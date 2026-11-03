@@ -32,7 +32,7 @@ const state = { tag, started: new Date().toISOString(), workspace, deadline: '20
 const save = () => writeFile(path.join(control, 'status.json'), JSON.stringify(state, null, 2) + '\n');
 const log = (event) => { process.stdout.write(JSON.stringify({ at: new Date().toISOString(), ...event }) + '\n'); };
 const git = async (...args) => (await exec('git', args, { cwd: workspace, maxBuffer: 4 * 1024 * 1024 })).stdout.trim();
-const codeFiles = (files) => files.split('\n').filter(Boolean).filter((f) => !/^(spec\/|docs\/|artifacts\/)|\.md$/i.test(f));
+const codeFiles = (files) => files.split('\n').filter(Boolean).filter((f) => !/^spec\/(?:STATE\.md$|reports\/|tasks\/|work\/)/.test(f));
 let snapshotRunning = null, repairCount = 0, repairNoProgress = 0, preflight, stopRequested = false, releasePass = null;
 const ciReceipts = new Map();
 
