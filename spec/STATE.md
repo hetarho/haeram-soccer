@@ -13,7 +13,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T02:28Z | T672 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:27Z | T675 |
@@ -550,7 +550,7 @@
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
 | T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
-| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
+| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
