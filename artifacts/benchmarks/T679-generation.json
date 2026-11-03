@@ -1,0 +1,978 @@
+{
+  "task": "T679",
+  "measuredAt": "2026-11-03T19:59:30.546Z",
+  "source": {
+    "head": "53e8d81d56bf5fa28f445ea609bd405488f9dad4",
+    "dirty": true
+  },
+  "build": {
+    "sha256": "2a513eec3c4416eab9a49e99bf34b9d6c279534576ddad013d4ee57e83cda83a",
+    "files": 1205
+  },
+  "environment": {
+    "chromium": "153.0.8010.12",
+    "playwright": "1.63.0",
+    "node": "v26.8.1",
+    "cpus": "10 × Apple M1 Max",
+    "memoryGiB": 32,
+    "loadAverageAtStart": [
+      2.8,
+      3.4,
+      3.5
+    ],
+    "loadAverageAtEnd": [
+      3.7,
+      3.5,
+      3.5
+    ]
+  },
+  "reference": {
+    "viewport": "390x844",
+    "deviceScaleFactor": 2,
+    "modes": {
+      "x1": "no slowdown",
+      "cdp-x4": "Emulation.setCPUThrottlingRate 4 on the page (main thread only; worker targets refuse it)",
+      "process-x4": "every renderer process runs 5 ms of each 20 ms (SIGSTOP/SIGCONT), main thread and workers alike, from the loaded start screen on"
+    },
+    "network": "Fast 4G (9/1.5 Mbps, 60 ms), cache disabled, for the cold load",
+    "tier": "oil",
+    "traits": [],
+    "club": "first affordable row of the list as it opens"
+  },
+  "limits": {
+    "generationBudgetMs": {
+      "1930": 5000,
+      "2000": 90000
+    },
+    "checkpointIndexedDbConservativeUtf16Bytes": 6291456,
+    "checkpointLimitInThisTreeBytes": 3145728,
+    "portableUtf8Bytes": 8388608
+  },
+  "runs": [
+    {
+      "decade": 1970,
+      "mode": "process-x4",
+      "seed": "generation-reference",
+      "club": "Leeds Mill A6",
+      "loadAverage": {
+        "start": [
+          2.8,
+          3.4,
+          3.5
+        ],
+        "listing": [
+          3.2,
+          3.4,
+          3.5
+        ]
+      },
+      "coldLoadMs": 2828,
+      "slowedRenderers": [7880],
+      "generationMs": 61136,
+      "generationRendererCpuMs": 0,
+      "budgetMs": null,
+      "withinBudget": null,
+      "workerGenerationMs": 57902,
+      "perSeasonMs": 1853,
+      "perSeasonWorkerMs": 1755,
+      "seasonsReported": 33,
+      "seasonsWithDigest": 33,
+      "cards": [
+        {
+          "feat": "league-run",
+          "atMs": 9475
+        },
+        {
+          "feat": "league-run",
+          "atMs": 13586
+        },
+        {
+          "feat": "league-run",
+          "atMs": 21942
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 30018
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 33038
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 36055
+        },
+        {
+          "feat": "treble",
+          "atMs": 39059
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 42076
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 45091
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 48094
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 51583
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 54598
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 57640
+        }
+      ],
+      "beyondWorkerMs": 3234,
+      "decadeMarks": [
+        { "season": 1950, "atMs": 20554 },
+        { "season": 1960, "atMs": 37652 },
+        { "season": 1970, "atMs": 57639 }
+      ],
+      "lastSeasonGapMs": 263,
+      "takeover": {
+        "hubMs": 1017,
+        "savedMs": 6400
+      },
+      "memory": {
+        "peakRendererRssMiB": 0,
+        "peakWorkerHeapMiB": 180.8,
+        "peakPageHeapMiB": 12.7,
+        "samples": 67,
+        "workerHeapSamples": 67,
+        "timeline": [
+          [3, 0, 0],
+          [1061, 0, 3],
+          [2080, 0, 28],
+          [3096, 0, 41],
+          [4120, 0, 30],
+          [5130, 0, 64],
+          [6154, 0, 92],
+          [7166, 0, 49],
+          [8194, 0, 56],
+          [9208, 0, 82],
+          [10227, 0, 118],
+          [11247, 0, 34],
+          [12252, 0, 55],
+          [13266, 0, 88],
+          [14269, 0, 52],
+          [15289, 0, 71],
+          [16294, 0, 103],
+          [17308, 0, 108],
+          [18324, 0, 48],
+          [19332, 0, 73],
+          [20337, 0, 96],
+          [21350, 0, 137],
+          [22364, 0, 52],
+          [23378, 0, 80],
+          [24399, 0, 100],
+          [25401, 0, 121],
+          [26418, 0, 54],
+          [27427, 0, 70],
+          [28442, 0, 97],
+          [29445, 0, 121],
+          [30461, 0, 127],
+          [31474, 0, 50],
+          [32498, 0, 75],
+          [33513, 0, 92],
+          [34526, 0, 112],
+          [35540, 0, 122],
+          [36564, 0, 167],
+          [37584, 0, 165],
+          [38594, 0, 75],
+          [39606, 0, 93],
+          [40634, 0, 98],
+          [41646, 0, 117],
+          [42666, 0, 147],
+          [43687, 0, 172],
+          [44691, 0, 72],
+          [45707, 0, 77],
+          [46713, 0, 107],
+          [47717, 0, 114],
+          [48721, 0, 146],
+          [49740, 0, 149],
+          [50745, 0, 48],
+          [51766, 0, 73],
+          [52783, 0, 97],
+          [53804, 0, 110],
+          [54818, 0, 141],
+          [55832, 0, 142],
+          [56835, 0, 181],
+          [57863, 0, 175],
+          [58870, 0, 30],
+          [59897, 0, 30],
+          [60905, 0, 30],
+          [62108, 0, 51],
+          [63112, 0, 51],
+          [64133, 0, 51],
+          [65136, 0, 77],
+          [66147, 0, 92],
+          [67163, 0, 112]
+        ]
+      },
+      "checkpoint": {
+        "utf16Units": 260382,
+        "conservativeUtf16Bytes": 520776,
+        "utf8Bytes": 780524,
+        "payloadUnits": 260071,
+        "codec": "gzip-cjk14",
+        "generation": 1,
+        "fields": [
+          "schema",
+          "engine",
+          "catalog",
+          "catalogHash",
+          "worldId",
+          "generation",
+          "parentGeneration",
+          "codec",
+          "checksum",
+          "payload"
+        ]
+      },
+      "workers": [
+        {
+          "url": "http://127.0.0.1:4294/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4294/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4294/assets/codec-BARgBK3B.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4294/assets/worker-DaUr9C4d.js",
+          "throttle": "none"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "decade": 2000,
+      "mode": "process-x4",
+      "seed": "generation-reference",
+      "club": "Leeds Mill A6",
+      "loadAverage": {
+        "start": [
+          3,
+          3.4,
+          3.5
+        ],
+        "listing": [
+          2.9,
+          3.3,
+          3.4
+        ]
+      },
+      "coldLoadMs": 2809,
+      "slowedRenderers": [8463],
+      "generationMs": 129811,
+      "generationRendererCpuMs": 0,
+      "budgetMs": 90000,
+      "withinBudget": false,
+      "workerGenerationMs": 126297,
+      "perSeasonMs": 2060,
+      "perSeasonWorkerMs": 2005,
+      "seasonsReported": 63,
+      "seasonsWithDigest": 63,
+      "cards": [
+        {
+          "feat": "league-run",
+          "atMs": 8907
+        },
+        {
+          "feat": "league-run",
+          "atMs": 12710
+        },
+        {
+          "feat": "war",
+          "atMs": 15711
+        },
+        {
+          "feat": "league-run",
+          "atMs": 21552
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 29303
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 32304
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 35323
+        },
+        {
+          "feat": "treble",
+          "atMs": 38336
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 41341
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 44342
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 47342
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 50345
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 53345
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 56363
+        },
+        {
+          "feat": "treble",
+          "atMs": 59363
+        },
+        {
+          "feat": "treble",
+          "atMs": 62373
+        },
+        {
+          "feat": "treble",
+          "atMs": 65393
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 68396
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 71418
+        },
+        {
+          "feat": "league-run",
+          "atMs": 74418
+        },
+        {
+          "feat": "treble",
+          "atMs": 77420
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 80421
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 83423
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 86432
+        },
+        {
+          "feat": "league-run",
+          "atMs": 89438
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 92451
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 95451
+        },
+        {
+          "feat": "treble",
+          "atMs": 98465
+        },
+        {
+          "feat": "treble",
+          "atMs": 101477
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 104496
+        },
+        {
+          "feat": "league-run",
+          "atMs": 108853
+        },
+        {
+          "feat": "treble",
+          "atMs": 111865
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 114868
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 118616
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 126050
+        }
+      ],
+      "beyondWorkerMs": 3514,
+      "decadeMarks": [
+        { "season": 1950, "atMs": 20156 },
+        { "season": 1960, "atMs": 36511 },
+        { "season": 1970, "atMs": 55731 },
+        { "season": 1980, "atMs": 77422 },
+        { "season": 1990, "atMs": 101200 },
+        { "season": 2000, "atMs": 126024 }
+      ],
+      "lastSeasonGapMs": 273,
+      "takeover": {
+        "hubMs": 1038,
+        "savedMs": 14674
+      },
+      "memory": {
+        "peakRendererRssMiB": 0,
+        "peakWorkerHeapMiB": 241.2,
+        "peakPageHeapMiB": 13.1,
+        "samples": 143,
+        "workerHeapSamples": 143,
+        "timeline": [
+          [25, 0, 0],
+          [1068, 0, 3],
+          [2080, 0, 17],
+          [3085, 0, 19],
+          [4104, 0, 35],
+          [5123, 0, 59],
+          [6135, 0, 106],
+          [7139, 0, 79],
+          [8142, 0, 84],
+          [9156, 0, 121],
+          [10179, 0, 141],
+          [11225, 0, 16],
+          [12230, 0, 62],
+          [13232, 0, 77],
+          [14237, 0, 77],
+          [15255, 0, 24],
+          [16261, 0, 43],
+          [17266, 0, 59],
+          [18278, 0, 85],
+          [19284, 0, 120],
+          [20290, 0, 140],
+          [21295, 0, 69],
+          [22301, 0, 69],
+          [23304, 0, 90],
+          [24312, 0, 131],
+          [25337, 0, 152],
+          [26355, 0, 47],
+          [27365, 0, 84],
+          [28374, 0, 100],
+          [29382, 0, 98],
+          [30387, 0, 141],
+          [31413, 0, 30],
+          [32418, 0, 70],
+          [33421, 0, 88],
+          [34435, 0, 111],
+          [35457, 0, 111],
+          [36460, 0, 123],
+          [37477, 0, 158],
+          [38499, 0, 50],
+          [39509, 0, 77],
+          [40517, 0, 86],
+          [41529, 0, 93],
+          [42533, 0, 124],
+          [43537, 0, 143],
+          [44542, 0, 47],
+          [45557, 0, 79],
+          [46581, 0, 92],
+          [47587, 0, 118],
+          [48595, 0, 117],
+          [49602, 0, 152],
+          [50615, 0, 162],
+          [51633, 0, 173],
+          [52646, 0, 43],
+          [53662, 0, 67],
+          [54665, 0, 92],
+          [55672, 0, 110],
+          [56677, 0, 139],
+          [57686, 0, 151],
+          [58690, 0, 167],
+          [59697, 0, 178],
+          [60718, 0, 180],
+          [61728, 0, 55],
+          [62739, 0, 88],
+          [63746, 0, 102],
+          [64750, 0, 113],
+          [65753, 0, 126],
+          [66766, 0, 161],
+          [67793, 0, 160],
+          [68801, 0, 193],
+          [69809, 0, 189],
+          [70817, 0, 41],
+          [71821, 0, 78],
+          [72836, 0, 92],
+          [73864, 0, 105],
+          [74876, 0, 109],
+          [75889, 0, 141],
+          [76894, 0, 151],
+          [77899, 0, 159],
+          [78902, 0, 177],
+          [79907, 0, 67],
+          [80911, 0, 87],
+          [81916, 0, 94],
+          [82935, 0, 123],
+          [83948, 0, 123],
+          [84964, 0, 132],
+          [85977, 0, 163],
+          [86990, 0, 174],
+          [87996, 0, 177],
+          [89004, 0, 189],
+          [90026, 0, 72],
+          [91050, 0, 66],
+          [92066, 0, 88],
+          [93076, 0, 100],
+          [94097, 0, 130],
+          [95116, 0, 136],
+          [96141, 0, 142],
+          [97156, 0, 166],
+          [98174, 0, 184],
+          [99179, 0, 192],
+          [100184, 0, 202],
+          [101198, 0, 208],
+          [102220, 0, 241],
+          [103225, 0, 82],
+          [104241, 0, 85],
+          [105261, 0, 108],
+          [106266, 0, 118],
+          [107273, 0, 132],
+          [108280, 0, 152],
+          [109298, 0, 164],
+          [110302, 0, 177],
+          [111325, 0, 183],
+          [112352, 0, 214],
+          [113357, 0, 218],
+          [114365, 0, 241],
+          [115373, 0, 237],
+          [116382, 0, 81],
+          [117399, 0, 84],
+          [118404, 0, 94],
+          [119419, 0, 136],
+          [120442, 0, 128],
+          [121468, 0, 150],
+          [122489, 0, 177],
+          [123507, 0, 176],
+          [124528, 0, 200],
+          [125530, 0, 209],
+          [126540, 0, 225],
+          [127563, 0, 225],
+          [128593, 0, 225],
+          [129618, 0, 225],
+          [130723, 0, 226],
+          [132612, 0, 229],
+          [133618, 0, 229],
+          [134622, 0, 229],
+          [135636, 0, 229],
+          [136649, 0, 229],
+          [137670, 0, 229],
+          [138674, 0, 229],
+          [139681, 0, 229],
+          [140702, 0, 229],
+          [141713, 0, 229],
+          [142724, 0, 229],
+          [143731, 0, 161],
+          [144741, 0, 174]
+        ]
+      },
+      "checkpoint": {
+        "utf16Units": 474770,
+        "conservativeUtf16Bytes": 949552,
+        "utf8Bytes": 1423688,
+        "payloadUnits": 474459,
+        "codec": "gzip-cjk14",
+        "generation": 1,
+        "fields": [
+          "schema",
+          "engine",
+          "catalog",
+          "catalogHash",
+          "worldId",
+          "generation",
+          "parentGeneration",
+          "codec",
+          "checksum",
+          "payload"
+        ]
+      },
+      "workers": [
+        {
+          "url": "http://127.0.0.1:4295/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4295/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4295/assets/codec-BARgBK3B.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4295/assets/worker-DaUr9C4d.js",
+          "throttle": "none"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "decade": 1970,
+      "mode": "x1",
+      "seed": "generation-reference",
+      "club": "Leeds Mill A6",
+      "loadAverage": {
+        "start": [
+          4,
+          3.5,
+          3.5
+        ],
+        "listing": [
+          3.8,
+          3.5,
+          3.5
+        ]
+      },
+      "coldLoadMs": 2842,
+      "slowedRenderers": [],
+      "generationMs": 15501,
+      "generationRendererCpuMs": 0,
+      "budgetMs": null,
+      "withinBudget": null,
+      "workerGenerationMs": 10958,
+      "perSeasonMs": 470,
+      "perSeasonWorkerMs": 332,
+      "seasonsReported": 33,
+      "seasonsWithDigest": 33,
+      "cards": [
+        {
+          "feat": "league-run",
+          "atMs": 2532
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 6140
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 9141
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 12144
+        }
+      ],
+      "beyondWorkerMs": 4543,
+      "decadeMarks": [
+        { "season": 1950, "atMs": 4473 },
+        { "season": 1960, "atMs": 7436 },
+        { "season": 1970, "atMs": 10919 }
+      ],
+      "lastSeasonGapMs": 39,
+      "takeover": {
+        "hubMs": 1190,
+        "savedMs": 1979
+      },
+      "memory": {
+        "peakRendererRssMiB": 0,
+        "peakWorkerHeapMiB": 185.8,
+        "peakPageHeapMiB": 13.5,
+        "samples": 18,
+        "workerHeapSamples": 18,
+        "timeline": [
+          [3, 0, 0],
+          [1005, 0, 3],
+          [2007, 0, 95],
+          [3010, 0, 88],
+          [4015, 0, 111],
+          [5019, 0, 34],
+          [6024, 0, 76],
+          [7028, 0, 87],
+          [8032, 0, 83],
+          [9034, 0, 78],
+          [10039, 0, 186],
+          [11043, 0, 137],
+          [12051, 0, 137],
+          [13055, 0, 137],
+          [14066, 0, 137],
+          [15074, 0, 137],
+          [16076, 0, 137],
+          [17108, 0, 62]
+        ]
+      },
+      "checkpoint": {
+        "utf16Units": 260382,
+        "conservativeUtf16Bytes": 520776,
+        "utf8Bytes": 780524,
+        "payloadUnits": 260071,
+        "codec": "gzip-cjk14",
+        "generation": 1,
+        "fields": [
+          "schema",
+          "engine",
+          "catalog",
+          "catalogHash",
+          "worldId",
+          "generation",
+          "parentGeneration",
+          "codec",
+          "checksum",
+          "payload"
+        ]
+      },
+      "workers": [
+        {
+          "url": "http://127.0.0.1:4296/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4296/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4296/assets/codec-BARgBK3B.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4296/assets/worker-DaUr9C4d.js",
+          "throttle": "none"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "decade": 2000,
+      "mode": "x1",
+      "seed": "generation-reference",
+      "club": "Leeds Mill A6",
+      "loadAverage": {
+        "start": [
+          3.8,
+          3.5,
+          3.5
+        ],
+        "listing": [
+          4.1,
+          3.6,
+          3.5
+        ]
+      },
+      "coldLoadMs": 2823,
+      "slowedRenderers": [],
+      "generationMs": 28115,
+      "generationRendererCpuMs": 0,
+      "budgetMs": 90000,
+      "withinBudget": true,
+      "workerGenerationMs": 23489,
+      "perSeasonMs": 446,
+      "perSeasonWorkerMs": 373,
+      "seasonsReported": 63,
+      "seasonsWithDigest": 63,
+      "cards": [
+        {
+          "feat": "league-run",
+          "atMs": 2536
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 6084
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 9083
+        },
+        {
+          "feat": "treble",
+          "atMs": 12246
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 15246
+        },
+        {
+          "feat": "treble",
+          "atMs": 18247
+        },
+        {
+          "feat": "europe-first",
+          "atMs": 21603
+        },
+        {
+          "feat": "europe-two",
+          "atMs": 24603
+        }
+      ],
+      "beyondWorkerMs": 4626,
+      "decadeMarks": [
+        { "season": 1950, "atMs": 4458 },
+        { "season": 1960, "atMs": 7363 },
+        { "season": 1970, "atMs": 10756 },
+        { "season": 1980, "atMs": 14603 },
+        { "season": 1990, "atMs": 18906 },
+        { "season": 2000, "atMs": 23445 }
+      ],
+      "lastSeasonGapMs": 44,
+      "takeover": {
+        "hubMs": 1192,
+        "savedMs": 2989
+      },
+      "memory": {
+        "peakRendererRssMiB": 0,
+        "peakWorkerHeapMiB": 212.3,
+        "peakPageHeapMiB": 12.3,
+        "samples": 32,
+        "workerHeapSamples": 32,
+        "timeline": [
+          [2, 0, 0],
+          [1004, 0, 3],
+          [2008, 0, 89],
+          [3013, 0, 69],
+          [4016, 0, 136],
+          [5019, 0, 52],
+          [6023, 0, 77],
+          [7026, 0, 93],
+          [8031, 0, 82],
+          [9034, 0, 80],
+          [10037, 0, 74],
+          [11041, 0, 178],
+          [12045, 0, 137],
+          [13049, 0, 97],
+          [14052, 0, 210],
+          [15054, 0, 135],
+          [16059, 0, 80],
+          [17062, 0, 177],
+          [18066, 0, 61],
+          [19071, 0, 153],
+          [20074, 0, 114],
+          [21078, 0, 183],
+          [22083, 0, 80],
+          [23086, 0, 184],
+          [24096, 0, 212],
+          [25100, 0, 212],
+          [26107, 0, 212],
+          [27110, 0, 212],
+          [28115, 0, 212],
+          [29195, 0, 53],
+          [30199, 0, 117],
+          [31203, 0, 146]
+        ]
+      },
+      "checkpoint": {
+        "utf16Units": 474770,
+        "conservativeUtf16Bytes": 949552,
+        "utf8Bytes": 1423688,
+        "payloadUnits": 474459,
+        "codec": "gzip-cjk14",
+        "generation": 1,
+        "fields": [
+          "schema",
+          "engine",
+          "catalog",
+          "catalogHash",
+          "worldId",
+          "generation",
+          "parentGeneration",
+          "codec",
+          "checksum",
+          "payload"
+        ]
+      },
+      "workers": [
+        {
+          "url": "http://127.0.0.1:4296/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4296/assets/fixtureHelper-ByibsqT9.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4296/assets/codec-BARgBK3B.js",
+          "throttle": "none"
+        },
+        {
+          "url": "http://127.0.0.1:4296/assets/worker-DaUr9C4d.js",
+          "throttle": "none"
+        }
+      ],
+      "errors": []
+    }
+  ],
+  "beside": {
+    "file": "artifacts/benchmarks/T667-generation.json",
+    "task": "T667",
+    "source": {
+      "head": "0840876c0f7ea0c7ef9d26c1cd1af7f4d73a6417",
+      "dirty": true
+    },
+    "cpus": "12 × Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "runs": [
+      {
+        "decade": 2000,
+        "mode": "process-x4",
+        "generationMs": 322026,
+        "workerGenerationMs": 321377,
+        "seasonsReported": 63,
+        "perSeasonMs": 5112
+      },
+      {
+        "decade": 1930,
+        "mode": "process-x4",
+        "generationMs": 3760,
+        "workerGenerationMs": 3164,
+        "seasonsReported": 0,
+        "perSeasonMs": null
+      },
+      {
+        "decade": 1970,
+        "mode": "process-x4",
+        "generationMs": 131886,
+        "workerGenerationMs": 131435,
+        "seasonsReported": 33,
+        "perSeasonMs": 3997
+      },
+      {
+        "decade": 1930,
+        "mode": "x1",
+        "generationMs": 1901,
+        "workerGenerationMs": 1580,
+        "seasonsReported": 0,
+        "perSeasonMs": null
+      },
+      {
+        "decade": 1970,
+        "mode": "x1",
+        "generationMs": 32976,
+        "workerGenerationMs": 32725,
+        "seasonsReported": 33,
+        "perSeasonMs": 999
+      },
+      {
+        "decade": 2000,
+        "mode": "x1",
+        "generationMs": 68193,
+        "workerGenerationMs": 68013,
+        "seasonsReported": 63,
+        "perSeasonMs": 1082
+      }
+    ]
+  }
+}

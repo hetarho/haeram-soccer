@@ -1,0 +1,213 @@
+{
+  "task": "T679",
+  "measuredAt": "2026-11-03T19:37:29.287Z",
+  "source": {
+    "head": "53e8d81d56bf5fa28f445ea609bd405488f9dad4",
+    "dirty": true
+  },
+  "environment": {
+    "node": "v26.8.1",
+    "cpus": "10 × Apple M1 Max",
+    "platform": "darwin 25.5.0",
+    "memoryGiB": 32
+  },
+  "workload": {
+    "decade": 1970,
+    "seed": "generation-reference",
+    "order": "with without without with with without",
+    "clone": "structuredClone of the progress reply"
+  },
+  "runs": [
+    {
+      "side": "with",
+      "wallMs": 12680.7,
+      "cpuMs": 16827.2,
+      "digestMs": 8,
+      "cloneMs": 1.8,
+      "seasons": 33,
+      "worldSha256": "eff75db52db85a2a6207400769446dfd198613847fdfa294eef61488bd1aaf7b",
+      "loadAverage": {
+        "before": [
+          2.42,
+          3.44,
+          3.56
+        ],
+        "after": [
+          2.42,
+          3.41,
+          3.54
+        ]
+      }
+    },
+    {
+      "side": "without",
+      "wallMs": 12704,
+      "cpuMs": 16754.6,
+      "digestMs": 0,
+      "cloneMs": 0.8,
+      "seasons": 33,
+      "worldSha256": "eff75db52db85a2a6207400769446dfd198613847fdfa294eef61488bd1aaf7b",
+      "loadAverage": {
+        "before": [
+          2.42,
+          3.41,
+          3.54
+        ],
+        "after": [
+          2.61,
+          3.4,
+          3.54
+        ]
+      }
+    },
+    {
+      "side": "without",
+      "wallMs": 12742.2,
+      "cpuMs": 16882.3,
+      "digestMs": 0,
+      "cloneMs": 0.9,
+      "seasons": 33,
+      "worldSha256": "eff75db52db85a2a6207400769446dfd198613847fdfa294eef61488bd1aaf7b",
+      "loadAverage": {
+        "before": [
+          2.61,
+          3.4,
+          3.54
+        ],
+        "after": [
+          2.49,
+          3.34,
+          3.51
+        ]
+      }
+    },
+    {
+      "side": "with",
+      "wallMs": 12794.8,
+      "cpuMs": 16889.1,
+      "digestMs": 8.3,
+      "cloneMs": 1.9,
+      "seasons": 33,
+      "worldSha256": "eff75db52db85a2a6207400769446dfd198613847fdfa294eef61488bd1aaf7b",
+      "loadAverage": {
+        "before": [
+          2.49,
+          3.34,
+          3.51
+        ],
+        "after": [
+          2.63,
+          3.34,
+          3.51
+        ]
+      }
+    },
+    {
+      "side": "with",
+      "wallMs": 12885.8,
+      "cpuMs": 17088.7,
+      "digestMs": 9.4,
+      "cloneMs": 1.8,
+      "seasons": 33,
+      "worldSha256": "eff75db52db85a2a6207400769446dfd198613847fdfa294eef61488bd1aaf7b",
+      "loadAverage": {
+        "before": [
+          2.63,
+          3.34,
+          3.51
+        ],
+        "after": [
+          2.65,
+          3.31,
+          3.49
+        ]
+      }
+    },
+    {
+      "side": "without",
+      "wallMs": 12683,
+      "cpuMs": 16801.8,
+      "digestMs": 0,
+      "cloneMs": 0.9,
+      "seasons": 33,
+      "worldSha256": "eff75db52db85a2a6207400769446dfd198613847fdfa294eef61488bd1aaf7b",
+      "loadAverage": {
+        "before": [
+          2.65,
+          3.31,
+          3.49
+        ],
+        "after": [
+          4.03,
+          3.58,
+          3.59
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "with": {
+      "wallMs": [
+        12680.7,
+        12794.8,
+        12885.8
+      ],
+      "cpuMs": [
+        16827.2,
+        16889.1,
+        17088.7
+      ],
+      "meanWallMs": 12787.1,
+      "meanCpuMs": 16935
+    },
+    "without": {
+      "wallMs": [
+        12704,
+        12742.2,
+        12683
+      ],
+      "cpuMs": [
+        16754.6,
+        16882.3,
+        16801.8
+      ],
+      "meanWallMs": 12709.7,
+      "meanCpuMs": 16812.9
+    },
+    "wallAddedPct": 0.6,
+    "cpuAddedPct": 0.7,
+    "pairWallAddedPct": [
+      -0.2,
+      0.4,
+      1.6
+    ],
+    "pairCpuAddedPct": [
+      0.4,
+      0,
+      1.7
+    ],
+    "digestSharePct": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "digestMsPerSeason": [
+      0.2,
+      0.3,
+      0.3
+    ],
+    "cloneMsPerSeason": {
+      "with": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "without": [
+        0,
+        0,
+        0
+      ]
+    },
+    "sameWorld": true
+  }
+}
