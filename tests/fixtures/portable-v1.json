@@ -751,7 +751,7 @@
           {
             "kind": "takeover",
             "title": "구단 인수",
-            "amount": "2855861"
+            "amount": "4331765"
           },
           {
             "kind": "sponsor-sign",
@@ -4999,7 +4999,7 @@
           {
             "kind": "takeover",
             "title": "구단 인수",
-            "amount": "9732668707"
+            "amount": "12599819005"
           },
           {
             "kind": "gate",
@@ -5169,7 +5169,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "48822945824"
+            "amount": "12495734203"
           },
           {
             "kind": "gate",
@@ -5334,7 +5334,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "48822945824"
+            "amount": "12495734203"
           },
           {
             "kind": "operating-cost",
@@ -5499,7 +5499,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "48822945824"
+            "amount": "12495734203"
           },
           {
             "kind": "operating-cost",
@@ -5584,7 +5584,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "48822945824"
+            "amount": "12495734203"
           },
           {
             "kind": "retirement",
@@ -12003,7 +12003,7 @@
           {
             "kind": "takeover",
             "title": "구단 인수",
-            "amount": "1619189269"
+            "amount": "2100072007"
           },
           {
             "kind": "europe-qualification",
@@ -12193,7 +12193,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "8118374771"
+            "amount": "3090523635"
           },
           {
             "kind": "europe-prize",
@@ -12458,7 +12458,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "8118374771"
+            "amount": "3090523635"
           },
           {
             "kind": "operating-cost",
@@ -12608,7 +12608,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "8118374771"
+            "amount": "3090523635"
           },
           {
             "kind": "operating-cost",
@@ -12683,7 +12683,7 @@
           {
             "kind": "owner-living",
             "title": "구단주 생활비",
-            "amount": "8118374771"
+            "amount": "3090523635"
           },
           {
             "kind": "retirement",
@@ -16525,7 +16525,7 @@
           {
             "kind": "takeover",
             "title": "구단 인수",
-            "amount": "2855861"
+            "amount": "4331765"
           },
           {
             "kind": "sponsor-sign",
@@ -17421,7 +17421,7 @@
           {
             "kind": "takeover",
             "title": "구단 인수",
-            "amount": "2855861"
+            "amount": "4331765"
           },
           {
             "kind": "playing-coach-proposal",
@@ -18241,7 +18241,7 @@
           {
             "kind": "takeover",
             "title": "구단 인수",
-            "amount": "2855861"
+            "amount": "4331765"
           }
         ],
         "euro": []
