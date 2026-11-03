@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import {
-  createWorld,
   transferOffers,
   operate,
   managerCandidates,
@@ -13,14 +12,9 @@ import { detectMediations, resolveMediation, promiseForMediation } from './media
 import { judgePromises, cancelPromises } from './promises';
 import { lineOf } from './player';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import { careerWorld } from './career.testkit';
 function fixture(winter = false, line: 'MF' | 'GK' = 'MF') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Fixed Promise',
-    color: '#224466',
-    seed: 'promise',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'promise' });
   if (winter) {
     w.calendar = { day: transferWindowDays(w.year).winterOpen };
     w.round = Math.floor(w.calendar.day / 7);
@@ -40,7 +34,7 @@ function fixture(winter = false, line: 'MF' | 'GK' = 'MF') {
   return { w, offer, promise: w.promises![0] };
 }
 function afterDeadline(
-  w: ReturnType<typeof createWorld>,
+  w: ReturnType<typeof careerWorld>,
   promise: NonNullable<typeof w.promises>[number],
 ) {
   w.year = promise.deadline.year;

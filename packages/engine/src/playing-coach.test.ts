@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, moneyLabel, operate } from './index';
+import { moneyLabel, operate } from './index';
 import {
   answerPlayingCoach,
   automaticPlayingCoachFits,
@@ -17,14 +17,9 @@ import { pendingWorkPreview } from './pending-work-preview';
 import { initializeCoaching } from './coaching-entry';
 import { coachWage, coachMatches, staffMember } from './staff';
 import { ratio } from './primitives';
+import { careerWorld } from './career.testkit';
 function world({ seed = 'playing-coach', fieldPlayer = false, atFounding = false } = {}) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Joint Contract',
-    color: '#224466',
-    seed,
-    level: 'easy',
-  });
+  const w = careerWorld({ seed });
   w.cash = w.income = '999999999999';
   if (!atFounding) {
     w.round = 35;

@@ -1,17 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, KnockoutTie } from '../../contracts/src/types';
-import { createWorld, ownLeagueClubs } from './index';
+import { ownLeagueClubs } from './index';
 import { decideTie } from './knockout';
 import { simulateMatch } from './match';
+import { careerWorld } from './career.testkit';
 
 function world() {
-  return createWorld({
-    country: 'ENG',
-    name: 'Cup Town',
-    color: '#552233',
-    seed: 'knockout-shootout',
-    level: 'normal',
-  });
+  return careerWorld({ seed: 'knockout-shootout' });
 }
 
 describe('knockout ties (→MATCH-6)', () => {

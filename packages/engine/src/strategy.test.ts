@@ -4,7 +4,6 @@ import { lineOf } from './player';
 import {
   activePlayers,
   clubOf,
-  createWorld,
   formationOf,
   slotOvr,
   lineupSummary,
@@ -14,18 +13,13 @@ import {
   startingSquad,
   tacticalProfile,
 } from './index';
+import { careerWorld } from './career.testkit';
 
-const input = {
-  country: 'ENG' as const,
-  name: 'Preparation FC',
-  color: '#28654b',
-  seed: 'real-lineup-decisions',
-  level: 'normal' as const,
-};
+const input = { seed: 'real-lineup-decisions' };
 
 describe('the manager picks the XI (→CLUB-6)', () => {
   it('plays his automatic XI as the match actors and records', () => {
-    const w = createWorld(input),
+    const w = careerWorld(input),
       ids = startingSquad(w, clubOf(w)).map((player) => player.id);
     const match = simulateMatch(w, nextOwnFixture(w)!, false, true),
       side = match.record.home === w.playerClub ? 0 : 1;
@@ -44,7 +38,7 @@ describe('the manager picks the XI (→CLUB-6)', () => {
   });
 
   it('plays a player out of position at his level there', () => {
-    const w = createWorld(input),
+    const w = careerWorld(input),
       ids = startingSquad(w, clubOf(w)).map((player) => player.id);
     // Anyone may play any slot (→CLUB-6): the keeper in the first defender's place.
     const keeper = w.players.find((player) => player.id === ids[0])!,
@@ -57,9 +51,9 @@ describe('the manager picks the XI (→CLUB-6)', () => {
   });
 
   it('changes actual chances through the forwards’ ability', () => {
-    const fixtureOf = (w: ReturnType<typeof createWorld>) => nextOwnFixture(w)!;
+    const fixtureOf = (w: ReturnType<typeof careerWorld>) => nextOwnFixture(w)!;
     const totalTargets = (level: number) => {
-      const w = createWorld(input);
+      const w = careerWorld(input);
       for (const player of activePlayers(w).filter((p) => lineOf(p.position) === 'FW'))
         for (const a of ATTRIBUTES) player.attrs[a] = level;
       const fixture = fixtureOf(w),
@@ -78,7 +72,7 @@ describe('the manager picks the XI (→CLUB-6)', () => {
 
 describe('the tactical profile reads the named attributes (→MATCH-8, MATCH-9)', () => {
   it('fit reads attributes', () => {
-    const w = createWorld(input);
+    const w = careerWorld(input);
     const lines = (tactic: Parameters<typeof formationOf>[0]) => {
       const xi = startingSquad(w, clubOf(w)).map((p) => structuredClone(p));
       return {

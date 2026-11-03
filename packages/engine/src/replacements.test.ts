@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import type { World, Player, TransferBid } from '../../contracts/src/types';
 import { validateWorld, canonical } from '../../contracts/src/index';
 import {
-  createWorld,
   activePlayers,
   makePlayer,
   ownStarters,
@@ -19,19 +18,11 @@ import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
 /** The club on the pre-feature path: replacement needs, not the match model, are the subject. */
 function found(count: number) {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Replacement Rovers',
-      color: '#224433',
-      seed: 'replacement-needs',
-      level: 'easy',
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'replacement-needs' }, DISABLED_RELEASE);
   w.cash = w.income = '999999999999';
   w.calendar = { day: 1 };
   w.settings!.responsibilities.recruitment = 'delegated';

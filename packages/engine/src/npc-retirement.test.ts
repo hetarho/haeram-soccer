@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from './index';
 import {
   announceRetirements,
   retireAtClose,
@@ -7,14 +6,8 @@ import {
   retirementChanceWithContext,
 } from './careers';
 import { squad } from './world';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Retained Retirement',
-    color: '#224466',
-    seed: 'npc-retirement',
-    level: 'easy',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'npc-retirement' });
 describe('actual retained NPC retirement', () => {
   it('distinguishes missing minutes, known low minutes, regular starters and goalkeeper age', () => {
     expect(retirementChanceWithContext(1950, 1918, 'CM')).toBe(0.08);

@@ -1,17 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { createWorld, transferOffers } from './index';
+import { transferOffers } from './index';
 import { detectMediations, resolveMediation, resolveDelegatedMediations } from './mediation';
 import { lineOf } from './player';
 import { requestCandidates, signingVerdict } from './signings';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import { careerWorld } from './career.testkit';
 function fixture() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Resolve Mediation',
-    color: '#224466',
-    seed: 'resolution',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'resolution' });
   const offers = transferOffers(w)
     .filter((o) => o.available && lineOf(o.player.position) === 'MF')
     .sort((a, b) => (BigInt(a.fee) > BigInt(b.fee) ? -1 : 1));
@@ -27,7 +22,7 @@ function fixture() {
   detectMediations(w);
   return { w, id: w.mediations![0].id, named };
 }
-function rich(w: ReturnType<typeof createWorld>) {
+function rich(w: ReturnType<typeof careerWorld>) {
   w.cash = '999999999999';
   w.income = '999999999999';
   w.round = 23;

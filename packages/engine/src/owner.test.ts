@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
 import type { MatchRecord, OwnerTrait, TransferFact, World } from '../../contracts/src/types';
-import { createWorld } from './founding';
 import { operate } from './operations';
 import { advanceEconomy } from './economy';
 import {
@@ -32,19 +31,16 @@ import {
 } from './fan-mood';
 import { withOwner } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
-/** A founded career: no owner state, so every owner rule stands aside. */
-const world = () =>
-  createWorld(
-    {
-      country: 'ENG',
-      name: 'Proprietors Town',
-      color: '#335577',
-      seed: 'owner-foundation',
-      level: 'normal' as const,
-    },
-    DISABLED_RELEASE,
-  );
+/** A career taken over; its owner state is the takeover's until a test sets its own. */
+const world = () => careerWorld({ seed: 'owner-foundation' }, DISABLED_RELEASE);
+/** A career with no owner state, as a hand-built world holds it: every owner rule stands aside. */
+const unowned = () => {
+  const w = world();
+  delete w.owner;
+  return w;
+};
 
 const OWNER_COMMANDS = [
   { type: 'owner-stake', percent: 20 },
@@ -54,7 +50,7 @@ const OWNER_COMMANDS = [
 
 describe('owner commands (→OWNER-7/9/11)', () => {
   it.each(OWNER_COMMANDS)('refuses $type while the career has no owner', (cmd) => {
-    const w = world(),
+    const w = unowned(),
       before = canonical(w);
     expect(() => operate(w, cmd)).toThrow(OWNER_PENDING_MESSAGE);
     expect(canonical(w)).toBe(before);
@@ -62,8 +58,8 @@ describe('owner commands (→OWNER-7/9/11)', () => {
 });
 
 describe('owner hooks without an owner', () => {
-  it('return at once and change nothing in a founded career', () => {
-    const w = world(),
+  it('return at once and change nothing in a career with no owner state', () => {
+    const w = unowned(),
       before = canonical(w);
     // The hooks never read their facts without an owner, so stand-ins serve.
     const result = { id: 'league:1', home: w.playerClub } as MatchRecord,
@@ -78,8 +74,9 @@ describe('owner hooks without an owner', () => {
     fanMoodIdentity(w);
     expect(canonical(w)).toBe(before);
   });
-  it('treats a founded career as owned and only an ownerless world as nobody’s', () => {
-    const w = world();
+  it('treats a career as owned, its owner state or none, and only an ownerless world as nobody’s', () => {
+    expect(hasOwner(world())).toBe(true);
+    const w = unowned();
     expect(hasOwner(w)).toBe(true);
     expect(hasOwner({ playerClub: '' })).toBe(false);
   });
@@ -304,17 +301,7 @@ describe('FFP (→OWNER-10)', () => {
     withOwner(w, { fortune: '1000000000000' });
     return w;
   };
-  const spain = () =>
-    createWorld(
-      {
-        country: 'ESP',
-        name: 'Propietarios CF',
-        color: '#335577',
-        seed: 'owner-ffp',
-        level: 'normal',
-      },
-      DISABLED_RELEASE,
-    );
+  const spain = () => careerWorld({ country: 'ESP', seed: 'owner-ffp' }, DISABLED_RELEASE);
   it('applies from 2011/12 in the top flight only', () => {
     expect(ffpRoom(topFlight(FFP.start - 1))).toBeUndefined();
     expect(ffpRoom(topFlight(FFP.start))).toBeDefined();

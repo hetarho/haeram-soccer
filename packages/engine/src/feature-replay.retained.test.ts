@@ -3,10 +3,11 @@ import { canonical } from '../../contracts/src/index';
 import { Host } from '../../../apps/web/src/runtime/host';
 import { retainedWorkload } from '../../../tests/fixtures/retained-workload';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
-import { createWorld, currentDay, advanceDays } from './index';
+import { currentDay, advanceDays } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { command, facts, readAndReload } from './feature-replay.testkit';
+import { careerWorld } from './career.testkit';
 
 // Each career is its own case with its own limit, in its own file so the two run side by side.
 // The retained one is built over three and a half seasons and then crosses a season close,
@@ -23,16 +24,7 @@ for (const retained of [true])
       const seed = cachedWorld(`seed:${retained ? 'retained' : 'new'}`, () => {
         const seed = retained
           ? retainedWorkload(DISABLED_RELEASE).w
-          : createWorld(
-              {
-                country: 'ENG',
-                name: 'Feature Replay',
-                color: '#224466',
-                seed: 'feature-replay',
-                level: 'easy',
-              },
-              DISABLED_RELEASE,
-            );
+          : careerWorld({ seed: 'feature-replay' }, DISABLED_RELEASE);
         for (const key of RESPONSIBILITY_KEYS) seed.settings!.responsibilities[key] = 'delegated';
         // Cross the next seasonal boundary in the retained case, keeping its outstanding promise.
         if (retained) advanceDays(seed, 322 - currentDay(seed), undefined, false);

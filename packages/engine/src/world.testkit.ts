@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 import { COUNTRIES } from '../../catalogs/src/index';
-import type { createWorld } from './index';
+import type { World } from '../../contracts/src/types';
 
 export const input = {
   country: 'ENG' as const,
@@ -9,7 +9,7 @@ export const input = {
   seed: 'portable-world-1',
   level: 'normal' as const,
 };
-export function assertCapacities(w: ReturnType<typeof createWorld>) {
+export function assertCapacities(w: World) {
   for (const cp of COUNTRIES)
     cp.groups.forEach((groups, tier) =>
       groups.forEach((count, group) =>

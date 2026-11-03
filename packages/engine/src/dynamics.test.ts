@@ -1,15 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, EVOLUTION, evolveClubs, levelOf } from './index';
+import { EVOLUTION, evolveClubs, levelOf } from './index';
+import { careerWorld } from './career.testkit';
 
 describe('clubs nobody owns', () => {
   it('can grow past any old cap through rare projects, as strong as an owner can build', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Watcher',
-      color: '#224433',
-      seed: 'superclub-probe',
-      level: 'easy' as const,
-    });
+    const w = careerWorld({ seed: 'superclub-probe' });
     let highest = 0,
       projects = 0;
     for (let season = 0; season < 40; season++) {

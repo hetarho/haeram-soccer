@@ -147,11 +147,14 @@ const facts = (w: World) => ({
  * the candidate rounds' label and football; 593d6d509d01b4b2 and 5f44410b73d9e99e before.
  * T645's person-name pools changed both by their names only: with every name removed they digest
  * e2a038cc28b4e66d and 0cb5b46b9f17cb32 before and after; 2c29fb75f9446f68 and b9827562f0e62916
- * before.
+ * before. T670's start (`founded` takes the fourth tier's first club over in a world made fresh in
+ * 2024, where it founded an amateur club and moved it to 2024) changed the candidate rounds only:
+ * another own club, squad and league play them; the aggregate records, of fixtures without the own
+ * club, did not move; 09f27c83b64a3831 before.
  */
 const BEFORE = {
   aggregateRecords: '4eb52d8d3132ffc5',
-  candidateRounds: '09f27c83b64a3831',
+  candidateRounds: '725b7e23284728b6',
 };
 
 describe('complete-result throughput (T285)', () => {

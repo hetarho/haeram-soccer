@@ -6,7 +6,6 @@ import { decode, encode } from '../../../apps/web/src/adapters/persistence';
 import {
   activePlayers,
   clubOf,
-  createWorld,
   formationOf,
   slotOvr,
   lineupSummary,
@@ -22,15 +21,10 @@ import {
   tacticalProfile,
   transferOffers,
 } from './index';
+import { careerWorld } from './career.testkit';
 
 function world(strong = false) {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Scouting United',
-    color: '#224433',
-    seed: 'recruitment-preview',
-    level: 'easy' as const,
-  });
+  const w = careerWorld({ seed: 'recruitment-preview' });
   w.cash = '999999999999';
   w.tactic = 'possession';
   for (const player of w.players) {

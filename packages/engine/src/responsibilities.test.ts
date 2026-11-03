@@ -2,22 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { gameSettingsSchema } from '../../contracts/src/schema';
 import {
   coachDelegated,
-  createWorld,
   defaultSettings,
   isDelegated,
   operate,
   RESPONSIBILITY_KEYS,
   STAFF_ROLES,
 } from './index';
+import { careerWorld } from './career.testkit';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Authority Town',
-    color: '#224466',
-    seed: 'responsibilities',
-    level: 'normal',
-  });
+const world = () => careerWorld({ seed: 'responsibilities' });
 describe('game-owned responsibility and time settings', () => {
   it('starts with seven independent approved defaults', () => {
     const w = world();

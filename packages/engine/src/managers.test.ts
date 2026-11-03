@@ -1,14 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { staffAuthority } from './testing';
 import { validateWorld } from '../../contracts/src/index';
-import type { Founding, ManagerStyle, World } from '../../contracts/src/types';
+import type { ManagerStyle, World } from '../../contracts/src/types';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
-import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { careerWorld } from './career.testkit';
 import {
   advanceRound,
   coachProspect,
-  createWorld,
   dailyStaff,
   financialBreakdown,
   makeManager,
@@ -19,7 +18,6 @@ import {
   managerRenewal,
   managerTrait,
   MARKET_BANDS,
-  type MatchModelRelease,
   operate,
   quote,
   ratio,
@@ -28,25 +26,9 @@ import {
   STYLE_INFO,
 } from './index';
 
-/**
- * The test club, on the pre-feature path: managers, not the match model, are the subject. `found`
- * is `createWorld` for a world only searched through, so it is not kept on disk.
- */
-function world(
-  seed = 'manager-schools',
-  found: (input: Founding, release: MatchModelRelease) => World = (input, release) =>
-    simulatedWorld(input, {}, release),
-) {
-  const w = found(
-    {
-      country: 'ENG',
-      name: 'Dugout Athletic',
-      color: '#224466',
-      seed,
-      level: 'easy' as const,
-    },
-    DISABLED_RELEASE,
-  );
+/** The test club, on the pre-feature path: managers, not the match model, are the subject. */
+function world(seed = 'manager-schools') {
+  const w = careerWorld({ seed }, DISABLED_RELEASE);
   w.cash = '999999999';
   return w;
 }
@@ -66,7 +48,7 @@ function market(seeds = 12, seasons = 30) {
 function withFirefighter(seed: string) {
   return cachedWorld(`firefighter:${seed}`, () => {
     for (let n = 0; ; n++) {
-      const w = world(`${seed}-${n}`, createWorld),
+      const w = world(`${seed}-${n}`),
         candidate = managerOffers(w).findIndex((offer) => offer.style === 'firefighter');
       if (candidate < 0) continue;
       operate(w, { type: 'hire', id: managerOffers(w)[candidate].id });

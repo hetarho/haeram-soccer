@@ -1,18 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from './index';
 import { managerialEntryReady, managerialProfile, qualifyManagers } from './manager-entry';
 import { managerCandidates } from './managerMarket';
 import { candidateStyles } from './styles';
 import { managerTermLimit } from './ops-staff';
+import { careerWorld } from './career.testkit';
 const date = (year: number, day = 0) => ({ year, day });
 function fixture() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Manager Entry',
-    color: '#224466',
-    seed: 'manager-entry',
-    level: 'easy',
-  });
+  // A copy: the takeover already read who has coached, and the employment below is hand-set.
+  const w = structuredClone(careerWorld({ seed: 'manager-entry' }));
   const p = w.people![w.players[0].id];
   p.qualities = { understanding: 4, teaching: 1, judgement: 4 };
   p.employment = [{ role: 'assistant', club: w.playerClub, from: date(1950) }];

@@ -9,7 +9,8 @@ import { cellOf } from './grid/pitch';
 import { MaterialTally } from './grid/record';
 import { buildGridSetup } from './grid/setup';
 import { country } from '../../catalogs/src/index';
-import { createWorld, closeSeason } from './index';
+import { closeSeason } from './index';
+import { careerWorld } from './career.testkit';
 import { ranked } from './season';
 import { clubOf } from './world';
 import {
@@ -39,7 +40,7 @@ const recordOf = (material: MatchMaterial, lines: [number, number] = [11, 11]) =
 
 describe('post-match material', () => {
   it('fills material for own matches only', () => {
-    const w = createWorld({ ...FOUNDING, seed: 'material' });
+    const w = careerWorld({ seed: 'material' });
     const ownFixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     const [home, away] = w.clubs.filter(
       (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,

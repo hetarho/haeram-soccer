@@ -1,24 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import {
-  createWorld,
-  contractTalks,
-  activePlayers,
-  pushInbox,
-  readInbox,
-  seasonDayOf,
-} from './index';
+import { contractTalks, activePlayers, pushInbox, readInbox, seasonDayOf } from './index';
 import { pendingDecisions, stoppingReasons } from './stopping';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { renewalDay } from './staff';
 import type { InboxKind } from '../../contracts/src/types';
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Stops',
-    color: '#224466',
-    seed: 'stopping',
-    level: 'normal',
-  });
+import { careerWorld } from './career.testkit';
+const world = () => careerWorld({ seed: 'stopping' });
 const note = (w: ReturnType<typeof world>, kind: InboxKind, ref?: string) =>
   pushInbox(w, { kind, title: kind, detail: 'report', attention: true, ref });
 describe('shared domain-owned stopping policy', () => {

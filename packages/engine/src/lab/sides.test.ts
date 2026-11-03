@@ -13,9 +13,9 @@ import {
   labStarterAverage,
   setLabPlayerOvr,
 } from './sides';
-import { createWorld } from '../founding';
 import { appearanceForFixture } from '../match-appearance';
 import { createLabWorld, labFixture, leftAtHome, playLabMatch, watchLabMatch } from './match';
+import { historyWorld } from '../history';
 
 const input = {
   side: 0 as const,
@@ -117,13 +117,7 @@ describe('lab setup', () => {
   it('hosts are named left and right', () => {
     expect(lab.hosts.map((c) => c.name)).toEqual(['좌측 팀', '우측 팀']);
     // Names only: the clubs keep their ids and kits, so nothing a match plays changes.
-    const plain = createWorld({
-      country: 'ENG',
-      name: 'Match Lab',
-      color: '#2a5d8f',
-      seed: 'lab-world',
-      level: 'normal',
-    });
+    const plain = historyWorld('lab-world');
     const before = plain.clubs.filter((c) => lab.hosts.some((h) => h.id === c.id));
     expect(before.map((c) => c.id)).toEqual(lab.hosts.map((c) => c.id));
     before.forEach((c, i) => expect({ ...lab.hosts[i]!, name: c.name, short: c.short }).toEqual(c));

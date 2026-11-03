@@ -11,9 +11,10 @@ import { validateWorld, type LoadCatalog } from './schema';
 import type { Sponsor, SponsorContract, TransferFact, World } from './types';
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from './detail';
 import { MATCH_MODEL_REVISION, type MatchModelState, type NpcSeasonStats } from './match-model';
-import { createWorld, simulateSeason, type MatchModelRelease } from '../../engine/src/index';
+import { simulateSeason, type MatchModelRelease } from '../../engine/src/index';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
+import { careerWorld } from '../../engine/src/career.testkit';
 it('round trips exact monetary strings without losing integer precision', () => {
   const facts = {
     currency: 'ITL',
@@ -23,17 +24,7 @@ it('round trips exact monetary strings without losing integer precision', () => 
   expect(JSON.parse(canonical(facts))).toEqual(facts);
 });
 
-const world = (release?: MatchModelRelease) =>
-  createWorld(
-    {
-      country: 'ENG',
-      name: 'Contract Rovers',
-      color: '#224466',
-      seed: 'contracts',
-      level: 'easy' as const,
-    },
-    release,
-  );
+const world = (release?: MatchModelRelease) => careerWorld({ seed: 'contracts' }, release);
 /** The world as rules 1.15 saved it, with that rule's single sponsor. */
 const legacy = (w: World, sponsor: Sponsor) => ({
   ...structuredClone(w),

@@ -5,7 +5,6 @@ import {
   type MatchModelRevision,
 } from '../../../contracts/src/match-model';
 import { random } from '../primitives';
-import { createWorld } from '../index';
 import { playGrid } from './engine';
 import {
   interruptAll,
@@ -43,6 +42,7 @@ import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf, type SetPieceScene } 
 import { createState, onPitch, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { Tracer, type TraceEntry } from './trace';
 import { gridKit } from './testkit';
+import { careerWorld } from '../career.testkit';
 
 const C = GRID_MOVEMENT_CONFIG;
 /** The fastest any player runs: full pace, fresh, recovering after a turnover. */
@@ -68,13 +68,7 @@ function field(): GridState {
   return s;
 }
 
-const w = createWorld({
-  country: 'ENG',
-  name: 'Grid Movement Lab',
-  color: '#2a5d8f',
-  seed: 'grid-movement',
-  level: 'normal',
-});
+const w = careerWorld({ seed: 'grid-movement' });
 const [home, away] = w.clubs.filter(
   (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
 );

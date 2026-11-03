@@ -8,7 +8,6 @@ import {
   broadcastQuote,
   catchment,
   clubOf,
-  createWorld,
   credit,
   DISTRIBUTION_CONFIG,
   financialBreakdown,
@@ -40,6 +39,7 @@ import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world } from './finance.testkit';
+import { careerWorld } from './career.testkit';
 
 describe('earned, auditable club finances', () => {
   it('keeps a real deficit after expenses and currency/calendar progression without creating help', () => {
@@ -268,16 +268,7 @@ describe('earned, auditable club finances', () => {
   });
 
   it('writes money in the one notation of the app', () => {
-    const spain = createWorld(
-      {
-        country: 'ESP',
-        name: 'Notation CF',
-        color: '#335544',
-        seed: 'notation',
-        level: 'easy' as const,
-      },
-      DISABLED_RELEASE,
-    );
+    const spain = careerWorld({ country: 'ESP', seed: 'notation' }, DISABLED_RELEASE);
     const euro = { ...spain, year: 2001 },
       sterling = { ...world(), year: 1950 };
     const eur = (euros: number) => moneyLabel(euro, String(Math.round(euros * 100)));

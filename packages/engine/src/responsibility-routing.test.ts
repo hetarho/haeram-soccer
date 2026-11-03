@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  createWorld,
   defaultSettings,
   dailyMarket,
   staffSignings,
@@ -8,14 +7,9 @@ import {
   activePlayers,
   seasonDayOf,
 } from './index';
+import { careerWorld } from './career.testkit';
 const world = () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Mixed Authority',
-    color: '#224466',
-    seed: 'authority-market',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'authority-market' });
   w.cash = w.income = '999999999999';
   w.round = 23;
   w.calendar = { day: seasonDayOf(w.year, 1, 1) };

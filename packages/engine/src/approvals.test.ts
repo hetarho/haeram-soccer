@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { activePlayers, contractTalks, createWorld, seasonDayOf } from './index';
+import { activePlayers, contractTalks, seasonDayOf } from './index';
 import {
   APPROVAL_DEADLINE_DAYS,
   approvalDeadline,
@@ -12,6 +12,7 @@ import { settleMorale } from './morale';
 import { RESPONSIBILITY_KEYS } from './responsibilities';
 import { pendingDecisions } from './stopping';
 import { validateWorld } from '../../contracts/src/schema';
+import { careerWorld } from './career.testkit';
 
 const valid = (input: unknown) => {
   try {
@@ -22,14 +23,7 @@ const valid = (input: unknown) => {
   }
 };
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Waits',
-    color: '#224466',
-    seed: 'approval-waits',
-    level: 'normal',
-  });
+const world = () => careerWorld({ seed: 'approval-waits' });
 /** A world whose first `n` players ask to renew at the January window (→CLUB-26). */
 function asking(n = 1) {
   const w = world();

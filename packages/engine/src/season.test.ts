@@ -79,7 +79,7 @@ describe('closed season archive', () => {
   );
 
   it('rejects archived bracket rows and scorers that point nowhere or contradict their legs', () => {
-    const { w, season } = closedSeason(archiveLastRound('amateur'));
+    const { w, season } = closedSeason(archiveLastRound('professional'));
     const corruptions: ((row: number[]) => void)[] = [
       (row) => (row[0] = w.clubs.length),
       (row) => (row[1] = w.clubs.length),

@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import {
   activeTrainingFocus,
-  createWorld,
   advanceRound,
   simulateMatch,
   nextOwnFixture,
@@ -20,19 +19,10 @@ import {
   settleMorale,
 } from './morale';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 /** The club on the pre-feature path: morale, not the match model, is the subject. */
-const world = () =>
-  createWorld(
-    {
-      country: 'ENG',
-      name: 'Morale',
-      color: '#24664f',
-      seed: 'morale',
-      level: 'easy' as const,
-    },
-    DISABLED_RELEASE,
-  );
+const world = () => careerWorld({ seed: 'morale' }, DISABLED_RELEASE);
 
 describe('squad morale', () => {
   it('starts neutral for new clubs and is exactly neutral when absent', () => {

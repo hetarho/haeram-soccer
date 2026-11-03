@@ -9,7 +9,6 @@ import {
   ballonDorPremium,
   ballonDorRecord,
   ballonDorStar,
-  createWorld,
   overall,
   payBallonDorBonus,
   ratio,
@@ -17,16 +16,11 @@ import {
   zeroMetrics,
 } from './index';
 import { M } from './grid/record';
+import { careerWorld } from './career.testkit';
 
 /** A world in 1960 whose season aggregates are filled in by each case. */
 function season() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Ballon d Or',
-    color: '#224466',
-    seed: 'ballon-dor',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'ballon-dor' });
   w.year = 1960;
   w.europe = [];
   w.npcSeason = {

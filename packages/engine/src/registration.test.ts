@@ -2,21 +2,15 @@ import { placeBid, respondBid } from './transfers';
 import { transferOffers } from './ops-squad';
 import { movePerson } from './npc-continuity';
 import { describe, it, expect } from 'vitest';
-import { createWorld } from './index';
 import { makePlayer, clubOf, joinClub } from './world';
 import { registration, registrationRoom } from './registration';
 import { validateWorld, canonical } from '../../contracts/src/index';
 import { country, currency, priceIndex } from '../../catalogs/src/index';
 import { prepareSeason } from './season';
 import type { CountryCode, Player } from '../../contracts/src/types';
+import { careerWorld } from './career.testkit';
 function fixture(code: CountryCode, year: number, tier: number, count: number) {
-  const w = createWorld({
-    country: code,
-    name: 'Synthetic Registration',
-    color: '#224466',
-    seed: 'registration',
-    level: 'normal',
-  });
+  const w = careerWorld({ country: code, seed: 'registration' });
   const own = clubOf(w),
     depth = country(code).groups.length;
   const displaced = w.clubs.find(
@@ -147,13 +141,7 @@ describe('season-specific squad registration', () => {
     expect(registrationRoom(w, candidate(w, 20))).toBeUndefined();
   });
   it('records first-team join seasons and graduate flags losslessly without inventing absent tenure', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Join Years',
-      color: '#224466',
-      seed: 'join-years',
-      level: 'normal',
-    });
+    const w = careerWorld({ seed: 'join-years' });
     expect(w.players.every((p) => p.joined === w.year && !p.graduate)).toBe(true);
     const player = w.players[0];
     joinClub(player, 'academy', w.year);

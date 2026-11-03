@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { COUNTRIES, currency, priceIndex } from '../../catalogs/src/index';
 import type { CountryCode, Fixture, KnockoutRound } from '../../contracts/src/types';
-import { AMATEUR_CLUBS, createWorld, finishCups, finishEurope, prepareSeason } from './index';
+import { AMATEUR_CLUBS, finishCups, finishEurope, prepareSeason } from './index';
 import { knockoutStage, type CupStage } from './stages';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 /** Seasons that span every domestic cup size and each continental format and calendar change. */
 const YEARS = [1950, 1955, 1960, 1971, 1991, 1993, 1994, 1997, 1999, 2004, 2009, 2021, 2024];
@@ -25,16 +26,7 @@ function liveStage(competition: string, rounds: KnockoutRound[], f: Fixture): Cu
  */
 function seasonsOf(code: CountryCode) {
   return cachedWorld(`stage-seasons-${code}`, () => {
-    const baseline = createWorld(
-      {
-        country: code,
-        name: 'Stage Rovers',
-        seed: `stages-${code}`,
-        color: '#224433',
-        level: 'normal' as const,
-      },
-      DISABLED_RELEASE,
-    );
+    const baseline = careerWorld({ country: code, seed: `stages-${code}` }, DISABLED_RELEASE);
     return YEARS.map((year) => {
       // Each is a fresh synthetic epoch, not thirteen jumps through one retained career.
       const w = structuredClone(baseline);

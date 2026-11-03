@@ -1,23 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { IdentityColours } from '../../contracts/src/identity';
-import type { Founding } from '../../contracts/src/types';
 import { identityOf } from './club-identity';
 import { DESIGNERS, designFee, redrawFee } from './design-studio';
-import { createWorld } from './founding';
 import { operate } from './operations';
+import { careerWorld } from './career.testkit';
 
-const FOUNDING: Founding = {
-  country: 'ENG',
-  name: 'Design Studio',
-  color: '#223344',
-  seed: 'design-studio',
-  level: 'normal',
-};
+const CAREER = { seed: 'design-studio' };
 const COLOURS: IdentityColours = ['#0b1f44', '#ffd166', '#d62828'];
 
 describe('designer commission', () => {
   it("charges the designer's fee and delivers its drafts in the owner's colours", () => {
-    const w = createWorld(FOUNDING);
+    const w = careerWorld(CAREER);
     const cash = BigInt(w.cash),
       fee = BigInt(designFee(w, 'studio'));
     operate(w, { type: 'design-commission', studio: 'studio', colours: COLOURS });
@@ -29,7 +22,7 @@ describe('designer commission', () => {
   });
 
   it('adopting a draft applies it and ends the commission; discarding keeps the fee spent', () => {
-    const w = createWorld(FOUNDING);
+    const w = careerWorld(CAREER);
     operate(w, { type: 'design-commission', studio: 'local', colours: COLOURS });
     const chosen = structuredClone(w.designCommission!.drafts[1]!);
     operate(w, { type: 'adopt-design', draft: 1 });
@@ -46,7 +39,7 @@ describe('designer commission', () => {
   });
 
   it('redraws the same designer and colours at half the fee', () => {
-    const w = createWorld(FOUNDING);
+    const w = careerWorld(CAREER);
     operate(w, { type: 'design-commission', studio: 'star', colours: COLOURS });
     const cash = BigInt(w.cash);
     operate(w, { type: 'redraw-designs' });

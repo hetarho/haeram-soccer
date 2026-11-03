@@ -6,7 +6,8 @@ import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../tests/fixtures/worlds';
-import { advanceRound, createWorld, managerCandidates, operate, simulateSeason } from './index';
+import { advanceRound, managerCandidates, operate, simulateSeason } from './index';
+import { careerWorld } from './career.testkit';
 import {
   attributeOwnMatch,
   captureCupTitle,
@@ -159,7 +160,7 @@ describe('manager-history capture (→HIST-18/19, SAVE-24)', () => {
     // whose final we win is the scene (a lost final still happens even then).
     const won = ['manager-cup-2', 'manager-cup-3', 'manager-cup-4']
       .map((seed) => {
-        const w = createWorld({ ...FOUNDING, seed }, DISABLED_RELEASE);
+        const w = careerWorld({ seed }, DISABLED_RELEASE);
         for (const p of w.players)
           for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[]) p.attrs[key] = 99;
         finishCups(w);

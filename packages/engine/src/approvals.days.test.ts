@@ -1,16 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { advanceDays, completeRound, createWorld, prepareRound } from './index';
+import { advanceDays, completeRound, prepareRound } from './index';
 import { approvalWait } from './approvals';
 import { pendingDecisions } from './stopping';
+import { careerWorld } from './career.testkit';
 
-const world = () =>
-  createWorld({
-    country: 'ENG',
-    name: 'Waits',
-    color: '#224466',
-    seed: 'approval-waits',
-    level: 'normal',
-  });
+const world = () => careerWorld({ seed: 'approval-waits' });
 
 describe('approval waiting days on the calendar (→STAFF-48)', () => {
   it('counts on every settled day, on both day paths', () => {

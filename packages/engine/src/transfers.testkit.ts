@@ -1,24 +1,15 @@
 import type { TransferBid, World } from '../../contracts/src/types';
 import { staffAuthority } from './testing';
-import { createWorld, currentDay, seasonDayOf } from './index';
+import { currentDay, seasonDayOf } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
 export const CLOSED = '이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.';
 
 /** The market's club on the pre-feature path: transfers, not the match model, are the subject. */
 export function world(seed = 'transfer-market', fresh = false) {
-  const found = () =>
-    createWorld(
-      {
-        country: 'ENG',
-        name: 'Market Town',
-        color: '#224433',
-        seed,
-        level: 'easy' as const,
-      },
-      DISABLED_RELEASE,
-    );
+  const found = () => careerWorld({ seed }, DISABLED_RELEASE);
   // Founding costs most of a test that plays no match: each seed is founded once and copied.
   const w = fresh ? found() : cachedWorld(`founded:${seed}`, found);
   w.settings = staffAuthority(2);

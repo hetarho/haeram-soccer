@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from './founding';
 import {
   financialBreakdown,
   isIncomeKind,
@@ -14,20 +13,16 @@ import { SEASON_END_DAY, SEASON_ROUNDS } from './calendar';
 import { scaleBy } from './primitives';
 import { withOwner } from './testing';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { careerWorld } from './career.testkit';
 
-/** A founded club; `owned` gives it a takeover owner and plenty of cash. */
+/**
+ * A club taken over with plenty of cash: `owned` gives it the test owner, otherwise it holds no
+ * owner state, as a hand-built world does.
+ */
 const world = (owned = true) => {
-  const w = createWorld(
-    {
-      country: 'ENG',
-      name: 'Ledger Rovers',
-      color: '#553377',
-      seed: 'owner-finance',
-      level: 'normal' as const,
-    },
-    DISABLED_RELEASE,
-  );
+  const w = careerWorld({ seed: 'owner-finance' }, DISABLED_RELEASE);
   if (owned) withOwner(w);
+  else delete w.owner;
   w.cash = '100000000000';
   return w;
 };
@@ -117,7 +112,7 @@ describe('owner money in the ledger (→ECON-10)', () => {
 });
 
 describe('the club’s bankruptcy (→ECON-24, OWNER-16)', () => {
-  it('ends a taken-over career by its cause and leaves a founded one as it was', () => {
+  it('ends a taken-over career by its cause and leaves one without owner state as it was', () => {
     for (const owned of [true, false]) {
       const w = world(owned);
       w.round = 1;

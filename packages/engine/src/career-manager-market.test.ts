@@ -1,24 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import {
-  createWorld,
-  operate,
-  managerCandidates,
-  managerMatches,
-  managerPayoff,
-  dailyStaff,
-} from './index';
+import { operate, managerCandidates, managerMatches, managerPayoff, dailyStaff } from './index';
 import { holdRows } from './testing';
 import { closeEmployment, openEmployment, careerDate } from './person-careers';
 import { managerHireCost } from './managerMarket';
 import { releaseCost } from './staff';
+import { careerWorld } from './career.testkit';
 function fixture(kind: 'free' | 'internal' | 'club') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Career Management',
-    color: '#224466',
-    seed: 'career-manager',
-    level: 'easy',
-  });
+  const w = careerWorld({ seed: 'career-manager' });
   const p = w.players[0],
     person = w.people![p.id];
   p.status = 'retired';

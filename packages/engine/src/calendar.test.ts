@@ -8,7 +8,6 @@ import {
   currentDay,
   daysUntilNextMatch,
   fixtureDay,
-  FOUNDING_YEAR,
   nextOwnFixture,
   prepareSeason,
   seasonDate,
@@ -18,6 +17,7 @@ import {
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world as calendarClub } from './calendar.testkit';
+import { CAREER_YEAR } from './career.testkit';
 
 /**
  * The calendar club on the pre-feature path: the calendar's mechanics, not the match model, are
@@ -37,7 +37,7 @@ describe('persistent season calendar', () => {
     expect(w.ownMatches).toEqual([]);
     expect(w.cash).toBe(cash);
     expect(w.players).toEqual(players);
-    expect(seasonDate(w)).toBe(`${FOUNDING_YEAR}년 8월 7일`);
+    expect(seasonDate(w)).toBe(`${CAREER_YEAR}년 8월 7일`);
     expect(daysUntilNextMatch(w)).toBe(1);
     const playback = advanceDays(w, 1);
     expect(w.round).toBe(1);
@@ -48,25 +48,26 @@ describe('persistent season calendar', () => {
 
   it('keeps daily, three-day and next-own-match outcomes identical across empty rounds', () => {
     const a = world();
-    a.lower = true;
-    clubOf(a).tier = 4;
+    // The own club changes places with a top-flight club, whose 20-club league plays 38 games.
+    const own = clubOf(a),
+      top = a.clubs.find((c) => c.country === own.country && c.tier === 0 && !c.representative)!;
+    [own.tier, own.group, top.tier, top.group] = [top.tier, top.group, own.tier, own.group];
     prepareSeason(a);
     const b = structuredClone(a);
     const c = structuredClone(a);
+    for (let n = 0; n < 5; n++) advanceToNextMatch(c);
+    // 38 games in 46 rounds leave an empty round before the sixth match.
+    const sixth = nextOwnFixture(c)!;
     advanceToNextMatch(c);
-    advanceToNextMatch(c);
-    // The 30-game amateur league leaves an empty round before the third match.
-    const third = nextOwnFixture(c)!;
-    advanceToNextMatch(c);
-    expect(currentDay(c)).toBe(fixtureDay(third));
-    expect(c.round).toBeGreaterThan(3);
+    expect(currentDay(c)).toBe(fixtureDay(sixth));
+    expect(c.round).toBeGreaterThan(6);
     while (currentDay(a) < currentDay(c)) advanceDays(a, 1);
     while (currentDay(b) < currentDay(c))
       advanceDays(b, Math.min(3, currentDay(c) - currentDay(b)));
     expect(canonical(a)).toBe(canonical(b));
     expect(canonical(a)).toBe(canonical(c));
-    expect(c.ownMatches).toHaveLength(3);
-    expect(c.rankHistory?.at(-1)?.rows).toHaveLength(16);
+    expect(c.ownMatches).toHaveLength(6);
+    expect(c.rankHistory?.at(-1)?.rows).toHaveLength(20);
   });
 
   it('migrates older saves at the completed round without inventing earlier rank history', () => {
@@ -133,11 +134,11 @@ describe('persistent season calendar', () => {
     expect(currentDay(w)).toBe(SEASON_END_DAY);
     const snapshots = structuredClone(w.rankHistory);
     advanceDays(w, 1);
-    expect(w.year).toBe(FOUNDING_YEAR + 1);
+    expect(w.year).toBe(CAREER_YEAR + 1);
     expect(currentDay(w)).toBe(0);
-    // A new club plays its first season in the 16-club amateur league.
-    expect(w.history.at(-1)).toMatchObject({ year: FOUNDING_YEAR, played: 30 });
-    expect(w.rankHistory?.filter((s) => s.year === FOUNDING_YEAR)).toEqual(snapshots);
+    // The club taken over plays its first season in the 24-club fourth tier.
+    expect(w.history.at(-1)).toMatchObject({ year: CAREER_YEAR, played: 46 });
+    expect(w.rankHistory?.filter((s) => s.year === CAREER_YEAR)).toEqual(snapshots);
     expect(w.rankHistory?.at(-1)?.round).toBe(0);
     validateWorld(w);
   });

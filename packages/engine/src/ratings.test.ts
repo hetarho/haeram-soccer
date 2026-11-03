@@ -1,17 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld } from './index';
 import { clubValuation, squadValue } from './ratings';
 import { playerValue } from './transfers';
 import { activePlayers, clubOf } from './world';
+import { careerWorld } from './career.testkit';
 
 function world() {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Valued Rovers',
-    color: '#553344',
-    seed: 'ratings',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'ratings' });
   w.cash = '5000000';
   return w;
 }

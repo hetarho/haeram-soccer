@@ -1,7 +1,6 @@
 import { delegatedSponsors } from './sponsors';
 import { describe, expect, it } from 'vitest';
 import {
-  createWorld,
   defaultSettings,
   dailyStaff,
   seasonAcademy,
@@ -10,14 +9,9 @@ import {
   STAFF_ROLES,
   RESPONSIBILITY_KEYS,
 } from './index';
+import { careerWorld } from './career.testkit';
 const world = () => {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Staff Authority',
-    color: '#224466',
-    seed: 'staff-authority',
-    level: 'normal',
-  });
+  const w = careerWorld({ seed: 'staff-authority' });
   w.settings = defaultSettings();
   w.cash = w.income = '999999999999';
   w.round = 23;

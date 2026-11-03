@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { createWorld, gateProjection, simulateMatch } from './index';
+import { gateProjection, simulateMatch } from './index';
 import { gate, gateDetail, readGateDetail } from './settlement';
+import { careerWorld } from './career.testkit';
 
 describe('gate ledger detail', () => {
   it('gateDetail and readGateDetail round-trip with and without the league scale', () => {
@@ -21,13 +22,7 @@ describe('gate ledger detail', () => {
   });
 
   it('gate() writes a detail readGateDetail reads', () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Gate United',
-      color: '#224433',
-      seed: 'gate-detail',
-      level: 'normal',
-    });
+    const w = careerWorld({ seed: 'gate-detail' });
     const fixture = w.fixtures.find((match) => match.home === w.playerClub)!,
       match = simulateMatch(w, fixture, false, true).record,
       scale = gateProjection(w, match.id, match.away).leagueFactor,

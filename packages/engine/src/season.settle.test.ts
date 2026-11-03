@@ -8,7 +8,7 @@ import { INJURY } from './careers';
 import { dayCountedFrom } from './calendar';
 import { isUnavailable } from './discipline';
 import { M } from './grid/record';
-import { createWorld, simulateMatch } from './index';
+import { simulateMatch } from './index';
 import { playFixture } from './knockout';
 import { type MatchModelRelease, validateFullMatchRecord } from './match-model';
 import { adaptationAfter, FORMATIONS, gainLevelFactor, MATCH_GAIN } from './player';
@@ -17,19 +17,11 @@ import { founded } from './season.testkit';
 import { fatigueCost } from './strategy';
 import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
+import { careerWorld } from './career.testkit';
 
 /** The release-on probe's world: founded in 1950 in ENG's fourth tier (fixtures 1950:ENG:4). */
 function world(release: MatchModelRelease) {
-  return createWorld(
-    {
-      country: 'ENG',
-      name: 'Settle Athletic',
-      color: '#225544',
-      seed: 'settle-match',
-      level: 'normal',
-    },
-    release,
-  );
+  return careerWorld({ seed: 'settle-match' }, release);
 }
 /**
  * A 2024 world on the model a new career plays, recorded once the year has moved (founded off,

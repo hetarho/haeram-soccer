@@ -11,17 +11,12 @@ import {
   settleCohesion,
   settleStarts,
 } from './adaptation';
-import { activePlayers, advanceRound, clubNews, createWorld, ownStarters } from './index';
+import { activePlayers, advanceRound, clubNews, ownStarters } from './index';
 import { FORMATIONS, MATCH_GAIN, TRAINING_GAIN } from './player';
+import { careerWorld } from './career.testkit';
 
 function world(seed = 'adaptation') {
-  const w = createWorld({
-    country: 'ENG',
-    name: 'Settle Town',
-    color: '#335577',
-    seed,
-    level: 'normal',
-  });
+  const w = careerWorld({ seed });
   w.cash = '999999999';
   return w;
 }

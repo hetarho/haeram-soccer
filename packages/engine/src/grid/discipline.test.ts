@@ -14,10 +14,10 @@ import {
 import type { Point } from './pitch';
 import { gridKit } from './testkit';
 import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
-import { createWorld } from '../index';
 import { playGrid } from './engine';
 import { M } from './record';
 import { buildGridSetup } from './setup';
+import { careerWorld } from '../career.testkit';
 
 // The pre-feature path's discipline mechanics, as the other grid files pin them (T417).
 const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
@@ -105,16 +105,7 @@ describe('grid discipline (work in progress)', () => {
       s.players[1][3]!.base.fill(80);
       return s;
     };
-    const w = createWorld(
-      {
-        country: 'ENG',
-        name: 'Booked Lab',
-        color: '#2a5d8f',
-        seed: 'booked',
-        level: 'normal',
-      },
-      DISABLED_RELEASE,
-    );
+    const w = careerWorld({ seed: 'booked' }, DISABLED_RELEASE);
     expect(w.clubs.length).toBeGreaterThan(1);
     const foulRate = (booked: boolean) => {
       const s = run(booked);
@@ -128,16 +119,7 @@ describe('grid discipline (work in progress)', () => {
   });
 
   it('plays on with ten men after a red card and keeps cards at plausible rates', () => {
-    const w = createWorld(
-      {
-        country: 'ENG',
-        name: 'Grid Cards Lab',
-        color: '#2a5d8f',
-        seed: 'grid-cards',
-        level: 'normal',
-      },
-      DISABLED_RELEASE,
-    );
+    const w = careerWorld({ seed: 'grid-cards' }, DISABLED_RELEASE);
     const [home, away] = w.clubs.filter(
       (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
     );

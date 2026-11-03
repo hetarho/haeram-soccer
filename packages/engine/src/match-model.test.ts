@@ -18,7 +18,8 @@ import {
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { currentDay } from './calendar';
 import { M } from './grid/record';
-import { advanceRound, createWorld } from './index';
+import { advanceRound } from './index';
+import { careerWorld } from './career.testkit';
 import {
   activateMatchModel,
   assertFullMatchRecord,
@@ -266,8 +267,8 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
     level: 'normal' as const,
   };
   it('records the model from founding or from the next unplayed day', () => {
-    // Careers founded before the release, then activated by it.
-    const founded = simulatedWorld(founding, {}, DISABLED_RELEASE);
+    // Careers started before the release, then activated by it.
+    const founded = careerWorld({ seed: founding.seed }, DISABLED_RELEASE);
     const boundary = trackingBoundary(founded);
     expect(activateMatchModel(founded, ENABLED_RELEASE)).toBe(true);
     expect(founded.matchModel).toEqual({
@@ -282,11 +283,12 @@ describe('prospective activation (→SAVE-23, HIST-17)', () => {
       trackedFrom: boundary,
       competitions: [],
     });
-    // Founding with the switch on is the same career recorded from its first day, and a founding
-    // now takes the switch as released.
-    expect(canonical(createWorld(founding, ENABLED_RELEASE))).toBe(canonical(founded));
-    expect(canonical(createWorld(founding))).toBe(canonical(founded));
-    expect(createWorld(founding, DISABLED_RELEASE).matchModel).toBeUndefined();
+    // A takeover with the switch on is the same career recorded from its first day, and a
+    // takeover now takes the switch as released.
+    const started = (release?: MatchModelRelease) => careerWorld({ seed: founding.seed }, release);
+    expect(canonical(started(ENABLED_RELEASE))).toBe(canonical(founded));
+    expect(canonical(started())).toBe(canonical(founded));
+    expect(started(DISABLED_RELEASE).matchModel).toBeUndefined();
     // Mid-season only the model and its empty ledger are added; every settled fact stays.
     const played = simulatedWorld(founding, { rounds: 2 }, DISABLED_RELEASE);
     const before = structuredClone(played);
@@ -419,7 +421,7 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
   const REVISION_7: MatchModelRelease = { revision: seventh, enabled: true };
   const REVISION_8: MatchModelRelease = { revision: eighth, enabled: true };
   const REVISION_9: MatchModelRelease = { revision: ninth, enabled: true };
-  const w = createWorld(founding);
+  const w = careerWorld({ seed: founding.seed });
   const ability = (club: string) => clubManager(w, findClub(w, club)).ability;
   const nobodys = w.fixtures.filter(
     (f) =>
@@ -477,11 +479,10 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
     expect(owned[3]!.sum - owned[2]!.sum).toBeCloseTo(away - 4, 9);
     // The manager who plays is the one the market shows, derived without a stored draw: reading
     // him leaves the world, its market and every stream as they were (→STAFF-17).
-    const fresh = createWorld(founding);
+    const fresh = careerWorld({ seed: founding.seed });
     const untouched = canonical(fresh);
     for (const f of nobodys.slice(0, 5)) prepareMatch(fresh, f, HOST_MATH, third);
     expect(canonical(fresh)).toBe(untouched);
-    expect(fresh.managerMarket).toBeUndefined();
   });
 
   it('revisions 1 and 2 keep the flat 4', () => {

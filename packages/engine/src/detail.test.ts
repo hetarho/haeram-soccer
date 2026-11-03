@@ -2,21 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../contracts/src/detail';
 import { validateWorld } from '../../contracts/src/index';
 import type { Tactic, World } from '../../contracts/src/types';
-import { advanceRound, createWorld } from './index';
-import { professionalStart } from './testing';
+import { advanceRound } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { careerWorld } from './career.testkit';
 
 /** A professional season played to its last round with `tactic`, built once and shared. */
 function season(tactic: Tactic, seed: string) {
   return cachedWorld(`season:${tactic}:${seed}`, () => {
-    const w = createWorld({
-      country: 'ENG',
-      name: 'Detail Athletic',
-      color: '#24664f',
-      seed,
-      level: 'normal' as const,
-    });
-    professionalStart(w);
+    const w = careerWorld({ seed });
     w.tactic = tactic;
     for (let round = 0; round < 46; round++) advanceRound(w, undefined, false);
     return w;
