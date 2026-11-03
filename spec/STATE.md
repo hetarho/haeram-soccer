@@ -16,9 +16,10 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
+| hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | - |
 
 ## inbox
+- 261103 decided ARCH-6 WEB-18 T681 T682: measured automatic-play hotspots → GameClient owns prepared sharing, fixture helpers retain inactive IDs without lifetime payloads, profiled staff/manager membership keeps live eligibility; x20 target unmet, preserve production pace options (alt: migrate storage or raise pacing before reducing repeated work). hr05
 - 261103 decided OWNER-3 ECON-36 ECON-38 T685: the owner asked to fix the balance as far as possible, a 석유 재벌 free to buy any club below his reach → reach by price-rank bands (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%) so three-division countries hold every tier, living costs 0.25%, dividend −0.5 per 1%, star sale −4 once a window (T668's proposals), books opening with half a season of income, cash kept to one season and debt to 1.5 seasons of income, takeover loan 10 seasons (alt: keep division reaches and add 지역 유지 rules per country | recalibrate the books' income scale only and leave them unbounded | pay the inherited debt at the takeover from the owner's fortune). ot03
 - 261103 decided ARCH-30 T683 T684: 39 integration failures on dfa39857 (the takeover's migrated tests, never run, plus the merge with hr03's read models) → two fix tasks run before the push, engine files and web/fixture files, each case kept protecting what it protects (alt: one task for all 24 files | push and fix on main). ot03
 - 261103 decided WEB-115 T678: how the feats are found → engine `seasonDigest` reads the archives and the clubs' Elo at each season reached and carries only the season's greatest feat; only the European Cup lineage makes the treble and the European feats; a league run is carded at five and afterwards only when it becomes its country's longest; the war is one card on the 1946 restart (alt: the UI derives feats from the digests it received, which a reload mid-generation would cut short | a card for every season a run continues). ot03
@@ -559,7 +560,6 @@
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
 | T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
 | T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
 | T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
@@ -588,7 +588,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- hr05: T681 implementation/scoped checks complete locally; implement-task T682, then combined coordinator gate, browser measurements and publication; preserve ot03 ownership.
+- hr05: T681/T682 and final post-sync coordinator gate complete; publish verified f48a4447 to main and verify exact-source CI before closing the session.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Continue the active ot03 takeover handoff; hr03 read/storage work is complete (spec/reports/261103-hr03.md).
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
@@ -597,6 +597,7 @@
 - implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 
 ## log
+- 261103 T682 done: real Host profile + paired/A/A CPU, 16 browser runs/8,200 days/50 saves with full fact/reload parity; retained x10 3.41–3.50→5.34–5.36/s. All declared scopes and 349 browser cases covered, timing attempts disclosed; final synced gate f48a4447 passes. hr05
 - 261103 fix browser gate: the complete season-flow journey reaches its final record panes past the local 30 s budget even in isolation; use the adjacent long-journey slow classification, retaining all progression/save/record assertions. hr05
 - 261103 T681 done locally: prepared client views bypass duplicate store sharing; 97 unit cases and fast checks pass, paired component CPU clears noise with equal outputs; actual client/browser coverage deferred to combined T682 gate. hr05
 - 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
@@ -616,4 +617,3 @@
 - 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
 - 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
-- 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03

@@ -1,0 +1,130 @@
+{
+  "started": "2026-11-03T07:12:30.225Z",
+  "scope": "batch: Chromium",
+  "source": {
+    "commit": "585415cea595d7dbf80dc6607481b86f3692355f",
+    "tree": "f6a907099af638d2212b7c7e61380894c6149ee5",
+    "dirty": false,
+    "diff": ""
+  },
+  "machine": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "logicalCpus": 12,
+    "memoryBytes": 33577496576
+  },
+  "cache": "Existing caches retained; cache warmth and external host load uncontrolled.",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "command": "pnpm run typecheck",
+      "started": "2026-11-03T07:12:30.254Z",
+      "finished": "2026-11-03T07:13:09.407Z",
+      "elapsedMs": 39152,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "lint",
+      "command": "pnpm run lint",
+      "started": "2026-11-03T07:13:09.411Z",
+      "finished": "2026-11-03T07:13:29.379Z",
+      "elapsedMs": 19968,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "format:check",
+      "command": "pnpm run format:check",
+      "started": "2026-11-03T07:13:29.379Z",
+      "finished": "2026-11-03T07:14:06.788Z",
+      "elapsedMs": 37409,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "test:unit",
+      "command": "pnpm run test:unit --reporter=default --reporter=json --outputFile=.tmp/verification/unit-results.json",
+      "started": "2026-11-03T07:14:06.788Z",
+      "finished": "2026-11-03T07:16:11.133Z",
+      "elapsedMs": 124345,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "test:integration",
+      "command": "pnpm run test:integration --reporter=default --reporter=json --outputFile=.tmp/verification/integration-results.json",
+      "started": "2026-11-03T07:16:11.135Z",
+      "finished": "2026-11-03T07:32:57.596Z",
+      "elapsedMs": 1006462,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "test:contract",
+      "command": "pnpm run test:contract --reporter=default --reporter=json --outputFile=.tmp/verification/contract-results.json",
+      "started": "2026-11-03T07:32:57.597Z",
+      "finished": "2026-11-03T07:34:13.782Z",
+      "elapsedMs": 76184,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "validate:catalogs",
+      "command": "pnpm run validate:catalogs",
+      "started": "2026-11-03T07:34:13.782Z",
+      "finished": "2026-11-03T07:34:14.844Z",
+      "elapsedMs": 1062,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "validate:presentation",
+      "command": "pnpm run validate:presentation",
+      "started": "2026-11-03T07:34:14.845Z",
+      "finished": "2026-11-03T07:34:16.010Z",
+      "elapsedMs": 1165,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "build",
+      "command": "pnpm run build",
+      "started": "2026-11-03T07:34:16.011Z",
+      "finished": "2026-11-03T07:34:21.646Z",
+      "elapsedMs": 5635,
+      "exitCode": 0,
+      "verifiedAtSource": "f0ea7ada0945cd29431dd54694218f7af0306aee"
+    },
+    {
+      "stage": "test:e2e",
+      "command": "Exact Chromium coverage with disclosed continuation, isolated timing rechecks and one repaired long-journey classification",
+      "started": "2026-11-03T07:39:52.022Z",
+      "finished": "2026-11-03T08:22:36.004Z",
+      "elapsedMs": 2563982,
+      "exitCode": 0,
+      "coverage": {
+        "total": 349,
+        "initiallyPassed": 26,
+        "resumedPassed": 318,
+        "isolatedPassed": 4,
+        "repairedPassed": 1,
+        "initialFailures": 5
+      },
+      "finalCommand": "pnpm run test:e2e --project=chromium --test-list .tmp/hr05-e2e-repaired.list --workers=1",
+      "finalStarted": "2026-11-03T08:21:49.274Z"
+    }
+  ],
+  "finished": "2026-11-03T08:22:36.004Z",
+  "elapsedMs": 4205779,
+  "passed": true,
+  "reusedSource": {
+    "commit": "f0ea7ada0945cd29431dd54694218f7af0306aee",
+    "tree": "1e8cd03baf1dc11034bfe7451839738e6eb5f4ee",
+    "dirty": false,
+    "diff": ""
+  },
+  "execution": "All declared scopes and 349 exact Chromium cases verified. Reuse is limited to unchanged production/test scopes; an exact source comparison proves the sole e2e edit adds a comment and test.slow(), retaining all assertions. Initial interrupted/failed invocations remain disclosed."
+}

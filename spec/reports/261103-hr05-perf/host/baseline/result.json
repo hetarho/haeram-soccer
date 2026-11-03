@@ -1,0 +1,938 @@
+{
+  "source": "227f56c5f457d00ec696c613d3496cd2cd2901f3",
+  "bundleHash": "fccd714dc8b91e18253e52ecb4d9ad212b95e2ebd102756540e4b24bfc058a81",
+  "fixtureHash": "1df3cb308e86667ef646a6f265fe7a84fe00f3405280c04478cbab0ec528a082",
+  "host": "hq-dev1-pve2-vm2",
+  "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+  "node": "v24.22.1",
+  "scope": "retained Host with two real helpers; no codec/autosave; clone cost explicit; main Host thread profile excludes helper CPU",
+  "warmDays": 14,
+  "days": 60,
+  "loadBefore": [
+    9.23,
+    6.84,
+    7.5
+  ],
+  "loadAfter": [
+    10,
+    7.16,
+    7.6
+  ],
+  "factsHash": "43dae1c49173e79022280db67bbb8ea8cea463597a758571ad2fe65c6d8aa74e",
+  "spans": [
+    {
+      "projectionMs": 44.83812899999975,
+      "publisherMs": 33.354811000001064,
+      "cloneMs": 0.14424800000051619,
+      "wallMs": 84.42355099999986,
+      "cpuMs": 82.258,
+      "own": false,
+      "year": 2034,
+      "day": 302
+    },
+    {
+      "projectionMs": 44.77816099999836,
+      "publisherMs": 33.56442700000116,
+      "cloneMs": 0.6516190000002098,
+      "wallMs": 82.76597199999742,
+      "cpuMs": 83.48,
+      "own": false,
+      "year": 2034,
+      "day": 303
+    },
+    {
+      "projectionMs": 45.26470399999744,
+      "publisherMs": 34.141554999998334,
+      "cloneMs": 0.13497300000017276,
+      "wallMs": 83.43812700000126,
+      "cpuMs": 82.469,
+      "own": false,
+      "year": 2034,
+      "day": 304
+    },
+    {
+      "projectionMs": 47.090119999997114,
+      "publisherMs": 34.19209300000148,
+      "cloneMs": 0.12698299999829032,
+      "wallMs": 85.93790000000081,
+      "cpuMs": 82.131,
+      "own": false,
+      "year": 2034,
+      "day": 305
+    },
+    {
+      "projectionMs": 45.83585899999889,
+      "publisherMs": 32.93845399999918,
+      "cloneMs": 0.12937500000043656,
+      "wallMs": 82.52445699999953,
+      "cpuMs": 82.925,
+      "own": false,
+      "year": 2034,
+      "day": 306
+    },
+    {
+      "projectionMs": 47.539655000000494,
+      "publisherMs": 33.858886999998504,
+      "cloneMs": 0.12880800000129966,
+      "wallMs": 90.74811000000045,
+      "cpuMs": 86.364,
+      "own": false,
+      "year": 2034,
+      "day": 307
+    },
+    {
+      "projectionMs": 71.54075499999817,
+      "publisherMs": 138.68070799999987,
+      "cloneMs": 13.501901999999973,
+      "wallMs": 1496.4193350000023,
+      "cpuMs": 1414.704,
+      "own": true,
+      "year": 2034,
+      "day": 308
+    },
+    {
+      "projectionMs": 65.02128100000118,
+      "publisherMs": 34.79550100000051,
+      "cloneMs": 0.14539300000251387,
+      "wallMs": 105.34349500000098,
+      "cpuMs": 107.023,
+      "own": false,
+      "year": 2034,
+      "day": 309
+    },
+    {
+      "projectionMs": 60.94954299999881,
+      "publisherMs": 35.53097600000183,
+      "cloneMs": 0.15249500000209082,
+      "wallMs": 101.29564400000163,
+      "cpuMs": 98.322,
+      "own": false,
+      "year": 2034,
+      "day": 310
+    },
+    {
+      "projectionMs": 68.20759900000121,
+      "publisherMs": 34.46449699999721,
+      "cloneMs": 0.14596899999742163,
+      "wallMs": 112.39797299999918,
+      "cpuMs": 100.012,
+      "own": false,
+      "year": 2034,
+      "day": 311
+    },
+    {
+      "projectionMs": 65.43209800000113,
+      "publisherMs": 34.8123889999988,
+      "cloneMs": 0.13364200000069104,
+      "wallMs": 104.61740999999893,
+      "cpuMs": 99.226,
+      "own": false,
+      "year": 2034,
+      "day": 312
+    },
+    {
+      "projectionMs": 52.584147999998095,
+      "publisherMs": 34.05818399999771,
+      "cloneMs": 0.12850799999796436,
+      "wallMs": 90.98372100000051,
+      "cpuMs": 91.342,
+      "own": false,
+      "year": 2034,
+      "day": 313
+    },
+    {
+      "projectionMs": 56.91275600000154,
+      "publisherMs": 33.961151999999856,
+      "cloneMs": 0.13731999999799882,
+      "wallMs": 95.55265800000052,
+      "cpuMs": 94.145,
+      "own": false,
+      "year": 2034,
+      "day": 314
+    },
+    {
+      "projectionMs": 60.82191099999909,
+      "publisherMs": 132.14339200000177,
+      "cloneMs": 14.091215000000375,
+      "wallMs": 1475.3944730000003,
+      "cpuMs": 1292.476,
+      "own": true,
+      "year": 2034,
+      "day": 315
+    },
+    {
+      "projectionMs": 59.46283200000107,
+      "publisherMs": 34.753522999999404,
+      "cloneMs": 0.15578300000197487,
+      "wallMs": 98.93250099999932,
+      "cpuMs": 98.46,
+      "own": false,
+      "year": 2034,
+      "day": 316
+    },
+    {
+      "projectionMs": 56.208137999998144,
+      "publisherMs": 34.091803999999684,
+      "cloneMs": 0.1345370000017283,
+      "wallMs": 94.86984599999778,
+      "cpuMs": 90.381,
+      "own": false,
+      "year": 2034,
+      "day": 317
+    },
+    {
+      "projectionMs": 56.164741000000504,
+      "publisherMs": 34.53414200000043,
+      "cloneMs": 0.13597899999876972,
+      "wallMs": 94.63359599999967,
+      "cpuMs": 94.982,
+      "own": false,
+      "year": 2034,
+      "day": 318
+    },
+    {
+      "projectionMs": 58.13394299999709,
+      "publisherMs": 34.17558399999689,
+      "cloneMs": 0.13569099999949685,
+      "wallMs": 96.15109299999676,
+      "cpuMs": 93.102,
+      "own": false,
+      "year": 2034,
+      "day": 319
+    },
+    {
+      "projectionMs": 55.367880000001605,
+      "publisherMs": 34.29454799999803,
+      "cloneMs": 0.12086199999976088,
+      "wallMs": 92.64832599999863,
+      "cpuMs": 91.803,
+      "own": false,
+      "year": 2034,
+      "day": 320
+    },
+    {
+      "projectionMs": 53.31557799999791,
+      "publisherMs": 33.89351600000009,
+      "cloneMs": 0.15467700000226614,
+      "wallMs": 93.90992199999891,
+      "cpuMs": 95.89,
+      "own": false,
+      "year": 2034,
+      "day": 321
+    },
+    {
+      "projectionMs": 50.30963799999881,
+      "publisherMs": 71.7537799999991,
+      "cloneMs": 1.006729999997333,
+      "wallMs": 292.54397900000185,
+      "cpuMs": 290.088,
+      "own": false,
+      "year": 2034,
+      "day": 322
+    },
+    {
+      "projectionMs": 69.74755000000005,
+      "publisherMs": 115.98313099999723,
+      "cloneMs": 37.52011399999901,
+      "wallMs": 1391.326441000001,
+      "cpuMs": 1376.37,
+      "own": false,
+      "year": 2035,
+      "day": 0
+    },
+    {
+      "projectionMs": 74.8168119999973,
+      "publisherMs": 31.494017000000895,
+      "cloneMs": 0.16389799999888055,
+      "wallMs": 114.30344400000104,
+      "cpuMs": 110.897,
+      "own": false,
+      "year": 2035,
+      "day": 1
+    },
+    {
+      "projectionMs": 82.20111200000247,
+      "publisherMs": 40.5815079999993,
+      "cloneMs": 1.3191900000019814,
+      "wallMs": 137.6644950000009,
+      "cpuMs": 138.773,
+      "own": false,
+      "year": 2035,
+      "day": 2
+    },
+    {
+      "projectionMs": 72.48331300000063,
+      "publisherMs": 26.728778000000602,
+      "cloneMs": 0.4138649999986228,
+      "wallMs": 134.7438779999975,
+      "cpuMs": 129.333,
+      "own": false,
+      "year": 2035,
+      "day": 3
+    },
+    {
+      "projectionMs": 58.28986499999883,
+      "publisherMs": 25.121773999999277,
+      "cloneMs": 0.15971599999829778,
+      "wallMs": 89.23437900000135,
+      "cpuMs": 90.374,
+      "own": false,
+      "year": 2035,
+      "day": 4
+    },
+    {
+      "projectionMs": 57.202431999998225,
+      "publisherMs": 25.55960100000084,
+      "cloneMs": 0.13970100000005914,
+      "wallMs": 87.9826639999992,
+      "cpuMs": 86.744,
+      "own": false,
+      "year": 2035,
+      "day": 5
+    },
+    {
+      "projectionMs": 51.156284000000596,
+      "publisherMs": 24.622294999997393,
+      "cloneMs": 0.14086699999825214,
+      "wallMs": 81.02363400000104,
+      "cpuMs": 79.061,
+      "own": false,
+      "year": 2035,
+      "day": 6
+    },
+    {
+      "projectionMs": 88.3451279999972,
+      "publisherMs": 68.24037199999657,
+      "cloneMs": 15.274481000000378,
+      "wallMs": 3186.269166000002,
+      "cpuMs": 2378.274,
+      "own": true,
+      "year": 2035,
+      "day": 7
+    },
+    {
+      "projectionMs": 76.88210400000025,
+      "publisherMs": 30.303287999999156,
+      "cloneMs": 0.18535200000042096,
+      "wallMs": 139.47269700000106,
+      "cpuMs": 135.807,
+      "own": false,
+      "year": 2035,
+      "day": 8
+    },
+    {
+      "projectionMs": 77.36930500000017,
+      "publisherMs": 31.04537700000219,
+      "cloneMs": 0.1852660000004107,
+      "wallMs": 116.30025599999863,
+      "cpuMs": 114.947,
+      "own": false,
+      "year": 2035,
+      "day": 9
+    },
+    {
+      "projectionMs": 75.2579160000023,
+      "publisherMs": 30.11417700000311,
+      "cloneMs": 0.16236799999751383,
+      "wallMs": 113.10107300000163,
+      "cpuMs": 115.19,
+      "own": false,
+      "year": 2035,
+      "day": 10
+    },
+    {
+      "projectionMs": 73.87397700000292,
+      "publisherMs": 29.62518700000146,
+      "cloneMs": 0.16333899999881396,
+      "wallMs": 111.21282300000166,
+      "cpuMs": 110.687,
+      "own": false,
+      "year": 2035,
+      "day": 11
+    },
+    {
+      "projectionMs": 104.5585319999991,
+      "publisherMs": 27.619163999999728,
+      "cloneMs": 0.14228100000036648,
+      "wallMs": 141.6052720000007,
+      "cpuMs": 107.448,
+      "own": false,
+      "year": 2035,
+      "day": 12
+    },
+    {
+      "projectionMs": 62.38549200000125,
+      "publisherMs": 26.243953999997757,
+      "cloneMs": 0.13680400000157533,
+      "wallMs": 105.51584000000003,
+      "cpuMs": 95.278,
+      "own": false,
+      "year": 2035,
+      "day": 13
+    },
+    {
+      "projectionMs": 80.99844599999778,
+      "publisherMs": 67.1957799999982,
+      "cloneMs": 9.164272000001802,
+      "wallMs": 1697.1415930000003,
+      "cpuMs": 1552.645,
+      "own": true,
+      "year": 2035,
+      "day": 14
+    },
+    {
+      "projectionMs": 72.4391770000002,
+      "publisherMs": 31.877337000001717,
+      "cloneMs": 0.17611000000033528,
+      "wallMs": 112.42274499999985,
+      "cpuMs": 110.797,
+      "own": false,
+      "year": 2035,
+      "day": 15
+    },
+    {
+      "projectionMs": 71.67958600000202,
+      "publisherMs": 31.94841599999927,
+      "cloneMs": 0.17459400000007008,
+      "wallMs": 116.00500900000043,
+      "cpuMs": 113.154,
+      "own": false,
+      "year": 2035,
+      "day": 16
+    },
+    {
+      "projectionMs": 71.03561999999874,
+      "publisherMs": 33.06989899999826,
+      "cloneMs": 0.7380040000025474,
+      "wallMs": 116.21290399999998,
+      "cpuMs": 115.58,
+      "own": false,
+      "year": 2035,
+      "day": 17
+    },
+    {
+      "projectionMs": 68.20648299999812,
+      "publisherMs": 30.883762000001298,
+      "cloneMs": 0.18359599999894272,
+      "wallMs": 107.95819400000255,
+      "cpuMs": 106.233,
+      "own": false,
+      "year": 2035,
+      "day": 18
+    },
+    {
+      "projectionMs": 69.8614579999994,
+      "publisherMs": 32.85491699999693,
+      "cloneMs": 0.7059860000008484,
+      "wallMs": 112.27162999999928,
+      "cpuMs": 111.467,
+      "own": false,
+      "year": 2035,
+      "day": 19
+    },
+    {
+      "projectionMs": 70.57966599999781,
+      "publisherMs": 32.390802999998414,
+      "cloneMs": 0.19287700000131736,
+      "wallMs": 109.72322600000189,
+      "cpuMs": 108.012,
+      "own": false,
+      "year": 2035,
+      "day": 20
+    },
+    {
+      "projectionMs": 64.45794400000159,
+      "publisherMs": 61.19763899999816,
+      "cloneMs": 8.190412999996624,
+      "wallMs": 1398.8211379999993,
+      "cpuMs": 1271.835,
+      "own": true,
+      "year": 2035,
+      "day": 21
+    },
+    {
+      "projectionMs": 52.785900000002584,
+      "publisherMs": 25.783272999993642,
+      "cloneMs": 0.13844699999754084,
+      "wallMs": 92.72800299999653,
+      "cpuMs": 83.557,
+      "own": false,
+      "year": 2035,
+      "day": 22
+    },
+    {
+      "projectionMs": 51.72623200000089,
+      "publisherMs": 25.694920999994793,
+      "cloneMs": 0.13402900000073714,
+      "wallMs": 82.82118900000205,
+      "cpuMs": 83.658,
+      "own": false,
+      "year": 2035,
+      "day": 23
+    },
+    {
+      "projectionMs": 52.448817000004055,
+      "publisherMs": 26.394754999993893,
+      "cloneMs": 0.12728100000094855,
+      "wallMs": 84.68951599999855,
+      "cpuMs": 82.854,
+      "own": false,
+      "year": 2035,
+      "day": 24
+    },
+    {
+      "projectionMs": 51.16409100000601,
+      "publisherMs": 27.39313100000436,
+      "cloneMs": 0.1370009999955073,
+      "wallMs": 84.6568580000021,
+      "cpuMs": 82.916,
+      "own": false,
+      "year": 2035,
+      "day": 25
+    },
+    {
+      "projectionMs": 51.82840700000088,
+      "publisherMs": 30.934392000002845,
+      "cloneMs": 0.16457200000149896,
+      "wallMs": 88.9590160000007,
+      "cpuMs": 91.062,
+      "own": false,
+      "year": 2035,
+      "day": 26
+    },
+    {
+      "projectionMs": 52.67791999999463,
+      "publisherMs": 26.865174999999,
+      "cloneMs": 0.14676999999937834,
+      "wallMs": 91.01043000000209,
+      "cpuMs": 87.604,
+      "own": false,
+      "year": 2035,
+      "day": 27
+    },
+    {
+      "projectionMs": 80.23707999999897,
+      "publisherMs": 106.62573999999586,
+      "cloneMs": 16.410155999998096,
+      "wallMs": 1526.4146660000042,
+      "cpuMs": 1416.483,
+      "own": true,
+      "year": 2035,
+      "day": 28
+    },
+    {
+      "projectionMs": 76.84221999999863,
+      "publisherMs": 45.880080000002636,
+      "cloneMs": 0.23101999999926193,
+      "wallMs": 133.54030400000192,
+      "cpuMs": 130.208,
+      "own": false,
+      "year": 2035,
+      "day": 29
+    },
+    {
+      "projectionMs": 74.43314600000303,
+      "publisherMs": 33.366493000001356,
+      "cloneMs": 0.7821550000007846,
+      "wallMs": 118.01947999999538,
+      "cpuMs": 119.371,
+      "own": false,
+      "year": 2035,
+      "day": 30
+    },
+    {
+      "projectionMs": 72.99554000000353,
+      "publisherMs": 32.699525999996695,
+      "cloneMs": 0.16275299999688286,
+      "wallMs": 114.75295399999595,
+      "cpuMs": 110.308,
+      "own": false,
+      "year": 2035,
+      "day": 31
+    },
+    {
+      "projectionMs": 77.51127500000439,
+      "publisherMs": 48.0940649999975,
+      "cloneMs": 0.935710999998264,
+      "wallMs": 737.9669250000006,
+      "cpuMs": 678.107,
+      "own": false,
+      "year": 2035,
+      "day": 32
+    },
+    {
+      "projectionMs": 82.09599299999536,
+      "publisherMs": 44.32804100000067,
+      "cloneMs": 0.1920959999988554,
+      "wallMs": 134.44890000000305,
+      "cpuMs": 134.703,
+      "own": false,
+      "year": 2035,
+      "day": 33
+    },
+    {
+      "projectionMs": 69.8247510000001,
+      "publisherMs": 33.32875800000329,
+      "cloneMs": 0.20187799999985145,
+      "wallMs": 110.3399219999992,
+      "cpuMs": 106.825,
+      "own": false,
+      "year": 2035,
+      "day": 34
+    },
+    {
+      "projectionMs": 71.49071600000025,
+      "publisherMs": 69.12635299999965,
+      "cloneMs": 8.732039999995322,
+      "wallMs": 1363.250187000005,
+      "cpuMs": 1308.604,
+      "own": true,
+      "year": 2035,
+      "day": 35
+    },
+    {
+      "projectionMs": 71.35667499999545,
+      "publisherMs": 33.09188600000198,
+      "cloneMs": 0.16937899999902584,
+      "wallMs": 111.10042699999758,
+      "cpuMs": 110.522,
+      "own": false,
+      "year": 2035,
+      "day": 36
+    },
+    {
+      "projectionMs": 80.44949799999449,
+      "publisherMs": 33.342366000004404,
+      "cloneMs": 0.18122299999959068,
+      "wallMs": 119.97861700000067,
+      "cpuMs": 119.18,
+      "own": false,
+      "year": 2035,
+      "day": 37
+    },
+    {
+      "projectionMs": 61.28962799999863,
+      "publisherMs": 29.376188000002003,
+      "cloneMs": 0.16421299999637995,
+      "wallMs": 102.83545900000172,
+      "cpuMs": 102.779,
+      "own": false,
+      "year": 2035,
+      "day": 38
+    }
+  ],
+  "parts": [
+    {
+      "key": "coaches",
+      "chars": 566945
+    },
+    {
+      "key": "managers",
+      "chars": 480710
+    },
+    {
+      "key": "world.clubs",
+      "chars": 424050
+    },
+    {
+      "key": "world.history",
+      "chars": 381513
+    },
+    {
+      "key": "world.players",
+      "chars": 243265
+    },
+    {
+      "key": "world.discipline",
+      "chars": 177604
+    },
+    {
+      "key": "world.ownMatches",
+      "chars": 159622
+    },
+    {
+      "key": "world.rankHistory",
+      "chars": 140741
+    },
+    {
+      "key": "world.europe",
+      "chars": 64367
+    },
+    {
+      "key": "world.tables",
+      "chars": 57079
+    },
+    {
+      "key": "world.fixtures",
+      "chars": 55143
+    },
+    {
+      "key": "transferLedger",
+      "chars": 45465
+    },
+    {
+      "key": "world.scorerSeason",
+      "chars": 41299
+    },
+    {
+      "key": "world.bids",
+      "chars": 23873
+    },
+    {
+      "key": "tallies",
+      "chars": 23104
+    },
+    {
+      "key": "world.inbox",
+      "chars": 22196
+    },
+    {
+      "key": "world.events",
+      "chars": 22152
+    },
+    {
+      "key": "world.recruitmentArrivals",
+      "chars": 21737
+    },
+    {
+      "key": "world.cups",
+      "chars": 18501
+    },
+    {
+      "key": "world.mediations",
+      "chars": 15478
+    },
+    {
+      "key": "world.academy",
+      "chars": 12991
+    },
+    {
+      "key": "world.transfers",
+      "chars": 11915
+    },
+    {
+      "key": "world.promises",
+      "chars": 11808
+    },
+    {
+      "key": "news",
+      "chars": 10922
+    },
+    {
+      "key": "transfers",
+      "chars": 8473
+    },
+    {
+      "key": "finance",
+      "chars": 4345
+    },
+    {
+      "key": "world.managerMarket",
+      "chars": 3955
+    },
+    {
+      "key": "world.recentResults",
+      "chars": 3317
+    },
+    {
+      "key": "world.receiptIds",
+      "chars": 2969
+    },
+    {
+      "key": "world.decisionChoices",
+      "chars": 2052
+    },
+    {
+      "key": "sponsors",
+      "chars": 1496
+    },
+    {
+      "key": "world.staff",
+      "chars": 1481
+    },
+    {
+      "key": "milestones",
+      "chars": 1149
+    },
+    {
+      "key": "world.sponsors",
+      "chars": 821
+    },
+    {
+      "key": "world.nextOpponentLineup",
+      "chars": 650
+    },
+    {
+      "key": "world.shortlist",
+      "chars": 490
+    },
+    {
+      "key": "world.lastChampions",
+      "chars": 452
+    },
+    {
+      "key": "world.settings",
+      "chars": 251
+    },
+    {
+      "key": "world.manager",
+      "chars": 249
+    },
+    {
+      "key": "world.matchModel",
+      "chars": 153
+    },
+    {
+      "key": "world.policy",
+      "chars": 120
+    },
+    {
+      "key": "world.catalogHash",
+      "chars": 66
+    },
+    {
+      "key": "managerHistoryKey",
+      "chars": 49
+    },
+    {
+      "key": "world.direction",
+      "chars": 42
+    },
+    {
+      "key": "world.coachingMarketAt",
+      "chars": 22
+    },
+    {
+      "key": "world.seed",
+      "chars": 20
+    },
+    {
+      "key": "world.id",
+      "chars": 18
+    },
+    {
+      "key": "world.priceIndex",
+      "chars": 18
+    },
+    {
+      "key": "world.cash",
+      "chars": 14
+    },
+    {
+      "key": "annualCost",
+      "chars": 13
+    },
+    {
+      "key": "world.catalog",
+      "chars": 13
+    },
+    {
+      "key": "world.operatingExpenses",
+      "chars": 13
+    },
+    {
+      "key": "world.income",
+      "chars": 12
+    },
+    {
+      "key": "world.expense",
+      "chars": 12
+    },
+    {
+      "key": "world.calendar",
+      "chars": 10
+    },
+    {
+      "key": "world.playerClub",
+      "chars": 10
+    },
+    {
+      "key": "world.tactic",
+      "chars": 10
+    },
+    {
+      "key": "world.trainingAt",
+      "chars": 8
+    },
+    {
+      "key": "world.engine",
+      "chars": 7
+    },
+    {
+      "key": "world.level",
+      "chars": 6
+    },
+    {
+      "key": "newsTotal",
+      "chars": 5
+    },
+    {
+      "key": "world.revision",
+      "chars": 5
+    },
+    {
+      "key": "world.currency",
+      "chars": 5
+    },
+    {
+      "key": "world.lower",
+      "chars": 5
+    },
+    {
+      "key": "totalMatches",
+      "chars": 4
+    },
+    {
+      "key": "world.year",
+      "chars": 4
+    },
+    {
+      "key": "world.ticket",
+      "chars": 4
+    },
+    {
+      "key": "coefficient",
+      "chars": 2
+    },
+    {
+      "key": "world.replacementNeeds",
+      "chars": 2
+    },
+    {
+      "key": "world.academyReviews",
+      "chars": 2
+    },
+    {
+      "key": "world.morale",
+      "chars": 2
+    },
+    {
+      "key": "world.campaigns",
+      "chars": 2
+    },
+    {
+      "key": "world.cupWinners",
+      "chars": 2
+    },
+    {
+      "key": "world.schema",
+      "chars": 1
+    },
+    {
+      "key": "world.round",
+      "chars": 1
+    },
+    {
+      "key": "world.stadium",
+      "chars": 1
+    },
+    {
+      "key": "world.trainingGround",
+      "chars": 1
+    },
+    {
+      "key": "world.academyFacility",
+      "chars": 1
+    }
+  ]
+}
