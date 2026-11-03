@@ -16,7 +16,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T04:09Z | T668 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:18Z | 2026-11-03T05:18Z | T680 |
+| hr04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:18Z | 2026-11-03T05:23Z | T680 |
 
 ## inbox
 - 261103 decided WEB-115 T678: how the feats are found → engine `seasonDigest` reads the archives and the clubs' Elo at each season reached and carries only the season's greatest feat; only the European Cup lineage makes the treble and the European feats; a league run is carded at five and afterwards only when it becomes its country's longest; the war is one card on the 1946 restart (alt: the UI derives feats from the digests it received, which a reload mid-generation would cut short | a card for every season a run continues). ot03
