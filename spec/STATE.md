@@ -19,6 +19,7 @@
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:27Z | T675 |
 
 ## inbox
+- 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
 - 261103 decided T673 T674 T675: headless loop preflight failed because its child cannot resolve GitHub although this session can → implement the three selected tasks in this authorized session, keeping the coordinator gate and task commits (alt: change child permission settings or wait). hr03
 - 261103 decided HIST-11 HIST-22 SAVE-28 T673 T674 T675: how to avoid repeating historical news/statistics work → persist incremental source-linked news/record summaries, index current-season finance and page retained news (alt: replace IndexedDB or recompute every read); preserve all original facts and current rules. hr03
 - 261103 decided ARCH-30 T673 T674 T675: scope with takeover work active on another device → independent main-based news/read improvements only, reserve its T669–T672 IDs and retain its handoff; no takeover implementation. hr03
@@ -514,7 +515,7 @@
 | ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
-| SAVE | 63 | 63 | - | 0 |
+| SAVE | 64 | 64 | - | 0 |
 | OWNER | 1 | 1 | - | 0 |
 | PLAYER | 13 | 13 | - | 0 |
 
@@ -552,6 +553,8 @@
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 
+| T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | todo |
+
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -580,6 +583,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 SAVE r64 tasked T676: separate IndexedDB/portable compression budget from the unchanged localStorage fallback, based on retained-career measurements. hr03
 - 261103 T674 done: incremental career summaries, indexed seasonal finance, pure paged news RPC and older-news/filter UI; 14 focused unit cases and fast checks/build pass. hr03
 - 261103 T673 done: persisted incremental news journal, writer reconstruction, six unit cases and fast checks/build; integration deferred to final gate. hr03
 - 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
@@ -599,4 +603,3 @@
 - 261103 update-ssot WEB r204 ECON r42 WORLD r8 LEAGUE r12 MATCH r47 KIT r8 SAVE r62 HIST r21 CLUB r50 ARCH r27 PLAYER r13: takeover start, amateur level removed, books and club value, owner bankruptcy and 퇴진, 승리의 부적 exception, rules 5.0.0; ot03
 - 261103 create-ssot OWNER r1: owner fortune, six wealth tiers, eight traits, quarterly business bet, living costs, injections within FFP, dividends, 팬 민심, 퇴진 압박, 구단주 파산 위기; ot03
 - 261103 T647 done: the owner no longer suggests or forces training. The coach-training command, orderTraining (with suggestion odds, strain and resignation), orders.ts, trainingOrders and staff strain/asked are gone; older saves drop them on load, and the squad's 하드 streak is now World.hardStreak. TrainingOrderSheet and every 제안·강행/개별 훈련/이 선수 훈련 entry are deleted. 훈련, 유소년, the player sheet and the market read the coaches' calls. Equivalence digests unchanged; unit 224/1937 green; e2e edited for the batch.
-- 261103 ot03 start (autopilot): finish T647–T652, then plan and build ideation owner-wealth-and-takeover in parallel lanes; illustrations stay
