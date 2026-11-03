@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T14:59Z | 2026-11-03T14:59Z | - |
 
 ## inbox
 - 261103 decided ARCH-30 T685 T686 T678 T679: owner authorizes autopilot continuation, an intermediate main push after the release gate passes, and preservation of all work remotely before 2026-11-04 09:30 Asia/Seoul. Resume the latest cv03 checkpoint rather than restart completed takeover tasks; unfinished or unverified work goes to wip/nv04 at the deadline, with actual validation limits retained (alt: restart from main or publish an unverified release). nv04
