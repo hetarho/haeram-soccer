@@ -158,5 +158,9 @@ test('unsupported indexed career stays protected after writer handoff', async ({
   await holder.close();
   await expect(page.getByRole('alert')).toContainText('규칙 2.0.0');
   expect(await idbGet(page, 'checkpoints', 'active')).toBe(raw);
-  expect(await exportRaw(page, true)).toBe(raw);
+  const slot = page.getByRole('listitem', { name: '슬롯 1 · 이전 규칙' });
+  await expect(slot.getByRole('button', { name: '삭제', exact: true })).toBeEnabled();
+  const downloading = page.waitForEvent('download');
+  await slot.getByRole('button', { name: '내보내기', exact: true }).click();
+  expect(await readFile((await (await downloading).path())!, 'utf8')).toBe(raw);
 });
