@@ -16,6 +16,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T14:57Z | 2026-11-03T14:57Z | T689 |
 
 ## inbox
 - 261103 decided CLUB-25 CLUB-26 T690: exceptional-player wages → ordinary wages unchanged through OVR80, convex scarcity to ×2 at 95, top-flight wage demands phased in at 85–90; recent winner ×2 and +0.4 per extra recent win, podium ×1.4 (alt: fame only leaves unawarded elite players cheap; an aggressive variant produces excessive outliers). Selected after 144000 sensitivity cases, 576 retention decisions and 40 whole-season outcomes across six paired future streams; ordinary ratios preserved, 98 newly unaffordable contracts, no forecast bankruptcies. bl03
@@ -541,7 +542,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
+| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | doing@261103.nv04 |
 | T653 | owner and takeover foundation: contracts, config, commands and hook points | OWNER ECON SAVE WEB | T652 | todo |
 | T654 | spike: how the world lives 1930 → decade before anyone owns a club | WORLD ARCH LEAGUE MATCH | T652 T653 | todo |
 | T655 | world from 1930 to the takeover decade, with the wartime stop | WORLD LEAGUE HIST ARCH OWNER | T652 T654 | todo |
