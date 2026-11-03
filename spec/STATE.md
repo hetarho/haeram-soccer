@@ -19,6 +19,7 @@
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:14Z | - |
 
 ## inbox
+- 261103 decided T673 T674 T675: headless loop preflight failed because its child cannot resolve GitHub although this session can → implement the three selected tasks in this authorized session, keeping the coordinator gate and task commits (alt: change child permission settings or wait). hr03
 - 261103 decided HIST-11 HIST-22 SAVE-28 T673 T674 T675: how to avoid repeating historical news/statistics work → persist incremental source-linked news/record summaries, index current-season finance and page retained news (alt: replace IndexedDB or recompute every read); preserve all original facts and current rules. hr03
 - 261103 decided ARCH-30 T673 T674 T675: scope with takeover work active on another device → independent main-based news/read improvements only, reserve its T669–T672 IDs and retain its handoff; no takeover implementation. hr03
 - 261103 decided SAVE-17 WEB-45 T652: can a supported save lack `settings` → no: every rules-4.0.0/0.7.0 career is founded with them (written at founding since 261016, before 4.0.0), so the intervention level, its level→settings mapping and `World.intervention` go and an older save's level is dropped on load; a hand-built world without settings reads as the owner deciding everything (alt: keep a read-only level→settings mapping). ot03
