@@ -1,0 +1,48 @@
+
+ENG top flight (20), by strength
+ENG:0:0:0    str  94 rep  90 income  78766k wages 143589k costs  26789k result -91612k cash      0k debt 118149k
+ENG:0:0:14   str  90 rep  93 income  75881k wages 125189k costs  25993k result -75300k cash      0k debt 113822k
+ENG:0:0:13   str  86 rep  84 income  71452k wages  38426k costs  24047k result   8980k cash  71452k debt      0k
+ENG:0:0:15   str  84 rep  84 income  66227k wages  43533k costs  22719k result    -24k cash  57966k debt      0k
+ENG:0:0:7    str  83 rep  73 income  60264k wages  27072k costs  20737k result  12454k cash  60264k debt      0k
+ENG:0:0:12   str  83 rep  79 income  63597k wages  34169k costs  21588k result   7840k cash  63597k debt      0k
+ENG:0:0:16   str  82 rep  80 income  57393k wages  44634k costs  19239k result  -6479k cash      0k debt  13191k
+ENG:1:0:11   str  82 rep  73 income  52803k wages  27333k costs  17635k result   7836k cash  52803k debt      0k
+ENG:0:0:4    str  79 rep  79 income  57528k wages  19976k costs  19358k result  18194k cash  57528k debt      0k
+ENG:0:0:8    str  79 rep  72 income  52318k wages  14861k costs   6678k result  30779k cash  48313k debt      0k
+
+ESP top flight (20), by strength
+ESP:0:0:15   str  93 rep  94 income 3389005k wages 7367393k costs 1149042k result -5127430k cash      0k debt 5083508k
+ESP:0:0:6    str  86 rep  80 income 2508360k wages 1782774k costs 828314k result -102728k cash 1484310k debt      0k
+ESP:0:0:14   str  85 rep  83 income 2826965k wages 2666020k costs 952171k result -791226k cash      0k debt 1470894k
+ESP:0:0:16   str  85 rep  85 income 3122257k wages 3625860k costs 1068066k result -1571670k cash      0k debt 4683385k
+ESP:0:0:3    str  82 rep  86 income 3061211k wages 4266187k costs 1039821k result -2244796k cash      0k debt 4591817k
+ESP:0:0:17   str  82 rep  77 income 2615569k wages 1422713k costs 892297k result 300559k cash 2301393k debt      0k
+ESP:0:0:8    str  81 rep  79 income 2477817k wages 1424880k costs 831884k result 221054k cash 1475354k debt      0k
+ESP:0:0:18   str  81 rep  78 income 2319991k wages 1777139k costs 804458k result -261606k cash 1205430k debt      0k
+ESP:1:0:21   str  80 rep  74 income 2256246k wages 1154329k costs 796478k result 305438k cash 2256246k debt      0k
+ESP:0:0:2    str  79 rep  84 income 2726005k wages 1277944k costs 947370k result 500691k cash      0k debt 3083211k
+
+FRA top flight (18), by strength
+FRA:0:0:13   str  92 rep  86 income 34814841k wages 93458704k costs 12065939k result -70709802k cash      0k debt 52222262k
+FRA:0:0:3    str  87 rep  86 income 28497033k wages 46223172k costs 9501463k result -27227602k cash      0k debt      0k
+FRA:0:0:4    str  87 rep  88 income 34052810k wages 72390924k costs 11580489k result -49918603k cash      0k debt 51079215k
+FRA:1:0:11   str  85 rep  76 income 23904272k wages 19871771k costs 7975971k result -3943470k cash 3807944k debt      0k
+FRA:0:0:9    str  84 rep  90 income 36861718k wages 34263556k costs 12521506k result -9923344k cash      0k debt 55292577k
+FRA:0:0:12   str  84 rep  78 income 30395660k wages 20072461k costs 10077517k result 245682k cash      0k debt 8257899k
+FRA:0:0:15   str  82 rep  72 income 28000459k wages 16496085k costs 9519243k result 1985132k cash 7640619k debt      0k
+FRA:1:0:15   str  82 rep  80 income 29298933k wages 29359556k costs 9905016k result -9965639k cash 5403386k debt      0k
+FRA:0:0:7    str  81 rep  80 income 29719119k wages 19939469k costs 10279902k result -500251k cash      0k debt 4947643k
+FRA:1:0:9    str  79 rep  72 income 26229594k wages 13318595k costs 8953024k result 3957975k cash 26229594k debt      0k
+
+GER top flight (18), by strength
+GER:0:0:3    str  98 rep  90 income 294420k wages 962560k costs  98958k result -767098k cash      0k debt 441630k
+GER:0:0:5    str  89 rep  87 income 271374k wages 383023k costs  92143k result -203792k cash      0k debt 407061k
+GER:0:0:4    str  86 rep  82 income 236680k wages 209315k costs  80751k result -53387k cash  21852k debt      0k
+GER:0:0:2    str  85 rep  84 income 274474k wages 232113k costs  93006k result -50644k cash      0k debt 315378k
+GER:1:0:12   str  84 rep  87 income 246634k wages 312303k costs  84298k result -149967k cash      0k debt 369951k
+GER:0:0:12   str  81 rep  76 income 237406k wages  91995k costs  81576k result  63835k cash 237406k debt      0k
+GER:0:0:13   str  81 rep  76 income 207861k wages 142129k costs  71375k result  -5643k cash 196741k debt      0k
+GER:0:0:11   str  80 rep  81 income 239014k wages 112300k costs  80482k result  46232k cash 142963k debt      0k
+GER:2:0:15   str  79 rep  69 income 202457k wages 124402k costs  65516k result  12538k cash 199728k debt      0k
+GER:0:0:7    str  78 rep  71 income 201268k wages  83120k costs  66656k result  51492k cash 201268k debt      0k

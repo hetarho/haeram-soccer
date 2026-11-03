@@ -15,17 +15,19 @@ export { OWNER_TRAIT_LIMIT };
 /**
  * The six wealth tiers, richest first (→OWNER-3): each starts with `multiple` × its anchor, the
  * median pound price in the takeover season of the clubs in its reach. The tier never changes.
+ * T686: 1.3 → 1.6, since a country's median club of a band costs up to 1.28 × the anchor (ESP's
+ * 지역 유지 band), which left its owner 2–3% of his fortune and bankrupt in his third season.
  */
 export const OWNER_TIERS: Record<
   WealthTier,
   { label: string; multiple: number; band: readonly [from: number, to: number] }
 > = {
   oil: { label: '석유 재벌', multiple: 10, band: [0, 0.08] },
-  chaebol: { label: '재벌 총수', multiple: 1.3, band: [0.08, 0.2] },
-  industrial: { label: '산업 자본가', multiple: 1.3, band: [0.2, 0.35] },
-  midsize: { label: '중견 사업가', multiple: 1.3, band: [0.35, 0.55] },
-  local: { label: '지역 유지', multiple: 1.3, band: [0.55, 0.8] },
-  selfmade: { label: '자수성가 축구팬', multiple: 1.3, band: [0.8, 1] },
+  chaebol: { label: '재벌 총수', multiple: 1.6, band: [0.08, 0.2] },
+  industrial: { label: '산업 자본가', multiple: 1.6, band: [0.2, 0.35] },
+  midsize: { label: '중견 사업가', multiple: 1.6, band: [0.35, 0.55] },
+  local: { label: '지역 유지', multiple: 1.6, band: [0.55, 0.8] },
+  selfmade: { label: '자수성가 축구팬', multiple: 1.6, band: [0.8, 1] },
 };
 
 /** The eight traits' effects (→OWNER-5), each read only while the owner holds the trait. */
@@ -65,8 +67,12 @@ export const OWNER_BUSINESS = {
   stake: { min: 0, max: 100, start: 0 },
 } as const;
 
-/** Living costs at each settlement: `rate` of the tier's starting fortune, grown with prices (→OWNER-8). */
-export const OWNER_LIVING = { rate: 0.0025 } as const;
+/**
+ * Living costs at each settlement: `rate` of the tier's starting fortune, grown with prices (→OWNER-8).
+ * T686: 0.25% → 0.2%, with the 1.6 multiples, so no reference owner who moves no money is
+ * bankrupt within 15 seasons (the earliest at 18).
+ */
+export const OWNER_LIVING = { rate: 0.002 } as const;
 
 /** The 배당 dial's shares in percent and its default (→OWNER-11). */
 export const OWNER_DIVIDEND = { shares: DIVIDEND_SHARES, start: 0 } as const;

@@ -1,27 +1,32 @@
 /**
  * Owner balance harness (LEAGUE-13, ECON-29, OWNER-3/5/8/12, ECON-37/38; spec/ssot/LEAGUE.md).
  *
- * Plays LEAGUE-13's reference careers: a world lived from 1930 to its 1950/51 season by the day
- * loop (`generateHistory`, →WORLD-13), then a 1950 takeover in each country of the club at the
- * middle price of the tier's reach there (→OWNER-3; the dearer of the two middle clubs for an even
- * count, among those the tier's fortune pays for), 기본 방향, every business responsibility
- * delegated, and the season played round by round to its close until 2009/10 or the career's end
- * (→OWNER-16). The reference moves no owner money: stake 0%, no injection, dividend 0%. Careers
- * with five traits run beside, and `--policies` adds owners who inject and take dividends at fixed
- * simple policies. It prints LEAGUE-13's columns per tier, ECON-29's rows on the 중견 사업가 careers,
- * how the careers end (club bankruptcy, owner bankruptcy, 퇴진), and where the start's fortunes,
- * living costs, 팬 민심 and club prices land. Money is compared in 1901 price units of each season.
+ * Plays LEAGUE-13's reference careers (r13): a world lived from 1930 to its 1950/51 season by the
+ * day loop (`generateHistory`, →WORLD-13), then a 1950 takeover in each country of the median-priced
+ * club of the tier's price band there (→OWNER-3; the dearer of the two middle clubs for an even
+ * count; the nearest band holding a club of that country when its own holds none), 기본 방향, every
+ * business responsibility delegated, and the season played round by round to its close until
+ * 2009/10 or the career's end (→OWNER-16). The reference moves no owner money: stake 0%, no
+ * injection, dividend 0%; its bankrupt column counts the club's bankruptcy (→ECON-24), and the
+ * owner's fortune is measured beside it on a 50% dividend run (`--policies dividend`). Careers with
+ * five traits run beside, and `--policies` adds owners who inject and take dividends at fixed simple
+ * policies. It prints LEAGUE-13's columns per tier, ECON-29's rows on the 중견 사업가 careers,
+ * ECON-36's check of the first owned season against the books, how the careers end (club
+ * bankruptcy, owner bankruptcy, 퇴진), and where the start's fortunes, living costs, 팬 민심 and club
+ * prices land. Money is compared in 1901 price units of each season.
  *
  *   pnpm exec tsx scripts/owner-balance.ts            six tiers × ENG ESP FRA GER × 5 seeds, no traits
  *   options: --tiers oil,midsize   --countries ENG,FRA   --seeds N   --first-seed N
  *            --until YEAR (the last season played; 2009)   --traits none,five
- *            --policies none,dividend,patron,mixed   --build (ECON-29's facility rule)
- *            --out careers.json (keep the careers)   --in a.json,b.json (report kept careers only)
+ *            --policies none,dividend,dividend25,patron,mixed   --build (ECON-29's facility rule)
+ *            --purse-apart   --world-dir DIR (keep each seed's 1950 world)   --prepare (only that)
+ *            --out careers.json (keep the careers)   --in a.json,dir (report kept careers only;
+ *            --measured-rate R and --note TEXT say what they were played on)   --reach   --moods
  *            --log (one line a season on stderr)
  *
- * Policies: none, the reference; dividend, the 배당 dial at 50%; patron, a quarter of the fortune
- * above zero put in on each season's first day (within FFP); mixed, a tenth put in and the dial at
- * 50%. The business stake stays 0% in every policy.
+ * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
+ * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
+ * put in and the dial at 50%. The business stake stays 0% in every policy.
  */
 import {
   existsSync,
@@ -99,8 +104,10 @@ const MOODS = args.includes('--moods');
  */
 const PURSE_APART = args.includes('--purse-apart');
 /** The living-cost rates the owner's bankruptcy season is read at (→OWNER-8), the SSOT's first. */
-const LIVING_RATES = [OWNER_LIVING.rate, 0.005, 0.0025, 0.001, 0.0005];
+const LIVING_RATES = [...new Set([OWNER_LIVING.rate, 0.0025, 0.0015, 0.001, 0.0005])];
 const SSOT_LIVING = OWNER_LIVING.rate;
+/** --measured-rate: the living-cost rate kept careers were played at (`--in`), if not the SSOT's. */
+const MEASURED_LIVING = Number(option('measured-rate', String(SSOT_LIVING)));
 /** Sets the living-cost rate the engine reads (a measurement override, never a game setting). */
 const setLiving = (rate: number) => ((OWNER_LIVING as { rate: number }).rate = rate);
 const TAKEOVER_YEAR = 1950;
@@ -114,10 +121,11 @@ const CAREER = 50;
  */
 const FIVE: OwnerTrait[] = ['talisman', 'negotiator', 'networker', 'marketer', 'politician'];
 
-type Policy = 'none' | 'dividend' | 'patron' | 'mixed';
+type Policy = 'none' | 'dividend' | 'dividend25' | 'patron' | 'mixed';
 const POLICY: Record<Policy, { inject: number; dividend: DividendShare }> = {
   none: { inject: 0, dividend: 0 },
   dividend: { inject: 0, dividend: 50 },
+  dividend25: { inject: 0, dividend: 25 },
   patron: { inject: 0.25, dividend: 0 },
   mixed: { inject: 0.1, dividend: 50 },
 };
@@ -597,7 +605,7 @@ function livingReport(careers: Career[]) {
   if (!apart.length) return;
   console.log(
     '\n### Owner bankruptcy by living-cost rate a settlement (reference careers, read from the fortune left; ' +
-      `${SSOT_LIVING * 100}% is OWNER-8's)\n`,
+      `${SSOT_LIVING * 100}% is OWNER-8's; played at ${MEASURED_LIVING * 100}%)\n`,
   );
   console.log(
     `| tier | traits | careers | ${LIVING_RATES.map((r) => `${r * 100}%`).join(' | ')} |`,
@@ -609,7 +617,7 @@ function livingReport(careers: Career[]) {
       const seasons = group.flatMap((c) => {
         let total = 0;
         for (const [i, s] of c.seasons.entries()) {
-          total += ((s.lifeShare ?? 0) * rate) / SSOT_LIVING;
+          total += ((s.lifeShare ?? 0) * rate) / MEASURED_LIVING;
           if (total > 1) return [i + 1];
         }
         return [];
@@ -646,7 +654,8 @@ function startReport(careers: Career[]) {
     const divisions = new Map<number, number>();
     for (const c of group)
       divisions.set(c.start.division + 1, (divisions.get(c.start.division + 1) ?? 0) + 1);
-    const living = (c: Career) => c.start.fortune * SSOT_LIVING * (OWNER_BUSINESS.dates.length + 1);
+    const living = (c: Career) =>
+      c.start.fortune * MEASURED_LIVING * (OWNER_BUSINESS.dates.length + 1);
     console.log(
       `| ${tier} | ${group.length} | ${[...divisions]
         .sort((a, b) => a[0] - b[0])
@@ -886,6 +895,8 @@ console.log(
       '/',
     )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''})`,
 );
+/** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
+if (option('note', '')) console.log(`\n${option('note', '')}`);
 balanceReport(careers);
 livingReport(careers);
 startReport(careers);
