@@ -16,7 +16,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T14:57Z | 2026-11-03T14:57Z | T689 |
+| nv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-03T14:57Z | 2026-11-03T14:59Z | T685 |
 
 ## inbox
 - 261103 decided CLUB-25 CLUB-26 T690: exceptional-player wages → ordinary wages unchanged through OVR80, convex scarcity to ×2 at 95, top-flight wage demands phased in at 85–90; recent winner ×2 and +0.4 per extra recent win, podium ×1.4 (alt: fame only leaves unawarded elite players cheap; an aggressive variant produces excessive outliers). Selected after 144000 sensitivity cases, 576 retention decisions and 40 whole-season outcomes across six paired future streams; ordinary ratios preserved, 98 newly unaffordable contracts, no forecast bankruptcies. bl03
@@ -567,7 +567,7 @@
 | T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
 | T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
 | T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | doing@261103.nv04 |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 
 ## work
