@@ -1,0 +1,80 @@
+[
+  {
+    "label": "early",
+    "before": {
+      "year": 1950,
+      "calendar": {
+        "day": 0
+      },
+      "rounds": 0,
+      "ownMatches": 0,
+      "events": 1,
+      "seasons": 0,
+      "cash": "331427",
+      "model": {
+        "revision": "continuous-aggregate-10",
+        "activated": {
+          "year": 1950,
+          "day": 0,
+          "revision": 0
+        },
+        "trackedFrom": {
+          "year": 1950,
+          "day": 1,
+          "round": 1
+        },
+        "coverage": "founding"
+      }
+    },
+    "after": {
+      "year": 1950,
+      "day": 0,
+      "round": 0,
+      "matches": 0,
+      "events": 1,
+      "seasons": 0,
+      "modelActivated": false
+    },
+    "fileBytes": 156422,
+    "utf16": 104696
+  },
+  {
+    "label": "late",
+    "before": {
+      "year": 2034,
+      "calendar": {
+        "day": 287
+      },
+      "rounds": 41,
+      "ownMatches": 3943,
+      "events": 16145,
+      "seasons": 84,
+      "cash": "374716173816",
+      "model": {
+        "revision": "continuous-aggregate-4",
+        "activated": {
+          "year": 1950,
+          "day": 0,
+          "revision": 0
+        },
+        "trackedFrom": {
+          "year": 1950,
+          "day": 1,
+          "round": 1
+        },
+        "coverage": "founding"
+      }
+    },
+    "after": {
+      "year": 2034,
+      "day": 287,
+      "round": 41,
+      "matches": 3943,
+      "events": 16145,
+      "seasons": 84,
+      "modelActivated": true
+    },
+    "fileBytes": 6113501,
+    "utf16": 4076082
+  }
+]
