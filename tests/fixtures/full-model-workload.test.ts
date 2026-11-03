@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { describe, expect, it } from 'vitest';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { Host } from '../../apps/web/src/runtime/host';
@@ -15,7 +16,11 @@ import { DISABLED_RELEASE, ENABLED_RELEASE } from './releases';
 import { simulatedWorld } from './worlds';
 
 /** A supported career founded before the release, three rounds in on the pre-feature model. */
-const preRelease = () => simulatedWorld(ACTIVATION_FOUNDING, { rounds: 3 }, DISABLED_RELEASE);
+const preRelease = () => {
+  const world = simulatedWorld(ACTIVATION_FOUNDING, { rounds: 3 }, DISABLED_RELEASE);
+  initializeReadModels(world);
+  return world;
+};
 /** The writer tab's load of `raw` under `release`, as the client sends it (→SAVE-3/23). */
 async function writerLoad(raw: string, release: typeof ENABLED_RELEASE) {
   const host = new Host(undefined, { release });
