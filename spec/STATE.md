@@ -16,7 +16,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T04:09Z | T668 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T03:24Z | T675 |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T04:14Z | T675 |
 
 ## inbox
 - 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
