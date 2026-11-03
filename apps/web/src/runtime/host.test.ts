@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
 import { describe, it, expect, vi } from 'vitest';
@@ -501,6 +502,8 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
       canonical({
         ...w,
         revision: legacy.revision,
+        newsJournal: undefined,
+        careerReads: undefined,
         clubs: w.clubs.map((club) => ({ ...club, identity: undefined })),
       }),
     ).toBe(canonical(legacy));
@@ -834,7 +837,11 @@ describe('prospective match-model activation (→SAVE-23)', () => {
    * A supported career saved before the full model (played with the release off): mid-season with
    * two own results settled; the next round plays an own match.
    */
-  const career = () => simulatedWorld(input, { rounds: 3 }, DISABLED_RELEASE);
+  const career = () => {
+    const w = simulatedWorld(input, { rounds: 3 }, DISABLED_RELEASE);
+    initializeReadModels(w);
+    return w;
+  };
 
   it('activates supported careers only prospectively', async () => {
     const source = career();
@@ -1077,12 +1084,14 @@ describe('own-manager tracking at the writer boundary (→SAVE-24)', () => {
       // Older facts are kept as they were and old results stay unattributed.
       const {
         managerHistory: _facts,
+        newsJournal: _news,
+        careerReads: _reads,
         matchModel: _model,
         npcSeason: _season,
         revision: _revision,
         ...rest
       } = w;
-      void [_facts, _model, _season, _revision];
+      void [_facts, _news, _reads, _model, _season, _revision];
       const { revision: _old, ...before } = source;
       void _old;
       expect(canonical(rest)).toBe(canonical(before));

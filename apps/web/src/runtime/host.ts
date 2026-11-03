@@ -652,7 +652,7 @@ export class Host {
         let activated = writer
           ? this.adoptManagerHistory(modelled, modelled !== result.world)
           : modelled;
-        if (writer && needsReadModels(activated)) {
+        if (writer && needsReadModels(activated) && !settledAhead(this.world, activated)) {
           const journalled = structuredClone(activated);
           initializeReadModels(journalled);
           if (activated === result.world) journalled.revision++;
