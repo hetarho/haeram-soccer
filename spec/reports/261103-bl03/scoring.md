@@ -1,6 +1,6 @@
 # Scoring and retention investigation — 261103
 
-No scoring candidate is released. The owner requires realistic measurements before a scoring commit, then prioritised publishing the validated award/wage changes and removing their work branch. The experimental source, driver and all results remain in the detached worktree `/home/deep/haeram/haeram-soccor/.tmp/bl03-calibration`; a checked archive is `.tmp/scoring-research-before-cleanup.tar.gz` there. The original save is unchanged.
+No scoring candidate is released. The owner requires realistic measurements before a scoring commit, then prioritised publishing the validated award/wage changes and removing their work branch. The experimental source, driver and all results remain in the detached worktree `/home/deep/haeram/haeram-soccor/.tmp/bl03-calibration`; a checked portable archive is `artifacts/benchmarks/star-balance-261103/scoring-research.tar.gz` in the repository. The original save is unchanged.
 
 ## Evidence
 
