@@ -8,7 +8,8 @@
 - level: mid
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
-- push: main   # branch every finished unit is pushed to, - = commit only — chosen at the first start-vibe
+- push: next   # every session gathers its work on next; only the last session working releases next into main (→ARCH-30)
+- plan: next   # planning is numbered and published on next too
 
 ## active
 | tag | host | mode | since | at | doing |
@@ -637,7 +638,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 28 | 28 | - | 2 |
+| ARCH | 29 | 29 | - | 2 |
 | WEB | 206 | 206 | - | 0 |
 | LAB | 5 | 5 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
@@ -699,14 +700,18 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- ot03 (coordinator): main merged into the takeover (hr03 reads and IndexedDB-only saves, hr04's T680 plan); batch gate once (Chromium; ~35 migrated e2e specs never ran; T671's seed-pinned journeys, T672's integration files, save-upgrade/contract-talks/client after the merge), then push main. Report spec/reports/261103-ot03.md
-- after the ot03 takeover lands on main: implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
-- Measure T680 (hr04).
-- planning from T668's inbox suggests: update-ssot OWNER-8 living costs, OWNER-12 dividend and star-sale drivers, ECON-36 books, OWNER-3 reach
+- release (→ARCH-30 r29): sessions push code to `next` only; the last session working merges `main` into `next`, runs `pnpm run verify:batch` once, merges `next` into `main` and pushes (deploy). hr05 started under push: main and may still push main itself; the release merges it in
+- implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
 - implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 
 ## log
+- 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
+- 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
+- 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
+- 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
+- 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
+- 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
 - 261103 merge main into the takeover (hr03 news journal, career reads, IndexedDB-only saves; hr04 T680 plan): career reads and the first-season goal count only the owner's seasons (→HIST-21); a founded 0.7.0 career stays protected in every tab, never cleared (→SAVE-26/29); ot03
 - 261103 T668 done: `scripts/owner-balance.ts` (generated 1950 worlds, a takeover per tier and country at its reach, delegated, `--traits`, `--policies`, `--purse-apart`, `--reach`, `--moods`); one seed, 30 seasons: no top-flight title in any reference career, 석유 재벌 3 of 4 and 재벌 총수 1 of 4 club-bankrupt in 1950 on inherited debt, every surviving lower career in the top flight, every reference owner bankrupt at 1% living costs (median seasons 6–17), 퇴진 from delegated star sales and 50% dividends; no constant changed, old→new proposed (inbox suggests); `artifacts/benchmarks/T668/`; ot03
 - 261103 T667 done: browser generation on the reference trace (whole renderer slowed 4x, since DevTools throttling skips workers) 1930 3.8 s, 1970 131.9 s, 2000 322.0 s against 90 s (unslowed 1.9 / 33.0 / 68.2 s); 2000 peaks 0.7–0.9 GiB renderer, 233–257 MiB worker heap; first checkpoint after a 2000 takeover 949,712 B UTF-16 / 1.42 MB file; `scripts/generation-budget.ts`, `artifacts/benchmarks/T667-generation.json`; rule change proposed in its limits; ot03
@@ -721,9 +726,3 @@
 - 261103 hr03 CI 41577500074 passed all 9 jobs for published main source af513df9; exact-SHA REST receipt replaces the CLI public-HTML watcher's completed/null parse. No app code changed.
 - 261103 T675 done: unit 1917, integration 1176 (+4 skipped), contract 47; Chromium 349 executed, repaired 9 setup/expectation failures with 22/22 scoped reruns; final coordinator gate fde8c867 passes. hr03
 - 261103 T676 done: clean 84-season checkpoint gzip encode/validate 18.64 s, original facts/news/stats equal, UTF-16 4.08 MB / portable 6.11 MB; fallback portions superseded by user-approved T677. hr03
-- 261103 T677 done: remove legacy localStorage checkpoints, migration/fallback budgets and startup reset/strategy cleanup; IndexedDB fixtures updated, 30 affected unit cases and fast checks pass. hr03
-- 261103 WORLD r9 dependency restored verbatim from ot03 WIP: published T670–T672 already reference it; no owner code or task ownership changed. hr03
-- 261103 SAVE r65 WEB r205 tasked T677: user removes beta compatibility for legacy localStorage checkpoints; current device metadata remains. hr03
-- 261103 SAVE r64 tasked T676: separate IndexedDB/portable compression budget from the unchanged localStorage fallback, based on retained-career measurements. hr03
-- 261103 T674 done: incremental career summaries, indexed seasonal finance, pure paged news RPC and older-news/filter UI; 14 focused unit cases and fast checks/build pass. hr03
-- 261103 T673 done: persisted incremental news journal, writer reconstruction, six unit cases and fast checks/build; integration deferred to final gate. hr03
