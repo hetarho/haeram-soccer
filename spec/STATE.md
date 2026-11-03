@@ -16,7 +16,6 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T04:09Z | T668 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T04:14Z | T675 |
 
 ## inbox
 - 261103 decided SAVE-29 WEB-62 T677: user explicitly drops beta backward compatibility for old localStorage code → remove checkpoint slots/fallback/migration/reset/strategy cleanup; keep current preferences, notification/read markers, game index and manifest metadata, with no deletion or migration of existing browser keys. hr03
@@ -549,7 +548,6 @@
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | doing@261103.ot03 |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | doing@261103.ot03 |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | doing@261103.ot03 |
-| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
 | T670 | engine tests build careers by taking a club over | WEB WORLD ECON CLUB ARCH | T665 | todo |
 | T671 | the founding leaves the engine: fixtures, web tests, e2e and scripts on takeovers | WEB WORLD CLUB SAVE ARCH | T670 | todo |
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
@@ -576,13 +574,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Complete T675 final coordinator gate and publish the verified source (hr03).
-- implement-task T675 (hr03); preserve ot03 takeover handoff below.
+- Continue the active ot03 takeover handoff; hr03 read/storage work is complete (spec/reports/261103-hr03.md).
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 T675 done: unit 1917, integration 1176 (+4 skipped), contract 47; Chromium 349 executed, repaired 9 setup/expectation failures with 22/22 scoped reruns; final coordinator gate fde8c867 passes. hr03
 - 261103 T676 done: clean 84-season checkpoint gzip encode/validate 18.64 s, original facts/news/stats equal, UTF-16 4.08 MB / portable 6.11 MB; fallback portions superseded by user-approved T677. hr03
 - 261103 T677 done: remove legacy localStorage checkpoints, migration/fallback budgets and startup reset/strategy cleanup; IndexedDB fixtures updated, 30 affected unit cases and fast checks pass. hr03
 - 261103 WORLD r9 dependency restored verbatim from ot03 WIP: published T670–T672 already reference it; no owner code or task ownership changed. hr03
@@ -602,4 +600,3 @@
 - 261103 T650 done: the owner adds no capital and starts no facility work. The support/facility commands, World.support (dropped on load), the ownerCapital build effect (구단주 투자 keeps only its wage cost) and the ledger's owner capital line are gone; startFacilityWork is reached only by the calibration harness's reference club and tests, and a work under way still opens on its day; 추가 출자, the facility review and 공사 시작 are deleted while 재정·투자 reads each part's stage, art and work under way. Equivalence digests unchanged; unit 222/1913 green; contract 47 green (golden unchanged); e2e edited for the batch.
 - 261103 T649 done: the club keeps the direction it was founded with. The policy/build/direction/ticket commands, setPolicy/setBuild/setDirection, the policy and ticket previews, the 80+ intake odds and the card display lines are gone; founding installs its preset directly (32 founded worlds identical); the 방향 board, composer, department sheets, direction lines and the device strategy library are deleted (its key removed on writer start); 재정·투자 and the staff/academy/market views read the rows, investment, ticket price and bases read-only. Equivalence digests unchanged; unit 222/1911 green; golden regenerated (contract 47 green); e2e edited for the batch.
 - 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.
-- 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03
