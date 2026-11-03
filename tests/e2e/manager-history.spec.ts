@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { expect, test, type Page } from '@playwright/test';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { canonical } from '../../packages/contracts/src/index';
@@ -62,6 +63,7 @@ for (const viewport of VIEWPORTS)
     test.setTimeout(240_000);
     await page.setViewportSize(viewport);
     const career: ManagerJourneyCareer = await managerJourneyCareer();
+    initializeReadModels(career.world);
     const total = career.views.length;
     expect(total).toBeGreaterThan(career.pageSize);
     await importResponsibilityCareer(page, career.world);

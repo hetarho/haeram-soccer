@@ -9,7 +9,7 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { committedRaw } from './club-identity-helpers';
 
-// Synthetic, incompressible note details exercise the real >3 MiB IndexedDB path.
+// Synthetic note details make a >3 MiB checkpoint while keeping the gzip file below 8 MiB.
 test('saves and reloads a larger portable gzip checkpoint through IndexedDB', async ({ page }) => {
   test.setTimeout(180000);
   const w = createWorld({
@@ -22,7 +22,7 @@ test('saves and reloads a larger portable gzip checkpoint through IndexedDB', as
   w.settings!.mode = 'manual';
   const alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_';
   let state = 1;
-  for (let n = 0; n < 5120; n++) {
+  for (let n = 0; n < 3600; n++) {
     let detail = '';
     for (let i = 0; i < 1000; i++) {
       state ^= state << 13;
