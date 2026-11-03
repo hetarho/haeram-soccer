@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r27 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r28 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -184,9 +184,10 @@
   - Production repository: https://github.com/hetarho/haeram-soccer.git.
 - ARCH-28 [o] Browser interest and responsiveness have measured release budgets.
   - Initial entry JavaScript + CSS: at most 250 KiB compressed, excluding lazy engine/catalog chunks; report all first-play transfer sizes separately. Pages visited later (the records room, cup history) load as their own chunks.
-  - Reference trace: pinned Chromium, 4x CPU slowdown, Fast 4G for cold loading, desktop and 390x844 mobile viewports.
+  - Reference trace: pinned Chromium, 4x CPU slowdown of the whole renderer including the engine worker (DevTools throttling skips workers), Fast 4G for cold loading, desktop and 390x844 mobile viewports.
   - UI feedback after controls: p95 below 100 ms during ordinary simulation; observed pitch rendering targets at least 30 FPS on the reference mobile viewport.
-  - World generation after a valid start: at most 5 seconds for a 1930 takeover and at most 90 seconds for a 2000 takeover on the reference trace; present real generation progress (the season reached) while it runs.
+  - World generation after a valid start: at most 5 seconds for a 1930 takeover; a later decade at most 5 seconds a season played before the takeover on the reference trace (2000: 63 seasons, about 5¼ minutes), with the history view (→!WEB-115) showing the season reached throughout; the history view adds at most 10% to the generation time. ← the wait for a later decade is spent watching its history, and 90 seconds for 2000 would need a world 3.6× faster
+    - measured 261103 (preview build, process-wide 4x, a shared host under load): 1930 3.8 s, 1970 131.9 s, 2000 322.0 s (5.1 s a season); without the slowdown 1.9 / 33.0 / 68.2 s.
   - Benchmark reports record tool/browser versions, dataset size, world seed, save sizes, match/season throughput, and long-run memory; these are targets to measure, not invented results.
 
 - ARCH-29 [o] Owner-scoped data sits behind profile ports: a device profile now (a random device ID, the game-slot index), an account profile later. ← games should follow the owner once sign-in exists (→ARCH-19) without reshaping local data
@@ -250,6 +251,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r28 261103 ARCH-28✎ world generation 2000 at most 90 s→a later decade at most 5 s a season played with the history view (→WEB-115) adding at most 10%; reference trace 4x CPU→4x of the whole renderer including the engine worker
 - r27 261103 ARCH-1✎ carry founding, initial-capital difficulty→the takeover start with wealth tiers and traits; ARCH-14✎ measure worlds at founding→at the takeover; ARCH-19✎ submission founding year, initial-capital category→takeover decade, wealth tier, trait count; ARCH-21✎ Playwright founding→start and takeover; ARCH-28✎ world initialization 5 s→5 s for 1930 and 90 s for a 2000 takeover with the season reached
 - r26 261102 ARCH-1✎ carry manager personality and tactical requests→manager personality; ARCH-6✎ duplicates never repeat tactics changes→removed from the list; ARCH-8✎ record requested tactics, manager responses and applied tactics separately→removed; ARCH-21✎ Vitest manager-request outcomes and Playwright request tactics→removed; ARCH-24✎ full web loop manager personality/requests→manager personality; ARCH-29✎ device profile holds the strategy library→device ID and game-slot index only
 - r25 261028 ARCH-31✎ throughput gates on absolute budgets (fixture ≤1 ms, season ≤15 s median on a reference machine)→no absolute time budget, throughput compared with the previous release on one machine and reported, capacity stays the gate; ARCH-34+ a speed-up succeeds when faster than its baseline on the measuring machine beyond the noise (paired harness, 95% interval, result-identical hashes)

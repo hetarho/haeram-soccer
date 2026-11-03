@@ -383,22 +383,41 @@ try {
   if (centuryCheckpointSha256 !== storageReport.centuryCheckpointSha256)
     throw new Error('Century checkpoint differs from the verified storage artifact');
   const restoreContext = await browser.newContext();
-  await restoreContext.addInitScript(
-    ({ raw, envelope }) => {
-      localStorage.setItem('haeram-soccor:slot:a', raw);
-      localStorage.setItem(
-        'haeram-soccor:manifest',
-        JSON.stringify({
-          slot: 0,
-          worldId: envelope.worldId,
-          generation: envelope.generation,
-          parentGeneration: envelope.parentGeneration,
-        }),
-      );
-    },
+  const restored = await restoreContext.newPage();
+  await restored.goto(`${origin}/404.html`);
+  await restored.evaluate(
+    ({ raw, envelope }) =>
+      new Promise((resolve, reject) => {
+        const open = indexedDB.open('haeram-soccor', 2);
+        open.onupgradeneeded = () => {
+          for (const name of ['games', 'checkpoints'])
+            if (!open.result.objectStoreNames.contains(name)) open.result.createObjectStore(name);
+        };
+        open.onerror = () => reject(open.error);
+        open.onsuccess = () => {
+          const db = open.result,
+            tx = db.transaction('checkpoints', 'readwrite');
+          tx.objectStore('checkpoints').put(raw, 'active');
+          tx.oncomplete = () => {
+            db.close();
+            localStorage.setItem(
+              'haeram-soccor:manifest',
+              JSON.stringify({
+                worldId: envelope.worldId,
+                generation: envelope.generation,
+                parentGeneration: envelope.parentGeneration,
+              }),
+            );
+            resolve();
+          };
+          tx.onerror = tx.onabort = () => {
+            db.close();
+            reject(tx.error);
+          };
+        };
+      }),
     { raw, envelope },
   );
-  const restored = await restoreContext.newPage();
   restored.on('pageerror', (error) => errors.push(error.message));
   const t = performance.now();
   // An in-game address continues the game in play without the slot screen (→WEB-62), so this

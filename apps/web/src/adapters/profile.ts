@@ -15,9 +15,6 @@ export interface Owner {
   id: string;
 }
 export const DEVICE_KEY = 'haeram-soccor:device';
-/** The strategy library earlier versions kept on the device (→SAVE-25); nothing reads it now. */
-export const STRATEGIES_KEY = 'haeram-soccor:strategies';
-
 export function ownerOf(value: unknown): Owner | undefined {
   const owner = value as Partial<Owner> | null;
   return owner &&
@@ -40,17 +37,4 @@ export function deviceOwner(storage: StoragePort): Owner {
     }
   }
   return { kind: 'device', id };
-}
-
-/**
- * Removes the strategy library earlier versions kept on this device (→SAVE-25): saved directions
- * are no longer read since a club keeps the direction it was founded with. Called when the writer
- * tab starts; the device ID and the game-slot index stay.
- */
-export function removeStrategyLibrary(storage: Pick<StoragePort, 'removeItem'>) {
-  try {
-    storage.removeItem(STRATEGIES_KEY);
-  } catch {
-    /* Unavailable storage holds no library to remove. */
-  }
 }

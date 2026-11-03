@@ -19,7 +19,10 @@ import {
 } from '../../packages/engine/src/grid/record';
 import { eraRules, isLevel, type DecideRule } from '../../packages/engine/src/grid/setup';
 import { random, zeroMetrics } from '../../packages/engine/src/primitives';
-import { CHECKPOINT_LIMIT, TOTAL_LIMIT } from '../../apps/web/src/adapters/repository';
+import {
+  INDEXED_CHECKPOINT_LIMIT,
+  PORTABLE_FILE_LIMIT,
+} from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
 export const MATCH_PARITY_VERSION = 'match-parity-6';
@@ -1543,8 +1546,8 @@ export const PERFORMANCE_CONFIG = {
   /** Paired evidence needs the same machine, toolchain and worlds; other runs are context only. */
   pairing: ['machine', 'toolchain', 'worlds'] as const,
   storage: {
-    checkpointBytes: CHECKPOINT_LIMIT,
-    totalBytes: TOTAL_LIMIT,
+    checkpointBytes: INDEXED_CHECKPOINT_LIMIT,
+    portableFileBytes: PORTABLE_FILE_LIMIT,
     /** SAVE-4's import caps, enforced in apps/web/src/adapters (persistence.ts, compression.ts). */
     importFileBytes: 8 * 1024 * 1024,
     decompressedBytes: 32 * 1024 * 1024,

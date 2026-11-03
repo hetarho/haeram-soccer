@@ -60,7 +60,7 @@ import { playGrid, type GridResult } from '../packages/engine/src/grid/engine';
 import { buildFrames } from '../packages/engine/src/grid/playback';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
 import { decode, encode } from '../apps/web/src/adapters/persistence';
-import { SLOT } from '../apps/web/src/adapters/repository';
+import { ACTIVE } from '../apps/web/src/adapters/repository';
 import {
   aggregatePlan,
   aggregateRecord,
@@ -513,7 +513,7 @@ for (const [profile, seed] of Object.entries(PERFORMANCE_CONFIG.profiles)) {
     raw = encoded;
   }
   // Conservative UTF-16 size of the active slot, as scripts/benchmark.ts counts it (→SAVE-4).
-  const checkpointBytes = 2 * (raw.length + SLOT[0]!.length);
+  const checkpointBytes = 2 * (raw.length + ACTIVE.length);
   seasons.push({
     profile,
     seed,

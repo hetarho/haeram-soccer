@@ -1,3 +1,4 @@
+import { careerEuropeanCoefficient } from './career-reads';
 import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
 import { random, integer, compareIds } from './primitives';
@@ -659,6 +660,7 @@ export function europeFinal(w: World, t: EuropeTournament) {
 }
 
 export function europeanCoefficient(w: World) {
+  if (w.careerReads) return careerEuropeanCoefficient(w);
   return w.ownMatches
     .filter((m) => m.kind === 'europe' && m.year >= w.year - 5)
     .reduce((sum, m) => {

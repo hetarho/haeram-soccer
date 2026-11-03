@@ -1,3 +1,4 @@
+import { seedRawCheckpoint } from './checkpoint-storage';
 import {
   clubhouseTab,
   openClubhouse,
@@ -274,20 +275,7 @@ test('watching a match pauses the calendar and retains playback across page swit
 /** Puts a world in slot 1, to continue from the slot screen. */
 async function seed(page: Page, w: World) {
   const raw = await encode(w, 1, 0);
-  await page.addInitScript((raw) => {
-    if (localStorage.getItem('haeram-soccor:manifest')) return;
-    const envelope = JSON.parse(raw);
-    localStorage.setItem('haeram-soccor:slot:a', raw);
-    localStorage.setItem(
-      'haeram-soccor:manifest',
-      JSON.stringify({
-        slot: 0,
-        worldId: envelope.worldId,
-        generation: envelope.generation,
-        parentGeneration: envelope.parentGeneration,
-      }),
-    );
-  }, raw);
+  await seedRawCheckpoint(page, raw);
 }
 
 test('the office summary flags tired starters and offers no remedy (→WEB-44)', async ({ page }) => {

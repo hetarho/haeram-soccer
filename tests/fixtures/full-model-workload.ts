@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../packages/engine/src/read-models';
 import { MATCH_MODEL_REVISION } from '../../packages/contracts/src/match-model';
 import type { World } from '../../packages/contracts/src/types';
 import {
@@ -22,7 +23,7 @@ export const ACTIVATION_CAREER: CareerInput = { country: 'ENG', seed: 'release-a
 /**
  * The writer load's activation of `w` (`Host.adoptModel`, →SAVE-23): a copy one revision on with
  * `release`'s model recorded at the next unplayed day. A career whose identities and manager
- * history are already there gets nothing else from the load's upgrades, so this is what a writer
+ * history are already there also receives its incremental read models, so this is what a writer
  * tab holds after loading it. Throws when `release` does not activate `w`.
  */
 export function writerActivation(w: World, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
@@ -30,6 +31,7 @@ export function writerActivation(w: World, release: MatchModelRelease = MATCH_MO
   activated.revision++;
   if (!activateMatchModel(activated, release))
     throw new Error('the release does not activate this career');
+  initializeReadModels(activated);
   return activated;
 }
 

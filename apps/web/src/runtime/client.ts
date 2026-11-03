@@ -1,12 +1,11 @@
+import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, World } from '../../../../packages/contracts/src/types';
 import type { ClubListing, StartChoice } from '../../../../packages/contracts/src/owner';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
 import { IndexedDbCheckpointKey } from '../adapters/previousStore';
-import { ACTIVE_SAVE_KEYS } from '../adapters/games';
 import {
-  CURRENT_ENGINE_VERSION,
   envelopeEngine,
   isEarlierEngine,
   SaveCompatibilityError,
@@ -379,25 +378,6 @@ export class GameClient {
   }
   private async load() {
     await this.whenSaved();
-    if (!this.state.readonly) {
-      const [{ resetLegacy }, { IndexedDbParkedStore }, { removeStrategyLibrary }] =
-        await Promise.all([
-          import('../adapters/legacyReset'),
-          import('../adapters/games'),
-          import('../adapters/profile'),
-        ]);
-      // The strategy library of earlier versions is no longer read (→SAVE-25).
-      removeStrategyLibrary(localStorage);
-      const cleared = await resetLegacy(
-        localStorage,
-        IndexedDbParkedStore.available() ? new IndexedDbParkedStore() : undefined,
-        () => !this.state.readonly && !this.failed,
-      );
-      if (cleared > 0)
-        notificationStore.add(
-          `이전 규칙 커리어 ${cleared}개를 정리했어요. 게임 버전 ${CURRENT_ENGINE_VERSION}에서는 구단을 인수해 새 커리어를 시작해요.`,
-        );
-    }
     const result = await this.saves.load();
     if (result) {
       const playback = this.state.playback,
@@ -841,6 +821,21 @@ export class GameClient {
     }
   }
   /** Season and manager records are reads; refreshing them never holds the clock or sets busy. */
+  async newsPage(before?: string, tag?: NewsItem['tag']) {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error('먼저 클럽을 창단하세요.');
+    const reply = await this.read({
+      type: 'news-page',
+      world,
+      ...(before ? { before } : {}),
+      ...(tag ? { tag } : {}),
+    });
+    if (!reply.ok || !reply.newsPage)
+      throw new Error(reply.error ?? '뉴스 기록을 불러오지 못했어요.');
+    if (this.state.view?.world.id !== world || reply.newsPage.world !== world)
+      throw new Error('다른 커리어의 뉴스입니다.');
+    return reply.newsPage;
+  }
   async archive(year: number) {
     return (await this.read({ type: 'archive', year })).archive;
   }
@@ -1014,7 +1009,6 @@ export class GameClient {
       this.autosaveTimer = undefined;
       await this.whenSaved();
       await this.saves.clearActive();
-      for (const key of ACTIVE_SAVE_KEYS) localStorage.removeItem(key);
       await this.saves.clearPrevious().catch(() => {});
       // Nothing left in this page — the slot index on leaving, a save — may bring it back either.
       this.state.view = undefined;

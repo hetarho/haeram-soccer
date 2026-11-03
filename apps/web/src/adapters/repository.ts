@@ -4,10 +4,9 @@ import {
   SaveCompatibilityError,
   type CheckpointSchema,
 } from '../../../../packages/contracts/src/versions';
-export const CHECKPOINT_LIMIT = 3 * 1024 * 1024;
-export const TOTAL_LIMIT = 3.5 * 1024 * 1024;
+export const INDEXED_CHECKPOINT_LIMIT = 6 * 1024 * 1024;
+export const PORTABLE_FILE_LIMIT = 8 * 1024 * 1024;
 export const MANIFEST = 'haeram-soccor:manifest';
-export const SLOT = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b'];
 function checkpointGeneration(raw: string | null) {
   try {
     const value = JSON.parse(raw || 'null')?.generation;
@@ -56,10 +55,9 @@ export interface IndexedCheckpoints {
   active: PreviousStore;
   previous: PreviousStore;
 }
-/** Checkpoint sources: the two localStorage slots, then the IndexedDB previous and active keys. */
-export const PREVIOUS = 2;
-export const ACTIVE = 3;
-export type Source = 0 | 1 | typeof PREVIOUS | typeof ACTIVE;
+export const PREVIOUS = 'previous';
+export const ACTIVE = 'active';
+export type Source = typeof PREVIOUS | typeof ACTIVE;
 /** Writes a validated candidate (checkpointWriter.ts), injected so browsers load it lazily. */
 export type CheckpointWrite = typeof import('./checkpointWriter').writeCheckpoint;
 export interface Lineage {
@@ -68,12 +66,7 @@ export interface Lineage {
   parentGeneration: number;
 }
 
-/**
- * Browser storage only. Every checkpoint is validated by the injected worker codec. With IndexedDB
- * (a previous and an active store) the game in play keeps its active copy and predecessor there,
- * and a game still in slot:a/b moves on the first commit; without it the game alternates slot:a
- * and slot:b while both fit the budget.
- */
+/** IndexedDB checkpoints, validated by the injected worker codec before activation or commit. */
 export class SaveRepository<W extends SaveWorldMetadata = World> {
   private source: Source | undefined;
   /** The committed checkpoint when it sits in IndexedDB, so parking reads it without waiting. */
@@ -105,8 +98,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
   /** The committed checkpoint of the game in play, exactly as stored (→SAVE-14 parking). */
   committedRaw() {
     if (this.source === undefined) return null;
-    if (this.source === PREVIOUS || this.source === ACTIVE) return this.indexedRaw ?? null;
-    return this.storage.getItem(SLOT[this.source]);
+    return this.indexedRaw ?? null;
   }
   /**
    * The stored checkpoint a recovery export keeps: the protected incompatible one, else the
@@ -114,60 +106,43 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
    */
   recoveryRaw() {
     if (this.protectedRaw) return this.protectedRaw;
-    let slot: unknown;
-    try {
-      slot = JSON.parse(this.storage.getItem(MANIFEST) || 'null')?.slot;
-    } catch {
-      /* preserve raw slots for recovery */
-    }
-    if (slot === 0 || slot === 1) return this.storage.getItem(SLOT[slot]) || undefined;
-    if (slot === ACTIVE) return this.activeRaw;
-    return this.storage.getItem(SLOT[0]) || this.storage.getItem(SLOT[1]) || this.activeRaw;
+    return this.activeRaw;
   }
-  /** Whether a game in play is stored, in localStorage or as the IndexedDB active copy. */
+  /** Whether the current IndexedDB game or its commit manifest exists. */
   hasStored() {
-    return (
-      [MANIFEST, ...SLOT].some((key) => this.storage.getItem(key) !== null) ||
-      this.activeRaw !== undefined
-    );
+    return this.storage.getItem(MANIFEST) !== null || this.activeRaw !== undefined;
   }
   /** Drops the active copy of a game removed from play; on failure the game stays whole. */
   async clearActive() {
-    await this.indexed?.active.clear();
+    await this.requireIndexed().active.clear();
+    this.storage.removeItem(MANIFEST);
+    this.source = undefined;
+    this.indexedRaw = undefined;
+    this.generation = 0;
     this.activeRaw = undefined;
   }
   /** Drops the predecessor of a game removed from play. */
   async clearPrevious() {
-    await this.indexed?.previous.clear();
+    await this.requireIndexed().previous.clear();
+  }
+  private requireIndexed() {
+    if (!this.indexed)
+      throw new Error('게임 저장에는 IndexedDB가 필요해요. 브라우저의 저장 권한을 확인하세요.');
+    return this.indexed;
   }
   async load() {
+    const indexed = this.requireIndexed();
     const manifest = this.storage.getItem(MANIFEST);
-    const indexed = this.indexed;
     const raws = new Map<Source, string | null>();
     const read = async (source: Source) => {
-      if (!raws.has(source))
-        raws.set(
-          source,
-          source === PREVIOUS
-            ? await indexed!.previous.read().catch(() => null)
-            : source === ACTIVE
-              ? await indexed!.active.read().catch(() => null)
-              : this.storage.getItem(SLOT[source]),
-        );
+      if (!raws.has(source)) raws.set(source, await indexed[source].read());
       if (source === ACTIVE) this.activeRaw = raws.get(ACTIVE) ?? undefined;
       return raws.get(source)!;
     };
     this.activeRaw = undefined;
-    const sources: Source[] = indexed ? [ACTIVE, 0, 1] : [0, 1];
-    // A removed game leaves no manifest, slot or active copy; its predecessor is never brought
-    // back alone.
-    if (
-      indexed &&
-      (manifest !== null ||
-        SLOT.some((key) => this.storage.getItem(key) !== null) ||
-        (await read(ACTIVE)) !== null)
-    )
-      sources.push(PREVIOUS);
+    const sources: Source[] = [ACTIVE];
+    // A deleted game's lone predecessor is never restored as the game in play.
+    if (manifest !== null || (await read(ACTIVE)) !== null) sources.push(PREVIOUS);
     let order = sources;
     let declared: Source | undefined;
     let header: Lineage | undefined;
@@ -175,7 +150,6 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
       const m = JSON.parse(manifest || 'null');
       if (
         m &&
-        (m.slot === 0 || m.slot === 1 || (m.slot === ACTIVE && indexed)) &&
         typeof m.worldId === 'string' &&
         m.worldId.length > 0 &&
         m.worldId.length <= 100 &&
@@ -185,7 +159,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
         m.parentGeneration >= 0 &&
         m.parentGeneration < m.generation
       ) {
-        declared = m.slot as Source;
+        declared = ACTIVE;
         header = m;
         order = [declared, ...sources.filter((source) => source !== declared)];
       }
@@ -218,6 +192,25 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
               (source === declared ? header.generation : header.parentGeneration))
         ) {
           errors.push('체크포인트와 매니페스트 계보가 일치하지 않습니다.');
+          // An interrupted active/manifest write can leave the committed generation in previous.
+          // Only take it after validating active, so incompatible newer data still stays protected.
+          if (declared === ACTIVE) {
+            try {
+              const previous = JSON.parse((await read(PREVIOUS)) || 'null');
+              if (
+                previous?.worldId === header.worldId &&
+                previous.generation === header.generation &&
+                previous.parentGeneration === header.parentGeneration
+              ) {
+                declared = PREVIOUS;
+                order = [PREVIOUS, ACTIVE];
+                index = -1;
+                continue;
+              }
+            } catch {
+              /* Normal validated recovery below handles malformed headers. */
+            }
+          }
           header = undefined;
           declared = undefined;
           order = await recoverOrder();
@@ -228,7 +221,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
         this.generation = result.envelope.generation;
         this.incompatible = undefined;
         this.protectedRaw = undefined;
-        return { ...result, raw, recovered: source !== declared, errors };
+        return { ...result, raw, recovered: source !== ACTIVE || declared === undefined, errors };
       } catch (error) {
         if (isSaveCompatibilityError(error)) {
           this.incompatible = error;
@@ -246,7 +239,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
       throw new Error(
         '유효한 저장을 찾지 못했습니다. 파일 가져오기로 복구하세요. ' + errors.join(' '),
       );
-    // A writer reset or confirmed deletion may have removed the previously protected career.
+    // Confirmed deletion may have removed the previously protected career.
     this.incompatible = undefined;
     this.protectedRaw = undefined;
     this.source = undefined;
@@ -276,7 +269,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     };
     const source = await this.write(
       this.storage,
-      this.indexed,
+      this.requireIndexed(),
       this.source,
       this.committedRaw(),
       raw,

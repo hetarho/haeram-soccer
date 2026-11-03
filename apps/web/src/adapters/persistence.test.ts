@@ -30,7 +30,7 @@ import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, type PreviousStore, type StoragePort } from './persistence';
-import { MANIFEST, SLOT } from './repository';
+import { MANIFEST } from './repository';
 import { base64, pack, unpack } from './packing';
 import { denseBytes } from './dense';
 import { bmpText } from './bmp127';
@@ -291,20 +291,20 @@ describe('recoverable persistence', () => {
     expect(port.getItem('haeram-soccor:manifest')).toBe(before);
     expect((await new Saves(port).load())?.world.round).toBe(0);
   });
-  it('recovers the previous slot and preserves it on the next commit', async () => {
+  it('recovers the IndexedDB predecessor and preserves it on the next commit', async () => {
     const port = new Memory();
     const saves = new Saves(port);
     await saves.save(world());
     const w = observed(1);
     await saves.save(w);
-    port.data.set('haeram-soccor:slot:b', 'corrupt');
+    port.data.set('indexed:active', 'corrupt');
     const recovery = new Saves(port);
     expect((await recovery.load())?.recovered).toBe(true);
     await recovery.save(w);
     expect((await new Saves(port).load())?.world.round).toBe(1);
-    expect((await decode(port.getItem('haeram-soccor:slot:a')!)).world.round).toBe(0);
+    expect((await decode(port.getItem('indexed:previous')!)).world.round).toBe(0);
   });
-  it.each([null, '{', '{"slot":0}', '{"slot":1,"generation":-1}'])(
+  it.each([null, '{', '{"generation":0}', '{"generation":-1}'])(
     'recovers the newest validated checkpoint with an invalid manifest: %s',
     async (manifest) => {
       const port = new Memory();
@@ -324,7 +324,7 @@ describe('recoverable persistence', () => {
       expect(canonical(loaded!.world)).toBe(canonical(w));
       await recovery.save(observed(2));
       expect((await new Saves(port).load())?.world.round).toBe(2);
-      expect((await decode(port.getItem('haeram-soccor:slot:b')!)).world.round).toBe(1);
+      expect((await decode(port.getItem('indexed:previous')!)).world.round).toBe(1);
     },
   );
   it('commits a codec checkpoint by its envelope and never writes one older than the last commit', async () => {
@@ -522,7 +522,7 @@ describe('incompatible checkpoint protection', () => {
     await saves.save(world());
     const w = observed(1);
     await saves.save(w);
-    const selected = 'haeram-soccor:slot:b';
+    const selected = 'indexed:active';
     const future = JSON.stringify({ ...JSON.parse(port.getItem(selected)!), [field]: value });
     port.data.set(selected, future);
     const before = new Map(port.data);
@@ -534,7 +534,7 @@ describe('incompatible checkpoint protection', () => {
     expect(port.data).toEqual(before);
   });
 
-  it.each([null, '{"slot":0}', '{broken'])(
+  it.each([null, '{"generation":0}', '{broken'])(
     'protects the newest future slot when the manifest is %s',
     async (manifest) => {
       const port = new Memory();
@@ -543,10 +543,10 @@ describe('incompatible checkpoint protection', () => {
       const w = observed(1);
       await saves.save(w);
       const future = JSON.stringify({
-        ...JSON.parse(port.getItem('haeram-soccor:slot:b')!),
+        ...JSON.parse(port.getItem('indexed:active')!),
         engine: '9.0.0',
       });
-      port.data.set('haeram-soccor:slot:b', future);
+      port.data.set('indexed:active', future);
       if (manifest === null) port.removeItem('haeram-soccor:manifest');
       else port.data.set('haeram-soccor:manifest', manifest);
       const before = new Map(port.data);
@@ -557,54 +557,48 @@ describe('incompatible checkpoint protection', () => {
     },
   );
 
-  it.each([0, 1])(
-    'preserves incompatible slot %i if an explicit replacement cannot commit',
-    async (slot) => {
+  it('preserves an incompatible indexed save if an explicit replacement cannot commit', async () => {
+    const port = new Memory(),
+      w = world();
+    const future = JSON.stringify({ ...JSON.parse(await encode(w, 9, 8)), engine: '9.0.0' });
+    port.data.set('indexed:active', future);
+    port.data.set('indexed:previous', await encode(w, 8, 7));
+    const manifest = JSON.stringify({ worldId: w.id, generation: 9, parentGeneration: 8 });
+    port.data.set('haeram-soccor:manifest', manifest);
+    const recovery = new Saves(port);
+    await expect(recovery.load()).rejects.toThrow(SaveCompatibilityError);
+    expect(recovery.generationInfo).toEqual({ generation: 10, parentGeneration: 9 });
+    const replacement = await encode(world(), 10, 9);
+    port.fail = 'indexed:active';
+    await expect(recovery.commit(replacement, { replaceIncompatible: true })).rejects.toThrow(
+      'Quota',
+    );
+    expect(port.getItem('indexed:active')).toBe(future);
+    expect(port.getItem('haeram-soccor:manifest')).toBe(manifest);
+    expect(recovery.incompatibleBackup).toBe(future);
+    await expect(new Saves(port).load()).rejects.toThrow(SaveCompatibilityError);
+    port.fail = '';
+    await recovery.commit(replacement, { replaceIncompatible: true });
+    expect((await new Saves(port).load())?.world.engine).toBe(CURRENT_ENGINE_VERSION);
+    expect(port.getItem('indexed:previous')).toBe(future);
+    expect(recovery.incompatibleCheckpoint).toBe(false);
+  });
+
+  it.each([{}, { generation: 99, parentGeneration: 98 }, { generation: 2, parentGeneration: 99 }])(
+    'recovers the newest valid checkpoint after a damaged manifest %j',
+    async (metadata) => {
       const port = new Memory();
-      const w = world();
-      const future = JSON.stringify({ ...JSON.parse(await encode(w, 9, 8)), engine: '9.0.0' });
-      const selected = `haeram-soccor:slot:${slot ? 'b' : 'a'}`;
-      port.data.set(selected, future);
-      port.data.set(`haeram-soccor:slot:${slot ? 'a' : 'b'}`, await encode(w, 8, 7));
-      const manifest = JSON.stringify({ slot, worldId: w.id, generation: 9, parentGeneration: 8 });
-      port.data.set('haeram-soccor:manifest', manifest);
-      const recovery = new Saves(port);
-      await expect(recovery.load()).rejects.toThrow(SaveCompatibilityError);
-      expect(recovery.generationInfo).toEqual({ generation: 10, parentGeneration: 9 });
-      const replacement = await encode(world(), 10, 9);
-      port.fail = 'haeram-soccor:manifest';
-      await expect(recovery.commit(replacement, { replaceIncompatible: true })).rejects.toThrow(
-        'Quota',
-      );
-      expect(port.getItem(selected)).toBe(future);
-      expect(port.getItem('haeram-soccor:manifest')).toBe(manifest);
-      expect(recovery.incompatibleBackup).toBe(future);
-      await expect(new Saves(port).load()).rejects.toThrow(SaveCompatibilityError);
-      port.fail = '';
-      await recovery.commit(replacement, { replaceIncompatible: true });
-      expect((await new Saves(port).load())?.world.engine).toBe(CURRENT_ENGINE_VERSION);
-      expect(JSON.parse(port.getItem('haeram-soccor:manifest')!).slot).toBe(1 - slot);
-      expect(port.getItem(selected)).toBe(future);
-      expect(recovery.incompatibleCheckpoint).toBe(false);
+      const saves = new Saves(port);
+      await saves.save(world());
+      const w = observed(1);
+      await saves.save(w);
+      port.data.set('haeram-soccor:manifest', JSON.stringify({ ...metadata, worldId: w.id }));
+      const recovery = await new Saves(port).load();
+      expect(recovery?.world.round).toBe(1);
+      expect(recovery?.envelope.generation).toBe(2);
+      expect(recovery?.recovered).toBe(true);
     },
   );
-
-  it.each([
-    { slot: 0 },
-    { slot: 0, generation: 99, parentGeneration: 98 },
-    { slot: 1, generation: 2, parentGeneration: 99 },
-  ])('recovers the newest valid checkpoint after a damaged manifest %j', async (metadata) => {
-    const port = new Memory();
-    const saves = new Saves(port);
-    await saves.save(world());
-    const w = observed(1);
-    await saves.save(w);
-    port.data.set('haeram-soccor:manifest', JSON.stringify({ ...metadata, worldId: w.id }));
-    const recovery = await new Saves(port).load();
-    expect(recovery?.world.round).toBe(1);
-    expect(recovery?.envelope.generation).toBe(2);
-    expect(recovery?.recovered).toBe(true);
-  });
 });
 
 describe('checkpoint container schema 2', () => {
@@ -647,10 +641,10 @@ describe('checkpoint container schema 2', () => {
       next = withoutManagerHistory(unmodelled(2));
     const raw = await seal(w);
     expect(JSON.parse(raw).schema).toBe(1);
-    port.data.set('haeram-soccor:slot:a', raw);
+    port.data.set('indexed:active', raw);
     port.data.set(
       'haeram-soccor:manifest',
-      JSON.stringify({ slot: 0, worldId: w.id, generation: 1, parentGeneration: 0 }),
+      JSON.stringify({ worldId: w.id, generation: 1, parentGeneration: 0 }),
     );
     const before = new Map(port.data);
     const saves = new Saves(port);
@@ -666,7 +660,7 @@ describe('checkpoint container schema 2', () => {
     expect(reloaded?.envelope.parentGeneration).toBe(1);
     expect(canonical(reloaded!.world)).toBe(canonical(next));
     // The schema-1 predecessor stays exactly as it was written.
-    expect(port.getItem('haeram-soccor:slot:a')).toBe(raw);
+    expect(port.getItem('indexed:previous')).toBe(raw);
   });
 
   it('future envelope or nested identity version remains a compatibility error', async () => {
@@ -706,7 +700,7 @@ describe('checkpoint container schema 2', () => {
       await saves.save(world());
       await saves.save(observed(1));
       const newer = await encode(withIdentity(observed(1), { ...IDENTITY, version: 3 as 2 }), 2, 1);
-      port.data.set('haeram-soccor:slot:b', newer);
+      port.data.set('indexed:active', newer);
       if (!manifest) port.removeItem('haeram-soccor:manifest');
       const before = new Map(port.data);
       const recovery = new Saves(port);
@@ -1113,27 +1107,26 @@ describe('club identity continuity fixtures (→KIT-12/15, SAVE-3/20/21/22)', ()
   it('a failed write of the adopted career keeps the original checkpoint loadable as its verified previous copy', async () => {
     const legacy = preIdentityCareer();
     const raw = await containerOneCheckpoint(legacy);
-    // The career is still where an earlier layout left it, in slot:a.
+    // The supported career is the committed IndexedDB active checkpoint.
     const port = new Memory();
     const { worldId, generation, parentGeneration } = JSON.parse(raw);
-    port.data.set(SLOT[0], raw);
-    const manifest = JSON.stringify({ slot: 0, worldId, generation, parentGeneration });
+    const manifest = JSON.stringify({ worldId, generation, parentGeneration });
     port.data.set(MANIFEST, manifest);
     const previous = new MemoryPrevious(),
       active = new MemoryPrevious();
+    active.value = raw;
     const open = () => new Saves(port, decode, previous, active);
     const saves = open();
     await saves.load();
     active.fail = true;
     await expect(saves.save(adoptedCareer(legacy, ENABLED_RELEASE))).rejects.toThrow('Quota');
-    expect(port.getItem(SLOT[0])).toBe(raw);
+    expect(active.value).toBe(raw);
     expect(port.getItem(MANIFEST)).toBe(manifest);
     expect(previous.value).toBe(raw);
     expect(canonical((await open().load())!.world)).toBe(canonical(legacy));
     active.fail = false;
     await saves.save(adoptedCareer(legacy, ENABLED_RELEASE));
-    // It moved: slot:a goes once the manifest names the IndexedDB generation (→SAVE-3).
-    expect(port.getItem(SLOT[0])).toBeNull();
+    expect(active.value).not.toBe(raw);
     const reloaded = (await open().load())!;
     // The adopted career is tracked from that write on, in its container (→SAVE-24).
     expect(reloaded.envelope).toMatchObject({

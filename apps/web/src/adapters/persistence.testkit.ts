@@ -33,6 +33,24 @@ export function legacyIntegers(values: number[], width: number) {
   return btoa(encoded);
 }
 
+/** In-memory IndexedDB port for tests of the repository's real codec. */
+export class MemoryCheckpoint implements PreviousStore {
+  constructor(
+    private storage: StoragePort,
+    private key: 'active' | 'previous',
+  ) {}
+  async read() {
+    return this.storage.getItem('indexed:' + this.key);
+  }
+  async write(raw: string) {
+    this.storage.setItem('indexed:' + this.key, raw);
+    if ((await this.read()) !== raw) throw new Error('저장 읽기 검증 실패');
+  }
+  async clear() {
+    this.storage.removeItem('indexed:' + this.key);
+  }
+}
+
 /**
  * The save repository with the codec on the calling thread, as tests drive it; browser clients
  * hand the codec to their worker (`client.ts`).
@@ -41,8 +59,8 @@ export class Saves extends SaveRepository {
   constructor(
     storage: StoragePort,
     inspect: SaveInspector = decode,
-    previous?: PreviousStore,
-    active?: PreviousStore,
+    previous: PreviousStore = new MemoryCheckpoint(storage, 'previous'),
+    active: PreviousStore = new MemoryCheckpoint(storage, 'active'),
   ) {
     super(storage, inspect, writeCheckpoint, previous, active);
   }

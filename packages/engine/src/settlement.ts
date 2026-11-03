@@ -1,3 +1,4 @@
+import { eventsInSeason } from './season-index';
 import { baseEffects, settleBases } from './bases';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { addEvent } from './events';
@@ -122,7 +123,7 @@ function accrue(w: World, kind: string, title: string, detail: string, amount: s
 /** Adds an installment already paid or charged to the season's one ledger entry of its kind. */
 function book(w: World, kind: string, title: string, detail: string, amount: string) {
   if (BigInt(amount) <= 0n) return;
-  const entry = w.events.findLast(
+  const entry = eventsInSeason(w, w.year).findLast(
     (event) =>
       event.kind === kind &&
       event.title === title &&

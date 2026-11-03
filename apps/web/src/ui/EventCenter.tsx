@@ -609,7 +609,7 @@ export function CommunicationsCenter({ client }: { client: GameClient }) {
           />
           <TabPanel idPrefix={id} value={tab}>
             {tab === 'news' ? (
-              <NewsList w={w} />
+              <NewsList key={w.id} w={w} client={client} />
             ) : (
               <>
                 <NewsQuietToggle />
