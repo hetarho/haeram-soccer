@@ -315,6 +315,7 @@ const ConnectedStart = memo(function ConnectedStart({
       readonly={readonly || (!replace && failed && !start)}
       initial={start?.choice}
       progress={start && !start.listings ? { season: start.season ?? WORLD_START } : undefined}
+      digest={start?.digest}
       listings={start?.listings}
       fortune={start?.fortune}
       error={start?.error}

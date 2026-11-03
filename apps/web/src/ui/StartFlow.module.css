@@ -259,6 +259,169 @@
   font-weight: 700;
   line-height: 1.4;
 }
+/* The world's history while it is generated (→WEB-115): compact text rows, never touch targets;
+   the content region scrolls when they outgrow the phone (→WEB-63). */
+.history {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.historyHead {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+.historyHead b {
+  color: var(--text);
+}
+.historyHead small {
+  font-size: 12px;
+  font-family: var(--display);
+}
+.lists {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--card-radius);
+}
+.list {
+  display: grid;
+  gap: 3px;
+  align-content: start;
+  min-width: 0;
+}
+.list h3 {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-family: var(--display);
+  color: var(--text-muted);
+}
+.list h3:not(:first-child) {
+  margin-top: 6px;
+}
+.list ol,
+.list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 1px;
+}
+.list ol {
+  counter-reset: elo;
+}
+.list li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.list ol li::before {
+  counter-increment: elo;
+  content: counter(elo);
+  flex: none;
+  min-width: 1.4em;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.list small {
+  flex: none;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.list li b {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.listNote {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+/* The two lists sit side by side from 390 px and stack on the narrowest phones. */
+@media (max-width: 389px) {
+  .lists {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+}
+/* A great feat's card: an overlay that takes no input and closes by itself (→WEB-115). */
+.featLayer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 900;
+  display: flex;
+  justify-content: center;
+  padding: 0 12px;
+  pointer-events: none;
+}
+.feat {
+  display: grid;
+  gap: 2px;
+  width: min(420px, 100%);
+  padding: 12px 16px;
+  border-radius: var(--card-radius);
+  border: 1px solid var(--gold-edge);
+  background: var(--surface-grain, none) var(--surface-2);
+  color: var(--text);
+  overflow-wrap: anywhere;
+  animation:
+    feat-in 360ms cubic-bezier(0.2, 1.2, 0.3, 1) both,
+    feat-out 320ms ease-in calc(var(--feat-ms) - 320ms) forwards;
+}
+.feat small {
+  font-size: 12px;
+  font-family: var(--display);
+  color: var(--text-muted);
+}
+.feat b {
+  font-size: 17px;
+  line-height: 1.35;
+  font-family: var(--display);
+}
+.feat span {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+@keyframes feat-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes feat-out {
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+/* Reduced motion shows the card still, without the slide (→WEB-46). */
+@media (prefers-reduced-motion: reduce) {
+  .feat {
+    animation: none;
+  }
+}
 .failed {
   display: grid;
   gap: 8px;

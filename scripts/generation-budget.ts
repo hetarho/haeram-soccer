@@ -15,9 +15,13 @@
  *   pnpm run build
  *   pnpm exec tsx scripts/generation-budget.ts [--decades 1930,1970,2000] [--modes process-x4,x1]
  *     [--seed generation-reference] [--out artifacts/benchmarks/T667-generation.json] [--append]
+ *     [--task T667] [--beside artifacts/benchmarks/T667-generation.json]
  *
- * Linux only: memory and CPU time come from /proc (VmHWM, utime + stime) and the slowdown from
- * signals to the renderer processes this script's browser started.
+ * Each run also records the host's load average, the time a season played, the progress replies
+ * carrying the history view's digest and the feat cards it showed (→WEB-115, T679).
+ *
+ * Memory and CPU time come from /proc (VmHWM, utime + stime), so they read 0 off Linux; the
+ * slowdown is signals to the renderer processes this script's browser started (Linux and macOS).
  */
 import { chromium, expect, type CDPSession, type Page } from '@playwright/test';
 import { execFileSync, spawn } from 'node:child_process';
@@ -46,6 +50,7 @@ const origin = `http://127.0.0.1:${port}`;
 /** ARCH-28's budgets and the checkpoint limits a takeover's first save must meet (→SAVE-4). */
 const BUDGET_MS: Record<number, number> = { 1930: 5000, 2000: 90000 };
 const MiB = 1024 * 1024;
+const load = () => os.loadavg().map((value) => Math.round(value * 10) / 10);
 
 function files(root: string): string[] {
   return readdirSync(root, { withFileTypes: true })
@@ -198,7 +203,12 @@ const MARKS = `
         const data = event.data;
         if (!data || typeof data !== 'object') return;
         if (typeof data.season === 'number' && 'progress' in data)
-          window.generationMarks.push({ kind: 'season', season: data.season, at: performance.now() });
+          window.generationMarks.push({
+            kind: 'season',
+            season: data.season,
+            digest: !!data.digest,
+            at: performance.now(),
+          });
         else if (data.start) window.generationMarks.push({ kind: 'listed', at: performance.now() });
       });
     }
@@ -208,7 +218,15 @@ const MARKS = `
         window.generationMarks.push({ kind: type, at: performance.now() });
       return super.postMessage(message, options);
     }
-  };`;
+  };
+  // Each feat card the history view shows (→WEB-115).
+  let shownCard = null;
+  new MutationObserver(() => {
+    const card = document.querySelector('[data-testid="generation-feat"]');
+    if (card && card !== shownCard)
+      window.generationMarks.push({ kind: 'card', feat: card.dataset.feat, at: performance.now() });
+    shownCard = card;
+  }).observe(document, { childList: true, subtree: true });`;
 
 /** The committed checkpoint of the game in play (→SAVE-3), read back from IndexedDB. */
 const ACTIVE_CHECKPOINT = `new Promise((resolve, reject) => {
@@ -242,6 +260,7 @@ async function run(
   mode: Mode,
 ) {
   const pageRate = mode === 'cdp-x4' ? 4 : 1;
+  const loadAtStart = load();
   const context = await browser.newContext({
     viewport: { width: 390, height: 844 },
     deviceScaleFactor: 2,
@@ -271,6 +290,7 @@ async function run(
   // The process slowdown starts once the page's renderer has loaded (its cold load is not slowed).
   const slowed = (await renderers(browserCdp)).map((item) => item.pid);
   const resume = mode === 'process-x4' ? slowDown(slowed) : async () => {};
+  console.log(`${decade} ${mode}: loaded in ${coldLoadMs} ms; renderers ${slowed.join(', ')}`);
   await flow
     .getByTestId('start-tiers')
     .getByRole('button', { name: OWNER_TIERS.oil.label })
@@ -326,10 +346,14 @@ async function run(
   await expect(listing).toBeVisible({ timeout: 1800000 });
   const generationMs = Math.round(performance.now() - clicked);
   const generationCpuMs = Math.round((await cpuAt()) - cpuBefore);
+  const loadAtListing = load();
+  console.log(`${decade} ${mode}: club list after ${generationMs} ms, load ${loadAtListing[0]}`);
   const pageMarks = (await page.evaluate('window.generationMarks')) as {
     kind: string;
     at: number;
     season?: number;
+    digest?: boolean;
+    feat?: string;
   }[];
 
   // Takes the first club the fortune pays for over and reads its first checkpoint back.
@@ -345,6 +369,7 @@ async function run(
   await confirm.getByRole('button', { name: '인수 확정', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 600000 });
   const hubMs = Math.round(performance.now() - takeoverStart);
+  console.log(`${decade} ${mode}: club hub ${hubMs} ms after the takeover`);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료', { timeout: 600000 });
   const savedMs = Math.round(performance.now() - takeoverStart);
   sampling = false;
@@ -370,19 +395,37 @@ async function run(
     ...samples.flatMap((sample) => sample.workerHeaps.map((heap) => heap.usedBytes ?? 0)),
   );
   const peakPageHeapBytes = Math.max(0, ...samples.map((sample) => sample.pageHeapBytes ?? 0));
+  const workerGenerationMs = request && listed ? Math.round(listed.at - request.at) : null;
+  const perSeason = (ms: number | null) =>
+    ms !== null && seasons.length ? Math.round(ms / seasons.length) : null;
   const result = {
     decade,
     mode,
     seed,
     club,
+    /** os.loadavg() as the run began and as the club list opened (a shared host, →T679). */
+    loadAverage: { start: loadAtStart, listing: loadAtListing },
     coldLoadMs,
     slowedRenderers: mode === 'process-x4' ? slowed : [],
     generationMs,
     generationRendererCpuMs: generationCpuMs,
     budgetMs: BUDGET_MS[decade] ?? null,
     withinBudget: BUDGET_MS[decade] === undefined ? null : generationMs <= BUDGET_MS[decade]!,
-    workerGenerationMs: request && listed ? Math.round(listed.at - request.at) : null,
+    workerGenerationMs,
+    /** Click to club list, and the worker's request to its listing, per season played. */
+    perSeasonMs: perSeason(generationMs),
+    perSeasonWorkerMs: perSeason(workerGenerationMs),
     seasonsReported: seasons.length,
+    /** Progress replies carrying the history view's digest (→WEB-115) and the cards it showed. */
+    seasonsWithDigest: pageMarks.filter((mark) => mark.kind === 'season' && mark.digest).length,
+    cards: pageMarks
+      .filter((mark) => mark.kind === 'card')
+      .map((mark) => ({ feat: mark.feat, atMs: Math.round(mark.at - (request?.at ?? 0)) })),
+    /**
+     * Click to club list beyond the worker's span: the click's dispatch, the list's wait behind a
+     * card still open or waiting after the last season (→WEB-115) and its render.
+     */
+    beyondWorkerMs: workerGenerationMs !== null ? generationMs - workerGenerationMs : null,
     decadeMarks: seasons.filter((item) => item.season % 10 === 0),
     lastSeasonGapMs: seasons.length
       ? Math.round((listed?.at ?? 0) - (request?.at ?? 0)) - seasons.at(-1)!.atMs
@@ -437,9 +480,8 @@ try {
   }
   const browser = await chromium.launch();
   const browserCdp = await browser.newBrowserCDPSession();
-  const load = () => os.loadavg().map((value) => Math.round(value * 10) / 10);
   const report = {
-    task: 'T667',
+    task: arg('task', 'T667'),
     measuredAt: new Date().toISOString(),
     source: { head: git('rev-parse', 'HEAD'), dirty: !!git('status', '--porcelain') },
     build: { sha256: buildHash.digest('hex'), files: dist.length },
@@ -474,7 +516,29 @@ try {
       portableUtf8Bytes: 8 * MiB,
     },
     runs: [] as unknown[],
+    /** An earlier report's figures, a season played at a time, for comparison (--beside). */
+    beside: undefined as unknown,
   };
+  const besideFile = arg('beside', '');
+  if (besideFile) {
+    const earlier = JSON.parse(readFileSync(besideFile, 'utf8'));
+    report.beside = {
+      file: besideFile,
+      task: earlier.task,
+      source: earlier.source,
+      cpus: earlier.environment?.cpus,
+      runs: earlier.runs.map((item: Record<string, number | string>) => ({
+        decade: item.decade,
+        mode: item.mode,
+        generationMs: item.generationMs,
+        workerGenerationMs: item.workerGenerationMs,
+        seasonsReported: item.seasonsReported,
+        perSeasonMs: item.seasonsReported
+          ? Math.round(Number(item.generationMs) / Number(item.seasonsReported))
+          : null,
+      })),
+    };
+  }
   // --append keeps the runs an earlier invocation wrote to the same file (each must fit a timeout).
   if (process.argv.includes('--append') && existsSync(out)) {
     const earlier = JSON.parse(readFileSync(out, 'utf8'));

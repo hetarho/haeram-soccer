@@ -21,6 +21,7 @@ export const INTEGRATION_FILES = [
   'apps/web/src/runtime/client.test.ts',
   'apps/web/src/runtime/fixtureHelpers.integration.test.ts',
   'apps/web/src/runtime/host.archive.test.ts',
+  'apps/web/src/runtime/host.generation.test.ts',
   'apps/web/src/runtime/host.test.ts',
   'apps/web/src/runtime/host.world-market.test.ts',
   'apps/web/src/runtime/next-event.test.ts',

@@ -178,6 +178,8 @@ TeamDirectory joined as the `team` preview after this audit (T644). It composes 
 
 StartFlow and ClubListing (T662) joined as the `start-flow` preview, and OwnerSheet and GameOver (T663) as `owner-sheet` and `game-over`, after this audit (T664 registered the last two). The start flow's fit at 360x740 and 390x844 belongs to the browser batch run of `tests/e2e/start.spec.ts`, the 구단주 sheet's to `tests/e2e/owner-sheet.spec.ts`; their all-theme rendering is not claimed as inspected here.
 
+The generation history view (T678, WEB-115) joined the `start-flow` preview's 생성 중 state and its simulated generation: the closed season with its 발롱도르, the Club Elo top 10 and the champions and European winners as compact text lists on one `inset` plane, and a self-closing feat card over them on the theme's `--surface-2` with the gold edge the celebration banner uses. Its fit while a 1950 world is generated belongs to the browser batch run of `tests/e2e/start.spec.ts`; its all-theme rendering is not claimed as inspected here.
+
 | Preview             | App components                                                                                   | Desktop / mobile      |
 | ------------------- | ------------------------------------------------------------------------------------------------ | --------------------- |
 | cards               | Card, FixtureNotebook                                                                            | Inspected / inspected |

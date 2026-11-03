@@ -1,6 +1,6 @@
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
-import type { Command, World } from '../../../../packages/contracts/src/types';
+import type { Command, GenerationDigest, World } from '../../../../packages/contracts/src/types';
 import type { ClubListing, StartChoice } from '../../../../packages/contracts/src/owner';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
 import { SaveRepository, type SaveWorldMetadata } from '../adapters/repository';
@@ -44,6 +44,8 @@ export interface StartState {
   /** Whether it replaces the game in play once a club is taken over (→WEB-62). */
   replace: boolean;
   season?: number;
+  /** The latest season's history while the world is generated (→WEB-115). */
+  digest?: GenerationDigest;
   listings?: ClubListing[];
   /** The tier's fortune in pounds, minor units (→OWNER-3). */
   fortune?: string;
@@ -243,7 +245,11 @@ export class GameClient {
     pending.timer = window.setTimeout(() => this.failWorker(), pending.timeout);
     if (r.progress !== undefined) {
       if (r.season !== undefined && this.state.start)
-        this.state.start = { ...this.state.start, season: r.season };
+        this.state.start = {
+          ...this.state.start,
+          season: r.season,
+          ...(r.digest ? { digest: r.digest } : {}),
+        };
       if (this.state.activity === 'foreground' || r.season !== undefined) {
         this.state.progress = r.progress;
         this.emit();

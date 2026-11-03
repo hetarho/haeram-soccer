@@ -1,6 +1,6 @@
 import { newsItemSchema } from '../../../../packages/contracts/src/news';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
-import type { WorldMarketPage } from '../../../../packages/contracts/src/types';
+import type { GenerationDigest, WorldMarketPage } from '../../../../packages/contracts/src/types';
 import type { worldMarketDetail } from '../../../../packages/engine/src/world-market';
 import {
   worldMarketQuerySchema,
@@ -468,6 +468,8 @@ export interface Reply {
   progress?: number;
   /** The season a world's generation has reached, with `progress` (→WEB-15, WORLD-13). */
   season?: number;
+  /** That season's history for the start's view (→WEB-115); absent before the first close. */
+  digest?: GenerationDigest;
   /** The generated world's clubs on sale and the chosen tier's fortune in pounds (→ECON-37). */
   start?: { listings: ClubListing[]; fortune: string };
   clubSheet?: ClubSheetFacts;

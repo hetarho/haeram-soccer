@@ -130,6 +130,40 @@ for (const viewport of [
   });
 }
 
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+]) {
+  test(`plays the world's history while a 1950 world is generated at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    // Twenty seasons are played before the list, which may wait for two feat cards.
+    test.setTimeout(180000);
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+    // The season, the Elo top 10 and the champions on screen while it runs (→WEB-115), and the
+    // view within the phone without document scrolling (→WEB-15, WEB-63).
+    const listing = await generateWorld(
+      page,
+      { tier: 'midsize', decade: 1950, seed: `history-${viewport.width}` },
+      async (generation) => {
+        const geometry = await viewGeometry(page);
+        const measured = JSON.stringify(geometry);
+        expect(geometry.documentScroll, measured).toBe(0);
+        expect(geometry.documentWidth, measured).toBeLessThanOrEqual(geometry.viewportWidth);
+        expect(geometry.width, measured).toBeLessThanOrEqual(geometry.clientWidth);
+        // Rows are text, not touch targets: the history offers nothing to tap.
+        await expect(generation.getByTestId('generation-history').getByRole('button')).toHaveCount(
+          0,
+        );
+      },
+    );
+    // A feat card takes no input and closes by itself before the list follows.
+    await expect(page.getByTestId('generation-feat')).toHaveCount(0);
+    await expect(listing).toContainText('구단주 자금');
+  });
+}
+
 test('takes over with a preset as its direction, which the club keeps', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
