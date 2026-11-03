@@ -186,6 +186,7 @@ for (const contracts of ['direct', 'delegated'] as const)
       const { advanceRound } = await import('../../packages/engine/src/index');
       const { stagePlayingCoach } = await import('../../packages/engine/src/testing');
       const { configureResponsibilities } = await import('./events');
+      const { playerWorth } = await import('../../packages/engine/src/contracts');
       const { w, player } = secondCareerFixture();
       for (let round = 0; round < 35; round++) advanceRound(w, undefined, false);
       player.qualities = { understanding: 5, teaching: 5, judgement: 5 };
@@ -197,6 +198,11 @@ for (const contracts of ['direct', 'delegated'] as const)
         intention: { at: { year: w.year, day: w.calendar!.day }, draw: 0.75, willing: true },
       });
       w.income = w.cash;
+      // The conversion follows the ordinary contract rule (→STAFF-32): 재계약 기조 표준 keeps a
+      // player at most at 110% of his market wage (→CLUB-26). The taken-over squad's veteran, made
+      // 35 above, still drew a younger man's wage beyond it, so he is paid what the market pays him.
+      const veteran = w.players.find((p) => p.id === player.id)!;
+      veteran.wage = playerWorth(w, veteran);
       w.settings!.responsibilities.contracts = contracts;
       w.settings!.responsibilities.staff = staff;
       // Staff put the conversion as they would on filling his post (→STAFF-32).

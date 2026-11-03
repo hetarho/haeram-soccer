@@ -327,7 +327,13 @@ test('reads the ticket price taken over with and charges it at an actual home ga
 test('reads a genuine negative operating balance with no owner capital to add', async ({
   page,
 }) => {
-  const fixture = careerWorld({ country: 'ENG', seed: 'business-budget-recovery' });
+  // A top-flight club taken over: its wage bill outruns a round's income, where the lowest
+  // division's first club (the default career) earns about twice its costs and never ran short.
+  const fixture = careerWorld({
+    country: 'ENG',
+    seed: 'business-budget-recovery',
+    club: 'ENG:0:0:0',
+  });
   // A price off the presets, as an older save keeps it (→ECON-17).
   fixture.ticket = 0.01;
   // Real costs, not an edited balance, take the club below zero within a round or two.
@@ -371,7 +377,8 @@ test('ends a bankrupt career on the game-over page and starts a new game from it
       buffer: Buffer.from(await encode(fixture)),
     });
   const over = page.getByTestId('game-over');
-  await expect(over).toContainText('Bankrupt Fixture 파산');
+  // The page names the club taken over, not a founding's chosen name (→WEB-56).
+  await expect(over).toContainText(`${clubOf(fixture).name} 파산`);
   await expect(over).toContainText('함께한 시즌');
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);

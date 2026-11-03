@@ -186,7 +186,12 @@ for (const themeId of ['standard', 'pixel']) {
         .filter({ has: page.getByRole('heading', { name: '우리 클럽의 선수들', exact: true }) });
       const row = panel.locator('article').first();
       await expect(row).toBeVisible();
-      // A room shown again eases its rows out of the hover they had on the last visit.
+      // A room shown again eases its rows out of the hover they had on the last visit. The pointer
+      // and focus also leave the control that opened the room: image themes fill a row that is
+      // hovered or holds focus alike, so a row laid out under the pointer read as hovered before
+      // the hover below (pixel, after a taken-over club's money band moved the rows there).
+      await page.mouse.move(0, 0);
+      await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
       await settle(page);
       const beforeHover = await surface(row);
       await row.hover();

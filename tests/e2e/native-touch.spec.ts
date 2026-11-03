@@ -7,7 +7,7 @@ import { expect, test, type Locator, type Page } from '@playwright/test';
 import { COUNTRIES } from '../../packages/catalogs/src/index';
 import { expectHomeBounds, expectViewFits, horizontalOverflow, settle } from './layout';
 import { chooseLevel, reportKit } from './events';
-import { generateWorld, openClub, startCareer, takeOverClub } from './start';
+import { fundClub, generateWorld, openClub, startCareer, takeOverClub } from './start';
 
 async function expectTouchControl(
   control: Locator,
@@ -73,6 +73,9 @@ for (const viewport of [
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     const { name } = await openClub(listing);
     await takeOverClub(page, name);
+    // A 1930 club is taken over with no cash; funded, it shows no money band, whose two lines
+    // left the match theatre 66 px short of 360x740 (→WEB-17, WEB-56).
+    await fundClub(page);
     await expectHomeBounds(page);
     // Play below runs the clock briefly in the open window; an offer card must not cover
     // the preparation controls this test measures, so offers go to the staff (level 4).

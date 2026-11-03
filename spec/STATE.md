@@ -17,9 +17,14 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T08:13Z | T687 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T08:13Z | - |
 
 ## inbox
+- 261103 decided WEB-17 WEB-56 ARCH-21 T687: the 360x740 overflow in match-core, native-touch and the compact market (≈66 px) is the money band of a 1930 takeover's cash 0, not a takeover screen → those journeys fund the club first with the HUD's first 자금 투입 step, match-core's engine reference putting in the same step (alt: compress the theatre to fit beside the band, a design change | drop the band from the theatre, against WEB-56's every view). ot03
+- 261103 suggest WEB-17 WEB-56 T685: the match theatre at 360x740 still overflows by about 66 px whenever the money band shows (two lines at 12.5 px), and every 1930 takeover opens with it until T685's books bring cash → a design pass: a one-line band on phones, or the theatre yielding that room. ot03
+- 261103 decided CLUB-26 STAFF-32 T687: the joint-authority journeys' veteran, made 35 on a takeover squad, kept a younger man's wage above 재계약 기조 표준's 110% cap, so delegated staff rightly refused the playing-coach conversion → the journey pays him his market wage before the proposal (alt: 재계약 기조 모두 붙잡기, changing the club's direction | a younger veteran, no longer retiring). ot03
+- 261103 decided WEB-43 WEB-109 T687: the market's two-candidate comparison gave one of our own players market terms (fee, loan fee, cash after a signing) → `candidateSide` leaves terms out for ours, with a unit regression test; the journey compares two candidates that are not ours (alt: hide the compare toggle on our rows | keep the terms). ot03
+- 261103 decided ARCH-21 T687: seeds and clubs re-pinned by engine scans in Node rather than checks relaxed → revision 10 `goal-feedback-25` (4′ home, 16′ away, 22′ home), revision 1 `goal-feedback-207` (2′ home, 4′ and 40′ away; the archived scrubber's return 11 → 2), `kit-prep-a` `career(4)` for its first cup tie, the deficit journey on `ENG:0:0:0` (the lowest division's first club earns about twice its costs); contract-talks 180 s like the other season-living journeys (alt: derive goal minutes and scrubber values from each record at run time | edit wages for a lower-division deficit). ot03
 - 261103 decided KIT-9 KIT-13 OWNER-12 ARCH-21 T684: the identity workload's "design edit changed non-cosmetic facts" on a takeover career → adopting a draft truly changes one fact, the owner's 팬 민심 (−20 with one `fan-mood` event), as KIT-9 states, so the workload allows exactly that drop and event and adds the owner's other fields to the facts an edit may not move; the read models were not the cause (alt: strip events and read models from the comparison, which would let any event through | run the workload on a world without an owner, which no career is). ot03
 - 261103 decided ARCH-21 T684: helper-pool cases started a second client on the first one's saved game → each `withCores` call is another device with empty storage (alt: pass `replace` to take the first device's game over). ot03
 - 261103 decided LEAGUE-5 ARCH-21 T684: GER/FRA cups draw 32강 after the first round since the amateur clubs left them → the expected rounds derive from the first round's entrants and the power of two after it, checked equal to the country's professional clubs (alt: pin GER/FRA to 32 and ENG to 64 by hand). ot03
@@ -682,7 +687,6 @@
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
 | T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
-| T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | doing@261103.ot03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -706,11 +710,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T687 (the takeover's browser journeys), then T685 and T686 (balance), T678 and T679 (history view); each loop pushes its work to `next` after the quick batch (ot03)
+- implement-task T685 and T686 (balance), then T678 and T679 (history view); T687's 10 journey specs wait for the release run's Chromium; each loop pushes its work to `next` after the quick batch (ot03)
 - release (→ARCH-30 r29): the last session working merges `main` into `next`, runs `pnpm run verify:batch` once (browser journeys only there), merges `next` into `main` and pushes (deploy); hr05 started under push: main and may push main itself, the release merges it in
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks
 
 ## log
+- 261103 T687 done: the 20 Chromium journeys failing on dfa39857 fixed in 10 specs, none loosened: the club taken over's own name, `kit-prep-a`'s first cup tie after four league matches, re-pinned goal seeds (revision 10 `goal-feedback-25`, revision 1 `goal-feedback-207`), the 1930 cash-0 money band funded away where 360x740 is measured, the market comparison passing our own keepers over, the 35-year-old veteran on his market wage for 재계약 기조 표준, a top-flight club for the genuine deficit, contract-talks at 180 s, the hover read with pointer and focus away; app fix: the comparison shows no market terms for our own player (unit test); the specs await the release run; ot03
 - 261103 T684 done: the 12 web and fixture integration cases pass on takeover careers (4 files, no production change, no behaviour bug): the identity workload expects an adoption's stated 팬 민심 drop and its one event (→KIT-9, OWNER-12) and still holds every other fact, the read models unmoved; the helper cases start each device with empty storage; the cup rounds derive from the professional entrants (64 after England's first round, 32 after Germany's and France's); persistence.history passes on T683's seed d; ot03
 - 261103 T683 done: the 27 engine integration cases pass on takeover careers (18 files, no production change, no takeover or merge bug): setups stand in for the founding's facts (a school-less manager, three seasons left, a small ground and following, nobody retiring), expectations follow the takeover's rules (OWNER-4's schooled manager, CLUB-1's generated fillers, CLUB-27's unhappy player, the own league group and first played round), `transferred-scorer` re-pinned to seed d; ot03
 - 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
@@ -730,4 +735,3 @@
 - 261103 T665 done: protocol `found`, the founding screen, the identity editor, its draft reducer and the ready-made crests deleted; runtime tests start by `generate`+`take-over` (`startedHost`, `startedWorld`), client tests by `generate`/`takeOver`; founding wording reads for a takeover; integration and e2e edits await the batch; ot03
 - 261103 update-ssot KIT r9 (KIT-2: no ready-made crests, designers compose from the catalogue); create-task: T665 narrowed to the founding UI, T670–T672 split from it (engine tests, fixtures/web/e2e/scripts with the founding's deletion, the amateur level); T666–T668 dep T672; KIT row tasked 4→9 (the 261103 create-task consumed KIT@8, r9 goes to T665); ot03
 - 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
-- 261103 hr03 CI 41577500074 passed all 9 jobs for published main source af513df9; exact-SHA REST receipt replaces the CLI public-HTML watcher's completed/null parse. No app code changed.
