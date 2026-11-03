@@ -8,7 +8,7 @@
 - level: mid
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
-- push: next   # every session gathers its work on next; only the last session working releases next into main (→ARCH-30)
+- push: main
 - plan: next   # planning is numbered and published on next too
 
 ## active
@@ -19,6 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 
 ## inbox
+- 261103 decided ARCH-30 T685 T686 T678 T679: owner authorizes autopilot continuation, an intermediate main push after the release gate passes, and preservation of all work remotely before 2026-11-04 09:30 Asia/Seoul. Resume the latest cv03 checkpoint rather than restart completed takeover tasks; unfinished or unverified work goes to wip/nv04 at the deadline, with actual validation limits retained (alt: restart from main or publish an unverified release). nv04
 - 261103 parked T685 ARCH-30: unit Git metadata is read-only: installed vibe check cannot snapshot the source (git add -A: unable to create temporary file, Read-only file system), so no task commit is possible here. The cv03 host must regenerate portable/prepared worlds, finish the task checks and commit the preserved implementation with Git write access before T686; no push or shared report/active lifecycle action was attempted. cv03
 - 261103 decided ARCH-30 PLAYER-18 PLAYER-27 T685: resume the stopped Claude ot03 handoff at the owner's request; merge main performance and award/wage work before balance, reconcile parallel PLAYER r14 changes as r15 without a new product policy; push next and wip/cv03 for the 22:00 KST handoff, leaving main release to its own gate (alt: restart T653 from main | deploy during the handoff). cv03
 - 261103 decided CLUB-25 CLUB-26 T690: exceptional-player wages → ordinary wages unchanged through OVR80, convex scarcity to ×2 at 95, top-flight wage demands phased in at 85–90; recent winner ×2 and +0.4 per extra recent win, podium ×1.4 (alt: fame only leaves unawarded elite players cheap; an aggressive variant produces excessive outliers). Selected after 144000 sensitivity cases, 576 retention decisions and 40 whole-season outcomes across six paired future streams; ordinary ratios preserved, 98 newly unaffordable contracts, no forecast bankruptcies. bl03
@@ -711,9 +712,9 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Finish T685 from preserved working edits: host regenerates portable/prepared worlds and commits with Git write access (unit .git is read-only); then T686, T678 and T679 on work/cv03-continuation.
-- Deadline 2026-11-03 22:00 Asia/Seoul: leave commits, reports and every unfinished change on the remote next and wip/cv03 branches for another device.
-- Preserve T689 scoring experiments and limits from spec/reports/261103-bl03/scoring.md; publish next without a main deployment.
+- implement-task T685, then T686, T678 and T679; repair any release-gate failures before the intermediate main push.
+- Deadline: 2026-11-04 09:30 Asia/Seoul; preserve all incomplete work on wip/nv04 before the deadline.
+- T689 scoring research follows only after the takeover release work, with its existing measurement and publication requirements.
 
 ## log
 - 261103 T685 implementation preserved for cv03 host: 1125 changed unit tests pass; commit/snapshot blocked by read-only Git metadata, artifact regeneration and final integrated checks remain host-owned.
