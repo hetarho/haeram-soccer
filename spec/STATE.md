@@ -557,7 +557,6 @@
 | T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T668 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | todo |
 
 ## work
@@ -582,7 +581,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
+- hr05: T681 implementation/scoped checks complete locally; implement-task T682, then combined coordinator gate, browser measurements and publication; preserve ot03 ownership.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Continue the active ot03 takeover handoff; hr03 read/storage work is complete (spec/reports/261103-hr03.md).
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
@@ -590,6 +589,7 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 T681 done locally: prepared client views bypass duplicate store sharing; 97 unit cases and fast checks pass, paired component CPU clears noise with equal outputs; actual client/browser coverage deferred to combined T682 gate. hr05
 - 261103 review/automatic-play-hotspots-261103 F1/F2 adopted by the owner and tasked as T681/T682; preserve gameplay and production pace options. hr05
 - 261103 T680 done: 8 x 365 browser days, x20 target unmet (fresh 8.68–9.32/s; retained 3.49–3.55/s), all equal-date facts/commits/reloads pass; main-page shareValue hotspot measured; report spec/reports/261103-hr04.md. hr04
 - 261103 T680 planned from user measurement request: compare current x10 and isolated 50 ms/day experiments on fresh and retained careers; ship no pace change. hr04
@@ -609,4 +609,3 @@
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
 - 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
 - 261103 fix operating-expense test: owner capital no longer exists (T650), so the turnover case checks player sales and compensation only; found by the ot03 batch gate (integration 1 of 1187)
-- 261103 T652 done: nothing unused is left beside what the reasons in T652's result keep. `intervention` (no supported save lacks settings, so no level mapping), `campaign`, `sponsor` and `club-identity` leave Command/protocol/engine/outcome, `World.intervention` is dropped on load; engine `intervention.ts` and `MilestoneCollection` deleted, 69 exports removed (sprite painter, queue filters, criteria schemas, round-simulator injection among them), 3 test conveniences moved to test helpers, 56 CSS classes, 28 messages ×12 packs, 7 unused locals; tests set authority through `testing.ts` `staffAuthority`/`handTo`. Equivalence digests unchanged; unit 222/1900 green; contract 47 green (golden unchanged); e2e edited for the batch.
