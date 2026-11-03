@@ -1,6 +1,12 @@
 import type { CareerDate, PersonCareer, World } from '../../contracts/src/types';
 import { managerialGrade } from './aptitude';
-import { careerDate, coachingPeople, coachingService, longestMentor } from './person-careers';
+import {
+  careerDate,
+  coachingPeople,
+  coachingService,
+  longestMentor,
+  managementProfiled,
+} from './person-careers';
 import { integer, random } from './primitives';
 import { candidateStyles } from './styles';
 
@@ -34,5 +40,6 @@ export function qualifyManagers(w: World) {
       random(`${w.seed}:managerial-entry:${person.id}`),
       candidateStyles(`${w.seed}:managerial-entry:${person.id}`, at.year)[0],
     );
+    managementProfiled(w);
   }
 }

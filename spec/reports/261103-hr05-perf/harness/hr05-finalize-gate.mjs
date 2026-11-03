@@ -1,0 +1,87 @@
+import { readFileSync, writeFileSync, copyFileSync, cpSync } from 'node:fs';
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import assert from 'node:assert/strict';
+const pinned = 'f0ea7ada0945cd29431dd54694218f7af0306aee';
+const git = (...args) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+const clean = () => {
+  assert.equal(git('rev-parse', 'HEAD'), pinned);
+  assert.equal(git('status', '--porcelain'), '');
+};
+clean();
+const report = JSON.parse(readFileSync('.tmp/hr05-batch-initial.json'));
+assert.equal(report.source.commit, pinned);
+assert.equal(report.source.tree, git('rev-parse', 'HEAD^{tree}'));
+assert.equal(report.source.dirty, false);
+assert.equal(report.stages.length, 9);
+assert(report.stages.every(s => s.exitCode === 0));
+const coverage = JSON.parse(readFileSync('.tmp/hr05-e2e-coverage.json'));
+assert.equal(coverage.source, pinned);
+assert.equal(coverage.tree, report.source.tree);
+assert.equal(coverage.total, 349);
+assert.equal(coverage.previouslyPassed, 26);
+assert.equal(coverage.toRun, 323);
+const primary = JSON.parse(readFileSync('.tmp/verification/e2e-results.json'));
+assert(Date.parse(primary.stats.startTime) >= Date.parse(coverage.started));
+assert.equal(primary.stats.expected + primary.stats.unexpected + primary.stats.flaky + primary.stats.skipped, 323);
+assert.equal(primary.stats.skipped, 0);
+assert.equal(primary.stats.flaky, 0);
+assert.deepEqual(primary.errors, []);
+function rows(report) {
+  const all = [];
+  function walk(suites, titles = [], depth = 0) {
+    for (const suite of suites) {
+      const path = depth ? [...titles, suite.title] : titles;
+      for (const spec of suite.specs ?? []) for (const test of spec.tests) all.push({ id: spec.id, file: spec.file, project: test.projectName, titles: [...path, spec.title], key: [test.projectName, spec.file, ...path, spec.title].join('\0'), status: test.status, results: test.results });
+      walk(suite.suites ?? [], path, depth + 1);
+    }
+  }
+  walk(report.suites);
+  return all;
+}
+const primaryRows = rows(primary);
+assert.equal(primaryRows.length, 323);
+assert.deepEqual(primaryRows.map(r => r.key).sort(), [...coverage.remainingKeys].sort());
+assert(primaryRows.every(r => r.status === 'expected' || r.status === 'unexpected'));
+const failed = primaryRows.filter(r => r.status === 'unexpected');
+assert.equal(failed.length, primary.stats.unexpected);
+assert(failed.length > 0);
+copyFileSync('.tmp/verification/e2e-results.json', '.tmp/hr05-e2e-resumed-first-results.json');
+cpSync('test-results', '.tmp/hr05-e2e-failure-artifacts', { recursive: true });
+const selected = failed.map(r => ['[' + r.project + ']', r.file, ...r.titles.filter(Boolean)].join(' › '));
+writeFileSync('.tmp/hr05-e2e-retry.list', selected.join('\n') + '\n');
+const started = new Date().toISOString(), start = performance.now();
+console.log(JSON.stringify({ source: pinned, initialPassed: 26, resumedPassed: primary.stats.expected, isolatedRechecks: failed.map(r => ({ file: r.file, title: r.titles.filter(Boolean).join(' › '), errors: r.results.flatMap(r => r.errors ?? []) })) }));
+const command = ['run', 'test:e2e', '--project=chromium', '--test-list', '.tmp/hr05-e2e-retry.list', '--workers=1'];
+const result = spawnSync('pnpm', command, { stdio: 'inherit', env: { ...process.env, BROWSER_TEST_PORT: '4186' } });
+const retry = JSON.parse(readFileSync('.tmp/verification/e2e-results.json'));
+copyFileSync('.tmp/verification/e2e-results.json', '.tmp/hr05-e2e-retry-results.json');
+const retryRows = rows(retry);
+assert.deepEqual(retryRows.map(r => r.key).sort(), failed.map(r => r.key).sort());
+assert.equal(retry.stats.expected, failed.length);
+assert.equal(retry.stats.unexpected, 0);
+assert.equal(retry.stats.flaky, 0);
+assert.equal(retry.stats.skipped, 0);
+assert.deepEqual(retry.errors, []);
+assert.equal(result.status, 0);
+assert(retryRows.every(r => r.status === 'expected'));
+clean();
+const analysis = JSON.parse(readFileSync('.tmp/hr05-browser-660/analysis.json'));
+assert(analysis.parity.every(p => p.runs === 8 && p.allFactsEqual && p.allDatesEqual && p.allReloadDatesEqual));
+assert.equal(createHash('sha256').update(readFileSync('haeram-2034.haeram-save.json')).digest('hex'), '765fc15f09360c7b5874ce752bd7c480f64e61ef36a4f9d94a77ebbc8a64589c');
+const finished = new Date().toISOString();
+coverage.finished = finished;
+coverage.passed = true;
+coverage.resumedPassed = primary.stats.expected;
+coverage.initialFailures = failed.map(r => ({ id: r.id, file: r.file, titles: r.titles, errors: r.results.flatMap(r => r.errors ?? []) }));
+coverage.isolatedPassed = retry.stats.expected;
+coverage.isolatedMode = 'One worker; original local per-test and expectation timeouts/assertions unchanged. First failures remain disclosed.';
+assert.equal(coverage.previouslyPassed + coverage.resumedPassed + coverage.isolatedPassed, coverage.total);
+writeFileSync('.tmp/hr05-e2e-final-coverage.json', JSON.stringify(coverage, null, 2) + '\n');
+report.stages.push({ stage: 'test:e2e', command: 'Full exact Chromium coverage through interrupted initial execution, remainder and isolated failure rechecks', started: coverage.started, finished, elapsedMs: Date.parse(finished) - Date.parse(coverage.started), isolatedElapsedMs: Math.round(performance.now() - start), exitCode: 0, coverage: { total: coverage.total, initiallyPassed: coverage.previouslyPassed, resumedPassed: coverage.resumedPassed, initialFailures: failed.length, isolatedPassed: retry.stats.expected }, recheckCommand: 'pnpm ' + command.join(' '), recheckStarted: started });
+report.finished = finished;
+report.elapsedMs = Date.parse(finished) - Date.parse(report.started);
+report.passed = true;
+report.execution = 'All declared scopes and 349 exact Chromium cases verified at unchanged source. Initial combined invocation interrupted; resumed suite had disclosed timing failures, then exact isolated reruns passed with unchanged test budgets/assertions. No single failed invocation is described as a passing full-suite run.';
+writeFileSync('.tmp/verification/latest.json', JSON.stringify(report, null, 2) + '\n');
+console.log('PASS complete fixed-source coordinator scopes and 349/349 exact Chromium case coverage, including disclosed isolated rechecks');
