@@ -649,6 +649,7 @@
 ## next
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (remove founding, difficulty levels, the founding editor and the amateur level), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c/fa1ed566 (fix for 41524887826)
+- continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 
 ## log
 - 261103 T669 done (merged 1c218442): results-only fixtures before the takeover; generateHistory 2000 773.9 s → 30.9 s Node (≈124 s reference, ARCH-28 90 s needs ~27% more); ot03
