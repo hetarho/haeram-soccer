@@ -8,20 +8,23 @@ import type { BallonDorHonour, SeasonArchive } from '../../contracts/src/types';
 export const BALLON_DOR_CONFIG = {
   /** The season whose close awards the first Ballon d'Or: 1955/56, as France Football's 1956. */
   first: 1955,
-  /** Points per goal and per assist over every competition of the season. */
+  /** Raw production weights over every competition, bounded by `production` below. */
   goals: 4,
   assists: 3,
+  production: { maximum: 120, scale: 80 },
   /** Class: (OVR at the close − `classFrom`) × `classWeight`, only above `classFrom`. */
   classFrom: 70,
   classWeight: 2,
   /** Team honours, each only when he played for the winning club in that competition. */
   honours: {
-    europe: 40,
-    'europe-final': 15,
-    continental: 15,
-    league: 25,
-    cup: 10,
+    europe: 180,
+    'europe-final': 75,
+    continental: 90,
+    league: 120,
+    cup: 45,
   } satisfies Record<BallonDorHonour, number>,
+  /** The best final top-flight place he contributed to, first through sixth. */
+  leaguePlaces: [80, 60, 45, 30, 20, 10] as readonly number[],
   /** Top-flight league appearances a candidate needs that season. */
   appearances: 15,
   places: 3,
@@ -40,6 +43,13 @@ export const BALLON_DOR_CONFIG = {
     to: [50, 100] as [number, number],
   },
 };
+
+/** Diminishing individual production keeps team achievements meaningful even at extreme totals. */
+export function ballonDorProduction(goals: number, assists: number): number {
+  const config = BALLON_DOR_CONFIG;
+  const raw = goals * config.goals + assists * config.assists;
+  return Math.round((config.production.maximum * raw) / (config.production.scale + raw));
+}
 
 /** How the media name each honour beside a podium place. */
 export const BALLON_DOR_HONOUR_LABEL: Record<BallonDorHonour, string> = {

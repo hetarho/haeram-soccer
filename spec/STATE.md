@@ -13,12 +13,15 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| bl03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T07:35Z | 2026-11-03T07:35Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
 
 ## inbox
+- 261103 decided PLAYER-27 T688: owner delegates trophy/team-led awards and requests the award change committed on main first → bounded production (120 max, raw scale 80), European/league/cup honours 180/120/45 and top-six finish 80/60/45/30/20/10; preserve past podiums (alt: unlimited goals plus larger trophies, which another 169-goal season can still swamp). bl03
+- 261103 decided MATCH-23 CLUB-26: owner requires many realistic measurements before committing scoring distribution or star wages → keep those code changes uncommitted until multi-seed, multi-tactic and season evidence meets the chosen reference bands; first finish T688 independently. bl03
 - 261103 decided OWNER-3 ECON-36 ECON-38 T685: the owner asked to fix the balance as far as possible, a 석유 재벌 free to buy any club below his reach → reach by price-rank bands (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%) so three-division countries hold every tier, living costs 0.25%, dividend −0.5 per 1%, star sale −4 once a window (T668's proposals), books opening with half a season of income, cash kept to one season and debt to 1.5 seasons of income, takeover loan 10 seasons (alt: keep division reaches and add 지역 유지 rules per country | recalibrate the books' income scale only and leave them unbounded | pay the inherited debt at the takeover from the owner's fortune). ot03
 - 261103 decided ARCH-30 T683 T684: 39 integration failures on dfa39857 (the takeover's migrated tests, never run, plus the merge with hr03's read models) → two fix tasks run before the push, engine files and web/fixture files, each case kept protecting what it protects (alt: one task for all 24 files | push and fix on main). ot03
 - 261103 decided WEB-115 T678: how the feats are found → engine `seasonDigest` reads the archives and the clubs' Elo at each season reached and carries only the season's greatest feat; only the European Cup lineage makes the treble and the European feats; a league run is carded at five and afterwards only when it becomes its country's longest; the war is one card on the 1946 restart (alt: the UI derives feats from the digests it received, which a reload mid-generation would cut short | a card for every season a run continues). ot03
@@ -522,7 +525,7 @@
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
 | OWNER | 2 | 2 | - | 0 |
-| PLAYER | 13 | 13 | - | 0 |
+| PLAYER | 14 | 14 | - | 0 |
 
 ## review
 | id | st |
@@ -589,6 +592,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- bl03: T688 complete on local main; measure scoring distribution and star wage candidates in an isolated branch before committing them; preserve hr05/ot03 work.
 - implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
 - hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
 - after the ot03 takeover lands on main (T668 last): implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
@@ -598,6 +602,8 @@
 - on branch `wip/ot03` (owner takeover; T653–T664 and T669 done, main fa1ed566 merged): implement-task T665 (founding screen, `found` message, identity editor, ready-made crests), then T670 (engine tests on `careerWorld`), T671 (the founding leaves the engine), T672 (the amateur level, LEAGUE-16), then T666 (records before the owner; ~68 web `w.history` reads), T667 (browser generation budget, ARCH-28), T668 (balance per tier); then the batch gate once (Chromium; ~35 migrated e2e specs never ran) and merge into main + push. Report spec/reports/261103-ot03.md
 
 ## log
+- 261103 T688 done: trophy-led Ballon d Or, bounded production and top-six finish points; 39 unit tests and task checks passed. bl03
+- 261103 update-ssot PLAYER r14 and create-task T688: trophy/team-led Ballon d Or first; scoring/wage commits gated on substantial measurements. bl03
 - 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
 - 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
 - 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
@@ -616,5 +622,3 @@
 - 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
 - 261103 update-ssot HIST SAVE start (hr03): incremental news and career read models; normalize ot03 doing cell to its existing T665 ID, branch handoff remains in next.
 - 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
-- 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
-- 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes

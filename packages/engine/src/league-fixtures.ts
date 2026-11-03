@@ -77,3 +77,14 @@ export const emptyTable = (): TableRow => ({
   ga: 0,
   points: 0,
 });
+
+/** The settled league ordering, shared by season outcomes and individual award team credit. */
+export function ranked(w: Pick<World, 'tables'>, clubs: readonly Club[]) {
+  return [...clubs].sort((a, b) => {
+    const x = w.tables[a.id] || emptyTable(),
+      y = w.tables[b.id] || emptyTable();
+    return (
+      y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a.id, b.id)
+    );
+  });
+}

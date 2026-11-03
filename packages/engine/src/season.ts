@@ -103,8 +103,14 @@ import {
   recordScorers,
   snapshotScorers,
 } from './scoring';
-import { groupKey, amateurOpponents, buildSeasonFixtures, emptyTable } from './league-fixtures';
-export { emptyTable } from './league-fixtures';
+import {
+  groupKey,
+  amateurOpponents,
+  buildSeasonFixtures,
+  emptyTable,
+  ranked,
+} from './league-fixtures';
+export { emptyTable, ranked } from './league-fixtures';
 export { groupKey, fixturesFor } from './league-fixtures';
 
 /**
@@ -145,15 +151,6 @@ export function prepareSeason(w: World, continental = true, lifecycle = true) {
     prepareCups(w);
   }
   snapshotStandings(w);
-}
-export function ranked(w: World, clubs: Club[]) {
-  return [...clubs].sort((a, b) => {
-    const x = w.tables[a.id] || emptyTable(),
-      y = w.tables[b.id] || emptyTable();
-    return (
-      y.points - x.points || y.gf - y.ga - (x.gf - x.ga) || y.gf - x.gf || compareIds(a.id, b.id)
-    );
-  });
 }
 /** Each played club is ranked within its old division/group, before promotion changes tiers. */
 export function leagueFinishes(w: World) {
