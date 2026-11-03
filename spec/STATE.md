@@ -16,7 +16,7 @@
 | ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:15Z | T673 |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:20Z | T674 |
 
 ## inbox
 - 261103 decided T673 T674 T675: headless loop preflight failed because its child cannot resolve GitHub although this session can → implement the three selected tasks in this authorized session, keeping the coordinator gate and task commits (alt: change child permission settings or wait). hr03
@@ -544,7 +544,7 @@
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
-| T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | todo |
+| T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
 
 ## work
