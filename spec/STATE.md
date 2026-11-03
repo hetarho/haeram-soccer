@@ -15,8 +15,8 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
-| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:27Z | T675 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:28Z | 2026-11-03T02:28Z | - |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:56Z | T676 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T03:11Z | T666 |
 
 ## inbox
 - 261103 decided CLUB-25 ECON-26 T672: `market-prices.ts` `divisions` [1, 0.4, 0.15, 0.07, 0.03] is a scale by depth, not by country: `divisionFor` prices a market player whose ability falls below a country's last division one step deeper (ENG's 0.03, ESP's 0.15), so its fifth entry is England's price floor, not an amateur division → keep all five shares and `divisionFor`'s reach, reword the comments, and fix the contracts test to expect that reach (alt: drop the 0.03 and clamp at the last division, repricing every ENG candidate rated under 44 and, clamped in every country, every ESP/POR/NED/BEL candidate under 66 up to ×2.7 — a balance change for T668, not a removal). ot03
@@ -591,6 +591,7 @@
 - 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
 - 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
 - 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
+- 261103 decided SAVE-2 SAVE-4 T676: the 84-season news journal pushes maximum-compression saves to 589 s, while identical-byte gzip is 1.10 s and its 6.11 MB file fits the existing 8 MiB import cap → IndexedDB checkpoints allow 6 MiB UTF-16 and budget-verified gzip; fallback remains 3 MiB / 3.5 MiB total, portable 8 MiB and decompressed 32 MiB unchanged (alt: keep maximum Brotli on every save | drop retained news). hr03
 
 ## ideation
 | id | st |
@@ -626,7 +627,7 @@
 | ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
-| SAVE | 63 | 63 | - | 0 |
+| SAVE | 64 | 64 | - | 0 |
 | OWNER | 1 | 1 | - | 0 |
 | PLAYER | 14 | 14 | - | 0 |
 
@@ -643,12 +644,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | todo |
+| T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T672 | doing@261103.ot03 |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T672 | todo |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T672 | todo |
 | T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
+| T676 | Fast IndexedDB checkpoints within portable and fallback budgets | SAVE HIST ARCH | T674 | doing@261103.hr03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -696,23 +698,3 @@
 - 261103 T658 done: takeOver turns an unowned club into the owner's with its cash, debts as a loan and squad; ot03
 - 261103 T657 done: club value, price, reach bands and the club listing; ot03
 - 261103 T653 done: the owner and takeover shape the lanes build on — contracts `owner.ts` (tiers, traits, OwnerState, TakeoverLoan, ClubBooks, StartChoice, ClubListing, EndCause) on `World.owner/loan/ended` and `Club.books` in types and schema, every OWNER/ECON-36–38/CLUB-1 number named in engine `owner-config.ts`, commands owner-stake/inject/dividend refused by `ownerCommand` until T659, no-op hooks `ownerDay`/`ownerClose`/`ownerSettleGap` (`owner.ts`) and `fanMoodAfterLeagueMatch`/`fanMoodRound`/`fanMoodClose`/`fanMoodTransfer`/`fanMoodIdentity` (`fan-mood.ts`) at their day-loop sites, the engine halting on `careerEnded` (bankrupt or `ended`), fortune and loan converted at a currency change, `withOwner` test helper; equivalence digests unchanged.
-- 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
-- 261103 update-ssot HIST SAVE start (hr03): incremental news and career read models; normalize ot03 doing cell to its existing T665 ID, branch handoff remains in next.
-- 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
-- 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
-- 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
-- 261103 fix e2e gate: the ot03 Chromium batch's 12 failures follow the removals (7 milestones, a rested player's line reads 팀 훈련) and the closed match design (경기 상세 opened past the first sample, a closing sheet's fading copy is not open), plus two app fixes — the 결재함 names the playing-coach player in the browser projection without people, and on phones the speed chips stay on screen beside the matchup
-- 261103 fix operating-expense test: owner capital no longer exists (T650), so the turnover case checks player sales and compensation only; found by the ot03 batch gate (integration 1 of 1187)
-- 261103 T652 done: nothing unused is left beside what the reasons in T652's result keep. `intervention` (no supported save lacks settings, so no level mapping), `campaign`, `sponsor` and `club-identity` leave Command/protocol/engine/outcome, `World.intervention` is dropped on load; engine `intervention.ts` and `MilestoneCollection` deleted, 69 exports removed (sprite painter, queue filters, criteria schemas, round-simulator injection among them), 3 test conveniences moved to test helpers, 56 CSS classes, 28 messages ×12 packs, 7 unused locals; tests set authority through `testing.ts` `staffAuthority`/`handTo`. Equivalence digests unchanged; unit 222/1900 green; contract 47 green (golden unchanged); e2e edited for the batch.
-- 261103 T651 done: a player's coaching intention is his own 50/80% draw and only delegated staff propose a playing coach, the owner answering in the 결재함. The encourage-coaching/propose-playing-coach commands, encourageCoaching (65/95%, its event) and proposePlayingCoach are gone (staff record through submitPlayingCoachProposal, tests stage with testing.ts stagePlayingCoach); intention.encouraged leaves the types and is dropped on load and from packed careers (now four wide, older seven-wide rows read); the view's careers map goes; PlayingCoachReview is the 결재함 approval only and the player sheet reads the aptitude grades. Equivalence digests unchanged; unit 222/1915 green; golden regenerated (contract 47 green); e2e edited for the batch.
-- 261103 T650 done: the owner adds no capital and starts no facility work. The support/facility commands, World.support (dropped on load), the ownerCapital build effect (구단주 투자 keeps only its wage cost) and the ledger's owner capital line are gone; startFacilityWork is reached only by the calibration harness's reference club and tests, and a work under way still opens on its day; 추가 출자, the facility review and 공사 시작 are deleted while 재정·투자 reads each part's stage, art and work under way. Equivalence digests unchanged; unit 222/1913 green; contract 47 green (golden unchanged); e2e edited for the batch.
-- 261103 T649 done: the club keeps the direction it was founded with. The policy/build/direction/ticket commands, setPolicy/setBuild/setDirection, the policy and ticket previews, the 80+ intake odds and the card display lines are gone; founding installs its preset directly (32 founded worlds identical); the 방향 board, composer, department sheets, direction lines and the device strategy library are deleted (its key removed on writer start); 재정·투자 and the staff/academy/market views read the rows, investment, ticket price and bases read-only. Equivalence digests unchanged; unit 222/1911 green; golden regenerated (contract 47 green); e2e edited for the batch.
-- 261103 T648 done: the manager alone picks the tactic and the XI. The tactics/lineup/accept-condition commands, request scoring and history, setLineup/lineupPreset/selectedLineup, Manager.lastRequest/requestHistory/pending/conflicts, World.requested/lineup (dropped on load), the STAFF-14 request modifiers and the 우리만의 선발 milestone are gone; TacticsTalk, TacticalLab, tacticComparison and PlayerPreparationHost are deleted and the next-match report reads the manager's XI and matchday squad with the kit choice in its own 유니폼 section. Equivalence digests unchanged; unit 223/1936 green; golden regenerated (contract 47 green); e2e edited for the batch.
-- 261103 create-task OWNER@1 WEB@204 ECON@42 WORLD@8 LEAGUE@12 MATCH@47 KIT@8 SAVE@62 HIST@21 CLUB@50 ARCH@27 PLAYER@13 → T653–T668 (foundation T653; lanes takeover, owner-economy, traits, start-ui, owner-ui; main-session T654–T656; integration T664–T666; explore T654, T667, T668); ot03
-- 261103 ideation owner-wealth-and-takeover converted
-- 261103 update-ssot WEB r204 ECON r42 WORLD r8 LEAGUE r12 MATCH r47 KIT r8 SAVE r62 HIST r21 CLUB r50 ARCH r27 PLAYER r13: takeover start, amateur level removed, books and club value, owner bankruptcy and 퇴진, 승리의 부적 exception, rules 5.0.0; ot03
-- 261103 create-ssot OWNER r1: owner fortune, six wealth tiers, eight traits, quarterly business bet, living costs, injections within FFP, dividends, 팬 민심, 퇴진 압박, 구단주 파산 위기; ot03
-- 261103 T647 done: the owner no longer suggests or forces training. The coach-training command, orderTraining (with suggestion odds, strain and resignation), orders.ts, trainingOrders and staff strain/asked are gone; older saves drop them on load, and the squad's 하드 streak is now World.hardStreak. TrainingOrderSheet and every 제안·강행/개별 훈련/이 선수 훈련 entry are deleted. 훈련, 유소년, the player sheet and the market read the coaches' calls. Equivalence digests unchanged; unit 224/1937 green; e2e edited for the batch.
-- 261103 ot03 start (autopilot): finish T647–T652, then plan and build ideation owner-wealth-and-takeover in parallel lanes; illustrations stay
-- 261103 design close 6c0d6b12: tests and SSOT aligned (WEB r203: WEB-39 office opens on the 결재함 without its room scene, 결재라인 from 결재 설정/who-decides links; WEB-100 requests under titles, waiting first, delegates and 직접/위임 + 전체 switches, no filters; WEB-43 이적시장 선수/유소년/코치/감독/단장; WEB-50/95/49 board in the ball side's colours, notable-only commentary log, details and player dialogs, after-match table; WEB-71/72/79 entries; MATCH r46 MATCH-10 after-match standing); unit tests for the titled queue, 1.3% pitch margin and ageMax; kit preview on the shared pitch margin; office/queue and match-view e2e specs migrated for the batch
-- 261103 T646 done: care command, CareKind, winBonus (dropped on load), care.ts, win-bonus settlement, care news/ledger lines and the motivator's meeting bonus removed; office shows 결재함 + read-only 클럽 현황, HUD cash sheet explains cash/fixed costs/runway only, places read with 유소년 keeping 승격·방출; equivalence digests unchanged; 2 typecheck + 8 unit failures predate it (ds03 6c0d6b12 vs WEB-39), e2e edited for the batch
