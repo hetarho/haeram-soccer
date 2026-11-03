@@ -19,6 +19,7 @@ export {
   MARKET_CONFIG,
   divisionShare,
   marketWageUnits,
+  starWagePremium,
   marketValueUnits,
   transferPremium,
   marketWageAt,

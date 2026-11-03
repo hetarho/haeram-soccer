@@ -141,7 +141,10 @@ describe('transfer premium (CLUB-46)', () => {
         12,
       );
       expect(valueOverWage(pivot + premiumSpan, year)).toBeCloseTo(minYears * multiple, 12);
-      expect(valueOverWage(pivot + premiumSpan + 15, year)).toBeCloseTo(minYears * multiple, 12);
+      expect(valueOverWage(pivot + premiumSpan + 15, year)).toBeCloseTo(
+        (minYears * multiple) / prices.starWagePremium(pivot + premiumSpan + 15),
+        12,
+      );
     }
   });
 
@@ -211,4 +214,32 @@ describe('market pricing read leaf', () => {
       expect({ world, player }).toEqual(before);
     },
   );
+});
+
+describe('exceptional-player wage demands', () => {
+  const wage = (ability: number, division = 0, age = 26) =>
+    prices.marketWageUnits(division, ability, age, ability);
+
+  it('preserves ordinary-player calibration and steepens elite wages', () => {
+    expect(wage(80) / wage(60)).toBeGreaterThanOrEqual(6);
+    expect(wage(80) / wage(60)).toBeLessThanOrEqual(10);
+    expect(wage(70, 1) / wage(70)).toBeCloseTo(0.4, 12);
+    expect(wage(90) / wage(80)).toBeGreaterThan(3);
+    expect(wage(95) / wage(80)).toBeGreaterThan(wage(90) / wage(80));
+  });
+
+  it('international stars demand top-flight money in a lower division', () => {
+    for (const division of [1, 2, 3]) {
+      expect(wage(90, division)).toBe(wage(90));
+      expect(wage(99, division)).toBe(wage(99));
+      expect(wage(87, division)).toBeGreaterThan(wage(87) * prices.divisionShare(division));
+    }
+  });
+
+  it('keeps wages monotonic across the star and international-market boundaries', () => {
+    for (const age of [18, 26, 33, 38])
+      for (const division of [0, 1, 2, 3])
+        for (let ability = 40; ability < 99; ability++)
+          expect(wage(ability + 1, division, age)).toBeGreaterThan(wage(ability, division, age));
+  });
 });

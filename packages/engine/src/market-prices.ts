@@ -18,6 +18,8 @@ export const MARKET_CONFIG = {
   pivot: 70,
   /** Each ability point multiplies wage and value, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
   perPoint: 1.105,
+  /** Exceptional ability commands a convex premium; ordinary squad wages stay unchanged. */
+  star: { from: 80, full: 95, maximum: 2, globalFrom: 85, globalFull: 90 },
   /**
    * The transfer market's own growth beyond the football index (→CLUB-46), [year, multiple]
    * anchors, geometric between them and flat outside. Fees grew with football's income until the
@@ -104,7 +106,21 @@ export function transferPremium(year: number) {
 
 /** Yearly market wage in 1901 units at football index 1. */
 export function marketWageUnits(division: number, ability: number, age: number, potential: number) {
-  return scaleUnits(marketPoints(ability, age, potential, MARKET_CONFIG.promise.wage), division);
+  const star = MARKET_CONFIG.star;
+  const global = clamp((ability - star.globalFrom) / (star.globalFull - star.globalFrom), 0, 1);
+  return (
+    scaleUnits(
+      marketPoints(ability, age, potential, MARKET_CONFIG.promise.wage),
+      division * (1 - global),
+    ) * starWagePremium(ability)
+  );
+}
+
+/** Scarcity above an ordinary top-flight player, independent of transfer-fee inflation. */
+export function starWagePremium(ability: number) {
+  const star = MARKET_CONFIG.star;
+  const progress = clamp((ability - star.from) / (star.full - star.from), 0, 1);
+  return 1 + (star.maximum - 1) * progress ** 2;
 }
 /**
  * Transfer value in 1901 units at football index 1: years of a wage that counts more promise,

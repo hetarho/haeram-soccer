@@ -241,14 +241,29 @@ describe('Ballon d’Or records and the contract premium (→HIST-13, CLUB-26)',
     expect(ballonDorRecord(history, 'nobody')).toEqual({ wins: [], podiums: [] });
   });
 
-  it('prices a win ×1.20 and a podium ×1.10 for the three closed seasons before', () => {
-    expect(ballonDorPremium(history, 1961, 'p')).toEqual({ factor: 1.2, place: 1, year: 1959 });
-    expect(ballonDorPremium(history, 1963, 'p')).toEqual({ factor: 1.1, place: 3, year: 1960 });
+  it('prices a win ×2 and a podium ×1.4 for the three closed seasons before', () => {
+    expect(ballonDorPremium(history, 1961, 'p')).toEqual({ factor: 2, place: 1, year: 1959 });
+    expect(ballonDorPremium(history, 1963, 'p')).toEqual({ factor: 1.4, place: 3, year: 1960 });
     expect(ballonDorPremium(history, 1964, 'p')).toEqual({ factor: 1 });
-    expect(ballonDorPremium(history, 1959, 'p')).toEqual({ factor: 1.2, place: 1, year: 1956 });
-    expect(ballonDorPremium(history, 1960, 'y')).toEqual({ factor: 1.1, place: 3, year: 1959 });
-    expect(ballonDorPremium(history, 1961, 'z')).toEqual({ factor: 1.1, place: 3, year: 1958 });
+    expect(ballonDorPremium(history, 1959, 'p')).toEqual({ factor: 2, place: 1, year: 1956 });
+    expect(ballonDorPremium(history, 1960, 'y')).toEqual({ factor: 1.4, place: 3, year: 1959 });
+    expect(ballonDorPremium(history, 1961, 'z')).toEqual({ factor: 1.4, place: 3, year: 1958 });
   });
+});
+
+it('raises repeated recent winners progressively, independent of archive order', () => {
+  const recent = [
+    { year: 1958, ballonDor: [place('p')] },
+    { year: 1959, ballonDor: [place('p')] },
+    { year: 1960, ballonDor: [place('p')] },
+  ];
+  expect(ballonDorPremium(recent, 1961, 'p')).toEqual({ factor: 2.8, place: 1, year: 1960 });
+  expect(ballonDorPremium([...recent].reverse(), 1961, 'p')).toEqual(
+    ballonDorPremium(recent, 1961, 'p'),
+  );
+  expect(ballonDorPremium(recent, 1962, 'p').factor).toBe(2.4);
+  expect(ballonDorPremium(recent, 1963, 'p').factor).toBe(2);
+  expect(ballonDorPremium(recent, 1964, 'p').factor).toBe(1);
 });
 
 describe('the Ballon d’Or bonus clause (→CLUB-29)', () => {

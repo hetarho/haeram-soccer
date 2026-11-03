@@ -87,8 +87,8 @@ describe('Ballon d’Or lines for the player sheet and the contract talk (→WEB
   });
 
   it('states the premium a recent podium place adds to his demand', () => {
-    expect(ballonDorPremiumLine(world, 'star')).toBe('발롱도르 수상 (1958/59) · 요구 +20%');
-    expect(ballonDorPremiumLine(world, 'x')).toBe('발롱도르 수상 (1957/58) · 요구 +20%');
+    expect(ballonDorPremiumLine(world, 'star')).toBe('발롱도르 수상 (1958/59) · 요구 +140%');
+    expect(ballonDorPremiumLine(world, 'x')).toBe('발롱도르 수상 (1957/58) · 요구 +100%');
     expect(ballonDorPremiumLine({ ...world, year: 1963 }, 'star')).toBeUndefined();
   });
 });

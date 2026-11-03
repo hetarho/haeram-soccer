@@ -30,7 +30,7 @@ export const BALLON_DOR_CONFIG = {
   places: 3,
   /** Closed seasons a podium place keeps raising his demand (→CLUB-26). */
   premiumSeasons: 3,
-  premium: { winner: 1.2, podium: 1.1 },
+  premium: { winner: 2, podium: 1.4, repeatWinner: 0.4 },
   /**
    * The bonus clause (→CLUB-29): for players rated `ability`+ or with a podium place within
    * `premiumSeasons`; in `share` of their contracts (1-rated agent → 5-rated), sized from
@@ -81,7 +81,7 @@ export function ballonDorRecord(history: Podiums, id: string): BallonDorRecord {
 
 /**
  * The demand multiplier a podium place within the last `premiumSeasons` closed seasons before
- * `year` brings (→CLUB-26): a win ×1.20, a second or third place ×1.10, the larger applying, with
+ * `year` brings (→CLUB-26): a win ×2, plus 0.4 per additional recent win, or a podium ×1.4, with
  * the place and season it comes from; otherwise ×1.
  */
 export function ballonDorPremium(
@@ -91,13 +91,16 @@ export function ballonDorPremium(
 ): { factor: number; place?: 1 | 2 | 3; year?: number } {
   const { premiumSeasons, premium } = BALLON_DOR_CONFIG;
   let best: { factor: number; place?: 1 | 2 | 3; year?: number } = { factor: 1 };
+  let wins = 0;
   for (const season of history) {
     if (season.year < year - premiumSeasons || season.year >= year) continue;
     const at = season.ballonDor?.findIndex((place) => place.id === id) ?? -1;
     if (at < 0) continue;
+    if (at === 0) wins++;
     const factor = at === 0 ? premium.winner : premium.podium;
     if (factor > best.factor || (factor === best.factor && season.year > (best.year ?? 0)))
       best = { factor, place: (at + 1) as 1 | 2 | 3, year: season.year };
   }
+  if (best.place === 1) best.factor += Math.max(0, wins - 1) * premium.repeatWinner;
   return best;
 }
