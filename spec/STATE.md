@@ -16,6 +16,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:27Z | T675 |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:28Z | 2026-11-03T02:28Z | - |
 
 ## inbox
 - 261103 suggest ARCH-21 T671: ARCH-21 still names `simulatedWorld` "for a founding plus seasons and rounds"; it now builds a takeover career (`careerWorld`) plus seasons and rounds (update-ssot wording only). ot03
