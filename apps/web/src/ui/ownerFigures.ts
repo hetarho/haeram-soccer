@@ -31,6 +31,7 @@ import {
   OWNER_TIERS,
   OWNER_TRAITS,
 } from '../../../../packages/engine/src/owner-config';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { quote } from '../../../../packages/engine/src/quotes';
 import type { ClientState } from '../runtime/client';
@@ -417,11 +418,6 @@ export function ownerLock(state: ClientState, connected: boolean): string | unde
   return undefined;
 }
 
-/** The seasons a career counts: from the takeover on, or every season of a founded club. */
-function careerSeasons(w: World) {
-  const from = w.owner?.takeover.year;
-  return from === undefined ? w.history : w.history.filter((season) => season.year >= from);
-}
 export interface GameOverFacts {
   cause: EndCause;
   title: string;
@@ -442,7 +438,8 @@ export interface GameOverFacts {
 export function gameOverFacts(w: World): GameOverFacts {
   const own = ownClub(w);
   const cause = endCause(w) ?? 'club';
-  const seasons = careerSeasons(w);
+  // The seasons a career counts: from the takeover on, or every season of a founded club.
+  const seasons = ownSeasons(w);
   const best = seasons.reduce<(typeof seasons)[number] | undefined>(
     (top, season) =>
       !top || season.tier < top.tier || (season.tier === top.tier && season.rank < top.rank)

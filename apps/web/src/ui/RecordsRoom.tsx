@@ -5,6 +5,7 @@ import { PixelIcon } from './PixelIcon';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { readBuildTitle } from '../../../../packages/engine/src/build';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ClubRecords, RecordMatch, Run } from '../runtime/clubRecords';
@@ -15,6 +16,7 @@ import { CareerRecordBook, ClubLeaders, TrophyCabinet } from './CareerRecordBook
 import { divisionName } from './careerRecords';
 import { ClubLink } from './ClubLink';
 import { ClubTrends, SeasonTable } from './ClubTrends';
+import { OwnerSeasons, SeasonsBeforeOwner } from './OwnerEras';
 import { Dialog } from './Dialog';
 import { kindLabel, number, seasonName } from './format';
 import { Money } from './Money';
@@ -64,7 +66,7 @@ function savedRecordYear(w: World) {
   const params = new URLSearchParams(location.search),
     raw = params.get('season');
   const year = raw ? Number(raw) : params.get('view') === 'season' ? w.year : undefined;
-  return year === w.year || w.history.some((season) => season.year === year) ? year : undefined;
+  return year === w.year || ownSeasons(w).some((season) => season.year === year) ? year : undefined;
 }
 const scroller = () => document.querySelector<HTMLElement>('[data-testid="view-scroller"]');
 function recordScroll(value: number) {
@@ -226,7 +228,11 @@ export function RecordsRoom({ state, client }: Props) {
       >
         {tab === 'seasons' ? (
           year === undefined ? (
-            <SeasonTable w={w} onSeason={openSeason} />
+            <>
+              <SeasonTable w={w} onSeason={openSeason} />
+              <OwnerSeasons w={w} />
+              <SeasonsBeforeOwner w={w} seasons={state.view!.preOwner} />
+            </>
           ) : (
             <>
               <div className={s.recordControls}>
@@ -519,7 +525,7 @@ function SeasonRecords({
   const matches = archive?.matches.filter((m) => filter === 'all' || m.kind === filter) || [],
     h = archive?.season;
   // Oldest first; the season in progress is the last stop.
-  const years = [...w.history.map((season) => season.year), w.year],
+  const years = [...ownSeasons(w).map((season) => season.year), w.year],
     at = Math.max(0, years.indexOf(year));
   const f = (n: string, y = year) => <Money value={n} code={c.country} year={y} />;
   const scope = filter === 'all' ? '모든 대회' : kindLabel[filter];

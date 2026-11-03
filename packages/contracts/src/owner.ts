@@ -4,7 +4,7 @@
  * books every club keeps (→ECON-36) and what the start chooses and lists (→WEB-2, ECON-37).
  * Money is decimal-string minor units (→ECON-1).
  */
-import type { CareerDate, CountryCode, World } from './types';
+import type { CareerDate, CountryCode, CupRun, World } from './types';
 import type { CrestDesign } from './identity';
 import type { Position } from './player';
 
@@ -69,6 +69,19 @@ export interface OwnerSeasonRecord {
   dividend: string;
   /** 팬 민심 at the close (→OWNER-12). */
   fanMood: number;
+}
+/**
+ * One season the bought club played before the takeover (→HIST-21), read from the world's season
+ * archive (→HIST-2): its league finish, its country's title and the cup runs the archive keeps —
+ * the domestic cup's final, and each continental competition's final, bracket round or group stage.
+ */
+export interface PreOwnerSeason {
+  year: number;
+  /** Its division (0 the top flight), group and place; absent when the archive holds no row for it. */
+  finish?: { tier: number; group: number; place: number };
+  /** It won its country's top flight. */
+  title?: true;
+  runs: CupRun[];
 }
 /** The takeover's facts (→ECON-38, OWNER-3): historical amounts, in the money they were paid in. */
 export interface TakeoverFacts {

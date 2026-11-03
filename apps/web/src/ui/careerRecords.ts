@@ -1,4 +1,5 @@
 import type { Player, SeasonArchive, World } from '../../../../packages/contracts/src/types';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { divisionName } from '../presentation/competitionLabels';
 
 export { divisionName };
@@ -72,17 +73,19 @@ export function clubRanks(players: readonly Player[], id: string) {
   });
 }
 
+/** The record book counts the club's own seasons, from the takeover on (→HIST-21, WEB-28). */
 export function careerRecords(w: World) {
-  const seasons = w.history.filter((h) => h.played > 0);
+  const own = ownSeasons(w),
+    seasons = own.filter((h) => h.played > 0);
   const best = (compare: (a: SeasonArchive, b: SeasonArchive) => number) =>
     seasons.slice().sort((a, b) => compare(a, b) || a.year - b.year)[0];
   const leader = (key: LeaderBoard['key']) => clubLeaders(w.players, leaderBoard(key), 1)[0];
   return {
-    seasons: w.history.length,
-    finish: bestFinish(w.history),
+    seasons: own.length,
+    finish: bestFinish(own),
     points: best((a, b) => b.points * a.played - a.points * b.played),
     attack: best((a, b) => b.gf * a.played - a.gf * b.played),
-    supporters: w.history.slice().sort((a, b) => b.fans - a.fans || a.year - b.year)[0],
+    supporters: own.slice().sort((a, b) => b.fans - a.fans || a.year - b.year)[0],
     scorer: leader('goals'),
     creator: leader('assists'),
     keeper: leader('saves'),
@@ -96,19 +99,21 @@ const CONTINENTAL_ORDER = ['ucl', 'cwc', 'uel', 'uecl', 'super'];
  * The trophy cabinet from the season archives alone: league titles by division; moves up and down
  * the pyramid, each archive against the next and the last against the division played now; the
  * domestic cup's wins and finals, counted only in seasons whose cup run was recorded; continental
- * titles under the competition's name that season; and the best finish.
+ * titles under the competition's name that season; and the best finish. Only the club's own seasons
+ * count: the honours of its seasons before the owner stand with them in 시즌별 기록 (→HIST-21).
  */
 export function trophyCabinet(w: World) {
-  const own = w.clubs.find((c) => c.id === w.playerClub)!;
+  const own = w.clubs.find((c) => c.id === w.playerClub)!,
+    seasons = ownSeasons(w);
   const titles = new Map<number, number[]>();
   const continental = new Map<string, { kind: string; years: number[] }>();
   const cup = { wins: [] as number[], finals: [] as number[], unrecorded: 0 };
   // Each move is filed under the season at whose close it happened.
   const promotions: number[] = [],
     relegations: number[] = [];
-  w.history.forEach((h, i) => {
+  seasons.forEach((h, i) => {
     if (h.rank === 1) titles.set(h.tier, [...(titles.get(h.tier) ?? []), h.year]);
-    const next = w.history[i + 1]?.tier ?? own.tier;
+    const next = seasons[i + 1]?.tier ?? own.tier;
     if (next < h.tier) promotions.push(h.year);
     else if (next > h.tier) relegations.push(h.year);
     if (!h.runs) cup.unrecorded++;
@@ -125,7 +130,7 @@ export function trophyCabinet(w: World) {
   const order = (kind: string) =>
     CONTINENTAL_ORDER.includes(kind) ? CONTINENTAL_ORDER.indexOf(kind) : CONTINENTAL_ORDER.length;
   return {
-    seasons: w.history.length,
+    seasons: seasons.length,
     league: [...titles]
       .sort(([a], [b]) => a - b)
       .map(([tier, years]) => ({ tier, label: divisionName(own.country, tier), years })),
@@ -135,6 +140,6 @@ export function trophyCabinet(w: World) {
     continental: [...continental]
       .map(([name, entry]) => ({ name, ...entry }))
       .sort((a, b) => order(a.kind) - order(b.kind) || a.years[0] - b.years[0]),
-    best: bestFinish(w.history),
+    best: bestFinish(seasons),
   };
 }

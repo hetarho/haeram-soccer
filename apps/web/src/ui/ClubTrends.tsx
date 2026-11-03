@@ -2,7 +2,7 @@ import { useTaskState } from './taskMemory';
 import { useMemo } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { country, currency } from '../../../../packages/catalogs/src/index';
-import { clubOf } from '../../../../packages/engine/src/player-state';
+import { clubOf, ownSeasons } from '../../../../packages/engine/src/player-state';
 import { inTodayMoney } from '../../../../packages/engine/src/transfer-records';
 import { Panel } from './App';
 import { Chart, type ChartBand } from './Chart';
@@ -10,6 +10,7 @@ import { ClubLink } from './ClubLink';
 import { divisionName } from './careerRecords';
 import { compactMoney, number, seasonName } from './format';
 import { Money } from './Money';
+import { runsText } from './recordEras';
 import {
   eloDetail,
   eloStanding,
@@ -37,13 +38,14 @@ const axisMoney = (w: World, plot: number) => {
 
 /**
  * Every records chart's series with the line each season shows in its bubble, computed once per
- * closed season (or a change of division) so moving over a chart never recomputes them.
+ * closed season (or a change of division) so moving over a chart never recomputes them. The club's
+ * growth starts at the takeover: the seasons before it kept no own-club figures (→HIST-21).
  */
 function trendSeries(w: World) {
   const club = clubOf(w),
     code = club.country,
     amount = (value: string) => compactMoney(value, code, w.year),
-    seasons = w.history,
+    seasons = ownSeasons(w),
     rated = seasons.filter((h) => h.elo !== undefined),
     valued = seasons.filter((h) => h.squadValue && h.clubValue);
   const series = (list: typeof seasons, values: number[], detail: (index: number) => string) => ({
@@ -330,10 +332,13 @@ export function ClubTrends({ w }: { w: World }) {
   );
 }
 
-/** One row per closed season, newest first; with `onSeason` a row opens that season (→WEB-54). */
+/**
+ * One row per closed season of the club's own, newest first; with `onSeason` a row opens that
+ * season (→WEB-54). The seasons before the takeover are listed apart (→HIST-21).
+ */
 export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
   const code = clubOf(w).country,
-    seasons = w.history;
+    seasons = ownSeasons(w);
   const [limit, setLimit] = useTaskState(w.id, 'record-season-limit', 49);
   return (
     <Panel title="시즌별 기록" note={`${seasons.length}시즌`}>
@@ -430,16 +435,7 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                     </span>
                   </td>
                   <td data-label="컵 대회">
-                    <span className={t.cellText}>
-                      {h.runs?.length
-                        ? h.runs
-                            .map(
-                              (run) =>
-                                `${run.key === 'cup' ? '컵' : run.name} ${run.champion ? '우승' : run.reached}`,
-                            )
-                            .join(' · ')
-                        : '—'}
-                    </span>
+                    <span className={t.cellText}>{runsText(h.runs)}</span>
                   </td>
                   <td data-label="Elo">
                     <span className={t.cellText}>

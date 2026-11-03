@@ -46,19 +46,45 @@ it('uses denominator-aware season records and retains inactive leaders without m
   expect(careerRecords(w).finish).toBeUndefined();
   expect(careerRecords(w).scorer).toBeUndefined();
   w.history = [
-    season(1902, { points: 40, gf: 40 }),
-    season(1901, { points: 30, played: 10, gf: 30 }),
+    season(1952, { points: 40, gf: 40 }),
+    season(1951, { points: 30, played: 10, gf: 30 }),
   ];
   w.players[0].career[0] = 7;
   w.players[0].status = 'retired';
   const before = JSON.stringify(w),
     records = careerRecords(w);
-  expect(records.points!.year).toBe(1901);
-  expect(records.attack!.year).toBe(1901);
-  expect(records.finish!.year).toBe(1901);
+  expect(records.points!.year).toBe(1951);
+  expect(records.attack!.year).toBe(1951);
+  expect(records.finish!.year).toBe(1951);
   expect(records.scorer!.status).toBe('retired');
-  expect(records.supporters!.year).toBe(1901);
+  expect(records.supporters!.year).toBe(1951);
   expect(JSON.stringify(w)).toBe(before);
+});
+
+it('starts the record book and the cabinet at the takeover (→HIST-21, WEB-28)', () => {
+  const w = world();
+  expect(w.owner!.takeover.year).toBe(1950);
+  // The world's seasons before the takeover keep every own-club field empty, honours aside.
+  const before = season(1948, {
+    tier: 0,
+    rank: 0,
+    points: 0,
+    played: 0,
+    gf: 0,
+    fans: 0,
+    europe: [{ kind: 'ucl', name: 'European Cup', winner: w.playerClub, field: 16 }],
+  });
+  w.history = [before, season(1949, { tier: 0, rank: 0, played: 0 }), season(1950, { tier: 2 })];
+  w.clubs.find((c) => c.id === w.playerClub)!.tier = 2;
+  const records = careerRecords(w),
+    cabinet = trophyCabinet(w);
+  expect(records.seasons).toBe(1);
+  expect(records.supporters!.year).toBe(1950);
+  expect(cabinet.seasons).toBe(1);
+  expect(cabinet.continental).toEqual([]);
+  // No move is read between the world's top-flight placeholder and the club's first season.
+  expect(cabinet.promotions).toEqual([]);
+  expect(cabinet.relegations).toEqual([]);
 });
 
 describe('division names', () => {

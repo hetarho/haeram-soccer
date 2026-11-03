@@ -1,6 +1,7 @@
 import { Select } from './Select';
 import { useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
+import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { encodeCsv, downloadCsv } from '../adapters/csv';
 import { analysisDataset, type AnalysisDataset } from './analysisDataset';
 import type { PlayerScope } from './playerAnalysis';
@@ -75,7 +76,7 @@ export function AnalysisExport({
             ? `${seasonName(year)} · ${scope}`
             : type === 'players'
               ? `현재 ${w.year}년 선수 자료 · ${playerScope === 'season' ? '이번 시즌 모든 대회' : '우리 클럽 통산 모든 대회'}`
-              : `완료한 ${w.history.length}개 시즌 · 리그 성적과 결산`}{' '}
+              : `완료한 ${ownSeasons(w).length}개 시즌 · 리그 성적과 결산`}{' '}
           · {dataset.rows.length}행
         </p>
         {type === 'players' && (
