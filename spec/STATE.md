@@ -15,6 +15,7 @@
 |---|---|---|---|---|---|
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
 
 ## inbox
 - 261103 decided LEAGUE-13 OWNER-3 T668: which club a reference career takes over → the median-priced club of the tier's reach in that country that its fortune pays for, the dearer of the two middle ones (alt: the club nearest the anchor | a seeded draw from the reach). ot03
@@ -611,6 +612,8 @@
 - 261103 decided T665 T670 T671 T672: T665 (founding, difficulty, editor and amateur level end to end) cannot finish in one unit — 243 files build worlds with `createWorld`/`simulatedWorld(Founding)` → split into T665 founding screen, `found` message, identity editor and ready-made crests; T670 engine/contracts tests on a takeover test builder; T671 fixtures, web tests, e2e and scripts, then the founding deleted; T672 the amateur level with LEAGUE-16's test; T666–T668 wait on T672 (alt: one unit for all of it, which would stop mid-migration | a renamed founding builder for tests, which keeps the founding in the code). ot03
 - 261103 decided T670 ARCH-21: how tests get a career once the founding goes → `careerWorld`: a fresh 1950 world nobody owns (`historyWorld` with a test-only year) and a takeover of the lowest division's first club by an `oil` owner, funded with two years of fixed costs (alt: a lived world from `generateHistory`, seconds per test | the takeover's own cash 0, bankrupt at round 8). ot03
 - 261103 decided KIT-2 KIT-14 T665: KIT-2 still offered six ready-made crests, 랜덤 and 직접 꾸미기 while KIT-14 removed the founding crests and no editor is left → KIT r9: designers compose crests from the component catalogue; no ready-made crests or owner-side composition (alt: keep the six presets as designer templates, which nothing reads). ot03
+- 261103 decided OWNER-3 ECON-36 ECON-38 T685: the owner asked to fix the balance as far as possible, a 석유 재벌 free to buy any club below his reach → reach by price-rank bands (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%) so three-division countries hold every tier, living costs 0.25%, dividend −0.5 per 1%, star sale −4 once a window (T668's proposals), books opening with half a season of income, cash kept to one season and debt to 1.5 seasons of income, takeover loan 10 seasons (alt: keep division reaches and add 지역 유지 rules per country | recalibrate the books' income scale only and leave them unbounded | pay the inherited debt at the takeover from the owner's fortune). ot03
+- 261103 decided ARCH-30 T683 T684: 39 integration failures on dfa39857 (the takeover's migrated tests, never run, plus the merge with hr03's read models) → two fix tasks run before the push, engine files and web/fixture files, each case kept protecting what it protects (alt: one task for all 24 files | push and fix on main). ot03
 
 ## ideation
 | id | st |
@@ -641,18 +644,19 @@
 | KIT | 9 | 9 | - | 0 |
 | CLUB | 50 | 50 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
-| LEAGUE | 12 | 12 | - | 0 |
+| LEAGUE | 13 | 13 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
-| ECON | 42 | 42 | - | 0 |
+| ECON | 43 | 43 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 1 | 1 | - | 0 |
+| OWNER | 2 | 2 | - | 0 |
 | PLAYER | 14 | 14 | - | 0 |
 
 ## review
 | id | st |
 |---|---|
+| automatic-play-hotspots-261103 | converted@261103 |
 | outside-t216-t255-261019 | converted@261019 |
 | recent-code-quality-261023 | converted@261023 |
 | development-feedback-261026 | converted@261026 |
@@ -663,8 +667,14 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T668 | todo |
+| T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
+| T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
+| T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
+| T683 | engine integration tests on takeover careers | ARCH OWNER WORLD HIST SAVE | T668 | todo |
+| T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T684 | todo |
+| T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -692,6 +702,8 @@
 - after the ot03 takeover lands on main: implement-task T678 (history view while the world is generated, WEB-115), then T679 (explore 1h: generation with the view against ARCH-28)
 - Measure T680 (hr04).
 - planning from T668's inbox suggests: update-ssot OWNER-8 living costs, OWNER-12 dividend and star-sale drivers, ECON-36 books, OWNER-3 reach
+- implement-task T683, then T684 (integration fixes on wip/ot03), the e2e fix task once the Chromium read of dfa39857 is in, the batch gate and the push to main; then T685, T686 (balance), T678, T679
+- hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
 
 ## log
 - 261103 merge main into the takeover (hr03 news journal, career reads, IndexedDB-only saves; hr04 T680 plan): career reads and the first-season goal count only the owner's seasons (→HIST-21); a founded 0.7.0 career stays protected in every tab, never cleared (→SAVE-26/29); ot03

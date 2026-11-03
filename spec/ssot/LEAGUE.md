@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r12 | Define the browser-demo rules for domestic seasons and relegation.
+> r13 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -38,7 +38,7 @@
   - a new manager (→STAFF-17) takes 30% of the distance to 0.50 when his school differs from his predecessor's, 10% when it is the same.
   - between seasons a takeover or a project (→LEAGUE-10) takes 0.15, a promotion or a relegation 0.10, never below 0.30.
   - a rival's dossier and its league-table OVR show it (→WEB-58).
-- LEAGUE-13 [o] Balance is measured on reference careers per wealth tier: a takeover in 1950 of a club at the tier's reach (→OWNER-3) with no traits and no owner money moved (stake 0%, no injection, dividend 0%), all business responsibilities delegated and 기본 방향, run to 2009 in four countries (ENG ESP FRA GER) × 5 seeds; tuning changes rules and constants for every tier alike, never one tier's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
+- LEAGUE-13 [o] Balance is measured on reference careers per wealth tier: a takeover in 1950 of the median-priced club of the tier's reach in each country (→OWNER-3; the nearest band holding a club of that country when its own holds none) with no traits and no owner money moved (stake 0%, no injection, dividend 0%), all business responsibilities delegated and 기본 방향, run to 2009 in four countries (ENG ESP FRA GER) × 5 seeds; tuning changes rules and constants for every tier alike, never one tier's own. ← reaching the top should take long and holding it stay hard, with room for a lucky career
   | tier | first top-flight title | share of top-flight titles after the first | bankrupt |
   |---|---|---|---|
   | 석유 재벌 | most careers, median within 10 seasons | 35% or less | none |
@@ -48,6 +48,7 @@
   | 지역 유지 | the top flight in about half the careers | - | 1 in 10 or fewer |
   | 자수성가 축구팬 | the top flight in 1 in 4 careers or fewer | - | 1 in 5 or fewer |
   - careers with five traits are measured beside each tier; the bands hold for no traits.
+  - bankrupt counts the club's bankruptcy (→ECON-24); the owner's fortune is measured beside it on a 50% dividend, since the reference moves no owner money.
 
 - LEAGUE-14 [o] Every club's reputation (0–100) follows its standing, the owner's club and clubs nobody owns alike: at each season close it closes 20% of the gap to the level of the division it will play in next, plus its league finish; honours add at once. ← standing is relative: decades in a lower division never make a giant, and a fallen giant's name fades over seasons, not at once
   - division level: top flight 75, then 15 less per tier (second 60, third 45, fourth 30), at least 8.
@@ -64,6 +65,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r13 261103 LEAGUE-13✎ reference club at the tier's reach→the median-priced club of the tier's price band in each country, nearest band when none; bankrupt column→the club's bankruptcy (→ECON-24), the owner's purse measured beside it on a 50% dividend
 - r12 261103 LEAGUE-5✎ entrants professional and amateur→professional only; LEAGUE-6- amateur exchange removed; LEAGUE-10✎ +a takeover or project clears the club's debt; LEAGUE-13✎ reference careers by difficulty level from the amateur league with level bands→per wealth tier from a 1950 takeover with tier bands; LEAGUE-14✎ a new club 12 and the amateur league's level 8→removed; LEAGUE-16+ the last professional division relegates nobody
 - r11 261102 LEAGUE-13✎ reference careers named by the historical intervention level 4→all business responsibilities delegated only (the intervention level is removed)
 - r10 261019 LEAGUE-15+ injuries and suspensions for clubs nobody owns, a retained unavailable list cleared at the seasonal squad generation, league discipline table
