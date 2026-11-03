@@ -14,6 +14,7 @@ import { eventsInSeason } from '../packages/engine/src/season-index';
 import { tallies } from '../apps/web/src/runtime/playerTallies';
 import { decode, checkpoint } from '../apps/web/src/adapters/persistence';
 import { createWorld } from '../packages/engine/src/founding';
+import { CHECKPOINT_LIMIT, SLOT } from '../apps/web/src/adapters/repository';
 
 const arg = (flag: string) => process.argv[process.argv.indexOf(flag) + 1];
 const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
@@ -109,24 +110,35 @@ function scaling(seasons: number) {
   };
 }
 async function codec(w: World) {
-  const old = structuredClone(w);
+  const old = { ...w };
   delete old.newsJournal;
   delete old.careerReads;
-  const newer = structuredClone(old);
+  const newer = { ...old };
   const start = performance.now();
   initializeReadModels(newer);
   const initializeMs = performance.now() - start;
   const cases = [];
-  for (const [label, world] of [
+  const inputs = [
     ['original', old],
     ['incremental', newer],
-  ] as const) {
+  ] as const;
+  for (const [label, world] of inputs) {
+    if (label === 'original' && process.argv.includes('--incremental-only')) continue;
+    console.log(
+      JSON.stringify({
+        stage: 'checkpoint',
+        label,
+        year: world.year,
+        matches: world.ownMatches.length,
+      }),
+    );
     const t = performance.now();
     try {
       const { raw } = await checkpoint(world);
       cases.push({
         label,
         checkpointUtf16Bytes: raw.length * 2,
+        withinCheckpointLimit: 2 * (raw.length + SLOT[0].length) <= CHECKPOINT_LIMIT,
         encodeValidateMs: performance.now() - t,
         summariesSurvive:
           label === 'original' ||

@@ -5,7 +5,7 @@ import { create } from 'zustand';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { NewsItem, NewsTag } from '../../../../packages/engine/src/news';
 import { seasonName } from './format';
-import { useGameState } from '../runtime/store';
+import { gameStore, useGameState } from '../runtime/store';
 import s from './NewsFeed.module.css';
 
 const NO_NEWS: NewsItem[] = [];
@@ -16,18 +16,37 @@ export function useClubNews(): NewsItem[] {
 
 const SEEN_KEY = 'haeram-soccor:news-seen';
 /** The newest item the owner has seen, per browser and world: a convenience, never a game fact. */
-function readSeen(worldId: string): string | undefined {
+interface NewsSeen {
+  id: string;
+  total?: number;
+}
+function readSeen(worldId: string): NewsSeen | undefined {
   try {
-    const all = JSON.parse(localStorage.getItem(SEEN_KEY) || '{}') as Record<string, string>;
-    return typeof all[worldId] === 'string' ? all[worldId] : undefined;
+    const all = JSON.parse(localStorage.getItem(SEEN_KEY) || '{}') as Record<string, unknown>;
+    const item = all[worldId];
+    if (typeof item === 'string') return { id: item };
+    if (item && typeof item === 'object' && 'id' in item && typeof item.id === 'string') {
+      const total =
+        'total' in item &&
+        typeof item.total === 'number' &&
+        Number.isSafeInteger(item.total) &&
+        item.total >= 0
+          ? item.total
+          : undefined;
+      return { id: item.id, total };
+    }
+    return undefined;
   } catch {
     return undefined;
   }
 }
-function writeSeen(worldId: string, id: string) {
+function writeSeen(worldId: string, id: string, total?: number) {
   try {
-    const all = JSON.parse(localStorage.getItem(SEEN_KEY) || '{}') as Record<string, string>;
-    all[worldId] = id;
+    const all = JSON.parse(localStorage.getItem(SEEN_KEY) || '{}') as Record<
+      string,
+      string | NewsSeen
+    >;
+    all[worldId] = total === undefined ? id : { id, total };
     localStorage.setItem(SEEN_KEY, JSON.stringify(all));
   } catch {
     /* Without storage every item simply stays unmarked. */
@@ -35,9 +54,10 @@ function writeSeen(worldId: string, id: string) {
 }
 
 /** Items newer than the newest one seen; an unknown marker (a new season's feed) means all. */
-function freshCount(news: NewsItem[], seen?: string) {
-  const at = seen ? news.findIndex((item) => item.id === seen) : -1;
-  return seen ? (at < 0 ? news.length : at) : news.length;
+function freshCount(news: NewsItem[], seen?: NewsSeen, total = news.length) {
+  if (seen?.total !== undefined) return Math.max(0, total - seen.total);
+  const at = seen ? news.findIndex((item) => item.id === seen.id) : -1;
+  return seen ? (at < 0 ? total : at) : total;
 }
 
 export type NewsTab = 'notifications' | 'news';
@@ -54,15 +74,18 @@ export const useNewsSheet = create<{
 }));
 
 export function markNewsSeen(worldId: string, news: NewsItem[]) {
-  if (news[0]) writeSeen(worldId, news[0].id);
+  const view = gameStore.getSnapshot().view;
+  if (news[0])
+    writeSeen(worldId, news[0].id, view?.world.id === worldId ? view.newsTotal : undefined);
 }
 
 export function useUnreadNewsCount() {
   const news = useClubNews();
   const worldId = useGameState((state) => state.view?.world.id);
+  const total = useGameState((state) => state.view?.newsTotal);
   useNewsSheet((state) => state.open);
   useNewsSheet((state) => state.tab);
-  return worldId ? freshCount(news, readSeen(worldId)) : 0;
+  return worldId ? freshCount(news, readSeen(worldId), total) : 0;
 }
 
 const QUIET_KEY = 'haeram-soccor:news-quiet';
@@ -135,6 +158,7 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
   const [older, setOlder] = useState<NewsItem[]>([]);
   const [filtered, setFiltered] = useState<NewsItem[]>([]);
   const [ended, setEnded] = useState(false);
+  const [allEnded, setAllEnded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const news =
@@ -147,8 +171,10 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
     setError('');
     try {
       const page = await client.newsPage(news.at(-1)?.id, tag === '전체' ? undefined : tag);
-      if (tag === '전체') setOlder((previous) => [...previous, ...page.items]);
-      else setFiltered((previous) => [...previous, ...page.items]);
+      if (tag === '전체') {
+        setOlder((previous) => [...previous, ...page.items]);
+        setAllEnded(!page.next);
+      } else setFiltered((previous) => [...previous, ...page.items]);
       setEnded(!page.next);
     } catch (e) {
       setError(String(e));
@@ -159,7 +185,7 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
   const chooseTag = async (value: (typeof TAGS)[number]) => {
     if (loading) return;
     setTag(value);
-    setEnded(false);
+    setEnded(value === '전체' ? allEnded : false);
     setError('');
     if (value === '전체' || !client) return;
     setFiltered([]);
@@ -196,7 +222,16 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
       {shown.length ? (
         <ul className={s.feed}>
           {shown.map((item) => (
-            <Headline key={item.id} item={item} fresh={fresh.has(item.id)} />
+            <Headline
+              key={item.id}
+              item={item}
+              fresh={
+                !seenAtOpen ||
+                (seenAtOpen.total !== undefined && item.sequence !== undefined
+                  ? item.sequence > seenAtOpen.total
+                  : fresh.has(item.id))
+              }
+            />
           ))}
         </ul>
       ) : (

@@ -282,6 +282,7 @@ export interface View {
   finance?: ReturnType<typeof financialBreakdown>;
   /** Club news derived from the full career; the projected world keeps only recent records. */
   news: NewsItem[];
+  newsTotal?: number;
   /** Appearances, cards and this season's heat maps from every own match (→HIST-13, HIST-16). */
   tallies: Tallies;
   /**

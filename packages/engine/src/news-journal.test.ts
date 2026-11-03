@@ -5,6 +5,7 @@ import {
   deriveClubNews,
   initializeNewsJournal,
   newsPage,
+  newsTotal,
   refreshNewsJournal,
 } from './news';
 
@@ -15,7 +16,12 @@ describe('incremental news journal', () => {
     const w = facts();
     initializeNewsJournal(w);
     for (let n = 1; n <= 12; n++) play(w, n, n === 8 ? 3 : 1);
-    expect(newsPage(w)).toEqual(deriveClubNews(w).slice(0, 50));
+    expect(
+      newsPage(w).map(({ sequence: _sequence, ...item }) => {
+        void _sequence;
+        return item;
+      }),
+    ).toEqual(deriveClubNews(w).slice(0, 50));
     const before = JSON.stringify(w.newsJournal);
     refreshNewsJournal(w);
     clubNews(w);
@@ -85,6 +91,41 @@ describe('incremental news journal', () => {
     w.events[0].title = 'Changed';
     refreshNewsJournal(w);
     expect(newsPage(w).find((row) => row.id === item?.id)).toEqual(item);
+  });
+  it('keeps total unread ordinals beyond the recent page and upgrades older journals without rewriting headlines', () => {
+    const w = facts();
+    initializeNewsJournal(w);
+    for (let n = 0; n < 80; n++)
+      w.events.push({
+        year: w.year,
+        round: n,
+        kind: 'transfer-in',
+        title: `Player ${n}`,
+        detail: 'Fact',
+      });
+    refreshNewsJournal(w);
+    expect(clubNews(w)).toHaveLength(50);
+    expect(newsTotal(w)).toBe(80);
+    const titles = Object.values(w.newsJournal!.seasons)
+      .flat()
+      .map((item) => item.title);
+    delete w.newsJournal!.count;
+    for (const items of Object.values(w.newsJournal!.seasons))
+      for (const item of items) delete item.sequence;
+    initializeNewsJournal(w);
+    expect(newsTotal(w)).toBe(80);
+    expect(
+      Object.values(w.newsJournal!.seasons)
+        .flat()
+        .map((item) => item.title),
+    ).toEqual(titles);
+    expect(
+      new Set(
+        Object.values(w.newsJournal!.seasons)
+          .flat()
+          .map((item) => item.sequence),
+      ).size,
+    ).toBe(80);
   });
   it('validates persisted state and query bounds', () => {
     const w = facts();

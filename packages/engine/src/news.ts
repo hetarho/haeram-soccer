@@ -1487,6 +1487,21 @@ function journalContext(w: World, state: NewsState): NewsContext {
 const journalContexts = new WeakMap<NewsJournal, NewsContext>();
 const bucketIds = new WeakMap<NewsItem[], Set<string>>();
 const journalSources = new WeakMap<NewsJournal, { table: string; honour: number | undefined }>();
+/** Older journal representations keep their text while acquiring stable unread ordinals once. */
+function numberJournal(j: NewsJournal) {
+  if (j.count !== undefined) return;
+  let count = 0;
+  for (const year of j.years)
+    for (let index = j.seasons[year].length - 1; index >= 0; index--)
+      j.seasons[year][index].sequence = ++count;
+  j.count = count;
+}
+export function newsTotal(w: World): number {
+  const j = w.newsJournal;
+  return j
+    ? (j.count ?? j.years.reduce((n, year) => n + j.seasons[year].length, 0))
+    : deriveClubNews(w).length;
+}
 function appendHeadline(j: NewsJournal, item: NewsItem) {
   let bucket = j.seasons[item.year];
   if (!bucket) {
@@ -1502,8 +1517,9 @@ function appendHeadline(j: NewsJournal, item: NewsItem) {
   if (ids.has(item.id)) return;
   if (bucket.length >= NEWS_LIMITS.perSeason)
     throw new Error('시즌 뉴스 용량 한도에 도달했습니다.');
+  numberJournal(j);
   ids.add(item.id);
-  bucket.push(item);
+  bucket.push({ ...item, sequence: ++j.count! });
   // Only the affected season is sorted, never the complete career.
   bucket.sort((a, b) => b.order - a.order);
 }
@@ -1534,7 +1550,10 @@ function resetNewsSeason(w: World, j: NewsJournal, year: number, ctx: NewsContex
 }
 /** Explicit writer initialization. Legacy pure reads never create save data. */
 export function initializeNewsJournal(w: World) {
-  if (w.newsJournal) return;
+  if (w.newsJournal) {
+    numberJournal(w.newsJournal);
+    return;
+  }
   const firstYear = w.ownMatches[0]?.year ?? w.year;
   const ctx = newsContext({ ...w, ownMatches: [] });
   w.newsJournal = {
@@ -1542,6 +1561,7 @@ export function initializeNewsJournal(w: World) {
     year: firstYear,
     matches: 0,
     events: 0,
+    count: 0,
     peakUnbeaten: 0,
     peakWinning: 0,
     state: newsState(ctx),

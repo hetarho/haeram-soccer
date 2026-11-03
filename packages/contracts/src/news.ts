@@ -18,6 +18,7 @@ export const newsItemSchema = z.object({
   title: z.string().max(2000),
   detail: z.string().max(8000).optional(),
   celebrate: z.boolean().optional(),
+  sequence: count.optional(),
 });
 export type NewsItem = z.infer<typeof newsItemSchema>;
 export const newsStateSchema = z.object({
@@ -60,6 +61,7 @@ export const newsJournalSchema = z.object({
   year: z.number().int().min(1901).max(4000),
   matches: count,
   events: count,
+  count: count.optional(),
   peakUnbeaten: count,
   peakWinning: count,
   state: newsStateSchema,

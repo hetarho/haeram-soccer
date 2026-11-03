@@ -1,4 +1,4 @@
-import { newsBefore } from '../../../../packages/engine/src/news';
+import { newsBefore, newsTotal } from '../../../../packages/engine/src/news';
 import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
 import { initializeReadModels, needsReadModels } from '../../../../packages/engine/src/read-models';
 import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/src/world-market';
@@ -478,6 +478,7 @@ export class Host {
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
       news: this.news(w),
+      newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
       transferLedger: this.transferLedger(w),
     };

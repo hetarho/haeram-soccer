@@ -14,6 +14,7 @@ test('reads stored older news by page and category after saving and reloading', 
     seed: 'news-journal',
     level: 'easy',
   });
+  w.settings!.mode = 'manual';
   initializeReadModels(w);
   for (let n = 1; n <= 80; n++)
     w.events.push({
@@ -25,6 +26,10 @@ test('reads stored older news by page and category after saving and reloading', 
     });
   refreshReadModels(w);
   await importResponsibilityCareer(page, w);
+  await expect(page.getByTestId('communications-button')).toHaveAttribute(
+    'aria-label',
+    /새 소식 80개/,
+  );
   await page.getByTestId('communications-button').click();
   const sheet = page.getByRole('dialog', { name: '알림·뉴스', exact: true });
   await sheet.getByRole('tab', { name: /^뉴스/ }).click();

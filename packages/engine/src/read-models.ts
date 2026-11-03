@@ -22,6 +22,7 @@ export function needsReadModels(w: World) {
   return (
     !j ||
     !s ||
+    j.count === undefined ||
     j.matches !== w.ownMatches.length ||
     j.events !== w.events.length ||
     j.year !== w.year ||
