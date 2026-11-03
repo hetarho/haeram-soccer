@@ -93,26 +93,31 @@ export function historyWorld(
 /**
  * The ownerless world on the first day of `decade`'s first season — the 1946/47 restart for the
  * 1940s (→WORLD-14) — with every season before it played and archived. `onProgress` hears each
- * season reached, once a season.
+ * season reached, once a season, with the world standing on its first day (→WEB-115).
  */
 export function generateHistory(
   seed: string,
   decade: TakeoverDecade,
-  onProgress?: (season: number) => void,
+  onProgress?: HistoryProgress,
 ): World {
   if (!TAKEOVER_DECADES.includes(decade)) throw new Error('인수 시대를 확인해 주세요.');
   return liveHistory(historyWorld(seed), seasonFrom(decade), onProgress);
 }
 /**
+ * Hears a season reached and the world on its first day, the season just closed archived; it
+ * reads the world and never changes it.
+ */
+export type HistoryProgress = (season: number, w: World) => void;
+/**
  * Lives an ownerless world season by season, each to its close by the day loop, until `first`
  * is the season in play (its first day); `onProgress` hears each season reached.
  */
-export function liveHistory(w: World, first: number, onProgress?: (season: number) => void) {
+export function liveHistory(w: World, first: number, onProgress?: HistoryProgress) {
   while (w.year < first) {
     const season = w.year;
     // Exactly to the close: the day after the final round opens the next season (→LEAGUE-9).
     while (w.year === season) advanceDays(w, SEASON_END_DAY + 1 - currentDay(w), undefined, false);
-    onProgress?.(w.year);
+    onProgress?.(w.year, w);
   }
   return w;
 }

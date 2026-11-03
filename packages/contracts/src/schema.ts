@@ -2,7 +2,7 @@ import { careerReadsSchema } from './career-reads';
 import { newsJournalSchema } from './news';
 import { z } from 'zod';
 z.config({ jitless: true });
-import type { SponsorSlot, World } from './types';
+import type { GenerationDigest, GenerationFeatKind, SponsorSlot, World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
 import { BUILD_OPTIONS, STRATEGY_NAME_LIMIT } from './build';
 import { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS } from './player';
@@ -828,6 +828,40 @@ const personCareer = z.strictObject({
     .optional(),
 });
 export const personCareerSchema = personCareer;
+/** A digest's club: identity, name and association, so the start needs no world (→WEB-115). */
+const digestClub = z.strictObject({ id, name: text, country: text });
+/** The feats of WEB-115, greatest first. */
+export const GENERATION_FEAT_KINDS = [
+  'war',
+  'treble',
+  'europe-three',
+  'ballon-three',
+  'europe-two',
+  'europe-first',
+  'league-run',
+] as const satisfies readonly GenerationFeatKind[];
+/** One season reached while the world is generated (→WEB-115, WORLD-13). */
+export const generationDigestSchema: z.ZodType<GenerationDigest> = z
+  .strictObject({
+    season: z.number().int().min(1930).max(2100),
+    closed: z.number().int().min(1930).max(2100),
+    elo: z
+      .array(z.strictObject({ ...digestClub.shape, elo: z.number().int().min(0).max(4000) }))
+      .max(10),
+    champions: z.array(z.strictObject({ country: text, club: digestClub })).max(8),
+    europe: z.array(z.strictObject({ kind: text, name: text, club: digestClub })).max(8),
+    ballonDor: z.strictObject({ name: text, club: digestClub }).optional(),
+    feat: z
+      .strictObject({
+        kind: z.enum(GENERATION_FEAT_KINDS),
+        club: digestClub.optional(),
+        player: text.optional(),
+        competition: text.optional(),
+        count: z.number().int().min(2).max(100).optional(),
+      })
+      .optional(),
+  })
+  .refine((digest) => digest.closed < digest.season);
 const competitionKey = z.union([
   z.literal(['league', 'europe']),
   z.templateLiteral(['cup:', z.string().min(1).max(90)]),

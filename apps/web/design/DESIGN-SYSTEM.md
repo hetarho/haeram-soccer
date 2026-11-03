@@ -102,6 +102,13 @@ column labels orient the reader, body values stay readable, and row separators r
 than both. An own-club mark may identify our row without turning every alternate row into a
 large highlighted block.
 
+Background facts that change on their own, such as the world's history while it is generated
+(WEB-115), read as compact text lists rather than tables or cards: one `inset` plane holds the
+lists, rows wrap instead of truncating and carry no touch target, and two lists sit side by side
+from 390px and stack below it. A feat announced over them is an overlay card with no controls
+that closes by itself; it takes no pointer events, so nothing underneath waits for it, and
+reduced motion keeps the card without its slide.
+
 In candidate lists, a player's name opens their record with the `link` role; it must not inherit
 the generic framed-button skin. Keep comparison toggles equally quiet and render their checked
 state with the theme's checkbox artwork. Explicit table columns reserve room for identity,

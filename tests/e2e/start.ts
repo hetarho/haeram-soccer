@@ -34,8 +34,36 @@ export const DEFAULT_START = {
 /** The start flow on screen, opened by the start address or a slot's 새 게임. */
 export const startFlow = (page: Page) => page.getByTestId('start-flow');
 
-/** Picks the tier, traits, decade and seed, then 세계 생성 →, and waits for the club list. */
-export async function generateWorld(page: Page, start: CareerStart = {}) {
+/**
+ * The world's history plays while a later decade is generated (→WEB-115): the season reached, the
+ * season just closed, the Club Elo world top 10 and each playable association's league champion
+ * stand on screen before the club list. `whileGenerating` measures the view meanwhile.
+ */
+export async function expectHistoryPlays(
+  flow: Locator,
+  whileGenerating?: (generation: Locator) => Promise<void>,
+) {
+  const generation = flow.getByTestId('world-generation');
+  await expect(generation).toBeVisible();
+  await expect(generation.getByRole('status').first()).toContainText(/\d{4}\/\d{2} 시즌/);
+  const history = generation.getByTestId('generation-history');
+  await expect(history).toContainText(/\d{4}\/\d{2} 시즌 결과/, { timeout: 60000 });
+  await expect(history.getByTestId('generation-elo').locator('li')).toHaveCount(10);
+  const champions = history.getByTestId('generation-champions').locator('li');
+  await expect(champions).toHaveCount(8);
+  await expect(champions.first()).toContainText('잉글랜드');
+  await whileGenerating?.(generation);
+}
+
+/**
+ * Picks the tier, traits, decade and seed, then 세계 생성 →, and waits for the club list; a later
+ * decade checks that its history plays meanwhile.
+ */
+export async function generateWorld(
+  page: Page,
+  start: CareerStart = {},
+  whileGenerating?: (generation: Locator) => Promise<void>,
+) {
   const { tier, traits, decade, seed } = { ...DEFAULT_START, ...start };
   const flow = startFlow(page);
   await expect(flow).toBeVisible();
@@ -56,6 +84,7 @@ export async function generateWorld(page: Page, start: CareerStart = {}) {
   await flow.getByText('고급 설정', { exact: true }).click();
   await flow.getByLabel('세계 생성 시드').fill(seed);
   await flow.getByRole('button', { name: '세계 생성 →', exact: true }).click();
+  if (decade > 1930) await expectHistoryPlays(flow, whileGenerating);
   const listing = flow.getByTestId('club-listing');
   // A 1930 world plays no season first; a later decade plays its seasons behind the progress.
   await expect(listing).toBeVisible({ timeout: decade === 1930 ? 30000 : 600000 });

@@ -1,4 +1,7 @@
-import { useId, useState } from 'react';
+import { useEffect, useId, useState, type CSSProperties } from 'react';
+import { country } from '../../../../packages/catalogs/src/index';
+import type { GenerationDigest } from '../../../../packages/contracts/src/types';
+import { BALLON_DOR_CONFIG } from '../../../../packages/engine/src/ballon-dor';
 import {
   OWNER_TRAIT_IDS,
   OWNER_TRAIT_LIMIT,
@@ -14,6 +17,17 @@ import { OWNER_TIERS, OWNER_TRAITS } from '../../../../packages/engine/src/owner
 import { useLocale } from '../presentation/react';
 import { ClubListing } from './ClubListing';
 import { seasonName } from './format';
+import {
+  cardCloses,
+  closeDue,
+  clubListFollows,
+  featMessages,
+  GENERATION_CARD,
+  NO_CARDS,
+  receiveDigest,
+  type CardSchedule,
+  type GenerationCard,
+} from './generationCards';
 import {
   DECADE_LINES,
   decadeSeason,
@@ -50,6 +64,8 @@ export interface StartFlowProps {
   onGenerate: (choice: StartChoice) => void;
   /** The season the generation has reached (→WEB-15, ARCH-28). */
   progress?: { season: number };
+  /** The latest season's history while the world is generated (→WEB-115). */
+  digest?: GenerationDigest;
   /** Every club on sale once the world stands at the takeover season (→ECON-37). */
   listings?: Listing[];
   /** The chosen tier's fortune in pounds, minor units (→OWNER-3). */
@@ -78,6 +94,7 @@ export interface StartFlowProps {
 export function StartFlow({
   onGenerate,
   progress,
+  digest,
   listings,
   fortune,
   onTakeOver,
@@ -99,7 +116,15 @@ export function StartFlow({
   const [step, setStep] = useState<Step>('tier');
   // A host that restores a start mid-generation passes its progress from the first render.
   const [generating, setGenerating] = useState(() => progress !== undefined);
-  const view = listings ? 'club' : generating ? 'progress' : step;
+  const cards = useGenerationCards(digest);
+  // The club list follows once a feat card on screen, or the last season's waiting one, closes.
+  const view = listings
+    ? clubListFollows(cards, true)
+      ? 'club'
+      : 'progress'
+    : generating
+      ? 'progress'
+      : step;
   const order = STEPS.findIndex(([id]) => id === (view === 'progress' ? 'club' : view));
   const update = (change: Partial<StartChoice>) =>
     setChoice((current) => ({ ...current, ...change }));
@@ -146,7 +171,9 @@ export function StartFlow({
       {view === 'progress' && (
         <GenerationProgress
           choice={choice}
-          season={progress?.season ?? WORLD_START}
+          season={progress?.season ?? digest?.season ?? WORLD_START}
+          digest={digest}
+          card={cards.shown}
           error={error}
           onRetry={generate}
           onChange={() => setGenerating(false)}
@@ -353,10 +380,43 @@ export function DecadeStep({
   );
 }
 
-/** 세계를 생성중… with the season reached (→WEB-15, WORLD-13, ARCH-28). */
+/**
+ * The feat cards' schedule (→WEB-115): each digest arrives once, and a card on screen closes by
+ * itself after `GENERATION_CARD.ms`. A new generation (no digest yet) starts afresh.
+ */
+function useGenerationCards(digest: GenerationDigest | undefined) {
+  const [schedule, setSchedule] = useState<CardSchedule>(NO_CARDS);
+  useEffect(() => {
+    const now = performance.now();
+    setSchedule((current) =>
+      digest ? receiveDigest(closeDue(current, now), digest, now) : NO_CARDS,
+    );
+  }, [digest]);
+  const closes = cardCloses(schedule);
+  useEffect(() => {
+    if (closes === undefined) return;
+    const timer = window.setTimeout(
+      () => setSchedule((current) => closeDue(current, performance.now())),
+      Math.max(0, closes - performance.now()),
+    );
+    return () => window.clearTimeout(timer);
+  }, [closes]);
+  return schedule;
+}
+
+/** The European Cup's first season (→EURO-1), before which the history has no European winner. */
+const EUROPE_FIRST = 1955;
+
+/**
+ * 세계를 생성중… with the season reached (→WEB-15, WORLD-13, ARCH-28) and, for a later decade,
+ * the world's history as it is made (→WEB-115): the season just closed with its 발롱도르, the
+ * Club Elo world top 10, the league champions and European winners, and a feat card over them.
+ */
 export function GenerationProgress({
   choice,
   season,
+  digest,
+  card,
   error,
   blocked = false,
   onRetry,
@@ -364,6 +424,8 @@ export function GenerationProgress({
 }: {
   choice: StartChoice;
   season: number;
+  digest?: GenerationDigest;
+  card?: GenerationCard;
   error?: string;
   blocked?: boolean;
   onRetry?: () => void;
@@ -380,6 +442,7 @@ export function GenerationProgress({
           <b>{seasonName(Math.min(season, year))}</b> 시즌
         </p>
       </div>
+      {year > WORLD_START && <GenerationHistory digest={digest} />}
       <progress aria-label="세계 생성 진행" max={100} value={share} />
       <p className={s.consequence}>
         {seasonName(WORLD_START)} 시즌부터 {seasonName(year)} 시즌 개막까지 · {share}%
@@ -423,6 +486,103 @@ export function GenerationProgress({
           </div>
         </div>
       )}
+      {card && <FeatCard key={card.season} card={card} />}
+    </div>
+  );
+}
+
+/** The latest season's facts, compact text rows that are no touch targets (→WEB-115). */
+function GenerationHistory({ digest }: { digest?: GenerationDigest }) {
+  const { t } = useLocale();
+  if (!digest)
+    return (
+      <p className={s.consequence} data-testid="generation-history">
+        {t('start.history.waiting')}
+      </p>
+    );
+  return (
+    <section
+      className={s.history}
+      data-testid="generation-history"
+      aria-label={t('start.history.region')}
+    >
+      <p className={s.historyHead}>
+        <span>{t('start.history.closed', { season: seasonName(digest.closed) })}</span>
+        <span data-testid="generation-ballon-dor">
+          <small>{t('start.history.ballonDor')}</small>{' '}
+          {digest.ballonDor ? (
+            <>
+              <b>{digest.ballonDor.name}</b> · {digest.ballonDor.club.name}
+            </>
+          ) : (
+            t('start.history.ballonDorBefore', { season: seasonName(BALLON_DOR_CONFIG.first) })
+          )}
+        </span>
+      </p>
+      <div className={s.lists} data-surface="inset">
+        <section className={s.list} aria-label={t('start.history.elo')}>
+          <h3>{t('start.history.elo')}</h3>
+          <ol data-testid="generation-elo">
+            {digest.elo.map((row) => (
+              <li key={row.id}>
+                <span className={s.name}>{row.name}</span>
+                <small>{row.country}</small>
+                <b>{row.elo}</b>
+              </li>
+            ))}
+          </ol>
+        </section>
+        <section className={s.list} aria-label={t('start.history.champions')}>
+          <h3>{t('start.history.champions')}</h3>
+          <ul data-testid="generation-champions">
+            {digest.champions.map((row) => (
+              <li key={row.country}>
+                <small>{country(row.country).name}</small>
+                <span className={s.name}>{row.club.name}</span>
+              </li>
+            ))}
+          </ul>
+          <h3>{t('start.history.europe')}</h3>
+          {digest.europe.length ? (
+            <ul data-testid="generation-europe">
+              {digest.europe.map((row) => (
+                <li key={row.kind}>
+                  <small>{row.name}</small>
+                  <span className={s.name}>{row.club.name}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={s.listNote}>
+              {t('start.history.europeBefore', { season: seasonName(EUROPE_FIRST) })}
+            </p>
+          )}
+        </section>
+      </div>
+    </section>
+  );
+}
+
+/** A great feat's card: no input, closing by itself (→WEB-115). */
+function FeatCard({ card }: { card: GenerationCard }) {
+  const { t } = useLocale();
+  const { title, line } = featMessages(card, seasonName);
+  return (
+    <div className={s.featLayer}>
+      <div
+        className={s.feat}
+        role="status"
+        aria-live="polite"
+        data-testid="generation-feat"
+        data-feat={card.feat.kind}
+        style={{ '--feat-ms': `${GENERATION_CARD.ms}ms` } as CSSProperties}
+      >
+        <small>
+          {t('start.feat.label')} · {seasonName(card.closed)}
+        </small>
+        <b>{t(...title)}</b>
+        <span>{t(...line)}</span>
+      </div>
     </div>
   );
 }

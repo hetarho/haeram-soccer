@@ -1,4 +1,4 @@
-import { lazy, useEffect, useState, type ReactNode } from 'react';
+import { lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Story } from './catalog';
 import type { Sample, previewRuntime } from './client';
 import { Panel, Table } from '../ui/App';
@@ -86,8 +86,13 @@ import type {
   StartChoice,
   WealthTier,
 } from '../../../../packages/contracts/src/owner';
-import type { World } from '../../../../packages/contracts/src/types';
-import { country, currency } from '../../../../packages/catalogs/src/index';
+import type {
+  GenerationDigest,
+  GenerationFeat,
+  World,
+} from '../../../../packages/contracts/src/types';
+import { COUNTRIES, country, currency } from '../../../../packages/catalogs/src/index';
+import { eloOf } from '../../../../packages/engine/src/elo';
 import { GameSlotScreen } from '../ui/GameSlotScreen';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
@@ -690,6 +695,47 @@ function previewSheet(w: World, clubId: string, year: number): ClubSheetFacts | 
     },
   };
 }
+/**
+ * A sample season of the generation history view (→WEB-115) from the preview world's clubs: its
+ * Elo top 10, the first club of each playable country as champion and, from 1955/56, the European
+ * Cup and 발롱도르; a feat card on the 1946 restart and every few seasons after it.
+ */
+function previewDigest(w: World, season: number): GenerationDigest {
+  const named = (club: World['clubs'][number]) => ({
+    id: club.id,
+    name: club.name,
+    country: club.country,
+  });
+  const elo = [...w.clubs]
+    .sort((a, b) => eloOf(b) - eloOf(a))
+    .slice(0, 10)
+    .map((club) => ({ ...named(club), elo: Math.round(eloOf(club)) }));
+  const champions = COUNTRIES.flatMap(({ code }) => {
+    const club = w.clubs.find((item) => item.country === code && !item.representative);
+    return club ? [{ country: code, club: named(club) }] : [];
+  });
+  const best = w.clubs.find((club) => club.id === elo[0]?.id) ?? w.clubs[0]!;
+  const european = season > 1955;
+  const feat: GenerationFeat | undefined =
+    season === 1946
+      ? { kind: 'war' }
+      : european && season % 3 === 0
+        ? { kind: 'europe-two', club: named(best), competition: 'European Cup', count: 2 }
+        : season % 4 === 0
+          ? { kind: 'league-run', club: champions[0]!.club, count: 5 }
+          : undefined;
+  return {
+    season,
+    closed: season === 1946 ? 1938 : season - 1,
+    elo,
+    champions,
+    europe: european ? [{ kind: 'ucl', name: 'European Cup', club: named(best) }] : [],
+    ...(european
+      ? { ballonDor: { name: w.players[0]?.name ?? 'A. Player', club: named(best) } }
+      : {}),
+    ...(feat ? { feat } : {}),
+  };
+}
 /** The start flow on preview data: every step, a simulated generation and the takeover list. */
 function StartFlowStory({
   runtime,
@@ -702,6 +748,12 @@ function StartFlowStory({
   const [mode, setMode] = useState<'choice' | 'progress' | 'list'>('choice');
   const [run, setRun] = useState<{ choice: StartChoice; season: number }>();
   const [listed, setListed] = useState<ReturnType<typeof previewStart>>();
+  // The history view's season (→WEB-115): the simulated run's, and a fixed one for 생성 중.
+  const digest = useMemo(
+    () => (run && run.season > 1930 ? previewDigest(w, run.season) : undefined),
+    [w, run],
+  );
+  const sample = useMemo(() => previewDigest(w, 1965), [w]);
   useEffect(() => {
     if (!run || listed) return;
     const year = takeoverYear(run.choice.decade);
@@ -744,6 +796,7 @@ function StartFlowStory({
           onBack={noop}
           onGenerate={(choice) => setRun({ choice, season: 1930 })}
           progress={run && !listed ? { season: run.season } : undefined}
+          digest={digest}
           listings={listed?.listings}
           fortune={listed?.fortune}
           loadClub={loadClub}
@@ -753,8 +806,9 @@ function StartFlowStory({
       {mode === 'progress' && (
         <StartFlow
           key="progress"
-          initial={{ tier: 'oil', traits: ['talisman', 'marketer'], decade: 1960 }}
-          progress={{ season: 1947 }}
+          initial={{ tier: 'oil', traits: ['talisman', 'marketer'], decade: 1970 }}
+          progress={{ season: 1965 }}
+          digest={sample}
           onGenerate={noop}
           onTakeOver={takeOver}
         />

@@ -936,6 +936,50 @@ export interface BallonDorPlace {
   points: number;
   honours: BallonDorHonour[];
 }
+/** A club as a generation digest names it, so the start shows it without the world (→WEB-115). */
+export interface DigestClub {
+  id: string;
+  name: string;
+  country: string;
+}
+/**
+ * A season's great feat while the world is generated, greatest first (→WEB-115): the war's stop and
+ * restart, a treble, the European Cup lineage kept three seasons running, a third 발롱도르 in a
+ * row, the European Cup kept two seasons running, a club's first European Cup, a league run.
+ */
+export type GenerationFeatKind =
+  'war' | 'treble' | 'europe-three' | 'ballon-three' | 'europe-two' | 'europe-first' | 'league-run';
+export interface GenerationFeat {
+  kind: GenerationFeatKind;
+  /** The feat's club; absent for the war. */
+  club?: DigestClub;
+  /** The 발롱도르 winner of `ballon-three`. */
+  player?: string;
+  /** The European Cup lineage's name in that season (European Cup, Champions League; →EURO-1). */
+  competition?: string;
+  /** Titles in a row: the run of a European, 발롱도르 or league feat. */
+  count?: number;
+}
+/**
+ * One season reached while the world is generated (→WEB-115, WORLD-13): the facts of the season
+ * just closed, read from its archive and the clubs' Elo, never invented (→WORLD-8).
+ */
+export interface GenerationDigest {
+  /** The season reached, standing on its first day. */
+  season: number;
+  /** The season just closed: 1938 for the 1946 restart (→WORLD-14). */
+  closed: number;
+  /** The world's ten best clubs by Club Elo, best first (→HIST-12). */
+  elo: (DigestClub & { elo: number })[];
+  /** Each playable association's league champion, in WORLD-1's order. */
+  champions: { country: string; club: DigestClub }[];
+  /** The winners of the continental competitions decided that season, the Super Cup aside. */
+  europe: { kind: string; name: string; club: DigestClub }[];
+  /** The 발롱도르 winner, from 1955/56 (→PLAYER-27). */
+  ballonDor?: { name: string; club: DigestClub };
+  /** The season's greatest feat, at most one. */
+  feat?: GenerationFeat;
+}
 /** A finished knockout from its first round of 32 clubs or fewer to the final; clubs index `clubs`. */
 export interface BracketArchive {
   /** `cup` for the domestic cup, otherwise the continental competition key. */

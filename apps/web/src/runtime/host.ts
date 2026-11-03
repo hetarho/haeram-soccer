@@ -43,6 +43,7 @@ import {
 } from '../../../../packages/engine/src/index';
 import { managerHistoryPage } from '../../../../packages/engine/src/manager-achievements';
 import { generateHistory, HISTORY_START } from '../../../../packages/engine/src/history';
+import { seasonDigest } from '../../../../packages/engine/src/generation-digest';
 import { seasonAfter, seasonFrom } from '../../../../packages/engine/src/wartime';
 import { takeOver } from '../../../../packages/engine/src/takeover';
 import { clubListings } from '../../../../packages/engine/src/listing';
@@ -720,9 +721,18 @@ export class Host {
         // One generation at a time; a new one drops the world an earlier one left untaken.
         this.start = undefined;
         let played = 0;
-        const world = generateHistory(choice.seed, choice.decade, (season) => {
+        // Each season reached carries its digest for the history view (→WEB-115); the view never
+        // holds the generation back.
+        const world = generateHistory(choice.seed, choice.decade, (season, w) => {
           played++;
-          this.progress({ requestId: r.requestId, ok: true, progress: played / total, season });
+          const digest = seasonDigest(w);
+          this.progress({
+            requestId: r.requestId,
+            ok: true,
+            progress: played / total,
+            season,
+            ...(digest ? { digest } : {}),
+          });
         });
         this.start = { world, choice };
         start = {
