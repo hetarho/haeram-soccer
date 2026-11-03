@@ -1,4 +1,4 @@
-import type { World } from '../../contracts/src/types';
+import type { PersonCareer, World } from '../../contracts/src/types';
 
 /**
  * The read-only inputs an unowned fixture consumes (ARCH-6); no campaign execution imports.
@@ -17,11 +17,36 @@ export const FIXTURE_READ_KEYS = [
   'year',
 ] as const satisfies readonly (keyof World)[];
 export type FixtureReadKey = (typeof FIXTURE_READ_KEYS)[number];
-export type FixtureReadCopy = Pick<World, FixtureReadKey>;
+/** Active roster identities need these fields; inactive people only reserve their IDs. */
+export const FIXTURE_PERSON_READ_KEYS = [
+  'id',
+  'name',
+  'born',
+  'position',
+  'professionalism',
+  'qualities',
+  'origin',
+  'playing',
+  'club',
+] as const satisfies readonly (keyof PersonCareer)[];
+export type FixtureReadPerson = Pick<PersonCareer, 'id' | 'playing'> & Partial<PersonCareer>;
+export type FixtureReadCopy = Omit<Pick<World, FixtureReadKey>, 'people'> & {
+  people?: Record<string, FixtureReadPerson>;
+};
 
 export function readCopy(w: World): FixtureReadCopy {
   const copy: Partial<Record<FixtureReadKey, unknown>> = {};
-  for (const key of FIXTURE_READ_KEYS) if (key in w) copy[key] = w[key];
+  for (const key of FIXTURE_READ_KEYS) if (key in w && key !== 'people') copy[key] = w[key];
+  if (w.people)
+    copy.people = Object.fromEntries(
+      Object.entries(w.people).map(([id, person]) => {
+        const row: FixtureReadPerson = { id: person.id, playing: person.playing };
+        if (person.playing === 'active')
+          for (const key of FIXTURE_PERSON_READ_KEYS)
+            if (key in person) Object.assign(row, { [key]: person[key] });
+        return [id, row];
+      }),
+    );
   return copy as FixtureReadCopy;
 }
 
@@ -35,16 +60,8 @@ export function fixtureRosterKey(copy: FixtureReadCopy): string {
     copy.seed,
     copy.year,
     copy.clubs.map((c) => [c.id, c.country, c.strength, c.tier]),
-    Object.values(copy.people ?? {}).map((p) => [
-      p.id,
-      p.name,
-      p.born,
-      p.position,
-      p.professionalism,
-      p.qualities,
-      p.origin,
-      p.playing,
-      p.club,
-    ]),
+    Object.values(copy.people ?? {}).map((p) =>
+      p.playing === 'active' ? FIXTURE_PERSON_READ_KEYS.map((key) => p[key]) : [p.id, p.playing],
+    ),
   ]);
 }
