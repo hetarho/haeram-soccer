@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T08:13Z | - |
 
 ## inbox
 - 261103 decided WEB-17 WEB-56 ARCH-21 T687: the 360x740 overflow in match-core, native-touch and the compact market (≈66 px) is the money band of a 1930 takeover's cash 0, not a takeover screen → those journeys fund the club first with the HUD's first 자금 투입 step, match-core's engine reference putting in the same step (alt: compress the theatre to fit beside the band, a design change | drop the band from the theatre, against WEB-56's every view). ot03
