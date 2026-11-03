@@ -4,7 +4,10 @@ import {
   SaveCompatibilityError,
   type CheckpointSchema,
 } from '../../../../packages/contracts/src/versions';
+/** The small fallback store keeps its original compact-checkpoint budget. */
 export const CHECKPOINT_LIMIT = 3 * 1024 * 1024;
+export const INDEXED_CHECKPOINT_LIMIT = 6 * 1024 * 1024;
+export const PORTABLE_FILE_LIMIT = 8 * 1024 * 1024;
 export const TOTAL_LIMIT = 3.5 * 1024 * 1024;
 export const MANIFEST = 'haeram-soccor:manifest';
 export const SLOT = ['haeram-soccor:slot:a', 'haeram-soccor:slot:b'];

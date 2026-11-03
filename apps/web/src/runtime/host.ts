@@ -1,3 +1,4 @@
+import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
 import { newsBefore, newsTotal } from '../../../../packages/engine/src/news';
 import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
 import { initializeReadModels, needsReadModels } from '../../../../packages/engine/src/read-models';
@@ -608,6 +609,7 @@ export class Host {
     this.codec.postMessage({
       id: r.requestId,
       world: w,
+      ...(r.checkpointBudget !== undefined ? { checkpointBudget: r.checkpointBudget } : {}),
       generation: r.generation,
       parentGeneration: r.parentGeneration,
     });
@@ -663,7 +665,8 @@ export class Host {
         if (r.body.metadataOnly) worldMetadata = worldMetadataOf(activated);
         else if (!r.body.activate) candidate = structuredClone(activated);
         if (r.body.activate) this.world = activated;
-        if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
+        if (upgraded)
+          raw = await encode(activated, r.generation, r.parentGeneration, r.checkpointBudget);
         envelope = result.envelope;
       } else if (r.body.type === 'found') {
         if (this.world && !r.body.replace)
@@ -756,7 +759,7 @@ export class Host {
           w.revision++;
           changed = true;
         } else if (r.body.type === 'export')
-          raw = await encode(w, r.generation, r.parentGeneration);
+          raw = await encode(w, r.generation, r.parentGeneration, INDEXED_CHECKPOINT_LIMIT);
       }
       if (changed && this.world)
         this.world.receiptIds = [...this.world.receiptIds.slice(-199), r.requestId];

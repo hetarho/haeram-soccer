@@ -14,7 +14,11 @@ import { eventsInSeason } from '../packages/engine/src/season-index';
 import { tallies } from '../apps/web/src/runtime/playerTallies';
 import { decode, checkpoint } from '../apps/web/src/adapters/persistence';
 import { createWorld } from '../packages/engine/src/founding';
-import { CHECKPOINT_LIMIT, SLOT } from '../apps/web/src/adapters/repository';
+import {
+  CHECKPOINT_LIMIT,
+  INDEXED_CHECKPOINT_LIMIT,
+  SLOT,
+} from '../apps/web/src/adapters/repository';
 
 const arg = (flag: string) => process.argv[process.argv.indexOf(flag) + 1];
 const median = (xs: number[]) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length / 2)];
@@ -113,7 +117,7 @@ async function codec(w: World) {
   const old = { ...w };
   delete old.newsJournal;
   delete old.careerReads;
-  const newer = { ...old };
+  const newer = { ...w };
   const start = performance.now();
   initializeReadModels(newer);
   const initializeMs = performance.now() - start;
@@ -134,15 +138,32 @@ async function codec(w: World) {
     );
     const t = performance.now();
     try {
-      const { raw } = await checkpoint(world);
+      const { raw } = await checkpoint(
+        world,
+        1,
+        0,
+        process.argv.includes('--indexed') ? INDEXED_CHECKPOINT_LIMIT : undefined,
+      );
+      const checkpointMs = performance.now() - t;
+      const verificationStarted = performance.now();
+      const restored = (await decode(raw)).world;
       cases.push({
         label,
+        codec: JSON.parse(raw).codec,
+        fileBytes: Buffer.byteLength(raw),
+        originalFactsEqual:
+          canonical({ ...restored, newsJournal: undefined, careerReads: undefined }) ===
+          canonical(old),
         checkpointUtf16Bytes: raw.length * 2,
-        withinCheckpointLimit: 2 * (raw.length + SLOT[0].length) <= CHECKPOINT_LIMIT,
-        encodeValidateMs: performance.now() - t,
+        withinCheckpointLimit:
+          2 * (raw.length + SLOT[0].length) <=
+          (process.argv.includes('--indexed') ? INDEXED_CHECKPOINT_LIMIT : CHECKPOINT_LIMIT),
+        encodeValidateMs: checkpointMs,
+        independentVerificationMs: performance.now() - verificationStarted,
         summariesSurvive:
           label === 'original' ||
-          canonical((await decode(raw)).world.newsJournal) === canonical(world.newsJournal),
+          (canonical(restored.newsJournal) === canonical(world.newsJournal) &&
+            canonical(restored.careerReads) === canonical(world.careerReads)),
       });
     } catch (error) {
       cases.push({ label, failure: String(error), encodeValidateMs: performance.now() - t });

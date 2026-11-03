@@ -33,7 +33,13 @@ import {
   SUPPORTED_ENGINE_VERSIONS,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import { SAVE_CODECS, type Envelope } from './repository';
+import {
+  SAVE_CODECS,
+  INDEXED_CHECKPOINT_LIMIT,
+  PORTABLE_FILE_LIMIT,
+  SLOT,
+  type Envelope,
+} from './repository';
 export { CHECKPOINT_LIMIT, TOTAL_LIMIT } from './repository';
 export type { Envelope, StoragePort, SaveInspector, PreviousStore } from './repository';
 async function digest(bytes: Uint8Array) {
@@ -42,11 +48,23 @@ async function digest(bytes: Uint8Array) {
     (b) => b.toString(16).padStart(2, '0'),
   ).join('');
 }
-export async function encode(w: World, generation = 1, parentGeneration = 0): Promise<string> {
+export async function encode(
+  w: World,
+  generation = 1,
+  parentGeneration = 0,
+  checkpointBudget?: number,
+): Promise<string> {
+  if (
+    checkpointBudget !== undefined &&
+    (!Number.isSafeInteger(checkpointBudget) ||
+      checkpointBudget < 1 ||
+      checkpointBudget > INDEXED_CHECKPOINT_LIMIT)
+  )
+    throw new Error('저장 예산이 올바르지 않습니다.');
   const schema = checkpointContainerFor(w);
   const bytes = new TextEncoder().encode(canonical(pack(w)));
-  const payload = await encodePayload(bytes);
-  const e: Envelope = {
+  const checksum = await digest(bytes);
+  const envelope = (payload: Awaited<ReturnType<typeof encodePayload>>): Envelope => ({
     schema,
     engine: w.engine,
     catalog: w.catalog,
@@ -55,17 +73,33 @@ export async function encode(w: World, generation = 1, parentGeneration = 0): Pr
     generation,
     parentGeneration,
     codec: payload.codec,
-    checksum: await digest(bytes),
+    checksum,
     payload: payload.payload,
-  };
-  return JSON.stringify(e);
+  });
+  const payload = await encodePayload(
+    bytes,
+    checkpointBudget === undefined
+      ? undefined
+      : (candidate) => {
+          const raw = JSON.stringify(envelope(candidate));
+          return (
+            2 * (raw.length + SLOT[0].length) <= checkpointBudget &&
+            new TextEncoder().encode(raw).length <= PORTABLE_FILE_LIMIT
+          );
+        },
+  );
+  return JSON.stringify(envelope(payload));
 }
 /**
  * Everything a checkpoint is checked for before its payload means anything: header, versions,
  * catalog pin, codec, bounded decompression and checksum, then the JSON it carries.
  */
 async function readEnvelope(raw: string, supported: readonly string[]) {
-  if (raw.length > 8 * 1024 * 1024) throw new Error('저장 파일이 너무 큽니다.');
+  if (
+    raw.length > PORTABLE_FILE_LIMIT ||
+    new TextEncoder().encode(raw).length > PORTABLE_FILE_LIMIT
+  )
+    throw new Error('저장 파일이 너무 큽니다.');
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
     throw new Error('저장 헤더가 올바르지 않습니다.');
@@ -201,7 +235,12 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
  * The codec worker's checkpoint (→ARCH-13): encoded, then decoded and validated as a load would, so
  * only a candidate that loads is ever handed to the slot writer.
  */
-export async function checkpoint(w: World, generation = 1, parentGeneration = 0) {
-  const raw = await encode(w, generation, parentGeneration);
+export async function checkpoint(
+  w: World,
+  generation = 1,
+  parentGeneration = 0,
+  checkpointBudget?: number,
+) {
+  const raw = await encode(w, generation, parentGeneration, checkpointBudget);
   return { raw, envelope: (await decode(raw)).envelope };
 }

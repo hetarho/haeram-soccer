@@ -1,3 +1,4 @@
+import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
@@ -628,6 +629,7 @@ describe('background worker publication', () => {
   it('activates an explicit import while ignoring unsolicited stale worker responses', async () => {
     const client = await start(),
       replacement = simulatedWorld({ ...founding, seed: 'replacement', name: 'New Athletic' });
+    initializeReadModels(replacement);
     await client.importFile(await encode(replacement));
     expect(client.state.view?.world.id).toBe(replacement.id);
     expect(client.state.savedRevision).toBe(0);
@@ -859,9 +861,9 @@ describe('rules-4.0.0 checkpoints in game version 0.7.0 (→SAVE-10)', () => {
     const saved = await decode(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'b' : 'a'}`)!);
     // Only the version label and the world revision of the activation change.
     expect(saved.envelope.engine).toBe(CURRENT_ENGINE_VERSION);
-    expect(canonical(saved.world)).toBe(
-      canonical({ ...career, engine: CURRENT_ENGINE_VERSION, revision: career.revision + 1 }),
-    );
+    const expected = { ...career, engine: CURRENT_ENGINE_VERSION, revision: career.revision + 1 };
+    initializeReadModels(expected);
+    expect(canonical(saved.world)).toBe(canonical(expected));
     // The career as it was stays the previous copy until a newer save commits.
     expect(storage.getItem(`haeram-soccor:slot:${manifest.slot ? 'a' : 'b'}`)).toBe(raw);
     // Loading it again changes nothing.
@@ -1060,6 +1062,7 @@ describe('earlier-rules and future saves: compatibility recovery', () => {
     expect(client.state.view).toBeUndefined();
     storage.fail = 'haeram-soccor:manifest';
     const replacement = simulatedWorld({ ...founding, seed: 'explicit-recovery-quota' });
+    initializeReadModels(replacement);
     await client.importFile(await encode(replacement));
     expect(client.state.error).toContain('Quota');
     expect(client.state.view?.world.id).toBe(replacement.id);

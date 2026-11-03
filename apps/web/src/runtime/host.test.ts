@@ -1,3 +1,4 @@
+import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
 import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { signSponsor, sponsorSlots } from '../../../../packages/engine/src/sponsors';
@@ -282,13 +283,22 @@ describe('worker command protocol', () => {
     await h.handle(req('days', 0, { type: 'command', command: { type: 'advance-days', days: 2 } }));
     const revision = h.world!.revision;
     expect(revision).toBeGreaterThan(0);
-    const saving = await h.handle({ ...req('save', -1, { type: 'save' }), generation: 4 });
+    const saving = await h.handle({
+      ...req('save', -1, { type: 'save' }),
+      generation: 4,
+      checkpointBudget: INDEXED_CHECKPOINT_LIMIT,
+    });
     expect(saving.ok).toBe(true);
     expect(saving.view).toBeUndefined();
     expect(saving.raw).toBeUndefined();
     expect(saving.saving).toEqual({ worldId: h.world!.id, revision });
     expect(jobs).toHaveLength(1);
-    expect(jobs[0]).toMatchObject({ id: 'save', generation: 4, parentGeneration: 0 });
+    expect(jobs[0]).toMatchObject({
+      id: 'save',
+      generation: 4,
+      parentGeneration: 0,
+      checkpointBudget: INDEXED_CHECKPOINT_LIMIT,
+    });
     const result = await build(jobs[0]);
     if (!result.ok) throw new Error(result.error);
     expect(result.revision).toBe(revision);

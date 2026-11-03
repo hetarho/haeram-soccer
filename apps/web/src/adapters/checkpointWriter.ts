@@ -1,6 +1,8 @@
 import {
   ACTIVE,
   CHECKPOINT_LIMIT,
+  INDEXED_CHECKPOINT_LIMIT,
+  PORTABLE_FILE_LIMIT,
   MANIFEST,
   PREVIOUS,
   SLOT,
@@ -41,7 +43,11 @@ export async function writeCheckpoint(
   raw: string,
   lineage: Lineage,
 ): Promise<Source> {
-  if (2 * (raw.length + SLOT[0].length) > CHECKPOINT_LIMIT)
+  const limit = indexed ? INDEXED_CHECKPOINT_LIMIT : CHECKPOINT_LIMIT;
+  if (
+    2 * (raw.length + SLOT[0].length) > limit ||
+    new TextEncoder().encode(raw).length > PORTABLE_FILE_LIMIT
+  )
     throw new Error('저장 용량 한도에 도달했습니다. 현재 진행을 파일로 내보내세요.');
   if (indexed) {
     const manifest = JSON.stringify({ slot: ACTIVE, ...lineage });

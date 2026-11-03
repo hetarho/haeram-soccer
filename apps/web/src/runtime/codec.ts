@@ -4,7 +4,12 @@ import type { CodecJob, CodecResult } from './protocol';
 /** Builds and validates one checkpoint; a failure is answered, never thrown, and nothing is written. */
 export async function build(job: CodecJob): Promise<CodecResult> {
   try {
-    const { raw, envelope } = await checkpoint(job.world, job.generation, job.parentGeneration);
+    const { raw, envelope } = await checkpoint(
+      job.world,
+      job.generation,
+      job.parentGeneration,
+      job.checkpointBudget,
+    );
     return { id: job.id, ok: true, revision: job.world.revision, raw, envelope };
   } catch (error) {
     return {

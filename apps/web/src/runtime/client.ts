@@ -1,3 +1,4 @@
+import { INDEXED_CHECKPOINT_LIMIT } from '../adapters/repository';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
@@ -108,6 +109,7 @@ export class GameClient {
   private saveWanted = false;
   /** Saves automatic progress no later than AUTOSAVE_MS after its first unsaved day. */
   private autosaveTimer?: number;
+  private indexedCheckpoints = false;
   private session = crypto.randomUUID();
   private serial = 0;
   private actionSerial = 0;
@@ -158,6 +160,7 @@ export class GameClient {
   };
   constructor(private notify: (state: ClientState) => void) {
     const indexed = IndexedDbCheckpointKey.available();
+    this.indexedCheckpoints = indexed;
     this.saves = new SaveRepository(
       localStorage,
       async (raw) => {
@@ -510,6 +513,7 @@ export class GameClient {
       const head = this.head;
       this.worker.postMessage({
         protocol: 1,
+        ...(this.indexedCheckpoints ? { checkpointBudget: INDEXED_CHECKPOINT_LIMIT } : {}),
         session: this.session,
         requestId,
         expectedRevision: head?.world.revision ?? -1,

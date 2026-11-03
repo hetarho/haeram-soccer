@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { PreviousUnavailableError, writeCheckpoint } from './checkpointWriter';
 import {
   CHECKPOINT_LIMIT,
+  INDEXED_CHECKPOINT_LIMIT,
+  PORTABLE_FILE_LIMIT,
   SaveRepository,
   type Envelope,
   type PreviousStore,
@@ -270,17 +272,33 @@ describe('save repository', () => {
     expect([previous.raw, active.raw]).toEqual([checkpoint(1, size), checkpoint(2, size)]);
     expect([...storage.data.keys()]).toEqual([MANIFEST]);
   });
-  it.each([true, false])('refuses a candidate over 3 MiB (IndexedDB: %s)', async (idb) => {
+  it.each([true, false])('enforces the selected checkpoint budget (IndexedDB: %s)', async (idb) => {
     const { storage, active, open } = setup(idb);
     const saves = open();
     await saves.commit(checkpoint(1));
     const before = [new Map(storage.data), active.raw];
-    await expect(saves.commit(checkpoint(2, sized(CHECKPOINT_LIMIT) + 400))).rejects.toThrow(
-      '한도',
-    );
+    const limit = idb ? INDEXED_CHECKPOINT_LIMIT : CHECKPOINT_LIMIT;
+    await expect(saves.commit(checkpoint(2, sized(limit) + 400))).rejects.toThrow('한도');
     expect([storage.data, active.raw]).toEqual(before);
-    // A checkpoint just within 3 MiB is kept.
-    await saves.commit(checkpoint(2, sized(CHECKPOINT_LIMIT)));
+    // The selected layout keeps a candidate just within its own bound.
+    await saves.commit(checkpoint(2, sized(limit)));
     expect((await open().load())?.envelope.generation).toBe(2);
+  });
+  it('keeps larger indexed active and previous copies but rejects an unexportable UTF-8 file before writing', async () => {
+    const { storage, previous, active, open } = setup();
+    const saves = open();
+    const big = sized(CHECKPOINT_LIMIT + 500_000);
+    await saves.commit(checkpoint(1, big));
+    await saves.commit(checkpoint(2, big));
+    expect(active.raw).toBe(checkpoint(2, big));
+    expect(previous.raw).toBe(checkpoint(1, big));
+    const before = [new Map(storage.data), active.raw, previous.raw];
+    const raw = checkpoint(3).replace(
+      'x'.repeat(100),
+      '한'.repeat(Math.ceil(PORTABLE_FILE_LIMIT / 3)),
+    );
+    expect(raw.length * 2).toBeLessThan(INDEXED_CHECKPOINT_LIMIT);
+    await expect(saves.commit(raw)).rejects.toThrow('한도');
+    expect([storage.data, active.raw, previous.raw]).toEqual(before);
   });
 });
