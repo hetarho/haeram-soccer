@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import type { MatchRecord, World } from '../../contracts/src/types';
 import { newsJournalSchema } from '../../contracts/src/news';
 import {
   clubNews,
@@ -9,47 +8,7 @@ import {
   refreshNewsJournal,
 } from './news';
 
-/** Synthetic facts only: no simulation or browser setup. */
-function facts(): World {
-  return {
-    year: 1930,
-    round: 0,
-    playerClub: 'own',
-    lower: true,
-    clubs: [
-      { id: 'own', name: 'Town', country: 'ENG', tier: 0, group: 0 },
-      { id: 'rival', name: 'City', country: 'ENG', tier: 0, group: 0 },
-    ],
-    players: [{ id: 'scorer', name: 'First Name' }],
-    ownMatches: [],
-    events: [],
-    history: [],
-    rankHistory: [],
-  } as unknown as World;
-}
-function result(w: World, n: number, goals = 1): MatchRecord {
-  const metrics = () => Array<number>(12).fill(0);
-  const player = metrics();
-  player[0] = goals;
-  player[10] = 90;
-  return {
-    id: `${w.year}:league:${n}`,
-    year: w.year,
-    round: n,
-    kind: 'league',
-    home: 'own',
-    away: 'rival',
-    score: { home: goals, away: 0 },
-    metrics: [metrics(), metrics()],
-    highlights: [],
-    players: [{ id: 'scorer', metrics: player }],
-  } as unknown as MatchRecord;
-}
-function play(w: World, n: number, goals = 1) {
-  w.round = n;
-  w.ownMatches.push(result(w, n, goals));
-  refreshNewsJournal(w);
-}
+import { facts, play, result } from '../../../tests/fixtures/read-facts';
 
 describe('incremental news journal', () => {
   it('matches the fact reader for a current season, with stable IDs and no duplicate settlement', () => {

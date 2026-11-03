@@ -1,4 +1,4 @@
-import { refreshNewsJournal } from './news';
+import { refreshReadModels } from './read-models';
 import { resolveMediation } from './mediation';
 import { answerPlayingCoach } from './playing-coach';
 import type { World, Command } from '../../contracts/src/types';
@@ -71,6 +71,6 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
     default:
       squadCommand(w, cmd);
   }
-  refreshNewsJournal(w);
+  refreshReadModels(w);
   w.revision++;
 }

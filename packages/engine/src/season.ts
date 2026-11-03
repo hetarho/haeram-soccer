@@ -1,4 +1,4 @@
-import { refreshNewsJournal } from './news';
+import { refreshReadModels } from './read-models';
 import { openNeed } from './replacements';
 import { callUpFor } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
@@ -258,7 +258,7 @@ export function recordMatch(w: World, playback: MatchPlayback, league = false) {
     // The manager in charge is frozen on the kept record as it settles (→HIST-18).
     const saved = attributeOwnMatch(w, { ...m, players, ...(lineCounts ? { lineCounts } : {}) });
     w.ownMatches.push(saved);
-    refreshNewsJournal(w);
+    refreshReadModels(w);
     gate(w, m);
     // Every starter settles a little by the slot he played, a substitute by the slot of the
     // player he replaced (→PLAYER-12).
@@ -694,7 +694,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   promote(w);
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
   retainRecentResults(w);
-  refreshNewsJournal(w);
+  refreshReadModels(w);
   // The season's own match material, the playoff's included, becomes one heat map per own player
   // (→MATCH-5).
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
@@ -716,7 +716,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     '시즌의 마지막 페이지',
     `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
   );
-  refreshNewsJournal(w);
+  refreshReadModels(w);
   w.year++;
   w.calendar = { day: 0 };
   atCareerDate(w, { year: w.year - 1, day: SEASON_END_DAY + 1 }, () => {
@@ -809,7 +809,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // The new season's first day of club business opens the summer window.
   clubDay(w);
   sponsorReminder(w);
-  refreshNewsJournal(w);
+  refreshReadModels(w);
 }
 /**
  * One round: the days up to and including its league match day, each lived as a day step lives it
@@ -1022,7 +1022,7 @@ export function clubDay(w: World) {
   contractTalks(w);
   transferRequests(w);
   clearHealed(w);
-  refreshNewsJournal(w);
+  refreshReadModels(w);
 }
 /** Off days only move the clock. Matches and existing weekly costs settle on their due day. */
 export function advanceDays(

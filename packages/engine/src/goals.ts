@@ -1,3 +1,4 @@
+import { careerPromotion } from './career-reads';
 import type { World } from '../../contracts/src/types';
 import { clubOf } from './player-state';
 
@@ -37,14 +38,16 @@ function goal(
 /** Retained canonical facts are the only source; reading milestones never awards or writes anything. */
 export function clubMilestones(w: World) {
   const own = clubOf(w),
-    archived = [...w.history].sort((a, b) => a.year - b.year),
-    wins = w.ownMatches.filter((match) =>
-      match.home === w.playerClub
-        ? match.score.home > match.score.away
-        : match.score.away > match.score.home,
-    ).length;
+    archived = w.careerReads ? [] : [...w.history].sort((a, b) => a.year - b.year),
+    wins =
+      w.careerReads?.wins ??
+      w.ownMatches.filter((match) =>
+        match.home === w.playerClub
+          ? match.score.home > match.score.away
+          : match.score.away > match.score.home,
+      ).length;
   const hasPromotion =
-    w.events.some((event) => event.kind === 'promotion') ||
+    (w.careerReads ? careerPromotion(w) : w.events.some((event) => event.kind === 'promotion')) ||
     archived.some((season, index) => season.tier > (archived[index + 1]?.tier ?? own.tier));
   const goals: ClubGoal[] = [
     goal(
@@ -55,6 +58,7 @@ export function clubMilestones(w: World) {
       Math.max(
         w.ownMatches.length,
         w.tables[w.playerClub]?.played || 0,
+        w.careerReads?.bestPlayed ?? 0,
         ...archived.map((season) => season.played),
       ),
       1,
@@ -64,7 +68,12 @@ export function clubMilestones(w: World) {
       '첫 승리의 기쁨',
       '공식 경기에서 첫 승리를 기록해요.',
       '상대 전술과 피로를 살펴 경기 준비하기',
-      Math.max(wins, w.tables[w.playerClub]?.won || 0, ...archived.map((season) => season.won)),
+      Math.max(
+        wins,
+        w.tables[w.playerClub]?.won || 0,
+        w.careerReads?.bestWon ?? 0,
+        ...archived.map((season) => season.won),
+      ),
       1,
     ),
     goal(
@@ -89,7 +98,7 @@ export function clubMilestones(w: World) {
       '천 명의 목소리',
       '현재 또는 시즌 기록에서 서포터 1,000명을 모아요.',
       '경기와 해외 마케팅으로 서포터 늘리기',
-      Math.max(own.fans, ...archived.map((season) => season.fans)),
+      Math.max(own.fans, w.careerReads?.bestFans ?? 0, ...archived.map((season) => season.fans)),
       1000,
     ),
     goal(
@@ -97,7 +106,7 @@ export function clubMilestones(w: World) {
       '한 시즌의 이야기',
       '첫 시즌을 끝내고 기록을 남겨요.',
       '시즌을 마치고 클럽 기록 확인하기',
-      archived.length,
+      w.careerReads?.history ?? archived.length,
       1,
     ),
     goal(

@@ -544,7 +544,6 @@
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
-| T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
 
 ## work
@@ -569,11 +568,12 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T674, then T675 (hr03); preserve ot03 takeover handoff below.
+- implement-task T675 (hr03); preserve ot03 takeover handoff below.
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 
 ## log
+- 261103 T674 done: incremental career summaries, indexed seasonal finance, pure paged news RPC and older-news/filter UI; 14 focused unit cases and fast checks/build pass. hr03
 - 261103 T673 done: persisted incremental news journal, writer reconstruction, six unit cases and fast checks/build; integration deferred to final gate. hr03
 - 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
 - 261103 update-ssot HIST SAVE start (hr03): incremental news and career read models; normalize ot03 doing cell to its existing T665 ID, branch handoff remains in next.
@@ -593,5 +593,3 @@
 - 261103 create-ssot OWNER r1: owner fortune, six wealth tiers, eight traits, quarterly business bet, living costs, injections within FFP, dividends, 팬 민심, 퇴진 압박, 구단주 파산 위기; ot03
 - 261103 T647 done: the owner no longer suggests or forces training. The coach-training command, orderTraining (with suggestion odds, strain and resignation), orders.ts, trainingOrders and staff strain/asked are gone; older saves drop them on load, and the squad's 하드 streak is now World.hardStreak. TrainingOrderSheet and every 제안·강행/개별 훈련/이 선수 훈련 entry are deleted. 훈련, 유소년, the player sheet and the market read the coaches' calls. Equivalence digests unchanged; unit 224/1937 green; e2e edited for the batch.
 - 261103 ot03 start (autopilot): finish T647–T652, then plan and build ideation owner-wealth-and-takeover in parallel lanes; illustrations stay
-- 261103 design close 6c0d6b12: tests and SSOT aligned (WEB r203: WEB-39 office opens on the 결재함 without its room scene, 결재라인 from 결재 설정/who-decides links; WEB-100 requests under titles, waiting first, delegates and 직접/위임 + 전체 switches, no filters; WEB-43 이적시장 선수/유소년/코치/감독/단장; WEB-50/95/49 board in the ball side's colours, notable-only commentary log, details and player dialogs, after-match table; WEB-71/72/79 entries; MATCH r46 MATCH-10 after-match standing); unit tests for the titled queue, 1.3% pitch margin and ageMax; kit preview on the shared pitch margin; office/queue and match-view e2e specs migrated for the batch
-- 261103 T646 done: care command, CareKind, winBonus (dropped on load), care.ts, win-bonus settlement, care news/ledger lines and the motivator's meeting bonus removed; office shows 결재함 + read-only 클럽 현황, HUD cash sheet explains cash/fixed costs/runway only, places read with 유소년 keeping 승격·방출; equivalence digests unchanged; 2 typecheck + 8 unit failures predate it (ds03 6c0d6b12 vs WEB-39), e2e edited for the batch

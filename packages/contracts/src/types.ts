@@ -1,3 +1,4 @@
+import type { CareerReads } from './career-reads';
 import type { NewsJournal } from './news';
 import type { ClubBuild } from './build';
 import type {
@@ -1184,6 +1185,7 @@ export interface World {
   ownMatches: MatchRecord[];
   /** Source-linked headlines and incremental record counters; absent in older saves. */
   newsJournal?: NewsJournal;
+  careerReads?: CareerReads;
   /** The persisted match model and its counters' coverage (→SAVE-23); absent before activation. */
   matchModel?: MatchModelState;
   /** Current-season NPC aggregates under the full model (→HIST-17); absent before activation. */

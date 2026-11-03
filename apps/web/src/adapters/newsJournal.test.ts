@@ -6,6 +6,7 @@ import {
   newsPage,
   refreshNewsJournal,
 } from '../../../../packages/engine/src/news';
+import { initializeCareerReads } from '../../../../packages/engine/src/career-reads';
 import { advanceRound } from '../../../../packages/engine/src/season';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { Host } from '../runtime/host';
@@ -16,12 +17,15 @@ describe('news journal checkpoint continuity', () => {
   it('retains headlines and counters through export/import and the next settlement', async () => {
     const w = simulatedWorld(input, { rounds: 2 });
     initializeNewsJournal(w);
+    initializeCareerReads(w);
     const raw = await encode(w);
     const loaded = (await decode(raw)).world;
     expect(loaded.newsJournal).toEqual(w.newsJournal);
+    expect(loaded.careerReads).toEqual(w.careerReads);
     advanceRound(w, undefined, false);
     advanceRound(loaded, undefined, false);
     expect(canonical(loaded.newsJournal)).toBe(canonical(w.newsJournal));
+    expect(loaded.careerReads).toEqual(w.careerReads);
     expect(canonical(loaded.ownMatches)).toBe(canonical(w.ownMatches));
   });
   it('upgrades a missing journal once on writer activation and leaves read-only worlds intact', async () => {
@@ -54,6 +58,6 @@ describe('news journal checkpoint continuity', () => {
     refreshNewsJournal(again.world!);
     expect(canonical(again.world)).toBe(before);
     expect(newsJournalSchema.safeParse(again.world!.newsJournal).success).toBe(true);
-    expect(repeated.view?.world.newsJournal).toBeUndefined();
+    expect(repeated.view?.world).not.toHaveProperty('newsJournal');
   });
 });

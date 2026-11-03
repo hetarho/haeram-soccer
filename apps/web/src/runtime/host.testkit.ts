@@ -1,4 +1,4 @@
-import { initializeNewsJournal } from '../../../../packages/engine/src/news';
+import { initializeReadModels } from '../../../../packages/engine/src/read-models';
 import { expect } from 'vitest';
 import type { Host } from './host';
 import type { Body } from './protocol';
@@ -28,12 +28,12 @@ export const req = (id: string, revision: number, body: Body) => ({
  * cached), as if simulated in place: same world, same receipts.
  */
 export function playOn(h: Host, played: World, release: MatchModelRelease = MATCH_MODEL_RELEASE) {
-  const { newsJournal: _journal, ...baseline } = h.world!;
-  void _journal;
+  const { newsJournal: _journal, careerReads: _reads, ...baseline } = h.world!;
+  void [_journal, _reads];
   expect(canonical({ ...baseline, receiptIds: [] })).toBe(
     canonical(simulatedWorld(input, {}, release)),
   );
   played.receiptIds = h.world!.receiptIds;
-  initializeNewsJournal(played);
+  initializeReadModels(played);
   h.world = played;
 }

@@ -1,3 +1,4 @@
+import { eventsInSeason } from './season-index';
 import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
 import { country } from '../../catalogs/src/index';
@@ -1138,8 +1139,7 @@ function honours(w: World): NewsItem[] {
     });
   // Cups decided in May are celebrated on the day of the final (their events); older seasons
   // without those events are celebrated here at the close.
-  const won = (kind: string) =>
-    w.events.some((event) => event.year === last.year && event.kind === kind);
+  const won = (kind: string) => eventsInSeason(w, last.year).some((event) => event.kind === kind);
   const cup = last.champions.find((c) => c.cup === w.playerClub);
   if (cup && !won('cup-honor'))
     items.push({ ...base('cup'), title: `${name}, ${country(cup.country).name} 컵 우승!` });
@@ -1635,4 +1635,37 @@ export function newsPage(w: World, offset = 0, limit: number = NEWS_LIMITS.page)
 }
 export function clubNews(w: World): NewsItem[] {
   return w.newsJournal ? newsPage(w, 0, NEWS_LIMITS.recent) : deriveClubNews(w);
+}
+
+/** A source-ID cursor stays stable when newer headlines arrive between archive requests. */
+export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[] {
+  const j = w.newsJournal;
+  if (!j) {
+    const all = deriveClubNews(w);
+    const at = before ? all.findIndex((item) => item.id === before) : -1;
+    if (before && at < 0) throw new Error('뉴스 위치를 찾지 못했습니다.');
+    return all
+      .slice(at + 1)
+      .filter((item) => !tag || item.tag === tag)
+      .slice(0, NEWS_LIMITS.page);
+  }
+  let index = j.years.length - 1,
+    offset = 0;
+  if (before) {
+    const year = Number(before.split(':')[0]);
+    index = j.years.indexOf(year);
+    const at = j.seasons[year]?.findIndex((item) => item.id === before) ?? -1;
+    if (index < 0 || at < 0) throw new Error('뉴스 위치를 찾지 못했습니다.');
+    offset = at + 1;
+  }
+  const result: NewsItem[] = [];
+  for (; index >= 0 && result.length < NEWS_LIMITS.page; index--) {
+    const bucket = j.seasons[j.years[index]];
+    for (; offset < bucket.length && result.length < NEWS_LIMITS.page; offset++) {
+      const item = bucket[offset];
+      if (!tag || item.tag === tag) result.push(item);
+    }
+    offset = 0;
+  }
+  return result;
 }

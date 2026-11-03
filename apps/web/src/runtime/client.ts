@@ -1,3 +1,4 @@
+import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, Founding, World } from '../../../../packages/contracts/src/types';
 import type { FullStatsScope } from '../../../../packages/contracts/src/match-model';
@@ -764,6 +765,21 @@ export class GameClient {
     }
   }
   /** Season and manager records are reads; refreshing them never holds the clock or sets busy. */
+  async newsPage(before?: string, tag?: NewsItem['tag']) {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error('먼저 클럽을 창단하세요.');
+    const reply = await this.read({
+      type: 'news-page',
+      world,
+      ...(before ? { before } : {}),
+      ...(tag ? { tag } : {}),
+    });
+    if (!reply.ok || !reply.newsPage)
+      throw new Error(reply.error ?? '뉴스 기록을 불러오지 못했어요.');
+    if (this.state.view?.world.id !== world || reply.newsPage.world !== world)
+      throw new Error('다른 커리어의 뉴스입니다.');
+    return reply.newsPage;
+  }
   async archive(year: number) {
     return (await this.read({ type: 'archive', year })).archive;
   }

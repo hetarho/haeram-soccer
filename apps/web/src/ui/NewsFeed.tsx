@@ -1,3 +1,5 @@
+import type { GameClient } from '../runtime/client';
+import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
 import { useState } from 'react';
 import { create } from 'zustand';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -7,7 +9,7 @@ import { useGameState } from '../runtime/store';
 import s from './NewsFeed.module.css';
 
 const NO_NEWS: NewsItem[] = [];
-/** News the worker derived from the full career; the projected world is too short for records. */
+/** The bounded recent feed, prepared by the worker from its retained journal. */
 export function useClubNews(): NewsItem[] {
   return useGameState((state) => state.view?.news) ?? NO_NEWS;
 }
@@ -125,13 +127,56 @@ function Headline({ item, fresh }: { item: NewsItem; fresh?: boolean }) {
   );
 }
 
-/** Every headline of the season with tag filters; closing it marks the feed as read. */
-export function NewsList({ w }: { w: World }) {
-  const news = useClubNews();
+/** Stored headlines with tag filters and explicit older-news pages. */
+export function NewsList({ w, client }: { w: World; client?: GameClient }) {
   const [tag, setTag] = useState<(typeof TAGS)[number]>('전체');
+  const current = useClubNews();
+  const [recent] = useState(current);
+  const [older, setOlder] = useState<NewsItem[]>([]);
+  const [filtered, setFiltered] = useState<NewsItem[]>([]);
+  const [ended, setEnded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const news =
+    tag === '전체' || !client
+      ? [...new Map([...recent, ...older].map((item) => [item.id, item])).values()]
+      : filtered;
+  const loadMore = async () => {
+    if (!client || loading) return;
+    setLoading(true);
+    setError('');
+    try {
+      const page = await client.newsPage(news.at(-1)?.id, tag === '전체' ? undefined : tag);
+      if (tag === '전체') setOlder((previous) => [...previous, ...page.items]);
+      else setFiltered((previous) => [...previous, ...page.items]);
+      setEnded(!page.next);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+  const chooseTag = async (value: (typeof TAGS)[number]) => {
+    if (loading) return;
+    setTag(value);
+    setEnded(false);
+    setError('');
+    if (value === '전체' || !client) return;
+    setFiltered([]);
+    setLoading(true);
+    try {
+      const page = await client.newsPage(undefined, value);
+      setFiltered(page.items);
+      setEnded(!page.next);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+    }
+  };
   const [seenAtOpen] = useState(() => readSeen(w.id));
   const fresh = freshCount(news, seenAtOpen);
-  const shown = tag === '전체' ? news : news.filter((item) => item.tag === tag);
+  const shown = tag === '전체' || client ? news : news.filter((item) => item.tag === tag);
   return (
     <>
       <div className={s.filters} role="group" aria-label="뉴스 분류">
@@ -140,12 +185,14 @@ export function NewsList({ w }: { w: World }) {
             key={value}
             aria-pressed={tag === value}
             className={tag === value ? s.selected : undefined}
-            onClick={() => setTag(value)}
+            disabled={loading}
+            onClick={() => void chooseTag(value)}
           >
             {value}
           </button>
         ))}
       </div>
+      {loading && <p role="status">소식 불러오는 중…</p>}
       {shown.length ? (
         <ul className={s.feed}>
           {shown.map((item) => (
@@ -155,6 +202,16 @@ export function NewsList({ w }: { w: World }) {
       ) : (
         <p className={s.empty}>이 분류의 소식이 아직 없어요.</p>
       )}
+      {client &&
+        !ended &&
+        (tag === '전체'
+          ? recent.length >= NEWS_LIMITS.recent
+          : filtered.length >= NEWS_LIMITS.page) && (
+          <button type="button" disabled={loading} onClick={() => void loadMore()}>
+            {loading ? '이전 소식 불러오는 중…' : '이전 소식 더 보기'}
+          </button>
+        )}
+      {error && <p role="alert">{error}</p>}
       <NewsQuietToggle />
       <p className={s.note}>
         뉴스는 기록된 경기와 구단 결정에서만 만들어요. 연속 기록·점유율·xG 같은 수치는 사실이고,

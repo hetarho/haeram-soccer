@@ -1,4 +1,6 @@
-import { initializeNewsJournal } from '../../../../packages/engine/src/news';
+import { newsBefore } from '../../../../packages/engine/src/news';
+import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
+import { initializeReadModels, needsReadModels } from '../../../../packages/engine/src/read-models';
 import { worldMarketPage, worldMarketDetail } from '../../../../packages/engine/src/world-market';
 import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
@@ -318,6 +320,7 @@ export class Host {
     // command, its watchdog would run out while only the command reports progress.
     const type = (input as { body?: { type?: unknown } } | null)?.body?.type;
     if (
+      type === 'news-page' ||
       type === 'world-market' ||
       type === 'world-market-detail' ||
       type === 'head-to-head' ||
@@ -401,12 +404,14 @@ export class Host {
       npcSeason: _season,
       managerHistory: _history,
       newsJournal: _news,
+      careerReads: _reads,
       ...projected
     } = w;
     void _people;
     void _season;
     void _history;
     void _news;
+    void _reads;
     return {
       coaches: staffMarket(w),
       world: {
@@ -494,6 +499,19 @@ export class Host {
       if (this.session && this.session !== request.session)
         throw new Error('이전 세션의 요청입니다.');
       if (!w) throw new Error('먼저 클럽을 창단하세요.');
+      if (body.type === 'news-page') {
+        if (body.world !== w.id) throw new Error('다른 커리어의 뉴스 요청입니다.');
+        const items = newsBefore(w, body.before, body.tag);
+        return {
+          requestId: request.requestId,
+          ok: true,
+          newsPage: {
+            world: w.id,
+            items,
+            ...(items.length === NEWS_LIMITS.page ? { next: items.at(-1)!.id } : {}),
+          },
+        };
+      }
       if (body.type === 'world-market')
         return {
           requestId: request.requestId,
@@ -634,9 +652,9 @@ export class Host {
         let activated = writer
           ? this.adoptManagerHistory(modelled, modelled !== result.world)
           : modelled;
-        if (writer && !activated.newsJournal) {
+        if (writer && needsReadModels(activated)) {
           const journalled = structuredClone(activated);
-          initializeNewsJournal(journalled);
+          initializeReadModels(journalled);
           if (activated === result.world) journalled.revision++;
           activated = journalled;
         }
@@ -650,7 +668,7 @@ export class Host {
         if (this.world && !r.body.replace)
           throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
         this.world = createWorld(r.body.input, this.release);
-        initializeNewsJournal(this.world);
+        initializeReadModels(this.world);
         changed = true;
       } else {
         const w = this.world;

@@ -1,3 +1,5 @@
+import { newsItemSchema } from '../../../../packages/contracts/src/news';
+import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketPage } from '../../../../packages/contracts/src/types';
 import type { worldMarketDetail } from '../../../../packages/engine/src/world-market';
 import {
@@ -38,7 +40,6 @@ import {
 import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
-import type { NewsItem } from '../../../../packages/engine/src/news';
 import type { TransferLedgerEntry } from '../../../../packages/engine/src/transfer-records';
 import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
@@ -194,6 +195,12 @@ export const requestSchema = z.object({
     z.object({ type: z.literal('command'), command }),
     z.object({ type: z.literal('export') }),
     z.object({ type: z.literal('save') }),
+    z.strictObject({
+      type: z.literal('news-page'),
+      tag: newsItemSchema.shape.tag.optional(),
+      world: z.string().min(1).max(300),
+      before: z.string().min(1).max(300).optional(),
+    }),
     z.object({ type: z.literal('archive'), year: z.number().int().min(1901).max(4000) }),
     // One page of the own managers' tenures and older personnel events (→HIST-18/19, WEB-92):
     // `cursor` is the query's own page position and `world` the career the client shows, so a
@@ -244,7 +251,10 @@ export type Body = Request['body'];
  * The season's complete statistics come with a `full-stats` read when a view asks (→WEB-89), and
  * the manager-history facts with a `manager-history` read (→HIST-18).
  */
-export type ProjectedWorld = Omit<World, 'people' | 'npcSeason' | 'managerHistory'> & {
+export type ProjectedWorld = Omit<
+  World,
+  'people' | 'npcSeason' | 'managerHistory' | 'newsJournal' | 'careerReads'
+> & {
   people?: never;
   /**
    * The next opponent's actual eligible XI and its manager, resolved on the worker: the person
@@ -408,6 +418,7 @@ export interface Reply {
   candidate?: World;
   worldMetadata?: WorldMetadata;
   archive?: { season?: SeasonArchive; matches: MatchRecord[]; events: Event[]; managers: Event[] };
+  newsPage?: { world: string; items: NewsItem[]; next?: string };
   headToHead?: HeadToHead;
   /** Our match records over every own match (→WEB-54); the view keeps only recent matches. */
   clubRecords?: ClubRecords;

@@ -1,3 +1,4 @@
+import { careerReadsSchema } from './career-reads';
 import { newsJournalSchema } from './news';
 import { z } from 'zod';
 z.config({ jitless: true });
@@ -1039,6 +1040,7 @@ const worldSchema: z.ZodType<World> = z.object({
   designCommission: designCommissionSchema.optional(),
   ownMatches: z.array(match).max(100000),
   newsJournal: newsJournalSchema.optional(),
+  careerReads: careerReadsSchema.optional(),
   matchModel: matchModelStateSchema.optional(),
   npcSeason: npcSeasonSchema.optional(),
   managerHistory: managerHistoryFactsSchema.optional(),
@@ -1228,6 +1230,14 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   assertIdentityFormatVersions(input);
   assertMatchModelFormat(input);
   const w = worldSchema.parse(input);
+  if (
+    w.careerReads &&
+    (w.careerReads.matches > w.ownMatches.length ||
+      w.careerReads.events > w.events.length ||
+      w.careerReads.history > w.history.length ||
+      w.careerReads.year > w.year)
+  )
+    throw new Error('누적 통계의 범위가 올바르지 않습니다.');
   if (w.newsJournal) {
     const j = w.newsJournal;
     if (
