@@ -69,6 +69,31 @@ Concentration split (`scripts/scoring-concentration.ts`, 1,200 matches, room onl
 
 Reading: both candidates bring the match total inside its band by taking chances away from everyone — fewer shots, a lower xG a shot, and the ones left pushed into the box (outside-the-box shots fall further from their band, box shots leave theirs) — with recycling back passes as a new miss. Midfielders shoot a little more, but the ST slot still takes 42–43% of the shots and the top scorer still converts 1.3–1.9× the rest of his side, so the club top scorer keeps 38–44% of the goals. Fewer goals do not spread them: the share needs the side's other players to reach scoring positions (MATCH-16's lines, MATCH-33's box occupation) rather than less volume for all. Neither candidate is a commit candidate: goals inside, but shots, shot places, line shares and the top-scorer share stay outside, with back passes, box-shot share and (room) xG a shot as material new misses.
 
+## Third unit: `occupy`, box occupation for late midfield runners (08:45–09:05 KST)
+
+`candidates/occupy.json` is earlySupport plus MATCH-33's box-occupation knobs that send deliveries to whoever arrives free rather than to the striker the ball suits: box-scene roles `boxToBox` and `mezzala` beside `shadowStriker`/`attackingMidfielder` (`box.roles`), the edge zone 17 m out (19), delivery weight on a free arrival `free` 2 (1) and on suiting the ball `suit` 0.4 (0.8). Same preload, seeds, sizes and command as above; every name exists in the live configs (the preload throws otherwise), no engine source changed, invariants hold in every condition (no failures).
+
+| core row (validation, 17 × 600) | earlySupport | occupy |
+|---|---|---|
+| goals a match (2.6–2.9) | 2.68 in | 2.67 in |
+| shots a team (11–14) | 16.24 out | 16.06 out |
+| xG a shot (0.09–0.12 window) | 0.082 in | 0.081 in |
+| goal-area / rest of box / outside shots | 12.2 / 77.1 / 10.7% out | 11.6 / 77.7 / 10.7% out |
+| back passes (12–18%) | 19.9 out | 20.1 out |
+| goals by FW / MF (50–60 / 27–37%) | 73.7 / 15.1 out | 74.6 / 15.7 out |
+| rows inside of 38 | 24 | 23 |
+| hat-tricks a match (0.02–0.05) | 0.057 [0.040, 0.079] unres. | 0.073 [0.055, 0.099] out |
+| club top-scorer share, clubs with 20+ goals (20–30%) | 39.8% [36.7, 42.9] (39) | 38.9% [35.4, 42.4] (43) |
+| MATCH-30 inside / outside | 12 / 7 | 13 / 7 (box shots 14.3, cut-backs 0.24 out) |
+| MATCH-29 inside / outside / insufficient | 8 / 3 / 14 | 8 / 5 / 12 |
+| goals across the pairings | 1.84–4.76 | 1.86–4.64 |
+
+Calibration ran at scale 1 (17 × 600, `--scale` omitted; its seeds 0…599 contain the 0…149 of the rows above), so its share is read there too: goals 2.88 in, 23/38 rows, shots 16.13, goal-area 11.9%, outside 10.9%, back passes 20.0%, FW goals 73.8%, penalty goals 11.6% out, hat-tricks 0.063 [0.046, 0.087], club top-scorer share 39.9% [37.6, 42.2] (45 clubs), MATCH-29 12 / 3 / 10. Files: `candidate-occupy-calibration.json`, `candidate-occupy-validation.json`, `candidate-occupy-concentration-validation.json`; logs gitignored.
+
+Concentration split (`scripts/scoring-concentration.ts`, validation seeds, 1,200 matches; `candidate-occupy-concentration-validation.json`): goals 2.59, shots 15.8 a team, the ST slot 40% of shots (released 46%, room 42%) at 4.2 an appearance, CM 1.11 shots an appearance (released 0.74); but the top scorer is still his side's top shooter in 74 of 75 clubs, all at ST, takes 29% of its shots and converts 12.6% against the rest's 6.7%, so his goal share stays 43.6% [42.6, 44.6].
+
+Reading: sending the ball to free late arrivals moves shots off the striker (46 → 40%) but not goals: the midfielders' extra shots convert at 5–6% while the striker's remaining ones are the close chances, so the rest's conversion falls and the top scorer's share holds at 39–44% (hat-tricks rise). The lever is not who the delivery picks but the quality of the chances the arriving players get — the striker still occupies the goal-area posts (FW first at near and far post in `boxScene`), which a config patch cannot reorder; that needs a source candidate (the post assignment and bl03's `rotate`), measured the same way.
+
 ## Gate
 
-The owner's realism gate is unmet on the released source: goals, shot volume, shot places, line shares, hat-tricks and top-scorer share are all outside MATCH-23 on both partitions. No scoring source is changed or committed. bl03's room and earlySupport, re-run on the released source on both partitions, bring goals inside but leave shots, shot places, line shares and the top-scorer share outside with new misses, so neither passes. The owner-profile striker stress case and whole-career comparisons were not re-run here; bl03's (on identical grid code) stand.
+The owner's realism gate is unmet on the released source: goals, shot volume, shot places, line shares, hat-tricks and top-scorer share are all outside MATCH-23 on both partitions. No scoring source is changed or committed. bl03's room and earlySupport, re-run on the released source on both partitions, bring goals inside but leave shots, shot places, line shares and the top-scorer share outside with new misses, so neither passes; occupy (third unit) keeps goals inside and moves shots off the striker but leaves the top-scorer share at 38.9% and puts hat-tricks outside, so it does not pass either. The owner-profile striker stress case and whole-career comparisons were not re-run here; bl03's (on identical grid code) stand.
