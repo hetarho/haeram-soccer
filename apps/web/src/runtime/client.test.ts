@@ -19,7 +19,7 @@ import { HELPER_CONFIG, HelperPool, type HelperPort } from './helperPool';
 import type { CodecResult, Reply, Request } from './protocol';
 import { earlierRules, GameSlots } from './slots';
 import { GameIndexStore, type ParkedStore } from '../adapters/games';
-import { NOTIFICATIONS_KEY, type SystemNotification } from './store';
+import { createGameStore, NOTIFICATIONS_KEY, type SystemNotification } from './store';
 
 vi.mock('../adapters/previousStore', () => ({
   IndexedDbCheckpointKey: class {
@@ -333,6 +333,38 @@ describe('background worker publication', () => {
     expect(canonical(client.state.view)).toBe(
       canonical(structuredClone((worker.host as unknown as { view(): unknown }).view())),
     );
+  });
+
+  it('publishes shared held days once, keeping shown snapshots stable through background saves', async () => {
+    const store = createGameStore(),
+      client = await start((state) => store.publish(state, { viewShared: true })),
+      initial = store.getSnapshot().view!;
+    const first = await client.command(
+      { type: 'advance-days', days: 1 },
+      { background: true, automatic: true },
+    );
+    const second = await client.command(
+      { type: 'advance-days', days: 1 },
+      { background: true, automatic: true },
+    );
+    expect(store.getSnapshot().view).toBe(initial);
+    expect(client.reveal()).toBe(1);
+    const dayOne = store.getSnapshot().view!;
+    expect(dayOne).toBe(first!.view);
+    expect(dayOne.world.tables).toBe(initial.world.tables);
+    expect(dayOne.world.history).toBe(initial.world.history);
+    expect(dayOne.world.calendar!.day).toBe(1);
+    client.saveSoon();
+    await client.whenSaved();
+    expect(store.getSnapshot().savedRevision).toBe(second!.view!.world.revision);
+    expect(store.getSnapshot().view).toBe(dayOne);
+    expect(client.reveal()).toBe(1);
+    expect(store.getSnapshot().view).toBe(second!.view);
+    expect(store.getSnapshot().view!.world.tables).toBe(initial.world.tables);
+    expect(store.getSnapshot().view!.world.calendar!.day).toBe(2);
+    expect(dayOne.world.calendar!.day).toBe(1);
+    expect(initial.world.calendar!.day).toBe(0);
+    expect(client.reveal()).toBe(0);
   });
 
   it('serializes overlapping background ticks with current revisions and checkpoint generations', async () => {
