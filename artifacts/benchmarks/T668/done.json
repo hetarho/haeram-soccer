@@ -1,0 +1,101 @@
+{
+ "seconds": 3897,
+ "results": [
+  {
+   "name": "ref-oil-ENG-ESP",
+   "code": 0
+  },
+  {
+   "name": "ref-oil-FRA-GER",
+   "code": 0
+  },
+  {
+   "name": "ref-chaebol-ENG-ESP",
+   "code": 0
+  },
+  {
+   "name": "ref-chaebol-FRA-GER",
+   "code": 0
+  },
+  {
+   "name": "ref-industrial-ENG-ESP",
+   "code": 0
+  },
+  {
+   "name": "ref-industrial-FRA-GER",
+   "code": 0
+  },
+  {
+   "name": "ref-midsize-ENG-ESP",
+   "code": 0
+  },
+  {
+   "name": "ref-midsize-FRA-GER",
+   "code": 0
+  },
+  {
+   "name": "ref-local-ENG-ESP",
+   "code": 1
+  },
+  {
+   "name": "ref-local-FRA-GER",
+   "code": 1
+  },
+  {
+   "name": "ref-selfmade-ENG-ESP",
+   "code": 0
+  },
+  {
+   "name": "ref-selfmade-FRA-GER",
+   "code": 0
+  },
+  {
+   "name": "policy-oil-ENG",
+   "code": 0
+  },
+  {
+   "name": "policy-chaebol-ENG",
+   "code": 0
+  },
+  {
+   "name": "policy-industrial-ENG",
+   "code": 0
+  },
+  {
+   "name": "policy-midsize-ENG",
+   "code": 0
+  },
+  {
+   "name": "policy-local-ENG",
+   "code": 0
+  },
+  {
+   "name": "policy-selfmade-ENG",
+   "code": 0
+  },
+  {
+   "name": "five-oil-ENG-GER",
+   "code": 0
+  },
+  {
+   "name": "five-chaebol-ENG-GER",
+   "code": 0
+  },
+  {
+   "name": "five-industrial-ENG-GER",
+   "code": 0
+  },
+  {
+   "name": "five-midsize-ENG-GER",
+   "code": 0
+  },
+  {
+   "name": "five-local-ENG-GER",
+   "code": 1
+  },
+  {
+   "name": "five-selfmade-ENG-GER",
+   "code": 0
+  }
+ ]
+}
