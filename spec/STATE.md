@@ -17,7 +17,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | hr05 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T05:50Z | 2026-11-03T06:15Z | T682 |
-| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T07:35Z | 2026-11-03T07:35Z | - |
+| ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T07:55Z | T684 |
 
 ## inbox
 - 261103 decided ARCH-21 OWNER-4 T683: cases built on the neutral founding manager (no school, three seasons left) on a takeover career, whose manager keeps his school and may be a firefighter on a one-season term → each case's setup drops his school or gives him three seasons left, as the founding manager stood, and the case says why (alt: seeds whose taken-over manager happens to fit | turn the cases into OWNER-4 checks, losing the neutral-manager rule's coverage). ot03
@@ -676,7 +676,7 @@
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
 | T681 | Reconcile client views once before store publication | ARCH WEB SAVE | T680 | doing@261103.hr05 |
 | T682 | Profile and reduce repeated day-step Worker work | ARCH WEB SAVE | T681 | doing@261103.hr05 |
-| T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | todo |
+| T684 | web and fixture integration tests on takeover careers | ARCH KIT SAVE HIST LEAGUE | T683 | doing@261103.ot03 |
 | T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 | T687 | browser journeys on takeover careers | ARCH WEB OWNER KIT | T684 | todo |
