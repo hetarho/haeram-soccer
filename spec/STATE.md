@@ -644,7 +644,7 @@
 | T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | doing@261103.hr03 |
 | T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | doing@261103.hr03 |
 | T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | doing@261103.hr03 |
-| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | todo |
+| T672 | remove the amateur level; the last professional division relegates nobody | WORLD LEAGUE ECON CLUB OWNER WEB | T671 | doing@261103.ot03 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
