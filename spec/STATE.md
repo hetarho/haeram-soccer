@@ -686,7 +686,6 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
@@ -712,12 +711,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T685, then T686, T678 and T679; repair any release-gate failures before the intermediate main push.
+- implement-task T686, then T678 and T679; repair any release-gate failures before the intermediate main push.
 - Deadline: 2026-11-04 09:30 Asia/Seoul; preserve all incomplete work on wip/nv04 before the deadline.
 - T689 scoring research follows only after the takeover release work, with its existing measurement and publication requirements.
 
 ## log
-- 261103 T685 implementation preserved for cv03 host: 1125 changed unit tests pass; commit/snapshot blocked by read-only Git metadata, artifact regeneration and final integrated checks remain host-owned.
+- 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
+- 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
 - 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.
 - 261103 T690 done: progressive elite wages and repeated award premiums; 144000 sensitivity cases, 576 retention decisions, 40 full-season outcomes, 35 unit and 36 contract integration tests plus fast checks passed. bl03
