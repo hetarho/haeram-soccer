@@ -20,7 +20,7 @@
 
 ## inbox
 - 261103 decided ARCH-30 T685 T686 T678 T679: owner authorizes autopilot continuation, an intermediate main push after the release gate passes, and preservation of all work remotely before 2026-11-04 09:30 Asia/Seoul. Resume the latest cv03 checkpoint rather than restart completed takeover tasks; unfinished or unverified work goes to wip/nv04 at the deadline, with actual validation limits retained (alt: restart from main or publish an unverified release). nv04
-- 261103 parked T685 ARCH-30: unit Git metadata is read-only: installed vibe check cannot snapshot the source (git add -A: unable to create temporary file, Read-only file system), so no task commit is possible here. The cv03 host must regenerate portable/prepared worlds, finish the task checks and commit the preserved implementation with Git write access before T686; no push or shared report/active lifecycle action was attempted. cv03
+- 261103 decided T685 ARCH-30: the cv03 read-only Git blocker is resolved in the recovered nv04 worktree using the verified acceptEdits runner and scoped Git allowlist; restore the preserved task to todo and finish artifact regeneration and validation before T686 (alt: restart the completed implementation). nv04
 - 261103 decided ARCH-30 PLAYER-18 PLAYER-27 T685: resume the stopped Claude ot03 handoff at the owner's request; merge main performance and award/wage work before balance, reconcile parallel PLAYER r14 changes as r15 without a new product policy; push next and wip/cv03 for the 22:00 KST handoff, leaving main release to its own gate (alt: restart T653 from main | deploy during the handoff). cv03
 - 261103 decided CLUB-25 CLUB-26 T690: exceptional-player wages → ordinary wages unchanged through OVR80, convex scarcity to ×2 at 95, top-flight wage demands phased in at 85–90; recent winner ×2 and +0.4 per extra recent win, podium ×1.4 (alt: fame only leaves unawarded elite players cheap; an aggressive variant produces excessive outliers). Selected after 144000 sensitivity cases, 576 retention decisions and 40 whole-season outcomes across six paired future streams; ordinary ratios preserved, 98 newly unaffordable contracts, no forecast bankruptcies. bl03
 - 261103 decided PLAYER-27 T688: owner delegates trophy/team-led awards and requests the award change committed on main first → bounded production (120 max, raw scale 80), European/league/cup honours 180/120/45 and top-six finish 80/60/45/30/20/10; preserve past podiums (alt: unlimited goals plus larger trophies, which another 169-goal season can still swamp). bl03
@@ -686,9 +686,9 @@
 |---|---|---|---|---|
 | T678 | the world's history plays while it is generated | WEB ARCH WORLD HIST PLAYER EURO | T686 | todo |
 | T679 | measure generation with the history view against ARCH-28 | ARCH WEB WORLD | T678 | todo |
-| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | blocked@261103 |
+| T685 | balance rules: price-band reach, living costs, fan mood, bounded books, a longer takeover loan | OWNER ECON LEAGUE WEB SAVE | T687 | todo |
 | T686 | measure and tune the owner balance on the new rules | LEAGUE ECON OWNER | T685 | todo |
-| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | doing@261103.nv04 |
+| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
