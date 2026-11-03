@@ -78,6 +78,8 @@ const TRAIT_SETS = option('traits', 'none').split(',');
 const POLICIES = option('policies', 'none').split(',') as Policy[];
 const BUILD = args.includes('--build');
 const LOG = args.includes('--log');
+/** --moods: 팬 민심 after every round with the drivers that moved it, on stderr. */
+const MOODS = args.includes('--moods');
 /**
  * --purse-apart: the owner pays no living costs while the career plays, so a reference career that
  * moves no owner money measures the club for its whole length; with stake 0% and nothing moved the
@@ -242,7 +244,8 @@ function pickClub(w: World, tier: WealthTier, code: CountryCode) {
             ? -1
             : 1,
     );
-  if (!affordable.length) throw new Error(`${tier} ${code}: no club in reach is affordable`);
+  // A country may hold no club in a tier's reach (FRA has no third tier above its lowest).
+  if (!affordable.length) return undefined;
   return {
     entry: affordable[affordable.length >> 1]!,
     reach: reach.length,
@@ -272,10 +275,11 @@ function playCareer(
   traits: string,
   policy: Policy,
   seed: string,
-): Career {
+): Career | undefined {
   const w = worldAt(seed);
-  const pick = pickClub(w, tier, code),
-    club = pick.entry.club,
+  const pick = pickClub(w, tier, code);
+  if (!pick) return undefined;
+  const club = pick.entry.club,
     books = club.books,
     last = books?.seasons.find((s) => s.year < w.year);
   const division = club.tier,
@@ -333,6 +337,14 @@ function playCareer(
       advanceRound(w, undefined, false);
       moodLow = Math.min(moodLow, w.owner!.fanMood);
       if (w.owner!.fanMood < FAN_MOOD.floor) belowFloor++;
+      if (MOODS)
+        console.error(
+          `  ${year} round ${w.round} 팬 민심 ${w.owner!.fanMood.toFixed(1)} · ${w.events
+            .slice(firstEvent)
+            .filter((e) => e.kind === 'fan-mood' && e.round === w.round)
+            .map((e) => `${e.title} ${e.detail}`)
+            .join(' · ')}`,
+        );
     }
     if (careerEnded(w)) break;
     let lifeShare: number | undefined;
@@ -518,19 +530,27 @@ function startReport(careers: Career[]) {
     "\n### The start — 1950 price units of the bought club's country (anchor in English units), medians\n",
   );
   console.log(
-    "| tier | careers | division bought (1 = top) | clubs in the country's reach | anchor | starting fortune | price | fortune left | price / last income | debt taken over | cash taken over | living costs a season at the start | seasons of living costs the fortune left pays (no growth) |",
+    "| tier | clubs bought | division bought (1 = top) | clubs in the country's reach | anchor | starting fortune | price | fortune left | price / books' last income | first-season turnover / books' last income | debt taken over | cash taken over | living costs a season at the start | seasons of living costs the fortune left pays (no growth) |",
   );
-  console.log('|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
+  console.log('|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|');
   for (const tier of Object.keys(TIER_BANDS) as WealthTier[]) {
-    const group = careers.filter(
-      (c) => c.tier === tier && c.traits === 'none' && c.policy === 'none',
-    );
+    // One row per club bought: the same start under every policy and trait set.
+    const clubs = new Map<string, Career>();
+    for (const c of careers.filter((c) => c.tier === tier)) {
+      const key = `${c.seed}|${c.club}`,
+        kept = clubs.get(key);
+      if (!kept || (!kept.seasons.length && c.seasons.length)) clubs.set(key, c);
+    }
+    const group = [...clubs.values()];
     if (!group.length) continue;
+    const played = group.filter((c) => c.seasons.length);
+    const firstTurnover = played.map((c) => turnover(c.seasons[0]!) / c.start.lastIncome);
     const m = (f: (c: Career) => number) => median(group.map(f));
     const divisions = new Map<number, number>();
     for (const c of group)
       divisions.set(c.start.division + 1, (divisions.get(c.start.division + 1) ?? 0) + 1);
-    const living = (c: Career) => c.start.fortune * OWNER_LIVING.rate * 4;
+    const living = (c: Career) =>
+      c.start.fortune * SSOT_LIVING * (OWNER_BUSINESS.dates.length + 1);
     console.log(
       `| ${tier} | ${group.length} | ${[...divisions]
         .sort((a, b) => a[0] - b[0])
@@ -540,7 +560,7 @@ function startReport(careers: Career[]) {
         )} | ${num(m((c) => c.start.reach))} | ${num(m((c) => c.start.anchor))} | ${num(m((c) => c.start.fortune))} | ${num(m((c) => c.start.price))} | ${num(m((c) => c.start.fortune - c.start.price))} | ${num(
         m((c) => c.start.price / c.start.lastIncome),
         2,
-      )} | ${num(m((c) => c.start.debt))} | ${num(m((c) => c.start.cash))} | ${num(m(living))} | ${num(
+      )} | ${num(median(firstTurnover), 2)} (${firstTurnover.length}) | ${num(m((c) => c.start.debt))} | ${num(m((c) => c.start.cash))} | ${num(m(living))} | ${num(
         m((c) => (c.start.fortune - c.start.price) / living(c)),
         1,
       )} |`,
@@ -656,8 +676,39 @@ function careerList(careers: Career[]) {
   }
 }
 
+/**
+ * --reach: the clubs each tier reaches in 1950 by country (→OWNER-3), with their books (→ECON-36):
+ * how many carry debt, and the median debt and price against last season's income.
+ */
+function reachReport(seed: string) {
+  const w = worldAt(seed),
+    priced = pricedClubs(w);
+  console.log(`\n### Reach and books in ${TAKEOVER_YEAR}, seed ${seed}\n`);
+  console.log(
+    '| tier | country | clubs in reach | affordable | in debt | debt / last income (median of those in debt) | debt above a season\'s income | price / last income (median) |',
+  );
+  console.log('|---|---|---:|---:|---:|---:|---:|---:|');
+  for (const tier of TIERS) {
+    const fortune = tierFortune(w, tier, priced);
+    for (const code of COUNTRY_CODES) {
+      const reach = reachOf(w, tier, priced).filter((e) => e.club.country === code);
+      const income = (e: (typeof reach)[number]) =>
+        Number(e.club.books?.seasons.find((s) => s.year < w.year)?.income ?? NaN);
+      const indebted = reach.filter((e) => BigInt(e.club.books?.debt ?? '0') > 0n);
+      const ratio = indebted.map((e) => Number(e.club.books!.debt) / income(e));
+      console.log(
+        `| ${tier} | ${code} | ${reach.length} | ${reach.filter((e) => pays(w, e, fortune)).length} | ${indebted.length} | ${num(median(ratio), 2)} | ${ratio.filter((r) => r > 1).length} | ${num(median(reach.map((e) => Number(e.price) / income(e))), 2)} |`,
+      );
+    }
+  }
+}
+
 const started = performance.now();
 const careers: Career[] = [];
+if (args.includes('--reach')) {
+  for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) reachReport(`owner-balance-${i}`);
+  process.exit(0);
+}
 const saved = option('in', '');
 if (saved)
   for (const file of saved.split(','))
@@ -670,6 +721,10 @@ else
           for (const policy of POLICIES) {
             const t = performance.now();
             const career = playCareer(code, tier, traits, policy, `owner-balance-${i}`);
+            if (!career) {
+              console.error(`${tier} ${code} seed ${i}: no club in the tier's reach there`);
+              continue;
+            }
             careers.push(career);
             console.error(
               `${tier} ${code} ${traits} ${policy} seed ${i}: ${career.club}, ${career.seasons.length} seasons${career.end ? `, ended ${career.end.cause} ${career.end.year}` : ''} in ${((performance.now() - t) / 1000).toFixed(0)} s`,
@@ -682,7 +737,7 @@ console.log(
     OWNER_TIERS,
   )
     .map((t) => t.multiple)
-    .join('/')}, living ${OWNER_LIVING.rate * 100}% a settlement)`,
+    .join('/')}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''})`,
 );
 balanceReport(careers);
 livingReport(careers);
