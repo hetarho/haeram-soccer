@@ -3,7 +3,6 @@ import { validateWorld } from '../../contracts/src/schema';
 import type { World } from '../../contracts/src/types';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { takeOver } from './takeover';
-import { divisionPlaces } from './club-value';
 import { simulateSeason } from './season';
 import { squad } from './world';
 import { generateHistory, historyWorld, liveHistory } from './history';
@@ -19,12 +18,11 @@ import {
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
-/** The club at `place` of a division of `code` (→OWNER-3's places). */
+/** A club at `place` by strength in a division of `code`, independent of wealth-tier reach. */
 const atPlace = (w: World, code: string, tier: number, place: number) => {
-  const places = divisionPlaces(w);
-  return w.clubs.find(
-    (c) => c.country === code && c.tier === tier && !c.representative && places.get(c.id) === place,
-  )!;
+  return w.clubs
+    .filter((c) => c.country === code && c.tier === tier && !c.representative)
+    .sort((a, b) => b.strength - a.strength || a.id.localeCompare(b.id))[place - 1]!;
 };
 
 it('plays a taken-over club’s first season with the existing loop', () => {

@@ -14,7 +14,10 @@ export function ownerlessWorld(
   seed = 'ownerless',
   release: MatchModelRelease = DISABLED_RELEASE,
 ): World {
-  return historyWorld(seed, release, CAREER_YEAR);
+  const w = historyWorld(seed, release, CAREER_YEAR);
+  // Most value/listing units supply their own books; keep that synthetic baseline empty.
+  for (const club of w.clubs) delete club.books;
+  return w;
 }
 
 /** Hand-made books (→ECON-36): `cash` and `debt` with last season's income and wage bill. */

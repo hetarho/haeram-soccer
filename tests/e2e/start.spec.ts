@@ -147,20 +147,21 @@ test('takes over with a preset as its direction, which the club keeps', async ({
   await expect(areas.getByRole('button')).toHaveCount(0);
 });
 
-test('the owner funds a club taken over with no cash, and the guide reads the takeover', async ({
+test('the owner adds to the club’s opening cash, and the guide reads the takeover', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await startCareer(page, { seed: 'start-funding' });
-  // A 1930 club has closed no season, so it comes with no cash (→ECON-36/38): the owner's money is
-  // the club's first (→OWNER-9).
+  // A 1930 club opens with half a season's income (→ECON-36/38); an injection adds to it.
   const before = await exportWorld(page);
-  expect(before.cash).toBe('0');
+  expect(BigInt(before.cash)).toBeGreaterThan(0n);
   await fundClub(page);
   const funded = await exportWorld(page);
-  expect(BigInt(funded.cash)).toBeGreaterThan(0n);
-  expect(BigInt(funded.owner!.fortune)).toBe(BigInt(before.owner!.fortune) - BigInt(funded.cash));
+  expect(BigInt(funded.cash)).toBeGreaterThan(BigInt(before.cash));
+  expect(BigInt(funded.owner!.fortune)).toBe(
+    BigInt(before.owner!.fortune) - (BigInt(funded.cash) - BigInt(before.cash)),
+  );
   const openGuide = async () => {
     await page.getByRole('button', { name: '설정', exact: true }).click();
     await page

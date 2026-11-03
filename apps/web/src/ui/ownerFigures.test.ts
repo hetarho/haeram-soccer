@@ -8,9 +8,10 @@ import {
   FAN_MOOD,
   FFP,
   OWNER_BUSINESS,
+  OWNER_LIVING,
   OWNER_TRAITS,
 } from '../../../../packages/engine/src/owner-config';
-import { ratio } from '../../../../packages/engine/src/primitives';
+import { scaleBy } from '../../../../packages/engine/src/primitives';
 import { withOwner } from '../../../../packages/engine/src/testing';
 import type { ClientState } from '../runtime/client';
 import type { View } from '../runtime/protocol';
@@ -124,7 +125,7 @@ describe('the business stake (→OWNER-7/8)', () => {
     expect(stakeAmount('-500', 50)).toBe('0');
     // Living costs in the takeover season are the rate of the starting fortune exactly.
     const living = livingCost(w);
-    expect(living).toBe(ratio(owner.takeover.fortune, 1n, 100n));
+    expect(living).toBe(scaleBy(owner.takeover.fortune, OWNER_LIVING.rate, 10000n));
     const outlook = stakeOutlook(w, 40);
     expect(outlook.amount).toBe(stakeAmount(owner.fortune, 40));
     expect(BigInt(outlook.win)).toBe(
@@ -226,11 +227,13 @@ describe('the 배당 dial (→OWNER-11)', () => {
     w.expense = '600';
     w.cash = '5000';
     expect(dividendOutlook(w, 50)).toMatchObject({ result: '400', amount: '200' });
-    expect(dividendOutlook(w, 50).mood).toBeCloseTo(-20);
+    expect(dividendOutlook(w, 50).mood).toBeCloseTo(20 * FAN_MOOD.dividend.perPercent);
     w.cash = '100';
     expect(dividendOutlook(w, 100).amount).toBe('100');
     w.owner!.traits = ['fansFriend'];
-    expect(dividendOutlook(w, 100).mood).toBeCloseTo(-10 * FAN_MOOD.friendly);
+    expect(dividendOutlook(w, 100).mood).toBeCloseTo(
+      10 * FAN_MOOD.dividend.perPercent * FAN_MOOD.friendly,
+    );
     w.expense = '2000';
     expect(dividendOutlook(w, 100)).toMatchObject({ amount: '0', mood: 0 });
   });

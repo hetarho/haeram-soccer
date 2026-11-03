@@ -110,7 +110,7 @@ describe('a currency change (→ECON-6)', () => {
 
 /**
  * A taken-over career in `year`: the founded world with an owner's state and `fortune`, his
- * starting fortune 10,000,000 so each settlement's living costs are 100,000 at takeover prices.
+ * starting fortune 10,000,000 so each settlement's living costs are 25,000 at takeover prices.
  */
 function ownerWorld(year = 1950, fortune?: string) {
   const w = world();
@@ -197,12 +197,12 @@ describe('the business settlements (→OWNER-7/8)', () => {
     expect(w.inbox!.length).toBe(items);
     expect(w.owner!.ownerCrisis!.since.day).toBe(day);
   });
-  it('take living costs of 1% of the starting fortune grown with prices, across a currency change', () => {
+  it('take living costs of 0.25% of the starting fortune grown with prices, across a currency change', () => {
     const w = ownerWorld(1950),
       share = scaleBy(w.owner!.takeover.fortune, OWNER_LIVING.rate, 10000n),
       grown = (year: number) =>
         ratio(share, BigInt(quote('ENG', year, 100000)), BigInt(quote('ENG', 1950, 100000)));
-    expect(OWNER_LIVING.rate).toBe(0.01);
+    expect(OWNER_LIVING.rate).toBe(0.0025);
     expect(livingCost(w)).toBe(share);
     expect(livingCost(w, 1960)).toBe(grown(1960));
     expect(BigInt(livingCost(w, 1960))).toBeGreaterThan(BigInt(share));

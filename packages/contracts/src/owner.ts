@@ -119,6 +119,8 @@ export interface OwnerState {
   dividendShare: DividendShare;
   /** 팬 민심, 0–100 (→OWNER-12). */
   fanMood: number;
+  /** The last transfer window with a star-sale drop (→OWNER-12); at most one drop per window. */
+  starSaleWindow?: { year: number; kind: 'summer' | 'winter' };
   /** 구단주 파산 위기: the settlement that left the fortune below zero (→OWNER-14). */
   ownerCrisis?: { since: CareerDate };
   /** 퇴진 압박: settled league rounds in a row with 팬 민심 below the floor (→OWNER-13). */

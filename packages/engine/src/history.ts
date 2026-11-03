@@ -15,6 +15,7 @@ import { installMissingIdentities } from './club-identity';
 import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
 import { seasonFrom } from './wartime';
 import { DEFAULT_TICKET } from './presets';
+import { booksOpen } from './books';
 
 /** Every world is made in 1930, the first takeover decade (→WORLD-13). */
 export const HISTORY_START = TAKEOVER_DECADES[0];
@@ -72,6 +73,7 @@ export function historyWorld(
     receiptIds: [],
   };
   prepareSeason(w);
+  booksOpen(w);
   // Each club's first manager starts with the world (→STAFF-17), not with a founding; the other
   // associations' clubs, which the season's preparation adds, included.
   w.managerMarket = {

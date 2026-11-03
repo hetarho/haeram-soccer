@@ -25,6 +25,7 @@ import { DEFAULT_TICKET } from './presets';
 import { ratio, scaleBy } from './primitives';
 import { seasonAfter } from './wartime';
 import { hasOwner } from './owner';
+import { CLUB_BOOKS } from './owner-config';
 
 /** Whether a club keeps books: a league club of a playable country that is not the owner's. */
 export function keepsBooks(w: World, club: Club) {
@@ -33,6 +34,19 @@ export function keepsBooks(w: World, club: Club) {
     !club.representative &&
     COUNTRIES.some((country) => country.code === club.country)
   );
+}
+
+/** The world's first day: half a season's income in cash, with no closed season invented. */
+export function booksOpen(w: World) {
+  const season = seasonIndex(w);
+  for (const club of w.clubs) {
+    if (!keepsBooks(w, club) || club.books) continue;
+    club.books = {
+      seasons: [],
+      cash: scaleBy(seasonIncome(w, club, undefined, season).toString(), CLUB_BOOKS.opening, 1000n),
+      debt: '0',
+    };
+  }
 }
 
 /**
@@ -81,7 +95,10 @@ function seasonIndex(w: World): SeasonIndex {
 export function settleNpcBooks(w: World, club: Club, season: SeasonIndex = seasonIndex(w)) {
   const books = club.books ?? { seasons: [], cash: '0', debt: '0' };
   const book = seasonBook(w, club, books, season);
-  const balance = BigInt(books.cash) - BigInt(books.debt) + BigInt(book.result);
+  const result = BigInt(books.cash) - BigInt(books.debt) + BigInt(book.result);
+  const ceiling = BigInt(scaleBy(book.income, CLUB_BOOKS.cashSeasons, 1000n)),
+    floor = -BigInt(scaleBy(book.income, CLUB_BOOKS.debtSeasons, 1000n));
+  const balance = result > ceiling ? ceiling : result < floor ? floor : result;
   const next = currencyChange(club.country, w.year, seasonAfter(w.year));
   const carried = next ? next(balance.toString()) : balance.toString();
   club.books = {
@@ -99,13 +116,9 @@ export function clearDebt(club: Club) {
 
 /** The season's income, wages and operating expenses of `club`, in this season's money. */
 function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex): ClubSeasonBook {
-  const view = clubView(w, club, season.fixtures.get(club.id) ?? []);
   const last = books.seasons[0];
   const tierBefore = last && lastTier(w, club, last.year);
-  const income =
-    distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!) +
-    gateIncome(view, club) +
-    commercial(view);
+  const income = seasonIncome(w, club, tierBefore, season);
   const wages = squad(w, club).reduce(
     (sum, p) => sum + BigInt(marketWageAt(club.country, w.year, club.tier, p)),
     0n,
@@ -118,6 +131,16 @@ function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex)
     costs: costs.toString(),
     result: (income - wages - costs).toString(),
   };
+}
+
+/** Opening cash and closing books use exactly the same season-income scales. */
+function seasonIncome(w: World, club: Club, tierBefore: number | undefined, season: SeasonIndex) {
+  const view = clubView(w, club, season.fixtures.get(club.id) ?? []);
+  return (
+    distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!) +
+    gateIncome(view, club) +
+    commercial(view)
+  );
 }
 
 /**

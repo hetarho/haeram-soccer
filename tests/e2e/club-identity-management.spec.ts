@@ -58,8 +58,8 @@ const RED = '#d62828';
 const BIG = (value: string) => BigInt(value);
 
 /**
- * Takes the seed's club over and funds it, resolving with its name: a 1930 club is taken over with
- * no cash, and every designer here is paid from the club's (→OWNER-9).
+ * Takes the seed's club over and funds it, resolving with its name: every designer here is paid
+ * from the club's cash, supplemented by the owner's injection (→OWNER-9).
  */
 async function found(page: Page, seed: string) {
   await page.setViewportSize({ width: 390, height: 844 });

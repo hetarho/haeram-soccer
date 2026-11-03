@@ -16,13 +16,16 @@ export { OWNER_TRAIT_LIMIT };
  * The six wealth tiers, richest first (→OWNER-3): each starts with `multiple` × its anchor, the
  * median pound price in the takeover season of the clubs in its reach. The tier never changes.
  */
-export const OWNER_TIERS: Record<WealthTier, { label: string; multiple: number }> = {
-  oil: { label: '석유 재벌', multiple: 10 },
-  chaebol: { label: '재벌 총수', multiple: 1.3 },
-  industrial: { label: '산업 자본가', multiple: 1.3 },
-  midsize: { label: '중견 사업가', multiple: 1.3 },
-  local: { label: '지역 유지', multiple: 1.3 },
-  selfmade: { label: '자수성가 축구팬', multiple: 1.3 },
+export const OWNER_TIERS: Record<
+  WealthTier,
+  { label: string; multiple: number; band: readonly [from: number, to: number] }
+> = {
+  oil: { label: '석유 재벌', multiple: 10, band: [0, 0.08] },
+  chaebol: { label: '재벌 총수', multiple: 1.3, band: [0.08, 0.2] },
+  industrial: { label: '산업 자본가', multiple: 1.3, band: [0.2, 0.35] },
+  midsize: { label: '중견 사업가', multiple: 1.3, band: [0.35, 0.55] },
+  local: { label: '지역 유지', multiple: 1.3, band: [0.55, 0.8] },
+  selfmade: { label: '자수성가 축구팬', multiple: 1.3, band: [0.8, 1] },
 };
 
 /** The eight traits' effects (→OWNER-5), each read only while the owner holds the trait. */
@@ -63,7 +66,7 @@ export const OWNER_BUSINESS = {
 } as const;
 
 /** Living costs at each settlement: `rate` of the tier's starting fortune, grown with prices (→OWNER-8). */
-export const OWNER_LIVING = { rate: 0.01 } as const;
+export const OWNER_LIVING = { rate: 0.0025 } as const;
 
 /** The 배당 dial's shares in percent and its default (→OWNER-11). */
 export const OWNER_DIVIDEND = { shares: DIVIDEND_SHARES, start: 0 } as const;
@@ -108,9 +111,9 @@ export const FAN_MOOD = {
   /** A signing for a fee above the club's previous record. */
   recordSigning: 5,
   /** A dividend: per 1% of the season's turnover taken. */
-  dividend: { perPercent: -1 },
-  /** Selling one of the club's `top` highest-OVR players. */
-  starSale: { change: -8, top: 3 },
+  dividend: { perPercent: -0.5 },
+  /** Selling one of the club's `top` highest-OVR players, at most once a transfer window. */
+  starSale: { change: -4, top: 3 },
   /** Adopting a designer draft (→KIT-9). */
   identity: -20,
   /** Each home league match, per preset step its price stands above the era's default (→ECON-17). */
@@ -126,7 +129,10 @@ export const FAN_MOOD = {
 export const CLUB_VALUE = { following: 0.05, placeSeasons: 3, floor: 1 } as const;
 
 /** The club's debt at the takeover becomes a loan of equal installments (→ECON-38). */
-export const TAKEOVER_DEBT = { seasons: 5, rate: 0.05 } as const;
+export const TAKEOVER_DEBT = { seasons: 10, rate: 0.05 } as const;
+
+/** Unowned books: opening cash, maximum cash and maximum debt in seasons of income (→ECON-36). */
+export const CLUB_BOOKS = { opening: 0.5, cashSeasons: 1, debtSeasons: 1.5 } as const;
 
 /**
  * The club as the owner takes it over (→CLUB-1): its squad filled to `squad` with players at its

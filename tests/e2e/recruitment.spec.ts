@@ -37,8 +37,8 @@ async function exportWorld(page: Page): Promise<World> {
 }
 
 /**
- * Takes a club over on `seed` and opens the market. A 1930 club is taken over with no cash, so a
- * journey that pays a fee first puts a quarter of the owner's fortune into the club (`fund`).
+ * Takes a club over on `seed` and opens the market. A journey that pays a fee supplements the
+ * opening cash with a quarter of the owner's fortune (`fund`).
  */
 async function foundMarket(page: Page, seed: string, start: CareerStart & { fund?: boolean } = {}) {
   const { fund, ...choice } = start;

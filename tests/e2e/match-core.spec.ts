@@ -126,8 +126,8 @@ for (const viewport of [
     await page.setViewportSize(viewport);
     await page.goto('/');
     await startCareer(page, { seed });
-    // A 1930 club is taken over with no cash; funded, it shows no money band, whose two lines
-    // left the theatre 66 px short of 360x740 (→WEB-17, WEB-56). The first 자금 투입 step.
+    // Keep the theatre geometry independent of the money band (→WEB-17, WEB-56), using the
+    // first 자금 투입 step in addition to the club's opening cash.
     await fundClub(page);
     // The reference takes the same club over from the same seed and choices (→WORLD-13), and the
     // owner puts the same step in.

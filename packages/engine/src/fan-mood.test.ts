@@ -11,6 +11,7 @@ import {
 } from './fan-mood';
 import { ownerClose } from './owner';
 import { FAN_MOOD } from './owner-config';
+import { transferWindowDays } from './transfer-window';
 import { SEASON_END_DAY } from './calendar';
 import { activePlayers, clubOf, overall } from './player-state';
 import { recordTransfer } from './transfer-records';
@@ -233,10 +234,10 @@ describe('the owner’s money and 팬 민심 (→OWNER-9/11/12)', () => {
     operate(later, { type: 'owner-inject', amount: '1' });
     expect(mood(later)).toBe(60 + FAN_MOOD.injection.max);
   });
-  it('takes 1 per 1% of the season’s turnover a dividend, 0.7 for 팬들의 친구', () => {
+  it('takes 0.5 per 1% of the season’s turnover a dividend, 0.7 for 팬들의 친구', () => {
     for (const [traits, expected] of [
-      [[], 60 - 20],
-      [['fansFriend'], 60 - 20 * 0.7],
+      [[], 60 + 20 * FAN_MOOD.dividend.perPercent],
+      [['fansFriend'], 60 + 20 * FAN_MOOD.dividend.perPercent * FAN_MOOD.friendly],
     ] as const) {
       const w = world(FAN_MOOD.start, [...traits]);
       w.owner!.dividendShare = 50;
@@ -264,7 +265,7 @@ describe('transfers and identity (→OWNER-12, KIT-9)', () => {
     sign(d, '3000001');
     expect(mood(w)).toBe(60 + FAN_MOOD.recordSigning);
   });
-  it('takes 8 for selling one of the three highest-OVR players, ties counting against it', () => {
+  it('takes 4 for selling one of the three highest-OVR players, ties counting against it', () => {
     const sell = (place: number, lift = true) => {
       const w = world(),
         squad = [...activePlayers(w)].sort((x, y) => overall(y) - overall(x));
@@ -286,6 +287,38 @@ describe('transfers and identity (→OWNER-12, KIT-9)', () => {
     expect(sell(3)).toBe(60);
     // Without clear leaders the third place is shared by equals: none of them is a star.
     expect(sell(5, false)).toBe(60);
+  });
+  it('drops at most once a window, retaining the last window across save/reload and years', () => {
+    let w = world();
+    // Four prepared stars suffice: this unit exercises the transfer hook, never world progression.
+    w.players = [...activePlayers(w)].slice(0, 4);
+    w.players.forEach((p, i) => {
+      for (const key of Object.keys(p.attrs) as (keyof typeof p.attrs)[])
+        p.attrs[key] = 90 - i * 10;
+    });
+    const sell = (index: number) => {
+      const player = w.players[index]!;
+      player.status = 'sold';
+      fanMoodTransfer(
+        w,
+        recordTransfer(w, { direction: 'out', loan: false, player, fee: '1000' })!,
+      );
+    };
+    sell(0);
+    expect(mood(w)).toBe(FAN_MOOD.start + FAN_MOOD.starSale.change);
+    expect(w.owner!.starSaleWindow).toEqual({ year: w.year, kind: 'summer' });
+    w = JSON.parse(JSON.stringify(w)) as World;
+    sell(1);
+    expect(mood(w)).toBe(FAN_MOOD.start + FAN_MOOD.starSale.change);
+    expect(fanMoodMovers(w)).toHaveLength(1);
+    w.calendar = { day: transferWindowDays(w.year).winterOpen };
+    sell(2);
+    expect(mood(w)).toBe(FAN_MOOD.start + 2 * FAN_MOOD.starSale.change);
+    expect(w.owner!.starSaleWindow).toEqual({ year: w.year, kind: 'winter' });
+    w.year++;
+    w.calendar = { day: transferWindowDays(w.year).winterOpen };
+    sell(3);
+    expect(mood(w)).toBe(FAN_MOOD.start + 3 * FAN_MOOD.starSale.change);
   });
   it('takes 20 for adopting a designer draft', () => {
     const w = world();

@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { WEALTH_TIER_IDS } from '../../contracts/src/owner';
-import type { Club, SeasonArchive, World } from '../../contracts/src/types';
+import type { World } from '../../contracts/src/types';
 import {
   clubsForSale,
   clubValue,
   divisionDistribution,
-  divisionPlaces,
   facilityStage,
   fromPounds,
   inPounds,
@@ -13,6 +12,7 @@ import {
   reachOf,
   tierAnchor,
   tierFortune,
+  type PricedClub,
 } from './club-value';
 import { CLUB_TAKEOVER, CLUB_VALUE, OWNER_TIERS } from './owner-config';
 import { squad, stature } from './world';
@@ -57,10 +57,9 @@ describe('club value (→ECON-37)', () => {
   it('makes an indebted big club cheaper than the same squad kept healthy', () => {
     const w = ownerlessWorld();
     const giant = leader(w, 0);
-    const places = divisionPlaces(w);
-    const midTable = clubsForSale(w).find(
-      (c) => c.country === 'ENG' && c.tier === 0 && places.get(c.id) === 10,
-    )!;
+    const midTable = clubsForSale(w)
+      .filter((c) => c.country === 'ENG' && c.tier === 0)
+      .sort((a, b) => b.strength - a.strength)[9]!;
     const bare = big(clubValue(w, giant)),
       mid = big(clubValue(w, midTable));
     withBooks(w, giant, { cash: '20000000', debt: '0' });
@@ -162,34 +161,41 @@ describe('wealth tiers (→OWNER-3)', () => {
     expect(new Set(priced.map(({ club }) => club.country)).size).toBe(8);
   });
 
-  it('reaches distinct places of the pyramid, richest first', () => {
-    const places = divisionPlaces(w);
-    const reach = (tier: (typeof WEALTH_TIER_IDS)[number]) =>
-      reachOf(w, tier, priced).map(({ club }) => [club.tier, places.get(club.id)!]);
-    expect(reach('oil').every(([tier, place]) => tier === 0 && place <= 5)).toBe(true);
-    expect(reach('oil')).toHaveLength(8 * 5);
-    expect(reach('chaebol').every(([tier, place]) => tier === 0 && place >= 6 && place <= 12)).toBe(
-      true,
-    );
-    expect(
-      reach('industrial').every(([tier, place]) =>
-        tier === 0 ? place >= 13 : tier === 1 && place <= 6,
-      ),
-    ).toBe(true);
-    expect(reach('midsize').every(([tier, place]) => (tier === 1 ? place >= 7 : tier === 2))).toBe(
-      true,
-    );
-    expect(reach('local').length).toBeGreaterThan(0);
-    expect(reach('local').every(([tier]) => tier >= 2)).toBe(true);
-    // England's fourth tier is its lowest: 자수성가 reaches it, 지역 유지 does not.
-    const lowest = reachOf(w, 'selfmade', priced);
-    expect(lowest.some(({ club }) => club.country === 'ENG' && club.tier === 3)).toBe(true);
-    expect(lowest.some(({ club }) => club.country === 'ENG' && club.tier < 3)).toBe(false);
-    expect(lowest.some(({ club }) => club.country === 'ESP' && club.tier === 1)).toBe(true);
+  it('uses price ranks with exact band edges, stable ties and no overlapping membership', () => {
+    // Twenty hand-made prices: unrelated currencies/divisions cannot affect their pound ranking.
+    const club = priced[0]!.club;
+    const list: PricedClub[] = Array.from({ length: 20 }, (_, i) => ({
+      club: { ...club, id: `club-${String(i).padStart(2, '0')}` },
+      price: '1',
+      pricePounds: String(200 - i),
+    }));
+    list[2]!.pricePounds = list[1]!.pricePounds;
+    const scrambled = [...list].reverse();
+    const expected = [
+      [0, 2],
+      [2, 4],
+      [4, 7],
+      [7, 11],
+      [11, 16],
+      [16, 20],
+    ];
+    for (const [i, tier] of WEALTH_TIER_IDS.entries()) {
+      const [from, to] = expected[i]!;
+      expect(reachOf(w, tier, scrambled)).toEqual(list.slice(from, to));
+      expect(tierAnchor(w, tier, scrambled)).toBe(String([199, 198, 195, 191, 187, 182][i]));
+    }
+    expect(scrambled).toEqual([...list].reverse());
+    expect(reachOf(w, 'oil', [])).toEqual([]);
+    expect(tierAnchor(w, 'oil', [])).toBe('0');
+  });
+
+  it('gives a three-division country clubs in 지역 유지’s band', () => {
+    const local = reachOf(w, 'local', priced);
+    expect(local.some(({ club }) => club.country === 'GER')).toBe(true);
+    expect(local.some(({ club }) => club.country === 'FRA')).toBe(true);
     const anchors = WEALTH_TIER_IDS.map((tier) => big(tierAnchor(w, tier, priced)));
     for (let i = 1; i < anchors.length; i++)
       expect(anchors[i]!).toBeLessThanOrEqual(anchors[i - 1]!);
-    expect(anchors[3]!).toBeGreaterThan(0n);
   });
 
   it('starts each tier at its anchor’s multiple, able to buy a club it reaches', () => {
@@ -210,47 +216,5 @@ describe('wealth tiers (→OWNER-3)', () => {
     const spanish = priced.find(({ club }) => club.country === 'ESP')!;
     expect(spanish.pricePounds).toBe(inPounds('ESP', w.year, spanish.price));
     expect(big(tierAnchor(w, 'oil'))).toBe(big(tierAnchor(w, 'oil', priced)));
-  });
-});
-
-describe('division places', () => {
-  /** Last season's archived table: rows of [club index, tier, group, points, goals for, against]. */
-  const archive = (w: World, rows: number[][]) =>
-    (w.history = [{ year: w.year - 1, standings: rows } as unknown as SeasonArchive]);
-  const row = (w: World, club: Club, tier: number, points: number) => [
-    w.clubs.indexOf(club),
-    tier,
-    0,
-    points,
-    40,
-    40,
-  ];
-
-  it('orders a division by strength in a world’s first season', () => {
-    const w = ownerlessWorld();
-    const places = divisionPlaces(w);
-    const top = w.clubs
-      .filter((c) => c.country === 'ENG' && c.tier === 0)
-      .sort((a, b) => b.strength - a.strength || (a.id < b.id ? -1 : 1));
-    expect(top.map((c) => places.get(c.id))).toEqual(top.map((_, i) => i + 1));
-  });
-
-  it('orders it by last season’s finish, the relegated first and the promoted last', () => {
-    const w = ownerlessWorld();
-    const top = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0);
-    const second = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 1);
-    const weakest = [...top].sort((a, b) => a.strength - b.strength)[0]!;
-    const [up, down] = [second[0]!, top.find((c) => c !== weakest)!];
-    archive(w, [
-      ...top.map((c) => row(w, c, 0, c === weakest ? 90 : 40)),
-      ...second.map((c) => row(w, c, 1, c === up ? 99 : 30)),
-    ]);
-    // The promotion and relegation of the close.
-    up.tier = 0;
-    down.tier = 1;
-    const places = divisionPlaces(w);
-    expect(places.get(weakest.id)).toBe(1);
-    expect(places.get(up.id)).toBe(top.length);
-    expect(places.get(down.id)).toBe(1);
   });
 });

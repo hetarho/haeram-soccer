@@ -73,8 +73,8 @@ for (const viewport of [
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     const { name } = await openClub(listing);
     await takeOverClub(page, name);
-    // A 1930 club is taken over with no cash; funded, it shows no money band, whose two lines
-    // left the match theatre 66 px short of 360x740 (→WEB-17, WEB-56).
+    // Fund above the opening cash so a money band never changes the geometry measured here
+    // (→WEB-17, WEB-56).
     await fundClub(page);
     await expectHomeBounds(page);
     // Play below runs the clock briefly in the open window; an offer card must not cover

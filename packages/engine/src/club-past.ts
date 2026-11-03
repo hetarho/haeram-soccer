@@ -12,7 +12,7 @@ import { compareIds } from './primitives';
 /**
  * A club's place in its division of an archived season (→HIST-2): its row among the rows of its
  * country, division and group, by points, goal difference, goals and club ID — the order the
- * archive's tables are read in (club-value `divisionPlaces`). Undefined without a row for it.
+ * archive's tables are read in. Undefined without a row for it.
  */
 export function archivedFinish(
   w: Pick<World, 'clubs'>,

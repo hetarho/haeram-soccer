@@ -38,8 +38,8 @@ export function careerClub(code: CountryCode = 'ENG') {
 /**
  * A fresh world (`historyWorld` on `input.year`, nothing lived before it) whose `input.club` an
  * `input.tier` owner takes over with `input.traits` and `input.preset`, its cash then set to
- * `input.cash` or `CAREER_FUNDS` years of its fixed costs with no ledger entry. ← a fresh world's
- * books open at cash 0 and an unfunded club goes bankrupt at round 8. `release` is the internal
+ * `input.cash` or `CAREER_FUNDS` years of its fixed costs with no ledger entry, independent of the
+ * bought club's opening books. `release` is the internal
  * switch, as for `takeOver`.
  */
 export function careerWorld(

@@ -189,6 +189,7 @@ describe('owner and takeover (→SAVE-27)', () => {
       stake: 35,
       dividendShare: 75,
       fanMood: 13.6,
+      starSaleWindow: { year: w.year, kind: 'winter' },
       ownerCrisis: { since: { year: w.year, day: 92 } },
       fanCrisis: { rounds: 3 },
       ffpInjections: [{ season: w.year, amount: '40000' }],
@@ -226,6 +227,7 @@ describe('owner and takeover (→SAVE-27)', () => {
     // A save carrying none of it (an older one) validates as before.
     const older = world();
     delete older.owner;
+    for (const club of older.clubs) delete club.books;
     const plain = validateWorld(older, LOAD_CATALOG);
     for (const key of ['owner', 'loan', 'ended'] as const) expect(plain).not.toHaveProperty(key);
     expect(plain.clubs.every((club) => club.books === undefined)).toBe(true);
@@ -243,6 +245,8 @@ describe('owner and takeover (→SAVE-27)', () => {
     ['a stake in part percent', { stake: 12.5 }],
     ['a dividend off the dial', { dividendShare: 30 }],
     ['팬 민심 above 100', { fanMood: 100.5 }],
+    ['invalid star-sale window', { starSaleWindow: { year: 1950, kind: 'spring' } }],
+    ['fractional star-sale season', { starSaleWindow: { year: 1950.5, kind: 'summer' } }],
   ])('refuses an owner with %s', (_, owner) => {
     const w = world();
     withOwner(w, owner as never);

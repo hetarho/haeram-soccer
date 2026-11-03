@@ -22,6 +22,7 @@ import { clamp } from './primitives';
 import { isLeagueMatch, lastSeasonTurnover, seasonTurnover } from './finance';
 import { DEFAULT_TICKET, TICKET_PRESETS } from './presets';
 import { transferRanking } from './transfer-records';
+import { transferWindow } from './transfer-window';
 
 /** A live owner's career: the hooks act only while he owns the club and it plays on. */
 function live(w: World) {
@@ -186,11 +187,20 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
   if (!sold) return;
   const ovr = overall(sold),
     level = activePlayers(w).filter((p) => overall(p) >= ovr).length;
-  if (level < FAN_MOOD.starSale.top)
+  const window = transferWindow(w),
+    owner = w.owner!;
+  if (
+    level < FAN_MOOD.starSale.top &&
+    window.open &&
+    window.kind &&
+    (owner.starSaleWindow?.year !== w.year || owner.starSaleWindow.kind !== window.kind)
+  ) {
+    owner.starSaleWindow = { year: w.year, kind: window.kind };
     move(w, FAN_MOOD.starSale.change, {
       title: '주축 선수 매각',
       detail: `${fact.name} · OVR ${ovr}`,
     });
+  }
 }
 
 /** A designer draft adopted as the club's identity (→OWNER-12, KIT-9). */
@@ -224,8 +234,8 @@ function takeoverIncome(w: World) {
 }
 
 /**
- * A dividend taken at the close (→OWNER-11/12): −1 per 1% of the season's turnover; a season
- * without turnover loses the whole standing.
+ * A dividend taken at the close (→OWNER-11/12), scaled by its share of the season's turnover;
+ * without turnover it counts as 100%.
  */
 export function fanMoodDividend(w: World, amount: bigint) {
   if (!live(w) || amount <= 0n) return;

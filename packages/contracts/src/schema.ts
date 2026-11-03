@@ -897,6 +897,7 @@ const ownerState = z.strictObject({
   stake: z.number().int().min(0).max(100),
   dividendShare: z.literal(DIVIDEND_SHARES),
   fanMood: rating,
+  starSaleWindow: z.strictObject({ year: season, kind: z.enum(['summer', 'winter']) }).optional(),
   ownerCrisis: z.strictObject({ since: careerDate }).optional(),
   fanCrisis: z.strictObject({ rounds: z.number().int().min(1).max(100) }).optional(),
   ffpInjections: z.array(z.strictObject({ season, amount })).max(100),

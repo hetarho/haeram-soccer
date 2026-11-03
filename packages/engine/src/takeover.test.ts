@@ -3,8 +3,9 @@ import { validateWorld } from '../../contracts/src/schema';
 import type { OwnerTrait, WealthTier } from '../../contracts/src/owner';
 import type { Club, Player, SeasonArchive, World } from '../../contracts/src/types';
 import { takeOver, takeoverExpenses, takeoverLoan, uncoveredSlots } from './takeover';
-import { clubValue, divisionPlaces, facilityStage, fromPounds, tierFortune } from './club-value';
+import { clubValue, facilityStage, fromPounds, tierFortune } from './club-value';
 import {
+  CLUB_BOOKS,
   CLUB_TAKEOVER,
   FAN_MOOD,
   OWNER_BUSINESS,
@@ -35,16 +36,16 @@ import { clubNews } from './news';
 import { clubMilestones } from './goals';
 import { scaleBy, zeroMetrics } from './primitives';
 import { ownerlessWorld, withBooks } from './ownerless.testkit';
+import { historyWorld } from './history';
+import { settleNpcBooks } from './books';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 
 const choice = (tier: WealthTier, traits: OwnerTrait[] = []) => ({ tier, traits });
 /** The club at `place` of a division of England. */
 const atPlace = (w: World, tier: number, place: number): Club => {
-  const places = divisionPlaces(w);
-  return w.clubs.find(
-    (c) =>
-      c.country === 'ENG' && c.tier === tier && !c.representative && places.get(c.id) === place,
-  )!;
+  return w.clubs
+    .filter((c) => c.country === 'ENG' && c.tier === tier && !c.representative)
+    .sort((a, b) => b.strength - a.strength || a.id.localeCompare(b.id))[place - 1]!;
 };
 /** An English second-tier club near the top, with cash, a debt and last season's books. */
 function setup(seed = 'takeover') {
@@ -181,6 +182,22 @@ describe('takeover (→ECON-38, CLUB-1, OWNER-4)', () => {
     // The takeover is the owner's era's first history entry (→HIST-5).
     expect(w.events[0]).toMatchObject({ kind: 'takeover', year: w.year, round: 0, amount: price });
     expect(() => validateWorld(structuredClone(w))).not.toThrow();
+  });
+
+  it('starts a 1930 takeover with the club’s half-season opening cash', () => {
+    const w = historyWorld('takeover-opening', DISABLED_RELEASE);
+    const club = atPlace(w, 1, 3);
+    const cash = club.books!.cash;
+    const copy = structuredClone(w);
+    const closed = settleNpcBooks(
+      copy,
+      copy.clubs.find((c) => c.id === club.id)!,
+    ).seasons[0]!;
+    expect(cash).toBe(scaleBy(closed.income, CLUB_BOOKS.opening, 1000n));
+    expect(BigInt(cash)).toBeGreaterThan(0n);
+    takeOver(w, club.id, choice('oil'), undefined, DISABLED_RELEASE);
+    expect(w.cash).toBe(cash);
+    expect(w.loan).toBeUndefined();
   });
 
   it('takes no loan over a club without debt, and no cash over one without books', () => {

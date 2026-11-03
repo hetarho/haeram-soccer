@@ -61,6 +61,11 @@ describe('the takeover list (→WEB-15)', () => {
     const w = ownerlessWorld();
     const oil = clubListings(w, 'oil');
     expect(oil.every((l) => l.affordable)).toBe(true);
+    const cheapest = [...oil].sort((a, b) =>
+      Number(BigInt(a.pricePounds) - BigInt(b.pricePounds)),
+    )[0]!;
+    expect(cheapest.affordable).toBe(true);
+    expect(BigInt(cheapest.pricePounds)).toBeLessThanOrEqual(BigInt(tierFortune(w, 'oil')));
     const selfmade = clubListings(w, 'selfmade');
     const fortune = tierFortune(w, 'selfmade');
     expect(selfmade.some((l) => l.affordable)).toBe(true);

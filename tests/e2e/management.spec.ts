@@ -135,8 +135,8 @@ test('browses every historical regional group and resets filters on country chan
   page,
 }) => {
   await page.goto('/');
-  // An Italian club, so the season's own league is Italy's; a 1930 club has no cash and would go
-  // bankrupt before the close in the red, so the owner funds it first (→ECON-24, OWNER-9).
+  // An Italian club, so the season's own league is Italy's; supplement its opening cash for
+  // the full-season browsing journey (→ECON-24, OWNER-9).
   await startCareer(page, {
     seed: 'historical-regional-groups',
     country: 'ITA',

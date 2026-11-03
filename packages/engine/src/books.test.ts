@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { Club, World } from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
-import { booksClose, clearDebt, keepsBooks, settleNpcBooks } from './books';
+import {
+  booksClose,
+  booksOpen,
+  clearDebt,
+  currencyChange,
+  keepsBooks,
+  settleNpcBooks,
+} from './books';
+import { CLUB_BOOKS } from './owner-config';
+import { scaleBy } from './primitives';
 import { facilityStage } from './club-value';
 import { historyWorld } from './history';
 import { evolveClubs } from './dynamics';
@@ -16,10 +25,33 @@ const club = (w: World, country: string, tier: number) =>
 const amount = (value: string) => BigInt(value);
 
 describe('season books of clubs nobody owns (→ECON-36)', () => {
+  it('opens with half a season’s income and no invented closed season', () => {
+    const w = world();
+    const top = club(w, 'ENG', 0),
+      third = club(w, 'ENG', 2);
+    // Restrict the accounting fixture to the two clubs and their real league gates.
+    w.clubs = [top, third];
+    w.fixtures = w.fixtures.filter((f) => f.home === top.id || f.home === third.id);
+    for (const c of w.clubs) delete c.books;
+    booksOpen(w);
+    for (const c of w.clubs) {
+      const opening = structuredClone(c.books!);
+      expect(opening.seasons).toEqual([]);
+      expect(opening.debt).toBe('0');
+      const income = settleNpcBooks(w, c).seasons[0]!.income;
+      expect(opening.cash).toBe(scaleBy(income, CLUB_BOOKS.opening, 1000n));
+      expect(amount(opening.cash)).toBeGreaterThan(0n);
+    }
+    const before = structuredClone(w.clubs.map((c) => c.books));
+    booksOpen(w);
+    expect(w.clubs.map((c) => c.books)).toEqual(before);
+  });
   it('settle a season from the owner scales: income, wages, operating expenses and result', () => {
     const w = world();
     const top = club(w, 'ENG', 0),
       third = club(w, 'ENG', 2);
+    // Isolate income and expenses from the opening balance.
+    for (const c of [top, third]) c.books = { seasons: [], cash: '0', debt: '0' };
     const [a, b] = [settleNpcBooks(w, top), settleNpcBooks(w, third)];
     for (const books of [a, b]) {
       const [book] = books.seasons;
@@ -29,8 +61,12 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
       expect(amount(book!.result)).toBe(
         amount(book!.income) - amount(book!.wages) - amount(book!.costs),
       );
-      // Nothing before the first season: the result is the whole balance.
-      expect(amount(books.cash) - amount(books.debt)).toBe(amount(book!.result));
+      const result = amount(book!.result),
+        ceiling = amount(scaleBy(book!.income, CLUB_BOOKS.cashSeasons, 1000n)),
+        floor = -amount(scaleBy(book!.income, CLUB_BOOKS.debtSeasons, 1000n));
+      expect(amount(books.cash) - amount(books.debt)).toBe(
+        result > ceiling ? ceiling : result < floor ? floor : result,
+      );
     }
     // A first season pays its division's operating expenses (→ECON-30).
     expect(a.seasons[0]!.costs).toBe(operatingExpensesAt('ENG', w.year, 0));
@@ -40,21 +76,37 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     expect(amount(a.seasons[0]!.wages)).toBeGreaterThan(amount(b.seasons[0]!.wages));
   });
 
-  it('keeps cash below zero as debt, and never ends a club for it', () => {
+  it('caps cash and writes off debt beyond the income bounds, without ending the club', () => {
     const w = world();
     const target = club(w, 'ESP', 1);
     // The season's result on its own, then the same season over a balance.
-    const result = amount(settleNpcBooks(w, target).seasons[0]!.result);
+    const income = settleNpcBooks(w, target).seasons[0]!.income;
     const huge = 10n ** 15n;
     target.books = { seasons: [], cash: '0', debt: huge.toString() };
     const indebted = settleNpcBooks(w, target);
     expect(indebted.cash).toBe('0');
-    expect(amount(indebted.debt)).toBe(huge - result);
+    expect(indebted.debt).toBe(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n));
     target.books = { seasons: [], cash: huge.toString(), debt: '0' };
     const rich = settleNpcBooks(w, target);
-    expect([amount(rich.cash), rich.debt]).toEqual([huge + result, '0']);
+    expect([rich.cash, rich.debt]).toEqual([scaleBy(income, CLUB_BOOKS.cashSeasons, 1000n), '0']);
     expect(w.bankrupt).toBeUndefined();
     expect(w.clubs).toContain(target);
+  });
+
+  it.each([0.25, -0.5])('leaves a closing balance of %s seasons of income untouched', (share) => {
+    const w = world();
+    const target = club(w, 'ENG', 1);
+    w.clubs = [target];
+    const book = settleNpcBooks(w, target).seasons[0]!;
+    const end = amount(scaleBy(book.income, share, 1000n));
+    const start = end - amount(book.result);
+    target.books = {
+      seasons: [],
+      cash: start > 0n ? start.toString() : '0',
+      debt: start < 0n ? (-start).toString() : '0',
+    };
+    const books = settleNpcBooks(w, target);
+    expect(amount(books.cash) - amount(books.debt)).toBe(end);
   });
 
   it('keeps only the current and the last closed season', () => {
@@ -77,7 +129,9 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     expect(currency('FRA', 1998).code).not.toBe(currency('FRA', 1999).code);
     // The season's own amounts stay in francs; the balance is in euros, far fewer units.
     expect(amount(books.debt)).toBeLessThan(10n ** 12n - amount(book!.result));
-    expect(amount(books.debt)).toBeGreaterThan(0n);
+    expect(books.debt).toBe(
+      currencyChange('FRA', 1998, 1999)!(scaleBy(book!.income, CLUB_BOOKS.debtSeasons, 1000n)),
+    );
   });
 
   it('is cleared by a takeover or a project between seasons (→LEAGUE-10)', () => {
@@ -107,6 +161,7 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     const career = careerWorld({ seed: 'npc-books' }, DISABLED_RELEASE);
     const unowned = structuredClone(career);
     delete unowned.owner;
+    for (const c of unowned.clubs) delete c.books;
     booksClose(unowned);
     expect(unowned.clubs.some((c) => c.books)).toBe(false);
     // A taken-over career keeps books for every club but the owner's.

@@ -133,86 +133,6 @@ export function clubsForSale(w: World): Club[] {
   );
 }
 
-/**
- * Each professional club's place in its division (its group, 1 first), the order the reach bands
- * read (→OWNER-3): last season's finish when the world archived that season, clubs that came down
- * from the division above first and those that came up last; else, as in a world's first season,
- * its strength.
- */
-export function divisionPlaces(w: World): Map<string, number> {
-  const last = w.history.at(-1);
-  const finish = new Map<string, [tier: number, rank: number]>();
-  if (last && last.year === w.year - 1) {
-    const groups = new Map<string, number[][]>();
-    for (const row of last.standings) {
-      const key = `${w.clubs[row[0]]?.country}:${row[1]}:${row[2]}`;
-      groups.set(key, [...(groups.get(key) ?? []), row]);
-    }
-    for (const rows of groups.values())
-      [...rows]
-        .sort(
-          (a, b) =>
-            b[3]! - a[3]! ||
-            b[4]! - b[5]! - (a[4]! - a[5]!) ||
-            b[4]! - a[4]! ||
-            compareIds(w.clubs[a[0]!]?.id ?? '', w.clubs[b[0]!]?.id ?? ''),
-        )
-        .forEach((row, rank) => {
-          const club = w.clubs[row[0]!];
-          if (club) finish.set(club.id, [row[1]!, rank + 1]);
-        });
-  }
-  const divisions = new Map<string, Club[]>();
-  for (const club of clubsForSale(w)) {
-    const key = `${club.country}:${club.tier}:${club.group}`;
-    divisions.set(key, [...(divisions.get(key) ?? []), club]);
-  }
-  const places = new Map<string, number>();
-  const unknown: [number, number] = [Infinity, Infinity];
-  for (const clubs of divisions.values())
-    [...clubs]
-      .sort((a, b) => {
-        const [ta, ra] = finish.get(a.id) ?? unknown,
-          [tb, rb] = finish.get(b.id) ?? unknown;
-        return ta - tb || ra - rb || b.strength - a.strength || compareIds(a.id, b.id);
-      })
-      .forEach((club, i) => places.set(club.id, i + 1));
-  return places;
-}
-
-/**
- * One rule of a tier's reach: clubs from division `from` (0 the top flight) down to `to`, at
- * places `first`–`last` in their division's order; `lowest` keeps only a country's lowest
- * professional division, and `lowest: false` leaves it out.
- */
-export interface ReachRule {
-  from: number;
-  to?: number;
-  first?: number;
-  last?: number;
-  lowest?: boolean;
-}
-/**
- * The clubs each wealth tier reaches (→OWNER-3), whose median price is its anchor: the top flight's
- * places 1–5 and 6–12; its places from 13 with the second tier's 1–6; the rest of the second tier
- * with the third; the lower professional tiers, from the third down but a country's lowest; and
- * each country's lowest professional tier. A club may lie in two reaches.
- */
-export const REACH_BANDS: Record<WealthTier, readonly ReachRule[]> = {
-  oil: [{ from: 0, to: 0, first: 1, last: 5 }],
-  chaebol: [{ from: 0, to: 0, first: 6, last: 12 }],
-  industrial: [
-    { from: 0, to: 0, first: 13 },
-    { from: 1, to: 1, first: 1, last: 6 },
-  ],
-  midsize: [
-    { from: 1, to: 1, first: 7 },
-    { from: 2, to: 2 },
-  ],
-  local: [{ from: 2, lowest: false }],
-  selfmade: [{ from: 0, lowest: true }],
-};
-
 /** A club for sale with its price in its own money and in pounds. */
 export interface PricedClub {
   club: Club;
@@ -226,22 +146,19 @@ export function pricedClubs(w: World): PricedClub[] {
     return { club, price, pricePounds: inPounds(club.country, w.year, price) };
   });
 }
-/** Whether a club lies in a tier's reach, given its place in its division. */
-export function inReach(tier: WealthTier, club: Club, place: number) {
-  const lowest = club.tier === country(club.country).groups.length - 1;
-  return REACH_BANDS[tier].some(
-    (rule) =>
-      club.tier >= rule.from &&
-      club.tier <= (rule.to ?? Infinity) &&
-      place >= (rule.first ?? 1) &&
-      place <= (rule.last ?? Infinity) &&
-      (rule.lowest === undefined || rule.lowest === lowest),
-  );
-}
-/** The priced clubs in a tier's reach. */
+/**
+ * The priced clubs in a tier's price-rank band, dearest first (→OWNER-3). Rank shares start at
+ * zero; an edge belongs to the band starting there. Equal prices use stable club IDs.
+ */
 export function reachOf(w: World, tier: WealthTier, priced = pricedClubs(w)): PricedClub[] {
-  const places = divisionPlaces(w);
-  return priced.filter(({ club }) => inReach(tier, club, places.get(club.id) ?? Infinity));
+  const [from, to] = OWNER_TIERS[tier].band;
+  return [...priced]
+    .sort((a, b) => {
+      const x = BigInt(a.pricePounds),
+        y = BigInt(b.pricePounds);
+      return (x > y ? -1 : x < y ? 1 : 0) || compareIds(a.club.id, b.club.id);
+    })
+    .filter((_, rank) => rank / priced.length >= from && rank / priced.length < to);
 }
 /**
  * A tier's anchor (→OWNER-3): the median pound price, this season, of the clubs in its reach across

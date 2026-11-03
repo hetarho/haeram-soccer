@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { OWNER_TRAIT_IDS, WEALTH_TIER_IDS } from '../../contracts/src/owner';
 import {
+  CLUB_BOOKS,
   CLUB_TAKEOVER,
   CLUB_VALUE,
   FAN_MOOD,
@@ -14,10 +15,18 @@ import {
   TAKEOVER_DEBT,
 } from './owner-config';
 
-/** The SSOT's numbers (OWNER r1, ECON r42, CLUB r50); a retune changes the SSOT first. */
+/** The SSOT's numbers (OWNER r2, ECON r43, CLUB r51); a retune changes the SSOT first. */
 describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
   it('sizes six tiers, richest first, as multiples of their anchor (→OWNER-3)', () => {
     expect(Object.keys(OWNER_TIERS)).toEqual([...WEALTH_TIER_IDS]);
+    expect(Object.values(OWNER_TIERS).map((tier) => tier.band)).toEqual([
+      [0, 0.08],
+      [0.08, 0.2],
+      [0.2, 0.35],
+      [0.35, 0.55],
+      [0.55, 0.8],
+      [0.8, 1],
+    ]);
     expect(Object.values(OWNER_TIERS).map((tier) => [tier.label, tier.multiple])).toEqual([
       ['석유 재벌', 10],
       ['재벌 총수', 1.3],
@@ -54,7 +63,7 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
       chance: 0.5,
       stake: { min: 0, max: 100, start: 0 },
     });
-    expect(OWNER_LIVING.rate).toBe(0.01);
+    expect(OWNER_LIVING.rate).toBe(0.0025);
     expect(OWNER_DIVIDEND).toEqual({ shares: [0, 25, 50, 75, 100], start: 0 });
   });
 
@@ -85,8 +94,8 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
       lastInLowest: -10,
       injection: { perPercent: 1, max: 10 },
       recordSigning: 5,
-      dividend: { perPercent: -1 },
-      starSale: { change: -8, top: 3 },
+      dividend: { perPercent: -0.5 },
+      starSale: { change: -4, top: 3 },
       identity: -20,
       ticket: { perStep: -0.2 },
     });
@@ -95,8 +104,9 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
   });
 
   it('values clubs, turns their debt into a loan and sets the bought club as it stands (→ECON-37/38, CLUB-1)', () => {
+    expect(CLUB_BOOKS).toEqual({ opening: 0.5, cashSeasons: 1, debtSeasons: 1.5 });
     expect(CLUB_VALUE).toEqual({ following: 0.05, placeSeasons: 3, floor: 1 });
-    expect(TAKEOVER_DEBT).toEqual({ seasons: 5, rate: 0.05 });
+    expect(TAKEOVER_DEBT).toEqual({ seasons: 10, rate: 0.05 });
     expect(CLUB_TAKEOVER.squad).toBe(20);
     expect(CLUB_TAKEOVER.goalkeepers).toBe(2);
     const { division, stature } = CLUB_TAKEOVER.facilities;

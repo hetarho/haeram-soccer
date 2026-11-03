@@ -14,6 +14,7 @@ import { historyWorld, liveHistory } from '../../../../packages/engine/src/histo
 import { pricedClubs, tierFortune } from '../../../../packages/engine/src/club-value';
 import { pays } from '../../../../packages/engine/src/listing';
 import { takeOver } from '../../../../packages/engine/src/takeover';
+import { TAKEOVER_DEBT } from '../../../../packages/engine/src/owner-config';
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
@@ -1233,7 +1234,8 @@ describe('a taken-over career (→SAVE-27)', () => {
     takeOver(w, indebted.club.id, { tier: 'oil', traits: ['politician', 'marketer'] });
     expect(w.owner?.takeover).toMatchObject({ year: 1931, clubId: indebted.club.id });
     expect(w.owner?.takeover.lastIncome).toBeDefined();
-    expect(w.loan?.seasonsLeft).toBe(5);
+    expect(w.loan?.seasonsLeft).toBe(TAKEOVER_DEBT.seasons);
+    w.owner!.starSaleWindow = { year: w.year, kind: 'summer' };
     expect(w.history.map((season) => season.year)).toEqual([1930]);
     // The model the world ran since 1930 is tracked from the takeover (→SAVE-23, OWNER-4).
     expect(generated.matchModel?.activated.year).toBe(1930);
@@ -1250,6 +1252,7 @@ describe('a taken-over career (→SAVE-27)', () => {
     const loaded = (await decode(await encode(w))).world;
     expect(canonical(loaded)).toBe(canonical(w));
     expect(loaded.owner).toEqual(w.owner);
+    expect(loaded.owner!.starSaleWindow).toEqual({ year: w.year, kind: 'summer' });
     expect(loaded.loan).toEqual(w.loan);
     expect(loaded.clubs.filter((club) => club.books)).toEqual(books);
   });
