@@ -11,6 +11,7 @@ job.ownerInstructions = {
   permissions: 'Use acceptEdits and the provided allowlist. Do not bypass permissions or change permission configuration. Git commits are available through the allowed Git commands in this Claude unit.',
   repositoryRules: 'Read and follow applicable AGENTS.md files before changing their paths. In particular, apps/web/AGENTS.md requires the shared design-system and resource-skin guides for visual/theme changes and preservation of artwork/resource handoff metadata.',
   deadline: 'Implementation stops at 2026-11-04 09:10 Asia/Seoul. Preserve measurements and partial results incrementally in task results and reports. Keep generated portable/prepared fixture artifacts consistent when their dependencies change.',
+  releasedPrerequisite: 'The takeover release prerequisite is now satisfied. Main code commit 420ea7a5 was pushed at 05:50 KST and CI run 41716276177 passed all nine jobs at 06:45 KST. Main metadata HEAD is bc4f224e. Do not return no_work to wait for this gate again. T689 is the remaining task: continue its measured scoring investigation on the released source, preserve the existing acceptance and publication requirements, and record partial results before the 09:10 stop if the full task cannot finish. No scoring source commit unless its realism gate passes; partial candidate source may be backed up only by the host WIP checkpoint.',
 };
 try {
   const failure = JSON.parse(await readFile(new URL('./repair.json', import.meta.url), 'utf8'));

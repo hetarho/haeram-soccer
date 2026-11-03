@@ -19,6 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 
 ## inbox
+- 261104 decided ARCH-30 MATCH-23 T689: takeover release prerequisite satisfied: main 420ea7a5 passed all nine CI jobs in run 41716276177 at 06:45 KST. Resume T689 on released bc4f224e now; preserve every measurement/publication criterion and save partial findings before the 09:10 implementation stop, with all WIP remotely backed up before 09:30 (alt: keep waiting for an already successful release gate). nv04
 - 261104 decided ARCH-30 MATCH-23 T689: start T689's 2 h scoring run at 05:15 KST while T678, T679 and their update-ssot sit 3 commits ahead of main awaiting the release gate? → no: the unit ends without work so the host's gate and the takeover's intermediate main push run first, as the owner orders T689 after the takeover release and the 09:10 KST stop leaves room for gate fixes only if the gate starts now; T689 stays todo, re-run on the released source with its acceptance unchanged (alt: run it now and push the gate to about 07:30 KST | close it on bl03's partial exit, which the owner's "retains its existing measurement requirements" rules out). nv04
 - 261104 decided OWNER-3 OWNER-8 LEAGUE-13 ECON-29 ARCH-28 T686 T679: how T686's tuned values and T679's measurement enter the SSOTs, with the code already holding them → OWNER r3 states 1.6× and 0.2% with T686's measured reasons and makes T686's must-hold (no owner who moves no money bankrupt within 15 seasons) OWNER-8's stated bound; LEAGUE-13, ECON-29 and ARCH-28 gain measured 261104 lines beside the earlier ones; each domain's tasked moves with its rev since no code changes, so no task (alt: leave the bound in the done task only, which leaves 0.2% without the target it was tuned to | replace the 261103 ARCH-28 line, losing the measurement without the view | open a confirming task with nothing to implement). nv04
 - 261104 decided ARCH-28 ARCH-34 T679: how the view's cost is read → Node `generateHistory` 1970 in a process per run, order with/without/without/with/with/without so a drifting host load falls on both sides, both sides cloning the progress reply as postMessage does, the digest's own time beside it; in the browser the click-to-list time beyond the worker's span counted whole as the view's (the list's hold behind its last card) (alt: one process alternating, whose heap and JIT carry from run to run | a browser run with the view switched off, a product flag the view does not have). nv04
@@ -718,9 +719,9 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- repair any release-gate failures before the intermediate main push (T678's host.generation integration test and 1950 start journeys await the batch). T686's remaining balance proposals (CLUB-25 wage top, ECON-30 share, OWNER-12 퇴진 band, ECON-36 check) stay an inbox suggest.
-- Deadline: 2026-11-04 09:30 Asia/Seoul; preserve all incomplete work on wip/nv04 before the deadline.
-- T689 scoring research follows only after the takeover release work, with its existing measurement and publication requirements.
+- implement-task T689 on released main bc4f224e; takeover release CI 41716276177 passed. Preserve the scoring realism gate and record partial findings before the deadline if unfinished.
+- Deadline: 2026-11-04 09:30 Asia/Seoul; implementation stops 09:10, final remote backup 09:28.
+- T686 measured remaining giant-club bankruptcy and progression balance issues; its policy suggestions remain in the inbox and report.
 
 ## log
 - 261104 update-ssot OWNER r3 LEAGUE r14 ECON r44 ARCH r30: T686's 1.6× tier multiple and 0.2% living costs with the passive-owner bound, T686's measured lines in LEAGUE-13 and ECON-29, T679's measured note in ARCH-28; the code already holds every value, so no task (tasked = rev). T689 cites none of them. nv04

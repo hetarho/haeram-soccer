@@ -28,7 +28,8 @@ const common = { targetRoot: workspace, tag, provider: 'claude', permissionMode:
   verify: ['pnpm run verify:batch'], timeoutMs: 16200000,
   env: { ...process.env, BROWSER_TEST_PORT: '4634' } };
 process.env.BROWSER_TEST_PORT = '4634';
-const state = { tag, started: new Date().toISOString(), workspace, deadline: '2026-11-04T09:30:00+09:00', intermediatePublished: false, epochs: [], checkpoints: [], repairs: [], ci: [], status: 'starting' };
+const previousState = await readFile(path.join(control, 'status.json'), 'utf8').then(JSON.parse).catch(() => null);
+const state = { tag, started: previousState?.started ?? new Date().toISOString(), resumed: new Date().toISOString(), workspace, deadline: '2026-11-04T09:30:00+09:00', intermediatePublished: previousState?.intermediatePublished ?? false, lastMainPush: previousState?.lastMainPush, epochs: previousState?.epochs ?? [], checkpoints: previousState?.checkpoints ?? [], repairs: previousState?.repairs ?? [], ci: previousState?.ci ?? [], status: 'starting' };
 const save = () => writeFile(path.join(control, 'status.json'), JSON.stringify(state, null, 2) + '\n');
 const log = (event) => { process.stdout.write(JSON.stringify({ at: new Date().toISOString(), ...event }) + '\n'); };
 const git = async (...args) => (await exec('git', args, { cwd: workspace, maxBuffer: 4 * 1024 * 1024 })).stdout.trim();
