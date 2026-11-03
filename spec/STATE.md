@@ -700,10 +700,9 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- release (→ARCH-30 r29): sessions push code to `next` only; the last session working merges `main` into `next`, runs `pnpm run verify:batch` once, merges `next` into `main` and pushes (deploy). hr05 started under push: main and may still push main itself; the release merges it in
-- implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
-- hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks; preserve ot03 ownership.
-- implement-task T683, then T684 (integration fixes on wip/ot03) and T687 (20 Chromium journeys), the batch gate and the push to main; then T685, T686 (balance), T678, T679
+- implement-task T683, then T684 and T687 (the takeover's integration and browser fixes), T685 and T686 (balance), T678 and T679 (history view); each loop pushes its work to `next` after the quick batch (ot03)
+- release (→ARCH-30 r29): the last session working merges `main` into `next`, runs `pnpm run verify:batch` once (browser journeys only there), merges `next` into `main` and pushes (deploy); hr05 started under push: main and may push main itself, the release merges it in
+- hr05: implement-task T681 then T682 for the owner-approved automatic-play bottlenecks
 
 ## log
 - 261103 update-ssot ARCH r29 (owner: every session gathers on `next`, only the last one runs the full suite with e2e and pushes main); cfg push and plan main→next; ARCH r29 no-op for code (process only); ot03
