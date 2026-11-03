@@ -13,11 +13,14 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 next on wip/ot03 |
+| ot03 | ihaelam-ui-MacBookPro | autopilot | 2026-11-02T16:10Z | 2026-11-03T00:00Z | T665 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
+| hr03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-03T02:14Z | 2026-11-03T02:14Z | - |
 
 ## inbox
+- 261103 decided HIST-11 HIST-22 SAVE-28 T673 T674 T675: how to avoid repeating historical news/statistics work → persist incremental source-linked news/record summaries, index current-season finance and page retained news (alt: replace IndexedDB or recompute every read); preserve all original facts and current rules. hr03
+- 261103 decided ARCH-30 T673 T674 T675: scope with takeover work active on another device → independent main-based news/read improvements only, reserve its T669–T672 IDs and retain its handoff; no takeover implementation. hr03
 - 261103 decided SAVE-17 WEB-45 T652: can a supported save lack `settings` → no: every rules-4.0.0/0.7.0 career is founded with them (written at founding since 261016, before 4.0.0), so the intervention level, its level→settings mapping and `World.intervention` go and an older save's level is dropped on load; a hand-built world without settings reads as the owner deciding everything (alt: keep a read-only level→settings mapping). ot03
 - 261103 decided ECON-7 ECON-15 WEB-14 T652: the pre-1.19 campaign settlement and the running-campaign card are unreachable under SAVE-16 yet still in the SSOT → kept for an update-ssot, only the campaign command and `campaignOffers` go (alt: delete them now and amend ECON-7/15 and WEB-14). ot03
 - 261103 decided ARCH-21 SAVE-23 T652: `advance`/`season` → kept in `Command`, the protocol and the host because the golden runner and host tests send them; only the client's per-season loop goes (alt: drop them from the protocol and move host tests to `advance-days`). ot03
@@ -506,8 +509,8 @@
 | STAFF | 38 | 38 | - | 0 |
 | ECON | 42 | 42 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 21 | 21 | - | 0 |
-| SAVE | 62 | 62 | - | 0 |
+| HIST | 22 | 22 | - | 0 |
+| SAVE | 63 | 63 | - | 0 |
 | OWNER | 1 | 1 | - | 0 |
 | PLAYER | 13 | 13 | - | 0 |
 
@@ -540,6 +543,9 @@
 | T666 | records: the club's history before the owner and the owner's seasons | HIST OWNER WEB | T652 T665 | todo |
 | T667 | measure world generation against ARCH-28 on the reference trace | ARCH WORLD SAVE | T652 T665 | todo |
 | T668 | measure reference careers per wealth tier and tune owner numbers | LEAGUE ECON OWNER | T652 T665 | todo |
+| T673 | Record news and update record counters when facts settle | HIST SAVE ARCH | - | todo |
+| T674 | Serve career statistics and current-season finance from maintained summaries | HIST SAVE ARCH | T673 | todo |
+| T675 | Verify long-career scaling and checkpoint continuity of incremental reads | HIST SAVE ARCH | T674 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -563,10 +569,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- implement-task T673, then T674 and T675 (hr03); preserve ot03 takeover handoff below.
 - continue branch `wip/ot03` (dda53874: owner takeover T653–T664 and T669 done, main merged; its STATE is current): implement-task T665, then T666, T667, T668; batch gate once (Chromium), then merge into main and push. Report spec/reports/261103-ot03.md
 - read main CI after 1928053c (fix for 41524887826: position-badges, analysis, mobile-match-presentation)
 
 ## log
+- 261103 HIST r22 SAVE r63 tasked: T673–T675 incremental news, statistics/finance reads and performance/continuity verification. hr03
+- 261103 update-ssot HIST SAVE start (hr03): incremental news and career read models; normalize ot03 doing cell to its existing T665 ID, branch handoff remains in next.
 - 261103 ot03 hand-off: main pushed with CI fix 1928053c and report; owner takeover work on wip/ot03 and wip/ot03-t669 for another session
 - 261103 fix CI 41524887826: position badges scroll a family's first market row up the list (random seed put it below the 360px fold), the goal-cue check reads the cue the page recorded inside its 1 s hold (and the ball-side scoreboard check waits out the page entrance WebKit resampled), and formation slots centre with `translate` so a pressed slot no longer jumps off the mouseup in Firefox (app fix, unit test)
 - 261103 ot03 batch gate passed on 8887ace7 (typecheck, lint, format, unit, integration 147 files, contract 47, catalogs, presentation, build, Chromium 346/346); pushed main with T646–T652, the design close and the gate fixes
@@ -585,26 +594,3 @@
 - 261103 ot03 start (autopilot): finish T647–T652, then plan and build ideation owner-wealth-and-takeover in parallel lanes; illustrations stay
 - 261103 design close 6c0d6b12: tests and SSOT aligned (WEB r203: WEB-39 office opens on the 결재함 without its room scene, 결재라인 from 결재 설정/who-decides links; WEB-100 requests under titles, waiting first, delegates and 직접/위임 + 전체 switches, no filters; WEB-43 이적시장 선수/유소년/코치/감독/단장; WEB-50/95/49 board in the ball side's colours, notable-only commentary log, details and player dialogs, after-match table; WEB-71/72/79 entries; MATCH r46 MATCH-10 after-match standing); unit tests for the titled queue, 1.3% pitch margin and ageMax; kit preview on the shared pitch margin; office/queue and match-view e2e specs migrated for the batch
 - 261103 T646 done: care command, CareKind, winBonus (dropped on load), care.ts, win-bonus settlement, care news/ledger lines and the motivator's meeting bonus removed; office shows 결재함 + read-only 클럽 현황, HUD cash sheet explains cash/fixed costs/runway only, places read with 유소년 keeping 승격·방출; equivalence digests unchanged; 2 typecheck + 8 unit failures predate it (ds03 6c0d6b12 vs WEB-39), e2e edited for the batch
-- 261102 create-task owner intervention removal → T646–T652 (sequential; KIT-6/8 tasked in T648, KIT stays tasked 4 for its earlier KIT-5/9/10/12/13 deltas)
-- 261102 update-ssot owner intervention removal: WEB r202 ECON r41 ARCH r26 SAVE r61 LEAGUE r11 CLUB r49 MATCH r45 HIST r20 KIT r7 STAFF r38 PLAYER r12 (WORLD unchanged) — only 직접/위임 and its approvals stay; care, training 제안/강행, tactic requests and owner lineups, the 방향 board, dials, ticket price, owner capital, cash remedies, facility work start, coaching encouragement and owner-proposed playing coaches withdrawn; values stay as founded or saved; older saves drop the removed state (SAVE-25)
-- 261102 update-ssot WEB ECON CLUB STAFF MATCH SAVE ARCH LEAGUE HIST KIT PLAYER WORLD start: owner intervention removal
-- 261102 design ds03 web: market targets 선수/유소년/코치/감독/단장 (youth = world market ≤20, ageMax query); office 결재함 as titles with delegates (단장/감독/유스 디렉터) and 직접/위임 + 전체 switches; match board in the side on the ball, larger titles, 20% pitch margin, matchup beside speeds, notable-only commentary log, 상세 and player sheets as dialogs; season table full width. Committed without verify at the owner's request.
-- 261102 ideation owner-wealth-and-takeover ready: difficulty by owner wealth (6 tiers) × traits (0–5 of 8), takeover of any club at its value from a chosen decade 1930–2000, owner fortune with a quarterly 50/50 business stake and living costs, injection at any time, season-close dividends, FFP from 2011/12, 팬 민심 and 구단주 퇴진, crises as a status, amateur level removed
-- 261102 nm62 closed: T645 on main (511e2419, fix 5e42da3d); CI 41390729838 integration passed, remaining checks/unit/e2e failures in ds02's areas, fixed by ds02's 89299cb queued next. Report spec/reports/261102-nm62.md.
-- 261102 fix T645 name-bearing checks: grid-throughput (153 digests) and full-model-throughput re-recorded, every one equal to the source's with names removed; mediation free-agent journey searches a piece of the name shared by more than a page, since full names no longer repeat (3/3 Chromium); nm62.
-- 261102 T645 done: per-country name pools (113–144 given × 204–285 surnames) in catalog 2026-demo-5, surnames distinct inside every generated NPC and founding squad; fresh world 315→~12,670 distinct names, in-squad repeats ~2,300→0; portable goldens re-recorded (names only); nm62.
-- 261102 create-task WORLD@7 SAVE@60 → T645 person-name pools, squad surnames, catalog 2026-demo-5; nm62.
-- 261102 update-ssot WORLD r7 SAVE r60: person-name pools ≥100 given × ≥200 surnames per country, no shared surname in a generated squad, catalog 2026-demo-5 pin move; nm62.
-- 261102 update-ssot WORLD SAVE start; nm62.
-- 261102 of02 complete: restored original room art and moved Home office work back into the office; Team before the market holds compact first-team/youth/coach lists, with shared four-family position badges. Final main source 0ff2e0b9 passed CI 41345384013 (all nine jobs, including Chromium, Firefox and both WebKit shards) after the test-only manual-progression repair; all 80 captures visually reviewed. Report spec/reports/261101-of02.md; proof .tmp/owner-office-review/261102-of02. Session closed; unrelated pending and inbox preserved.
-- 261102 fix business browser progression: watch real rounds in public manual mode before reading investment/finance results, so a resumed automatic clock cannot open the next match-eve report over the controls. CI 41340021151 passed checks, unit, all three integration shards, Chromium and both WebKit shards; Firefox's investment case alone timed out behind NEXT MATCH on both attempts. No app, financial assertion, timeout or observation rule changed; of02.
-- 261102 fix recovery history journey: verify the new Team list entries between Home and detailed personnel work, including back/forward through the coach list and the earlier first-team list. Full batch passed unit 1955, integration 1272 (4 existing skips), contract 48, catalog/presentation/build and 351/352 Chromium cases; the sole failure expected the pre-Team history. Test-only correction; keep unchanged successes and rerun the complete recovery spec on all three browsers; session of02.
-- 261102 fix growth-core regression journey: return through the real clubhouse entry after office advice, before asserting the Home-only progression timeline. Both phone failures passed every office warning/dialog/focus assertion and reached real progression; the final timeline lookup retained its old Home assumption. No app, assertion, timeout or game rule changed; session of02.
-- 261102 fix office keyboard continuity: keep the persistent section navigation outside the inert content boundary and select from the eager page; only the dashboard/working content stays inert while its deferred view changes. This preserves consecutive key events without losing focus between selection and view commit. Replaces the delayed-focus attempt with the existing TabList recovery logic; strict focus/URL assertions remain, staff repeated twice per browser; of02.
-- 261102 fix staff browser geometry: settle finite motion and snap tab bounds to the existing 1/64px layout unit before the unchanged 44px check; WebKit returned 43.9999961853 for an actual 44px tab. Combined focused gate passed all 36 theme/browser office/Team/badge cases and 8/9 related cases; keep those results and rerun staff plus captures. Session of02.
-- 261102 fix Team coach columns: retain the 88px contract width on phones so the real season/end suffix fits the pixel score font; keep all zero-overflow and row-density assertions. Integrated main's committed competition/award work without changing its checkout; of02 verifies the combined candidate.
-- 261102 fix Team browser assertion: manager-journey has two distinct active players named Albert Brooks, so require one correctly named button per actual player ID row, preserving exact row counts and the same inspector/retention/geometry checks. First focused gate: office and badge 24 cases passed across all themes/browsers; Team 12 stopped at this identity assertion; session of02.
-- 261102 fix Team: keep the directory tabs sticky below any task-return bar, so switching lists preserves the actual scroll position instead of scrolling the departing list to its tabs first. Existing WEB-112 retention policy; bounded two-file style/layout correction after T644, session of02.
-- 261102 T644 done: primary 팀 before 이적시장 (sidebar 클럽하우스/리그/컵/팀/이적시장/기록, phone 리그/컵/클럽하우스/팀/이적시장/기록) opens canonical /team?view=players|academy|coaches with compact market-density rows: our actual first team, academy prospects and manager plus all eight posts with vacancies, PositionBadge, actual facts only; names open the player sheet, a prospect's review or a coach career; 1군 관리/유소년 관리/코치진 관리 lead to the unchanged illustrated pages, which lead back with one `← 팀 · <list>` link; the office bar is 사무실/훈련/운영; 12 locale packs, team story and coverage notes; typecheck/lint/format, affected unit 35 files / 343 tests plus 23 navigation/locale files / 223 tests, architecture 25 tests and build passed; tests/e2e/team-directory.spec.ts and nine updated specs left to the host gate; session of02.
-- 261102 T643 done: shared PositionBadge (engine lineOf family, actual code, localized hidden family name; gold GK, blue DF, green MF, coral FW with dark ink and a family edge, theme badge radius only) replaces the market's dark tile in every row and stays visible at 360px; badges story shows all 14 positions; typecheck/lint/format, affected unit 13 files / 119 tests plus locale/catalog/lock/architecture tests and build passed; tests/e2e/position-badges.spec.ts left to the host gate; session of02.
-- 261102 update-ssot WEB r200; create-task T643 T644: add primary Team with compact own first-team/youth/coach lists and shared four-family position badges; preserve restored art and office relocation. Canonical max T642 after plan-sync, other session bd02 tasks unchanged; only of02 work in this checkout.
