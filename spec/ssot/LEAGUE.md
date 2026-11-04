@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r14 | Define the browser-demo rules for domestic seasons and relegation.
+> r15 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -19,6 +19,8 @@
 - LEAGUE-9 [o] A season closes on the day after its final round (day 323 counted from 1 August); the empty summer is skipped and the next season starts on 1 August. ← nothing happens after the final round, so waiting through it only delays the season review and the summer window
 - LEAGUE-10 [o] Between seasons every club nobody owns rises or falls. ← fixed strengths let one well-run club pull away forever; real leagues see clubs rise and fall, while a few stay on top
   - it closes 20% of the gap to its level: its division's midpoint + its stature + last season's success; promotion closes 35% more of the gap at once and relegation 15%.
+  - its means level (→!ECON-36): a club nobody owns that keeps books plays at most at the highest strength whose squad its last closed season's book pays: that squad's market wage bill (→CLUB-25, →CLUB-48), priced in the division and season the book was earned, at most the book's income less its operating expenses (→ECON-30). Its level is never above its means level, and a club above it after its summer change sells down to it at once. A club with a project, or in the summer of its takeover, is not held to it; a club without books has none. ← a club pays its stars from its own income, as small-league giants sell what their league's money cannot keep: a country's strongest club earns only 1.2–1.7× its top flight's median club (measured 261104)
+  - the means level is in force only with CLUB-48's table, through CLUB-48's gate, never alone. ← at the modern spread it would sell the stars the 1950s market kept near a regular's pay
   - stature is stable per club: each country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5).
   - success: last season's top-flight champion +3, the rest of the top four +1.5, a continental winner +2.
   - a rare project (a new owner, a golden generation; 0.4% a club a summer, from its own stream) adds 8–18 to its level, fading 15% a summer; a project in the owner's country within one division is reported. ← any club can become as strong as the owner's, by chance
@@ -75,6 +77,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r15 261104 LEAGUE-10✎ strength bounded by 15–99 only→also by a means level (the strength whose squad its last closed book pays at income − operating expenses; level never above it, sold down at once; projects and a takeover's summer exempt), in force only with CLUB-48's table
 - r14 261104 LEAGUE-13✎ no measured line→measured 261104 on takeover careers (2 seeds × 4 countries, 1950–1969): titles, top-flight reach and club bankruptcies per tier, and 구단주 퇴진 on 50%/25% dividends
 - r13 261103 LEAGUE-13✎ reference club at the tier's reach→the median-priced club of the tier's price band in each country, nearest band when none; bankrupt column→the club's bankruptcy (→ECON-24), the owner's purse measured beside it on a 50% dividend
 - r12 261103 LEAGUE-5✎ entrants professional and amateur→professional only; LEAGUE-6- amateur exchange removed; LEAGUE-10✎ +a takeover or project clears the club's debt; LEAGUE-13✎ reference careers by difficulty level from the amateur league with level bands→per wealth tier from a 1950 takeover with tier bands; LEAGUE-14✎ a new club 12 and the amateur league's level 8→removed; LEAGUE-16+ the last professional division relegates nobody
