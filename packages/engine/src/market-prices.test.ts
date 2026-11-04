@@ -3,6 +3,7 @@ import { ATTRIBUTES } from '../../contracts/src/player';
 import type { Player, World } from '../../contracts/src/types';
 import * as legacy from './contracts';
 import * as prices from './market-prices';
+import { footballQuote } from './quotes';
 
 /**
  * Captured from contracts.ts before extraction; synthetic ratings, no generated world. Only the GER
@@ -214,6 +215,154 @@ describe('market pricing read leaf', () => {
       expect({ world, player }).toEqual(before);
     },
   );
+});
+
+describe('era star pay spread (CLUB-48)', () => {
+  const codes = ['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'];
+  const player = (ability: number, age: number, potential: number, year: number) =>
+    ({
+      id: 'star',
+      position: 'CM',
+      attrs: Object.fromEntries(ATTRIBUTES.map((attribute) => [attribute, ability])),
+      born: year - age,
+      potential,
+    }) as Player;
+  /** The released curve: every star term in full (s = 1). */
+  const released = (
+    code: string,
+    year: number,
+    division: number,
+    ability: number,
+    age: number,
+    potential: number,
+  ) => footballQuote(code, year, prices.marketWageUnits(division, ability, age, potential));
+  function withSpread<T>(table: typeof prices.STAR_SPREAD_CONFIG, run: () => T) {
+    const kept = { ...prices.STAR_SPREAD_CONFIG };
+    Object.assign(prices.STAR_SPREAD_CONFIG, table);
+    try {
+      return run();
+    } finally {
+      Object.assign(prices.STAR_SPREAD_CONFIG, kept);
+    }
+  }
+
+  it('never moves a wage at OVR 80 or below, in any country or year', () => {
+    for (const code of codes)
+      for (let year = 1930; year <= 2030; year += 4)
+        for (let ability = 40; ability <= 80; ability += 4)
+          for (const [age, potential] of [
+            [18, ability + 15],
+            [27, ability],
+            [34, ability],
+          ])
+            for (const division of [0, 1, 3])
+              expect(
+                prices.marketWageAt(code, year, division, player(ability, age, potential, year)),
+              ).toBe(released(code, year, division, ability, age, potential));
+  });
+
+  it('counts every star term in full from 2008 (CLUB-25, CLUB-26)', () => {
+    for (const code of codes)
+      for (let year = 2008; year <= 2030; year++) {
+        expect(prices.starPaySpread(code, year)).toBe(1);
+        for (let ability = 81; ability <= 99; ability += 3)
+          expect(prices.marketWageAt(code, year, 0, player(ability, 27, ability, year))).toBe(
+            released(code, year, 0, ability, 27, ability),
+          );
+      }
+  });
+
+  it('keeps its shared table within 0–1, never falling with time', () => {
+    const anchors = prices.STAR_SPREAD_CONFIG.shared;
+    for (let i = 0; i < anchors.length; i++) {
+      expect(anchors[i][1]).toBeGreaterThanOrEqual(0);
+      expect(anchors[i][1]).toBeLessThanOrEqual(1);
+      if (i) expect(anchors[i][0]).toBeGreaterThan(anchors[i - 1][0]);
+    }
+    for (const code of codes)
+      for (let year = 1930; year < 2030; year++)
+        expect(prices.starPaySpread(code, year + 1)).toBeGreaterThanOrEqual(
+          prices.starPaySpread(code, year),
+        );
+  });
+
+  it('never makes a better player cheaper, and keeps him dearer wherever stars are paid apart', () => {
+    for (const code of codes)
+      for (let year = 1930; year <= 2030; year += 2) {
+        const spread = prices.starPaySpread(code, year);
+        for (const division of [0, 2])
+          for (let ability = 40; ability < 99; ability++) {
+            const low = prices.marketWageUnits(division, ability, 26, ability, spread),
+              high = prices.marketWageUnits(division, ability + 1, 26, ability + 1, spread);
+            if (ability < 80 || spread > 0) expect(high).toBeGreaterThan(low);
+            else expect(high).toBe(low);
+          }
+      }
+  });
+
+  it('prices a star at W80 × (W / W80)^s, linear in s between its anchors', () => {
+    const table = {
+      shared: [[1950, 0] as [number, number], [2000, 1] as [number, number]],
+      own: {},
+    };
+    withSpread(table, () => {
+      expect(prices.starPaySpread('ESP', 1930)).toBe(0);
+      expect(prices.starPaySpread('ESP', 1975)).toBeCloseTo(0.5, 12);
+      expect(prices.starPaySpread('ESP', 2020)).toBe(1);
+    });
+    const full = prices.marketWageUnits(0, 92, 25, 95),
+      ordinary = prices.marketWageUnits(0, 80, 25, 83);
+    expect(prices.marketWageUnits(0, 92, 25, 95, 0)).toBeCloseTo(ordinary, 9);
+    expect(prices.marketWageUnits(0, 92, 25, 95, 0.5)).toBeCloseTo(Math.sqrt(full * ordinary), 9);
+    expect(prices.marketWageUnits(0, 92, 25, 95, 1)).toBe(full);
+    // A lower-division star's top-flight terms are a star term too.
+    expect(prices.marketWageUnits(2, 92, 25, 95, 0)).toBeCloseTo(
+      prices.marketWageUnits(2, 80, 25, 83),
+      9,
+    );
+  });
+
+  // T693 kept the released curve (s = 1, no own anchor) until CLUB-48's band is resolved; the
+  // mechanism is checked on England's maximum-wage anchor as CLUB-48 states it.
+  it("pays an English star an 80's wage under an own anchor of 0, through its season only", () => {
+    const table = {
+      shared: [[1970, 0.5] as [number, number], [2008, 1] as [number, number]],
+      own: { ENG: { through: 1960, spread: 0 } },
+    };
+    withSpread(table, () => {
+      for (const year of [1950, 1955, 1960])
+        expect(prices.marketWageAt('ENG', year, 0, player(95, 27, 95, year))).toBe(
+          prices.marketWageAt('ENG', year, 0, player(80, 27, 80, year)),
+        );
+      expect(prices.starPaySpread('ESP', 1955)).toBe(0.5);
+      expect(prices.starPaySpread('ENG', 1961)).toBe(prices.starPaySpread('ESP', 1961));
+      expect(BigInt(prices.marketWageAt('ENG', 1961, 0, player(95, 27, 95, 1961)))).toBeGreaterThan(
+        BigInt(prices.marketWageAt('ENG', 1961, 0, player(80, 27, 80, 1961))),
+      );
+    });
+  });
+
+  it("keeps a running contract's wage and prices the next demand, Ballon d'Or premium^s", () => {
+    const year = 1975,
+      star = { ...player(92, 27, 92, year), wage: released('ESP', year, 0, 92, 27, 92) };
+    const world = {
+      year,
+      playerClub: 'own',
+      clubs: [{ id: 'own', country: 'ESP', tier: 0 }],
+      history: [{ year: year - 1, ballonDor: [{ id: 'star' }] }],
+    } as unknown as World;
+    const signed = star.wage;
+    const at = (s: number) =>
+      withSpread({ shared: [[1950, s]], own: {} }, () => legacy.playerWorth(world, star));
+    expect(at(1)).toBe((BigInt(released('ESP', year, 0, 92, 27, 92)) * 2n).toString());
+    const ordinary = withSpread({ shared: [[1950, 0]], own: {} }, () =>
+      prices.marketWageAt('ESP', year, 0, star),
+    );
+    expect(ordinary).toBe(released('ESP', year, 0, 80, 27, 80));
+    expect(at(0)).toBe(ordinary);
+    expect(BigInt(at(0.5))).toBeLessThan(BigInt(at(1)));
+    expect(star.wage).toBe(signed);
+  });
 });
 
 describe('exceptional-player wage demands', () => {
