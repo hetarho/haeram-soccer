@@ -53,6 +53,24 @@ export const RESULTS_ONLY_CONFIG = {
   extraTime: 30 / 90,
 } as const;
 
+/**
+ * T698's placebo draw, a measurement-only override (→CLUB-48's champions part): while `salt` is
+ * non-empty, every results-only fixture of season `season` (league, cup and continental alike)
+ * draws from a stream carrying the salt, so that season's results are drawn afresh while every
+ * other draw keeps its key. A season Y is the one starting in Y (`w.year === Y` until its close);
+ * 1930 is the world's first (`HISTORY_START`, a literal here since history.ts reaches this module).
+ * Production never sets the salt: with it empty the key is the released one exactly.
+ */
+export const RESULTS_LUCK: { salt: string; season: number } = { salt: '', season: 1930 };
+
+/** The stream a fixture's result draws from (→ARCH-5: named by the fixture). */
+function resultsKey(w: World, f: Fixture) {
+  const { salt, season } = RESULTS_LUCK;
+  return salt && w.year === season
+    ? `${w.seed}:results:${salt}:${f.id}`
+    : `${w.seed}:results:${f.id}`;
+}
+
 /** One side's eleven and what each of them is picked by, read once per XI. */
 interface Eleven {
   shot: number[];
@@ -209,7 +227,7 @@ export function resultsOnlyMatch(w: World, f: Fixture, decide?: DecideRule): Mat
   const sides = [elevenOf(squads[0], tactics[0]), elevenOf(squads[1], tactics[1])] as const;
   const lines = squads.map((xi) => xi.map(() => zeroMetrics())) as [Metrics[], Metrics[]];
   const team: [Metrics, Metrics] = [zeroMetrics(), zeroMetrics()];
-  const r = random(`${w.seed}:results:${f.id}`);
+  const r = random(resultsKey(w, f));
   const G = C.goals,
     lift = G.perLevel * ((strength[0]! + strength[1]!) / 2 - G.level);
   const mean = (side: 0 | 1) =>

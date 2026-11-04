@@ -47,6 +47,22 @@
  *   pnpm exec tsx scripts/era-wage-spread.ts --seeds owner-balance-0 --spread table.json --means \
  *     --observe-cups --out screen.json                                     T697's screen world
  *   pnpm exec tsx scripts/era-wage-spread.ts --screen a.extra.json,b.extra.json
+ *
+ * T698: CLUB-48 r57's champions part reads the real leagues' 1980/81–2009/10 spread (LEAGUE-10
+ * r17, `CHAMPION_BAND`, each country's real values beside) and history's noise. `--placebo SALT`
+ * lives the released world with its first season's (1930/31) results drawn with that salt
+ * (`RESULTS_LUCK`, a measurement override) and records it in the extra; a placebo needs only its
+ * champions, so one row year is enough. `--champions-placebo` groups such extras by salt and
+ * prints, per set and country, the points outside the real spread pooled over the seeds against
+ * `--champions-released`, and the allowance (the largest excess in any country of any set, at
+ * least 0); with `--champions-candidate` beside them the candidate reads released + allowance.
+ *
+ *   pnpm exec tsx scripts/era-wage-spread.ts --seeds owner-balance-0 --years 2009 --countries POR \
+ *     --until 2009 --placebo placebo-1 --out placebo-1-0.json             one placebo world
+ *   pnpm exec tsx scripts/era-wage-spread.ts --champions-placebo p.extra.json,... \
+ *     --champions-released r.extra.json,...                               the noise and the allowance
+ *   pnpm exec tsx scripts/era-wage-spread.ts --champions-placebo p.extra.json,... \
+ *     --champions-released r.extra.json,... --champions-candidate c.extra.json,...  a candidate
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import type { Club, World } from '../packages/contracts/src/types';
@@ -57,6 +73,7 @@ import { squad } from '../packages/engine/src/world';
 import { overall } from '../packages/engine/src/player-state';
 import { footballQuote } from '../packages/engine/src/quotes';
 import { BOOK_COMPETITIONS, keepsBooks } from '../packages/engine/src/books';
+import { RESULTS_LUCK } from '../packages/engine/src/results-only';
 import { MEANS_LEVEL, meansLevel, squadCostAt } from '../packages/engine/src/dynamics';
 import {
   MARKET_CONFIG,
@@ -119,6 +136,8 @@ interface Extra {
   means: boolean;
   /** T697: competition money in the books' income (`--cups`). */
   cups?: boolean;
+  /** T698: the placebo salt 1930/31's results were drawn afresh with (`--placebo`). */
+  placebo?: string;
   table?: Table;
   champions: { year: number; code: string; club: string }[];
   /**
@@ -157,6 +176,8 @@ const MEANS = args.includes('--means');
 /** T697: competition money in force (`--cups`), or observed beside the books without it. */
 const CUPS = args.includes('--cups');
 const OBSERVE_CUPS = args.includes('--observe-cups');
+/** T698: a placebo set, the world's first season's results drawn with this salt (`--placebo`). */
+const PLACEBO = option('placebo', '');
 
 function readTable(path: string): Table {
   return JSON.parse(readFileSync(path, 'utf8')) as Table;
@@ -231,6 +252,10 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
   // Each book's competition money and division at the close, for the summer's counterfactual.
   const money = new Map<string, { year: number; tier: number; total: bigint }>();
   if (CUPS) BOOK_COMPETITIONS.inForce = true;
+  if (PLACEBO) {
+    RESULTS_LUCK.salt = PLACEBO;
+    RESULTS_LUCK.season = w.year;
+  }
   if (OBSERVE_CUPS)
     BOOK_COMPETITIONS.observe = (c, m, released) => {
       money.set(c.id, { year: w.year, tier: c.tier, total: m.total });
@@ -343,6 +368,7 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
     seed,
     means: MEANS,
     ...(CUPS ? { cups: true } : {}),
+    ...(PLACEBO ? { placebo: PLACEBO } : {}),
     ...(table ? { table } : {}),
     champions: w.history.flatMap((h) =>
       h.champions.map((ch) => ({ year: h.year, code: ch.country, club: ch.club })),
@@ -611,13 +637,45 @@ function livedReport(rows: Row[], extras: Extra[]) {
   );
 }
 
-/** LEAGUE-10's measured spread: 5–9 different champions in 30 seasons, the most titles of one club 8–15. */
-const CHAMPION_BAND: Record<'different' | 'most', [number, number]> = {
-  different: [5, 9],
-  most: [8, 15],
+type Band = Record<'different' | 'most', [number, number]>;
+/**
+ * CLUB-48 r57's reference, LEAGUE-10 r17: the real leagues 1980/81–2009/10 on their official
+ * champions lists (titles not awarded left out: Italy 2004/05, France 1992/93) — 4–9 different
+ * champions per country, the most titles of one club 7–17; `REAL_CHAMPIONS` is LEAGUE-10's
+ * per-country table, whose extremes are the band's ends.
+ */
+const CHAMPION_BAND: Band = { different: [4, 9], most: [7, 17] };
+const REAL_CHAMPIONS: Record<string, { different: number; most: number; club: string }> = {
+  ENG: { different: 8, most: 11, club: 'Manchester United' },
+  ESP: { different: 7, most: 11, club: 'Real Madrid, Barcelona' },
+  ITA: { different: 8, most: 9, club: 'Juventus' },
+  GER: { different: 7, most: 16, club: 'Bayern München' },
+  FRA: { different: 9, most: 7, club: 'Lyon' },
+  NED: { different: 5, most: 14, club: 'PSV' },
+  POR: { different: 4, most: 17, club: 'Porto' },
+  BEL: { different: 7, most: 14, club: 'Anderlecht' },
+};
+/** LEAGUE-10's 261011 measurement of the model's own spread, T696's and T697's band: a second, labelled reading. */
+const BAND_261011: Band = { different: [5, 9], most: [8, 15] };
+{
+  const real = Object.values(REAL_CHAMPIONS);
+  const ends = (key: 'different' | 'most') => [
+    Math.min(...real.map((r) => r[key])),
+    Math.max(...real.map((r) => r[key])),
+  ];
+  for (const key of ['different', 'most'] as const)
+    if (ends(key).join() !== CHAMPION_BAND[key].join())
+      throw new Error(`the band's ${key} ends are not the real leagues' extremes`);
+}
+const realOf = (code: string) => {
+  const r = REAL_CHAMPIONS[code];
+  return r ? `${r.different} / ${r.most}` : '-';
 };
 const outside = (value: number, [low, high]: [number, number]) =>
   Math.max(0, low - value, value - high);
+/** Points outside a band: the different champions and the most titles, each by how far it sits outside. */
+const pointsOutside = (x: { different: number; most: number }, band: Band) =>
+  outside(x.different, band.different) + outside(x.most, band.most);
 function championsOf(extra: Extra, code: string, from: number, to: number) {
   const titles = new Map<string, number>();
   for (const ch of extra.champions)
@@ -629,71 +687,176 @@ function championsOf(extra: Extra, code: string, from: number, to: number) {
     most: Math.max(0, ...titles.values()),
   };
 }
-function championsReport(released: Extra[], candidate: Extra[], from: number, to: number) {
-  const band = CHAMPION_BAND;
-  console.log(
-    `\n### Champions ${from}–${to} per country: different top-flight champions / the most titles of one club (LEAGUE-10: ${band.different.join('–')} and ${band.most.join('–')})\n`,
-  );
-  console.log(
-    'Released: worlds at the released curve (s = 1, no means level). Candidate: the table and the means level lived together. Verdict: within the band, or no further outside it than the released world on the same seed.\n',
-  );
-  console.log('| seed | country | seasons | released | candidate | verdict |');
-  console.log('|---|---|---:|---|---|---|');
-  let pass = 0,
+const codesOf = (extras: Extra[]) =>
+  [...new Set(extras.flatMap((e) => e.champions.map((ch) => ch.code)))].sort();
+/** Per country, the points outside `band` summed over the extras (one world per seed). */
+function pooledOutside(extras: Extra[], band: Band, from: number, to: number) {
+  const pooled = new Map<string, number>();
+  for (const e of extras)
+    for (const code of codesOf([e])) {
+      const c = championsOf(e, code, from, to);
+      if (c.seasons) pooled.set(code, (pooled.get(code) ?? 0) + pointsOutside(c, band));
+    }
+  return pooled;
+}
+/**
+ * The share of the country-seasons from..to whose champion differs from the released world's on
+ * the same seed: how far a set's history has diverged (context for the allowance, not a rule).
+ */
+function divergence(released: Extra[], extras: Extra[], from: number, to: number) {
+  let differ = 0,
     all = 0;
-  const failures: string[] = [];
+  for (const e of extras) {
+    const rel = released.find((r) => r.seed === e.seed);
+    if (!rel) continue;
+    const key = (ch: Extra['champions'][number]) => `${ch.year}:${ch.code}`;
+    const theirs = new Map(rel.champions.map((ch) => [key(ch), ch.club]));
+    for (const ch of e.champions)
+      if (ch.year >= from && ch.year <= to && theirs.has(key(ch))) {
+        all++;
+        if (theirs.get(key(ch)) !== ch.club) differ++;
+      }
+  }
+  return { differ, all, share: all ? differ / all : 0 };
+}
+const percent = (x: number) => `${(100 * x).toFixed(1)}%`;
+const seedsOf = (extras: Extra[]) => [...new Set(extras.map((e) => e.seed))].sort();
+
+/**
+ * History's noise (CLUB-48 r57): placebo sets of the released world on the same seeds, each with
+ * 1930/31's results drawn afresh. Per set and country the points outside the real spread pooled
+ * over the seeds against the released worlds; the allowance is the largest excess over released in
+ * any country of any complete set, at least 0. Returns the allowance and how many sets are complete.
+ */
+function placeboReport(released: Extra[], placebos: Extra[], from: number, to: number) {
+  const band = CHAMPION_BAND,
+    seeds = seedsOf(released);
+  const sets = new Map<string, Extra[]>();
+  for (const e of placebos) {
+    if (!e.placebo) throw new Error(`${e.seed}: not a placebo world (no salt in its extra)`);
+    if (e.means || e.cups || e.table)
+      throw new Error(`${e.placebo}: a placebo lives the released world`);
+    sets.set(e.placebo, [...(sets.get(e.placebo) ?? []), e]);
+  }
+  const order = [...sets.keys()].sort(
+    (a, b) => Number(a.replace(/\D/g, '')) - Number(b.replace(/\D/g, '')) || a.localeCompare(b),
+  );
+  const complete = order.filter((salt) => seedsOf(sets.get(salt)!).join() === seeds.join());
+  const rel = pooledOutside(released, band, from, to),
+    codes = codesOf(released);
+  console.log(
+    `\n### History's noise: ${complete.length} placebo sets × seeds ${seeds.join(', ')}, champions ${from}–${to}\n`,
+  );
+  console.log(
+    `Each set: the released world (s = 1, no means level, no competition money in the books) lived again from 1930 on the same seeds with 1930/31's results drawn with the set's salt (\`RESULTS_LUCK\`); clubs, rules and every later draw unchanged. Cells: points outside the real spread (different ${band.different.join('–')}, most ${band.most.join('–')}) summed over the seeds, then (excess over released). Diverged: the share of the country-seasons ${from}–${to} whose champion differs from released.\n`,
+  );
+  console.log(`| set | ${codes.join(' | ')} | largest excess | diverged |`);
+  console.log(`|---|${codes.map(() => '---:|').join('')}---:|---:|`);
+  console.log(
+    `| real (different / most) | ${codes.map(realOf).join(' | ')} | - | - |\n| released | ${codes.map((c) => rel.get(c) ?? 0).join(' | ')} | - | - |`,
+  );
+  let allowance = 0;
+  const where: string[] = [];
+  for (const salt of order) {
+    const extras = sets.get(salt)!,
+      done = complete.includes(salt);
+    const own = pooledOutside(extras, band, from, to);
+    const excess = codes.map((c) => (own.get(c) ?? 0) - (rel.get(c) ?? 0));
+    const largest = Math.max(...excess);
+    if (done && largest > allowance) allowance = largest;
+    if (done && largest > 0)
+      where.push(`${salt} ${codes.filter((_, i) => excess[i] === largest).join('/')} +${largest}`);
+    const d = divergence(released, extras, from, to);
+    console.log(
+      `| ${salt}${done ? '' : ` (incomplete: ${seedsOf(extras).length} of ${seeds.length} seeds)`} | ${codes.map((c, i) => `${own.get(c) ?? 0} (${excess[i]! >= 0 ? '+' : ''}${excess[i]})`).join(' | ')} | ${largest} | ${percent(d.share)} |`,
+    );
+  }
+  const shares = complete.map((salt) => divergence(released, sets.get(salt)!, from, to).share);
+  console.log(
+    `\n**Allowance: ${allowance}** point${allowance === 1 ? '' : 's'} (the largest excess over released in any country of any of the ${complete.length} complete sets, at least 0)${where.length ? `; sets ending further out than released: ${where.join(', ')}` : '; no set ends further out than released in any country'}.`,
+  );
+  if (shares.length)
+    console.log(
+      `Diverged champions per set: ${percent(Math.min(...shares))}–${percent(Math.max(...shares))} (mean ${percent(shares.reduce((a, b) => a + b, 0) / shares.length)}).`,
+    );
+  return { allowance, complete: complete.length };
+}
+
+/**
+ * CLUB-48 r57's champions part on a candidate: per country, pooled over the seeds, within the real
+ * spread or no further outside it than released + the allowance. The per-seed table and the
+ * 261011 band's reading stay beside it as diagnosis.
+ */
+function championsReport(
+  released: Extra[],
+  candidate: Extra[],
+  from: number,
+  to: number,
+  allowance?: number,
+) {
+  const band = CHAMPION_BAND,
+    codes = codesOf(candidate);
+  console.log(
+    `\n### Champions ${from}–${to} per country and seed: different top-flight champions / the most titles of one club (diagnosis)\n`,
+  );
+  console.log(
+    `Real: LEAGUE-10 r17's real leagues (band ${band.different.join('–')} and ${band.most.join('–')}); 261011: the model's own band (${BAND_261011.different.join('–')} and ${BAND_261011.most.join('–')}). Points: outside the real band; old: outside the 261011 band.\n`,
+  );
+  console.log('| seed | country | real | released | candidate | points r → c | old r → c |');
+  console.log('|---|---|---|---|---|---|---|');
   for (const cand of candidate) {
     const rel = released.find((e) => e.seed === cand.seed);
-    const codes = [...new Set(cand.champions.map((ch) => ch.code))].sort();
-    for (const code of codes) {
+    for (const code of codesOf([cand])) {
       const c = championsOf(cand, code, from, to),
         r = rel && championsOf(rel, code, from, to);
       if (!c.seasons) continue;
-      const away = (x: { different: number; most: number }) => [
-        outside(x.different, band.different),
-        outside(x.most, band.most),
-      ];
-      const cOut = away(c),
-        rOut = r ? away(r) : [Infinity, Infinity];
-      const ok = cOut.every((d, i) => d === 0 || d <= rOut[i]!);
-      all++;
-      if (ok) pass++;
-      else failures.push(`${cand.seed.slice(-1)} ${code}`);
       console.log(
-        `| ${cand.seed.slice(-1)} | ${code} | ${c.seasons} | ${r ? `${r.different} / ${r.most}` : '-'} | ${c.different} / ${c.most} | ${ok ? 'ok' : 'OUT'} |`,
+        `| ${cand.seed.slice(-1)} | ${code} | ${realOf(code)} | ${r ? `${r.different} / ${r.most}` : '-'} | ${c.different} / ${c.most} | ${r ? pointsOutside(r, band) : '-'} → ${pointsOutside(c, band)} | ${r ? pointsOutside(r, BAND_261011) : '-'} → ${pointsOutside(c, BAND_261011)} |`,
       );
     }
   }
+  const pairs = candidate.filter((c) => released.some((r) => r.seed === c.seed));
+  const relSeeds = released.filter((r) => pairs.some((c) => c.seed === r.seed));
+  const rel = pooledOutside(relSeeds, band, from, to),
+    cand = pooledOutside(pairs, band, from, to);
+  const relOld = pooledOutside(relSeeds, BAND_261011, from, to),
+    candOld = pooledOutside(pairs, BAND_261011, from, to);
+  const a = allowance ?? 0;
   console.log(
-    `\n${pass} of ${all} country-seeds pass${failures.length ? `; failing: ${failures.join(', ')}` : ''}.`,
+    `\n### The champions part per country, pooled over seeds ${seedsOf(pairs).join(', ')}: points outside the real spread\n`,
   );
-  // Per country over its seeds: the points outside the band (different + most), summed.
-  const pooled = new Map<string, [number, number, number]>();
-  for (const cand of candidate) {
-    const rel = released.find((e) => e.seed === cand.seed);
-    if (!rel) continue;
-    for (const code of new Set(cand.champions.map((ch) => ch.code))) {
-      const c = championsOf(cand, code, from, to),
-        r = championsOf(rel, code, from, to);
-      if (!c.seasons) continue;
-      const away = (x: typeof c) =>
-        outside(x.different, band.different) + outside(x.most, band.most);
-      const [seeds, rSum, cSum] = pooled.get(code) ?? [0, 0, 0];
-      pooled.set(code, [seeds + 1, rSum + away(r), cSum + away(c)]);
-    }
+  console.log(
+    `${allowance === undefined ? 'No allowance given: the bar is released (allowance 0).' : `Allowance ${a} (history's noise, \`noise.md\`).`} A country passes when the candidate's points are 0 or at most released + allowance. Old: T696's and T697's reading on the 261011 band (no further out than released).\n`,
+  );
+  console.log(
+    '| country | real | released | candidate | released + allowance | verdict | old: released → candidate |',
+  );
+  console.log('|---|---|---:|---:|---:|---|---|');
+  const failing: string[] = [],
+    oldFailing: string[] = [];
+  for (const code of codes) {
+    const r = rel.get(code) ?? 0,
+      c = cand.get(code) ?? 0,
+      ok = c === 0 || c <= r + a;
+    const ro = relOld.get(code) ?? 0,
+      co = candOld.get(code) ?? 0,
+      oldOk = co === 0 || co <= ro;
+    if (!ok) failing.push(code);
+    if (!oldOk) oldFailing.push(code);
+    console.log(
+      `| ${code} | ${realOf(code)} | ${r} | ${c} | ${r + a} | ${ok ? 'ok' : 'FAIL'} | ${ro} → ${co} ${oldOk ? 'ok' : 'worse'} |`,
+    );
   }
+  const d = divergence(released, candidate, from, to);
   console.log(
-    '\nPer country over its seeds: points outside the band (different + most), summed; worse = the candidate further out than released.\n',
+    `\n**Champions part: ${failing.length ? `fails in ${failing.join(', ')}` : 'passes in every country'}** (old reading: ${oldFailing.length ? `worse in ${oldFailing.join(', ')}` : 'no country worse'}). Diverged champions against released: ${percent(d.share)} of ${d.all} country-seasons.`,
   );
-  console.log('| country | seeds | released | candidate | verdict |');
-  console.log('|---|---:|---:|---:|---|');
-  for (const [code, [seeds, r, c]] of [...pooled].sort())
-    console.log(`| ${code} | ${seeds} | ${r} | ${c} | ${c === 0 || c <= r ? 'ok' : 'worse'} |`);
   const cost = (list: Extra[]) =>
     list.map((e) => `${e.seed} ${(e.seconds / e.seasons).toFixed(2)} s`).join(', ');
   console.log(
     `\nSeconds per lived season — released: ${cost(released)}; candidate: ${cost(candidate)}.`,
   );
+  return { failing, oldFailing };
 }
 /**
  * T697's screen, on worlds lived with the table and the means level and competition money
@@ -795,13 +958,25 @@ if (input) {
   else if (table) tableReport(rows, table, option('label', 'Candidate'));
 } else if (option('screen', '')) {
   screenReport(readExtras(option('screen', '')));
-} else if (option('champions-candidate', '')) {
-  championsReport(
-    readExtras(option('champions-released', '')),
-    readExtras(option('champions-candidate', '')),
-    Number(option('from', '1980')),
-    Number(option('to', '2009')),
-  );
+} else if (option('champions-placebo', '') || option('champions-candidate', '')) {
+  const from = Number(option('from', '1980')),
+    to = Number(option('to', '2009'));
+  const released = readExtras(option('champions-released', ''));
+  let allowance: number | undefined;
+  if (option('champions-placebo', '')) {
+    const noise = placeboReport(released, readExtras(option('champions-placebo', '')), from, to);
+    const sets = Number(option('sets', '19'));
+    if (noise.complete >= sets) allowance = noise.allowance;
+    else
+      console.log(
+        `\nOnly ${noise.complete} of ${sets} placebo sets are complete: the allowance is partial and no candidate is read.`,
+      );
+  }
+  if (
+    option('champions-candidate', '') &&
+    (allowance !== undefined || !option('champions-placebo', ''))
+  )
+    championsReport(released, readExtras(option('champions-candidate', '')), from, to, allowance);
 } else {
   const years = list('years', '1950,1970,1990,2010').map(Number),
     codes = list('countries', 'ENG,ESP,FRA,GER');
