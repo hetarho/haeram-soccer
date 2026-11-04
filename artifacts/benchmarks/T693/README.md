@@ -86,3 +86,39 @@ three smaller leagues, whose missed cases would need s 0.14–0.22 in 1960 and 0
 Verdict: the candidate meets CLUB-48's band in 1950–1990 on the calibration books, but not in 2010 at the s = 1 the
 SSOT fixes from 2008, and five held-out clubs without a project pay more than their revenue in 2000 — the exit's
 commit condition fails, so the released curve stays (the tree's table is s = 1 everywhere, no own anchor).
+
+## Careers — LEAGUE-13's reference grid, 1950–1969, no traits, purse apart
+
+Wage line in these tables: the club's players, manager and staff (the operating costs' wage lines), as T686 read it.
+Baseline: 46 careers (자수성가 pays for no Spanish club in any band). Candidate: worlds lived from 1930 on the
+candidate table, 37 careers — 자수성가 and three 지역 유지 careers were not played within the timebox. Nothing else
+was tuned. Each career took 14–16 minutes at 10 jobs on this host.
+
+| tier | baseline: title / bankrupt / top-flight seasons (avg) | candidate | LEAGUE-13 |
+|---|---|---|---|
+| 석유 재벌 | 1 of 8 / 6 of 8 (ESP FRA GER, all in 1950) / 4.8 | 7 of 8 (median 2nd season, 18.4% after) / 0 / 19.6 | most win, median within 10; ≤35% after; none bankrupt |
+| 재벌 총수 | 1 of 8 / 0 / 14.3 | 2 of 8 (3.7% after) / 0 / 19.1 | about half win; ≤30% after; none bankrupt |
+| 산업 자본가 | 2 of 8 / 0 / 15.0 | 5 of 8 (9.6% after) / 0 / 19.9 | about a third win; ≤25% after; none bankrupt |
+| 중견 사업가 | 1 of 8 / 0 / 10.6 | 3 of 8 / 0 / 15.5 | ≤1 in 5 win; top flight in most; ≤1 in 20 bankrupt |
+| 지역 유지 | 0 of 8 / 0 / 11.0 | 0 of 5 / 0 / 15.2 | top flight in about half; ≤1 in 10 bankrupt |
+| 자수성가 | 0 of 6 / 0 / 7.8 | not played | top flight in ≤1 in 4; ≤1 in 5 bankrupt |
+
+Lower tiers on the baseline (the growth slice's readings): every 중견 사업가, 지역 유지 and 자수성가 reference reaches
+the top flight (8/8, 8/8, 6/6; first top-flight season median 2, 4 and 5.5), with operating results of +19.7%,
++16.4% and +15.4% of revenue and wage bills of 44.2%, 46.4% and 44.0%.
+
+ECON-29 on 중견 사업가 as played (160 seasons each):
+
+| target | band | baseline | candidate |
+|---|---|---|---|
+| wage bill / revenue | 45–70% | 44.2% OUT | 39.0% OUT |
+| operating result / revenue before trading | −5% to +10% | +19.7% OUT | +22.9% OUT |
+| player sales / revenue (beside) | - | 9.0% | 5.3% |
+| net result with sales (beside) | - | 28.7% | 28.3% |
+| 1950s matchday / turnover | 60%+ | 70.7% ok | 70.5% ok |
+| facility ladder in seasons of top-flight net | 25+ | 105.3 ok | 105.2 ok |
+| bankrupt | none | 0 | 0 |
+
+On the candidate no tier's club bankruptcies rise and 석유 재벌 meets its LEAGUE-13 row, but cheaper stars make
+every club that buys them stronger: 중견 사업가 wins 3 of 8 (band ≤1 in 5), 산업 자본가 5 of 8, and the 중견
+사업가 reference runs a larger surplus (ECON-29's operating row further out).

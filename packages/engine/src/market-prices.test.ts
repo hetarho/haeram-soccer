@@ -310,20 +310,98 @@ describe('era star pay spread (CLUB-48)', () => {
       expect(prices.starPaySpread('ESP', 1975)).toBeCloseTo(0.5, 12);
       expect(prices.starPaySpread('ESP', 2020)).toBe(1);
     });
+    // W80 is the same player at OVR 80 with his own age and potential (CLUB-48 r53).
     const full = prices.marketWageUnits(0, 92, 25, 95),
-      ordinary = prices.marketWageUnits(0, 80, 25, 83);
+      ordinary = prices.marketWageUnits(0, 80, 25, 95);
+    expect(prices.ordinaryWageUnits(0, 25, 95)).toBe(ordinary);
     expect(prices.marketWageUnits(0, 92, 25, 95, 0)).toBeCloseTo(ordinary, 9);
     expect(prices.marketWageUnits(0, 92, 25, 95, 0.5)).toBeCloseTo(Math.sqrt(full * ordinary), 9);
     expect(prices.marketWageUnits(0, 92, 25, 95, 1)).toBe(full);
     // A lower-division star's top-flight terms are a star term too.
     expect(prices.marketWageUnits(2, 92, 25, 95, 0)).toBeCloseTo(
-      prices.marketWageUnits(2, 80, 25, 83),
+      prices.marketWageUnits(2, 80, 25, 95),
       9,
     );
   });
 
-  // T693 kept the released curve (s = 1, no own anchor) until CLUB-48's band is resolved; the
-  // mechanism is checked on England's maximum-wage anchor as CLUB-48 states it.
+  it('prices W80 at OVR 80 with his own age and potential, so a young star never earns less at 81 than at 80', () => {
+    // Released W80 with the potential lowered alike paid 1,055.9 / 1,067.0 units at 81 against 1,077.2 at 80.
+    for (const s of [0, 0.1])
+      expect(prices.marketWageUnits(0, 81, 18, 99, s)).toBeGreaterThanOrEqual(
+        prices.marketWageUnits(0, 80, 18, 99, s),
+      );
+    for (const [age, potential] of [
+      [18, 99],
+      [21, 90],
+      [27, 92],
+    ])
+      for (const division of [0, 2]) {
+        const w80 = prices.ordinaryWageUnits(division, age, potential);
+        expect(w80).toBe(prices.marketWageUnits(division, 80, age, potential));
+        // At s = 0 a star earns an ordinary OVR-80 player's wage of his age and promise.
+        expect(prices.marketWageUnits(division, 92, age, potential, 0)).toBe(w80);
+      }
+  });
+
+  it('never lowers a wage as OVR or potential rises, at any spread, age or division', () => {
+    const ages = [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 27, 30, 33, 36],
+      divisions = [0, 1, 2, 4],
+      spreads = [0, 0.1, 0.23, 0.57, 0.99],
+      wage = prices.marketWageUnits,
+      falls: string[] = [];
+    const check = (label: string, low: number, high: number) => {
+      if (high < low) falls.push(`${label}: ${high} < ${low}`);
+    };
+    for (const age of ages)
+      for (const division of divisions)
+        for (const s of spreads) {
+          const at = `age ${age} division ${division} s ${s}`;
+          for (let ability = 75; ability < 99; ability++) {
+            // OVR rises at a fixed potential, one below the OVR included.
+            for (const potential of [85, 90, 99, ability - 1])
+              check(
+                `${at} OVR ${ability}→${ability + 1} potential ${potential}`,
+                wage(division, ability, age, potential, s),
+                wage(division, ability + 1, age, potential, s),
+              );
+            // OVR and potential rise together at a fixed promise gap.
+            for (const gap of [0, 5, 15])
+              check(
+                `${at} OVR ${ability}→${ability + 1} gap ${gap}`,
+                wage(division, ability, age, Math.min(99, ability + gap), s),
+                wage(division, ability + 1, age, Math.min(99, ability + 1 + gap), s),
+              );
+          }
+          // Potential rises at a fixed OVR.
+          for (let ability = 75; ability <= 99; ability++)
+            for (let potential = 60; potential < 99; potential++)
+              check(
+                `${at} OVR ${ability} potential ${potential}→${potential + 1}`,
+                wage(division, ability, age, potential, s),
+                wage(division, ability, age, potential + 1, s),
+              );
+        }
+    expect(falls.slice(0, 5)).toEqual([]);
+  });
+
+  it('holds production at s = 1 in every playable country and season, with no own anchor (CLUB-48 in force)', () => {
+    expect(prices.STAR_SPREAD_CONFIG.own).toEqual({});
+    expect(prices.STAR_SPREAD_CONFIG.shared.every(([, s]) => s === 1)).toBe(true);
+    for (const code of codes)
+      for (let year = 1930; year <= 2030; year++) {
+        expect(prices.starPaySpread(code, year)).toBe(1);
+        for (const [ability, age, potential] of [
+          [92, 18, 99],
+          [95, 27, 95],
+        ])
+          expect(prices.marketWageAt(code, year, 0, player(ability, age, potential, year))).toBe(
+            released(code, year, 0, ability, age, potential),
+          );
+      }
+  });
+
+  // Production holds s = 1 with no own anchor (CLUB-48 in force); the mechanism is checked on
+  // England's maximum-wage anchor as a table that passes CLUB-48's gate would carry it.
   it("pays an English star an 80's wage under an own anchor of 0, through its season only", () => {
     const table = {
       shared: [[1970, 0.5] as [number, number], [2008, 1] as [number, number]],
@@ -332,7 +410,7 @@ describe('era star pay spread (CLUB-48)', () => {
     withSpread(table, () => {
       for (const year of [1950, 1955, 1960])
         expect(prices.marketWageAt('ENG', year, 0, player(95, 27, 95, year))).toBe(
-          prices.marketWageAt('ENG', year, 0, player(80, 27, 80, year)),
+          prices.marketWageAt('ENG', year, 0, player(80, 27, 95, year)),
         );
       expect(prices.starPaySpread('ESP', 1955)).toBe(0.5);
       expect(prices.starPaySpread('ENG', 1961)).toBe(prices.starPaySpread('ESP', 1961));
@@ -358,7 +436,7 @@ describe('era star pay spread (CLUB-48)', () => {
     const ordinary = withSpread({ shared: [[1950, 0]], own: {} }, () =>
       prices.marketWageAt('ESP', year, 0, star),
     );
-    expect(ordinary).toBe(released('ESP', year, 0, 80, 27, 80));
+    expect(ordinary).toBe(released('ESP', year, 0, 80, 27, 92));
     expect(at(0)).toBe(ordinary);
     expect(BigInt(at(0.5))).toBeLessThan(BigInt(at(1)));
     expect(star.wage).toBe(signed);
