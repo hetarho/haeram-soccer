@@ -1,0 +1,362 @@
+[
+ {
+  "name": "season-ctl-1-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/ctl.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-ctl-1-0.json"
+  ]
+ },
+ {
+  "name": "season-ctl-1-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/ctl.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-ctl-1-7.json"
+  ]
+ },
+ {
+  "name": "season-ctl-1-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/ctl.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-ctl-1-14.json"
+  ]
+ },
+ {
+  "name": "season-ctl-2-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/ctl.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-ctl-2-0.json"
+  ]
+ },
+ {
+  "name": "season-ctl-2-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/ctl.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-ctl-2-7.json"
+  ]
+ },
+ {
+  "name": "season-ctl-2-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/ctl.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-ctl-2-14.json"
+  ]
+ },
+ {
+  "name": "season-w0a7ah3hb35-1-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-w0a7ah3hb35-1-0.json"
+  ]
+ },
+ {
+  "name": "season-w0a7ah3hb35-1-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-w0a7ah3hb35-1-7.json"
+  ]
+ },
+ {
+  "name": "season-w0a7ah3hb35-1-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-w0a7ah3hb35-1-14.json"
+  ]
+ },
+ {
+  "name": "season-w0a7ah3hb35-2-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-w0a7ah3hb35-2-0.json"
+  ]
+ },
+ {
+  "name": "season-w0a7ah3hb35-2-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-w0a7ah3hb35-2-7.json"
+  ]
+ },
+ {
+  "name": "season-w0a7ah3hb35-2-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-w0a7ah3hb35-2-14.json"
+  ]
+ },
+ {
+  "name": "season-sp70bx40s10rc20-1-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70bx40s10rc20-1-0.json"
+  ]
+ },
+ {
+  "name": "season-sp70bx40s10rc20-1-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70bx40s10rc20-1-7.json"
+  ]
+ },
+ {
+  "name": "season-sp70bx40s10rc20-1-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70bx40s10rc20-1-14.json"
+  ]
+ },
+ {
+  "name": "season-sp70bx40s10rc20-2-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70bx40s10rc20-2-0.json"
+  ]
+ },
+ {
+  "name": "season-sp70bx40s10rc20-2-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70bx40s10rc20-2-7.json"
+  ]
+ },
+ {
+  "name": "season-sp70bx40s10rc20-2-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70bx40s10rc20-2-14.json"
+  ]
+ },
+ {
+  "name": "season-sp70rc12ah15-1-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70rc12ah15.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70rc12ah15-1-0.json"
+  ]
+ },
+ {
+  "name": "season-sp70rc12ah15-1-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70rc12ah15.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70rc12ah15-1-7.json"
+  ]
+ },
+ {
+  "name": "season-sp70rc12ah15-1-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70rc12ah15.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70rc12ah15-1-14.json"
+  ]
+ },
+ {
+  "name": "season-sp70rc12ah15-2-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70rc12ah15.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70rc12ah15-2-0.json"
+  ]
+ },
+ {
+  "name": "season-sp70rc12ah15-2-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70rc12ah15.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70rc12ah15-2-7.json"
+  ]
+ },
+ {
+  "name": "season-sp70rc12ah15-2-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70rc12ah15.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/season/season-sp70rc12ah15-2-14.json"
+  ]
+ }
+]

@@ -78,16 +78,6 @@ export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 /** Initial values; T215 and T216 tune them. */
 export const DUEL_CONFIG = {
   pass: {
-    /**
-     * T689 experiment (default off at 0): nobody reaches the first `keeperClear` m of a keeper's
-     * distribution, as a keeper releases the ball only once nobody stands on him.
-     */
-    keeperClear: 0,
-    /**
-     * T689 experiment (default off at 0): an opponent within `keeperLeave` m of a keeper as he
-     * distributes is not where his ball goes (he plays it past the man on him), so he does not reach it.
-     */
-    keeperLeave: 0,
     /** Calibration offset on every cell's real completion rate (T215). */
     base: 0.07,
     passer: 1 / 250,
@@ -213,14 +203,6 @@ export const DUEL_CONFIG = {
      */
     crossKeeper: 0.47,
     /**
-     * T689 experiment (default off at 0, →MATCH-18/33): a cross neither delivered nor overhit is
-     * blocked behind for a corner by the defender at the crosser's foot this share of the time,
-     * scaled by the pressure on the crosser (at most 1).
-     */
-    crossBlockBehind: 0,
-    /** T689 experiment (default off at 0): a defender who wins a delivery's aerial duel heads it behind this share of the time. */
-    headBehind: 0,
-    /**
      * The deepest a won take-on ends (T437, →MATCH-11, the attack frame's metres), though always
      * a metre past the man he beat: a defender beaten in the box leaves the attacker a strike from
      * where he went past him, not a run into the six-yard box. Neutral at 104.5 (`takeOn.past`'s
@@ -275,12 +257,8 @@ export const SHOT_CONFIG = {
   blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
-  /**
-   * Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`.
-   * `setPieceHeader` (T689 cv04-sym experiment, default off at 0): a set piece's delivered header's
-   * chance quality, in place of `header`.
-   */
-  candidate: { header: 0.42, setPieceHeader: 0 },
+  /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
+  candidate: { header: 0.42 },
   /**
    * Revision 9 (T579, →MATCH-35 r42, MATCH-11): the keeper narrows the angle. From the shot, he
    * covers the goal mouth within `reach` m either side of him; a shot's chance scales by the share
@@ -288,13 +266,7 @@ export const SHOT_CONFIG = {
    * (`keeperNarrowing`), so a keeper off his line toward the ball takes chances away and one caught
    * out of position gives them.
    */
-  /**
-   * `set`, `corridor`: T689 experiment, default off at `set` 0: `reach` only against a shooter
-   * through on goal (no outfield opponent within `corridor` m of the line from him to the goal's
-   * middle, between them); `set` m against one with at least `crowd` defenders between.
-   */
-  // `ahead` (cv04-rec, default 0): a defender counts as between only `ahead` m or more nearer the goal along the line than the shooter.
-  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6, crowd: 1, ahead: 0 } },
+  revision9: { narrow: { reach: 1.5 } },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -313,7 +285,6 @@ export function chanceXg(
     pressure?: number;
     freeKick?: boolean;
     candidate?: boolean;
-    headerQuality?: number;
   } = {},
   math: MatchMath = HOST_MATH,
 ): number {
@@ -321,9 +292,7 @@ export function chanceXg(
   const z = C.a + C.b * goalDistance(p, math) + C.c * goalAngle(p, math);
   return (
     sigmoid(z, math) *
-    (opts.header
-      ? (opts.headerQuality ?? (opts.candidate ? C.candidate.header : C.header))
-      : 1) *
+    (opts.header ? (opts.candidate ? C.candidate.header : C.header) : 1) *
     (opts.cutBack ? C.cutBack : 1) *
     (opts.freeKick ? C.freeKickWall : 1) *
     Math.max(C.pressureFloor, 1 - C.pressure * (opts.pressure ?? 0))
@@ -727,21 +696,7 @@ export function resolvePass(
       ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
       : skill(s, side, idx, 'passing');
   const lane = onCandidate(s)
-    ? reachOnPath(
-        s,
-        side,
-        s.players[side][idx]!.pos,
-        at ?? receiver.pos,
-        kickAt,
-        keeper && P.keeperLeave > 0
-          ? (gp) => {
-              const k = s.players[side][idx]!.pos;
-              return s.math.hypot(gp.pos[0] - k[0], gp.pos[1] - k[1]) < P.keeperLeave;
-            }
-          : undefined,
-        undefined,
-        keeper && P.keeperClear > 0 ? P.keeperClear : undefined,
-      )
+    ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
     : undefined;
   const first = lane?.first;
   // The defender the pass plays against (→MATCH-11): on the candidate the one who reaches its
@@ -880,23 +835,7 @@ export function keeperNarrowing(
   const { atan2, hypot } = s.math;
   const depth = PITCH.length - from[0];
   if (depth <= 0) return 1;
-  const N = SHOT_CONFIG.revision9.narrow;
-  let reach: number = N.reach;
-  if (N.set > 0) {
-    const gx = PITCH.length,
-      gy = PITCH.width / 2;
-    const dd = hypot(gx - from[0], gy - from[1]);
-    let between = 0;
-    for (const gp of s.players[other(side)]) {
-      if (!onPitch(gp) || gp.slot === 0 || dd <= 0) continue;
-      const p = attackFrame(side, gp.pos);
-      const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
-      if (t <= 0 || t >= 1 || t * dd < N.ahead) continue;
-      if (Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd < N.corridor)
-        between++;
-    }
-    if (between >= N.crowd) reach = N.set;
-  }
+  const reach = SHOT_CONFIG.revision9.narrow.reach;
   const lo = atan2(PITCH.width / 2 - BOX_CONFIG.post - from[1], depth),
     hi = atan2(PITCH.width / 2 + BOX_CONFIG.post - from[1], depth);
   /** The share of the mouth [lo, hi] open past a keeper at `k`. */
@@ -932,13 +871,7 @@ export function resolveShot(
   tags: Pick<Tags, 'pressure'>,
   ctx: ShotContext,
   r: () => number,
-  opts: {
-    header?: boolean;
-    cutBack?: boolean;
-    freeKick?: boolean;
-    kickAt?: number;
-    headerQuality?: number;
-  } = {},
+  opts: { header?: boolean; cutBack?: boolean; freeKick?: boolean; kickAt?: number } = {},
 ): ShotOutcome {
   const C = SHOT_CONFIG;
   const { kickAt = 0, ...kind } = opts;
@@ -1091,17 +1024,6 @@ export function resolveCross(
   if (!delivered || !attacker) {
     const over = crossOverhit(s, side, idx, r);
     if (over) return over;
-    // T689 experiment (default off): blocked behind by the defender at the crosser's foot.
-    const BB = DUEL_CONFIG.candidate.crossBlockBehind;
-    if (BB > 0 && onCandidate(s) && tags.pressure > 0 && r() < BB * Math.min(1, tags.pressure)) {
-      const y = clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width);
-      return {
-        kind: 'out',
-        at: toEngine(side, [PITCH.length, y]),
-        lastTouch: foe,
-        over: 'byline',
-      };
-    }
     const spot: Point = attacker
       ? attackFrame(side, attacker.pos)
       : [PITCH.length - 10, PITCH.width / 2];
@@ -1111,14 +1033,8 @@ export function resolveCross(
   }
   const won = aerialDelivery(s, side, attacker, tags, r, [attacker.pos[0], attacker.pos[1]]);
   if (won.kind !== 'header') return won;
-  // T689 cv04-sym experiment (default off at 0): a set piece's header's own chance quality.
-  const SP = SHOT_CONFIG.candidate.setPieceHeader;
-  const quality = SP > 0 && onCandidate(s) && tags.phase === 'setPiece' ? { headerQuality: SP } : {};
   return {
-    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, {
-      header: true,
-      ...quality,
-    }),
+    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, { header: true }),
     header: true,
     ...(won.aerial === undefined ? {} : { aerial: won.aerial }),
   };
@@ -1203,18 +1119,8 @@ function aerialDelivery(
     }, undefined)?.gp;
   if (defender) {
     const duel = resolveAerial(s, [side, attacker.idx], [foe, defender.idx], [88.5, at[1]], r);
-    if (duel.kind === 'loose' && duel.winner[0] === foe) {
-      // T689 experiment (default off at 0, →MATCH-18): a defender's header heads it behind.
-      const HB = DUEL_CONFIG.candidate.headBehind;
-      if (HB > 0 && onCandidate(s) && r() < HB)
-        return {
-          kind: 'out',
-          at: toEngine(side, [PITCH.length, clamp(at[1], 0, PITCH.width)]),
-          lastTouch: foe,
-          over: 'byline',
-        };
+    if (duel.kind === 'loose' && duel.winner[0] === foe)
       return { kind: 'loose', at: toEngine(side, [88.5, at[1]]), winner: duel.winner, aerial: foe };
-    }
   }
   const aerial = defender ? { aerial: side } : {};
   if (r() < (tags.phase === 'setPiece' ? X.control.setPiece : X.control.open))

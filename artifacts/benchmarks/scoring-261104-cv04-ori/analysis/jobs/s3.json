@@ -1,0 +1,69 @@
+[
+ {
+  "name": "bands-fa-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/fa.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "conc-fa-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/fa.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/conc-fa-calibration1200.json"
+  ]
+ },
+ {
+  "name": "origins-fa-0-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/fa.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-fa-0-150.json"
+  ]
+ },
+ {
+  "name": "origins-fa-150-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/fa.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "150",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-fa-150-150.json"
+  ]
+ },
+ {
+  "name": "bands-fas12-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/fas12.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-farc17-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/farc17.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

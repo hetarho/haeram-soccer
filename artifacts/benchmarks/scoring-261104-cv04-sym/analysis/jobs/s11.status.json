@@ -1,0 +1,125 @@
+{
+ "seconds": 498,
+ "status": [
+  {
+   "name": "season-ctl-1-14",
+   "code": 0,
+   "seconds": 103
+  },
+  {
+   "name": "season-ctl-2-14",
+   "code": 0,
+   "seconds": 108
+  },
+  {
+   "name": "season-ctl-1-0",
+   "code": 0,
+   "seconds": 126
+  },
+  {
+   "name": "season-ctl-2-7",
+   "code": 0,
+   "seconds": 128
+  },
+  {
+   "name": "season-ctl-2-0",
+   "code": 0,
+   "seconds": 128
+  },
+  {
+   "name": "season-ctl-1-7",
+   "code": 0,
+   "seconds": 130
+  },
+  {
+   "name": "season-w0a7ah3hb35-1-14",
+   "code": 0,
+   "seconds": 108
+  },
+  {
+   "name": "season-w0a7ah3hb35-1-0",
+   "code": 0,
+   "seconds": 133
+  },
+  {
+   "name": "season-w0a7ah3hb35-1-7",
+   "code": 0,
+   "seconds": 134
+  },
+  {
+   "name": "season-w0a7ah3hb35-2-14",
+   "code": 0,
+   "seconds": 115
+  },
+  {
+   "name": "season-w0a7ah3hb35-2-7",
+   "code": 0,
+   "seconds": 130
+  },
+  {
+   "name": "season-w0a7ah3hb35-2-0",
+   "code": 0,
+   "seconds": 133
+  },
+  {
+   "name": "season-sp70bx40s10rc20-1-14",
+   "code": 0,
+   "seconds": 107
+  },
+  {
+   "name": "season-sp70bx40s10rc20-1-0",
+   "code": 0,
+   "seconds": 128
+  },
+  {
+   "name": "season-sp70bx40s10rc20-1-7",
+   "code": 0,
+   "seconds": 127
+  },
+  {
+   "name": "season-sp70bx40s10rc20-2-14",
+   "code": 0,
+   "seconds": 108
+  },
+  {
+   "name": "season-sp70bx40s10rc20-2-0",
+   "code": 0,
+   "seconds": 128
+  },
+  {
+   "name": "season-sp70bx40s10rc20-2-7",
+   "code": 0,
+   "seconds": 123
+  },
+  {
+   "name": "season-sp70rc12ah15-1-14",
+   "code": 0,
+   "seconds": 103
+  },
+  {
+   "name": "season-sp70rc12ah15-1-0",
+   "code": 0,
+   "seconds": 127
+  },
+  {
+   "name": "season-sp70rc12ah15-1-7",
+   "code": 0,
+   "seconds": 125
+  },
+  {
+   "name": "season-sp70rc12ah15-2-14",
+   "code": 0,
+   "seconds": 106
+  },
+  {
+   "name": "season-sp70rc12ah15-2-7",
+   "code": 0,
+   "seconds": 121
+  },
+  {
+   "name": "season-sp70rc12ah15-2-0",
+   "code": 0,
+   "seconds": 129
+  }
+ ]
+}

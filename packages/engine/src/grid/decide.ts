@@ -106,21 +106,7 @@ export const DECISION_CONFIG = {
     pressure: 0.5,
     margin: 0.5,
   },
-  /**
-   * `safe`: T689 experiment, default off at 0 (see `keeperDistribution`). `hold`: T689 experiment,
-   * default off at 0: seconds a keeper with the ball in his hands holds it before he chooses (engine).
-   */
-  keeper: {
-    sweeper: 0.7,
-    stopper: 0.45,
-    press: 0.15,
-    longRisk: 0.5,
-    safe: 0,
-    free: 0,
-    hold: 0,
-    /** T689 experiment, default off at 0: a keeper plays his ball at his feet as he chooses it (engine). */
-    quick: 0,
-  },
+  keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
   /**
    * Candidate model only (→MATCH-16, MATCH-17): teammates' intentions bend the carrier's choice. A
    * teammate showing for him scores `show` more; an overlap combining with him scores `release` more
@@ -258,8 +244,7 @@ export const DECISION_CONFIG = {
      * further off; the shot share floor and the carry further out hold as revision 6/7's.
      */
     revision9: {
-      /** `view`: T689 experiment, default off at 0 (`clearChance`'s alone clause needs that unblocked share). */
-      clear: { alone: 5, view: 0, within: 0 },
+      clear: { alone: 5 },
       /**
        * T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a
        * receiver with an opponent within `mark` m of him scores `score` less as a pass target, so
@@ -762,15 +747,7 @@ export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
     const t = (dx * vx + dy * vy) / (length * length);
     if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < corridor) ahead = true;
   }
-  if (!ahead) return true;
-  if (!(alone > 0 && !near)) return false;
-  // T689 experiment (default off): alone, he has a clear chance only with that share of the goal
-  // nobody in the shot's path blocks (→MATCH-35).
-  const view = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.view : 0;
-  // T689 experiment (default off): alone, only within `within` m of the goal centre.
-  const within = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.within : 0;
-  if (within > 0 && length > within) return false;
-  return view <= 0 || unblocked(shotBlockers(s, side, c)) >= view;
+  return !ahead || (alone > 0 && !near);
 }
 
 /**
@@ -888,10 +865,6 @@ export function passOptions(
     judge?: boolean;
     /** A receiver closed down during the carry (revision 10, T600, `rereadPass`). */
     closed?: number;
-    /** T689 experiment: no receiver with an opponent within this many m, nor a lane one reaches cleanly. */
-    safe?: number;
-    /** T689 experiment, with `safe`: nor a lane any opponent reaches at all. */
-    free?: boolean;
   } = {},
 ): PassOption[] {
   const P = DECISION_CONFIG.pass;
@@ -991,7 +964,6 @@ export function passOptions(
     if (path) risk = path.weight;
     // A contested target is only ever a forward pass's risk (T538).
     if (judge && dir !== 'forward' && (nearest < judge.contested.mark || path?.clean)) continue;
-    if (opts.safe && (nearest < opts.safe || (opts.free ? path?.first : path?.clean))) continue;
     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
     // A man already past the offside line as the ball is played (candidate model, T397).
@@ -1267,31 +1239,14 @@ export function keeperDistribution(
       (lineOf(position) === 'FW' || ['LM', 'RM', 'LWB', 'RWB'].includes(position))
     );
   };
-  let wantShort = r() < shortChance;
-  // T689 experiment (default off): only a safe short ball, else long; only a safe long ball when one
-  // exists, else as before.
-  const safe = K.safe > 0 && s.setup.model !== undefined ? K.safe : 0;
-  const free = K.free > 0;
-  if (safe && wantShort && !passOptions(s, side, idx, tags, { filter: back, safe, free }).length)
-    wantShort = false;
+  const wantShort = r() < shortChance;
   let options = passOptions(
     s,
     side,
     idx,
     tags,
-    wantShort
-      ? { filter: back, ...(safe ? { safe, free } : {}) }
-      : { filter: front, riskScale: K.longRisk },
+    wantShort ? { filter: back } : { filter: front, riskScale: K.longRisk },
   );
-  if (safe && !wantShort) {
-    const safer = passOptions(s, side, idx, tags, {
-      filter: front,
-      riskScale: K.longRisk,
-      safe,
-      free,
-    });
-    if (safer.length) options = safer;
-  }
   const kind: 'short' | 'long' = wantShort ? 'short' : 'long';
   if (!options.length) options = passOptions(s, side, idx, tags);
   if (!options.length) return { target: idx === 0 ? 1 : 0, kind };

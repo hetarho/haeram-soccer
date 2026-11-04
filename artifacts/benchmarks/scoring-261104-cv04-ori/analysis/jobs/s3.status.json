@@ -1,0 +1,35 @@
+{
+ "seconds": 248,
+ "status": [
+  {
+   "name": "origins-fa-0-150",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "origins-fa-150-150",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "bands-fas12-400",
+   "code": 0,
+   "seconds": 109
+  },
+  {
+   "name": "bands-farc17-400",
+   "code": 0,
+   "seconds": 109
+  },
+  {
+   "name": "bands-fa-400",
+   "code": 0,
+   "seconds": 111
+  },
+  {
+   "name": "conc-fa-calibration1200",
+   "code": 0,
+   "seconds": 248
+  }
+ ]
+}

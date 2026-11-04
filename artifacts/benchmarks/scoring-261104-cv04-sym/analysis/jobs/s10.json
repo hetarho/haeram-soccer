@@ -1,0 +1,68 @@
+[
+ {
+  "name": "conc-sp70bx40s10rc20-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-sp70bx40s10rc20-calibration1200.json"
+  ]
+ },
+ {
+  "name": "conc-Bss8-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/Bss8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-Bss8-calibration1200.json"
+  ]
+ },
+ {
+  "name": "conc-Bho18-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/Bho18.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-Bho18-calibration1200.json"
+  ]
+ },
+ {
+  "name": "conc-Bar8-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/Bar8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-Bar8-calibration1200.json"
+  ]
+ },
+ {
+  "name": "conc-Bbo6-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/Bbo6.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-Bbo6-calibration1200.json"
+  ]
+ },
+ {
+  "name": "conc-Baf40-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/Baf40.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-Baf40-calibration1200.json"
+  ]
+ }
+]

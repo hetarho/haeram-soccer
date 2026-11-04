@@ -1,0 +1,80 @@
+[
+ {
+  "name": "origins-sp70bx40s10rc20-0-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-sp70bx40s10rc20-0-150.json"
+  ]
+ },
+ {
+  "name": "origins-sp70bx40s10rc20-150-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "150",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-sp70bx40s10rc20-150-150.json"
+  ]
+ },
+ {
+  "name": "origins-sp70bx40s10rc20-300-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-sp70bx40s10rc20-300-150.json"
+  ]
+ },
+ {
+  "name": "origins-sp70bx40s10rc20-450-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "450",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-sp70bx40s10rc20-450-150.json"
+  ]
+ },
+ {
+  "name": "origins-ctl-0-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/ctl.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-ctl-0-150.json"
+  ]
+ },
+ {
+  "name": "origins-ctl-150-150",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/ctl.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "150",
+   "--matches",
+   "150",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/origins/origins-ctl-150-150.json"
+  ]
+ }
+]

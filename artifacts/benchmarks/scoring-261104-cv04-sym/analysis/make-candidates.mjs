@@ -25,6 +25,7 @@ const scale = (v) => ({ decide: { candidate: { revision4: { shotScale: v } } } }
 const longShot = (v) => ({ decide: { candidate: { longShotScale: v } } });
 const mf = (v) => ({ decide: { candidate: { revision4: { shotLine: { GK: 0, DF: 0.5, MF: v, FW: 1 } } } } });
 const all = (...xs) => xs.reduce((o, x) => merge(o, x), {});
+const B = all(sp(0.7), box(0.4), scale(0.1), reach(2));
 const variants = {
   sp55: sp(0.55),
   sp70: sp(0.7),
@@ -61,6 +62,12 @@ const variants = {
   sp70bx40s12rc25: all(sp(0.7), box(0.4), scale(0.12), reach(2.5)),
   sp70bx40s10rc25: all(sp(0.7), box(0.4), scale(0.1), reach(2.5)),
   sp75bx40s12rc20: all(sp(0.75), box(0.4), scale(0.12), reach(2)),
+  // s10: who gets the chances (the striker slot's ~40% of goals), on sp70bx40s10rc20 (`B`)
+  Bss8: all(B, { shape: { candidate: { secondStriker: { drop: 8 } } } }),
+  Bho18: all(B, { shape: { candidate: { hold: { out: 18 } } } }),
+  Bar8: all(B, { shape: { candidate: { arrive: { out: 8 } } } }),
+  Bbo6: all(B, { shape: { candidate: { boxRun: { odds: 6 } } } }),
+  Baf40: all(B, { shape: { candidate: { arrive: { from: 40 } } } }),
 };
 for (const [name, v] of Object.entries(variants))
   writeFileSync(new URL(name + '.json', dir), JSON.stringify(merge(base, v)) + '\n');

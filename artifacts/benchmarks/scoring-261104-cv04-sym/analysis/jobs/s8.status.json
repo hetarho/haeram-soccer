@@ -1,0 +1,35 @@
+{
+ "seconds": 578,
+ "status": [
+  {
+   "name": "stress-sp70bx40s085-val-1",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "stress-sp70bx40s085-val-2",
+   "code": 0,
+   "seconds": 106
+  },
+  {
+   "name": "stress-sp70bx40s085-val-3",
+   "code": 0,
+   "seconds": 107
+  },
+  {
+   "name": "pc-sp70bx40s10rc20-calibration-2",
+   "code": 0,
+   "seconds": 367
+  },
+  {
+   "name": "conc-sp70bx40s10rc20-validation2400",
+   "code": 0,
+   "seconds": 572
+  },
+  {
+   "name": "conc-rc20-validation2400",
+   "code": 0,
+   "seconds": 578
+  }
+ ]
+}

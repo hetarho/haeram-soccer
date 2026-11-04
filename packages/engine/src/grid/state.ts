@@ -75,11 +75,6 @@ export interface GridState {
    * is decided (T542): on revision 6 he goes on rather than turning it back.
    */
   beat?: [0 | 1, number];
-  /**
-   * T689 experiment (default off, `DECISION_CONFIG.keeper.hold`): the side whose keeper holds the
-   * ball in his hands (a save he held, a delivery he claimed) until he releases it.
-   */
-  hands?: 0 | 1;
   /** Match seconds when the possessing side got the ball. */
   possessionSince: number;
   /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */
@@ -302,7 +297,6 @@ export function createState(setup: GridSetup): GridState {
     lastPass: undefined,
     received: undefined,
     beat: undefined,
-    hands: undefined,
   };
 }
 
