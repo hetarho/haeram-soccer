@@ -1,0 +1,62 @@
+[
+ {
+  "name": "bands-rc18-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/rc18.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-rc20-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/rc20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp70bx40s10-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp70bx40s10rc18-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc18.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp70bx40s10rc20-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp80bx40s10rc20-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp80bx40s10rc20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

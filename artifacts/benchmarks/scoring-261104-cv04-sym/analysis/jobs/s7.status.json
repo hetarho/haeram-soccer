@@ -1,0 +1,35 @@
+{
+ "seconds": 92,
+ "status": [
+  {
+   "name": "bands-rc20-400",
+   "code": 0,
+   "seconds": 82
+  },
+  {
+   "name": "bands-sp70bx40s10rc20-400",
+   "code": 0,
+   "seconds": 91
+  },
+  {
+   "name": "bands-rc18-400",
+   "code": 0,
+   "seconds": 91
+  },
+  {
+   "name": "bands-sp70bx40s10-400",
+   "code": 0,
+   "seconds": 92
+  },
+  {
+   "name": "bands-sp80bx40s10rc20-400",
+   "code": 0,
+   "seconds": 92
+  },
+  {
+   "name": "bands-sp70bx40s10rc18-400",
+   "code": 0,
+   "seconds": 92
+  }
+ ]
+}

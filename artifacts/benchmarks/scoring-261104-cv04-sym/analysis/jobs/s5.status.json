@@ -1,0 +1,25 @@
+{
+ "seconds": 131,
+ "status": [
+  {
+   "name": "bands-sp70bx40s085-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp70bx40-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp70ls6-400",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "bands-sp70m10-400",
+   "code": 0,
+   "seconds": 65
+  }
+ ]
+}

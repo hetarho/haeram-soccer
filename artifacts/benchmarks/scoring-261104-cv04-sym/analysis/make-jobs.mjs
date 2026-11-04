@@ -19,6 +19,35 @@ const jobs = process.argv.slice(3).flatMap((spec) => {
       script: 'scripts/scoring-concentration.ts',
       args: ['--matches', '2400', '--seeds', VAL, '--out', art + `conc-${n}-validation2400.json`],
     }];
+  // cv04-sym: a 1,200-match concentration screen on the calibration seeds (the script's default).
+  if (kind === 'conc1200')
+    return [{
+      name: `conc-${n}-calibration1200`,
+      patch: cand(n),
+      script: 'scripts/scoring-concentration.ts',
+      args: ['--matches', '1200', '--out', art + `conc-${n}-calibration1200.json`],
+    }];
+  // cv04-sym: MATCH-23's season share (`scripts/scoring-season-share.ts`): ENG's 20 top-flight clubs
+  // taken over in 2024, one whole league season each, two seeds of their own, in six slices.
+  // `season:<name>[:<seed numbers, e.g. 34>[:<country>]]`; ENG and seeds 1 and 2 by default.
+  if (kind === 'season') {
+    const nums = (a ?? '12').split('');
+    const country = b ?? 'ENG';
+    const tag = country === 'ENG' ? '' : country.toLowerCase();
+    return nums.map((k) => `t689-season-${k}`).flatMap((seed) =>
+      [[0, 7], [7, 14], [14, 20]].map(([lo, hi]) => ({
+        name: `season-${n}-${tag}${seed.slice(-1)}-${lo}`,
+        patch: cand(n),
+        script: 'scripts/scoring-season-share.ts',
+        args: [
+          '--country', country,
+          '--clubs', Array.from({ length: hi - lo }, (_, i) => lo + i).join(','),
+          '--seeds', seed, '--year', '2024',
+          '--out', art + `season/season-${n}-${tag}${seed.slice(-1)}-${lo}.json`,
+        ],
+      })),
+    );
+  }
   if (kind === 'bands') {
     const matches = a ? Number(a) : 400;
     return [{ name: `bands-${n}-${matches}`, patch: cand(n), script: 'scripts/grid-bands.ts', args: ['--candidate', '--matches', String(matches)] }];

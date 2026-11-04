@@ -1,0 +1,85 @@
+[
+ {
+  "name": "conc-rc20-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/rc20.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-rc20-validation2400.json"
+  ]
+ },
+ {
+  "name": "conc-sp70bx40s10rc20-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/conc-sp70bx40s10rc20-validation2400.json"
+  ]
+ },
+ {
+  "name": "pc-sp70bx40s10rc20-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s10rc20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/pc-sp70bx40s10rc20-calibration-2.json"
+  ]
+ },
+ {
+  "name": "stress-sp70bx40s085-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s085.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/stress-sp70bx40s085-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-sp70bx40s085-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s085.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/stress-sp70bx40s085-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-sp70bx40s085-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s085.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sym/stress-sp70bx40s085-val-3.json"
+  ]
+ }
+]

@@ -1,0 +1,25 @@
+{
+ "seconds": 411,
+ "status": [
+  {
+   "name": "pc-sp70rc12ah15-calibration-2",
+   "code": 0,
+   "seconds": 191
+  },
+  {
+   "name": "pc-sp55rc12ah15-calibration-2",
+   "code": 0,
+   "seconds": 191
+  },
+  {
+   "name": "conc-sp55rc12ah15-validation2400",
+   "code": 0,
+   "seconds": 409
+  },
+  {
+   "name": "conc-sp70rc12ah15-validation2400",
+   "code": 0,
+   "seconds": 411
+  }
+ ]
+}
