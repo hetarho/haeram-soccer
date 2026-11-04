@@ -447,6 +447,9 @@ describe('grid coordination', () => {
     // `readsOf` plans the attack's box runs alone in its speculative update: a defender's target
     // reads only those of the attack's jobs (`boxMarkPoint`, `zoneRunner`). Played matches check it
     // on every speculative update against the full plan, each run from the same intentions.
+    // Revision 10 (T599) marks a runner in behind along his run (`runnerMarkPoint`), a later job of
+    // the attack's: there the marker of a runner the full plan sends in behind may read otherwise,
+    // and only he. Revision 10 keeps that read (→SAVE-23); revision 9 holds the premise whole.
     const real = speculative.real!;
     const defenders = (s: GridState, defenceOnly: boolean) => {
       const everyone = [...s.players[0], ...s.players[1]];
@@ -457,12 +460,19 @@ describe('grid coordination', () => {
         run: gp.run,
       }));
       real(s, false, defenceOnly);
-      const side = other(s.owner![0]);
+      const att = s.owner![0],
+        side = other(att);
       const cache = newShapeCache();
       const targets = s.players[side].map((gp) =>
         onPitch(gp) ? targetOf(s, side, gp.idx, cache) : undefined,
       );
-      const boxRuns = s.players[s.owner![0]].filter((gp) => gp.intention?.box).length;
+      const boxRuns = s.players[att].filter((gp) => gp.intention?.box).length;
+      // Who marks a runner in behind, read before the intentions are put back.
+      const runnerMarks = s.players[side].map((gp) => {
+        const i = gp.intention;
+        const foe = i?.kind === 'mark' ? s.players[att][i.opponent!] : undefined;
+        return foe?.intention?.kind === 'run' && foe.intention.run === 'behind';
+      });
       everyone.forEach((gp, k) => {
         const was = kept[k]!;
         if (was.intention) Object.assign(was.intention, was.fields);
@@ -470,31 +480,36 @@ describe('grid coordination', () => {
         gp.ended = was.ended;
         gp.run = was.run;
       });
-      return { targets, boxRuns };
+      return { targets, boxRuns, runnerMarks };
     };
-    let samples = 0,
-      withBoxRuns = 0;
-    const differing: number[] = [];
-    speculative.sample = (s) => {
-      const full = defenders(s, false);
-      const reduced = defenders(s, true);
-      samples++;
-      if (reduced.boxRuns) withBoxRuns++;
-      if (JSON.stringify(reduced.targets) !== JSON.stringify(full.targets))
-        differing.push(s.elapsed);
-    };
-    try {
-      for (const tactics of [
-        ['possession', 'counter'],
-        ['press', 'balanced'],
-      ] as [Tactic, Tactic][])
-        playGrid({ ...kitOf(tactics).setup, model: MATCH_MODEL_REVISION });
-    } finally {
-      speculative.sample = undefined;
+    for (const model of [MATCH_MODEL_REVISIONS[8], MATCH_MODEL_REVISIONS[9]]) {
+      let samples = 0,
+        withBoxRuns = 0;
+      const differing: number[] = [];
+      speculative.sample = (s) => {
+        const full = defenders(s, false);
+        const reduced = defenders(s, true);
+        samples++;
+        if (reduced.boxRuns) withBoxRuns++;
+        full.targets.forEach((target, i) => {
+          if (JSON.stringify(reduced.targets[i]) === JSON.stringify(target)) return;
+          if (model === MATCH_MODEL_REVISIONS[9] && full.runnerMarks[i]) return;
+          differing.push(s.elapsed);
+        });
+      };
+      try {
+        for (const tactics of [
+          ['possession', 'counter'],
+          ['press', 'balanced'],
+        ] as [Tactic, Tactic][])
+          playGrid({ ...kitOf(tactics).setup, model });
+      } finally {
+        speculative.sample = undefined;
+      }
+      expect(differing, model).toEqual([]);
+      expect(samples, model).toBeGreaterThan(200);
+      expect(withBoxRuns, model).toBeGreaterThan(0);
     }
-    expect(differing).toEqual([]);
-    expect(samples).toBeGreaterThan(200);
-    expect(withBoxRuns).toBeGreaterThan(0);
   });
 
   it('keeps comparable role and trait differences, deterministically', () => {
