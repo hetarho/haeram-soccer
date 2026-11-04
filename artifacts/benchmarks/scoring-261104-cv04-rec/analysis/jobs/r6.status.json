@@ -1,0 +1,20 @@
+{
+ "seconds": 357,
+ "status": [
+  {
+   "name": "pc-ah3hb35-calibration-2",
+   "code": 0,
+   "seconds": 354
+  },
+  {
+   "name": "pc-ah3-calibration-2",
+   "code": 0,
+   "seconds": 356
+  },
+  {
+   "name": "pc-ah6-calibration-2",
+   "code": 0,
+   "seconds": 357
+  }
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "seconds": 382,
+ "status": [
+  {
+   "name": "bands-w0a7ah3hb35a070-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-w0a7ah3hb35a080-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "pc-w0a7ah3hb35a070-calibration-2",
+   "code": 0,
+   "seconds": 184
+  },
+  {
+   "name": "conc-w0a7ah3hb35a070-validation2400",
+   "code": 0,
+   "seconds": 382
+  }
+ ]
+}

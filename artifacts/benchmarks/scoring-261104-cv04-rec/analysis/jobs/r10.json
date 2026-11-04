@@ -1,0 +1,142 @@
+[
+ {
+  "name": "conc-w0a7ah3-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/conc-w0a7ah3-validation2400.json"
+  ]
+ },
+ {
+  "name": "conc-w0a7ah3hb35-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/conc-w0a7ah3hb35-validation2400.json"
+  ]
+ },
+ {
+  "name": "core-w0a7ah3-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/core-w0a7ah3-validation-1.json"
+  ]
+ },
+ {
+  "name": "stress-w0a7ah3-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/stress-w0a7ah3-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-w0a7ah3-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/stress-w0a7ah3-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-w0a7ah3-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/stress-w0a7ah3-val-3.json"
+  ]
+ },
+ {
+  "name": "stress-w0a7ah3hb35-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/stress-w0a7ah3hb35-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-w0a7ah3hb35-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/stress-w0a7ah3hb35-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-w0a7ah3hb35-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3hb35.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/stress-w0a7ah3hb35-val-3.json"
+  ]
+ },
+ {
+  "name": "core-w0a7ah3hb35-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0a7ah3hb35.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/core-w0a7ah3hb35-validation-1.json"
+  ]
+ }
+]

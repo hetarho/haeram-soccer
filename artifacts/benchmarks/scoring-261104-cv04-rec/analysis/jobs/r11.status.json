@@ -1,0 +1,20 @@
+{
+ "seconds": 274,
+ "status": [
+  {
+   "name": "tactics-w0a7ah3-calibration",
+   "code": 0,
+   "seconds": 99
+  },
+  {
+   "name": "pc-cb5-calibration-2",
+   "code": 0,
+   "seconds": 187
+  },
+  {
+   "name": "pc-dr6l30-calibration-2",
+   "code": 0,
+   "seconds": 174
+  }
+ ]
+}

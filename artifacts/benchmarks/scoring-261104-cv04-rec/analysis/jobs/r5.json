@@ -1,0 +1,59 @@
+[
+ {
+  "name": "pc-w0-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pc-w0-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pcd-ctl-400-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/ctl.json",
+  "script": "scripts/scoring-press-counter.ts",
+  "args": [
+   "--start",
+   "400",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pcd-ctl-400-200.json"
+  ]
+ },
+ {
+  "name": "pcd-sn01o08h25-400-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/sn01o08h25.json",
+  "script": "scripts/scoring-press-counter.ts",
+  "args": [
+   "--start",
+   "400",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pcd-sn01o08h25-400-200.json"
+  ]
+ },
+ {
+  "name": "pcd-w0-400-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/w0.json",
+  "script": "scripts/scoring-press-counter.ts",
+  "args": [
+   "--start",
+   "400",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pcd-w0-400-200.json"
+  ]
+ }
+]
