@@ -99,7 +99,7 @@ for (const viewport of [
       await expectTouchSize(target);
       expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
     }
-    await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');
+    await expect(page.getByTestId('hud-cash')).toContainText('구단 자금');
     await expect(page.getByTestId('hud-cash')).toBeVisible();
     const season = hub.getByRole('region', { name: '이번 시즌', exact: true });
     for (const figure of ['라운드', '리그 순위', '승점 0'])
