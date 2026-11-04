@@ -1,3 +1,4 @@
+import { captureRender } from './render.testkit';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -162,13 +163,15 @@ describe('owner office page', () => {
   });
   it('only proposes a changed explicit choice; inspecting an applied choice submits nothing', () => {
     const select = vi.fn();
-    const row = OfficeRow({
-      label: '선수 계약',
-      detail: '계약',
-      delegated: true,
-      blocked: false,
-      onSelect: select,
-    });
+    const row = captureRender(() =>
+      OfficeRow({
+        label: '선수 계약',
+        detail: '계약',
+        delegated: true,
+        blocked: false,
+        onSelect: select,
+      }),
+    );
     const choices = row.props.children[1].props.children[1].props.children;
     expect(choices[1].props['data-ui']).toBe('secondary');
     expect(choices[0].props['data-ui']).toBeUndefined();
@@ -180,13 +183,15 @@ describe('owner office page', () => {
 
   it('fills only applied office choices, leaving a mixed bulk choice unselected', () => {
     for (const delegated of [false, true]) {
-      const row = OfficeRow({
-        label: '계약',
-        detail: '',
-        delegated,
-        blocked: false,
-        onSelect: vi.fn(),
-      });
+      const row = captureRender(() =>
+        OfficeRow({
+          label: '계약',
+          detail: '',
+          delegated,
+          blocked: false,
+          onSelect: vi.fn(),
+        }),
+      );
       const buttons = row.props.children[1].props.children[1].props.children;
       expect(buttons[Number(!delegated)].props['data-ui']).toBeUndefined();
       expect(buttons[Number(delegated)].props['aria-pressed']).toBe(true);

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
 import { cancelPromises } from './promises';
 import {
@@ -306,26 +307,44 @@ type ManagerCheck = [
 function managerChecks(w: World, c: ManagerCriteria): ManagerCheck[] {
   const cap = c.maxWageOvr === undefined ? undefined : BigInt(managerCapWage(w, c.maxWageOvr));
   const traitLabel = (trait: ManagerCriteria['traits'][number]) =>
-    trait === 'none' ? '성향 없음' : MANAGER_TRAIT_INFO[trait].label;
+    trait === 'none'
+      ? sourceMessage('copy.managerMarket.c197dc0c61')
+      : MANAGER_TRAIT_INFO[trait].label;
   return [
-    [`OVR ${c.minOvr} 이상인 후보가 없어요`, (m) => m.ability >= c.minOvr],
     [
-      `연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'manager') ?? '0')} 안의 후보가 없어요`,
+      sourceMessage('copy.managerMarket.f93a95143a', { p0: c.minOvr }),
+      (m) => m.ability >= c.minOvr,
+    ],
+    [
+      sourceMessage('copy.managerMarket.7875f4d9d5', {
+        p0: moneyLabel(w, annualWageLimit(w, 'manager') ?? '0'),
+      }),
       (m) => wageWithinLimit(w, 'manager', m.wage),
     ],
     [
-      `${c.schools.map((style) => STYLE_INFO[style].label).join('·')} 학파의 후보가 없어요`,
+      sourceMessage('copy.managerMarket.c25c9d5f08', {
+        p0: c.schools.map((style) => STYLE_INFO[style].label).join('·'),
+      }),
       (m) => !c.schools.length || (!!m.style && c.schools.includes(m.style)),
     ],
-    [`유연성 ${c.minFlexibility} 이상인 후보가 없어요`, (m) => m.flexibility >= c.minFlexibility],
-    [`자존심 ${c.maxPride} 이하인 후보가 없어요`, (m) => m.pride <= c.maxPride],
-    [`육성 ${c.minYouth} 이상인 후보가 없어요`, (m) => m.youth >= c.minYouth],
     [
-      `선발 성향이 ${c.traits.map(traitLabel).join('·')}인 후보가 없어요`,
+      sourceMessage('copy.managerMarket.c4e7a3ae22', { p0: c.minFlexibility }),
+      (m) => m.flexibility >= c.minFlexibility,
+    ],
+    [
+      sourceMessage('copy.managerMarket.d872739a02', { p0: c.maxPride }),
+      (m) => m.pride <= c.maxPride,
+    ],
+    [
+      sourceMessage('copy.managerMarket.7a6176875b', { p0: c.minYouth }),
+      (m) => m.youth >= c.minYouth,
+    ],
+    [
+      sourceMessage('copy.managerMarket.2311b4937c', { p0: c.traits.map(traitLabel).join('·') }),
       (m) => !c.traits.length || c.traits.includes(m.trait ?? 'none'),
     ],
     [
-      `연봉 상한(OVR ${c.maxWageOvr} 감독 시세) 안의 후보가 없어요`,
+      sourceMessage('copy.managerMarket.dadaf6be6b', { p0: c.maxWageOvr }),
       (m) => cap === undefined || BigInt(m.wage) <= cap,
     ],
   ];
@@ -412,19 +431,29 @@ export function managerBeats(
 /** "육성형 Name(OVR 72/80, 연봉 …)" with his club and compensation when he is another club's. */
 export function managerLine(w: World, m: ManagerCandidate) {
   const club = m.club ? w.clubs.find((other) => other.id === m.club)?.name : undefined;
-  return `${STYLE_INFO[m.style].label} ${m.name}(OVR ${m.ability}/${potentialOf(m)} · 연봉 ${moneyLabel(w, m.wage)}${
-    club ? ` · ${club} · 웃돈 ${moneyLabel(w, m.compensation ?? '0')}` : ''
-  })`;
+  return sourceMessage('copy.managerMarket.fa90c59043', {
+    p0: STYLE_INFO[m.style].label,
+    p1: m.name,
+    p2: m.ability,
+    p3: potentialOf(m),
+    p4: moneyLabel(w, m.wage),
+    p5: club
+      ? sourceMessage('copy.managerMarket.575bf0eea8', {
+          p0: club,
+          p1: moneyLabel(w, m.compensation ?? '0'),
+        })
+      : '',
+  });
 }
 /** Why no candidate matches: the first criterion nobody meets, or that nobody is affordable. */
 function noManagerReason(w: World, c: ManagerCriteria) {
   let left = pool(w, c);
-  if (!left.length) return '선임할 수 있는 후보가 없어요';
+  if (!left.length) return sourceMessage('copy.managerMarket.787cdc64a1');
   for (const [why, fits] of managerChecks(w, c)) {
     left = left.filter(fits);
     if (!left.length) return why;
   }
-  return '자금 여력에 맞는 후보가 없어요';
+  return sourceMessage('copy.managerMarket.3bf57ff1eb');
 }
 /**
  * Whom the staff would appoint if the post fell vacant today (→STAFF-18): the first match, or with
@@ -438,16 +467,20 @@ export function managerPickPreview(w: World): {
 } {
   const c = managerCriteriaOf(w),
     match = managerMatches(w)[0];
-  if (match) return { pick: match, reason: `${managerLine(w, match)} · 감독 기조에 맞는 첫 후보` };
+  if (match)
+    return {
+      pick: match,
+      reason: sourceMessage('copy.managerMarket.0e2c008dd4', { p0: managerLine(w, match) }),
+    };
   const why = noManagerReason(w, c),
     best = c.whenNone === 'best' ? bestFreeAgent(w) : undefined;
   if (best)
     return {
       pick: best,
       fallback: true,
-      reason: `${managerLine(w, best)} · 감독 기조에 맞는 감독이 없어(${why}) 가장 나은 자유계약 감독`,
+      reason: sourceMessage('copy.managerMarket.45d12f6484', { p0: managerLine(w, best), p1: why }),
     };
-  return { reason: `감독 기조에 맞는 감독이 없어요 · ${why} · 임시 감독 체제로 기다려요` };
+  return { reason: sourceMessage('copy.managerMarket.a7e71044e9', { p0: why }) };
 }
 /** Why nobody was appointed, for the staff's report. */
 export function managerSearchReason(w: World) {
@@ -456,7 +489,7 @@ export function managerSearchReason(w: World) {
 
 /** The candidate leaves the market for our club; the manager he replaces becomes a free agent. */
 export function takeManager(w: World, candidate: ManagerCandidate, replaced: Manager) {
-  cancelPromises(w, replaced.id, '구단이 새 감독을 선임해 요청한 감독이 떠났어요.');
+  cancelPromises(w, replaced.id, sourceMessage('copy.managerMarket.435a26fe96'));
   const m = market(w);
   m.free = m.free.filter((free) => free.id !== candidate.id);
   if (candidate.club && !candidate.person) {
@@ -586,8 +619,11 @@ export function refreshManagerMarket(w: World, relegated?: Set<string>) {
     addEvent(
       w,
       'rival-sacking',
-      `${club.name}, ${manager.name} 감독 경질`,
-      `${STYLE_INFO[manager.style].label} · OVR ${manager.ability} · 자유계약 감독 명단에 올랐어요`,
+      sourceMessage('copy.managerMarket.11434d85c4', { p0: club.name, p1: manager.name }),
+      sourceMessage('copy.managerMarket.e35226e9f4', {
+        p0: STYLE_INFO[manager.style].label,
+        p1: manager.ability,
+      }),
     );
   }
   const { min, max } = freeAgentRange(w);

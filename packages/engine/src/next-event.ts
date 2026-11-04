@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { World } from '../../contracts/src/types';
 import { advanceDays } from './season';
 import { stoppingReasons } from './stopping';
@@ -8,9 +9,8 @@ import { careerEnded } from './owner';
 
 export function assertNextEvent(w: World) {
   const settings = validateSettings(settingsOf(w));
-  if (settings.mode !== 'manual')
-    throw new Error('다음 이벤트는 수동 모드에서만 사용할 수 있어요.');
-  if (w.critical || careerEnded(w)) throw new Error('중요한 구단 상태를 먼저 확인하세요.');
+  if (settings.mode !== 'manual') throw new Error(sourceMessage('copy.next_event.eac8c1a71a'));
+  if (w.critical || careerEnded(w)) throw new Error(sourceMessage('copy.next_event.4df180c2f9'));
 }
 /** Each yield is a fully settled day, for internal worker responsiveness only. */
 export function* nextEventDays(w: World): Generator<void> {

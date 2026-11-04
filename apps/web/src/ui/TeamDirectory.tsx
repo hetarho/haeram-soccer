@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
@@ -11,7 +12,8 @@ import { PersonCareer } from './PersonCareer';
 import { PositionBadge } from './PositionBadge';
 import { StaffRoleBadge } from './StaffRoleBadge';
 import { Select } from './Select';
-import { openAcademyProspect, openPersonnel, openTeam, usePlayerSheet } from './state';
+import { openPlayer } from '../entities/player';
+import { openAcademyProspect, openPersonnel, openTeam } from './state';
 import {
   ACADEMY_SORTS,
   academyRows,
@@ -46,6 +48,7 @@ const MANAGE = {
  * open the illustrated detailed workflows. Reading the lists issues no command.
  */
 export function TeamDirectory({ state, client }: { state: ClientState; client: GameClient }) {
+  useTextLocale();
   const { t } = useLocale();
   const w = state.view!.world;
   const [view, setView] = useAddressTab<TeamView>('view', TEAM_VIEWS, 'players', {
@@ -68,21 +71,27 @@ export function TeamDirectory({ state, client }: { state: ClientState; client: G
     window.dispatchEvent(new Event('tasknavigate'));
   };
   return (
-    <section className={s.directory} data-ui="team-directory" aria-label={t('navigation.team')}>
+    <section
+      className={s.directory}
+      data-ui="team-directory"
+      aria-label={localizeValue(t('navigation.team'))}
+    >
       <div className={s.tabs}>
         <TabList<TeamView>
           tabs={TEAM_VIEWS.map(([id, label]) => [id, t(label)] as const)}
           value={view}
           onChange={choose}
-          label={t('team.directory')}
+          label={localizeValue(t('team.directory'))}
           idPrefix="team"
         />
       </div>
       <TabPanel idPrefix="team" value={view}>
-        {view === 'coaches' ? (
-          <CoachList w={w} client={client} />
-        ) : (
-          <PlayerList key={view} w={w} view={view} />
+        {localizeValue(
+          view === 'coaches' ? (
+            <CoachList w={w} client={client} />
+          ) : (
+            <PlayerList key={view} w={w} view={view} />
+          ),
         )}
       </TabPanel>
     </section>
@@ -109,50 +118,56 @@ function Toolbar<T extends string>({
   shown: number;
   total: number;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   return (
     <div className={s.toolbar}>
       <label className={s.search}>
-        <span className={s.srOnly}>{t('team.search')}</span>
+        <span className={s.srOnly}>{localizeValue(t('team.search'))}</span>
         <input
           type="search"
-          aria-label={t('team.search')}
-          placeholder={t('team.search.placeholder')}
+          aria-label={localizeValue(t('team.search'))}
+          placeholder={localizeValue(t('team.search.placeholder'))}
           value={query}
           onChange={(event) => onQuery(event.target.value)}
         />
       </label>
       <Select
-        aria-label={t('team.sort')}
+        aria-label={localizeValue(t('team.sort'))}
         className={s.sort}
         value={sort}
         onValueChange={(value) => onSort(value as T)}
       >
-        {sorts.map((id) => (
-          <option key={id} value={id}>
-            {t(`team.sort.${id}`)}
-          </option>
-        ))}
+        {localizeValue(
+          sorts.map((id) => (
+            <option key={id} value={id}>
+              {localizeValue(t(`team.sort.${id}`))}
+            </option>
+          )),
+        )}
       </Select>
       <span className={s.count} data-testid="team-count">
-        {t('team.count', { shown, total })}
+        {localizeValue(t('team.count', { shown, total }))}
       </span>
       <button type="button" data-ui="link" className={s.manage} onClick={MANAGE[view]}>
-        {t(`team.manage.${view}`)}
+        {localizeValue(t(`team.manage.${view}`))}
       </button>
     </div>
   );
 }
 
 function Empty({ onClear }: { onClear?: () => void }) {
+  useTextLocale();
   const { t } = useLocale();
   return (
     <p className={s.empty} role="status">
-      {t(onClear ? 'team.empty.filtered' : 'team.empty')}
-      {onClear && (
-        <button type="button" data-ui="tertiary" onClick={onClear}>
-          {t('team.clear')}
-        </button>
+      {localizeValue(t(onClear ? 'team.empty.filtered' : 'team.empty'))}
+      {localizeValue(
+        onClear && (
+          <button type="button" data-ui="tertiary" onClick={onClear}>
+            {localizeValue(t('team.clear'))}
+          </button>
+        ),
       )}
     </p>
   );
@@ -160,6 +175,7 @@ function Empty({ onClear }: { onClear?: () => void }) {
 
 /** 1군 or 유소년: actual players as one aligned row each. */
 function PlayerList({ w, view }: { w: World; view: 'players' | 'academy' }) {
+  useTextLocale();
   const { t } = useLocale();
   const academy = view === 'academy';
   const [query, setQuery] = useTaskState(w.id, `team-${view}-query`, '');
@@ -185,7 +201,7 @@ function PlayerList({ w, view }: { w: World; view: 'players' | 'academy' }) {
       />
       <table
         className={`${market.candidateTable} ${s.table}`}
-        aria-label={t(`team.view.${view}`)}
+        aria-label={localizeValue(t(`team.view.${view}`))}
         data-testid={`team-${view}`}
       >
         <colgroup>
@@ -193,64 +209,83 @@ function PlayerList({ w, view }: { w: World; view: 'players' | 'academy' }) {
           <col className={market.ratingColumn} />
           <col className={market.potentialColumn} />
           <col className={s.figureColumn} />
-          {!academy && <col className={`${market.wageColumn} ${s.wide}`} />}
-          {!academy && <col className={`${s.contractColumn} ${s.wide}`} />}
+          {localizeValue(!academy && <col className={`${market.wageColumn} ${s.wide}`} />)}
+          {localizeValue(!academy && <col className={`${s.contractColumn} ${s.wide}`} />)}
         </colgroup>
         <thead>
           <tr>
-            <th scope="col">{t('team.column.player')}</th>
-            <th scope="col">{t('team.column.ovr')}</th>
-            <th scope="col">{t('team.column.potential')}</th>
-            <th scope="col">{t(academy ? 'team.column.growth' : 'team.column.fatigue')}</th>
-            {!academy && (
-              <th scope="col" className={s.wide}>
-                {t('team.column.wage')}
-              </th>
+            <th scope="col">{localizeValue(t('team.column.player'))}</th>
+            <th scope="col">{localizeValue(t('team.column.ovr'))}</th>
+            <th scope="col">{localizeValue(t('team.column.potential'))}</th>
+            <th scope="col">
+              {localizeValue(t(academy ? 'team.column.growth' : 'team.column.fatigue'))}
+            </th>
+            {localizeValue(
+              !academy && (
+                <th scope="col" className={s.wide}>
+                  {localizeValue(t('team.column.wage'))}
+                </th>
+              ),
             )}
-            {!academy && (
-              <th scope="col" className={s.wide}>
-                {t('team.column.contract')}
-              </th>
+            {localizeValue(
+              !academy && (
+                <th scope="col" className={s.wide}>
+                  {localizeValue(t('team.column.contract'))}
+                </th>
+              ),
             )}
           </tr>
         </thead>
         <tbody>
-          {listed.map((row) => (
-            <tr key={row.id} data-testid={`team-row-${row.id}`}>
-              <td>
-                <PlayerName row={row} academy={academy} />
-              </td>
-              <td>
-                <OvrBadge value={row.ovr} />
-              </td>
-              <td className={s.number}>{row.potential}</td>
-              <td className={s.number}>
-                {academy
-                  ? row.developed === undefined
-                    ? '—'
-                    : `+${(row.developed / 100).toFixed(2)}`
-                  : row.fatigue}
-              </td>
-              {!academy && (
-                <td className={`${s.number} ${s.wide}`}>
-                  <Money value={row.wage} code={club.country} year={w.year} plain />
+          {localizeValue(
+            listed.map((row) => (
+              <tr key={row.id} data-testid={`team-row-${row.id}`}>
+                <td>
+                  <PlayerName row={row} academy={academy} />
                 </td>
-              )}
-              {!academy && (
-                <td className={`${s.number} ${s.wide}`}>
-                  {t('team.contract.until', { season: seasonName(row.until - 1) })}
+                <td>
+                  <OvrBadge value={row.ovr} />
                 </td>
-              )}
-            </tr>
-          ))}
+                <td className={s.number}>{localizeValue(row.potential)}</td>
+                <td className={s.number}>
+                  {localizeValue(
+                    academy
+                      ? row.developed === undefined
+                        ? '—'
+                        : `+${(row.developed / 100).toFixed(2)}`
+                      : row.fatigue,
+                  )}
+                </td>
+                {localizeValue(
+                  !academy && (
+                    <td className={`${s.number} ${s.wide}`}>
+                      <Money value={row.wage} code={club.country} year={w.year} plain />
+                    </td>
+                  ),
+                )}
+                {localizeValue(
+                  !academy && (
+                    <td className={`${s.number} ${s.wide}`}>
+                      {localizeValue(
+                        t('team.contract.until', { season: seasonName(row.until - 1) }),
+                      )}
+                    </td>
+                  ),
+                )}
+              </tr>
+            )),
+          )}
         </tbody>
       </table>
-      {listed.length === 0 && <Empty onClear={query ? () => setQuery('') : undefined} />}
+      {localizeValue(
+        listed.length === 0 && <Empty onClear={query ? () => setQuery('') : undefined} />,
+      )}
     </>
   );
 }
 
 function PlayerName({ row, academy }: { row: TeamPlayerRow; academy: boolean }) {
+  useTextLocale();
   const { t } = useLocale();
   const facts = [
     t('team.age', { age: row.age }),
@@ -263,21 +298,23 @@ function PlayerName({ row, academy }: { row: TeamPlayerRow; academy: boolean }) 
       type="button"
       data-ui="link"
       className={market.playerName}
-      aria-label={t(academy ? 'team.prospect.open' : 'team.player.open', { name: row.name })}
+      aria-label={localizeValue(
+        t(academy ? 'team.prospect.open' : 'team.player.open', { name: row.name }),
+      )}
       onClick={(event) => {
         if (academy) {
           openAcademyProspect(row.id);
           return;
         }
         event.currentTarget.focus();
-        usePlayerSheet.getState().open(row.id);
+        openPlayer({ id: row.id });
       }}
     >
       <span className={market.playerIdentity}>
         <PositionBadge position={row.position} />
         <span className={market.playerText}>
           <b>{row.name}</b>
-          <small>{facts.join(' · ')}</small>
+          <small>{localizeValue(facts.join(' · '))}</small>
         </span>
       </span>
     </button>
@@ -286,6 +323,7 @@ function PlayerName({ row, academy }: { row: TeamPlayerRow; academy: boolean }) 
 
 /** 코치: the manager and every supported staff post, a vacancy named as one. */
 function CoachList({ w, client }: { w: World; client: GameClient }) {
+  useTextLocale();
   const { t } = useLocale();
   const [query, setQuery] = useTaskState(w.id, 'team-coaches-query', '');
   const [sort, setSort] = useTaskState<CoachSort>(w.id, 'team-coaches-sort', 'post');
@@ -308,7 +346,7 @@ function CoachList({ w, client }: { w: World; client: GameClient }) {
       />
       <table
         className={`${market.candidateTable} ${s.table}`}
-        aria-label={t('team.view.coaches')}
+        aria-label={localizeValue(t('team.view.coaches'))}
         data-testid="team-coaches"
       >
         <colgroup>
@@ -320,69 +358,79 @@ function CoachList({ w, client }: { w: World; client: GameClient }) {
         </colgroup>
         <thead>
           <tr>
-            <th scope="col">{t('team.column.coach')}</th>
-            <th scope="col">{t('team.column.ability')}</th>
+            <th scope="col">{localizeValue(t('team.column.coach'))}</th>
+            <th scope="col">{localizeValue(t('team.column.ability'))}</th>
             <th scope="col" className={s.wide}>
-              {t('team.column.age')}
+              {localizeValue(t('team.column.age'))}
             </th>
             <th scope="col" className={s.wide}>
-              {t('team.column.wage')}
+              {localizeValue(t('team.column.wage'))}
             </th>
-            <th scope="col">{t('team.column.contract')}</th>
+            <th scope="col">{localizeValue(t('team.column.contract'))}</th>
           </tr>
         </thead>
         <tbody>
-          {listed.map(({ post, coach }) => (
-            <tr key={post} data-testid={`team-post-${post}`} data-vacant={!coach || undefined}>
-              <td>
-                {coach?.person ? (
-                  <button
-                    type="button"
-                    data-ui="link"
-                    className={market.playerName}
-                    aria-label={t('team.coach.open', { name: coach.name })}
-                    onClick={() => setCareer(coach.person)}
-                  >
-                    <span className={market.playerText}>
-                      <b>{coach.name}</b>
-                      <StaffRoleBadge post={post} />
-                    </span>
-                  </button>
-                ) : (
-                  <span className={`${market.playerName} ${s.plainName}`}>
-                    <span className={market.playerText}>
-                      <b className={coach ? undefined : s.vacant}>
-                        {coach ? coach.name : t('team.vacant')}
-                      </b>
-                      <StaffRoleBadge post={post} />
-                    </span>
-                  </span>
-                )}
-              </td>
-              <td>{coach ? <OvrBadge value={coach.ability} /> : '—'}</td>
-              <td className={`${s.number} ${s.wide}`}>{coach?.age ?? '—'}</td>
-              <td className={`${s.number} ${s.wide}`}>
-                {!coach ? (
-                  '—'
-                ) : BigInt(coach.wage) > 0n ? (
-                  <Money value={coach.wage} code={club.country} year={w.year} plain />
-                ) : (
-                  t('team.volunteer')
-                )}
-              </td>
-              <td className={s.number}>
-                {!coach
-                  ? '—'
-                  : coach.interim
-                    ? t('team.interim')
-                    : t('team.contract.until', { season: seasonName(coach.until - 1) })}
-              </td>
-            </tr>
-          ))}
+          {localizeValue(
+            listed.map(({ post, coach }) => (
+              <tr key={post} data-testid={`team-post-${post}`} data-vacant={!coach || undefined}>
+                <td>
+                  {localizeValue(
+                    coach?.person ? (
+                      <button
+                        type="button"
+                        data-ui="link"
+                        className={market.playerName}
+                        aria-label={localizeValue(t('team.coach.open', { name: coach.name }))}
+                        onClick={() => setCareer(coach.person)}
+                      >
+                        <span className={market.playerText}>
+                          <b>{coach.name}</b>
+                          <StaffRoleBadge post={post} />
+                        </span>
+                      </button>
+                    ) : (
+                      <span className={`${market.playerName} ${s.plainName}`}>
+                        <span className={market.playerText}>
+                          <b className={coach ? undefined : s.vacant}>
+                            {localizeValue(coach ? coach.name : t('team.vacant'))}
+                          </b>
+                          <StaffRoleBadge post={post} />
+                        </span>
+                      </span>
+                    ),
+                  )}
+                </td>
+                <td>{localizeValue(coach ? <OvrBadge value={coach.ability} /> : '—')}</td>
+                <td className={`${s.number} ${s.wide}`}>{localizeValue(coach?.age ?? '—')}</td>
+                <td className={`${s.number} ${s.wide}`}>
+                  {localizeValue(
+                    !coach ? (
+                      '—'
+                    ) : BigInt(coach.wage) > 0n ? (
+                      <Money value={coach.wage} code={club.country} year={w.year} plain />
+                    ) : (
+                      t('team.volunteer')
+                    ),
+                  )}
+                </td>
+                <td className={s.number}>
+                  {localizeValue(
+                    !coach
+                      ? '—'
+                      : coach.interim
+                        ? t('team.interim')
+                        : t('team.contract.until', { season: seasonName(coach.until - 1) }),
+                  )}
+                </td>
+              </tr>
+            )),
+          )}
         </tbody>
       </table>
-      {listed.length === 0 && <Empty onClear={() => setQuery('')} />}
-      {career && <PersonCareer id={career} client={client} onClose={() => setCareer(undefined)} />}
+      {localizeValue(listed.length === 0 && <Empty onClear={() => setQuery('')} />)}
+      {localizeValue(
+        career && <PersonCareer id={career} client={client} onClose={() => setCareer(undefined)} />,
+      )}
     </>
   );
 }
@@ -392,13 +440,14 @@ function CoachList({ w, client }: { w: World; client: GameClient }) {
  * text link, resuming that list's search, sort and scroll.
  */
 export function TeamReturn({ page }: { page: 'firstTeam' | 'staff' | 'academy' }) {
+  useTextLocale();
   const { t } = useLocale();
   const view = owningTeamView(page);
   const label = TEAM_VIEWS.find(([id]) => id === view)![1];
   return (
     <div className={s.back} data-ui="team-return">
       <button type="button" data-ui="link" onClick={() => openTeam(view)}>
-        {t('team.back', { view: t(label) })}
+        {localizeValue(t('team.back', { view: t(label) }))}
       </button>
     </div>
   );

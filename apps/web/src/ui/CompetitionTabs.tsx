@@ -1,3 +1,4 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import s from './App.module.css';
 import type { Page } from './state';
 import type { ReactNode } from 'react';
@@ -7,13 +8,14 @@ import type { ReactNode } from 'react';
  * stepper. The page is kept for the region's name; current and closed seasons share the header.
  */
 export function CompetitionHeader({ page, children }: { page: Page; children: ReactNode }) {
+  useTextLocale();
   return (
     <div
       className={s.competitionScope}
-      aria-label="대회 탐색"
+      aria-label={displayMessage('copy.CompetitionTabs.4720b89b9a')}
       data-competition={page === 'europe' || page === 'cupHistory' ? 'cup' : 'league'}
     >
-      {children}
+      {localizeValue(children)}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Player } from '../../contracts/src/types';
 import { fatigueLoad } from './player-state';
 
@@ -7,14 +8,41 @@ export const INJURY = {
   fatigue: 1 / 25,
   pressing: 1.15,
   bands: [
-    { share: 0.6, days: [5, 14], label: ['근육 타박상', '가벼운 발목 염좌', '근육 경련'] },
-    { share: 0.25, days: [15, 35], label: ['햄스트링 부상', '종아리 근육 부상', '사타구니 부상'] },
+    {
+      share: 0.6,
+      days: [5, 14],
+      label: [
+        sourceMessage('copy.injury_rules.36409af67b'),
+        sourceMessage('copy.injury_rules.3928786c77'),
+        sourceMessage('copy.injury_rules.65faa2ce06'),
+      ],
+    },
+    {
+      share: 0.25,
+      days: [15, 35],
+      label: [
+        sourceMessage('copy.injury_rules.6609c130b3'),
+        sourceMessage('copy.injury_rules.b99e84248b'),
+        sourceMessage('copy.injury_rules.bec1a11da6'),
+      ],
+    },
     {
       share: 0.12,
       days: [36, 90],
-      label: ['발목 인대 부상', '중족골 골절', '무릎 내측 인대 부상'],
+      label: [
+        sourceMessage('copy.injury_rules.463c33e336'),
+        sourceMessage('copy.injury_rules.ad72768f43'),
+        sourceMessage('copy.injury_rules.75dff864b6'),
+      ],
     },
-    { share: 0.03, days: [120, 240], label: ['전방 십자인대 파열', '아킬레스건 부상'] },
+    {
+      share: 0.03,
+      days: [120, 240],
+      label: [
+        sourceMessage('copy.injury_rules.48e2c2d144'),
+        sourceMessage('copy.injury_rules.b2a5427a80'),
+      ],
+    },
   ],
 } as const;
 

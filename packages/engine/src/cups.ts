@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
@@ -73,8 +74,16 @@ function draw(w: World, cup: DomesticCup, clubs: string[], index: number, total:
     const opponent = findClub(w, home ? own.away : own.home);
     pushInbox(w, {
       kind: 'cup',
-      title: `${cup.name} ${round.label} 대진 · ${home ? 'vs' : '@'} ${opponent.name}`,
-      detail: `${seasonDayLabel(w.year, round.round * 7 - 3)} ${home ? '홈' : '원정'} 단판 승부 · 비기면 연장과 승부차기로 가려요.`,
+      title: sourceMessage('copy.cups.d1b6adc1bb', {
+        p0: cup.name,
+        p1: round.label,
+        p2: home ? 'vs' : '@',
+        p3: opponent.name,
+      }),
+      detail: sourceMessage('copy.cups.18ddccaf68', {
+        p0: seasonDayLabel(w.year, round.round * 7 - 3),
+        p1: home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+      }),
       // Stops the clock only where cup draws are enabled (level 1 or the detail setting).
       attention: true,
     });
@@ -120,9 +129,20 @@ function progress(w: World, cup: DomesticCup) {
           ties[Math.min(left - 1, ties.length - 1)],
         );
       credit(w, prize);
-      addEvent(w, 'cup-prize', `${cup.name} ${round.label} 통과`, `${cup.name} 상금`, prize);
+      addEvent(
+        w,
+        'cup-prize',
+        sourceMessage('copy.cups.71af979896', { p0: cup.name, p1: round.label }),
+        sourceMessage('copy.cups.f3b8bcee16', { p0: cup.name }),
+        prize,
+      );
     } else if (tie.winner !== w.playerClub)
-      addEvent(w, 'cup-exit', `${cup.name} ${round.label} 탈락`, cup.name);
+      addEvent(
+        w,
+        'cup-exit',
+        sourceMessage('copy.cups.58db98f85c', { p0: cup.name, p1: round.label }),
+        cup.name,
+      );
   });
   if (!roundDecided(round)) return changed;
   const left = survivors(round);
@@ -138,8 +158,8 @@ function progress(w: World, cup: DomesticCup) {
       addEvent(
         w,
         'cup-honor',
-        `${cup.name} 우승`,
-        `${w.year}/${String(w.year + 1).slice(2)} · 결승 승리`,
+        sourceMessage('copy.CareerRecordBook.2bfc53c804', { p0: cup.name }),
+        sourceMessage('copy.cups.daa07e344a', { p0: w.year, p1: String(w.year + 1).slice(2) }),
         prize,
       );
     }

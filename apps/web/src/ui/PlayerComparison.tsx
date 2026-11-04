@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { Select } from './Select';
 import { useState } from 'react';
 import type { Player, World } from '../../../../packages/contracts/src/types';
@@ -29,15 +32,15 @@ import s from './Analysis.module.css';
 /** The 16 attributes, then potential and fatigue (→WEB-25). */
 const skills: readonly (readonly [string, string, (p: Player) => number])[] = [
   ...ATTRIBUTES.map((a) => [ATTRIBUTE_LABEL[a], a, (p: Player) => p.attrs[a]] as const),
-  ['잠재력', 'potential', (p: Player) => p.potential],
-  ['피로 · 낮을수록 회복', 'fatigue', (p: Player) => p.fatigue],
+  [sourceMessage('copy.AssigneeProfile.ad725da0ea'), 'potential', (p: Player) => p.potential],
+  [sourceMessage('copy.PlayerComparison.e61ebab7c3'), 'fatigue', (p: Player) => p.fatigue],
 ];
 const status = (p: Player) =>
   p.status === 'active'
-    ? '활동 중'
+    ? sourceMessage('copy.PlayerComparison.3aa8c5b4af')
     : p.status === 'retired'
-      ? '은퇴 · 마지막 보존 능력'
-      : '매각 · 마지막 보존 능력';
+      ? sourceMessage('copy.PlayerComparison.1aced77ca0')
+      : sourceMessage('copy.PlayerComparison.c4b01f6215');
 /** Own-club records, or this season's league with every club's players (→WEB-89). */
 type ComparisonScope = PlayerScope | 'league';
 const rate = (value: number | undefined) => (value === undefined ? '—' : value.toFixed(2));
@@ -53,6 +56,7 @@ export function PlayerComparison({
   initialScope: PlayerScope;
   onClose: () => void;
 }) {
+  useTextLocale();
   const [scope, setScope] = useState<ComparisonScope>(initialScope),
     [a, setA] = useState(''),
     [b, setB] = useState('');
@@ -68,152 +72,194 @@ export function PlayerComparison({
     statsB = right && performanceRows(right[ownScope]);
   return (
     <Dialog
-      label={scope === 'league' ? '리그 선수 비교' : '우리 선수 비교'}
+      label={localizeValue(
+        scope === 'league'
+          ? sourceMessage('copy.PlayerComparison.b5cbdd27c7')
+          : sourceMessage('copy.PlayerComparison.e5d818b4c3'),
+      )}
       onClose={onClose}
       wide
-      actions={<button onClick={onClose}>비교 마치기</button>}
+      actions={<button onClick={onClose}>{richMessage('copy.PlayerComparison.ba98764c52')}</button>}
     >
       <div className={s.controls}>
         <label>
-          함께 비교할 기록{' '}
-          <Select
-            aria-label="비교 지표 범위"
-            value={scope}
-            onValueChange={(value) => setScope(value as ComparisonScope)}
-          >
-            <option value="season">현재 시즌 · 모든 대회</option>
-            <option value="career">우리 클럽 통산</option>
-            {tracked && <option value="league">이번 시즌 리그 · 다른 클럽 포함</option>}
-          </Select>
+          {richMessage('copy.PlayerComparison.932e4d93a3', {
+            p0: ' ',
+            p1: (
+              <Select
+                aria-label={displayMessage('copy.PlayerComparison.96d3969d1f')}
+                value={scope}
+                onValueChange={(value) => setScope(value as ComparisonScope)}
+              >
+                <option value="season">{richMessage('copy.AnalysisExport.92da79e9ab')}</option>
+                <option value="career">{richMessage('copy.AnalysisExport.05b05e1b81')}</option>
+                {localizeValue(
+                  tracked && (
+                    <option value="league">
+                      {richMessage('copy.PlayerComparison.994ca0df48')}
+                    </option>
+                  ),
+                )}
+              </Select>
+            ),
+          })}
         </label>
-        {scope !== 'league' && (
-          <>
-            <label>
-              선수 A{' '}
-              <Select
-                aria-label="비교 선수 A"
-                value={left?.id || ''}
-                onValueChange={(value) => setA(value)}
-              >
-                {pool
-                  .filter((p) => p.id !== right?.id)
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} · {p.position} · {status(p)}
-                    </option>
-                  ))}
-              </Select>
-            </label>
-            <label>
-              선수 B{' '}
-              <Select
-                aria-label="비교 선수 B"
-                value={right?.id || ''}
-                onValueChange={(value) => setB(value)}
-              >
-                {pool
-                  .filter((p) => p.id !== left?.id)
-                  .map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} · {p.position} · {status(p)}
-                    </option>
-                  ))}
-              </Select>
-            </label>
-          </>
+        {localizeValue(
+          scope !== 'league' && (
+            <>
+              <label>
+                {richMessage('copy.PlayerComparison.fddc552b70', {
+                  p0: ' ',
+                  p1: (
+                    <Select
+                      aria-label={displayMessage('copy.PlayerComparison.6d47f21b87')}
+                      value={left?.id || ''}
+                      onValueChange={(value) => setA(value)}
+                    >
+                      {localizeValue(
+                        pool
+                          .filter((p) => p.id !== right?.id)
+                          .map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name} · {localizeValue(p.position)} · {localizeValue(status(p))}
+                            </option>
+                          )),
+                      )}
+                    </Select>
+                  ),
+                })}
+              </label>
+              <label>
+                {richMessage('copy.PlayerComparison.ac57591843', {
+                  p0: ' ',
+                  p1: (
+                    <Select
+                      aria-label={displayMessage('copy.PlayerComparison.09887c4738')}
+                      value={right?.id || ''}
+                      onValueChange={(value) => setB(value)}
+                    >
+                      {localizeValue(
+                        pool
+                          .filter((p) => p.id !== left?.id)
+                          .map((p) => (
+                            <option key={p.id} value={p.id}>
+                              {p.name} · {localizeValue(p.position)} · {localizeValue(status(p))}
+                            </option>
+                          )),
+                      )}
+                    </Select>
+                  ),
+                })}
+              </label>
+            </>
+          ),
         )}
       </div>
-      {scope === 'league' ? (
-        full.status === 'failed' ? (
-          <p className={s.note} role="status">
-            {FULL_STATS_FAILED}{' '}
-            <button type="button" onClick={full.retry}>
-              다시 불러오기
-            </button>
-          </p>
-        ) : full.status !== 'ready' ? (
-          <p className={s.note} role="status">
-            리그 세부 기록을 불러오는 중…
-          </p>
-        ) : (
-          <LeagueComparison w={w} full={full.read} a={a} b={b} onA={setA} onB={setB} />
-        )
-      ) : left && right ? (
-        <section className={s.content} aria-label="두 선수 비교 결과">
-          <div className={s.matchTeams}>
-            <b>
-              {left.name}
-              <small>
-                {left.position} · {status(left)}
-              </small>
-              <small data-testid="compare-positions">{positionsLabel(left.positions)}</small>
-            </b>
-            <span>vs</span>
-            <b>
-              {right.name}
-              <small>
-                {right.position} · {status(right)}
-              </small>
-              <small>{positionsLabel(right.positions)}</small>
-            </b>
-          </div>
-          <p className={s.note}>
-            능력은 100점 척도예요. 주 포지션이 다른 선수는 필요한 능력도 달라요.
-          </p>
-          <div className={s.metricRows}>
-            {skills.map(([label, key, read]) => (
-              <div key={key}>
-                <strong>
-                  {read(left).toFixed(1)}
-                  <progress
-                    className={s.skillBar}
-                    aria-label={`${left.name} ${label}`}
-                    max={100}
-                    value={read(left)}
-                  />
-                </strong>
-                <span>{label}</span>
-                <strong>
-                  {read(right).toFixed(1)}
-                  <progress
-                    className={s.skillBar}
-                    aria-label={`${right.name} ${label}`}
-                    max={100}
-                    value={read(right)}
-                  />
-                </strong>
-              </div>
-            ))}
-            <div>
-              <strong>
-                {left[ownScope][10]}
-                <small>분</small>
-              </strong>
-              <span>실제 출전</span>
-              <strong>
-                {right[ownScope][10]}
-                <small>분</small>
-              </strong>
+      {localizeValue(
+        scope === 'league' ? (
+          full.status === 'failed' ? (
+            <p className={s.note} role="status">
+              {localizeValue(FULL_STATS_FAILED)}
+              {localizeValue(' ')}
+              <button type="button" onClick={full.retry}>
+                {richMessage('copy.ConstantsPage.9cee01b433')}
+              </button>
+            </p>
+          ) : full.status !== 'ready' ? (
+            <p className={s.note} role="status">
+              {richMessage('copy.PlayerComparison.064be3df2e')}
+            </p>
+          ) : (
+            <LeagueComparison w={w} full={full.read} a={a} b={b} onA={setA} onB={setB} />
+          )
+        ) : left && right ? (
+          <section
+            className={s.content}
+            aria-label={displayMessage('copy.PlayerComparison.4a5b0c4e96')}
+          >
+            <div className={s.matchTeams}>
+              <b>
+                {left.name}
+                <small>
+                  {localizeValue(left.position)} · {localizeValue(status(left))}
+                </small>
+                <small data-testid="compare-positions">
+                  {localizeValue(positionsLabel(left.positions))}
+                </small>
+              </b>
+              <span>{richMessage('copy.LeagueInsights.f130559f0e')}</span>
+              <b>
+                {right.name}
+                <small>
+                  {localizeValue(right.position)} · {localizeValue(status(right))}
+                </small>
+                <small>{localizeValue(positionsLabel(right.positions))}</small>
+              </b>
             </div>
-            {statsA!.map((row, i) => (
-              <div key={row.label}>
-                <strong>{rate(row.per90)}</strong>
-                <span>{row.label} /90분</span>
-                <strong>{rate(statsB![i].per90)}</strong>
+            <p className={s.note}>{richMessage('copy.PlayerComparison.825c011900')}</p>
+            <div className={s.metricRows}>
+              {localizeValue(
+                skills.map(([label, key, read]) => (
+                  <div key={key}>
+                    <strong>
+                      {localizeValue(read(left).toFixed(1))}
+                      <progress
+                        className={s.skillBar}
+                        aria-label={localizeValue(`${left.name} ${label}`)}
+                        max={100}
+                        value={read(left)}
+                      />
+                    </strong>
+                    <span>{localizeValue(label)}</span>
+                    <strong>
+                      {localizeValue(read(right).toFixed(1))}
+                      <progress
+                        className={s.skillBar}
+                        aria-label={localizeValue(`${right.name} ${label}`)}
+                        max={100}
+                        value={read(right)}
+                      />
+                    </strong>
+                  </div>
+                )),
+              )}
+              <div>
+                <strong>
+                  {localizeValue(left[ownScope][10])}
+                  <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
+                </strong>
+                <span>{richMessage('copy.PlayerComparison.f0e9ef7161')}</span>
+                <strong>
+                  {localizeValue(right[ownScope][10])}
+                  <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
+                </strong>
               </div>
-            ))}
-          </div>
-          {(left[ownScope][10] < 180 || right[ownScope][10] < 180) && (
-            <p className={s.note}>표본 주의 · 한 선수 이상의 출전 기록이 180분 미만이에요.</p>
-          )}
-          <details data-ui="disclosure" className={s.disclosure}>
-            <summary>분모·원시 기록 펼치기</summary>
-            <PlayerPerformance player={left} scope={ownScope} />
-            <PlayerPerformance player={right} scope={ownScope} />
-          </details>
-        </section>
-      ) : (
-        <p className={s.note}>이 범위에서 비교할 선수 두 명이 필요해요.</p>
+              {localizeValue(
+                statsA!.map((row, i) => (
+                  <div key={row.label}>
+                    <strong>{localizeValue(rate(row.per90))}</strong>
+                    <span>
+                      {richMessage('copy.PlayerComparison.a538caf9c4', { p0: row.label })}
+                    </span>
+                    <strong>{localizeValue(rate(statsB![i].per90))}</strong>
+                  </div>
+                )),
+              )}
+            </div>
+            {localizeValue(
+              (left[ownScope][10] < 180 || right[ownScope][10] < 180) && (
+                <p className={s.note}>{richMessage('copy.PlayerComparison.1d1aa4b285')}</p>
+              ),
+            )}
+            <details data-ui="disclosure" className={s.disclosure}>
+              <summary>{richMessage('copy.PlayerComparison.75023f2b42')}</summary>
+              <PlayerPerformance player={left} scope={ownScope} />
+              <PlayerPerformance player={right} scope={ownScope} />
+            </details>
+          </section>
+        ) : (
+          <p className={s.note}>{richMessage('copy.PlayerComparison.08a41ccd96')}</p>
+        ),
       )}
     </Dialog>
   );
@@ -239,11 +285,12 @@ function LeagueComparison({
   onA: (id: string) => void;
   onB: (id: string) => void;
 }) {
+  useTextLocale();
   const coverage = fullStatsCoverage(full, w.year);
   if (!full || coverage.status === 'unavailable')
     return (
       <p className={s.note} data-testid="full-stats-coverage">
-        {coverage.text}
+        {localizeValue(coverage.text)}
       </p>
     );
   const rows = fullStatsPlayers(full, w).sort(
@@ -258,8 +305,8 @@ function LeagueComparison({
   const clubs = (row: FullStatsPlayer) => row.clubs.map(club).join(' → ');
   const option = (row: FullStatsPlayer) => (
     <option key={row.id} value={row.id}>
-      {row.name} · {row.position} · {clubs(row)}
-      {row.ours ? ' · 우리 선수' : ''}
+      {row.name} · {localizeValue(row.position)} · {localizeValue(clubs(row))}
+      {localizeValue(row.ours ? sourceMessage('copy.PlayerComparison.4c74be1201') : '')}
     </option>
   );
   const rates = left && right && [fullStatsRates(left), fullStatsRates(right)];
@@ -267,86 +314,110 @@ function LeagueComparison({
     <>
       <div className={s.controls}>
         <label>
-          선수 A{' '}
-          <Select
-            aria-label="비교 선수 A"
-            value={left?.id || ''}
-            onValueChange={(value) => onA(value)}
-          >
-            {rows.filter((row) => row.id !== right?.id).map(option)}
-          </Select>
+          {richMessage('copy.PlayerComparison.fddc552b70', {
+            p0: ' ',
+            p1: (
+              <Select
+                aria-label={displayMessage('copy.PlayerComparison.6d47f21b87')}
+                value={left?.id || ''}
+                onValueChange={(value) => onA(value)}
+              >
+                {localizeValue(rows.filter((row) => row.id !== right?.id).map(option))}
+              </Select>
+            ),
+          })}
         </label>
         <label>
-          선수 B{' '}
-          <Select
-            aria-label="비교 선수 B"
-            value={right?.id || ''}
-            onValueChange={(value) => onB(value)}
-          >
-            {rows.filter((row) => row.id !== left?.id).map(option)}
-          </Select>
+          {richMessage('copy.PlayerComparison.ac57591843', {
+            p0: ' ',
+            p1: (
+              <Select
+                aria-label={displayMessage('copy.PlayerComparison.09887c4738')}
+                value={right?.id || ''}
+                onValueChange={(value) => onB(value)}
+              >
+                {localizeValue(rows.filter((row) => row.id !== left?.id).map(option))}
+              </Select>
+            ),
+          })}
         </label>
       </div>
       <p className={s.note} data-testid="full-stats-coverage">
-        {coverage.text}
+        {localizeValue(coverage.text)}
       </p>
-      {left && right && rates ? (
-        <section className={s.content} aria-label="두 선수 비교 결과">
-          <div className={s.matchTeams}>
-            <b>
-              {left.name}
-              <small>
-                {left.position} · {clubs(left)}
-              </small>
-            </b>
-            <span>vs</span>
-            <b>
-              {right.name}
-              <small>
-                {right.position} · {clubs(right)}
-              </small>
-            </b>
-          </div>
-          <div className={s.metricRows}>
-            <div>
-              <strong>{fullStatsAppearances(left)}</strong>
-              <span>출전</span>
-              <strong>{fullStatsAppearances(right)}</strong>
+      {localizeValue(
+        left && right && rates ? (
+          <section
+            className={s.content}
+            aria-label={displayMessage('copy.PlayerComparison.4a5b0c4e96')}
+          >
+            <div className={s.matchTeams}>
+              <b>
+                {left.name}
+                <small>
+                  {localizeValue(left.position)} · {localizeValue(clubs(left))}
+                </small>
+              </b>
+              <span>{richMessage('copy.LeagueInsights.f130559f0e')}</span>
+              <b>
+                {right.name}
+                <small>
+                  {localizeValue(right.position)} · {localizeValue(clubs(right))}
+                </small>
+              </b>
             </div>
-            <div>
-              <strong>
-                {left.minutes}
-                <small>분</small>
-              </strong>
-              <span>실제 출전</span>
-              <strong>
-                {right.minutes}
-                <small>분</small>
-              </strong>
+            <div className={s.metricRows}>
+              <div>
+                <strong>{localizeValue(fullStatsAppearances(left))}</strong>
+                <span>{richMessage('copy.BallonDorView.b849877c07')}</span>
+                <strong>{localizeValue(fullStatsAppearances(right))}</strong>
+              </div>
+              <div>
+                <strong>
+                  {localizeValue(left.minutes)}
+                  <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
+                </strong>
+                <span>{richMessage('copy.PlayerComparison.f0e9ef7161')}</span>
+                <strong>
+                  {localizeValue(right.minutes)}
+                  <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
+                </strong>
+              </div>
+              {localizeValue(
+                rates[0].map((row, i) => (
+                  <div key={row.label}>
+                    <strong>{localizeValue(row.text)}</strong>
+                    <span>
+                      {richMessage('copy.PlayerComparison.a538caf9c4', { p0: row.label })}
+                    </span>
+                    <strong>{localizeValue(rates[1][i]!.text)}</strong>
+                  </div>
+                )),
+              )}
             </div>
-            {rates[0].map((row, i) => (
-              <div key={row.label}>
-                <strong>{row.text}</strong>
-                <span>{row.label} /90분</span>
-                <strong>{rates[1][i]!.text}</strong>
-              </div>
-            ))}
-          </div>
-          {(left.minutes < 180 || right.minutes < 180) && (
-            <p className={s.note}>표본 주의 · 한 선수 이상의 출전 기록이 180분 미만이에요.</p>
-          )}
-          <details data-ui="disclosure" className={s.disclosure}>
-            <summary>분모·원시 기록 펼치기</summary>
-            {[left, right].map((row) => (
-              <div key={row.id}>
-                <PlayerPerformance stats={row.metrics} title={`${row.name} · 이번 시즌 리그`} />
-                <PlayerAdvancedStats advanced={fullStatsAdvanced(row)} />
-              </div>
-            ))}
-          </details>
-        </section>
-      ) : (
-        <p className={s.note}>이번 시즌 리그 기록이 있는 선수 두 명이 필요해요.</p>
+            {localizeValue(
+              (left.minutes < 180 || right.minutes < 180) && (
+                <p className={s.note}>{richMessage('copy.PlayerComparison.1d1aa4b285')}</p>
+              ),
+            )}
+            <details data-ui="disclosure" className={s.disclosure}>
+              <summary>{richMessage('copy.PlayerComparison.75023f2b42')}</summary>
+              {localizeValue(
+                [left, right].map((row) => (
+                  <div key={row.id}>
+                    <PlayerPerformance
+                      stats={row.metrics}
+                      title={displayMessage('copy.PlayerComparison.b2b1928be5', { p0: row.name })}
+                    />
+                    <PlayerAdvancedStats advanced={fullStatsAdvanced(row)} />
+                  </div>
+                )),
+              )}
+            </details>
+          </section>
+        ) : (
+          <p className={s.note}>{richMessage('copy.PlayerComparison.a39e28516b')}</p>
+        ),
       )}
     </>
   );

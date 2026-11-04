@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { careerPromotion } from './career-reads';
 import type { World } from '../../contracts/src/types';
 import { clubOf, ownSeasons } from './player-state';
@@ -52,9 +53,9 @@ export function clubMilestones(w: World) {
   const goals: ClubGoal[] = [
     goal(
       'debut',
-      '첫 경기의 발자국',
-      '우리 클럽의 첫 공식 경기를 마쳐요.',
-      '다음 우리 경기 진행하기',
+      sourceMessage('copy.goals.e48985f15c'),
+      sourceMessage('copy.goals.d2f198cf02'),
+      sourceMessage('copy.goals.4e02a6760d'),
       Math.max(
         w.ownMatches.length,
         w.tables[w.playerClub]?.played || 0,
@@ -65,9 +66,9 @@ export function clubMilestones(w: World) {
     ),
     goal(
       'first-win',
-      '첫 승리의 기쁨',
-      '공식 경기에서 첫 승리를 기록해요.',
-      '상대 전술과 피로를 살펴 경기 준비하기',
+      sourceMessage('copy.goals.a17eac6a35'),
+      sourceMessage('copy.goals.d27444fa04'),
+      sourceMessage('copy.goals.c6c811d41d'),
       Math.max(
         wins,
         w.tables[w.playerClub]?.won || 0,
@@ -78,43 +79,43 @@ export function clubMilestones(w: World) {
     ),
     goal(
       'player-growth',
-      '함께 자라는 선수들',
-      '선수들의 실제 주요 능력 성장을 합쳐 1을 쌓아요.',
-      '유소년 훈련을 선택하고 라운드 진행하기',
+      sourceMessage('copy.goals.163c32fb41'),
+      sourceMessage('copy.goals.c264eb7850'),
+      sourceMessage('copy.goals.dea6f164bb'),
       w.players.reduce((sum, player) => sum + (player.developed || 0), 0),
       1,
     ),
     goal(
       'facilities',
-      '동네의 작은 구장',
-      '관중석을 증축해 5,000석 구장을 열어요.',
+      sourceMessage('copy.goals.1c4d522ad0'),
+      sourceMessage('copy.goals.95d4ff88ff'),
       // No career starts a work (→ECON-32): a work under way opens it.
-      '재정·투자에서 경기장 단계 보기',
+      sourceMessage('copy.goals.77905c5c5b'),
       w.stadium,
       1,
     ),
     goal(
       'supporters',
-      '천 명의 목소리',
-      '현재 또는 시즌 기록에서 서포터 1,000명을 모아요.',
-      '경기와 해외 마케팅으로 서포터 늘리기',
+      sourceMessage('copy.goals.af120907db'),
+      sourceMessage('copy.goals.2f7333308d'),
+      sourceMessage('copy.goals.cceccf5dce'),
       Math.max(own.fans, w.careerReads?.bestFans ?? 0, ...archived.map((season) => season.fans)),
       1000,
     ),
     goal(
       'season',
-      '한 시즌의 이야기',
-      '첫 시즌을 끝내고 기록을 남겨요.',
-      '시즌을 마치고 클럽 기록 확인하기',
+      sourceMessage('copy.goals.585c8a88bb'),
+      sourceMessage('copy.goals.3001b4d1be'),
+      sourceMessage('copy.goals.66d026b264'),
       // `careerReads.history` counts every archive read, the world's seasons before the owner too.
       w.careerReads ? ownSeasons(w).length : archived.length,
       1,
     ),
     goal(
       'promotion',
-      '더 높은 무대로',
-      '승격을 이루고 새로운 리그에 도전해요.',
-      '승격선을 향해 시즌 준비하기',
+      sourceMessage('copy.goals.957608c5cf'),
+      sourceMessage('copy.goals.27fe78eb70'),
+      sourceMessage('copy.goals.3583e44f21'),
       hasPromotion ? 1 : 0,
       1,
     ),

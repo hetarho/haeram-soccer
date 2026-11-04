@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   CURRENT_ENGINE_VERSION,
@@ -55,7 +56,7 @@ export const earlierRules = (entry: Pick<GameEntry, 'engine'>) =>
     : undefined;
 /** A slot card for an earlier-rules checkpoint the index never listed: nothing of it is decoded. */
 const unreadSummary = (): SlotSummary => ({
-  club: '이전 규칙 커리어',
+  club: sourceMessage('copy.slots.e9a070fc85'),
   country: '',
   division: '',
   date: '',
@@ -144,8 +145,7 @@ export class GameSlots {
     return found;
   }
   private writable() {
-    if (this.client.state.readonly)
-      throw new Error('다른 탭에서 플레이 중이라 이 탭은 읽기 전용이에요.');
+    if (this.client.state.readonly) throw new Error(sourceMessage('copy.slots.6a26f8d2c4'));
   }
   /**
    * Lists the world in play: a world listed under a slot makes that slot active; an unlisted one
@@ -186,15 +186,9 @@ export class GameSlots {
   private async park() {
     const w = this.client.state.view?.world;
     if (!w) return true;
-    if (!this.parked)
-      throw new Error(
-        '이 브라우저는 게임 보관함(IndexedDB)을 지원하지 않아 슬롯을 바꿀 수 없어요.',
-      );
+    if (!this.parked) throw new Error(sourceMessage('copy.slots.9f2337b4c0'));
     const raw = await this.client.checkpoint();
-    if (!raw)
-      throw new Error(
-        this.client.state.error || '현재 게임을 저장하지 못해 슬롯을 바꾸지 않았어요.',
-      );
+    if (!raw) throw new Error(this.client.state.error || sourceMessage('copy.slots.ac2d19aa56'));
     const index = this.sync(w, true);
     await this.parked.put(index.slots[index.active!]!.id, raw);
     return true;
@@ -203,7 +197,7 @@ export class GameSlots {
   async continue(slot: number) {
     const inPlay = this.client.state.view?.world;
     const entry = this.display(inPlay).slots[slot];
-    if (!entry) throw new Error('빈 슬롯이에요.');
+    if (!entry) throw new Error(sourceMessage('copy.slots.7b3241e6b3'));
     const earlier = earlierRules(entry);
     if (earlier)
       throw new Error(isEarlierEngine(earlier) ? earlierRulesMessage(earlier) : NEWER_GAME_MESSAGE);
@@ -212,12 +206,9 @@ export class GameSlots {
       return;
     }
     this.writable();
-    if (!this.parked)
-      throw new Error(
-        '이 브라우저는 게임 보관함(IndexedDB)을 지원하지 않아 슬롯을 바꿀 수 없어요.',
-      );
+    if (!this.parked) throw new Error(sourceMessage('copy.slots.9f2337b4c0'));
     const raw = await this.parked.get(entry.id);
-    if (!raw) throw new Error('이 슬롯의 저장을 찾지 못했어요. 파일 가져오기로 복구하세요.');
+    if (!raw) throw new Error(sourceMessage('copy.slots.148750cdf5'));
     await this.park();
     this.pending = slot;
     if (!(await this.client.switchTo(raw))) {
@@ -225,7 +216,7 @@ export class GameSlots {
       const error = this.client.state.error;
       // The game in play stays what is on disk; a half-finished switch never lingers in memory.
       await this.client.reload();
-      throw new Error(error || '게임을 불러오지 못했어요.');
+      throw new Error(error || sourceMessage('copy.slots.f5da590ae2'));
     }
     this.sync(this.client.state.view?.world, true);
   }

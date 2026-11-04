@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * The page's side of the match lab's workers (→LAB-4): a run's matches split into contiguous slices
  * across up to four workers, merged by match index and summarized by the first worker, so the summary
@@ -332,7 +333,7 @@ export class LabPool {
   /** A worker that errors outside a reply fails the run and whatever waits on it. */
   private crashed(worker: LabWorkerPort) {
     if (!this.workers.includes(worker)) return;
-    this.run?.finish({ status: 'failed', message: '실험 워커가 중단되었습니다' });
+    this.run?.finish({ status: 'failed', message: sourceMessage('copy.pool.d61e7782ad') });
     // Without a run (or when the run's finish left it alive) the pool starts over.
     if (this.workers.includes(worker)) this.dropRunWorkers(this.workers.length);
   }
@@ -346,7 +347,7 @@ export class LabPool {
       w.terminate();
     }
     if (!gone.length) return;
-    const error = new Error('실험 워커가 중단되었습니다');
+    const error = new Error(sourceMessage('copy.pool.d61e7782ad'));
     for (const waiter of this.sideWaiters.values()) waiter.reject(error);
     this.sideWaiters.clear();
     for (const waiter of this.probeWaiters.splice(0)) waiter.reject(error);

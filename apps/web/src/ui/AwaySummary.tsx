@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { dayCountedFrom, seasonDate } from '../../../../packages/engine/src/calendar';
@@ -23,8 +26,19 @@ function resultsSince(w: World, total: number, mark: ClockMark) {
       ours = home ? match.score.home : match.score.away,
       theirs = home ? match.score.away : match.score.home,
       rival = w.clubs.find((club) => club.id === (home ? match.away : match.home))?.name ?? '';
-    const outcome = ours > theirs ? '승' : ours < theirs ? '패' : '무';
-    tally[outcome === '승' ? 'won' : outcome === '패' ? 'lost' : 'drawn']++;
+    const outcome =
+      ours > theirs
+        ? sourceMessage('result.win')
+        : ours < theirs
+          ? sourceMessage('result.loss')
+          : sourceMessage('result.draw');
+    tally[
+      outcome === sourceMessage('result.win')
+        ? 'won'
+        : outcome === sourceMessage('result.loss')
+          ? 'lost'
+          : 'drawn'
+    ]++;
     return { id: match.id, text: `${outcome} ${ours}-${theirs} vs ${rival}` };
   });
   return {
@@ -40,6 +54,7 @@ function resultsSince(w: World, total: number, mark: ClockMark) {
  * played or a week or more passed; shorter runs clear without a card.
  */
 export function AwaySummary({ controller }: { controller: ProgressionController }) {
+  useTextLocale();
   const from = useProgression(controller, (state) => state.away);
   const running = useProgression(controller, (state) => state.running);
   const reason = useProgression(controller, (state) => state.reason);
@@ -58,43 +73,75 @@ export function AwaySummary({ controller }: { controller: ProgressionController 
     format = (value: bigint) => <Money value={value} code={own.country} year={w.year} />,
     newSeason = w.year !== from.year;
   return (
-    <Dialog label="자리를 비운 동안" onClose={() => controller.clearAway()}>
+    <Dialog
+      label={displayMessage('copy.AwaySummary.5cb298a46d')}
+      onClose={() => controller.clearAway()}
+    >
       <p className={s.span}>
-        {from.date} → {seasonDate(w)} · {number(days)}일
+        {richMessage('copy.AwaySummary.faaafd6ff7', {
+          p0: from.date,
+          p1: seasonDate(w),
+          p2: number(days),
+        })}
       </p>
       <ul className={s.facts}>
         <li>
-          <span>경기</span>
+          <span>{richMessage('copy.LabPage.e56314e9a1')}</span>
           <b>
-            {results.total
-              ? `${results.total}경기 · ${results.won}승 ${results.drawn}무 ${results.lost}패${results.counted < results.total ? ` (최근 ${results.counted}경기)` : ''}`
-              : '경기 없음'}
+            {localizeValue(
+              results.total
+                ? sourceMessage('copy.AwaySummary.6e366bcb3d', {
+                    p0: results.total,
+                    p1: results.won,
+                    p2: results.drawn,
+                    p3: results.lost,
+                    p4:
+                      results.counted < results.total
+                        ? sourceMessage('copy.AwaySummary.79c084c72a', { p0: results.counted })
+                        : '',
+                  })
+                : sourceMessage('copy.AwaySummary.0bd25447f8'),
+            )}
           </b>
         </li>
-        {results.latest.map((line) => (
-          <li key={line.id} className={s.result}>
-            {line.text}
-          </li>
-        ))}
+        {localizeValue(
+          results.latest.map((line) => (
+            <li key={line.id} className={s.result}>
+              {localizeValue(line.text)}
+            </li>
+          )),
+        )}
         <li>
-          <span>리그 순위</span>
-          <b>{newSeason ? `새 시즌 ${rank}위` : `${from.rank}위 → ${rank}위`}</b>
+          <span>{richMessage('copy.AwaySummary.a1f8f34457')}</span>
+          <b>
+            {localizeValue(
+              newSeason
+                ? sourceMessage('copy.AwaySummary.6206c84e44', { p0: rank })
+                : sourceMessage('copy.AwaySummary.c28072ce2e', { p0: from.rank, p1: rank }),
+            )}
+          </b>
         </li>
         <li>
-          <span>자금</span>
+          <span>{richMessage('copy.AwaySummary.e397620205')}</span>
           <b className={cash < 0n ? s.down : s.up}>
-            {cash < 0n ? '−' : '+'}
-            {format(cash < 0n ? -cash : cash)}
+            {localizeValue(cash < 0n ? '−' : '+')}
+            {localizeValue(format(cash < 0n ? -cash : cash))}
           </b>
         </li>
         <li>
-          <span>지금</span>
-          <b>{running ? '계속 진행 중' : reason || '멈춤'}</b>
+          <span>{richMessage('copy.AwaySummary.df159f47a8')}</span>
+          <b>
+            {localizeValue(
+              running
+                ? sourceMessage('copy.AwaySummary.9a0477ba21')
+                : reason || sourceMessage('copy.AwaySummary.cf7e66efa3'),
+            )}
+          </b>
         </li>
       </ul>
       <div className={a.actions}>
         <button data-ui="primary" className={a.primary} onClick={() => controller.clearAway()}>
-          확인
+          {richMessage('copy.stories.1aacb54c49')}
         </button>
       </div>
     </Dialog>

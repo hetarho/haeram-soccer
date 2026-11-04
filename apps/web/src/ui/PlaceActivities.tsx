@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -19,11 +21,13 @@ export interface PlaceActivitiesProps {
  * and have no panel of owner choices.
  */
 export function PlaceActivities(props: PlaceActivitiesProps) {
+  useTextLocale();
   const world = props.state.view?.world;
   return world ? <Activities key={world.id} {...props} /> : null;
 }
 
 function Activities({ state, client }: PlaceActivitiesProps) {
+  useTextLocale();
   const w = state.view!.world;
   const model = placeActivities(w);
   const club = clubOf(w);
@@ -72,79 +76,107 @@ function Activities({ state, client }: PlaceActivitiesProps) {
   return (
     <section
       className={s.panel}
-      aria-label="유소년에서 할 일"
+      aria-label={displayMessage('copy.PlaceActivities.7f1a4ad464')}
       data-testid="place-activities-academy"
     >
-      <ul className={s.facts} aria-label="현재 상태">
-        {model.facts.map((fact) => (
-          <li key={fact}>{fact}</li>
-        ))}
+      <ul className={s.facts} aria-label={displayMessage('copy.PlaceActivities.a00fce68f4')}>
+        {localizeValue(model.facts.map((fact) => <li key={fact}>{localizeValue(fact)}</li>))}
       </ul>
-      {reason && <p className={s.note}>{reason}</p>}
+      {localizeValue(reason && <p className={s.note}>{localizeValue(reason)}</p>)}
       <AcademyPanel w={w} client={scoped} onReview={inspect} />
-      {error && (
-        <p role="alert" className={s.note}>
-          {error}
-        </p>
+      {localizeValue(
+        error && (
+          <p role="alert" className={s.note}>
+            {localizeValue(error)}
+          </p>
+        ),
       )}
-      <div className={s.records} aria-label="이 장소의 실제 기록" aria-live="polite">
-        <b>최근 기록</b>
-        {model.records.length ? (
-          model.records.map((event, i) => (
-            <p key={`${event.year}:${event.round}:${event.kind}:${i}`}>
-              <b>
-                {event.year}년 · {event.title}
-              </b>
-              <small>{event.detail}</small>
-              {event.amount !== undefined && (
-                <Money value={event.amount} code={club.country} year={event.year} />
-              )}
-            </p>
-          ))
-        ) : (
-          <p>아직 이 장소의 기록이 없어요.</p>
+      <div
+        className={s.records}
+        aria-label={displayMessage('copy.PlaceActivities.55d95a0110')}
+        aria-live="polite"
+      >
+        <b>{richMessage('copy.PlaceActivities.dec5d6b60c')}</b>
+        {localizeValue(
+          model.records.length ? (
+            model.records.map((event, i) => (
+              <p key={`${event.year}:${event.round}:${event.kind}:${i}`}>
+                <b>
+                  {richMessage('copy.PlaceActivities.9a94b0918b', {
+                    p0: event.year,
+                    p1: event.title,
+                  })}
+                </b>
+                <small>{localizeValue(event.detail)}</small>
+                {localizeValue(
+                  event.amount !== undefined && (
+                    <Money value={event.amount} code={club.country} year={event.year} />
+                  ),
+                )}
+              </p>
+            ))
+          ) : (
+            <p>{richMessage('copy.PlaceActivities.e83dbaaf1c')}</p>
+          ),
         )}
       </div>
-      {inspection && (
-        <Dialog label="유소년 승격·방출 검토" onClose={close}>
-          {reviewed ? (
-            <>
-              <p>
-                {reviewed.player.name} · OVR {reviewed.overall} / POT {reviewed.potential} ·{' '}
-                {reviewed.label}
-              </p>
-              <p>
-                승격: 즉시 1군 합류 · 시장 급여를 지급하는 첫 프로 계약 · 아카데미의 연령별 성장
-                대신 1군 훈련과 출전 경쟁. 선발 출전은 보장되지 않아요.
-              </p>
-              <p>
-                승격 후 연봉{' '}
-                <Money value={reviewed.promotionWage} code={club.country} year={w.year} />
-              </p>
-              <p>
-                현재 {reviewedGroup?.label} 성장 ×{reviewedGroup?.factor} · 승격 후 계약 종료{' '}
-                {w.year + 3}년
-              </p>
-              {reviewed.promotionUnavailable && (
-                <p role="status">승격 불가: {reviewed.promotionUnavailable}</p>
-              )}
-              <p>
-                방출: 즉시 아카데미 자리 확보 · 이 선수의 잠재력과 남은 성장 기회를 포기해요.
-                승격·방출에는 재요청 대기가 없어요.
-              </p>
-              {reason && <p role="status">{reason}</p>}
-              <AcademyPanel w={w} client={scoped} selected={reviewed.player.id} />
-            </>
-          ) : (
-            <p>이미 승격·방출되었거나 현재 아카데미에 없는 선수예요.</p>
-          )}
-          {error && <p role="alert">{error}</p>}
-          <div className={s.actions}>
-            <button type="button" onClick={close}>
-              취소
-            </button>
-          </div>
-        </Dialog>
+      {localizeValue(
+        inspection && (
+          <Dialog label={displayMessage('copy.PlaceActivities.3be03a1cfe')} onClose={close}>
+            {localizeValue(
+              reviewed ? (
+                <>
+                  <p>
+                    {richMessage('copy.PlaceActivities.abc340ed9a', {
+                      p0: reviewed.player.name,
+                      p1: localizeValue(reviewed.overall),
+                      p2: localizeValue(reviewed.potential),
+                      p3: localizeValue(' '),
+                      p4: localizeValue(reviewed.label),
+                    })}
+                  </p>
+                  <p>{richMessage('copy.PlaceActivities.f71085db6c')}</p>
+                  <p>
+                    {richMessage('copy.PlaceActivities.90a1e63e67', {
+                      p0: ' ',
+                      p1: (
+                        <Money value={reviewed.promotionWage} code={club.country} year={w.year} />
+                      ),
+                    })}
+                  </p>
+                  <p>
+                    {richMessage('copy.PlaceActivities.d606de2a3f', {
+                      p0: reviewedGroup?.label,
+                      p1: reviewedGroup?.factor,
+                      p2: ' ',
+                      p3: w.year + 3,
+                    })}
+                  </p>
+                  {localizeValue(
+                    reviewed.promotionUnavailable && (
+                      <p role="status">
+                        {richMessage('copy.PlaceActivities.8069c5688f', {
+                          p0: reviewed.promotionUnavailable,
+                        })}
+                      </p>
+                    ),
+                  )}
+                  <p>{richMessage('copy.PlaceActivities.90eb9a2a49')}</p>
+                  {localizeValue(reason && <p role="status">{localizeValue(reason)}</p>)}
+                  <AcademyPanel w={w} client={scoped} selected={reviewed.player.id} />
+                </>
+              ) : (
+                <p>{richMessage('copy.PlaceActivities.ca9d020216')}</p>
+              ),
+            )}
+            {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+            <div className={s.actions}>
+              <button type="button" onClick={close}>
+                {richMessage('common.cancel')}
+              </button>
+            </div>
+          </Dialog>
+        ),
       )}
     </section>
   );

@@ -1,3 +1,6 @@
+import { richMessage } from '../presentation/LocalizedMessage';
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import type { ReactNode, Ref } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { ClubCrest } from './ClubCrest';
@@ -18,6 +21,7 @@ export function MatchReportCard({
   children: ReactNode;
   ref?: Ref<HTMLElement>;
 }) {
+  useTextLocale();
   const home = fixture.home === w.playerClub;
   const opponent = w.clubs.find((club) => club.id === (home ? fixture.away : fixture.home));
   return (
@@ -25,21 +29,34 @@ export function MatchReportCard({
       ref={ref}
       data-surface="panel"
       className={`${s.card} ${s.matchReport}`}
-      aria-label="이벤트"
+      aria-label={displayMessage('copy.EventCenter.46b289bb0a')}
       data-testid={continuing ? 'resume-match-card' : 'event-card'}
     >
       <header>
-        <span className={s.kind}>{continuing ? 'MATCH · 관전 중' : 'MATCH · 내일 경기'}</span>
+        <span className={s.kind}>
+          {localizeValue(
+            continuing
+              ? sourceMessage('copy.MatchReportCard.6e749ef1ab')
+              : sourceMessage('copy.MatchReportCard.937d98b3d5'),
+          )}
+        </span>
       </header>
       <h3>
-        {opponent && <ClubCrest w={w} id={opponent.id} size={22} />}
-        vs {opponent?.name}
+        {richMessage('copy.MatchReportCard.d8bc1c7304', {
+          p0: localizeValue(opponent && <ClubCrest w={w} id={opponent.id} size={22} />),
+          p1: opponent?.name,
+        })}
       </h3>
       <p>
-        {home ? '홈' : '원정'} · {competitionLabel(w, fixture)} ·{' '}
-        {continuing ? '보던 경기에서 이어서 관전해요.' : '선발과 전술은 스태프가 준비해요.'}
+        {localizeValue(home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'))} ·{' '}
+        {localizeValue(competitionLabel(w, fixture))} ·{localizeValue(' ')}
+        {localizeValue(
+          continuing
+            ? sourceMessage('copy.MatchReportCard.1932b035a7')
+            : sourceMessage('copy.MatchReportCard.8077c4f008'),
+        )}
       </p>
-      {children}
+      {localizeValue(children)}
     </aside>
   );
 }

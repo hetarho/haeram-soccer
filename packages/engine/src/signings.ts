@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { closeNeedFor, openNeeds } from './replacements';
 import { bidCeiling, directorTrait, staffBidShare } from './director-bidding';
 import { SQUAD_TARGET } from './squad-size';
@@ -142,24 +143,35 @@ export function signingVerdict(w: World, player: Player, fee: string) {
     cap = spare > 0n ? scaleBy(spare.toString(), stance.signing.feeShare, 100n) : '0';
   const no = (reason: string) => ({
     ok: false as const,
-    reason: `${reason}(재정 기조 ${finance})`,
+    reason: sourceMessage('copy.signings.1ed3f9250d', { p0: reason, p1: finance }),
   });
   if (!wageWithinLimit(w, 'recruitment', player.wage))
     return no(
-      `요구 연봉 ${moneyLabel(w, player.wage)}이 선수 영입의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'recruitment')!)}을 넘어요`,
+      sourceMessage('copy.signings.ef4cd4ff44', {
+        p0: moneyLabel(w, player.wage),
+        p1: moneyLabel(w, annualWageLimit(w, 'recruitment')!),
+      }),
     );
   if (spare < BigInt(fee))
-    return no(`이적료를 내면 운영자금이 ${stance.runway}라운드 운영비에 못 미쳐요`);
+    return no(sourceMessage('copy.signings.a436f357d9', { p0: stance.runway }));
   if (BigInt(fee) > BigInt(cap))
     return no(
-      `이적료 ${moneyLabel(w, fee)}가 여유 자금의 ${Math.round(stance.signing.feeShare * 100)}%(${moneyLabel(w, cap)})를 넘어요`,
+      sourceMessage('copy.signings.228afae599', {
+        p0: moneyLabel(w, fee),
+        p1: Math.round(stance.signing.feeShare * 100),
+        p2: moneyLabel(w, cap),
+      }),
     );
   const bill = BigInt(wageBill(w)) + BigInt(player.wage),
     revenue = recentRevenue(w),
     share = Math.round(stance.wageShare * 100);
   if (bill * 100n > BigInt(revenue) * BigInt(share))
     return no(
-      `연봉을 더하면 연간 인건비 ${moneyLabel(w, bill.toString())}가 최근 12개월 수입 ${moneyLabel(w, revenue)}의 ${share}%를 넘어요`,
+      sourceMessage('copy.signings.ae8b1bfd1d', {
+        p0: moneyLabel(w, bill.toString()),
+        p1: moneyLabel(w, revenue),
+        p2: share,
+      }),
     );
   const cash = w.cash;
   w.players.push(player);
@@ -173,32 +185,58 @@ export function signingVerdict(w: World, player: Player, fee: string) {
   }
   if (BigInt(seasonEnd) < runway)
     return no(
-      `시즌 말 자금 전망(낮게 잡아 ${moneyLabel(w, seasonEnd)})이 ${stance.runway}라운드 운영비에 못 미쳐요`,
+      sourceMessage('copy.signings.d4c4571f86', {
+        p0: moneyLabel(w, seasonEnd),
+        p1: stance.runway,
+      }),
     );
   return {
     ok: true as const,
-    reason: `이적료는 여유 자금의 ${Math.round(stance.signing.feeShare * 100)}% 안, 인건비는 수입의 ${share}% 안(재정 기조 ${finance})`,
+    reason: sourceMessage('copy.signings.56746fd995', {
+      p0: Math.round(stance.signing.feeShare * 100),
+      p1: share,
+      p2: finance,
+    }),
   };
 }
 
 /** The need in words, with the row behind it and the manager's request when it is one. */
 export function needLine(w: World, need: SigningNeed) {
-  const asked = need.requested ? `감독 요청 ${requestLabel(need.requested)} · ` : '';
-  if (need.kind === 'replacement') return `대체 영입 필요 · ${LINE_NAME[need.line]}`;
+  const asked = need.requested
+    ? sourceMessage('copy.signings.9a09ea9254', { p0: requestLabel(need.requested) })
+    : '';
+  if (need.kind === 'replacement')
+    return sourceMessage('copy.signings.bf13cbb429', { p0: LINE_NAME[need.line] });
   if (need.kind === 'short')
     return (
       asked +
       (need.count < need.minimum
-        ? `${LINE_NAME[need.line]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
-        : `선수단이 ${need.squad}명뿐이라 ${SIGNING_CONFIG.squadMinimum}명을 채워요`)
+        ? sourceMessage('copy.signings.19d3170548', {
+            p0: LINE_NAME[need.line],
+            p1: need.count,
+            p2: need.minimum,
+          })
+        : sourceMessage('copy.signings.a884ab54f9', {
+            p0: need.squad,
+            p1: SIGNING_CONFIG.squadMinimum,
+          }))
     );
-  return `${asked}${POSITION_LABEL[need.position]} 자리 주전 ${need.starter.name}(그 자리 OVR ${Math.round(need.level)})보다 그 자리에서 ${need.margin} 이상 나은 선수를 찾아요(재정 기조 ${financeOption(w, 'recruitment').name})`;
+  return sourceMessage('copy.signings.c997ed1cf6', {
+    p0: asked,
+    p1: POSITION_LABEL[need.position],
+    p2: need.starter.name,
+    p3: Math.round(need.level),
+    p4: need.margin,
+    p5: financeOption(w, 'recruitment').name,
+  });
 }
 /** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
 const pickNote = (need: SigningNeed, player: Player) =>
-  need.requested?.pick === player.id ? ' · 감독이 고른 선수' : '';
+  need.requested?.pick === player.id ? sourceMessage('copy.signings.12b34e9f78') : '';
 const recruitmentLine = (w: World) =>
-  `영입 기조 ${POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name}`;
+  sourceMessage('copy.signings.3c1f7d75ad', {
+    p0: POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name,
+  });
 
 /** Free agents first, then by ability, potential and id. */
 const byCandidate = (a: Offer, b: Offer) =>
@@ -443,8 +481,12 @@ export function judgeRequests(w: World) {
   m.trust = clamp(m.trust - SIGNING_CONFIG.unmetTrust);
   pushInbox(w, {
     kind: 'staff-report',
-    title: `${m.name} 감독의 영입 요청이 채워지지 않았어요`,
-    detail: `이적시장이 열릴 때 요청한 ${window.requests.map(requestLabel).join('·')}에 맞는 선수가 아무도 오지 않았어요 · 감독 신뢰 −${SIGNING_CONFIG.unmetTrust}(지금 ${m.trust})`,
+    title: sourceMessage('copy.signings.ab7622ed62', { p0: m.name }),
+    detail: sourceMessage('copy.signings.53e0647ca7', {
+      p0: window.requests.map(requestLabel).join('·'),
+      p1: SIGNING_CONFIG.unmetTrust,
+      p2: m.trust,
+    }),
     attention: false,
   });
 }
@@ -501,18 +543,28 @@ function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: 
   addEvent(
     w,
     'transfer-in',
-    `${p.name} 영입`,
-    `${p.position} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 단장 영입`,
+    sourceMessage('copy.ClubStaff.2d43ec39f3', { p0: p.name }),
+    sourceMessage('copy.signings.2856924462', {
+      p0: p.position,
+      p1: w.year - p.born,
+      p2: moneyLabel(w, p.wage),
+      p3: p.until,
+    }),
     '0',
   );
   pushInbox(w, {
     kind: 'staff-report',
-    title: `단장 영입 · 자유계약 ${p.name}`,
-    detail:
-      `${needLine(w, need)}${pickNote(need, offer.player)} · ${p.position} · ${w.year - p.born}세 · OVR ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · ${recruitmentLine(w)} · ${why}`.slice(
-        0,
-        400,
-      ),
+    title: sourceMessage('copy.signings.ce393e327b', { p0: p.name }),
+    detail: sourceMessage('copy.signings.b30a33d536', {
+      p0: needLine(w, need),
+      p1: pickNote(need, offer.player),
+      p2: p.position,
+      p3: w.year - p.born,
+      p4: overall(p),
+      p5: moneyLabel(w, p.wage),
+      p6: recruitmentLine(w),
+      p7: why,
+    }).slice(0, 400),
     attention: false,
   });
 }
@@ -569,8 +621,11 @@ export function staffSignings(w: World) {
         placeBid(w, index, fee, false, retry.staff);
         pushInbox(w, {
           kind: 'staff-report',
-          title: `단장 흥정 · ${offer.player.name}`,
-          detail: `요구액의 ${staffBidShare(w, previous)}% · ${verdict.reason}`,
+          title: sourceMessage('copy.signings.6773850ac5', { p0: offer.player.name }),
+          detail: sourceMessage('copy.signings.2bce8a2d24', {
+            p0: staffBidShare(w, previous),
+            p1: verdict.reason,
+          }),
           attention: false,
         });
         return;
@@ -578,7 +633,7 @@ export function staffSignings(w: World) {
       retry.status = 'expired';
       pushInbox(w, {
         kind: 'staff-report',
-        title: `단장 흥정 종료 · ${offer.player.name}`,
+        title: sourceMessage('copy.signings.e773f7135a', { p0: offer.player.name }),
         detail: room ?? verdict.reason,
         attention: false,
       });
@@ -635,12 +690,19 @@ export function staffSignings(w: World) {
         const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
         pushInbox(w, {
           kind: 'staff-report',
-          title: `단장 영입 제안 · ${offer.player.name}`,
-          detail:
-            `${needLine(w, need)}${pickNote(need, offer.player)} · ${offer.player.position} · ${w.year - offer.player.born}세 · OVR ${overall(offer.player)} · 제안 ${moneyLabel(w, fee)} · ${staffBidShare(w)}% (요구액 ${moneyLabel(w, offer.fee)}) · ${recruitmentLine(w)} · ${verdict.reason}`.slice(
-              0,
-              400,
-            ),
+          title: sourceMessage('copy.signings.0e14ee5884', { p0: offer.player.name }),
+          detail: sourceMessage('copy.signings.8ca7bd666f', {
+            p0: needLine(w, need),
+            p1: pickNote(need, offer.player),
+            p2: offer.player.position,
+            p3: w.year - offer.player.born,
+            p4: overall(offer.player),
+            p5: moneyLabel(w, fee),
+            p6: staffBidShare(w),
+            p7: moneyLabel(w, offer.fee),
+            p8: recruitmentLine(w),
+            p9: verdict.reason,
+          }).slice(0, 400),
           attention: false,
           ref: bid.id,
         });
@@ -657,8 +719,7 @@ export function pursueRequest(
   actor: 'owner' | 'delegated',
 ) {
   const picked = requestCandidates(w, request).find(({ offer }) => offer.player.id === person);
-  if (!picked || !transferWindow(w).open)
-    return '현재 후보·이적시장·선수단 조건으로 진행할 수 없어요.';
+  if (!picked || !transferWindow(w).open) return sourceMessage('copy.signings.b38bc71204');
   const day = currentDay(w),
     { offer, index } = picked;
   const room = registrationRoom(w, { ...offer.player, joined: w.year });
@@ -673,7 +734,7 @@ export function pursueRequest(
       (day - windowOpening(w, day)) % SIGNING_CONFIG.lookDays !== 0 ||
       windowBids(w, day).some((b) => b.staff && (isOpen(b) || b.day === day))
     )
-      return '이번 주 영입 검토 또는 진행 중인 협상을 먼저 마쳐야 해요.';
+      return sourceMessage('copy.signings.475daa54a3');
     const verdict = signingVerdict(w, offer.player, fee);
     if (!verdict.ok) return verdict.reason;
     if (offer.freeAgent) {
@@ -701,7 +762,7 @@ export function pursueRequest(
       directorSignsFreeAgent(w, offer, need, verdict.reason);
     } else placeBid(w, index, fee, false, request.kind);
   } else {
-    if (BigInt(w.cash) < BigInt(fee)) return '보유 자금이 부족해요.';
+    if (BigInt(w.cash) < BigInt(fee)) return sourceMessage('copy.signings.e890653f5c');
     if (offer.freeAgent) squadCommand(w, { type: 'recruit', candidate: index });
     else placeBid(w, index, fee);
   }

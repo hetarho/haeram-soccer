@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { MANAGER_GONE } from './staff-info';
 export { MANAGER_GONE } from './staff-info';
 import { cancelPromises } from './promises';
@@ -70,8 +71,8 @@ export function managerPayoff(w: World) {
 }
 function termRefusal(m: Pick<Manager, 'style'>) {
   return managerTerm(m) === 1
-    ? '소방수 감독은 1시즌만 계약합니다.'
-    : '감독과는 70세가 되는 시즌까지만 계약할 수 있습니다.';
+    ? sourceMessage('copy.ops_staff.4517d9bc89')
+    : sourceMessage('copy.ops_staff.8d560369b3');
 }
 /**
  * Terms for keeping the manager `term` more seasons (one when absent): the going wage, quote(120 +
@@ -91,7 +92,7 @@ export function managerRenewal(w: World, term?: ContractTerm) {
 export function renewManager(w: World, term?: ContractTerm, delegated = false) {
   checkTerm(term);
   const terms = managerRenewal(w, term);
-  if (!terms) throw new Error('재계약할 수 있는 감독이 아닙니다.');
+  if (!terms) throw new Error(sourceMessage('copy.ops_staff.2628bc7495'));
   if (term !== undefined && term > terms.limit) throw new Error(termRefusal(w.manager));
   debit(w, terms.fee, delegated);
   w.manager = withTerm(
@@ -102,8 +103,11 @@ export function renewManager(w: World, term?: ContractTerm, delegated = false) {
   addEvent(
     w,
     'manager-renew',
-    '감독 재계약',
-    `${w.manager.name} 재계약 · ${contractSeason(terms.until)} 시즌 끝까지`,
+    sourceMessage('copy.finance.ddb2236cce'),
+    sourceMessage('copy.ops_staff.2098553516', {
+      p0: w.manager.name,
+      p1: contractSeason(terms.until),
+    }),
     terms.fee,
   );
   return terms;
@@ -176,20 +180,36 @@ export function appointDelegatedManager(w: World) {
   addEvent(
     w,
     'manager-hire',
-    `${manager.name} 감독 선임`,
-    `${club ? `${club}에서 영입 · ` : ''}${school} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${ends} 시즌 끝까지 · 단장 선임`,
+    sourceMessage('copy.ops_staff.ba7d8bb916', { p0: manager.name }),
+    sourceMessage('copy.ops_staff.6f85fa9bf8', {
+      p0: club ? sourceMessage('copy.ops_staff.bd24ddbe15', { p0: club }) : '',
+      p1: school,
+      p2: tacticLabel[manager.philosophy],
+      p3: traitNote(manager),
+      p4: ends,
+    }),
     cost,
   );
   pushInbox(w, {
     kind: 'staff-report',
-    title: `${school} ${manager.name} 감독 선임`,
+    title: sourceMessage('copy.ops_staff.5e6e13d3ea', { p0: school, p1: manager.name }),
     detail: [
-      `${match ? '단장이 선호 학파와 감독 기조에 맞는' : '선호 학파와 감독 기조에 맞는 감독이 없어 단장이 가장 나은'} ${club ? `${club} 감독을 웃돈을 주고` : '자유계약 감독을'} ${term}시즌 계약했어요`,
+      sourceMessage('copy.ops_staff.ad9572163a', {
+        p0: match
+          ? sourceMessage('copy.ops_staff.12466ea4e6')
+          : sourceMessage('copy.ops_staff.3630736524'),
+        p1: club
+          ? sourceMessage('copy.ops_staff.0188f795bb', { p0: club })
+          : sourceMessage('copy.ops_staff.f32e03025e'),
+        p2: term,
+      }),
       `OVR ${manager.ability}`,
-      `연봉 ${moneyLabel(w, manager.wage)}`,
-      `계약금 ${moneyLabel(w, pick.fee)}`,
-      ...(pick.compensation ? [`웃돈 ${moneyLabel(w, pick.compensation)}`] : []),
-      `${ends} 시즌 끝까지`,
+      sourceMessage('copy.ScoutShortlist.572ddadbfc', { p0: moneyLabel(w, manager.wage) }),
+      sourceMessage('copy.ops_staff.612034e799', { p0: moneyLabel(w, pick.fee) }),
+      ...(pick.compensation
+        ? [sourceMessage('copy.ops_staff.1024b0eddb', { p0: moneyLabel(w, pick.compensation) })]
+        : []),
+      sourceMessage('copy.ops_staff.feb2376490', { p0: ends }),
       directionLine(w, 'school'),
       directionLine(w, 'manager'),
     ]
@@ -205,12 +225,12 @@ function reportManagerWait(w: World) {
   if (w.inbox?.some((item) => item.ref === interim)) return;
   pushInbox(w, {
     kind: 'staff-report',
-    title: '감독 선임 대기: 감독 기조에 맞는 감독이 없어요',
+    title: sourceMessage('copy.ops_staff.d87a7829d1'),
     detail: [
       managerSearchReason(w),
       directionLine(w, 'school'),
       directionLine(w, 'manager'),
-      '임시 감독 체제로 계속해요',
+      sourceMessage('copy.ops_staff.8901240968'),
     ]
       .join(' · ')
       .slice(0, 400),
@@ -234,7 +254,7 @@ function resign(w: World, reason: string, departure: ManagerDeparture) {
   addEvent(
     w,
     'manager-departure',
-    `${old.name} 감독의 마지막 날`,
+    sourceMessage('copy.ops_staff.1ef8ab17e1', { p0: old.name }),
     `${old.since}–${w.year} · ${reason}`,
   );
   // Counting this departure keeps two caretakers on the same day apart.
@@ -268,7 +288,7 @@ function resign(w: World, reason: string, departure: ManagerDeparture) {
  * league round, with `chance`, or `zeroChance` at trust 0.
  */
 export const TRUST_FLOOR_CONFIG = { warn: 10, chance: 0.1, zeroChance: 0.25 } as const;
-const TRUST_COLLAPSE = '구단주와의 신뢰가 무너져 사임했습니다.';
+const TRUST_COLLAPSE = sourceMessage('copy.ops_staff.1caf0d4a92');
 
 /**
  * Once per settled league round (→STAFF-47): the first round a manager is at the floor warns the
@@ -288,15 +308,15 @@ export function settleManagerTrust(w: World) {
     addEvent(
       w,
       'manager-trust-warning',
-      `${m.name} 감독, 사임 고민`,
-      `구단주 신뢰 ${m.trust} · 관계가 바닥까지 내려앉았어요`,
+      sourceMessage('copy.ops_staff.816e053b3e', { p0: m.name }),
+      sourceMessage('copy.ops_staff.787bae4090', { p0: m.trust }),
     );
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${m.name} 감독이 사임을 고민하고 있어요`,
+      title: sourceMessage('copy.ops_staff.9969ee0134', { p0: m.name }),
       detail: [
-        `구단주와의 신뢰가 ${m.trust}까지 떨어졌어요`,
-        '이대로면 어느 라운드에든 사임할 수 있어요',
+        sourceMessage('copy.ops_staff.649ed6929c', { p0: m.trust }),
+        sourceMessage('copy.ops_staff.997b4d159b'),
       ].join(' · '),
       attention: true,
       ref: m.id,
@@ -324,8 +344,19 @@ export function yearlyStaff(w: World) {
       addEvent(
         w,
         'manager-growth',
-        `${m.name} 감독 ${next.ability > m.ability ? '성장' : '노쇠'}`,
-        `${age}세 · 지도력 ${m.ability} → ${next.ability} · 잠재력 ${next.potential}`,
+        sourceMessage('copy.ops_staff.f6683ec2e5', {
+          p0: m.name,
+          p1:
+            next.ability > m.ability
+              ? sourceMessage('team.column.growth')
+              : sourceMessage('copy.ops_staff.ce2cc8c95a'),
+        }),
+        sourceMessage('copy.ops_staff.b46b52928a', {
+          p0: age,
+          p1: m.ability,
+          p2: next.ability,
+          p3: next.potential,
+        }),
       );
     m.ability = next.ability;
     m.potential = next.potential;
@@ -338,14 +369,14 @@ export function yearlyStaff(w: World) {
     !m.interim &&
     (age !== undefined ? age >= MANAGER_CAREER.retire : m.since + 25 <= w.year)
   )
-    resign(w, '긴 지도자 생활을 마치고 은퇴했습니다.', 'retired');
+    resign(w, sourceMessage('copy.ops_staff.91648c3b7d'), 'retired');
   // No manager renews himself (→STAFF-14): an unrenewed contract ends at the close.
   else if (m.until <= w.year && !m.interim)
     resign(
       w,
       managerTerm(m) === 1
-        ? '시즌 종료까지의 단기 계약을 마치고 떠났습니다.'
-        : '재계약 없이 계약 기간을 마치고 떠났습니다.',
+        ? sourceMessage('copy.ops_staff.dd7292cb64')
+        : sourceMessage('copy.ops_staff.0e3349a2cf'),
       'expired',
     );
 }
@@ -368,7 +399,7 @@ export function staffCommand(w: World, cmd: StaffCommand) {
     case 'hire': {
       checkTerm(cmd.term);
       const candidate = managerCandidates(w).find((offer) => offer.id === cmd.id);
-      if (!candidate) throw new Error('지금 선임할 수 없는 감독입니다.');
+      if (!candidate) throw new Error(sourceMessage('copy.ops_staff.633b8b7f0b'));
       const limit = managerTermLimit(candidate, w.year);
       if (limit < 1 || (cmd.term !== undefined && cmd.term > limit))
         throw new Error(termRefusal(candidate));
@@ -379,16 +410,22 @@ export function staffCommand(w: World, cmd: StaffCommand) {
       addEvent(
         w,
         'manager-departure',
-        `${w.manager.name} 감독 교체`,
-        `${w.manager.since}–${w.year} · 구단의 선택`,
+        sourceMessage('copy.ops_staff.2d935a0dbe', { p0: w.manager.name }),
+        sourceMessage('copy.ops_staff.78180d8343', { p0: w.manager.since, p1: w.year }),
       );
       const manager = installManager(w, candidate, term, cmd.term);
       const club = candidate.club ? w.clubs.find((c) => c.id === candidate.club)?.name : undefined;
       addEvent(
         w,
         'manager-hire',
-        `${manager.name} 감독 선임`,
-        `${club ? `${club}에서 영입 · ` : ''}${STYLE_INFO[manager.style].label} · ${tacticLabel[manager.philosophy]}${traitNote(manager)} · 계약 ${contractSeason(w.year + term)} 시즌 끝까지`,
+        sourceMessage('copy.ops_staff.ba7d8bb916', { p0: manager.name }),
+        sourceMessage('copy.ops_staff.c29f9e7d96', {
+          p0: club ? sourceMessage('copy.ops_staff.bd24ddbe15', { p0: club }) : '',
+          p1: STYLE_INFO[manager.style].label,
+          p2: tacticLabel[manager.philosophy],
+          p3: traitNote(manager),
+          p4: contractSeason(w.year + term),
+        }),
         fee.toString(),
       );
       break;

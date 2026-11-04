@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * Every number of the owner and the takeover (→OWNER, ECON-36–38, CLUB-1) as named settings, the
  * SSOT's values. Engine and UI code read them by name, never as literals; T668's measurement retunes
@@ -22,32 +23,48 @@ export const OWNER_TIERS: Record<
   WealthTier,
   { label: string; multiple: number; band: readonly [from: number, to: number] }
 > = {
-  oil: { label: '석유 재벌', multiple: 10, band: [0, 0.08] },
-  chaebol: { label: '재벌 총수', multiple: 1.6, band: [0.08, 0.2] },
-  industrial: { label: '산업 자본가', multiple: 1.6, band: [0.2, 0.35] },
-  midsize: { label: '중견 사업가', multiple: 1.6, band: [0.35, 0.55] },
-  local: { label: '지역 유지', multiple: 1.6, band: [0.55, 0.8] },
-  selfmade: { label: '자수성가 축구팬', multiple: 1.6, band: [0.8, 1] },
+  oil: { label: sourceMessage('copy.owner_config.ca5be75a15'), multiple: 10, band: [0, 0.08] },
+  chaebol: {
+    label: sourceMessage('copy.owner_config.043b0936f2'),
+    multiple: 1.6,
+    band: [0.08, 0.2],
+  },
+  industrial: {
+    label: sourceMessage('copy.owner_config.5726199b80'),
+    multiple: 1.6,
+    band: [0.2, 0.35],
+  },
+  midsize: {
+    label: sourceMessage('copy.owner_config.10365bc4b0'),
+    multiple: 1.6,
+    band: [0.35, 0.55],
+  },
+  local: { label: sourceMessage('copy.owner_config.49e9b299ef'), multiple: 1.6, band: [0.55, 0.8] },
+  selfmade: { label: sourceMessage('copy.owner_config.225d3ff947'), multiple: 1.6, band: [0.8, 1] },
 };
 
 /** The eight traits' effects (→OWNER-5), each read only while the owner holds the trait. */
 export const OWNER_TRAITS = {
   /** 성공한 사업가: a business settlement succeeds with this chance instead of `OWNER_BUSINESS.chance`. */
-  businessman: { label: '성공한 사업가', success: 0.6 },
+  businessman: { label: sourceMessage('copy.owner_config.1616a30dd9'), success: 0.6 },
   /** 승리의 부적: the own club's match strength, on the OVR scale (→OWNER-6). */
-  talisman: { label: '승리의 부적', strength: 1 },
+  talisman: { label: sourceMessage('copy.owner_config.20ed096d80'), strength: 1 },
   /** 협상의 달인: factors on player wage demands and asked transfer fees for the own club. */
-  negotiator: { label: '협상의 달인', wages: 0.9, fees: 0.9 },
+  negotiator: { label: sourceMessage('copy.owner_config.6155e88d8d'), wages: 0.9, fees: 0.9 },
   /** 팬들의 친구: the factor on every 팬 민심 drop; rises are not scaled (→OWNER-12). */
-  fansFriend: { label: '팬들의 친구', drop: 0.7 },
+  fansFriend: { label: sourceMessage('copy.owner_config.5a6ef5eba3'), drop: 0.7 },
   /** 마당발: manager and coach candidate lists hold more candidates, each this much abler. */
-  networker: { label: '마당발', candidates: 1, ability: 5 },
+  networker: { label: sourceMessage('copy.owner_config.26ee39d7d7'), candidates: 1, ability: 5 },
   /** 원석 감별사: academy intake potential, and the factor on other clubs' players' scouting ranges. */
-  talentSpotter: { label: '원석 감별사', potential: 3, scoutRange: 0.5 },
+  talentSpotter: {
+    label: sourceMessage('copy.owner_config.d32282912e'),
+    potential: 3,
+    scoutRange: 0.5,
+  },
   /** 마케팅 귀재: the factor on sponsor offers (→ECON-8). */
-  marketer: { label: '마케팅 귀재', sponsor: 1.15 },
+  marketer: { label: sourceMessage('copy.owner_config.c2061fc364'), sponsor: 1.15 },
   /** 정치력: the factor on operating expenses (→ECON-30). */
-  politician: { label: '정치력', operating: 0.9 },
+  politician: { label: sourceMessage('copy.owner_config.cd5c9a46c5'), operating: 0.9 },
 } as const satisfies Record<OwnerTrait, { label: string; [effect: string]: string | number }>;
 
 /**

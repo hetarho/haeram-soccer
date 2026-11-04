@@ -1,14 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { ATTRIBUTES, type Position } from '../../../../packages/contracts/src/player';
 import type { Manager, Player, Staff, World } from '../../../../packages/contracts/src/types';
-import {
-  academyRows,
-  COACH_POSTS,
-  coachRows,
-  firstTeamRows,
-  listCoaches,
-  listPlayers,
-} from './teamRows';
+import { academyRows, coachRows, firstTeamRows, listCoaches, listPlayers } from './teamRows';
+import { CLUB_POSTS as COACH_POSTS } from '../../../../packages/engine/src/staff-info';
 
 /** Synthetic people only: no engine world, catalog or progression. */
 function player(id: string, name: string, position: Position, extra: Partial<Player> = {}) {

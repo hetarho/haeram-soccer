@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { World } from '../../../../packages/contracts/src/types';
 import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { currentDay, seasonDayLabel, seasonDayOf } from '../../../../packages/engine/src/calendar';
@@ -12,15 +13,24 @@ import { placeAcademy, youthCall } from './teamState';
 export function placeActivities(w: World) {
   const academy = placeAcademy(w);
   const facts = [
-    `유소년 ${academy.players.length}/${academy.capacity}명 · 1군 자리 ${academy.room.total}개`,
-    ...academy.groups.map(
-      (group) => `${group.label} ${group.players.length}명 · 성장 ×${group.factor}`,
+    sourceMessage('copy.placeActivityChoices.639fc9ce8e', {
+      p0: academy.players.length,
+      p1: academy.capacity,
+      p2: academy.room.total,
+    }),
+    ...academy.groups.map((group) =>
+      sourceMessage('copy.placeActivityChoices.1fe30589d5', {
+        p0: group.label,
+        p1: group.players.length,
+        p2: group.factor,
+      }),
     ),
-    `다음 입단 ${
-      academy.intakeDone || currentDay(w) > academy.intakeDay
-        ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
-        : seasonDayLabel(w.year, academy.intakeDay)
-    }`,
+    sourceMessage('copy.placeActivityChoices.fffce0d1b4', {
+      p0:
+        academy.intakeDone || currentDay(w) > academy.intakeDay
+          ? seasonDayLabel(w.year + 1, seasonDayOf(w.year + 1, 3, 15))
+          : seasonDayLabel(w.year, academy.intakeDay),
+    }),
     youthCall(w),
   ];
   const records = w.events
@@ -33,15 +43,16 @@ export function placeActivities(w: World) {
 /** One lock with the shared client guard, plus critical and replaced/stale preview protections. */
 export function activityUnavailable(state: ClientState, expected: Pick<World, 'id' | 'revision'>) {
   const w = state.view?.world;
-  if (!w || w.id !== expected.id) return '다른 게임으로 바뀌었어요. 현재 장소를 다시 열어 주세요.';
-  if (w.revision !== expected.revision) return '조건이 바뀌었어요. 최신 내용을 다시 확인해 주세요.';
-  if (careerEnded(w) || w.critical) return '진행을 막는 구단 상황을 먼저 확인해 주세요.';
+  if (!w || w.id !== expected.id) return sourceMessage('copy.placeActivityChoices.72e94ab565');
+  if (w.revision !== expected.revision)
+    return sourceMessage('copy.placeActivityChoices.28162087be');
+  if (careerEnded(w) || w.critical) return sourceMessage('copy.ownerFigures.37b69c4bc8');
   if (!gameActionsBlocked(state)) return undefined;
-  if (state.readonly) return '읽기 전용 탭에서는 요청할 수 없어요.';
+  if (state.readonly) return sourceMessage('copy.placeActivityChoices.8dd5f8bdad');
   if (state.clockRunning || state.processing)
-    return '달력 진행과 처리가 모두 멈춘 뒤 요청할 수 있어요.';
+    return sourceMessage('copy.placeActivityChoices.3297b53108');
   if (state.error) return state.error;
-  return '다른 요청을 처리하고 있어요.';
+  return sourceMessage('copy.placeActivityChoices.0e30e6b37b');
 }
 
 /** Reuse existing command/form implementations while keeping this inspection in its own world. */
@@ -66,7 +77,7 @@ export function placeActivityClient(
     try {
       const reply = await client.command(body, options);
       if (!isCurrent()) return;
-      if (!reply?.ok) failed(reply?.error || '처리하지 못했어요. 다시 시도해 주세요.');
+      if (!reply?.ok) failed(reply?.error || sourceMessage('copy.approvalClient.7aaf1ef9de'));
       return reply;
     } catch (error) {
       if (isCurrent()) failed(error instanceof Error ? error.message : String(error));

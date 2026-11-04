@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /** `playGrid`: a whole match, touch by touch (→MATCH-1, MATCH-3, MATCH-7, MATCH-11). */
 import type { MatchRecord, Score } from '../../../contracts/src/types';
 import {
@@ -1196,8 +1197,10 @@ export function playGrid(setup: GridSetup): GridResult {
     finished.highlights.push({
       minute: 120,
       side,
-      player: '승부차기',
-      action: `승부차기 ${side === 0 ? '홈' : '원정'} 승리`,
+      player: sourceMessage('copy.headToHead.16fa957ea6'),
+      action: sourceMessage('copy.match.35ef500e6b', {
+        p0: side === 0 ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+      }),
     });
   }
   const record: MatchRecord = {

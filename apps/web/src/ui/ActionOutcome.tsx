@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { Command, World } from '../../../../packages/contracts/src/types';
@@ -21,6 +23,7 @@ const VISIBLE_MS = 8000;
  * every dialog has closed. Each keeps its own before/after, because the clock may run between them.
  */
 export function ActionOutcome() {
+  useTextLocale();
   const page = useNavigation((state) => state.page);
   const element = useRef<HTMLElement | null>(null);
   const attach = useCallback((node: HTMLElement | null) => {
@@ -118,7 +121,7 @@ export function ActionOutcome() {
       className={s.outcome}
       role="status"
       aria-live="polite"
-      aria-label="방금 한 결정의 결과"
+      aria-label={displayMessage('copy.ActionOutcome.3539c4ca1a')}
       data-testid="action-outcome"
       onPointerEnter={() => window.clearTimeout(timer.current)}
     >
@@ -126,37 +129,51 @@ export function ActionOutcome() {
         <i aria-hidden="true">
           <PixelIcon name="check" size={16} />
         </i>
-        <b>{outcome.title}</b>
-        <button onClick={() => setBatch(undefined)}>확인</button>
+        <b>{localizeValue(outcome.title)}</b>
+        <button onClick={() => setBatch(undefined)}>
+          {richMessage('copy.stories.1aacb54c49')}
+        </button>
       </header>
-      {outcome.changes.length > 0 && (
-        <ul>
-          {outcome.changes.slice(0, 5).map((change) => (
-            <li key={change.label}>
-              <span>{change.label}</span>
-              <b className={change.trend ? s[change.trend] : undefined}>
-                {change.previous && (
-                  <>
-                    <del>{change.previous}</del> →{' '}
-                  </>
-                )}
-                {change.value}
-              </b>
-            </li>
-          ))}
-        </ul>
+      {localizeValue(
+        outcome.changes.length > 0 && (
+          <ul>
+            {localizeValue(
+              outcome.changes.slice(0, 5).map((change) => (
+                <li key={change.label}>
+                  <span>{localizeValue(change.label)}</span>
+                  <b className={change.trend ? s[change.trend] : undefined}>
+                    {localizeValue(
+                      change.previous && (
+                        <>
+                          <del>{localizeValue(change.previous)}</del> →{localizeValue(' ')}
+                        </>
+                      ),
+                    )}
+                    {localizeValue(change.value)}
+                  </b>
+                </li>
+              )),
+            )}
+          </ul>
+        ),
       )}
-      {outcome.events.slice(0, 2).map((event, i) => (
-        <p key={i}>
-          <b>{event.title}</b> {event.detail}
-        </p>
-      ))}
-      {outcome.note && <small>{outcome.note}</small>}
-      {earlier.length > 0 && (
-        <p className={s.earlier}>
-          함께 반영한 결정 ·{' '}
-          {earlier.map((entry) => entry.title.replace(/했어요$|바꿨어요$/, '')).join(', ')}
-        </p>
+      {localizeValue(
+        outcome.events.slice(0, 2).map((event, i) => (
+          <p key={i}>
+            <b>{localizeValue(event.title)}</b> {localizeValue(event.detail)}
+          </p>
+        )),
+      )}
+      {localizeValue(outcome.note && <small>{localizeValue(outcome.note)}</small>)}
+      {localizeValue(
+        earlier.length > 0 && (
+          <p className={s.earlier}>
+            {richMessage('copy.ActionOutcome.7a98b5bba1', {
+              p0: ' ',
+              p1: earlier.map((entry) => entry.title.replace(/했어요$|바꿨어요$/, '')).join(', '),
+            })}
+          </p>
+        ),
       )}
     </aside>,
     document.body,

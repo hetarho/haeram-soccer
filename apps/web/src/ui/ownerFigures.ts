@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * What the 구단주 sheet, the crisis statuses and the game-over page read (→WEB-114, WEB-56,
  * OWNER-7–16): pure views over the world and the owner's named settings. Every rule number comes
@@ -332,7 +333,18 @@ export function fanMovers(w: World): FanMover[] {
     const change = felt(owner, FAN_MOOD.result[result]);
     const rival = w.clubs.find((club) => club.id === (home ? match.away : match.home));
     movers.push({
-      label: `리그 ${match.round}라운드 ${rival?.name ?? ''} ${gf}:${ga} ${result === 'win' ? '승리' : result === 'defeat' ? '패배' : '무승부'}`,
+      label: sourceMessage('copy.ownerFigures.ac3373014d', {
+        p0: match.round,
+        p1: rival?.name ?? '',
+        p2: gf,
+        p3: ga,
+        p4:
+          result === 'win'
+            ? sourceMessage('result.win.label')
+            : result === 'defeat'
+              ? sourceMessage('result.loss.label')
+              : sourceMessage('result.draw.label'),
+      }),
       change,
       direction: direction(change),
     });
@@ -340,26 +352,38 @@ export function fanMovers(w: World): FanMover[] {
   const drift = felt(owner, (FAN_MOOD.start - owner.fanMood) * FAN_MOOD.drift);
   if (Math.abs(drift) >= 0.05)
     movers.push({
-      label: `라운드마다 ${FAN_MOOD.start} 쪽으로 ${drift > 0 ? '회복' : '하락'}`,
+      label: sourceMessage('copy.ownerFigures.5648870692', {
+        p0: FAN_MOOD.start,
+        p1:
+          drift > 0
+            ? sourceMessage('copy.TrainingView.de755cc2f7')
+            : sourceMessage('copy.ClubOverview.7b0c422662'),
+      }),
       change: drift,
       direction: direction(drift),
     });
   const injected = owner.ffpInjections.find((entry) => entry.season === w.year);
   if (injected && BigInt(injected.amount) > 0n)
     movers.push({
-      label: `이번 시즌 자금 투입 ${ownMoney(w, injected.amount)}`,
+      label: sourceMessage('copy.ownerFigures.32472d4af2', { p0: ownMoney(w, injected.amount) }),
       direction: 'up',
     });
   const record = owner.seasonRecords.at(-1);
   if (record) {
     if (BigInt(record.dividend) > 0n)
       movers.push({
-        label: `${seasonName(record.year)} 배당 ${compactMoney(record.dividend, ownClub(w).country, record.year)}`,
+        label: sourceMessage('copy.ownerFigures.6ca7be66b2', {
+          p0: seasonName(record.year),
+          p1: compactMoney(record.dividend, ownClub(w).country, record.year),
+        }),
         direction: 'down',
       });
     const since = owner.fanMood - record.fanMood;
     movers.push({
-      label: `${seasonName(record.year)} 시즌 마감(${number(record.fanMood)}) 이후`,
+      label: sourceMessage('copy.ownerFigures.286a8fe495', {
+        p0: seasonName(record.year),
+        p1: number(record.fanMood),
+      }),
       change: since,
       direction: direction(since),
     });
@@ -389,16 +413,25 @@ export function ownerStatuses(w: World): OwnerStatus[] {
     const close = seasonClose(w);
     statuses.push({
       id: 'owner',
-      title: '구단주 파산 위기',
-      detail: `구단주 자금 ${ownMoney(w, owner.fortune)} · 시즌 마감(${close.date}, ${close.days}일 남음)까지 흑자로 돌아오지 못하면 구단주가 파산해요`,
+      title: sourceMessage('copy.ownerFigures.f20b1ae1c7'),
+      detail: sourceMessage('copy.ownerFigures.32a7b90384', {
+        p0: ownMoney(w, owner.fortune),
+        p1: close.date,
+        p2: close.days,
+      }),
     });
   }
   const rounds = owner.fanCrisis?.rounds ?? 0;
   if (rounds > 0)
     statuses.push({
       id: 'fans',
-      title: '퇴진 압박',
-      detail: `팬 민심 ${mood(owner.fanMood)} · 기준 ${FAN_MOOD.floor} 아래 ${rounds}라운드째 · ${Math.max(0, FAN_MOOD.rounds - rounds)}라운드 더 이어지면 구단주가 물러나요`,
+      title: sourceMessage('copy.ownerFigures.c505853f74'),
+      detail: sourceMessage('copy.ownerFigures.38f609e242', {
+        p0: mood(owner.fanMood),
+        p1: FAN_MOOD.floor,
+        p2: rounds,
+        p3: Math.max(0, FAN_MOOD.rounds - rounds),
+      }),
     });
   return statuses;
 }
@@ -410,13 +443,12 @@ export function ownerStatuses(w: World): OwnerStatus[] {
  */
 export function ownerLock(state: ClientState, connected: boolean): string | undefined {
   const w = state.view?.world;
-  if (!w || careerOver(w)) return '구단 운영이 끝났어요.';
-  if (w.critical) return '진행을 막는 구단 상황을 먼저 확인해 주세요.';
-  if (state.readonly) return '읽기 전용 탭에서는 정할 수 없어요.';
-  if (state.clockRunning || state.processing)
-    return '달력 진행과 처리가 모두 멈춘 뒤 정할 수 있어요.';
-  if (gameActionsBlocked(state)) return '처리 중인 결정이 끝나면 정할 수 있어요.';
-  if (!connected) return '이 화면에서는 볼 수만 있어요.';
+  if (!w || careerOver(w)) return sourceMessage('copy.ownerFigures.13ed83a888');
+  if (w.critical) return sourceMessage('copy.ownerFigures.37b69c4bc8');
+  if (state.readonly) return sourceMessage('copy.ownerFigures.05d3f0c469');
+  if (state.clockRunning || state.processing) return sourceMessage('copy.ownerFigures.dd737e80ef');
+  if (gameActionsBlocked(state)) return sourceMessage('copy.ownerFigures.60c01a5709');
+  if (!connected) return sourceMessage('copy.ownerFigures.ff6cbf3618');
   return undefined;
 }
 
@@ -464,22 +496,42 @@ export function gameOverFacts(w: World): GameOverFacts {
       : cause === 'owner'
         ? (w.history.at(-1)?.year ?? w.year)
         : w.year;
-  const kept = '남은 건 우리가 쌓은 기록이에요.';
+  const kept = sourceMessage('copy.ownerFigures.bb36ff7e9c');
   const line =
     cause === 'club'
-      ? `${seasonName(season)} 시즌, 적자를 ${w.insolvent ?? 0}라운드 동안 벗어나지 못해 구단이 문을 닫았어요. ${kept}`
+      ? sourceMessage('copy.ownerFigures.628dfc9d8f', {
+          p0: seasonName(season),
+          p1: w.insolvent ?? 0,
+          p2: kept,
+        })
       : cause === 'owner'
-        ? `${seasonName(season)} 시즌을 마치고도 구단주 자금이 ${ownMoney(w, w.owner?.fortune ?? '0')} 적자에서 벗어나지 못해 구단주가 파산했어요. ${own.name}의 경영권도 넘어갔어요. ${kept}`
-        : `${seasonName(season)} 시즌, 팬 민심이 ${FAN_MOOD.floor} 아래로 ${FAN_MOOD.rounds}라운드 이어지자 서포터들의 퇴진 요구 끝에 구단주가 물러났어요. ${kept}`;
+        ? sourceMessage('copy.ownerFigures.b2200caa15', {
+            p0: seasonName(season),
+            p1: ownMoney(w, w.owner?.fortune ?? '0'),
+            p2: own.name,
+            p3: kept,
+          })
+        : sourceMessage('copy.ownerFigures.8fc80aaaac', {
+            p0: seasonName(season),
+            p1: FAN_MOOD.floor,
+            p2: FAN_MOOD.rounds,
+            p3: kept,
+          });
   return {
     cause,
     title:
-      cause === 'club' ? `${own.name} 파산` : cause === 'owner' ? '구단주 파산' : '구단주 퇴진',
+      cause === 'club'
+        ? sourceMessage('copy.ownerFigures.f933e937de', { p0: own.name })
+        : cause === 'owner'
+          ? sourceMessage('copy.stories.ca78f66cf8')
+          : sourceMessage('copy.stories.4e6b8dec47'),
     club: cause === 'club' ? undefined : own.name,
     season,
     line,
     seasons: seasons.length,
-    best: best ? `${best.tier + 1}부 ${best.rank}위` : '—',
+    best: best
+      ? sourceMessage('copy.ownerFigures.fc474da2fc', { p0: best.tier + 1, p1: best.rank })
+      : '—',
     titles,
     peak,
   };

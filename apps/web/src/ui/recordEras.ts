@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * The records room's two eras (→HIST-21, OWNER-17): the bought club's seasons before the owner and
  * the owner's own seasons, as the rows 시즌별 기록 lists. Pure reads of published facts.
@@ -15,7 +16,8 @@ export function runsText(runs: readonly CupRun[] | undefined) {
   return runs?.length
     ? runs
         .map(
-          (run) => `${run.key === 'cup' ? '컵' : run.name} ${run.champion ? '우승' : run.reached}`,
+          (run) =>
+            `${run.key === 'cup' ? sourceMessage('navigation.short.europe') : run.name} ${run.champion ? sourceMessage('copy.CupHistory.31e52393f3') : run.reached}`,
         )
         .join(' · ')
     : '—';
@@ -24,12 +26,21 @@ export function runsText(runs: readonly CupRun[] | undefined) {
 /** A season's league finish before the owner — '2부 3위' — or '—' when the archive kept no row. */
 export function finishText(code: string, season: PreOwnerSeason) {
   const finish = season.finish;
-  return finish ? `${divisionName(code, finish.tier, finish.group)} ${finish.place}위` : '—';
+  return finish
+    ? sourceMessage('copy.CareerRecordBook.2df6533b51', {
+        p0: divisionName(code, finish.tier, finish.group),
+        p1: finish.place,
+      })
+    : '—';
 }
 
 /** The honours of the seasons before the owner, as the panel's note reads them. */
 export function honoursText(honours: { league: number; cup: number; europe: number }) {
-  return `리그 우승 ${honours.league}회 · 컵 우승 ${honours.cup}회 · 유럽 ${honours.europe}회`;
+  return sourceMessage('copy.recordEras.9d6329038f', {
+    p0: honours.league,
+    p1: honours.cup,
+    p2: honours.europe,
+  });
 }
 
 /** Newest first, as every season list of the records room. */

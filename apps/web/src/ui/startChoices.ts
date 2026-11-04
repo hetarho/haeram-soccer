@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * The start flow's pure rules and copy (→WEB-2, WEB-15, OWNER-2/3/5): what each wealth tier
  * reaches, what each trait does, what the trait count means for difficulty, what each decade
@@ -50,16 +51,16 @@ export function generationShare(season: number, decade: TakeoverDecade) {
 
 /** What each tier's fortune reaches (→OWNER-3), in the table's order. */
 export const TIER_REACH: Record<WealthTier, string> = {
-  oil: '1부 상위권 구단',
-  chaebol: '1부 중위권 구단',
-  industrial: '1부 하위권 · 2부 상위권',
-  midsize: '2·3부 구단',
-  local: '하부 프로 리그 구단',
-  selfmade: '최하위 프로 리그 구단',
+  oil: sourceMessage('copy.startChoices.5fdc4e6fe8'),
+  chaebol: sourceMessage('copy.startChoices.d3ed912d77'),
+  industrial: sourceMessage('copy.startChoices.3a91340eed'),
+  midsize: sourceMessage('copy.startChoices.5ce5b6d6b3'),
+  local: sourceMessage('copy.startChoices.20f19a6410'),
+  selfmade: sourceMessage('copy.startChoices.caf6501c49'),
 };
 /** A tier's fortune as its card states it: the reach's median price times the tier's multiple. */
 export function tierFortuneLine(tier: WealthTier) {
-  return `시세 중앙값 ×${OWNER_TIERS[tier].multiple}`;
+  return sourceMessage('copy.startChoices.08f0b64f54', { p0: OWNER_TIERS[tier].multiple });
 }
 /**
  * The selected tier's consequence under the cards: its starting fortune, and what stays after
@@ -68,11 +69,14 @@ export function tierFortuneLine(tier: WealthTier) {
 export function tierNote(tier: WealthTier) {
   const { label, multiple } = OWNER_TIERS[tier];
   const left = Math.round((multiple - 1) * 100);
-  return `${label} · 시작 자금은 닿는 구단 시세 중앙값의 ${multiple}배. ${
-    multiple >= OWNER_TIERS.oil.multiple
-      ? '지출에 사실상 한도가 없어요.'
-      : `중간 시세 구단을 사면 그 값의 ${left}%가 남아요.`
-  }`;
+  return sourceMessage('copy.startChoices.b69db77876', {
+    p0: label,
+    p1: multiple,
+    p2:
+      multiple >= OWNER_TIERS.oil.multiple
+        ? sourceMessage('copy.startChoices.cab59e048e')
+        : sourceMessage('copy.startChoices.b61f0f69ab', { p0: left }),
+  });
 }
 
 const percent = (share: number) => `${Math.round(share * 100)}%`;
@@ -81,17 +85,35 @@ const change = (factor: number) =>
   `${factor < 1 ? '−' : '+'}${Math.round(Math.abs(1 - factor) * 100)}%`;
 /** Each trait's effect in one line, its numbers read from OWNER_TRAITS (→OWNER-5). */
 export const TRAIT_EFFECTS: Record<OwnerTrait, string> = {
-  businessman: `사업 성공 확률 ${percent(OWNER_BUSINESS.chance)} → ${percent(OWNER_TRAITS.businessman.success)}`,
-  talisman: `우리 팀 경기력 OVR +${OWNER_TRAITS.talisman.strength}`,
+  businessman: sourceMessage('copy.startChoices.5650359467', {
+    p0: percent(OWNER_BUSINESS.chance),
+    p1: percent(OWNER_TRAITS.businessman.success),
+  }),
+  talisman: sourceMessage('copy.startChoices.a5dec0d8ad', { p0: OWNER_TRAITS.talisman.strength }),
   negotiator:
     OWNER_TRAITS.negotiator.wages === OWNER_TRAITS.negotiator.fees
-      ? `연봉 요구·이적료 ${change(OWNER_TRAITS.negotiator.wages)}`
-      : `연봉 요구 ${change(OWNER_TRAITS.negotiator.wages)} · 이적료 ${change(OWNER_TRAITS.negotiator.fees)}`,
-  fansFriend: `팬 민심 하락 폭 ${change(OWNER_TRAITS.fansFriend.drop)}`,
-  networker: `감독·코치 후보 +${OWNER_TRAITS.networker.candidates}명, 능력 +${OWNER_TRAITS.networker.ability}`,
-  talentSpotter: `유스 잠재력 +${OWNER_TRAITS.talentSpotter.potential} · 스카우팅 오차 ${change(OWNER_TRAITS.talentSpotter.scoutRange)}`,
-  marketer: `스폰서 제안 ${change(OWNER_TRAITS.marketer.sponsor)}`,
-  politician: `운영비 ${change(OWNER_TRAITS.politician.operating)}`,
+      ? sourceMessage('copy.startChoices.52fab71c3f', { p0: change(OWNER_TRAITS.negotiator.wages) })
+      : sourceMessage('copy.startChoices.91efb75e71', {
+          p0: change(OWNER_TRAITS.negotiator.wages),
+          p1: change(OWNER_TRAITS.negotiator.fees),
+        }),
+  fansFriend: sourceMessage('copy.startChoices.c99c27f746', {
+    p0: change(OWNER_TRAITS.fansFriend.drop),
+  }),
+  networker: sourceMessage('copy.startChoices.2bd363935a', {
+    p0: OWNER_TRAITS.networker.candidates,
+    p1: OWNER_TRAITS.networker.ability,
+  }),
+  talentSpotter: sourceMessage('copy.startChoices.c4feaca35b', {
+    p0: OWNER_TRAITS.talentSpotter.potential,
+    p1: change(OWNER_TRAITS.talentSpotter.scoutRange),
+  }),
+  marketer: sourceMessage('copy.startChoices.6791494f35', {
+    p0: change(OWNER_TRAITS.marketer.sponsor),
+  }),
+  politician: sourceMessage('copy.startChoices.0d5c455e42', {
+    p0: change(OWNER_TRAITS.politician.operating),
+  }),
 };
 /** Picks or drops a trait, never past OWNER_TRAIT_LIMIT, keeping the traits' own order. */
 export function toggleTrait(traits: readonly OwnerTrait[], trait: OwnerTrait): OwnerTrait[] {
@@ -100,7 +122,14 @@ export function toggleTrait(traits: readonly OwnerTrait[], trait: OwnerTrait): O
   return OWNER_TRAIT_IDS.filter((item) => item === trait || traits.includes(item));
 }
 /** The trait count read as difficulty, the hardest first (→OWNER-2): none is 하드, all is 이지. */
-export const TRAIT_DIFFICULTY = ['하드', '어려움', '조금 어려움', '조금 쉬움', '쉬움', '이지'];
+export const TRAIT_DIFFICULTY = [
+  sourceMessage('copy.startChoices.8123f1c028'),
+  sourceMessage('copy.startChoices.fac94f6966'),
+  sourceMessage('copy.startChoices.085814c711'),
+  sourceMessage('copy.startChoices.b725b59e49'),
+  sourceMessage('copy.startChoices.dd0c5cb040'),
+  sourceMessage('copy.startChoices.382e7eddd5'),
+];
 export function traitDifficulty(count: number) {
   const picked = Math.min(OWNER_TRAIT_LIMIT, Math.max(0, Math.round(count)));
   const step = Math.round((picked / OWNER_TRAIT_LIMIT) * (TRAIT_DIFFICULTY.length - 1));
@@ -113,18 +142,18 @@ export function traitDifficulty(count: number) {
  * euro (→ECON-5) and financial fair play (→OWNER-10).
  */
 export const DECADE_LINES: Record<TakeoverDecade, string> = {
-  1930: `프로 리그의 첫 시즌부터. ${WARTIME.last + 1}년 전쟁으로 멈춰요.`,
-  1940: `전쟁이 끝난 ${WARTIME.restart}년, 리그 재개 시즌에 인수해요.`,
-  1950: `유러피언컵 출범 ${EUROPEAN_CUP_START - 1950}시즌 전. 발롱도르도 곧 시작돼요.`,
-  1960: '컵위너스컵 출범. 유럽 무대가 넓어져요.',
-  1970: '1971년 UEFA컵 출범. 유럽 대회가 셋으로.',
-  1980: '중계권료가 커지는 시대. 유러피언컵 조별리그를 앞두고.',
-  1990: '챔피언스리그 출범(1992), 보스만과 유로화를 앞두고.',
-  2000: `본선 32개 팀 챔피언스리그. ${FFP.start}년 재정적 페어플레이.`,
+  1930: sourceMessage('copy.startChoices.1699058b41', { p0: WARTIME.last + 1 }),
+  1940: sourceMessage('copy.startChoices.7ce0cf95bd', { p0: WARTIME.restart }),
+  1950: sourceMessage('copy.startChoices.7866bd201b', { p0: EUROPEAN_CUP_START - 1950 }),
+  1960: sourceMessage('copy.startChoices.884418da67'),
+  1970: sourceMessage('copy.startChoices.7af5e2f30d'),
+  1980: sourceMessage('copy.startChoices.fab017e5cd'),
+  1990: sourceMessage('copy.startChoices.a9791844dc'),
+  2000: sourceMessage('copy.startChoices.290d855acc', { p0: FFP.start }),
 };
 /** The decade card's season line: "1950/51 시즌 인수", the 1940s at the restart. */
 export function decadeSeason(decade: TakeoverDecade) {
-  return `${seasonName(takeoverYear(decade))} 시즌 인수`;
+  return sourceMessage('copy.startChoices.04feef9f73', { p0: seasonName(takeoverYear(decade)) });
 }
 
 /** Whether the owner's fortune, in pounds, pays the club's price (→ECON-37, OWNER-3). */
@@ -198,7 +227,8 @@ export function defaultFilter(listings: readonly ClubListing[], fortune?: string
   return { country, division: divisions[0] ?? 'all', affordable: false, sort: 'strength' };
 }
 /** A division as the list names it: "1부". */
-export const divisionLabel = (division: number) => `${division + 1}부`;
+export const divisionLabel = (division: number) =>
+  sourceMessage('copy.cupRoute.3d1e4a6467', { p0: division + 1 });
 
 /** What a club's sheet opens before buying (→WEB-15): the contracts' shape, read by the worker. */
-export type { ClubSheetFacts } from '../../../../packages/contracts/src/owner';
+export type { ClubProfile } from '../../../../packages/contracts/src/owner';

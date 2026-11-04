@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { World } from '../../../../packages/contracts/src/types';
 import { useLocale } from '../presentation/react';
 import { number } from './format';
@@ -20,6 +22,7 @@ export function GameOver({
   onNew: () => void;
   onSlots: () => void;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const facts = gameOverFacts(w);
   return (
@@ -28,35 +31,35 @@ export function GameOver({
       className={s.gameOver}
       data-testid="game-over"
       data-cause={facts.cause}
-      aria-label="게임 오버"
+      aria-label={displayMessage('copy.catalog.f041a37093')}
     >
-      <small>GAME OVER</small>
-      <h2>{facts.title}</h2>
-      {facts.club && <strong className={s.club}>{facts.club}</strong>}
-      <p>{facts.line}</p>
+      <small>{richMessage('copy.GameOver.6f391555cf')}</small>
+      <h2>{localizeValue(facts.title)}</h2>
+      {localizeValue(facts.club && <strong className={s.club}>{localizeValue(facts.club)}</strong>)}
+      <p>{localizeValue(facts.line)}</p>
       <ul>
         <li>
-          <span>함께한 시즌</span>
-          <b>{facts.seasons}</b>
+          <span>{richMessage('copy.GameOver.83a2c32286')}</span>
+          <b>{localizeValue(facts.seasons)}</b>
         </li>
         <li>
-          <span>최고 성적</span>
-          <b>{facts.best}</b>
+          <span>{richMessage('copy.CareerRecordBook.3dba8e06e7')}</span>
+          <b>{localizeValue(facts.best)}</b>
         </li>
         <li>
-          <span>우승</span>
-          <b>{facts.titles}</b>
+          <span>{richMessage('copy.CupHistory.31e52393f3')}</span>
+          <b>{localizeValue(facts.titles)}</b>
         </li>
         <li>
-          <span>최다 서포터</span>
-          <b>{number(facts.peak)}</b>
+          <span>{richMessage('copy.GameOver.c320bee1f5')}</span>
+          <b>{localizeValue(number(facts.peak))}</b>
         </li>
       </ul>
       <div className={s.actions}>
-        <button onClick={onExport}>기록 내보내기</button>
-        <button onClick={onSlots}>{t('slots.title')}</button>
+        <button onClick={onExport}>{richMessage('save.export')}</button>
+        <button onClick={onSlots}>{localizeValue(t('slots.title'))}</button>
         <button data-ui="primary" className={app.primary} onClick={onNew}>
-          이 슬롯에서 새 게임
+          {richMessage('copy.GameOver.fcd78ecc40')}
         </button>
       </div>
     </section>

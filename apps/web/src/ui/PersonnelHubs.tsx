@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useEffect, type ReactNode } from 'react';
 import type { ClientState } from '../runtime/client';
 import { FIRST_TEAM_TABS, STAFF_TABS } from './personnelNavigation';
@@ -25,6 +26,7 @@ export function PersonnelHub({
   panel: (tab: PeopleTab, replace: () => void) => ReactNode;
   market: (close: () => void) => ReactNode;
 }) {
+  useTextLocale();
   const w = state.view!.world;
   const tabs = page === 'firstTeam' ? FIRST_TEAM_TABS : STAFF_TABS;
   const [tab] = useAddressTab<string>('view', tabs, tabs[0][0], {
@@ -57,9 +59,9 @@ export function PersonnelHub({
   };
   return (
     <>
-      {tab !== 'market' && <TeamReturn page={page} />}
-      {panel(tab as PeopleTab, replace)}
-      {page === 'staff' && showMarket && market(closeMarket)}
+      {localizeValue(tab !== 'market' && <TeamReturn page={page} />)}
+      {localizeValue(panel(tab as PeopleTab, replace))}
+      {localizeValue(page === 'staff' && showMarket && market(closeMarket))}
     </>
   );
 }

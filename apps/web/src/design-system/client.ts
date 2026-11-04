@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { createStore } from 'zustand/vanilla';
 import type { GameClient, ClientState } from '../runtime/client';
 import type { ProgressionController, ProgressionState } from '../runtime/progression';
@@ -12,7 +13,7 @@ export interface Sample {
 export async function loadSample(): Promise<Sample> {
   const response = await fetch('/__design-system');
   const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? '샘플 데이터를 불러오지 못했어요.');
+  if (!response.ok) throw new Error(data.error ?? sourceMessage('copy.client.adc15ce57e'));
   return data;
 }
 export function previewRuntime(sample: Sample, notify: (message: string) => void) {
@@ -33,11 +34,12 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
       body: JSON.stringify(body),
     });
     const reply = (await response.json()) as Reply;
-    if (!response.ok || !reply.ok) throw new Error(reply.error ?? '샘플 조회에 실패했어요.');
+    if (!response.ok || !reply.ok)
+      throw new Error(reply.error ?? sourceMessage('copy.client.b5067270b2'));
     return reply;
   };
   const command = async () => {
-    notify('미리보기 동작입니다. 샘플과 저장된 게임은 변경되지 않습니다.');
+    notify(sourceMessage('copy.client.e4bd41337d'));
     return { requestId: 'design-system-preview', ok: true, view: sample.view };
   };
   const client = {
@@ -55,7 +57,7 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
     hasStoredGame: () => false,
     earlierRules: () => undefined,
     exportFile: async () => {
-      notify('샘플에서는 저장 파일을 내보내지 않습니다.');
+      notify(sourceMessage('copy.client.62b45e9016'));
       return undefined;
     },
     checkpoint: async () => {
@@ -83,6 +85,17 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
     clubRecords: async () => (await read({ type: 'club-records' })).clubRecords!,
     personCareer: async (person) => (await read({ type: 'person-career', person })).personCareer!,
     headToHead: async (club) => (await read({ type: 'head-to-head', club })).headToHead!,
+    clubProfile: async (clubId) =>
+      (await read({ type: 'club-profile', clubId, world: sample.view.world.id })).clubProfile!,
+    playerProfile: async (playerId, clubId) =>
+      (
+        await read({
+          type: 'player-profile',
+          playerId,
+          world: sample.view.world.id,
+          ...(clubId ? { clubId } : {}),
+        })
+      ).playerProfile!,
     recruitmentHistory: async () =>
       (await read({ type: 'recruitment-history' })).recruitmentHistory!,
     mediationPreview: async (id, support) =>
@@ -114,7 +127,7 @@ export function previewRuntime(sample: Sample, notify: (message: string) => void
     store,
     start: () => {
       store.setState({ running: true });
-      notify('재생 상태 미리보기입니다. 게임 날짜는 진행하지 않습니다.');
+      notify(sourceMessage('copy.client.caca108939'));
     },
     pause: () => store.setState({ running: false }),
     stop: () => store.setState({ running: false }),

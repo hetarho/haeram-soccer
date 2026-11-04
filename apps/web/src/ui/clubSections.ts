@@ -1,11 +1,12 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Page } from './state';
 
 /**
  * The owner's workspace tabs. The former office, operations and training bar is retired.
  */
 export const CLUB_SECTIONS = [
-  ['business', '오버뷰'],
-  ['operations', '투자'],
+  ['business', sourceMessage('copy.ClubNavigation.940af95a36')],
+  ['operations', sourceMessage('copy.TrainingView.9e820c8111')],
 ] as const satisfies readonly (readonly [Page, string])[];
 export type ClubSection = (typeof CLUB_SECTIONS)[number][0];
 

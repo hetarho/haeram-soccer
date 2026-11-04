@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { memo, useEffect, useState } from 'react';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
@@ -36,7 +39,16 @@ export function parseDivision(value: string): Pick<LeagueChoice, 'tier' | 'group
 export function leagueName(league: LeagueChoice) {
   const cp = country(league.code);
   const groups = cp.groups[league.tier]?.length ?? 1;
-  return `${cp.name} ${league.tier + 1}부${groups > 1 ? ` ${String.fromCharCode(65 + league.group)}조` : ''}`;
+  return sourceMessage('copy.LeaguePicker.67aca42fff', {
+    p0: cp.name,
+    p1: league.tier + 1,
+    p2:
+      groups > 1
+        ? sourceMessage('copy.competitionLabels.9e6d97cc84', {
+            p0: String.fromCharCode(65 + league.group),
+          })
+        : '',
+  });
 }
 
 /**
@@ -87,6 +99,7 @@ export const LeaguePicker = memo(function LeaguePicker({
   season?: number;
   onSeason?: (year: number) => void;
 }) {
+  useTextLocale();
   const w = useGameState(selectLeagueWorld)!;
   const seasons = useLeagueSeasons();
   const own = base ?? ownLeague(w),
@@ -94,70 +107,90 @@ export const LeaguePicker = memo(function LeaguePicker({
     cp = country(shown.code);
   const choose = (next: LeagueChoice) => onLeague(sameLeague(next, own) ? undefined : next);
   return (
-    <div className={`${s.filters} ${s.leaguePicker}`} role="group" aria-label="리그 선택">
+    <div
+      className={`${s.filters} ${s.leaguePicker}`}
+      role="group"
+      aria-label={displayMessage('copy.LeaguePicker.10c3ea119c')}
+    >
       <label>
-        <span className={s.srOnly}>국가</span>
+        <span className={s.srOnly}>{richMessage('copy.ClubListing.10a6c77fd1')}</span>
         <Select
-          aria-label="국가"
-          title={cp.name}
+          aria-label={displayMessage('copy.ClubListing.10a6c77fd1')}
+          title={localizeValue(cp.name)}
           value={shown.code}
           hintLayout="inline"
           onValueChange={(code) => choose(code === own.code ? own : { code, tier: 0, group: 0 })}
         >
-          {COUNTRIES.map((entry) => (
-            <option
-              key={entry.code}
-              value={entry.code}
-              data-short={entry.code}
-              data-hint={entry.code}
-            >
-              {entry.name}
-            </option>
-          ))}
-        </Select>
-      </label>
-      <label>
-        <span className={s.srOnly}>디비전</span>
-        <Select
-          aria-label="디비전"
-          value={divisionValue(shown)}
-          onValueChange={(value) => choose({ code: shown.code, ...parseDivision(value) })}
-        >
-          {cp.groups.flatMap((groups, tier) =>
-            groups.map((_, group) => {
-              const letter = groups.length > 1 ? String.fromCharCode(65 + group) : '';
-              return (
-                <option
-                  key={`${tier}.${group}`}
-                  value={divisionValue({ tier, group })}
-                  data-short={`${tier + 1}부${letter}`}
-                >
-                  {tier + 1}부{letter && ` ${letter}조`}
-                </option>
-              );
-            }),
+          {localizeValue(
+            COUNTRIES.map((entry) => (
+              <option
+                key={entry.code}
+                value={entry.code}
+                data-short={entry.code}
+                data-hint={entry.code}
+              >
+                {localizeValue(entry.name)}
+              </option>
+            )),
           )}
         </Select>
       </label>
-      {onSeason && seasons && (
-        <SeasonStepper
-          years={seasons.years}
-          value={season ?? seasons.current}
-          current={seasons.current}
-          onChange={onSeason}
-        />
-      )}
-      {league && !sameLeague(league, own) && (
-        <button
-          type="button"
-          data-ui="link"
-          className={s.ownLeague}
-          aria-label="우리 리그 보기"
-          onClick={() => onLeague(undefined)}
+      <label>
+        <span className={s.srOnly}>{richMessage('copy.LeaguePicker.c7f4a2dc4d')}</span>
+        <Select
+          aria-label={displayMessage('copy.LeaguePicker.c7f4a2dc4d')}
+          value={divisionValue(shown)}
+          onValueChange={(value) => choose({ code: shown.code, ...parseDivision(value) })}
         >
-          <ClubCrest w={w} id={w.playerClub} size={16} />
-          <b>우리 리그</b>
-        </button>
+          {localizeValue(
+            cp.groups.flatMap((groups, tier) =>
+              groups.map((_, group) => {
+                const letter = groups.length > 1 ? String.fromCharCode(65 + group) : '';
+                return (
+                  <option
+                    key={`${tier}.${group}`}
+                    value={divisionValue({ tier, group })}
+                    data-short={sourceMessage('copy.competitionLabels.85f44f73b7', {
+                      p0: tier + 1,
+                      p1: letter,
+                    })}
+                  >
+                    {richMessage('copy.competitionLabels.85f44f73b7', {
+                      p0: tier + 1,
+                      p1:
+                        letter &&
+                        sourceMessage('copy.competitionLabels.9e6d97cc84', { p0: letter }),
+                    })}
+                  </option>
+                );
+              }),
+            ),
+          )}
+        </Select>
+      </label>
+      {localizeValue(
+        onSeason && seasons && (
+          <SeasonStepper
+            years={seasons.years}
+            value={season ?? seasons.current}
+            current={seasons.current}
+            onChange={onSeason}
+          />
+        ),
+      )}
+      {localizeValue(
+        league && !sameLeague(league, own) && (
+          <button
+            type="button"
+            data-ui="link"
+            className={s.ownLeague}
+            aria-label={displayMessage('copy.LeaguePicker.3880896773')}
+            onClick={() => onLeague(undefined)}
+          >
+            <ClubCrest w={w} id={w.playerClub} size={16} />
+            <b>{richMessage('copy.ClubTrends.af534b6786')}</b>
+          </button>
+        ),
       )}
     </div>
   );

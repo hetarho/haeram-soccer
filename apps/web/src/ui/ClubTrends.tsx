@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useTaskState } from './taskMemory';
 import { useMemo } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -6,7 +9,7 @@ import { clubOf, ownSeasons } from '../../../../packages/engine/src/player-state
 import { inTodayMoney } from '../../../../packages/engine/src/transfer-records';
 import { Panel } from './App';
 import { Chart, type ChartBand } from './Chart';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { divisionName } from './careerRecords';
 import { compactMoney, number, seasonName } from './format';
 import { Money } from './Money';
@@ -58,13 +61,13 @@ function trendSeries(w: World) {
     cash = seasons.map((h) => inTodayMoney(w, h.cash, h.year));
   const bands: ChartBand[] = [
     {
-      label: '세계 최저–최고',
+      label: sourceMessage('copy.ClubTrends.6b66f78089'),
       tone: 'faint',
       lo: rated.map((h) => h.eloRange?.[0]),
       hi: rated.map((h) => h.eloRange?.[1]),
     },
     {
-      label: '우리 리그 최저–최고',
+      label: sourceMessage('copy.ClubTrends.d8c6ce5a6e'),
       tone: 'strong',
       lo: rated.map((h) => h.eloRange?.[2]),
       hi: rated.map((h) => h.eloRange?.[3]),
@@ -101,7 +104,11 @@ function trendSeries(w: World) {
     fans: series(
       seasons,
       seasons.map((h) => h.fans),
-      (i) => `${seasonName(seasons[i].year)} · ${number(seasons[i].fans)}명`,
+      (i) =>
+        sourceMessage('copy.ClubTrends.d4c90a70d9', {
+          p0: seasonName(seasons[i].year),
+          p1: number(seasons[i].fans),
+        }),
     ),
     cash: series(
       seasons,
@@ -128,30 +135,39 @@ export function EloStanding({
   w: World;
   standing: ReturnType<typeof eloStanding>;
 }) {
+  useTextLocale();
   const { elo, rank, total, world, league, gap } = standing;
   const span = Math.max(1, world.high.elo - world.low.elo),
     at = (value: number) => Math.min(100, Math.max(0, ((value - world.low.elo) / span) * 100));
   const clubs: [string, RatedClub][] = [
-    ['세계 최고', world.high],
-    ['세계 최저', world.low],
-    ['우리 리그 최고', league.high],
-    ['우리 리그 최저', league.low],
+    [sourceMessage('copy.ClubTrends.75c9c24acc'), world.high],
+    [sourceMessage('copy.ClubTrends.c963437ebb'), world.low],
+    [sourceMessage('copy.ClubTrends.bd93348744'), league.high],
+    [sourceMessage('copy.ClubTrends.6e2c4996c8'), league.low],
   ];
   return (
-    <section className={s.eloStanding} aria-label="클럽 Elo 위치">
+    <section className={s.eloStanding} aria-label={displayMessage('copy.ClubTrends.1c0d302530')}>
       <div className={s.eloFigures}>
         <div>
-          <small>지금 Elo</small>
-          <strong>{elo}</strong>
+          <small>{richMessage('copy.ClubTrends.21685aad29')}</small>
+          <strong>{localizeValue(elo)}</strong>
         </div>
         <div>
-          <small>전체 순위</small>
-          <strong>{rank}위</strong>
-          <small>{number(total)}개 클럽 중</small>
+          <small>{richMessage('copy.ClubTrends.cd843762fc')}</small>
+          <strong>{richMessage('copy.BallonDorView.5094d45cea', { p0: rank })}</strong>
+          <small>{richMessage('copy.ClubTrends.6d32b95c7b', { p0: number(total) })}</small>
         </div>
         <div>
-          <small>{gap ? '리그 1위와' : '우리 리그'}</small>
-          <strong>{gap ? `−${-gap}` : 'Elo 1위'}</strong>
+          <small>
+            {localizeValue(
+              gap
+                ? sourceMessage('copy.ClubTrends.397eab83dc')
+                : sourceMessage('copy.ClubTrends.af534b6786'),
+            )}
+          </small>
+          <strong>
+            {localizeValue(gap ? `−${-gap}` : sourceMessage('copy.ClubTrends.dbbcff36fe'))}
+          </strong>
         </div>
       </div>
       <div className={s.eloScale} aria-hidden="true">
@@ -164,32 +180,38 @@ export function EloStanding({
         <b style={{ left: `${at(elo)}%` }} />
       </div>
       <div className={s.eloScaleEnds} aria-hidden="true">
-        <span>세계 {world.low.elo}</span>
-        <span>우리 리그 {`${league.low.elo}–${league.high.elo}`}</span>
-        <span>{world.high.elo}</span>
+        <span>{richMessage('copy.ClubTrends.b16d70e99d', { p0: world.low.elo })}</span>
+        <span>
+          {richMessage('copy.ClubTrends.1cc3e92f5b', {
+            p0: `${league.low.elo}–${league.high.elo}`,
+          })}
+        </span>
+        <span>{localizeValue(world.high.elo)}</span>
       </div>
       <dl className={s.eloClubs}>
-        {clubs.map(([label, rated]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>
-              <ClubLink w={w} id={rated.club.id} crest={14} />
-              <b>{rated.elo}</b>
-            </dd>
-          </div>
-        ))}
+        {localizeValue(
+          clubs.map(([label, rated]) => (
+            <div key={label}>
+              <dt>{localizeValue(label)}</dt>
+              <dd>
+                <ClubLink w={w} id={rated.club.id} crest={14} />
+                <b>{localizeValue(rated.elo)}</b>
+              </dd>
+            </div>
+          )),
+        )}
       </dl>
     </section>
   );
 }
 
 const TREND_METRICS = [
-  ['league', '리그 위치'],
+  ['league', sourceMessage('copy.ClubTrends.8d547a12d3')],
   ['elo', 'Elo'],
-  ['squad', '선수단 가치'],
-  ['club', '구단 가치'],
-  ['fans', '서포터'],
-  ['cash', '자금'],
+  ['squad', sourceMessage('copy.ClubTrends.837d4e5ad5')],
+  ['club', sourceMessage('copy.ClubTrends.9aea64c2b7')],
+  ['fans', sourceMessage('copy.ClubTrends.2070613ba9')],
+  ['cash', sourceMessage('copy.AwaySummary.e397620205')],
 ] as const;
 type TrendMetric = (typeof TREND_METRICS)[number][0];
 
@@ -199,6 +221,7 @@ type TrendMetric = (typeof TREND_METRICS)[number][0];
  * today's money.
  */
 export function ClubTrends({ w }: { w: World }) {
+  useTextLocale();
   const club = clubOf(w),
     code = club.country;
   const series = useMemo(() => trendSeries(w), [w.history, w.year, club.tier]);
@@ -210,123 +233,156 @@ export function ClubTrends({ w }: { w: World }) {
     <>
       <div className={s.recordControls}>
         <Segments
-          label="추이 지표"
+          label={displayMessage('copy.ClubTrends.370413228d')}
           options={TREND_METRICS}
           value={metric}
           onChange={setMetric}
           wrap
         />
       </div>
-      {metric === 'league' && (
-        <Panel title="리그 위치" note={`지금 ${divisionName(code, club.tier, club.group)}`}>
-          <div className={s.panelBody}>
-            <Chart
-              label="피라미드 전체 순위"
-              inverse
-              values={series.league.values}
-              labels={series.league.labels}
-              format={(value) => `${Math.round(value)}위`}
-              detail={(i) => series.league.details[i]}
-            />
-            <p className={s.muted}>
-              위 디비전의 클럽 수에 그 시즌 순위를 더한 {country(code).name} 피라미드 전체 순위예요.
-              1위가 1부 우승이에요. 점을 누르거나 그래프 위를 움직이면 그 시즌의 리그와 순위가 떠요.
-            </p>
-          </div>
-        </Panel>
-      )}
-      {metric === 'elo' && (
-        <Panel title="클럽 Elo" note={`지금 ${standing.elo} · 전체 ${standing.rank}위`}>
-          <div className={s.panelBody}>
-            <Chart
-              label="시즌 말 Elo"
-              values={series.elo.values}
-              labels={series.elo.labels}
-              bands={series.elo.bands}
-              format={(value) => String(Math.round(value))}
-              detail={(i) => series.elo.details[i]}
-            />
-            {series.elo.unrated > 0 && (
+      {localizeValue(
+        metric === 'league' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.8d547a12d3')}
+            note={sourceMessage('copy.ClubStaff.ceb2ec9df3', {
+              p0: divisionName(code, club.tier, club.group),
+            })}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.98cc96f48e')}
+                inverse
+                values={series.league.values}
+                labels={series.league.labels}
+                format={(value) =>
+                  sourceMessage('copy.BallonDorView.5094d45cea', { p0: Math.round(value) })
+                }
+                detail={(i) => series.league.details[i]}
+              />
               <p className={s.muted}>
-                Elo가 기록되지 않은 시즌 {series.elo.unrated}개는 그래프에 없어요.
+                {richMessage('copy.ClubTrends.916a3ece1a', { p0: country(code).name })}
               </p>
-            )}
-            {series.elo.unranged > 0 && (
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'elo' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.14e4f1a04e')}
+            note={sourceMessage('copy.ClubTrends.84c355f838', {
+              p0: standing.elo,
+              p1: standing.rank,
+            })}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.1b416348cd')}
+                values={series.elo.values}
+                labels={series.elo.labels}
+                bands={series.elo.bands}
+                format={(value) => String(Math.round(value))}
+                detail={(i) => series.elo.details[i]}
+              />
+              {localizeValue(
+                series.elo.unrated > 0 && (
+                  <p className={s.muted}>
+                    {richMessage('copy.ClubTrends.7ceef984e5', { p0: series.elo.unrated })}
+                  </p>
+                ),
+              )}
+              {localizeValue(
+                series.elo.unranged > 0 && (
+                  <p className={s.muted}>
+                    {richMessage('copy.ClubTrends.1bd7bed943', { p0: series.elo.unranged })}
+                  </p>
+                ),
+              )}
+              <EloStanding w={w} standing={standing} />
+              <p className={s.muted}>{richMessage('copy.ClubTrends.472acb8bec')}</p>
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'squad' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.837d4e5ad5')}
+            note={sourceMessage('copy.ClubTrends.2670bb8d4c')}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.878b88665f')}
+                values={series.squad.values}
+                labels={series.squad.labels}
+                format={series.axis}
+                detail={(i) => series.squad.details[i]}
+              />
               <p className={s.muted}>
-                Elo 범위가 기록되지 않은 시즌 {series.elo.unranged}개에는 띠가 없어요.
+                {richMessage('copy.ClubTrends.aefa2a2106', {
+                  p0:
+                    series.unvalued > 0 &&
+                    sourceMessage('copy.ClubTrends.d8516d8f3b', { p0: series.unvalued }),
+                })}
               </p>
-            )}
-            <EloStanding w={w} standing={standing} />
-            <p className={s.muted}>
-              모든 대회 결과로 갱신하는 클럽 Elo예요(K 20, 홈 어드밴티지 60, 큰 점수 차 가중). 강한
-              상대를 이기면 많이 오르고 약한 상대에게 지면 많이 떨어져요.
-            </p>
-          </div>
-        </Panel>
+            </div>
+          </Panel>
+        ),
       )}
-      {metric === 'squad' && (
-        <Panel title="선수단 가치" note="현재 물가·화폐로 환산">
-          <div className={s.panelBody}>
-            <Chart
-              label="시즌 말 선수단 가치"
-              values={series.squad.values}
-              labels={series.squad.labels}
-              format={series.axis}
-              detail={(i) => series.squad.details[i]}
-            />
-            <p className={s.muted}>
-              시즌 말 선수 전원의 평가 가치(다른 구단이 받아들일 이적료)의 합이에요.
-              {series.unvalued > 0 && ` 가치가 기록되지 않은 시즌 ${series.unvalued}개는 빠졌어요.`}
-            </p>
-          </div>
-        </Panel>
+      {localizeValue(
+        metric === 'club' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.9aea64c2b7')}
+            note={sourceMessage('copy.ClubTrends.2670bb8d4c')}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.91dd8e4981')}
+                values={series.club.values}
+                labels={series.club.labels}
+                format={series.axis}
+                detail={(i) => series.club.details[i]}
+              />
+              <p className={s.muted}>
+                {richMessage('copy.ClubTrends.df4b3478fb', {
+                  p0:
+                    series.unvalued > 0 &&
+                    sourceMessage('copy.ClubTrends.d8516d8f3b', { p0: series.unvalued }),
+                })}
+              </p>
+            </div>
+          </Panel>
+        ),
       )}
-      {metric === 'club' && (
-        <Panel title="구단 가치" note="현재 물가·화폐로 환산">
-          <div className={s.panelBody}>
-            <Chart
-              label="시즌 말 구단 가치"
-              values={series.club.values}
-              labels={series.club.labels}
-              format={series.axis}
-              detail={(i) => series.club.details[i]}
-            />
-            <p className={s.muted}>
-              선수단 가치 + 시설 투자액의 절반 + 브랜드(서포터 20명당 1단위, 평판 가중) +
-              현금(부채는 차감)이에요.
-              {series.unvalued > 0 && ` 가치가 기록되지 않은 시즌 ${series.unvalued}개는 빠졌어요.`}
-            </p>
-          </div>
-        </Panel>
+      {localizeValue(
+        metric === 'fans' && (
+          <Panel title={displayMessage('copy.ClubTrends.b5648588cc')}>
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.2070613ba9')}
+                values={series.fans.values}
+                labels={series.fans.labels}
+                detail={(i) => series.fans.details[i]}
+              />
+            </div>
+          </Panel>
+        ),
       )}
-      {metric === 'fans' && (
-        <Panel title="서포터의 성장">
-          <div className={s.panelBody}>
-            <Chart
-              label="서포터"
-              values={series.fans.values}
-              labels={series.fans.labels}
-              detail={(i) => series.fans.details[i]}
-            />
-          </div>
-        </Panel>
-      )}
-      {metric === 'cash' && (
-        <Panel title="현재 물가로 본 시즌 말 자금">
-          <div className={s.panelBody}>
-            <Chart
-              label="현재 물가 기준 자금"
-              values={series.cash.values}
-              labels={series.cash.labels}
-              format={series.axis}
-              detail={(i) => series.cash.details[i]}
-            />
-            <p className={s.muted}>
-              물가와 화폐 전환을 보정해 지금 돈으로 환산했어요. 초기 국가 자료가 없으면 영국 지수
-              추정을 씁니다. 실험 전후 변화는 인과관계의 증명이 아닙니다.
-            </p>
-          </div>
-        </Panel>
+      {localizeValue(
+        metric === 'cash' && (
+          <Panel title={displayMessage('copy.ClubTrends.31a8d6cbae')}>
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.ac4ecd5b04')}
+                values={series.cash.values}
+                labels={series.cash.labels}
+                format={series.axis}
+                detail={(i) => series.cash.details[i]}
+              />
+              <p className={s.muted}>{richMessage('copy.ClubTrends.13f9a892bd')}</p>
+            </div>
+          </Panel>
+        ),
       )}
     </>
   );
@@ -337,23 +393,41 @@ export function ClubTrends({ w }: { w: World }) {
  * season (→WEB-54). The seasons before the takeover are listed apart (→HIST-21).
  */
 export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
+  useTextLocale();
   const code = clubOf(w).country,
     seasons = ownSeasons(w);
   const [limit, setLimit] = useTaskState(w.id, 'record-season-limit', 49);
   return (
-    <Panel title="시즌별 기록" note={`${seasons.length}시즌`}>
+    <Panel
+      title={displayMessage('copy.ClubTrends.f402b0218e')}
+      note={sourceMessage('copy.BallonDorView.3585c2642b', { p0: seasons.length })}
+    >
       <div className={s.tableWrap}>
-        <table className={t.seasonHistory} role="table" aria-label="시즌별 기록">
+        <table
+          className={t.seasonHistory}
+          role="table"
+          aria-label={displayMessage('copy.ClubTrends.f402b0218e')}
+        >
           <thead>
             <tr>
-              <th scope="col">시즌</th>
-              <th scope="col">리그</th>
-              <th scope="col">승점</th>
-              <th scope="col">컵 대회</th>
-              <th scope="col">Elo</th>
+              <th scope="col">{richMessage('copy.ClubTrends.a3142392a3')}</th>
+              <th scope="col">{richMessage('navigation.league')}</th>
+              <th scope="col">{richMessage('copy.ClubTrends.e8fd75919a')}</th>
+              <th scope="col">{richMessage('copy.ClubTrends.cf5a6ab3e0')}</th>
+              <th scope="col">{richMessage('copy.ClubTrends.fbd742149e')}</th>
               <th scope="col">
-                <span className={t.valueScope}>선수단 </span>가치
-                <span className={t.valueBasis}>현재 물가</span>
+                {richMessage('copy.ClubTrends.04da029e77', {
+                  p0: (
+                    <span className={t.valueScope}>
+                      {richMessage('copy.ClubTrends.c111372590')}
+                    </span>
+                  ),
+                  p1: (
+                    <span className={t.valueBasis}>
+                      {richMessage('copy.ClubTrends.7a70ccf2b0')}
+                    </span>
+                  ),
+                })}
               </th>
             </tr>
           </thead>
@@ -368,103 +442,130 @@ export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: numbe
                   data-ui="link"
                   type="button"
                   className={s.seasonRowLink}
-                  aria-label={`${seasonName(w.year)} 구단 시즌 기록 보기`}
-                  aria-description="현재 진행 중인 시즌"
+                  aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
+                    p0: seasonName(w.year),
+                  })}
+                  aria-description={displayMessage('copy.ClubTrends.8e03ed8a86')}
                   onClick={(event) => {
                     event.stopPropagation();
                     onSeason?.(w.year);
                   }}
                 >
-                  <span className={t.cellText}>{seasonName(w.year)}</span>
+                  <span className={t.cellText}>{localizeValue(seasonName(w.year))}</span>
                 </button>
               </td>
-              <td data-label="리그">
+              <td data-label={sourceMessage('navigation.league')}>
                 <span
                   className={t.cellText}
-                  title={divisionName(code, clubOf(w).tier, clubOf(w).group)}
+                  title={localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
                 >
-                  {divisionName(code, clubOf(w).tier, clubOf(w).group)}
+                  {localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
                 </span>
               </td>
-              <td data-label="승점">{w.tables[w.playerClub]?.points ?? 0}</td>
-              <td data-label="컵 대회">—</td>
-              <td data-label="Elo">{clubOf(w).elo?.toFixed(0) ?? '—'}</td>
-              <td data-label="선수단 가치 · 현재 물가">—</td>
+              <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
+                {localizeValue(w.tables[w.playerClub]?.points ?? 0)}
+              </td>
+              <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>—</td>
+              <td data-label="Elo">{localizeValue(clubOf(w).elo?.toFixed(0) ?? '—')}</td>
+              <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>—</td>
             </tr>
-            {[...seasons]
-              .reverse()
-              .slice(0, limit)
-              .map((h) => (
-                <tr
-                  key={h.year}
-                  className={onSeason ? s.seasonRow : undefined}
-                  onClick={onSeason && (() => onSeason(h.year))}
-                >
-                  <td>
-                    {onSeason ? (
-                      <button
-                        data-ui="link"
-                        type="button"
-                        className={s.seasonRowLink}
-                        aria-label={`${seasonName(h.year)} 구단 시즌 기록 보기`}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          onSeason(h.year);
-                        }}
+            {localizeValue(
+              [...seasons]
+                .reverse()
+                .slice(0, limit)
+                .map((h) => (
+                  <tr
+                    key={h.year}
+                    className={onSeason ? s.seasonRow : undefined}
+                    onClick={onSeason && (() => onSeason(h.year))}
+                  >
+                    <td>
+                      {localizeValue(
+                        onSeason ? (
+                          <button
+                            data-ui="link"
+                            type="button"
+                            className={s.seasonRowLink}
+                            aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
+                              p0: seasonName(h.year),
+                            })}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onSeason(h.year);
+                            }}
+                          >
+                            <span className={t.cellText}>{localizeValue(seasonName(h.year))}</span>
+                          </button>
+                        ) : (
+                          seasonName(h.year)
+                        ),
+                      )}
+                    </td>
+                    <td data-label={sourceMessage('navigation.league')}>
+                      <span
+                        className={t.cellText}
+                        title={displayMessage('copy.CareerRecordBook.2df6533b51', {
+                          p0: divisionName(code, h.tier, h.group),
+                          p1: h.rank,
+                        })}
                       >
-                        <span className={t.cellText}>{seasonName(h.year)}</span>
-                      </button>
-                    ) : (
-                      seasonName(h.year)
-                    )}
-                  </td>
-                  <td data-label="리그">
-                    <span
-                      className={t.cellText}
-                      title={`${divisionName(code, h.tier, h.group)} ${h.rank}위`}
-                    >
-                      {divisionName(code, h.tier, h.group)} {h.rank}위
-                    </span>
-                  </td>
-                  <td data-label="승점">
-                    <span
-                      className={t.cellText}
-                      title={`${h.points} (${h.won}-${h.drawn}-${h.lost})`}
-                    >
-                      {h.points} ({h.won}-{h.drawn}-{h.lost})
-                    </span>
-                  </td>
-                  <td data-label="컵 대회">
-                    <span className={t.cellText}>{runsText(h.runs)}</span>
-                  </td>
-                  <td data-label="Elo">
-                    <span className={t.cellText}>
-                      {h.elo !== undefined
-                        ? `${Math.round(h.elo)}${h.eloRank ? ` (${h.eloRank}위)` : ''}`
-                        : '—'}
-                    </span>
-                  </td>
-                  <td data-label="선수단 가치 · 현재 물가">
-                    {h.squadValue ? (
-                      <Money
-                        value={inTodayMoney(w, h.squadValue, h.year)}
-                        code={code}
-                        year={w.year}
-                      />
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                </tr>
-              ))}
+                        {richMessage('copy.CareerRecordBook.58e3ce05f8', {
+                          p0: divisionName(code, h.tier, h.group),
+                          p1: h.rank,
+                        })}
+                      </span>
+                    </td>
+                    <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
+                      <span
+                        className={t.cellText}
+                        title={localizeValue(`${h.points} (${h.won}-${h.drawn}-${h.lost})`)}
+                      >
+                        {localizeValue(h.points)} ({localizeValue(h.won)}-{localizeValue(h.drawn)}-
+                        {localizeValue(h.lost)})
+                      </span>
+                    </td>
+                    <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>
+                      <span className={t.cellText}>{localizeValue(runsText(h.runs))}</span>
+                    </td>
+                    <td data-label="Elo">
+                      <span className={t.cellText}>
+                        {localizeValue(
+                          h.elo !== undefined
+                            ? `${Math.round(h.elo)}${h.eloRank ? sourceMessage('copy.ClubTrends.631b514ecd', { p0: h.eloRank }) : ''}`
+                            : '—',
+                        )}
+                      </span>
+                    </td>
+                    <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>
+                      {localizeValue(
+                        h.squadValue ? (
+                          <Money
+                            value={inTodayMoney(w, h.squadValue, h.year)}
+                            code={code}
+                            year={w.year}
+                          />
+                        ) : (
+                          '—'
+                        ),
+                      )}
+                    </td>
+                  </tr>
+                )),
+            )}
           </tbody>
         </table>
-        {seasons.length > limit && (
-          <button type="button" onClick={() => setLimit(limit + 50)}>
-            이전 시즌 더 보기 · {seasons.length - limit}시즌
-          </button>
+        {localizeValue(
+          seasons.length > limit && (
+            <button type="button" onClick={() => setLimit(limit + 50)}>
+              {richMessage('copy.ClubTrends.fbea915f3f', { p0: seasons.length - limit })}
+            </button>
+          ),
         )}
-        {!seasons.length && <div className={s.empty}>첫 시즌이 끝나면 기록이 쌓여요.</div>}
+        {localizeValue(
+          !seasons.length && (
+            <div className={s.empty}>{richMessage('copy.ClubTrends.82338e0d4b')}</div>
+          ),
+        )}
       </div>
     </Panel>
   );

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { PixelIcon } from './PixelIcon';
 import { useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { POSITIONS } from '../../../../packages/contracts/src/player';
@@ -25,17 +28,17 @@ const GROUPS: {
 }[] = [
   {
     key: 'scope',
-    label: '지표 범위',
+    label: sourceMessage('copy.RosterFilters.6643386ffb'),
     options: [
-      { value: 'season', label: '이번 시즌' },
-      { value: 'career', label: '우리 클럽 통산' },
+      { value: 'season', label: sourceMessage('copy.ClubHub.ece63ccd56') },
+      { value: 'career', label: sourceMessage('copy.AnalysisExport.05b05e1b81') },
     ],
   },
   {
     key: 'role',
-    label: '포지션',
+    label: sourceMessage('copy.BallonDorView.cb34c0f691'),
     options: [
-      { value: 'all', label: '전체' },
+      { value: 'all', label: sourceMessage('copy.DecisionRuleFacts.a4b69faf0c') },
       ...(['GK', 'DF', 'MF', 'FW'] as const).map((value) => ({ value, label: value })),
       // Every outfield position; a player counts under each he plays at 준수 or better.
       ...POSITIONS.filter((value) => value !== 'GK').map((value) => ({ value, label: value })),
@@ -43,21 +46,23 @@ const GROUPS: {
   },
   {
     key: 'order',
-    label: '정렬',
+    label: sourceMessage('team.sort'),
     options: [
-      { value: 'roster', label: '선수단 순서' },
-      { value: 'ability', label: 'OVR 높은 순' },
-      { value: 'minutes', label: '출전 분' },
-      { value: 'fatigue', label: '피로 낮은 순' },
-      { value: 'goals90', label: '90분당 득점' },
+      { value: 'roster', label: sourceMessage('copy.RosterFilters.3c3a54ab1b') },
+      { value: 'ability', label: sourceMessage('team.sort.ovr') },
+      { value: 'minutes', label: sourceMessage('copy.RosterFilters.d7e941c675') },
+      { value: 'fatigue', label: sourceMessage('copy.RosterFilters.99128f9393') },
+      { value: 'goals90', label: sourceMessage('copy.RosterFilters.ee67f0500f') },
     ],
   },
   {
     key: 'minutes',
-    label: '최소 표본',
+    label: sourceMessage('copy.RosterFilters.2abe78b715'),
     options: [0, 90, 180, 450, 900].map((value) => ({
       value,
-      label: value ? `${value}분+` : '제한 없음',
+      label: value
+        ? sourceMessage('copy.RosterFilters.85528345bf', { p0: value })
+        : sourceMessage('copy.RosterFilters.0d10aef3da'),
     })),
   },
 ];
@@ -76,27 +81,37 @@ const phone = () => {
 };
 
 function Choices({ view, onChange }: { view: RosterView; onChange: (view: RosterView) => void }) {
+  useTextLocale();
   return (
     <div className={s.groups}>
-      {GROUPS.map((group) => (
-        <div key={group.key} className={s.group} role="radiogroup" aria-label={group.label}>
-          <span>{group.label}</span>
-          <div className={s.chips}>
-            {group.options.map((option) => (
-              <button
-                key={String(option.value)}
-                type="button"
-                role="radio"
-                aria-checked={view[group.key] === option.value}
-                className={s.chip}
-                onClick={() => onChange({ ...view, [group.key]: option.value })}
-              >
-                {option.label}
-              </button>
-            ))}
+      {localizeValue(
+        GROUPS.map((group) => (
+          <div
+            key={group.key}
+            className={s.group}
+            role="radiogroup"
+            aria-label={localizeValue(group.label)}
+          >
+            <span>{localizeValue(group.label)}</span>
+            <div className={s.chips}>
+              {localizeValue(
+                group.options.map((option) => (
+                  <button
+                    key={String(option.value)}
+                    type="button"
+                    role="radio"
+                    aria-checked={view[group.key] === option.value}
+                    className={s.chip}
+                    onClick={() => onChange({ ...view, [group.key]: option.value })}
+                  >
+                    {localizeValue(option.label)}
+                  </button>
+                )),
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        )),
+      )}
     </div>
   );
 }
@@ -112,6 +127,7 @@ export function RosterFilters({
   view: RosterView;
   onChange: (view: RosterView) => void;
 }) {
+  useTextLocale();
   const [open, setOpen] = useState<'popover' | 'sheet'>();
   const trigger = useRef<HTMLButtonElement>(null);
   const id = useId();
@@ -123,7 +139,7 @@ export function RosterFilters({
       disabled={!active}
       onClick={() => onChange(DEFAULT_ROSTER_VIEW)}
     >
-      초기화
+      {richMessage('copy.LabPage.893f3d9463')}
     </button>
   );
   return (
@@ -132,7 +148,9 @@ export function RosterFilters({
         ref={trigger}
         type="button"
         className={s.trigger}
-        aria-label={`선수 보기 설정${active ? ` · ${active}개 적용` : ''}`}
+        aria-label={displayMessage('copy.RosterFilters.62fd24988a', {
+          p0: active ? sourceMessage('copy.RosterFilters.6f9480e0d7', { p0: active }) : '',
+        })}
         aria-haspopup="dialog"
         aria-expanded={!!open}
         aria-controls={open === 'popover' ? id : undefined}
@@ -140,19 +158,31 @@ export function RosterFilters({
         onClick={() => setOpen(open ? undefined : phone() ? 'sheet' : 'popover')}
       >
         <PixelIcon name="filter" />
-        {active > 0 && <i aria-hidden="true">{active}</i>}
+        {localizeValue(active > 0 && <i aria-hidden="true">{localizeValue(active)}</i>)}
       </button>
-      {open === 'sheet' && (
-        <Dialog label="선수 보기 설정" onClose={() => setOpen(undefined)}>
-          <Choices view={view} onChange={onChange} />
-          <div className={s.footer}>{reset}</div>
-        </Dialog>
+      {localizeValue(
+        open === 'sheet' && (
+          <Dialog
+            label={displayMessage('copy.RosterFilters.b9aaa892ef')}
+            onClose={() => setOpen(undefined)}
+          >
+            <Choices view={view} onChange={onChange} />
+            <div className={s.footer}>{localizeValue(reset)}</div>
+          </Dialog>
+        ),
       )}
-      {open === 'popover' && (
-        <Popover id={id} anchor={trigger} label="선수 보기 설정" onClose={() => setOpen(undefined)}>
-          <Choices view={view} onChange={onChange} />
-          <div className={s.footer}>{reset}</div>
-        </Popover>
+      {localizeValue(
+        open === 'popover' && (
+          <Popover
+            id={id}
+            anchor={trigger}
+            label={displayMessage('copy.RosterFilters.b9aaa892ef')}
+            onClose={() => setOpen(undefined)}
+          >
+            <Choices view={view} onChange={onChange} />
+            <div className={s.footer}>{localizeValue(reset)}</div>
+          </Popover>
+        ),
       )}
     </>
   );
@@ -175,6 +205,7 @@ function Popover({
   onClose: () => void;
   children: ReactNode;
 }) {
+  useTextLocale();
   const panel = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   close.current = onClose;
@@ -243,11 +274,11 @@ function Popover({
       className={s.popover}
       popover="manual"
       role="dialog"
-      aria-label={label}
+      aria-label={localizeValue(label)}
     >
       <div className={s.popoverBody}>
-        <b className={s.title}>{label}</b>
-        {children}
+        <b className={s.title}>{localizeValue(label)}</b>
+        {localizeValue(children)}
       </div>
     </div>
   );

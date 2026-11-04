@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
   BracketArchive,
   CupFinal,
@@ -182,7 +183,7 @@ export function decideTie(tie: KnockoutTie, legs: Fixture[], awayGoals: boolean)
     // Still level after extra time: the deciding match's shoot-out (→MATCH-6).
     const last = legs.at(-1)!;
     const kicks = last.shootout;
-    if (!kicks) throw new Error('승부차기 기록 없이 동률인 대진이 있습니다.');
+    if (!kicks) throw new Error(sourceMessage('copy.knockout.68187bccd3'));
     tie.winner = kicks.home > kicks.away ? last.home : last.away;
     tie.decided = 'pens';
   }
@@ -236,7 +237,7 @@ export function archivedRounds(
   const index = new Map(w.clubs.map((club, i) => [club.id, i]));
   const kept = rounds
     .map((round, at) => ({ round, at }))
-    .filter(({ round }) => !round.label.startsWith('예선'));
+    .filter(({ round }) => !round.label.startsWith(sourceMessage('copy.bracketTree.dbad85ccbc')));
   const first = kept.findIndex(
     ({ round }) => 2 * round.ties.length + (round.byes?.length ?? 0) <= ARCHIVED_FIELD,
   );

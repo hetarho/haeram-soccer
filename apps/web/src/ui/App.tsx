@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { PORTABLE_FILE_LIMIT } from '../adapters/repository';
 import { ClubNavigation } from './ClubNavigation';
 import { ApprovalInboxHost, ClubOverviewHost, OfficeOverviewHost } from './OfficeOverviewHost';
@@ -55,8 +58,8 @@ import { useGlossary } from './metricGlossary';
 import { useNewsSheet } from './NewsFeed';
 import { CelebrationHost } from './Celebration';
 const CupsView = lazy(() => import('./CupsView').then((module) => ({ default: module.CupsView })));
-import { TeamSheetHost } from './TeamSheet';
-import { PlayerSheetHost } from './PlayerSheet';
+import { ClubDetailHost } from '../widgets/club-detail';
+import { PlayerDetailHost } from '../widgets/player-detail';
 import { MANAGER_GONE } from '../../../../packages/engine/src/staff-info';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
@@ -67,6 +70,7 @@ const AwaySummary = lazy(() =>
   import('./AwaySummary').then((module) => ({ default: module.AwaySummary })),
 );
 function AwayHost({ controller }: { controller: ProgressionController }) {
+  useTextLocale();
   const away = useProgression(controller, (state) => !!state.away);
   return away ? (
     <Suspense fallback={null}>
@@ -147,6 +151,7 @@ function useMarketOpen() {
   return page === 'firstTeam' && market;
 }
 function NavIcon({ page }: { page: NavEntry }) {
+  useTextLocale();
   const names: Record<NavEntry, PixelIconName> = {
     market: 'switch',
     dashboard: 'home',
@@ -167,6 +172,7 @@ function NavIcon({ page }: { page: NavEntry }) {
   return <PixelIcon name={names[page]} size={20} className={s.navIcon} />;
 }
 export function Crest({ color = '#b4c399' }: { color?: string }) {
+  useTextLocale();
   return <span className={s.crest} style={{ backgroundColor: color }} aria-hidden="true" />;
 }
 export function Panel({
@@ -183,25 +189,29 @@ export function Panel({
   children: ReactNode;
   footer?: ReactNode;
 }) {
+  useTextLocale();
   return (
     <section data-surface="panel" data-ui="content-panel" className={s.panel}>
       <div data-ui="panel-header" className={s.panelHead}>
         <div className={s.panelHeading}>
-          <h3>{title}</h3>
-          {note && <span>{note}</span>}
+          <h3>{localizeValue(title)}</h3>
+          {localizeValue(note && <span>{localizeValue(note)}</span>)}
         </div>
-        {action}
+        {localizeValue(action)}
       </div>
-      {children}
-      {footer && (
-        <div data-ui="panel-footer" className={s.panelFoot}>
-          {footer}
-        </div>
+      {localizeValue(children)}
+      {localizeValue(
+        footer && (
+          <div data-ui="panel-footer" className={s.panelFoot}>
+            {localizeValue(footer)}
+          </div>
+        ),
       )}
     </section>
   );
 }
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
+  useTextLocale();
   return <Standings w={w} ids={ids} limit={limit} />;
 }
 const selectContentWorld = worldSelector([
@@ -296,6 +306,7 @@ const ConnectedStart = memo(function ConnectedStart({
   onBack?: () => void;
   onDone: () => void;
 }) {
+  useTextLocale();
   const busy = useGameState((state) => state.busy);
   const readonly = useGameState((state) => state.readonly);
   const failed = useGameState((state) => !!state.error);
@@ -304,7 +315,7 @@ const ConnectedStart = memo(function ConnectedStart({
   if (loading)
     return (
       <div className={s.loading} role="status">
-        세계를 준비하고 있어요…
+        {richMessage('copy.App.da5941981e')}
       </div>
     );
   return (
@@ -321,7 +332,7 @@ const ConnectedStart = memo(function ConnectedStart({
       fortune={start?.fortune}
       error={start?.error}
       onGenerate={(choice) => void client.generate(choice, replace)}
-      loadClub={(clubId) => client.clubSheet(clubId)}
+      loadClub={(clubId) => client.startClubProfile(clubId)}
       onTakeOver={(clubId) =>
         void client.takeOver(clubId).then((reply) => {
           if (reply?.ok) onDone();
@@ -331,6 +342,7 @@ const ConnectedStart = memo(function ConnectedStart({
   );
 });
 const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client: GameClient }) {
+  useTextLocale();
   const state = useContentState();
   const w = state.view!.world;
   const { t } = useLocale();
@@ -338,7 +350,7 @@ const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client
     <Suspense
       fallback={
         <div className={s.loading} role="status">
-          {t('shell.loadingView')}
+          {localizeValue(t('shell.loadingView'))}
         </div>
       }
     >
@@ -347,13 +359,14 @@ const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client
   );
 });
 const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
+  useTextLocale();
   const state = useContentState();
   const page = useNavigation((state) => state.page);
   const visited = useRef(false);
   if (page === 'europe' || page === 'cupHistory') visited.current = true;
   if (!visited.current) return null;
   return (
-    <Suspense fallback={<p role="status">컵 대회를 불러오고 있어요.</p>}>
+    <Suspense fallback={<p role="status">{richMessage('copy.App.3517432bfc')}</p>}>
       <CupsView w={state.view!.world} coefficient={state.view!.coefficient} client={client} />
     </Suspense>
   );
@@ -368,13 +381,14 @@ const ConnectedRich = memo(function ConnectedRich({
   controller: ProgressionController;
   page: Page;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const state = useContentState();
   return (
     <Suspense
       fallback={
         <div className={s.loading} role="status">
-          {t('shell.loadingView')}
+          {localizeValue(t('shell.loadingView'))}
         </div>
       }
     >
@@ -393,6 +407,7 @@ const GameHud = memo(function GameHud({
   /** A new game, even beside a parked one, shows the start HUD: no club, menu, inbox or cash. */
   playing: boolean;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const own = useGameState((state) =>
     playing
@@ -408,51 +423,66 @@ const GameHud = memo(function GameHud({
   const dated = useNavigation((state) => state.page !== 'match');
   return (
     <header className={s.hud}>
-      {playing && (
-        <button
-          data-ui="icon"
-          className={s.hudMenu}
-          aria-label={t('shell.menu')}
-          onClick={(event) => {
-            event.currentTarget.focus();
-            onMenu();
-          }}
-        >
-          <PixelIcon name="menu" size={20} />
-        </button>
+      {localizeValue(
+        playing && (
+          <button
+            data-ui="icon"
+            className={s.hudMenu}
+            aria-label={localizeValue(t('shell.menu'))}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              onMenu();
+            }}
+          >
+            <PixelIcon name="menu" size={20} />
+          </button>
+        ),
       )}
       <div className={s.hudClub} data-ui="hud-club">
-        {own && crestWorld ? (
-          <ClubCrest w={crestWorld} id={own.id} size={26} className={s.hudCrest} />
-        ) : (
-          <Crest color={own?.color} />
+        {localizeValue(
+          own && crestWorld ? (
+            <ClubCrest w={crestWorld} id={own.id} size={26} className={s.hudCrest} />
+          ) : (
+            <Crest color={own?.color} />
+          ),
         )}
         <div>
-          <b className={own ? s.hudClubName : undefined}>{own?.name || 'Haeram Football'}</b>
+          <b className={own ? s.hudClubName : undefined}>
+            {localizeValue(own?.name || 'Haeram Football')}
+          </b>
           {/* Beside the club name in play; beside the game's name with its version elsewhere. */}
           <BetaMark version={!own} />
-          {!own && <small data-testid="calendar">{WORLD_START} · A NEW OWNER</small>}
+          {localizeValue(
+            !own && (
+              <small data-testid="calendar">
+                {richMessage('copy.App.a34829c99d', { p0: localizeValue(WORLD_START) })}
+              </small>
+            ),
+          )}
         </div>
       </div>
-      {today && (
-        <span
-          className={s.hudDate}
-          data-ui="hud-date"
-          data-testid={dated ? 'calendar' : undefined}
-          data-season={season}
-        >
-          <span data-testid={dated ? 'game-date' : undefined}>{today}</span>
-        </span>
+      {localizeValue(
+        today && (
+          <span
+            className={s.hudDate}
+            data-ui="hud-date"
+            data-testid={dated ? 'calendar' : undefined}
+            data-season={season}
+          >
+            <span data-testid={dated ? 'game-date' : undefined}>{localizeValue(today)}</span>
+          </span>
+        ),
       )}
       <ReadonlyBadge />
-      {!playing && <PresentationSettingsTrigger />}
-      {playing && <HudCash client={client} />}
-      {playing && <CommunicationsButton className={s.hudNotifications} />}
+      {localizeValue(!playing && <PresentationSettingsTrigger />)}
+      {localizeValue(playing && <HudCash client={client} />)}
+      {localizeValue(playing && <CommunicationsButton className={s.hudNotifications} />)}
     </header>
   );
 });
 /** Read-only ownership is a small HUD badge that explains itself on tap (→WEB-10). */
 function ReadonlyBadge() {
+  useTextLocale();
   const { t } = useLocale();
   const readonly = useGameState((state) => state.readonly && !!state.view);
   const notice = useGameState((state) => state.notice);
@@ -461,11 +491,11 @@ function ReadonlyBadge() {
   const text = notice || t('shell.readonlyNotice');
   return (
     <span className={s.readonlyBadge} role="status">
-      <button aria-expanded={open} title={text} onClick={() => setOpen(!open)}>
+      <button aria-expanded={open} title={localizeValue(text)} onClick={() => setOpen(!open)}>
         <PixelIcon name="eye" size={14} />
-        {t('shell.readonly')}
+        {localizeValue(t('shell.readonly'))}
       </button>
-      <span className={open ? s.readonlyDetail : s.srOnly}>{text}</span>
+      <span className={open ? s.readonlyDetail : s.srOnly}>{localizeValue(text)}</span>
     </span>
   );
 }
@@ -481,6 +511,7 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   playing: boolean;
   onDownload: () => Promise<void>;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const state = useGameState((state) => state);
   const critical = playing ? state.view?.world.critical : undefined;
@@ -488,53 +519,66 @@ const RuntimeFeedback = memo(function RuntimeFeedback({
   const error = state.error || localError;
   return (
     <>
-      {(error || critical) && (
-        <FeedbackOverlay urgent>
-          {error && (
-            <div data-surface="inset" className={s.error} role="alert">
-              {error}
-              <button onClick={() => location.reload()}>{t('save.reload')}</button>
-              {state.error && !playing && (
-                <button disabled={state.busy} onClick={() => void onDownload()}>
-                  {t('save.exportRecovery')}
-                </button>
-              )}
-            </div>
-          )}
-          {critical === MANAGER_GONE ? (
-            <div data-surface="inset" className={s.critical} role="status">
-              감독이 떠났어요. 임시 감독이 팀을 맡고 있어요.
-              <div className={s.criticalActions}>
-                <button
-                  data-ui="primary"
-                  className={s.primary}
-                  disabled={blocked}
-                  onClick={() => {
-                    void client.acknowledge();
-                    openPeople('candidates');
-                  }}
-                >
-                  감독 선임하러 가기
-                </button>
-                <button disabled={blocked} onClick={() => void client.acknowledge()}>
-                  임시 감독으로 계속
-                </button>
-              </div>
-            </div>
-          ) : (
-            critical && (
-              <div data-surface="inset" className={s.critical} role="status">
-                {critical}
-                <button disabled={blocked} onClick={() => void client.acknowledge()}>
-                  알림 확인 후 계속
-                </button>
-              </div>
-            )
-          )}
-        </FeedbackOverlay>
+      {localizeValue(
+        (error || critical) && (
+          <FeedbackOverlay urgent>
+            {localizeValue(
+              error && (
+                <div data-surface="inset" className={s.error} role="alert">
+                  {localizeValue(error)}
+                  <button onClick={() => location.reload()}>
+                    {localizeValue(t('save.reload'))}
+                  </button>
+                  {localizeValue(
+                    state.error && !playing && (
+                      <button disabled={state.busy} onClick={() => void onDownload()}>
+                        {localizeValue(t('save.exportRecovery'))}
+                      </button>
+                    ),
+                  )}
+                </div>
+              ),
+            )}
+            {localizeValue(
+              critical === MANAGER_GONE ? (
+                <div data-surface="inset" className={s.critical} role="status">
+                  {richMessage('copy.App.7252955d92', {
+                    p0: (
+                      <div className={s.criticalActions}>
+                        <button
+                          data-ui="primary"
+                          className={s.primary}
+                          disabled={blocked}
+                          onClick={() => {
+                            void client.acknowledge();
+                            openPeople('candidates');
+                          }}
+                        >
+                          {richMessage('copy.App.e9e9c5997e')}
+                        </button>
+                        <button disabled={blocked} onClick={() => void client.acknowledge()}>
+                          {richMessage('copy.App.b78e7fcc88')}
+                        </button>
+                      </div>
+                    ),
+                  })}
+                </div>
+              ) : (
+                critical && (
+                  <div data-surface="inset" className={s.critical} role="status">
+                    {localizeValue(critical)}
+                    <button disabled={blocked} onClick={() => void client.acknowledge()}>
+                      {richMessage('copy.App.d5321ec391')}
+                    </button>
+                  </div>
+                )
+              ),
+            )}
+          </FeedbackOverlay>
+        ),
       )}
       {/* Routine notices remain in the inbox; debt retains its status band on every view. */}
-      {playing && <CashAlarm />}
+      {localizeValue(playing && <CashAlarm />)}
     </>
   );
 });
@@ -578,15 +622,17 @@ function useSaveText(playing = true, detail: 'full' | 'brief' = 'full') {
     : t('save.status', { saved, revision: w.revision, status: t(`save.price.${status}`) });
 }
 const AccessibleSaveStatus = memo(function AccessibleSaveStatus() {
+  useTextLocale();
   const text = useSaveText();
   return (
     <span className={s.srOnly} data-testid="save-status">
-      {text}
+      {localizeValue(text)}
     </span>
   );
 });
 function SaveStatus() {
-  return <p className={s.menuSave}>{useSaveText(true, 'brief')}</p>;
+  useTextLocale();
+  return <p className={s.menuSave}>{localizeValue(useSaveText(true, 'brief'))}</p>;
 }
 function SaveActions({
   client,
@@ -601,41 +647,48 @@ function SaveActions({
   onImport: (file?: File) => Promise<void>;
   onSlots?: () => void;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const state = useGameState((state) => state);
   const w = state.view?.world;
   return (
     <div className={compact ? s.sideFoot : s.actions}>
-      {compact && (
-        <>
-          {t('save.localNotice')}
-          <br />
-          {t('save.fileNotice')}
-        </>
+      {localizeValue(
+        compact && (
+          <>
+            {localizeValue(t('save.localNotice'))}
+            <br />
+            {localizeValue(t('save.fileNotice'))}
+          </>
+        ),
       )}
       <button
         data-ui={compact ? undefined : 'navigation'}
         disabled={(!w && !state.error) || state.busy}
         onClick={() => void onDownload()}
       >
-        {t(compact ? 'save.exportCompact' : 'save.export')}
+        {localizeValue(t(compact ? 'save.exportCompact' : 'save.export'))}
       </button>
-      {!compact && w && onSlots && (
-        <button data-ui="navigation" onClick={onSlots}>
-          {t('slots.title')}
-        </button>
+      {localizeValue(
+        !compact && w && onSlots && (
+          <button data-ui="navigation" onClick={onSlots}>
+            {localizeValue(t('slots.title'))}
+          </button>
+        ),
       )}
-      {!compact && w && state.saveFailed && state.savedRevision !== w.revision && (
-        <button
-          data-ui="navigation"
-          disabled={state.busy || state.readonly}
-          onClick={() => void client.retrySave()}
-        >
-          {t('save.retry')}
-        </button>
+      {localizeValue(
+        !compact && w && state.saveFailed && state.savedRevision !== w.revision && (
+          <button
+            data-ui="navigation"
+            disabled={state.busy || state.readonly}
+            onClick={() => void client.retrySave()}
+          >
+            {localizeValue(t('save.retry'))}
+          </button>
+        ),
       )}
       <label className={s.fileButton}>
-        {t('save.import')}
+        {localizeValue(t('save.import'))}
         <input
           className={s.fileInput}
           type="file"
@@ -651,12 +704,13 @@ function SaveActions({
   );
 }
 function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) {
+  useTextLocale();
   const { t } = useLocale();
   const state = useGameState((state) => state);
   return (
     <div className={s.startTools}>
       <label className={s.fileButton}>
-        {t('save.importFile')}
+        {localizeValue(t('save.importFile'))}
         <input
           className={s.fileInput}
           type="file"
@@ -672,6 +726,7 @@ function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) 
   );
 }
 export function App() {
+  useTextLocale();
   const { t } = useLocale();
   const importBlocked = useGameState((state) => gameActionsBlocked(state, { recovery: true }));
   const progressionBlocked = useGameState(gameActionsBlocked);
@@ -704,9 +759,7 @@ export function App() {
   useEffect(() => {
     try {
       if (!isSecureContext || !crypto.subtle || !crypto.randomUUID)
-        throw new Error(
-          '게임 저장은 HTTPS 또는 localhost에서 이용할 수 있습니다. localhost로 접속하거나 HTTPS 배포를 사용하세요.',
-        );
+        throw new Error(sourceMessage('copy.App.dcae7e4e35'));
       const c = new GameClient((state) => gameStore.publish(state, { viewShared: true }));
       const progression = new ProgressionController(c);
       const library = new GameSlots(c);
@@ -754,9 +807,11 @@ export function App() {
     id === 'dashboard' && officePending > 0 ? (
       <>
         <b data-ui="count" className={s.navCount} aria-hidden="true">
-          {officePending > 99 ? '99+' : officePending}
+          {localizeValue(officePending > 99 ? '99+' : officePending)}
         </b>
-        <span className={s.srOnly}> · 결재 대기 {officePending}건</span>
+        <span className={s.srOnly}>
+          {richMessage('copy.App.eb5ef51fb1', { p0: officePending })}
+        </span>
       </>
     ) : null;
   // Every world that comes into play joins the slot index (→SAVE-14).
@@ -929,227 +984,278 @@ export function App() {
       <aside className={s.sidebar} data-ui="sidebar">
         <div className={s.brand}>
           <i className={s.brandSignal} aria-hidden="true" />
-          <h1>HAERAM</h1>
-          <span>FOOTBALL MANAGER</span>
-          <small>A CLUB. A CENTURY.</small>
+          <h1>{richMessage('copy.App.5d8aae0c5c')}</h1>
+          <span>{richMessage('copy.App.f7f99c9d5d')}</span>
+          <small>{richMessage('copy.App.367aa4e689')}</small>
         </div>
-        <nav className={s.nav} aria-label={t('shell.navigation')}>
-          {NAV.map(([id, label]) => (
-            <button
-              data-ui="navigation"
-              key={id}
-              disabled={menuDisabled}
-              aria-current={current(id) ? 'page' : undefined}
-              className={current(id) ? s.active : undefined}
-              onClick={() => openPrimary(id)}
-            >
-              <NavIcon page={id} />
-              {t(label)}
-              {officeBadge(id)}
-            </button>
-          ))}
+        <nav className={s.nav} aria-label={localizeValue(t('shell.navigation'))}>
+          {localizeValue(
+            NAV.map(([id, label]) => (
+              <button
+                data-ui="navigation"
+                key={id}
+                disabled={menuDisabled}
+                aria-current={current(id) ? 'page' : undefined}
+                className={current(id) ? s.active : undefined}
+                onClick={() => openPrimary(id)}
+              >
+                <NavIcon page={id} />
+                {localizeValue(t(label))}
+                {localizeValue(officeBadge(id))}
+              </button>
+            )),
+          )}
         </nav>
-        {client && !playing && (
-          <SaveActions client={client} compact onDownload={download} onImport={importFile} />
+        {localizeValue(
+          client && !playing && (
+            <SaveActions client={client} compact onDownload={download} onImport={importFile} />
+          ),
         )}
       </aside>
       <main className={s.main}>
-        {screen === 'game' && <GameHud client={client} onMenu={openMenu} playing={playing} />}
-        {!client && localError && (
-          <FeedbackOverlay>
-            <div data-surface="inset" className={s.error} role="alert">
-              {localError}
-            </div>
-          </FeedbackOverlay>
+        {localizeValue(
+          screen === 'game' && <GameHud client={client} onMenu={openMenu} playing={playing} />,
         )}
-        {client && screen === 'game' && (
-          <RuntimeFeedback
-            client={client}
-            localError={localError}
-            playing={playing}
-            onDownload={download}
-          />
+        {localizeValue(
+          !client && localError && (
+            <FeedbackOverlay>
+              <div data-surface="inset" className={s.error} role="alert">
+                {localizeValue(localError)}
+              </div>
+            </FeedbackOverlay>
+          ),
+        )}
+        {localizeValue(
+          client && screen === 'game' && (
+            <RuntimeFeedback
+              client={client}
+              localError={localError}
+              playing={playing}
+              onDownload={download}
+            />
+          ),
         )}
         <div ref={scroller} className={s.scroller} data-testid="view-scroller">
-          {client && controller && playing && !careerOver(w) && page !== 'match' && (
-            <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
+          {localizeValue(
+            client && controller && playing && !careerOver(w) && page !== 'match' && (
+              <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
+            ),
           )}
-          {client && controller ? (
-            screen === 'slots' && slots ? (
-              <Suspense
-                fallback={
-                  <div className={s.loading} role="status">
-                    {t('shell.loadingSlots')}
-                  </div>
-                }
-              >
-                <GameSlotScreen
-                  slots={slots}
-                  onEnter={enterGame}
-                  onNew={startNew}
-                  onExport={saveFile}
-                  onRemovedInPlay={reloadToSlots}
-                />
-              </Suspense>
-            ) : !w || replacing ? (
-              // One start session per slot: another slot never inherits its choices.
-              <ConnectedStart
-                key={foundingSlot()}
-                client={client}
-                replace={replacing}
-                slot={foundingSlot()}
-                onBack={slots?.read().slots.some(Boolean) ? openSlots : undefined}
-                onDone={() => {
-                  setReplacing(false);
-                  setTargetSlot(undefined);
-                  // A new career always opens on home, whatever address the start was reached at.
-                  replacePage('dashboard');
-                }}
-              />
-            ) : careerOver(w) ? (
-              <GameOver
-                w={w}
-                onExport={() => void download()}
-                onNew={() => void startNew(slots?.read().active ?? 0)}
-                onSlots={openSlots}
-              />
-            ) : (
-              <>
-                {changingView && (
-                  <div data-surface="inset" className={s.viewPending} role="status">
-                    {t('shell.loadingView')}
-                  </div>
-                )}
-                <div className={s.views} aria-busy={changingView}>
-                  <ClubNavigation page={page} />
-                  <div
-                    className={s.coreContent}
-                    hidden={contentPage !== 'dashboard'}
-                    inert={changingView}
-                  >
-                    <ConnectedDashboard client={client} />
-                  </div>
-                  <div id="competition-hub-panel" className={s.views} inert={changingView}>
-                    <LiveSeason
-                      key={worldId}
-                      page={contentPage}
-                      client={client}
-                      controller={controller}
-                    />
-                    <div hidden={contentPage !== 'europe' && contentPage !== 'cupHistory'}>
-                      <ConnectedEurope client={client} />
+          {localizeValue(
+            client && controller ? (
+              screen === 'slots' && slots ? (
+                <Suspense
+                  fallback={
+                    <div className={s.loading} role="status">
+                      {localizeValue(t('shell.loadingSlots'))}
                     </div>
-                    {(
-                      [
-                        'team',
-                        'firstTeam',
-                        'academy',
-                        'staff',
-                        'training',
-                        'operations',
-                        'business',
-                        'history',
-                      ] as Page[]
-                    ).includes(contentPage) && (
-                      <ConnectedRich page={contentPage} client={client} controller={controller} />
-                    )}
-                  </div>
-                </div>
-              </>
-            )
-          ) : (
-            <div className={s.loading}>{t('shell.loadingOffice')}</div>
-          )}
-          {client && screen === 'game' && (!w || replacing) && <StartTools onImport={importFile} />}
-        </div>
-        {client && controller && playing && !careerOver(w) && page !== 'match' && (
-          <ProgressControls client={client} controller={controller} />
-        )}
-      </main>
-      {playing && <AccessibleSaveStatus />}
-      <nav ref={mobileNavigation} className={s.mobileNav} aria-label={t('shell.mobileNavigation')}>
-        {BOTTOM_ORDER.map((id) => {
-          const [, label, full] = TABS.find(([tab]) => tab === id)!;
-          return (
-            <button
-              data-ui="navigation"
-              key={id}
-              aria-label={t(full)}
-              aria-current={current(id) ? 'page' : undefined}
-              className={id === 'dashboard' ? s.homeTab : undefined}
-              disabled={menuDisabled}
-              onClick={() => openPrimary(id)}
-            >
-              <NavIcon page={id} />
-              <span>{t(label)}</span>
-              {officeBadge(id)}
-            </button>
-          );
-        })}
-      </nav>
-      {client && playing && <ActionOutcome />}
-      {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
-      {client && playing && <CommunicationsCenter key={w.id} client={client} />}
-      {moreOpen && (
-        <AppMenu
-          onClose={() => setMoreOpen(false)}
-          onNews={() => showNews('notifications')}
-          onGuide={() => setGuideOpen(true)}
-          onGlossary={showGlossary}
-          saveTools={
-            <>
-              <SaveStatus />
-              {client && (
-                <SaveActions
+                  }
+                >
+                  <GameSlotScreen
+                    slots={slots}
+                    onEnter={enterGame}
+                    onNew={startNew}
+                    onExport={saveFile}
+                    onRemovedInPlay={reloadToSlots}
+                  />
+                </Suspense>
+              ) : !w || replacing ? (
+                // One start session per slot: another slot never inherits its choices.
+                <ConnectedStart
+                  key={foundingSlot()}
                   client={client}
-                  onDownload={download}
-                  onImport={importFile}
+                  replace={replacing}
+                  slot={foundingSlot()}
+                  onBack={slots?.read().slots.some(Boolean) ? openSlots : undefined}
+                  onDone={() => {
+                    setReplacing(false);
+                    setTargetSlot(undefined);
+                    // A new career always opens on home, whatever address the start was reached at.
+                    replacePage('dashboard');
+                  }}
+                />
+              ) : careerOver(w) ? (
+                <GameOver
+                  w={w}
+                  onExport={() => void download()}
+                  onNew={() => void startNew(slots?.read().active ?? 0)}
                   onSlots={openSlots}
                 />
-              )}
-            </>
-          }
-        />
+              ) : (
+                <>
+                  {localizeValue(
+                    changingView && (
+                      <div data-surface="inset" className={s.viewPending} role="status">
+                        {localizeValue(t('shell.loadingView'))}
+                      </div>
+                    ),
+                  )}
+                  <div className={s.views} aria-busy={changingView}>
+                    <ClubNavigation page={page} />
+                    <div
+                      className={s.coreContent}
+                      hidden={contentPage !== 'dashboard'}
+                      inert={changingView}
+                    >
+                      <ConnectedDashboard client={client} />
+                    </div>
+                    <div id="competition-hub-panel" className={s.views} inert={changingView}>
+                      <LiveSeason
+                        key={worldId}
+                        page={contentPage}
+                        client={client}
+                        controller={controller}
+                      />
+                      <div hidden={contentPage !== 'europe' && contentPage !== 'cupHistory'}>
+                        <ConnectedEurope client={client} />
+                      </div>
+                      {localizeValue(
+                        (
+                          [
+                            'team',
+                            'firstTeam',
+                            'academy',
+                            'staff',
+                            'training',
+                            'operations',
+                            'business',
+                            'history',
+                          ] as Page[]
+                        ).includes(contentPage) && (
+                          <ConnectedRich
+                            page={contentPage}
+                            client={client}
+                            controller={controller}
+                          />
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </>
+              )
+            ) : (
+              <div className={s.loading}>{localizeValue(t('shell.loadingOffice'))}</div>
+            ),
+          )}
+          {localizeValue(
+            client && screen === 'game' && (!w || replacing) && (
+              <StartTools onImport={importFile} />
+            ),
+          )}
+        </div>
+        {localizeValue(
+          client && controller && playing && !careerOver(w) && page !== 'match' && (
+            <ProgressControls client={client} controller={controller} />
+          ),
+        )}
+      </main>
+      {localizeValue(playing && <AccessibleSaveStatus />)}
+      <nav
+        ref={mobileNavigation}
+        className={s.mobileNav}
+        aria-label={localizeValue(t('shell.mobileNavigation'))}
+      >
+        {localizeValue(
+          BOTTOM_ORDER.map((id) => {
+            const [, label, full] = TABS.find(([tab]) => tab === id)!;
+            return (
+              <button
+                data-ui="navigation"
+                key={id}
+                aria-label={localizeValue(t(full))}
+                aria-current={current(id) ? 'page' : undefined}
+                className={id === 'dashboard' ? s.homeTab : undefined}
+                disabled={menuDisabled}
+                onClick={() => openPrimary(id)}
+              >
+                <NavIcon page={id} />
+                <span>{localizeValue(t(label))}</span>
+                {localizeValue(officeBadge(id))}
+              </button>
+            );
+          }),
+        )}
+      </nav>
+      {localizeValue(client && playing && <ActionOutcome />)}
+      {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
+      {localizeValue(client && playing && <CommunicationsCenter key={w.id} client={client} />)}
+      {localizeValue(
+        moreOpen && (
+          <AppMenu
+            onClose={() => setMoreOpen(false)}
+            onNews={() => showNews('notifications')}
+            onGuide={() => setGuideOpen(true)}
+            onGlossary={showGlossary}
+            saveTools={
+              <>
+                <SaveStatus />
+                {localizeValue(
+                  client && (
+                    <SaveActions
+                      client={client}
+                      onDownload={download}
+                      onImport={importFile}
+                      onSlots={openSlots}
+                    />
+                  ),
+                )}
+              </>
+            }
+          />
+        ),
       )}
-      {guideOpen && w && (
-        <Suspense fallback={null}>
-          <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
-        </Suspense>
+      {localizeValue(
+        guideOpen && w && (
+          <Suspense fallback={null}>
+            <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
+          </Suspense>
+        ),
       )}
       <GlossaryHost />
-      {client && playing && <TeamSheetHost client={client} />}
-      {playing && client && <PlayerSheetHost client={client} />}
-      {playing && client && controller && (
-        <>
-          <ClubOverviewHost />
-          <OfficeOverviewHost client={client} controller={controller} />
-          <ApprovalInboxHost client={client} controller={controller} />
-        </>
+      {localizeValue(client && playing && <ClubDetailHost client={client} />)}
+      {localizeValue(playing && client && <PlayerDetailHost client={client} />)}
+      {localizeValue(
+        playing && client && controller && (
+          <>
+            <ClubOverviewHost />
+            <OfficeOverviewHost client={client} controller={controller} />
+            <ApprovalInboxHost client={client} controller={controller} />
+          </>
+        ),
       )}
-      {playing && <CelebrationHost />}
-      {playing && controller && <AwayHost controller={controller} />}
-      {pendingImport && (
-        <Dialog label={t('save.confirmImport')} onClose={() => setPendingImport(undefined)}>
-          <h2>{t('save.importQuestion')}</h2>
-          <p>{t('save.importNotice')}</p>
-          <div className={s.actions}>
-            <button onClick={() => void download()}>{t('save.exportCurrent')}</button>
-            <button onClick={() => setPendingImport(undefined)}>{t('common.cancel')}</button>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={importBlocked}
-              onClick={() => {
-                if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
-                const raw = pendingImport;
-                setPendingImport(undefined);
-                void client?.importFile(raw);
-              }}
-            >
-              {t('save.replaceAndImport')}
-            </button>
-          </div>
-        </Dialog>
+      {localizeValue(playing && <CelebrationHost />)}
+      {localizeValue(playing && controller && <AwayHost controller={controller} />)}
+      {localizeValue(
+        pendingImport && (
+          <Dialog
+            label={localizeValue(t('save.confirmImport'))}
+            onClose={() => setPendingImport(undefined)}
+          >
+            <h2>{localizeValue(t('save.importQuestion'))}</h2>
+            <p>{localizeValue(t('save.importNotice'))}</p>
+            <div className={s.actions}>
+              <button onClick={() => void download()}>
+                {localizeValue(t('save.exportCurrent'))}
+              </button>
+              <button onClick={() => setPendingImport(undefined)}>
+                {localizeValue(t('common.cancel'))}
+              </button>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={importBlocked}
+                onClick={() => {
+                  if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
+                  const raw = pendingImport;
+                  setPendingImport(undefined);
+                  void client?.importFile(raw);
+                }}
+              >
+                {localizeValue(t('save.replaceAndImport'))}
+              </button>
+            </div>
+          </Dialog>
+        ),
       )}
     </div>
   );

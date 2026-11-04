@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { hasOwner } from './owner';
 import { decideCoachingIntention, initializeCoaching } from './coaching-entry';
 import {
@@ -94,7 +95,7 @@ function careerLine(w: World, p: Player) {
   const apps = w.ownMatches.filter((m) =>
     m.players.some((line) => line.id === p.id && line.metrics[10]! > 0),
   ).length;
-  return `우리 클럽 ${apps}경기 ${p.career[0]}골 ${p.career[1]}도움`;
+  return sourceMessage('copy.careers.62fb838450', { p0: apps, p1: p.career[0], p2: p.career[1] });
 }
 
 /** 1 April: each veteran decides, from his own stream, whether to stop at the season's end. */
@@ -114,13 +115,17 @@ export function announceRetirements(w: World) {
     addEvent(
       w,
       'retirement-announce',
-      `${p.name} 은퇴 발표`,
-      `${age}세 · 이번 시즌을 끝으로 은퇴 · ${careerLine(w, p)}`,
+      sourceMessage('copy.careers.e1e5c40770', { p0: p.name }),
+      sourceMessage('copy.careers.955985f96c', { p0: age, p1: careerLine(w, p) }),
     );
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${p.name}, 이번 시즌 끝으로 은퇴`,
-      detail: `${p.position} · ${age}세 · ${careerLine(w, p)}. 시즌이 끝날 때까지 뛰고 떠나요. 이적시장에서 대체 선수를 준비하세요.`,
+      title: sourceMessage('copy.careers.18b4e2fb19', { p0: p.name }),
+      detail: sourceMessage('copy.careers.619c47459d', {
+        p0: p.position,
+        p1: age,
+        p2: careerLine(w, p),
+      }),
       attention: false,
       ref: p.id,
     });
@@ -140,7 +145,12 @@ export function retireAtClose(w: World) {
     retirePerson(w, person);
     delete p.stance;
     leaveContract(w, p);
-    addEvent(w, 'retirement', `${p.name}의 다음 장`, `${age}세 은퇴 · ${careerLine(w, p)}`);
+    addEvent(
+      w,
+      'retirement',
+      sourceMessage('copy.careers.a1549f3110', { p0: p.name }),
+      sourceMessage('copy.careers.8b93b53d6c', { p0: age, p1: careerLine(w, p) }),
+    );
   }
   for (const person of peopleOf(w)) {
     if (person.playing === 'retired' || person.club === w.playerClub) continue;
@@ -170,7 +180,7 @@ export function trainingInjuries(w: World, players: readonly Player[]) {
     if (p.status !== 'active' || isInjured(w, p)) continue;
     const r = random(`${w.seed}:training-injury:${w.year}:${w.round}:${p.id}`);
     if (r() >= trainingInjuryChance(p)) continue;
-    injure(w, p, r, '훈련 중 ');
+    injure(w, p, r, sourceMessage('copy.careers.a1e2bc1a06'));
   }
 }
 /** Days out and the name of an injury drawn from the table's bands (→CLUB-23). */
@@ -198,12 +208,16 @@ export function injure(w: World, p: Player, r: () => number, where = '') {
     w,
     'injury',
     `${p.name} ${where}${label}`,
-    `약 ${Math.max(1, Math.round(days / 7))}주 결장 · ${back} 복귀 예상`,
+    sourceMessage('copy.careers.ba3aa948d1', { p0: Math.max(1, Math.round(days / 7)), p1: back }),
   );
   pushInbox(w, {
     kind: 'staff-report',
-    title: `의료팀 보고: ${p.name} ${where}${label}`,
-    detail: `${p.position} · 약 ${Math.max(1, Math.round(days / 7))}주 결장 예상(${back} 복귀). 감독이 다른 선수로 선발을 짜요.`,
+    title: sourceMessage('copy.careers.4fcfea9488', { p0: p.name, p1: where, p2: label }),
+    detail: sourceMessage('copy.careers.68a0eac16e', {
+      p0: p.position,
+      p1: Math.max(1, Math.round(days / 7)),
+      p2: back,
+    }),
     attention: false,
     ref: p.id,
   });

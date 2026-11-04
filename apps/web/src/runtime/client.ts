@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { NewsItem } from '../../../../packages/contracts/src/news';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import type { Command, GenerationDigest, World } from '../../../../packages/contracts/src/types';
@@ -34,7 +35,7 @@ const GENERATION_STEP_MS = 600000;
 /** Automatic progress waits at most this long for its background save (→SAVE-8). */
 export const AUTOSAVE_MS = 30000;
 /** The writer's notice once an activated career's updated save data is committed (→WEB-66). */
-export const SAVE_DATA_UPDATED = '기존 기록을 보존하고 저장 데이터를 현재 형식으로 갱신했어요.';
+export const SAVE_DATA_UPDATED = sourceMessage('copy.client.424f709abd');
 /**
  * A new game on its way (→WEB-2, WEB-15): the start's choices, the season the world's generation
  * has reached, then every club on sale with the tier's fortune, or why the generation failed.
@@ -186,7 +187,8 @@ export class GameClient {
       localStorage,
       async (raw) => {
         const reply = await this.rpc({ type: 'inspect', raw, metadataOnly: true });
-        if (!reply.worldMetadata || !reply.envelope) throw new Error('저장 검증 응답 누락');
+        if (!reply.worldMetadata || !reply.envelope)
+          throw new Error(sourceMessage('copy.client.d9dbcef838'));
         return { world: reply.worldMetadata, envelope: reply.envelope };
       },
       // The writer loads with the first save, keeping it out of the entry (→ARCH-28).
@@ -205,7 +207,7 @@ export class GameClient {
     this.codec.onmessage = (event: MessageEvent<CodecResult>) => this.built(event.data);
     this.codec.onerror = () => {
       for (const id of [...this.builds.keys()])
-        this.built({ id, ok: false, error: '저장 Worker가 종료되었습니다.' });
+        this.built({ id, ok: false, error: sourceMessage('copy.client.f7f205cc44') });
     };
     this.startHelpers();
     this.channel.onmessage = (event) => this.refresh(event.data?.generation);
@@ -277,7 +279,7 @@ export class GameClient {
       pending.reject(
         r.errorCode === 'save-compatibility'
           ? new SaveCompatibilityError(r.error)
-          : new Error(r.error || 'Worker 오류'),
+          : new Error(r.error || sourceMessage('copy.client.aa2516a9e3')),
       );
   }
   private helpersFailed() {
@@ -314,8 +316,7 @@ export class GameClient {
   private failWorker() {
     this.failed = true;
     this.worker.terminate();
-    this.state.error =
-      '계산 Worker가 종료되었거나 응답하지 않습니다. 마지막 저장을 다시 불러오세요.';
+    this.state.error = sourceMessage('copy.client.0747dd4e85');
     this.state.busy = false;
     this.state.processing = false;
     this.state.activity = 'idle';
@@ -334,22 +335,20 @@ export class GameClient {
       this.state.busy = false;
       this.state.processing = false;
       this.state.activity = 'idle';
-      this.state.error =
-        '이 브라우저는 저장 압축을 지원하지 않습니다. 최신 Chrome, Firefox 또는 Safari에서 기록을 가져오세요.';
+      this.state.error = sourceMessage('copy.client.d09886a50b');
       this.emit();
       return;
     }
     if (!navigator.locks) {
       // No tab may write without the lock, so this one stays read-only and its badge says why.
-      this.state.notice =
-        '안전한 저장을 위해 Web Locks가 지원되는 HTTPS 또는 localhost 환경이 필요합니다.';
+      this.state.notice = sourceMessage('copy.client.2313251099');
       await this.enqueue(() => this.load());
       return;
     }
     await new Promise<void>((resolve) => {
       void navigator.locks.request('haeram-soccor:writer', { ifAvailable: true }, async (lock) => {
         this.state.readonly = !lock;
-        if (!lock) this.state.notice = '다른 탭이 플레이 중입니다. 이 탭은 읽기 전용입니다.';
+        if (!lock) this.state.notice = sourceMessage('shell.readonlyNotice');
         await this.enqueue(() => this.load());
         resolve();
         if (lock)
@@ -372,7 +371,7 @@ export class GameClient {
         if (!lock || this.failed) return;
         this.state.readonly = false;
         delete this.state.notice;
-        notificationStore.add('다른 탭이 닫혀 이 탭에서 이어서 플레이합니다.');
+        notificationStore.add(sourceMessage('copy.client.b912d5c1e3'));
         await this.enqueue(() => this.load());
         await new Promise<void>((done) => {
           this.release = done;
@@ -413,7 +412,7 @@ export class GameClient {
       this.state.saveFailed = false;
       // The writer tells; read-only tabs reloading the same checkpoint would only repeat it.
       if (result.recovered && !this.state.readonly)
-        notificationStore.add('이전의 정상 체크포인트로 복구했습니다.');
+        notificationStore.add(sourceMessage('copy.client.6138a2ccc4'));
       if (reply.upgraded && reply.raw) {
         try {
           await this.saves.commit(reply.raw);
@@ -433,9 +432,7 @@ export class GameClient {
           });
         } catch (error) {
           this.state.saveFailed = true;
-          throw new Error(
-            `현재 진행은 메모리에 있습니다. 갱신한 저장 데이터를 저장하지 못했어요: ${String(error)} · 파일로 내보내세요.`,
-          );
+          throw new Error(sourceMessage('copy.client.042fb5736b', { p0: String(error) }));
         }
       }
     }
@@ -497,10 +494,7 @@ export class GameClient {
     timeout = 15000,
     automatic = false,
   ): Promise<Reply> {
-    if (this.failed)
-      return Promise.reject(
-        new Error('Worker를 다시 불러오세요. 마지막 저장은 파일로 보관할 수 있습니다.'),
-      );
+    if (this.failed) return Promise.reject(new Error(sourceMessage('copy.client.3e8bd256a6')));
     return new Promise((resolve, reject) => {
       this.waiters.set(requestId, {
         resolve,
@@ -560,7 +554,7 @@ export class GameClient {
     return task;
   }
   private async mutate(body: Body, automatic = false) {
-    if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
+    if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
     // A new career's first world, the club taken over, is saved whole (→SAVE-3).
     const starts = body.type === 'take-over';
     if (starts) {
@@ -616,9 +610,7 @@ export class GameClient {
       }
     } catch (error) {
       this.saveWanted = false;
-      const failure = new Error(
-        `현재 진행은 메모리에 있습니다. 저장 실패: ${String(error)} · 파일로 내보내세요.`,
-      );
+      const failure = new Error(sourceMessage('copy.client.38dd719a53', { p0: String(error) }));
       this.state.error = String(failure);
       this.state.saveFailed = true;
       this.emit();
@@ -639,7 +631,12 @@ export class GameClient {
       this.builds.set(requestId, {
         resolve,
         timer: window.setTimeout(
-          () => this.built({ id: requestId, ok: false, error: '저장 Worker가 응답하지 않습니다.' }),
+          () =>
+            this.built({
+              id: requestId,
+              ok: false,
+              error: sourceMessage('copy.client.91046c8a4d'),
+            }),
           CODEC_TIMEOUT_MS,
         ),
       }),
@@ -700,17 +697,15 @@ export class GameClient {
       this.state.progress = 0;
       this.emit();
       try {
-        if (this.state.readonly) throw new Error('이 탭은 읽기 전용입니다.');
+        if (this.state.readonly) throw new Error(sourceMessage('copy.client.ef47a5dab0'));
         if (this.saves.incompatibleCheckpoint && !replace)
-          throw new SaveCompatibilityError(
-            '호환되지 않는 기록을 내보낸 뒤 명시적으로 새 세계로 교체하세요.',
-          );
+          throw new SaveCompatibilityError(sourceMessage('copy.client.d60567e568'));
         const reply = await this.rpc(
           { type: 'generate', choice, replace },
           undefined,
           GENERATION_STEP_MS,
         );
-        if (!reply.start) throw new Error('구단 목록 응답이 없습니다.');
+        if (!reply.start) throw new Error(sourceMessage('copy.client.e77af07eb2'));
         this.state.start = { ...this.state.start!, ...reply.start };
         return reply;
       } catch (error) {
@@ -736,10 +731,42 @@ export class GameClient {
       return reply;
     });
   }
-  /** A club's sheet in the generated world, read outside the command queue (→WEB-15). */
-  async clubSheet(clubId: string) {
-    const reply = await this.rpc({ type: 'club-sheet', clubId });
-    return reply.clubSheet;
+  /** A club's profile in the generated world, read outside the command queue (→WEB-15). */
+  async startClubProfile(clubId: string) {
+    const reply = await this.rpc({ type: 'club-profile', clubId });
+    return reply.clubProfile;
+  }
+  /** Any club's profile in the career shown (→WEB-58); one answered for another career is refused. */
+  async clubProfile(clubId: string) {
+    const world = this.careerWorld();
+    const reply = await this.read({ type: 'club-profile', clubId, world });
+    if (!reply.clubProfile) throw new Error(reply.error ?? sourceMessage('copy.client.2495f14743'));
+    if (this.state.view?.world.id !== world)
+      throw new Error(sourceMessage('copy.client.bb0388da59'));
+    return reply.clubProfile;
+  }
+  /**
+   * A first-team player of any club in the career shown, with the club he plays for (→WEB-59);
+   * `clubId`, where he was named, is looked at first.
+   */
+  async playerProfile(playerId: string, clubId?: string) {
+    const world = this.careerWorld();
+    const reply = await this.read({
+      type: 'player-profile',
+      playerId,
+      world,
+      ...(clubId ? { clubId } : {}),
+    });
+    if (!reply.playerProfile)
+      throw new Error(reply.error ?? sourceMessage('copy.client.da8045ca44'));
+    if (this.state.view?.world.id !== world)
+      throw new Error(sourceMessage('copy.client.66590a4777'));
+    return reply.playerProfile;
+  }
+  private careerWorld() {
+    const world = this.state.view?.world.id;
+    if (!world) throw new Error(sourceMessage('copy.client.a198ec6115'));
+    return world;
   }
   /** Leaves a new game before its takeover; the worker drops its world with the next start. */
   leaveStart() {
@@ -828,7 +855,7 @@ export class GameClient {
   /** Season and manager records are reads; refreshing them never holds the clock or sets busy. */
   async newsPage(before?: string, tag?: NewsItem['tag']) {
     const world = this.state.view?.world.id;
-    if (!world) throw new Error('먼저 클럽을 창단하세요.');
+    if (!world) throw new Error(sourceMessage('copy.client.c4072852b5'));
     const reply = await this.read({
       type: 'news-page',
       world,
@@ -836,9 +863,9 @@ export class GameClient {
       ...(tag ? { tag } : {}),
     });
     if (!reply.ok || !reply.newsPage)
-      throw new Error(reply.error ?? '뉴스 기록을 불러오지 못했어요.');
+      throw new Error(reply.error ?? sourceMessage('copy.client.61c0310bdd'));
     if (this.state.view?.world.id !== world || reply.newsPage.world !== world)
-      throw new Error('다른 커리어의 뉴스입니다.');
+      throw new Error(sourceMessage('copy.client.b5f5102d65'));
     return reply.newsPage;
   }
   async archive(year: number) {
@@ -847,17 +874,19 @@ export class GameClient {
   async recruitmentHistory() {
     const reply = await this.read({ type: 'recruitment-history' });
     if (!reply.recruitmentHistory)
-      throw new Error(reply.error ?? '영입 결정 기록 응답이 없습니다.');
+      throw new Error(reply.error ?? sourceMessage('copy.client.77f448d4c3'));
     return reply.recruitmentHistory;
   }
   async mediationPreview(id: string, support: 'director' | 'balanced' | 'manager') {
     const reply = await this.read({ type: 'mediation-preview', id, support });
-    if (!reply.mediationPreview) throw new Error(reply.error ?? '중재 미리보기 응답이 없습니다.');
+    if (!reply.mediationPreview)
+      throw new Error(reply.error ?? sourceMessage('copy.client.5f4238fea0'));
     return reply.mediationPreview;
   }
   async personCareer(person: string) {
     const reply = await this.read({ type: 'person-career', person });
-    if (!reply.personCareer) throw new Error(reply.error ?? '인물 경력 응답이 없습니다.');
+    if (!reply.personCareer)
+      throw new Error(reply.error ?? sourceMessage('copy.client.3e6c4c1970'));
     return reply.personCareer;
   }
   /**
@@ -866,34 +895,34 @@ export class GameClient {
    */
   async headToHead(club: string) {
     const reply = await this.read({ type: 'head-to-head', club });
-    if (!reply.headToHead) throw new Error('맞대결 기록 응답이 없습니다.');
+    if (!reply.headToHead) throw new Error(sourceMessage('copy.client.f7307d418d'));
     return reply.headToHead;
   }
   /** Our match records over every own match, read like head-to-head without the command queue. */
   async clubRecords() {
     const reply = await this.read({ type: 'club-records' });
-    if (!reply.clubRecords) throw new Error('클럽 기록 응답이 없습니다.');
+    if (!reply.clubRecords) throw new Error(sourceMessage('copy.client.3a2136dd0f'));
     return reply.clubRecords;
   }
   /** Bounded market page, admitted through the same displayed-day read gate as other previews. */
   async worldMarket(query: Omit<WorldMarketQuery, 'world'> = {}) {
     const world = this.state.view?.world.id;
-    if (!world) throw new Error('먼저 구단을 인수하세요.');
+    if (!world) throw new Error(sourceMessage('copy.client.a198ec6115'));
     const reply = await this.read({ type: 'world-market', query: { ...query, world } });
     if (!reply.ok || !reply.worldMarket)
-      throw new Error(reply.error ?? '이적시장 응답이 없습니다.');
+      throw new Error(reply.error ?? sourceMessage('copy.client.29113d74d3'));
     if (this.state.view?.world.id !== world || reply.worldMarket.world !== world)
-      throw new Error('다른 커리어의 이적시장입니다.');
+      throw new Error(sourceMessage('copy.client.468e777c46'));
     return reply.worldMarket;
   }
   async worldMarketDetail(target: WorldMarketTarget, fee?: string, loan = false) {
     const world = this.state.view?.world.id;
-    if (!world || target.world !== world) throw new Error('다른 커리어의 이적 대상입니다.');
+    if (!world || target.world !== world) throw new Error(sourceMessage('copy.client.906fd444a8'));
     const reply = await this.read({ type: 'world-market-detail', target, fee, loan });
     if (!reply.ok || !reply.worldMarketDetail)
-      throw new Error(reply.error ?? '영입 미리보기 응답이 없습니다.');
+      throw new Error(reply.error ?? sourceMessage('copy.client.5e4dc51a81'));
     if (this.state.view?.world.id !== world || reply.worldMarketDetail.world !== world)
-      throw new Error('다른 커리어의 영입 미리보기입니다.');
+      throw new Error(sourceMessage('copy.client.866fec3562'));
     return reply.worldMarketDetail;
   }
   /**
@@ -909,8 +938,10 @@ export class GameClient {
       ...(cursor !== undefined ? { cursor } : {}),
       ...(world !== undefined ? { world } : {}),
     });
-    if (!reply.managerHistory) throw new Error(reply.error ?? '감독 이력 응답이 없습니다.');
-    if (this.state.view?.world.id !== world) throw new Error('다른 커리어의 감독 이력입니다.');
+    if (!reply.managerHistory)
+      throw new Error(reply.error ?? sourceMessage('copy.client.7694a5e1a8'));
+    if (this.state.view?.world.id !== world)
+      throw new Error(sourceMessage('copy.client.cba83d23a6'));
     return reply.managerHistory;
   }
   /** Another league's fixtures this season, read like head-to-head without the command queue. */
@@ -929,7 +960,7 @@ export class GameClient {
    */
   async fullStats(scope: FullStatsScope) {
     const reply = await this.read({ type: 'full-stats', ...scope });
-    if (!reply.ok) throw new Error(reply.error ?? '세부 기록 응답이 없습니다.');
+    if (!reply.ok) throw new Error(reply.error ?? sourceMessage('copy.client.9c85eddfec'));
     return reply.fullStats;
   }
   private rawBackup() {
@@ -957,8 +988,7 @@ export class GameClient {
     return this.enqueue(async () => {
       const incompatible = this.saves.incompatibleCheckpoint;
       if (incompatible && !this.replacingIncompatible) {
-        this.state.error =
-          '지원하지 않는 저장 버전의 원본을 보존하고 있습니다. 호환되는 앱으로 열거나 기록 파일을 가져오세요.';
+        this.state.error = sourceMessage('copy.client.4106edaaff');
         return this.rawBackup();
       }
       const head = this.head;
@@ -973,7 +1003,7 @@ export class GameClient {
   }
   /** Validates a checkpoint envelope, makes it the game in play and commits it (→SAVE-5). */
   private async activate(raw: string) {
-    if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+    if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
     await this.whenSaved();
     await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
     this.replacingIncompatible = this.saves.incompatibleCheckpoint;
@@ -995,7 +1025,7 @@ export class GameClient {
   async checkpoint() {
     return (
       (await this.enqueue(async () => {
-        if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+        if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
         await this.save();
         return this.saves.committedRaw() ?? undefined;
       })) ?? undefined
@@ -1008,7 +1038,7 @@ export class GameClient {
   /** Removes the game in play's checkpoints; the app reloads into the slot screen after. */
   forget() {
     return this.enqueue(async () => {
-      if (this.state.readonly) throw new Error('읽기 전용 탭입니다.');
+      if (this.state.readonly) throw new Error(sourceMessage('copy.client.6d888fa0f2'));
       // No autosave may bring the removed game back.
       clearTimeout(this.autosaveTimer);
       this.autosaveTimer = undefined;
@@ -1033,11 +1063,11 @@ export class GameClient {
     this.failed = true;
     for (const waiter of this.waiters.values()) {
       clearTimeout(waiter.timer);
-      waiter.reject(new Error('세션이 닫혔습니다.'));
+      waiter.reject(new Error(sourceMessage('copy.client.250bdea6bf')));
     }
     this.waiters.clear();
     for (const id of [...this.builds.keys()])
-      this.built({ id, ok: false, error: '세션이 닫혔습니다.' });
+      this.built({ id, ok: false, error: sourceMessage('copy.client.250bdea6bf') });
     this.lockWait?.abort();
     this.release?.();
     this.channel.close();

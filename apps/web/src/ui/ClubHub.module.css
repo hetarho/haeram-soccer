@@ -1,7 +1,7 @@
 .hub {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  grid-template-areas: 'header' 'fixture' 'state';
+  grid-template-areas: 'header' 'fixture' 'state' 'areas';
   align-content: start;
   gap: 16px;
   width: 100%;
@@ -57,6 +57,10 @@
 
 /* The office entrance: the manager-room art fills a reserved slot under a light shade, so loading
    it never moves the way in; the live caption sits over its top edge. */
+/* The office's working areas follow its entrance (→WEB-11/116). */
+.areas {
+  grid-area: areas;
+}
 .office {
   grid-area: state;
   position: relative;

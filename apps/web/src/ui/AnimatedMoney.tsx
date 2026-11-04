@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { reducedMotion } from './motion';
 
@@ -15,6 +16,7 @@ export function AnimatedMoney({
   upClass?: string;
   downClass?: string;
 }) {
+  useTextLocale();
   const [shown, setShown] = useState(value);
   const [trend, setTrend] = useState<'up' | 'down'>();
   const from = useRef(value);
@@ -49,7 +51,7 @@ export function AnimatedMoney({
     <b
       className={`${className || ''} ${trend === 'up' ? upClass || '' : trend === 'down' ? downClass || '' : ''}`}
     >
-      {format(shown)}
+      {localizeValue(format(shown))}
     </b>
   );
 }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /** Node/Vite SSR only. No browser storage, persisted games or live client workers. */
 import { preparedWorld } from '../../../../tests/fixtures/prepared-world';
 import { Host } from '../runtime/host';
@@ -12,6 +13,8 @@ const READS = new Set([
   'club-records',
   'person-career',
   'head-to-head',
+  'club-profile',
+  'player-profile',
   'recruitment-history',
   'mediation-preview',
   'world-market',
@@ -37,7 +40,8 @@ const ready = (async () => {
   const reply = await host.handle(
     request({ type: 'command', command: { type: 'settings', settings: world.settings } }),
   );
-  if (!reply.ok || !reply.view) throw new Error(reply.error ?? '샘플을 준비하지 못했어요.');
+  if (!reply.ok || !reply.view)
+    throw new Error(reply.error ?? sourceMessage('copy.fixture.a74e657053'));
   const record = world.ownMatches.at(-1)!;
   return { view: reply.view, playback: archivePlayback(record) };
 })();
@@ -46,6 +50,6 @@ export const sampleData = () => ready;
 export async function sampleRead(body: unknown) {
   await ready;
   const parsed = requestSchema.parse(request(body as Request['body']));
-  if (!READS.has(parsed.body.type)) throw new Error('샘플 조회만 허용됩니다.');
+  if (!READS.has(parsed.body.type)) throw new Error(sourceMessage('copy.fixture.4c05fb7499'));
   return host.handle(parsed);
 }

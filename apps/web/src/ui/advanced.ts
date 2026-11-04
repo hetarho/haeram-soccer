@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../packages/contracts/src/detail';
 
@@ -53,13 +54,15 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
   const rows: ComparisonRow[] = [];
   if (record.xg) rows.push(row('xg', 'xG', record.xg, (side) => fixed(record.xg![side])));
   rows.push(
-    row('possession', '점유율', metric(11), (side) => share(record.metrics[side][11], minutes)),
+    row('possession', sourceMessage('copy.stories.6169842c01'), metric(11), (side) =>
+      share(record.metrics[side][11], minutes),
+    ),
   );
   const detail = record.detail;
   rows.push(
     row(
       'on-target',
-      '슈팅 (유효)',
+      sourceMessage('copy.LeagueFullStats.0927c60a4f'),
       metric(4),
       (side) => `${record.metrics[side][4]} (${record.metrics[side][5]})`,
     ),
@@ -68,22 +71,28 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
     rows.push(
       row(
         'big-chance',
-        '빅찬스 (득점)',
+        sourceMessage('copy.advanced.7b2b4dbb2a'),
         [detail[0][TD.bigChances], detail[1][TD.bigChances]],
         (side) => `${detail[side][TD.bigChances]} (${detail[side][TD.bigChancesScored]})`,
       ),
-      row('box-shot', '박스 안 슈팅', [detail[0][TD.boxShots], detail[1][TD.boxShots]], (side) =>
-        String(detail[side][TD.boxShots]),
+      row(
+        'box-shot',
+        sourceMessage('copy.advanced.6b88079ae9'),
+        [detail[0][TD.boxShots], detail[1][TD.boxShots]],
+        (side) => String(detail[side][TD.boxShots]),
       ),
-      row('key-pass', '키패스', [detail[0][TD.keyPasses], detail[1][TD.keyPasses]], (side) =>
-        String(detail[side][TD.keyPasses]),
+      row(
+        'key-pass',
+        sourceMessage('copy.MatchReport.532ac6f371'),
+        [detail[0][TD.keyPasses], detail[1][TD.keyPasses]],
+        (side) => String(detail[side][TD.keyPasses]),
       ),
     );
   }
   rows.push(
     row(
       'pass-accuracy',
-      '패스 성공률',
+      sourceMessage('copy.summary.5101559c4e'),
       [
         record.metrics[0][2] ? record.metrics[0][3] / record.metrics[0][2] : 0,
         record.metrics[1][2] ? record.metrics[1][3] / record.metrics[1][2] : 0,
@@ -97,7 +106,7 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
     rows.push(
       row(
         'final-third',
-        '파이널 서드 패스',
+        sourceMessage('copy.PlayerAdvancedStats.c4f75aa388'),
         [
           ft(0) ? detail[0][TD.finalThirdCompleted] / ft(0) : 0,
           ft(1) ? detail[1][TD.finalThirdCompleted] / ft(1) : 0,
@@ -105,22 +114,24 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         (side) =>
           `${share(detail[side][TD.finalThirdCompleted], ft(side))} · ${detail[side][TD.finalThirdCompleted]}/${ft(side)}`,
       ),
-      row('field-tilt', '필드 틸트', [ft(0), ft(1)], (side) => share(ft(side), ft(0) + ft(1))),
+      row('field-tilt', sourceMessage('copy.SeasonReview.c7c1a585f2'), [ft(0), ft(1)], (side) =>
+        share(ft(side), ft(0) + ft(1)),
+      ),
       row(
         'progressive',
-        '전진 패스',
+        sourceMessage('copy.PlayerAdvancedStats.af1b560101'),
         [detail[0][TD.progressivePasses], detail[1][TD.progressivePasses]],
         (side) => String(detail[side][TD.progressivePasses]),
       ),
       row(
         'take-on',
-        '드리블 돌파',
+        sourceMessage('copy.advanced.a85fbde940'),
         [record.metrics[0][8], record.metrics[1][8]],
         (side) => `${record.metrics[side][8]}/${detail[side][TD.takeOns]}`,
       ),
       row(
         'high-turnover',
-        '하이 턴오버',
+        sourceMessage('copy.PlayerAdvancedStats.11212f27d2'),
         [detail[0][TD.highTurnovers], detail[1][TD.highTurnovers]],
         (side) => String(detail[side][TD.highTurnovers]),
       ),
@@ -140,10 +151,15 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
     );
   }
   rows.push(
-    row('tackles-interceptions', '태클·인터셉트', [home[6] + home[7], away[6] + away[7]], (side) =>
-      String(record.metrics[side][6] + record.metrics[side][7]),
+    row(
+      'tackles-interceptions',
+      sourceMessage('copy.advanced.1a691bf32f'),
+      [home[6] + home[7], away[6] + away[7]],
+      (side) => String(record.metrics[side][6] + record.metrics[side][7]),
     ),
-    row('saves', '선방', metric(9), (side) => String(record.metrics[side][9])),
+    row('saves', sourceMessage('copy.RecordsRoom.2a022bd612'), metric(9), (side) =>
+      String(record.metrics[side][9]),
+    ),
   );
   if (detail && record.lineCounts) rows.push(...spatialRows(detail));
   return rows;
@@ -161,26 +177,39 @@ function spatialRows(detail: [number[], number[]]): ComparisonRow[] {
     row(term, label, pair(attempts), (side) => `${detail[side][attempts]} (${detail[side][done]})`);
   const cards = (side: 0 | 1) => detail[side][TD.yellowCards] + 2 * detail[side][TD.redCards];
   return [
-    count('box-entry', '박스 진입', TD.boxEntries),
-    count('front-of-box-entry', '박스 앞 진입', TD.frontOfBoxEntries),
-    count('line-breaking', '라인 브레이킹 패스', TD.lineBreakingPasses),
-    row('xt', '위협도 기여(xT)', pair(TD.xtAdded), (side) =>
+    count('box-entry', sourceMessage('copy.MatchReport.649752aebf'), TD.boxEntries),
+    count('front-of-box-entry', sourceMessage('copy.advanced.d77d2a88ec'), TD.frontOfBoxEntries),
+    count(
+      'line-breaking',
+      sourceMessage('copy.PlayerAdvancedStats.0ad2f4840a'),
+      TD.lineBreakingPasses,
+    ),
+    row('xt', sourceMessage('copy.PlayerAdvancedStats.af1292ae9d'), pair(TD.xtAdded), (side) =>
       fixed(detail[side][TD.xtAdded] / 1000),
     ),
-    completed('cross', '크로스 (성공)', TD.crosses, TD.crossesCompleted),
-    count('cut-back', '컷백', TD.cutBacks),
-    completed('through-ball', '침투 패스 (성공)', TD.throughBalls, TD.throughBallsCompleted),
-    count('progressive-carry', '전진 운반', TD.progressiveCarries),
-    count('fouls', '파울', TD.fouls, true),
+    completed('cross', sourceMessage('copy.advanced.1f4ed025cc'), TD.crosses, TD.crossesCompleted),
+    count('cut-back', sourceMessage('copy.PlayerAdvancedStats.cf8188e2fc'), TD.cutBacks),
+    completed(
+      'through-ball',
+      sourceMessage('copy.advanced.da26b8c742'),
+      TD.throughBalls,
+      TD.throughBallsCompleted,
+    ),
+    count(
+      'progressive-carry',
+      sourceMessage('copy.PlayerAdvancedStats.0801bcf3fb'),
+      TD.progressiveCarries,
+    ),
+    count('fouls', sourceMessage('copy.summary.a9d93d66a9'), TD.fouls, true),
     row(
       'cards',
-      '경고·퇴장',
+      sourceMessage('copy.MatchReport.54c8d68f37'),
       [cards(0), cards(1)],
       (side) => `${detail[side][TD.yellowCards]}·${detail[side][TD.redCards]}`,
       true,
     ),
-    count('set-piece', '코너킥', TD.corners),
-    count('offside', '오프사이드', TD.offsides, true),
+    count('set-piece', sourceMessage('copy.summary.64f1e3a4bc'), TD.corners),
+    count('offside', sourceMessage('copy.summary.7858515c16'), TD.offsides, true),
   ];
 }
 

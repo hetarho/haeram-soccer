@@ -4,7 +4,7 @@
  * books every club keeps (→ECON-36) and what the start chooses and lists (→WEB-2, ECON-37).
  * Money is decimal-string minor units (→ECON-1).
  */
-import type { CareerDate, CountryCode, CupRun, World } from './types';
+import type { CareerDate, CountryCode, CupRun, StaffRole, World } from './types';
 import type { CrestDesign } from './identity';
 import type { Position } from './player';
 
@@ -196,15 +196,27 @@ export interface ClubListing {
   /** Whether the chosen tier's fortune pays its price. */
   affordable: boolean;
 }
+/** One post of a club's 코치진: its holder, or none when the post is vacant. */
+export interface ClubPost {
+  post: 'manager' | StaffRole;
+  name?: string;
+  age?: number;
+  rating?: number;
+  /** His career record's person, when he has one. */
+  person?: string;
+  /** The manager's school (학파). */
+  note?: string;
+}
 /**
- * What a club's sheet opens before buying (→WEB-15): its squad, manager, stadium and history.
- * The worker reads it from the generated world (runtime `clubSheetFacts`); the list's own numbers
- * stay on the listing.
+ * Any club as its detail opens it (→WEB-15, WEB-58): squad, 코치진, stadium and history, read by
+ * the worker (runtime `clubProfile`) from the world in play, or from the generated world before
+ * a takeover. A club nobody owns keeps only its manager; ours lists every post, vacant ones too.
  */
-export interface ClubSheetFacts {
+export interface ClubProfile {
   crest?: CrestDesign;
+  /** The first team, best OVR first. */
   squad: { id: string; name: string; position: Position; age: number; ovr: number }[];
-  manager?: { name: string; age: number; rating: number; note?: string };
+  staff: ClubPost[];
   stadium: { name?: string; seats: number };
   history: {
     /** Honours won before the takeover. */

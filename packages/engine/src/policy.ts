@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ClubPolicy, PolicyKey, PolicyLevel, World } from '../../contracts/src/types';
 
 /** Display and decision order. */
@@ -30,173 +31,202 @@ export const POLICY_INFO: Record<
   }
 > = {
   support: {
-    label: '선수단 투자',
+    label: sourceMessage('copy.contracts.31d8ccedbf'),
     levels: [
       {
         level: 1,
-        name: '긴축',
-        summary: '협상 호감 −5% · 라운드 성장 ×0.8 · 피로 회복 −2 · 운영 경비 ×0.9',
+        name: sourceMessage('copy.policy.15540ae21f'),
+        summary: sourceMessage('copy.policy.29b49c5f41'),
       },
       {
         level: 2,
-        name: '절약',
-        summary: '협상 호감 0% · 라운드 성장 ×0.9 · 피로 회복 −1 · 운영 경비 ×0.95',
+        name: sourceMessage('copy.policy.c2c05df7dc'),
+        summary: sourceMessage('copy.policy.3d040f1fb6'),
       },
       {
         level: 3,
-        name: '표준',
-        summary: '협상 호감 +5% · 라운드 성장·피로 회복·운영 경비 기본',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: sourceMessage('copy.policy.b41007006a'),
       },
       {
         level: 4,
-        name: '후한 지원',
-        summary: '협상 호감 +10% · 라운드 성장 ×1.12 · 피로 회복 +1 · 운영 경비 ×1.1',
+        name: sourceMessage('copy.policy.dc3507d722'),
+        summary: sourceMessage('copy.policy.fcd74b70d5'),
       },
       {
         level: 5,
-        name: '최고 대우',
-        summary: '협상 호감 +15% · 라운드 성장 ×1.25 · 피로 회복 +2 · 운영 경비 ×1.2',
+        name: sourceMessage('copy.policy.691d996bf3'),
+        summary: sourceMessage('copy.policy.135396d929'),
       },
     ],
   },
   recruitment: {
-    label: '영입 기조',
+    label: sourceMessage('copy.policy.f0bb84ce59'),
     levels: [
       {
         level: 1,
-        name: '유망주 발굴',
-        summary: '17–21세 · 능력 35–65인 선수를 잠재력 먼저 보고 찾아요',
+        name: sourceMessage('copy.policy.98593ea624'),
+        summary: sourceMessage('copy.policy.fb20092ed9'),
       },
       {
         level: 2,
-        name: '젊은 선수 위주',
-        summary: '18–25세 · 능력 38–75인 선수를 잠재력 먼저 보고 찾아요',
-      },
-      { level: 3, name: '균형', summary: '18–30세 · 능력 40–85인 선수를 찾아요' },
-      { level: 4, name: '경험 위주', summary: '23–31세 · 능력 50–88인 선수를 찾아요' },
-      { level: 5, name: '즉시 전력', summary: '26–33세 · 능력 60–92인 선수를 찾아요' },
-    ],
-  },
-  academy: {
-    label: '유소년 투자',
-    levels: [
-      { level: 1, name: '기본 운영', summary: '추가 비용 없음 · 입단 인원과 잠재력 기본' },
-      {
-        level: 2,
-        name: '육성 강화',
-        summary: '라운드마다 소액 지출 · 입단 잠재력 +3 · 유스 성장 ×1.1',
+        name: sourceMessage('copy.policy.931bb98a41'),
+        summary: sourceMessage('copy.policy.b4e6d76212'),
       },
       {
         level: 3,
-        name: '집중 투자',
-        summary: '라운드마다 지출 · 입단 +1명 · 잠재력 +5 · 유스 성장 ×1.2',
+        name: sourceMessage('copy.stories.634269a095'),
+        summary: sourceMessage('copy.policy.556322e8cc'),
       },
       {
         level: 4,
-        name: '엘리트 아카데미',
-        summary: '라운드마다 큰 지출 · 입단 +1명 · 잠재력 +8 · 유스 성장 ×1.3',
+        name: sourceMessage('copy.policy.8d07b643d0'),
+        summary: sourceMessage('copy.policy.d1b6a5a03d'),
       },
       {
         level: 5,
-        name: '최고 수준 아카데미',
-        summary: '라운드마다 최대 지출 · 입단 +2명 · 잠재력 +11 · 유스 성장 ×1.45',
+        name: sourceMessage('copy.build.9fa10575b1'),
+        summary: sourceMessage('copy.policy.14e387d3d7'),
+      },
+    ],
+  },
+  academy: {
+    label: sourceMessage('copy.FinancialBreakdown.d4527c802c'),
+    levels: [
+      {
+        level: 1,
+        name: sourceMessage('copy.policy.a6dad7d287'),
+        summary: sourceMessage('copy.policy.a6f7d65e9d'),
+      },
+      {
+        level: 2,
+        name: sourceMessage('copy.policy.6790b9183c'),
+        summary: sourceMessage('copy.policy.e12b579a32'),
+      },
+      {
+        level: 3,
+        name: sourceMessage('copy.policy.f287cb691a'),
+        summary: sourceMessage('copy.policy.8528d27f4c'),
+      },
+      {
+        level: 4,
+        name: sourceMessage('copy.policy.5065bab3b6'),
+        summary: sourceMessage('copy.policy.d7722fdb57'),
+      },
+      {
+        level: 5,
+        name: sourceMessage('copy.policy.cdbcdf39fb'),
+        summary: sourceMessage('copy.policy.e124210492'),
       },
     ],
   },
   localInvest: {
-    label: '주변 투자',
+    label: sourceMessage('copy.policy.09f73facfb'),
     levels: [
-      { level: 1, name: '없음', summary: '추가 비용 없음 · 지역 기반 그대로' },
+      {
+        level: 1,
+        name: sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+        summary: sourceMessage('copy.policy.a73592d17a'),
+      },
       {
         level: 2,
-        name: '지역 행사 후원',
-        summary: '라운드마다 소액 지출 · 관중 수요 +2% · 지역 기반 목표 20',
+        name: sourceMessage('copy.policy.40299543c2'),
+        summary: sourceMessage('copy.policy.71d05c845c'),
       },
       {
         level: 3,
-        name: '지역 상권 투자',
-        summary: '라운드마다 지출 · 관중 수요 +4% · 지역 기반 목표 40',
+        name: sourceMessage('copy.policy.03d6f2091d'),
+        summary: sourceMessage('copy.policy.89e8d38aa1'),
       },
       {
         level: 4,
-        name: '지역 인프라 투자',
-        summary: '라운드마다 큰 지출 · 관중 수요 +6% · 지역 기반 목표 65',
+        name: sourceMessage('copy.policy.9bc2edc399'),
+        summary: sourceMessage('copy.policy.f96393398a'),
       },
       {
         level: 5,
-        name: '도시 재생 사업',
-        summary: '라운드마다 최대 지출 · 관중 수요 +8% · 지역 기반 목표 100',
+        name: sourceMessage('copy.policy.b2d9bc6743'),
+        summary: sourceMessage('copy.policy.ca7a2f5110'),
       },
     ],
   },
   globalMarketing: {
-    label: '해외 마케팅',
+    label: sourceMessage('copy.policy.00ca8c6d8c'),
     levels: [
-      { level: 1, name: '입소문', summary: '추가 비용 없음 · 팬 변화 없음' },
+      {
+        level: 1,
+        name: sourceMessage('copy.policy.307c69c7ec'),
+        summary: sourceMessage('copy.policy.dfc2657b24'),
+      },
       {
         level: 2,
-        name: '해외 홍보',
-        summary: '라운드마다 소액 지출 · 팬 +0.4%/라운드 · 글로벌 인지도 목표 20',
+        name: sourceMessage('copy.policy.fee992bdb8'),
+        summary: sourceMessage('copy.policy.07a7a3eb10'),
       },
       {
         level: 3,
-        name: '해외 광고',
-        summary: '라운드마다 지출 · 팬 +0.8%/라운드 · 글로벌 인지도 목표 40',
+        name: sourceMessage('copy.policy.f5eaba9a1c'),
+        summary: sourceMessage('copy.policy.91f27ef3a9'),
       },
       {
         level: 4,
-        name: '글로벌 캠페인',
-        summary: '라운드마다 큰 지출 · 팬 +1.3%/라운드 · 글로벌 인지도 목표 65',
+        name: sourceMessage('copy.policy.966ccd7c69'),
+        summary: sourceMessage('copy.policy.8c236c9d09'),
       },
       {
         level: 5,
-        name: '세계적 브랜딩',
-        summary: '라운드마다 최대 지출 · 팬 +2%/라운드 · 글로벌 인지도 목표 100',
+        name: sourceMessage('copy.policy.7fa4e41f9d'),
+        summary: sourceMessage('copy.policy.3802145bfe'),
       },
     ],
   },
   globalScouting: {
-    label: '해외 스카우트망',
+    label: sourceMessage('copy.policy.652cb7e155'),
     levels: [
-      { level: 1, name: '없음', summary: '추가 비용 없음 · 국내에서만 찾아요' },
+      {
+        level: 1,
+        name: sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+        summary: sourceMessage('copy.policy.0cb8edf028'),
+      },
       {
         level: 2,
-        name: '해외 정보원',
-        summary:
-          '라운드마다 소액 지출 · 해외 1개국 1부 · 라인마다 해외 1자리 · 글로벌 인지도 목표 +10',
+        name: sourceMessage('copy.policy.8c3b718161'),
+        summary: sourceMessage('copy.policy.1df7ee8b1b'),
       },
       {
         level: 3,
-        name: '지역 스카우트',
-        summary: '라운드마다 지출 · 해외 2개국 1부 · 라인마다 해외 1자리 · 글로벌 인지도 목표 +20',
+        name: sourceMessage('copy.policy.8445ec445f'),
+        summary: sourceMessage('copy.policy.3274c89593'),
       },
       {
         level: 4,
-        name: '대륙 스카우트망',
-        summary:
-          '라운드마다 큰 지출 · 해외 4개국 1부 · 라인마다 해외 2자리 · 글로벌 인지도 목표 +30',
+        name: sourceMessage('copy.policy.f153e0ac35'),
+        summary: sourceMessage('copy.policy.63a1291ac9'),
       },
       {
         level: 5,
-        name: '세계 스카우트망',
-        summary:
-          '라운드마다 최대 지출 · 해외 7개국 1부 · 라인마다 해외 2자리 · 글로벌 인지도 목표 +45',
+        name: sourceMessage('copy.policy.da0ee66875'),
+        summary: sourceMessage('copy.policy.d0c15ba607'),
       },
     ],
   },
   tour: {
-    label: '해외 투어',
+    label: sourceMessage('copy.influences.f39e48758d'),
     levels: [
-      { level: 1, name: '안 함', summary: '투어 없음' },
+      {
+        level: 1,
+        name: sourceMessage('copy.policy.42fd2e05c9'),
+        summary: sourceMessage('copy.policy.22b47aa075'),
+      },
       {
         level: 2,
-        name: '짧은 투어',
-        summary: '시즌 시작에 투어 수입 · 글로벌 인지도 +5 · 모든 선수 피로 +10',
+        name: sourceMessage('copy.policy.0d8cc2d53e'),
+        summary: sourceMessage('copy.policy.3eb5dd5f40'),
       },
       {
         level: 3,
-        name: '긴 투어',
-        summary: '시즌 시작에 큰 투어 수입 · 글로벌 인지도 +10 · 모든 선수 피로 +20',
+        name: sourceMessage('copy.policy.6c71b0d2d1'),
+        summary: sourceMessage('copy.policy.4793942cdf'),
       },
     ],
   },

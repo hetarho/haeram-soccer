@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import {
   BUILD_OPTIONS,
   BUILD_SLOTS,
@@ -84,15 +85,15 @@ export interface BuildCard {
   effects: Partial<BuildEffects>;
 }
 export const BUILD_SLOT_INFO: Record<BuildSlot, { label: string }> = {
-  youth: { label: '유입 방식' },
-  scouting: { label: '스카우팅' },
-  market: { label: '매각 기조' },
-  revenue: { label: '수익 모델' },
-  fans: { label: '지역 관계 방식' },
-  culture: { label: '라커룸 문화' },
+  youth: { label: sourceMessage('copy.build.ba4ad47e0b') },
+  scouting: { label: sourceMessage('copy.investmentAreas.f163d8ed88') },
+  market: { label: sourceMessage('copy.build.714cde092c') },
+  revenue: { label: sourceMessage('copy.build.5b3a8115d5') },
+  fans: { label: sourceMessage('copy.build.3bf4cd4f00') },
+  culture: { label: sourceMessage('copy.build.2382a6ed40') },
 };
 const STANDARD: BuildCard = {
-  label: '표준',
+  label: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
   effects: {},
 };
 export const BUILD_CARDS: {
@@ -100,109 +101,109 @@ export const BUILD_CARDS: {
 } = {
   youth: {
     homegrown: {
-      label: '성골 유스',
+      label: sourceMessage('copy.build.7632514195'),
       effects: { academyIntake: 1, academyPotential: 3, scoutPerLine: -1 },
     },
     partnership: {
-      label: '유소년 클럽 제휴',
+      label: sourceMessage('copy.build.ec297d9d41'),
       effects: { academyIntake: 2, academyPotential: -2 },
     },
     worldwide: {
-      label: '해외 유스 스카우트',
+      label: sourceMessage('copy.build.3bc9336df1'),
       effects: { academyIntake: -1, academyPotential: 5 },
     },
     elite: {
-      label: '엘리트 선발',
+      label: sourceMessage('copy.build.416f207008'),
       effects: { academyIntake: -2, academyPotential: 8 },
     },
   },
   scouting: {
     data: {
-      label: '데이터 스카우팅',
+      label: sourceMessage('copy.build.8ac1576fda'),
       effects: { scoutPotentialFirst: 1, scoutPerLine: 1, scoutAbilityShift: -2 },
     },
     proven: {
-      label: '즉시 전력',
+      label: sourceMessage('copy.build.9fa10575b1'),
       effects: { scoutAbilityShift: 4, wage: 1.05 },
     },
     network: {
-      label: '광역 네트워크',
+      label: sourceMessage('copy.build.fce3f37294'),
       effects: { scoutPerLine: 1, scoutAbroadExtra: 1, scoutNeverPotentialFirst: 1 },
     },
     local: {
-      label: '지역 인재 우선',
+      label: sourceMessage('copy.build.935088b315'),
       effects: { gateDemand: 0.02, wage: 0.97, scoutPerLine: -1, scoutNoAbroad: 1 },
     },
   },
   market: {
     selling: {
-      label: '셀링 클럽',
+      label: sourceMessage('copy.build.7f0539dbda'),
       effects: { incomingBids: 1.6, saleFee: 1.25, moraleBaseline: -2 },
     },
     showcase: {
-      label: '쇼케이스',
+      label: sourceMessage('copy.build.9a48da1a5a'),
       effects: { incomingBids: 1.3, saleFee: 1.1, moraleBaseline: -1 },
     },
     hold: {
-      label: '핵심 지키기',
+      label: sourceMessage('copy.build.a8fd93bd1f'),
       effects: { incomingBids: 0.5, moraleBaseline: 2 },
     },
     hardball: {
-      label: '강경 협상',
+      label: sourceMessage('copy.build.3ca5f7813b'),
       effects: { saleFee: 1.15, incomingBids: 0.8 },
     },
   },
   revenue: {
     commercial: {
-      label: '상업 확장',
+      label: sourceMessage('copy.build.084571b70e'),
       effects: { sponsor: 1.2, marketingFans: 1.2, gateDemand: -0.03 },
     },
     owner: {
-      label: '구단주 투자',
+      label: sourceMessage('copy.build.af4648c9db'),
       effects: { wage: 1.05 },
     },
     frugal: {
-      label: '긴축 재정',
+      label: sourceMessage('copy.build.d4e31ebbfc'),
       effects: { wage: 0.94, moraleBaseline: -2, scoutAbilityShift: -2 },
     },
     members: {
-      label: '회원제 운영',
+      label: sourceMessage('copy.build.4f2c1a4618'),
       effects: { gateDemand: 0.05, winFans: 1.2, sponsor: 0.9 },
     },
   },
   fans: {
     community: {
-      label: '지역 밀착',
+      label: sourceMessage('copy.build.67357919b9'),
       effects: { gateDemand: 0.06, winFans: 1.4, marketingFans: 0.9 },
     },
     fortress: {
-      label: '홈 요새',
+      label: sourceMessage('copy.build.15ec9af002'),
       effects: { homeStrength: 1.5, winFans: 1.1, marketingFans: 0.85 },
     },
     mutual: {
-      label: '지역 상생',
+      label: sourceMessage('copy.build.0ab380f812'),
       effects: { localBaseRate: 1.5, sponsor: 0.95 },
     },
     families: {
-      label: '가족 관중',
+      label: sourceMessage('copy.build.273eeda011'),
       effects: { gateDemand: 0.04, marketingFans: 1.1, homeStrength: -0.5 },
     },
   },
   culture: {
     family: {
-      label: '가족 같은 클럽',
+      label: sourceMessage('copy.build.df2852e45c'),
       effects: { moraleBaseline: 3, wage: 1.03 },
     },
     meritocracy: {
-      label: '철저한 경쟁',
+      label: sourceMessage('copy.build.b4b429047e'),
       effects: { youthGrowth: 1.1, moraleBaseline: -1 },
     },
     stars: {
-      label: '스타 대우',
+      label: sourceMessage('copy.build.e42fda7924'),
       effects: { scoutAbilityShift: 2, moraleBaseline: 1, wage: 1.1 },
     },
     veterans: {
-      label: '베테랑 리더십',
+      label: sourceMessage('copy.build.79a7398867'),
       effects: { moraleBaseline: 2, youthGrowth: 0.9 },
     },
   },
@@ -227,12 +228,17 @@ export function buildPreset(build: ClubBuild) {
 export function buildLabel(build: ClubBuild) {
   return (
     buildPreset(build)?.label ??
-    (BUILD_SLOTS.some((slot) => build[slot]) ? '맞춤 방향' : '기본 방향')
+    (BUILD_SLOTS.some((slot) => build[slot])
+      ? sourceMessage('copy.build.017848335b')
+      : sourceMessage('copy.build.c8e41c9c28'))
   );
 }
 
 /** Names worlds recorded before the strategy became the club's direction (→ECON-22). */
-const RENAMED: Record<string, string> = { '기본 전략': '기본 방향', '맞춤 전략': '맞춤 방향' };
+const RENAMED: Record<string, string> = {
+  [sourceMessage('copy.build.1746bb30e7')]: sourceMessage('copy.build.c8e41c9c28'),
+  [sourceMessage('copy.build.e6cf2fdc9b')]: sourceMessage('copy.build.017848335b'),
+};
 /**
  * The name in a build event's title (`방향 · <name>`, or `운영 전략 · <name>` as recorded before
  * the rename), with the old default names read as 기본 방향 and 맞춤 방향 (→ECON-22).
@@ -244,7 +250,7 @@ export function buildTitleName(title: string) {
 }
 /** A build event's title as it reads now: `방향 · <name>`, whatever words recorded it. */
 export function readBuildTitle(title: string) {
-  return `방향 · ${buildTitleName(title)}`;
+  return sourceMessage('copy.build.018abc891d', { p0: buildTitleName(title) });
 }
 
 const composed = new Map<string, BuildEffects>();

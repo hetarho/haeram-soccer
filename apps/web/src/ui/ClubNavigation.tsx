@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useSyncExternalStore } from 'react';
 import { clubSection, operationsView } from './clubSections';
 import { openClubOverview, openInvestment, openPrimary, type Page } from './state';
@@ -18,6 +21,7 @@ function subscribeAddress(change: () => void) {
 
 /** Office actions stay above the investment directory and its detail pages. */
 export function ClubNavigation({ page }: { page: Page }) {
+  useTextLocale();
   const search = useSyncExternalStore(
     subscribeAddress,
     () => location.search,
@@ -35,13 +39,23 @@ export function ClubNavigation({ page }: { page: Page }) {
         type="button"
         data-ui="link"
         className={s.back}
-        aria-label={detail ? '구단주 사무실로' : '클럽하우스 홈으로'}
+        aria-label={localizeValue(
+          detail
+            ? sourceMessage('copy.ClubNavigation.8647a2ee50')
+            : sourceMessage('copy.ClubNavigation.cb149c35fb'),
+        )}
         onClick={() => (detail ? openInvestment() : openPrimary('dashboard'))}
       >
         <PixelIcon name="chevronLeft" size={16} />
-        {detail ? '사무실로' : '홈'}
+        {localizeValue(
+          detail ? sourceMessage('copy.ClubNavigation.156cc8acc7') : sourceMessage('fixture.home'),
+        )}
       </button>
-      <div className={s.actions} role="group" aria-label="사무실 메뉴">
+      <div
+        className={s.actions}
+        role="group"
+        aria-label={displayMessage('copy.ClubNavigation.95d7b417ab')}
+      >
         <button
           type="button"
           data-ui="secondary"
@@ -52,7 +66,7 @@ export function ClubNavigation({ page }: { page: Page }) {
             openClubOverview();
           }}
         >
-          오버뷰
+          {richMessage('copy.ClubNavigation.940af95a36')}
         </button>
         <ApprovalButtons />
       </div>

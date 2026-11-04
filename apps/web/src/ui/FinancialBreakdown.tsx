@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { memo } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { financialBreakdown } from '../../../../packages/engine/src/finance';
@@ -14,151 +17,183 @@ export const FinancialBreakdown = memo(
     w: World;
     breakdown?: Breakdown;
   }) {
+    useTextLocale();
     const club = w.clubs.find((c) => c.id === w.playerClub)!;
     const format = (amount: string) => money(amount, club.country, w.year);
     const costs = breakdown.costs;
     return (
-      <section data-surface="panel" className={s.panel} aria-label="수입과 지출 장부">
+      <section
+        data-surface="panel"
+        className={s.panel}
+        aria-label={displayMessage('copy.FinancialBreakdown.1bd659d06e')}
+      >
         <div className={s.heading}>
           <div>
-            <small>CLUB ACCOUNTS</small>
-            <h3>돈이 들어오고 나간 이유</h3>
+            <small>{richMessage('copy.FinancialBreakdown.9cccdb004b')}</small>
+            <h3>{richMessage('copy.FinancialBreakdown.03bb500d3d')}</h3>
           </div>
           <span>
-            {w.year}/{String(w.year + 1).slice(-2)} 시즌
+            {richMessage('copy.BusinessWorkbench.b58cd6400a', {
+              p0: w.year,
+              p1: String(w.year + 1).slice(-2),
+            })}
           </span>
         </div>
         <div className={s.summary}>
           <div>
-            <span>시즌 수지</span>
+            <span>{richMessage('copy.ClubCashSummary.967f1e3a31')}</span>
             <strong className={BigInt(breakdown.net) < 0n ? s.negative : undefined}>
-              {format(breakdown.net)}
+              {localizeValue(format(breakdown.net))}
             </strong>
-            <small>실제 수입에서 실제 지출을 차감</small>
+            <small>{richMessage('copy.FinancialBreakdown.7920b56b2c')}</small>
           </div>
           <div>
-            <span>보유 현금</span>
+            <span>{richMessage('copy.ClubCashSummary.861779d896')}</span>
             <strong className={BigInt(w.cash) < 0n ? s.negative : undefined}>
-              {format(w.cash)}
+              {localizeValue(format(w.cash))}
             </strong>
-            <small>지금 구단 계좌의 잔고</small>
+            <small>{richMessage('copy.FinancialBreakdown.d31a21b21f')}</small>
           </div>
           <div>
-            <span>다음 라운드 고정 지출</span>
-            <strong>{format(costs.nextRound)}</strong>
-            <small>급여·시설 유지·운영 경비 · 경기 개최비 별도</small>
+            <span>{richMessage('copy.ClubCashSummary.9ab3a675ca')}</span>
+            <strong>{localizeValue(format(costs.nextRound))}</strong>
+            <small>{richMessage('copy.FinancialBreakdown.289c3f5fa7')}</small>
           </div>
         </div>
         <div className={s.columns}>
           <div>
-            <h4>누적 수입</h4>
+            <h4>{richMessage('copy.FinancialBreakdown.029e3642cc')}</h4>
             <dl>
-              {breakdown.income
-                .filter((row) => BigInt(row.amount) !== 0n)
-                .map((row) => (
-                  <div key={row.key}>
-                    <dt>{row.label}</dt>
-                    <dd>{format(row.amount)}</dd>
-                  </div>
-                ))}
+              {localizeValue(
+                breakdown.income
+                  .filter((row) => BigInt(row.amount) !== 0n)
+                  .map((row) => (
+                    <div key={row.key}>
+                      <dt>{localizeValue(row.label)}</dt>
+                      <dd>{localizeValue(format(row.amount))}</dd>
+                    </div>
+                  )),
+              )}
             </dl>
             <div className={s.total}>
-              <span>수입 합계</span>
-              <b>{format(w.income)}</b>
+              <span>{richMessage('copy.FinancialBreakdown.fb58eb285a')}</span>
+              <b>{localizeValue(format(w.income))}</b>
             </div>
           </div>
           <div>
-            <h4>누적 지출</h4>
+            <h4>{richMessage('copy.FinancialBreakdown.6a849b5f77')}</h4>
             <dl>
-              {breakdown.expense
-                .filter((row) => BigInt(row.amount) !== 0n)
-                .map((row) => (
-                  <div key={row.key}>
-                    <dt>{row.label}</dt>
-                    <dd>{format(row.amount)}</dd>
-                  </div>
-                ))}
+              {localizeValue(
+                breakdown.expense
+                  .filter((row) => BigInt(row.amount) !== 0n)
+                  .map((row) => (
+                    <div key={row.key}>
+                      <dt>{localizeValue(row.label)}</dt>
+                      <dd>{localizeValue(format(row.amount))}</dd>
+                    </div>
+                  )),
+              )}
             </dl>
             <div className={s.total}>
-              <span>지출 합계</span>
-              <b>{format(w.expense)}</b>
+              <span>{richMessage('copy.FinancialBreakdown.e82ab98937')}</span>
+              <b>{localizeValue(format(w.expense))}</b>
             </div>
           </div>
           <div>
-            <h4>연간 고정비</h4>
+            <h4>{richMessage('copy.ClubCashSummary.382afa688e')}</h4>
             <dl>
-              {(
-                [
-                  ['선수 급여', costs.playerWages],
-                  ['감독 급여', costs.managerWage],
-                  ['스태프 급여', costs.staffWages],
-                  ['시설 유지', costs.maintenance],
-                  ['지역·글로벌 투자', costs.investment],
-                  ['유소년 투자', costs.academy],
-                  ['운영 경비', costs.expenses],
-                  ['인수 부채 상환', costs.loan],
-                ] as const
-              )
-                .filter(([label, amount]) => label === '선수 급여' || BigInt(amount) !== 0n)
-                .map(([label, amount]) => (
-                  <div key={label}>
-                    <dt>{label}</dt>
-                    <dd>{format(amount)}</dd>
-                  </div>
-                ))}
+              {localizeValue(
+                (
+                  [
+                    [sourceMessage('copy.FinancialBreakdown.4bdab1482a'), costs.playerWages],
+                    [sourceMessage('copy.FinancialBreakdown.db1fa5856a'), costs.managerWage],
+                    [sourceMessage('copy.FinancialBreakdown.cc06b9815f'), costs.staffWages],
+                    [sourceMessage('copy.FinancialBreakdown.be5fd48c10'), costs.maintenance],
+                    [sourceMessage('copy.FinancialBreakdown.614f1dbc56'), costs.investment],
+                    [sourceMessage('copy.FinancialBreakdown.d4527c802c'), costs.academy],
+                    [sourceMessage('copy.FinancialBreakdown.2d914c9be2'), costs.expenses],
+                    [sourceMessage('copy.FinancialBreakdown.ddebd211b6'), costs.loan],
+                  ] as const
+                )
+                  .filter(
+                    ([label, amount]) =>
+                      label === sourceMessage('copy.FinancialBreakdown.4bdab1482a') ||
+                      BigInt(amount) !== 0n,
+                  )
+                  .map(([label, amount]) => (
+                    <div key={label}>
+                      <dt>{localizeValue(label)}</dt>
+                      <dd>{localizeValue(format(amount))}</dd>
+                    </div>
+                  )),
+              )}
             </dl>
             <div className={s.total}>
-              <span>연간 합계</span>
-              <b>{format(costs.annual)}</b>
+              <span>{richMessage('copy.ClubCashSummary.c186eb9e27')}</span>
+              <b>{localizeValue(format(costs.annual))}</b>
             </div>
           </div>
         </div>
         <div data-surface="sheet" className={s.forecast}>
           <div>
-            <h4>현재 조건의 리그 홈 경기</h4>
+            <h4>{richMessage('copy.FinancialBreakdown.ed865d6d50')}</h4>
             <p>
-              예상 관중 {number(breakdown.gate.attendanceLow)}–
-              {number(breakdown.gate.attendanceHigh)}명 / 수용 {number(breakdown.gate.capacity)}명
+              {richMessage('copy.FinancialBreakdown.752828fd69', {
+                p0: number(breakdown.gate.attendanceLow),
+                p1: number(breakdown.gate.attendanceHigh),
+                p2: number(breakdown.gate.capacity),
+              })}
             </p>
             <p>
-              지역 서포터 {number(breakdown.gate.supporters)}명 · 연고 상한{' '}
-              {number(breakdown.catchment)}명
+              {richMessage('copy.FinancialBreakdown.a720f9040b', {
+                p0: number(breakdown.gate.supporters),
+                p1: ' ',
+                p2: number(breakdown.catchment),
+              })}
             </p>
             <p>
-              입장·상품 수입 {format(breakdown.gate.incomeLow)}–{format(breakdown.gate.incomeHigh)}{' '}
-              · 개최비 {format(breakdown.gate.costLow)}–{format(breakdown.gate.costHigh)}
+              {richMessage('copy.FinancialBreakdown.2ee6e23e8b', {
+                p0: format(breakdown.gate.incomeLow),
+                p1: format(breakdown.gate.incomeHigh),
+                p2: ' ',
+                p3: format(breakdown.gate.costLow),
+                p4: format(breakdown.gate.costHigh),
+              })}
             </p>
           </div>
-          <p>
-            지역 서포터 중 최근 성적, 가격, 주변 투자와 지역 기반에 따라 경기장을 찾는 범위로,
-            비슷한 상대를 기준으로 합니다. 전 세계 팬은 관중이 아니라 후원 가치를 올립니다. 리그
-            분배금은 라운드마다, 후원은 실제 리그 경기마다 나누어 받고, 순위 배분금은 시즌 종료 때
-            정산합니다.
-          </p>
+          <p>{richMessage('copy.FinancialBreakdown.8d8007a3d1')}</p>
         </div>
-        {!!breakdown.recent.length && (
-          <div className={s.receipts}>
-            <h4>최근 실제 정산</h4>
-            <ol>
-              {breakdown.recent.slice(0, 6).map((receipt, index) => (
-                <li key={`${receipt.year}:${receipt.round}:${receipt.kind}:${index}`}>
-                  <span>
-                    <small>{receipt.round}회차</small>
-                    {receipt.title}
-                  </span>
-                  <b className={receipt.direction === 'expense' ? s.negative : undefined}>
-                    {receipt.direction === 'expense' ? '−' : '+'}
-                    {format(receipt.amount)}
-                  </b>
-                </li>
-              ))}
-            </ol>
-          </div>
+        {localizeValue(
+          !!breakdown.recent.length && (
+            <div className={s.receipts}>
+              <h4>{richMessage('copy.FinancialBreakdown.dd4938954f')}</h4>
+              <ol>
+                {localizeValue(
+                  breakdown.recent.slice(0, 6).map((receipt, index) => (
+                    <li key={`${receipt.year}:${receipt.round}:${receipt.kind}:${index}`}>
+                      <span>
+                        <small>
+                          {richMessage('copy.FinancialBreakdown.26b12749e4', { p0: receipt.round })}
+                        </small>
+                        {localizeValue(receipt.title)}
+                      </span>
+                      <b className={receipt.direction === 'expense' ? s.negative : undefined}>
+                        {localizeValue(receipt.direction === 'expense' ? '−' : '+')}
+                        {localizeValue(format(receipt.amount))}
+                      </b>
+                    </li>
+                  )),
+                )}
+              </ol>
+            </div>
+          ),
         )}
-        {BigInt(w.cash) < 0n && (
-          <p data-surface="inset" className={s.warning}>
-            자금 부족이 계속되고 있습니다. 자동으로 자금이 보충되지 않습니다.
-          </p>
+        {localizeValue(
+          BigInt(w.cash) < 0n && (
+            <p data-surface="inset" className={s.warning}>
+              {richMessage('copy.FinancialBreakdown.37113490b0')}
+            </p>
+          ),
         )}
       </section>
     );

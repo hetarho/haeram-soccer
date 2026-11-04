@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Fixture, World } from '../../contracts/src/types';
 
 export const SEASON_ROUNDS = 46;
@@ -29,7 +30,11 @@ export function fixtureDay(f: Fixture) {
 }
 function dateLabel(year: number, day: number) {
   const date = new Date(Date.UTC(year, 7, 1) + day * DAY_MS);
-  return `${date.getUTCFullYear()}년 ${date.getUTCMonth() + 1}월 ${date.getUTCDate()}일`;
+  return sourceMessage('copy.calendar.d66339cc3d', {
+    p0: date.getUTCFullYear(),
+    p1: date.getUTCMonth() + 1,
+    p2: date.getUTCDate(),
+  });
 }
 export function seasonDate(w: World) {
   return dateLabel(w.year, currentDay(w));

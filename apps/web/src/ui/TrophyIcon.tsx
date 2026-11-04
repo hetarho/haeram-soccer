@@ -1,3 +1,4 @@
+import { useTextLocale } from '../presentation/text';
 import { useOptionalTheme } from '../presentation/react';
 import { SemanticIcon } from './PixelIcon';
 import s from './TrophyIcon.module.css';
@@ -13,6 +14,7 @@ export function TrophyIcon({
   earned?: boolean;
   variant?: string;
 }) {
+  useTextLocale();
   const theme = useOptionalTheme();
   const appearance = variant ?? (earned ? undefined : 'unearned');
   return (

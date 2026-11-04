@@ -1,6 +1,9 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { squadRegistration } from './squadRegistration';
 import { RecruitmentCommitments } from './MediationReview';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 import { useTaskState } from './taskMemory';
 import { Select } from './Select';
 import { PixelIcon } from './PixelIcon';
@@ -78,30 +81,35 @@ export function candidateSide(
           cashAfter: candidate.buy.cashAfter,
           annualAfter: candidate.buy.annualAfter,
         },
-    action: onOpen && <button onClick={onOpen}>상세 · 제안</button>,
+    action: onOpen && (
+      <button onClick={onOpen}>{richMessage('copy.RecruitmentDesk.b786dd4b77')}</button>
+    ),
   };
 }
 function sourceLabel(w: World, offer: WorldMarketOffer) {
-  if (!offer.source) return offer.freeAgent ? '자유계약 선수' : '스카우트 후보';
+  if (!offer.source)
+    return offer.freeAgent
+      ? sourceMessage('copy.RecruitmentDesk.c3d578838c')
+      : sourceMessage('copy.RecruitmentDesk.ba264afbbe');
   const source = w.clubs.find((club) => club.id === offer.source!.club);
   return `${offer.source.name} · ${source ? clubDivision(w, source) : offer.source.country}`;
 }
 const lineNames: Record<Line, string> = {
-  GK: '골키퍼',
-  DF: '수비수',
-  MF: '미드필더',
-  FW: '공격수',
+  GK: sourceMessage('position.family.GK'),
+  DF: sourceMessage('copy.RecruitmentDesk.48e2d845b6'),
+  MF: sourceMessage('copy.RecruitmentDesk.7d50bd87b5'),
+  FW: sourceMessage('copy.RecruitmentDesk.736f1ff574'),
 };
 /** An OVR range end as typed: blank clears it, anything else is held to 0–100. */
 const ovrBound = (value: string) =>
   value.trim() === '' ? undefined : Math.min(100, Math.max(0, Math.round(Number(value) || 0)));
 const BID_STATUS: Record<TransferBid['status'], string> = {
-  pending: '응답 대기',
-  accepted: '수락',
-  rejected: '거절됨',
-  countered: '역제안 받음',
-  expired: '기한 만료',
-  completed: '이적 완료',
+  pending: sourceMessage('copy.RecruitmentDesk.2ce739d0d5'),
+  accepted: sourceMessage('copy.RecruitmentDesk.831defcf7a'),
+  rejected: sourceMessage('copy.RecruitmentDesk.f2501555ed'),
+  countered: sourceMessage('copy.RecruitmentDesk.e0dd146d38'),
+  expired: sourceMessage('copy.RecruitmentDesk.0001ef80c8'),
+  completed: sourceMessage('copy.RecruitmentDesk.4e5ea77f47'),
 };
 const delta = (value: number) => (value > 0 ? `+${value}` : value < 0 ? String(value) : '±0');
 // Colour only marks direction: a rise in red, a fall in blue.
@@ -109,36 +117,55 @@ const tone = (value: number) => (value > 0 ? 'rise' : value < 0 ? 'fall' : undef
 
 /** The scout's verdict (→CLUB-47): grade, the slot it reads and the facts the gap does not say. */
 function VerdictCard({ verdict }: { verdict: ScoutVerdict }) {
+  useTextLocale();
   return (
     <section
       className={s.verdict}
       data-surface="detail"
       data-grade={verdict.grade}
       data-testid="scout-verdict"
-      aria-label="스카우트 판정"
+      aria-label={displayMessage('copy.RecruitmentDesk.d567fb3ec5')}
     >
-      <b className={s.grade}>{verdict.grade}</b>
+      <b className={s.grade}>{localizeValue(verdict.grade)}</b>
       <div className={s.verdictText}>
-        <small>스카우트 판정</small>
-        <strong>{verdict.label}</strong>
+        <small>{richMessage('copy.RecruitmentDesk.d567fb3ec5')}</small>
+        <strong>{localizeValue(verdict.label)}</strong>
         <span>
-          {verdict.slot.position} 자리 {verdict.slot.value} · 주전 {verdict.starter.name}{' '}
-          {verdict.starter.value} <em data-tone={tone(verdict.gap)}>({delta(verdict.gap)})</em>
+          {richMessage('copy.RecruitmentDesk.b91f168751', {
+            p0: verdict.slot.position,
+            p1: verdict.slot.value,
+            p2: verdict.starter.name,
+            p3: ' ',
+            p4: verdict.starter.value,
+            p5: <em data-tone={tone(verdict.gap)}>({localizeValue(delta(verdict.gap))})</em>,
+          })}
         </span>
       </div>
-      {verdict.pros.length > 0 && (
-        <ul className={s.reasons} data-reason="for" aria-label="장점">
-          {verdict.pros.map((reason) => (
-            <li key={reason}>{reason}</li>
-          ))}
-        </ul>
+      {localizeValue(
+        verdict.pros.length > 0 && (
+          <ul
+            className={s.reasons}
+            data-reason="for"
+            aria-label={displayMessage('copy.RecruitmentDesk.359027c169')}
+          >
+            {localizeValue(
+              verdict.pros.map((reason) => <li key={reason}>{localizeValue(reason)}</li>),
+            )}
+          </ul>
+        ),
       )}
-      {verdict.cons.length > 0 && (
-        <ul className={s.reasons} data-reason="against" aria-label="단점">
-          {verdict.cons.map((reason) => (
-            <li key={reason}>{reason}</li>
-          ))}
-        </ul>
+      {localizeValue(
+        verdict.cons.length > 0 && (
+          <ul
+            className={s.reasons}
+            data-reason="against"
+            aria-label={displayMessage('copy.RecruitmentDesk.a204c3bdd3')}
+          >
+            {localizeValue(
+              verdict.cons.map((reason) => <li key={reason}>{localizeValue(reason)}</li>),
+            )}
+          </ul>
+        ),
       )}
     </section>
   );
@@ -156,13 +183,14 @@ function Section({
   open?: boolean;
   children: ReactNode;
 }) {
+  useTextLocale();
   return (
     <details className={s.section} open={open}>
       <summary>
-        <span>{title}</span>
-        <b>{answer}</b>
+        <span>{localizeValue(title)}</span>
+        <b>{localizeValue(answer)}</b>
       </summary>
-      {children}
+      {localizeValue(children)}
     </details>
   );
 }
@@ -196,6 +224,7 @@ function CandidateCard({
   pending?: TransferBid;
   bid?: boolean;
 }) {
+  useTextLocale();
   const { offer, buy, loan, verdict } = candidate,
     player = offer.player,
     club = clubOf(w);
@@ -205,10 +234,10 @@ function CandidateCard({
   const growth = Math.max(0, Math.round(player.potential) - overall(player));
   const best = bestRoles(player, 1)[0];
   const origin = offer.own
-    ? '우리 선수 · 재영입할 수 없어요'
+    ? sourceMessage('copy.RecruitmentDesk.ea4236ffcd')
     : offer.recommended
-      ? '스카우트 추천'
-      : '직접 발굴';
+      ? sourceMessage('copy.RecruitmentDesk.741ff4233f')
+      : sourceMessage('copy.RecruitmentDesk.32024b055b');
   const free = BigInt(offer.fee) === 0n;
   // Signed and with us: his first-team training as the assistant sets it (→CLUB-13).
   const joined = bid
@@ -230,212 +259,312 @@ function CandidateCard({
           <span className={s.cardMeta}>
             <PositionBadge position={player.position} />
             <span>
-              {POSITION_LABEL[player.position]} · {w.year - player.born}세 · 잠재력{' '}
-              {Math.round(player.potential)}
-              {growth > 0 && <em data-tone="rise"> +{growth}</em>}
+              {richMessage('copy.RecruitmentDesk.dd2fe56eba', {
+                p0: POSITION_LABEL[player.position],
+                p1: w.year - player.born,
+                p2: ' ',
+                p3: Math.round(player.potential),
+                p4: growth > 0 && <em data-tone="rise"> +{localizeValue(growth)}</em>,
+              })}
             </span>
           </span>
           <small className={s.positions} data-testid="candidate-positions">
-            {positionsLabel(player.positions)}
+            {localizeValue(positionsLabel(player.positions))}
           </small>
           <small className={s.origin}>
-            {sourceLabel(w, offer)} · {origin}
+            {localizeValue(sourceLabel(w, offer))} · {localizeValue(origin)}
           </small>
         </div>
       </header>
-      {!bid && (
-        <div className={s.compareActions}>
-          <button aria-pressed={selected} onClick={onCompare}>
-            <PixelIcon name={selected ? 'check' : 'switch'} size={16} />
-            비교
-          </button>
-          {onCompareOwn && !offer.own && (
-            <button onClick={onCompareOwn}>
-              <PixelIcon name="people" size={16} />
-              우리 선수와 비교
+      {localizeValue(
+        !bid && (
+          <div className={s.compareActions}>
+            <button aria-pressed={selected} onClick={onCompare}>
+              {richMessage('copy.RecruitmentDesk.22c135bc3d', {
+                p0: <PixelIcon name={selected ? 'check' : 'switch'} size={16} />,
+              })}
             </button>
-          )}
-        </div>
-      )}
-      {verdict && <VerdictCard verdict={verdict} />}
-      {!bid && offer.available && (
-        <Section
-          title="우리 팀에서"
-          answer={
-            <>
-              {buy.slot.position} 자리 · 선발 전력{' '}
-              <em data-tone={tone(buy.strengthDelta)}>{delta(buy.strengthDelta)}</em>
-            </>
-          }
-          open
-        >
-          <dl className={s.facts} aria-label="영입 전력 변화">
-            <div data-testid="candidate-slot" className={s.wide}>
-              <dt>
-                {buy.slot.position} {ROLE_LABEL[buy.slot.role]} 자리 실효 OVR
-              </dt>
-              <dd>
-                합류 {buy.slot.arrival} → 적응 후 {buy.slot.settled}
-              </dd>
-            </div>
-            <div>
-              <dt>자동 선발 전력</dt>
-              <dd>
-                {buy.beforeStrength} → {buy.afterStrength}{' '}
-                <small data-tone={tone(buy.strengthDelta)}>({delta(buy.strengthDelta)})</small>
-              </dd>
-            </div>
-            <div>
-              <dt>전술 적합도</dt>
-              <dd>
-                {buy.beforeFit} → {buy.afterFit}{' '}
-                <small data-tone={tone(buy.fitDelta)}>({delta(buy.fitDelta)})</small>
-              </dd>
-            </div>
-          </dl>
-          <p className={s.note}>
-            {offer.foreign ? '해외에서 합류' : '국내에서 합류'} · 적응에 시간이 필요해요.{' '}
-            {buy.willStart
-              ? '현재 능력과 피로 기준의 자동 선발 후보예요.'
-              : '현재 선발을 유지하며 로테이션 후보로 합류해요.'}
-          </p>
-        </Section>
-      )}
-      {!bid && !offer.own && (
-        <Section
-          title="비용"
-          answer={`${free ? '이적료 없음' : `이적료 ${short(offer.fee)}`} · 연봉 ${short(player.wage)}`}
-          open
-        >
-          <dl className={s.facts}>
-            <div>
-              <dt>이적료</dt>
-              <dd>{cash(offer.fee)}</dd>
-            </div>
-            <div>
-              <dt>1시즌 임대료</dt>
-              <dd>{cash(offer.loanFee)}</dd>
-            </div>
-            <div>
-              <dt>연봉</dt>
-              <dd>{cash(player.wage)}</dd>
-            </div>
-            <div>
-              <dt>계약 / 임대 반환</dt>
-              <dd>
-                {player.until}년 / {w.year + 1}년
-              </dd>
-            </div>
-            {offer.available && (
-              <>
-                <div>
-                  <dt>영입 후 자금</dt>
-                  <dd>
-                    {cash(buy.cashAfter)}{' '}
-                    <small className={s.sub}>자금 여력 {runwayText(buy.runwayRounds)}</small>
-                  </dd>
-                </div>
-                <div>
-                  <dt>임대 후 자금</dt>
-                  <dd>
-                    {cash(loan.cashAfter)}{' '}
-                    <small className={s.sub}>자금 여력 {runwayText(loan.runwayRounds)}</small>
-                  </dd>
-                </div>
-              </>
+            {localizeValue(
+              onCompareOwn && !offer.own && (
+                <button onClick={onCompareOwn}>
+                  {richMessage('copy.RecruitmentDesk.21e5af41ca', {
+                    p0: <PixelIcon name="people" size={16} />,
+                  })}
+                </button>
+              ),
             )}
-          </dl>
-          {(offer.available || free) && (
+          </div>
+        ),
+      )}
+      {localizeValue(verdict && <VerdictCard verdict={verdict} />)}
+      {localizeValue(
+        !bid && offer.available && (
+          <Section
+            title={displayMessage('copy.RecruitmentDesk.fa575a045b')}
+            answer={
+              <>
+                {richMessage('copy.RecruitmentDesk.754d3d37ee', {
+                  p0: buy.slot.position,
+                  p1: ' ',
+                  p2: (
+                    <em data-tone={tone(buy.strengthDelta)}>
+                      {localizeValue(delta(buy.strengthDelta))}
+                    </em>
+                  ),
+                })}
+              </>
+            }
+            open
+          >
+            <dl className={s.facts} aria-label={displayMessage('copy.RecruitmentDesk.31c031a646')}>
+              <div data-testid="candidate-slot" className={s.wide}>
+                <dt>
+                  {richMessage('copy.RecruitmentDesk.728817823b', {
+                    p0: buy.slot.position,
+                    p1: ROLE_LABEL[buy.slot.role],
+                  })}
+                </dt>
+                <dd>
+                  {richMessage('copy.RecruitmentDesk.bba3142a34', {
+                    p0: buy.slot.arrival,
+                    p1: buy.slot.settled,
+                  })}
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.RecruitmentDesk.57a08ec84d')}</dt>
+                <dd>
+                  {localizeValue(buy.beforeStrength)} → {localizeValue(buy.afterStrength)}
+                  {localizeValue(' ')}
+                  <small data-tone={tone(buy.strengthDelta)}>
+                    ({localizeValue(delta(buy.strengthDelta))})
+                  </small>
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.RecruitmentDesk.df39d1a8b3')}</dt>
+                <dd>
+                  {localizeValue(buy.beforeFit)} → {localizeValue(buy.afterFit)}
+                  {localizeValue(' ')}
+                  <small data-tone={tone(buy.fitDelta)}>
+                    ({localizeValue(delta(buy.fitDelta))})
+                  </small>
+                </dd>
+              </div>
+            </dl>
             <p className={s.note}>
-              {free && '이적료 없음 · 연봉은 계속 지급해요. '}
-              {offer.available && (
-                <>연간 고정 지출 {cash(buy.annualAfter)} · 새 연봉 포함, 미래 수입 제외</>
+              {richMessage('copy.RecruitmentDesk.cf149d7b13', {
+                p0: offer.foreign
+                  ? sourceMessage('copy.RecruitmentDesk.bfba4a684e')
+                  : sourceMessage('copy.RecruitmentDesk.de8142588f'),
+                p1: ' ',
+                p2: buy.willStart
+                  ? sourceMessage('copy.RecruitmentDesk.fa88c3b24a')
+                  : sourceMessage('copy.RecruitmentDesk.8248a57393'),
+              })}
+            </p>
+          </Section>
+        ),
+      )}
+      {localizeValue(
+        !bid && !offer.own && (
+          <Section
+            title={displayMessage('copy.RecruitmentDesk.24423dd67b')}
+            answer={sourceMessage('copy.RecruitmentDesk.cc02bdebd0', {
+              p0: free
+                ? sourceMessage('copy.RecruitmentDesk.6a7f3133c2')
+                : sourceMessage('copy.RecruitmentDesk.73bc6c6e24', { p0: short(offer.fee) }),
+              p1: short(player.wage),
+            })}
+            open
+          >
+            <dl className={s.facts}>
+              <div>
+                <dt>{richMessage('copy.EventCenter.e2d73c6cf3')}</dt>
+                <dd>{localizeValue(cash(offer.fee))}</dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.PlayerCompare.e0e9003294')}</dt>
+                <dd>{localizeValue(cash(offer.loanFee))}</dd>
+              </div>
+              <div>
+                <dt>{richMessage('team.column.wage')}</dt>
+                <dd>{localizeValue(cash(player.wage))}</dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.RecruitmentDesk.c549ab659c')}</dt>
+                <dd>
+                  {richMessage('copy.RecruitmentDesk.e1a38071ed', {
+                    p0: player.until,
+                    p1: w.year + 1,
+                  })}
+                </dd>
+              </div>
+              {localizeValue(
+                offer.available && (
+                  <>
+                    <div>
+                      <dt>{richMessage('copy.PlayerCompare.8933209ede')}</dt>
+                      <dd>
+                        {localizeValue(cash(buy.cashAfter))}
+                        {localizeValue(' ')}
+                        <small className={s.sub}>
+                          {richMessage('copy.RecruitmentDesk.5e0a2459f7', {
+                            p0: runwayText(buy.runwayRounds),
+                          })}
+                        </small>
+                      </dd>
+                    </div>
+                    <div>
+                      <dt>{richMessage('copy.RecruitmentDesk.dfe24d38ff')}</dt>
+                      <dd>
+                        {localizeValue(cash(loan.cashAfter))}
+                        {localizeValue(' ')}
+                        <small className={s.sub}>
+                          {richMessage('copy.RecruitmentDesk.5e0a2459f7', {
+                            p0: runwayText(loan.runwayRounds),
+                          })}
+                        </small>
+                      </dd>
+                    </div>
+                  </>
+                ),
+              )}
+            </dl>
+            {localizeValue(
+              (offer.available || free) && (
+                <p className={s.note}>
+                  {localizeValue(free && sourceMessage('copy.RecruitmentDesk.e2ce5be708'))}
+                  {localizeValue(
+                    offer.available && (
+                      <>
+                        {richMessage('copy.RecruitmentDesk.1dfae53abc', {
+                          p0: cash(buy.annualAfter),
+                        })}
+                      </>
+                    ),
+                  )}
+                </p>
+              ),
+            )}
+          </Section>
+        ),
+      )}
+      {localizeValue(
+        !bid && (
+          <Section
+            title={displayMessage('copy.RecruitmentDesk.456a19ba24')}
+            answer={`${best ? `${ROLE_LABEL[best.role]} ${best.ovr} · ` : ''}${
+              player.traits.length
+                ? player.traits.map((trait) => TRAIT_LABEL[trait]).join('·')
+                : sourceMessage('copy.ClubStaff.7cff642737')
+            }`}
+          >
+            <PlayerProfile w={w} player={player} own={offer.own} compact />
+          </Section>
+        ),
+      )}
+      {localizeValue(
+        !bid &&
+          (pending ? (
+            <p className={s.pending} data-surface="detail" data-testid="pending-bid">
+              {localizeValue(
+                pending.status === 'countered' ? (
+                  <>
+                    {richMessage('copy.RecruitmentDesk.df14100077', {
+                      p0: cash(pending.counterFee || pending.fee),
+                    })}
+                  </>
+                ) : (
+                  <>
+                    {richMessage('copy.RecruitmentDesk.e0d3c704cd', {
+                      p0: cash(pending.fee),
+                      p1: ' ',
+                      p2: Math.max(0, pending.due - (w.calendar?.day ?? 0)),
+                    })}
+                  </>
+                ),
               )}
             </p>
-          )}
-        </Section>
-      )}
-      {!bid && (
-        <Section
-          title="능력·성향"
-          answer={`${best ? `${ROLE_LABEL[best.role]} ${best.ovr} · ` : ''}${
-            player.traits.length
-              ? player.traits.map((trait) => TRAIT_LABEL[trait]).join('·')
-              : '특성 없음'
-          }`}
-        >
-          <PlayerProfile w={w} player={player} own={offer.own} compact />
-        </Section>
-      )}
-      {!bid &&
-        (pending ? (
-          <p className={s.pending} data-surface="detail" data-testid="pending-bid">
-            {pending.status === 'countered' ? (
-              <>역제안 {cash(pending.counterFee || pending.fee)} · 알림·결정에서 답해 주세요</>
-            ) : (
-              <>
-                협상 중 · 제안 {cash(pending.fee)} ·{' '}
-                {Math.max(0, pending.due - (w.calendar?.day ?? 0))}일 안에 답이 와요
-              </>
-            )}
-          </p>
-        ) : (
-          <div className={s.transactions}>
-            <div>
-              {offer.freeAgent ? (
+          ) : (
+            <div className={s.transactions}>
+              <div>
+                {localizeValue(
+                  offer.freeAgent ? (
+                    <button
+                      data-ui="primary"
+                      className={s.primary}
+                      disabled={blocked || !buy.eligible || !buy.affordable}
+                      onClick={() => onRecruit(false)}
+                    >
+                      {localizeValue(
+                        offer.available
+                          ? sourceMessage('copy.MediationReview.2c47bc166e')
+                          : sourceMessage('copy.RecruitmentDesk.7d02fe352e'),
+                      )}
+                    </button>
+                  ) : (
+                    <button
+                      data-ui="primary"
+                      className={s.primary}
+                      disabled={blocked || !offer.available || !window.open || !buy.eligible}
+                      onClick={onBid}
+                    >
+                      {localizeValue(
+                        offer.available
+                          ? sourceMessage('copy.RecruitmentDesk.3a697d0f9c')
+                          : sourceMessage('copy.RecruitmentDesk.7d02fe352e'),
+                      )}
+                    </button>
+                  ),
+                )}
+                {localizeValue(
+                  offer.available && !offer.freeAgent && !window.open ? (
+                    <small data-tone="block">{localizeValue(window.label)}</small>
+                  ) : (
+                    (!buy.eligible || !buy.affordable) && (
+                      <small data-tone="block">{localizeValue(buy.reason)}</small>
+                    )
+                  ),
+                )}
+              </div>
+              <div>
                 <button
-                  data-ui="primary"
-                  className={s.primary}
-                  disabled={blocked || !buy.eligible || !buy.affordable}
-                  onClick={() => onRecruit(false)}
+                  data-ui="secondary"
+                  disabled={
+                    offer.freeAgent || blocked || !window.open || !loan.eligible || !loan.affordable
+                  }
+                  onClick={() => onRecruit(true)}
                 >
-                  {offer.available ? '자유계약 영입' : '계약 완료'}
+                  {richMessage('copy.RecruitmentDesk.3927e24ca2')}
                 </button>
-              ) : (
-                <button
-                  data-ui="primary"
-                  className={s.primary}
-                  disabled={blocked || !offer.available || !window.open || !buy.eligible}
-                  onClick={onBid}
-                >
-                  {offer.available ? '이적 제안' : '계약 완료'}
-                </button>
-              )}
-              {offer.available && !offer.freeAgent && !window.open ? (
-                <small data-tone="block">{window.label}</small>
-              ) : (
-                (!buy.eligible || !buy.affordable) && <small data-tone="block">{buy.reason}</small>
-              )}
+                {localizeValue(
+                  offer.freeAgent ? (
+                    <small>{richMessage('copy.RecruitmentDesk.cd560b565b')}</small>
+                  ) : !loan.eligible || !loan.affordable ? (
+                    <small data-tone="block">{localizeValue(loan.reason)}</small>
+                  ) : (
+                    offer.available && (
+                      <small>{richMessage('copy.RecruitmentDesk.42b7db7fec')}</small>
+                    )
+                  ),
+                )}
+              </div>
             </div>
-            <div>
-              <button
-                data-ui="secondary"
-                disabled={
-                  offer.freeAgent || blocked || !window.open || !loan.eligible || !loan.affordable
-                }
-                onClick={() => onRecruit(true)}
-              >
-                1시즌 임대
-              </button>
-              {offer.freeAgent ? (
-                <small>자유계약 선수는 임대할 수 없어요. 자유계약 영입을 이용해 주세요.</small>
-              ) : !loan.eligible || !loan.affordable ? (
-                <small data-tone="block">{loan.reason}</small>
-              ) : (
-                offer.available && (
-                  <small>판매 구단이 2–4일 뒤 답해요. 수락 시 임대료와 연봉이 발생해요.</small>
-                )
-              )}
-            </div>
+          )),
+      )}
+      {localizeValue(
+        joined && joinedCall && (
+          <div className={s.joined} aria-label={displayMessage('copy.RecruitmentDesk.de2966c4d5')}>
+            <PlayerLink id={joined.id} name={joined.name} />
+            <small data-testid="joined-training">
+              {richMessage('copy.AcademyPanel.110b08796f', {
+                p0: joinedCall.focus,
+                p1: joinedCall.by,
+              })}
+            </small>
           </div>
-        ))}
-      {joined && joinedCall && (
-        <div className={s.joined} aria-label="합류한 선수 관리">
-          <PlayerLink id={joined.id} name={joined.name} />
-          <small data-testid="joined-training">
-            1군 훈련 {joinedCall.focus} · {joinedCall.by}
-          </small>
-        </div>
+        ),
       )}
     </article>
   );
@@ -453,6 +582,7 @@ export function RecruitmentDesk({
   /** The 유소년 view: the same market held to academy ages, with filters of its own. */
   youth?: boolean;
 }) {
+  useTextLocale();
   const w = state.view!.world,
     club = clubOf(w);
   const [query, setQuery] = useTaskState<MarketQuery>(
@@ -580,9 +710,9 @@ export function RecruitmentDesk({
       world: w.id,
       text: reply?.ok
         ? candidate.offer.freeAgent
-          ? `${candidate.offer.player.name} 영입을 저장했어요.`
-          : `${candidate.offer.player.name} 임대 제안을 보냈어요. 구단이 수락하면 계약이 완료돼요.`
-        : client.state.error || '계약을 적용하지 못했어요.',
+          ? sourceMessage('copy.RecruitmentDesk.8464bd95f6', { p0: candidate.offer.player.name })
+          : sourceMessage('copy.RecruitmentDesk.bd7db3e5dd', { p0: candidate.offer.player.name })
+        : client.state.error || sourceMessage('copy.RecruitmentDesk.1018b7ec8c'),
     });
   };
   const bids = w.bids || [];
@@ -644,7 +774,11 @@ export function RecruitmentDesk({
       className={s.desk}
       data-ui="recruitment-desk"
       data-surface="sheet"
-      aria-label={youth ? '유소년 영입 데스크' : '선수 영입 데스크'}
+      aria-label={localizeValue(
+        youth
+          ? sourceMessage('copy.RecruitmentDesk.014f26cc56')
+          : sourceMessage('copy.RecruitmentDesk.e204ec970b'),
+      )}
     >
       <header className={s.toolbar}>
         <div className={s.heading}>
@@ -652,8 +786,19 @@ export function RecruitmentDesk({
             <PixelIcon name="people" size={26} />
           </span>
           <h3>
-            {youth ? `유소년 후보 · ${YOUTH_MARKET_AGE}세 이하` : '영입 후보'}{' '}
-            <span>{page ? `총 ${page.total}명` : '조회 중'}</span>
+            {localizeValue(
+              youth
+                ? sourceMessage('copy.RecruitmentDesk.16ed116c39', { p0: YOUTH_MARKET_AGE })
+                : sourceMessage('copy.ClubSettingControl.2051d3609a'),
+            )}
+            {localizeValue(' ')}
+            <span>
+              {localizeValue(
+                page
+                  ? sourceMessage('copy.RecruitmentDesk.719894d3b5', { p0: page.total })
+                  : sourceMessage('copy.RecruitmentDesk.32e78197fb'),
+              )}
+            </span>
           </h3>
         </div>
         <div
@@ -661,69 +806,90 @@ export function RecruitmentDesk({
           data-testid="transfer-window"
         >
           <span aria-hidden="true" className={s.windowDot} />
-          <span>{window.label}</span>
+          <span>{localizeValue(window.label)}</span>
         </div>
         <div className={s.tools}>
-          {selectedComparison.length > 0 && (
-            <button
-              data-ui="secondary"
-              type="button"
-              aria-label={`선택한 ${selectedComparison.length}명 비교`}
-              disabled={selectedComparison.length !== 2}
-              onClick={() => setComparing(true)}
-            >
-              비교 {selectedComparison.length}/2
-            </button>
+          {localizeValue(
+            selectedComparison.length > 0 && (
+              <button
+                data-ui="secondary"
+                type="button"
+                aria-label={displayMessage('copy.RecruitmentDesk.7a9058897a', {
+                  p0: selectedComparison.length,
+                })}
+                disabled={selectedComparison.length !== 2}
+                onClick={() => setComparing(true)}
+              >
+                {richMessage('copy.RecruitmentDesk.faace7439f', { p0: selectedComparison.length })}
+              </button>
+            ),
           )}
           <button
             data-ui="secondary"
             type="button"
-            aria-label="영입 필터"
+            aria-label={displayMessage('copy.RecruitmentDesk.d5ee7340ff')}
             aria-haspopup="dialog"
             aria-expanded={panel === 'filters'}
             onClick={() => setPanel('filters')}
           >
-            <PixelIcon name="filter" size={16} />
-            필터
-            {filtered && <i className={s.activeDot} aria-label="적용 중" />}
+            {richMessage('copy.RecruitmentDesk.001ec16a5c', {
+              p0: <PixelIcon name="filter" size={16} />,
+              p1: filtered && (
+                <i
+                  className={s.activeDot}
+                  aria-label={displayMessage('copy.RecruitmentDesk.0619d3235c')}
+                />
+              ),
+            })}
           </button>
           <button
             data-ui="tertiary"
             type="button"
-            aria-label={`이적 협상 · ${outgoing.length}건 진행 중${board.some(({ actionable }) => actionable) ? ' · 응답 필요' : ''}`}
+            aria-label={displayMessage('copy.RecruitmentDesk.0ac014a930', {
+              p0: outgoing.length,
+              p1: board.some(({ actionable }) => actionable)
+                ? sourceMessage('copy.RecruitmentDesk.a912604402')
+                : '',
+            })}
             aria-haspopup="dialog"
             aria-expanded={panel === 'negotiations'}
             onClick={() => setPanel('negotiations')}
           >
-            <PixelIcon name="switch" size={16} />
-            협상
-            {bids.length > 0 && (
-              <span className={s.count}>
-                {board.filter(({ actionable }) => actionable).length || outgoing.length}
-              </span>
-            )}
+            {richMessage('copy.RecruitmentDesk.b716043537', {
+              p0: <PixelIcon name="switch" size={16} />,
+              p1: bids.length > 0 && (
+                <span className={s.count}>
+                  {localizeValue(
+                    board.filter(({ actionable }) => actionable).length || outgoing.length,
+                  )}
+                </span>
+              ),
+            })}
           </button>
           <button
             data-ui="tertiary"
             type="button"
             className={s.infoTrigger}
-            aria-label="영입 정보 · 필요한 영입과 감독 요청"
+            aria-label={displayMessage('copy.RecruitmentDesk.a93c2ff6d9')}
             aria-haspopup="dialog"
             aria-expanded={panel === 'info'}
             onClick={() => setPanel('info')}
           >
-            <PixelIcon name="news" size={18} />
-            정보
+            {richMessage('copy.RecruitmentDesk.ae684d1827', {
+              p0: <PixelIcon name="news" size={18} />,
+            })}
           </button>
         </div>
       </header>
-      {message?.world === w.id && (
-        <p data-surface="inset" className={s.message} role="status">
-          {message.text}
-        </p>
+      {localizeValue(
+        message?.world === w.id && (
+          <p data-surface="inset" className={s.message} role="status">
+            {localizeValue(message.text)}
+          </p>
+        ),
       )}
       <label className={s.search}>
-        <span>선수 이름 검색</span>
+        <span>{richMessage('copy.RecruitmentDesk.a491b824b3')}</span>
         <input
           type="search"
           value={query.name ?? ''}
@@ -731,16 +897,26 @@ export function RecruitmentDesk({
           onChange={(event) => changeQuery({ name: event.target.value })}
         />
       </label>
-      {market.error && (
-        <p data-surface="inset" role="alert" className={s.warning}>
-          {market.error}{' '}
-          <button data-ui="tertiary" onClick={market.retry}>
-            목록 다시 조회
-          </button>
-        </p>
+      {localizeValue(
+        market.error && (
+          <p data-surface="inset" role="alert" className={s.warning}>
+            {localizeValue(market.error)}
+            {localizeValue(' ')}
+            <button data-ui="tertiary" onClick={market.retry}>
+              {richMessage('copy.RecruitmentDesk.98b83912a3')}
+            </button>
+          </p>
+        ),
       )}
-      {!page && !market.error && <p role="status">세계 선수 목록을 불러오고 있어요.</p>}
-      <table className={s.candidateTable} aria-label="영입 후보 목록">
+      {localizeValue(
+        !page && !market.error && (
+          <p role="status">{richMessage('copy.RecruitmentDesk.aaf4c19e26')}</p>
+        ),
+      )}
+      <table
+        className={s.candidateTable}
+        aria-label={displayMessage('copy.RecruitmentDesk.34d2b2b239')}
+      >
         <colgroup>
           <col />
           <col className={s.ratingColumn} />
@@ -751,661 +927,887 @@ export function RecruitmentDesk({
         </colgroup>
         <thead>
           <tr>
-            <th scope="col">선수</th>
+            <th scope="col">{richMessage('team.column.player')}</th>
             <th scope="col" className={s.ratingColumn}>
-              OVR
+              {richMessage('team.column.ovr')}
             </th>
             <th scope="col" className={s.potentialColumn}>
-              POT
+              {richMessage('team.column.potential')}
             </th>
             <th scope="col" className={s.feeColumn}>
-              이적료
+              {richMessage('copy.EventCenter.e2d73c6cf3')}
             </th>
             <th scope="col" className={s.wageColumn}>
-              연봉
+              {richMessage('team.column.wage')}
             </th>
             <th scope="col" className={s.compareColumn}>
-              비교
+              {richMessage('copy.RecruitmentDesk.c0154c812a')}
             </th>
           </tr>
         </thead>
         <tbody>
-          {page?.items.map((offer) => {
-            const player = offer.player;
-            const pending = pendingFor(player.id);
-            const source = sourceLabel(w, offer);
-            return (
-              <tr
-                key={player.id}
-                data-testid={`market-candidate-${player.id}`}
-                data-candidate-id={player.id}
-                data-line={lineOf(player.position)}
-                data-selected={
-                  selectedComparison.some((target) => target.playerId === player.id) || undefined
-                }
-                onClick={(event) => {
-                  if ((event.target as Element).closest('button, input, a')) return;
-                  setViewing(offer.target);
-                }}
-              >
-                <td>
-                  <button
-                    data-ui="link"
-                    type="button"
-                    className={s.playerName}
-                    aria-label={`${player.name} 상세 보기`}
-                    onClick={() => setViewing(offer.target)}
-                  >
-                    <span className={s.playerIdentity}>
-                      <PositionBadge position={player.position} />
-                      <span className={s.playerText}>
-                        <b>{player.name}</b>
-                        <small title={source}>
-                          {w.year - player.born}세
-                          {offer.own
-                            ? ' · 우리 선수'
-                            : !offer.available
-                              ? ' · 접근 불가'
-                              : pending
-                                ? ' · 협상 중'
-                                : ''}
-                          {offer.recommended ? ' · 스카우트 추천' : ''}
-                          {' · '}
-                          {source}
-                        </small>
+          {localizeValue(
+            page?.items.map((offer) => {
+              const player = offer.player;
+              const pending = pendingFor(player.id);
+              const source = sourceLabel(w, offer);
+              return (
+                <tr
+                  key={player.id}
+                  data-testid={`market-candidate-${player.id}`}
+                  data-candidate-id={player.id}
+                  data-line={lineOf(player.position)}
+                  data-selected={
+                    selectedComparison.some((target) => target.playerId === player.id) || undefined
+                  }
+                  onClick={(event) => {
+                    if ((event.target as Element).closest('button, input, a')) return;
+                    setViewing(offer.target);
+                  }}
+                >
+                  <td>
+                    <button
+                      data-ui="link"
+                      type="button"
+                      className={s.playerName}
+                      aria-label={displayMessage('copy.RecruitmentDesk.96683230cc', {
+                        p0: player.name,
+                      })}
+                      onClick={() => setViewing(offer.target)}
+                    >
+                      <span className={s.playerIdentity}>
+                        <PositionBadge position={player.position} />
+                        <span className={s.playerText}>
+                          <b>{player.name}</b>
+                          <small title={localizeValue(source)}>
+                            {richMessage('copy.RecruitmentDesk.f802b6ce0c', {
+                              p0: w.year - player.born,
+                              p1: offer.own
+                                ? sourceMessage('copy.PlayerComparison.4c74be1201')
+                                : !offer.available
+                                  ? sourceMessage('copy.RecruitmentDesk.36443794ec')
+                                  : pending
+                                    ? sourceMessage('copy.RecruitmentDesk.da919cc8fa')
+                                    : '',
+                              p2: offer.recommended
+                                ? sourceMessage('copy.RecruitmentDesk.73d246427f')
+                                : '',
+                              p3: ' · ',
+                              p4: source,
+                            })}
+                          </small>
+                        </span>
+                      </span>
+                    </button>
+                  </td>
+                  <td>
+                    <OvrBadge value={overall(player)} />
+                  </td>
+                  <td>
+                    <span className={s.potentialValue}>
+                      <b>{localizeValue(Math.round(player.potential))}</b>
+                      <span className={s.potentialTrack} aria-hidden="true">
+                        <i style={{ width: `${Math.max(0, Math.min(100, player.potential))}%` }} />
                       </span>
                     </span>
-                  </button>
-                </td>
-                <td>
-                  <OvrBadge value={overall(player)} />
-                </td>
-                <td>
-                  <span className={s.potentialValue}>
-                    <b>{Math.round(player.potential)}</b>
-                    <span className={s.potentialTrack} aria-hidden="true">
-                      <i style={{ width: `${Math.max(0, Math.min(100, player.potential))}%` }} />
-                    </span>
-                  </span>
-                </td>
-                <td className={s.feeValue}>
-                  {offer.freeAgent ? (
-                    <span className={s.freeTag}>
-                      <PixelIcon name="check" size={12} />
-                      자유계약
-                    </span>
-                  ) : (
-                    <span className={s.moneyValue}>{plain(offer.fee)}</span>
-                  )}
-                </td>
-                <td className={s.wageColumn}>
-                  <span className={s.wageValue}>{plain(player.wage)}</span>
-                </td>
-                <td>
-                  <button
-                    data-ui="link"
-                    type="button"
-                    className={s.compareToggle}
-                    aria-label={`${player.name} 비교`}
-                    aria-pressed={selectedComparison.some(
-                      (target) => target.playerId === player.id,
+                  </td>
+                  <td className={s.feeValue}>
+                    {localizeValue(
+                      offer.freeAgent ? (
+                        <span className={s.freeTag}>
+                          {richMessage('copy.RecruitmentDesk.12672e0ef0', {
+                            p0: <PixelIcon name="check" size={12} />,
+                          })}
+                        </span>
+                      ) : (
+                        <span className={s.moneyValue}>{localizeValue(plain(offer.fee))}</span>
+                      ),
                     )}
-                    onClick={() => toggle(offer.target)}
-                  >
-                    <span className={s.compareMark} aria-hidden="true" />
+                  </td>
+                  <td className={s.wageColumn}>
+                    <span className={s.wageValue}>{localizeValue(plain(player.wage))}</span>
+                  </td>
+                  <td>
+                    <button
+                      data-ui="link"
+                      type="button"
+                      className={s.compareToggle}
+                      aria-label={displayMessage('copy.RecruitmentDesk.242a41561d', {
+                        p0: player.name,
+                      })}
+                      aria-pressed={selectedComparison.some(
+                        (target) => target.playerId === player.id,
+                      )}
+                      onClick={() => toggle(offer.target)}
+                    >
+                      <span className={s.compareMark} aria-hidden="true" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            }),
+          )}
+          {localizeValue(
+            page?.total === 0 && (
+              <tr>
+                <td colSpan={6} className={s.empty}>
+                  {localizeValue(
+                    filtered
+                      ? sourceMessage('copy.RecruitmentDesk.66cea87275')
+                      : sourceMessage('copy.RecruitmentDesk.dc972cb7d7'),
+                  )}
+                  <button data-ui="tertiary" onClick={() => setQuery(DEFAULT_MARKET_QUERY)}>
+                    {richMessage('copy.RecruitmentDesk.ac59eacff1')}
                   </button>
                 </td>
               </tr>
-            );
-          })}
-          {page?.total === 0 && (
-            <tr>
-              <td colSpan={6} className={s.empty}>
-                {filtered
-                  ? '이 조건에 맞는 선수가 없어요. 필터를 지우고 다시 찾아보세요.'
-                  : '현재 조회할 수 있는 현역 선수가 없어요.'}
-                <button data-ui="tertiary" onClick={() => setQuery(DEFAULT_MARKET_QUERY)}>
-                  필터 지우기
-                </button>
-              </td>
-            </tr>
+            ),
           )}
         </tbody>
       </table>
-      {page && (
-        <nav className={s.pagination} aria-label="영입 목록 페이지">
-          <button
-            data-ui="tertiary"
-            disabled={page.page === 0}
-            onClick={() => changeQuery({ page: page.page - 1 })}
+      {localizeValue(
+        page && (
+          <nav
+            className={s.pagination}
+            aria-label={displayMessage('copy.RecruitmentDesk.c10f520b72')}
           >
-            <PixelIcon name="chevronLeft" size={14} /> 이전 페이지
-          </button>
-          <span role="status">
-            총 {page.total}명 · {page.page + 1} /{' '}
-            {Math.max(1, Math.ceil(page.total / page.pageSize))} 페이지 · {page.items.length}명 표시
-          </span>
-          <button
-            data-ui="tertiary"
-            disabled={(page.page + 1) * page.pageSize >= page.total}
-            onClick={() => changeQuery({ page: page.page + 1 })}
-          >
-            다음 페이지 <PixelIcon name="chevronRight" size={14} />
-          </button>
-        </nav>
+            <button
+              data-ui="tertiary"
+              disabled={page.page === 0}
+              onClick={() => changeQuery({ page: page.page - 1 })}
+            >
+              {richMessage('copy.RecruitmentDesk.aebeacd0de', {
+                p0: <PixelIcon name="chevronLeft" size={14} />,
+              })}
+            </button>
+            <span role="status">
+              {richMessage('copy.RecruitmentDesk.7917b17646', {
+                p0: page.total,
+                p1: page.page + 1,
+                p2: ' ',
+                p3: Math.max(1, Math.ceil(page.total / page.pageSize)),
+                p4: page.items.length,
+              })}
+            </span>
+            <button
+              data-ui="tertiary"
+              disabled={(page.page + 1) * page.pageSize >= page.total}
+              onClick={() => changeQuery({ page: page.page + 1 })}
+            >
+              {richMessage('copy.RecruitmentDesk.8ba4759b10', {
+                p0: <PixelIcon name="chevronRight" size={14} />,
+              })}
+            </button>
+          </nav>
+        ),
       )}
-      {panel === 'filters' && (
-        <Dialog
-          label="영입 필터"
-          onClose={() => setPanel(undefined)}
-          actions={
-            <div className={s.bidActions}>
+      {localizeValue(
+        panel === 'filters' && (
+          <Dialog
+            label={displayMessage('copy.RecruitmentDesk.d5ee7340ff')}
+            onClose={() => setPanel(undefined)}
+            actions={
+              <div className={s.bidActions}>
+                <button
+                  data-ui="tertiary"
+                  type="button"
+                  onClick={() => {
+                    setQuery(DEFAULT_MARKET_QUERY);
+                  }}
+                >
+                  {richMessage('copy.LabPage.893f3d9463')}
+                </button>
+                <button
+                  data-ui="primary"
+                  type="button"
+                  className={s.primary}
+                  onClick={() => setPanel(undefined)}
+                >
+                  {localizeValue(
+                    page
+                      ? sourceMessage('copy.RecruitmentDesk.15028b84c8', { p0: page.total })
+                      : sourceMessage('copy.ClubListing.f9a249aaf3'),
+                  )}
+                </button>
+              </div>
+            }
+          >
+            <p className={s.note}>
+              {richMessage('copy.RecruitmentDesk.570875f0a1', {
+                p0: query.recommendedOnly ? sourceMessage('copy.RecruitmentDesk.63fc71f9a3') : '',
+              })}
+            </p>
+            <div className={s.filters}>
+              {/* One position choice: a whole line or one position, the weak line marked. */}
+              <label className={s.wideFilter}>
+                {richMessage('copy.RecruitmentDesk.c0f856ef83', {
+                  p0: (
+                    <Select
+                      aria-label={displayMessage('copy.RecruitmentDesk.527b85552f')}
+                      value={query.position ?? (query.line ? `line:${query.line}` : 'all')}
+                      onValueChange={(value) =>
+                        changeQuery(
+                          value.startsWith('line:')
+                            ? { line: value.slice(5) as Line }
+                            : { position: value === 'all' ? undefined : (value as Position) },
+                        )
+                      }
+                    >
+                      <option value="all">{richMessage('copy.RecruitmentDesk.9666d1996a')}</option>
+                      {localizeValue(
+                        LINES.map((line) => {
+                          const mark =
+                            line === recommended
+                              ? sourceMessage('copy.RecruitmentDesk.b8ad204536')
+                              : '';
+                          const positions = POSITIONS.filter(
+                            (position) => lineOf(position) === line,
+                          );
+                          return line === 'GK' ? (
+                            <option key={line} value={`line:${line}`}>
+                              {richMessage('copy.RecruitmentDesk.f69b3f9a53', {
+                                p0: localizeValue(POSITION_LABEL.GK),
+                                p1: localizeValue(mark),
+                              })}
+                            </option>
+                          ) : (
+                            <optgroup key={line} label={localizeValue(lineNames[line])}>
+                              <option value={`line:${line}`}>
+                                {richMessage('copy.RecruitmentDesk.a04bf47a89', {
+                                  p0: lineNames[line],
+                                  p1: mark,
+                                })}
+                              </option>
+                              {localizeValue(
+                                positions.map((position) => (
+                                  <option key={position} value={position}>
+                                    {localizeValue(position)} ·{' '}
+                                    {localizeValue(POSITION_LABEL[position])}
+                                  </option>
+                                )),
+                              )}
+                            </optgroup>
+                          );
+                        }),
+                      )}
+                    </Select>
+                  ),
+                })}
+              </label>
+              <fieldset className={s.ovrRange}>
+                <legend>{richMessage('copy.RecruitmentDesk.17fd08e4f4')}</legend>
+                <label>
+                  {richMessage('copy.RecruitmentDesk.81a5d56d6d', {
+                    p0: (
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={99}
+                        placeholder={displayMessage('copy.RecruitmentDesk.01eebd5349')}
+                        aria-label={displayMessage('copy.RecruitmentDesk.c3db29d75b')}
+                        value={query.ovrMin ?? ''}
+                        onChange={(event) => changeQuery({ ovrMin: ovrBound(event.target.value) })}
+                      />
+                    ),
+                  })}
+                </label>
+                <label>
+                  {richMessage('copy.RecruitmentDesk.d0e833cdde', {
+                    p0: (
+                      <input
+                        type="number"
+                        inputMode="numeric"
+                        min={1}
+                        max={99}
+                        placeholder={displayMessage('copy.RecruitmentDesk.ee3b70e7b0')}
+                        aria-label={displayMessage('copy.RecruitmentDesk.d5cdbaabed')}
+                        value={query.ovrMax ?? ''}
+                        onChange={(event) => changeQuery({ ovrMax: ovrBound(event.target.value) })}
+                      />
+                    ),
+                  })}
+                </label>
+              </fieldset>
+              <label>
+                {richMessage('copy.RecruitmentDesk.5940572f7b', {
+                  p0: (
+                    <Select
+                      aria-label={displayMessage('copy.RecruitmentDesk.f147a893b5')}
+                      value={leagueKey || 'all'}
+                      onValueChange={(value) =>
+                        changeQuery({ league: leagues.find(([key]) => key === value)?.[1] })
+                      }
+                    >
+                      <option value="all">{richMessage('copy.ClubListing.86f46d158a')}</option>
+                      {localizeValue(
+                        leagues.map(([key]) => {
+                          const team = w.clubs.find((team) => marketLeagueKey(team) === key)!;
+                          return (
+                            <option key={key} value={key}>
+                              {localizeValue(team.country)} · {localizeValue(clubDivision(w, team))}
+                            </option>
+                          );
+                        }),
+                      )}
+                    </Select>
+                  ),
+                })}
+              </label>
+              <label>
+                {richMessage('copy.RecruitmentDesk.0fb68fb1bc', {
+                  p0: (
+                    <Select
+                      aria-label={displayMessage('copy.RecruitmentDesk.88c2223418')}
+                      value={query.team ?? 'all'}
+                      onValueChange={(value) =>
+                        changeQuery({ team: value === 'all' ? undefined : value })
+                      }
+                    >
+                      <option value="all">{richMessage('copy.RecruitmentDesk.bfd80f2a83')}</option>
+                      {localizeValue(
+                        teams.map((team) => (
+                          <option key={team.id} value={team.id}>
+                            {team.name}
+                          </option>
+                        )),
+                      )}
+                    </Select>
+                  ),
+                })}
+              </label>
               <button
-                data-ui="tertiary"
-                type="button"
-                onClick={() => {
-                  setQuery(DEFAULT_MARKET_QUERY);
-                }}
+                data-ui={query.recommendedOnly ? 'secondary' : 'tertiary'}
+                className={s.wideFilter}
+                aria-pressed={!!query.recommendedOnly}
+                onClick={() => changeQuery({ recommendedOnly: !query.recommendedOnly })}
               >
-                초기화
-              </button>
-              <button
-                data-ui="primary"
-                type="button"
-                className={s.primary}
-                onClick={() => setPanel(undefined)}
-              >
-                {page ? `${page.total}명 목록 보기` : '목록으로'}
+                {richMessage('copy.RecruitmentDesk.3daa639da2')}
               </button>
             </div>
-          }
-        >
-          <p className={s.note}>
-            전 세계 현역 선수·자유계약 선수{query.recommendedOnly ? ' · 스카우트 추천만' : ''}
-          </p>
-          <div className={s.filters}>
-            {/* One position choice: a whole line or one position, the weak line marked. */}
-            <label className={s.wideFilter}>
-              포지션
-              <Select
-                aria-label="영입 포지션"
-                value={query.position ?? (query.line ? `line:${query.line}` : 'all')}
-                onValueChange={(value) =>
-                  changeQuery(
-                    value.startsWith('line:')
-                      ? { line: value.slice(5) as Line }
-                      : { position: value === 'all' ? undefined : (value as Position) },
-                  )
-                }
-              >
-                <option value="all">모든 포지션</option>
-                {LINES.map((line) => {
-                  const mark = line === recommended ? ' · 추천' : '';
-                  const positions = POSITIONS.filter((position) => lineOf(position) === line);
-                  return line === 'GK' ? (
-                    <option key={line} value={`line:${line}`}>
-                      GK · {POSITION_LABEL.GK}
-                      {mark}
-                    </option>
-                  ) : (
-                    <optgroup key={line} label={lineNames[line]}>
-                      <option value={`line:${line}`}>
-                        {lineNames[line]} 전체{mark}
-                      </option>
-                      {positions.map((position) => (
-                        <option key={position} value={position}>
-                          {position} · {POSITION_LABEL[position]}
-                        </option>
-                      ))}
-                    </optgroup>
-                  );
-                })}
-              </Select>
-            </label>
-            <fieldset className={s.ovrRange}>
-              <legend>OVR 범위</legend>
-              <label>
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={99}
-                  placeholder="최소"
-                  aria-label="OVR 최소"
-                  value={query.ovrMin ?? ''}
-                  onChange={(event) => changeQuery({ ovrMin: ovrBound(event.target.value) })}
-                />
-                이상
-              </label>
-              <label>
-                <input
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={99}
-                  placeholder="최대"
-                  aria-label="OVR 최대"
-                  value={query.ovrMax ?? ''}
-                  onChange={(event) => changeQuery({ ovrMax: ovrBound(event.target.value) })}
-                />
-                이하
-              </label>
-            </fieldset>
-            <label>
-              리그
-              <Select
-                aria-label="영입 리그"
-                value={leagueKey || 'all'}
-                onValueChange={(value) =>
-                  changeQuery({ league: leagues.find(([key]) => key === value)?.[1] })
-                }
-              >
-                <option value="all">모든 리그</option>
-                {leagues.map(([key]) => {
-                  const team = w.clubs.find((team) => marketLeagueKey(team) === key)!;
-                  return (
-                    <option key={key} value={key}>
-                      {team.country} · {clubDivision(w, team)}
-                    </option>
-                  );
-                })}
-              </Select>
-            </label>
-            <label>
-              소속 구단
-              <Select
-                aria-label="영입 구단"
-                value={query.team ?? 'all'}
-                onValueChange={(value) =>
-                  changeQuery({ team: value === 'all' ? undefined : value })
-                }
-              >
-                <option value="all">모든 구단·자유계약</option>
-                {teams.map((team) => (
-                  <option key={team.id} value={team.id}>
-                    {team.name}
-                  </option>
-                ))}
-              </Select>
-            </label>
-            <button
-              data-ui={query.recommendedOnly ? 'secondary' : 'tertiary'}
-              className={s.wideFilter}
-              aria-pressed={!!query.recommendedOnly}
-              onClick={() => changeQuery({ recommendedOnly: !query.recommendedOnly })}
-            >
-              스카우트 추천만
-            </button>
-          </div>
-          <p className={s.note}>
-            OVR 높은 순으로 보여 줘요. 추천은 현재 선발의 약한 포지션이에요. 전력·적합도는 선수
-            구성의 비교이며 경기 승리를 보장하지 않습니다.
-          </p>
-        </Dialog>
+            <p className={s.note}>{richMessage('copy.RecruitmentDesk.32c81cccaa')}</p>
+          </Dialog>
+        ),
       )}
-      {panel === 'negotiations' && (
-        <Dialog label="이적 협상" onClose={() => setPanel(undefined)}>
-          {board.length > 0 && (
-            <section data-surface="sheet" className={s.negotiations} aria-label="진행 중인 협상">
-              <h3>이적 협상</h3>
-              {shownBids.map(({ bid, player, club: other, actionable, dueLabel }) => (
-                <div
+      {localizeValue(
+        panel === 'negotiations' && (
+          <Dialog
+            label={displayMessage('copy.EventCenter.89993bb226')}
+            onClose={() => setPanel(undefined)}
+          >
+            {localizeValue(
+              board.length > 0 && (
+                <section
                   data-surface="sheet"
-                  key={bid.id}
-                  className={s.negotiation}
-                  data-status={bid.status}
+                  className={s.negotiations}
+                  aria-label={displayMessage('copy.RecruitmentDesk.02c80345a8')}
                 >
-                  <span>
-                    <b>
-                      {bidKind(bid)} · {player?.name || '선수'}
-                      {/* A player who asked to leave (→CLUB-27) is the one the owner may want to sell. */}
-                      {bid.direction === 'in' && player?.transferRequest ? ' · 이적 요청' : ''}
-                    </b>
-                    <small>
-                      {bid.direction === 'in' && other ? `${other.name} · ` : ''}
-                      {freeSigning(bid) ? (
-                        '자유계약 · 이적료 없음'
-                      ) : bid.status === 'countered' ? (
-                        <>역제안 {format(bid.counterFee || bid.fee)}</>
-                      ) : (
-                        format(bid.fee)
-                      )}{' '}
-                      · {BID_STATUS[bid.status]}
-                      {(bid.status === 'pending' || bid.status === 'countered') &&
-                        ` · ${dueLabel}까지`}
-                      {bid.staff && bid.status === 'countered' && ' · 단장이 답해요'}
-                      {bid.direction === 'in' &&
-                        w.staff?.some((member) => member.person === bid.playerId) && (
-                          <>
-                            {' '}
-                            · 선수·코치 계약 함께 종료 · 코치 계약 종료 보상{' '}
-                            {format(
-                              releaseCost(
-                                w,
-                                w.staff.find((member) => member.person === bid.playerId),
+                  <h3>{richMessage('copy.EventCenter.89993bb226')}</h3>
+                  {localizeValue(
+                    shownBids.map(({ bid, player, club: other, actionable, dueLabel }) => (
+                      <div
+                        data-surface="sheet"
+                        key={bid.id}
+                        className={s.negotiation}
+                        data-status={bid.status}
+                      >
+                        <span>
+                          <b>
+                            {localizeValue(bidKind(bid))} ·{' '}
+                            {localizeValue(player?.name || sourceMessage('team.column.player'))}
+                            {/* A player who asked to leave (→CLUB-27) is the one the owner may want to sell. */}
+                            {localizeValue(
+                              bid.direction === 'in' && player?.transferRequest
+                                ? sourceMessage('copy.RecruitmentDesk.accf71c0c9')
+                                : '',
+                            )}
+                          </b>
+                          <small>
+                            {localizeValue(
+                              bid.direction === 'in' && other ? `${other.name} · ` : '',
+                            )}
+                            {localizeValue(
+                              freeSigning(bid) ? (
+                                sourceMessage('copy.RecruitmentDesk.6bf42e22d3')
+                              ) : bid.status === 'countered' ? (
+                                <>
+                                  {richMessage('copy.EventCenter.14e1931a6f', {
+                                    p0: format(bid.counterFee || bid.fee),
+                                  })}
+                                </>
+                              ) : (
+                                format(bid.fee)
                               ),
                             )}
-                          </>
+                            {localizeValue(' ')}· {localizeValue(BID_STATUS[bid.status])}
+                            {localizeValue(
+                              (bid.status === 'pending' || bid.status === 'countered') &&
+                                sourceMessage('copy.RecruitmentDesk.4c0051f0ab', { p0: dueLabel }),
+                            )}
+                            {localizeValue(
+                              bid.staff &&
+                                bid.status === 'countered' &&
+                                sourceMessage('copy.RecruitmentDesk.8f88e63ddf'),
+                            )}
+                            {localizeValue(
+                              bid.direction === 'in' &&
+                                w.staff?.some((member) => member.person === bid.playerId) && (
+                                  <>
+                                    {richMessage('copy.RecruitmentDesk.d9de0d7ef1', {
+                                      p0: ' ',
+                                      p1: ' ',
+                                      p2: format(
+                                        releaseCost(
+                                          w,
+                                          w.staff.find((member) => member.person === bid.playerId),
+                                        ),
+                                      ),
+                                    })}
+                                  </>
+                                ),
+                            )}
+                          </small>
+                        </span>
+                        {localizeValue(
+                          actionable && (
+                            <span className={s.negotiationActions}>
+                              <button
+                                data-ui="primary"
+                                className={s.primary}
+                                disabled={blocked}
+                                onClick={() =>
+                                  void client.command({
+                                    type: 'respond-bid',
+                                    id: bid.id,
+                                    accept: true,
+                                  })
+                                }
+                              >
+                                {localizeValue(
+                                  bid.direction === 'in'
+                                    ? sourceMessage('copy.RecruitmentDesk.45b54f8961')
+                                    : sourceMessage('copy.RecruitmentDesk.831defcf7a'),
+                                )}
+                              </button>
+                              <button
+                                data-ui="tertiary"
+                                disabled={blocked}
+                                onClick={() =>
+                                  void client.command({
+                                    type: 'respond-bid',
+                                    id: bid.id,
+                                    accept: false,
+                                  })
+                                }
+                              >
+                                {richMessage('copy.EventCenter.cc6314d04d')}
+                              </button>
+                            </span>
+                          ),
                         )}
-                    </small>
-                  </span>
-                  {actionable && (
-                    <span className={s.negotiationActions}>
-                      <button
-                        data-ui="primary"
-                        className={s.primary}
-                        disabled={blocked}
-                        onClick={() =>
-                          void client.command({ type: 'respond-bid', id: bid.id, accept: true })
-                        }
-                      >
-                        {bid.direction === 'in' ? '매각' : '수락'}
-                      </button>
-                      <button
-                        data-ui="tertiary"
-                        disabled={blocked}
-                        onClick={() =>
-                          void client.command({ type: 'respond-bid', id: bid.id, accept: false })
-                        }
-                      >
-                        거절
-                      </button>
-                    </span>
+                      </div>
+                    )),
                   )}
-                </div>
-              ))}
-              {shownBids.length < board.length && (
-                <button data-ui="tertiary" type="button" onClick={() => setExpanded(true)}>
-                  {board.length}건 모두 보기
-                </button>
-              )}
-            </section>
-          )}
-          {board.length === 0 && <p className={s.empty}>진행 중인 이적 협상이 없어요.</p>}
-        </Dialog>
-      )}
-      {panel === 'info' && (
-        <Dialog label="영입 정보" onClose={() => setPanel(undefined)}>
-          <p className={s.note}>
-            {window.open
-              ? '이적료 영입·임대·매각이 가능해요. 자유계약 선수는 언제든 영입할 수 있어요.'
-              : '지금은 자유계약 선수만 영입할 수 있어요. 이적 제안은 시장이 열리면 보내세요.'}
-          </p>
-          <RecruitmentNeeds
-            w={w}
-            offers={state.view!.transfers}
-            onRole={(line) => {
-              changeQuery({ line });
-              setPanel(undefined);
-            }}
-          />
-          {/* The 영입 area of the club's direction as founded (→ECON-25); it only reads. */}
-          <DirectionFacts w={w} rows={['scouting', 'recruitment', 'recruitmentSupport']} />
-          <div data-surface="sheet" className={s.summary}>
-            <span>
-              선수단 정원 <b>{registered.value}</b>
-              <small>{registered.detail}</small>
-            </span>
-            <span>
-              협상 중 <b>{outgoing.length}건</b>
-            </span>
-          </div>
-          {registered.full && (
-            <p data-surface="inset" className={s.warning}>
-              선수단 정원 {registered.value} · 자리가 가득 찼어요. 선수를 정리한 뒤 영입하세요.
-            </p>
-          )}
-          <RecruitmentCommitments w={w} client={client} />
-          <ScoutShortlist
-            w={w}
-            offers={state.view!.transfers}
-            disabled={false}
-            onOpen={(index) => {
-              const offer = state.view!.transfers[index];
-              if (!offer) return;
-              setPanel(undefined);
-              setViewing(
-                offer.source.kind === 'club'
-                  ? {
-                      world: w.id,
-                      kind: 'club',
-                      clubId: offer.source.club,
-                      playerId: offer.player.id,
-                    }
-                  : { world: w.id, kind: 'offer', playerId: offer.player.id },
-              );
-            }}
-          />
-          <OfferAnswers w={w} />
-        </Dialog>
-      )}
-      {comparing && (
-        <Dialog
-          label="영입 후보 비교"
-          onClose={() => setComparing(false)}
-          wide
-          actions={
-            <div className={s.close}>
-              <button onClick={() => setComparing(false)}>후보 비교 마치기</button>
-            </div>
-          }
-        >
-          {comparisonA.value && comparisonB.value ? (
-            <PlayerCompare
-              w={w}
-              label="두 후보 비교표"
-              sides={
-                [comparisonA.value, comparisonB.value].map((candidate, index) =>
-                  candidateSide(candidate, `후보 ${index ? 'B' : 'A'}`, () => {
-                    setComparing(false);
-                    setViewing(candidate.offer.target);
-                  }),
-                ) as [CompareSide, CompareSide]
-              }
-            />
-          ) : (
-            [comparisonA, comparisonB].map((reading, index) =>
-              reading.value ? null : (
-                <div key={selectedComparison[index]?.playerId ?? index}>
-                  <p role="status">{reading.error ?? '비교 선수 정보를 불러오고 있어요.'}</p>
-                  {reading.error && (
-                    <button data-ui="tertiary" onClick={reading.retry}>
-                      선수 다시 조회
-                    </button>
+                  {localizeValue(
+                    shownBids.length < board.length && (
+                      <button data-ui="tertiary" type="button" onClick={() => setExpanded(true)}>
+                        {richMessage('copy.RecruitmentDesk.0fe43297f5', { p0: board.length })}
+                      </button>
+                    ),
                   )}
-                </div>
+                </section>
               ),
-            )
-          )}
-        </Dialog>
+            )}
+            {localizeValue(
+              board.length === 0 && (
+                <p className={s.empty}>{richMessage('copy.RecruitmentDesk.49fe8df85c')}</p>
+              ),
+            )}
+          </Dialog>
+        ),
       )}
-      {ownCompare && (
-        <Dialog
-          label="우리 선수와 비교"
-          onClose={() => setOwnCompare(undefined)}
-          wide
-          actions={
-            <div className={s.close}>
-              <button onClick={() => setOwnCompare(undefined)}>비교 마치기</button>
-            </div>
-          }
-        >
-          {ownCandidate.value ? (
-            (() => {
-              const candidate = ownCandidate.value;
-              const ours = ownOptions(candidate);
-              const mine = ours.find((p) => p.id === ownCompare.player) ?? ours[0];
-              return mine ? (
-                <>
-                  <label className={s.ownPick}>
-                    <span>비교할 우리 선수</span>
-                    <Select
-                      aria-label="비교할 우리 선수"
-                      value={mine.id}
-                      onValueChange={(id) => setOwnCompare({ ...ownCompare, player: id })}
-                    >
-                      {ours.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.position} · {p.name} · OVR {overall(p)}
-                        </option>
-                      ))}
-                    </Select>
-                  </label>
-                  <PlayerCompare
-                    w={w}
-                    label="후보와 우리 선수 비교표"
-                    sides={[
-                      candidateSide(candidate, '영입 후보'),
-                      { label: '우리 선수', player: mine, own: true },
-                    ]}
-                  />
-                </>
-              ) : (
-                <p role="status">비교할 우리 선수가 없어요.</p>
-              );
-            })()
-          ) : (
-            <>
-              <p role="status">{ownCandidate.error ?? '선수 정보를 불러오고 있어요.'}</p>
-              {ownCandidate.error && (
-                <button data-ui="tertiary" onClick={ownCandidate.retry}>
-                  선수 다시 조회
-                </button>
+      {localizeValue(
+        panel === 'info' && (
+          <Dialog
+            label={displayMessage('copy.RecruitmentDesk.5cde1820c8')}
+            onClose={() => setPanel(undefined)}
+          >
+            <p className={s.note}>
+              {localizeValue(
+                window.open
+                  ? sourceMessage('copy.RecruitmentDesk.ef9888c1aa')
+                  : sourceMessage('copy.RecruitmentDesk.fcdba43502'),
               )}
-            </>
-          )}
-        </Dialog>
+            </p>
+            <RecruitmentNeeds
+              w={w}
+              offers={state.view!.transfers}
+              onRole={(line) => {
+                changeQuery({ line });
+                setPanel(undefined);
+              }}
+            />
+            {/* The 영입 area of the club's direction as founded (→ECON-25); it only reads. */}
+            <DirectionFacts w={w} rows={['scouting', 'recruitment', 'recruitmentSupport']} />
+            <div data-surface="sheet" className={s.summary}>
+              <span>
+                {richMessage('copy.RecruitmentDesk.f59c136d52', {
+                  p0: <b>{localizeValue(registered.value)}</b>,
+                  p1: <small>{localizeValue(registered.detail)}</small>,
+                })}
+              </span>
+              <span>
+                {richMessage('copy.RecruitmentDesk.1d0aa93ee7', {
+                  p0: (
+                    <b>{richMessage('copy.ClubOperations.7e77eaa28b', { p0: outgoing.length })}</b>
+                  ),
+                })}
+              </span>
+            </div>
+            {localizeValue(
+              registered.full && (
+                <p data-surface="inset" className={s.warning}>
+                  {richMessage('copy.RecruitmentDesk.4c53cab1e4', { p0: registered.value })}
+                </p>
+              ),
+            )}
+            <RecruitmentCommitments w={w} client={client} />
+            <ScoutShortlist
+              w={w}
+              offers={state.view!.transfers}
+              disabled={false}
+              onOpen={(index) => {
+                const offer = state.view!.transfers[index];
+                if (!offer) return;
+                setPanel(undefined);
+                setViewing(
+                  offer.source.kind === 'club'
+                    ? {
+                        world: w.id,
+                        kind: 'club',
+                        clubId: offer.source.club,
+                        playerId: offer.player.id,
+                      }
+                    : { world: w.id, kind: 'offer', playerId: offer.player.id },
+                );
+              }}
+            />
+            <OfferAnswers w={w} />
+          </Dialog>
+        ),
       )}
-      {bidding && (
-        <Dialog
-          label="이적 제안"
-          onClose={() => setBidding(undefined)}
-          actions={
-            <div className={s.bidActions}>
-              <button data-ui="tertiary" onClick={() => setBidding(undefined)}>
-                취소
-              </button>
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={
-                  blocked ||
-                  !bidDetail.current ||
-                  !outlook ||
-                  !bidDetail.value?.buy.eligible ||
-                  bidDetail.value?.offer.own ||
-                  bidDetail.value?.revision !== w.revision ||
-                  !!pendingFor(bidding.target.playerId) ||
-                  !window.open ||
-                  BigInt(fee) > BigInt(w.cash) ||
-                  BigInt(fee) < 1n
-                }
-                onClick={async () => {
-                  if (
-                    !bidDetail.value ||
+      {localizeValue(
+        comparing && (
+          <Dialog
+            label={displayMessage('copy.RecruitmentDesk.8cb4f0b5a1')}
+            onClose={() => setComparing(false)}
+            wide
+            actions={
+              <div className={s.close}>
+                <button onClick={() => setComparing(false)}>
+                  {richMessage('copy.RecruitmentDesk.11df61c0b2')}
+                </button>
+              </div>
+            }
+          >
+            {localizeValue(
+              comparisonA.value && comparisonB.value ? (
+                <PlayerCompare
+                  w={w}
+                  label={displayMessage('copy.RecruitmentDesk.585b075af5')}
+                  sides={
+                    [comparisonA.value, comparisonB.value].map((candidate, index) =>
+                      candidateSide(
+                        candidate,
+                        sourceMessage('copy.RecruitmentDesk.9cd3b1aad6', { p0: index ? 'B' : 'A' }),
+                        () => {
+                          setComparing(false);
+                          setViewing(candidate.offer.target);
+                        },
+                      ),
+                    ) as [CompareSide, CompareSide]
+                  }
+                />
+              ) : (
+                [comparisonA, comparisonB].map((reading, index) =>
+                  reading.value ? null : (
+                    <div key={selectedComparison[index]?.playerId ?? index}>
+                      <p role="status">
+                        {localizeValue(
+                          reading.error ?? sourceMessage('copy.RecruitmentDesk.c8de6825d0'),
+                        )}
+                      </p>
+                      {localizeValue(
+                        reading.error && (
+                          <button data-ui="tertiary" onClick={reading.retry}>
+                            {richMessage('copy.RecruitmentDesk.6cd5c3642f')}
+                          </button>
+                        ),
+                      )}
+                    </div>
+                  ),
+                )
+              ),
+            )}
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        ownCompare && (
+          <Dialog
+            label={displayMessage('copy.RecruitmentDesk.f86a889a44')}
+            onClose={() => setOwnCompare(undefined)}
+            wide
+            actions={
+              <div className={s.close}>
+                <button onClick={() => setOwnCompare(undefined)}>
+                  {richMessage('copy.PlayerComparison.ba98764c52')}
+                </button>
+              </div>
+            }
+          >
+            {localizeValue(
+              ownCandidate.value ? (
+                (() => {
+                  const candidate = ownCandidate.value;
+                  const ours = ownOptions(candidate);
+                  const mine = ours.find((p) => p.id === ownCompare.player) ?? ours[0];
+                  return mine ? (
+                    <>
+                      <label className={s.ownPick}>
+                        <span>{richMessage('copy.RecruitmentDesk.2bbfdaee48')}</span>
+                        <Select
+                          aria-label={displayMessage('copy.RecruitmentDesk.2bbfdaee48')}
+                          value={mine.id}
+                          onValueChange={(id) => setOwnCompare({ ...ownCompare, player: id })}
+                        >
+                          {localizeValue(
+                            ours.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {richMessage('copy.RecruitmentDesk.36a4a9d024', {
+                                  p0: localizeValue(p.position),
+                                  p1: p.name,
+                                  p2: localizeValue(overall(p)),
+                                })}
+                              </option>
+                            )),
+                          )}
+                        </Select>
+                      </label>
+                      <PlayerCompare
+                        w={w}
+                        label={displayMessage('copy.RecruitmentDesk.3b1d8dd121')}
+                        sides={[
+                          candidateSide(
+                            candidate,
+                            sourceMessage('copy.ClubSettingControl.2051d3609a'),
+                          ),
+                          {
+                            label: sourceMessage('copy.EventCenter.45d9ddc729'),
+                            player: mine,
+                            own: true,
+                          },
+                        ]}
+                      />
+                    </>
+                  ) : (
+                    <p role="status">{richMessage('copy.RecruitmentDesk.ca6bc7caf7')}</p>
+                  );
+                })()
+              ) : (
+                <>
+                  <p role="status">
+                    {localizeValue(
+                      ownCandidate.error ?? sourceMessage('copy.RecruitmentDesk.965c4d30c9'),
+                    )}
+                  </p>
+                  {localizeValue(
+                    ownCandidate.error && (
+                      <button data-ui="tertiary" onClick={ownCandidate.retry}>
+                        {richMessage('copy.RecruitmentDesk.6cd5c3642f')}
+                      </button>
+                    ),
+                  )}
+                </>
+              ),
+            )}
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        bidding && (
+          <Dialog
+            label={displayMessage('copy.RecruitmentDesk.3a697d0f9c')}
+            onClose={() => setBidding(undefined)}
+            actions={
+              <div className={s.bidActions}>
+                <button data-ui="tertiary" onClick={() => setBidding(undefined)}>
+                  {richMessage('common.cancel')}
+                </button>
+                <button
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={
+                    blocked ||
                     !bidDetail.current ||
                     !outlook ||
-                    !bidDetail.value.buy.eligible ||
-                    bidDetail.value.offer.own ||
-                    !currentWorld() ||
-                    bidDetail.value.revision !== client.state.view?.world.revision ||
-                    currentActionsBlocked() ||
-                    BigInt(fee) > BigInt(w.cash) ||
-                    BigInt(fee) < 1n ||
+                    !bidDetail.value?.buy.eligible ||
+                    bidDetail.value?.offer.own ||
+                    bidDetail.value?.revision !== w.revision ||
+                    !!pendingFor(bidding.target.playerId) ||
                     !window.open ||
-                    pendingFor(bidding.target.playerId)
-                  )
-                    return;
-                  const reply = await client.command(
-                    { type: 'bid', target: bidding.target, fee },
-                    { background: true },
-                  );
-                  if (!currentWorld() || activeBid.current !== bidding) return;
-                  setMessage({
-                    world: w.id,
-                    text: reply?.ok
-                      ? `${bidDetail.value.offer.player.name}에게 ${text(fee)} 제안을 보냈어요. 며칠 안에 답이 와요.`
-                      : client.state.error || '제안을 보내지 못했어요.',
-                  });
-                  if (reply?.ok) setBidding(undefined);
-                }}
-              >
-                {plain(fee)} 제안 보내기
-              </button>
-            </div>
-          }
-        >
-          {message?.world === w.id && (
-            <p data-surface="inset" className={s.message} role="status">
-              {message.text}
+                    BigInt(fee) > BigInt(w.cash) ||
+                    BigInt(fee) < 1n
+                  }
+                  onClick={async () => {
+                    if (
+                      !bidDetail.value ||
+                      !bidDetail.current ||
+                      !outlook ||
+                      !bidDetail.value.buy.eligible ||
+                      bidDetail.value.offer.own ||
+                      !currentWorld() ||
+                      bidDetail.value.revision !== client.state.view?.world.revision ||
+                      currentActionsBlocked() ||
+                      BigInt(fee) > BigInt(w.cash) ||
+                      BigInt(fee) < 1n ||
+                      !window.open ||
+                      pendingFor(bidding.target.playerId)
+                    )
+                      return;
+                    const reply = await client.command(
+                      { type: 'bid', target: bidding.target, fee },
+                      { background: true },
+                    );
+                    if (!currentWorld() || activeBid.current !== bidding) return;
+                    setMessage({
+                      world: w.id,
+                      text: reply?.ok
+                        ? sourceMessage('copy.RecruitmentDesk.3ac2ba2778', {
+                            p0: bidDetail.value.offer.player.name,
+                            p1: text(fee),
+                          })
+                        : client.state.error || sourceMessage('copy.RecruitmentDesk.f7f37b0236'),
+                    });
+                    if (reply?.ok) setBidding(undefined);
+                  }}
+                >
+                  {richMessage('copy.RecruitmentDesk.a917b94665', { p0: plain(fee) })}
+                </button>
+              </div>
+            }
+          >
+            {localizeValue(
+              message?.world === w.id && (
+                <p data-surface="inset" className={s.message} role="status">
+                  {localizeValue(message.text)}
+                </p>
+              ),
+            )}
+            {localizeValue(
+              bidDetail.value ? (
+                render(bidDetail.value, bidDetail.current, true)
+              ) : (
+                <p role="status">
+                  {localizeValue(
+                    bidDetail.error ?? sourceMessage('copy.RecruitmentDesk.178444b551'),
+                  )}
+                </p>
+              ),
+            )}
+            {localizeValue(
+              bidDetail.error && (
+                <button data-ui="tertiary" onClick={bidDetail.retry}>
+                  {richMessage('copy.RecruitmentDesk.3f6edcf334')}
+                </button>
+              ),
+            )}
+            <p className={s.note}>
+              {richMessage('copy.RecruitmentDesk.2145596719', {
+                p0: format(outlook?.asking || bidding.asking),
+              })}
             </p>
-          )}
-          {bidDetail.value ? (
-            render(bidDetail.value, bidDetail.current, true)
-          ) : (
-            <p role="status">{bidDetail.error ?? '제안 조건을 확인하고 있어요.'}</p>
-          )}
-          {bidDetail.error && (
-            <button data-ui="tertiary" onClick={bidDetail.retry}>
-              제안 조건 다시 조회
-            </button>
-          )}
-          <p className={s.note}>
-            요구 이적료 {format(outlook?.asking || bidding.asking)} · 상대 구단은 2–4일 뒤
-            수락·거절·역제안 중 하나로 답해요. 수락되면 그날 이적료가 나가요.
-          </p>
-          <div className={s.bidSteps} role="radiogroup" aria-label="제안 이적료">
-            {steps.map((percent, i) => (
-              <button
-                key={String(percent)}
-                role="radio"
-                data-ui={step === i ? 'secondary' : 'tertiary'}
-                aria-checked={step === i}
-                className={step === i ? s.bidPicked : undefined}
-                onClick={() => setStep(i)}
-              >
-                <b>{String(percent)}%</b>
-                <small>{plain(((asking * percent) / 100n).toString())}</small>
-              </button>
-            ))}
-          </div>
-          <dl className={s.costs}>
-            <div>
-              <dt>수락 가능성</dt>
-              <dd>
-                {outlook ? `${outlook.label} · 약 ${Math.round(outlook.chance * 100)}%` : '확인 중'}
-              </dd>
+            <div
+              className={s.bidSteps}
+              role="radiogroup"
+              aria-label={displayMessage('copy.RecruitmentDesk.8cfe8b46e7')}
+            >
+              {localizeValue(
+                steps.map((percent, i) => (
+                  <button
+                    key={String(percent)}
+                    role="radio"
+                    data-ui={step === i ? 'secondary' : 'tertiary'}
+                    aria-checked={step === i}
+                    className={step === i ? s.bidPicked : undefined}
+                    onClick={() => setStep(i)}
+                  >
+                    <b>{localizeValue(String(percent))}%</b>
+                    <small>{localizeValue(plain(((asking * percent) / 100n).toString()))}</small>
+                  </button>
+                )),
+              )}
             </div>
-            <div>
-              <dt>수락 시 자금</dt>
-              <dd>{format((BigInt(w.cash) - BigInt(fee)).toString())}</dd>
-            </div>
-          </dl>
-          {BigInt(fee) > BigInt(w.cash) && (
-            <p data-surface="inset" className={s.warning}>
-              자금이 부족해요.
-            </p>
-          )}
-        </Dialog>
+            <dl className={s.costs}>
+              <div>
+                <dt>{richMessage('copy.RecruitmentDesk.9873423ded')}</dt>
+                <dd>
+                  {localizeValue(
+                    outlook
+                      ? sourceMessage('copy.RecruitmentDesk.7d605cafab', {
+                          p0: outlook.label,
+                          p1: Math.round(outlook.chance * 100),
+                        })
+                      : sourceMessage('copy.RecruitmentDesk.414f13ede8'),
+                  )}
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.RecruitmentDesk.14d30523d4')}</dt>
+                <dd>{localizeValue(format((BigInt(w.cash) - BigInt(fee)).toString()))}</dd>
+              </div>
+            </dl>
+            {localizeValue(
+              BigInt(fee) > BigInt(w.cash) && (
+                <p data-surface="inset" className={s.warning}>
+                  {richMessage('copy.RecruitmentDesk.b1a864c839')}
+                </p>
+              ),
+            )}
+          </Dialog>
+        ),
       )}
-      {viewing && (
-        <Dialog label="영입 후보 상세" onClose={() => setViewing(undefined)}>
-          {message?.world === w.id && (
-            <p data-surface="inset" className={s.message} role="status">
-              {message.text}
-            </p>
-          )}
-          {detail.value ? (
-            render(detail.value, detail.current)
-          ) : (
-            <p role="status">{detail.error ?? '선수 정보를 불러오고 있어요.'}</p>
-          )}
-          {detail.error && (
-            <button data-ui="tertiary" onClick={detail.retry}>
-              선수 다시 조회
-            </button>
-          )}
-        </Dialog>
+      {localizeValue(
+        viewing && (
+          <Dialog
+            label={displayMessage('copy.RecruitmentDesk.4618a3f213')}
+            onClose={() => setViewing(undefined)}
+          >
+            {localizeValue(
+              message?.world === w.id && (
+                <p data-surface="inset" className={s.message} role="status">
+                  {localizeValue(message.text)}
+                </p>
+              ),
+            )}
+            {localizeValue(
+              detail.value ? (
+                render(detail.value, detail.current)
+              ) : (
+                <p role="status">
+                  {localizeValue(detail.error ?? sourceMessage('copy.RecruitmentDesk.965c4d30c9'))}
+                </p>
+              ),
+            )}
+            {localizeValue(
+              detail.error && (
+                <button data-ui="tertiary" onClick={detail.retry}>
+                  {richMessage('copy.RecruitmentDesk.6cd5c3642f')}
+                </button>
+              ),
+            )}
+          </Dialog>
+        ),
       )}
     </section>
   );

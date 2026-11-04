@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import {
   considerPlayingCoach,
   handoverPlayingCoaches,
@@ -130,7 +131,7 @@ export const DEPARTMENT_ATTRIBUTES: Partial<Record<StaffRole, readonly Attribute
   fitness: ['pace', 'stamina', 'strength'],
 };
 /** A developer coach's pull on growth of players aged 21 or younger, multiplied across roles. */
-const YOUTH_DEVELOPER: Partial<Record<StaffRole, number>> = {
+export const YOUTH_DEVELOPER: Partial<Record<StaffRole, number>> = {
   assistant: 1.3,
   youth: 1.1,
   attack: 1.05,
@@ -193,6 +194,15 @@ export function staffEffects(w: World): StaffEffects {
   for (const role of STAFF_ROLES) applyDepartment(effects, role, staffMember(w, role));
   return effects;
 }
+/**
+ * What one department adds on its own, every other effect neutral: `staffEffects` applies the
+ * departments in turn, so these combine to it (→WEB-116).
+ */
+export function departmentEffects(w: World, role: StaffRole): StaffEffects {
+  const effects = neutralEffects();
+  if (w.staff) applyDepartment(effects, role, staffMember(w, role));
+  return effects;
+}
 
 const times = (value: number) => `×${value.toFixed(2)}`;
 const signed = (value: number) => `${value > 0 ? '+' : ''}${value}`;
@@ -205,27 +215,42 @@ export function staffImpact(w: World, role: StaffRole): string {
   const owned = DEPARTMENT_ATTRIBUTES[role];
   if (owned)
     lines.push(
-      `${owned.map((a) => ATTRIBUTE_LABEL[a]).join('·')} 성장 ${times(effects.development[owned[0]!])}`,
+      sourceMessage('copy.staff.5b59177d56', {
+        p0: owned.map((a) => ATTRIBUTE_LABEL[a]).join('·'),
+        p1: times(effects.development[owned[0]!]),
+      }),
     );
   if (effects.youthDevelopment !== 1)
-    lines.push(`21세 이하 성장 ${times(effects.youthDevelopment)}`);
-  if (role === 'fitness') lines.push(`라운드 피로 회복 ${signed(effects.recoveryBonus)}`);
+    lines.push(sourceMessage('copy.staff.413059d5de', { p0: times(effects.youthDevelopment) }));
+  if (role === 'fitness')
+    lines.push(sourceMessage('copy.staff.d9633a4a27', { p0: signed(effects.recoveryBonus) }));
   if (role === 'youth')
     lines.push(
-      `입단 잠재력 ${signed(effects.academyQuality)}`,
-      `아카데미 성장 ${times(effects.academyGrowth)}`,
+      sourceMessage('copy.staff.a90e5fd56d', { p0: signed(effects.academyQuality) }),
+      sourceMessage('copy.staff.3bdb44c221', { p0: times(effects.academyGrowth) }),
     );
   // How far he looks and how many he lists per line (→CLUB-51), before the club's settings.
   if (role === 'scout') {
     const band = reachBand(member?.ability);
-    lines.push(`탐색 ${SCOUT_HOME_LABEL[band.home]}`, `라인마다 ${band.perLine}명`);
-    if (member?.trait === 'spotter') lines.push(`${SCOUT_CONFIG.youngAge}세 이하 잠재력 우선`);
+    lines.push(
+      sourceMessage('copy.staff.3c614719b7', { p0: SCOUT_HOME_LABEL[band.home] }),
+      sourceMessage('copy.staff.05ebd74ab4', { p0: band.perLine }),
+    );
+    if (member?.trait === 'spotter')
+      lines.push(sourceMessage('copy.staff.09d42b99df', { p0: SCOUT_CONFIG.youngAge }));
   }
   if (role === 'director') {
-    lines.push(`협상 성공률 ${signed(Math.round(effects.bidAcceptance * 100))}%p`);
-    if (effects.feeMultiplier !== 1) lines.push(`이적료 ${times(effects.feeMultiplier)}`);
+    lines.push(
+      sourceMessage('copy.staff.9861fae062', {
+        p0: signed(Math.round(effects.bidAcceptance * 100)),
+      }),
+    );
+    if (effects.feeMultiplier !== 1)
+      lines.push(
+        sourceMessage('copy.RecruitmentDesk.73bc6c6e24', { p0: times(effects.feeMultiplier) }),
+      );
   }
-  return `${member ? '' : '공석 · '}${lines.join(' · ')}`;
+  return `${member ? '' : sourceMessage('copy.staff.90c032fb75')}${lines.join(' · ')}`;
 }
 
 /** A new club's staff: one unpaid ability-50 member per post, the 단장 too, so it starts neutral. */
@@ -263,7 +288,7 @@ export function staffQuote(w: World, units: number, code = clubOf(w).country) {
 }
 export function checkTerm(term: ContractTerm | undefined) {
   if (term !== undefined && !CONTRACT_TERMS.includes(term))
-    throw new Error('계약 기간은 1–5시즌이어야 합니다.');
+    throw new Error(sourceMessage('copy.staff.ccee77b460'));
 }
 /** The owner's chosen term stays with the contract; one signed without a choice has none. */
 export function withTerm<T extends { term?: ContractTerm }>(person: T, term?: ContractTerm): T {
@@ -358,7 +383,12 @@ function fromMarket(w: World, candidate: StaffCandidate) {
   const from = club && w.clubs.find((one) => one.id === club)?.name;
   return {
     member: person ? { ...member, person } : member,
-    note: from ? [`${from}에서 영입`, `웃돈 ${moneyLabel(w, compensation ?? '0')}`] : [],
+    note: from
+      ? [
+          sourceMessage('copy.staff.054dd38a4d', { p0: from }),
+          sourceMessage('copy.staff.1024b0eddb', { p0: moneyLabel(w, compensation ?? '0') }),
+        ]
+      : [],
   };
 }
 
@@ -381,7 +411,7 @@ export function hireStaff(
     : Number.isInteger(candidate)
       ? pool[candidate]
       : undefined;
-  if (!offer) throw new Error('유효하지 않은 스태프 후보입니다.');
+  if (!offer) throw new Error(sourceMessage('copy.staff.505336b8a6'));
   // Older saves without staff start from the neutral volunteers.
   const staff = w.staff || basicStaff(w),
     current = staff.find((member) => member.role === role),
@@ -396,16 +426,18 @@ export function hireStaff(
   addEvent(
     w,
     'staff-hire',
-    `${STAFF_INFO[role].label} ${member.name} 선임`,
+    sourceMessage('copy.staff.3398e98a96', { p0: STAFF_INFO[role].label, p1: member.name }),
     [
       ...note.slice(0, 1),
-      `능력 ${member.ability}`,
-      member.trait ? STAFF_TRAIT_INFO[member.trait].label : '특기 없음',
-      `연봉 ${moneyLabel(w, member.wage)}`,
-      `계약 ${contractSeason(member.until)} 시즌 끝까지`,
-      `계약금 ${moneyLabel(w, offer.fee)}`,
+      sourceMessage('copy.staff.9a9b1e4758', { p0: member.ability }),
+      member.trait ? STAFF_TRAIT_INFO[member.trait].label : sourceMessage('copy.staff.93fdd090e1'),
+      sourceMessage('copy.ScoutShortlist.572ddadbfc', { p0: moneyLabel(w, member.wage) }),
+      sourceMessage('copy.format.87aef223c3', { p0: contractSeason(member.until) }),
+      sourceMessage('copy.ops_staff.612034e799', { p0: moneyLabel(w, offer.fee) }),
       ...note.slice(1),
-      ...(owed !== '0' ? [`${current!.name} 보상금 ${moneyLabel(w, owed)}`] : []),
+      ...(owed !== '0'
+        ? [sourceMessage('copy.staff.bf5993148d', { p0: current!.name, p1: moneyLabel(w, owed) })]
+        : []),
     ].join(' · '),
     total,
   );
@@ -427,7 +459,7 @@ export function departStaff(w: World, member?: Staff) {
 export function releaseStaff(w: World, role: StaffRole, mandatory = false): void {
   const staff = w.staff || basicStaff(w),
     member = staff.find((other) => other.role === role);
-  if (!member) throw new Error('이미 비어 있는 자리입니다.');
+  if (!member) throw new Error(sourceMessage('copy.staff.4ea7757113'));
   const owed = releaseCost(w, member);
   if (owed !== '0') debit(w, owed, mandatory);
   departStaff(w, member);
@@ -435,10 +467,13 @@ export function releaseStaff(w: World, role: StaffRole, mandatory = false): void
   addEvent(
     w,
     'staff-release',
-    `${STAFF_INFO[role].label} ${member.name} 계약 해지`,
+    sourceMessage('copy.staff.d481d4cf1e', { p0: STAFF_INFO[role].label, p1: member.name }),
     owed !== '0'
-      ? `잔여 계약 ${seasonsLeft(w, member.until)}시즌 보상금 ${moneyLabel(w, owed)} · 새 코치를 선임할 때까지 공석입니다.`
-      : '무보수 코치 · 보상금 없음 · 새 코치를 선임할 때까지 공석입니다.',
+      ? sourceMessage('copy.staff.515589e951', {
+          p0: seasonsLeft(w, member.until),
+          p1: moneyLabel(w, owed),
+        })
+      : sourceMessage('copy.staff.91ea5b6155'),
     owed !== '0' ? owed : undefined,
   );
 }
@@ -446,23 +481,23 @@ export function releaseStaff(w: World, role: StaffRole, mandatory = false): void
 export function autoTrainingAdvice(w: World): { focus: TrainingFocus; reason: string } {
   const starters = ownStarters(w);
   if (!starters.length)
-    return { focus: 'balanced', reason: '선발 명단이 비어 균형 훈련을 유지해요.' };
+    return { focus: 'balanced', reason: sourceMessage('copy.staff.098c9d8278') };
   const fatigue = starters.reduce((sum, player) => sum + player.fatigue, 0) / starters.length,
-    tired = `선발 평균 피로 ${Math.round(fatigue)}`;
+    tired = sourceMessage('copy.staff.4a48879849', { p0: Math.round(fatigue) });
   if (fatigue >= AUTO_RECOVERY_FATIGUE)
-    return { focus: 'recovery', reason: `${tired} · 회복이 먼저예요.` };
+    return { focus: 'recovery', reason: sourceMessage('copy.staff.03c7709857', { p0: tired }) };
   // 하드 트레이닝 only on fresh legs and a squad in good spirits (→CLUB-13).
   const fresh = fatigue < AUTO_HARD_FATIGUE && moraleOf(w) >= AUTO_HARD_MORALE;
   if (fresh && staffMember(w, 'assistant')?.trait === 'developer')
-    return { focus: 'hard', reason: `${tired} · 육성형 수석코치가 하드 트레이닝으로 끌어올려요.` };
+    return { focus: 'hard', reason: sourceMessage('copy.staff.8a11aaca16', { p0: tired }) };
   // 데뷔 시점 빠른 데뷔 calls for hard work from two young starters (→CLUB-13, CLUB-32).
   const young = starters.filter((player) => isYouth(w, player)).length;
   if (fresh && young >= (w.direction?.debut === 'early' ? 2 : 3))
     return {
       focus: 'hard',
-      reason: `${tired} · 21세 이하 선발 ${young}명을 하드 트레이닝으로 키워요.`,
+      reason: sourceMessage('copy.staff.d7899928f2', { p0: tired, p1: young }),
     };
-  return { focus: 'balanced', reason: `${tired} · 성장과 회복을 함께 챙겨요.` };
+  return { focus: 'balanced', reason: sourceMessage('copy.staff.fd15ae244c', { p0: tired }) };
 }
 /** The assistant's player rule: 회복 for a player at 40+ fatigue, no other exception of his own. */
 export function autoPlayerFocus(_w: World, p: Player): TrainingFocus | undefined {
@@ -515,15 +550,20 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
   const trait = c.trait && STAFF_INFO[role].traits.includes(c.trait) ? c.trait : undefined,
     cap = c.maxWageOvr === undefined ? undefined : BigInt(coachWage(w, c.maxWageOvr));
   return [
-    [`능력 ${c.minAbility} 이상인 후보가 없어요`, (coach) => coach.ability >= c.minAbility],
     [
-      `1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'staff') ?? '0')} 안의 후보가 없어요`,
+      sourceMessage('copy.staff.614681d845', { p0: c.minAbility }),
+      (coach) => coach.ability >= c.minAbility,
+    ],
+    [
+      sourceMessage('copy.staff.9494efbca1', {
+        p0: moneyLabel(w, annualWageLimit(w, 'staff') ?? '0'),
+      }),
       (coach) => wageWithinLimit(w, 'staff', coach.wage),
     ],
     ...(trait
       ? [
           [
-            `${STAFF_TRAIT_INFO[trait].label} 특성의 후보가 없어요`,
+            sourceMessage('copy.staff.81eb3103e9', { p0: STAFF_TRAIT_INFO[trait].label }),
             (coach) => coach.trait === trait,
           ] satisfies CoachCheck,
         ]
@@ -532,7 +572,7 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
       ? []
       : [
           [
-            `연봉 상한(능력 ${c.maxWageOvr} 코치 시세) 안의 후보가 없어요`,
+            sourceMessage('copy.staff.bb6522d828', { p0: c.maxWageOvr }),
             (coach) => BigInt(coach.wage) <= cap,
           ] satisfies CoachCheck,
         ]),
@@ -576,14 +616,14 @@ export function coachMatches(w: World, role: StaffRole, replacing?: Staff) {
 /** Why no candidate matches: the first criterion nobody meets, or that nobody is affordable. */
 function noCoachReason(w: World, role: StaffRole) {
   let pool = staffCandidates(w, role);
-  if (!pool.length) return '지금 후보가 없어요';
+  if (!pool.length) return sourceMessage('copy.staff.86001b51d0');
   for (const [why, fits] of coachChecks(w, role, coachCriteriaOf(w))) {
     pool = pool.filter(fits);
     if (!pool.length) return why;
   }
-  return '자금 여력에 맞는 후보가 없어요';
+  return sourceMessage('copy.managerMarket.3bf57ff1eb');
 }
-const VOLUNTEER_HOLDS = '자원봉사 코치가 자리를 지켜요';
+const VOLUNTEER_HOLDS = sourceMessage('copy.staff.90376685f9');
 /**
  * Whom 코치 기조 would hire today in a department, or why nobody, for its card (→STAFF-15). A coach
  * under contract stays until it ends; the line says so.
@@ -595,26 +635,30 @@ export function coachPickPreview(
   const c = coachCriteriaOf(w),
     member = staffMember(w, role),
     contracted = !!member && BigInt(member.wage) > 0n,
-    later = contracted ? ' · 계약 중인 코치는 계약이 끝날 때 코치 기조로 다시 판단해요' : '';
-  if (c.volunteer)
-    return { reason: `코치 기조 자원봉사 · 무급 코치(능력 50)가 자리를 맡아요${later}` };
+    later = contracted ? sourceMessage('copy.staff.2819959fa4') : '';
+  if (c.volunteer) return { reason: sourceMessage('copy.staff.497bcb4825', { p0: later }) };
   const pick = coachMatches(w, role, member)[0];
   if (!pick)
     return {
-      reason: `코치 기조에 맞는 코치가 없어요 · ${noCoachReason(w, role)}${contracted ? later : ` · ${VOLUNTEER_HOLDS}`}`,
+      reason: sourceMessage('copy.staff.bed67f751b', {
+        p0: noCoachReason(w, role),
+        p1: contracted ? later : ` · ${VOLUNTEER_HOLDS}`,
+      }),
     };
   const from = pick.club && w.clubs.find((club) => club.id === pick.club)?.name;
   return {
     pick,
     reason:
       [
-        `${pick.name} · 능력 ${pick.ability}`,
+        sourceMessage('copy.AcademyPanel.95ca4ba319', { p0: pick.name, p1: pick.ability }),
         ...(from ? [from] : []),
-        pick.trait ? STAFF_TRAIT_INFO[pick.trait].label : '특기 없음',
-        `연봉 ${moneyLabel(w, pick.wage)}`,
-        `계약금 ${moneyLabel(w, pick.fee)}`,
-        ...(pick.compensation ? [`웃돈 ${moneyLabel(w, pick.compensation)}`] : []),
-        `${c.term}시즌 계약`,
+        pick.trait ? STAFF_TRAIT_INFO[pick.trait].label : sourceMessage('copy.staff.93fdd090e1'),
+        sourceMessage('copy.ScoutShortlist.572ddadbfc', { p0: moneyLabel(w, pick.wage) }),
+        sourceMessage('copy.ops_staff.612034e799', { p0: moneyLabel(w, pick.fee) }),
+        ...(pick.compensation
+          ? [sourceMessage('copy.staff.1024b0eddb', { p0: moneyLabel(w, pick.compensation) })]
+          : []),
+        sourceMessage('copy.staff.19bfb52d83', { p0: c.term }),
       ].join(' · ') + later,
   };
 }
@@ -625,7 +669,7 @@ function reportNoCoach(w: World, role: StaffRole) {
   const label = STAFF_INFO[role].label;
   pushInbox(w, {
     kind: 'staff-report',
-    title: `${label}: 코치 기조에 맞는 코치가 없어요`,
+    title: sourceMessage('copy.staff.ad27139d55', { p0: label }),
     detail: [noCoachReason(w, role), directionLine(w, 'coaches'), VOLUNTEER_HOLDS]
       .join(' · ')
       .slice(0, 400),
@@ -666,7 +710,7 @@ export function renewalTerms(w: World, member: Staff, term: ContractTerm = DELEG
 export function renewStaff(w: World, role: StaffRole, term?: ContractTerm) {
   checkTerm(term);
   const member = staffMember(w, role);
-  if (!member || !isExpiring(w, member)) throw new Error('재계약할 수 있는 코치가 아닙니다.');
+  if (!member || !isExpiring(w, member)) throw new Error(sourceMessage('copy.staff.f56d379331'));
   const terms = renewalTerms(w, member, term);
   debit(w, terms.fee);
   w.staff = w.staff!.map((other) =>
@@ -677,8 +721,13 @@ export function renewStaff(w: World, role: StaffRole, term?: ContractTerm) {
   addEvent(
     w,
     'staff-renew',
-    `${STAFF_INFO[role].label} ${member.name} 재계약`,
-    `능력 ${member.ability} · 연봉 ${moneyLabel(w, terms.wage)} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 계약금 ${moneyLabel(w, terms.fee)}`,
+    sourceMessage('copy.staff.7422c62c85', { p0: STAFF_INFO[role].label, p1: member.name }),
+    sourceMessage('copy.staff.6a03d48098', {
+      p0: member.ability,
+      p1: moneyLabel(w, terms.wage),
+      p2: contractSeason(terms.until),
+      p3: moneyLabel(w, terms.fee),
+    }),
     terms.fee,
   );
 }
@@ -699,15 +748,17 @@ function appoint(w: World, member: Staff | StaffCandidate) {
   addEvent(
     w,
     'staff-hire',
-    `${STAFF_INFO[staff.role].label} ${staff.name} 선임`,
+    sourceMessage('copy.staff.3398e98a96', { p0: STAFF_INFO[staff.role].label, p1: staff.name }),
     [
       ...note.slice(0, 1),
-      `능력 ${staff.ability}`,
-      staff.trait ? STAFF_TRAIT_INFO[staff.trait].label : '특기 없음',
-      BigInt(staff.wage) > 0n ? `연봉 ${moneyLabel(w, staff.wage)}` : '무급 자원봉사',
-      `계약 ${contractSeason(staff.until)} 시즌 끝까지`,
+      sourceMessage('copy.staff.9a9b1e4758', { p0: staff.ability }),
+      staff.trait ? STAFF_TRAIT_INFO[staff.trait].label : sourceMessage('copy.staff.93fdd090e1'),
+      BigInt(staff.wage) > 0n
+        ? sourceMessage('copy.ScoutShortlist.572ddadbfc', { p0: moneyLabel(w, staff.wage) })
+        : sourceMessage('copy.staff.aae487bde3'),
+      sourceMessage('copy.format.87aef223c3', { p0: contractSeason(staff.until) }),
       ...note.slice(1),
-      '스태프 위임 선임',
+      sourceMessage('copy.staff.bf6725c150'),
     ].join(' · '),
     cost > 0n ? cost.toString() : undefined,
   );
@@ -727,9 +778,18 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
     first = c.volunteer ? undefined : coachMatches(w, role, member)[0],
     hired = (offer: StaffCandidate) => appoint(w, { ...offer, until: w.year + c.term });
   if (!member || BigInt(member.wage) === 0n) {
-    if (considerPlayingCoach(w, role)) return `${label} 플레잉 코치 계약 검토`;
-    if (first) return `${label} ${hired(first).name} 선임(능력 ${first.ability})`;
-    if (!member) return `${label} 자원봉사 ${appoint(w, volunteer(w, role)).name}`;
+    if (considerPlayingCoach(w, role)) return sourceMessage('copy.staff.904f237b75', { p0: label });
+    if (first)
+      return sourceMessage('copy.staff.f43f389728', {
+        p0: label,
+        p1: hired(first).name,
+        p2: first.ability,
+      });
+    if (!member)
+      return sourceMessage('copy.staff.536ea9f157', {
+        p0: label,
+        p1: appoint(w, volunteer(w, role)).name,
+      });
     w.staff = w.staff!.map((other) =>
       other.role === role ? { ...other, until: w.year + 1 } : other,
     );
@@ -754,19 +814,37 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
     addEvent(
       w,
       'staff-renew',
-      `${label} ${member.name} 재계약`,
-      `능력 ${member.ability} · 연봉 ${moneyLabel(w, terms.wage)} · 계약 ${contractSeason(terms.until)} 시즌 끝까지 · 스태프 위임`,
+      sourceMessage('copy.staff.7422c62c85', { p0: label, p1: member.name }),
+      sourceMessage('copy.staff.3a81e47f89', {
+        p0: member.ability,
+        p1: moneyLabel(w, terms.wage),
+        p2: contractSeason(terms.until),
+      }),
       terms.fee,
     );
-    return `${label} ${member.name} 재계약(${c.term}시즌)`;
+    return sourceMessage('copy.staff.2d9100b198', { p0: label, p1: member.name, p2: c.term });
   }
-  if (considerPlayingCoach(w, role)) return `${label} 플레잉 코치 계약 검토`;
+  if (considerPlayingCoach(w, role)) return sourceMessage('copy.staff.904f237b75', { p0: label });
   departStaff(w, member);
   w.staff = w.staff!.filter((other) => other.role !== role);
-  addEvent(w, 'staff-leave', `${label} ${member.name} 계약 만료`, `${member.since}–${w.year}`);
+  addEvent(
+    w,
+    'staff-leave',
+    sourceMessage('copy.staff.eb8e2e5784', { p0: label, p1: member.name }),
+    `${member.since}–${w.year}`,
+  );
   return first
-    ? `${label} ${member.name} 계약 만료 → ${hired(first).name} 선임(능력 ${first.ability})`
-    : `${label} ${member.name} 계약 만료 → 자원봉사 ${appoint(w, volunteer(w, role)).name}`;
+    ? sourceMessage('copy.staff.ef012e7b72', {
+        p0: label,
+        p1: member.name,
+        p2: hired(first).name,
+        p3: first.ability,
+      })
+    : sourceMessage('copy.staff.1aafebc711', {
+        p0: label,
+        p1: member.name,
+        p2: appoint(w, volunteer(w, role)).name,
+      });
 }
 /**
  * Season boundary: contracts end, renew or are replaced. Each department delegated to the staff
@@ -799,13 +877,13 @@ export function seasonStaff(w: World): void {
     addEvent(
       w,
       'staff-leave',
-      `${label} ${member.name} 계약 만료`,
-      `${member.since}–${w.year} · 새 코치를 선임할 때까지 공석입니다.`,
+      sourceMessage('copy.staff.eb8e2e5784', { p0: label, p1: member.name }),
+      sourceMessage('copy.staff.4a68f7aeca', { p0: member.since, p1: w.year }),
     );
     pushInbox(w, {
       kind: 'staff-renewal',
-      title: `${label} ${member.name} 계약 만료 · 공석`,
-      detail: `${label} 자리가 비었습니다. 공석인 부서는 기본 코치보다 효과가 낮아요. 코치진에서 새 코치를 선임하거나 코치 선임을 스태프에게 맡기세요.`,
+      title: sourceMessage('copy.staff.e9ba776814', { p0: label, p1: member.name }),
+      detail: sourceMessage('copy.staff.b3b9c5c3d6', { p0: label }),
       attention: true,
       ref: member.id,
     });
@@ -813,7 +891,7 @@ export function seasonStaff(w: World): void {
   if (report.length)
     pushInbox(w, {
       kind: 'staff-report',
-      title: `코치진 정비 · ${report.length}건`,
+      title: sourceMessage('copy.staff.e498a1e744', { p0: report.length }),
       detail: `${directionLine(w, 'coaches')} · ${report.join(' · ')}`.slice(0, 400),
       attention: false,
     });
@@ -851,7 +929,7 @@ function developStaff(w: World) {
     addEvent(
       w,
       'staff-growth',
-      `코치진 성장 · ${changes.length}명`,
+      sourceMessage('copy.staff.60930ed8e0', { p0: changes.length }),
       changes.join(' · ').slice(0, 400),
     );
 }
@@ -878,12 +956,19 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
   if (first && (!fits || managerBeats(c, first, m, kept.wage))) {
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${school}${m.name} 감독과 재계약하지 않아요`,
-      detail: `${
-        fits
-          ? `단장이 ${directionLine(w, 'manager')}(${MANAGER_PRIORITY_INFO[c.priority]})으로 더 나은 ${managerLine(w, first)} 감독을 찾았어요 (지금 OVR ${m.ability}/${m.potential ?? m.ability} · 재계약 연봉 ${moneyLabel(w, kept.wage)})`
-          : `${m.name} 감독은 선호 학파·감독 기조·연봉 한도에 맞지 않고, 맞는 ${managerLine(w, first)} 감독이 있어요`
-      } · 시즌이 끝나면 떠나고 단장이 그때 감독 기조에 맞는 감독을 선임해요`.slice(0, 400),
+      title: sourceMessage('copy.staff.b22e75686c', { p0: school, p1: m.name }),
+      detail: sourceMessage('copy.staff.447ddbb17d', {
+        p0: fits
+          ? sourceMessage('copy.staff.e600675c8f', {
+              p0: directionLine(w, 'manager'),
+              p1: MANAGER_PRIORITY_INFO[c.priority],
+              p2: managerLine(w, first),
+              p3: m.ability,
+              p4: m.potential ?? m.ability,
+              p5: moneyLabel(w, kept.wage),
+            })
+          : sourceMessage('copy.staff.8d0a001ffb', { p0: m.name, p1: managerLine(w, first) }),
+      }).slice(0, 400),
       attention: false,
       ref: m.id,
     });
@@ -897,8 +982,14 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
   renewManager(w, term, true);
   pushInbox(w, {
     kind: 'staff-report',
-    title: `${school}${m.name} 감독 재계약`,
-    detail: `${fits ? '선호 학파와 감독 기조에 맞아' : '감독 기조에 맞는 감독이 없어'} 단장이 ${term}시즌 더 계약했어요 · 연봉 ${moneyLabel(w, kept.wage)} · 계약금 ${moneyLabel(w, kept.fee)} · ${contractSeason(kept.until)} 시즌 끝까지`,
+    title: sourceMessage('copy.staff.2df73a2786', { p0: school, p1: m.name }),
+    detail: sourceMessage('copy.staff.7bd5fe0e53', {
+      p0: fits ? sourceMessage('copy.staff.fe8353cad0') : sourceMessage('copy.staff.55a196f21e'),
+      p1: term,
+      p2: moneyLabel(w, kept.wage),
+      p3: moneyLabel(w, kept.fee),
+      p4: contractSeason(kept.until),
+    }),
     attention: false,
   });
   return true;
@@ -920,11 +1011,19 @@ export function managerRenewalReminder(w: World) {
     if (!w.decisionChoices?.includes(id)) (w.decisionChoices ||= []).push(id);
     return;
   }
-  const seasons = terms.limit === 1 ? '1시즌' : `1–${terms.limit}시즌`;
+  const seasons =
+    terms.limit === 1
+      ? sourceMessage('copy.staff.413068e3c4')
+      : sourceMessage('copy.staff.3de821da4f', { p0: terms.limit });
   pushInbox(w, {
     kind: 'staff-renewal',
-    title: `${school}${m.name} 감독 계약이 이번 시즌 끝에 끝나요`,
-    detail: `재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요 (연봉 ${moneyLabel(w, terms.wage)} · 계약금 ${moneyLabel(w, terms.fee)} · ${seasons})${managerDelegated ? ' · 자금 여력이 부족해 단장이 재계약하지 않았어요' : ''}`,
+    title: sourceMessage('copy.staff.872f5c1c2c', { p0: school, p1: m.name }),
+    detail: sourceMessage('copy.staff.b0e7fd3114', {
+      p0: moneyLabel(w, terms.wage),
+      p1: moneyLabel(w, terms.fee),
+      p2: seasons,
+      p3: managerDelegated ? sourceMessage('copy.staff.ea819e5260') : '',
+    }),
     attention: true,
     ref: m.id,
   });
@@ -949,15 +1048,18 @@ export function dailyStaff(w: World) {
   if (!expiring.length) return;
   pushInbox(w, {
     kind: 'staff-renewal',
-    title: `코치 재계약 시즌이 돌아왔어요 · ${expiring.length}명`,
-    detail: `${expiring
-      .map((member) => `${STAFF_INFO[member.role].label} ${member.name}(능력 ${member.ability})`)
-      .join(
-        ' · ',
-      )}의 계약이 이번 시즌 끝에 끝나요. 재계약하지 않으면 떠나요. 코치진에서 재계약하거나 코치 선임을 스태프에게 맡기세요.`.slice(
-      0,
-      400,
-    ),
+    title: sourceMessage('copy.staff.63d1276353', { p0: expiring.length }),
+    detail: sourceMessage('copy.staff.5def6e5c7c', {
+      p0: expiring
+        .map((member) =>
+          sourceMessage('copy.staff.e5885878dc', {
+            p0: STAFF_INFO[member.role].label,
+            p1: member.name,
+            p2: member.ability,
+          }),
+        )
+        .join(' · '),
+    }).slice(0, 400),
     attention: true,
   });
 }

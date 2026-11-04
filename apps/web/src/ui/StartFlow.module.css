@@ -266,16 +266,21 @@
   gap: 6px;
   min-width: 0;
 }
+/* One line whose 발롱도르 starts at a fixed place, so a longer name never wraps or moves it. */
 .historyHead {
   margin: 0;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 2px 12px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
   font-size: 13px;
   line-height: 1.45;
   color: var(--text-muted);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+}
+.historyHead > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .historyHead b {
   color: var(--text);
@@ -319,36 +324,48 @@
 .list ol {
   counter-reset: elo;
 }
+/* Rows keep fixed columns and one line each, so the seasons' names, long or short, never move a
+   column or the rows below it. */
 .list li {
-  display: flex;
+  display: grid;
+  grid-template-columns: 4.4em minmax(0, 1fr);
   align-items: baseline;
   gap: 6px;
   min-width: 0;
   font-size: 13px;
   line-height: 1.45;
 }
+.list ol li {
+  grid-template-columns: 1.4em minmax(0, 1fr) 2.8em 2.6em;
+}
+/* The competitions change only by era: their names take what they need, up to a cap. */
+.europe li {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+.europe small {
+  max-width: 7.5em;
+}
 .list ol li::before {
   counter-increment: elo;
   content: counter(elo);
-  flex: none;
-  min-width: 1.4em;
   font-size: 12px;
   color: var(--text-muted);
   font-variant-numeric: tabular-nums;
 }
+.list small,
+.name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .list small {
-  flex: none;
   font-size: 12px;
   color: var(--text-muted);
 }
 .list li b {
-  flex: none;
+  text-align: end;
   font-variant-numeric: tabular-nums;
-}
-.name {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
 }
 .listNote {
   margin: 0;

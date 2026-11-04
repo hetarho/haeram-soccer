@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { TransferFact, World } from '../../../../packages/contracts/src/types';
 import {
   transferRanking,
@@ -7,8 +8,8 @@ import { LEADER_LIMIT, nextLeaderCount } from './careerRecords';
 
 /** 이적 기록's two boards (→WEB-54). */
 export const TRANSFER_BOARDS = [
-  ['in', '영입'],
-  ['out', '매각'],
+  ['in', sourceMessage('copy.areas.60be4d7b53')],
+  ['out', sourceMessage('copy.RecruitmentDesk.45b54f8961')],
 ] as const;
 export type TransferBoard = TransferFact['direction'];
 
@@ -73,7 +74,7 @@ export function transferRecordsView(
       ...(w.players.some((p) => p.id === fact.player) ? { player: fact.player } : {}),
       ...(fact.club && w.clubs.some((c) => c.id === fact.club) ? { club: fact.club } : {}),
       year: fact.year,
-      kind: fact.loan ? '임대' : '이적',
+      kind: fact.loan ? sourceMessage('team.loan') : sourceMessage('copy.NewsFeed.832934e8a8'),
       today: row.today,
       fee: fact.fee,
     };

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Player, Tactic, World } from '../../contracts/src/types';
 import { fatigueLoad, formationOf, ownMultiplier, slotOvr } from './player-state';
 import { slotLine } from './player';
@@ -30,10 +31,10 @@ export interface TacticalProfile {
 export { npcTactic } from './tactics';
 
 const tacticTradeoffs: Record<Tactic, string> = {
-  balanced: '수비 안정 · 직접 슈팅 기회는 조금 줄어듭니다',
-  possession: '중원 패스로 점유 · 직접 슈팅이 줄고 상대 압박을 받습니다',
-  counter: '수비와 공격수로 압박을 공략 · 점유와 패스 성공을 양보합니다',
-  press: '체력과 신선함으로 기회 창출 · 피로가 크고 역습에 노출됩니다',
+  balanced: sourceMessage('copy.strategy.5e6ed42671'),
+  possession: sourceMessage('copy.strategy.f0c09ac496'),
+  counter: sourceMessage('copy.strategy.2a59968cf2'),
+  press: sourceMessage('copy.strategy.ba50800d89'),
 };
 
 /**

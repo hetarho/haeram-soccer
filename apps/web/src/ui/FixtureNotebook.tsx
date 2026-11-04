@@ -1,6 +1,9 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { Select } from './Select';
 import { Card } from './Card';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { Suspense, useEffect, useState } from 'react';
 import type { MatchRecord, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
@@ -13,6 +16,7 @@ import { MatchMaterial, MatchReport } from './MatchReport';
 import s from './Analysis.module.css';
 
 export function FixtureNotebook({ w, client }: { w: World; client: GameClient }) {
+  useTextLocale();
   const [scope, setScope] = useState('upcoming'),
     [open, setOpen] = useState(false),
     [kind, setKind] = useState('all'),
@@ -38,12 +42,12 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
         setLoaded({
           id: selected.id,
           record,
-          error: record ? undefined : '경기 기록을 읽지 못했어요. 창을 닫고 다시 열어보세요.',
+          error: record ? undefined : sourceMessage('copy.FixtureNotebook.9ecddf6891'),
         });
       })
       .catch(() => {
         if (valid)
-          setLoaded({ id: selected.id, error: '경기 기록을 읽지 못했어요. 다시 열어보세요.' });
+          setLoaded({ id: selected.id, error: sourceMessage('copy.FixtureNotebook.12c42bae56') });
       });
     return () => {
       valid = false;
@@ -68,154 +72,228 @@ export function FixtureNotebook({ w, client }: { w: World; client: GameClient })
         className={s.disclosure}
         onToggle={(event) => setOpen(event.currentTarget.open)}
       >
-        <summary>우리 팀 일정 노트</summary>
-        {open && (
-          <section className={s.content} aria-label="우리 팀 일정 노트">
-            <div className={s.controls}>
-              <label>
-                진행 상태{' '}
-                <Select
-                  aria-label="일정 진행 상태"
-                  value={scope}
-                  onValueChange={(value) => {
-                    setScope(value);
-                    setPage(0);
-                  }}
-                >
-                  <option value="upcoming">예정 경기</option>
-                  <option value="completed">완료 경기</option>
-                  <option value="all">전체 일정</option>
-                </Select>
-              </label>
-              <label>
-                대회{' '}
-                <Select
-                  aria-label="일정 대회"
-                  value={kind}
-                  onValueChange={(value) => {
-                    setKind(value);
-                    setPage(0);
-                  }}
-                >
-                  <option value="all">모든 대회</option>
-                  {Object.entries(kindLabel).map(([id, label]) => (
-                    <option key={id} value={id}>
-                      {label}
-                    </option>
-                  ))}
-                </Select>
-              </label>
-              <label>
-                장소{' '}
-                <Select
-                  aria-label="일정 홈 원정"
-                  value={venue}
-                  onValueChange={(value) => {
-                    setVenue(value);
-                    setPage(0);
-                  }}
-                >
-                  <option value="all">홈·원정</option>
-                  <option value="home">홈</option>
-                  <option value="away">원정</option>
-                </Select>
-              </label>
-            </div>
-            <p className={s.note}>
-              이번 시즌 확정 일정 · {fixtures.length}경기 · 국내 컵과 플레이오프는 시즌 마감 때
-              일정이 추가될 수 있어요.
-            </p>
-            <div className={s.cards}>
-              {fixtures.slice(current * 20, (current + 1) * 20).map((f) => {
-                const ownHome = f.home === w.playerClub,
-                  opponent = w.clubs.find((c) => c.id === (ownHome ? f.away : f.home)),
-                  result = resultFor(f, w.playerClub);
-                return (
-                  <Card
-                    key={f.id}
-                    data-testid="fixture-card"
-                    data-next={f.id === next?.id || undefined}
-                    meta={
-                      <>
-                        {fixtureDate(w, f)} · {competitionLabel(w, f)} · {ownHome ? '홈' : '원정'}
-                        {f.id === next?.id && (
-                          <strong className={s.nextFixture}> · 다음 경기</strong>
-                        )}
-                      </>
-                    }
-                    title={opponent ? <ClubLink w={w} id={opponent.id} /> : '상대 미정'}
-                    actions={
-                      result ? (
-                        <>
-                          <button
-                            onClick={() => {
-                              setLoaded(undefined);
-                              setSelected({ id: f.id, year: f.year, view: 'report' });
-                            }}
-                          >
-                            이 경기 분석 보기
-                          </button>
-                          <button
-                            onClick={() => {
-                              setLoaded(undefined);
-                              setSelected({ id: f.id, year: f.year, view: 'material' });
-                            }}
-                          >
-                            경기 자료
-                          </button>
-                        </>
-                      ) : undefined
-                    }
-                  >
-                    {result ? (
-                      <>
-                        <b>
-                          우리 {result.result} {result.own}–{result.other}
-                        </b>
-                        <p className={s.fixtureNote}>정규 90분 결과</p>
-                      </>
-                    ) : (
-                      <span className={s.fixtureNote}>킥오프를 기다립니다</span>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-            {!fixtures.length && <p className={s.note}>이 조건에 맞는 확정 경기가 없어요.</p>}
-            {last > 0 && (
+        <summary>{richMessage('copy.FixtureNotebook.dd5ad63c8d')}</summary>
+        {localizeValue(
+          open && (
+            <section
+              className={s.content}
+              aria-label={displayMessage('copy.FixtureNotebook.dd5ad63c8d')}
+            >
               <div className={s.controls}>
-                <button disabled={current === 0} onClick={() => setPage(current - 1)}>
-                  이전 일정
-                </button>
-                <span className={s.note}>
-                  {current + 1}/{last + 1}
-                </span>
-                <button disabled={current === last} onClick={() => setPage(current + 1)}>
-                  다음 일정
-                </button>
+                <label>
+                  {richMessage('copy.FixtureNotebook.e3dae42678', {
+                    p0: ' ',
+                    p1: (
+                      <Select
+                        aria-label={displayMessage('copy.FixtureNotebook.f393e10539')}
+                        value={scope}
+                        onValueChange={(value) => {
+                          setScope(value);
+                          setPage(0);
+                        }}
+                      >
+                        <option value="upcoming">
+                          {richMessage('copy.FixtureNotebook.935c2e5e1a')}
+                        </option>
+                        <option value="completed">
+                          {richMessage('copy.FixtureNotebook.42d379b200')}
+                        </option>
+                        <option value="all">
+                          {richMessage('copy.FixtureNotebook.1474153e3a')}
+                        </option>
+                      </Select>
+                    ),
+                  })}
+                </label>
+                <label>
+                  {richMessage('copy.FixtureNotebook.a2bed9e9b0', {
+                    p0: ' ',
+                    p1: (
+                      <Select
+                        aria-label={displayMessage('copy.FixtureNotebook.7cdb680f13')}
+                        value={kind}
+                        onValueChange={(value) => {
+                          setKind(value);
+                          setPage(0);
+                        }}
+                      >
+                        <option value="all">
+                          {richMessage('copy.FixtureNotebook.4be0674739')}
+                        </option>
+                        {localizeValue(
+                          Object.entries(kindLabel).map(([id, label]) => (
+                            <option key={id} value={id}>
+                              {localizeValue(label)}
+                            </option>
+                          )),
+                        )}
+                      </Select>
+                    ),
+                  })}
+                </label>
+                <label>
+                  {richMessage('copy.FixtureNotebook.2628acfcbf', {
+                    p0: ' ',
+                    p1: (
+                      <Select
+                        aria-label={displayMessage('copy.FixtureNotebook.3abbc94803')}
+                        value={venue}
+                        onValueChange={(value) => {
+                          setVenue(value);
+                          setPage(0);
+                        }}
+                      >
+                        <option value="all">
+                          {richMessage('copy.FixtureNotebook.ca3fc2978f')}
+                        </option>
+                        <option value="home">{richMessage('fixture.home')}</option>
+                        <option value="away">{richMessage('fixture.away')}</option>
+                      </Select>
+                    ),
+                  })}
+                </label>
               </div>
-            )}
-          </section>
+              <p className={s.note}>
+                {richMessage('copy.FixtureNotebook.89baa69a31', { p0: fixtures.length })}
+              </p>
+              <div className={s.cards}>
+                {localizeValue(
+                  fixtures.slice(current * 20, (current + 1) * 20).map((f) => {
+                    const ownHome = f.home === w.playerClub,
+                      opponent = w.clubs.find((c) => c.id === (ownHome ? f.away : f.home)),
+                      result = resultFor(f, w.playerClub);
+                    return (
+                      <Card
+                        key={f.id}
+                        data-testid="fixture-card"
+                        data-next={f.id === next?.id || undefined}
+                        meta={
+                          <>
+                            {localizeValue(fixtureDate(w, f))} ·{' '}
+                            {localizeValue(competitionLabel(w, f))} ·{' '}
+                            {localizeValue(
+                              ownHome
+                                ? sourceMessage('fixture.home')
+                                : sourceMessage('fixture.away'),
+                            )}
+                            {localizeValue(
+                              f.id === next?.id && (
+                                <strong className={s.nextFixture}>
+                                  {richMessage('copy.FixtureNotebook.d733d630dc')}
+                                </strong>
+                              ),
+                            )}
+                          </>
+                        }
+                        title={localizeValue(
+                          opponent ? (
+                            <ClubLink w={w} id={opponent.id} />
+                          ) : (
+                            sourceMessage('copy.FixtureNotebook.d9ba4cde0b')
+                          ),
+                        )}
+                        actions={
+                          result ? (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setLoaded(undefined);
+                                  setSelected({ id: f.id, year: f.year, view: 'report' });
+                                }}
+                              >
+                                {richMessage('copy.FixtureNotebook.5624f76fe0')}
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setLoaded(undefined);
+                                  setSelected({ id: f.id, year: f.year, view: 'material' });
+                                }}
+                              >
+                                {richMessage('copy.stories.a3b55318c6')}
+                              </button>
+                            </>
+                          ) : undefined
+                        }
+                      >
+                        {localizeValue(
+                          result ? (
+                            <>
+                              <b>
+                                {richMessage('copy.FixtureNotebook.70b778e4b4', {
+                                  p0: result.result,
+                                  p1: result.own,
+                                  p2: result.other,
+                                })}
+                              </b>
+                              <p className={s.fixtureNote}>
+                                {richMessage('copy.FixtureNotebook.aa1e1acd84')}
+                              </p>
+                            </>
+                          ) : (
+                            <span className={s.fixtureNote}>
+                              {richMessage('copy.FixtureNotebook.5dc1ae4f9a')}
+                            </span>
+                          ),
+                        )}
+                      </Card>
+                    );
+                  }),
+                )}
+              </div>
+              {localizeValue(
+                !fixtures.length && (
+                  <p className={s.note}>{richMessage('copy.FixtureNotebook.b62613de29')}</p>
+                ),
+              )}
+              {localizeValue(
+                last > 0 && (
+                  <div className={s.controls}>
+                    <button disabled={current === 0} onClick={() => setPage(current - 1)}>
+                      {richMessage('copy.FixtureNotebook.14feb3ae4f')}
+                    </button>
+                    <span className={s.note}>
+                      {localizeValue(current + 1)}/{localizeValue(last + 1)}
+                    </span>
+                    <button disabled={current === last} onClick={() => setPage(current + 1)}>
+                      {richMessage('copy.FixtureNotebook.93b4421405')}
+                    </button>
+                  </div>
+                ),
+              )}
+            </section>
+          ),
         )}
       </details>
-      {selected && (
-        <Dialog
-          label={selected.view === 'material' ? '일정 경기 자료' : '일정 경기 분석'}
-          onClose={() => setSelected(undefined)}
-          wide
-        >
-          {detail?.record && selected.view === 'material' ? (
-            <Suspense fallback={<p className={s.note}>경기 자료를 펼치는 중…</p>}>
-              <MatchMaterial record={detail.record} w={w} />
-            </Suspense>
-          ) : detail?.record ? (
-            <MatchReport record={detail.record} w={w} />
-          ) : (
-            <p className={s.note} role={detail?.error ? 'alert' : 'status'}>
-              {detail?.error || '경기 기록을 펼치는 중…'}
-            </p>
-          )}
-        </Dialog>
+      {localizeValue(
+        selected && (
+          <Dialog
+            label={localizeValue(
+              selected.view === 'material'
+                ? sourceMessage('copy.FixtureNotebook.f5d5cf8aa7')
+                : sourceMessage('copy.FixtureNotebook.1a6eb95ec2'),
+            )}
+            onClose={() => setSelected(undefined)}
+            wide
+          >
+            {localizeValue(
+              detail?.record && selected.view === 'material' ? (
+                <Suspense
+                  fallback={
+                    <p className={s.note}>{richMessage('copy.FixtureNotebook.48fed68440')}</p>
+                  }
+                >
+                  <MatchMaterial record={detail.record} w={w} />
+                </Suspense>
+              ) : detail?.record ? (
+                <MatchReport record={detail.record} w={w} />
+              ) : (
+                <p className={s.note} role={detail?.error ? 'alert' : 'status'}>
+                  {localizeValue(detail?.error || sourceMessage('copy.FixtureNotebook.0998cc7d18'))}
+                </p>
+              ),
+            )}
+          </Dialog>
+        ),
       )}
     </>
   );

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
 import { baseEffects, settleBases } from './bases';
 import type { MatchRecord, World } from '../../contracts/src/types';
@@ -38,7 +39,11 @@ import { EXCLUSIVE_MARKETING, exclusiveSponsor, sponsorAnnual } from './sponsors
  * events and the news feed keep this text, so `readGateDetail` reads it back.
  */
 export function gateDetail(attendance: number, scale: number, matchId: string) {
-  return `관중 ${attendance}명 · 티켓과 구단 상품${scale !== 1 ? ` · 시즌 46경기 기준 ×${scale.toFixed(2)}` : ''} · ${matchId}`;
+  return sourceMessage('copy.settlement.7346a03127', {
+    p0: attendance,
+    p1: scale !== 1 ? sourceMessage('copy.settlement.254b30dbca', { p0: scale.toFixed(2) }) : '',
+    p2: matchId,
+  });
 }
 const GATE_DETAIL = /^관중 (\d+)명 · 티켓과 구단 상품(?: · 시즌 46경기 기준 ×\d+\.\d{2})? · (.+)$/;
 /** The crowd and match a `gateDetail` text names, or undefined for any other text. */
@@ -56,8 +61,8 @@ export function gate(w: World, m: MatchRecord) {
     addEvent(
       w,
       'match-bonus',
-      `${bonus.result} 성과 수입`,
-      `${m.id} · 홈·원정 동일 기준`,
+      sourceMessage('copy.settlement.d2ee78853a', { p0: bonus.result }),
+      sourceMessage('copy.settlement.8a8b52e6cd', { p0: m.id }),
       bonus.amount,
     );
   }
@@ -72,14 +77,26 @@ export function gate(w: World, m: MatchRecord) {
   const scale = isLeagueMatch(m.kind) ? projection.leagueFactor : 1;
   const income = footballQuote(c.country, w.year, attendance * projection.perFan * scale);
   credit(w, income);
-  addEvent(w, 'gate', '홈 경기의 수입', gateDetail(attendance, scale, m.id), income);
+  addEvent(
+    w,
+    'gate',
+    sourceMessage('copy.settlement.340b7d0f98'),
+    gateDetail(attendance, scale, m.id),
+    income,
+  );
   const cost = quote(
     c.country,
     w.year,
     FINANCE_CONFIG.homeMatchBaseCost + attendance * FINANCE_CONFIG.homeMatchCostPerFan,
   );
   debit(w, cost, true);
-  addEvent(w, 'match-cost', '홈 경기 개최비', `관중 ${attendance}명 · ${m.id}`, cost);
+  addEvent(
+    w,
+    'match-cost',
+    sourceMessage('copy.finance.aeee208c2a'),
+    sourceMessage('copy.settlement.9fb6f87d64', { p0: attendance, p1: m.id }),
+    cost,
+  );
 }
 /**
  * Every sponsor contract's league payments (→ECON-14): a base installment per scheduled league
@@ -96,7 +113,7 @@ function paySponsors(w: World, m: MatchRecord, result: string, resultBonus: stri
         w,
         `sponsor:${contract.slot}`,
         label,
-        `${contract.name} · 리그 경기 ${played}/${games}`,
+        sourceMessage('copy.settlement.58ef9a4673', { p0: contract.name, p1: played, p2: games }),
         roundShare(sponsorAnnual(w, contract), played, games),
       );
       if (played === games) contract.lastPaid = w.year;
@@ -105,8 +122,8 @@ function paySponsors(w: World, m: MatchRecord, result: string, resultBonus: stri
       accrue(
         w,
         'sponsor:shirt',
-        `${label} 경기 보너스`,
-        `${contract.name} · 리그 ${result} · ${m.id}`,
+        sourceMessage('copy.settlement.e5ceccab2f', { p0: label }),
+        sourceMessage('copy.settlement.04f82c2495', { p0: contract.name, p1: result, p2: m.id }),
         resultBonus,
       );
   }
@@ -142,12 +159,12 @@ function book(w: World, kind: string, title: string, detail: string, amount: str
 function settleDistribution(w: World) {
   const c = clubOf(w),
     division = divisionLabel(c.tier),
-    paid = `${w.round}/${SEASON_ROUNDS}라운드 분할`;
+    paid = sourceMessage('copy.settlement.1008ffc9cb', { p0: w.round, p1: SEASON_ROUNDS });
   accrue(
     w,
     'league-share',
-    '리그 분배금',
-    `${division} 균등 배분·중계권 · ${paid}`,
+    sourceMessage('copy.finance.2d1ae295d1'),
+    sourceMessage('copy.settlement.c272a9df11', { p0: division, p1: paid }),
     roundShare(leagueShare(w), w.round),
   );
   const parachute = roundShare(parachutePayment(w), w.round);
@@ -156,8 +173,8 @@ function settleDistribution(w: World) {
   accrue(
     w,
     'parachute',
-    '강등 보전금',
-    `${from} → ${division} 강등 · 줄어든 분배금의 절반 · ${paid}`,
+    sourceMessage('copy.finance.28f00ca15d'),
+    sourceMessage('copy.settlement.b76142a88c', { p0: from, p1: division, p2: paid }),
     parachute,
   );
 }
@@ -169,11 +186,19 @@ function cashWarning(w: World, perRound: string) {
   if (cash < 0n || cost <= 0n || cash >= cost * BigInt(CASH_WARNING_ROUNDS)) return;
   if (w.events.some((e) => e.year === w.year && e.kind === 'cash-warning')) return;
   const weeks = Number(cash / cost);
-  addEvent(w, 'cash-warning', '운영자금 경고', `라운드 운영비 약 ${weeks}회분 남음`);
+  addEvent(
+    w,
+    'cash-warning',
+    sourceMessage('copy.settlement.ce5198ee5c'),
+    sourceMessage('copy.settlement.4ce92703fd', { p0: weeks }),
+  );
   pushInbox(w, {
     kind: 'finance',
-    title: `운영자금이 약 ${weeks}주분 남았어요`,
-    detail: `라운드마다 급여·시설 유지·운영 경비 ${moneyLabel(w, perRound)}가 나가요. 잔고가 바닥난 채 ${BANKRUPTCY_ROUNDS}라운드가 지나면 구단이 파산해요.`,
+    title: sourceMessage('copy.settlement.de51e84ed8', { p0: weeks }),
+    detail: sourceMessage('copy.settlement.b6f2edcb75', {
+      p0: moneyLabel(w, perRound),
+      p1: BANKRUPTCY_ROUNDS,
+    }),
     // A status, not a stop: the HUD and the warning band show it in red (→ECON-24).
     attention: false,
   });
@@ -187,8 +212,8 @@ export function settleLeagueMerit(w: World, rank: number, clubs: number) {
   addEvent(
     w,
     'league-merit',
-    '리그 순위 배분금',
-    `${rank}/${clubs}위 · 최하위는 균등 배분금만`,
+    sourceMessage('copy.finance.8873d9546b'),
+    sourceMessage('copy.settlement.d3cebdd2e9', { p0: rank, p1: clubs }),
     amount,
   );
 }
@@ -212,8 +237,19 @@ export function settleRound(w: World) {
   addEvent(
     w,
     'operating-cost',
-    '급여와 시설 유지비',
-    `선수 ${money(cost.payments.playerWages)} · 감독 ${money(cost.payments.managerWage)} · 시설 ${money(cost.payments.maintenance)}${cost.payments.investment ? ` · 지역·글로벌 투자 ${money(cost.payments.investment)}` : ''}${cost.payments.academy ? ` · 유소년 ${money(cost.payments.academy)}` : ''}${fansGained ? ` · 해외 마케팅 팬 +${fansGained}명` : ''}`,
+    sourceMessage('copy.settlement.ea3cdc1f20'),
+    sourceMessage('copy.settlement.4742f582f8', {
+      p0: money(cost.payments.playerWages),
+      p1: money(cost.payments.managerWage),
+      p2: money(cost.payments.maintenance),
+      p3: cost.payments.investment
+        ? sourceMessage('copy.settlement.df623448a6', { p0: money(cost.payments.investment) })
+        : '',
+      p4: cost.payments.academy
+        ? sourceMessage('copy.settlement.4c2b7704f5', { p0: money(cost.payments.academy) })
+        : '',
+      p5: fansGained ? sourceMessage('copy.settlement.569eabd02c', { p0: fansGained }) : '',
+    }),
     (
       BigInt(cost.nextRound) -
       BigInt(cost.payments.expenses) -
@@ -225,12 +261,19 @@ export function settleRound(w: World) {
   // investment's factor this round when it is not the default ×1 (→ECON-16).
   const floor =
       BigInt(cost.seasonExpenses) <= BigInt(operatingExpensesAt(club.country, w.year, club.tier)),
-    factor = `${cost.operatingFactor === 1 ? '' : ` · 선수단 투자 ×${cost.operatingFactor}`}${cost.politicianFactor === 1 ? '' : ` · 정치력 ×${cost.politicianFactor}`}`;
+    factor = `${cost.operatingFactor === 1 ? '' : sourceMessage('copy.settlement.0d9e7521ec', { p0: cost.operatingFactor })}${cost.politicianFactor === 1 ? '' : sourceMessage('copy.settlement.3971849ca5', { p0: cost.politicianFactor })}`;
   book(
     w,
     'operating-expenses',
-    '운영 경비',
-    `${floor ? `${divisionLabel(club.tier)} 최저 수준` : `직전 시즌 매출의 ${Math.round(EXPENSE_CONFIG.share * 100)}%`}${factor} · 경기 운영·원정·행정·의료·용품·직원 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
+    sourceMessage('copy.FinancialBreakdown.2d914c9be2'),
+    sourceMessage('copy.settlement.804a02202f', {
+      p0: floor
+        ? sourceMessage('copy.settlement.4ae26c6e01', { p0: divisionLabel(club.tier) })
+        : sourceMessage('copy.fan_mood.f85507dce3', { p0: Math.round(EXPENSE_CONFIG.share * 100) }),
+      p1: factor,
+      p2: w.round,
+      p3: SEASON_ROUNDS,
+    }),
     cost.payments.expenses,
   );
   // The takeover loan's installments keep one ledger line a season too (→ECON-38, ECON-10).
@@ -238,8 +281,13 @@ export function settleRound(w: World) {
     book(
       w,
       'loan-repayment',
-      '인수 부채 상환',
-      `시즌 상환액 ${money(cost.loan)} · 남은 ${w.loan!.seasonsLeft}시즌 · ${w.round}/${SEASON_ROUNDS}라운드 분할`,
+      sourceMessage('copy.FinancialBreakdown.ddebd211b6'),
+      sourceMessage('copy.settlement.6a49bdf3d1', {
+        p0: money(cost.loan),
+        p1: w.loan!.seasonsLeft,
+        p2: w.round,
+        p3: SEASON_ROUNDS,
+      }),
       cost.payments.loan,
     );
   for (const c of w.campaigns) {
@@ -264,8 +312,12 @@ export function settleRound(w: World) {
     addEvent(
       w,
       'campaign-result',
-      `${offer.label} 결과`,
-      `팬 +${fans}명 · 비용 ${money(c.cost)} · 순수익 ${money((BigInt(income) - BigInt(c.cost)).toString())}`,
+      sourceMessage('copy.settlement.7c2aa96506', { p0: offer.label }),
+      sourceMessage('copy.settlement.7922c5dcfb', {
+        p0: fans,
+        p1: money(c.cost),
+        p2: money((BigInt(income) - BigInt(c.cost)).toString()),
+      }),
       income,
     );
   }
@@ -278,8 +330,8 @@ export function settleRound(w: World) {
     addEvent(
       w,
       'budget-warning',
-      '운영자금 경고',
-      '필수 비용으로 잔고가 음수가 되었습니다. 자동 지원금은 없습니다.',
+      sourceMessage('copy.settlement.ce5198ee5c'),
+      sourceMessage('copy.settlement.ad22a9114c'),
     );
   }
   insolvency(w, cost.annual);
@@ -305,16 +357,19 @@ function insolvency(w: World, annual: string) {
     addEvent(
       w,
       'bankruptcy',
-      `${clubOf(w).name} 파산`,
-      `잔고 ${moneyLabel(w, w.cash)} · ${w.insolvent}라운드 연속 적자 · 구단이 문을 닫았어요.`,
+      sourceMessage('copy.ownerFigures.f933e937de', { p0: clubOf(w).name }),
+      sourceMessage('copy.settlement.31e9d41431', { p0: moneyLabel(w, w.cash), p1: w.insolvent }),
     );
     return;
   }
   if (w.insolvent === 1)
     pushInbox(w, {
       kind: 'finance',
-      title: `파산 위기 · ${BANKRUPTCY_ROUNDS}라운드 안에 흑자로 돌아오세요`,
-      detail: `잔고가 ${moneyLabel(w, w.cash)}예요. 적자인 채로 ${BANKRUPTCY_ROUNDS}라운드가 정산되거나 빚이 연간 고정 지출의 절반을 넘으면 구단이 파산해 게임이 끝나요.`,
+      title: sourceMessage('copy.settlement.f40f997d11', { p0: BANKRUPTCY_ROUNDS }),
+      detail: sourceMessage('copy.settlement.c67c099969', {
+        p0: moneyLabel(w, w.cash),
+        p1: BANKRUPTCY_ROUNDS,
+      }),
       attention: false,
     });
 }

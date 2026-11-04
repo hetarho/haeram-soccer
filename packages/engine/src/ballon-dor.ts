@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The Ballon d'Or (→PLAYER-27): its rules and the reads of its archived podiums (→HIST-13). A read
  * leaf (→ARCH-4): types only, so the screens may read a player's honours and the contract premium
@@ -53,11 +54,11 @@ export function ballonDorProduction(goals: number, assists: number): number {
 
 /** How the media name each honour beside a podium place. */
 export const BALLON_DOR_HONOUR_LABEL: Record<BallonDorHonour, string> = {
-  europe: '유럽 정상',
-  'europe-final': '유럽 준우승',
-  continental: '대륙 대회 우승',
-  league: '리그 우승',
-  cup: '컵 우승',
+  europe: sourceMessage('copy.ballon_dor.8568a4df70'),
+  'europe-final': sourceMessage('copy.ballon_dor.140f275ad8'),
+  continental: sourceMessage('copy.ballon_dor.d89162c31e'),
+  league: sourceMessage('start.history.champions'),
+  cup: sourceMessage('copy.managerHistoryView.5b012994d1'),
 };
 
 /** A player's places on archived podiums, oldest first: place 1 is a win. */

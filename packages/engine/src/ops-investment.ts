@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Command, World } from '../../contracts/src/types';
 import { POLICY_INFO, policyOf } from './policy';
 import { DIRECTION_DEFAULT, DIRECTION_INFO } from './direction';
@@ -34,7 +35,7 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
         ) ||
         (command.amount !== null && !/^\d{1,40}$/.test(command.amount))
       )
-        throw new Error('연봉 한도를 확인해 주세요.');
+        throw new Error(sourceMessage('copy.ops_investment.d842dfec12'));
       const budget = { ...w.decisionBudgets?.[command.responsibility] };
       if (command.amount === null) delete budget.maxAnnualWage;
       else budget.maxAnnualWage = BigInt(command.amount).toString();
@@ -42,10 +43,10 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
       addEvent(
         w,
         'decision-wage-limit',
-        '업무별 연봉 한도 변경',
+        sourceMessage('copy.ops_investment.a31454ca6a'),
         command.amount === null
-          ? '별도 금액 상한을 해제했습니다. 업무의 재정 기준은 계속 적용합니다.'
-          : `1인당 연간 ${moneyLabel(w, command.amount)}까지 · 이후 자동 판단에 적용됩니다.`,
+          ? sourceMessage('copy.ops_investment.170ee849fd')
+          : sourceMessage('copy.ops_investment.8ca1afcae5', { p0: moneyLabel(w, command.amount) }),
       );
       return;
     }
@@ -57,7 +58,7 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
         ) ||
         !option
       )
-        throw new Error('업무별 재정 기준을 확인해 주세요.');
+        throw new Error(sourceMessage('copy.ops_investment.dea4aaa7cf'));
       w.decisionBudgets = {
         ...w.decisionBudgets,
         [command.responsibility]: {
@@ -68,15 +69,15 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
       addEvent(
         w,
         'decision-finance',
-        `업무별 재정 기준 · ${option.name}`,
-        '이 업무의 이후 자동 판단부터 적용됩니다.',
+        sourceMessage('copy.ops_investment.0b8db57c91', { p0: option.name }),
+        sourceMessage('copy.ops_investment.6369d4732a'),
       );
       return;
     }
     case 'club-direction': {
       const info = DIRECTION_INFO[command.key];
       const option = info?.options.find((option) => option.id === command.choice);
-      if (!option) throw new Error('의사결정 지침을 확인해 주세요.');
+      if (!option) throw new Error(sourceMessage('copy.ops_investment.df68b713f9'));
       const direction = { ...w.direction };
       if (option.id === DIRECTION_DEFAULT[command.key]) delete direction[command.key];
       else Object.assign(direction, { [command.key]: option.id });
@@ -87,7 +88,7 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
     case 'club-build': {
       const options: readonly string[] | undefined = BUILD_OPTIONS[command.slot];
       if (!options || (command.choice !== 'standard' && !options.includes(command.choice)))
-        throw new Error('구단 운영 방식을 확인해 주세요.');
+        throw new Error(sourceMessage('copy.ops_investment.86079834c3'));
       const build = { ...w.build };
       if (command.choice === 'standard') delete build[command.slot];
       else Object.assign(build, { [command.slot]: command.choice });
@@ -98,40 +99,50 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
       addEvent(
         w,
         'club-build',
-        `${BUILD_SLOT_INFO[command.slot].label} · ${option?.label ?? '표준'}`,
-        '이후 판단과 정산부터 적용됩니다. 이미 맺은 계약은 유지됩니다.',
+        `${BUILD_SLOT_INFO[command.slot].label} · ${option?.label ?? sourceMessage('copy.ClubSettingControl.54af05f0bf')}`,
+        sourceMessage('copy.ops_investment.66a03772b9'),
       );
       return;
     }
     case 'club-ticket': {
       const option = TICKET_LEVELS.find((option) => option.price === command.price);
-      if (!option) throw new Error('티켓 가격을 확인해 주세요.');
+      if (!option) throw new Error(sourceMessage('copy.ops_investment.7b59cee267'));
       w.ticket = option.price;
-      addEvent(w, 'club-ticket', `티켓 가격 · ${option.name}`, option.summary);
+      addEvent(
+        w,
+        'club-ticket',
+        sourceMessage('copy.ops_investment.cbaea17419', { p0: option.name }),
+        option.summary,
+      );
       return;
     }
     case 'club-policy': {
       const info = POLICY_INFO[command.key];
       const option = info?.levels.find((option) => option.level === command.level);
-      if (!option) throw new Error('운영 기준을 확인해 주세요.');
+      if (!option) throw new Error(sourceMessage('copy.ops_investment.ab8a2c2261'));
       w.policy = { ...policyOf(w), [command.key]: command.level };
       addEvent(w, 'club-policy', `${info.label} · ${option.name}`, option.summary);
       return;
     }
     case 'coaching-investment': {
       const option = DIRECTION_INFO.coaches.options.find((option) => option.id === command.choice);
-      if (!option) throw new Error('코치진 투자 수준을 확인해 주세요.');
+      if (!option) throw new Error(sourceMessage('copy.ops_investment.d4abced1b5'));
       w.direction = {
         ...w.direction,
         coaches: command.choice === 'standard' ? undefined : command.choice,
       };
-      addEvent(w, 'coaching-investment', `코치 채용 기준 · ${option.name}`, option.summary);
+      addEvent(
+        w,
+        'coaching-investment',
+        sourceMessage('copy.ops_investment.4bd80a1eee', { p0: option.name }),
+        option.summary,
+      );
       return;
     }
     case 'facility-upgrade': {
       const next = nextWork(w, command.part);
       if (partLevel(w, command.part) !== command.from || next?.cost !== command.cost)
-        throw new Error('공사 조건이 바뀌었어요. 현재 비용을 확인하고 다시 선택해 주세요.');
+        throw new Error(sourceMessage('copy.ops_investment.04e1831360'));
       startFacilityWork(w, command.part, (amount) => debit(w, amount));
       return;
     }

@@ -1,3 +1,4 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import { PixelIcon } from './PixelIcon';
 import { Children, isValidElement, useLayoutEffect, useId, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
@@ -91,6 +92,7 @@ export function Dialog({
   children,
   onClose,
   wide = false,
+  fixed = false,
   picker = false,
   summary,
   actions: footerActions,
@@ -99,12 +101,18 @@ export function Dialog({
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  /**
+   * One height whatever it shows, its body scrolling inside: for content that changes in place
+   * (tabs, a read arriving), so the dialog never jumps.
+   */
+  fixed?: boolean;
   /** A small centered panel over a light dim that keeps the page behind it visible. */
   picker?: boolean;
   /** Persistent context below the title, above the scrolling body. */
   summary?: ReactNode;
   actions?: ReactNode;
 }) {
+  useTextLocale();
   const element = useRef<HTMLElement>(null);
   const backdrop = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
@@ -225,7 +233,7 @@ export function Dialog({
     >
       <section
         ref={element}
-        className={s.modal}
+        className={`${s.modal} ${fixed ? s.fixed : ''}`}
         style={wide ? { maxWidth: 900 } : undefined}
         role="dialog"
         data-ui="dialog"
@@ -235,24 +243,26 @@ export function Dialog({
       >
         <header className={s.modalHead} data-ui="dialog-header">
           <span className={s.sheetHandle} aria-hidden="true" />
-          <h2 id={labelId}>{label}</h2>
+          <h2 id={labelId}>{localizeValue(label)}</h2>
           <button
             data-ui="icon"
             className={s.modalClose}
-            aria-label="창 닫기"
+            aria-label={displayMessage('copy.Dialog.f7041ae411')}
             onClick={requestClose}
           >
             <PixelIcon name="close" size={20} />
           </button>
         </header>
-        {summary && <div className={s.modalSummary}>{summary}</div>}
+        {localizeValue(summary && <div className={s.modalSummary}>{localizeValue(summary)}</div>)}
         <div className={s.modalBody} data-ui="dialog-body">
-          {content}
+          {localizeValue(content)}
         </div>
-        {actions && (
-          <footer className={s.modalActions} data-ui="dialog-actions">
-            {actions}
-          </footer>
+        {localizeValue(
+          actions && (
+            <footer className={s.modalActions} data-ui="dialog-actions">
+              {localizeValue(actions)}
+            </footer>
+          ),
         )}
       </section>
     </div>,

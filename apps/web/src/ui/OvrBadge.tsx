@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { Club, World } from '../../../../packages/contracts/src/types';
 import { cohesionMultiplier } from '../../../../packages/engine/src/player-state';
 import { rating } from '../../../../packages/engine/src/world';
@@ -14,7 +17,10 @@ export function clubOvr(w: World, club: Club) {
 }
 /** A rival's 조직력 and what it does to its XI: "조직력 0.86 · ×1.03" (→LEAGUE-12, WEB-58). */
 export function cohesionLine(club: Club) {
-  return `조직력 ${(club.cohesion ?? 0.8).toFixed(2)} · ×${Number(cohesionMultiplier(club).toFixed(3))}`;
+  return sourceMessage('copy.OvrBadge.9a31ef657c', {
+    p0: (club.cohesion ?? 0.8).toFixed(2),
+    p1: Number(cohesionMultiplier(club).toFixed(3)),
+  });
 }
 /** Presentation-only rarity tiers shared by rating cards and table chips (WEB-91). */
 export function ovrTier(value: number) {
@@ -44,28 +50,29 @@ export function OvrBadge({
   potential?: number;
   large?: boolean;
 }) {
+  useTextLocale();
   const chip = (
     <span className={`${s.ovr} ${large ? s.large : ''}`} data-tier={ovrTier(value)}>
       <b>
-        <i className={s.label}>OVR </i>
-        {value}
+        <i className={s.label}>{richMessage('copy.OvrBadge.ab597740a9')}</i>
+        {localizeValue(value)}
       </b>
-      {role && <small>{role}</small>}
+      {localizeValue(role && <small>{localizeValue(role)}</small>)}
     </span>
   );
   if (potential === undefined) return chip;
   return (
     <span className={s.pair}>
-      {chip}
+      {localizeValue(chip)}
       <span
         className={`${s.ovr} ${s.potential} ${large ? s.large : ''}`}
         data-tier={ovrTier(potential)}
       >
         <b>
-          <i className={s.label}>잠재력 </i>
-          {potential}
+          <i className={s.label}>{richMessage('copy.OvrBadge.a83c179adc')}</i>
+          {localizeValue(potential)}
         </b>
-        <small>POT</small>
+        <small>{richMessage('team.column.potential')}</small>
       </span>
     </span>
   );

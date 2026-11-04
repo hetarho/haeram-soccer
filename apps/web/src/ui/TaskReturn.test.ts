@@ -1,3 +1,4 @@
+import { captureRender } from './render.testkit';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -48,7 +49,7 @@ describe('named competition return', () => {
     expect(markup).toContain('aria-label="돌아가기 · 클럽 홈"');
     expect(markup).toContain('>← 돌아가기</button>');
     expect(markup).not.toContain('<small>');
-    TaskReturn({ compact: true })!.props.children[0].props.onClick();
+    captureRender(() => TaskReturn({ compact: true }))!.props.children[0].props.onClick();
     expect(returnToTask).toHaveBeenCalledOnce();
   });
 
@@ -56,7 +57,7 @@ describe('named competition return', () => {
     context.returning = undefined;
     const markup = renderToStaticMarkup(createElement(TaskReturn, { compact: true }));
     expect(markup).toContain('aria-label="돌아가기 · 클럽 홈"');
-    TaskReturn({ compact: true })!.props.children[0].props.onClick();
+    captureRender(() => TaskReturn({ compact: true }))!.props.children[0].props.onClick();
     expect(context.setPage).toHaveBeenCalledExactlyOnceWith('dashboard');
     expect(returnToTask).not.toHaveBeenCalled();
   });

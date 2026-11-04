@@ -1,3 +1,4 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import { useState } from 'react';
 import { compactMoney, money } from './format';
 import s from './Money.module.css';
@@ -25,6 +26,7 @@ export function Money({
   className?: string;
   plain?: boolean;
 }) {
+  useTextLocale();
   const [open, setOpen] = useState(false);
   const minor = value.toString(),
     compact = compactMoney(minor, code, year),
@@ -32,16 +34,16 @@ export function Money({
   // Below 100,000 whole units in a currency without minor units there is nothing left to disclose.
   if (plain || compact === exact)
     return (
-      <span className={className} title={exact} data-money="">
-        {compact}
+      <span className={className} title={localizeValue(exact)} data-money="">
+        {localizeValue(compact)}
       </span>
     );
   return (
     <button
       type="button"
       className={`${s.money} ${className ?? ''}`}
-      title={exact}
-      aria-label={`${compact} · 정확히 ${exact}`}
+      title={localizeValue(exact)}
+      aria-label={displayMessage('copy.Money.35733a3eaf', { p0: compact, p1: exact })}
       aria-expanded={open}
       data-money=""
       onClick={(event) => {
@@ -50,7 +52,7 @@ export function Money({
         setOpen(!open);
       }}
     >
-      {open ? exact : compact}
+      {localizeValue(open ? exact : compact)}
     </button>
   );
 }

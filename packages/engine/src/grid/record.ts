@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /** The only place a grid match is counted: team and player metrics, goals, xG and possession (→MATCH-11, MATCH-13). */
 import { emptyPlayerDetail, emptyTeamDetail, PD, TD } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
@@ -725,7 +726,7 @@ export class Tally {
       minute,
       side,
       player: this.setup.rosters[side][idx]!.name,
-      action: '골',
+      action: sourceMessage('copy.summary.68a6cf8ed8'),
     });
   }
 

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useRef, useState } from 'react';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { progressionPreferences } from '../adapters/progressionPreferences';
@@ -15,6 +18,7 @@ export function ProgressModeSwitch({
   client: GameClient;
   controller: ProgressionController;
 }) {
+  useTextLocale();
   const state = useGameState((state) => state);
   const w = state.view!.world;
   const mode = settingsOf(w).mode;
@@ -42,7 +46,11 @@ export function ProgressModeSwitch({
       setRemember(false);
     } catch (cause) {
       setRequest(expected);
-      setError(cause instanceof Error ? cause.message : '전환하지 못했어요. 다시 시도해 주세요.');
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : sourceMessage('copy.ProgressModeSwitch.22521b20bc'),
+      );
     } finally {
       inFlight.current = false;
       setApplying(false);
@@ -63,69 +71,81 @@ export function ProgressModeSwitch({
         className={s.modeSwitch}
         data-ui="primary"
         data-progress-mode
-        aria-label="진행 방식 변경"
+        aria-label={displayMessage('copy.ProgressModeSwitch.2154238879')}
         aria-haspopup={progressionPreferences.skipExplanation() ? undefined : 'dialog'}
         disabled={applying || modeSwitchBlocked(state)}
-        title={state.clockRunning ? '진행을 정지한 뒤 변경할 수 있어요.' : undefined}
+        title={localizeValue(
+          state.clockRunning ? sourceMessage('copy.ProgressModeSwitch.7150e07f7e') : undefined,
+        )}
         onClick={choose}
       >
-        <span>MODE:</span>
+        <span>{richMessage('copy.ProgressModeSwitch.125c615cb6')}</span>
         <span className={s.modeStatus} data-testid="progression-mode" aria-live="polite">
-          {mode === 'manual' ? 'MANUAL' : 'AUTO'}
+          {localizeValue(mode === 'manual' ? 'MANUAL' : 'AUTO')}
         </span>
       </button>
-      {request && (
-        <Dialog
-          label="게임 진행 방식이 변경됩니다."
-          onClose={close}
-          actions={
-            <div className={s.modeActions}>
-              <button disabled={applying} onClick={close}>
-                취소
-              </button>
-              <button
-                data-ui="primary"
-                disabled={
-                  applying ||
-                  modeSwitchBlocked(state) ||
-                  w.id !== request.id ||
-                  mode !== request.mode
-                }
-                onClick={() => void apply(request, remember)}
-              >
-                {manual ? '수동 모드로 변경' : '자동 모드로 변경'}
-              </button>
+      {localizeValue(
+        request && (
+          <Dialog
+            label={displayMessage('copy.ProgressModeSwitch.913a0ecd8c')}
+            onClose={close}
+            actions={
+              <div className={s.modeActions}>
+                <button disabled={applying} onClick={close}>
+                  {richMessage('common.cancel')}
+                </button>
+                <button
+                  data-ui="primary"
+                  disabled={
+                    applying ||
+                    modeSwitchBlocked(state) ||
+                    w.id !== request.id ||
+                    mode !== request.mode
+                  }
+                  onClick={() => void apply(request, remember)}
+                >
+                  {localizeValue(
+                    manual
+                      ? sourceMessage('copy.ProgressModeSwitch.60d11a1d2d')
+                      : sourceMessage('copy.ProgressModeSwitch.db8e714e4d'),
+                  )}
+                </button>
+              </div>
+            }
+          >
+            <div className={s.modeExplanation} aria-busy={applying}>
+              <strong>{localizeValue(manual ? 'AUTO → MANUAL' : 'MANUAL → AUTO')}</strong>
+              <p>
+                {localizeValue(
+                  manual
+                    ? sourceMessage('copy.ProgressModeSwitch.e7cdb1cba6')
+                    : sourceMessage('copy.ProgressModeSwitch.d3b71f95ae'),
+                )}
+              </p>
+              <p>
+                {localizeValue(
+                  manual
+                    ? sourceMessage('copy.ProgressModeSwitch.45b47fe011')
+                    : sourceMessage('copy.ProgressModeSwitch.a64978b95f'),
+                )}
+              </p>
+              <p className={s.modeHint}>{richMessage('copy.ProgressModeSwitch.b6a9cbcc96')}</p>
+              <label className={s.remember}>
+                {richMessage('copy.ProgressModeSwitch.17b0b8c9bc', {
+                  p0: (
+                    <input
+                      type="checkbox"
+                      checked={remember}
+                      disabled={applying}
+                      onChange={(event) => setRemember(event.target.checked)}
+                    />
+                  ),
+                })}
+              </label>
+              {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
             </div>
-          }
-        >
-          <div className={s.modeExplanation} aria-busy={applying}>
-            <strong>{manual ? 'AUTO → MANUAL' : 'MANUAL → AUTO'}</strong>
-            <p>
-              {manual
-                ? '필요한 보고를 확인하고 다음 일정을 직접 결정합니다. 경기 전날에는 준비 현황을 보고받습니다.'
-                : '재생 버튼을 누르면 선택한 배속으로 날짜가 흐릅니다. 결정이 필요하거나 설정한 알림이 도착하면 멈춰요.'}
-            </p>
-            <p>
-              {manual
-                ? '수동 모드로 바꾸면 경기 전날 보고를 켭니다. 다른 보고와 업무 위임 설정은 그대로 유지됩니다.'
-                : '보고와 업무 위임 설정은 그대로 유지됩니다.'}
-            </p>
-            <p className={s.modeHint}>
-              변경 후에는 정지 상태로 기다립니다. 날짜는 넘어가지 않으며, 위임 설정은 그대로
-              유지됩니다.
-            </p>
-            <label className={s.remember}>
-              <input
-                type="checkbox"
-                checked={remember}
-                disabled={applying}
-                onChange={(event) => setRemember(event.target.checked)}
-              />
-              다시 보지 않기
-            </label>
-            {error && <p role="alert">{error}</p>}
-          </div>
-        </Dialog>
+          </Dialog>
+        ),
       )}
     </>
   );

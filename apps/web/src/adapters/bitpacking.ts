@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 export interface BitColumns {
   count: number;
   headers: [number, number][];
@@ -10,7 +11,7 @@ const MAX_CELLS = 16 * 1024 * 1024;
 
 function validateWidth(width: number) {
   if (!Number.isInteger(width) || width < 1 || width > 156)
-    throw new Error('비트 통계 열 개수가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.bitpacking.c852cf9f8f'));
 }
 
 function base64(bytes: Uint8Array) {
@@ -25,7 +26,7 @@ function unbase64(encoded: string) {
     typeof encoded !== 'string' ||
     !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)
   )
-    throw new Error('비트 통계 Base64가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.bitpacking.35fae48603'));
   return Uint8Array.from(atob(encoded), (char) => char.charCodeAt(0));
 }
 
@@ -40,10 +41,10 @@ export function rangeBits(range: number) {
 export function packBitColumns(values: number[], width: number, layout?: 'planes'): BitColumns {
   validateWidth(width);
   if (layout !== undefined && layout !== 'planes')
-    throw new Error('비트 통계 배치가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.bitpacking.01dcc08ad1'));
   const count = values.length / width;
   if (!Number.isInteger(count) || count > MAX_COUNT || values.length > MAX_CELLS)
-    throw new Error('비트 통계 행 개수가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.bitpacking.41ba32cdfb'));
   const headers: [number, number][] = [];
   let totalBits = 0;
   for (let column = 0; column < width; column++) {
@@ -52,7 +53,7 @@ export function packBitColumns(values: number[], width: number, layout?: 'planes
     for (let row = 0; row < count; row++) {
       const value = values[row * width + column];
       if (!Number.isSafeInteger(value) || value < 0)
-        throw new Error('비트 통계에 안전한 정수가 아닌 값이 있습니다.');
+        throw new Error(sourceMessage('copy.bitpacking.936448c6ca'));
       min = Math.min(min, value);
       max = Math.max(max, value);
     }
@@ -105,7 +106,7 @@ export function readBitColumns(packed: BitColumns, width: number) {
     packed.headers.length !== width ||
     (packed.layout !== undefined && packed.layout !== 'planes')
   )
-    throw new Error('비트 통계 헤더가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.bitpacking.d845f1a234'));
   const offsets: number[] = [];
   let totalBits = 0;
   for (const header of packed.headers) {
@@ -118,7 +119,7 @@ export function readBitColumns(packed: BitColumns, width: number) {
       header[1] < 0 ||
       header[1] > 53
     )
-      throw new Error('비트 통계 열 범위가 올바르지 않습니다.');
+      throw new Error(sourceMessage('copy.bitpacking.7898b86990'));
     offsets.push(totalBits);
     totalBits += packed.count * header[1];
   }
@@ -127,13 +128,13 @@ export function readBitColumns(packed: BitColumns, width: number) {
     bytes.length !== Math.ceil(totalBits / 8) ||
     (totalBits % 8 && bytes.at(-1)! >= 2 ** (totalBits % 8))
   )
-    throw new Error('비트 통계 스트림 길이나 여백이 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.bitpacking.665c029da5'));
   const cells = packed.count * width;
   let cursor = 0;
   return {
     take(n: number): number[] {
       if (!Number.isInteger(n) || n < 0 || cursor + n > cells)
-        throw new Error('비트 통계가 부족합니다.');
+        throw new Error(sourceMessage('copy.bitpacking.698d8a75fe'));
       const result = Array.from({ length: n }, (_, i) => {
         const index = cursor + i,
           column = index % width,
@@ -162,14 +163,14 @@ export function readBitColumns(packed: BitColumns, width: number) {
         }
         value += min;
         if (!Number.isSafeInteger(value) || value < 0)
-          throw new Error('복원한 비트 통계가 안전한 정수 범위를 넘었습니다.');
+          throw new Error(sourceMessage('copy.bitpacking.c74e47069c'));
         return value;
       });
       cursor += n;
       return result;
     },
     done() {
-      if (cursor !== cells) throw new Error('비트 통계에 읽지 않은 값이 남았습니다.');
+      if (cursor !== cells) throw new Error(sourceMessage('copy.bitpacking.39c0a255cf'));
     },
   };
 }

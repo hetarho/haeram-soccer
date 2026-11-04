@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { GameClient } from '../runtime/client';
 import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { gameActionsBlocked } from '../runtime/store';
@@ -33,7 +34,7 @@ export function approvalClient(
     )
       return;
     if (!pending()) {
-      failed('이미 처리되었거나 조건이 바뀐 요청이에요. 결재함에서 남은 요청을 확인해 주세요.');
+      failed(sourceMessage('copy.ApprovalRequestHost.46413142a5'));
       return;
     }
     inFlight = true;
@@ -43,11 +44,15 @@ export function approvalClient(
       const reply = await client.command(body, options);
       if (!isCurrent()) return reply;
       if (reply?.ok && answers && !pending()) submitted();
-      else if (!reply?.ok) failed(reply?.error || '처리하지 못했어요. 다시 시도해 주세요.');
+      else if (!reply?.ok) failed(reply?.error || sourceMessage('copy.approvalClient.7aaf1ef9de'));
       return reply;
     } catch (error) {
       if (isCurrent())
-        failed(`${error instanceof Error ? error.message : String(error)} 다시 시도해 주세요.`);
+        failed(
+          sourceMessage('copy.approvalClient.a6f90be03a', {
+            p0: error instanceof Error ? error.message : String(error),
+          }),
+        );
       return undefined;
     } finally {
       inFlight = false;

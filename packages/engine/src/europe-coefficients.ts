@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { AssociationCoefficient, EuropeTournament, World } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
@@ -71,7 +72,9 @@ export function associationCoefficients(
   for (const t of tournaments) {
     for (const id of t.clubs) totals.get(countryOf.get(id) ?? '')?.entrants.add(id);
     const qualifiers = new Set(
-      (t.rounds ?? []).flatMap((r, index) => (r.label.startsWith('예선') ? [index] : [])),
+      (t.rounds ?? []).flatMap((r, index) =>
+        r.label.startsWith(sourceMessage('copy.bracketTree.dbad85ccbc')) ? [index] : [],
+      ),
     );
     for (const f of t.fixtures) {
       const round = /:k(\d+):/.exec(f.id);
@@ -100,7 +103,16 @@ export function associationCoefficients(
           );
       }
       for (const r of t.rounds ?? [])
-        if (['16강', '8강', '4강', '결승'].includes(r.label))
+        if (
+          (
+            [
+              sourceMessage('copy.europe_coefficients.01d8e30bcf'),
+              sourceMessage('copy.europe_coefficients.3f97f9ff09'),
+              sourceMessage('copy.europe_coefficients.2973b6282d'),
+              sourceMessage('copy.CupHistory.d7f030913a'),
+            ] as readonly string[]
+          ).includes(r.label)
+        )
           for (const id of new Set([
             ...r.ties.flatMap((tie) => [tie.home, tie.away]),
             ...(r.byes ?? []),
@@ -119,12 +131,30 @@ export function associationCoefficients(
       for (const r of t.rounds ?? []) {
         const bonus =
           t.key === 'ucl'
-            ? r.label === '16강'
+            ? r.label === sourceMessage('copy.europe_coefficients.01d8e30bcf')
               ? config.groups.uclLast16
-              : ['8강', '4강', '결승'].includes(r.label)
+              : (
+                    [
+                      sourceMessage('copy.europe_coefficients.3f97f9ff09'),
+                      sourceMessage('copy.europe_coefficients.2973b6282d'),
+                      sourceMessage('copy.CupHistory.d7f030913a'),
+                    ] as readonly string[]
+                  ).includes(r.label)
                 ? config.groups.uclRound
                 : 0
-            : (t.key === 'uel' ? ['16강', '8강', '4강', '결승'] : ['4강', '결승']).includes(r.label)
+            : (
+                  (t.key === 'uel'
+                    ? [
+                        sourceMessage('copy.europe_coefficients.01d8e30bcf'),
+                        sourceMessage('copy.europe_coefficients.3f97f9ff09'),
+                        sourceMessage('copy.europe_coefficients.2973b6282d'),
+                        sourceMessage('copy.CupHistory.d7f030913a'),
+                      ]
+                    : [
+                        sourceMessage('copy.europe_coefficients.2973b6282d'),
+                        sourceMessage('copy.CupHistory.d7f030913a'),
+                      ]) as readonly string[]
+                ).includes(r.label)
               ? 1
               : 0;
         for (const id of new Set([

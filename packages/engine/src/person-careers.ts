@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { clubManager } from './managerMarket';
 import type {
   CareerDate,
@@ -100,15 +101,16 @@ export function retainPerson(
       existing.professionalism !== player.personality.professionalism ||
       JSON.stringify(existing.qualities) !== JSON.stringify(player.qualities)
     )
-      throw new Error('인물 신원이 일치하지 않아요.');
+      throw new Error(sourceMessage('copy.person_careers.6fe742309a'));
     if (formerOwn) {
       existing.formerOwn = true;
       existing.ownCareer = [...player.career];
     }
     return existing;
   }
-  if (!player.qualities) throw new Error('기록된 지도자 자질이 없어요.');
-  if (club && !w.clubs.some((c) => c.id === club)) throw new Error('구단을 확인하세요.');
+  if (!player.qualities) throw new Error(sourceMessage('copy.person_careers.6618b07b14'));
+  if (club && !w.clubs.some((c) => c.id === club))
+    throw new Error(sourceMessage('copy.person_careers.063ee6cae9'));
   const person: PersonCareer = {
     id: player.id,
     name: player.name,
@@ -145,7 +147,7 @@ export function retainStaffPerson(
   const existing = resolvePerson(w, member.id);
   if (existing) {
     if (existing.name !== member.name || existing.born !== member.born)
-      throw new Error('인물 신원이 일치하지 않아요.');
+      throw new Error(sourceMessage('copy.person_careers.6fe742309a'));
     return existing;
   }
   const person: PersonCareer = {
@@ -170,7 +172,7 @@ export function retainStaffPerson(
 }
 function personOf(w: World, id: string) {
   const person = resolvePerson(w, id);
-  if (!person) throw new Error('인물을 확인하세요.');
+  if (!person) throw new Error(sourceMessage('copy.person_careers.8e330cf8cd'));
   return person;
 }
 /**
@@ -186,7 +188,8 @@ export function openEmployment(
   observed = true,
 ): CareerEmployment {
   const person = personOf(w, id);
-  if (!w.clubs.some((c) => c.id === club)) throw new Error('구단을 확인하세요.');
+  if (!w.clubs.some((c) => c.id === club))
+    throw new Error(sourceMessage('copy.person_careers.063ee6cae9'));
   const active = person.employment.filter((job) => !job.to);
   const same = active.find((job) => job.role === role && job.club === club);
   if (same) {
@@ -203,15 +206,15 @@ export function openEmployment(
         (job.role === 'player' && ['manager', 'director', 'scout'].includes(role)),
     )
   )
-    throw new Error('중복 재직은 불가능해요.');
+    throw new Error(sourceMessage('copy.person_careers.4481e925a8'));
   if (role !== 'player' && occupiedPostByOther(w, role, club, id))
-    throw new Error('이미 담당자가 있어요.');
+    throw new Error(sourceMessage('copy.person_careers.9190eec9ae'));
   if (
     person.employment.some(
       (job) => job.role === role && job.to && compareCareerDates(job.to, from) > 0,
     )
   )
-    throw new Error('재직 날짜를 확인하세요.');
+    throw new Error(sourceMessage('copy.person_careers.5f8962da34'));
   const job = { role, club, from: { ...from } };
   // Someone who already coached or had a mentor stays where `coachingPeople` has him (T669).
   const coached =
@@ -231,7 +234,8 @@ export function closeEmployment(w: World, id: string, role: CareerRole, to = car
   const person = personOf(w, id);
   const job = person.employment.find((job) => !job.to && job.role === role);
   if (!job) return;
-  if (compareCareerDates(to, job.from) < 0) throw new Error('재직 날짜를 확인하세요.');
+  if (compareCareerDates(to, job.from) < 0)
+    throw new Error(sourceMessage('copy.person_careers.5f8962da34'));
   job.to = { ...to };
   employmentChanged(w, person, job, false);
   const remaining = person.employment.find((job) => !job.to);

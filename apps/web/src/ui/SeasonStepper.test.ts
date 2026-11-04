@@ -1,3 +1,4 @@
+import { captureRender } from './render.testkit';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
@@ -21,8 +22,9 @@ vi.mock('./liveState', () => ({ selectLeagueWorld: () => world }));
 const YEARS = [1950, 1951, 1952];
 type Arrow = { props: { 'aria-label': string; disabled: boolean; onClick: () => void } };
 const arrows = (value: number, onChange = vi.fn()) => {
-  const [older, , newer] = SeasonStepper({ years: YEARS, value, current: 1952, onChange }).props
-    .children as [Arrow, unknown, Arrow];
+  const [older, , newer] = captureRender(() =>
+    SeasonStepper({ years: YEARS, value, current: 1952, onChange }),
+  ).props.children as [Arrow, unknown, Arrow];
   return { older, newer, onChange };
 };
 
@@ -89,7 +91,9 @@ describe('league picker division options (→WEB-65)', () => {
     const picker = LeaguePicker as unknown as {
       type: (props: object) => { props: { children: { props: { children: unknown[] } }[] } };
     };
-    const tree = picker.type({ league: { code: 'ENG', tier: 1, group: 0 }, onLeague });
+    const tree = captureRender(() =>
+      picker.type({ league: { code: 'ENG', tier: 1, group: 0 }, onLeague }),
+    );
     const division = tree.props.children[1]!.props.children[1] as {
       props: { onValueChange: (value: string) => void };
     };

@@ -1,48 +1,54 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { FacilityScene } from './facilityScene';
 
 export const INVESTMENT_AREAS = [
   {
     id: 'firstTeam',
-    title: '1군',
+    title: sourceMessage('team.view.players'),
     art: 'training',
-    description: '선수 지원 · 라커룸 문화 · 훈련장',
+    description: sourceMessage('copy.investmentAreas.09d82efac1'),
   },
-  { id: 'youth', title: '유소년', art: 'academy', description: '육성 투자 · 유입 방식 · 아카데미' },
+  {
+    id: 'youth',
+    title: sourceMessage('team.view.academy'),
+    art: 'academy',
+    description: sourceMessage('copy.investmentAreas.ebb385fde7'),
+  },
   {
     id: 'coaches',
-    title: '코치진',
+    title: sourceMessage('copy.investmentAreas.243be11e44'),
     art: 'staff',
-    description: '재직 스태프의 상시 효과 · 급여 현황',
+    description: sourceMessage('copy.investmentAreas.6ed8a570a1'),
   },
   {
     id: 'stadium',
-    title: '경기장',
+    title: sourceMessage('copy.ClubOperations.64779ec1ad'),
     art: 'stadium',
-    description: '티켓 가격 · 관중석 증축 · 재건축',
+    description: sourceMessage('copy.investmentAreas.0be5f698b0'),
   },
   {
     id: 'scouting',
-    title: '스카우팅',
+    title: sourceMessage('copy.investmentAreas.f163d8ed88'),
     art: 'manager',
-    description: '스카우팅 방식 · 해외 스카우트망',
+    description: sourceMessage('copy.investmentAreas.eabd121323'),
   },
   {
     id: 'community',
-    title: '팬 · 마케팅',
+    title: sourceMessage('copy.investmentAreas.36aa92ebb0'),
     art: 'stadium',
-    description: '지역 관계 · 지역 투자 · 해외 마케팅 · 투어',
+    description: sourceMessage('copy.investmentAreas.68e757d65b'),
   },
   {
     id: 'finance',
-    title: '재정 · 사업',
+    title: sourceMessage('copy.investmentAreas.7fd6d6d374'),
     art: 'manager',
-    description: '수익 모델 · 사업 투자 · 자금 투입 · 배당',
+    description: sourceMessage('copy.investmentAreas.9964916eb0'),
   },
   {
     id: 'identity',
-    title: '구단 디자인',
+    title: sourceMessage('club.operations.identity'),
     art: 'locker',
-    description: '디자인 의뢰 · 색상 · 문장 · 유니폼',
+    description: sourceMessage('copy.investmentAreas.2786fb409b'),
   },
 ] as const satisfies readonly {
   id: string;
@@ -52,6 +58,6 @@ export const INVESTMENT_AREAS = [
 }[];
 export type InvestmentArea = (typeof INVESTMENT_AREAS)[number]['id'];
 export const INVESTMENT_PAGES = [
-  ['overview', '투자'],
+  ['overview', sourceMessage('copy.TrainingView.9e820c8111')],
   ...INVESTMENT_AREAS.map((area) => [area.id, area.title] as const),
 ] as const;

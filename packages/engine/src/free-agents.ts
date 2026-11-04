@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The world's free agents (→CLUB-49): players football let go, held without a club. They join at
  * the close — our unsigned expiries and every club nobody owns's two least able players aged 21 or
@@ -304,8 +305,13 @@ export function signFreeAgentAtClose(
   addEvent(
     w,
     'free-agent-signing',
-    `${p.name} 자유계약 입단`,
-    `${p.position} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 시즌 마감 보충, 이적료 없음`,
+    sourceMessage('copy.free_agents.b9563581fa', { p0: p.name }),
+    sourceMessage('copy.free_agents.66f9dc1d1c', {
+      p0: p.position,
+      p1: w.year - p.born,
+      p2: moneyLabel(w, p.wage),
+      p3: p.until,
+    }),
   );
   return p;
 }

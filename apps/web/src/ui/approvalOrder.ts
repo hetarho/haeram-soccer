@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import { RESPONSIBILITY_KEYS } from '../../../../packages/engine/src/responsibilities';
@@ -66,7 +67,8 @@ const KIND_TITLES: Partial<Record<StopReason['kind'], ResponsibilityKey>> = {
 export function requestTitle(item: StopReason): ApprovalTitle {
   const key = requestKeys(item)[0] ?? KIND_TITLES[item.kind];
   if (key) return key;
-  if (item.kind === 'finance') return item.title.includes('후원') ? 'sponsors' : 'finance';
+  if (item.kind === 'finance')
+    return item.title.includes(sourceMessage('club.operations.sponsor')) ? 'sponsors' : 'finance';
   return 'other';
 }
 /**

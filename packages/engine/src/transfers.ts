@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { SALE_BARS } from './transfer-policy';
 import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
@@ -138,14 +139,14 @@ function askingFee(offer: Pick<MarketOffer, 'fee' | 'loanFee'>, loan?: boolean) 
   return loan ? offer.loanFee : offer.fee;
 }
 function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, loan = false) {
-  if (!offer?.available) return '이미 계약했거나 없는 선수입니다.';
+  if (!offer?.available) return sourceMessage('copy.ops_squad.c94b14b4dc');
   const room = registrationRoom(w, {
     ...offer.player,
     joined: w.year,
     ...(loan ? { loanUntil: w.year + 1 } : {}),
   });
   if (room) return room;
-  if (BigInt(w.cash) < BigInt(fee)) return '보유 자금이 부족합니다.';
+  if (BigInt(w.cash) < BigInt(fee)) return sourceMessage('copy.playing_coach.8791d586e5');
   return undefined;
 }
 function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: string) {
@@ -187,26 +188,31 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
   addEvent(
     w,
     'transfer-in',
-    `${p.name} ${bid.loan ? '임대' : '영입'}`,
-    `${p.position} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 협상 타결`,
+    `${p.name} ${bid.loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53')}`,
+    sourceMessage('copy.transfers.244d316b53', {
+      p0: p.position,
+      p1: w.year - p.born,
+      p2: moneyLabel(w, p.wage),
+      p3: p.until,
+    }),
     fee,
   );
   bid.status = 'completed';
 }
 function saleBlocker(w: World, p: Player | undefined) {
-  if (!p || p.status !== 'active' || p.loanUntil) return '매각 가능한 선수가 아닙니다.';
+  if (!p || p.status !== 'active' || p.loanUntil) return sourceMessage('copy.transfers.b0b5964d37');
   const active = activePlayers(w);
   if (
     active.length <= SQUAD_MINIMUM ||
     (p.position === 'GK' && active.filter((x) => x.position === 'GK').length <= 1)
   )
-    return '최소 선수단과 골키퍼를 유지해야 합니다.';
+    return sourceMessage('copy.transfers.6c697e8ad5');
   return undefined;
 }
 function completeSale(w: World, bid: TransferBid, p: Player) {
   const club = w.clubs.find((c) => c.id === bid.club);
   if (BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, p.id)))
-    throw new Error('코치 계약 종료 비용을 지급할 자금이 부족해요.');
+    throw new Error(sourceMessage('copy.transfers.4c1042837b'));
   const wasStarter = ownStarters(w).some((starter) => starter.id === p.id);
   credit(w, bid.fee);
   endPlayingCoachForDeparture(w, p.id);
@@ -227,8 +233,12 @@ function completeSale(w: World, bid: TransferBid, p: Player) {
   addEvent(
     w,
     'transfer-out',
-    `${p.name}의 새로운 도전`,
-    `${club ? `${club.name} 이적` : '매각'} · 개인 경력 기록은 보존됩니다.`,
+    sourceMessage('copy.transfers.6873202f94', { p0: p.name }),
+    sourceMessage('copy.transfers.64761434a6', {
+      p0: club
+        ? sourceMessage('copy.transfers.8ef007b0c0', { p0: club.name })
+        : sourceMessage('copy.RecruitmentDesk.45b54f8961'),
+    }),
     bid.fee,
   );
   bid.status = 'completed';
@@ -250,8 +260,8 @@ export function placeBid(
 ): void {
   const scouted = typeof candidate === 'number' ? transferOffers(w)[candidate] : undefined;
   const offer = typeof candidate === 'number' ? scouted : worldMarketOffer(w, candidate);
-  if (!offer?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
-  if (offer.freeAgent) throw new Error('자유계약 선수는 이적료 협상 없이 바로 영입할 수 있어요.');
+  if (!offer?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
+  if (offer.freeAgent) throw new Error(sourceMessage('copy.transfers.79ea9f1dde'));
   // The selling club, whichever list named him: a bid concerns him there (→CLUB-14).
   const club =
     typeof candidate === 'number'
@@ -264,7 +274,7 @@ export function placeBid(
   if (
     (w.bids || []).some((b) => b.direction === 'out' && b.playerId === offer.player.id && isOpen(b))
   )
-    throw new Error('이 선수와는 이미 협상 중이에요. 기존 제안의 답을 먼저 확인하세요.');
+    throw new Error(sourceMessage('copy.transfers.f49acd2668'));
   assertTransferWindow(w);
   const room = registrationRoom(w, {
     ...offer.player,
@@ -273,8 +283,8 @@ export function placeBid(
   });
   if (room) throw new Error(room);
   if (typeof fee !== 'string' || !/^\d{1,80}$/.test(fee) || BigInt(fee) < 1n)
-    throw new Error('제안 금액을 확인하세요.');
-  if (BigInt(w.cash) < BigInt(fee)) throw new Error('보유 자금이 부족합니다.');
+    throw new Error(sourceMessage('copy.transfers.ce43157e82'));
+  if (BigInt(w.cash) < BigInt(fee)) throw new Error(sourceMessage('copy.playing_coach.8791d586e5'));
   // Earlier bids for him this season keep a renewed bid on the same day apart.
   const earlier = (w.bids || []).filter(
     (b) => b.direction === 'out' && b.playerId === offer.player.id && b.year === w.year,
@@ -301,8 +311,17 @@ export function placeBid(
   addEvent(
     w,
     'transfer-bid',
-    `${offer.player.name} ${loan ? '임대' : '영입'} 제안`,
-    `${offer.player.position} · ${w.year - offer.player.born}세 · 제안 ${moneyLabel(w, fee)} · 요구액 ${moneyLabel(w, askingFee(offer, loan))} · ${seasonDayLabel(w.year, bid.due)}까지 답변`,
+    sourceMessage('copy.transfers.3417e50747', {
+      p0: offer.player.name,
+      p1: loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53'),
+    }),
+    sourceMessage('copy.transfers.6d1ab8f358', {
+      p0: offer.player.position,
+      p1: w.year - offer.player.born,
+      p2: moneyLabel(w, fee),
+      p3: moneyLabel(w, askingFee(offer, loan)),
+      p4: seasonDayLabel(w.year, bid.due),
+    }),
   );
   // On deadline day the selling club answers at once, so the owner can still reply to a counter.
   if (bid.due <= day) decideOutgoing(w, bid);
@@ -310,8 +329,8 @@ export function placeBid(
 /** Owner answer to a selling club's counter offer or to another club's bid for our player. */
 export function respondBid(w: World, id: string, accept: boolean): void {
   const bid = (w.bids || []).find((b) => b.id === id);
-  if (!bid) throw new Error('없는 이적 제안입니다.');
-  if (bid.staff) throw new Error('단장의 제안은 단장이 답해요.');
+  if (!bid) throw new Error(sourceMessage('copy.transfers.8f83a6128d'));
+  if (bid.staff) throw new Error(sourceMessage('copy.transfers.3151d1051d'));
   if (bid.direction === 'out' && bid.status === 'countered') {
     if (accept) {
       assertTransferWindow(w);
@@ -332,7 +351,7 @@ export function respondBid(w: World, id: string, accept: boolean): void {
       bid.status = 'rejected';
       resent(w, bid, p);
     }
-  } else throw new Error('응답할 수 있는 이적 제안이 아닙니다.');
+  } else throw new Error(sourceMessage('copy.transfers.c5ab3adae5'));
   markRelatedRead(w, id);
 }
 export interface BidOutlook {
@@ -359,7 +378,12 @@ export function bidOutlook(
   const r = valid ? feeRatio(fee, asking) : 0;
   return {
     chance,
-    label: chance >= 0.6 ? '높음' : chance >= 0.35 ? '보통' : '낮음',
+    label:
+      chance >= 0.6
+        ? sourceMessage('copy.player.5327dee9ab')
+        : chance >= 0.35
+          ? sourceMessage('copy.teamState.666599febd')
+          : sourceMessage('copy.player.9f07b9bc5f'),
     asking,
     counterPossible: valid && r >= 0.7 && r <= 1,
   };
@@ -417,8 +441,8 @@ function announceWindows(w: World, day: number) {
   if (opening && !already('window-open')) {
     pushInbox(w, {
       kind: 'window-open',
-      title: `${WINDOW_INFO[opening].name} 개장`,
-      detail: `${WINDOW_INFO[opening].deadline}까지 이적료가 있는 영입·임대·매각과 협상을 진행할 수 있어요. 다른 구단의 제안도 들어옵니다.`,
+      title: sourceMessage('copy.transfers.2c21803a75', { p0: WINDOW_INFO[opening].name }),
+      detail: sourceMessage('copy.transfers.8caca6c7a1', { p0: WINDOW_INFO[opening].deadline }),
       attention: true,
     });
     // The chief scout lists candidates and the manager asks before the window's first day of
@@ -435,9 +459,8 @@ function announceWindows(w: World, day: number) {
   if (closing && !already('window-close'))
     pushInbox(w, {
       kind: 'window-close',
-      title: `${WINDOW_INFO[closing].name} 마감일`,
-      detail:
-        '오늘이 마지막 날이에요. 남은 협상은 오늘 안에 답하세요. 내일부터는 자유계약 선수만 영입할 수 있어요.',
+      title: sourceMessage('copy.transfers.2b65203518', { p0: WINDOW_INFO[closing].name }),
+      detail: sourceMessage('copy.transfers.a92abd548c'),
       attention: false,
     });
 }
@@ -447,7 +470,16 @@ function expire(w: World, bid: TransferBid, name: string, reason: string) {
   markRelatedRead(w, bid.id);
   pushInbox(w, {
     kind: 'staff-report',
-    title: clip(`${name} ${bid.direction === 'out' ? '협상' : '제안'} 종료`, 160),
+    title: clip(
+      sourceMessage('copy.transfers.917f415b42', {
+        p0: name,
+        p1:
+          bid.direction === 'out'
+            ? sourceMessage('copy.Rich.ba7bffee64')
+            : sourceMessage('copy.transfers.46ec31ac83'),
+      }),
+      160,
+    ),
     detail: reason,
     attention: false,
     ref: bid.id,
@@ -456,12 +488,17 @@ function expire(w: World, bid: TransferBid, name: string, reason: string) {
 function decideOutgoing(w: World, bid: TransferBid) {
   const offer = marketOffer(w, bid);
   if (!offer?.available) {
-    expire(w, bid, offer?.player.name || '영입 대상', '선수가 다른 길을 택해 협상이 끝났어요.');
+    expire(
+      w,
+      bid,
+      offer?.player.name || sourceMessage('copy.EventCenter.42bd764e17'),
+      sourceMessage('copy.transfers.131637770d'),
+    );
     return;
   }
   const p = offer.player,
     asking = askingFee(offer, bid.loan),
-    move = bid.loan ? '임대' : '영입';
+    move = bid.loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53');
   const r = random(`${w.seed}:bid:${bid.id}`),
     roll = r(),
     chance = acceptanceChance(w, bid.fee, asking),
@@ -476,8 +513,11 @@ function decideOutgoing(w: World, bid: TransferBid) {
       bid.status = 'rejected';
       pushInbox(w, {
         kind: 'bid-response',
-        title: clip(`${p.name} ${move} 무산`, 160),
-        detail: `상대 구단은 ${moneyLabel(w, bid.fee)} 제안을 받아들였지만 마무리하지 못했어요. ${blocker}`,
+        title: clip(sourceMessage('copy.transfers.138ea75077', { p0: p.name, p1: move }), 160),
+        detail: sourceMessage('copy.transfers.6b0ecd8998', {
+          p0: moneyLabel(w, bid.fee),
+          p1: blocker,
+        }),
         attention,
         ref: bid.id,
       });
@@ -486,8 +526,13 @@ function decideOutgoing(w: World, bid: TransferBid) {
     completeSigning(w, bid, offer, bid.fee);
     pushInbox(w, {
       kind: 'bid-response',
-      title: clip(`${p.name} ${move} 완료`, 160),
-      detail: `${p.position} · ${w.year - p.born}세 · ${moneyLabel(w, bid.fee)} 제안이 받아들여졌어요.${bid.staff ? ' 단장의 제안이에요.' : ''}`,
+      title: clip(sourceMessage('copy.transfers.4bd8c1ff7d', { p0: p.name, p1: move }), 160),
+      detail: sourceMessage('copy.transfers.500d09e6f8', {
+        p0: p.position,
+        p1: w.year - p.born,
+        p2: moneyLabel(w, bid.fee),
+        p3: bid.staff ? sourceMessage('copy.transfers.fba4d72f3f') : '',
+      }),
       attention,
       ref: bid.id,
     });
@@ -500,8 +545,17 @@ function decideOutgoing(w: World, bid: TransferBid) {
     }
     pushInbox(w, {
       kind: 'bid-response',
-      title: clip(`${p.name} 측 역제안 ${moneyLabel(w, bid.counterFee)}`, 160),
-      detail: `우리 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 이적시장이 닫히기 전에 수락하거나 거절하세요.`,
+      title: clip(
+        sourceMessage('copy.transfers.b81ca1edd5', {
+          p0: p.name,
+          p1: moneyLabel(w, bid.counterFee),
+        }),
+        160,
+      ),
+      detail: sourceMessage('copy.transfers.4806c94809', {
+        p0: moneyLabel(w, bid.fee),
+        p1: moneyLabel(w, asking),
+      }),
       attention: true,
       ref: bid.id,
     });
@@ -509,10 +563,16 @@ function decideOutgoing(w: World, bid: TransferBid) {
     bid.status = 'rejected';
     pushInbox(w, {
       kind: 'bid-response',
-      title: clip(`${p.name} ${move} 제안 거절`, 160),
+      title: clip(sourceMessage('copy.transfers.9f030caf7e', { p0: p.name, p1: move }), 160),
       detail: bid.staff
-        ? `단장의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 다음에 다른 선수를 찾아요.`
-        : `우리 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)}. 더 높은 금액으로 다시 제안할 수 있어요.`,
+        ? sourceMessage('copy.transfers.328d32d40e', {
+            p0: moneyLabel(w, bid.fee),
+            p1: moneyLabel(w, asking),
+          })
+        : sourceMessage('copy.transfers.964210f510', {
+            p0: moneyLabel(w, bid.fee),
+            p1: moneyLabel(w, asking),
+          }),
       attention: !bid.staff,
       ref: bid.id,
     });
@@ -535,10 +595,25 @@ function answerStaffCounter(w: World, bid: TransferBid, offer: MarketOffer, aski
   pushInbox(w, {
     kind: 'bid-response',
     title: clip(
-      `${p.name} 측 역제안 ${moneyLabel(w, fee)} · 단장이 ${accept ? '수락' : '거절'}`,
+      sourceMessage('copy.transfers.8fed8750be', {
+        p0: p.name,
+        p1: moneyLabel(w, fee),
+        p2: accept
+          ? sourceMessage('copy.RecruitmentDesk.831defcf7a')
+          : sourceMessage('copy.EventCenter.cc6314d04d'),
+      }),
       160,
     ),
-    detail: `단장의 제안 ${moneyLabel(w, bid.fee)} · 요구액 ${moneyLabel(w, asking)} · 요구액의 ${Math.round(feeRatio(bid.fee, asking) * 100)}% · ${bargaining ? '다음 날 5%p 높은 제안으로 흥정해요.' : accept ? verdict.reason : (blocker ?? verdict.reason)}`,
+    detail: sourceMessage('copy.transfers.4a233f3fc1', {
+      p0: moneyLabel(w, bid.fee),
+      p1: moneyLabel(w, asking),
+      p2: Math.round(feeRatio(bid.fee, asking) * 100),
+      p3: bargaining
+        ? sourceMessage('copy.transfers.c294c4e9ad')
+        : accept
+          ? verdict.reason
+          : (blocker ?? verdict.reason),
+    }),
     attention: false,
     ref: bid.id,
   });
@@ -549,32 +624,42 @@ function settleBids(w: World, open: boolean) {
     if (!isOpen(bid)) continue;
     const today = dayCountedFrom(w, bid.year);
     if (bid.year !== w.year && currency(code, bid.year).code !== w.currency) {
-      expire(w, bid, '이적', '화폐 단위가 바뀌어 이전 금액의 협상이 끝났어요.');
+      expire(
+        w,
+        bid,
+        sourceMessage('copy.NewsFeed.832934e8a8'),
+        sourceMessage('copy.transfers.a2d7b03b15'),
+      );
     } else if (bid.direction === 'out') {
       const signed = activePlayers(w).find((x) => x.id === bid.playerId);
-      if (signed) expire(w, bid, signed.name, '이미 우리 선수가 되어 협상을 정리했어요.');
+      if (signed) expire(w, bid, signed.name, sourceMessage('copy.transfers.0a5b5b015e'));
       // A bid for a player the world no longer holds there lapses, nothing paid (→CLUB-50).
       else if (!locateOffer(w, bid.playerId, bid.club))
         expire(
           w,
           bid,
-          bid.offer?.player.name || '영입 대상',
-          '선수가 더는 그 구단에 없어 협상이 끝났어요.',
+          bid.offer?.player.name || sourceMessage('copy.EventCenter.42bd764e17'),
+          sourceMessage('copy.transfers.0c573da036'),
         );
       else if (!open)
         expire(
           w,
           bid,
-          marketOffer(w, bid)?.player.name || '영입 대상',
-          '이적시장이 닫혀 협상이 끝났어요.',
+          marketOffer(w, bid)?.player.name || sourceMessage('copy.EventCenter.42bd764e17'),
+          sourceMessage('copy.transfers.f3f12a6e89'),
         );
       else if (bid.status === 'pending' && today >= bid.due) decideOutgoing(w, bid);
     } else {
       const p = w.players.find((x) => x.id === bid.playerId);
       if (!p || p.status !== 'active')
-        expire(w, bid, p?.name || '선수', '선수가 이미 팀을 떠나 제안이 끝났어요.');
+        expire(
+          w,
+          bid,
+          p?.name || sourceMessage('team.column.player'),
+          sourceMessage('copy.transfers.d4c1ccec41'),
+        );
       else if (!open || today > bid.due) {
-        expire(w, bid, p.name, '답변 기한이 지나 제안이 만료됐어요.');
+        expire(w, bid, p.name, sourceMessage('copy.transfers.d7b0bda06d'));
         // An offer left to lapse is declined as surely as one turned down (→CLUB-27).
         resent(w, bid, p);
       }
@@ -606,12 +691,12 @@ export function saleBar(w: World, p: Player) {
     percent -= points;
     cuts.push(`${why} −${points}%p`);
   };
-  if (age >= 33) cut(30, `${age}세`);
-  else if (age >= 30) cut(15, `${age}세`);
-  if (seasons <= 1) cut(20, '계약 마지막 시즌');
-  else if (seasons === 2) cut(10, '계약 1년 남음');
-  if (runway < first) cut(20, '운영자금 위기');
-  else if (runway < second) cut(10, '운영자금 빠듯');
+  if (age >= 33) cut(30, sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: age }));
+  else if (age >= 30) cut(15, sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: age }));
+  if (seasons <= 1) cut(20, sourceMessage('copy.transfers.53f9e38caf'));
+  else if (seasons === 2) cut(10, sourceMessage('copy.transfers.d8bb752fd6'));
+  if (runway < first) cut(20, sourceMessage('copy.transfers.c1074e3430'));
+  else if (runway < second) cut(10, sourceMessage('copy.transfers.7f834a5b0d'));
   return { percent: Math.max(SALE_BAR_FLOOR, percent), base, prospect, cuts };
 }
 /**
@@ -629,8 +714,11 @@ export { SALE_BARS } from './transfer-policy';
 const SALE_BAR_FLOOR = 80;
 /** "유망주 기준 200%" or "기준 95%(130%에서 31세 −15%p · …)" for the staff report. */
 function saleBarLabel(bar: ReturnType<typeof saleBar>) {
-  const steps = [...bar.cuts, ...(bar.percent === SALE_BAR_FLOOR ? ['최저 80%'] : [])];
-  return `${bar.prospect ? '유망주 기준' : '기준'} ${bar.percent}%${steps.length ? `(${bar.base}%에서 ${steps.join(' · ')})` : ''}`;
+  const steps = [
+    ...bar.cuts,
+    ...(bar.percent === SALE_BAR_FLOOR ? [sourceMessage('copy.transfers.c7f5debdf7')] : []),
+  ];
+  return `${bar.prospect ? sourceMessage('copy.transfers.bd0e2a77d1') : sourceMessage('copy.LabPage.eaea55bff6')} ${bar.percent}%${steps.length ? sourceMessage('copy.transfers.06ddab0099', { p0: bar.base, p1: steps.join(' · ') }) : ''}`;
 }
 /**
  * A club that would buy `p`: one whose level suits him (from 4 below to 12 above his ability),
@@ -664,9 +752,21 @@ export function suitorFor(w: World, p: Player, r: () => number): Club | undefine
  */
 export const TRANSFER_STANCES: readonly TransferStance[] = ['listed', 'open', 'untouchable'];
 export const STANCE_INFO: Record<TransferStance, { label: string; tag: string; event: string }> = {
-  listed: { label: '이적 명단', tag: '적극 매도', event: '이적 명단 등록' },
-  open: { label: '협상 가능', tag: '좋은 제안이면 검토', event: '협상 가능으로 전환' },
-  untouchable: { label: '이적 불가', tag: '거액 제안만 검토', event: '이적 불가 선언' },
+  listed: {
+    label: sourceMessage('copy.transfers.c1d56f4e34'),
+    tag: sourceMessage('copy.transfers.69a5e25323'),
+    event: sourceMessage('copy.transfers.6d575b9555'),
+  },
+  open: {
+    label: sourceMessage('copy.transfers.5132ea553c'),
+    tag: sourceMessage('copy.transfers.c67541427c'),
+    event: sourceMessage('copy.transfers.e09c8b6b04'),
+  },
+  untouchable: {
+    label: sourceMessage('copy.transfers.50625fe4db'),
+    tag: sourceMessage('copy.transfers.dced6ad07b'),
+    event: sourceMessage('copy.transfers.1a9d8d885e'),
+  },
 };
 export function transferStance(p: Player): TransferStance {
   return p.stance ?? 'open';
@@ -701,20 +801,22 @@ export function staffStances(w: World) {
     changes: [Player, TransferStance, string][] = [];
   for (const p of candidates) {
     if (starters.has(p.id)) continue;
-    if (market === 'selling' && age(p) >= 30) changes.push([p, 'listed', '매각 기조 셀링 클럽']);
-    else if (sell && age(p) <= 21) changes.push([p, 'listed', '육성 목표 판매용 육성']);
+    if (market === 'selling' && age(p) >= 30)
+      changes.push([p, 'listed', sourceMessage('copy.transfers.e21edf1075')]);
+    else if (sell && age(p) <= 21)
+      changes.push([p, 'listed', sourceMessage('copy.transfers.29d7bc190f')]);
   }
   if (market === 'hold')
     for (const p of candidates
       .filter((one) => starters.has(one.id) && !one.transferRequest)
       .sort((a, b) => overall(b) - overall(a) || compareIds(a.id, b.id))
       .slice(0, 3))
-      changes.push([p, 'untouchable', '매각 기조 핵심 지키기']);
+      changes.push([p, 'untouchable', sourceMessage('copy.transfers.942b0ebd92')]);
   if (!changes.length) return;
   for (const [p, stance] of changes) setTransferStance(w, p.id, stance);
   pushInbox(w, {
     kind: 'staff-report',
-    title: `단장이 이적 상태 ${changes.length}건을 정했어요`,
+    title: sourceMessage('copy.transfers.cb87fe79cd', { p0: changes.length }),
     detail: changes
       .map(([p, stance, why]) => `${p.name} ${STANCE_INFO[stance].label}(${why})`)
       .join(' · ')
@@ -724,11 +826,12 @@ export function staffStances(w: World) {
 }
 export function setTransferStance(w: World, id: string, stance: TransferStance) {
   const p = w.players.find((x) => x.id === id && x.status === 'active');
-  if (!p || p.loanUntil) throw new Error('이적 상태를 정할 수 있는 선수가 아닙니다.');
-  if (!TRANSFER_STANCES.includes(stance)) throw new Error('이적 상태를 확인하세요.');
-  if (p.retiring !== undefined) throw new Error('은퇴를 앞둔 선수는 이적 상태를 바꿀 수 없어요.');
+  if (!p || p.loanUntil) throw new Error(sourceMessage('copy.transfers.45a038282c'));
+  if (!TRANSFER_STANCES.includes(stance))
+    throw new Error(sourceMessage('copy.transfers.fbecae18f4'));
+  if (p.retiring !== undefined) throw new Error(sourceMessage('copy.transfers.e8c146ef48'));
   if (p.transferRequest && stance === 'untouchable')
-    throw new Error('이적을 요청한 선수는 이적 불가로 둘 수 없어요.');
+    throw new Error(sourceMessage('copy.transfers.2c9aecab5e'));
   if (transferStance(p) === stance) return;
   if (stance === 'open') delete p.stance;
   else p.stance = stance;
@@ -738,10 +841,13 @@ export function setTransferStance(w: World, id: string, stance: TransferStance) 
     'transfer-list',
     `${p.name} ${STANCE_INFO[stance].event}`,
     stance === 'listed'
-      ? `적극 매도 · 평가 가치 ${moneyLabel(w, value)} · 이적시장 기간에 실제 구단의 제안을 받아요.`
+      ? sourceMessage('copy.transfers.d0461ef468', { p0: moneyLabel(w, value) })
       : stance === 'untouchable'
-        ? `평가 가치의 ${UNTOUCHABLE_BAR}%(${moneyLabel(w, ratio(value, BigInt(UNTOUCHABLE_BAR), 100n))}) 미만 제안은 바로 거절하고, 그 이상 거액 제안만 검토해요.`
-        : `평가 가치 ${moneyLabel(w, value)} · 다른 구단의 제안을 검토해요.`,
+        ? sourceMessage('copy.transfers.dd710b4f94', {
+            p0: UNTOUCHABLE_BAR,
+            p1: moneyLabel(w, ratio(value, BigInt(UNTOUCHABLE_BAR), 100n)),
+          })
+        : sourceMessage('copy.transfers.f18522d935', { p0: moneyLabel(w, value) }),
   );
 }
 /**
@@ -760,24 +866,31 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
     card = cardOf(buildOf(w), 'market').label,
     [first, second] = financeStance(w, 'sales').sellSteps;
   if (runway < first)
-    return { accept: true, reason: `자금 여력 ${runway}주의 운영자금 위기라 매각을 택했어요.` };
+    return { accept: true, reason: sourceMessage('copy.transfers.838216488c', { p0: runway }) };
   if (market === 'hold')
-    return { accept: false, reason: `매각 기조가 ${card}라 어떤 금액에도 지키기로 했어요.` };
+    return { accept: false, reason: sourceMessage('copy.transfers.57ffab38e3', { p0: card }) };
   const base = UNTOUCHABLE_PRICE[market ?? 'standard'],
-    steps = [`매각 기조 ${card} ${base}%`];
+    steps = [sourceMessage('copy.transfers.363d93e2b9', { p0: card, p1: base })];
   let bar = base;
   if (runway < second) {
     bar -= 25;
-    steps.push('운영자금 빠듯 −25%p');
+    steps.push(sourceMessage('copy.transfers.e69d5f4ed0'));
   }
   if (essential) {
     bar += 25;
-    steps.push('감독이 대체할 선수가 없다며 반대 +25%p');
+    steps.push(sourceMessage('copy.transfers.0b7e88dde9'));
   }
   const accept = offered >= bar;
   return {
     accept,
-    reason: `평가 가치의 ${offered}%로 기준 ${bar}%(${steps.join(' · ')})${accept ? '를 넘어 매각했어요.' : '에 못 미쳐 지키기로 했어요.'}`,
+    reason: sourceMessage('copy.transfers.428e788cc5', {
+      p0: offered,
+      p1: bar,
+      p2: steps.join(' · '),
+      p3: accept
+        ? sourceMessage('copy.transfers.5a5873f55e')
+        : sourceMessage('copy.transfers.0554a8ecb9'),
+    }),
   };
 }
 function listedOffers(w: World, day: number, until: number) {
@@ -806,15 +919,30 @@ function listedOffers(w: World, day: number, until: number) {
       status: 'pending',
     };
     w.bids = [...(w.bids || []), bid];
-    const summary = `${p.position} · ${w.year - p.born}세 · 능력 ${overall(p)} · 평가 가치 ${moneyLabel(w, value)}`;
+    const summary = sourceMessage('copy.transfers.0a9e8d6e85', {
+      p0: p.position,
+      p1: w.year - p.born,
+      p2: overall(p),
+      p3: moneyLabel(w, value),
+    });
     if (isDelegated(w, 'sales')) {
       answerIncoming(w, bid, p, club, value, fee);
       continue;
     }
     pushInbox(w, {
       kind: 'incoming-bid',
-      title: clip(`${club.name}이(가) 이적 명단의 ${p.name}에게 ${moneyLabel(w, fee)} 제안`, 160),
-      detail: `${summary} · ${seasonDayLabel(w.year, bid.due)}까지 수락하거나 거절하세요.`,
+      title: clip(
+        sourceMessage('copy.transfers.a6c6b22996', {
+          p0: club.name,
+          p1: p.name,
+          p2: moneyLabel(w, fee),
+        }),
+        160,
+      ),
+      detail: sourceMessage('copy.transfers.5a29c1b837', {
+        p0: summary,
+        p1: seasonDayLabel(w.year, bid.due),
+      }),
       attention: true,
       ref: bid.id,
     });
@@ -877,8 +1005,8 @@ function answerIncoming(
   ) {
     pushInbox(w, {
       kind: 'incoming-bid',
-      title: `${player.name} 선수·코치 계약 종료 검토`,
-      detail: '매각하면 코치 계약도 끝나요. 두 역할과 기존 계약 종료 비용을 함께 확인하세요.',
+      title: sourceMessage('copy.stopping.8b601a30d9', { p0: player.name }),
+      detail: sourceMessage('copy.transfers.2179e3980f'),
       attention: true,
       ref: bid.id,
     });
@@ -887,25 +1015,40 @@ function answerIncoming(
   const age = w.year - player.born,
     offered = Number((BigInt(fee) * 100n) / BigInt(value)),
     untouchable = player.stance === 'untouchable',
-    summary = `${player.position} · ${age}세 · 능력 ${overall(player)} · 평가 가치 ${moneyLabel(w, value)}`;
+    summary = sourceMessage('copy.transfers.0a9e8d6e85', {
+      p0: player.position,
+      p1: age,
+      p2: overall(player),
+      p3: moneyLabel(w, value),
+    });
   const report = (
     accept: boolean,
     detail: string,
-    who = isDelegated(w, 'sales') ? '단장이' : '구단이',
+    who: string = isDelegated(w, 'sales')
+      ? sourceMessage('copy.transfers.e744d7026d')
+      : sourceMessage('copy.transfers.1654d061b5'),
   ) => {
     if (
       accept &&
       BigInt(w.cash) + BigInt(bid.fee) < BigInt(playingCoachDepartureCost(w, player.id))
     ) {
       accept = false;
-      detail = '코치 계약 종료 비용을 지급할 자금이 부족해 거절했어요.';
+      detail = sourceMessage('copy.transfers.7017097137');
     }
     if (accept) completeSale(w, bid, player);
     else bid.status = 'rejected';
     pushInbox(w, {
       kind: 'staff-report',
       title: clip(
-        `${who} ${club.name}의 ${player.name} 제안(${moneyLabel(w, fee)})을 ${accept ? '수락' : '거절'}했어요`,
+        sourceMessage('copy.transfers.9cee38f04c', {
+          p0: who,
+          p1: club.name,
+          p2: player.name,
+          p3: moneyLabel(w, fee),
+          p4: accept
+            ? sourceMessage('copy.RecruitmentDesk.831defcf7a')
+            : sourceMessage('copy.EventCenter.cc6314d04d'),
+        }),
         160,
       ),
       detail: `${summary} · ${detail}`,
@@ -916,16 +1059,13 @@ function answerIncoming(
   };
   if (untouchable && offered < UNTOUCHABLE_BAR) {
     // Whoever decides, an untouchable player is not discussed below the bar.
-    report(
-      false,
-      `이적 불가 선수예요. 제안이 평가 가치의 ${offered}%로 기준 ${UNTOUCHABLE_BAR}%에 못 미쳐 바로 거절했어요.`,
-    );
+    report(false, sourceMessage('copy.transfers.b100c715c7', { p0: offered, p1: UNTOUCHABLE_BAR }));
     return;
   }
   if (isDelegated(w, 'sales')) {
     if (player.stance === 'listed') {
       const blocker = saleBlocker(w, player);
-      report(!blocker, blocker || '이적 명단에 오른 선수라 매각했어요.');
+      report(!blocker, blocker || sourceMessage('copy.transfers.f3dca7c29b'));
       return;
     }
     const starters = new Set(ownStarters(w).map((p) => p.id));
@@ -937,8 +1077,8 @@ function answerIncoming(
       const verdict = untouchableVerdict(w, offered, starter && !covered);
       report(
         verdict.accept && !blocker,
-        `이적 불가 선수의 거액 제안 · ${blocker || verdict.reason}`,
-        '감독과 상의한 단장이',
+        sourceMessage('copy.transfers.88db755e4b', { p0: blocker || verdict.reason }),
+        sourceMessage('copy.transfers.bac92950ec'),
       );
       return;
     }
@@ -946,26 +1086,41 @@ function answerIncoming(
       premium = BigInt(fee) * 100n >= BigInt(value) * BigInt(bar.percent),
       expendable = saleAllowed(w, starter, age, covered);
     const accept = premium && expendable && !blocker;
-    const against = `평가 가치의 ${offered}%로 ${saleBarLabel(bar)}`;
+    const against = sourceMessage('copy.transfers.4107e9b5df', {
+      p0: offered,
+      p1: saleBarLabel(bar),
+    });
     report(
       accept,
       accept
-        ? `제안이 ${against}를 넘어 매각했어요.${starter ? ' 같은 포지션에 대신 뛸 선수가 있어요.' : ''}`
+        ? sourceMessage('copy.transfers.b9bf12065d', {
+            p0: against,
+            p1: starter ? sourceMessage('copy.transfers.f145fa2aab') : '',
+          })
         : blocker
           ? blocker
           : !premium
-            ? `제안이 ${against}에 못 미쳐 거절했어요.`
-            : '대체할 선수가 없는 주전이라 남기기로 했어요.',
+            ? sourceMessage('copy.transfers.18f8d5571f', { p0: against })
+            : sourceMessage('copy.transfers.efb4411288'),
     );
     return;
   }
   pushInbox(w, {
     kind: 'incoming-bid',
     title: clip(
-      `${club.name}이(가) ${player.name}에게 ${moneyLabel(w, fee)} ${untouchable ? '거액 ' : ''}제안`,
+      sourceMessage('copy.transfers.8f75758d7e', {
+        p0: club.name,
+        p1: player.name,
+        p2: moneyLabel(w, fee),
+        p3: untouchable ? sourceMessage('copy.transfers.4a41dc5263') : '',
+      }),
       160,
     ),
-    detail: `${summary}${untouchable ? ` · 이적 불가 선수지만 평가 가치의 ${offered}%라 구단주의 확인이 필요해요` : ''} · ${seasonDayLabel(w.year, bid.due)}까지 수락하거나 거절하세요.`,
+    detail: sourceMessage('copy.transfers.dbf5657414', {
+      p0: summary,
+      p1: untouchable ? sourceMessage('copy.transfers.6a01f0e5c8', { p0: offered }) : '',
+      p2: seasonDayLabel(w.year, bid.due),
+    }),
     attention: true,
     ref: bid.id,
   });
@@ -1040,7 +1195,12 @@ export function handoverRecruitment(w: World, delegated: boolean) {
     if (bid.status !== 'countered') continue;
     const offer = marketOffer(w, bid);
     if (!offer?.available || !transferWindow(w).open || !bid.counterFee) {
-      expire(w, bid, offer?.player.name || '영입 대상', '현재 완료할 수 없는 협상이에요.');
+      expire(
+        w,
+        bid,
+        offer?.player.name || sourceMessage('copy.EventCenter.42bd764e17'),
+        sourceMessage('copy.transfers.30aac47a5f'),
+      );
       continue;
     }
     answerStaffCounter(w, bid, offer, askingFee(offer, bid.loan));

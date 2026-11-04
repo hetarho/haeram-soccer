@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ClubBuild } from '../../contracts/src/build';
 import type { ClubPolicy, Direction } from '../../contracts/src/types';
 
@@ -29,10 +30,10 @@ export const BUILD_PRESETS: {
 }[] = [
   {
     id: 'local-pride',
-    label: '유스 순혈주의',
-    model: '지역 출신 유스로 1군을 꾸리는 칸테라 정책',
-    aim: '시너지 우리 동네 아이들 바로 발동',
-    summary: '주변 투자 늘리기 · 티켓 저렴 · 모두 붙잡기 · 1군 공급 · 재정 신중',
+    label: sourceMessage('copy.preset_data.7bd0f95449'),
+    model: sourceMessage('copy.preset_data.d3684aa55a'),
+    aim: sourceMessage('copy.preset_data.689cf66078'),
+    summary: sourceMessage('copy.preset_data.a962ad7295'),
     build: {
       youth: 'homegrown',
       scouting: 'local',
@@ -49,11 +50,10 @@ export const BUILD_PRESETS: {
   },
   {
     id: 'youth-academy',
-    label: '유스 명가',
-    model: '아카데미에 쏟아붓고 키운 아이들로 1군을 채워요',
-    aim: '육성형 또는 능력 70+ 유스 디렉터가 있으면 시너지 유스 파이프라인',
-    summary:
-      '엘리트 아카데미 · 1군 공급 · 빠른 데뷔 · 유망주 발굴 · 육성형 육성가 감독 · 최고 수준 코치',
+    label: sourceMessage('copy.preset_data.af512882a9'),
+    model: sourceMessage('copy.preset_data.86d2c15059'),
+    aim: sourceMessage('copy.preset_data.2883deb2aa'),
+    summary: sourceMessage('copy.preset_data.d9b539ec6b'),
     build: { youth: 'elite', culture: 'meritocracy' },
     rows: {
       policy: { academy: 4, recruitment: 1 },
@@ -69,10 +69,10 @@ export const BUILD_PRESETS: {
   },
   {
     id: 'trading',
-    label: '트레이딩 머신',
-    model: '지표로 찾고 1군에서 키워 비싸게 팔아요',
-    aim: '시너지 트레이딩 머신 바로 발동 · 발굴가 스카우트나 협상가 단장을 쓰면 머니볼까지',
-    summary: '젊은 선수 위주 영입 · 판매용 육성 · 빠른 데뷔 · 젊은 선수 우선 재계약',
+    label: sourceMessage('copy.preset_data.741a79d7f9'),
+    model: sourceMessage('copy.preset_data.3dfdb5628d'),
+    aim: sourceMessage('copy.preset_data.7a8cba5ba7'),
+    summary: sourceMessage('copy.preset_data.2d65f3dbab'),
     build: { scouting: 'data', market: 'selling', culture: 'meritocracy' },
     rows: {
       policy: { recruitment: 2 },
@@ -81,10 +81,10 @@ export const BUILD_PRESETS: {
   },
   {
     id: 'commercial',
-    label: '상업 제국',
-    model: '브랜드로 벌어 스타를 데려와요',
-    aim: '해외 마케팅 4단계 · 3만 석 경기장을 채우면 시너지 상업 제국',
-    summary: '해외 광고 · 짧은 해외 투어 · 티켓 비싸게 · 재정 적극',
+    label: sourceMessage('copy.preset_data.096f323d0b'),
+    model: sourceMessage('copy.preset_data.4d49a5a2d4'),
+    aim: sourceMessage('copy.preset_data.415f781654'),
+    summary: sourceMessage('copy.preset_data.6db74febda'),
     build: { scouting: 'network', revenue: 'commercial', culture: 'stars' },
     rows: {
       policy: { globalMarketing: 3, tour: 2 },
@@ -94,20 +94,19 @@ export const BUILD_PRESETS: {
   },
   {
     id: 'global',
-    label: '세계로',
-    model: '세계를 뒤져 숨은 재능을 찾고 보여 줘서 팔아요',
-    aim: '발굴가 또는 능력 65+ 수석 스카우트가 있으면 시너지 글로벌 스카우팅',
-    summary: '해외 스카우트망 · 해외 홍보 · 짧은 해외 투어 · 젊은 선수 위주 영입',
+    label: sourceMessage('copy.preset_data.0e372a2477'),
+    model: sourceMessage('copy.preset_data.072719174c'),
+    aim: sourceMessage('copy.preset_data.4fdf232c8f'),
+    summary: sourceMessage('copy.preset_data.ebad1b4e05'),
     build: { youth: 'worldwide', scouting: 'network', market: 'showcase' },
     rows: { policy: { globalScouting: 3, globalMarketing: 2, tour: 2, recruitment: 2 } },
   },
   {
     id: 'ambition',
-    label: '승격 올인',
-    model: '구단주 돈과 홈 요새로 지금 올라가요',
-    aim: '유스 성장을 내주고 당장의 전력을 사요',
-    summary:
-      '후한 선수단 투자 · 즉시 전력 영입 · 핵심만 붙잡기 · 검증된 승부사 · 유소년 최소 · 재정 공격적',
+    label: sourceMessage('copy.preset_data.db02ec8751'),
+    model: sourceMessage('copy.preset_data.f3a48b9c51'),
+    aim: sourceMessage('copy.preset_data.7600dc9821'),
+    summary: sourceMessage('copy.preset_data.64a67f4044'),
     build: {
       scouting: 'proven',
       market: 'hold',
@@ -127,10 +126,10 @@ export const BUILD_PRESETS: {
   },
   {
     id: 'shoestring',
-    label: '알뜰 생존',
-    model: '적은 돈으로 오래 버티는 작은 구단',
-    aim: '분위기를 지키며 선수 급여 ×0.91 · 작은 출발에 맞춰요',
-    summary: '절약 · 짠물 재계약 · 저비용 감독·코치 · 재정 안정적',
+    label: sourceMessage('copy.preset_data.af91e935f5'),
+    model: sourceMessage('copy.preset_data.edb6ffba81'),
+    aim: sourceMessage('copy.preset_data.1bfa478ab7'),
+    summary: sourceMessage('copy.preset_data.24bb5f447c'),
     build: {
       youth: 'partnership',
       scouting: 'local',

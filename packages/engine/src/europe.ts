@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { careerEuropeanCoefficient } from './career-reads';
 import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { World, EuropeTournament, Fixture, KnockoutRound } from '../../contracts/src/types';
@@ -140,7 +141,8 @@ export function ensureRepresentatives(w: World) {
 }
 const sorted = europeanTableOrder;
 export function leaguePhasePairs(ids: string[], games: number) {
-  if (ids.length !== 36 || ![6, 8].includes(games)) throw new Error('36팀 리그 페이즈 설정 오류');
+  if (ids.length !== 36 || ![6, 8].includes(games))
+    throw new Error(sourceMessage('copy.europe.d95a9e16c5'));
   const result: [string, string, number][] = [];
   // Balanced circulant graph: each opponent unique, exactly games/2 at home and away.
   for (let shift = 1; shift <= games / 2; shift++)
@@ -362,7 +364,13 @@ function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement
         pay.match + (f.score.home === f.score.away ? pay.draw : ownWin ? pay.win : 0),
       );
     credit(w, prize);
-    addEvent(w, 'europe-prize', `${t.name} 경기 수당`, `참가·결과 수당 · ${f.id}`, prize);
+    addEvent(
+      w,
+      'europe-prize',
+      sourceMessage('copy.europe.328d44d240', { p0: t.name }),
+      sourceMessage('copy.europe.104242b7d8', { p0: f.id }),
+      prize,
+    );
   }
   settlement?.(w, p);
 }
@@ -377,13 +385,16 @@ function drawRound(
 ) {
   const rounds = (t.rounds ||= []);
   const index = rounds.length,
-    within = qualifier ? index : rounds.filter((r) => !r.label.startsWith('예선')).length;
+    within = qualifier
+      ? index
+      : rounds.filter((r) => !r.label.startsWith(sourceMessage('copy.bracketTree.dbad85ccbc')))
+          .length;
   const { playing, byes } = within === 0 ? splitByes(clubs) : { playing: clubs, byes: [] };
   const final = !qualifier && within === total - 1;
   const label = qualifier
-    ? `예선 ${index + 1}라운드`
+    ? sourceMessage('copy.europe.ded8bacfd0', { p0: index + 1 })
     : byes.length && t.format !== 'knockout'
-      ? '플레이오프'
+      ? sourceMessage('copy.europe.7a2cab9ff4')
       : roundLabel(clubs.length, within);
   const planned = qualifier
     ? EUROPE_CALENDAR.qualifier[Math.min(index, EUROPE_CALENDAR.qualifier.length - 1)]
@@ -409,7 +420,7 @@ function drawRound(
 function phaseQualifiers(w: World, t: EuropeTournament, marker: 'phase' | 'second') {
   if (t.format === 'league' && marker === 'phase') {
     const table = sorted(t, t.clubs);
-    if (table.slice(24).includes(w.playerClub)) t.ownExit = '리그 페이즈 탈락';
+    if (table.slice(24).includes(w.playerClub)) t.ownExit = sourceMessage('copy.europe.1f199bef10');
     return table.slice(0, 24);
   }
   const groups = phaseGroups(t, marker).map((g) => sorted(t, g));
@@ -431,7 +442,7 @@ function phaseQualifiers(w: World, t: EuropeTournament, marker: 'phase' | 'secon
   if (marker === 'phase' && t.field === 24)
     qualified.push(...sorted(t, groups.map((g) => g[1]).filter(Boolean)).slice(0, 2));
   if (members.includes(w.playerClub) && !qualified.includes(w.playerClub))
-    t.ownExit = '조별 단계 탈락';
+    t.ownExit = sourceMessage('copy.europe.de00608246');
   return qualified;
 }
 function phaseRows(w: World, t: EuropeTournament, ids: string[]) {
@@ -457,14 +468,23 @@ function progressEurope(w: World, t: EuropeTournament) {
       if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
       const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.knockout);
       credit(w, prize);
-      addEvent(w, 'europe-prize', `${t.name} ${last.label} 수당`, `토너먼트 참가 수당`, prize);
-      if (tie.winner !== w.playerClub) t.ownExit = `${last.label} 탈락`;
+      addEvent(
+        w,
+        'europe-prize',
+        sourceMessage('copy.europe.a89a075f58', { p0: t.name, p1: last.label }),
+        sourceMessage('copy.europe.9e055955e9'),
+        prize,
+      );
+      if (tie.winner !== w.playerClub)
+        t.ownExit = sourceMessage('copy.CupsView.9f7893bf1b', { p0: last.label });
     });
     if (!roundDecided(last)) return changed;
   }
   const phase = t.fixtures.filter((f) => f.id.includes(':phase:'));
   const second = t.fixtures.filter((f) => f.id.includes(':second:'));
-  const afterPhase = rounds.filter((r) => !r.label.startsWith('예선'));
+  const afterPhase = rounds.filter(
+    (r) => !r.label.startsWith(sourceMessage('copy.bracketTree.dbad85ccbc')),
+  );
   if (t.format === 'knockout') {
     const total = roundsFor(t.clubs.length);
     if (!last) drawRound(w, t, t.clubs, total, false);
@@ -480,12 +500,15 @@ function progressEurope(w: World, t: EuropeTournament) {
     }
     for (const id of left) t.standings[id] = emptyTable();
     schedulePhase(w, t, left, 'phase', EUROPE_CALENDAR.qualifiedPhase);
-    t.stage = '조별 리그';
+    t.stage = sourceMessage('copy.competitionLabels.6fcd805067');
     return true;
   }
   if (!phase.length) {
     schedulePhase(w, t, t.clubs, 'phase');
-    t.stage = t.format === 'league' ? '리그 페이즈' : '조별 리그';
+    t.stage =
+      t.format === 'league'
+        ? sourceMessage('copy.competitionLabels.6b9ab4d59c')
+        : sourceMessage('copy.competitionLabels.6fcd805067');
     return true;
   }
   if (phase.some((f) => !f.score)) return changed;
@@ -495,7 +518,7 @@ function progressEurope(w: World, t: EuropeTournament) {
     const qualified = phaseQualifiers(w, t, 'phase');
     for (const id of qualified) t.standings[id] = emptyTable();
     schedulePhase(w, t, qualified, 'second', EUROPE_CALENDAR.second);
-    t.stage = '2차 조별 리그';
+    t.stage = sourceMessage('copy.cupRoute.be35e01438');
     return true;
   }
   if (second.some((f) => !f.score)) return changed;
@@ -516,7 +539,7 @@ function progressEurope(w: World, t: EuropeTournament) {
 }
 function crown(w: World, t: EuropeTournament, winner: string) {
   t.winner = winner;
-  t.stage = '우승 확정';
+  t.stage = sourceMessage('copy.europe.cec9c85508');
   if (t.format === 'knockout' && !t.firstStandings) {
     for (const id of t.clubs) t.standings[id] = emptyTable();
     for (const f of t.fixtures)
@@ -548,8 +571,8 @@ function crown(w: World, t: EuropeTournament, winner: string) {
     addEvent(
       w,
       'europe-honor',
-      `${t.name} 우승`,
-      `${w.year}/${String(w.year + 1).slice(2)} · 대륙의 정상`,
+      sourceMessage('copy.CareerRecordBook.2bfc53c804', { p0: t.name }),
+      sourceMessage('copy.europe.10aa1bf17d', { p0: w.year, p1: String(w.year + 1).slice(2) }),
       prize,
     );
   }
@@ -567,7 +590,7 @@ export function prepareEurope(w: World) {
     let eligible = [...access]
       .filter(([, entry]) => entry.competition === era.key)
       .map(([id]) => id);
-    if (eligible.length > era.field) throw new Error('국내 출전권이 유럽대회 정원을 초과했습니다.');
+    if (eligible.length > era.field) throw new Error(sourceMessage('copy.europe.bd33c22054'));
     const background = w.clubs
       .filter((c) => c.id.startsWith('euro:'))
       .sort(
@@ -579,7 +602,7 @@ export function prepareEurope(w: World) {
     eligible = [...new Set([...eligible, ...background])]
       .filter((id) => id && !occupied.has(id))
       .slice(0, era.field);
-    if (eligible.length !== era.field) throw new Error('유럽대회 참가팀 부족');
+    if (eligible.length !== era.field) throw new Error(sourceMessage('copy.europe.dc7c35139c'));
     eligible.forEach((id) => occupied.add(id));
     const t: EuropeTournament = {
       key: era.key,
@@ -587,7 +610,10 @@ export function prepareEurope(w: World) {
       field: era.field,
       format: era.format,
       games: era.games,
-      stage: era.format === 'knockout' ? '토너먼트' : '리그/조별 단계',
+      stage:
+        era.format === 'knockout'
+          ? sourceMessage('copy.CupsView.ef098a0928')
+          : sourceMessage('copy.europe.9f06751f31'),
       clubs: eligible,
       fixtures: [],
       standings: Object.fromEntries(eligible.map((id) => [id, emptyTable()])),
@@ -602,8 +628,8 @@ export function prepareEurope(w: World) {
       addEvent(
         w,
         'europe-qualification',
-        `${t.name} 참가`,
-        t.ownQualification || '첫 시즌 초청 · 예선 경로와 배경 대표팀은 간소화합니다.',
+        sourceMessage('copy.europe.bd1d8cb4de', { p0: t.name }),
+        t.ownQualification || sourceMessage('copy.europe.d92714c47b'),
       );
   }
 }
@@ -637,12 +663,17 @@ export function finishEurope(w: World) {
         field: 2,
         format: 'knockout',
         games: 1,
-        stage: '결승',
+        stage: sourceMessage('copy.CupHistory.d7f030913a'),
         clubs: [ucl, other],
         fixtures: [],
         standings: { [ucl]: emptyTable(), [other]: emptyTable() },
         rounds: [
-          { label: '결승', round: SEASON_ROUNDS, legs: 1, ties: [{ home: ucl, away: other }] },
+          {
+            label: sourceMessage('copy.CupHistory.d7f030913a'),
+            round: SEASON_ROUNDS,
+            legs: 1,
+            ties: [{ home: ucl, away: other }],
+          },
         ],
       };
       t.fixtures.push(...tieFixtures(w, 'super', 'europe', 'UEFA', 0, t.rounds![0]));

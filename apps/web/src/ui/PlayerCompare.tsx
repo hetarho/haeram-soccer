@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { ReactNode } from 'react';
 import type { Personality } from '../../../../packages/contracts/src/player';
 import type { Player, World } from '../../../../packages/contracts/src/types';
@@ -59,6 +62,7 @@ export function PlayerCompare({
   sides: readonly [CompareSide, CompareSide];
   label: string;
 }) {
+  useTextLocale();
   const club = clubOf(w);
   const scout = staffMember(w, 'scout')?.ability;
   const range = scoutRangeScale(w);
@@ -81,7 +85,7 @@ export function PlayerCompare({
   });
   const groups: { title: string; rows: Row[]; note?: string }[] = [
     {
-      title: '핵심',
+      title: sourceMessage('copy.PlayerCompare.2667257de7'),
       rows: [
         {
           label: 'OVR',
@@ -89,7 +93,7 @@ export function PlayerCompare({
           better: 'higher',
         },
         {
-          label: '잠재력',
+          label: sourceMessage('copy.AssigneeProfile.ad725da0ea'),
           cells: both((side) => ({
             text: Math.round(side.player.potential),
             value: Math.round(side.player.potential),
@@ -97,7 +101,7 @@ export function PlayerCompare({
           better: 'higher',
         },
         {
-          label: '성장 여지',
+          label: sourceMessage('copy.PlayerCompare.520962add0'),
           cells: both((side) => ({
             text: `+${growth(side.player)}`,
             value: growth(side.player),
@@ -105,11 +109,13 @@ export function PlayerCompare({
           better: 'higher',
         },
         {
-          label: '나이',
-          cells: both((side) => ({ text: `${w.year - side.player.born}세` })),
+          label: sourceMessage('team.column.age'),
+          cells: both((side) => ({
+            text: sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: w.year - side.player.born }),
+          })),
         },
         {
-          label: '포지션',
+          label: sourceMessage('copy.BallonDorView.cb34c0f691'),
           cells: both((side) => ({ text: positionsLabel(side.player.positions) })),
         },
       ],
@@ -117,38 +123,54 @@ export function PlayerCompare({
   ];
   if (sides.some((side) => side.terms))
     groups.push({
-      title: '조건',
-      note: '영입 후 연간 고정 지출은 새 연봉 포함, 미래 수입 제외예요.',
+      title: sourceMessage('copy.PlayerCompare.291ac97193'),
+      note: sourceMessage('copy.PlayerCompare.e7ffaa54c7'),
       rows: [
         {
-          label: '이적료',
+          label: sourceMessage('copy.EventCenter.e2d73c6cf3'),
           better: 'lower',
           cells: both((side) =>
             side.terms
               ? {
-                  text: side.terms.freeAgent ? '자유계약' : cash(side.terms.fee),
+                  text: side.terms.freeAgent
+                    ? sourceMessage('copy.PlayerCompare.f201ec1d4f')
+                    : cash(side.terms.fee),
                   value: BigInt(side.terms.fee),
                 }
               : { text: '—' },
           ),
         },
-        { label: '1시즌 임대료', ...money((terms) => terms.loanFee, 'lower') },
         {
-          label: '연봉',
+          label: sourceMessage('copy.PlayerCompare.e0e9003294'),
+          ...money((terms) => terms.loanFee, 'lower'),
+        },
+        {
+          label: sourceMessage('team.column.wage'),
           cells: both((side) => ({
             text: cash(side.player.wage),
             value: BigInt(side.player.wage),
           })),
           better: 'lower',
         },
-        { label: '계약', cells: both((side) => ({ text: `${side.player.until}년까지` })) },
-        { label: '영입 후 자금', ...money((terms) => terms.cashAfter, 'higher') },
-        { label: '연간 고정 지출', ...money((terms) => terms.annualAfter, 'lower') },
+        {
+          label: sourceMessage('team.column.contract'),
+          cells: both((side) => ({
+            text: sourceMessage('copy.PlayerCompare.9b59bc9f85', { p0: side.player.until }),
+          })),
+        },
+        {
+          label: sourceMessage('copy.PlayerCompare.8933209ede'),
+          ...money((terms) => terms.cashAfter, 'higher'),
+        },
+        {
+          label: sourceMessage('copy.BusinessWorkbench.d69ab3db74'),
+          ...money((terms) => terms.annualAfter, 'lower'),
+        },
       ],
     });
   else
     groups[0].rows.push({
-      label: '연봉',
+      label: sourceMessage('team.column.wage'),
       cells: both((side) => ({ text: cash(side.player.wage), value: BigInt(side.player.wage) })),
       better: 'lower',
     });
@@ -166,17 +188,17 @@ export function PlayerCompare({
       })),
     });
   groups.push({
-    title: '특성 · 성향',
+    title: sourceMessage('copy.PlayerCompare.22705afbae'),
     note: sides.some((side) => !side.own)
-      ? '상대 선수 성향은 수석 스카우트가 본 범위예요.'
+      ? sourceMessage('copy.PlayerCompare.cfd9898d43')
       : undefined,
     rows: [
       {
-        label: '플레이 특성',
+        label: sourceMessage('copy.PlayerCompare.2e0c7616cd'),
         cells: both((side) => ({
           text: side.player.traits.length
             ? side.player.traits.map((trait) => TRAIT_LABEL[trait]).join(' · ')
-            : '없음',
+            : sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
         })),
       },
       ...(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => ({
@@ -188,88 +210,108 @@ export function PlayerCompare({
     ],
   });
   return (
-    <section className={s.compare} aria-label={label}>
+    <section className={s.compare} aria-label={localizeValue(label)}>
       <div className={s.heads}>
-        {sides.map((side, index) => (
-          <article
-            key={side.player.id}
-            data-surface="detail"
-            className={s.head}
-            data-side={index ? 'right' : 'left'}
-            data-candidate-id={side.own ? undefined : side.player.id}
-          >
-            <span data-ui="label" className={s.sideLabel} data-own={side.own || undefined}>
-              {side.label}
-            </span>
-            <OvrBadge value={overall(side.player)} role={side.player.position} large />
-            <h3>{side.player.name}</h3>
-            <small>
-              {side.player.position} · {POSITION_LABEL[side.player.position]} ·{' '}
-              {w.year - side.player.born}세
-            </small>
-            {side.action}
-          </article>
-        ))}
+        {localizeValue(
+          sides.map((side, index) => (
+            <article
+              key={side.player.id}
+              data-surface="detail"
+              className={s.head}
+              data-side={index ? 'right' : 'left'}
+              data-candidate-id={side.own ? undefined : side.player.id}
+            >
+              <span data-ui="label" className={s.sideLabel} data-own={side.own || undefined}>
+                {localizeValue(side.label)}
+              </span>
+              <OvrBadge value={overall(side.player)} role={side.player.position} large />
+              <h3>{side.player.name}</h3>
+              <small>
+                {richMessage('copy.PlayerCompare.661179378f', {
+                  p0: side.player.position,
+                  p1: POSITION_LABEL[side.player.position],
+                  p2: ' ',
+                  p3: w.year - side.player.born,
+                })}
+              </small>
+              {localizeValue(side.action)}
+            </article>
+          )),
+        )}
         <span className={s.versus} aria-hidden="true">
-          VS
+          {richMessage('copy.PlayerCompare.8db1a2e199')}
         </span>
       </div>
-      {groups.map((group) => (
-        <table key={group.title} className={s.table}>
-          <caption>{group.title}</caption>
-          <thead className={s.hidden}>
-            <tr>
-              <th scope="col">{sides[0].player.name}</th>
-              <th scope="col">항목</th>
-              <th scope="col">{sides[1].player.name}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {group.rows.map((row) => {
-              const best = winner(row);
-              return (
-                <tr key={row.label}>
-                  {row.cells.map((cell, index) => {
-                    const td = (
-                      <td
-                        key={index}
-                        data-side={index ? 'right' : 'left'}
-                        data-better={best === index || undefined}
-                      >
-                        {row.bars && typeof cell.value === 'number' ? (
-                          <span className={s.bar}>
-                            <b>{cell.text}</b>
-                            <span className={s.track} aria-hidden="true">
-                              <i style={{ width: `${Math.max(2, Math.min(100, cell.value))}%` }} />
-                            </span>
-                          </span>
-                        ) : (
-                          <b>{cell.text}</b>
-                        )}
-                      </td>
-                    );
-                    return index === 0
-                      ? [
-                          td,
-                          <th key="label" scope="row">
-                            {row.label}
-                          </th>,
-                        ]
-                      : td;
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-          {group.note && (
-            <tfoot>
+      {localizeValue(
+        groups.map((group) => (
+          <table key={group.title} className={s.table}>
+            <caption>{localizeValue(group.title)}</caption>
+            <thead className={s.hidden}>
               <tr>
-                <td colSpan={3}>{group.note}</td>
+                <th scope="col">{sides[0].player.name}</th>
+                <th scope="col">{richMessage('copy.LabPage.962f286b14')}</th>
+                <th scope="col">{sides[1].player.name}</th>
               </tr>
-            </tfoot>
-          )}
-        </table>
-      ))}
+            </thead>
+            <tbody>
+              {localizeValue(
+                group.rows.map((row) => {
+                  const best = winner(row);
+                  return (
+                    <tr key={row.label}>
+                      {localizeValue(
+                        row.cells.map((cell, index) => {
+                          const td = (
+                            <td
+                              key={index}
+                              data-side={index ? 'right' : 'left'}
+                              data-better={best === index || undefined}
+                            >
+                              {localizeValue(
+                                row.bars && typeof cell.value === 'number' ? (
+                                  <span className={s.bar}>
+                                    <b>{localizeValue(cell.text)}</b>
+                                    <span className={s.track} aria-hidden="true">
+                                      <i
+                                        style={{
+                                          width: `${Math.max(2, Math.min(100, cell.value))}%`,
+                                        }}
+                                      />
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <b>{localizeValue(cell.text)}</b>
+                                ),
+                              )}
+                            </td>
+                          );
+                          return index === 0
+                            ? [
+                                td,
+                                <th key="label" scope="row">
+                                  {localizeValue(row.label)}
+                                </th>,
+                              ]
+                            : td;
+                        }),
+                      )}
+                    </tr>
+                  );
+                }),
+              )}
+            </tbody>
+            {localizeValue(
+              group.note && (
+                <tfoot>
+                  <tr>
+                    <td colSpan={3}>{localizeValue(group.note)}</td>
+                  </tr>
+                </tfoot>
+              ),
+            )}
+          </table>
+        )),
+      )}
     </section>
   );
 }

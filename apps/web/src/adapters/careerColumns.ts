@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { z } from 'zod';
 import { readCareerOrder } from './careerOrder';
 import { readCareerProfiles } from './careerProfiles';
@@ -35,7 +36,7 @@ const schema = z.strictObject({
   draw: z.tuple([z.string(), z.string(), z.string(), z.string()]).optional(),
 });
 export type PackedCareerColumns = z.infer<typeof schema>;
-const failure = () => new Error('인물 이력 압축 참조 또는 차원 손상');
+const failure = () => new Error(sourceMessage('copy.careerColumns.1a9ac09859'));
 const firstYear = (born: number) => (born >= 1901 && born <= 4000 ? born : 0);
 /** Frozen version-two scalar codebook. Never import mutable gameplay generators here. */
 function scalarStream(seed: string) {

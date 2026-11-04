@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { useEffect, useState } from 'react';
 import { PD, TD } from '../../../../packages/contracts/src/detail';
 import {
@@ -61,20 +62,27 @@ export function fullStatsCoverage(
   if (!read || read.year !== year)
     return {
       status: 'unavailable',
-      text: '이 기간의 세부 기록은 집계되지 않았어요. 기록이 없는 기간은 0이 아니라 빈칸이에요.',
+      text: sourceMessage('copy.fullStatsView.bacdff45b0'),
     };
   const matches = trackedMatches(read),
     untracked = read.untracked;
   if (!untracked)
     return {
       status: 'whole',
-      text: `${seasonName(read.year)} 시즌 전체 기록 · 리그 ${matches}경기`,
+      text: sourceMessage('copy.fullStatsView.6c28580244', {
+        p0: seasonName(read.year),
+        p1: matches,
+      }),
       matches,
       untracked,
     };
   return {
     status: 'partial',
-    text: `${seasonDayLabel(read.year, read.trackedFrom.day)}부터 기록 · 리그 ${matches}경기 · 그 전 ${untracked}경기는 기록 없음`,
+    text: sourceMessage('copy.fullStatsView.cca4f99bee', {
+      p0: seasonDayLabel(read.year, read.trackedFrom.day),
+      p1: matches,
+      p2: untracked,
+    }),
     matches,
     untracked,
   };
@@ -131,7 +139,7 @@ export function fullStatsRates(row: FullStatsPlayer): { label: string; text: str
   const advanced = [
     ['xG', PD.xg, 100],
     ['xA', PD.xa, 100],
-    ['키패스', PD.keyPasses, 1],
+    [sourceMessage('copy.MatchReport.532ac6f371'), PD.keyPasses, 1],
   ] as const;
   return [
     ...performanceRows(row.metrics).map(({ label, per90 }) => ({
@@ -198,9 +206,9 @@ export const perMatch = (value: number, matches: number, digits = 2) =>
 
 export type ClubOrder = 'xgd' | 'goals' | 'shots';
 export const CLUB_ORDERS: readonly (readonly [ClubOrder, string])[] = [
-  ['xgd', 'xG 차'],
-  ['goals', '득점'],
-  ['shots', '슈팅'],
+  ['xgd', sourceMessage('copy.fullStatsView.abc2d9a4a3')],
+  ['goals', sourceMessage('copy.summary.eb4e291be3')],
+  ['shots', sourceMessage('copy.summary.da1cc31972')],
 ];
 const clubValue: Record<ClubOrder, (row: FullStatsClub) => number> = {
   xgd: (row) => (row.matches ? (row.xg - row.xga) / row.matches : -Infinity),
@@ -222,17 +230,34 @@ export const LEADERS: readonly {
   /** xG and xA are kept in hundredths and shown with two decimals. */
   scale?: 100;
 }[] = [
-  { key: 'goals', label: '골', value: (row) => row.metrics[GOALS]! },
-  { key: 'assists', label: '도움', value: (row) => row.metrics[ASSISTS]! },
+  {
+    key: 'goals',
+    label: sourceMessage('copy.summary.68a6cf8ed8'),
+    value: (row) => row.metrics[GOALS]!,
+  },
+  {
+    key: 'assists',
+    label: sourceMessage('copy.BallonDorView.8d901cc28d'),
+    value: (row) => row.metrics[ASSISTS]!,
+  },
   { key: 'xg', label: 'xG', term: 'xg', value: (row) => row.detail[PD.xg]!, scale: 100 },
   { key: 'xa', label: 'xA', term: 'xa', value: (row) => row.detail[PD.xa]!, scale: 100 },
-  { key: 'key-pass', label: '키패스', term: 'key-pass', value: (row) => row.detail[PD.keyPasses]! },
+  {
+    key: 'key-pass',
+    label: sourceMessage('copy.MatchReport.532ac6f371'),
+    term: 'key-pass',
+    value: (row) => row.detail[PD.keyPasses]!,
+  },
   {
     key: 'defence',
-    label: '태클+인터셉트',
+    label: sourceMessage('copy.fullStatsView.3cef0459ef'),
     value: (row) => row.metrics[TACKLES]! + row.metrics[INTERCEPTIONS]!,
   },
-  { key: 'saves', label: '선방', value: (row) => row.metrics[SAVES]! },
+  {
+    key: 'saves',
+    label: sourceMessage('copy.RecordsRoom.2a022bd612'),
+    value: (row) => row.metrics[SAVES]!,
+  },
 ];
 export interface LeaderRow {
   player: FullStatsPlayer;
@@ -261,7 +286,7 @@ export function leaders(rows: readonly FullStatsPlayer[], key: LeaderKey, limit 
       player,
       total: (leader.value(player) / scale).toFixed(digits),
       rate: per90Text(leader.value(player) / scale, player.minutes),
-      sample: `${player.minutes}분`,
+      sample: sourceMessage('copy.LabPage.be847e9e64', { p0: player.minutes }),
     }));
 }
 
@@ -275,7 +300,7 @@ export type FullStatsState =
   | { status: 'failed'; retry: () => void }
   | { status: 'ready'; read: FullStatsRead | undefined };
 /** What a lens says when the read itself failed, beside its retry button. */
-export const FULL_STATS_FAILED = '세부 기록을 불러오지 못했어요.';
+export const FULL_STATS_FAILED = sourceMessage('copy.fullStatsView.543d84eb22');
 /**
  * One competition's complete statistics, requested when a lens opens and again once they can have
  * changed (→WEB-89): the daily view never carries them. A league's settle only on a league match

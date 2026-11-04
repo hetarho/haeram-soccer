@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The world before the takeover (→WORLD-13): made in 1930 and lived by the day loop (→LEAGUE-11)
  * season by season to the chosen decade's first season, with nobody owning a club. Every fixture
@@ -34,7 +35,7 @@ export function historyWorld(
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
   year: number = HISTORY_START,
 ): World {
-  if (!seed.trim() || seed.length > 80) throw new Error('시드를 확인해 주세요.');
+  if (!seed.trim() || seed.length > 80) throw new Error(sourceMessage('copy.history.d5edd5d38b'));
   const clubs = generateClubs(seed);
   const code = clubs[0]!.country;
   const manager = makeManager(code, seed, year);
@@ -103,7 +104,7 @@ export function generateHistory(
   decade: TakeoverDecade,
   onProgress?: HistoryProgress,
 ): World {
-  if (!TAKEOVER_DECADES.includes(decade)) throw new Error('인수 시대를 확인해 주세요.');
+  if (!TAKEOVER_DECADES.includes(decade)) throw new Error(sourceMessage('copy.history.35e020f6ed'));
   return liveHistory(historyWorld(seed), seasonFrom(decade), onProgress);
 }
 /**

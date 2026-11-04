@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { worldMarketOffer } from './world-market';
 import { registrationRoom } from './registration';
 import type { Command, Player, World } from '../../contracts/src/types';
@@ -36,7 +37,8 @@ export type SquadCommand = Extract<
  * with his career. The caller has checked registration and the window.
  */
 export function signFreeAgent(w: World, offer: { player: Player }): Player {
-  if (!takeFreeAgent(w, offer.player.id)) throw new Error('이미 계약했거나 없는 선수입니다.');
+  if (!takeFreeAgent(w, offer.player.id))
+    throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
   const p = structuredClone(offer.player);
   p.clauses = signingClauses(w, p);
   const prior = w.players.findIndex((row) => row.id === p.id);
@@ -65,7 +67,7 @@ export function squadCommand(w: World, cmd: SquadCommand) {
     case 'bid': {
       const target = cmd.target ?? cmd.candidate;
       if (target === undefined || (cmd.target && cmd.candidate !== undefined))
-        throw new Error('영입 대상을 확인하세요.');
+        throw new Error(sourceMessage('copy.ops_squad.ca6b698a89'));
       placeBid(w, target, cmd.fee, cmd.loan);
       break;
     }
@@ -74,15 +76,15 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       break;
     case 'recruit': {
       if ((cmd.candidate === undefined) === (cmd.target === undefined))
-        throw new Error('영입 대상을 확인하세요.');
+        throw new Error(sourceMessage('copy.ops_squad.ca6b698a89'));
       const o = cmd.target ? worldMarketOffer(w, cmd.target) : transferOffers(w)[cmd.candidate!];
-      if (!o?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
+      if (!o?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
       // Another club's player joins only through a negotiated bid, at his asking fee (→CLUB-4).
       if (!o.freeAgent) {
         placeBid(w, cmd.target ?? cmd.candidate!, cmd.loan ? o.loanFee : o.fee, cmd.loan);
         break;
       }
-      if (cmd.loan) throw new Error('자유계약 선수는 임대하지 않고 바로 영입해요.');
+      if (cmd.loan) throw new Error(sourceMessage('copy.ops_squad.a2b1b34469'));
       const room = registrationRoom(w, { ...o.player, joined: w.year });
       if (room) throw new Error(room);
       assertTransferWindow(w, true);
@@ -95,8 +97,13 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       addEvent(
         w,
         'transfer-in',
-        `${p.name} 영입`,
-        `${p.position} · ${w.year - p.born}세 · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${p.until}년 · 자유계약`,
+        sourceMessage('copy.ClubStaff.2d43ec39f3', { p0: p.name }),
+        sourceMessage('copy.ops_squad.378259bb11', {
+          p0: p.position,
+          p1: w.year - p.born,
+          p2: moneyLabel(w, p.wage),
+          p3: p.until,
+        }),
         '0',
       );
       break;

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type {
   AppearanceSide,
   CrestDesign,
@@ -22,7 +23,7 @@ import {
  */
 
 /** What a match view says when its record carries no appearance (KIT-12). */
-export const UNRECORDED_KIT = '유니폼 미기록';
+export const UNRECORDED_KIT = sourceMessage('copy.matchAppearance.9527d1b434');
 
 export interface SideLook {
   crest: CrestDesign;

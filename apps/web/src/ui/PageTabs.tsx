@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useEffect, useLayoutEffect, useRef, type KeyboardEvent, type ReactNode } from 'react';
 import { nextTabIndex, tabFocusLost, tabIntentOutcome, type TabIntent } from './tabs';
 import { taskAddress, useTaskState } from './taskMemory';
@@ -29,6 +30,7 @@ export function TabList<T extends string>({
   /** False for tabs that open pages of their own rather than one panel below them. */
   panel?: boolean;
 }) {
+  useTextLocale();
   const bar = useRef<HTMLDivElement>(null);
   // The tab the keyboard picked, until its selection commits or the owner turns elsewhere.
   const intent = useRef<TabIntent<T> | undefined>(undefined);
@@ -73,22 +75,24 @@ export function TabList<T extends string>({
       [next]?.focus();
   };
   return (
-    <div ref={bar} className={className} role="tablist" aria-label={label}>
-      {tabs.map(([id, text], index) => (
-        <button
-          key={id}
-          type="button"
-          id={`${idPrefix}-tab-${id}`}
-          role="tab"
-          aria-selected={value === id}
-          aria-controls={panel ? `${idPrefix}-panel` : undefined}
-          tabIndex={value === id ? 0 : -1}
-          onKeyDown={(event) => keyboard(event, index)}
-          onClick={() => onChange(id)}
-        >
-          {text}
-        </button>
-      ))}
+    <div ref={bar} className={className} role="tablist" aria-label={localizeValue(label)}>
+      {localizeValue(
+        tabs.map(([id, text], index) => (
+          <button
+            key={id}
+            type="button"
+            id={`${idPrefix}-tab-${id}`}
+            role="tab"
+            aria-selected={value === id}
+            aria-controls={panel ? `${idPrefix}-panel` : undefined}
+            tabIndex={value === id ? 0 : -1}
+            onKeyDown={(event) => keyboard(event, index)}
+            onClick={() => onChange(id)}
+          >
+            {localizeValue(text)}
+          </button>
+        )),
+      )}
     </div>
   );
 }
@@ -195,9 +199,10 @@ export function TabPanel({
   value: string;
   children: ReactNode;
 }) {
+  useTextLocale();
   return (
     <div id={`${idPrefix}-panel`} role="tabpanel" aria-labelledby={`${idPrefix}-tab-${value}`}>
-      {children}
+      {localizeValue(children)}
     </div>
   );
 }

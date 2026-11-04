@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * Dense text for compressed checkpoint bytes, 14 bits per character.
  *
@@ -39,16 +40,16 @@ export function denseText(bytes: Uint8Array): string {
 
 export function denseBytes(text: string): Uint8Array {
   const padding = text.charCodeAt(0) - BASE;
-  if (!(padding >= 0 && padding < BITS)) throw new Error('저장 인코딩 헤더 손상');
+  if (!(padding >= 0 && padding < BITS)) throw new Error(sourceMessage('copy.dense.70b715337f'));
   const bits = (text.length - 1) * BITS - padding;
-  if (bits < 0 || bits % 8) throw new Error('저장 인코딩 길이 손상');
+  if (bits < 0 || bits % 8) throw new Error(sourceMessage('copy.dense.16b27fbb19'));
   const bytes = new Uint8Array(bits / 8);
   let held = 0,
     value = 0,
     out = 0;
   for (let i = 1; i < text.length; i++) {
     const code = text.charCodeAt(i) - BASE;
-    if (!(code >= 0 && code <= MASK)) throw new Error('저장 인코딩 문자 손상');
+    if (!(code >= 0 && code <= MASK)) throw new Error(sourceMessage('copy.dense.ef8da1dc51'));
     value = (value << BITS) | code;
     held += BITS;
     while (held >= 8 && out < bytes.length) {
@@ -59,6 +60,6 @@ export function denseBytes(text: string): Uint8Array {
   }
   // Whatever is left over must be exactly the declared zero padding.
   if (out !== bytes.length || held !== padding || value !== 0)
-    throw new Error('저장 인코딩 패딩 손상');
+    throw new Error(sourceMessage('copy.dense.295e2b62ce'));
   return bytes;
 }

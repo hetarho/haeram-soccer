@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { GameClient } from '../runtime/client';
 import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
 import { useState } from 'react';
@@ -112,47 +115,56 @@ export const useNewsQuiet = create<{ quiet: boolean; setQuiet: (quiet: boolean) 
 );
 
 export function NewsQuietToggle() {
+  useTextLocale();
   const quiet = useNewsQuiet((state) => state.quiet);
   const setQuiet = useNewsQuiet((state) => state.setQuiet);
   return (
     <label data-surface="inset" className={s.quiet}>
       <input type="checkbox" checked={quiet} onChange={(event) => setQuiet(event.target.checked)} />
       <span>
-        <b>뉴스 표시 안 함</b>
-        <small>축하 배너를 띄우지 않고 오른쪽 아래 알림·뉴스의 뉴스 탭에만 쌓아요</small>
+        <b>{richMessage('copy.NewsFeed.344d4f3f70')}</b>
+        <small>{richMessage('copy.NewsFeed.067b7d744f')}</small>
       </span>
     </label>
   );
 }
 
 const TAGS: (NewsTag | '전체')[] = [
-  '전체',
-  '경기',
-  '기록',
-  '선수',
-  '순위',
-  '분석',
-  '구단',
-  '이적',
-  '유스',
+  sourceMessage('copy.DecisionRuleFacts.a4b69faf0c'),
+  sourceMessage('copy.LabPage.e56314e9a1'),
+  sourceMessage('navigation.history'),
+  sourceMessage('team.column.player'),
+  sourceMessage('copy.BallonDorView.8f363885a3'),
+  sourceMessage('copy.NewsFeed.45ec3425c8'),
+  sourceMessage('copy.InvestmentTotals.47dfdfd818'),
+  sourceMessage('copy.NewsFeed.832934e8a8'),
+  sourceMessage('copy.NewsFeed.690198ae20'),
 ];
 
 function Headline({ item, fresh }: { item: NewsItem; fresh?: boolean }) {
+  useTextLocale();
   return (
     <li className={`${s.item} ${s[item.tone]} ${s[item.weight]}`} data-testid="news-item">
       <span className={s.meta}>
-        <b>{item.tag}</b>
-        {seasonName(item.year)} · {item.round}R{fresh && <em>NEW</em>}
+        {richMessage('copy.NewsFeed.792637f107', {
+          p0: <b>{localizeValue(item.tag)}</b>,
+          p1: localizeValue(seasonName(item.year)),
+          p2: localizeValue(item.round),
+          p3: localizeValue(fresh && <em>{richMessage('copy.NewsFeed.a253ff09c5')}</em>),
+        })}
       </span>
-      <strong>{item.title}</strong>
-      {item.detail && <small>{item.detail}</small>}
+      <strong>{localizeValue(item.title)}</strong>
+      {localizeValue(item.detail && <small>{localizeValue(item.detail)}</small>)}
     </li>
   );
 }
 
 /** Stored headlines with tag filters and explicit older-news pages. */
 export function NewsList({ w, client }: { w: World; client?: GameClient }) {
-  const [tag, setTag] = useState<(typeof TAGS)[number]>('전체');
+  useTextLocale();
+  const [tag, setTag] = useState<(typeof TAGS)[number]>(
+    sourceMessage('copy.DecisionRuleFacts.a4b69faf0c'),
+  );
   const current = useClubNews();
   const [recent] = useState(current);
   const [older, setOlder] = useState<NewsItem[]>([]);
@@ -162,7 +174,7 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const news =
-    tag === '전체' || !client
+    tag === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c') || !client
       ? [...new Map([...recent, ...older].map((item) => [item.id, item])).values()]
       : filtered;
   const loadMore = async () => {
@@ -170,8 +182,11 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
     setLoading(true);
     setError('');
     try {
-      const page = await client.newsPage(news.at(-1)?.id, tag === '전체' ? undefined : tag);
-      if (tag === '전체') {
+      const page = await client.newsPage(
+        news.at(-1)?.id,
+        tag === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c') ? undefined : tag,
+      );
+      if (tag === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c')) {
         setOlder((previous) => [...previous, ...page.items]);
         setAllEnded(!page.next);
       } else setFiltered((previous) => [...previous, ...page.items]);
@@ -185,9 +200,9 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
   const chooseTag = async (value: (typeof TAGS)[number]) => {
     if (loading) return;
     setTag(value);
-    setEnded(value === '전체' ? allEnded : false);
+    setEnded(value === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c') ? allEnded : false);
     setError('');
-    if (value === '전체' || !client) return;
+    if (value === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c') || !client) return;
     setFiltered([]);
     setLoading(true);
     try {
@@ -202,56 +217,72 @@ export function NewsList({ w, client }: { w: World; client?: GameClient }) {
   };
   const [seenAtOpen] = useState(() => readSeen(w.id));
   const fresh = new Set(recent.slice(0, freshCount(recent, seenAtOpen)).map((item) => item.id));
-  const shown = tag === '전체' || client ? news : news.filter((item) => item.tag === tag);
+  const shown =
+    tag === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c') || client
+      ? news
+      : news.filter((item) => item.tag === tag);
   return (
     <>
-      <div className={s.filters} role="group" aria-label="뉴스 분류">
-        {TAGS.map((value) => (
-          <button
-            key={value}
-            aria-pressed={tag === value}
-            className={tag === value ? s.selected : undefined}
-            disabled={loading}
-            onClick={() => void chooseTag(value)}
-          >
-            {value}
-          </button>
-        ))}
-      </div>
-      {loading && <p role="status">소식 불러오는 중…</p>}
-      {shown.length ? (
-        <ul className={s.feed}>
-          {shown.map((item) => (
-            <Headline
-              key={item.id}
-              item={item}
-              fresh={
-                !seenAtOpen ||
-                (seenAtOpen.total !== undefined && item.sequence !== undefined
-                  ? item.sequence > seenAtOpen.total
-                  : fresh.has(item.id))
-              }
-            />
-          ))}
-        </ul>
-      ) : (
-        <p className={s.empty}>이 분류의 소식이 아직 없어요.</p>
-      )}
-      {client &&
-        !ended &&
-        (tag === '전체'
-          ? recent.length >= NEWS_LIMITS.recent
-          : filtered.length >= NEWS_LIMITS.page) && (
-          <button type="button" disabled={loading} onClick={() => void loadMore()}>
-            {loading ? '이전 소식 불러오는 중…' : '이전 소식 더 보기'}
-          </button>
+      <div
+        className={s.filters}
+        role="group"
+        aria-label={displayMessage('copy.NewsFeed.3d368f4f3c')}
+      >
+        {localizeValue(
+          TAGS.map((value) => (
+            <button
+              key={value}
+              aria-pressed={tag === value}
+              className={tag === value ? s.selected : undefined}
+              disabled={loading}
+              onClick={() => void chooseTag(value)}
+            >
+              {localizeValue(value)}
+            </button>
+          )),
         )}
-      {error && <p role="alert">{error}</p>}
+      </div>
+      {localizeValue(loading && <p role="status">{richMessage('copy.NewsFeed.d3fb3b2ec7')}</p>)}
+      {localizeValue(
+        shown.length ? (
+          <ul className={s.feed}>
+            {localizeValue(
+              shown.map((item) => (
+                <Headline
+                  key={item.id}
+                  item={item}
+                  fresh={
+                    !seenAtOpen ||
+                    (seenAtOpen.total !== undefined && item.sequence !== undefined
+                      ? item.sequence > seenAtOpen.total
+                      : fresh.has(item.id))
+                  }
+                />
+              )),
+            )}
+          </ul>
+        ) : (
+          <p className={s.empty}>{richMessage('copy.NewsFeed.202a03cb24')}</p>
+        ),
+      )}
+      {localizeValue(
+        client &&
+          !ended &&
+          (tag === sourceMessage('copy.DecisionRuleFacts.a4b69faf0c')
+            ? recent.length >= NEWS_LIMITS.recent
+            : filtered.length >= NEWS_LIMITS.page) && (
+            <button type="button" disabled={loading} onClick={() => void loadMore()}>
+              {localizeValue(
+                loading
+                  ? sourceMessage('copy.NewsFeed.6730816b12')
+                  : sourceMessage('copy.NewsFeed.8eb41deffa'),
+              )}
+            </button>
+          ),
+      )}
+      {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
       <NewsQuietToggle />
-      <p className={s.note}>
-        뉴스는 기록된 경기와 구단 결정에서만 만들어요. 연속 기록·점유율·xG 같은 수치는 사실이고,
-        원인을 단정하지 않아요.
-      </p>
+      <p className={s.note}>{richMessage('copy.NewsFeed.125c7e3b0e')}</p>
     </>
   );
 }

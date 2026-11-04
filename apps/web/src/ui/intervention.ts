@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type {
   GameSettings,
   ResponsibilityKey,
@@ -8,23 +9,23 @@ import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-i
 import type { GameClient } from '../runtime/client';
 
 export const RESPONSIBILITY_LABELS: Readonly<Record<ResponsibilityKey, string>> = {
-  manager: '감독 인사',
-  staff: '스태프 인사',
-  contracts: '선수 계약',
-  recruitment: '선수 영입',
-  sales: '선수 매각',
-  academy: '유소년 승격·방출',
-  sponsors: '스폰서 계약',
+  manager: sourceMessage('copy.intervention.4670efb7ec'),
+  staff: sourceMessage('copy.intervention.aed9dbd6ea'),
+  contracts: sourceMessage('copy.stories.cb2c18aee9'),
+  recruitment: sourceMessage('copy.intervention.d12b6b87e1'),
+  sales: sourceMessage('copy.intervention.5ea61dab56'),
+  academy: sourceMessage('copy.OwnerOfficeView.dc639eb0dc'),
+  sponsors: sourceMessage('copy.intervention.710956eea4'),
 };
 /** What each responsibility covers, under its label. */
 export const RESPONSIBILITY_DETAILS: Readonly<Record<ResponsibilityKey, string>> = {
-  manager: '감독 선임·재계약',
-  staff: '단장·스카우트·코치진의 선임·재계약',
-  contracts: '선수 재계약·계약 개선',
-  recruitment: '선수 영입·영입 협상',
-  sales: '우리 선수에게 온 제안·매각 방침',
-  academy: '유소년 승격과 방출',
-  sponsors: '자리별 스폰서 계약',
+  manager: sourceMessage('copy.OwnerOfficeView.ff794c03f8'),
+  staff: sourceMessage('copy.intervention.20143ef8ea'),
+  contracts: sourceMessage('copy.intervention.7afd0357ff'),
+  recruitment: sourceMessage('copy.intervention.c58f247587'),
+  sales: sourceMessage('copy.intervention.e68edb2830'),
+  academy: sourceMessage('copy.intervention.1969f5af28'),
+  sponsors: sourceMessage('copy.intervention.c5ca8c981c'),
 };
 /** Who takes each responsibility once the owner delegates it. */
 export type ResponsibilityPost = 'director' | 'manager' | 'youth';
@@ -41,12 +42,16 @@ export const RESPONSIBILITY_DELEGATES: Readonly<
 };
 /** Current holders and their person records for a delegated responsibility. */
 export function responsibilityAssignee(w: World, post: ResponsibilityPost) {
-  const labels = { director: '단장', manager: '감독', youth: STAFF_INFO.youth.label };
+  const labels = {
+    director: sourceMessage('staff.role.director'),
+    manager: sourceMessage('staff.role.manager'),
+    youth: STAFF_INFO.youth.label,
+  };
   const member = post === 'manager' ? w.manager : staffMember(w, post);
   return {
     post,
     label: labels[post],
-    name: member?.name ?? '공석',
+    name: member?.name ?? sourceMessage('team.vacant'),
     person: member?.person,
     member,
   };

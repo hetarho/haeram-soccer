@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { eventsInSeason } from './season-index';
 import type { Event, MatchRecord, World } from '../../contracts/src/types';
 import { PD, TD } from '../../contracts/src/detail';
@@ -57,7 +58,8 @@ function played(w: World, m: MatchRecord, clubNames: Map<string, string>): Playe
     ga,
     result: gf > ga ? 'W' : gf === ga ? 'D' : 'L',
     home: side === 0,
-    opponent: clubNames.get(side === 0 ? m.away : m.home) ?? '상대',
+    opponent:
+      clubNames.get(side === 0 ? m.away : m.home) ?? sourceMessage('copy.MatchBriefing.6a3b6fa71b'),
     possession: minutes ? m.metrics[side][11] / minutes : 0.5,
     ...(m.xg ? { xg: m.xg[side], xga: m.xg[other] } : {}),
   };
@@ -65,7 +67,9 @@ function played(w: World, m: MatchRecord, clubNames: Map<string, string>): Playe
 
 /** The running score through the recorded goals: deficits, leads, and who settled it when. */
 function goalStory(p: Played) {
-  const goals = p.m.highlights.filter((h) => h.action === '골').sort((a, b) => a.minute - b.minute);
+  const goals = p.m.highlights
+    .filter((h) => h.action === sourceMessage('copy.summary.68a6cf8ed8'))
+    .sort((a, b) => a.minute - b.minute);
   let us = 0,
     them = 0,
     deficit = 0,
@@ -106,7 +110,12 @@ type Line = MatchRecord['players'][number];
 
 const record = (games: NewsResult[]) => {
   const count = (r: NewsResult) => games.filter((g) => g === r).length;
-  return `${games.length}전 ${count('W')}승 ${count('D')}무 ${count('L')}패`;
+  return sourceMessage('copy.CareerClubDetail.bb90701b0c', {
+    p0: games.length,
+    p1: count('W'),
+    p2: count('D'),
+    p3: count('L'),
+  });
 };
 
 /**
@@ -192,7 +201,7 @@ function newsContext(w: World): NewsContext {
   const ctx: NewsContext = {
     w,
     name: clubOf(w).name,
-    who: (id) => people.get(id) ?? '선수',
+    who: (id) => people.get(id) ?? sourceMessage('team.column.player'),
     season: [],
     hasHistory: earlier.length > 0,
     unbeatenRecord: 0,
@@ -247,7 +256,10 @@ function matchNews(p: Played, index: number): MatchNews {
     p,
     index,
     score: `${p.gf}-${p.ga}`,
-    versus: `${p.home ? '홈' : '원정'} ${p.opponent}전`,
+    versus: sourceMessage('copy.news.0474708ae9', {
+      p0: p.home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+      p1: p.opponent,
+    }),
     story: goalStory(p),
     candidates,
     add: (kind, tag, tone, weight, title, detail, celebrate) => {
@@ -302,68 +314,108 @@ export function deriveClubNews(w: World): NewsItem[] {
 function resultLine({ name }: NewsContext, { p, score, versus, story, add }: MatchNews) {
   const shots = `${p.m.metrics[p.side][4]}-${p.m.metrics[p.side === 0 ? 1 : 0][4]}`;
   const facts = [
-    `점유율 ${percent(p.possession)}`,
-    `슈팅 ${shots}`,
+    sourceMessage('copy.news.a9fe900936', { p0: percent(p.possession) }),
+    sourceMessage('copy.news.94bba32f25', { p0: shots }),
     ...(p.xg !== undefined ? [`xG ${two(p.xg)}-${two(p.xga!)}`] : []),
   ].join(' · ');
   if (p.result === 'W' && story.deficit > 0)
     add(
       'result',
-      '경기',
+      sourceMessage('copy.LabPage.e56314e9a1'),
       'good',
       story.deficit >= 2 ? 'notable' : 'minor',
-      `${name}, ${versus} ${score} 역전승`,
-      `${story.deficit}골 차 열세를 뒤집었다 · ${facts}`,
+      sourceMessage('copy.news.9059dcde82', { p0: name, p1: versus, p2: score }),
+      sourceMessage('copy.news.30e9f61a0b', { p0: story.deficit, p1: facts }),
     );
   else if (p.result === 'W' && story.decisive && story.decisive.minute >= 88)
     add(
       'result',
-      '경기',
+      sourceMessage('copy.LabPage.e56314e9a1'),
       'good',
       'notable',
-      `'${story.decisive.minute}분 극장골' ${story.decisive.player}… ${name}, ${versus} ${score} 승리`,
+      sourceMessage('copy.news.b94a9fb0d2', {
+        p0: story.decisive.minute,
+        p1: story.decisive.player,
+        p2: name,
+        p3: versus,
+        p4: score,
+      }),
       facts,
     );
   else if (p.result !== 'W' && story.lead >= 2)
     add(
       'result',
-      '경기',
+      sourceMessage('copy.LabPage.e56314e9a1'),
       'bad',
       'notable',
-      `${name}, 2골 차 리드 못 지켜… ${versus} ${score} ${p.result === 'D' ? '무승부' : '역전패'}`,
+      sourceMessage('copy.news.88eaaea8b3', {
+        p0: name,
+        p1: versus,
+        p2: score,
+        p3:
+          p.result === 'D'
+            ? sourceMessage('result.draw.label')
+            : sourceMessage('copy.news.2d89546311'),
+      }),
       facts,
     );
   else if (p.result === 'D' && story.equaliser && story.equaliser.minute >= 88 && p.gf > 0)
     add(
       'result',
-      '경기',
+      sourceMessage('copy.LabPage.e56314e9a1'),
       'good',
       'minor',
-      `${story.equaliser.minute}분 동점골… ${name}, ${versus} ${score} 기사회생`,
+      sourceMessage('copy.news.970b8605e8', {
+        p0: story.equaliser.minute,
+        p1: name,
+        p2: versus,
+        p3: score,
+      }),
       facts,
     );
   else if (p.result === 'W' && p.gf - p.ga >= 3)
-    add('result', '경기', 'good', 'notable', `${name}, ${versus} ${score} 대승`, facts);
+    add(
+      'result',
+      sourceMessage('copy.LabPage.e56314e9a1'),
+      'good',
+      'notable',
+      sourceMessage('copy.news.2f0f8e7128', { p0: name, p1: versus, p2: score }),
+      facts,
+    );
   else if (p.result === 'L' && p.ga - p.gf >= 3)
-    add('result', '경기', 'bad', 'notable', `${name}, ${versus} ${score} 완패`, facts);
+    add(
+      'result',
+      sourceMessage('copy.LabPage.e56314e9a1'),
+      'bad',
+      'notable',
+      sourceMessage('copy.news.f68c2f911a', { p0: name, p1: versus, p2: score }),
+      facts,
+    );
   else if (p.result === 'W' && p.ga === 0)
-    add('result', '경기', 'good', 'minor', `${name}, ${versus} ${score} 무실점 승리`, facts);
+    add(
+      'result',
+      sourceMessage('copy.LabPage.e56314e9a1'),
+      'good',
+      'minor',
+      sourceMessage('copy.news.a0748f37e4', { p0: name, p1: versus, p2: score }),
+      facts,
+    );
   else
     add(
       'result',
-      '경기',
+      sourceMessage('copy.LabPage.e56314e9a1'),
       p.result === 'W' ? 'good' : p.result === 'L' ? 'bad' : 'neutral',
       'minor',
-      `${name}, ${versus} ${score} ${p.result === 'W' ? '승리' : p.result === 'D' ? '무승부' : '패배'}`,
+      `${name}, ${versus} ${score} ${p.result === 'W' ? sourceMessage('result.win.label') : p.result === 'D' ? sourceMessage('result.draw.label') : sourceMessage('result.loss.label')}`,
       facts,
     );
   if (story.early)
     add(
       'early-goal',
-      '경기',
+      sourceMessage('copy.LabPage.e56314e9a1'),
       'good',
       'minor',
-      `킥오프 ${story.early.minute}분 만에 골망… ${story.early.player} 번개포`,
+      sourceMessage('copy.news.d6974eb6e6', { p0: story.early.minute, p1: story.early.player }),
       versus,
     );
 }
@@ -374,10 +426,10 @@ function milestoneNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
   if (p.result === 'W' && ctx.totalWins === 0)
     add(
       'first-win',
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'major',
-      `${name}, 인수 후 첫 공식전 승리!`,
+      sourceMessage('copy.news.6c7b4fc12e', { p0: name }),
       `${versus} ${score}`,
       true,
     );
@@ -386,10 +438,10 @@ function milestoneNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
     if (ctx.totalWins % 50 === 0)
       add(
         'win-milestone',
-        '기록',
+        sourceMessage('navigation.history'),
         'good',
         'major',
-        `${name}, 구단 통산 ${ctx.totalWins}승 금자탑`,
+        sourceMessage('copy.news.5dc18c6840', { p0: name, p1: ctx.totalWins }),
         `${versus} ${score}`,
         ctx.totalWins % 100 === 0,
       );
@@ -397,11 +449,11 @@ function milestoneNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
   if (p.result === 'W' && p.gf - p.ga > ctx.biggestMargin && p.gf - p.ga >= 3 && ctx.hasHistory)
     add(
       'record-margin',
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'major',
-      `${name}, ${p.opponent} ${score} 대파… 구단 역대 최다 점수 차 승리`,
-      `종전 기록 ${ctx.biggestMargin}골 차`,
+      sourceMessage('copy.news.11bbf53f34', { p0: name, p1: p.opponent, p2: score }),
+      sourceMessage('copy.news.fed51b0e0b', { p0: ctx.biggestMargin }),
       true,
     );
   ctx.biggestMargin = Math.max(ctx.biggestMargin, p.gf - p.ga);
@@ -418,112 +470,118 @@ function runNews(ctx: NewsContext, { p, index, score, versus, add }: MatchNews) 
   if (unbeatenRecordBroken && unbeaten === unbeatenRecord + 1)
     add(
       `unbeaten-record-${unbeaten}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'major',
-      `${name}, 공식전 ${unbeaten}경기 무패… 구단 최다 기록 경신`,
-      `종전 기록 ${unbeatenRecord}경기`,
+      sourceMessage('copy.news.c857150180', { p0: name, p1: unbeaten }),
+      sourceMessage('copy.news.3ff45fe415', { p0: unbeatenRecord }),
       unbeaten >= 8,
     );
   else if ([5, 10, 15, 20, 25, 30].includes(unbeaten))
     add(
       `unbeaten-${unbeaten}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       unbeaten >= 10 ? 'notable' : 'minor',
-      `${name}, 최근 ${unbeaten}경기 무패 행진${unbeatenRecordBroken ? '… 구단 최다 기록 진행 중' : ''}`,
+      sourceMessage('copy.news.9b6dea118c', {
+        p0: name,
+        p1: unbeaten,
+        p2: unbeatenRecordBroken ? sourceMessage('copy.news.4ca57fa497') : '',
+      }),
       `${versus} ${score}`,
     );
   if (p.result === 'L' && wasUnbeaten >= 5)
     add(
       'unbeaten-ended',
-      '기록',
+      sourceMessage('navigation.history'),
       'neutral',
       'notable',
-      `${name}의 ${wasUnbeaten}경기 무패 행진, ${p.opponent}에 막혀 마감`,
+      sourceMessage('copy.news.183be1f7c8', { p0: name, p1: wasUnbeaten, p2: p.opponent }),
       `${versus} ${score}`,
     );
   const winsRecordBroken = hasHistory && winsRecord >= 3 && winning > winsRecord;
   if (winsRecordBroken && winning === winsRecord + 1)
     add(
       `wins-record-${winning}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'major',
-      `${name}, 공식전 ${winning}연승… 구단 최다 연승 기록 경신`,
-      `종전 기록 ${winsRecord}연승`,
+      sourceMessage('copy.news.e4623ef597', { p0: name, p1: winning }),
+      sourceMessage('copy.news.93388ed69a', { p0: winsRecord }),
       winning >= 5,
     );
   else if ([3, 5, 7, 10].includes(winning))
     add(
       `wins-${winning}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       winning >= 5 ? 'major' : 'notable',
-      winning >= 5 ? `${name}, 파죽의 ${winning}연승` : `${name}, 공식전 ${winning}연승`,
+      winning >= 5
+        ? sourceMessage('copy.news.2a5b9f911b', { p0: name, p1: winning })
+        : sourceMessage('copy.news.c4157251a9', { p0: name, p1: winning }),
       `${versus} ${score}`,
       winning === 5 && !hasHistory,
     );
   if (p.result === 'W' && wasWinless >= 4)
     add(
       'winless-ended',
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'notable',
-      `${name}, ${wasWinless + 1}경기 만에 승리… 무승 탈출`,
+      sourceMessage('copy.news.73ad33bec0', { p0: name, p1: wasWinless + 1 }),
       `${versus} ${score}`,
     );
   if ([5, 8, 10, 15].includes(winless))
     add(
       `winless-${winless}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'bad',
       'notable',
-      `${name}, ${winless}경기째 무승… 길어지는 부진`,
+      sourceMessage('copy.news.50af76c81e', { p0: name, p1: winless }),
     );
   if ([3, 4, 5, 7].includes(losing))
     add(
       `losing-${losing}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'bad',
       'notable',
-      `${name}, ${losing}연패 수렁… 반등 실마리 찾아야`,
+      sourceMessage('copy.news.266ccdc11b', { p0: name, p1: losing }),
       `${versus} ${score}`,
     );
   if ([3, 5, 7].includes(clean))
     add(
       `clean-${clean}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'notable',
-      `${name}, ${clean}경기 연속 클린시트… '짠물 수비'`,
+      sourceMessage('copy.news.d00b44066f', { p0: name, p1: clean }),
     );
   if ([10, 15, 20].includes(scoring))
     add(
       `scoring-${scoring}`,
-      '기록',
+      sourceMessage('navigation.history'),
       'good',
       'minor',
-      `${name}, ${scoring}경기 연속 득점… 식지 않는 화력`,
+      sourceMessage('copy.news.5be413e697', { p0: name, p1: scoring }),
     );
   if (index === 4) {
     const opening = ctx.season.slice(0, 5);
     if (opening.every((g) => g !== 'L'))
       add(
         'opening-unbeaten',
-        '기록',
+        sourceMessage('navigation.history'),
         'good',
         'notable',
-        `${name}, 개막 5경기 무패 순항`,
+        sourceMessage('copy.news.c035523129', { p0: name }),
         record(opening),
       );
     else if (opening.every((g) => g !== 'W'))
       add(
         'opening-winless',
-        '기록',
+        sourceMessage('navigation.history'),
         'bad',
         'notable',
-        `${name}, 개막 5경기 무승… 출발부터 삐걱`,
+        sourceMessage('copy.news.1eaad06f5e', { p0: name }),
         record(opening),
       );
   }
@@ -537,29 +595,29 @@ function homeAwayNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
     if ([5, 10, 15].includes(ctx.homeUnbeaten))
       add(
         `home-unbeaten-${ctx.homeUnbeaten}`,
-        '기록',
+        sourceMessage('navigation.history'),
         'good',
         'minor',
-        `${name}, 홈 ${ctx.homeUnbeaten}경기 무패… 안방 불패`,
+        sourceMessage('copy.news.24465f44de', { p0: name, p1: ctx.homeUnbeaten }),
       );
   } else {
     ctx.awayUnbeaten = p.result === 'L' ? 0 : ctx.awayUnbeaten + 1;
     if ([5, 8, 10].includes(ctx.awayUnbeaten))
       add(
         `away-unbeaten-${ctx.awayUnbeaten}`,
-        '기록',
+        sourceMessage('navigation.history'),
         'good',
         'minor',
-        `${name}, 원정 ${ctx.awayUnbeaten}경기 무패`,
+        sourceMessage('copy.news.cae5542fb6', { p0: name, p1: ctx.awayUnbeaten }),
       );
     if (p.result === 'W') {
       if (!ctx.awayWins && ctx.awayWithoutWin >= 3)
         add(
           'first-away-win',
-          '기록',
+          sourceMessage('navigation.history'),
           'good',
           'minor',
-          `${name}, ${ctx.awayWithoutWin + 1}번째 원정서 마수걸이 승리`,
+          sourceMessage('copy.news.6e680afcfc', { p0: name, p1: ctx.awayWithoutWin + 1 }),
           `${versus} ${score}`,
         );
       ctx.awayWins++;
@@ -576,11 +634,11 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
     if ([3, 5, 8].includes(ctx.homePossessionRun))
       add(
         `home-possession-${ctx.homePossessionRun}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'neutral',
         'minor',
-        `홈 ${ctx.homePossessionRun}경기 연속 점유율 60% 이상… 점유율 축구 안착`,
-        `이번 경기 점유율 ${percent(p.possession)}`,
+        sourceMessage('copy.news.1499674cac', { p0: ctx.homePossessionRun }),
+        sourceMessage('copy.news.6b07c3ddda', { p0: percent(p.possession) }),
       );
   }
   if (p.possession >= 0.6) {
@@ -591,10 +649,16 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
     if ([5, 10, 15, 20].includes(possessionGames.length) && (rate >= 0.7 || rate <= 0.2))
       add(
         `possession-split-${possessionGames.length}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         rate >= 0.7 ? 'good' : 'bad',
         'notable',
-        `점유율 60% 넘긴 경기 승률 ${percent(rate)}${rate >= 0.7 ? "… '공 잡으면 이긴다'" : '… 점유는 하는데'}`,
+        sourceMessage('copy.news.1b8e7181a3', {
+          p0: percent(rate),
+          p1:
+            rate >= 0.7
+              ? sourceMessage('copy.news.af111c5ae5')
+              : sourceMessage('copy.news.0d34984f39'),
+        }),
         record(possessionGames),
       );
   }
@@ -604,10 +668,10 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
       const won = ahead.filter((g) => g === 'W').length;
       add(
         `possession-ahead-${ahead.length}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'neutral',
         'minor',
-        `점유율에서 앞선 경기 승률 ${percent(won / ahead.length)}`,
+        sourceMessage('copy.news.3b21578b94', { p0: percent(won / ahead.length) }),
         record(ahead),
       );
     }
@@ -615,19 +679,19 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
   if (p.result === 'W' && p.possession <= 0.35)
     add(
       'low-possession-win',
-      '분석',
+      sourceMessage('copy.NewsFeed.45ec3425c8'),
       'good',
       'minor',
-      `점유율 ${percent(p.possession)}로 승리… 실리 축구의 정석`,
+      sourceMessage('copy.news.ed1bc306dd', { p0: percent(p.possession) }),
       `${versus} ${score}`,
     );
   if (p.result === 'L' && p.possession >= 0.65)
     add(
       'possession-loss',
-      '분석',
+      sourceMessage('copy.NewsFeed.45ec3425c8'),
       'bad',
       'minor',
-      `점유율 ${percent(p.possession)}에도 패배… 결정력에 발목`,
+      sourceMessage('copy.news.f236aed084', { p0: percent(p.possession) }),
       `${versus} ${score}`,
     );
   if (story.first === 'us') {
@@ -636,12 +700,12 @@ function possessionNews(ctx: NewsContext, { p, score, versus, story, add }: Matc
       const dropped = scoredFirst.filter((g) => g !== 'W').length;
       add(
         `scored-first-${scoredFirst.length}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         dropped ? 'neutral' : 'good',
         'minor',
         dropped
-          ? `선제골 넣은 경기 ${record(scoredFirst)}`
-          : `선제골 넣은 ${scoredFirst.length}경기 전승… 리드를 지키는 팀`,
+          ? sourceMessage('copy.news.96c7e30dc9', { p0: record(scoredFirst) })
+          : sourceMessage('copy.news.48db594333', { p0: scoredFirst.length }),
       );
     }
   }
@@ -659,19 +723,19 @@ function xgNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
   if (p.result === 'L' && p.xg - p.xga >= 1)
     add(
       'xg-loss',
-      '분석',
+      sourceMessage('copy.NewsFeed.45ec3425c8'),
       'bad',
       'notable',
-      `xG ${two(p.xg)} 대 ${two(p.xga)}에도 패배… 지독한 불운`,
+      sourceMessage('copy.news.0ffbd3b4e8', { p0: two(p.xg), p1: two(p.xga) }),
       `${versus} ${score}`,
     );
   else if (p.result === 'W' && p.xga - p.xg >= 1)
     add(
       'xg-steal',
-      '분석',
+      sourceMessage('copy.NewsFeed.45ec3425c8'),
       'good',
       'minor',
-      `기대득점 열세 딛고 승리… 효율 축구 빛났다`,
+      sourceMessage('copy.news.9c0f06cac9'),
       `xG ${two(p.xg)}-${two(p.xga)} · ${versus} ${score}`,
     );
   const finishing = goalsFor - xgFor,
@@ -686,31 +750,31 @@ function xgNews(ctx: NewsContext, { p, score, versus, add }: MatchNews) {
     once(`finishing-hot-${level}`, finishing >= level, () =>
       add(
         `finishing-hot-${level}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'good',
         'notable',
-        `기대득점보다 ${one(finishing)}골 더… 매서운 결정력`,
-        `${goalsFor}골 · xG ${one(xgFor)}`,
+        sourceMessage('copy.news.8d09fc99a8', { p0: one(finishing) }),
+        sourceMessage('copy.news.c6d20d6a5a', { p0: goalsFor, p1: one(xgFor) }),
       ),
     );
     once(`finishing-cold-${level}`, -finishing >= level, () =>
       add(
         `finishing-cold-${level}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'bad',
         'notable',
-        `xG 대비 −${one(-finishing)}골… 결정력 빨간불`,
-        `${goalsFor}골 · xG ${one(xgFor)}`,
+        sourceMessage('copy.news.98cf3dd770', { p0: one(-finishing) }),
+        sourceMessage('copy.news.c6d20d6a5a', { p0: goalsFor, p1: one(xgFor) }),
       ),
     );
     once(`keeping-hot-${level}`, keeping >= level, () =>
       add(
         `keeping-hot-${level}`,
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'good',
         'notable',
-        `기대실점보다 ${one(keeping)}골 덜 내줘… 골문 철벽`,
-        `${goalsAgainst}실점 · xGA ${one(xgAgainst)}`,
+        sourceMessage('copy.news.2951325a43', { p0: one(keeping) }),
+        sourceMessage('copy.news.d00493f3dd', { p0: goalsAgainst, p1: one(xgAgainst) }),
       ),
     );
   }
@@ -739,10 +803,10 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
     if (p.possession >= 0.6)
       add(
         'season-possession',
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'neutral',
         'minor',
-        `점유율 ${percent(p.possession)}… 시즌 최고 점유율`,
+        sourceMessage('copy.news.06c87d46d5', { p0: percent(p.possession) }),
         `${versus} ${score}`,
       );
   });
@@ -750,10 +814,10 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
     if (completed / attempts >= 0.82)
       add(
         'season-passing',
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'good',
         'minor',
-        `패스 성공률 ${percent(completed / attempts)}… 시즌 최고`,
+        sourceMessage('copy.news.04944b2486', { p0: percent(completed / attempts) }),
         `${completed}/${attempts} · ${versus}`,
       );
   });
@@ -761,10 +825,10 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
     if (shotCount >= 12)
       add(
         'season-shots',
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'good',
         'minor',
-        `슈팅 ${shotCount}개 폭격… 시즌 최다`,
+        sourceMessage('copy.news.c15fbe8f48', { p0: shotCount }),
         `${versus} ${score}`,
       );
   });
@@ -772,10 +836,10 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
     if (p.xg! >= 2)
       add(
         'season-xg',
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'good',
         'minor',
-        `기대득점(xG) ${two(p.xg!)}… 시즌 최고 화력`,
+        sourceMessage('copy.news.2a1f038866', { p0: two(p.xg!) }),
         `${versus} ${score}`,
       );
   });
@@ -788,21 +852,24 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
       if (ppda! <= 7)
         add(
           'season-ppda',
-          '분석',
+          sourceMessage('copy.NewsFeed.45ec3425c8'),
           'good',
           'minor',
-          `PPDA ${one(ppda!)}… 시즌 가장 강한 전방 압박`,
-          `상대 빌드업 패스 ${o[TD.buildUpPasses]}회 · 압박 수비 ${t[TD.pressActions]}회`,
+          sourceMessage('copy.news.5b55a18101', { p0: one(ppda!) }),
+          sourceMessage('copy.news.a034192c2a', {
+            p0: o[TD.buildUpPasses],
+            p1: t[TD.pressActions],
+          }),
         );
     });
     best('high-turnovers', t[TD.highTurnovers], true, () => {
       if (t[TD.highTurnovers] >= 9)
         add(
           'season-high-turnovers',
-          '분석',
+          sourceMessage('copy.NewsFeed.45ec3425c8'),
           'good',
           'minor',
-          `하이 턴오버 ${t[TD.highTurnovers]}회… 시즌 최다`,
+          sourceMessage('copy.news.ae96de7951', { p0: t[TD.highTurnovers] }),
           versus,
         );
     });
@@ -810,20 +877,20 @@ function seasonHighs({ seasonBest }: NewsContext, { p, index, score, versus, add
       if (t[TD.keyPasses] >= 10)
         add(
           'season-key-passes',
-          '분석',
+          sourceMessage('copy.NewsFeed.45ec3425c8'),
           'good',
           'minor',
-          `키패스 ${t[TD.keyPasses]}개… 시즌 최다 찬스 메이킹`,
+          sourceMessage('copy.news.6020e1eb7d', { p0: t[TD.keyPasses] }),
           versus,
         );
     });
     if (t[TD.bigChances] >= 4 && t[TD.bigChancesScored] === 0)
       add(
         'big-chances-missed',
-        '분석',
+        sourceMessage('copy.NewsFeed.45ec3425c8'),
         'bad',
         'minor',
-        `빅찬스 ${t[TD.bigChances]}번 모두 놓쳤다`,
+        sourceMessage('copy.news.9791d4afe2', { p0: t[TD.bigChances] }),
         versus,
       );
   }
@@ -854,59 +921,67 @@ function playerGoalNews(
   if (goals >= 3)
     add(
       `hat-trick:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'major',
-      `${player} 해트트릭 폭발… ${name}, ${versus} ${score}`,
+      sourceMessage('copy.news.857a4c0986', { p0: player, p1: name, p2: versus, p3: score }),
       undefined,
       true,
     );
   else if (goals >= 1 && goals + assists >= 3)
     add(
       `one-man-show:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'notable',
-      `${player}, ${goals}골 ${assists}도움 원맨쇼`,
+      sourceMessage('copy.news.f4dee049d1', { p0: player, p1: goals, p2: assists }),
       `${versus} ${score}`,
     );
   else if (goals === 2)
     add(
       `brace:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'notable',
       p.result === 'W'
-        ? `'${player} 멀티골' ${name}, ${versus} ${score} 승리`
-        : `${player} 멀티골에도… ${versus} ${score} ${p.result === 'D' ? '무승부' : '패배'}`,
+        ? sourceMessage('copy.news.baafba9728', { p0: player, p1: name, p2: versus, p3: score })
+        : sourceMessage('copy.news.a88100141a', {
+            p0: player,
+            p1: versus,
+            p2: score,
+            p3:
+              p.result === 'D'
+                ? sourceMessage('result.draw.label')
+                : sourceMessage('result.loss.label'),
+          }),
     );
   if (assists >= 3)
     add(
       `assists:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'notable',
-      `${player}, 도움 해트트릭… 특급 도우미`,
+      sourceMessage('copy.news.fe5063189c', { p0: player }),
       versus,
     );
   const careerBefore = careerGoals.get(line.id) || 0;
   if (goals && careerBefore === 0 && line.id.includes(':academy:'))
     add(
       `academy-goal:${line.id}`,
-      '유스',
+      sourceMessage('copy.NewsFeed.690198ae20'),
       'good',
       'major',
-      `'성골 유스' ${player}, 1군 데뷔골`,
+      sourceMessage('copy.news.ff6d31daf6', { p0: player }),
       versus,
       true,
     );
   else if (goals && debut)
     add(
       `debut-goal:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'notable',
-      `${player}, 데뷔전 데뷔골… 화려한 신고식`,
+      sourceMessage('copy.news.6042a65038', { p0: player }),
       versus,
     );
   const run = goals > 0 ? (scorerRun.get(line.id) || 0) + 1 : 0;
@@ -914,10 +989,10 @@ function playerGoalNews(
   if ([3, 4, 5, 7, 10].includes(run))
     add(
       `scoring-run:${line.id}:${run}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       run >= 5 ? 'notable' : 'minor',
-      `${player}, ${run}경기 연속골… 물오른 득점 감각`,
+      sourceMessage('copy.news.c9a9f9afec', { p0: player, p1: run }),
     );
   const before = seasonGoals.get(line.id) || 0,
     after = before + goals;
@@ -927,20 +1002,27 @@ function playerGoalNews(
       if (before < mark && after >= mark)
         add(
           `season-goals:${line.id}:${mark}`,
-          '선수',
+          sourceMessage('team.column.player'),
           'good',
           'notable',
-          `${player}, 시즌 ${mark}호골… ${mark === 10 ? '두 자릿수 득점 고지' : '득점 행진'}`,
+          sourceMessage('copy.news.6c45ba5afa', {
+            p0: player,
+            p1: mark,
+            p2:
+              mark === 10
+                ? sourceMessage('copy.news.3ace1dc6b2')
+                : sourceMessage('copy.news.abf9800db7'),
+          }),
         );
     careerGoals.set(line.id, careerBefore + goals);
     for (const mark of [50, 100, 150, 200])
       if (careerBefore < mark && careerBefore + goals >= mark)
         add(
           `career-goals:${line.id}:${mark}`,
-          '선수',
+          sourceMessage('team.column.player'),
           'good',
           'major',
-          `${player}, 구단 통산 ${mark}호골 대기록`,
+          sourceMessage('copy.news.7d1195adb1', { p0: player, p1: mark }),
           undefined,
           true,
         );
@@ -950,10 +1032,10 @@ function playerGoalNews(
   if (after >= 5 && [6, 10].includes(dry))
     add(
       `drought:${line.id}:${dry}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'bad',
       'minor',
-      `${player}, ${dry}경기째 침묵… 골 가뭄 길어진다`,
+      sourceMessage('copy.news.36277518f8', { p0: player, p1: dry }),
     );
 }
 
@@ -964,28 +1046,31 @@ function playerPlayNews({ who }: NewsContext, { p, score, versus, add }: MatchNe
   if (line.metrics[2] >= 50 && line.metrics[3] / line.metrics[2] >= 0.95)
     add(
       `passing:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'minor',
-      `${player}, 패스 성공률 ${percent(line.metrics[3] / line.metrics[2])}… 중원 사령관`,
+      sourceMessage('copy.news.99562ba334', {
+        p0: player,
+        p1: percent(line.metrics[3] / line.metrics[2]),
+      }),
       `${line.metrics[3]}/${line.metrics[2]}`,
     );
   if (line.metrics[6] + line.metrics[7] >= 10)
     add(
       `hoover:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'minor',
-      `${player}, 태클·인터셉트 ${line.metrics[6] + line.metrics[7]}회… '진공청소기'`,
+      sourceMessage('copy.news.cd77977438', { p0: player, p1: line.metrics[6] + line.metrics[7] }),
       versus,
     );
   if (line.metrics[9] >= 7 || (line.metrics[9] >= 5 && p.ga === 0))
     add(
       `keeper:${line.id}`,
-      '선수',
+      sourceMessage('team.column.player'),
       'good',
       'notable',
-      `${player}, 선방 ${line.metrics[9]}회 '거미손'`,
+      sourceMessage('copy.news.59267aa2b4', { p0: player, p1: line.metrics[9] }),
       `${versus} ${score}`,
     );
   const d = line.detail;
@@ -993,19 +1078,19 @@ function playerPlayNews({ who }: NewsContext, { p, score, versus, add }: MatchNe
     if (d[PD.keyPasses] >= 5)
       add(
         `key-passes:${line.id}`,
-        '선수',
+        sourceMessage('team.column.player'),
         'good',
         'minor',
-        `${player}, 키패스 ${d[PD.keyPasses]}개로 찬스 메이킹`,
+        sourceMessage('copy.news.3dc73a13ca', { p0: player, p1: d[PD.keyPasses] }),
         `xA ${two(d[PD.xa] / 100)}`,
       );
     if (d[PD.xg] >= 150 && goals === 0)
       add(
         `xg-blank:${line.id}`,
-        '선수',
+        sourceMessage('team.column.player'),
         'bad',
         'minor',
-        `${player}, xG ${two(d[PD.xg] / 100)}에도 무득점`,
+        sourceMessage('copy.news.980d25d5c1', { p0: player, p1: two(d[PD.xg] / 100) }),
         versus,
       );
   }
@@ -1068,7 +1153,7 @@ function tableNews(w: World, name: string): NewsItem[] {
         year: w.year,
         round: snapshot.round,
         order: snapshot.round * 1000 + 900 + (items.length % 50),
-        tag: '순위',
+        tag: sourceMessage('copy.BallonDorView.8f363885a3'),
         tone,
         weight,
         title,
@@ -1083,33 +1168,62 @@ function tableNews(w: World, name: string): NewsItem[] {
           'top',
           'good',
           'major',
-          beenTop ? `${name}, 선두 탈환` : `${name}, 리그 선두 등극!`,
-          second ? `2위와 승점 ${snapshot.rows[0][1] - second[1]}점 차` : undefined,
+          beenTop
+            ? sourceMessage('copy.news.4d41acc29a', { p0: name })
+            : sourceMessage('copy.news.a03cf66d6d', { p0: name }),
+          second
+            ? sourceMessage('copy.news.7cad1d42b7', { p0: snapshot.rows[0][1] - second[1] })
+            : undefined,
           !beenTop,
         );
         beenTop = true;
       } else if ([5, 10, 15, 20].includes(topRounds))
-        item(`top-${topRounds}`, 'good', 'notable', `${name}, ${topRounds}라운드째 선두 질주`);
+        item(
+          `top-${topRounds}`,
+          'good',
+          'notable',
+          sourceMessage('copy.news.a325d5c16a', { p0: name, p1: topRounds }),
+        );
       if (rank === 1 && second && snapshot.round >= 15) {
         const gap = snapshot.rows[0][1] - second[1];
         for (const mark of [6, 10, 15])
           if (gap >= mark && !leadMarks.has(mark)) {
             leadMarks.add(mark);
-            item(`lead-${mark}`, 'good', 'notable', `${name}, 2위와 승점 ${gap}점 차… 독주 체제`);
+            item(
+              `lead-${mark}`,
+              'good',
+              'notable',
+              sourceMessage('copy.news.73b7bac2f6', { p0: name, p1: gap }),
+            );
           }
       }
       if (promotion && rank <= promotion && previousRank > promotion && rank !== 1)
-        item('promotion-zone', 'good', 'notable', `${name}, 자동 승격권 진입… ${rank}위`);
+        item(
+          'promotion-zone',
+          'good',
+          'notable',
+          sourceMessage('copy.news.ba77450179', { p0: name, p1: rank }),
+        );
       if (relegation && rank > size - relegation && previousRank <= size - relegation)
-        item('relegation-zone', 'bad', 'notable', `${name}, 강등권 추락… ${rank}위`);
+        item(
+          'relegation-zone',
+          'bad',
+          'notable',
+          sourceMessage('copy.news.b84d2b860c', { p0: name, p1: rank }),
+        );
       if (relegation && rank <= size - relegation && previousRank > size - relegation)
-        item('escape', 'good', 'notable', `${name}, 강등권 탈출… ${rank}위`);
+        item(
+          'escape',
+          'good',
+          'notable',
+          sourceMessage('copy.news.35d51360f6', { p0: name, p1: rank }),
+        );
       if (previousRank - rank >= 3 && rank !== 1)
         item(
           'climb',
           'good',
           'minor',
-          `${name}, 단숨에 ${previousRank - rank}계단 도약… ${rank}위`,
+          sourceMessage('copy.news.1b09983e54', { p0: name, p1: previousRank - rank, p2: rank }),
         );
     }
     previousRank = rank;
@@ -1129,7 +1243,7 @@ function honours(w: World): NewsItem[] {
     year: last.year,
     round: 46,
     order: 46 * 1000 + 990,
-    tag: '기록' as const,
+    tag: sourceMessage('navigation.history'),
     tone: 'good' as const,
     weight: 'major' as const,
     celebrate: true,
@@ -1137,18 +1251,29 @@ function honours(w: World): NewsItem[] {
   if (last.rank === 1)
     items.push({
       ...base('league'),
-      title: `${name}, ${last.tier === 0 ? '리그 우승!' : `${last.tier + 1}부 우승!`}`,
-      detail: `승점 ${last.points} · ${last.won}승 ${last.drawn}무 ${last.lost}패`,
+      title: `${name}, ${last.tier === 0 ? sourceMessage('copy.news.a7e193f977') : sourceMessage('copy.news.e273562b7b', { p0: last.tier + 1 })}`,
+      detail: sourceMessage('copy.news.6bf44c20c1', {
+        p0: last.points,
+        p1: last.won,
+        p2: last.drawn,
+        p3: last.lost,
+      }),
     });
   // Cups decided in May are celebrated on the day of the final (their events); older seasons
   // without those events are celebrated here at the close.
   const won = (kind: string) => eventsInSeason(w, last.year).some((event) => event.kind === kind);
   const cup = last.champions.find((c) => c.cup === w.playerClub);
   if (cup && !won('cup-honor'))
-    items.push({ ...base('cup'), title: `${name}, ${country(cup.country).name} 컵 우승!` });
+    items.push({
+      ...base('cup'),
+      title: sourceMessage('copy.news.b295075154', { p0: name, p1: country(cup.country).name }),
+    });
   for (const europe of last.europe)
     if (europe.winner === w.playerClub && !won('europe-honor'))
-      items.push({ ...base(`europe-${europe.kind}`), title: `${name}, ${europe.name} 정상!` });
+      items.push({
+        ...base(`europe-${europe.kind}`),
+        title: sourceMessage('copy.news.313915a09d', { p0: name, p1: europe.name }),
+      });
   const award = ballonDorNews(w, last);
   if (award?.ours) items.push({ ...base('ballon-dor'), title: award.title, detail: award.detail });
   else if (award) {
@@ -1169,14 +1294,20 @@ function ballonDorNews(w: World, last: World['history'][number]) {
   const winner = podium[0]!,
     ours = winner.club === w.playerClub;
   const detail = podium
-    .map(
-      (place, i) =>
-        `${i + 1}위 ${place.name}(${clubName(place.club)}) ${place.goals}골 ${place.assists}도움 · ${place.points}점`,
+    .map((place, i) =>
+      sourceMessage('copy.news.f773f19b57', {
+        p0: i + 1,
+        p1: place.name,
+        p2: clubName(place.club),
+        p3: place.goals,
+        p4: place.assists,
+        p5: place.points,
+      }),
     )
     .join(' · ');
   const title = ours
-    ? `${winner.name}, 발롱도르 수상!`
-    : `발롱도르: ${winner.name}(${clubName(winner.club)})`;
+    ? sourceMessage('copy.news.acf8ebe63d', { p0: winner.name })
+    : sourceMessage('copy.news.485919afba', { p0: winner.name, p1: clubName(winner.club) });
   return { ours, title, detail, text: { title, detail } };
 }
 
@@ -1197,19 +1328,21 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'transfer-in':
       return {
         ...base,
-        tag: '이적',
+        tag: sourceMessage('copy.NewsFeed.832934e8a8'),
         tone: 'good',
         weight: 'notable',
-        title: `[오피셜] ${event.title} 완료`,
+        title: sourceMessage('copy.news.8a1d91593b', { p0: event.title }),
         detail: first(event.detail),
       };
     case 'transfer-out':
       return {
         ...base,
-        tag: '이적',
+        tag: sourceMessage('copy.NewsFeed.832934e8a8'),
         tone: 'neutral',
         weight: 'notable',
-        title: `[오피셜] ${event.title.replace('의 새로운 도전', '')}, 팀 떠난다`,
+        title: sourceMessage('copy.news.1525e1ef66', {
+          p0: event.title.replace(sourceMessage('copy.news.79f5163cc0'), ''),
+        }),
         detail: first(event.detail),
       };
     case 'manager-hire': {
@@ -1217,10 +1350,10 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
       const style = Object.values(STYLE_INFO).find((info) => parts.includes(info.label));
       return {
         ...base,
-        tag: '구단',
+        tag: sourceMessage('copy.InvestmentTotals.47dfdfd818'),
         tone: 'neutral',
         weight: 'major',
-        title: `[오피셜] ${event.title}`,
+        title: sourceMessage('copy.news.a6b1154b33', { p0: event.title }),
         detail: style ? style.school : first(event.detail),
       };
     }
@@ -1228,7 +1361,7 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'rival-sacking':
       return {
         ...base,
-        tag: '이적',
+        tag: sourceMessage('copy.NewsFeed.832934e8a8'),
         tone: 'neutral',
         weight: 'minor',
         title: event.title,
@@ -1237,7 +1370,7 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'manager-departure':
       return {
         ...base,
-        tag: '구단',
+        tag: sourceMessage('copy.InvestmentTotals.47dfdfd818'),
         tone: 'bad',
         weight: 'major',
         title: event.title,
@@ -1246,7 +1379,7 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'youth-intake':
       return {
         ...base,
-        tag: '유스',
+        tag: sourceMessage('copy.NewsFeed.690198ae20'),
         tone: 'neutral',
         weight: 'minor',
         title: event.title,
@@ -1255,16 +1388,16 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'youth-promotion':
       return {
         ...base,
-        tag: '유스',
+        tag: sourceMessage('copy.NewsFeed.690198ae20'),
         tone: 'good',
         weight: 'notable',
-        title: `'유스 출신' ${event.title}`,
+        title: sourceMessage('copy.news.d5c8935f87', { p0: event.title }),
         detail: first(event.detail),
       };
     case 'facility':
       return {
         ...base,
-        tag: '구단',
+        tag: sourceMessage('copy.InvestmentTotals.47dfdfd818'),
         tone: 'good',
         weight: 'minor',
         title: `${name}, ${event.title}`,
@@ -1273,7 +1406,7 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'facility-open':
       return {
         ...base,
-        tag: '구단',
+        tag: sourceMessage('copy.InvestmentTotals.47dfdfd818'),
         tone: 'good',
         weight: 'notable',
         title: `${name}, ${event.title}`,
@@ -1282,10 +1415,10 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'sponsor-sign':
       return {
         ...base,
-        tag: '구단',
+        tag: sourceMessage('copy.InvestmentTotals.47dfdfd818'),
         tone: 'neutral',
         weight: 'minor',
-        title: `${name}, 새 후원 계약`,
+        title: sourceMessage('copy.news.36c4a61665', { p0: name }),
         // The event names the slot (→ECON-8) and its detail the partner.
         detail: `${event.title} · ${first(event.detail)}`,
       };
@@ -1298,30 +1431,37 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
           : (event.title.split(' · ')[1] ?? event.title);
       return {
         ...base,
-        tag: '구단',
+        tag: sourceMessage('copy.InvestmentTotals.47dfdfd818'),
         tone: 'neutral',
         weight: 'notable',
-        title: `${name}, ${event.kind === 'build' ? '방향' : '구단 비전'} '${label}' 발표`,
+        title: sourceMessage('copy.news.2811b23648', {
+          p0: name,
+          p1:
+            event.kind === 'build'
+              ? sourceMessage('copy.news.d7895d7647')
+              : sourceMessage('copy.news.d3fab97084'),
+          p2: label,
+        }),
         ...(event.kind === 'build' ? { detail: event.detail } : {}),
       };
     }
     case 'promotion':
       return {
         ...base,
-        tag: '순위',
+        tag: sourceMessage('copy.BallonDorView.8f363885a3'),
         tone: 'good',
         weight: 'major',
-        title: `${name}, 승격 확정!`,
+        title: sourceMessage('copy.news.1959b18c23', { p0: name }),
         detail: event.detail,
         celebrate: true,
       };
     case 'relegation':
       return {
         ...base,
-        tag: '순위',
+        tag: sourceMessage('copy.BallonDorView.8f363885a3'),
         tone: 'bad',
         weight: 'major',
-        title: `${name}, 강등`,
+        title: sourceMessage('copy.news.3fdfd0292d', { p0: name }),
         detail: event.detail,
       };
     case 'cup-prize': {
@@ -1330,16 +1470,20 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
       const late = / (4강|8강) 통과/.test(event.title);
       return {
         ...base,
-        tag: '경기',
+        tag: sourceMessage('copy.LabPage.e56314e9a1'),
         tone: 'good',
-        weight: event.title.includes(' 4강 통과') ? 'major' : late ? 'notable' : 'minor',
-        title: `${name}, ${event.title.replace(' 4강 통과', ' 결승 진출').replace(' 8강 통과', ' 4강 진출')}`,
+        weight: event.title.includes(sourceMessage('copy.news.6351bcdae5'))
+          ? 'major'
+          : late
+            ? 'notable'
+            : 'minor',
+        title: `${name}, ${event.title.replace(sourceMessage('copy.news.6351bcdae5'), sourceMessage('copy.news.ae6c276293')).replace(sourceMessage('copy.news.05003ba521'), sourceMessage('copy.news.7166cb8a7f'))}`,
       };
     }
     case 'cup-exit':
       return {
         ...base,
-        tag: '경기',
+        tag: sourceMessage('copy.LabPage.e56314e9a1'),
         tone: 'bad',
         weight: /결승|4강|8강/.test(event.title) ? 'notable' : 'minor',
         title: `${name}, ${event.title}`,
@@ -1348,30 +1492,32 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'europe-honor':
       return {
         ...base,
-        tag: '기록',
+        tag: sourceMessage('navigation.history'),
         tone: 'good',
         weight: 'major',
-        title: `${name}, ${event.title.replace(/ 우승$/, '')} ${event.kind === 'cup-honor' ? '우승!' : '정상!'}`,
+        title: `${name}, ${event.title.replace(/ 우승$/, '')} ${event.kind === 'cup-honor' ? sourceMessage('copy.CupsView.db1f9c8207') : sourceMessage('copy.news.9d48af84fb')}`,
         detail: event.detail,
         celebrate: true,
       };
     case 'retirement-announce':
       return {
         ...base,
-        tag: '선수',
+        tag: sourceMessage('team.column.player'),
         tone: 'neutral',
         weight: 'notable',
-        title: `${event.title}… 이번 시즌이 마지막`,
+        title: sourceMessage('copy.news.912cf487a1', { p0: event.title }),
         detail: event.detail,
       };
     case 'retirement':
-      return event.detail.includes('은퇴')
+      return event.detail.includes(sourceMessage('copy.Rich.fc798874df'))
         ? {
             ...base,
-            tag: '선수',
+            tag: sourceMessage('team.column.player'),
             tone: 'neutral',
             weight: 'minor',
-            title: `${event.title.replace('의 다음 장', '')}, 현역 은퇴`,
+            title: sourceMessage('copy.news.a48c80fa59', {
+              p0: event.title.replace(sourceMessage('copy.news.df7eb52b69'), ''),
+            }),
             detail: event.detail,
           }
         : undefined;
@@ -1379,17 +1525,17 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
       const weeks = Number(/약 (\d+)주/.exec(event.detail)?.[1] || 0);
       return {
         ...base,
-        tag: '선수',
+        tag: sourceMessage('team.column.player'),
         tone: 'bad',
         weight: weeks >= 6 ? 'notable' : 'minor',
-        title: `${event.title}… 약 ${weeks}주 결장`,
+        title: sourceMessage('copy.news.9804e35b15', { p0: event.title, p1: weeks }),
         detail: event.detail.split(' · ')[1],
       };
     }
     case 'unsettled':
       return {
         ...base,
-        tag: '선수',
+        tag: sourceMessage('team.column.player'),
         tone: 'bad',
         weight: 'notable',
         title: event.title,
@@ -1399,7 +1545,7 @@ function eventNews(w: World, name: string, event: Event, index: number): NewsIte
     case 'potential-stall':
       return {
         ...base,
-        tag: '유스',
+        tag: sourceMessage('copy.NewsFeed.690198ae20'),
         tone: event.kind === 'potential-breakthrough' ? 'good' : 'bad',
         weight: event.kind === 'potential-breakthrough' ? 'notable' : 'minor',
         title: event.title,
@@ -1477,7 +1623,7 @@ function journalContext(w: World, state: NewsState): NewsContext {
     ...state,
     w,
     name: clubOf(w).name,
-    who: (id) => names.get(id) ?? '선수',
+    who: (id) => names.get(id) ?? sourceMessage('team.column.player'),
     appeared: new JournalSet(state.appeared),
     careerGoals: new JournalMap(state.careerGoals),
     scorerRun: new JournalMap(state.scorerRun),
@@ -1519,7 +1665,7 @@ function appendHeadline(j: NewsJournal, item: NewsItem) {
   }
   if (ids.has(item.id)) return;
   if (bucket.length >= NEWS_LIMITS.perSeason)
-    throw new Error('시즌 뉴스 용량 한도에 도달했습니다.');
+    throw new Error(sourceMessage('copy.news.9b6c1eabd9'));
   numberJournal(j);
   ids.add(item.id);
   bucket.push({ ...item, sequence: ++j.count! });
@@ -1594,7 +1740,7 @@ export function refreshNewsJournal(w: World) {
   ctx.name = clubOf(w).name;
   // Resolve names again after a signing; already recorded text stays frozen.
   const names = new Map(w.players.map((p) => [p.id, p.name]));
-  ctx.who = (id) => names.get(id) ?? '선수';
+  ctx.who = (id) => names.get(id) ?? sourceMessage('team.column.player');
   const clubNames = new Map(w.clubs.map((c) => [c.id, c.name]));
   while (j.matches < w.ownMatches.length) {
     const m = w.ownMatches[j.matches];
@@ -1639,7 +1785,7 @@ export function newsPage(w: World, offset = 0, limit: number = NEWS_LIMITS.page)
     limit < 1 ||
     limit > NEWS_LIMITS.page
   )
-    throw new Error('뉴스 조회 범위가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.news.15e329bc9e'));
   const j = w.newsJournal;
   if (!j) return deriveClubNews(w).slice(offset, offset + limit);
   const out: NewsItem[] = [];
@@ -1666,7 +1812,7 @@ export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[]
   if (!j) {
     const all = deriveClubNews(w);
     const at = before ? all.findIndex((item) => item.id === before) : -1;
-    if (before && at < 0) throw new Error('뉴스 위치를 찾지 못했습니다.');
+    if (before && at < 0) throw new Error(sourceMessage('copy.news.534fe04a9e'));
     return all
       .slice(at + 1)
       .filter((item) => !tag || item.tag === tag)
@@ -1678,7 +1824,7 @@ export function newsBefore(w: World, before?: string, tag?: NewsTag): NewsItem[]
     const year = Number(before.split(':')[0]);
     index = j.years.indexOf(year);
     const at = j.seasons[year]?.findIndex((item) => item.id === before) ?? -1;
-    if (index < 0 || at < 0) throw new Error('뉴스 위치를 찾지 못했습니다.');
+    if (index < 0 || at < 0) throw new Error(sourceMessage('copy.news.534fe04a9e'));
     offset = at + 1;
   }
   const result: NewsItem[] = [];

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { LINEAGES, lineageName } from './cupCompetitions';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import type {
@@ -73,8 +76,8 @@ function finalLine(w: World, winner: string, final?: CupFinal) {
     <>
       <Club w={w} id={winner} strong />
       <em>
-        {final.score[0]}–{final.score[1]}
-        {final.decided === 'pens' ? ' (승부차기)' : ''}
+        {localizeValue(final.score[0])}–{localizeValue(final.score[1])}
+        {localizeValue(final.decided === 'pens' ? sourceMessage('copy.CupHistory.52e5d7ab38') : '')}
       </em>
       <Club w={w} id={final.runnerUp} />
     </>
@@ -98,55 +101,83 @@ function CupJourney({
   rows: RouteRow[];
   onReport: (match: MatchRecord) => void;
 }) {
+  useTextLocale();
   return (
     <ol className={ch.route}>
-      {rows.map((row) =>
-        row.kind === 'phase' ? (
-          <li data-surface="sheet" key={row.label} className={ch.routeCard}>
-            <header>
-              <b>{row.label}</b>
-              <span className={`${ch.chip} ${RESULT_TONE[row.result] ?? ''}`}>{row.result}</span>
-            </header>
-            <p className={ch.routeScore}>{row.record}</p>
-            <p className={ch.routeMeta}>{row.standing}</p>
-          </li>
-        ) : (
-          <li
-            data-surface="sheet"
-            key={row.legs[0].match.id}
-            className={`${ch.routeCard} ${row.result === '우승' ? ch.routeTitle : ''}`}
-          >
-            <header>
-              <b>{row.label}</b>
-              <span className={`${ch.chip} ${RESULT_TONE[row.result] ?? ''}`}>{row.result}</span>
-              {row.decided && <span className={ch.chip}>{row.decided}</span>}
-            </header>
-            <p className={ch.routeOpponent}>
-              <Club w={w} id={row.opponent} />
-              {row.tag && <small>{row.tag}</small>}
-            </p>
-            <p className={ch.routeScore}>{row.summary}</p>
-            {row.xg && <p className={ch.routeMeta}>{row.xg}</p>}
-            {row.legs
-              .filter((leg) => leg.scorers)
-              .map((leg) => (
-                <p key={leg.match.id} className={ch.routeMeta}>
-                  {row.legs.length > 1 ? `${leg.leg}차전 ` : ''}득점 {leg.scorers}
-                </p>
-              ))}
-            <div className={ch.routeActions}>
-              {row.legs.map((leg) => (
-                <button
-                  key={leg.match.id}
-                  type="button"
-                  aria-label={`${row.label}${leg.leg ? ` ${leg.leg}차전` : ''} 경기 리포트`}
-                  onClick={() => onReport(leg.match)}
-                >
-                  {leg.leg ? `${leg.leg}차전 ` : ''}경기 리포트
-                </button>
-              ))}
-            </div>
-          </li>
+      {localizeValue(
+        rows.map((row) =>
+          row.kind === 'phase' ? (
+            <li data-surface="sheet" key={row.label} className={ch.routeCard}>
+              <header>
+                <b>{localizeValue(row.label)}</b>
+                <span className={`${ch.chip} ${RESULT_TONE[row.result] ?? ''}`}>
+                  {localizeValue(row.result)}
+                </span>
+              </header>
+              <p className={ch.routeScore}>{localizeValue(row.record)}</p>
+              <p className={ch.routeMeta}>{localizeValue(row.standing)}</p>
+            </li>
+          ) : (
+            <li
+              data-surface="sheet"
+              key={row.legs[0].match.id}
+              className={`${ch.routeCard} ${row.result === sourceMessage('copy.CupHistory.31e52393f3') ? ch.routeTitle : ''}`}
+            >
+              <header>
+                <b>{localizeValue(row.label)}</b>
+                <span className={`${ch.chip} ${RESULT_TONE[row.result] ?? ''}`}>
+                  {localizeValue(row.result)}
+                </span>
+                {localizeValue(
+                  row.decided && <span className={ch.chip}>{localizeValue(row.decided)}</span>,
+                )}
+              </header>
+              <p className={ch.routeOpponent}>
+                <Club w={w} id={row.opponent} />
+                {localizeValue(row.tag && <small>{localizeValue(row.tag)}</small>)}
+              </p>
+              <p className={ch.routeScore}>{localizeValue(row.summary)}</p>
+              {localizeValue(row.xg && <p className={ch.routeMeta}>{localizeValue(row.xg)}</p>)}
+              {localizeValue(
+                row.legs
+                  .filter((leg) => leg.scorers)
+                  .map((leg) => (
+                    <p key={leg.match.id} className={ch.routeMeta}>
+                      {richMessage('copy.CupHistory.53caf0198b', {
+                        p0:
+                          row.legs.length > 1
+                            ? sourceMessage('copy.CupHistory.7c43974c45', { p0: leg.leg })
+                            : '',
+                        p1: leg.scorers,
+                      })}
+                    </p>
+                  )),
+              )}
+              <div className={ch.routeActions}>
+                {localizeValue(
+                  row.legs.map((leg) => (
+                    <button
+                      key={leg.match.id}
+                      type="button"
+                      aria-label={displayMessage('copy.CupHistory.36c4befe2c', {
+                        p0: row.label,
+                        p1: leg.leg
+                          ? sourceMessage('copy.CupHistory.5555cf407e', { p0: leg.leg })
+                          : '',
+                      })}
+                      onClick={() => onReport(leg.match)}
+                    >
+                      {richMessage('copy.CupHistory.8e07000c94', {
+                        p0: leg.leg
+                          ? sourceMessage('copy.CupHistory.7c43974c45', { p0: leg.leg })
+                          : '',
+                      })}
+                    </button>
+                  )),
+                )}
+              </div>
+            </li>
+          ),
         ),
       )}
     </ol>
@@ -155,25 +186,30 @@ function CupJourney({
 
 /** Doubles or trebles: how many, then the latest seasons with their clubs. */
 function Feats({ w, title, feats }: { w: World; title: string; feats: Feat[] }) {
+  useTextLocale();
   const [all, setAll] = useState(false);
   if (!feats.length) return null;
   return (
     <li>
       <span>
-        {title} · {feats.length}회
+        {richMessage('copy.CareerRecordBook.f512e88a6e', { p0: title, p1: feats.length })}
       </span>
       <ol>
-        {(all ? feats : feats.slice(0, FEATS_SHOWN)).map((feat) => (
-          <li key={feat.year}>
-            <small>{seasonName(feat.year)}</small>
-            <Club w={w} id={feat.club} strong={feat.club === w.playerClub} />
-          </li>
-        ))}
+        {localizeValue(
+          (all ? feats : feats.slice(0, FEATS_SHOWN)).map((feat) => (
+            <li key={feat.year}>
+              <small>{localizeValue(seasonName(feat.year))}</small>
+              <Club w={w} id={feat.club} strong={feat.club === w.playerClub} />
+            </li>
+          )),
+        )}
       </ol>
-      {!all && feats.length > FEATS_SHOWN && (
-        <button type="button" className={c.more} onClick={() => setAll(true)}>
-          {feats.length}회 모두 보기
-        </button>
+      {localizeValue(
+        !all && feats.length > FEATS_SHOWN && (
+          <button type="button" className={c.more} onClick={() => setAll(true)}>
+            {richMessage('copy.CupHistory.cb6d9b3332', { p0: feats.length })}
+          </button>
+        ),
       )}
     </li>
   );
@@ -189,86 +225,110 @@ function Honours({
   honours: CupHonours;
   continental: boolean;
 }) {
+  useTextLocale();
   const [all, setAll] = useState(false);
   const top = honours.clubs.slice(0, CLUBS_SHOWN),
     ours = honours.clubs.find((entry) => entry.club === w.playerClub);
   const shown = all ? honours.clubs : ours && !top.includes(ours) ? [...top, ours] : top;
   return (
-    <section className={ch.honours} aria-label="역대 기록">
-      <h4>역대 기록</h4>
-      <table className={ch.honoursTable} aria-label="클럽별 우승 기록">
+    <section className={ch.honours} aria-label={displayMessage('copy.CupHistory.2927780640')}>
+      <h4>{richMessage('copy.CupHistory.2927780640')}</h4>
+      <table className={ch.honoursTable} aria-label={displayMessage('copy.CupHistory.3de8e03131')}>
         <thead>
           <tr>
-            <th scope="col">클럽</th>
-            <th scope="col">우승</th>
-            <th scope="col">준우승</th>
-            <th scope="col">결승</th>
-            <th scope="col">최근 우승</th>
+            <th scope="col">{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
+            <th scope="col">{richMessage('copy.CupHistory.31e52393f3')}</th>
+            <th scope="col">{richMessage('copy.CupHistory.adbe7b40f8')}</th>
+            <th scope="col">{richMessage('copy.CupHistory.d7f030913a')}</th>
+            <th scope="col">{richMessage('copy.CupHistory.3b9a89cc60')}</th>
           </tr>
         </thead>
         <tbody>
-          {shown.map((entry) => (
-            <tr key={entry.club} className={entry.club === w.playerClub ? c.ownRow : undefined}>
-              <td>
-                <Club w={w} id={entry.club} />
-                {entry.club === w.playerClub && <i className={ch.ownTag}>우리 팀</i>}
-              </td>
-              <td>
-                <b>{entry.titles}</b>
-              </td>
-              <td>{entry.runnerUps}</td>
-              <td>{entry.finals}</td>
-              <td>{entry.lastTitle ? seasonName(entry.lastTitle) : '—'}</td>
-            </tr>
-          ))}
+          {localizeValue(
+            shown.map((entry) => (
+              <tr key={entry.club} className={entry.club === w.playerClub ? c.ownRow : undefined}>
+                <td>
+                  <Club w={w} id={entry.club} />
+                  {localizeValue(
+                    entry.club === w.playerClub && (
+                      <i className={ch.ownTag}>{richMessage('copy.BallonDorView.8434ac1486')}</i>
+                    ),
+                  )}
+                </td>
+                <td>
+                  <b>{localizeValue(entry.titles)}</b>
+                </td>
+                <td>{localizeValue(entry.runnerUps)}</td>
+                <td>{localizeValue(entry.finals)}</td>
+                <td>{localizeValue(entry.lastTitle ? seasonName(entry.lastTitle) : '—')}</td>
+              </tr>
+            )),
+          )}
         </tbody>
       </table>
-      {!all && honours.clubs.length > CLUBS_SHOWN && (
-        <button type="button" className={c.more} onClick={() => setAll(true)}>
-          {honours.clubs.length}개 클럽 모두 보기
-        </button>
+      {localizeValue(
+        !all && honours.clubs.length > CLUBS_SHOWN && (
+          <button type="button" className={c.more} onClick={() => setAll(true)}>
+            {richMessage('copy.CupHistory.d2cec228a6', { p0: honours.clubs.length })}
+          </button>
+        ),
       )}
-      {continental && honours.nations.length > 0 && (
-        <table className={ch.honoursTable} aria-label="국가별 우승 기록">
-          <thead>
-            <tr>
-              <th scope="col">국가</th>
-              <th scope="col">우승</th>
-              <th scope="col">준우승</th>
-              <th scope="col">우승 클럽</th>
-            </tr>
-          </thead>
-          <tbody>
-            {honours.nations.map((nation) => (
-              <tr key={nation.code}>
-                <td>{nation.name}</td>
-                <td>
-                  <b>{nation.titles}</b>
-                </td>
-                <td>{nation.runnerUps}</td>
-                <td>{nation.clubs}</td>
+      {localizeValue(
+        continental && honours.nations.length > 0 && (
+          <table
+            className={ch.honoursTable}
+            aria-label={displayMessage('copy.CupHistory.63f3941c36')}
+          >
+            <thead>
+              <tr>
+                <th scope="col">{richMessage('copy.ClubListing.10a6c77fd1')}</th>
+                <th scope="col">{richMessage('copy.CupHistory.31e52393f3')}</th>
+                <th scope="col">{richMessage('copy.CupHistory.adbe7b40f8')}</th>
+                <th scope="col">{richMessage('copy.CupHistory.d071148a5e')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {localizeValue(
+                honours.nations.map((nation) => (
+                  <tr key={nation.code}>
+                    <td>{localizeValue(nation.name)}</td>
+                    <td>
+                      <b>{localizeValue(nation.titles)}</b>
+                    </td>
+                    <td>{localizeValue(nation.runnerUps)}</td>
+                    <td>{localizeValue(nation.clubs)}</td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        ),
       )}
       <ul className={ch.feats}>
-        {honours.streaks.map((streak) => (
-          <li key={streak.from}>
-            <span>최다 연속 우승</span>
-            <p>
-              <Club w={w} id={streak.club} strong /> {streak.length}년 연속 (
-              {seasonName(streak.from)}–{seasonName(streak.to)})
-            </p>
-          </li>
-        ))}
-        <Feats w={w} title="더블 · 리그와 컵 2관왕" feats={honours.doubles} />
-        <Feats w={w} title="트레블 · 리그·컵·유럽 3관왕" feats={honours.trebles} />
+        {localizeValue(
+          honours.streaks.map((streak) => (
+            <li key={streak.from}>
+              <span>{richMessage('copy.CupHistory.44e9c558bb')}</span>
+              <p>
+                {richMessage('copy.CupHistory.be63ced77e', {
+                  p0: <Club w={w} id={streak.club} strong />,
+                  p1: streak.length,
+                  p2: seasonName(streak.from),
+                  p3: seasonName(streak.to),
+                })}
+              </p>
+            </li>
+          )),
+        )}
+        <Feats w={w} title={displayMessage('copy.CupHistory.24bc14ce55')} feats={honours.doubles} />
+        <Feats w={w} title={displayMessage('copy.CupHistory.372bc751a7')} feats={honours.trebles} />
       </ul>
-      {honours.unrecorded > 0 && (
-        <p className={c.note}>
-          결승 점수가 남지 않은 {honours.unrecorded}시즌은 우승만 세고 준우승은 세지 않아요.
-        </p>
+      {localizeValue(
+        honours.unrecorded > 0 && (
+          <p className={c.note}>
+            {richMessage('copy.CupHistory.6726a9d15a', { p0: honours.unrecorded })}
+          </p>
+        ),
       )}
     </section>
   );
@@ -293,6 +353,7 @@ export function CupHistory({
   onYear: (year: number) => void;
   countryCode: string;
 }) {
+  useTextLocale();
   const own = clubOf(w);
   const ownCompetition = key !== 'cup' || countryCode === own.country;
   const [report, setReport] = useState<MatchRecord>();
@@ -365,174 +426,247 @@ export function CupHistory({
   };
   const lineage = LINEAGES.find((entry) => entry.key === key);
   return (
-    <section data-surface="panel" className={c.card} aria-label="컵 대회 역사">
+    <section
+      data-surface="panel"
+      className={c.card}
+      aria-label={displayMessage('copy.CupHistory.b645405cca')}
+    >
       <div className={ch.historyPanel}>
-        {year !== undefined && !final && honours.finals.length > 0 ? (
-          <div className={s.panelBody}>
-            <p>
-              {seasonName(year)} · {chip}의 대회 기록이 없어요.
+        {localizeValue(
+          year !== undefined && !final && honours.finals.length > 0 ? (
+            <div className={s.panelBody}>
+              <p>{richMessage('copy.CupHistory.e9ac70e2f9', { p0: seasonName(year), p1: chip })}</p>
+              <button type="button" onClick={() => setPicked(years.at(-1)!)}>
+                {richMessage('copy.CupHistory.4191c2d345')}
+              </button>
+            </div>
+          ) : year === undefined || !final ? (
+            <p className={s.muted}>
+              {richMessage('copy.CupHistory.aa6afc8638', {
+                p0: ' ',
+                p1: !lineage
+                  ? sourceMessage('copy.CupHistory.f114008743')
+                  : w.year >= lineage.founded
+                    ? sourceMessage('copy.CupHistory.db2642fb8b')
+                    : sourceMessage('copy.CupHistory.04d903605d', {
+                        p0: seasonName(lineage.founded),
+                      }),
+              })}
             </p>
-            <button type="button" onClick={() => setPicked(years.at(-1)!)}>
-              최근 기록된 시즌 보기
-            </button>
-          </div>
-        ) : year === undefined || !final ? (
-          <p className={s.muted}>
-            아직 기록된 대회가 없어요.{' '}
-            {!lineage
-              ? '첫 시즌이 끝나면 대진표와 우승팀이 남아요.'
-              : w.year >= lineage.founded
-                ? '첫 대회가 끝나면 대진표와 우승팀이 남아요.'
-                : `${seasonName(lineage.founded)} 시즌에 창설돼요.`}
-          </p>
-        ) : (
-          <>
-            <section ref={stepper} className={ch.historySection} aria-label="시즌별 대진">
-              <div data-surface="sheet" className={ch.winner} data-testid="cup-season-winner">
-                <small>
-                  {seasonName(year)}
-                  {final.name && ` ${final.name}`} 우승
-                </small>
-                <p className={ch.winnerClub}>
-                  <Club w={w} id={final.winner} strong />
-                </p>
-                {final.final && (
-                  <p className={ch.winnerFinal}>
-                    결승 {final.final.score[0]}–{final.final.score[1]}
-                    {final.final.decided === 'pens' && ' (승부차기)'} ·{' '}
-                    <Club w={w} id={final.final.runnerUp} />
-                  </p>
-                )}
-              </div>
-              {season && (
-                <p data-surface="inset" className={c.status}>
-                  {ownCompetition ? runLine(season, key) : '우리 클럽은 나서지 않았어요'}
-                </p>
-              )}
+          ) : (
+            <>
               <section
-                ref={journey}
-                tabIndex={-1}
-                className={ch.journey}
-                aria-label="우리 클럽의 컵 여정"
+                ref={stepper}
+                className={ch.historySection}
+                aria-label={displayMessage('copy.CupHistory.98bac862e4')}
               >
-                <h4>우리 클럽의 컵 여정</h4>
-                <button
-                  type="button"
-                  className={ch.clubSeason}
-                  onClick={() => openClubSeason(year)}
+                <div data-surface="sheet" className={ch.winner} data-testid="cup-season-winner">
+                  <small>
+                    {richMessage('copy.CupHistory.f519e2b191', {
+                      p0: seasonName(year),
+                      p1: final.name && ` ${final.name}`,
+                    })}
+                  </small>
+                  <p className={ch.winnerClub}>
+                    <Club w={w} id={final.winner} strong />
+                  </p>
+                  {localizeValue(
+                    final.final && (
+                      <p className={ch.winnerFinal}>
+                        {richMessage('copy.CupHistory.c1c5c1838b', {
+                          p0: final.final.score[0],
+                          p1: final.final.score[1],
+                          p2:
+                            final.final.decided === 'pens' &&
+                            sourceMessage('copy.CupHistory.52e5d7ab38'),
+                          p3: ' ',
+                          p4: <Club w={w} id={final.final.runnerUp} />,
+                        })}
+                      </p>
+                    ),
+                  )}
+                </div>
+                {localizeValue(
+                  season && (
+                    <p data-surface="inset" className={c.status}>
+                      {localizeValue(
+                        ownCompetition
+                          ? runLine(season, key)
+                          : sourceMessage('copy.CupHistory.c594d0de0f'),
+                      )}
+                    </p>
+                  ),
+                )}
+                <section
+                  ref={journey}
+                  tabIndex={-1}
+                  className={ch.journey}
+                  aria-label={displayMessage('copy.CupHistory.c9494ad455')}
                 >
-                  우리 구단 시즌 기록
-                </button>
-                {archive?.failed ? (
-                  <p className={c.note}>경기 기록을 읽지 못했어요.</p>
-                ) : !route ? (
-                  <p className={c.note}>경기 기록을 불러오는 중…</p>
-                ) : route.length ? (
-                  <CupJourney w={w} rows={route} onReport={setReport} />
-                ) : (
-                  <p className={c.note}>
-                    {!ownCompetition ||
-                    (season?.runs && !season.runs.some((run) => run.key === key))
-                      ? `우리 클럽은 이 시즌 ${name}에 나서지 않았어요.`
-                      : `이 시즌 우리 클럽의 ${name} 경기 기록이 남아 있지 않아요.`}
-                  </p>
-                )}
-              </section>
-              {!ownCompetition ? (
-                <p className={c.treeNote}>이 대회의 지난 대진표는 보관하지 않았어요.</p>
-              ) : archive?.failed ? (
-                <p className={c.treeNote} role="alert">
-                  대진표를 읽지 못했어요. 시즌을 다시 골라 보세요.
-                </p>
-              ) : !records ? (
-                <p className={c.treeNote} role="status">
-                  대진표를 펼치는 중…
-                </p>
-              ) : knockout ? (
-                <>
-                  <Bracket
-                    key={`${key}:${year}`}
-                    w={w}
-                    rounds={knockout.rounds}
-                    fixtures={knockout.fixtures}
-                    competition={knockout.competition}
-                    year={year}
-                  />
-                  <p className={c.note}>
-                    32강부터 결승까지 남겨요. 그 전 라운드와 조별 리그는 우리 클럽 경기만 기록돼요.
-                  </p>
-                </>
-              ) : (
-                <p className={c.note}>이 시즌은 결승 기록만 남아 있어요.</p>
-              )}
-            </section>
-            {runs.length > 0 && (
-              <section className={c.leaders} aria-label="우리 클럽의 도전">
-                <h4>우리 클럽의 도전</h4>
-                <ol className={ch.runs}>
-                  {(allRuns ? runs : runs.slice(0, RUNS_SHOWN)).map((entry) => (
-                    <li key={entry.year}>
-                      <button
-                        type="button"
-                        className={ch.runButton}
-                        aria-label={`${seasonName(entry.year)} 여정 보기`}
-                        aria-describedby={`${runId}-${entry.year}`}
-                        aria-current={entry.year === year || undefined}
-                        disabled={!years.includes(entry.year)}
-                        onClick={() => showJourney(entry.year)}
-                      >
-                        <span>{seasonName(entry.year)}</span>
-                        <b
-                          id={`${runId}-${entry.year}`}
-                          className={entry.run.champion ? c.champion : undefined}
-                        >
-                          {runResult(entry.run)}
-                        </b>
-                      </button>
-                    </li>
-                  ))}
-                </ol>
-                {!allRuns && runs.length > RUNS_SHOWN && (
-                  <button type="button" className={c.more} onClick={() => setAllRuns(true)}>
-                    모두 보기
+                  <h4>{richMessage('copy.CupHistory.c9494ad455')}</h4>
+                  <button
+                    type="button"
+                    className={ch.clubSeason}
+                    onClick={() => openClubSeason(year)}
+                  >
+                    {richMessage('copy.CupHistory.ec42c28759')}
                   </button>
+                  {localizeValue(
+                    archive?.failed ? (
+                      <p className={c.note}>{richMessage('copy.CupHistory.1886147a5c')}</p>
+                    ) : !route ? (
+                      <p className={c.note}>{richMessage('copy.CupHistory.ae16a1181d')}</p>
+                    ) : route.length ? (
+                      <CupJourney w={w} rows={route} onReport={setReport} />
+                    ) : (
+                      <p className={c.note}>
+                        {localizeValue(
+                          !ownCompetition ||
+                            (season?.runs && !season.runs.some((run) => run.key === key))
+                            ? sourceMessage('copy.CupHistory.ccfff29a0c', { p0: name })
+                            : sourceMessage('copy.CupHistory.85a1e3f15a', { p0: name }),
+                        )}
+                      </p>
+                    ),
+                  )}
+                </section>
+                {localizeValue(
+                  !ownCompetition ? (
+                    <p className={c.treeNote}>{richMessage('copy.CupHistory.573cb72a81')}</p>
+                  ) : archive?.failed ? (
+                    <p className={c.treeNote} role="alert">
+                      {richMessage('copy.CupHistory.bc3d4d9ea0')}
+                    </p>
+                  ) : !records ? (
+                    <p className={c.treeNote} role="status">
+                      {richMessage('copy.CupHistory.3702589cee')}
+                    </p>
+                  ) : knockout ? (
+                    <>
+                      <Bracket
+                        key={`${key}:${year}`}
+                        w={w}
+                        rounds={knockout.rounds}
+                        fixtures={knockout.fixtures}
+                        competition={knockout.competition}
+                        year={year}
+                      />
+                      <p className={c.note}>{richMessage('copy.CupHistory.4d91aed602')}</p>
+                    </>
+                  ) : (
+                    <p className={c.note}>{richMessage('copy.CupHistory.428d2fd093')}</p>
+                  ),
                 )}
               </section>
-            )}
-            <Honours key={key} w={w} honours={honours} continental={key !== 'cup'} />
-            <section className={ch.historySection} aria-label="역대 결승">
-              <h4>역대 결승</h4>
-              <ul className={c.finals}>
-                {(allFinals ? honours.finals : honours.finals.slice(0, FINALS_SHOWN)).map((row) => (
-                  <li key={row.year} className={row.winner === w.playerClub ? c.ownTie : undefined}>
-                    <button
-                      type="button"
-                      className={ch.finalSeason}
-                      aria-label={`${seasonName(row.year)} 대진 보기`}
-                      aria-current={row.year === year || undefined}
-                      onClick={() => showBracket(row.year)}
-                    >
-                      {seasonName(row.year)}
-                      {row.name && row.name !== chip && <small>{row.name}</small>}
-                    </button>
-                    <div>{finalLine(w, row.winner, row.final)}</div>
-                    {row.streak > 1 && <i className={ch.streak}>{row.streak}년 연속</i>}
-                  </li>
-                ))}
-              </ul>
-              {!allFinals && honours.finals.length > FINALS_SHOWN && (
-                <button type="button" className={c.more} onClick={() => setAllFinals(true)}>
-                  {honours.finals.length}시즌 모두 보기
-                </button>
+              {localizeValue(
+                runs.length > 0 && (
+                  <section
+                    className={c.leaders}
+                    aria-label={displayMessage('copy.CupHistory.059f61f532')}
+                  >
+                    <h4>{richMessage('copy.CupHistory.059f61f532')}</h4>
+                    <ol className={ch.runs}>
+                      {localizeValue(
+                        (allRuns ? runs : runs.slice(0, RUNS_SHOWN)).map((entry) => (
+                          <li key={entry.year}>
+                            <button
+                              type="button"
+                              className={ch.runButton}
+                              aria-label={displayMessage('copy.CupHistory.7d33b2a088', {
+                                p0: seasonName(entry.year),
+                              })}
+                              aria-describedby={`${runId}-${entry.year}`}
+                              aria-current={entry.year === year || undefined}
+                              disabled={!years.includes(entry.year)}
+                              onClick={() => showJourney(entry.year)}
+                            >
+                              <span>{localizeValue(seasonName(entry.year))}</span>
+                              <b
+                                id={`${runId}-${entry.year}`}
+                                className={entry.run.champion ? c.champion : undefined}
+                              >
+                                {localizeValue(runResult(entry.run))}
+                              </b>
+                            </button>
+                          </li>
+                        )),
+                      )}
+                    </ol>
+                    {localizeValue(
+                      !allRuns && runs.length > RUNS_SHOWN && (
+                        <button type="button" className={c.more} onClick={() => setAllRuns(true)}>
+                          {richMessage('copy.CupHistory.75e8bb70f1')}
+                        </button>
+                      ),
+                    )}
+                  </section>
+                ),
               )}
-            </section>
-          </>
+              <Honours key={key} w={w} honours={honours} continental={key !== 'cup'} />
+              <section
+                className={ch.historySection}
+                aria-label={displayMessage('copy.CupHistory.a65b587105')}
+              >
+                <h4>{richMessage('copy.CupHistory.a65b587105')}</h4>
+                <ul className={c.finals}>
+                  {localizeValue(
+                    (allFinals ? honours.finals : honours.finals.slice(0, FINALS_SHOWN)).map(
+                      (row) => (
+                        <li
+                          key={row.year}
+                          className={row.winner === w.playerClub ? c.ownTie : undefined}
+                        >
+                          <button
+                            type="button"
+                            className={ch.finalSeason}
+                            aria-label={displayMessage('copy.CupHistory.03b8428a1c', {
+                              p0: seasonName(row.year),
+                            })}
+                            aria-current={row.year === year || undefined}
+                            onClick={() => showBracket(row.year)}
+                          >
+                            {localizeValue(seasonName(row.year))}
+                            {localizeValue(
+                              row.name && row.name !== chip && (
+                                <small>{localizeValue(row.name)}</small>
+                              ),
+                            )}
+                          </button>
+                          <div>{localizeValue(finalLine(w, row.winner, row.final))}</div>
+                          {localizeValue(
+                            row.streak > 1 && (
+                              <i className={ch.streak}>
+                                {richMessage('copy.CupHistory.c972156b5a', { p0: row.streak })}
+                              </i>
+                            ),
+                          )}
+                        </li>
+                      ),
+                    ),
+                  )}
+                </ul>
+                {localizeValue(
+                  !allFinals && honours.finals.length > FINALS_SHOWN && (
+                    <button type="button" className={c.more} onClick={() => setAllFinals(true)}>
+                      {richMessage('copy.CupHistory.f665f1d63e', { p0: honours.finals.length })}
+                    </button>
+                  ),
+                )}
+              </section>
+            </>
+          ),
         )}
       </div>
-      {report && (
-        <Dialog label="컵 경기 리포트" onClose={() => setReport(undefined)} wide>
-          <MatchReport record={report} w={w} />
-        </Dialog>
+      {localizeValue(
+        report && (
+          <Dialog
+            label={displayMessage('copy.CupHistory.e44c272d88')}
+            onClose={() => setReport(undefined)}
+            wide
+          >
+            <MatchReport record={report} w={w} />
+          </Dialog>
+        ),
       )}
     </section>
   );

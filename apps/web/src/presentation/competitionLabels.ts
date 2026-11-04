@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES } from '../../../../packages/catalogs/src/index';
 
@@ -8,10 +9,10 @@ import { COUNTRIES } from '../../../../packages/catalogs/src/index';
  */
 
 export const kindLabel: Record<string, string> = {
-  league: '리그',
-  cup: '국내 컵',
-  playoff: '승격 플레이오프',
-  europe: '클럽대항전',
+  league: sourceMessage('navigation.league'),
+  cup: sourceMessage('copy.competitionLabels.0efd8e1c18'),
+  playoff: sourceMessage('copy.competitionLabels.b5a56f17ba'),
+  europe: sourceMessage('copy.competitionLabels.c31822375c'),
 };
 
 /**
@@ -21,8 +22,10 @@ export const kindLabel: Record<string, string> = {
 export function divisionName(code: string, tier: number, group?: number) {
   const groups = COUNTRIES.find((c) => c.code === code)?.groups[tier] ?? [];
   const region =
-    group !== undefined && groups.length > 1 ? ` ${String.fromCharCode(65 + group)}조` : '';
-  return `${tier + 1}부${region}`;
+    group !== undefined && groups.length > 1
+      ? sourceMessage('copy.competitionLabels.9e6d97cc84', { p0: String.fromCharCode(65 + group) })
+      : '';
+  return sourceMessage('copy.competitionLabels.85f44f73b7', { p0: tier + 1, p1: region });
 }
 
 /**
@@ -39,9 +42,15 @@ export function competitionLabel(w: Pick<World, 'cups' | 'europe'>, f: Fixture) 
   if (f.kind === 'europe') {
     const t = w.europe.find((entry) => entry.key === f.groupKey);
     if (!t) return kindLabel.europe;
-    if (!knockout) return `${t.name} ${t.format === 'league' ? '리그 페이즈' : '조별 리그'}`;
+    if (!knockout)
+      return `${t.name} ${t.format === 'league' ? sourceMessage('copy.competitionLabels.6b9ab4d59c') : sourceMessage('copy.competitionLabels.6fcd805067')}`;
     const round = t.rounds?.[Number(knockout[1])];
-    const leg = round?.legs === 2 ? (knockout[2] ? ' 2차전' : ' 1차전') : '';
+    const leg =
+      round?.legs === 2
+        ? knockout[2]
+          ? sourceMessage('copy.competitionLabels.7b32c11947')
+          : sourceMessage('copy.competitionLabels.2a5fd233a4')
+        : '';
     return `${t.name}${round ? ` ${round.label}${leg}` : ''}`;
   }
   return kindLabel[f.kind] || f.kind;

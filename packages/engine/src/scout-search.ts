@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The chief scout's search (→CLUB-51): he finds players among those the world holds (→CLUB-50) —
  * other clubs' first-team players and the free agents (→CLUB-49) within his reach — and lists the
@@ -51,8 +52,8 @@ export const SCOUT_CONFIG = {
 
 export type ScoutHome = (typeof SCOUT_CONFIG.reachBands)[number]['home'];
 export const SCOUT_HOME_LABEL: Readonly<Record<ScoutHome, string>> = {
-  adjacent: '우리 리그와 위아래 리그',
-  country: '국내 전체 리그',
+  adjacent: sourceMessage('copy.scout_search.f7c215bd95'),
+  country: sourceMessage('copy.scout_search.7156229250'),
 };
 
 /** Where and how the chief scout searches today (→CLUB-51). */

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /** Whole-world recruitment reads: every club's players and the world's free agents (→WEB-43). */
 import type {
   Club,
@@ -167,7 +168,7 @@ export function worldMarketOffer(
 /** Pure bounded query. Only rows on this page leave the worker; no previews are built here. */
 export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketPage {
   const q = worldMarketQuerySchema.parse(input);
-  if (q.world !== w.id) throw new Error('다른 커리어의 이적시장 요청입니다.');
+  if (q.world !== w.id) throw new Error(sourceMessage('copy.world_market.4466033c4c'));
   const recommended = recommendedIds(w);
   const feeMultiplier = askingMultiplier(w);
   const owned = new Set(activePlayers(w).map((p) => p.id));
@@ -261,7 +262,7 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
 /** Expensive previews belong only to an explicitly inspected candidate, never the full market. */
 export function worldMarketDetail(w: World, target: WorldMarketTarget, fee?: string, loan = false) {
   const offer = worldMarketOffer(w, target);
-  if (!offer) throw new Error('이적 대상의 소속이나 커리어가 바뀌었어요. 목록을 새로 확인하세요.');
+  if (!offer) throw new Error(sourceMessage('copy.world_market.4a04d0a645'));
   const buy = recruitmentPreview(w, offer);
   return {
     world: w.id,

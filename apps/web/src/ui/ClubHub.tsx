@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -10,37 +12,53 @@ import { useGameState } from '../runtime/store';
 import { openCupSeason, openPrimary, useNavigation } from './state';
 import { approvalRequests, overdueSummary } from '../runtime/progression';
 import { currentCupBriefings } from './competitionNavigation';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
 import { FacilityArt } from './FacilityArt';
+import { InvestmentGallery } from './InvestmentGallery';
 import { Card } from './Card';
 import { PixelIcon } from './PixelIcon';
 import { HomeAwayBadge } from './HomeAwayBadge';
 
 export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => void }) {
+  useTextLocale();
   const next = nextOwnFixture(w);
   const opponent = w.clubs.find(
     (c) => c.id === (next?.home === w.playerClub ? next.away : next?.home),
   );
   return (
-    <section className={s.fixture} aria-label="다음 경기" data-home-part="fixture">
+    <section
+      className={s.fixture}
+      aria-label={displayMessage('copy.ClubHub.3bfd9db66e')}
+      data-home-part="fixture"
+    >
       <div className={s.fixtureInfo}>
         {/* The competition and venue sit beside the title; opponent and report share one row. */}
         <div className={s.fixtureHead}>
-          <h2 className={s.fixtureTitle}>NEXT MATCH</h2>
-          {next && <span className={s.fixtureTag}>{competitionLabel(w, next)}</span>}
-          {next && <HomeAwayBadge side={next.home === w.playerClub ? 'home' : 'away'} />}
+          <h2 className={s.fixtureTitle}>{richMessage('copy.ClubHub.c0ee2913e3')}</h2>
+          {localizeValue(
+            next && (
+              <span className={s.fixtureTag}>{localizeValue(competitionLabel(w, next))}</span>
+            ),
+          )}
+          {localizeValue(
+            next && <HomeAwayBadge side={next.home === w.playerClub ? 'home' : 'away'} />,
+          )}
         </div>
         <div className={s.fixtureRow}>
           <h3>
-            {opponent ? (
-              <>
-                vs <ClubLink w={w} id={opponent.id} crest={18} large />
-              </>
-            ) : (
-              <span>다음 시즌을 준비해요</span>
+            {localizeValue(
+              opponent ? (
+                <>
+                  {richMessage('copy.ClubHub.906befedbd', {
+                    p0: <ClubLink w={w} id={opponent.id} crest={18} large />,
+                  })}
+                </>
+              ) : (
+                <span>{richMessage('copy.ClubHub.1015d8ff31')}</span>
+              ),
             )}
           </h3>
           <button
@@ -53,7 +71,7 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
               onPrepare();
             }}
           >
-            상세 리포트
+            {richMessage('copy.ClubHub.f2bef7802a')}
           </button>
         </div>
       </div>
@@ -67,25 +85,37 @@ export function NextMatchCard({ w, onPrepare }: { w: World; onPrepare: () => voi
  * them and 들어가기 as live text on top. The office holds the club summary.
  */
 export function OfficeEntrance({ w }: { w: World }) {
+  useTextLocale();
   const requests = approvalRequests(w);
   const pending = requests.length,
     overdue = overdueSummary(w, requests).overdue;
   return (
-    <section className={s.office} data-home-part="office" aria-label="구단주 사무실">
+    <section
+      className={s.office}
+      data-home-part="office"
+      aria-label={displayMessage('copy.catalog.9a8019d09c')}
+    >
       <FacilityArt kind="manager" world={w} className={s.officeArt} />
       <div className={s.officeShade} aria-hidden="true" />
       <div className={s.officeCaption}>
-        <b>구단주 사무실</b>
+        <b>{richMessage('copy.catalog.9a8019d09c')}</b>
         <span data-testid="office-waiting">
-          결재 대기{' '}
-          {pending > 0 ? (
-            <b data-ui="count" className={s.officeCount}>
-              {pending > 99 ? '99+' : pending}
-            </b>
-          ) : (
-            '0'
-          )}
-          건{overdue > 0 && <em className={s.officeLate}> · 지연 {overdue}건</em>}
+          {richMessage('copy.ClubHub.a51a602b0a', {
+            p0: ' ',
+            p1:
+              pending > 0 ? (
+                <b data-ui="count" className={s.officeCount}>
+                  {localizeValue(pending > 99 ? '99+' : pending)}
+                </b>
+              ) : (
+                '0'
+              ),
+            p2: overdue > 0 && (
+              <em className={s.officeLate}>
+                {richMessage('copy.ApprovalButtons.51598323eb', { p0: overdue })}
+              </em>
+            ),
+          })}
         </span>
         <button
           type="button"
@@ -93,7 +123,7 @@ export function OfficeEntrance({ w }: { w: World }) {
           className={s.officeEnter}
           onClick={() => openPrimary('business')}
         >
-          들어가기
+          {richMessage('copy.ClubHub.851ea8409a')}
         </button>
       </div>
     </section>
@@ -101,31 +131,34 @@ export function OfficeEntrance({ w }: { w: World }) {
 }
 
 export function CupBriefing({ w, onOpen }: { w: World; onOpen?: () => void }) {
+  useTextLocale();
   return (
-    <section className={s.competitions} aria-label="현재 컵 대회">
-      {currentCupBriefings(w).map((cup) => (
-        <Card
-          key={cup.key}
-          title={cup.name}
-          meta={<PixelIcon name="cup" size={28} />}
-          actions={
-            <button
-              data-ui="secondary"
-              aria-label={`${cup.name} 현재 대회 보기`}
-              onClick={() => {
-                onOpen?.();
-                openCupSeason(w.year, cup.key, w.year);
-              }}
-            >
-              대회 보기 ↗
-            </button>
-          }
-        >
-          <strong>{cup.status}</strong>
-          {cup.detail && <p>{cup.detail}</p>}
-          {cup.winner && <p>{cup.winner}</p>}
-        </Card>
-      ))}
+    <section className={s.competitions} aria-label={displayMessage('copy.ClubHub.1c4fa642c2')}>
+      {localizeValue(
+        currentCupBriefings(w).map((cup) => (
+          <Card
+            key={cup.key}
+            title={localizeValue(cup.name)}
+            meta={<PixelIcon name="cup" size={28} />}
+            actions={
+              <button
+                data-ui="secondary"
+                aria-label={displayMessage('copy.ClubHub.5d3690a8c5', { p0: cup.name })}
+                onClick={() => {
+                  onOpen?.();
+                  openCupSeason(w.year, cup.key, w.year);
+                }}
+              >
+                {richMessage('copy.ClubHub.c769579672')}
+              </button>
+            }
+          >
+            <strong>{localizeValue(cup.status)}</strong>
+            {localizeValue(cup.detail && <p>{localizeValue(cup.detail)}</p>)}
+            {localizeValue(cup.winner && <p>{localizeValue(cup.winner)}</p>)}
+          </Card>
+        )),
+      )}
     </section>
   );
 }
@@ -137,6 +170,7 @@ export function CupBriefing({ w, onOpen }: { w: World; onOpen?: () => void }) {
  * and the cups.
  */
 export function SeasonCard({ w, active }: { w: World; active: boolean }) {
+  useTextLocale();
   const table = w.tables[w.playerClub];
   const ids = orderIds(ownLeagueIds(w), w.tables),
     played = !!table?.played,
@@ -146,58 +180,75 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
   // Home content skips day-only changes; progress reads the shown world so it moves every day.
   const progress = useGameState((state) => ownLeagueProgress(state.view?.world ?? w));
   return (
-    <section className={s.seasonCard} data-home-part="season-card" aria-label="이번 시즌">
+    <section
+      className={s.seasonCard}
+      data-home-part="season-card"
+      aria-label={displayMessage('copy.ClubHub.ece63ccd56')}
+    >
       <div className={s.seasonSummary}>
         <span className={s.groupTitle} data-home-part="season-group">
-          {leagueName(ownLeague(w))}
+          {localizeValue(leagueName(ownLeague(w)))}
         </span>
         <span className={s.groupTitle} data-home-part="season-group" aria-hidden="true">
-          컵
+          {richMessage('navigation.short.europe')}
         </span>
         <div className={s.resources} data-home-part="season-stats">
-          <div aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}>
-            <span>라운드</span>
+          <div
+            aria-label={displayMessage('copy.ClubHub.9a0f4b3241', {
+              p0: round.total,
+              p1: round.played,
+            })}
+          >
+            <span>{richMessage('copy.ClubHub.0fcb288d12')}</span>
             <b>
               <span
                 key={round.played}
                 className={s.bump}
                 data-testid={active ? 'game-round' : undefined}
               >
-                {round.played}
+                {localizeValue(round.played)}
               </span>
-              <small data-testid={active ? 'game-round-total' : undefined}>/ {round.total}</small>
+              <small data-testid={active ? 'game-round-total' : undefined}>
+                / {localizeValue(round.total)}
+              </small>
             </b>
           </div>
           <div>
-            <span>리그 순위</span>
+            <span>{richMessage('copy.AwaySummary.a1f8f34457')}</span>
             <b data-testid="hub-rank">
               <span key={played ? rank : '-'} className={s.bump}>
-                {played ? rank : '—'}
+                {localizeValue(played ? rank : '—')}
               </span>
-              <small>/{ids.length}위</small>
+              <small>{richMessage('copy.ClubHub.327cd4f374', { p0: ids.length })}</small>
             </b>
           </div>
           <div>
-            <span>승점 {table?.points ?? 0}</span>
+            <span>{richMessage('copy.ClubHub.7776cad992', { p0: table?.points ?? 0 })}</span>
             <b data-testid="hub-record">
               <span key={table ? table.played : 0} className={s.bump}>
-                {table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0'}
+                {localizeValue(table ? `${table.won}-${table.drawn}-${table.lost}` : '0-0-0')}
               </span>
             </b>
           </div>
         </div>
         <div className={s.cupSummary} data-home-part="cup-summary">
-          <span>컵대회</span>
+          <span>{richMessage('copy.ClubHub.30aa32ffee')}</span>
           <b>
-            {cupCount}
-            <small>개</small>
+            {localizeValue(cupCount)}
+            <small>{richMessage('copy.ClubHub.a57ab05712')}</small>
           </b>
         </div>
         <div className={s.seasonMeter} data-home-part="season-meter">
           <span>
-            리그 진행률 <b>{progress.toFixed(1)}%</b>
+            {richMessage('copy.ClubHub.96a2c9fbff', {
+              p0: <b>{localizeValue(progress.toFixed(1))}%</b>,
+            })}
           </span>
-          <progress aria-label="리그 진행률" value={progress} max={100} />
+          <progress
+            aria-label={displayMessage('copy.ClubHub.11ed863eae')}
+            value={progress}
+            max={100}
+          />
         </div>
       </div>
     </section>
@@ -211,32 +262,44 @@ export function SeasonCard({ w, active }: { w: World; active: boolean }) {
  * the club sections hold the real workflows.
  */
 export function ClubSituation({ w }: { w: World }) {
+  useTextLocale();
   return (
-    <section className={s.situation} aria-label="클럽 현황" data-testid="club-situation">
+    <section
+      className={s.situation}
+      aria-label={displayMessage('copy.ClubHub.149de98d87')}
+      data-testid="club-situation"
+    >
       <dl>
-        {clubSituation(w).map((fact) => (
-          <div
-            key={fact.key}
-            data-ui="stat-tile"
-            data-fact={fact.key}
-            data-tone={fact.tone}
-            className={s.fact}
-          >
-            <dt>{fact.label}</dt>
-            <dd>
-              <b>{fact.value}</b>
-              <span className={s.factNote}>
-                {fact.note}
-                {fact.warning && (
-                  <strong className={s.factWarning} data-testid={`situation-warning-${fact.key}`}>
-                    {' · '}
-                    {fact.warning}
-                  </strong>
-                )}
-              </span>
-            </dd>
-          </div>
-        ))}
+        {localizeValue(
+          clubSituation(w).map((fact) => (
+            <div
+              key={fact.key}
+              data-ui="stat-tile"
+              data-fact={fact.key}
+              data-tone={fact.tone}
+              className={s.fact}
+            >
+              <dt>{localizeValue(fact.label)}</dt>
+              <dd>
+                <b>{localizeValue(fact.value)}</b>
+                <span className={s.factNote}>
+                  {localizeValue(fact.note)}
+                  {localizeValue(
+                    fact.warning && (
+                      <strong
+                        className={s.factWarning}
+                        data-testid={`situation-warning-${fact.key}`}
+                      >
+                        {localizeValue(' · ')}
+                        {localizeValue(fact.warning)}
+                      </strong>
+                    ),
+                  )}
+                </span>
+              </dd>
+            </div>
+          )),
+        )}
       </dl>
     </section>
   );
@@ -247,14 +310,20 @@ export function ClubSituation({ w }: { w: World }) {
  * which never replaces the queue and offers no immediate owner action.
  */
 export function OfficeTeam({ w }: { w: World }) {
+  useTextLocale();
   return (
-    <section className={s.team} aria-label="팀 현황" data-office-part="team">
+    <section
+      className={s.team}
+      aria-label={displayMessage('copy.ClubHub.be3c272ab3')}
+      data-office-part="team"
+    >
       <ClubSituation w={w} />
     </section>
   );
 }
 
 export function ClubHub({ w, client }: { w: World; client: GameClient }) {
+  useTextLocale();
   // Home stays mounted while hidden: only leaving it matters, not moves between other pages.
   const away = useNavigation((state) => state.page !== 'dashboard');
   const [preparing, setPreparing] = useState(false);
@@ -270,17 +339,26 @@ export function ClubHub({ w, client }: { w: World; client: GameClient }) {
       className={s.hub}
       data-testid="club-hub"
       data-home-active={!away}
-      aria-label="클럽 키우기"
+      aria-label={displayMessage('copy.ClubHub.463aec347d')}
     >
       <SeasonCard w={w} active={!away} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
       <OfficeEntrance w={w} />
+      <InvestmentGallery w={w} className={s.areas} />
 
-      {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
-      {cupsOpen && (
-        <Dialog label="컵대회" wide onClose={() => setCupsOpen(false)}>
-          <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
-        </Dialog>
+      {localizeValue(
+        preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />,
+      )}
+      {localizeValue(
+        cupsOpen && (
+          <Dialog
+            label={displayMessage('copy.ClubHub.30aa32ffee')}
+            wide
+            onClose={() => setCupsOpen(false)}
+          >
+            <CupBriefing w={w} onOpen={() => setCupsOpen(false)} />
+          </Dialog>
+        ),
       )}
     </section>
   );
