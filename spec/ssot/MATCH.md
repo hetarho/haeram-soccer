@@ -1,5 +1,5 @@
 # MATCH Observable match simulation
-> r48 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
+> r49 | Define continuous own-club football and complete, calibrated probabilistic results for the rest of the world.
 
 ## decisions
 - MATCH-1 [o] The detailed engine plays the own club's match touch by touch (dispatch →MATCH-22): two halves of 45 minutes plus added time, each action taking its own match time; the ball changes sides only through an event on the pitch — a tackle, an interception, a loose ball won, the ball out of play, a shot that ends, a foul or an offside. Events and team/player counts share one seeded engine. Pitch playback does not change outcomes. ← every change of possession has a cause the owner can see
@@ -214,6 +214,7 @@
   | ball in play (a match) | 54–58 min |
   - rows that read ball positions or possession sequences (possessions and median passes in one, possessions ending in a shot, mean shot distance, shots from 30 m+ and from the own half) bind the detailed engine only: the aggregate path records no such facts (→MATCH-26).
   - a top-tier 38-round league season holds: each club's top scorer takes 20–30% of its league goals on average, the league's top scorer scores 22–32 goals, and hat-tricks come at 0.02–0.05 a match.
+    - a club's top-scorer share divides his league goals by the club's recorded league goals; it takes no allowance for own goals, which neither path records (→!MATCH-27). ← an estimated allowance would loosen the band without a measured fact
   - every band in this decision is a real-football range, not the window a row must hit: a row holds within 25% of its range's mean either side, never narrower than the range itself, and a row bounded at 0 (an at-most row) holds up to 25% above its cap. →MATCH-30's counters hold the same way. ← play that reads right is judged against real averages with room, not tuned into a narrow window at the cost of sensible choices
 - MATCH-24 [o] The live event line narrates notable actions with their cell and tags in Korean football media's terms (하프스페이스, 라인 사이, 뒷공간, 아크 정면, 컷백, 니어/파 포스트, 레스트 디펜스, 세컨드 볼, 수적 우위, 라인 브레이킹, 역습, 게겐프레싱 and the like), derived from recorded events only; it never changes outcomes and uses no invented zone names.
 - MATCH-25 [o] After an own match its post-match material is shown and kept as →MATCH-5 allows: a shot map (place, xG, outcome, header or foot), heat maps for each player and side, a pass network (average positions and passes between pairs) and a tactical report — where attacks came from by lane and band, entries, where the ball was won and lost, set pieces and decisive duels. ← it gives the owner grounds for manager and signing decisions
@@ -222,6 +223,7 @@
   - values are generated together as one simulated match, conditioned on the clubs, starting players, roles, tactics, strength, home advantage, fatigue and era. The numbers are settled game facts used by records and later progression; they are not independent decorative draws.
   - numerical parity does not require ball/player frame traces or retaining an NPC per-action archive. Map and archive lifetimes remain →MATCH-5/25 and →HIST-2/16/17; named participants follow →WORLD-6/11.
 - MATCH-27 [o] A settled result is internally consistent on either path.
+  - every goal is credited to a participating player of the scoring side; no own goal is recorded on either path.
   - score, goals and assists identify actual participating players; team/player totals reconcile under each metric's definition. Successful actions do not exceed attempts, shot classifications agree with shots and xG, and derived ratios use recorded denominators.
   - cards, injuries, substitutions and dismissals share the match timeline and roster. Players cannot contribute outside their on-pitch intervals; era limits, man-short time, extra time, shootouts and unavailability follow →MATCH-6/19/20/21 and →LEAGUE-15.
   - match facts feed exactly one settlement into standings, scorer tables, player/team totals, discipline and retained history. Save/reload, repeated commands and a change of view cannot add, redraw or reattribute the same match (→MATCH-7).
@@ -335,6 +337,7 @@
 - The grid engine starts new careers; earlier careers follow its activation rule (→SAVE-19).
 
 ## chg
+- r49 261104 MATCH-27✎ goals credited to participating players→to a participating player of the scoring side, no own goal on either path · MATCH-23✎ top-scorer share's denominator unstated→the club's recorded league goals, no own-goal allowance
 - r48 261103 MATCH-22✎ +before the takeover every fixture takes a results-only path (score, scorers and assisters, extra time and shootouts; no other counters, discipline, injuries or substitutions)
 - r47 261103 MATCH-2✎ same terms→same terms except the owner's 승리의 부적 (→OWNER-6)
 - r46 261103 MATCH-10✎ full post-match league context opens explicitly→the standing after the match shows once it ends, the full league table on request
