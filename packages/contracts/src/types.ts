@@ -477,6 +477,29 @@ export interface Staff {
   /** Seasons the owner chose at his last hiring or renewal (→STAFF-15); absent before rules 1.16. */
   term?: ContractTerm;
 }
+/**
+ * A staff hire candidate (→STAFF-49, CLUB-50): a free agent, or another club's holder of the post,
+ * who also costs his club compensation (웃돈).
+ */
+export type StaffCandidate = Staff & {
+  /** Signing fee paid to him. */
+  fee: string;
+  source: 'free' | 'club';
+  /** For another club's holder: his club and the compensation it receives. */
+  club?: string;
+  compensation?: string;
+};
+/**
+ * The staff markets (→STAFF-49): each post's free agents, and per club and post that changed
+ * holder how many it has had since its first and when he started; every other holder is derived.
+ */
+export interface StaffMarket {
+  /** Season and league round of the last refresh. */
+  year: number;
+  round: number;
+  free: Partial<Record<StaffRole, Staff[]>>;
+  clubs: Record<string, Partial<Record<StaffRole, [count: number, since: number]>>>;
+}
 export interface Academy {
   /** Academy prospects are not first-team players until promoted. */
   players: Player[];
@@ -1264,6 +1287,8 @@ export interface World {
   buildNext?: { build: ClubBuild; name?: string };
   /** The manager market (→STAFF-17); absent until it first moves, when the season's four seed it. */
   managerMarket?: ManagerMarket;
+  /** The staff markets (→STAFF-49); absent until they first change, when the season seeds them. */
+  staffMarket?: StaffMarket;
   /** The chief scout's shortlist and the manager's requests (→CLUB-33); absent until first drawn. */
   shortlist?: Shortlist;
   /**

@@ -40,6 +40,9 @@ it('keeps candidate order, new profiles and live employment/ability changes afte
     quotes = [...renewed.youth!, ...renewed.attack!].filter((candidate) => candidate.person);
   expect(quotes).toHaveLength(2);
   for (const quote of quotes) {
+    // A former player waiting for a post is one of its free agents (→STAFF-27, STAFF-49).
+    expect(quote.source).toBe('free');
+    expect(quote.compensation).toBeUndefined();
     expect(quote.wage).toBe(coachWage(w, 70));
     expect(quote.fee).toBe((BigInt(quote.wage) / 4n).toString());
     expect(quote.since).toBe(w.year);

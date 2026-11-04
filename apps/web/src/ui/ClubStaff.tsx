@@ -112,14 +112,15 @@ export function TermDial({
 }
 
 /**
- * What a contract costs before it is signed: the wage over the term with the signing fee, when it
- * ends, and what releasing or replacing him would pay right after (25% of the wage per season
- * left, →STAFF-11).
+ * What a contract costs before it is signed: the wage over the term with the signing fee and any
+ * compensation to another club (→STAFF-49), when it ends, and what releasing or replacing him
+ * would pay right after (25% of the wage per season left, →STAFF-11).
  */
 function TermCosts({
   w,
   wage,
   fee,
+  compensation,
   term,
   until,
   ends = true,
@@ -127,6 +128,7 @@ function TermCosts({
   w: World;
   wage: string;
   fee: string;
+  compensation?: string;
   term: number;
   until: number;
   /** Off where the sheet already says when the contract ends. */
@@ -136,11 +138,12 @@ function TermCosts({
   const format = (value: string | bigint) => (
     <Money value={value} code={club.country} year={w.year} />
   );
-  const total = BigInt(wage) * BigInt(term) + BigInt(fee);
+  const total = BigInt(wage) * BigInt(term) + BigInt(fee) + BigInt(compensation ?? '0');
   return (
     <p className={s.termCosts} data-testid="term-costs">
       <span>
         총 {format(total)} · 연봉 {format(wage)} × {term}시즌 + 계약금 {format(fee)}
+        {compensation && <> + 웃돈 {format(compensation)}</>}
       </span>
       <small>
         {ends && `${contractLine(until, w.year)} · `}중도 해지·교체 보상금{' '}
@@ -586,6 +589,7 @@ export function CoachingStaff({
               w={w}
               wage={chosen.wage}
               fee={chosen.fee}
+              compensation={chosen.compensation}
               term={term}
               until={w.year + term}
             />
@@ -780,7 +784,14 @@ export function StaffMarket({
             <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
           )}
           <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />
-          <TermCosts w={w} wage={chosen.wage} fee={chosen.fee} term={term} until={w.year + term} />
+          <TermCosts
+            w={w}
+            wage={chosen.wage}
+            fee={chosen.fee}
+            compensation={chosen.compensation}
+            term={term}
+            until={w.year + term}
+          />
           {current && owed !== '0' && (
             <p className={s.note}>
               {current.name}은 떠나고 보상금 {format(owed)}을 받아요 (남은{' '}

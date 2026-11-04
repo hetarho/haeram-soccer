@@ -77,6 +77,7 @@ import { managerStyleEffects } from './styles';
 import { synergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { MARKET_REFRESH_ROUNDS, refreshManagerMarket } from './managerMarket';
+import { refreshStaffMarket } from './club-staff';
 import { drawShortlist } from './signings';
 import { dailyStaff, seasonStaff } from './staff';
 import { fansAfterMatch } from './fans';
@@ -730,6 +731,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         .map((club) => club.id),
     ),
   );
+  refreshStaffMarket(w);
   refreshFreeAgents(w);
   // The new season's first day of club business opens the summer window.
   clubDay(w);
@@ -856,6 +858,7 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
     w,
     new Set(w.clubs.filter((c) => (tiers.get(c.id) ?? c.tier) < c.tier).map((c) => c.id)),
   );
+  refreshStaffMarket(w);
   refreshFreeAgents(w);
   clubDay(w);
 }
@@ -973,6 +976,8 @@ function playRound(
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
     refreshManagerMarket(w);
+    // The staff markets move with the managers' (→STAFF-49).
+    refreshStaffMarket(w);
     refreshFreeAgents(w);
     refreshCoachingMarket(w);
     qualifyManagers(w);

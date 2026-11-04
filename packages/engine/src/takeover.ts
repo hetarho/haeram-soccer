@@ -24,6 +24,7 @@ import { pays } from './listing';
 import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from './match-model';
 import { ensureManagerHistory } from './manager-history-capture';
 import { clubManager, openManagerMarket } from './managerMarket';
+import { openStaffMarket } from './club-staff';
 import { MORALE_START } from './morale';
 import { invalidateNpcSquads, joinClub, makePlayer, refillPlace, squad } from './world';
 import {
@@ -291,8 +292,10 @@ export function takeOver(
   w.bids = [];
   w.inbox = [];
   w.morale = MORALE_START;
-  // The world before kept no free agent: the season's candidates open the market (→STAFF-17).
+  // The world before kept no free agent: the season's candidates open the market (→STAFF-17),
+  // and the season's opening pools the staff markets (→STAFF-49).
   openManagerMarket(w);
+  openStaffMarket(w);
   foundWithPreset(w, preset);
   openShortlistWindow(w);
   activateMatchModel(w, release);

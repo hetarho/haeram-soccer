@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Grade, PersonCareer, Position } from '../../contracts/src/types';
-import { hireStaff, releaseStaff, staffCandidates } from './index';
+import { hireStaff, releaseStaff, STAFF_MARKET_CONFIG, staffCandidates } from './index';
 import { coachingProfile, coachingSpecialty, initializeCoaching } from './coaching-entry';
 import { careerDate } from './person-careers';
 import { retirePerson } from './careers';
@@ -79,7 +79,7 @@ describe('former player coaching candidates', () => {
       expect(JSON.stringify(w)).toBe(before);
     }
   });
-  it('appends to the ordinary three and uses stable IDs after list indices shift', () => {
+  it('joins the post free agents and uses stable IDs after list indices shift', () => {
     const w = world();
     w.cash = '9999999999';
     const a = retire(w, 0),
@@ -87,7 +87,12 @@ describe('former player coaching candidates', () => {
     const role = a.coaching!.role;
     expect(role).toBe(b.coaching!.role);
     const pool = staffCandidates(w, role);
-    expect(pool).toHaveLength(5);
+    // The pool's free agents, then the two waiting as themselves (→STAFF-27), then other clubs'.
+    const free = pool.filter((c) => c.source === 'free');
+    expect(free).toHaveLength(w.staffMarket!.free[role]!.length + 2);
+    expect(free.slice(-2).map((c) => c.id)).toEqual([a.id, b.id].sort());
+    expect(pool.slice(free.length).every((c) => c.source === 'club')).toBe(true);
+    expect(pool).toHaveLength(free.length + STAFF_MARKET_CONFIG.poachList);
     const bIndex = pool.findIndex((c) => c.id === b.id);
     hireStaff(
       w,

@@ -1162,6 +1162,24 @@ const worldSchema: z.ZodType<World> = z.object({
       serial: z.number().int().min(0),
     })
     .optional(),
+  // Each post's free agents hold at most 6, 마당발's 7 (→STAFF-49, OWNER-5).
+  staffMarket: z
+    .strictObject({
+      year: z.number().int().min(1901).max(4000),
+      round: z.number().int().min(0).max(46),
+      free: z.partialRecord(
+        staffRole,
+        z
+          .array(staff)
+          .max(7)
+          .refine((pool) => new Set(pool.map((m) => m.id)).size === pool.length, '자유계약 중복'),
+      ),
+      clubs: z.record(
+        id,
+        z.partialRecord(staffRole, z.tuple([z.number().int().min(0).max(10000), z.number().int()])),
+      ),
+    })
+    .optional(),
   inbox: z.array(inboxItem).max(200).optional(),
   manager,
   tactic,

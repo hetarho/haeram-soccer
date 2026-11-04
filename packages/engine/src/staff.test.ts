@@ -28,6 +28,7 @@ import {
   settleTraining,
   simulateSeason,
   STAFF_INFO,
+  STAFF_MARKET_CONFIG,
   STAFF_ROLES,
   staffCandidates,
   staffEffects,
@@ -242,28 +243,30 @@ describe('coaching staff', () => {
     );
   });
 
-  it('offers three seeded candidates per role and season, never someone already employed', () => {
+  it('offers each post its free agents, then other clubs’ holders, never someone employed', () => {
     const w = world();
     for (const role of STAFF_ROLES) {
       const offers = staffCandidates(w, role);
       expect(canonical(offers)).toBe(canonical(staffCandidates(structuredClone(w), role)));
-      expect(offers).toHaveLength(3);
-      offers.forEach((offer, i) => {
+      const free = offers.filter((offer) => offer.source === 'free');
+      // Free agents first, then the six ablest holders of our league and the division above.
+      expect(offers.map((offer) => offer.source)).toEqual([
+        ...free.map(() => 'free'),
+        ...Array<'club'>(STAFF_MARKET_CONFIG.poachList).fill('club'),
+      ]);
+      expect(free.length).toBeGreaterThanOrEqual(STAFF_MARKET_CONFIG.poolMin);
+      for (const offer of offers) {
         expect(offer.role).toBe(role);
-        // The band is the level a coach reaches; a young one is below it now (→STAFF-16).
-        expect(offer.potential).toBeGreaterThanOrEqual([45, 55, 65][i]);
-        expect(offer.ability).toBeLessThanOrEqual([65, 78, 90][i]);
+        expect(offer.ability).toBeLessThanOrEqual(STAFF_MARKET_CONFIG.levels[1]);
         expect(offer.ability).toBeLessThanOrEqual(offer.potential!);
         expect(w.year - offer.born!).toBeGreaterThanOrEqual(25);
-        expect(w.year - offer.born!).toBeLessThanOrEqual(62);
-        if (i > 0) expect(offer.trait).toBeDefined();
-        if (offer.trait) expect(STAFF_INFO[role].traits).toContain(offer.trait);
+        expect(w.year - offer.born!).toBeLessThan(STAFF_MARKET_CONFIG.retireAge);
+        expect(STAFF_INFO[role].traits).toContain(offer.trait);
         expect(offer.fee).toBe(ratio(offer.wage, 1n, 4n));
         expect(BigInt(offer.wage)).toBeGreaterThan(0n);
-        expect([w.year + 2, w.year + 3]).toContain(offer.until);
-      });
-      const nextSeason = staffCandidates({ ...w, year: w.year + 1 }, role);
-      expect(canonical(nextSeason)).not.toBe(canonical(offers));
+        expect(offer.until).toBe(w.year + 2);
+        expect(offer.compensation === undefined).toBe(offer.source === 'free');
+      }
     }
     expect(staffCandidates(w, 'chef' as StaffRole)).toEqual([]);
   });
@@ -274,15 +277,20 @@ describe('coaching staff', () => {
       [first, second, third] = staffCandidates(w, 'attack');
     operate(w, { type: 'hire-staff', role: 'attack', candidate: 0 });
     expect(BigInt(w.cash)).toBe(start - BigInt(first.fee));
-    const { fee: _fee, ...contract } = first;
-    void _fee;
+    const { fee: _fee, source: _source, ...contract } = first;
+    void [_fee, _source];
     expect(w.staff!.find((member) => member.role === 'attack')).toEqual(contract);
     expect(w.staff!.map((member) => member.role)).toEqual(STAFF_ROLES);
     expect(staffWageTotal(w)).toBe(BigInt(first.wage));
     expect(operatingCosts(w).staffWages).toBe(first.wage);
     expect(w.events.at(-1)).toMatchObject({ kind: 'staff-hire', amount: first.fee });
     // The hired coach is no longer offered, so indices refer to who is still available.
-    expect(staffCandidates(w, 'attack').map((offer) => offer.id)).toEqual([second.id, third.id]);
+    expect(
+      staffCandidates(w, 'attack')
+        .filter((offer) => offer.source === 'free')
+        .map((offer) => offer.id)
+        .slice(0, 2),
+    ).toEqual([second.id, third.id]);
     // A replaced coach is owed 25% of his wage for each season left on his contract.
     const before = BigInt(w.cash),
       owed = BigInt(ratio(first.wage, BigInt(first.until - w.year), 4n));
@@ -295,7 +303,7 @@ describe('coaching staff', () => {
       released - BigInt(ratio(second.wage, BigInt(second.until - w.year), 4n)),
     );
     expect(w.staff!.some((member) => member.role === 'attack')).toBe(false);
-    expect(() => hireStaff(w, 'attack', 7)).toThrow('스태프 후보');
+    expect(() => hireStaff(w, 'attack', 99)).toThrow('스태프 후보');
     validateWorld(w);
   });
 
@@ -309,11 +317,10 @@ describe('coaching staff', () => {
     expect(canonical(w)).toBe(before);
     const old = world();
     delete old.staff;
+    const offer = staffCandidates(old, 'scout')[2]!;
     hireStaff(old, 'scout', 2);
     expect(old.staff).toHaveLength(8);
-    expect(old.staff!.find((member) => member.role === 'scout')!.ability).toBeGreaterThanOrEqual(
-      65,
-    );
+    expect(old.staff!.find((member) => member.role === 'scout')!.id).toBe(offer.id);
   });
 
   it('ends paid contracts at the season boundary with an attention report and renews volunteers', () => {

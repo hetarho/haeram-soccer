@@ -244,6 +244,7 @@ const selectContentWorld = worldSelector([
   'morale',
   'inbox',
   'managerMarket',
+  'staffMarket',
   // Discarding the designer's drafts changes only the commission (→WEB-108).
   'designCommission',
 ]);

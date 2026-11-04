@@ -18,6 +18,7 @@ import type {
   PersonCareer,
   Player,
   Staff,
+  StaffCandidate,
   StaffRole,
   TrainingFocus,
   World,
@@ -35,9 +36,10 @@ import { annualWageLimit, directionLine, financeStance, wageWithinLimit } from '
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
-import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
-import { hasTrait, networkCandidates, networkedCandidate } from './owner-traits';
+import { coachSeason } from './coaching';
 import { STYLE_INFO } from './styles';
+import { freeStaff, joinStaffPool, poachStaff, takeStaff } from './club-staff';
+import { poachable } from './managerMarket';
 import { reachBand, SCOUT_CONFIG, SCOUT_HOME_LABEL } from './scout-search';
 import {
   coachCriteriaOf,
@@ -119,17 +121,6 @@ export function managerTrait(
 const NEUTRAL_ABILITY = 50;
 /** A department without a coach is worse than an unremarkable volunteer. */
 const VACANT_MULTIPLIER = 0.9;
-/** Ability bands of the three candidates offered per role each season. */
-const CANDIDATE_ABILITY: readonly (readonly [number, number])[] = [
-  [45, 65],
-  [55, 78],
-  [65, 90],
-];
-/** The season's bands: the three, then 마당발's more in the top one (→OWNER-5). */
-function candidateBands(w: World) {
-  const top = CANDIDATE_ABILITY[CANDIDATE_ABILITY.length - 1]!;
-  return [...CANDIDATE_ABILITY, ...Array.from({ length: networkCandidates(w) }, () => top)];
-}
 /** The attributes each coaching department grows (→STAFF-11, →PLAYER-15). */
 export const DEPARTMENT_ATTRIBUTES: Partial<Record<StaffRole, readonly Attribute[]>> = {
   assistant: ['passing', 'vision', 'decisions', 'composure'],
@@ -287,26 +278,26 @@ export function withTerm<T extends { term?: ContractTerm }>(person: T, term?: Co
 export function coachWage(w: World, ability: number, code = clubOf(w).country) {
   return staffQuote(w, Math.max(0, (ability - 30) * 1.5), code);
 }
-type StaffCandidate = Staff & { fee: string };
-/** The season's draws per club and department; delegated staff look at them every day. */
-const candidateCache = new Map<string, readonly StaffCandidate[]>();
-/** Three seeded candidates per role and season, 마당발's more; anyone already employed is not offered. */
+/**
+ * A post's candidates (→STAFF-49): its free agents, the former players waiting for it (→STAFF-27),
+ * then other clubs' holders; anyone already working for us is not offered.
+ */
 export function staffCandidates(w: World, role: StaffRole): StaffCandidate[] {
   if (!STAFF_ROLES.includes(role)) return [];
   return staffMarket(w, [role])[role]!;
 }
 /**
- * Every role's candidates at once, reading the person registry a single time: it grows with the
- * career, and the view lists every department each day.
+ * Every role's candidates at once, reading the person registry and the clubs a single time: the
+ * registry grows with the career, and the view lists every department each day.
  */
 export function staffMarket(
   w: World,
   roles: readonly StaffRole[] = STAFF_ROLES,
 ): Partial<Record<StaffRole, StaffCandidate[]>> {
-  const code = clubOf(w).country,
-    employed = new Set((w.staff || []).map((member) => member.id)),
+  const employed = new Set((w.staff || []).map((member) => member.id)),
     ready = new Map<StaffRole, PersonCareer[]>(),
-    quotes = new Map<number, { wage: string; fee: string }>();
+    quotes = new Map<number, { wage: string; fee: string }>(),
+    clubs = poachable(w);
   for (const person of profiledCoaches(w)) {
     const role = person.coaching?.role;
     if (!role || !roles.includes(role) || !coachingEntryReady(person)) continue;
@@ -316,13 +307,6 @@ export function staffMarket(
   }
   return Object.fromEntries(
     roles.map((role) => {
-      const key = `${w.seed}|${w.playerClub}|${code}|${w.year}|${role}${hasTrait(w, 'networker') ? '|networker' : ''}`;
-      let drawn = candidateCache.get(key);
-      if (!drawn) {
-        drawn = drawCandidates(w, role, code);
-        if (candidateCache.size > 512) candidateCache.clear();
-        candidateCache.set(key, drawn);
-      }
       const retained: StaffCandidate[] = (ready.get(role) ?? [])
         .sort((a, b) => compareIds(a.id, b.id))
         .map((person) => {
@@ -344,59 +328,43 @@ export function staffMarket(
             wage: quote.wage,
             since: w.year,
             until: w.year + 3,
+            source: 'free' as const,
             fee: quote.fee,
           };
         });
       return [
         role,
-        [
-          ...drawn
-            .filter((candidate) => !employed.has(candidate.id))
-            .map((candidate) => ({ ...candidate })),
-          ...retained,
-        ],
+        [...freeStaff(w, role), ...retained, ...poachStaff(w, role, clubs)].filter(
+          (candidate) => !employed.has(candidate.id),
+        ),
       ];
     }),
   );
 }
-function drawCandidates(w: World, role: StaffRole, code: string): StaffCandidate[] {
-  return candidateBands(w).map(([min, max], i) => {
-    const r = random(`${w.seed}:staff-market:${w.year}:${role}:${i}`);
-    const name = personName(code, r),
-      peak = integer(r, min, max),
-      traits = STAFF_INFO[role].traits,
-      // The modest first candidate may have no specialty.
-      pick = integer(r, i === 0 ? -1 : 0, traits.length - 1),
-      until = w.year + integer(r, 2, 3),
-      // A young coach is cheaper now and grows toward the band's level (→STAFF-16).
-      career = coachProspect(
-        `${w.seed}:staff-age:${w.year}:${role}:${i}`,
-        peak,
-        COACH_CAREER.ages,
-        COACH_CAREER.prime,
-      ),
-      ability = career.ability,
-      wage = coachWage(w, ability);
-    return networkedCandidate(w, {
-      id: `${w.playerClub}:staff:${role}:${w.year}:${i}`,
-      role,
-      name,
-      ability,
-      ...(pick >= 0 ? { trait: traits[pick] } : {}),
-      wage,
-      since: w.year,
-      until,
-      born: w.year - career.age,
-      potential: career.potential,
-      fee: ratio(wage, 1n, 4n),
-    });
-  });
-}
 const roleOrder = (a: Staff, b: Staff) => STAFF_ROLES.indexOf(a.role) - STAFF_ROLES.indexOf(b.role);
+/** His signing fee and any compensation to his club (→STAFF-49). */
+export const staffHireCost = (candidate: Pick<StaffCandidate, 'fee' | 'compensation'>) =>
+  BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0');
+/**
+ * A hired candidate leaves the market and, with the fields only an offer carries dropped, becomes
+ * a member of our staff; another club's holder is named with the compensation it took.
+ */
+function fromMarket(w: World, candidate: StaffCandidate) {
+  takeStaff(w, candidate);
+  const { fee: _fee, source: _source, club, compensation, ...member } = candidate;
+  void _fee;
+  void _source;
+  const from = club && w.clubs.find((one) => one.id === club)?.name;
+  return {
+    member,
+    note: from ? [`${from}에서 영입`, `웃돈 ${moneyLabel(w, compensation ?? '0')}`] : [],
+  };
+}
 
 /**
  * Hires a candidate for `term` seasons at the wage he asks now, fixed for the term; without a term
- * he signs for the length he was offered with.
+ * he signs for the length he was offered with. Another club's holder also costs his club its
+ * compensation (→STAFF-49).
  */
 export function hireStaff(
   w: World,
@@ -417,9 +385,9 @@ export function hireStaff(
   const staff = w.staff || basicStaff(w),
     current = staff.find((member) => member.role === role),
     owed = releaseCost(w, current),
-    total = (BigInt(offer.fee) + BigInt(owed)).toString();
+    total = (staffHireCost(offer) + BigInt(owed)).toString();
   debit(w, total);
-  const { fee, ...offered } = offer;
+  const { member: offered, note } = fromMarket(w, offer);
   const member = withTerm(term ? { ...offered, until: w.year + term } : offered, term);
   departStaff(w, current);
   if (member.person) openEmployment(w, member.person, member.role, w.playerClub);
@@ -429,17 +397,24 @@ export function hireStaff(
     'staff-hire',
     `${STAFF_INFO[role].label} ${member.name} 선임`,
     [
+      ...note.slice(0, 1),
       `능력 ${member.ability}`,
       member.trait ? STAFF_TRAIT_INFO[member.trait].label : '특기 없음',
       `연봉 ${moneyLabel(w, member.wage)}`,
       `계약 ${contractSeason(member.until)} 시즌 끝까지`,
-      `계약금 ${moneyLabel(w, fee)}`,
+      `계약금 ${moneyLabel(w, offer.fee)}`,
+      ...note.slice(1),
       ...(owed !== '0' ? [`${current!.name} 보상금 ${moneyLabel(w, owed)}`] : []),
     ].join(' · '),
     total,
   );
 }
+/**
+ * A member leaves our staff: a former player's employment closes with his learned values kept;
+ * a paid coach joins his post's free agents (→STAFF-49).
+ */
 export function departStaff(w: World, member?: Staff) {
+  if (member && !member.person) joinStaffPool(w, member);
   if (!member?.person) return;
   const person = w.people?.[member.person];
   if (person?.coaching) {
@@ -572,11 +547,14 @@ export function coachFits(
 }
 const byWage = (a: { wage: string }, b: { wage: string }) =>
   BigInt(a.wage) < BigInt(b.wage) ? -1 : BigInt(a.wage) > BigInt(b.wage) ? 1 : 0;
+/** At equal standing a free agent comes before another club's holder (→STAFF-15). */
+const freeFirst = (a: StaffCandidate, b: StaffCandidate) =>
+  (a.source === 'club' ? 1 : 0) - (b.source === 'club' ? 1 : 0);
 /**
- * The season's candidates (→STAFF-11) who meet 코치 기조 and whom the club can afford in place of
- * `replacing` (cash after his fee still keeps 재정 기조's runway with his wage instead of the
- * replaced one), in the option's order: the ablest or the cheapest first, ties to the lower
- * candidate (→STAFF-15).
+ * The post's candidates (→STAFF-49) who meet 코치 기조 and whom the club can afford in place of
+ * `replacing` (cash after his fee and any compensation still keeps 재정 기조's runway with his wage
+ * instead of the replaced one), in the option's order: the ablest or the cheapest first, then a
+ * free agent before another club's holder, then the list's order (→STAFF-15).
  */
 export function coachMatches(w: World, role: StaffRole, replacing?: Staff) {
   const c = coachCriteriaOf(w),
@@ -586,14 +564,18 @@ export function coachMatches(w: World, role: StaffRole, replacing?: Staff) {
     .filter(
       (offer) =>
         checks.every(([, fits]) => fits(offer)) &&
-        affordable(w, BigInt(offer.fee), BigInt(offer.wage) - freed),
+        affordable(w, staffHireCost(offer), BigInt(offer.wage) - freed),
     )
-    .sort(c.priority === 'ability' ? (a, b) => b.ability - a.ability : byWage);
+    .sort(
+      c.priority === 'ability'
+        ? (a, b) => b.ability - a.ability || freeFirst(a, b)
+        : (a, b) => byWage(a, b) || freeFirst(a, b),
+    );
 }
 /** Why no candidate matches: the first criterion nobody meets, or that nobody is affordable. */
 function noCoachReason(w: World, role: StaffRole) {
   let pool = staffCandidates(w, role);
-  if (!pool.length) return '이번 시즌 후보가 없어요';
+  if (!pool.length) return '지금 후보가 없어요';
   for (const [why, fits] of coachChecks(w, role, coachCriteriaOf(w))) {
     pool = pool.filter(fits);
     if (!pool.length) return why;
@@ -608,7 +590,7 @@ const VOLUNTEER_HOLDS = '자원봉사 코치가 자리를 지켜요';
 export function coachPickPreview(
   w: World,
   role: StaffRole,
-): { pick?: Staff & { fee: string }; reason: string } {
+): { pick?: StaffCandidate; reason: string } {
   const c = coachCriteriaOf(w),
     member = staffMember(w, role),
     contracted = !!member && BigInt(member.wage) > 0n,
@@ -620,14 +602,17 @@ export function coachPickPreview(
     return {
       reason: `코치 기조에 맞는 코치가 없어요 · ${noCoachReason(w, role)}${contracted ? later : ` · ${VOLUNTEER_HOLDS}`}`,
     };
+  const from = pick.club && w.clubs.find((club) => club.id === pick.club)?.name;
   return {
     pick,
     reason:
       [
         `${pick.name} · 능력 ${pick.ability}`,
+        ...(from ? [from] : []),
         pick.trait ? STAFF_TRAIT_INFO[pick.trait].label : '특기 없음',
         `연봉 ${moneyLabel(w, pick.wage)}`,
         `계약금 ${moneyLabel(w, pick.fee)}`,
+        ...(pick.compensation ? [`웃돈 ${moneyLabel(w, pick.compensation)}`] : []),
         `${c.term}시즌 계약`,
       ].join(' · ') + later,
   };
@@ -696,10 +681,15 @@ export function renewStaff(w: World, role: StaffRole, term?: ContractTerm) {
     terms.fee,
   );
 }
-/** Puts `member` in charge of `role`, paying his signing fee. */
-function appoint(w: World, member: Staff & { fee?: string }) {
-  const { fee, ...staff } = member;
-  if (fee && BigInt(fee) > 0n) debit(w, fee, true);
+/**
+ * Puts `member` in charge of his post: a candidate is signed from the market, paying his signing
+ * fee and any compensation to his club (→STAFF-49); a volunteer costs nothing.
+ */
+function appoint(w: World, member: Staff | StaffCandidate) {
+  const offer = 'source' in member ? member : undefined,
+    cost = offer ? staffHireCost(offer) : 0n,
+    { member: staff, note } = offer ? fromMarket(w, offer) : { member, note: [] };
+  if (cost > 0n) debit(w, cost.toString(), true);
   departStaff(w, staffMember(w, staff.role));
   if (staff.person) openEmployment(w, staff.person, staff.role, w.playerClub);
   w.staff = [...(w.staff || []).filter((other) => other.role !== staff.role), staff].sort(
@@ -710,13 +700,15 @@ function appoint(w: World, member: Staff & { fee?: string }) {
     'staff-hire',
     `${STAFF_INFO[staff.role].label} ${staff.name} 선임`,
     [
+      ...note.slice(0, 1),
       `능력 ${staff.ability}`,
       staff.trait ? STAFF_TRAIT_INFO[staff.trait].label : '특기 없음',
       BigInt(staff.wage) > 0n ? `연봉 ${moneyLabel(w, staff.wage)}` : '무급 자원봉사',
       `계약 ${contractSeason(staff.until)} 시즌 끝까지`,
+      ...note.slice(1),
       '스태프 위임 선임',
     ].join(' · '),
-    fee && BigInt(fee) > 0n ? fee : undefined,
+    cost > 0n ? cost.toString() : undefined,
   );
   return staff;
 }
@@ -732,7 +724,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
   const c = coachCriteriaOf(w),
     label = STAFF_INFO[role].label,
     first = c.volunteer ? undefined : coachMatches(w, role, member)[0],
-    hired = (offer: Staff & { fee: string }) => appoint(w, { ...offer, until: w.year + c.term });
+    hired = (offer: StaffCandidate) => appoint(w, { ...offer, until: w.year + c.term });
   if (!member || BigInt(member.wage) === 0n) {
     if (considerPlayingCoach(w, role)) return `${label} 플레잉 코치 계약 검토`;
     if (first) return `${label} ${hired(first).name} 선임(능력 ${first.ability})`;

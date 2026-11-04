@@ -1165,7 +1165,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('staff', 'drawCandidates', 'coachFits', 'fillDelegatedPost'),
+          ...src('club-staff', 'refreshStaffMarket', 'poachStaff'),
+          ...src('staff', 'coachFits', 'fillDelegatedPost'),
           ...src('ops-staff', 'appointDelegatedManager'),
         ],
         [

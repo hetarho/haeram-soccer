@@ -31,6 +31,7 @@ import {
   renewalTerms,
   seasonStaff,
   STAFF_INFO,
+  STAFF_MARKET_CONFIG,
   STAFF_ROLES,
   STYLE_INFO,
   staffCandidates,
@@ -520,7 +521,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
 });
 
 describe('the 단장 (STAFF-20)', () => {
-  it('is hired, released and renewed like any department, from three candidates a season', () => {
+  it('is hired, released and renewed like any department, from the 단장 market', () => {
     const w = world('director-post');
     expect(STAFF_ROLES[0]).toBe('director');
     expect(STAFF_INFO.director).toEqual({
@@ -530,7 +531,11 @@ describe('the 단장 (STAFF-20)', () => {
     });
     expect(STAFF_INFO.scout.traits).toEqual(['spotter']);
     const offers = staffCandidates(w, 'director');
-    expect(offers).toHaveLength(3);
+    // Free agents first, then other clubs' 단장s (→STAFF-49).
+    expect(offers.map((offer) => offer.source)).toEqual([
+      ...Array<'free'>(STAFF_MARKET_CONFIG.poolMin).fill('free'),
+      ...Array<'club'>(STAFF_MARKET_CONFIG.poachList).fill('club'),
+    ]);
     expect(
       offers.every(
         (offer) => !offer.trait || offer.trait === 'negotiator' || offer.trait === 'closer',
@@ -554,6 +559,10 @@ describe('the 단장 (STAFF-20)', () => {
     operate(w, { type: 'release-staff', role: 'director' });
     expect(w.staff!.some((member) => member.role === 'director')).toBe(false);
     expect(staffEffects(w).bidAcceptance).toBe(-0.05);
+    // The man released joins the 단장 free agents.
+    expect(
+      staffCandidates(w, 'director').some((o) => o.id === hired.id && o.source === 'free'),
+    ).toBe(true);
   });
 
   it('the staff fill his post by 코치 기조 once staff are delegated, the coaching departments with him', () => {
