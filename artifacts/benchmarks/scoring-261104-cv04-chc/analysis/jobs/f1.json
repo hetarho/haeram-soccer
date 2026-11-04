@@ -1,0 +1,345 @@
+[
+ {
+  "name": "conc-Er3c1f5a110-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/conc-Er3c1f5a110-validation2400.json"
+  ]
+ },
+ {
+  "name": "core-Er3c1f5a110-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/core-Er3c1f5a110-validation-1.json"
+  ]
+ },
+ {
+  "name": "pc-Er3c1f5a110-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/pc-Er3c1f5a110-calibration-2.json"
+  ]
+ },
+ {
+  "name": "stress-Er3c1f5a110-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/stress-Er3c1f5a110-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-Er3c1f5a110-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/stress-Er3c1f5a110-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-Er3c1f5a110-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/stress-Er3c1f5a110-val-3.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-1-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-1-0.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-1-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-1-7.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-1-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-1-14.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-2-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-2-0.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-2-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-2-7.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-2-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-2-14.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-3-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-3-0.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-3-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-3-7.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-3-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-3-14.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-4-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-4-0.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-4-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-4-7.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-4-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-4-14.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-esp1-0",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-esp1-0.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-esp1-7",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-esp1-7.json"
+  ]
+ },
+ {
+  "name": "season-Er3c1f5a110-esp1-14",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/season/season-Er3c1f5a110-esp1-14.json"
+  ]
+ }
+]

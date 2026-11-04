@@ -1,0 +1,80 @@
+[
+ {
+  "name": "origins-Er3c15f4a100-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c15f4a100.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-Er3c15f4a100-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Er3c15f5a110-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c15f5a110.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-Er3c15f5a110-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Er3c1f5a110-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-Er3c1f5a110-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-r3c15f5a120-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/r3c15f5a120.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-r3c15f5a120-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-r3c15f6a130-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/r3c15f6a130.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-r3c15f6a130-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Eid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Eid.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-Eid-0-300.json"
+  ]
+ }
+]

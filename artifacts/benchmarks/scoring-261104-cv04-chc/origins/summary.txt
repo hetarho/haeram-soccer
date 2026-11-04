@@ -1,0 +1,803 @@
+B300: 300 matches, shots/team 13.32, goals/match 2.32; ST slot 0.278 of shots, 0.311 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.55  0.239  0.061  0.061  0.359  0.319  0.245
+    restart-corner                1.04  0.184  0.205  0.160  0.058  0.039  0.023
+    through                       2.57  0.104  0.047  0.037  0.127  0.306  0.102
+    self-takeOn                   0.91  0.085  0.108  0.093  0.402  0.390  0.106
+    penalty                       0.13  0.076  0.697  0.760  0.434  0.472  0.116
+    pass-pass                     1.45  0.075  0.060  0.051  0.247  0.269  0.065
+    opp-pass:loose                0.29  0.063  0.253  0.230  0.523  0.659  0.134
+    restart-freeKick              0.73  0.062  0.099  0.093  0.119  0.070  0.014
+    pass-cross                    0.78  0.049  0.072  0.092  0.434  0.441  0.069
+    setPiece-2nd                  0.34  0.030  0.102  0.092  0.359  0.619  0.060
+    opp-holdUp:tackled            0.05  0.012  0.276  0.135  0.517  0.750  0.028
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.52  0.512  0.235  0.223  0.352  0.444  0.731
+    box                           9.58  0.455  0.055  0.050  0.242  0.165  0.241
+    outside                       1.22  0.033  0.031  0.027  0.417  0.261  0.028
+  open play: shots/team 11.43, goals/match 1.57, ST 0.389 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.27  0.637  0.220  0.214  0.358  0.440  0.721
+    box                           7.99  0.314  0.031  0.029  0.276  0.304  0.246
+    outside                       1.17  0.049  0.033  0.028  0.421  0.261  0.033
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            1.04  0.184  0.205  0.160  0.058  0.039  0.023
+    self-carry@goalArea           0.80  0.157  0.227  0.231  0.294  0.330  0.167
+    penalty@goalArea              0.10  0.076  0.883  0.760  0.483  0.472  0.116
+    self-carry@box                3.39  0.069  0.024  0.024  0.364  0.333  0.074
+    opp-pass:loose@goalArea       0.13  0.059  0.532  0.488  0.584  0.659  0.125
+    restart-freeKick@box          0.53  0.058  0.127  0.126  0.083  0.050  0.009
+    through@goalArea              0.30  0.053  0.206  0.184  0.317  0.405  0.069
+    pass-cross@goalArea           0.47  0.047  0.118  0.131  0.419  0.424  0.065
+    self-takeOn@goalArea          0.26  0.045  0.199  0.209  0.340  0.419  0.060
+    through@box                   2.05  0.043  0.024  0.017  0.084  0.200  0.028
+    pass-pass@box                 0.94  0.039  0.048  0.047  0.167  0.185  0.023
+    self-takeOn@box               0.59  0.036  0.071  0.049  0.402  0.360  0.042
+    pass-pass@goalArea            0.13  0.030  0.266  0.187  0.278  0.333  0.032
+    setPiece-2nd@goalArea         0.06  0.022  0.429  0.337  0.686  0.800  0.056
+    self-carry@outside            0.36  0.013  0.042  0.040  0.458  0.111  0.005
+    opp-holdUp:tackled@goalArea   0.02  0.012  0.571  0.250  0.500  0.750  0.028
+    pass-pass@outside             0.38  0.006  0.018  0.015  0.434  0.500  0.009
+    pass-cross@box                0.32  0.001  0.005  0.036  0.455  1.000  0.005
+  by slot position: ST 0.278/0.311, CM 0.228/0.150, SUB 0.154/0.145, LB 0.044/0.091, LW 0.099/0.075, RW 0.069/0.065, RB 0.027/0.036, AM 0.040/0.029, DM 0.012/0.024, RM 0.014/0.023, LWB 0.011/0.020, CB 0.008/0.013, LM 0.012/0.010, RWB 0.006/0.009
+Bid: 150 matches, shots/team 13.30, goals/match 2.35; ST slot 0.273 of shots, 0.315 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.57  0.270  0.069  0.064  0.358  0.368  0.315
+    restart-corner                0.99  0.162  0.193  0.163  0.098  0.070  0.036
+    through                       2.64  0.125  0.056  0.040  0.120  0.295  0.117
+    pass-pass                     1.51  0.085  0.066  0.054  0.221  0.167  0.045
+    self-takeOn                   0.88  0.071  0.095  0.092  0.376  0.400  0.090
+    penalty                       0.12  0.068  0.686  0.760  0.343  0.417  0.090
+    opp-pass:loose                0.31  0.062  0.234  0.231  0.479  0.591  0.117
+    pass-cross                    0.79  0.048  0.072  0.088  0.428  0.471  0.072
+    restart-freeKick              0.69  0.045  0.078  0.089  0.141  0.125  0.018
+    setPiece-2nd                  0.34  0.031  0.108  0.084  0.324  0.545  0.054
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.67  0.554  0.244  0.218  0.341  0.421  0.739
+    box                           9.35  0.415  0.052  0.050  0.235  0.178  0.234
+    outside                       1.28  0.031  0.029  0.029  0.405  0.273  0.027
+  open play: shots/team 11.51, goals/match 1.70, ST 0.373 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.40  0.667  0.236  0.213  0.352  0.424  0.758
+    box                           7.87  0.290  0.031  0.028  0.260  0.270  0.211
+    outside                       1.24  0.043  0.029  0.029  0.408  0.273  0.032
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@goalArea           0.87  0.193  0.262  0.231  0.331  0.382  0.234
+    restart-corner@box            0.99  0.162  0.193  0.163  0.098  0.070  0.036
+    through@goalArea              0.32  0.068  0.247  0.198  0.299  0.417  0.090
+    penalty@goalArea              0.09  0.068  0.889  0.760  0.407  0.417  0.090
+    self-carry@box                3.28  0.062  0.022  0.022  0.354  0.364  0.072
+    opp-pass:loose@goalArea       0.14  0.060  0.512  0.492  0.512  0.619  0.117
+    through@box                   2.07  0.048  0.027  0.017  0.076  0.176  0.027
+    pass-pass@box                 1.00  0.045  0.053  0.047  0.143  0.125  0.018
+    pass-cross@goalArea           0.49  0.045  0.110  0.121  0.432  0.438  0.063
+    self-takeOn@goalArea          0.28  0.043  0.181  0.193  0.289  0.400  0.054
+    restart-freeKick@box          0.47  0.043  0.107  0.128  0.114  0.133  0.018
+    pass-pass@goalArea            0.14  0.037  0.317  0.210  0.220  0.154  0.018
+    self-takeOn@box               0.55  0.028  0.061  0.047  0.402  0.400  0.036
+    setPiece-2nd@goalArea         0.05  0.023  0.533  0.315  0.733  0.750  0.054
+    self-carry@outside            0.42  0.014  0.040  0.039  0.444  0.200  0.009
+    pass-pass@outside             0.37  0.003  0.009  0.016  0.436  1.000  0.009
+    pass-cross@box                0.30  0.003  0.011  0.034  0.422  1.000  0.009
+  by slot position: ST 0.273/0.315, CM 0.229/0.176, SUB 0.161/0.145, RW 0.074/0.091, LB 0.036/0.082, LW 0.108/0.074, AM 0.041/0.031, DM 0.013/0.031, RB 0.024/0.020, CB 0.008/0.011, LWB 0.010/0.009, RWB 0.007/0.006, RM 0.008/0.006, LM 0.010/0.003
+Eid: 300 matches, shots/team 12.80, goals/match 2.40; ST slot 0.311 of shots, 0.285 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.19  0.254  0.073  0.056  0.379  0.361  0.322
+    restart-corner                0.99  0.204  0.248  0.176  0.039  0.027  0.020
+    through                       2.12  0.097  0.055  0.042  0.148  0.229  0.078
+    restart-freeKick              0.70  0.076  0.130  0.113  0.137  0.036  0.010
+    self-takeOn                   0.83  0.074  0.106  0.087  0.475  0.377  0.098
+    penalty                       0.11  0.072  0.776  0.760  0.388  0.442  0.112
+    pass-cross                    0.81  0.065  0.097  0.092  0.428  0.553  0.127
+    opp-pass:loose                0.32  0.064  0.243  0.238  0.471  0.522  0.117
+    pass-pass                     1.88  0.047  0.030  0.037  0.348  0.294  0.049
+    rebound                       0.16  0.017  0.122  0.092  0.398  0.333  0.020
+    setPiece-2nd                  0.30  0.008  0.033  0.063  0.394  0.500  0.015
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           8.18  0.501  0.074  0.056  0.251  0.122  0.215
+    goalArea                      2.10  0.451  0.258  0.235  0.381  0.446  0.707
+    outside                       2.52  0.047  0.022  0.024  0.449  0.471  0.078
+  open play: shots/team 11.00, goals/match 1.55, ST 0.378 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      1.87  0.586  0.243  0.223  0.383  0.447  0.693
+    box                           6.63  0.341  0.040  0.029  0.296  0.239  0.216
+    outside                       2.50  0.073  0.023  0.024  0.452  0.471  0.091
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            0.99  0.204  0.248  0.176  0.039  0.027  0.020
+    self-carry@goalArea           0.56  0.125  0.265  0.243  0.319  0.367  0.161
+    self-carry@box                2.93  0.107  0.044  0.025  0.377  0.286  0.107
+    restart-freeKick@box          0.55  0.076  0.166  0.142  0.097  0.036  0.010
+    penalty@goalArea              0.10  0.072  0.881  0.760  0.424  0.442  0.112
+    opp-pass:loose@goalArea       0.14  0.060  0.500  0.485  0.500  0.558  0.117
+    pass-cross@goalArea           0.45  0.057  0.151  0.129  0.379  0.585  0.117
+    through@goalArea              0.25  0.054  0.258  0.210  0.344  0.282  0.054
+    self-takeOn@goalArea          0.20  0.043  0.254  0.217  0.475  0.452  0.068
+    through@box                   1.59  0.039  0.029  0.018  0.074  0.107  0.015
+    self-takeOn@box               0.48  0.028  0.069  0.050  0.464  0.200  0.020
+    pass-pass@box                 0.68  0.022  0.039  0.049  0.147  0.188  0.015
+    self-carry@outside            0.69  0.022  0.039  0.034  0.437  0.688  0.054
+    pass-pass@outside             1.09  0.013  0.014  0.015  0.470  0.111  0.005
+    pass-pass@goalArea            0.10  0.013  0.148  0.194  0.377  0.667  0.029
+    rebound@goalArea              0.07  0.011  0.195  0.136  0.366  0.250  0.010
+    pass-cross@box                0.35  0.008  0.028  0.045  0.491  0.333  0.010
+    through@outside               0.28  0.004  0.018  0.026  0.398  0.667  0.010
+  by slot position: ST 0.311/0.285, CM 0.207/0.165, SUB 0.153/0.121, LB 0.039/0.089, RW 0.065/0.083, LW 0.097/0.075, RB 0.025/0.046, DM 0.012/0.029, LWB 0.012/0.025, AM 0.039/0.024, RM 0.012/0.019, LM 0.013/0.014, CB 0.007/0.014, RWB 0.007/0.011
+r2: 300 matches, shots/team 13.39, goals/match 2.62; ST slot 0.278 of shots, 0.319 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.53  0.260  0.075  0.076  0.366  0.327  0.267
+    restart-corner                1.04  0.145  0.182  0.161  0.062  0.044  0.020
+    through                       2.63  0.105  0.053  0.044  0.126  0.289  0.096
+    self-takeOn                   0.90  0.097  0.141  0.136  0.396  0.368  0.112
+    penalty                       0.14  0.079  0.721  0.760  0.419  0.435  0.108
+    pass-pass                     1.47  0.069  0.061  0.056  0.238  0.278  0.060
+    pass-cross                    0.81  0.062  0.101  0.118  0.419  0.408  0.080
+    restart-freeKick              0.70  0.052  0.097  0.095  0.123  0.073  0.012
+    opp-pass:loose                0.29  0.051  0.227  0.225  0.500  0.625  0.100
+    setPiece-2nd                  0.36  0.043  0.159  0.124  0.355  0.559  0.076
+    rebound                       0.17  0.011  0.087  0.152  0.327  0.444  0.016
+    opp-holdUp:tackled            0.06  0.010  0.235  0.161  0.559  0.625  0.020
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.56  0.507  0.260  0.248  0.343  0.421  0.669
+    box                           9.57  0.457  0.063  0.062  0.242  0.194  0.279
+    outside                       1.26  0.036  0.037  0.031  0.416  0.464  0.052
+  open play: shots/team 11.49, goals/match 1.90, ST 0.379 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.29  0.589  0.244  0.238  0.348  0.417  0.648
+    box                           7.99  0.361  0.043  0.043  0.275  0.306  0.292
+    outside                       1.21  0.049  0.039  0.033  0.420  0.464  0.060
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@goalArea           0.82  0.160  0.257  0.248  0.293  0.317  0.159
+    restart-corner@box            1.04  0.145  0.182  0.161  0.062  0.044  0.020
+    self-carry@box                3.33  0.088  0.034  0.037  0.374  0.319  0.088
+    penalty@goalArea              0.12  0.079  0.886  0.760  0.443  0.435  0.108
+    through@goalArea              0.31  0.058  0.245  0.210  0.303  0.326  0.060
+    pass-cross@goalArea           0.48  0.058  0.161  0.172  0.406  0.413  0.076
+    self-takeOn@box               0.57  0.055  0.125  0.111  0.401  0.302  0.052
+    restart-freeKick@box          0.51  0.051  0.132  0.130  0.089  0.050  0.008
+    opp-pass:loose@goalArea       0.12  0.046  0.500  0.485  0.556  0.667  0.096
+    self-takeOn@goalArea          0.25  0.039  0.207  0.224  0.333  0.452  0.056
+    through@box                   2.09  0.039  0.025  0.020  0.084  0.226  0.028
+    pass-pass@box                 0.96  0.034  0.047  0.052  0.155  0.148  0.016
+    pass-pass@goalArea            0.13  0.027  0.273  0.205  0.234  0.333  0.028
+    setPiece-2nd@box              0.25  0.022  0.113  0.082  0.273  0.412  0.028
+    setPiece-2nd@goalArea         0.06  0.020  0.432  0.362  0.649  0.750  0.048
+    self-carry@outside            0.38  0.013  0.044  0.046  0.456  0.500  0.020
+    opp-holdUp:tackled@goalArea   0.02  0.010  0.571  0.288  0.571  0.625  0.020
+    pass-pass@outside             0.38  0.008  0.026  0.015  0.448  0.667  0.016
+    pass-cross@box                0.34  0.004  0.015  0.042  0.438  0.333  0.004
+  by slot position: ST 0.278/0.319, SUB 0.151/0.154, CM 0.224/0.149, LW 0.106/0.095, LB 0.044/0.071, RW 0.067/0.070, AM 0.041/0.029, RB 0.026/0.027, LWB 0.012/0.019, RM 0.013/0.015, DM 0.012/0.015, LM 0.012/0.015, CB 0.008/0.013, RWB 0.006/0.009
+r2c1: 300 matches, shots/team 13.41, goals/match 2.48; ST slot 0.274 of shots, 0.315 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.56  0.251  0.068  0.069  0.359  0.332  0.265
+    restart-corner                1.06  0.165  0.192  0.160  0.059  0.049  0.026
+    through                       2.64  0.112  0.052  0.042  0.132  0.277  0.098
+    self-takeOn                   0.90  0.082  0.113  0.097  0.386  0.426  0.111
+    penalty                       0.13  0.075  0.718  0.760  0.410  0.429  0.103
+    pass-pass                     1.45  0.071  0.061  0.052  0.235  0.283  0.064
+    pass-cross                    0.80  0.066  0.103  0.115  0.414  0.408  0.085
+    restart-freeKick              0.72  0.059  0.102  0.094  0.127  0.068  0.013
+    opp-pass:loose                0.28  0.054  0.241  0.220  0.470  0.600  0.103
+    setPiece-2nd                  0.36  0.027  0.093  0.087  0.375  0.600  0.051
+    opp-pass:intercepted          0.09  0.012  0.161  0.104  0.768  1.000  0.038
+    opp-holdUp:tackled            0.06  0.011  0.222  0.133  0.583  0.750  0.026
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.56  0.534  0.258  0.244  0.343  0.428  0.726
+    box                           9.60  0.435  0.056  0.051  0.237  0.167  0.231
+    outside                       1.25  0.031  0.031  0.030  0.418  0.435  0.043
+  open play: shots/team 11.49, goals/match 1.74, ST 0.386 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.30  0.651  0.246  0.236  0.349  0.428  0.721
+    box                           8.00  0.305  0.033  0.030  0.270  0.289  0.229
+    outside                       1.20  0.044  0.032  0.031  0.423  0.435  0.050
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            1.06  0.165  0.192  0.160  0.059  0.049  0.026
+    self-carry@goalArea           0.83  0.165  0.246  0.251  0.293  0.333  0.175
+    penalty@goalArea              0.11  0.075  0.875  0.760  0.438  0.429  0.103
+    self-carry@box                3.36  0.074  0.027  0.026  0.365  0.327  0.077
+    through@goalArea              0.31  0.063  0.250  0.216  0.303  0.340  0.068
+    pass-cross@goalArea           0.47  0.060  0.161  0.171  0.404  0.422  0.081
+    restart-freeKick@box          0.52  0.056  0.135  0.129  0.090  0.048  0.009
+    opp-pass:loose@goalArea       0.12  0.050  0.536  0.489  0.551  0.622  0.098
+    self-takeOn@goalArea          0.25  0.042  0.207  0.222  0.333  0.484  0.064
+    through@box                   2.09  0.040  0.024  0.017  0.089  0.167  0.021
+    self-takeOn@box               0.58  0.038  0.080  0.051  0.378  0.357  0.043
+    pass-pass@box                 0.94  0.034  0.044  0.046  0.150  0.200  0.021
+    pass-pass@goalArea            0.13  0.034  0.321  0.207  0.244  0.280  0.030
+    setPiece-2nd@goalArea         0.06  0.017  0.371  0.330  0.714  0.846  0.047
+    self-carry@outside            0.37  0.012  0.041  0.045  0.457  0.333  0.013
+    opp-holdUp:tackled@goalArea   0.03  0.011  0.533  0.287  0.600  0.750  0.026
+    pass-cross@box                0.33  0.005  0.020  0.036  0.429  0.250  0.004
+    pass-pass@outside             0.38  0.004  0.013  0.015  0.441  1.000  0.013
+  by slot position: ST 0.274/0.315, CM 0.225/0.153, SUB 0.156/0.145, LW 0.102/0.090, LB 0.045/0.078, RW 0.068/0.063, RB 0.028/0.032, AM 0.040/0.030, DM 0.012/0.022, LWB 0.012/0.022, RM 0.013/0.017, CB 0.008/0.013, LM 0.012/0.011, RWB 0.006/0.009
+r3c15: 300 matches, shots/team 13.52, goals/match 2.69; ST slot 0.275 of shots, 0.309 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.62  0.266  0.077  0.077  0.361  0.336  0.289
+    restart-corner                1.04  0.146  0.189  0.161  0.056  0.059  0.028
+    through                       2.73  0.129  0.064  0.059  0.133  0.260  0.108
+    self-takeOn                   0.89  0.088  0.133  0.113  0.409  0.423  0.120
+    penalty                       0.14  0.074  0.732  0.760  0.427  0.417  0.100
+    pass-pass                     1.45  0.073  0.068  0.059  0.237  0.237  0.056
+    opp-pass:loose                0.29  0.061  0.285  0.238  0.459  0.551  0.108
+    pass-cross                    0.80  0.061  0.103  0.115  0.409  0.469  0.092
+    restart-freeKick              0.70  0.047  0.091  0.094  0.136  0.079  0.012
+    setPiece-2nd                  0.37  0.029  0.103  0.102  0.350  0.478  0.044
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.61  0.515  0.265  0.248  0.339  0.414  0.691
+    box                           9.61  0.459  0.064  0.062  0.238  0.181  0.269
+    outside                       1.30  0.026  0.027  0.033  0.418  0.476  0.040
+  open play: shots/team 11.64, goals/match 1.97, ST 0.363 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.35  0.598  0.251  0.239  0.341  0.414  0.682
+    box                           8.04  0.366  0.045  0.043  0.270  0.269  0.271
+    outside                       1.25  0.036  0.028  0.035  0.423  0.476  0.047
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@goalArea           0.88  0.163  0.249  0.252  0.292  0.351  0.185
+    restart-corner@box            1.04  0.146  0.189  0.161  0.056  0.059  0.028
+    self-carry@box                3.37  0.093  0.037  0.034  0.368  0.293  0.088
+    penalty@goalArea              0.11  0.074  0.882  0.760  0.441  0.417  0.100
+    through@box                   2.17  0.062  0.038  0.037  0.087  0.180  0.036
+    through@goalArea              0.32  0.062  0.258  0.219  0.304  0.340  0.068
+    pass-cross@goalArea           0.47  0.056  0.161  0.168  0.414  0.489  0.088
+    opp-pass:loose@goalArea       0.12  0.056  0.600  0.481  0.507  0.556  0.100
+    self-takeOn@box               0.57  0.045  0.106  0.072  0.418  0.417  0.060
+    restart-freeKick@box          0.50  0.045  0.120  0.130  0.094  0.056  0.008
+    self-takeOn@goalArea          0.24  0.041  0.232  0.237  0.324  0.424  0.056
+    pass-pass@box                 0.94  0.041  0.059  0.058  0.155  0.152  0.020
+    pass-pass@goalArea            0.13  0.027  0.289  0.210  0.224  0.273  0.024
+    setPiece-2nd@goalArea         0.07  0.019  0.366  0.332  0.610  0.667  0.040
+    self-carry@outside            0.37  0.010  0.036  0.052  0.469  0.500  0.016
+    pass-pass@outside             0.39  0.005  0.017  0.015  0.438  0.750  0.012
+    pass-cross@box                0.33  0.005  0.020  0.040  0.401  0.250  0.004
+  by slot position: ST 0.275/0.309, CM 0.228/0.169, SUB 0.158/0.159, LW 0.102/0.084, RW 0.069/0.074, LB 0.041/0.062, AM 0.039/0.035, RB 0.027/0.033, LWB 0.011/0.017, DM 0.012/0.015, RM 0.013/0.012, LM 0.012/0.011, CB 0.008/0.010, RWB 0.005/0.009
+r2rc15: 300 matches, shots/team 13.24, goals/match 2.91; ST slot 0.278 of shots, 0.303 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.47  0.247  0.080  0.080  0.363  0.306  0.249
+    pass-cross                    0.76  0.127  0.245  0.299  0.435  0.414  0.174
+    restart-corner                1.01  0.117  0.168  0.159  0.056  0.059  0.023
+    through                       2.60  0.114  0.064  0.050  0.125  0.230  0.087
+    self-takeOn                   0.93  0.092  0.143  0.122  0.392  0.338  0.102
+    opp-pass:loose                0.32  0.069  0.317  0.285  0.503  0.433  0.098
+    penalty                       0.13  0.065  0.722  0.760  0.367  0.351  0.075
+    pass-pass                     1.47  0.057  0.057  0.056  0.251  0.300  0.057
+    restart-freeKick              0.69  0.043  0.092  0.097  0.119  0.053  0.008
+    setPiece-2nd                  0.36  0.033  0.132  0.114  0.342  0.586  0.064
+    rebound                       0.18  0.014  0.112  0.133  0.327  0.417  0.019
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.50  0.545  0.318  0.303  0.332  0.372  0.668
+    box                           9.48  0.422  0.065  0.066  0.246  0.211  0.294
+    outside                       1.26  0.033  0.038  0.033  0.412  0.345  0.038
+  open play: shots/team 11.41, goals/match 2.26, ST 0.350 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.24  0.619  0.312  0.300  0.342  0.375  0.662
+    box                           7.95  0.338  0.048  0.048  0.279  0.306  0.295
+    outside                       1.23  0.043  0.039  0.034  0.416  0.345  0.042
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@goalArea           0.79  0.142  0.261  0.250  0.278  0.282  0.132
+    restart-corner@box            1.01  0.117  0.168  0.159  0.056  0.059  0.023
+    pass-cross@goalArea           0.45  0.117  0.381  0.458  0.403  0.402  0.155
+    self-carry@box                3.31  0.093  0.041  0.043  0.376  0.333  0.102
+    penalty@goalArea              0.11  0.065  0.877  0.760  0.385  0.351  0.075
+    opp-pass:loose@goalArea       0.15  0.062  0.593  0.530  0.462  0.426  0.087
+    through@box                   2.08  0.053  0.037  0.031  0.083  0.174  0.030
+    through@goalArea              0.30  0.051  0.253  0.200  0.309  0.311  0.053
+    self-takeOn@box               0.61  0.047  0.111  0.089  0.396  0.317  0.049
+    self-takeOn@goalArea          0.25  0.045  0.260  0.226  0.320  0.359  0.053
+    restart-freeKick@box          0.50  0.043  0.127  0.131  0.100  0.053  0.008
+    pass-pass@box                 0.94  0.030  0.046  0.056  0.163  0.192  0.019
+    setPiece-2nd@goalArea         0.06  0.022  0.500  0.375  0.632  0.684  0.049
+    pass-pass@goalArea            0.13  0.022  0.247  0.185  0.286  0.368  0.026
+    self-carry@outside            0.38  0.013  0.049  0.046  0.429  0.364  0.015
+    setPiece-2nd@box              0.25  0.010  0.060  0.063  0.255  0.444  0.015
+    pass-cross@box                0.31  0.010  0.049  0.068  0.481  0.556  0.019
+    through@outside               0.23  0.010  0.065  0.036  0.268  0.111  0.004
+    pass-pass@outside             0.40  0.006  0.021  0.017  0.444  0.600  0.011
+  by slot position: ST 0.278/0.303, CM 0.227/0.176, SUB 0.157/0.159, LW 0.102/0.113, RW 0.068/0.064, LB 0.041/0.057, AM 0.041/0.034, RB 0.026/0.018, RM 0.012/0.016, DM 0.011/0.015, CB 0.008/0.014, LWB 0.010/0.013, RWB 0.007/0.009, LM 0.012/0.008
+fl05: 300 matches, shots/team 12.81, goals/match 2.36; ST slot 0.293 of shots, 0.330 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.43  0.252  0.067  0.060  0.371  0.354  0.270
+    restart-corner                0.98  0.153  0.183  0.158  0.036  0.028  0.013
+    through                       2.26  0.096  0.050  0.040  0.128  0.279  0.082
+    penalty                       0.13  0.088  0.795  0.760  0.487  0.468  0.124
+    opp-pass:loose                0.33  0.083  0.298  0.242  0.540  0.644  0.163
+    restart-freeKick              0.73  0.074  0.118  0.098  0.123  0.115  0.026
+    self-takeOn                   0.84  0.066  0.093  0.078  0.446  0.362  0.073
+    pass-cross                    0.85  0.066  0.092  0.096  0.453  0.532  0.107
+    pass-pass                     1.41  0.052  0.044  0.049  0.255  0.162  0.026
+    setPiece-2nd                  0.26  0.027  0.120  0.086  0.392  0.737  0.060
+    opp-pass:intercepted          0.12  0.013  0.129  0.084  0.657  0.556  0.021
+    rebound                       0.18  0.013  0.083  0.087  0.394  0.444  0.017
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.47  0.521  0.248  0.224  0.403  0.470  0.742
+    box                           9.05  0.446  0.058  0.050  0.241  0.156  0.210
+    outside                       1.28  0.034  0.031  0.027  0.441  0.458  0.047
+  open play: shots/team 10.96, goals/match 1.62, ST 0.402 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.21  0.629  0.229  0.212  0.409  0.472  0.738
+    box                           7.50  0.322  0.035  0.029  0.280  0.256  0.205
+    outside                       1.25  0.049  0.032  0.028  0.446  0.458  0.056
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            0.98  0.153  0.183  0.158  0.036  0.028  0.013
+    self-carry@goalArea           0.72  0.149  0.244  0.237  0.336  0.390  0.176
+    self-carry@box                3.34  0.092  0.032  0.024  0.364  0.262  0.073
+    penalty@goalArea              0.11  0.088  0.939  0.760  0.485  0.468  0.124
+    opp-pass:loose@goalArea       0.17  0.076  0.529  0.447  0.627  0.630  0.146
+    restart-freeKick@box          0.55  0.072  0.154  0.128  0.078  0.118  0.026
+    pass-cross@goalArea           0.54  0.058  0.127  0.129  0.466  0.537  0.094
+    through@goalArea              0.28  0.054  0.226  0.188  0.327  0.421  0.069
+    through@box                   1.76  0.040  0.026  0.018  0.078  0.107  0.013
+    self-takeOn@goalArea          0.20  0.037  0.213  0.196  0.402  0.423  0.047
+    pass-pass@box                 0.87  0.031  0.042  0.045  0.143  0.091  0.009
+    self-takeOn@box               0.56  0.024  0.051  0.042  0.438  0.235  0.017
+    setPiece-2nd@goalArea         0.04  0.020  0.583  0.346  0.625  0.714  0.043
+    pass-pass@goalArea            0.12  0.017  0.169  0.197  0.324  0.167  0.009
+    self-carry@outside            0.37  0.011  0.036  0.039  0.500  0.625  0.021
+    pass-cross@box                0.32  0.008  0.032  0.041  0.432  0.500  0.013
+    pass-pass@outside             0.42  0.004  0.012  0.015  0.468  0.667  0.009
+  by slot position: ST 0.293/0.330, CM 0.220/0.154, SUB 0.151/0.132, LW 0.099/0.086, RW 0.064/0.074, LB 0.043/0.068, RB 0.029/0.038, AM 0.039/0.030, LWB 0.012/0.025, DM 0.011/0.018, RM 0.012/0.017, LM 0.012/0.017, CB 0.008/0.006, RWB 0.007/0.006
+f4: 300 matches, shots/team 13.31, goals/match 2.73; ST slot 0.282 of shots, 0.324 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.54  0.288  0.087  0.088  0.358  0.356  0.316
+    through                       2.58  0.138  0.073  0.066  0.132  0.230  0.098
+    restart-corner                0.97  0.130  0.184  0.158  0.062  0.065  0.026
+    self-takeOn                   0.89  0.078  0.120  0.113  0.428  0.422  0.102
+    penalty                       0.14  0.077  0.750  0.760  0.488  0.524  0.124
+    pass-cross                    0.81  0.061  0.103  0.102  0.422  0.440  0.083
+    pass-pass                     1.48  0.060  0.055  0.056  0.246  0.286  0.053
+    opp-pass:loose                0.28  0.057  0.280  0.243  0.494  0.511  0.090
+    restart-freeKick              0.74  0.046  0.085  0.095  0.119  0.053  0.008
+    setPiece-2nd                  0.33  0.034  0.141  0.113  0.367  0.571  0.060
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           9.53  0.516  0.074  0.073  0.245  0.222  0.353
+    goalArea                      2.59  0.463  0.245  0.231  0.359  0.432  0.617
+    outside                       1.19  0.021  0.024  0.027  0.402  0.471  0.030
+  open play: shots/team 11.45, goals/match 2.04, ST 0.366 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.30  0.515  0.228  0.219  0.365  0.416  0.585
+    box                           8.01  0.458  0.058  0.057  0.278  0.304  0.379
+    outside                       1.14  0.028  0.025  0.028  0.409  0.471  0.036
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@box                3.40  0.144  0.058  0.056  0.365  0.381  0.169
+    self-carry@goalArea           0.81  0.137  0.231  0.241  0.303  0.321  0.135
+    restart-corner@box            0.97  0.130  0.184  0.158  0.062  0.065  0.026
+    through@box                   2.06  0.078  0.052  0.050  0.093  0.109  0.026
+    penalty@goalArea              0.12  0.077  0.875  0.760  0.528  0.524  0.124
+    through@goalArea              0.31  0.054  0.234  0.198  0.314  0.409  0.068
+    pass-cross@goalArea           0.48  0.049  0.139  0.133  0.425  0.425  0.064
+    opp-pass:loose@goalArea       0.12  0.048  0.520  0.465  0.547  0.538  0.079
+    restart-freeKick@box          0.53  0.044  0.114  0.131  0.092  0.056  0.008
+    self-takeOn@box               0.58  0.041  0.098  0.077  0.448  0.441  0.056
+    self-takeOn@goalArea          0.25  0.035  0.193  0.216  0.327  0.379  0.041
+    pass-pass@box                 0.95  0.033  0.048  0.056  0.155  0.185  0.019
+    pass-pass@goalArea            0.13  0.024  0.260  0.180  0.325  0.350  0.026
+    setPiece-2nd@goalArea         0.07  0.021  0.436  0.346  0.692  0.824  0.053
+    setPiece-2nd@box              0.23  0.013  0.079  0.060  0.257  0.182  0.008
+    pass-cross@box                0.33  0.012  0.050  0.057  0.417  0.500  0.019
+    self-carry@outside            0.33  0.007  0.031  0.041  0.426  0.500  0.011
+    pass-pass@outside             0.40  0.002  0.008  0.015  0.434  1.000  0.008
+  by slot position: ST 0.282/0.324, CM 0.225/0.163, SUB 0.154/0.159, LW 0.102/0.098, RW 0.068/0.062, LB 0.040/0.061, AM 0.041/0.035, RB 0.026/0.021, LWB 0.011/0.018, RM 0.013/0.015, DM 0.010/0.013, CB 0.008/0.012, LM 0.013/0.011, RWB 0.007/0.007
+r3c15f3: 300 matches, shots/team 13.35, goals/match 2.90; ST slot 0.280 of shots, 0.324 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.59  0.284  0.090  0.093  0.361  0.368  0.323
+    through                       2.62  0.146  0.081  0.074  0.131  0.220  0.099
+    restart-corner                1.02  0.124  0.176  0.159  0.060  0.074  0.028
+    self-takeOn                   0.88  0.086  0.143  0.125  0.430  0.467  0.124
+    penalty                       0.14  0.071  0.765  0.760  0.494  0.500  0.110
+    pass-pass                     1.49  0.065  0.064  0.059  0.241  0.211  0.043
+    pass-cross                    0.78  0.062  0.115  0.121  0.423  0.444  0.085
+    opp-pass:loose                0.28  0.060  0.311  0.266  0.473  0.500  0.092
+    restart-freeKick              0.70  0.042  0.089  0.097  0.136  0.054  0.007
+    setPiece-2nd                  0.34  0.030  0.127  0.118  0.368  0.577  0.053
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           9.49  0.501  0.077  0.076  0.241  0.206  0.319
+    goalArea                      2.58  0.476  0.268  0.253  0.360  0.441  0.649
+    outside                       1.28  0.023  0.026  0.035  0.407  0.450  0.032
+  open play: shots/team 11.50, goals/match 2.21, ST 0.363 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.31  0.530  0.254  0.243  0.362  0.432  0.631
+    box                           7.96  0.440  0.061  0.060  0.272  0.274  0.332
+    outside                       1.23  0.030  0.027  0.036  0.414  0.450  0.037
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@goalArea           0.86  0.147  0.248  0.256  0.311  0.391  0.177
+    self-carry@box                3.35  0.127  0.055  0.056  0.365  0.333  0.131
+    restart-corner@box            1.02  0.124  0.176  0.159  0.060  0.074  0.028
+    through@box                   2.08  0.084  0.058  0.056  0.088  0.123  0.032
+    penalty@goalArea              0.12  0.071  0.873  0.760  0.521  0.500  0.110
+    through@goalArea              0.31  0.056  0.262  0.225  0.310  0.367  0.064
+    pass-cross@goalArea           0.47  0.055  0.172  0.168  0.423  0.458  0.078
+    opp-pass:loose@goalArea       0.12  0.049  0.597  0.513  0.528  0.512  0.078
+    self-takeOn@box               0.56  0.047  0.121  0.086  0.448  0.488  0.071
+    restart-freeKick@box          0.50  0.041  0.120  0.133  0.110  0.056  0.007
+    pass-pass@box                 0.96  0.040  0.061  0.061  0.151  0.114  0.014
+    self-takeOn@goalArea          0.23  0.038  0.236  0.245  0.350  0.455  0.053
+    pass-pass@goalArea            0.12  0.023  0.278  0.191  0.250  0.300  0.021
+    setPiece-2nd@goalArea         0.07  0.020  0.415  0.338  0.659  0.765  0.046
+    setPiece-2nd@box              0.23  0.010  0.066  0.067  0.263  0.222  0.007
+    self-carry@outside            0.37  0.009  0.036  0.054  0.441  0.500  0.014
+    pass-cross@box                0.32  0.007  0.031  0.053  0.424  0.333  0.007
+    pass-pass@outside             0.41  0.002  0.008  0.015  0.447  1.000  0.007
+  by slot position: ST 0.280/0.324, CM 0.225/0.172, SUB 0.155/0.162, LW 0.099/0.092, RW 0.069/0.061, LB 0.040/0.053, AM 0.043/0.039, RB 0.029/0.023, LWB 0.012/0.018, DM 0.011/0.015, RM 0.012/0.014, CB 0.007/0.011, RWB 0.006/0.009, LM 0.012/0.007
+r3c15f5: 300 matches, shots/team 13.47, goals/match 3.27; ST slot 0.277 of shots, 0.333 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.64  0.320  0.113  0.103  0.355  0.379  0.364
+    through                       2.62  0.142  0.088  0.084  0.132  0.201  0.086
+    restart-corner                1.06  0.120  0.185  0.161  0.055  0.076  0.028
+    self-takeOn                   0.86  0.082  0.156  0.131  0.435  0.469  0.116
+    penalty                       0.15  0.067  0.742  0.760  0.449  0.470  0.095
+    pass-pass                     1.45  0.060  0.068  0.061  0.252  0.254  0.046
+    pass-cross                    0.81  0.058  0.118  0.123  0.402  0.474  0.083
+    opp-pass:loose                0.28  0.048  0.280  0.261  0.476  0.532  0.076
+    restart-freeKick              0.72  0.040  0.090  0.097  0.127  0.051  0.006
+    setPiece-2nd                  0.35  0.034  0.156  0.133  0.370  0.606  0.061
+    rebound                       0.20  0.011  0.092  0.138  0.300  0.273  0.009
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           9.64  0.542  0.092  0.087  0.238  0.239  0.388
+    goalArea                      2.58  0.436  0.276  0.254  0.360  0.442  0.578
+    outside                       1.25  0.022  0.029  0.033  0.410  0.500  0.034
+  open play: shots/team 11.54, goals/match 2.53, ST 0.375 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           8.04  0.495  0.078  0.072  0.271  0.309  0.407
+    goalArea                      2.30  0.476  0.262  0.243  0.367  0.438  0.554
+    outside                       1.20  0.029  0.031  0.034  0.418  0.500  0.039
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@box                3.42  0.166  0.079  0.071  0.359  0.399  0.199
+    self-carry@goalArea           0.86  0.145  0.275  0.254  0.316  0.352  0.153
+    restart-corner@box            1.06  0.120  0.185  0.161  0.055  0.076  0.028
+    through@box                   2.11  0.093  0.072  0.069  0.089  0.110  0.031
+    penalty@goalArea              0.13  0.067  0.868  0.760  0.474  0.470  0.095
+    self-takeOn@box               0.57  0.049  0.140  0.097  0.455  0.479  0.070
+    pass-cross@goalArea           0.47  0.047  0.161  0.165  0.414  0.522  0.073
+    through@goalArea              0.29  0.043  0.237  0.224  0.322  0.381  0.049
+    restart-freeKick@box          0.51  0.039  0.123  0.134  0.104  0.053  0.006
+    opp-pass:loose@goalArea       0.11  0.038  0.552  0.515  0.522  0.541  0.061
+    self-takeOn@goalArea          0.22  0.034  0.250  0.247  0.333  0.455  0.046
+    pass-pass@box                 0.94  0.034  0.058  0.063  0.155  0.152  0.015
+    pass-pass@goalArea            0.12  0.023  0.319  0.204  0.278  0.304  0.021
+    setPiece-2nd@goalArea         0.08  0.021  0.438  0.363  0.708  0.762  0.049
+    setPiece-2nd@box              0.23  0.012  0.088  0.070  0.226  0.333  0.012
+    pass-cross@box                0.33  0.011  0.055  0.062  0.385  0.273  0.009
+    self-carry@outside            0.35  0.009  0.042  0.051  0.408  0.444  0.012
+    pass-pass@outside             0.39  0.003  0.013  0.015  0.479  1.000  0.009
+  by slot position: ST 0.277/0.333, CM 0.221/0.169, SUB 0.154/0.150, LW 0.103/0.106, RW 0.069/0.064, LB 0.039/0.050, AM 0.043/0.033, LWB 0.012/0.021, RB 0.030/0.019, DM 0.012/0.013, CB 0.008/0.012, RM 0.013/0.011, LM 0.014/0.010, RWB 0.007/0.008
+r3c1f4a115: 300 matches, shots/team 13.28, goals/match 2.82; ST slot 0.275 of shots, 0.299 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.57  0.292  0.090  0.090  0.340  0.316  0.308
+    through                       2.61  0.163  0.088  0.073  0.135  0.181  0.099
+    restart-corner                0.99  0.104  0.148  0.144  0.062  0.080  0.028
+    self-takeOn                   0.86  0.079  0.130  0.115  0.418  0.418  0.111
+    penalty                       0.14  0.077  0.756  0.760  0.500  0.523  0.134
+    pass-cross                    0.81  0.067  0.118  0.121  0.437  0.404  0.091
+    pass-pass                     1.50  0.062  0.058  0.053  0.242  0.212  0.043
+    opp-pass:loose                0.26  0.051  0.277  0.249  0.452  0.465  0.079
+    restart-freeKick              0.72  0.049  0.094  0.088  0.145  0.073  0.012
+    setPiece-2nd                  0.32  0.025  0.108  0.110  0.392  0.571  0.047
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           9.51  0.493  0.073  0.072  0.236  0.209  0.344
+    goalArea                      2.54  0.482  0.268  0.247  0.361  0.393  0.632
+    outside                       1.23  0.025  0.028  0.027  0.407  0.286  0.024
+  open play: shots/team 11.42, goals/match 2.17, ST 0.321 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.25  0.524  0.252  0.235  0.362  0.370  0.603
+    box                           7.98  0.444  0.060  0.058  0.265  0.266  0.368
+    outside                       1.18  0.032  0.030  0.028  0.411  0.286  0.029
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@goalArea           0.83  0.148  0.252  0.249  0.306  0.320  0.158
+    self-carry@box                3.40  0.134  0.055  0.056  0.340  0.327  0.146
+    restart-corner@box            0.99  0.104  0.148  0.144  0.062  0.080  0.028
+    through@box                   2.10  0.098  0.066  0.056  0.090  0.096  0.032
+    penalty@goalArea              0.12  0.077  0.878  0.760  0.527  0.523  0.134
+    through@goalArea              0.30  0.058  0.268  0.221  0.344  0.327  0.063
+    pass-cross@goalArea           0.48  0.057  0.166  0.166  0.439  0.417  0.079
+    restart-freeKick@box          0.52  0.047  0.128  0.121  0.109  0.075  0.012
+    opp-pass:loose@goalArea       0.11  0.041  0.522  0.488  0.448  0.457  0.063
+    self-takeOn@box               0.56  0.040  0.102  0.079  0.443  0.471  0.063
+    self-takeOn@goalArea          0.22  0.038  0.239  0.232  0.328  0.344  0.043
+    pass-pass@box                 0.95  0.030  0.044  0.053  0.149  0.120  0.012
+    pass-pass@goalArea            0.12  0.028  0.320  0.191  0.213  0.208  0.020
+    setPiece-2nd@goalArea         0.06  0.015  0.351  0.338  0.730  0.769  0.040
+    self-carry@outside            0.34  0.011  0.044  0.043  0.426  0.111  0.004
+    pass-cross@box                0.32  0.011  0.046  0.055  0.433  0.333  0.012
+    pass-pass@outside             0.43  0.004  0.012  0.014  0.457  1.000  0.012
+  by slot position: ST 0.275/0.299, CM 0.231/0.181, SUB 0.150/0.162, LW 0.101/0.101, RW 0.067/0.069, LB 0.040/0.056, AM 0.042/0.036, RB 0.029/0.022, DM 0.011/0.019, RM 0.014/0.017, LWB 0.011/0.013, RWB 0.006/0.009, LM 0.013/0.008, CB 0.009/0.008
+r3c15f5a120: 300 matches, shots/team 13.23, goals/match 2.93; ST slot 0.276 of shots, 0.300 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.50  0.325  0.106  0.097  0.346  0.301  0.326
+    through                       2.61  0.157  0.088  0.076  0.136  0.174  0.091
+    restart-corner                1.02  0.108  0.155  0.141  0.054  0.084  0.030
+    self-takeOn                   0.83  0.077  0.137  0.119  0.429  0.412  0.106
+    penalty                       0.14  0.068  0.714  0.760  0.452  0.500  0.114
+    pass-cross                    0.82  0.063  0.112  0.120  0.432  0.418  0.087
+    opp-pass:loose                0.27  0.053  0.290  0.268  0.438  0.468  0.083
+    pass-pass                     1.47  0.050  0.050  0.055  0.244  0.295  0.049
+    restart-freeKick              0.73  0.040  0.080  0.090  0.142  0.057  0.008
+    setPiece-2nd                  0.32  0.027  0.125  0.109  0.380  0.625  0.057
+    rebound                       0.18  0.010  0.084  0.120  0.327  0.333  0.011
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           9.47  0.514  0.080  0.077  0.239  0.210  0.360
+    goalArea                      2.58  0.466  0.265  0.244  0.346  0.400  0.621
+    outside                       1.18  0.019  0.024  0.028  0.417  0.294  0.019
+  open play: shots/team 11.34, goals/match 2.30, ST 0.325 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.31  0.508  0.253  0.235  0.350  0.383  0.598
+    box                           7.89  0.467  0.068  0.063  0.272  0.264  0.379
+    outside                       1.14  0.025  0.025  0.029  0.420  0.294  0.022
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@box                3.36  0.163  0.071  0.062  0.350  0.294  0.159
+    self-carry@goalArea           0.83  0.156  0.273  0.255  0.303  0.321  0.167
+    restart-corner@box            1.02  0.108  0.155  0.141  0.054  0.084  0.030
+    through@box                   2.08  0.102  0.072  0.060  0.094  0.100  0.034
+    penalty@goalArea              0.11  0.068  0.882  0.760  0.485  0.500  0.114
+    pass-cross@goalArea           0.49  0.053  0.161  0.163  0.435  0.447  0.080
+    through@goalArea              0.32  0.050  0.229  0.210  0.297  0.318  0.053
+    opp-pass:loose@goalArea       0.12  0.044  0.542  0.503  0.431  0.462  0.068
+    self-takeOn@box               0.53  0.040  0.111  0.086  0.456  0.429  0.057
+    restart-freeKick@box          0.53  0.040  0.109  0.120  0.116  0.057  0.008
+    self-takeOn@goalArea          0.23  0.036  0.235  0.224  0.331  0.375  0.045
+    pass-pass@goalArea            0.13  0.025  0.282  0.192  0.231  0.273  0.023
+    pass-pass@box                 0.94  0.022  0.034  0.054  0.147  0.211  0.015
+    setPiece-2nd@goalArea         0.06  0.015  0.382  0.321  0.706  0.769  0.038
+    setPiece-2nd@box              0.22  0.011  0.076  0.070  0.275  0.500  0.019
+    pass-cross@box                0.33  0.009  0.040  0.057  0.427  0.250  0.008
+    self-carry@outside            0.31  0.007  0.032  0.045  0.419  0.000  0.000
+    pass-pass@outside             0.40  0.003  0.013  0.013  0.477  1.000  0.011
+  by slot position: ST 0.276/0.300, CM 0.225/0.182, SUB 0.150/0.148, LW 0.105/0.113, RW 0.067/0.072, LB 0.041/0.049, AM 0.043/0.038, RB 0.030/0.026, LWB 0.011/0.016, DM 0.011/0.015, RM 0.014/0.014, LM 0.014/0.013, RWB 0.006/0.008, CB 0.009/0.008
+r3c15f6a130: 300 matches, shots/team 13.13, goals/match 2.95; ST slot 0.278 of shots, 0.309 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.49  0.323  0.106  0.095  0.352  0.336  0.350
+    through                       2.59  0.146  0.083  0.079  0.141  0.155  0.073
+    restart-corner                0.99  0.090  0.134  0.133  0.049  0.075  0.022
+    penalty                       0.15  0.078  0.750  0.760  0.435  0.478  0.120
+    self-takeOn                   0.85  0.071  0.124  0.126  0.431  0.397  0.091
+    pass-cross                    0.82  0.067  0.120  0.116  0.411  0.407  0.088
+    pass-pass                     1.45  0.063  0.065  0.055  0.245  0.214  0.044
+    opp-pass:loose                0.28  0.052  0.277  0.265  0.434  0.478  0.080
+    restart-freeKick              0.71  0.043  0.089  0.082  0.133  0.053  0.007
+    setPiece-2nd                  0.30  0.029  0.146  0.109  0.376  0.654  0.062
+    rebound                       0.17  0.014  0.118  0.121  0.373  0.333  0.015
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           9.34  0.509  0.080  0.076  0.240  0.220  0.361
+    goalArea                      2.59  0.472  0.269  0.244  0.361  0.404  0.617
+    outside                       1.20  0.019  0.024  0.026  0.397  0.353  0.022
+  open play: shots/team 11.27, goals/match 2.33, ST 0.333 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      2.31  0.499  0.251  0.232  0.367  0.390  0.584
+    box                           7.80  0.476  0.071  0.064  0.273  0.273  0.391
+    outside                       1.16  0.024  0.024  0.026  0.400  0.353  0.026
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@box                3.37  0.166  0.073  0.063  0.354  0.347  0.186
+    self-carry@goalArea           0.80  0.150  0.278  0.250  0.332  0.331  0.161
+    through@box                   2.03  0.093  0.067  0.062  0.096  0.049  0.015
+    restart-corner@box            0.99  0.090  0.134  0.133  0.049  0.075  0.022
+    penalty@goalArea              0.12  0.078  0.920  0.760  0.480  0.478  0.120
+    pass-cross@goalArea           0.49  0.051  0.153  0.153  0.427  0.422  0.069
+    through@goalArea              0.33  0.050  0.221  0.216  0.317  0.341  0.055
+    opp-pass:loose@goalArea       0.12  0.044  0.542  0.508  0.458  0.487  0.069
+    restart-freeKick@box          0.52  0.043  0.121  0.110  0.108  0.053  0.007
+    self-takeOn@goalArea          0.25  0.036  0.216  0.232  0.338  0.344  0.040
+    self-takeOn@box               0.52  0.034  0.096  0.090  0.460  0.433  0.047
+    pass-pass@box                 0.91  0.033  0.053  0.053  0.150  0.103  0.011
+    pass-pass@goalArea            0.14  0.026  0.280  0.200  0.220  0.261  0.022
+    pass-cross@box                0.33  0.016  0.071  0.058  0.388  0.357  0.018
+    setPiece-2nd@goalArea         0.06  0.016  0.412  0.322  0.765  0.786  0.040
+    setPiece-2nd@box              0.20  0.012  0.091  0.064  0.256  0.545  0.022
+    self-carry@outside            0.32  0.007  0.031  0.039  0.382  0.167  0.004
+    pass-pass@outside             0.40  0.005  0.017  0.012  0.469  0.750  0.011
+  by slot position: ST 0.278/0.309, CM 0.226/0.182, SUB 0.155/0.151, LW 0.100/0.108, RW 0.068/0.071, LB 0.040/0.053, AM 0.041/0.036, RB 0.029/0.024, LM 0.013/0.014, DM 0.011/0.012, RM 0.014/0.012, LWB 0.011/0.012, RWB 0.006/0.008, CB 0.007/0.007
+Er3c15: 300 matches, shots/team 12.94, goals/match 2.96; ST slot 0.308 of shots, 0.284 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.32  0.249  0.085  0.071  0.370  0.326  0.286
+    restart-corner                0.98  0.165  0.248  0.177  0.025  0.034  0.020
+    through                       2.20  0.135  0.091  0.062  0.155  0.208  0.099
+    pass-cross                    0.82  0.079  0.142  0.118  0.411  0.400  0.111
+    self-takeOn                   0.85  0.071  0.123  0.102  0.468  0.444  0.111
+    restart-freeKick              0.66  0.068  0.151  0.108  0.151  0.033  0.008
+    opp-pass:loose                0.31  0.062  0.297  0.280  0.492  0.564  0.123
+    penalty                       0.11  0.053  0.734  0.760  0.422  0.447  0.083
+    pass-pass                     1.82  0.048  0.039  0.040  0.346  0.233  0.040
+    setPiece-2nd                  0.30  0.021  0.105  0.089  0.414  0.579  0.044
+    rebound                       0.16  0.016  0.144  0.141  0.330  0.286  0.016
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           8.21  0.508  0.092  0.070  0.248  0.151  0.270
+    goalArea                      2.12  0.439  0.305  0.260  0.372  0.416  0.643
+    outside                       2.61  0.053  0.030  0.029  0.445  0.468  0.087
+  open play: shots/team 11.19, goals/match 2.11, ST 0.353 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      1.91  0.539  0.298  0.252  0.374  0.412  0.629
+    box                           6.70  0.386  0.061  0.048  0.291  0.249  0.272
+    outside                       2.58  0.074  0.030  0.029  0.446  0.468  0.098
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            0.98  0.165  0.248  0.177  0.025  0.034  0.020
+    self-carry@goalArea           0.58  0.118  0.299  0.263  0.305  0.324  0.135
+    self-carry@box                3.02  0.108  0.053  0.040  0.367  0.260  0.099
+    through@box                   1.65  0.073  0.066  0.041  0.072  0.123  0.032
+    pass-cross@goalArea           0.47  0.071  0.224  0.170  0.367  0.413  0.103
+    restart-freeKick@box          0.51  0.068  0.196  0.137  0.111  0.033  0.008
+    opp-pass:loose@goalArea       0.15  0.055  0.557  0.526  0.523  0.592  0.115
+    through@goalArea              0.26  0.055  0.318  0.233  0.370  0.286  0.056
+    penalty@goalArea              0.09  0.053  0.855  0.760  0.455  0.447  0.083
+    self-takeOn@goalArea          0.21  0.037  0.266  0.231  0.444  0.485  0.063
+    self-takeOn@box               0.50  0.030  0.091  0.069  0.473  0.333  0.036
+    pass-pass@box                 0.63  0.023  0.053  0.058  0.154  0.200  0.016
+    self-carry@outside            0.72  0.023  0.046  0.043  0.436  0.650  0.052
+    pass-pass@goalArea            0.09  0.014  0.231  0.216  0.327  0.417  0.020
+    pass-pass@outside             1.10  0.012  0.017  0.016  0.457  0.091  0.004
+    setPiece-2nd@goalArea         0.04  0.012  0.458  0.385  0.583  0.545  0.024
+    pass-cross@box                0.35  0.008  0.033  0.049  0.469  0.286  0.008
+    through@outside               0.30  0.007  0.033  0.033  0.425  0.500  0.012
+  by slot position: ST 0.308/0.284, CM 0.207/0.162, SUB 0.157/0.131, LW 0.098/0.094, RW 0.067/0.089, LB 0.038/0.070, RB 0.024/0.041, AM 0.036/0.026, DM 0.011/0.025, LWB 0.012/0.023, RM 0.011/0.018, CB 0.008/0.016, LM 0.014/0.012, RWB 0.008/0.010
+Er3c15f4: 300 matches, shots/team 12.97, goals/match 3.26; ST slot 0.306 of shots, 0.303 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.42  0.309  0.114  0.093  0.370  0.361  0.368
+    restart-corner                0.94  0.149  0.257  0.177  0.028  0.034  0.017
+    through                       2.18  0.131  0.098  0.080  0.163  0.242  0.105
+    self-takeOn                   0.86  0.075  0.141  0.120  0.455  0.452  0.111
+    pass-cross                    0.84  0.069  0.133  0.123  0.390  0.448  0.101
+    restart-freeKick              0.71  0.064  0.149  0.109  0.153  0.032  0.007
+    opp-pass:loose                0.33  0.052  0.259  0.264  0.508  0.569  0.098
+    penalty                       0.10  0.044  0.694  0.760  0.435  0.488  0.071
+    pass-pass                     1.77  0.043  0.040  0.043  0.341  0.214  0.030
+    setPiece-2nd                  0.27  0.015  0.092  0.097  0.356  0.467  0.024
+    rebound                       0.17  0.015  0.150  0.143  0.280  0.067  0.003
+    opp-pass:intercepted          0.11  0.010  0.147  0.111  0.618  0.600  0.020
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           8.27  0.571  0.112  0.092  0.248  0.210  0.395
+    goalArea                      2.12  0.374  0.286  0.254  0.365  0.430  0.530
+    outside                       2.58  0.055  0.035  0.028  0.446  0.407  0.074
+  open play: shots/team 11.22, goals/match 2.42, ST 0.370 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           6.76  0.481  0.086  0.074  0.291  0.315  0.410
+    goalArea                      1.92  0.444  0.280  0.246  0.361  0.422  0.507
+    outside                       2.54  0.074  0.036  0.029  0.448  0.407  0.082
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@box                3.11  0.170  0.089  0.074  0.366  0.349  0.196
+    restart-corner@box            0.94  0.149  0.257  0.177  0.028  0.034  0.017
+    self-carry@goalArea           0.57  0.105  0.299  0.262  0.284  0.330  0.115
+    through@box                   1.63  0.077  0.077  0.066  0.076  0.107  0.027
+    restart-freeKick@box          0.55  0.064  0.191  0.138  0.103  0.032  0.007
+    pass-cross@goalArea           0.49  0.056  0.188  0.163  0.342  0.418  0.078
+    through@goalArea              0.25  0.049  0.320  0.230  0.420  0.417  0.068
+    opp-pass:loose@goalArea       0.14  0.046  0.523  0.509  0.535  0.622  0.095
+    penalty@goalArea              0.09  0.044  0.827  0.760  0.481  0.488  0.071
+    self-takeOn@box               0.48  0.038  0.128  0.098  0.466  0.432  0.054
+    self-takeOn@goalArea          0.22  0.035  0.258  0.227  0.417  0.471  0.054
+    self-carry@outside            0.74  0.034  0.074  0.043  0.453  0.515  0.057
+    pass-pass@box                 0.63  0.020  0.053  0.062  0.167  0.200  0.014
+    pass-cross@box                0.35  0.012  0.057  0.068  0.457  0.583  0.024
+    pass-pass@goalArea            0.09  0.012  0.231  0.226  0.308  0.333  0.014
+    pass-pass@outside             1.05  0.010  0.016  0.016  0.448  0.100  0.003
+    through@outside               0.30  0.005  0.028  0.031  0.422  0.600  0.010
+  by slot position: ST 0.306/0.303, CM 0.209/0.164, SUB 0.151/0.130, LW 0.104/0.095, RW 0.065/0.090, LB 0.038/0.060, RB 0.024/0.034, DM 0.012/0.028, AM 0.038/0.026, LWB 0.013/0.025, RM 0.011/0.014, LM 0.013/0.013, CB 0.008/0.011, RWB 0.008/0.007
+Er3c15f4a100: 300 matches, shots/team 12.63, goals/match 2.78; ST slot 0.319 of shots, 0.301 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.17  0.269  0.090  0.089  0.382  0.316  0.283
+    through                       2.12  0.149  0.098  0.080  0.147  0.137  0.068
+    restart-corner                0.93  0.144  0.215  0.161  0.064  0.100  0.048
+    pass-cross                    0.81  0.073  0.126  0.115  0.449  0.508  0.124
+    self-takeOn                   0.78  0.066  0.117  0.108  0.473  0.491  0.108
+    restart-freeKick              0.67  0.062  0.129  0.112  0.142  0.077  0.016
+    pass-pass                     1.84  0.060  0.045  0.040  0.339  0.180  0.036
+    penalty                       0.11  0.060  0.758  0.760  0.485  0.540  0.108
+    opp-pass:loose                0.32  0.046  0.201  0.203  0.561  0.579  0.088
+    setPiece-2nd                  0.34  0.029  0.118  0.116  0.404  0.667  0.064
+    rebound                       0.18  0.016  0.120  0.151  0.361  0.385  0.020
+    opp-pass:intercepted          0.12  0.011  0.129  0.125  0.671  0.444  0.016
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           7.87  0.547  0.097  0.087  0.260  0.210  0.382
+    goalArea                      2.08  0.401  0.268  0.248  0.361  0.406  0.542
+    outside                       2.68  0.051  0.027  0.023  0.458  0.442  0.076
+  open play: shots/team 10.92, goals/match 2.04, ST 0.339 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           6.39  0.465  0.074  0.070  0.302  0.281  0.385
+    goalArea                      1.86  0.465  0.255  0.239  0.357  0.382  0.524
+    outside                       2.66  0.070  0.027  0.023  0.459  0.442  0.091
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            0.93  0.144  0.215  0.161  0.064  0.100  0.048
+    self-carry@box                2.85  0.129  0.063  0.069  0.378  0.278  0.120
+    self-carry@goalArea           0.57  0.116  0.284  0.262  0.299  0.320  0.124
+    through@box                   1.59  0.093  0.082  0.064  0.085  0.090  0.028
+    restart-freeKick@box          0.53  0.062  0.165  0.142  0.098  0.077  0.016
+    penalty@goalArea              0.09  0.060  0.909  0.760  0.545  0.540  0.108
+    pass-cross@goalArea           0.47  0.057  0.169  0.156  0.419  0.500  0.096
+    through@goalArea              0.25  0.051  0.291  0.245  0.297  0.209  0.036
+    self-takeOn@box               0.42  0.036  0.120  0.092  0.456  0.433  0.052
+    opp-pass:loose@goalArea       0.10  0.035  0.468  0.474  0.468  0.552  0.064
+    pass-pass@box                 0.64  0.029  0.063  0.063  0.157  0.167  0.016
+    self-takeOn@goalArea          0.19  0.025  0.183  0.216  0.417  0.524  0.044
+    self-carry@outside            0.75  0.024  0.044  0.033  0.458  0.500  0.040
+    setPiece-2nd@goalArea         0.06  0.019  0.421  0.386  0.632  0.688  0.044
+    pass-cross@box                0.34  0.016  0.064  0.058  0.490  0.538  0.028
+    pass-pass@outside             1.12  0.016  0.019  0.014  0.457  0.308  0.016
+    pass-pass@goalArea            0.09  0.016  0.255  0.204  0.137  0.077  0.004
+    through@outside               0.28  0.004  0.018  0.028  0.367  0.333  0.004
+  by slot position: ST 0.319/0.301, CM 0.206/0.164, SUB 0.162/0.151, LW 0.096/0.102, RW 0.062/0.072, LB 0.033/0.066, AM 0.037/0.031, RB 0.026/0.030, LM 0.013/0.022, DM 0.011/0.018, CB 0.008/0.016, LWB 0.010/0.014, RM 0.011/0.010, RWB 0.007/0.005
+Er3c15f5a110: 300 matches, shots/team 12.47, goals/match 2.66; ST slot 0.327 of shots, 0.327 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.14  0.288  0.092  0.089  0.405  0.413  0.364
+    restart-corner                0.93  0.149  0.214  0.151  0.059  0.059  0.027
+    through                       2.05  0.122  0.079  0.078  0.152  0.227  0.084
+    pass-cross                    0.82  0.073  0.118  0.113  0.434  0.379  0.084
+    self-takeOn                   0.78  0.066  0.114  0.109  0.485  0.472  0.096
+    pass-pass                     1.85  0.060  0.043  0.040  0.350  0.229  0.042
+    restart-freeKick              0.69  0.059  0.114  0.099  0.133  0.106  0.019
+    opp-pass:loose                0.28  0.049  0.234  0.246  0.545  0.538  0.080
+    penalty                       0.09  0.046  0.698  0.760  0.434  0.514  0.073
+    rebound                       0.17  0.030  0.240  0.146  0.420  0.375  0.034
+    setPiece-2nd                  0.33  0.024  0.095  0.102  0.455  0.632  0.046
+    opp-pass:intercepted          0.12  0.013  0.139  0.106  0.556  0.500  0.019
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           7.71  0.553  0.095  0.086  0.267  0.240  0.406
+    goalArea                      2.02  0.420  0.276  0.244  0.384  0.427  0.548
+    outside                       2.75  0.028  0.013  0.022  0.455  0.545  0.046
+  open play: shots/team 10.77, goals/match 1.98, ST 0.387 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      1.83  0.499  0.270  0.239  0.385  0.418  0.539
+    box                           6.22  0.464  0.074  0.071  0.313  0.341  0.409
+    outside                       2.72  0.037  0.013  0.022  0.457  0.545  0.052
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry@box                2.81  0.150  0.071  0.071  0.398  0.417  0.192
+    restart-corner@box            0.93  0.149  0.214  0.151  0.059  0.059  0.027
+    self-carry@goalArea           0.59  0.128  0.289  0.248  0.334  0.382  0.149
+    through@box                   1.50  0.074  0.065  0.061  0.079  0.136  0.031
+    restart-freeKick@box          0.55  0.058  0.140  0.123  0.088  0.109  0.019
+    pass-cross@goalArea           0.47  0.056  0.161  0.154  0.419  0.400  0.069
+    penalty@goalArea              0.07  0.046  0.841  0.760  0.477  0.514  0.073
+    through@goalArea              0.25  0.045  0.240  0.240  0.360  0.361  0.050
+    opp-pass:loose@goalArea       0.10  0.040  0.508  0.535  0.508  0.531  0.065
+    self-takeOn@goalArea          0.17  0.035  0.272  0.226  0.408  0.500  0.054
+    pass-pass@box                 0.61  0.031  0.068  0.061  0.137  0.200  0.019
+    self-takeOn@box               0.42  0.029  0.091  0.097  0.508  0.391  0.034
+    pass-pass@goalArea            0.10  0.023  0.310  0.226  0.259  0.278  0.019
+    rebound@box                   0.09  0.018  0.255  0.137  0.400  0.357  0.019
+    pass-cross@box                0.36  0.016  0.061  0.060  0.453  0.308  0.015
+    setPiece-2nd@goalArea         0.05  0.014  0.344  0.363  0.500  0.636  0.027
+    rebound@goalArea              0.06  0.013  0.270  0.187  0.432  0.400  0.015
+    self-carry@outside            0.74  0.010  0.018  0.032  0.485  0.750  0.023
+    opp-pass:intercepted@goalArea  0.02  0.010  0.667  0.381  0.583  0.500  0.015
+    pass-pass@outside             1.15  0.006  0.007  0.013  0.470  0.200  0.004
+    through@outside               0.29  0.003  0.011  0.026  0.350  0.500  0.004
+  by slot position: ST 0.327/0.327, CM 0.202/0.170, SUB 0.161/0.137, LW 0.088/0.083, RW 0.062/0.081, LB 0.037/0.064, RB 0.024/0.034, AM 0.037/0.023, DM 0.011/0.021, LWB 0.011/0.021, LM 0.012/0.019, RM 0.012/0.009, CB 0.007/0.008, RWB 0.007/0.004
+Er3c1f5a110: 300 matches, shots/team 12.47, goals/match 2.63; ST slot 0.327 of shots, 0.316 of goals
+  by origin: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    self-carry                    4.14  0.292  0.093  0.089  0.402  0.404  0.373
+    restart-corner                0.92  0.152  0.219  0.150  0.060  0.058  0.028
+    through                       2.04  0.121  0.078  0.078  0.151  0.211  0.080
+    pass-cross                    0.82  0.071  0.114  0.113  0.436  0.375  0.084
+    self-takeOn                   0.78  0.067  0.113  0.106  0.494  0.453  0.096
+    restart-freeKick              0.70  0.061  0.115  0.097  0.136  0.104  0.020
+    pass-pass                     1.85  0.060  0.042  0.039  0.354  0.213  0.040
+    penalty                       0.09  0.047  0.685  0.760  0.407  0.486  0.072
+    opp-pass:loose                0.28  0.047  0.219  0.242  0.538  0.514  0.076
+    rebound                       0.17  0.025  0.196  0.120  0.402  0.450  0.036
+    setPiece-2nd                  0.33  0.023  0.091  0.100  0.449  0.611  0.044
+    opp-pass:intercepted          0.12  0.014  0.151  0.101  0.548  0.455  0.020
+  by place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    box                           7.71  0.543  0.093  0.084  0.265  0.229  0.394
+    goalArea                      2.02  0.425  0.276  0.244  0.381  0.418  0.562
+    outside                       2.74  0.032  0.015  0.021  0.461  0.440  0.044
+  open play: shots/team 10.77, goals/match 1.94, ST 0.376 of its goals
+  by open-play place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    goalArea                      1.82  0.509  0.271  0.240  0.384  0.411  0.557
+    box                           6.22  0.448  0.070  0.069  0.311  0.330  0.393
+    outside                       2.72  0.043  0.015  0.021  0.462  0.440  0.050
+  by origin@place: key | shots/team | goal share | conv | xG/shot | ST shot share | ST goal share | of ST goals
+    restart-corner@box            0.92  0.152  0.219  0.150  0.060  0.058  0.028
+    self-carry@box                2.80  0.140  0.066  0.070  0.393  0.409  0.181
+    self-carry@goalArea           0.59  0.140  0.309  0.251  0.337  0.373  0.165
+    through@box                   1.50  0.072  0.063  0.061  0.076  0.105  0.024
+    restart-freeKick@box          0.55  0.060  0.142  0.121  0.094  0.106  0.020
+    pass-cross@goalArea           0.46  0.053  0.154  0.156  0.418  0.405  0.068
+    penalty@goalArea              0.07  0.047  0.841  0.760  0.455  0.486  0.072
+    through@goalArea              0.25  0.046  0.242  0.243  0.349  0.361  0.052
+    opp-pass:loose@goalArea       0.10  0.038  0.476  0.534  0.492  0.500  0.060
+    self-takeOn@goalArea          0.17  0.033  0.250  0.220  0.404  0.500  0.052
+    self-takeOn@box               0.43  0.032  0.097  0.095  0.519  0.400  0.040
+    pass-pass@box                 0.60  0.029  0.063  0.060  0.140  0.174  0.016
+    pass-pass@goalArea            0.09  0.024  0.345  0.224  0.273  0.316  0.024
+    pass-cross@box                0.36  0.018  0.064  0.059  0.459  0.286  0.016
+    rebound@box                   0.09  0.014  0.200  0.101  0.364  0.455  0.020
+    self-carry@outside            0.75  0.013  0.022  0.030  0.486  0.700  0.028
+    setPiece-2nd@goalArea         0.05  0.013  0.312  0.363  0.469  0.600  0.024
+    rebound@goalArea              0.07  0.011  0.231  0.168  0.462  0.444  0.016
+    opp-pass:intercepted@goalArea  0.02  0.010  0.667  0.359  0.583  0.500  0.016
+    pass-pass@outside             1.15  0.006  0.007  0.012  0.472  0.000  0.000
+    through@outside               0.29  0.003  0.011  0.024  0.367  0.500  0.004
+  by slot position: ST 0.327/0.316, CM 0.200/0.173, SUB 0.162/0.133, LW 0.090/0.085, RW 0.063/0.081, LB 0.037/0.066, RB 0.024/0.033, AM 0.038/0.028, LWB 0.011/0.023, DM 0.011/0.022, LM 0.012/0.018, RM 0.012/0.010, RWB 0.008/0.006, CB 0.007/0.006

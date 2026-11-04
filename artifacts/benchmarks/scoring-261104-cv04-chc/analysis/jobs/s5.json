@@ -1,0 +1,22 @@
+[
+ {
+  "name": "bands-fl05-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/fl05.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Er3c1f5a110fl7-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c1f5a110fl7.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

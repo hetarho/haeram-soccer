@@ -1,0 +1,35 @@
+{
+ "seconds": 145,
+ "status": [
+  {
+   "name": "origins-Bid-0-150",
+   "code": 0,
+   "seconds": 89
+  },
+  {
+   "name": "origins-r3c15-0-300",
+   "code": 0,
+   "seconds": 144
+  },
+  {
+   "name": "origins-r2-0-300",
+   "code": 0,
+   "seconds": 144
+  },
+  {
+   "name": "origins-fl05-0-300",
+   "code": 0,
+   "seconds": 145
+  },
+  {
+   "name": "origins-r2c1-0-300",
+   "code": 0,
+   "seconds": 145
+  },
+  {
+   "name": "origins-r2rc15-0-300",
+   "code": 0,
+   "seconds": 145
+  }
+ ]
+}

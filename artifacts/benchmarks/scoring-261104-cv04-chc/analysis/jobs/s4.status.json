@@ -1,0 +1,35 @@
+{
+ "seconds": 435,
+ "status": [
+  {
+   "name": "bands-Er3c15f4a100-400",
+   "code": 0,
+   "seconds": 191
+  },
+  {
+   "name": "bands-Er3c15f5a110-400",
+   "code": 0,
+   "seconds": 209
+  },
+  {
+   "name": "bands-Er3c1f5a110-400",
+   "code": 0,
+   "seconds": 210
+  },
+  {
+   "name": "conc-Er3c1f5a110-calibration1200",
+   "code": 0,
+   "seconds": 428
+  },
+  {
+   "name": "conc-Er3c15f5a110-calibration1200",
+   "code": 0,
+   "seconds": 432
+  },
+  {
+   "name": "conc-Er3c15f4a100-calibration1200",
+   "code": 0,
+   "seconds": 435
+  }
+ ]
+}
