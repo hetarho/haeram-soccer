@@ -1,0 +1,74 @@
+[
+ {
+  "name": "origins-Bid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-blk/candidates/Bid.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-blk/origins/origins-Bid-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-u75-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-blk/candidates/u75.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-blk/origins/origins-u75-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-t1-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-blk/candidates/t1.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-blk/origins/origins-t1-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-t1u75a135-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-blk/candidates/t1u75a135.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-blk/origins/origins-t1u75a135-0-300.json"
+  ]
+ },
+ {
+  "name": "bands-u75a110-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-blk/candidates/u75a110.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-t1u75a135-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-blk/candidates/t1u75a135.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]
