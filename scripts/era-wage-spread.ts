@@ -23,6 +23,19 @@
  * A season Y is the one starting in Y (w.year = Y), closed in the summer of Y + 1. `--spread`
  * reads { shared: [[year, s], ...], own: { CODE: { through, spread } } } and, when living, also
  * prices every squad exactly through the production function at that table (`exact` below).
+ *
+ * T696: `--means` lives the world with `--spread`'s table in force and LEAGUE-10's means level on
+ * (measurement overrides of `STAR_SPREAD_CONFIG` and `MEANS_LEVEL`, never game settings), so each
+ * row holds the book as lived (`wages` is the wage bill at the table) beside its generated squad's
+ * cost at the same strength (`generated`). Every live run also writes `<out>.extra.json`: each
+ * season's champions from `w.history`, the clubs the means level sold down ({ year, code, from,
+ * to }) and the run's seconds per season. `--until YEAR` lives on past the last row year.
+ *
+ *   pnpm exec tsx scripts/era-wage-spread.ts --seeds owner-balance-0 --spread table.json --means \
+ *     --out lived.json                                                     a candidate world
+ *   pnpm exec tsx scripts/era-wage-spread.ts --in lived.json --lived --extra lived.extra.json
+ *   pnpm exec tsx scripts/era-wage-spread.ts --champions-released a.extra.json \
+ *     --champions-candidate b.extra.json                                    LEAGUE-10's champions
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import type { Club, World } from '../packages/contracts/src/types';
@@ -33,6 +46,7 @@ import { squad } from '../packages/engine/src/world';
 import { overall } from '../packages/engine/src/player-state';
 import { footballQuote } from '../packages/engine/src/quotes';
 import { keepsBooks } from '../packages/engine/src/books';
+import { MEANS_LEVEL, squadCostAt } from '../packages/engine/src/dynamics';
 import {
   MARKET_CONFIG,
   marketPoints,
@@ -85,7 +99,20 @@ interface Row {
   stars: Star[];
   /** The squad priced through the production function at `--spread`, when given. */
   exact?: number;
+  /** `--means`: the club's generated squad at its strength, priced as the books price a squad. */
+  generated?: number;
 }
+/** What a live run keeps beside its rows (`<out>.extra.json`). */
+interface Extra {
+  seed: string;
+  means: boolean;
+  table?: Table;
+  champions: { year: number; code: string; club: string }[];
+  sold: { year: number; code: string; id: string; tier: number; from: number; to: number }[];
+  seasons: number;
+  seconds: number;
+}
+const MEANS = args.includes('--means');
 
 function readTable(path: string): Table {
   return JSON.parse(readFileSync(path, 'utf8')) as Table;
@@ -150,11 +177,21 @@ function priceSquad(w: World, club: Club) {
   };
 }
 
-function live(seed: string, years: number[], codes: string[], table?: Table): Row[] {
+function live(seed: string, years: number[], codes: string[], table?: Table, until = 0) {
   const w = historyWorld(seed),
     rows: Row[] = [],
-    last = Math.max(...years);
+    last = Math.max(...years, until);
   const t0 = performance.now();
+  const sold: Extra['sold'] = [];
+  if (MEANS) {
+    if (!table) throw new Error('--means lives a candidate: give its table with --spread');
+    STAR_SPREAD_CONFIG.shared = table.shared;
+    STAR_SPREAD_CONFIG.own = table.own;
+    MEANS_LEVEL.inForce = true;
+    MEANS_LEVEL.observe = (c, from, to) =>
+      sold.push({ year: w.year, code: c.country, id: c.id, tier: c.tier, from, to });
+  }
+  const first = w.year;
   while (w.year <= last) {
     const season = w.year;
     if (!years.includes(season)) {
@@ -164,22 +201,38 @@ function live(seed: string, years: number[], codes: string[], table?: Table): Ro
     }
     advanceDays(w, SEASON_END_DAY - currentDay(w), undefined, false);
     const clubs = w.clubs.filter((c) => codes.includes(c.country) && keepsBooks(w, c));
+    const lived = (c: Club) => ({
+      base: 0,
+      ordinary: 0,
+      points: 0,
+      scarcity: 0,
+      top: 0,
+      stars: [] as Star[],
+      repriced: squad(w, c).reduce(
+        (sum, p) => sum + Number(marketWageAt(c.country, w.year, c.tier, p)),
+        0,
+      ),
+      generated: Number(squadCostAt(w, c, c.strength, c.tier, w.year)),
+    });
     const priced = new Map(
       clubs.map((c) => [
         c.id,
         {
-          ...priceSquad(w, c),
+          ...(MEANS
+            ? lived(c)
+            : { ...priceSquad(w, c), generated: undefined as number | undefined }),
           strength: c.strength,
           tier: c.tier,
           project: (c.project ?? 0) > 0,
-          exact: table
-            ? withTable(table, () =>
-                squad(w, c).reduce(
-                  (sum, p) => sum + Number(marketWageAt(c.country, w.year, c.tier, p)),
-                  0,
-                ),
-              )
-            : undefined,
+          exact:
+            table && !MEANS
+              ? withTable(table, () =>
+                  squad(w, c).reduce(
+                    (sum, p) => sum + Number(marketWageAt(c.country, w.year, c.tier, p)),
+                    0,
+                  ),
+                )
+              : undefined,
         },
       ]),
     );
@@ -205,15 +258,30 @@ function live(seed: string, years: number[], codes: string[], table?: Table): Ro
         scarcity: p.scarcity,
         top: p.top,
         base: p.base,
-        stars: p.stars,
+        stars: MEANS ? [] : p.stars,
         ...(p.exact !== undefined ? { exact: p.exact } : {}),
+        ...(p.generated !== undefined ? { generated: p.generated } : {}),
       });
+      // Lived at the table, the book's own wage bill is the reading (`wagesAt` = base).
+      if (MEANS) rows[rows.length - 1]!.base = Number(book.wages);
     }
     console.error(
       `${seed} ${season}/${(season + 1) % 100}: ${clubs.length} clubs at ${((performance.now() - t0) / 1000).toFixed(0)} s`,
     );
   }
-  return rows;
+  const extra: Extra = {
+    seed,
+    means: MEANS,
+    ...(table ? { table } : {}),
+    champions: w.history.flatMap((h) =>
+      h.champions.map((ch) => ({ year: h.year, code: ch.country, club: ch.club })),
+    ),
+    sold,
+    seasons: w.history.length,
+    seconds: (performance.now() - t0) / 1000,
+  };
+  console.error(`${seed}: ${extra.seasons} seasons from ${first} in ${extra.seconds.toFixed(0)} s`);
+  return { rows, extra };
 }
 
 /** A star's wage at spread s on CLUB-48 r53's W80 (his own potential) or, `t693`, on T693's. */
@@ -394,6 +462,173 @@ function tableReport(rows: Row[], table: Table, label: string) {
   );
 }
 
+/**
+ * T696: the books of worlds lived with a table and the means level (`--means` rows). Per case the
+ * strongest-three median of the books' own wage bill / revenue and every club without a project
+ * above its revenue; the gap between a book's wage bill and its generated squad's at the same
+ * strength; and, from `--extra`, where the means level bound.
+ */
+function livedReport(rows: Row[], extras: Extra[]) {
+  console.log(
+    "\n### Books lived with the table and the means level: the books' own wage bill / revenue\n",
+  );
+  console.log(
+    "Worlds lived from 1930 with the candidate table in force and LEAGUE-10's means level on (measurement overrides). Wage line: the books' wage bill, the squad's alone (→ECON-30). Gap: the book's wage bill / its generated squad's at the same strength (median, min–max over the case's clubs).\n",
+  );
+  console.log(
+    '| seed | season | country | strongest three: str wage / revenue | median | clubs without a project above revenue | verdict | gap: median (min–max) |',
+  );
+  console.log('|---|---|---|---|---:|---|---|---|');
+  let pass = 0,
+    all = 0,
+    within = 0;
+  const failures: string[] = [];
+  const overText = (over: Row[]) =>
+    over
+      .map((r) => `${r.id} (${r.tier + 1}부, str ${r.strength}) ${pct(r.wages / r.income)}`)
+      .join(', ');
+  for (const c of cases(rows)) {
+    const v = verdict(c, () => 1);
+    all++;
+    if (!v.over.length) within++;
+    if (v.ok) pass++;
+    else
+      failures.push(
+        `${c.seed.slice(-1)} ${c.year} ${c.code}: median ${pct(v.strongest)}${v.over.length ? `, ${overText(v.over)}` : ''}`,
+      );
+    const gaps = c.group
+      .filter((r) => r.generated)
+      .map((r) => r.wages / r.generated!)
+      .sort((a, b) => a - b);
+    const strongest = c.flight
+      .slice(0, 3)
+      .map((r) => `${r.strength}: ${pct(r.wages / r.income)}`)
+      .join(', ');
+    const gap = gaps.length
+      ? `${median(gaps).toFixed(3)} (${gaps[0]!.toFixed(3)}–${gaps.at(-1)!.toFixed(3)})`
+      : '-';
+    console.log(
+      `| ${c.seed.slice(-1)} | ${c.year}/${(c.year + 1) % 100} | ${c.code} | ${strongest} | ${pct(v.strongest)} | ${v.over.length ? overText(v.over) : 'none'} | ${v.ok ? 'ok' : 'OUT'} | ${gap} |`,
+    );
+  }
+  console.log(
+    `\n${pass} of ${all} cases meet CLUB-48's band on the lived books (the strongest-three median and no club without a project above its revenue); ${within} of ${all} hold no club without a project above its revenue (the held-out gate).`,
+  );
+  if (failures.length) console.log(`Failures: ${failures.join('; ')}.`);
+  if (!extras.length) return;
+  console.log(
+    '\n### Where the means level bound: club-seasons sold down / strength points sold, per country and decade\n',
+  );
+  const decades = [
+    ...new Set(extras.flatMap((e) => e.sold.map((s) => s.year - (s.year % 10)))),
+  ].sort((a, b) => a - b);
+  const codes = [...new Set(extras.flatMap((e) => e.sold.map((s) => s.code)))].sort();
+  console.log(`| country | ${decades.map((d) => `${d}s`).join(' | ')} | top flight, all decades |`);
+  console.log(`|---|${decades.map(() => '---:|').join('')}---:|`);
+  const cell = (list: Extra['sold']) =>
+    list.length ? `${list.length} / ${list.reduce((sum, s) => sum + s.from - s.to, 0)}` : '-';
+  for (const code of codes) {
+    const all = extras.flatMap((e) => e.sold.filter((s) => s.code === code));
+    const decadeCells = decades.map((d) => cell(all.filter((s) => s.year - (s.year % 10) === d)));
+    console.log(
+      `| ${code} | ${decadeCells.join(' | ')} | ${cell(all.filter((s) => s.tier === 0))} |`,
+    );
+  }
+  console.log(
+    `\nCells: club-seasons sold down / strength points sold, summed over ${extras.length} worlds (${extras.map((e) => e.seed).join(', ')}); the tier is the division after the close.`,
+  );
+}
+
+/** LEAGUE-10's measured spread: 5–9 different champions in 30 seasons, the most titles of one club 8–15. */
+const CHAMPION_BAND: Record<'different' | 'most', [number, number]> = {
+  different: [5, 9],
+  most: [8, 15],
+};
+const outside = (value: number, [low, high]: [number, number]) =>
+  Math.max(0, low - value, value - high);
+function championsOf(extra: Extra, code: string, from: number, to: number) {
+  const titles = new Map<string, number>();
+  for (const ch of extra.champions)
+    if (ch.code === code && ch.year >= from && ch.year <= to)
+      titles.set(ch.club, (titles.get(ch.club) ?? 0) + 1);
+  return {
+    seasons: [...titles.values()].reduce((a, b) => a + b, 0),
+    different: titles.size,
+    most: Math.max(0, ...titles.values()),
+  };
+}
+function championsReport(released: Extra[], candidate: Extra[], from: number, to: number) {
+  const band = CHAMPION_BAND;
+  console.log(
+    `\n### Champions ${from}–${to} per country: different top-flight champions / the most titles of one club (LEAGUE-10: ${band.different.join('–')} and ${band.most.join('–')})\n`,
+  );
+  console.log(
+    'Released: worlds at the released curve (s = 1, no means level). Candidate: the table and the means level lived together. Verdict: within the band, or no further outside it than the released world on the same seed.\n',
+  );
+  console.log('| seed | country | seasons | released | candidate | verdict |');
+  console.log('|---|---|---:|---|---|---|');
+  let pass = 0,
+    all = 0;
+  const failures: string[] = [];
+  for (const cand of candidate) {
+    const rel = released.find((e) => e.seed === cand.seed);
+    const codes = [...new Set(cand.champions.map((ch) => ch.code))].sort();
+    for (const code of codes) {
+      const c = championsOf(cand, code, from, to),
+        r = rel && championsOf(rel, code, from, to);
+      if (!c.seasons) continue;
+      const away = (x: { different: number; most: number }) => [
+        outside(x.different, band.different),
+        outside(x.most, band.most),
+      ];
+      const cOut = away(c),
+        rOut = r ? away(r) : [Infinity, Infinity];
+      const ok = cOut.every((d, i) => d === 0 || d <= rOut[i]!);
+      all++;
+      if (ok) pass++;
+      else failures.push(`${cand.seed.slice(-1)} ${code}`);
+      console.log(
+        `| ${cand.seed.slice(-1)} | ${code} | ${c.seasons} | ${r ? `${r.different} / ${r.most}` : '-'} | ${c.different} / ${c.most} | ${ok ? 'ok' : 'OUT'} |`,
+      );
+    }
+  }
+  console.log(
+    `\n${pass} of ${all} country-seeds pass${failures.length ? `; failing: ${failures.join(', ')}` : ''}.`,
+  );
+  // Per country over its seeds: the points outside the band (different + most), summed.
+  const pooled = new Map<string, [number, number, number]>();
+  for (const cand of candidate) {
+    const rel = released.find((e) => e.seed === cand.seed);
+    if (!rel) continue;
+    for (const code of new Set(cand.champions.map((ch) => ch.code))) {
+      const c = championsOf(cand, code, from, to),
+        r = championsOf(rel, code, from, to);
+      if (!c.seasons) continue;
+      const away = (x: typeof c) =>
+        outside(x.different, band.different) + outside(x.most, band.most);
+      const [seeds, rSum, cSum] = pooled.get(code) ?? [0, 0, 0];
+      pooled.set(code, [seeds + 1, rSum + away(r), cSum + away(c)]);
+    }
+  }
+  console.log(
+    '\nPer country over its seeds: points outside the band (different + most), summed; worse = the candidate further out than released.\n',
+  );
+  console.log('| country | seeds | released | candidate | verdict |');
+  console.log('|---|---:|---:|---:|---|');
+  for (const [code, [seeds, r, c]] of [...pooled].sort())
+    console.log(`| ${code} | ${seeds} | ${r} | ${c} | ${c === 0 || c <= r ? 'ok' : 'worse'} |`);
+  const cost = (list: Extra[]) =>
+    list.map((e) => `${e.seed} ${(e.seconds / e.seasons).toFixed(2)} s`).join(', ');
+  console.log(
+    `\nSeconds per lived season — released: ${cost(released)}; candidate: ${cost(candidate)}.`,
+  );
+}
+const readExtras = (paths: string) =>
+  paths
+    .split(',')
+    .filter(Boolean)
+    .flatMap((path) => JSON.parse(readFileSync(path, 'utf8')) as Extra[]);
+
 const spreadFile = option('spread', '');
 const table = spreadFile ? readTable(spreadFile) : undefined;
 const input = option('in', '');
@@ -401,11 +636,27 @@ if (input) {
   const rows = input.split(',').flatMap((path) => JSON.parse(readFileSync(path, 'utf8')) as Row[]);
   if (args.includes('--books')) booksReport(rows);
   if (args.includes('--fit')) fitReport(rows, table);
-  if (table) tableReport(rows, table, option('label', 'Candidate'));
+  if (args.includes('--lived')) livedReport(rows, readExtras(option('extra', '')));
+  else if (table) tableReport(rows, table, option('label', 'Candidate'));
+} else if (option('champions-candidate', '')) {
+  championsReport(
+    readExtras(option('champions-released', '')),
+    readExtras(option('champions-candidate', '')),
+    Number(option('from', '1980')),
+    Number(option('to', '2009')),
+  );
 } else {
   const years = list('years', '1950,1970,1990,2010').map(Number),
     codes = list('countries', 'ENG,ESP,FRA,GER');
-  const rows = list('seeds', 'owner-balance-0').flatMap((seed) => live(seed, years, codes, table));
-  writeFileSync(option('out', 'era-wage-spread.json'), JSON.stringify(rows));
+  const runs = list('seeds', 'owner-balance-0').map((seed) =>
+    live(seed, years, codes, table, Number(option('until', '0'))),
+  );
+  const rows = runs.flatMap((run) => run.rows),
+    out = option('out', 'era-wage-spread.json');
+  writeFileSync(out, JSON.stringify(rows));
+  writeFileSync(
+    out.replace(/\.json$/, '') + '.extra.json',
+    JSON.stringify(runs.map((run) => run.extra)),
+  );
   console.error(`${rows.length} rows`);
 }

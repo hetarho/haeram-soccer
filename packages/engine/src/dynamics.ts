@@ -2,8 +2,9 @@ import { clearDebt } from './books';
 import { cohesionAfterSummer } from './adaptation';
 import type { Club, World } from '../../contracts/src/types';
 import { clamp, random } from './primitives';
-import { stature, tierLevel } from './world';
+import { npcSquad, stature, tierLevel } from './world';
 import { pushInbox } from './inbox';
+import { marketWageAt } from './market-prices';
 
 /**
  * Between seasons every club nobody owns rises or falls (→LEAGUE-10): it drifts toward the level
@@ -30,7 +31,77 @@ export const EVOLUTION = {
   project: { chance: 0.004, min: 8, max: 18, fade: 0.85 },
   /** No club nobody owns is capped below the very best an owner can build. */
   ceiling: 99,
+  /** Nor falls below the weakest strength a club plays at (→LEAGUE-10: 15–99). */
+  floor: 15,
 } as const;
+
+/**
+ * LEAGUE-10's means level (→ECON-36, CLUB-25, CLUB-48): a club nobody owns that keeps books plays
+ * at most at the highest strength whose generated squad its last closed season's book pays — that
+ * squad's market wage bill, priced in the division and season the book was earned, at most the
+ * book's income less its operating expenses — and a club above it after its summer change sells
+ * down to it at once. A club with a project, or in the summer of its takeover, is not held; a club
+ * without books has none. In force only together with CLUB-48's table (`STAR_SPREAD_CONFIG`), set
+ * with it through CLUB-48's gate, never alone; `observe` is a measurement hook, never a setting.
+ */
+export const MEANS_LEVEL: {
+  inForce: boolean;
+  observe?: (club: Club, from: number, to: number) => void;
+} = { inForce: false };
+
+/** What a club's last closed book leaves for its squad's wages: its income less its operating expenses. */
+export function meansOf(c: Club) {
+  const book = c.books?.seasons[0];
+  return book && { year: book.year, budget: BigInt(book.income) - BigInt(book.costs) };
+}
+
+/**
+ * The market wage bill of `c`'s generated squad at `strength` (→WORLD-6), priced as the books
+ * price a squad (→ECON-36): each player's market wage in `tier` and `year` (→CLUB-25, CLUB-48).
+ */
+export function squadCostAt(w: World, c: Club, strength: number, tier: number, year: number) {
+  return npcSquad(w.seed, year, { ...c, strength, tier }).reduce(
+    (sum, p) => sum + BigInt(marketWageAt(c.country, year, tier, p)),
+    0n,
+  );
+}
+
+/**
+ * The highest strength from the floor to `upTo` whose generated squad, in `tier` and the book's
+ * season, costs at most `c`'s means (`meansOf`); the floor when none does, undefined without a
+ * closed book. Each strength is generated once (`cost`); a squad's cost rises with its strength,
+ * so a binary search finds the strength that fits with the next one up costing more.
+ */
+export function meansLevel(
+  w: World,
+  c: Club,
+  tier: number,
+  upTo: number = EVOLUTION.ceiling,
+  cost = memoCost(w, c, tier),
+) {
+  const means = meansOf(c);
+  if (!means) return undefined;
+  const fits = (strength: number) => cost(strength, means.year) <= means.budget;
+  if (fits(upTo)) return upTo;
+  let low: number = EVOLUTION.floor,
+    high = upTo;
+  if (!fits(low)) return low;
+  // fits(low) and not fits(high): narrow to neighbours.
+  while (high - low > 1) {
+    const mid = (low + high) >> 1;
+    if (fits(mid)) low = mid;
+    else high = mid;
+  }
+  return low;
+}
+function memoCost(w: World, c: Club, tier: number) {
+  const costs = new Map<number, bigint>();
+  return (strength: number, year: number) => {
+    let cost = costs.get(strength);
+    if (cost === undefined) costs.set(strength, (cost = squadCostAt(w, c, strength, tier, year)));
+    return cost;
+  };
+}
 
 /**
  * Success pays: last season's champion settles 3 points higher, the rest of the top four 1.5, a
@@ -86,7 +157,15 @@ export function evolveClubs(w: World, tiers: ReadonlyMap<string, number>) {
     if (takeover) next += e.takeover.min + r() * (e.takeover.max - e.takeover.min);
     else if (event < e.takeover.chance + e.crisis.chance)
       next -= e.crisis.min + r() * (e.crisis.max - e.crisis.min);
-    c.strength = Math.round(clamp(next, 15, e.ceiling));
+    c.strength = Math.round(clamp(next, e.floor, e.ceiling));
+    // A club nobody owns keeps only the stars its last closed book pays (→LEAGUE-10, ECON-36).
+    if (MEANS_LEVEL.inForce && !project && !takeover && c.project === undefined) {
+      const held = meansLevel(w, c, before, c.strength);
+      if (held !== undefined && held < c.strength) {
+        MEANS_LEVEL.observe?.(c, c.strength, held);
+        c.strength = held;
+      }
+    }
     // New money buys players, not a team: the squad's 조직력 starts again (→LEAGUE-12).
     cohesionAfterSummer(c, { investment: project || takeover, move: c.tier !== before });
     // ...and pays what the club owes (→ECON-36).
