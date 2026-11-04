@@ -347,16 +347,17 @@ export const staffHireCost = (candidate: Pick<StaffCandidate, 'fee' | 'compensat
   BigInt(candidate.fee) + BigInt(candidate.compensation ?? '0');
 /**
  * A hired candidate leaves the market and, with the fields only an offer carries dropped, becomes
- * a member of our staff; another club's holder is named with the compensation it took.
+ * a member of our staff under the record his move keeps (→STAFF-50); another club's holder is
+ * named with the compensation it took.
  */
 function fromMarket(w: World, candidate: StaffCandidate) {
-  takeStaff(w, candidate);
+  const person = takeStaff(w, candidate);
   const { fee: _fee, source: _source, club, compensation, ...member } = candidate;
   void _fee;
   void _source;
   const from = club && w.clubs.find((one) => one.id === club)?.name;
   return {
-    member,
+    member: person ? { ...member, person } : member,
     note: from ? [`${from}에서 영입`, `웃돈 ${moneyLabel(w, compensation ?? '0')}`] : [],
   };
 }
@@ -410,18 +411,18 @@ export function hireStaff(
   );
 }
 /**
- * A member leaves our staff: a former player's employment closes with his learned values kept;
- * a paid coach joins his post's free agents (→STAFF-49).
+ * A member leaves our staff: his employment with us closes (→STAFF-50), a former player's with his
+ * learned values kept; a paid coach joins his post's free agents (→STAFF-49).
  */
 export function departStaff(w: World, member?: Staff) {
-  if (member && !member.person) joinStaffPool(w, member);
-  if (!member?.person) return;
-  const person = w.people?.[member.person];
-  if (person?.coaching) {
-    person.coaching.ability = member.ability;
-    person.coaching.potential = member.potential ?? person.coaching.potential;
+  if (!member) return;
+  const coaching = member.person && w.people?.[member.person]?.coaching;
+  if (coaching) {
+    coaching.ability = member.ability;
+    coaching.potential = member.potential ?? coaching.potential;
   }
-  closeEmployment(w, member.person, member.role);
+  if (member.person) closeEmployment(w, member.person, member.role);
+  joinStaffPool(w, member);
 }
 export function releaseStaff(w: World, role: StaffRole, mandatory = false): void {
   const staff = w.staff || basicStaff(w),

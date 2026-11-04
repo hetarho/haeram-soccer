@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
 import type { CareerDate } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
-import type { PersonCareerDetail } from '../runtime/personCareer';
+import type { PersonCareerDetail, TenureSeason } from '../runtime/personCareer';
 import { STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { Dialog } from './Dialog';
 import { ClubLink } from './ClubLink';
 import { useGameState } from '../runtime/store';
+import { seasonName } from './format';
+import { divisionName } from '../presentation/competitionLabels';
 const date = (at: CareerDate) =>
   new Date(Date.UTC(at.year, 7, 1) + at.day * 86400000).toISOString().slice(0, 10);
+/** A tenure season's league finish (→STAFF-50): '2부 3위', or why the archive shows none. */
+const tenureFinish = (code: string, { finish, current }: TenureSeason) =>
+  finish
+    ? `${divisionName(code, finish.tier, finish.group)} ${finish.place}위`
+    : current
+      ? '진행 중'
+      : '순위 기록 없음';
 export function PersonCareerLink({
   id,
   name,
@@ -107,17 +116,30 @@ export function PersonCareer({
           )}
           <h3>실제 재직 기록</h3>
           <ol>
-            {d.person.employment.map((job, index) => (
-              <li key={index}>
-                {job.role === 'player'
-                  ? '선수'
-                  : job.role === 'manager'
-                    ? '감독'
-                    : STAFF_INFO[job.role].label}{' '}
-                · {w ? <ClubLink w={w} id={job.club} /> : job.club} · {date(job.from)}–
-                {job.to ? date(job.to) : '재직 중'}
-              </li>
-            ))}
+            {d.person.employment.map((job, index) => {
+              const seasons = d.tenures.find((tenure) => tenure.job === index)?.seasons ?? [],
+                code = w?.clubs.find((club) => club.id === job.club)?.country ?? '';
+              return (
+                <li key={index}>
+                  {job.role === 'player'
+                    ? '선수'
+                    : job.role === 'manager'
+                      ? '감독'
+                      : STAFF_INFO[job.role].label}{' '}
+                  · {w ? <ClubLink w={w} id={job.club} /> : job.club} · {date(job.from)}–
+                  {job.to ? date(job.to) : '재직 중'}
+                  {seasons.length > 0 && (
+                    <ol aria-label="재임 시즌 리그 순위">
+                      {seasons.map((season) => (
+                        <li key={season.year}>
+                          {seasonName(season.year)} · {tenureFinish(code, season)}
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </li>
+              );
+            })}
           </ol>
           <h3>함께 근무한 감독</h3>
           {d.person.mentors.length ? (

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validateWorld } from '../../contracts/src/index';
-import { careerDate, retainPerson, openEmployment } from './person-careers';
+import { careerDate, closeEmployment, retainPerson, openEmployment } from './person-careers';
 import { initializeCoaching } from './coaching-entry';
 import { dailyStaff } from './staff';
 import type { Player, Position, World } from '../../contracts/src/types';
@@ -152,6 +152,8 @@ it('closes retained coach employment and mentor exposure on release before a del
     at = careerDate(w);
   person.intention = { at, draw: 0, willing: true };
   const coaching = initializeCoaching(w, person)!;
+  // The hired assistant's own record (→STAFF-50) gives up the post the retained player takes.
+  closeEmployment(w, member.person!, 'assistant');
   Object.assign(member, {
     id: person.id,
     person: person.id,

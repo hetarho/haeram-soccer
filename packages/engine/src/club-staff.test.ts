@@ -295,6 +295,81 @@ describe('hiring from the staff markets (→STAFF-49, STAFF-15)', () => {
   });
 });
 
+describe('staff careers recorded only on a move (→STAFF-50)', () => {
+  it('a hired holder brings his time at his club, a release closes ours and a rehire reopens it', () => {
+    const w = fresh(),
+      people = Object.keys(w.people!).length,
+      offer = staffCandidates(w, 'attack').find((o) => o.source === 'club')!,
+      club = w.clubs.find((c) => c.id === offer.club)!,
+      holder = clubStaffMember(w, club, 'attack');
+    // Nobody who has not moved has a record.
+    expect(holder.id).toBe(offer.id);
+    expect(w.people![offer.id]).toBeUndefined();
+    w.calendar = { day: 2 };
+    operate(w, { type: 'hire-staff', role: 'attack', candidate: 0, candidateId: offer.id });
+    const hired = careerDate(w),
+      person = w.people![offer.id]!;
+    expect(person).toMatchObject({
+      id: offer.id,
+      name: offer.name,
+      born: offer.born,
+      playing: 'retired',
+      club: w.playerClub,
+    });
+    expect(person.employment).toEqual([
+      { role: 'attack', club: club.id, from: { year: holder.since, day: 0 }, to: hired },
+      { role: 'attack', club: w.playerClub, from: hired },
+    ]);
+    // Nobody watched his time at his club: the only manager beside him is ours, from his hire.
+    expect(person.mentors).toMatchObject([{ club: w.playerClub, from: hired }]);
+    expect(person.mentors[0]!.to).toBeUndefined();
+    expect(w.staff!.find((m) => m.role === 'attack')).toMatchObject({
+      id: offer.id,
+      person: offer.id,
+    });
+    expect(Object.keys(w.people!)).toHaveLength(people + 1);
+    validateWorld(JSON.parse(JSON.stringify(w)));
+    // Released, his job with us closes and he waits in the pool as the same man.
+    w.calendar = { day: 4 };
+    const released = careerDate(w);
+    releaseStaff(w, 'attack');
+    expect(person.employment[1]).toEqual({
+      role: 'attack',
+      club: w.playerClub,
+      from: hired,
+      to: released,
+    });
+    expect(person.club).toBeUndefined();
+    expect(person.mentors[0]!.to).toEqual(released);
+    expect(pool(w, 'attack').find((m) => m.id === offer.id)).toMatchObject({ person: offer.id });
+    validateWorld(JSON.parse(JSON.stringify(w)));
+    // Hired again from the pool, the same record opens a job again.
+    w.calendar = { day: 6 };
+    operate(w, { type: 'hire-staff', role: 'attack', candidate: 0, candidateId: offer.id });
+    expect(person.employment).toHaveLength(3);
+    expect(person.employment[2]).toEqual({
+      role: 'attack',
+      club: w.playerClub,
+      from: careerDate(w),
+    });
+    expect(pool(w, 'attack').some((m) => m.id === offer.id)).toBe(false);
+    validateWorld(JSON.parse(JSON.stringify(w)));
+  });
+
+  it('a free agent signed gets a record from his hire; a volunteer leaving gets none', () => {
+    const w = fresh(),
+      free = staffCandidates(w, 'scout').find((o) => o.source === 'free')!,
+      volunteer = w.staff!.find((m) => m.role === 'scout')!;
+    operate(w, { type: 'hire-staff', role: 'scout', candidate: 0, candidateId: free.id });
+    expect(w.people![free.id]!.employment).toEqual([
+      { role: 'scout', club: w.playerClub, from: careerDate(w) },
+    ]);
+    expect(w.people![volunteer.id]).toBeUndefined();
+    expect(w.staff!.find((m) => m.role === 'scout')).toMatchObject({ person: free.id });
+    validateWorld(JSON.parse(JSON.stringify(w)));
+  });
+});
+
 describe('former players placed at clubs nobody owns (→STAFF-43)', () => {
   it('replace the post holder, skip a post already taken and can be hired away', () => {
     const w = fresh();

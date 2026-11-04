@@ -279,7 +279,11 @@ describe('coaching staff', () => {
     expect(BigInt(w.cash)).toBe(start - BigInt(first.fee));
     const { fee: _fee, source: _source, ...contract } = first;
     void [_fee, _source];
-    expect(w.staff!.find((member) => member.role === 'attack')).toEqual(contract);
+    // He joins under the person record his move opens (→STAFF-50).
+    expect(w.staff!.find((member) => member.role === 'attack')).toEqual({
+      ...contract,
+      person: first.id,
+    });
     expect(w.staff!.map((member) => member.role)).toEqual(STAFF_ROLES);
     expect(staffWageTotal(w)).toBe(BigInt(first.wage));
     expect(operatingCosts(w).staffWages).toBe(first.wage);

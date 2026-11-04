@@ -18,7 +18,12 @@ import { networkCandidates, networkedCandidate } from './owner-traits';
 import { clubOf } from './player-state';
 import { personName } from './world';
 import { poachable } from './managerMarket';
-import { activeCoachingEmployment, closeEmployment, profiledCoaches } from './person-careers';
+import {
+  activeCoachingEmployment,
+  closeEmployment,
+  profiledCoaches,
+  retainStaffPerson,
+} from './person-careers';
 import { coachingEntryReady } from './coaching-entry';
 
 /**
@@ -284,32 +289,49 @@ export function nameNextHolder(w: World, clubId: string, role: StaffRole) {
 }
 /**
  * A hired candidate leaves the market (→STAFF-49): a free agent his pool; another club's holder
- * his post, a former player's employment there closing, and that club names its next holder.
+ * his post, his employment there closing, and that club names its next holder. His move is
+ * recorded (→STAFF-50): one without a record gets one, a derived holder with his time at his club
+ * from the season his holder count started. Returns the record his job with us opens under; none
+ * for one without an age (older saves).
  */
 export function takeStaff(
   w: World,
-  candidate: Pick<StaffCandidate, 'id' | 'role' | 'person' | 'source' | 'club'>,
-) {
+  candidate: Pick<StaffCandidate, 'id' | 'name' | 'role' | 'person' | 'source' | 'club' | 'born'>,
+): string | undefined {
+  const { born } = candidate;
   if (candidate.source === 'club' && candidate.club) {
-    if (candidate.person) closeEmployment(w, candidate.person, candidate.role);
+    const club = w.clubs.find((one) => one.id === candidate.club);
+    let person = candidate.person;
+    if (!person && club && born !== undefined) {
+      const holder = clubStaffMember(w, club, candidate.role);
+      if (holder.id === candidate.id)
+        person = retainStaffPerson(w, { ...candidate, since: holder.since, born }, club.id).id;
+    }
+    if (person) closeEmployment(w, person, candidate.role);
     nameNextHolder(w, candidate.club, candidate.role);
-    return;
+    return person;
   }
-  // A former player waits as himself, not in a stored pool (→STAFF-27).
-  if (candidate.person) return;
-  const m = market(w),
-    pool = m.free[candidate.role];
-  if (pool) m.free[candidate.role] = pool.filter((member) => member.id !== candidate.id);
+  // A free agent leaves his pool; a former player, who waits as himself (→STAFF-27), was in none.
+  if (staffMarketOf(w).free[candidate.role]?.some((member) => member.id === candidate.id)) {
+    const m = market(w);
+    m.free[candidate.role] = m.free[candidate.role]!.filter((member) => member.id !== candidate.id);
+  }
+  if (candidate.person || born === undefined) return candidate.person;
+  return retainStaffPerson(w, { ...candidate, since: w.year, born }).id;
 }
+/** A former player coaching for us, who waits as the person he is rather than in a pool (→STAFF-27). */
+const formerPlayerCoach = (w: World, member: Pick<Staff, 'person'>) =>
+  !!member.person && !!w.people?.[member.person]?.coaching;
 /**
  * A paid coach who leaves our club, replaced, released or unrenewed, joins his post's free agents
- * at the going wage for his ability (→STAFF-49). Volunteers and former players, who wait as the
- * people they are (→STAFF-27), do not; nor does anyone past `retireAge`.
+ * at the going wage for his ability (→STAFF-49), with his record (→STAFF-50) once he has one.
+ * Volunteers and former players, who wait as the people they are (→STAFF-27), do not; nor does
+ * anyone past `retireAge`. His job with us is closed by whoever lets him go.
  */
 export function joinStaffPool(w: World, member: Staff) {
   if (
     !hasOwner(w) ||
-    member.person ||
+    formerPlayerCoach(w, member) ||
     BigInt(member.wage) === 0n ||
     age(w, member) >= STAFF_MARKET_CONFIG.retireAge
   )

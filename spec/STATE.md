@@ -691,6 +691,9 @@
 - 261105 decided STAFF-49 OWNER-5 T703: what a refresh adds past a pool's floor and where 마당발 is read → as the manager market, after reaching its floor a pool grows toward its ceiling by 30% a draw, the former players waiting for the post counting toward both and never trimmed; 마당발's one more and +5 come from OWNER_TRAITS.networker, not new numbers in STAFF_MARKET_CONFIG (alt: refill to exactly the floor every time | duplicate the trait's values in the staff config). rs01
 - 261105 decided STAFF-43 STAFF-49 T703: what "replaces its derived holder" keeps → a placement moves the club's holder count on at once (since = the placement year), so the replaced man never returns and the club's next holder takes the post whenever the former player leaves, by contract end or a hire (alt: the replaced holder comes back after the two-year contract, nothing stored). rs01
 - 261105 decided STAFF-49 STAFF-50 T703: who joins a pool and what a hire records before T704 → a paid coach without a person record who leaves us (replaced, released or unrenewed) joins his post's pool at the going wage for his ability, the oldest leaving when it is over its ceiling; volunteers never, former players wait as themselves (STAFF-27); a hire's move is the staff-hire event naming the club and the 웃돈, person records being T704's; a free agent or club holder signed without a chosen term signs for 2 seasons (alt: keep his wage with us | record a person on every hire now). rs01
+- 261105 decided STAFF-50 HIST-14 T704: what a coach's, chief scout's or 단장's record holds when PersonCareer was made for players → a record under his staff id (so `Staff.person` names him, as for former players), retired from playing so the playing, retirement and coaching-entry walks pass him by, with a middling midfielder's position and grade-3 professionalism and qualities standing for what nobody observed; contract, schema and the career codec stay as they are (alt: make position, professionalism and qualities optional across the contract, schema and compact career codec). rs01
+- 261105 decided STAFF-50 STAFF-49 STAFF-43 T704: which moves open and close a record → a hire by us (owner or delegated) opens his job with us, a club's derived holder first getting his time there from day 0 of the season his holder count started, closed at the hire with no mentor (nobody watched it); our replacement, release or non-renewal closes it and his pool entry keeps `person`, so a rehire reopens the same record; a pooled man signing elsewhere records nothing (no club is named), and the holder a STAFF-43 placement displaces, volunteers and coaches hired before T704 (older saves) get no record, as nothing could open it (alt: record the displaced holder | backfill older hires' time with us from `since` when they leave). rs01
+- 261105 decided STAFF-50 LEAGUE-1 T704: which seasons a tenure lists → every job off the pitch, the manager's and chief scout's included, with each season it overlaps by at least a day (the war's seasons skipped); a season the archive holds no row of his club for shows 순위 기록 없음 and the one being played 진행 중, read at request time (alt: coaching and 단장 jobs only | count a season only after a set share of it). rs01
 
 ## ideation
 | id | st |
@@ -753,7 +756,6 @@
 | T698 | CLUB-48's champions part on the real leagues' spread and history's noise | CLUB LEAGUE | - | todo |
 | T699 | CLUB-48's careers' check on T697's table, then the table, the means level and competition money in force together | CLUB LEAGUE ECON OWNER | - | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | - | todo |
-| T704 | staff careers and tenure results | STAFF HIST LEAGUE ARCH | T703 | todo |
 | T705 | recruitment sources in the market | WEB CLUB STAFF ARCH | T702 T703 | todo |
 
 ## work
@@ -778,7 +780,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- rs01: T701, T702, T703 done (free-agent pool; the scout finds existing players; staff markets from clubs and free agents); implement-task T704, then T705 in the worktree .claude/worktrees/rs01 (branch worktree-rs01); the primary checkout is in a design session and stays untouched. Final gate once (golden and prepared worlds regenerated once after the engine tasks), then merge into main.
+- rs01: T701, T702, T703, T704 done (free-agent pool; the scout finds existing players; staff markets from clubs and free agents; staff careers on a move with tenure finishes); implement-task T705 in the worktree .claude/worktrees/rs01 (branch worktree-rs01); the primary checkout is in a design session and stays untouched. Final gate once (golden and prepared worlds regenerated once after the engine tasks), then merge into main.
 - ba04 T693 next (CLUB r52 era star pay spread): baseline books and every tier's reference careers on the released source first, then calibrate and hold out; do not start T689 before it.
 - Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers and wage change, one mechanism, and implement it.
 - Continue one issue at a time: transfers/retention, owner reach/dividend risk, then existing T689 and a fresh read of the old calibration memo. New balance tasks are authorized for this pass; preserve published contracts/history and every measurement/release gate.
@@ -807,6 +809,7 @@
 - ba04 records: T699 turned CLUB-48's table, LEAGUE-10's means level and competition money on together; CLUB r59, LEAGUE r18, ECON r48 state them in force with LEAGUE-13's and ECON-29's measured lines on these rules.
 
 ## log
+- 261105 T704 done
 - 261105 T703 done
 - 261105 T702 done
 - 261105 T701 done
@@ -826,4 +829,3 @@
 - 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
 - 261104 update-ssot CLUB r53 + create-task T694: CLUB-48's W80 at the player's own age and potential (the lowered potential paid an 18-year-old less at OVR 81 than at 80 under s < 1), the table in force stated as s = 1 everywhere with the gate a table must pass and England's anchor only with it; T694 fixes, pins and re-reads T693's candidate books. ba04
 - 261104 update-ssot ECON r46 CLUB r54 WEB r208 + create-task T695: SSOT aligned with the owner controls released on main without SSOT changes (owner-set dials, ticket preset, cards, rows and facility works; per-decision 재정 기조 and wage caps; grassroots and recruitment fee factors retired; training ground growth/recovery/goodwill; office on its investment directory with menu modals); T695 merges main fb868d3d here and verifies it, superseding the release-gate fix the owner already made. ba04
-- 261104 update-ssot LEAGUE r15 CLUB r55 + create-task T696: LEAGUE-10's means level (a club nobody owns keeps only the stars its last closed book pays at break-even) enters with CLUB-48's table (0.22 through 1970, 0.57 at 1990, 1 from 2008; England 0 through 1960/61) only through CLUB-48's gate (fit without the means level, books and champions with both); until then s = 1 and no means level. ba04
