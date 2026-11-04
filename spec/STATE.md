@@ -17,8 +17,11 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
+| ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261104 decided CLUB-48 CLUB-25 CLUB-26 ECON-36 LEAGUE-13 T693: which mechanism first makes a giant's books payable across eras (in 1950 every country's strongest club pays 1.8–3.3× its income in wages, so 6 of 8 석유 재벌 references go bankrupt in 1950–51) → an era star pay spread s (0–1) on every wage term above an ordinary OVR-80 player's (points above 80, T690's scarcity premium, top-flight terms, the Ballon d'Or premium), wages at 80 or below never moving: one year table for every country, 1 from 2008 at the latest so T690's modern ratios stand, calibrated as the least compression keeping the median of each country's three strongest clubs at ≤70% wages/revenue with no non-project club above 100%; England's own s = 0 through 1960/61 from the EFL's primary record of the maximum wage; held out on seeds 2–3 × eight countries × other years; T693 explores 150 min with its baseline first (alt: era-scale the whole wage slope, which moves the ordinary 80/60 and second-tier targets ECON-29 is calibrated on | bind NPC squad strength to their books' means, a larger world-model change better judged once prices are right | apply England's statutory cap worldwide, which no primary record supports | raise giants' income, a subsidy). ba04
+- 261104 decided ECON-29 ECON-30 LEAGUE-13 T693: plan the organic lower-club growth correction now, on T686's readings, or after T693 → after: T686's lower-tier readings predate the released investment controls, T693's baseline re-runs every tier's reference careers on them and its wage change moves the same books, so the growth slice is planned next on those readings, one mechanism at a time (alt: recalibrate ECON-30's operating share now on T686's +18.9% as-played surplus). ba04
 - 261104 decided T689 ARCH-30: the owner now explicitly orders an automatic, sequential football-realism balance pass in a new worktree; the prior stop-before-additional-balance-tasks instruction applied to the previous release and is superseded for this pass. Use update-ssot/create-task for new reversible policy changes, measure before selecting candidates, retain T689's original realism gate, and preserve the primary main checkout. Order: era-aware financial viability and lower-club growth, transfer/retention, owner reach/dividend risk, scoring, then a fresh check of the old calibration memo (alt: start another isolated T689 run before fixing the economic and retention findings). ba04
 - 261104 decided MATCH-17 MATCH-23 MATCH-33 T689: which structural correction the rest of the window (01:36–02:42Z) tests, and what to keep at its end → where the side on the ball waits: `hold` (a forward with no run waits off the offside line, MATCH-33's timed arrival) and `arrive` (AM, wingers and box-run roles wait in the scoring positions once the ball is in front of the box, MATCH-17/33), on the released source and on earlySupport with the released delivery zones (`earlyZones`, so cross finishes stay alive); `hold` alone moves nothing, `arrive` + `hold` (arrHoldEZ60) is the first lever to move the striker slot and on held-out seeds takes the club top-scorer share 42.9% → 36.2% [34.5, 37.9] with goals 2.77 and hat-tricks 0.049 inside, but the share stays above the 31.25% window, shots are 16.8 a team, the stress case does not move and the goal-area share and post-regain shots stay — gate unmet, so both default-off switches stay uncommitted in `.tmp/nx04/nx04-source.patch`, the engine source is restored, only evidence is committed and T689 stays todo with its next lever (alt: recovery after a loss, which the regain shots call for but no ball-side change could test in the window | commit `arrive` as revision 11, against the unmet gate). nx04
 - 261104 decided MATCH-16 MATCH-23 MATCH-33 ARCH-30 T689: does a structural movement/recovery candidate need another owner approval or a new balance task? → no: the owner already delegated reversible implementation in automatic mode and asked to finish existing T689 without creating extra balance tasks; continue within the existing SSOT and the original 00:42Z–02:42Z exploration window, which is not yet exhausted (alt: ask again and park | create a new balance task). The prior nw04 parking is superseded; its measurements remain immutable. The coordinator stopped the attempted final gate because research continues, not because a check failed. nx04
@@ -678,7 +681,7 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
-| CLUB | 51 | 51 | - | 0 |
+| CLUB | 52 | 52 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 14 | 14 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
@@ -704,6 +707,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
+| T693 | calibrate the era's star pay spread on the giants' books | CLUB ECON LEAGUE | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -727,11 +731,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- ba04 planning first: update-ssot/create-task for era-aware club financial viability and organic growth from the latest released source, using T686's measured gaps and the reviewed primary sources; do not start T689 before this financial slice.
+- ba04 T693 next (CLUB r52 era star pay spread): baseline books and every tier's reference careers on the released source first, then calibrate and hold out; do not start T689 before it.
+- Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers and wage change, one mechanism, and implement it.
 - Continue one issue at a time: transfers/retention, owner reach/dividend risk, then existing T689 and a fresh read of the old calibration memo. New balance tasks are authorized for this pass; preserve published contracts/history and every measurement/release gate.
 - Work only in /home/deep/haeram/haeram-soccor-balance on codex/football-balance; the loop host owns final verification and publication to configured main. Preserve other checkouts.
 
 ## log
+- 261104 update-ssot CLUB r52 + create-task T693: an era star pay spread prices every wage term above an ordinary OVR-80 player's (England's maximum wage to 1960/61), calibrated on the strongest clubs' books with held-out seeds, countries and years; the growth slice follows on T693's baseline. ba04
 - 261104 ba04 start: owner requests sequential football-realism calibration in a new isolated worktree; base main 7241867b, released planning documents synchronized to next without code, primary checkout preserved.
 - 261104 nv04 release: verified 96eb899c published to main; 2081 unit tests, 1177 integration tests (4 existing skips) and 346 Chromium journeys pass; actual CI 41772636192 succeeds (confirmed directly after CLI HTML conclusion-parser failure). Primary main checkout and unrelated work preserved. nx04
 - 261104 fix start: re-arm a generation-card timer that wakes before its fractional deadline, avoiding a permanently held club list; two regression tests and six existing schedule tests pass, with typecheck/lint/format. nx04
@@ -751,4 +757,3 @@
 - 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
 - 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
-- 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.
