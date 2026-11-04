@@ -86,8 +86,9 @@ const ledgers = () =>
     setup(w);
     const read = canonical(w),
       ledger = effectLedger(w);
-    // Reading the ledger changes nothing.
+    // Reading the ledger changes nothing, and it travels in the view, whose changes are canonical.
     expect(canonical(w)).toBe(read);
+    expect(() => canonical(ledger)).not.toThrow();
     const effect = (id: EffectId) => ledger.effects.find((item) => item.id === id)!;
     return { w, ledger, effect };
   });
@@ -99,8 +100,7 @@ function combined(effect: LedgerEffect) {
     (all, factor) => (effect.op === 'times' ? all * factor.value : all + factor.value),
     effect.op === 'times' ? 1 : 0,
   );
-  const [low, high] = effect.bounds ?? [-Infinity, Infinity];
-  return Math.min(high, Math.max(low, raw));
+  return Math.min(effect.max ?? Infinity, Math.max(effect.min ?? -Infinity, raw));
 }
 
 describe('effectLedger', () => {

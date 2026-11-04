@@ -146,8 +146,9 @@ export interface LedgerEffect {
   amount?: string;
   /** A base's level now, beside the target `value` it moves toward. */
   current?: number;
-  /** The engine keeps the combined value within these bounds. */
-  bounds?: readonly [number, number];
+  /** The floor and ceiling the engine keeps the combined value within, where it has them. */
+  min?: number;
+  max?: number;
   factors: EffectFactor[];
 }
 export interface EffectLedger {
@@ -285,7 +286,7 @@ export function effectLedger(w: World): EffectLedger {
       0,
       focus.recovery + terms.recoveryBonus + staff.recoveryBonus + ground.recoveryBonus,
     ),
-    bounds: [0, Infinity],
+    min: 0,
     factors: [
       { source: fact('focus'), value: focus.recovery },
       { source: policy('support'), value: terms.recoveryBonus },
@@ -300,7 +301,8 @@ export function effectLedger(w: World): EffectLedger {
     unit: 'score',
     op: 'plus',
     value: moraleBaseline(w),
-    bounds: MORALE_BASELINE_BOUNDS,
+    min: MORALE_BASELINE_BOUNDS[0],
+    max: MORALE_BASELINE_BOUNDS[1],
     factors: [
       { source: fact('standard'), value: morale.standard },
       { source: fact('leaders'), value: morale.leaders },
@@ -334,7 +336,8 @@ export function effectLedger(w: World): EffectLedger {
       goodwillParts.reduce((sum, part) => sum + part, 0),
       ...TALK_CONFIG.goodwill,
     ),
-    bounds: TALK_CONFIG.goodwill,
+    min: TALK_CONFIG.goodwill[0],
+    max: TALK_CONFIG.goodwill[1],
     factors: [
       { source: policy('support'), value: terms.goodwill },
       { source: { kind: 'facility', part: 'training' }, value: ground.goodwill },
@@ -448,7 +451,7 @@ export function effectLedger(w: World): EffectLedger {
     unit: 'count',
     op: 'plus',
     value: Math.max(4, staff.scoutCandidates + build.marketCandidates + terms.scoutCandidates),
-    bounds: [4, Infinity],
+    min: 4,
     factors: [
       { source: fact('standard'), value: neutralScout },
       { source: { kind: 'staff', role: 'scout' }, value: scout.scoutCandidates - neutralScout },
@@ -614,7 +617,8 @@ export function effectLedger(w: World): EffectLedger {
     op: 'plus',
     value: terms.baseTargets.global,
     current: w.globalReach ?? 0,
-    bounds: [0, 100],
+    min: 0,
+    max: 100,
     factors: [
       { source: policy('globalMarketing'), value: only('globalMarketing').baseTargets.global },
       { source: policy('globalScouting'), value: only('globalScouting').baseTargets.global },
