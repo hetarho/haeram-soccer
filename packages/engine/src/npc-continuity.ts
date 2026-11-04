@@ -10,7 +10,8 @@ import {
   playingFor,
   retainPerson,
 } from './person-careers';
-import { invalidateNpcSquads, makePlayer, npcSquad } from './world';
+import { invalidateNpcSquads, makePlayer, npcSquad, squadPlaces } from './world';
+import { clubStyle } from './tactics';
 import { lineOf } from './player';
 import { hasOwner } from './owner';
 
@@ -77,11 +78,16 @@ export function materializePeople(w: World) {
   }
   invalidateNpcSquads(w);
 }
+/**
+ * A new person for generated place `slot`, whose identity `p` is accounted for elsewhere: drawn as
+ * the place is (`npcSquad`), at its position and age, in its formation role and carrying the
+ * club's press load, so a refilled squad plays as its generated one does.
+ */
 function replacement(w: World, c: Club, p: Player, slot: number) {
   let serial = 0;
   let id = `${c.id}:vacancy:${slot}:${w.year}`;
   while (departed(w, id)) id = `${c.id}:vacancy:${slot}:${w.year}:${++serial}`;
-  return makePlayer(
+  const player = makePlayer(
     COUNTRIES.some((country) => country.code === c.country) ? c.country : 'ENG',
     w.seed,
     id,
@@ -90,7 +96,10 @@ function replacement(w: World, c: Club, p: Player, slot: number) {
     p.position,
     18 + ((w.year + slot) % 18),
     c.tier,
+    squadPlaces(clubStyle(c))[slot]?.role,
   );
+  player.fatigue = p.fatigue;
+  return player;
 }
 
 function identity(p: Player, person: PersonCareer): Player {
