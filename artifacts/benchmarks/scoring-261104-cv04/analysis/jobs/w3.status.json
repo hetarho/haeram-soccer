@@ -1,0 +1,50 @@
+{
+ "seconds": 193,
+ "status": [
+  {
+   "name": "regain-kc8",
+   "code": 0,
+   "seconds": 39
+  },
+  {
+   "name": "bands-view5-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-view5kc8-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-view3-400",
+   "code": 0,
+   "seconds": 77
+  },
+  {
+   "name": "bands-kc12-400",
+   "code": 0,
+   "seconds": 77
+  },
+  {
+   "name": "bands-view7-400",
+   "code": 0,
+   "seconds": 78
+  },
+  {
+   "name": "bands-kc8-400",
+   "code": 0,
+   "seconds": 78
+  },
+  {
+   "name": "conc-kc8-calibration",
+   "code": 0,
+   "seconds": 193
+  },
+  {
+   "name": "conc-view5-calibration",
+   "code": 0,
+   "seconds": 193
+  }
+ ]
+}

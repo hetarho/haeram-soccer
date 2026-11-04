@@ -1,0 +1,25 @@
+{
+ "seconds": 62,
+ "status": [
+  {
+   "name": "regain-kf5kc8",
+   "code": 0,
+   "seconds": 28
+  },
+  {
+   "name": "regain-kf5",
+   "code": 0,
+   "seconds": 28
+  },
+  {
+   "name": "bands-kf5-400",
+   "code": 0,
+   "seconds": 62
+  },
+  {
+   "name": "bands-kf5kc8-400",
+   "code": 0,
+   "seconds": 62
+  }
+ ]
+}

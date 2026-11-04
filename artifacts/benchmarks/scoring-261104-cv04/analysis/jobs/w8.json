@@ -1,0 +1,15 @@
+[
+ {
+  "name": "conc-ctl-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ctl.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-ctl-calibration.json"
+  ]
+ }
+]

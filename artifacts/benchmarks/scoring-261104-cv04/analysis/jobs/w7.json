@@ -1,0 +1,177 @@
+[
+ {
+  "name": "report-ctl-validation",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ctl.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "0.25",
+   "--only",
+   "core,tactics",
+   "--jobs",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/report-ctl-validation.json"
+  ]
+ },
+ {
+  "name": "report-kl6kc8-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "core,tactics",
+   "--jobs",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/report-kl6kc8-calibration.json"
+  ]
+ },
+ {
+  "name": "report-kl6kc8-validation",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "0.25",
+   "--only",
+   "core,tactics",
+   "--jobs",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/report-kl6kc8-validation.json"
+  ]
+ },
+ {
+  "name": "conc-ctl-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ctl.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-ctl-validation2400.json"
+  ]
+ },
+ {
+  "name": "conc-kl6kc8-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-kl6kc8-validation2400.json"
+  ]
+ },
+ {
+  "name": "stress-kl6kc8-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/stress-kl6kc8-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-kl6kc8-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/stress-kl6kc8-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-kl6kc8-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/stress-kl6kc8-val-3.json"
+  ]
+ },
+ {
+  "name": "conc-kl6kc8-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-kl6kc8-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-an12kl6kc8-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/an12kl6kc8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-an12kl6kc8-calibration.json"
+  ]
+ },
+ {
+  "name": "bands-ctl-1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ctl.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "1200"
+  ]
+ },
+ {
+  "name": "bands-kl6kc8-1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kl6kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "1200"
+  ]
+ },
+ {
+  "name": "bands-an12kl6kc8-1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/an12kl6kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "1200"
+  ]
+ }
+]

@@ -1,0 +1,150 @@
+[
+ {
+  "name": "conc-q10-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q10.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-q10-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-q10s14-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q10s14.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-q10s14-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-q15s20-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q15s20.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-q15s20-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-q10s14L6-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q10s14L6.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-q10s14L6-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-alone0-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/alone0.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-alone0-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-clr6-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/clr6.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-clr6-calibration.json"
+  ]
+ },
+ {
+  "name": "bands-ctl-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ctl.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-q10-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-q10s14-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q10s14.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-q15s20-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q15s20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-q10s14L6-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/q10s14L6.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-alone0-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/alone0.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-clr6-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/clr6.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

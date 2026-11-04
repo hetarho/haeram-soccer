@@ -1,0 +1,70 @@
+{
+ "seconds": 247,
+ "status": [
+  {
+   "name": "bands-q15s20-400",
+   "code": 0,
+   "seconds": 92
+  },
+  {
+   "name": "bands-q10s14-400",
+   "code": 0,
+   "seconds": 93
+  },
+  {
+   "name": "bands-ctl-400",
+   "code": 0,
+   "seconds": 93
+  },
+  {
+   "name": "bands-q10-400",
+   "code": 0,
+   "seconds": 93
+  },
+  {
+   "name": "bands-q10s14L6-400",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "bands-clr6-400",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "bands-alone0-400",
+   "code": 0,
+   "seconds": 79
+  },
+  {
+   "name": "conc-clr6-calibration",
+   "code": 0,
+   "seconds": 233
+  },
+  {
+   "name": "conc-q15s20-calibration",
+   "code": 0,
+   "seconds": 236
+  },
+  {
+   "name": "conc-q10s14-calibration",
+   "code": 0,
+   "seconds": 238
+  },
+  {
+   "name": "conc-q10s14L6-calibration",
+   "code": 0,
+   "seconds": 238
+  },
+  {
+   "name": "conc-q10-calibration",
+   "code": 0,
+   "seconds": 241
+  },
+  {
+   "name": "conc-alone0-calibration",
+   "code": 0,
+   "seconds": 247
+  }
+ ]
+}

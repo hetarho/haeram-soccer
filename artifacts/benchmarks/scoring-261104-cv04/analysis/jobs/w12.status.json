@@ -1,0 +1,45 @@
+{
+ "seconds": 180,
+ "status": [
+  {
+   "name": "regain-ko10",
+   "code": 0,
+   "seconds": 34
+  },
+  {
+   "name": "regain-ko16kl6kc8",
+   "code": 0,
+   "seconds": 34
+  },
+  {
+   "name": "regain-ko16",
+   "code": 0,
+   "seconds": 34
+  },
+  {
+   "name": "bands-ko16-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "bands-ko16kl6kc8-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "bands-ko10-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "conc-ko16kl6kc8-calibration",
+   "code": 0,
+   "seconds": 179
+  },
+  {
+   "name": "conc-ko16-calibration",
+   "code": 0,
+   "seconds": 180
+  }
+ ]
+}

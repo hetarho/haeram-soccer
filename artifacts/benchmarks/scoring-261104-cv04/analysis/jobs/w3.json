@@ -1,0 +1,101 @@
+[
+ {
+  "name": "bands-kc8-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-kc12-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kc12.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-view3-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/view3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-view5-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/view5.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-view7-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/view7.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-view5kc8-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/view5kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "regain-kc8",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kc8.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/regain-kc8-600-720.json"
+  ]
+ },
+ {
+  "name": "conc-kc8-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kc8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-kc8-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-view5-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/view5.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-view5-calibration.json"
+  ]
+ }
+]

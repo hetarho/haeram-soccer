@@ -1,0 +1,35 @@
+{
+ "seconds": 183,
+ "status": [
+  {
+   "name": "bands-o6-400",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "bands-o4-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-o5-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "conc-o6-calibration",
+   "code": 0,
+   "seconds": 175
+  },
+  {
+   "name": "conc-o4-calibration",
+   "code": 0,
+   "seconds": 182
+  },
+  {
+   "name": "conc-o5-calibration",
+   "code": 0,
+   "seconds": 183
+  }
+ ]
+}

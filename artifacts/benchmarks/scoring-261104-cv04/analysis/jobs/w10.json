@@ -1,0 +1,71 @@
+[
+ {
+  "name": "bands-o1-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/o1.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-o2-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/o2.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-o3-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/o3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "conc-o1-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/o1.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-o1-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-o2-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/o2.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-o2-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-o3-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/o3.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-o3-calibration.json"
+  ]
+ }
+]

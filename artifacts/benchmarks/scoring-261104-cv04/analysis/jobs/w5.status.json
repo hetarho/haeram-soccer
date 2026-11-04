@@ -1,0 +1,40 @@
+{
+ "seconds": 71,
+ "status": [
+  {
+   "name": "regain-kl6",
+   "code": 0,
+   "seconds": 34
+  },
+  {
+   "name": "regain-kl10",
+   "code": 0,
+   "seconds": 34
+  },
+  {
+   "name": "regain-kl6kc8",
+   "code": 0,
+   "seconds": 34
+  },
+  {
+   "name": "bands-kl6kc8-400",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "bands-kl6-400",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "bands-kl10-400",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "bands-a0kc8-400",
+   "code": 0,
+   "seconds": 71
+  }
+ ]
+}

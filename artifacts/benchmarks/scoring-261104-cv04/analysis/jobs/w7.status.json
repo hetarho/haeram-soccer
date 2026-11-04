@@ -1,0 +1,70 @@
+{
+ "seconds": 560,
+ "status": [
+  {
+   "name": "stress-kl6kc8-val-2",
+   "code": 0,
+   "seconds": 131
+  },
+  {
+   "name": "stress-kl6kc8-val-3",
+   "code": 0,
+   "seconds": 132
+  },
+  {
+   "name": "stress-kl6kc8-val-1",
+   "code": 0,
+   "seconds": 133
+  },
+  {
+   "name": "report-kl6kc8-calibration",
+   "code": 0,
+   "seconds": 315
+  },
+  {
+   "name": "report-kl6kc8-validation",
+   "code": 0,
+   "seconds": 316
+  },
+  {
+   "name": "report-ctl-validation",
+   "code": 0,
+   "seconds": 316
+  },
+  {
+   "name": "conc-kl6kc8-calibration",
+   "code": 0,
+   "seconds": 386
+  },
+  {
+   "name": "conc-an12kl6kc8-calibration",
+   "code": 0,
+   "seconds": 393
+  },
+  {
+   "name": "bands-ctl-1200",
+   "code": 0,
+   "seconds": 302
+  },
+  {
+   "name": "bands-kl6kc8-1200",
+   "code": 0,
+   "seconds": 302
+  },
+  {
+   "name": "bands-an12kl6kc8-1200",
+   "code": 0,
+   "seconds": 306
+  },
+  {
+   "name": "conc-ctl-validation2400",
+   "code": 0,
+   "seconds": 557
+  },
+  {
+   "name": "conc-kl6kc8-validation2400",
+   "code": 0,
+   "seconds": 560
+  }
+ ]
+}

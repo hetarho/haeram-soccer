@@ -1,0 +1,35 @@
+{
+ "seconds": 74,
+ "status": [
+  {
+   "name": "regain-ks5",
+   "code": 0,
+   "seconds": 39
+  },
+  {
+   "name": "bands-ks3-400",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "bands-view5-400",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "bands-view5ks5-400",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "bands-ks5-400",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "bands-view7-400",
+   "code": 0,
+   "seconds": 74
+  }
+ ]
+}

@@ -1,0 +1,48 @@
+[
+ {
+  "name": "regain-kf5",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kf5.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/regain-kf5-600-720.json"
+  ]
+ },
+ {
+  "name": "regain-kf5kc8",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kf5kc8.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/regain-kf5kc8-600-720.json"
+  ]
+ },
+ {
+  "name": "bands-kf5-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kf5.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-kf5kc8-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/kf5kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

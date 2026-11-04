@@ -1,0 +1,975 @@
+{
+ "kind": "t689-regain-shots",
+ "model": "continuous-aggregate-10",
+ "seeds": [
+  "grid-bands-1",
+  "grid-bands-2",
+  "grid-bands-3",
+  "grid-bands-4"
+ ],
+ "start": 600,
+ "matches": 120,
+ "allShots": 3882,
+ "rows": [
+  {
+   "key": "all",
+   "shots": 297,
+   "goals": 57,
+   "xg": 46.162
+  },
+  {
+   "key": "gkBy|-",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.175
+  },
+  {
+   "key": "gkBy|AM",
+   "shots": 23,
+   "goals": 6,
+   "xg": 3.109
+  },
+  {
+   "key": "gkBy|CB",
+   "shots": 6,
+   "goals": 1,
+   "xg": 0.953
+  },
+  {
+   "key": "gkBy|CM",
+   "shots": 13,
+   "goals": 2,
+   "xg": 3.211
+  },
+  {
+   "key": "gkBy|LB",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.637
+  },
+  {
+   "key": "gkBy|LM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.069
+  },
+  {
+   "key": "gkBy|LW",
+   "shots": 4,
+   "goals": 0,
+   "xg": 0.579
+  },
+  {
+   "key": "gkBy|RM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.199
+  },
+  {
+   "key": "gkBy|RW",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.169
+  },
+  {
+   "key": "gkBy|ST",
+   "shots": 69,
+   "goals": 13,
+   "xg": 10.415
+  },
+  {
+   "key": "gkBy|SUB",
+   "shots": 31,
+   "goals": 4,
+   "xg": 3.316
+  },
+  {
+   "key": "gkShotAfter|<3s",
+   "shots": 146,
+   "goals": 27,
+   "xg": 22.381
+  },
+  {
+   "key": "gkShotAfter|3-6s",
+   "shots": 4,
+   "goals": 0,
+   "xg": 0.144
+  },
+  {
+   "key": "gkShotAfter|6+s",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.307
+  },
+  {
+   "key": "gkWonAt|<5m",
+   "shots": 48,
+   "goals": 12,
+   "xg": 9.731
+  },
+  {
+   "key": "gkWonAt|10-20m",
+   "shots": 56,
+   "goals": 4,
+   "xg": 5.484
+  },
+  {
+   "key": "gkWonAt|5-10m",
+   "shots": 49,
+   "goals": 11,
+   "xg": 7.617
+  },
+  {
+   "key": "gkWonBand|0",
+   "shots": 34,
+   "goals": 10,
+   "xg": 9.514
+  },
+  {
+   "key": "gkWonBand|1",
+   "shots": 95,
+   "goals": 16,
+   "xg": 11.957
+  },
+  {
+   "key": "gkWonBand|2",
+   "shots": 24,
+   "goals": 1,
+   "xg": 1.362
+  },
+  {
+   "key": "loser|CB",
+   "shots": 67,
+   "goals": 16,
+   "xg": 12.137
+  },
+  {
+   "key": "loser|CM",
+   "shots": 3,
+   "goals": 3,
+   "xg": 1.828
+  },
+  {
+   "key": "loser|DM",
+   "shots": 9,
+   "goals": 0,
+   "xg": 0.751
+  },
+  {
+   "key": "loser|GK",
+   "shots": 153,
+   "goals": 27,
+   "xg": 22.832
+  },
+  {
+   "key": "loser|LB",
+   "shots": 12,
+   "goals": 3,
+   "xg": 2.414
+  },
+  {
+   "key": "loser|LM",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.012
+  },
+  {
+   "key": "loser|LW",
+   "shots": 4,
+   "goals": 1,
+   "xg": 0.471
+  },
+  {
+   "key": "loser|LWB",
+   "shots": 5,
+   "goals": 1,
+   "xg": 0.771
+  },
+  {
+   "key": "loser|RB",
+   "shots": 7,
+   "goals": 0,
+   "xg": 0.559
+  },
+  {
+   "key": "loser|RM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "loser|RW",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.037
+  },
+  {
+   "key": "loser|RWB",
+   "shots": 3,
+   "goals": 1,
+   "xg": 0.358
+  },
+  {
+   "key": "loser|ST",
+   "shots": 6,
+   "goals": 2,
+   "xg": 1.701
+  },
+  {
+   "key": "loser|SUB",
+   "shots": 24,
+   "goals": 2,
+   "xg": 2.29
+  },
+  {
+   "key": "loserBand|CB|0",
+   "shots": 14,
+   "goals": 5,
+   "xg": 3.946
+  },
+  {
+   "key": "loserBand|CB|1",
+   "shots": 38,
+   "goals": 9,
+   "xg": 6.48
+  },
+  {
+   "key": "loserBand|CB|2",
+   "shots": 12,
+   "goals": 1,
+   "xg": 0.904
+  },
+  {
+   "key": "loserBand|CB|3",
+   "shots": 3,
+   "goals": 1,
+   "xg": 0.808
+  },
+  {
+   "key": "loserBand|CM|0",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.44
+  },
+  {
+   "key": "loserBand|CM|1",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.6
+  },
+  {
+   "key": "loserBand|CM|3",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.788
+  },
+  {
+   "key": "loserBand|DM|1",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.334
+  },
+  {
+   "key": "loserBand|DM|2",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.191
+  },
+  {
+   "key": "loserBand|DM|3",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.227
+  },
+  {
+   "key": "loserBand|GK|0",
+   "shots": 125,
+   "goals": 22,
+   "xg": 19.922
+  },
+  {
+   "key": "loserBand|GK|1",
+   "shots": 24,
+   "goals": 4,
+   "xg": 2.175
+  },
+  {
+   "key": "loserBand|GK|2",
+   "shots": 4,
+   "goals": 1,
+   "xg": 0.736
+  },
+  {
+   "key": "loserBand|LB|0",
+   "shots": 4,
+   "goals": 2,
+   "xg": 0.617
+  },
+  {
+   "key": "loserBand|LB|1",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.192
+  },
+  {
+   "key": "loserBand|LB|2",
+   "shots": 2,
+   "goals": 1,
+   "xg": 1.476
+  },
+  {
+   "key": "loserBand|LB|3",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.09
+  },
+  {
+   "key": "loserBand|LB|4",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.038
+  },
+  {
+   "key": "loserBand|LM|0",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "loserBand|LM|1",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.012
+  },
+  {
+   "key": "loserBand|LW|0",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.217
+  },
+  {
+   "key": "loserBand|LW|1",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.254
+  },
+  {
+   "key": "loserBand|LW|3",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "loserBand|LWB|1",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "loserBand|LWB|2",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.193
+  },
+  {
+   "key": "loserBand|LWB|3",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.577
+  },
+  {
+   "key": "loserBand|RB|1",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.231
+  },
+  {
+   "key": "loserBand|RB|2",
+   "shots": 6,
+   "goals": 0,
+   "xg": 0.328
+  },
+  {
+   "key": "loserBand|RM|1",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "loserBand|RW|5",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.037
+  },
+  {
+   "key": "loserBand|RWB|1",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.279
+  },
+  {
+   "key": "loserBand|RWB|2",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.079
+  },
+  {
+   "key": "loserBand|ST|0",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.47
+  },
+  {
+   "key": "loserBand|ST|1",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.546
+  },
+  {
+   "key": "loserBand|ST|3",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.684
+  },
+  {
+   "key": "loserBand|SUB|0",
+   "shots": 9,
+   "goals": 1,
+   "xg": 1.096
+  },
+  {
+   "key": "loserBand|SUB|1",
+   "shots": 4,
+   "goals": 0,
+   "xg": 0.296
+  },
+  {
+   "key": "loserBand|SUB|2",
+   "shots": 6,
+   "goals": 1,
+   "xg": 0.457
+  },
+  {
+   "key": "loserBand|SUB|3",
+   "shots": 5,
+   "goals": 0,
+   "xg": 0.441
+  },
+  {
+   "key": "lostBand|0",
+   "shots": 158,
+   "goals": 32,
+   "xg": 26.709
+  },
+  {
+   "key": "lostBand|1",
+   "shots": 81,
+   "goals": 16,
+   "xg": 11.398
+  },
+  {
+   "key": "lostBand|2",
+   "shots": 37,
+   "goals": 4,
+   "xg": 4.363
+  },
+  {
+   "key": "lostBand|3",
+   "shots": 19,
+   "goals": 4,
+   "xg": 3.616
+  },
+  {
+   "key": "lostBand|4",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.038
+  },
+  {
+   "key": "lostBand|5",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.037
+  },
+  {
+   "key": "shooter|AM",
+   "shots": 34,
+   "goals": 6,
+   "xg": 3.927
+  },
+  {
+   "key": "shooter|CB",
+   "shots": 5,
+   "goals": 1,
+   "xg": 0.95
+  },
+  {
+   "key": "shooter|CM",
+   "shots": 21,
+   "goals": 3,
+   "xg": 3.844
+  },
+  {
+   "key": "shooter|LB",
+   "shots": 10,
+   "goals": 2,
+   "xg": 2.02
+  },
+  {
+   "key": "shooter|LM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.069
+  },
+  {
+   "key": "shooter|LW",
+   "shots": 17,
+   "goals": 1,
+   "xg": 2.697
+  },
+  {
+   "key": "shooter|LWB",
+   "shots": 7,
+   "goals": 1,
+   "xg": 1.072
+  },
+  {
+   "key": "shooter|RB",
+   "shots": 5,
+   "goals": 2,
+   "xg": 0.497
+  },
+  {
+   "key": "shooter|RM",
+   "shots": 5,
+   "goals": 0,
+   "xg": 0.583
+  },
+  {
+   "key": "shooter|RW",
+   "shots": 6,
+   "goals": 1,
+   "xg": 0.542
+  },
+  {
+   "key": "shooter|RWB",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.131
+  },
+  {
+   "key": "shooter|ST",
+   "shots": 138,
+   "goals": 33,
+   "xg": 24.585
+  },
+  {
+   "key": "shooter|SUB",
+   "shots": 46,
+   "goals": 6,
+   "xg": 5.245
+  },
+  {
+   "key": "what|clearance:foul",
+   "shots": 6,
+   "goals": 2,
+   "xg": 0.698
+  },
+  {
+   "key": "what|holdUp:tackled",
+   "shots": 15,
+   "goals": 1,
+   "xg": 2.156
+  },
+  {
+   "key": "what|pass/long:foul",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.152
+  },
+  {
+   "key": "what|pass/long:intercepted",
+   "shots": 71,
+   "goals": 10,
+   "xg": 9.968
+  },
+  {
+   "key": "what|pass/long:loose",
+   "shots": 20,
+   "goals": 7,
+   "xg": 4.908
+  },
+  {
+   "key": "what|pass/long:out",
+   "shots": 6,
+   "goals": 1,
+   "xg": 1.076
+  },
+  {
+   "key": "what|pass/short:foul",
+   "shots": 14,
+   "goals": 1,
+   "xg": 0.646
+  },
+  {
+   "key": "what|pass/short:intercepted",
+   "shots": 86,
+   "goals": 15,
+   "xg": 12.438
+  },
+  {
+   "key": "what|pass/short:loose",
+   "shots": 66,
+   "goals": 19,
+   "xg": 12.177
+  },
+  {
+   "key": "what|pass/short:out",
+   "shots": 10,
+   "goals": 1,
+   "xg": 1.921
+  },
+  {
+   "key": "what|pass/switch:loose",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.023
+  },
+  {
+   "key": "whatShooter|clearance:foul|LW",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.156
+  },
+  {
+   "key": "whatShooter|clearance:foul|LWB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.118
+  },
+  {
+   "key": "whatShooter|clearance:foul|RB",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.203
+  },
+  {
+   "key": "whatShooter|clearance:foul|RW",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.103
+  },
+  {
+   "key": "whatShooter|clearance:foul|SUB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.118
+  },
+  {
+   "key": "whatShooter|holdUp:tackled|CM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.002
+  },
+  {
+   "key": "whatShooter|holdUp:tackled|ST",
+   "shots": 11,
+   "goals": 1,
+   "xg": 1.456
+  },
+  {
+   "key": "whatShooter|holdUp:tackled|SUB",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.699
+  },
+  {
+   "key": "whatShooter|pass/long:foul|LWB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.126
+  },
+  {
+   "key": "whatShooter|pass/long:foul|SUB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.027
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|AM",
+   "shots": 13,
+   "goals": 2,
+   "xg": 1.112
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|CB",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.352
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|CM",
+   "shots": 10,
+   "goals": 2,
+   "xg": 3.064
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|LB",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.637
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|LW",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|ST",
+   "shots": 29,
+   "goals": 2,
+   "xg": 3.011
+  },
+  {
+   "key": "whatShooter|pass/long:intercepted|SUB",
+   "shots": 15,
+   "goals": 2,
+   "xg": 1.791
+  },
+  {
+   "key": "whatShooter|pass/long:loose|AM",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.145
+  },
+  {
+   "key": "whatShooter|pass/long:loose|LW",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.069
+  },
+  {
+   "key": "whatShooter|pass/long:loose|ST",
+   "shots": 11,
+   "goals": 7,
+   "xg": 4.482
+  },
+  {
+   "key": "whatShooter|pass/long:loose|SUB",
+   "shots": 5,
+   "goals": 0,
+   "xg": 0.211
+  },
+  {
+   "key": "whatShooter|pass/long:out|LB",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.584
+  },
+  {
+   "key": "whatShooter|pass/long:out|LW",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.17
+  },
+  {
+   "key": "whatShooter|pass/long:out|LWB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.117
+  },
+  {
+   "key": "whatShooter|pass/long:out|RB",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.205
+  },
+  {
+   "key": "whatShooter|pass/short:foul|AM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.008
+  },
+  {
+   "key": "whatShooter|pass/short:foul|LB",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.184
+  },
+  {
+   "key": "whatShooter|pass/short:foul|LW",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.064
+  },
+  {
+   "key": "whatShooter|pass/short:foul|LWB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.142
+  },
+  {
+   "key": "whatShooter|pass/short:foul|RB",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.089
+  },
+  {
+   "key": "whatShooter|pass/short:foul|RM",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.005
+  },
+  {
+   "key": "whatShooter|pass/short:foul|RWB",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.131
+  },
+  {
+   "key": "whatShooter|pass/short:foul|ST",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.022
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|AM",
+   "shots": 9,
+   "goals": 3,
+   "xg": 1.389
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|CB",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.469
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|CM",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.051
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|LM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.069
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|LW",
+   "shots": 5,
+   "goals": 0,
+   "xg": 0.605
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|RM",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.199
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|RW",
+   "shots": 3,
+   "goals": 0,
+   "xg": 0.185
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|ST",
+   "shots": 48,
+   "goals": 10,
+   "xg": 8.252
+  },
+  {
+   "key": "whatShooter|pass/short:intercepted|SUB",
+   "shots": 14,
+   "goals": 2,
+   "xg": 1.218
+  },
+  {
+   "key": "whatShooter|pass/short:loose|AM",
+   "shots": 9,
+   "goals": 1,
+   "xg": 1.273
+  },
+  {
+   "key": "whatShooter|pass/short:loose|CM",
+   "shots": 6,
+   "goals": 1,
+   "xg": 0.291
+  },
+  {
+   "key": "whatShooter|pass/short:loose|LB",
+   "shots": 1,
+   "goals": 1,
+   "xg": 0.44
+  },
+  {
+   "key": "whatShooter|pass/short:loose|LW",
+   "shots": 4,
+   "goals": 0,
+   "xg": 1.4
+  },
+  {
+   "key": "whatShooter|pass/short:loose|RW",
+   "shots": 2,
+   "goals": 1,
+   "xg": 0.254
+  },
+  {
+   "key": "whatShooter|pass/short:loose|ST",
+   "shots": 37,
+   "goals": 13,
+   "xg": 7.338
+  },
+  {
+   "key": "whatShooter|pass/short:loose|SUB",
+   "shots": 7,
+   "goals": 2,
+   "xg": 1.181
+  },
+  {
+   "key": "whatShooter|pass/short:out|CB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.13
+  },
+  {
+   "key": "whatShooter|pass/short:out|CM",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.436
+  },
+  {
+   "key": "whatShooter|pass/short:out|LB",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.175
+  },
+  {
+   "key": "whatShooter|pass/short:out|LW",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.233
+  },
+  {
+   "key": "whatShooter|pass/short:out|LWB",
+   "shots": 3,
+   "goals": 1,
+   "xg": 0.569
+  },
+  {
+   "key": "whatShooter|pass/short:out|RM",
+   "shots": 2,
+   "goals": 0,
+   "xg": 0.379
+  },
+  {
+   "key": "whatShooter|pass/switch:loose|ST",
+   "shots": 1,
+   "goals": 0,
+   "xg": 0.023
+  }
+ ]
+}

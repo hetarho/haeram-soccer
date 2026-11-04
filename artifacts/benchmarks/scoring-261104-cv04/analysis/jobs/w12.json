@@ -1,0 +1,97 @@
+[
+ {
+  "name": "regain-ko10",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko10.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/regain-ko10-600-720.json"
+  ]
+ },
+ {
+  "name": "regain-ko16",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko16.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/regain-ko16-600-720.json"
+  ]
+ },
+ {
+  "name": "regain-ko16kl6kc8",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko16kl6kc8.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/regain-ko16kl6kc8-600-720.json"
+  ]
+ },
+ {
+  "name": "bands-ko10-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-ko16-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko16.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-ko16kl6kc8-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko16kl6kc8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "conc-ko16-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko16.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-ko16-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-ko16kl6kc8-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04/candidates/ko16kl6kc8.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04/conc-ko16kl6kc8-calibration.json"
+  ]
+ }
+]

@@ -1,0 +1,205 @@
+diff --git a/packages/engine/src/grid/decide.ts b/packages/engine/src/grid/decide.ts
+index 47678484..70e27d31 100644
+--- a/packages/engine/src/grid/decide.ts
++++ b/packages/engine/src/grid/decide.ts
+@@ -106,7 +106,8 @@ export const DECISION_CONFIG = {
+     pressure: 0.5,
+     margin: 0.5,
+   },
+-  keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
++  /** `safe`: T689 experiment, default off at 0 (see `keeperDistribution`). */
++  keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5, safe: 0, free: 0 },
+   /**
+    * Candidate model only (→MATCH-16, MATCH-17): teammates' intentions bend the carrier's choice. A
+    * teammate showing for him scores `show` more; an overlap combining with him scores `release` more
+@@ -244,7 +245,8 @@ export const DECISION_CONFIG = {
+      * further off; the shot share floor and the carry further out hold as revision 6/7's.
+      */
+     revision9: {
+-      clear: { alone: 5 },
++      /** `view`: T689 experiment, default off at 0 (`clearChance`'s alone clause needs that unblocked share). */
++      clear: { alone: 5, view: 0, within: 0 },
+       /**
+        * T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a
+        * receiver with an opponent within `mark` m of him scores `score` less as a pass target, so
+@@ -747,7 +749,15 @@ export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
+     const t = (dx * vx + dy * vy) / (length * length);
+     if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < corridor) ahead = true;
+   }
+-  return !ahead || (alone > 0 && !near);
++  if (!ahead) return true;
++  if (!(alone > 0 && !near)) return false;
++  // T689 experiment (default off): alone, he has a clear chance only with that share of the goal
++  // nobody in the shot's path blocks (→MATCH-35).
++  const view = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.view : 0;
++  // T689 experiment (default off): alone, only within `within` m of the goal centre.
++  const within = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.within : 0;
++  if (within > 0 && length > within) return false;
++  return view <= 0 || unblocked(shotBlockers(s, side, c)) >= view;
+ }
+ 
+ /**
+@@ -865,6 +875,10 @@ export function passOptions(
+     judge?: boolean;
+     /** A receiver closed down during the carry (revision 10, T600, `rereadPass`). */
+     closed?: number;
++    /** T689 experiment: no receiver with an opponent within this many m, nor a lane one reaches cleanly. */
++    safe?: number;
++    /** T689 experiment, with `safe`: nor a lane any opponent reaches at all. */
++    free?: boolean;
+   } = {},
+ ): PassOption[] {
+   const P = DECISION_CONFIG.pass;
+@@ -964,6 +978,7 @@ export function passOptions(
+     if (path) risk = path.weight;
+     // A contested target is only ever a forward pass's risk (T538).
+     if (judge && dir !== 'forward' && (nearest < judge.contested.mark || path?.clean)) continue;
++    if (opts.safe && (nearest < opts.safe || (opts.free ? path?.first : path?.clean))) continue;
+     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
+     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
+     // A man already past the offside line as the ball is played (candidate model, T397).
+@@ -1239,14 +1254,31 @@ export function keeperDistribution(
+       (lineOf(position) === 'FW' || ['LM', 'RM', 'LWB', 'RWB'].includes(position))
+     );
+   };
+-  const wantShort = r() < shortChance;
++  let wantShort = r() < shortChance;
++  // T689 experiment (default off): only a safe short ball, else long; only a safe long ball when one
++  // exists, else as before.
++  const safe = K.safe > 0 && s.setup.model !== undefined ? K.safe : 0;
++  const free = K.free > 0;
++  if (safe && wantShort && !passOptions(s, side, idx, tags, { filter: back, safe, free }).length)
++    wantShort = false;
+   let options = passOptions(
+     s,
+     side,
+     idx,
+     tags,
+-    wantShort ? { filter: back } : { filter: front, riskScale: K.longRisk },
++    wantShort
++      ? { filter: back, ...(safe ? { safe, free } : {}) }
++      : { filter: front, riskScale: K.longRisk },
+   );
++  if (safe && !wantShort) {
++    const safer = passOptions(s, side, idx, tags, {
++      filter: front,
++      riskScale: K.longRisk,
++      safe,
++      free,
++    });
++    if (safer.length) options = safer;
++  }
+   const kind: 'short' | 'long' = wantShort ? 'short' : 'long';
+   if (!options.length) options = passOptions(s, side, idx, tags);
+   if (!options.length) return { target: idx === 0 ? 1 : 0, kind };
+diff --git a/packages/engine/src/grid/resolve.ts b/packages/engine/src/grid/resolve.ts
+index 28578668..b4c2f4fb 100644
+--- a/packages/engine/src/grid/resolve.ts
++++ b/packages/engine/src/grid/resolve.ts
+@@ -78,6 +78,16 @@ export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
+ /** Initial values; T215 and T216 tune them. */
+ export const DUEL_CONFIG = {
+   pass: {
++    /**
++     * T689 experiment (default off at 0): nobody reaches the first `keeperClear` m of a keeper's
++     * distribution, as a keeper releases the ball only once nobody stands on him.
++     */
++    keeperClear: 0,
++    /**
++     * T689 experiment (default off at 0): an opponent within `keeperLeave` m of a keeper as he
++     * distributes is not where his ball goes (he plays it past the man on him), so he does not reach it.
++     */
++    keeperLeave: 0,
+     /** Calibration offset on every cell's real completion rate (T215). */
+     base: 0.07,
+     passer: 1 / 250,
+@@ -696,7 +706,21 @@ export function resolvePass(
+       ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
+       : skill(s, side, idx, 'passing');
+   const lane = onCandidate(s)
+-    ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
++    ? reachOnPath(
++        s,
++        side,
++        s.players[side][idx]!.pos,
++        at ?? receiver.pos,
++        kickAt,
++        keeper && P.keeperLeave > 0
++          ? (gp) => {
++              const k = s.players[side][idx]!.pos;
++              return s.math.hypot(gp.pos[0] - k[0], gp.pos[1] - k[1]) < P.keeperLeave;
++            }
++          : undefined,
++        undefined,
++        keeper && P.keeperClear > 0 ? P.keeperClear : undefined,
++      )
+     : undefined;
+   const first = lane?.first;
+   // The defender the pass plays against (→MATCH-11): on the candidate the one who reaches its
+diff --git a/packages/engine/src/grid/shape.ts b/packages/engine/src/grid/shape.ts
+index 30c5ddf0..a2ddf609 100644
+--- a/packages/engine/src/grid/shape.ts
++++ b/packages/engine/src/grid/shape.ts
+@@ -151,6 +151,24 @@ export const SHAPE_CONFIG = {
+      * at 0.
+      */
+     secondStriker: { drop: 0, roles: ['targetMan'] as readonly RoleId[] },
++    /**
++     * T689 experiment (default off at 0): a presser of the keeper on the ball stands off at least
++     * `keeperOff` m goal-side of him instead of closing him, as opponents leave a keeper holding it.
++     */
++    keeperOff: 0,
++    /**
++     * T689 experiment (default off, →MATCH-33's timed arrival): in possession a forward with no run
++     * waits no deeper than `out` m from the goal line (the attack frame) instead of on the offside
++     * line, so he reaches the goal area only on a run. Off at 0.
++     */
++    hold: { out: 0 },
++    /**
++     * T689 experiment (default off, →MATCH-17/33 support arriving): in possession with the ball
++     * from `from` m up (attack frame), an attacking midfielder, a winger or a box-run role waits at
++     * least as far up as `out` m from the goal line and `narrow` of the way in toward the centre,
++     * so the carrier finds several men in scoring positions, not the striker alone. Off at 0.
++     */
++    arrive: { from: 0, out: 14, narrow: 0.3 },
+     /**
+      * The flank beside a back three (T399, →MATCH-8, MATCH-17): out of possession, with the ball
+      * at least `wide` m off the centre line and no further up the pitch than `upTo` m (the
+@@ -671,6 +689,25 @@ export function shapePlace(
+       FORMATION_FACTS[tactic].twoForwards
+     )
+       x -= SS.drop;
++    const H = SHAPE_CONFIG.candidate.hold;
++    if (H.out > 0 && s.setup.model !== undefined && line === 'FW')
++      x = Math.min(x, PITCH.length - H.out);
++    const A = SHAPE_CONFIG.candidate.arrive;
++    const pos = jobSlot.position;
++    if (
++      A.from > 0 &&
++      s.setup.model !== undefined &&
++      bx >= A.from &&
++      pos !== 'ST' &&
++      (pos === 'AM' ||
++        pos === 'LW' ||
++        pos === 'RW' ||
++        BOX_ROLES.includes(jobSlot.role) ||
++        SHAPE_CONFIG.candidate.boxRun.extra.includes(jobSlot.role))
++    ) {
++      x = Math.max(x, PITCH.length - A.out);
++      y += (CENTRE - y) * A.narrow;
++    }
+     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
+     return toEngine(side, [x, y]);
+   }
+@@ -791,6 +828,11 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number]
+   const foe = i.opponent === undefined ? undefined : s.players[other(side)][i.opponent];
+   const mate = i.teammate === undefined ? undefined : s.players[side][i.teammate];
+   if (foe && onPitch(foe) && i.kind === 'press') {
++    const off = s.setup.model !== undefined ? SHAPE_CONFIG.candidate.keeperOff : 0;
++    if (off > 0 && lineOfSlot(s, foe) === 'GK') {
++      const at = attackFrame(side, foe.pos);
++      return toEngine(side, [Math.max(0, at[0] - off), at[1]]);
++    }
+     const urgent = i.priority === 'danger';
+     const option = urgent || i.shadow === undefined ? undefined : s.players[other(side)][i.shadow];
+     return pressPoint(
