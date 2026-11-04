@@ -78,6 +78,16 @@ export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
 /** Initial values; T215 and T216 tune them. */
 export const DUEL_CONFIG = {
   pass: {
+    /**
+     * T689 experiment (default off at 0): nobody reaches the first `keeperClear` m of a keeper's
+     * distribution, as a keeper releases the ball only once nobody stands on him.
+     */
+    keeperClear: 0,
+    /**
+     * T689 experiment (default off at 0): an opponent within `keeperLeave` m of a keeper as he
+     * distributes is not where his ball goes (he plays it past the man on him), so he does not reach it.
+     */
+    keeperLeave: 0,
     /** Calibration offset on every cell's real completion rate (T215). */
     base: 0.07,
     passer: 1 / 250,
@@ -696,7 +706,21 @@ export function resolvePass(
       ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
       : skill(s, side, idx, 'passing');
   const lane = onCandidate(s)
-    ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
+    ? reachOnPath(
+        s,
+        side,
+        s.players[side][idx]!.pos,
+        at ?? receiver.pos,
+        kickAt,
+        keeper && P.keeperLeave > 0
+          ? (gp) => {
+              const k = s.players[side][idx]!.pos;
+              return s.math.hypot(gp.pos[0] - k[0], gp.pos[1] - k[1]) < P.keeperLeave;
+            }
+          : undefined,
+        undefined,
+        keeper && P.keeperClear > 0 ? P.keeperClear : undefined,
+      )
     : undefined;
   const first = lane?.first;
   // The defender the pass plays against (→MATCH-11): on the candidate the one who reaches its

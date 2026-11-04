@@ -215,6 +215,7 @@ export function playGrid(setup: GridSetup): GridResult {
    */
   function setOwner(side: 0 | 1, idx: number, at?: [number, number], passer?: number) {
     const gp = s.players[side][idx]!;
+    s.hands = undefined;
     if (at && !candidate) gp.pos = [at[0], at[1]];
     const where = at ?? gp.pos;
     if (candidate) {
@@ -289,8 +290,11 @@ export function playGrid(setup: GridSetup): GridResult {
     }
     if (o.result === 'save') tally.save(foe, o.by ?? 0);
     const at = endOfPlay(side, o);
-    if (o.then === 'hold') setOwner(foe, o.by ?? 0, s.players[foe][o.by ?? 0]!.pos);
-    else if (o.then === 'corner') {
+    if (o.then === 'hold') {
+      setOwner(foe, o.by ?? 0, s.players[foe][o.by ?? 0]!.pos);
+      // T689 experiment (default off): he holds it in his hands.
+      if (candidate && DECISION_CONFIG.keeper.hold > 0) s.hands = foe;
+    } else if (o.then === 'corner') {
       pending = classifyOut({ at, lastTouch: foe, over: 'byline', blockedOrSaved: true });
       rest();
     } else if (o.then === 'goalKick') {
@@ -461,8 +465,11 @@ export function playGrid(setup: GridSetup): GridResult {
         return;
       }
       case 'held':
-        if (o.by !== undefined) setOwner(foe, o.by, s.players[foe][o.by]!.pos);
-        else holdBias = true;
+        if (o.by !== undefined) {
+          setOwner(foe, o.by, s.players[foe][o.by]!.pos);
+          // T689 experiment (default off): the keeper's claim is in his hands.
+          if (candidate && DECISION_CONFIG.keeper.hold > 0) s.hands = foe;
+        } else holdBias = true;
         return;
       case 'shot':
         applyShot(side, o);
@@ -944,6 +951,7 @@ export function playGrid(setup: GridSetup): GridResult {
         // a second ball's first-time shot.
         finishing = undefined;
         rebound = undefined;
+        s.hands = undefined;
         const rs = pending;
         pending = undefined;
         // A dead ball interrupts every intention below leaving the pitch (→MATCH-17).
@@ -1050,6 +1058,27 @@ export function playGrid(setup: GridSetup): GridResult {
         justBeat = undefined;
         // His next action is decided now, knowing he has just beaten his man (T542).
         s.beat = prevBeat;
+        // T689 experiment (default off, `DECISION_CONFIG.keeper.hold`): a keeper with the ball in his
+        // hands holds it that many seconds while everyone moves on (the opponents leaving him), then
+        // chooses his ball by where they stand and plays it at once.
+        let held: Carry | undefined;
+        if (candidate && s.hands === owner[0] && DECISION_CONFIG.keeper.hold > 0) {
+          const gp = s.players[owner[0]][owner[1]]!;
+          const seconds = DECISION_CONFIG.keeper.hold;
+          held = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds };
+          advance(s, seconds, [{ gp, to: [gp.pos[0], gp.pos[1]] }]);
+          s.t += seconds;
+          s.elapsed += seconds;
+        } else if (
+          candidate &&
+          DECISION_CONFIG.keeper.quick > 0 &&
+          slotOf(s, s.players[owner[0]][owner[1]]!).position === 'GK'
+        ) {
+          // T689 experiment (default off): a keeper on the ball at his feet plays it as he chooses
+          // it, never standing on it while the man closing him arrives.
+          const gp = s.players[owner[0]][owner[1]]!;
+          held = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds: 0 };
+        }
         from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
         const tags = computeTags(s, owner[0], owner[1]);
         tally.material?.touch(owner[0], owner[1], from, tags.phase);
@@ -1093,7 +1122,8 @@ export function playGrid(setup: GridSetup): GridResult {
           d.action === 'pass' &&
           d.target !== undefined &&
           !receiverTight(s, owner[0], d.target);
-        const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
+        const carry =
+          held ?? (candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined);
         if (carry && free)
           d = rereadPass(s, owner[0], owner[1], d, free, computeTags(s, owner[0], owner[1]), r);
         const carried = carry?.seconds ?? 0;
@@ -1105,6 +1135,7 @@ export function playGrid(setup: GridSetup): GridResult {
         // Where everyone heads before the kick: off the ball they keep on until they read it.
         const before = candidate ? heading(s) : undefined;
         const played = play(owner[0], owner[1], d, jitter, carry, finish);
+        if (held) s.hands = undefined;
         // What is left of the action's time after the carry.
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.

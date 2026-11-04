@@ -17,7 +17,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| cv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-04T14:25Z | 2026-11-04T14:25Z | - |
+| cv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-04T14:25Z | 2026-11-04T14:30Z | - |
 
 ## inbox
 - 261104 decided T689 ARCH-21 ARCH-30: the owner explicitly resumes automatic work and requests main merged before 2026-11-05 09:00 Asia/Seoul (00:00Z), earlier if ready → supersede cv04's self-imposed single-window restriction and approval parking; reversible structural implementation and the required SSOT/task refresh are delegated, with the existing realism targets unchanged. Fix the final-gate regressions first; final-gate failures get a fresh repair session and re-verification rather than silently ending automation. Reserve time for the full gate and merge only verified changes. No additional balance tasks or changes from the primary checkout. cv04
