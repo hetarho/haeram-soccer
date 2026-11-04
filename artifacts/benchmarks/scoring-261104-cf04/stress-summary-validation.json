@@ -1,0 +1,236 @@
+{
+ "released": {
+  "normal": {
+   "teamSeasons": 12,
+   "matches": 456,
+   "seeds": [
+    "cf04-stress-val-1",
+    "cf04-stress-val-2",
+    "cf04-stress-val-3"
+   ],
+   "goalsPerMatch": 3.974,
+   "ownGoalsPerMatch": 1.965,
+   "ownShotsPerMatch": 21.8,
+   "topShare": [
+    0.4121,
+    [
+     0.3911,
+     0.433
+    ]
+   ],
+   "topGoalsPer38": [
+    31.9167,
+    [
+     31.7533,
+     32.08
+    ]
+   ],
+   "largestTopGoalsPer38": 62.0,
+   "hatTricksPerOwnMatch": 0.0943,
+   "goalsByLine": {
+    "FW": 0.6529,
+    "MF": 0.0949,
+    "DF": 0.106
+   },
+   "invalid": 0
+  },
+  "stress": {
+   "teamSeasons": 12,
+   "matches": 456,
+   "seeds": [
+    "cf04-stress-val-1",
+    "cf04-stress-val-2",
+    "cf04-stress-val-3"
+   ],
+   "goalsPerMatch": 4.509,
+   "ownGoalsPerMatch": 2.151,
+   "ownShotsPerMatch": 20.24,
+   "topShare": [
+    0.6185,
+    [
+     0.6109,
+     0.6261
+    ]
+   ],
+   "topGoalsPer38": [
+    51.75,
+    [
+     47.5634,
+     55.9366
+    ]
+   ],
+   "largestTopGoalsPer38": 100.0,
+   "hatTricksPerOwnMatch": 0.1842,
+   "goalsByLine": {
+    "FW": 0.788,
+    "MF": 0.0734,
+    "DF": 0.0122
+   },
+   "invalid": 0,
+   "starGoalsPer38": [
+    51.75,
+    [
+     47.5634,
+     55.9366
+    ]
+   ],
+   "starShotsPerMatch": 7.88
+  }
+ },
+ "earlySupport": {
+  "normal": {
+   "teamSeasons": 12,
+   "matches": 456,
+   "seeds": [
+    "cf04-stress-val-1",
+    "cf04-stress-val-2",
+    "cf04-stress-val-3"
+   ],
+   "goalsPerMatch": 2.717,
+   "ownGoalsPerMatch": 1.471,
+   "ownShotsPerMatch": 16.77,
+   "topShare": [
+    0.4347,
+    [
+     0.4202,
+     0.4493
+    ]
+   ],
+   "topGoalsPer38": [
+    24.75,
+    [
+     22.6141,
+     26.8859
+    ]
+   ],
+   "largestTopGoalsPer38": 48.0,
+   "hatTricksPerOwnMatch": 0.057,
+   "goalsByLine": {
+    "FW": 0.6423,
+    "MF": 0.0954,
+    "DF": 0.1133
+   },
+   "invalid": 0
+  },
+  "stress": {
+   "teamSeasons": 12,
+   "matches": 456,
+   "seeds": [
+    "cf04-stress-val-1",
+    "cf04-stress-val-2",
+    "cf04-stress-val-3"
+   ],
+   "goalsPerMatch": 3.068,
+   "ownGoalsPerMatch": 1.469,
+   "ownShotsPerMatch": 15.37,
+   "topShare": [
+    0.5918,
+    [
+     0.5661,
+     0.6174
+    ]
+   ],
+   "topGoalsPer38": [
+    34.0833,
+    [
+     32.1997,
+     35.967
+    ]
+   ],
+   "largestTopGoalsPer38": 59.0,
+   "hatTricksPerOwnMatch": 0.0855,
+   "goalsByLine": {
+    "FW": 0.7582,
+    "MF": 0.0791,
+    "DF": 0.0164
+   },
+   "invalid": 0,
+   "starGoalsPer38": [
+    34.0833,
+    [
+     32.1997,
+     35.967
+    ]
+   ],
+   "starShotsPerMatch": 5.57
+  }
+ },
+ "rotEarly": {
+  "normal": {
+   "teamSeasons": 12,
+   "matches": 456,
+   "seeds": [
+    "cf04-stress-val-1",
+    "cf04-stress-val-2",
+    "cf04-stress-val-3"
+   ],
+   "goalsPerMatch": 2.686,
+   "ownGoalsPerMatch": 1.401,
+   "ownShotsPerMatch": 16.46,
+   "topShare": [
+    0.4139,
+    [
+     0.3697,
+     0.4582
+    ]
+   ],
+   "topGoalsPer38": [
+    22.5833,
+    [
+     18.7424,
+     26.4243
+    ]
+   ],
+   "largestTopGoalsPer38": 42.0,
+   "hatTricksPerOwnMatch": 0.0307,
+   "goalsByLine": {
+    "FW": 0.6338,
+    "MF": 0.1408,
+    "DF": 0.1049
+   },
+   "invalid": 0
+  },
+  "stress": {
+   "teamSeasons": 12,
+   "matches": 456,
+   "seeds": [
+    "cf04-stress-val-1",
+    "cf04-stress-val-2",
+    "cf04-stress-val-3"
+   ],
+   "goalsPerMatch": 3.02,
+   "ownGoalsPerMatch": 1.432,
+   "ownShotsPerMatch": 15.49,
+   "topShare": [
+    0.5866,
+    [
+     0.5711,
+     0.6022
+    ]
+   ],
+   "topGoalsPer38": [
+    33.0,
+    [
+     31.0197,
+     34.9803
+    ]
+   ],
+   "largestTopGoalsPer38": 64.0,
+   "hatTricksPerOwnMatch": 0.0746,
+   "goalsByLine": {
+    "FW": 0.7534,
+    "MF": 0.1149,
+    "DF": 0.0168
+   },
+   "invalid": 0,
+   "starGoalsPer38": [
+    33.0,
+    [
+     31.0197,
+     34.9803
+    ]
+   ],
+   "starShotsPerMatch": 5.45
+  }
+ }
+}

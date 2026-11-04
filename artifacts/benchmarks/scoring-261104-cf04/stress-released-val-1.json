@@ -1,0 +1,233 @@
+{
+ "kind": "t689-cf04-striker-stress",
+ "model": "continuous-aggregate-10",
+ "patch": null,
+ "design": "careerWorld ENG takeover worlds, year 2024; per seed and own tactic one top-flight club vs another, 38 fixtures, opponent tactic rotating, venue alternating every 4; normal arm strength 80, stress arm 75 with bl03 peak-striker profile at ST; fitness reset each match",
+ "seeds": [
+  "cf04-stress-val-1"
+ ],
+ "games": 38,
+ "msPerMatch": 589,
+ "normal": {
+  "teamSeasons": 4,
+  "matches": 152,
+  "goalsPerMatch": 3.921,
+  "ownGoalsPerMatch": 2.053,
+  "ownShotsPerMatch": 22.04,
+  "topShare": 0.4231,
+  "topGoalsPer38": 32,
+  "largestTopGoalsPer38": 36,
+  "hatTricksPerOwnMatch": 0.1053,
+  "goalsByLine": {
+   "FW": 0.6571,
+   "MF": 0.1186,
+   "DF": 0.0962
+  },
+  "invalid": 0
+ },
+ "stress": {
+  "teamSeasons": 4,
+  "matches": 152,
+  "goalsPerMatch": 4.645,
+  "ownGoalsPerMatch": 2.105,
+  "ownShotsPerMatch": 20.5,
+  "topShare": 0.6108,
+  "topGoalsPer38": 49.25,
+  "largestTopGoalsPer38": 76,
+  "hatTricksPerOwnMatch": 0.1645,
+  "goalsByLine": {
+   "FW": 0.8094,
+   "MF": 0.0688,
+   "DF": 0.0094
+  },
+  "starGoalsPer38": 49.25,
+  "starShotsPerMatch": 8.16,
+  "invalid": 0
+ },
+ "rows": [
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "possession",
+   "arm": "normal",
+   "games": 38,
+   "goals": 81,
+   "conceded": 67,
+   "shots": 770,
+   "opponentShots": 764,
+   "hatTricks": 4,
+   "maximum": 6,
+   "topGoals": 36,
+   "topShare": 0.4444444444444444,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 53,
+    "MF": 7,
+    "DF": 12,
+    "GK": 0
+   },
+   "invalid": 0
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "possession",
+   "arm": "stress",
+   "games": 38,
+   "goals": 71,
+   "conceded": 78,
+   "shots": 655,
+   "opponentShots": 922,
+   "hatTricks": 7,
+   "maximum": 4,
+   "topGoals": 49,
+   "topShare": 0.6901408450704225,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 60,
+    "MF": 1,
+    "DF": 2,
+    "GK": 0
+   },
+   "invalid": 0,
+   "starGoals": 49,
+   "starShots": 269
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "press",
+   "arm": "normal",
+   "games": 38,
+   "goals": 101,
+   "conceded": 92,
+   "shots": 1032,
+   "opponentShots": 1146,
+   "hatTricks": 2,
+   "maximum": 5,
+   "topGoals": 32,
+   "topShare": 0.31683168316831684,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 47,
+    "MF": 22,
+    "DF": 18,
+    "GK": 0
+   },
+   "invalid": 0
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "press",
+   "arm": "stress",
+   "games": 38,
+   "goals": 123,
+   "conceded": 123,
+   "shots": 1119,
+   "opponentShots": 1253,
+   "hatTricks": 12,
+   "maximum": 5,
+   "topGoals": 76,
+   "topShare": 0.6178861788617886,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 89,
+    "MF": 19,
+    "DF": 0,
+    "GK": 0
+   },
+   "invalid": 0,
+   "starGoals": 76,
+   "starShots": 468
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "counter",
+   "arm": "normal",
+   "games": 38,
+   "goals": 60,
+   "conceded": 60,
+   "shots": 807,
+   "opponentShots": 544,
+   "hatTricks": 3,
+   "maximum": 3,
+   "topGoals": 31,
+   "topShare": 0.5166666666666667,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 49,
+    "MF": 2,
+    "DF": 0,
+    "GK": 0
+   },
+   "invalid": 0
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "counter",
+   "arm": "stress",
+   "games": 38,
+   "goals": 69,
+   "conceded": 80,
+   "shots": 735,
+   "opponentShots": 638,
+   "hatTricks": 4,
+   "maximum": 3,
+   "topGoals": 42,
+   "topShare": 0.6086956521739131,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 60,
+    "MF": 0,
+    "DF": 0,
+    "GK": 0
+   },
+   "invalid": 0,
+   "starGoals": 42,
+   "starShots": 279
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "balanced",
+   "arm": "normal",
+   "games": 38,
+   "goals": 70,
+   "conceded": 65,
+   "shots": 741,
+   "opponentShots": 622,
+   "hatTricks": 7,
+   "maximum": 4,
+   "topGoals": 29,
+   "topShare": 0.4142857142857143,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 56,
+    "MF": 6,
+    "DF": 0,
+    "GK": 0
+   },
+   "invalid": 0
+  },
+  {
+   "seed": "cf04-stress-val-1",
+   "tactic": "balanced",
+   "arm": "stress",
+   "games": 38,
+   "goals": 57,
+   "conceded": 105,
+   "shots": 607,
+   "opponentShots": 871,
+   "hatTricks": 2,
+   "maximum": 4,
+   "topGoals": 30,
+   "topShare": 0.5263157894736842,
+   "topSlot": "ST",
+   "goalsByLine": {
+    "FW": 50,
+    "MF": 2,
+    "DF": 1,
+    "GK": 0
+   },
+   "invalid": 0,
+   "starGoals": 30,
+   "starShots": 224
+  }
+ ]
+}

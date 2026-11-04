@@ -1,0 +1,3155 @@
+{
+"matches": 240,
+"cells": {
+"pos|RW": {
+"shots": 625,
+"goals": 51,
+"xg": 49.182
+},
+"origin|restart-freeKick": {
+"shots": 402,
+"goals": 33,
+"xg": 24.762999999999998
+},
+"posOrigin|RW|restart-freeKick": {
+"shots": 39,
+"goals": 2,
+"xg": 1.6709999999999998
+},
+"posPlace|RW|goalArea": {
+"shots": 94,
+"goals": 28,
+"xg": 25.258
+},
+"place|goalArea": {
+"shots": 1776,
+"goals": 500,
+"xg": 454.61400000000003
+},
+"originPlace|restart-freeKick|goalArea": {
+"shots": 102,
+"goals": 1,
+"xg": 0.978
+},
+"posOriginPlace|RW|restart-freeKick|goalArea": {
+"shots": 17,
+"goals": 0,
+"xg": 0.211
+},
+"pos|ST": {
+"shots": 4130,
+"goals": 399,
+"xg": 356.767
+},
+"origin|pass-pass": {
+"shots": 1218,
+"goals": 52,
+"xg": 55.834
+},
+"posOrigin|ST|pass-pass": {
+"shots": 513,
+"goals": 22,
+"xg": 24.662
+},
+"posPlace|ST|outside": {
+"shots": 844,
+"goals": 26,
+"xg": 18.374000000000002
+},
+"place|outside": {
+"shots": 1645,
+"goals": 42,
+"xg": 37.737
+},
+"originPlace|pass-pass|outside": {
+"shots": 593,
+"goals": 6,
+"xg": 7.988
+},
+"posOriginPlace|ST|pass-pass|outside": {
+"shots": 292,
+"goals": 3,
+"xg": 3.2009999999999996
+},
+"origin|self-carry": {
+"shots": 3807,
+"goals": 217,
+"xg": 193.856
+},
+"posOrigin|ST|self-carry": {
+"shots": 1662,
+"goals": 116,
+"xg": 98.202
+},
+"originPlace|self-carry|outside": {
+"shots": 464,
+"goals": 20,
+"xg": 15.87
+},
+"posOriginPlace|ST|self-carry|outside": {
+"shots": 221,
+"goals": 13,
+"xg": 7.336
+},
+"posPlace|ST|box": {
+"shots": 2347,
+"goals": 84,
+"xg": 88.49199999999999
+},
+"place|box": {
+"shots": 6244,
+"goals": 325,
+"xg": 310.221
+},
+"originPlace|self-carry|box": {
+"shots": 2877,
+"goals": 65,
+"xg": 60.658
+},
+"posOriginPlace|ST|self-carry|box": {
+"shots": 1195,
+"goals": 27,
+"xg": 28.525999999999996
+},
+"origin|self-takeOn": {
+"shots": 851,
+"goals": 59,
+"xg": 55.33800000000001
+},
+"posOrigin|ST|self-takeOn": {
+"shots": 455,
+"goals": 40,
+"xg": 33.601
+},
+"originPlace|self-takeOn|box": {
+"shots": 621,
+"goals": 26,
+"xg": 24.926
+},
+"posOriginPlace|ST|self-takeOn|box": {
+"shots": 306,
+"goals": 16,
+"xg": 13.264
+},
+"pos|LW": {
+"shots": 924,
+"goals": 81,
+"xg": 67.36500000000001
+},
+"origin|pass-cross": {
+"shots": 363,
+"goals": 30,
+"xg": 30.812
+},
+"posOrigin|LW|pass-cross": {
+"shots": 63,
+"goals": 7,
+"xg": 4.65
+},
+"posPlace|LW|goalArea": {
+"shots": 176,
+"goals": 43,
+"xg": 37.243
+},
+"originPlace|pass-cross|goalArea": {
+"shots": 145,
+"goals": 23,
+"xg": 25.647000000000002
+},
+"posOriginPlace|LW|pass-cross|goalArea": {
+"shots": 22,
+"goals": 4,
+"xg": 3.7009999999999996
+},
+"posPlace|ST|goalArea": {
+"shots": 939,
+"goals": 289,
+"xg": 249.89999999999998
+},
+"originPlace|self-takeOn|goalArea": {
+"shots": 126,
+"goals": 30,
+"xg": 27.424
+},
+"posOriginPlace|ST|self-takeOn|goalArea": {
+"shots": 79,
+"goals": 21,
+"xg": 18.462
+},
+"pos|LB": {
+"shots": 357,
+"goals": 56,
+"xg": 44.614999999999995
+},
+"origin|restart-corner": {
+"shots": 595,
+"goals": 120,
+"xg": 108.12899999999999
+},
+"posOrigin|LB|restart-corner": {
+"shots": 157,
+"goals": 32,
+"xg": 29.708000000000002
+},
+"posPlace|LB|box": {
+"shots": 323,
+"goals": 50,
+"xg": 39.428
+},
+"originPlace|restart-corner|box": {
+"shots": 595,
+"goals": 120,
+"xg": 108.12899999999999
+},
+"posOriginPlace|LB|restart-corner|box": {
+"shots": 157,
+"goals": 32,
+"xg": 29.708000000000002
+},
+"origin|setPiece-2nd": {
+"shots": 299,
+"goals": 25,
+"xg": 26.176000000000002
+},
+"posOrigin|ST|setPiece-2nd": {
+"shots": 168,
+"goals": 14,
+"xg": 16.549
+},
+"originPlace|setPiece-2nd|goalArea": {
+"shots": 82,
+"goals": 18,
+"xg": 16.902
+},
+"posOriginPlace|ST|setPiece-2nd|goalArea": {
+"shots": 46,
+"goals": 9,
+"xg": 9.809999999999999
+},
+"origin|through": {
+"shots": 1216,
+"goals": 120,
+"xg": 103.841
+},
+"posOrigin|LW|through": {
+"shots": 105,
+"goals": 10,
+"xg": 10.402999999999999
+},
+"posPlace|LW|box": {
+"shots": 616,
+"goals": 36,
+"xg": 27.234
+},
+"originPlace|through|box": {
+"shots": 600,
+"goals": 20,
+"xg": 16.586
+},
+"posOriginPlace|LW|through|box": {
+"shots": 52,
+"goals": 2,
+"xg": 2.1079999999999997
+},
+"originPlace|self-takeOn|outside": {
+"shots": 104,
+"goals": 3,
+"xg": 2.9880000000000004
+},
+"posOriginPlace|ST|self-takeOn|outside": {
+"shots": 70,
+"goals": 3,
+"xg": 1.875
+},
+"pos|CM": {
+"shots": 674,
+"goals": 49,
+"xg": 48.437
+},
+"posOrigin|CM|self-carry": {
+"shots": 325,
+"goals": 14,
+"xg": 10.887
+},
+"posPlace|CM|box": {
+"shots": 481,
+"goals": 13,
+"xg": 16.087
+},
+"posOriginPlace|CM|self-carry|box": {
+"shots": 257,
+"goals": 6,
+"xg": 3.511
+},
+"posOrigin|ST|pass-cross": {
+"shots": 170,
+"goals": 15,
+"xg": 14.794999999999998
+},
+"posOriginPlace|ST|pass-cross|goalArea": {
+"shots": 76,
+"goals": 13,
+"xg": 12.157
+},
+"posOrigin|RW|setPiece-2nd": {
+"shots": 10,
+"goals": 0,
+"xg": 0.091
+},
+"posPlace|RW|box": {
+"shots": 446,
+"goals": 22,
+"xg": 22.303
+},
+"originPlace|setPiece-2nd|box": {
+"shots": 145,
+"goals": 7,
+"xg": 8.065
+},
+"posOriginPlace|RW|setPiece-2nd|box": {
+"shots": 6,
+"goals": 0,
+"xg": 0.043
+},
+"origin|opp-pass:loose": {
+"shots": 130,
+"goals": 24,
+"xg": 23.621000000000002
+},
+"posOrigin|ST|opp-pass:loose": {
+"shots": 71,
+"goals": 15,
+"xg": 13.639000000000001
+},
+"originPlace|opp-pass:loose|goalArea": {
+"shots": 47,
+"goals": 20,
+"xg": 19.341
+},
+"posOriginPlace|ST|opp-pass:loose|goalArea": {
+"shots": 27,
+"goals": 14,
+"xg": 11.756999999999998
+},
+"origin|rebound": {
+"shots": 139,
+"goals": 16,
+"xg": 12.282
+},
+"posOrigin|ST|rebound": {
+"shots": 73,
+"goals": 7,
+"xg": 5.978
+},
+"originPlace|rebound|goalArea": {
+"shots": 49,
+"goals": 9,
+"xg": 7.668
+},
+"posOriginPlace|ST|rebound|goalArea": {
+"shots": 27,
+"goals": 4,
+"xg": 4.08
+},
+"posOrigin|LW|pass-pass": {
+"shots": 161,
+"goals": 8,
+"xg": 7.276999999999999
+},
+"originPlace|pass-pass|goalArea": {
+"shots": 106,
+"goals": 25,
+"xg": 29.174999999999997
+},
+"posOriginPlace|LW|pass-pass|goalArea": {
+"shots": 13,
+"goals": 3,
+"xg": 3.0620000000000003
+},
+"origin|opp-pass:intercepted": {
+"shots": 401,
+"goals": 79,
+"xg": 78.595
+},
+"posOrigin|ST|opp-pass:intercepted": {
+"shots": 245,
+"goals": 54,
+"xg": 50.097
+},
+"originPlace|opp-pass:intercepted|goalArea": {
+"shots": 224,
+"goals": 65,
+"xg": 64.054
+},
+"posOriginPlace|ST|opp-pass:intercepted|goalArea": {
+"shots": 134,
+"goals": 44,
+"xg": 40.501999999999995
+},
+"posOrigin|RW|pass-pass": {
+"shots": 105,
+"goals": 5,
+"xg": 4.826
+},
+"posPlace|RW|outside": {
+"shots": 85,
+"goals": 1,
+"xg": 1.621
+},
+"posOriginPlace|RW|pass-pass|outside": {
+"shots": 44,
+"goals": 0,
+"xg": 0.622
+},
+"posOrigin|LW|self-carry": {
+"shots": 343,
+"goals": 21,
+"xg": 16.837
+},
+"posOriginPlace|LW|self-carry|box": {
+"shots": 273,
+"goals": 5,
+"xg": 4.32
+},
+"posOrigin|ST|through": {
+"shots": 588,
+"goals": 75,
+"xg": 56.528000000000006
+},
+"originPlace|through|goalArea": {
+"shots": 337,
+"goals": 92,
+"xg": 81.434
+},
+"posOriginPlace|ST|through|goalArea": {
+"shots": 184,
+"goals": 60,
+"xg": 46.777
+},
+"originPlace|opp-pass:loose|outside": {
+"shots": 19,
+"goals": 1,
+"xg": 0.63
+},
+"posOriginPlace|ST|opp-pass:loose|outside": {
+"shots": 15,
+"goals": 0,
+"xg": 0.556
+},
+"pos|AM": {
+"shots": 490,
+"goals": 29,
+"xg": 28.602999999999998
+},
+"posOrigin|AM|through": {
+"shots": 105,
+"goals": 8,
+"xg": 5.65
+},
+"posPlace|AM|box": {
+"shots": 322,
+"goals": 13,
+"xg": 9.978
+},
+"posOriginPlace|AM|through|box": {
+"shots": 65,
+"goals": 3,
+"xg": 1.243
+},
+"posOrigin|AM|opp-pass:intercepted": {
+"shots": 17,
+"goals": 3,
+"xg": 3.1790000000000003
+},
+"originPlace|opp-pass:intercepted|box": {
+"shots": 140,
+"goals": 13,
+"xg": 12.854000000000001
+},
+"posOriginPlace|AM|opp-pass:intercepted|box": {
+"shots": 5,
+"goals": 1,
+"xg": 0.354
+},
+"originPlace|self-carry|goalArea": {
+"shots": 466,
+"goals": 132,
+"xg": 117.328
+},
+"posOriginPlace|ST|self-carry|goalArea": {
+"shots": 246,
+"goals": 76,
+"xg": 62.34
+},
+"posOriginPlace|ST|pass-pass|goalArea": {
+"shots": 63,
+"goals": 13,
+"xg": 16.718
+},
+"posOriginPlace|ST|setPiece-2nd|box": {
+"shots": 86,
+"goals": 5,
+"xg": 6.087
+},
+"pos|LM": {
+"shots": 82,
+"goals": 3,
+"xg": 6.006
+},
+"posOrigin|LM|self-carry": {
+"shots": 37,
+"goals": 0,
+"xg": 1.059
+},
+"posPlace|LM|box": {
+"shots": 71,
+"goals": 3,
+"xg": 5.641
+},
+"posOriginPlace|LM|self-carry|box": {
+"shots": 31,
+"goals": 0,
+"xg": 0.766
+},
+"pos|RM": {
+"shots": 94,
+"goals": 5,
+"xg": 5.558999999999999
+},
+"posOrigin|RM|restart-freeKick": {
+"shots": 20,
+"goals": 0,
+"xg": 0.804
+},
+"posPlace|RM|box": {
+"shots": 67,
+"goals": 5,
+"xg": 4.6000000000000005
+},
+"originPlace|restart-freeKick|box": {
+"shots": 280,
+"goals": 32,
+"xg": 23.665
+},
+"posOriginPlace|RM|restart-freeKick|box": {
+"shots": 8,
+"goals": 0,
+"xg": 0.7509999999999999
+},
+"pos|SUB": {
+"shots": 1741,
+"goals": 133,
+"xg": 134.678
+},
+"posOrigin|SUB|self-takeOn": {
+"shots": 155,
+"goals": 7,
+"xg": 9.783
+},
+"posPlace|SUB|box": {
+"shots": 1084,
+"goals": 43,
+"xg": 40.956
+},
+"posOriginPlace|SUB|self-takeOn|box": {
+"shots": 120,
+"goals": 5,
+"xg": 5.389
+},
+"posOrigin|SUB|self-carry": {
+"shots": 774,
+"goals": 39,
+"xg": 41.885000000000005
+},
+"posOriginPlace|SUB|self-carry|box": {
+"shots": 573,
+"goals": 12,
+"xg": 13.710999999999999
+},
+"posOrigin|SUB|opp-pass:intercepted": {
+"shots": 81,
+"goals": 10,
+"xg": 14.139
+},
+"posPlace|SUB|goalArea": {
+"shots": 332,
+"goals": 83,
+"xg": 85.648
+},
+"posOriginPlace|SUB|opp-pass:intercepted|goalArea": {
+"shots": 40,
+"goals": 8,
+"xg": 10.683
+},
+"posPlace|SUB|outside": {
+"shots": 325,
+"goals": 7,
+"xg": 8.073
+},
+"posOriginPlace|SUB|self-takeOn|outside": {
+"shots": 18,
+"goals": 0,
+"xg": 0.454
+},
+"posOrigin|SUB|rebound": {
+"shots": 37,
+"goals": 3,
+"xg": 3.422
+},
+"originPlace|rebound|box": {
+"shots": 74,
+"goals": 7,
+"xg": 4.384
+},
+"posOriginPlace|SUB|rebound|box": {
+"shots": 17,
+"goals": 2,
+"xg": 1.039
+},
+"posOrigin|LM|restart-corner": {
+"shots": 22,
+"goals": 2,
+"xg": 3.347
+},
+"posOriginPlace|LM|restart-corner|box": {
+"shots": 22,
+"goals": 2,
+"xg": 3.347
+},
+"posOrigin|SUB|through": {
+"shots": 253,
+"goals": 20,
+"xg": 21.799
+},
+"posOriginPlace|SUB|through|goalArea": {
+"shots": 69,
+"goals": 16,
+"xg": 16.724
+},
+"posOrigin|CM|self-takeOn": {
+"shots": 18,
+"goals": 0,
+"xg": 0.721
+},
+"posOriginPlace|CM|self-takeOn|box": {
+"shots": 16,
+"goals": 0,
+"xg": 0.721
+},
+"posOrigin|RM|self-carry": {
+"shots": 42,
+"goals": 1,
+"xg": 1.1
+},
+"posOriginPlace|RM|self-carry|box": {
+"shots": 33,
+"goals": 1,
+"xg": 0.6329999999999999
+},
+"originPlace|pass-cross|box": {
+"shots": 218,
+"goals": 7,
+"xg": 5.165
+},
+"posOriginPlace|ST|pass-cross|box": {
+"shots": 94,
+"goals": 2,
+"xg": 2.638
+},
+"posOrigin|SUB|pass-pass": {
+"shots": 191,
+"goals": 12,
+"xg": 9.377
+},
+"posOriginPlace|SUB|pass-pass|outside": {
+"shots": 103,
+"goals": 3,
+"xg": 1.438
+},
+"originPlace|rebound|outside": {
+"shots": 16,
+"goals": 0,
+"xg": 0.23
+},
+"posOriginPlace|SUB|rebound|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.105
+},
+"pos|LWB": {
+"shots": 92,
+"goals": 10,
+"xg": 11.504000000000001
+},
+"posOrigin|LWB|restart-corner": {
+"shots": 53,
+"goals": 9,
+"xg": 9.731
+},
+"posPlace|LWB|box": {
+"shots": 87,
+"goals": 10,
+"xg": 11.482
+},
+"posOriginPlace|LWB|restart-corner|box": {
+"shots": 53,
+"goals": 9,
+"xg": 9.731
+},
+"posOrigin|LWB|restart-freeKick": {
+"shots": 19,
+"goals": 1,
+"xg": 1.553
+},
+"posOriginPlace|LWB|restart-freeKick|box": {
+"shots": 17,
+"goals": 1,
+"xg": 1.547
+},
+"origin|pass-takeOn": {
+"shots": 10,
+"goals": 0,
+"xg": 0.036000000000000004
+},
+"posOrigin|ST|pass-takeOn": {
+"shots": 6,
+"goals": 0,
+"xg": 0.015
+},
+"originPlace|pass-takeOn|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.036000000000000004
+},
+"posOriginPlace|ST|pass-takeOn|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.015
+},
+"pos|RB": {
+"shots": 200,
+"goals": 19,
+"xg": 20.932
+},
+"posOrigin|RB|restart-corner": {
+"shots": 72,
+"goals": 11,
+"xg": 13.767
+},
+"posPlace|RB|box": {
+"shots": 183,
+"goals": 17,
+"xg": 19.181
+},
+"posOriginPlace|RB|restart-corner|box": {
+"shots": 72,
+"goals": 11,
+"xg": 13.767
+},
+"originPlace|pass-pass|box": {
+"shots": 519,
+"goals": 21,
+"xg": 18.67
+},
+"posOriginPlace|ST|pass-pass|box": {
+"shots": 158,
+"goals": 6,
+"xg": 4.745
+},
+"originPlace|through|outside": {
+"shots": 279,
+"goals": 8,
+"xg": 5.82
+},
+"posOriginPlace|SUB|through|outside": {
+"shots": 63,
+"goals": 1,
+"xg": 1.407
+},
+"pos|CB": {
+"shots": 74,
+"goals": 11,
+"xg": 9.870000000000001
+},
+"posOrigin|CB|restart-corner": {
+"shots": 36,
+"goals": 7,
+"xg": 6.759
+},
+"posPlace|CB|box": {
+"shots": 67,
+"goals": 10,
+"xg": 8.85
+},
+"posOriginPlace|CB|restart-corner|box": {
+"shots": 36,
+"goals": 7,
+"xg": 6.759
+},
+"posOrigin|LB|restart-freeKick": {
+"shots": 72,
+"goals": 13,
+"xg": 6.65
+},
+"posOriginPlace|LB|restart-freeKick|box": {
+"shots": 64,
+"goals": 13,
+"xg": 6.58
+},
+"posOriginPlace|SUB|through|box": {
+"shots": 121,
+"goals": 3,
+"xg": 3.67
+},
+"posOrigin|RB|restart-freeKick": {
+"shots": 50,
+"goals": 5,
+"xg": 4.211
+},
+"posOriginPlace|RB|restart-freeKick|box": {
+"shots": 43,
+"goals": 5,
+"xg": 4.128
+},
+"posOriginPlace|ST|through|outside": {
+"shots": 157,
+"goals": 4,
+"xg": 3.003
+},
+"origin|penalty": {
+"shots": 107,
+"goals": 82,
+"xg": 81.32
+},
+"posOrigin|RW|penalty": {
+"shots": 14,
+"goals": 10,
+"xg": 10.64
+},
+"originPlace|penalty|goalArea": {
+"shots": 82,
+"goals": 82,
+"xg": 62.32
+},
+"posOriginPlace|RW|penalty|goalArea": {
+"shots": 10,
+"goals": 10,
+"xg": 7.6
+},
+"pos|RWB": {
+"shots": 80,
+"goals": 4,
+"xg": 4.1450000000000005
+},
+"posOrigin|RWB|self-carry": {
+"shots": 53,
+"goals": 1,
+"xg": 1.165
+},
+"posPlace|RWB|box": {
+"shots": 66,
+"goals": 4,
+"xg": 3.51
+},
+"posOriginPlace|RWB|self-carry|box": {
+"shots": 44,
+"goals": 1,
+"xg": 0.571
+},
+"posOrigin|CM|pass-pass": {
+"shots": 96,
+"goals": 3,
+"xg": 4.284
+},
+"posPlace|CM|outside": {
+"shots": 102,
+"goals": 3,
+"xg": 2.86
+},
+"posOriginPlace|CM|pass-pass|outside": {
+"shots": 30,
+"goals": 0,
+"xg": 0.641
+},
+"posOrigin|RW|self-carry": {
+"shots": 235,
+"goals": 9,
+"xg": 7.32
+},
+"posOriginPlace|RW|self-carry|box": {
+"shots": 202,
+"goals": 5,
+"xg": 2.878
+},
+"posOriginPlace|SUB|self-carry|outside": {
+"shots": 107,
+"goals": 3,
+"xg": 3.9589999999999996
+},
+"posOrigin|SUB|pass-cross": {
+"shots": 72,
+"goals": 2,
+"xg": 5.444
+},
+"posOriginPlace|SUB|pass-cross|goalArea": {
+"shots": 25,
+"goals": 1,
+"xg": 4.32
+},
+"posOriginPlace|SUB|pass-pass|box": {
+"shots": 72,
+"goals": 2,
+"xg": 2.442
+},
+"posOrigin|SUB|setPiece-2nd": {
+"shots": 59,
+"goals": 8,
+"xg": 5.474
+},
+"posOriginPlace|SUB|setPiece-2nd|goalArea": {
+"shots": 22,
+"goals": 7,
+"xg": 4.405
+},
+"posOrigin|SUB|restart-corner": {
+"shots": 38,
+"goals": 10,
+"xg": 7.01
+},
+"posOriginPlace|SUB|restart-corner|box": {
+"shots": 38,
+"goals": 10,
+"xg": 7.01
+},
+"posOrigin|CM|rebound": {
+"shots": 6,
+"goals": 1,
+"xg": 0.6599999999999999
+},
+"posOriginPlace|CM|rebound|box": {
+"shots": 4,
+"goals": 0,
+"xg": 0.30200000000000005
+},
+"posOriginPlace|CM|pass-pass|box": {
+"shots": 63,
+"goals": 3,
+"xg": 2.523
+},
+"posOrigin|RB|self-carry": {
+"shots": 52,
+"goals": 2,
+"xg": 0.8500000000000001
+},
+"posOriginPlace|RB|self-carry|box": {
+"shots": 50,
+"goals": 1,
+"xg": 0.353
+},
+"posPlace|AM|outside": {
+"shots": 98,
+"goals": 3,
+"xg": 2.458
+},
+"posOriginPlace|AM|through|outside": {
+"shots": 22,
+"goals": 2,
+"xg": 0.54
+},
+"posPlace|AM|goalArea": {
+"shots": 70,
+"goals": 13,
+"xg": 16.167
+},
+"posOriginPlace|AM|through|goalArea": {
+"shots": 18,
+"goals": 3,
+"xg": 3.868
+},
+"posPlace|CM|goalArea": {
+"shots": 91,
+"goals": 33,
+"xg": 29.489000000000004
+},
+"posOriginPlace|CM|self-carry|goalArea": {
+"shots": 20,
+"goals": 6,
+"xg": 5.9110000000000005
+},
+"origin|opp-holdUp:tackled": {
+"shots": 27,
+"goals": 3,
+"xg": 2.548
+},
+"posOrigin|ST|opp-holdUp:tackled": {
+"shots": 22,
+"goals": 2,
+"xg": 2.093
+},
+"originPlace|opp-holdUp:tackled|box": {
+"shots": 16,
+"goals": 0,
+"xg": 0.491
+},
+"posOriginPlace|ST|opp-holdUp:tackled|box": {
+"shots": 13,
+"goals": 0,
+"xg": 0.239
+},
+"posOrigin|ST|restart-freeKick": {
+"shots": 51,
+"goals": 0,
+"xg": 1.501
+},
+"posOriginPlace|ST|restart-freeKick|box": {
+"shots": 31,
+"goals": 0,
+"xg": 1.4259999999999997
+},
+"posOriginPlace|CM|self-carry|outside": {
+"shots": 48,
+"goals": 2,
+"xg": 1.4649999999999999
+},
+"posOrigin|CM|through": {
+"shots": 73,
+"goals": 1,
+"xg": 1.67
+},
+"posOriginPlace|CM|through|box": {
+"shots": 64,
+"goals": 0,
+"xg": 0.653
+},
+"posPlace|LW|outside": {
+"shots": 132,
+"goals": 2,
+"xg": 2.888
+},
+"posOriginPlace|LW|through|outside": {
+"shots": 19,
+"goals": 0,
+"xg": 0.318
+},
+"posOrigin|AM|pass-pass": {
+"shots": 115,
+"goals": 1,
+"xg": 3.99
+},
+"posOriginPlace|AM|pass-pass|outside": {
+"shots": 41,
+"goals": 0,
+"xg": 0.6559999999999999
+},
+"pos|DM": {
+"shots": 102,
+"goals": 17,
+"xg": 14.908000000000001
+},
+"posOrigin|DM|self-carry": {
+"shots": 25,
+"goals": 1,
+"xg": 0.698
+},
+"posPlace|DM|goalArea": {
+"shots": 11,
+"goals": 2,
+"xg": 2.199
+},
+"posOriginPlace|DM|self-carry|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.031
+},
+"posOrigin|LW|self-takeOn": {
+"shots": 108,
+"goals": 6,
+"xg": 5.355
+},
+"posOriginPlace|LW|self-takeOn|box": {
+"shots": 86,
+"goals": 2,
+"xg": 2.492
+},
+"posOriginPlace|LW|self-carry|goalArea": {
+"shots": 48,
+"goals": 14,
+"xg": 11.754
+},
+"posOriginPlace|SUB|opp-pass:intercepted|box": {
+"shots": 36,
+"goals": 2,
+"xg": 3.16
+},
+"posOriginPlace|SUB|self-carry|goalArea": {
+"shots": 94,
+"goals": 24,
+"xg": 24.214
+},
+"posOrigin|RW|self-takeOn": {
+"shots": 62,
+"goals": 4,
+"xg": 3.102
+},
+"posOriginPlace|RW|self-takeOn|box": {
+"shots": 52,
+"goals": 1,
+"xg": 1.361
+},
+"originPlace|setPiece-2nd|outside": {
+"shots": 72,
+"goals": 0,
+"xg": 1.209
+},
+"posOriginPlace|SUB|setPiece-2nd|outside": {
+"shots": 18,
+"goals": 0,
+"xg": 0.25999999999999995
+},
+"posOrigin|ST|penalty": {
+"shots": 43,
+"goals": 33,
+"xg": 32.68
+},
+"posOriginPlace|ST|penalty|goalArea": {
+"shots": 33,
+"goals": 33,
+"xg": 25.08
+},
+"posOriginPlace|SUB|self-takeOn|goalArea": {
+"shots": 17,
+"goals": 2,
+"xg": 3.938
+},
+"originPlace|pass-takeOn|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|ST|pass-takeOn|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|ST|restart-freeKick|goalArea": {
+"shots": 16,
+"goals": 0,
+"xg": 0.07100000000000001
+},
+"posOriginPlace|ST|setPiece-2nd|outside": {
+"shots": 36,
+"goals": 0,
+"xg": 0.652
+},
+"posOriginPlace|ST|opp-pass:intercepted|box": {
+"shots": 89,
+"goals": 9,
+"xg": 8.423
+},
+"posOrigin|LWB|self-carry": {
+"shots": 16,
+"goals": 0,
+"xg": 0.148
+},
+"posOriginPlace|LWB|self-carry|box": {
+"shots": 14,
+"goals": 0,
+"xg": 0.138
+},
+"originPlace|opp-pass:intercepted|outside": {
+"shots": 37,
+"goals": 1,
+"xg": 1.685
+},
+"posOriginPlace|ST|opp-pass:intercepted|outside": {
+"shots": 22,
+"goals": 1,
+"xg": 1.1720000000000002
+},
+"posOrigin|CM|restart-freeKick": {
+"shots": 28,
+"goals": 0,
+"xg": 0.697
+},
+"posOriginPlace|CM|restart-freeKick|goalArea": {
+"shots": 13,
+"goals": 0,
+"xg": 0.09899999999999999
+},
+"posOrigin|CM|pass-cross": {
+"shots": 17,
+"goals": 3,
+"xg": 1.976
+},
+"posOriginPlace|CM|pass-cross|box": {
+"shots": 10,
+"goals": 0,
+"xg": 0.067
+},
+"origin|pass-cutBack": {
+"shots": 37,
+"goals": 1,
+"xg": 1.145
+},
+"posOrigin|CM|pass-cutBack": {
+"shots": 27,
+"goals": 1,
+"xg": 0.881
+},
+"originPlace|pass-cutBack|outside": {
+"shots": 13,
+"goals": 1,
+"xg": 0.531
+},
+"posOriginPlace|CM|pass-cutBack|outside": {
+"shots": 11,
+"goals": 1,
+"xg": 0.44999999999999996
+},
+"posOrigin|LW|opp-pass:loose": {
+"shots": 9,
+"goals": 1,
+"xg": 1.608
+},
+"posOriginPlace|LW|opp-pass:loose|goalArea": {
+"shots": 3,
+"goals": 1,
+"xg": 1.039
+},
+"posOriginPlace|LW|pass-pass|outside": {
+"shots": 75,
+"goals": 0,
+"xg": 1.299
+},
+"posOrigin|LW|opp-pass:intercepted": {
+"shots": 25,
+"goals": 6,
+"xg": 4.816
+},
+"posOriginPlace|LW|opp-pass:intercepted|goalArea": {
+"shots": 20,
+"goals": 5,
+"xg": 4.537
+},
+"posOriginPlace|LW|pass-pass|box": {
+"shots": 73,
+"goals": 5,
+"xg": 2.915
+},
+"posOrigin|RW|pass-cross": {
+"shots": 30,
+"goals": 3,
+"xg": 3.854
+},
+"posOriginPlace|RW|pass-cross|goalArea": {
+"shots": 15,
+"goals": 2,
+"xg": 3.56
+},
+"posOriginPlace|ST|through|box": {
+"shots": 247,
+"goals": 11,
+"xg": 6.747
+},
+"posOriginPlace|LW|self-carry|outside": {
+"shots": 22,
+"goals": 2,
+"xg": 0.7639999999999999
+},
+"posOrigin|LB|opp-pass:loose": {
+"shots": 2,
+"goals": 1,
+"xg": 1.364
+},
+"posPlace|LB|goalArea": {
+"shots": 24,
+"goals": 6,
+"xg": 4.904
+},
+"posOriginPlace|LB|opp-pass:loose|goalArea": {
+"shots": 2,
+"goals": 1,
+"xg": 1.364
+},
+"posOrigin|AM|self-carry": {
+"shots": 169,
+"goals": 8,
+"xg": 9.54
+},
+"posOriginPlace|AM|self-carry|outside": {
+"shots": 19,
+"goals": 0,
+"xg": 0.9930000000000001
+},
+"posOriginPlace|AM|self-carry|box": {
+"shots": 124,
+"goals": 3,
+"xg": 3.064
+},
+"posOriginPlace|RW|self-takeOn|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.126
+},
+"posOrigin|SUB|restart-freeKick": {
+"shots": 26,
+"goals": 4,
+"xg": 0.953
+},
+"posOriginPlace|SUB|restart-freeKick|box": {
+"shots": 16,
+"goals": 4,
+"xg": 0.8320000000000001
+},
+"posOriginPlace|RW|pass-pass|box": {
+"shots": 55,
+"goals": 3,
+"xg": 2.183
+},
+"posOrigin|LW|restart-freeKick": {
+"shots": 39,
+"goals": 2,
+"xg": 1.944
+},
+"posOriginPlace|LW|restart-freeKick|goalArea": {
+"shots": 17,
+"goals": 1,
+"xg": 0.23500000000000001
+},
+"posOrigin|RW|opp-pass:intercepted": {
+"shots": 9,
+"goals": 3,
+"xg": 2.4349999999999996
+},
+"posOriginPlace|RW|opp-pass:intercepted|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.034
+},
+"posOrigin|LW|restart-corner": {
+"shots": 47,
+"goals": 15,
+"xg": 8.619
+},
+"posOriginPlace|LW|restart-corner|box": {
+"shots": 47,
+"goals": 15,
+"xg": 8.619
+},
+"posOriginPlace|LW|restart-freeKick|box": {
+"shots": 20,
+"goals": 1,
+"xg": 1.6769999999999998
+},
+"posOriginPlace|RW|setPiece-2nd|outside": {
+"shots": 4,
+"goals": 0,
+"xg": 0.047999999999999994
+},
+"posOrigin|LB|self-carry": {
+"shots": 65,
+"goals": 5,
+"xg": 3.3850000000000002
+},
+"posOriginPlace|LB|self-carry|box": {
+"shots": 56,
+"goals": 3,
+"xg": 1.587
+},
+"posOrigin|LB|through": {
+"shots": 23,
+"goals": 3,
+"xg": 1.7409999999999999
+},
+"posOriginPlace|LB|through|box": {
+"shots": 14,
+"goals": 1,
+"xg": 0.476
+},
+"posOrigin|LB|setPiece-2nd": {
+"shots": 5,
+"goals": 0,
+"xg": 0.074
+},
+"posOriginPlace|LB|setPiece-2nd|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.074
+},
+"posOrigin|LB|self-takeOn": {
+"shots": 4,
+"goals": 0,
+"xg": 0.178
+},
+"posOriginPlace|LB|self-takeOn|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.031
+},
+"origin|opp-goalKick:intercepted": {
+"shots": 9,
+"goals": 1,
+"xg": 0.091
+},
+"posOrigin|ST|opp-goalKick:intercepted": {
+"shots": 5,
+"goals": 1,
+"xg": 0.031
+},
+"originPlace|opp-goalKick:intercepted|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|ST|opp-goalKick:intercepted|box": {
+"shots": 4,
+"goals": 0,
+"xg": 0.0
+},
+"originPlace|opp-pass:loose|box": {
+"shots": 64,
+"goals": 3,
+"xg": 3.6500000000000004
+},
+"posOriginPlace|ST|opp-pass:loose|box": {
+"shots": 29,
+"goals": 1,
+"xg": 1.326
+},
+"posOrigin|RB|pass-pass": {
+"shots": 11,
+"goals": 0,
+"xg": 0.548
+},
+"posOriginPlace|RB|pass-pass|box": {
+"shots": 7,
+"goals": 0,
+"xg": 0.372
+},
+"posOriginPlace|LW|opp-pass:loose|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.56
+},
+"originPlace|penalty|box": {
+"shots": 25,
+"goals": 0,
+"xg": 19.0
+},
+"posOriginPlace|RW|penalty|box": {
+"shots": 4,
+"goals": 0,
+"xg": 3.04
+},
+"posOrigin|LW|setPiece-2nd": {
+"shots": 9,
+"goals": 0,
+"xg": 0.44100000000000006
+},
+"posOriginPlace|LW|setPiece-2nd|box": {
+"shots": 6,
+"goals": 0,
+"xg": 0.355
+},
+"posOrigin|LW|rebound": {
+"shots": 4,
+"goals": 0,
+"xg": 0.593
+},
+"posOriginPlace|LW|rebound|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.435
+},
+"posOriginPlace|AM|pass-pass|box": {
+"shots": 71,
+"goals": 1,
+"xg": 2.7880000000000003
+},
+"origin|opp-goalKick:loose": {
+"shots": 33,
+"goals": 4,
+"xg": 3.372
+},
+"posOrigin|SUB|opp-goalKick:loose": {
+"shots": 3,
+"goals": 0,
+"xg": 0.13
+},
+"originPlace|opp-goalKick:loose|box": {
+"shots": 28,
+"goals": 4,
+"xg": 3.182
+},
+"posOriginPlace|SUB|opp-goalKick:loose|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.13
+},
+"posOriginPlace|LW|setPiece-2nd|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.08600000000000001
+},
+"origin|pass-clearance": {
+"shots": 9,
+"goals": 1,
+"xg": 0.351
+},
+"posOrigin|SUB|pass-clearance": {
+"shots": 3,
+"goals": 0,
+"xg": 0.048
+},
+"originPlace|pass-clearance|outside": {
+"shots": 6,
+"goals": 1,
+"xg": 0.219
+},
+"posOriginPlace|SUB|pass-clearance|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.048
+},
+"posOrigin|AM|pass-takeOn": {
+"shots": 2,
+"goals": 0,
+"xg": 0.02
+},
+"posOriginPlace|AM|pass-takeOn|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|RM|restart-corner": {
+"shots": 18,
+"goals": 3,
+"xg": 3.0869999999999997
+},
+"posOriginPlace|RM|restart-corner|box": {
+"shots": 18,
+"goals": 3,
+"xg": 3.0869999999999997
+},
+"posOrigin|RW|through": {
+"shots": 58,
+"goals": 2,
+"xg": 4.9350000000000005
+},
+"posOriginPlace|RW|through|outside": {
+"shots": 11,
+"goals": 1,
+"xg": 0.33499999999999996
+},
+"posOrigin|DM|restart-corner": {
+"shots": 45,
+"goals": 12,
+"xg": 7.527000000000001
+},
+"posPlace|DM|box": {
+"shots": 84,
+"goals": 15,
+"xg": 12.48
+},
+"posOriginPlace|DM|restart-corner|box": {
+"shots": 45,
+"goals": 12,
+"xg": 7.527000000000001
+},
+"posPlace|RM|outside": {
+"shots": 15,
+"goals": 0,
+"xg": 0.29700000000000004
+},
+"originPlace|restart-freeKick|outside": {
+"shots": 20,
+"goals": 0,
+"xg": 0.12000000000000001
+},
+"posOriginPlace|RM|restart-freeKick|outside": {
+"shots": 4,
+"goals": 0,
+"xg": 0.028
+},
+"posOrigin|RM|self-takeOn": {
+"shots": 8,
+"goals": 1,
+"xg": 0.456
+},
+"posOriginPlace|RM|self-takeOn|box": {
+"shots": 6,
+"goals": 1,
+"xg": 0.073
+},
+"posOriginPlace|LW|through|goalArea": {
+"shots": 34,
+"goals": 8,
+"xg": 7.977
+},
+"posOrigin|CB|self-carry": {
+"shots": 9,
+"goals": 0,
+"xg": 0.78
+},
+"posPlace|CB|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.065
+},
+"posOriginPlace|CB|self-carry|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.008
+},
+"posOrigin|CM|setPiece-2nd": {
+"shots": 13,
+"goals": 1,
+"xg": 1.625
+},
+"posOriginPlace|CM|setPiece-2nd|goalArea": {
+"shots": 7,
+"goals": 1,
+"xg": 1.4
+},
+"posOrigin|SUB|opp-pass:loose": {
+"shots": 28,
+"goals": 5,
+"xg": 5.033
+},
+"posOriginPlace|SUB|opp-pass:loose|goalArea": {
+"shots": 11,
+"goals": 4,
+"xg": 4.1579999999999995
+},
+"originPlace|opp-holdUp:tackled|goalArea": {
+"shots": 7,
+"goals": 3,
+"xg": 1.981
+},
+"posOriginPlace|ST|opp-holdUp:tackled|goalArea": {
+"shots": 6,
+"goals": 2,
+"xg": 1.7890000000000001
+},
+"posOriginPlace|SUB|pass-pass|goalArea": {
+"shots": 16,
+"goals": 7,
+"xg": 5.497
+},
+"posOrigin|ST|restart-corner": {
+"shots": 23,
+"goals": 4,
+"xg": 3.8609999999999998
+},
+"posOriginPlace|ST|restart-corner|box": {
+"shots": 23,
+"goals": 4,
+"xg": 3.8609999999999998
+},
+"posOriginPlace|ST|penalty|box": {
+"shots": 10,
+"goals": 0,
+"xg": 7.6
+},
+"posOriginPlace|RW|through|box": {
+"shots": 32,
+"goals": 0,
+"xg": 1.101
+},
+"posOriginPlace|SUB|pass-cross|box": {
+"shots": 47,
+"goals": 1,
+"xg": 1.124
+},
+"posPlace|RM|goalArea": {
+"shots": 12,
+"goals": 0,
+"xg": 0.662
+},
+"posOriginPlace|RM|restart-freeKick|goalArea": {
+"shots": 8,
+"goals": 0,
+"xg": 0.026000000000000002
+},
+"posOrigin|LM|restart-freeKick": {
+"shots": 17,
+"goals": 1,
+"xg": 1.285
+},
+"posOriginPlace|LM|restart-freeKick|box": {
+"shots": 14,
+"goals": 1,
+"xg": 1.267
+},
+"posOriginPlace|CM|pass-cross|goalArea": {
+"shots": 7,
+"goals": 3,
+"xg": 1.909
+},
+"posOrigin|SUB|pass-takeOn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|SUB|pass-takeOn|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|DM|self-carry|box": {
+"shots": 19,
+"goals": 1,
+"xg": 0.461
+},
+"posOrigin|CM|opp-pass:loose": {
+"shots": 7,
+"goals": 1,
+"xg": 0.952
+},
+"posOriginPlace|CM|opp-pass:loose|box": {
+"shots": 4,
+"goals": 1,
+"xg": 0.243
+},
+"posOriginPlace|SUB|rebound|goalArea": {
+"shots": 15,
+"goals": 1,
+"xg": 2.277
+},
+"posOriginPlace|RW|opp-pass:intercepted|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.339
+},
+"posOriginPlace|RW|opp-pass:intercepted|goalArea": {
+"shots": 6,
+"goals": 3,
+"xg": 2.0620000000000003
+},
+"posOriginPlace|ST|rebound|box": {
+"shots": 36,
+"goals": 3,
+"xg": 1.825
+},
+"posOrigin|RW|opp-pass:loose": {
+"shots": 4,
+"goals": 0,
+"xg": 0.19
+},
+"posOriginPlace|RW|opp-pass:loose|box": {
+"shots": 4,
+"goals": 0,
+"xg": 0.19
+},
+"posOriginPlace|AM|self-carry|goalArea": {
+"shots": 26,
+"goals": 5,
+"xg": 5.481999999999999
+},
+"posOrigin|SUB|opp-goalKick:intercepted": {
+"shots": 3,
+"goals": 0,
+"xg": 0.037
+},
+"originPlace|opp-goalKick:intercepted|outside": {
+"shots": 4,
+"goals": 1,
+"xg": 0.091
+},
+"posOriginPlace|SUB|opp-goalKick:intercepted|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.037
+},
+"posOriginPlace|SUB|restart-freeKick|goalArea": {
+"shots": 10,
+"goals": 0,
+"xg": 0.12100000000000001
+},
+"posPlace|LM|goalArea": {
+"shots": 5,
+"goals": 0,
+"xg": 0.142
+},
+"posOriginPlace|LM|self-carry|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.135
+},
+"posPlace|CB|goalArea": {
+"shots": 4,
+"goals": 1,
+"xg": 0.9550000000000001
+},
+"posOriginPlace|CB|self-carry|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.636
+},
+"posPlace|RWB|goalArea": {
+"shots": 5,
+"goals": 0,
+"xg": 0.393
+},
+"posOriginPlace|RWB|self-carry|goalArea": {
+"shots": 3,
+"goals": 0,
+"xg": 0.369
+},
+"posOriginPlace|CM|restart-freeKick|box": {
+"shots": 12,
+"goals": 0,
+"xg": 0.578
+},
+"posOrigin|CM|restart-corner": {
+"shots": 22,
+"goals": 3,
+"xg": 3.708
+},
+"posOriginPlace|CM|restart-corner|box": {
+"shots": 22,
+"goals": 3,
+"xg": 3.708
+},
+"posOrigin|SUB|penalty": {
+"shots": 13,
+"goals": 12,
+"xg": 9.879999999999999
+},
+"posOriginPlace|SUB|penalty|goalArea": {
+"shots": 12,
+"goals": 12,
+"xg": 9.12
+},
+"posOriginPlace|LW|pass-cross|box": {
+"shots": 41,
+"goals": 3,
+"xg": 0.9510000000000001
+},
+"posOriginPlace|RW|self-carry|goalArea": {
+"shots": 15,
+"goals": 4,
+"xg": 4.001
+},
+"posOriginPlace|LW|self-takeOn|goalArea": {
+"shots": 15,
+"goals": 4,
+"xg": 2.5
+},
+"posOrigin|CM|penalty": {
+"shots": 24,
+"goals": 20,
+"xg": 18.240000000000002
+},
+"posOriginPlace|CM|penalty|goalArea": {
+"shots": 20,
+"goals": 20,
+"xg": 15.200000000000001
+},
+"posOrigin|AM|setPiece-2nd": {
+"shots": 15,
+"goals": 2,
+"xg": 1.2469999999999999
+},
+"posOriginPlace|AM|setPiece-2nd|box": {
+"shots": 6,
+"goals": 1,
+"xg": 0.153
+},
+"posOriginPlace|SUB|penalty|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.76
+},
+"posOriginPlace|SUB|opp-pass:loose|box": {
+"shots": 17,
+"goals": 1,
+"xg": 0.8759999999999999
+},
+"posOrigin|RB|through": {
+"shots": 7,
+"goals": 0,
+"xg": 0.632
+},
+"posOriginPlace|RB|through|box": {
+"shots": 4,
+"goals": 0,
+"xg": 0.43799999999999994
+},
+"posOriginPlace|RW|pass-cross|box": {
+"shots": 15,
+"goals": 1,
+"xg": 0.29400000000000004
+},
+"posOriginPlace|RW|self-carry|outside": {
+"shots": 18,
+"goals": 0,
+"xg": 0.44199999999999995
+},
+"posOriginPlace|RW|through|goalArea": {
+"shots": 15,
+"goals": 1,
+"xg": 3.499
+},
+"originPlace|pass-cutBack|box": {
+"shots": 24,
+"goals": 0,
+"xg": 0.615
+},
+"posOriginPlace|CM|pass-cutBack|box": {
+"shots": 16,
+"goals": 0,
+"xg": 0.432
+},
+"posOriginPlace|RW|restart-freeKick|box": {
+"shots": 19,
+"goals": 2,
+"xg": 1.447
+},
+"posOrigin|RW|restart-corner": {
+"shots": 48,
+"goals": 9,
+"xg": 8.706
+},
+"posOriginPlace|RW|restart-corner|box": {
+"shots": 48,
+"goals": 9,
+"xg": 8.706
+},
+"posOrigin|AM|opp-pass:loose": {
+"shots": 9,
+"goals": 1,
+"xg": 0.835
+},
+"posOriginPlace|AM|opp-pass:loose|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.45599999999999996
+},
+"posPlace|LB|outside": {
+"shots": 10,
+"goals": 0,
+"xg": 0.28300000000000003
+},
+"posOriginPlace|LB|through|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.068
+},
+"posOrigin|AM|self-takeOn": {
+"shots": 29,
+"goals": 1,
+"xg": 1.738
+},
+"posOriginPlace|AM|self-takeOn|box": {
+"shots": 23,
+"goals": 1,
+"xg": 1.249
+},
+"posOriginPlace|AM|opp-pass:loose|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.32799999999999996
+},
+"posOrigin|LW|penalty": {
+"shots": 5,
+"goals": 3,
+"xg": 3.8
+},
+"posOriginPlace|LW|penalty|box": {
+"shots": 2,
+"goals": 0,
+"xg": 1.52
+},
+"posPlace|RB|goalArea": {
+"shots": 11,
+"goals": 2,
+"xg": 1.644
+},
+"posOriginPlace|RB|pass-pass|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.141
+},
+"posOriginPlace|AM|opp-pass:intercepted|goalArea": {
+"shots": 10,
+"goals": 2,
+"xg": 2.8
+},
+"posOrigin|ST|opp-goalKick:loose": {
+"shots": 24,
+"goals": 0,
+"xg": 1.8010000000000002
+},
+"posOriginPlace|ST|opp-goalKick:loose|box": {
+"shots": 19,
+"goals": 0,
+"xg": 1.609
+},
+"posOrigin|DM|restart-freeKick": {
+"shots": 14,
+"goals": 2,
+"xg": 1.25
+},
+"posOriginPlace|DM|restart-freeKick|box": {
+"shots": 12,
+"goals": 2,
+"xg": 1.2349999999999999
+},
+"posOrigin|AM|pass-cross": {
+"shots": 8,
+"goals": 0,
+"xg": 0.06
+},
+"posOriginPlace|AM|pass-cross|box": {
+"shots": 8,
+"goals": 0,
+"xg": 0.06
+},
+"posOriginPlace|SUB|setPiece-2nd|box": {
+"shots": 19,
+"goals": 1,
+"xg": 0.809
+},
+"posOrigin|SUB|opp-holdUp:tackled": {
+"shots": 2,
+"goals": 1,
+"xg": 0.20400000000000001
+},
+"originPlace|opp-holdUp:tackled|outside": {
+"shots": 4,
+"goals": 0,
+"xg": 0.077
+},
+"posOriginPlace|SUB|opp-holdUp:tackled|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"posOrigin|LM|self-takeOn": {
+"shots": 6,
+"goals": 0,
+"xg": 0.316
+},
+"posOriginPlace|LM|self-takeOn|box": {
+"shots": 4,
+"goals": 0,
+"xg": 0.261
+},
+"posOriginPlace|LB|restart-freeKick|goalArea": {
+"shots": 6,
+"goals": 0,
+"xg": 0.058
+},
+"posOriginPlace|CB|self-carry|box": {
+"shots": 6,
+"goals": 0,
+"xg": 0.136
+},
+"posOriginPlace|ST|rebound|outside": {
+"shots": 10,
+"goals": 0,
+"xg": 0.07200000000000001
+},
+"posOrigin|RWB|restart-corner": {
+"shots": 14,
+"goals": 3,
+"xg": 2.3
+},
+"posOriginPlace|RWB|restart-corner|box": {
+"shots": 14,
+"goals": 3,
+"xg": 2.3
+},
+"posOriginPlace|AM|setPiece-2nd|outside": {
+"shots": 6,
+"goals": 0,
+"xg": 0.07699999999999999
+},
+"posPlace|LWB|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.006
+},
+"posOriginPlace|LWB|restart-freeKick|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.006
+},
+"posOrigin|LB|opp-pass:intercepted": {
+"shots": 3,
+"goals": 1,
+"xg": 0.566
+},
+"posOriginPlace|LB|opp-pass:intercepted|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.156
+},
+"posOrigin|LB|pass-pass": {
+"shots": 21,
+"goals": 1,
+"xg": 0.649
+},
+"posOriginPlace|LB|pass-pass|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.064
+},
+"posOriginPlace|LB|through|goalArea": {
+"shots": 7,
+"goals": 2,
+"xg": 1.198
+},
+"posOriginPlace|CM|through|goalArea": {
+"shots": 7,
+"goals": 1,
+"xg": 0.95
+},
+"origin|opp-indirectFreeKick:loose": {
+"shots": 3,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|AM|opp-indirectFreeKick:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"originPlace|opp-indirectFreeKick:loose|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|AM|opp-indirectFreeKick:loose|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|DM|setPiece-2nd": {
+"shots": 8,
+"goals": 0,
+"xg": 0.384
+},
+"posOriginPlace|DM|setPiece-2nd|goalArea": {
+"shots": 4,
+"goals": 0,
+"xg": 0.271
+},
+"posOriginPlace|CM|rebound|goalArea": {
+"shots": 1,
+"goals": 1,
+"xg": 0.306
+},
+"posOrigin|RWB|restart-freeKick": {
+"shots": 8,
+"goals": 0,
+"xg": 0.59
+},
+"posOriginPlace|RWB|restart-freeKick|box": {
+"shots": 6,
+"goals": 0,
+"xg": 0.5660000000000001
+},
+"posOrigin|RW|opp-holdUp:tackled": {
+"shots": 1,
+"goals": 0,
+"xg": 0.179
+},
+"posOriginPlace|RW|opp-holdUp:tackled|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.179
+},
+"posOriginPlace|AM|pass-pass|goalArea": {
+"shots": 3,
+"goals": 0,
+"xg": 0.5469999999999999
+},
+"posOrigin|RW|opp-goalKick:loose": {
+"shots": 1,
+"goals": 1,
+"xg": 0.363
+},
+"posOriginPlace|RW|opp-goalKick:loose|box": {
+"shots": 1,
+"goals": 1,
+"xg": 0.363
+},
+"posOrigin|RM|pass-cross": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RM|pass-cross|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|RM|setPiece-2nd": {
+"shots": 1,
+"goals": 0,
+"xg": 0.056
+},
+"posOriginPlace|RM|setPiece-2nd|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.056
+},
+"origin|opp-clearance:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"posOrigin|CM|opp-clearance:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"originPlace|opp-clearance:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"posOriginPlace|CM|opp-clearance:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"posOriginPlace|LB|pass-pass|box": {
+"shots": 18,
+"goals": 1,
+"xg": 0.516
+},
+"posOriginPlace|LB|self-carry|goalArea": {
+"shots": 5,
+"goals": 2,
+"xg": 1.658
+},
+"posOriginPlace|LM|restart-freeKick|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.007
+},
+"posOrigin|AM|opp-goalKick:loose": {
+"shots": 3,
+"goals": 1,
+"xg": 0.12
+},
+"posOriginPlace|AM|opp-goalKick:loose|box": {
+"shots": 3,
+"goals": 1,
+"xg": 0.12
+},
+"origin|self-holdUp": {
+"shots": 2,
+"goals": 0,
+"xg": 0.359
+},
+"posOrigin|ST|self-holdUp": {
+"shots": 2,
+"goals": 0,
+"xg": 0.359
+},
+"originPlace|self-holdUp|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.359
+},
+"posOriginPlace|ST|self-holdUp|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.359
+},
+"posPlace|RWB|outside": {
+"shots": 9,
+"goals": 0,
+"xg": 0.243
+},
+"posOriginPlace|RWB|self-carry|outside": {
+"shots": 6,
+"goals": 0,
+"xg": 0.22500000000000003
+},
+"posOrigin|ST|pass-clearance": {
+"shots": 5,
+"goals": 1,
+"xg": 0.303
+},
+"posOriginPlace|ST|pass-clearance|outside": {
+"shots": 4,
+"goals": 1,
+"xg": 0.17099999999999999
+},
+"posOriginPlace|CM|setPiece-2nd|box": {
+"shots": 6,
+"goals": 0,
+"xg": 0.22599999999999998
+},
+"posOriginPlace|RWB|restart-freeKick|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.024
+},
+"posOrigin|CB|setPiece-2nd": {
+"shots": 7,
+"goals": 0,
+"xg": 0.20900000000000002
+},
+"posOriginPlace|CB|setPiece-2nd|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.152
+},
+"posOrigin|RW|pass-takeOn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.001
+},
+"posOriginPlace|RW|pass-takeOn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.001
+},
+"posOriginPlace|ST|opp-holdUp:tackled|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.066
+},
+"posPlace|DM|outside": {
+"shots": 7,
+"goals": 0,
+"xg": 0.22900000000000004
+},
+"posOriginPlace|DM|self-carry|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.20500000000000002
+},
+"posOriginPlace|AM|setPiece-2nd|goalArea": {
+"shots": 3,
+"goals": 1,
+"xg": 1.017
+},
+"posOrigin|RM|through": {
+"shots": 1,
+"goals": 0,
+"xg": 0.011
+},
+"posOriginPlace|RM|through|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.011
+},
+"posOrigin|RM|pass-cutBack": {
+"shots": 1,
+"goals": 0,
+"xg": 0.025
+},
+"posOriginPlace|RM|pass-cutBack|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.025
+},
+"posOrigin|AM|rebound": {
+"shots": 7,
+"goals": 2,
+"xg": 0.527
+},
+"posOriginPlace|AM|rebound|box": {
+"shots": 6,
+"goals": 2,
+"xg": 0.366
+},
+"posOrigin|LB|pass-cross": {
+"shots": 1,
+"goals": 0,
+"xg": 0.032
+},
+"posOriginPlace|LB|pass-cross|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.032
+},
+"posOriginPlace|AM|self-takeOn|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.066
+},
+"posOriginPlace|RW|restart-freeKick|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.013
+},
+"posOriginPlace|RW|pass-pass|goalArea": {
+"shots": 6,
+"goals": 2,
+"xg": 2.021
+},
+"posOrigin|CM|opp-pass:intercepted": {
+"shots": 16,
+"goals": 1,
+"xg": 2.1229999999999998
+},
+"posOriginPlace|CM|opp-pass:intercepted|goalArea": {
+"shots": 9,
+"goals": 1,
+"xg": 1.897
+},
+"posOrigin|ST|pass-cutBack": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|ST|pass-cutBack|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|DM|setPiece-2nd|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.09
+},
+"posOriginPlace|AM|opp-pass:intercepted|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.025
+},
+"originPlace|opp-goalKick:loose|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.19
+},
+"posOriginPlace|ST|opp-goalKick:loose|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.19
+},
+"posOriginPlace|CM|opp-pass:intercepted|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.141
+},
+"posOriginPlace|DM|setPiece-2nd|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.023
+},
+"posOriginPlace|RW|self-takeOn|goalArea": {
+"shots": 7,
+"goals": 3,
+"xg": 1.616
+},
+"posOriginPlace|LW|self-takeOn|outside": {
+"shots": 7,
+"goals": 0,
+"xg": 0.36
+},
+"posOriginPlace|LW|restart-freeKick|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.031
+},
+"posOrigin|RW|rebound": {
+"shots": 6,
+"goals": 3,
+"xg": 0.866
+},
+"posOriginPlace|RW|rebound|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.18
+},
+"posOriginPlace|RB|restart-freeKick|goalArea": {
+"shots": 6,
+"goals": 0,
+"xg": 0.082
+},
+"posOriginPlace|LW|opp-pass:intercepted|box": {
+"shots": 3,
+"goals": 1,
+"xg": 0.263
+},
+"posOrigin|AM|penalty": {
+"shots": 2,
+"goals": 2,
+"xg": 1.52
+},
+"posOriginPlace|AM|penalty|goalArea": {
+"shots": 2,
+"goals": 2,
+"xg": 1.52
+},
+"posOriginPlace|CM|through|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.067
+},
+"posOriginPlace|RM|self-carry|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.3
+},
+"posOriginPlace|CM|self-takeOn|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|CM|opp-pass:loose|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.695
+},
+"posOriginPlace|AM|rebound|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.161
+},
+"posOriginPlace|ST|restart-freeKick|outside": {
+"shots": 4,
+"goals": 0,
+"xg": 0.005
+},
+"posOriginPlace|RB|self-carry|goalArea": {
+"shots": 2,
+"goals": 1,
+"xg": 0.498
+},
+"posOrigin|LWB|setPiece-2nd": {
+"shots": 1,
+"goals": 0,
+"xg": 0.005
+},
+"posPlace|LWB|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.015
+},
+"posOriginPlace|LWB|setPiece-2nd|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.005
+},
+"posOrigin|AM|pass-cutBack": {
+"shots": 5,
+"goals": 0,
+"xg": 0.124
+},
+"posOriginPlace|AM|pass-cutBack|box": {
+"shots": 5,
+"goals": 0,
+"xg": 0.124
+},
+"posOrigin|LB|rebound": {
+"shots": 3,
+"goals": 0,
+"xg": 0.196
+},
+"posOriginPlace|LB|rebound|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.196
+},
+"posOriginPlace|LW|opp-pass:intercepted|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.016
+},
+"posOriginPlace|LB|self-takeOn|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.147
+},
+"origin|opp-throwIn:loose": {
+"shots": 4,
+"goals": 0,
+"xg": 0.075
+},
+"posOrigin|ST|opp-throwIn:loose": {
+"shots": 3,
+"goals": 0,
+"xg": 0.071
+},
+"originPlace|opp-throwIn:loose|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.048
+},
+"posOriginPlace|ST|opp-throwIn:loose|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.044
+},
+"posOrigin|SUB|opp-throwIn:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.004
+},
+"posOriginPlace|SUB|opp-throwIn:loose|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.004
+},
+"posOrigin|CB|restart-freeKick": {
+"shots": 18,
+"goals": 3,
+"xg": 1.632
+},
+"posOriginPlace|CB|restart-freeKick|box": {
+"shots": 18,
+"goals": 3,
+"xg": 1.632
+},
+"posOriginPlace|ST|opp-goalKick:intercepted|outside": {
+"shots": 1,
+"goals": 1,
+"xg": 0.031
+},
+"posOrigin|DM|penalty": {
+"shots": 6,
+"goals": 2,
+"xg": 4.56
+},
+"posOriginPlace|DM|penalty|goalArea": {
+"shots": 2,
+"goals": 2,
+"xg": 1.52
+},
+"posOriginPlace|DM|penalty|box": {
+"shots": 4,
+"goals": 0,
+"xg": 3.04
+},
+"posOriginPlace|RM|self-carry|outside": {
+"shots": 7,
+"goals": 0,
+"xg": 0.167
+},
+"posOrigin|RB|rebound": {
+"shots": 2,
+"goals": 0,
+"xg": 0.027
+},
+"posOriginPlace|RB|rebound|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.027
+},
+"posOrigin|SUB|pass-cutBack": {
+"shots": 1,
+"goals": 0,
+"xg": 0.055
+},
+"posOriginPlace|SUB|pass-cutBack|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.055
+},
+"posPlace|LM|outside": {
+"shots": 6,
+"goals": 0,
+"xg": 0.223
+},
+"posOriginPlace|LM|restart-freeKick|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.011
+},
+"posOrigin|DM|rebound": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"posOriginPlace|DM|rebound|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.012
+},
+"posOriginPlace|RW|rebound|goalArea": {
+"shots": 3,
+"goals": 3,
+"xg": 0.6859999999999999
+},
+"posOriginPlace|SUB|opp-pass:intercepted|outside": {
+"shots": 5,
+"goals": 0,
+"xg": 0.296
+},
+"posOriginPlace|SUB|opp-goalKick:intercepted|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|RM|pass-pass": {
+"shots": 1,
+"goals": 0,
+"xg": 0.02
+},
+"posOriginPlace|RM|pass-pass|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.02
+},
+"posOrigin|LW|pass-clearance": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"originPlace|pass-clearance|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.132
+},
+"posOriginPlace|LW|pass-clearance|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|AM|self-takeOn|goalArea": {
+"shots": 3,
+"goals": 0,
+"xg": 0.424
+},
+"posOriginPlace|CM|rebound|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.052
+},
+"posOriginPlace|CM|penalty|box": {
+"shots": 4,
+"goals": 0,
+"xg": 3.04
+},
+"posOriginPlace|LB|restart-freeKick|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.012
+},
+"posOrigin|RWB|pass-pass": {
+"shots": 3,
+"goals": 0,
+"xg": 0.08600000000000001
+},
+"posOriginPlace|RWB|pass-pass|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.012
+},
+"posOriginPlace|LW|rebound|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.158
+},
+"posOriginPlace|LB|self-carry|outside": {
+"shots": 4,
+"goals": 0,
+"xg": 0.139
+},
+"posOrigin|CB|through": {
+"shots": 3,
+"goals": 1,
+"xg": 0.471
+},
+"posOriginPlace|CB|through|goalArea": {
+"shots": 2,
+"goals": 1,
+"xg": 0.319
+},
+"origin|pass-throwIn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.006
+},
+"posOrigin|LW|pass-throwIn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.006
+},
+"originPlace|pass-throwIn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.006
+},
+"posOriginPlace|LW|pass-throwIn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.006
+},
+"posOrigin|AM|restart-freeKick": {
+"shots": 1,
+"goals": 0,
+"xg": 0.022
+},
+"posOriginPlace|AM|restart-freeKick|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.022
+},
+"posOriginPlace|CB|through|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.152
+},
+"posOriginPlace|CM|pass-pass|goalArea": {
+"shots": 3,
+"goals": 0,
+"xg": 1.12
+},
+"posOriginPlace|ST|pass-clearance|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.132
+},
+"posOriginPlace|DM|restart-freeKick|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.015
+},
+"posOriginPlace|LM|self-carry|outside": {
+"shots": 4,
+"goals": 0,
+"xg": 0.157
+},
+"posOriginPlace|LW|penalty|goalArea": {
+"shots": 3,
+"goals": 3,
+"xg": 2.2800000000000002
+},
+"posOrigin|LWB|self-takeOn": {
+"shots": 3,
+"goals": 0,
+"xg": 0.066
+},
+"posOriginPlace|LWB|self-takeOn|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.066
+},
+"posOriginPlace|LWB|self-carry|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.01
+},
+"posOrigin|LW|pass-cutBack": {
+"shots": 1,
+"goals": 0,
+"xg": 0.059
+},
+"posOriginPlace|LW|pass-cutBack|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.059
+},
+"posOrigin|DM|opp-pass:intercepted": {
+"shots": 2,
+"goals": 0,
+"xg": 0.362
+},
+"posOriginPlace|DM|opp-pass:intercepted|goalArea": {
+"shots": 2,
+"goals": 0,
+"xg": 0.362
+},
+"posOriginPlace|CM|opp-pass:intercepted|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.083
+},
+"origin|opp-kickoff:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.009
+},
+"posOrigin|AM|opp-kickoff:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.009
+},
+"originPlace|opp-kickoff:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.009
+},
+"posOriginPlace|AM|opp-kickoff:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.009
+},
+"posOrigin|RB|opp-pass:intercepted": {
+"shots": 2,
+"goals": 1,
+"xg": 0.877
+},
+"posOriginPlace|RB|opp-pass:intercepted|goalArea": {
+"shots": 1,
+"goals": 1,
+"xg": 0.8
+},
+"posOriginPlace|RWB|pass-pass|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.073
+},
+"posOriginPlace|RM|self-takeOn|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.336
+},
+"posOrigin|AM|opp-goalKick:intercepted": {
+"shots": 1,
+"goals": 0,
+"xg": 0.023
+},
+"posOriginPlace|AM|opp-goalKick:intercepted|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.023
+},
+"posOriginPlace|SUB|pass-clearance|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|LW|opp-pass:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.009
+},
+"posOriginPlace|CM|restart-freeKick|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.019
+},
+"posOriginPlace|RM|self-takeOn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.046
+},
+"posOriginPlace|CM|opp-pass:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.014
+},
+"posOrigin|LB|opp-holdUp:tackled": {
+"shots": 1,
+"goals": 0,
+"xg": 0.073
+},
+"posOriginPlace|LB|opp-holdUp:tackled|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.073
+},
+"posOrigin|LW|opp-goalKick:loose": {
+"shots": 2,
+"goals": 2,
+"xg": 0.959
+},
+"posOriginPlace|LW|opp-goalKick:loose|box": {
+"shots": 2,
+"goals": 2,
+"xg": 0.959
+},
+"posOriginPlace|RB|through|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.122
+},
+"posOriginPlace|LB|pass-pass|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.069
+},
+"posOriginPlace|LB|rebound|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|LW|opp-indirectFreeKick:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"originPlace|opp-indirectFreeKick:loose|box": {
+"shots": 2,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|LW|opp-indirectFreeKick:loose|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|RWB|pass-cross": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RWB|pass-cross|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|DM|pass-pass": {
+"shots": 1,
+"goals": 0,
+"xg": 0.114
+},
+"posOriginPlace|DM|pass-pass|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.114
+},
+"posOrigin|RW|opp-indirectFreeKick:loose": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RW|opp-indirectFreeKick:loose|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|RM|opp-pass:intercepted": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RM|opp-pass:intercepted|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|RB|setPiece-2nd": {
+"shots": 3,
+"goals": 0,
+"xg": 0.019
+},
+"posOriginPlace|RB|setPiece-2nd|box": {
+"shots": 3,
+"goals": 0,
+"xg": 0.019
+},
+"posOriginPlace|AM|opp-pass:loose|outside": {
+"shots": 2,
+"goals": 1,
+"xg": 0.05
+},
+"posPlace|RB|outside": {
+"shots": 6,
+"goals": 0,
+"xg": 0.107
+},
+"posOriginPlace|RB|through|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.072
+},
+"originPlace|opp-throwIn:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.027
+},
+"posOriginPlace|ST|opp-throwIn:loose|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.027
+},
+"posOriginPlace|LM|self-takeOn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.055
+},
+"posOriginPlace|RB|pass-pass|outside": {
+"shots": 3,
+"goals": 0,
+"xg": 0.035
+},
+"posOrigin|CM|opp-holdUp:tackled": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|CM|opp-holdUp:tackled|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|SUB|opp-holdUp:tackled|goalArea": {
+"shots": 1,
+"goals": 1,
+"xg": 0.192
+},
+"posOriginPlace|RB|opp-pass:intercepted|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.077
+},
+"posOriginPlace|LB|opp-pass:intercepted|goalArea": {
+"shots": 1,
+"goals": 1,
+"xg": 0.41
+},
+"posOrigin|RB|self-takeOn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RB|self-takeOn|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|LM|self-takeOn|goalArea": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOrigin|CB|self-takeOn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.018
+},
+"posOriginPlace|CB|self-takeOn|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.018
+},
+"posOriginPlace|CB|setPiece-2nd|outside": {
+"shots": 2,
+"goals": 0,
+"xg": 0.057
+},
+"posOrigin|RWB|self-takeOn": {
+"shots": 1,
+"goals": 0,
+"xg": 0.005
+},
+"posOriginPlace|RWB|self-takeOn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.005
+},
+"posOrigin|RW|pass-cutBack": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RW|pass-cutBack|box": {
+"shots": 1,
+"goals": 0,
+"xg": 0.0
+},
+"posOriginPlace|RB|restart-freeKick|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.001
+},
+"posOriginPlace|AM|pass-takeOn|outside": {
+"shots": 1,
+"goals": 0,
+"xg": 0.02
+}
+}
+}
