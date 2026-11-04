@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| nx04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T03:25Z | 2026-11-04T03:25Z | - |
 
 ## inbox
 - 261104 decided MATCH-17 MATCH-23 MATCH-33 T689: which structural correction the rest of the window (01:36–02:42Z) tests, and what to keep at its end → where the side on the ball waits: `hold` (a forward with no run waits off the offside line, MATCH-33's timed arrival) and `arrive` (AM, wingers and box-run roles wait in the scoring positions once the ball is in front of the box, MATCH-17/33), on the released source and on earlySupport with the released delivery zones (`earlyZones`, so cross finishes stay alive); `hold` alone moves nothing, `arrive` + `hold` (arrHoldEZ60) is the first lever to move the striker slot and on held-out seeds takes the club top-scorer share 42.9% → 36.2% [34.5, 37.9] with goals 2.77 and hat-tricks 0.049 inside, but the share stays above the 31.25% window, shots are 16.8 a team, the stress case does not move and the goal-area share and post-regain shots stay — gate unmet, so both default-off switches stay uncommitted in `.tmp/nx04/nx04-source.patch`, the engine source is restored, only evidence is committed and T689 stays todo with its next lever (alt: recovery after a loss, which the regain shots call for but no ball-side change could test in the window | commit `arrive` as revision 11, against the unmet gate). nx04
@@ -727,11 +726,11 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- Final coordinator gate and main publication of retained nv04 research tools/evidence and the generation-card deadline fix, from the isolated codex/nv04 worktree only.
-- T689 remains todo: the scoring realism gate is unmet; the original exploration window has ended and no scoring-engine candidate is applied. No additional balance tasks.
-- Preserve the primary checkout on main and its unrelated work. A future explicit T689 continuation can use the retained evidence and remaining failure diagnostics.
+- The nv04 continuation is published on main at 96eb899c; the full local gate and actual code-push CI run 41772636192 succeeded. Keep the primary checkout on local main and preserve its unrelated changes; use the isolated codex/nv04 worktree for further work.
+- T689 remains todo with its existing realism gate unmet. The exploration has ended, all evidence is retained, and no scoring-engine candidate is applied. No additional balance tasks.
 
 ## log
+- 261104 nv04 release: verified 96eb899c published to main; 2081 unit tests, 1177 integration tests (4 existing skips) and 346 Chromium journeys pass; actual CI 41772636192 succeeds (confirmed directly after CLI HTML conclusion-parser failure). Primary main checkout and unrelated work preserved. nx04
 - 261104 fix start: re-arm a generation-card timer that wakes before its fractional deadline, avoiding a permanently held club list; two regression tests and six existing schedule tests pass, with typecheck/lint/format. nx04
 - 261104 T689 partial: preserve all cf04/nx04 evidence and restore engine source after the unmet realism gate; exit recorded without marking the task done. Research timing and limited two-seed/position diagnostics clarified. nx04
 - 261104 T689 continue: nw04 research commit 8b6c840d retained; supersede its unnecessary owner-approval parking and use the remaining original exploration window for a structural candidate. No new task or source publication. nx04
@@ -751,4 +750,3 @@
 - 261103 update-ssot PLAYER r14 and create-task T688: trophy/team-led Ballon d Or first; scoring/wage commits gated on substantial measurements. bl03
 - 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
 - 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
-- 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
