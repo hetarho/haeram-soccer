@@ -260,4 +260,6 @@ export const verbatimParameters: Readonly<Record<string, readonly string[]>> = {
   'copy.free_agents.b9563581fa': ['p0'],
   'office.source.member': ['name'],
   'office.area.factor': ['effect', 'source'],
+  'market.source.club': ['club'],
+  'staff.source.club': ['club'],
 };

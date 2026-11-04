@@ -513,7 +513,17 @@
   font-size: 12px;
   font-family: var(--display);
 }
-.marketCard button {
+.marketCard > button {
   margin-top: 6px;
   min-height: var(--control-min-height);
+}
+/* Where a staff candidate comes from (→STAFF-49): 자유계약, or his club with its 웃돈. */
+.source {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
 }

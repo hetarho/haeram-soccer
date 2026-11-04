@@ -11,6 +11,7 @@ import type { MatchModelRelease } from '../../../../packages/engine/src/match-mo
 import { decode, encode, type StoragePort } from '../adapters/persistence';
 import { AUTOSAVE_MS, GameClient, SAVE_DATA_UPDATED, type ClientState } from './client';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
+import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 import type { World } from '../../../../packages/contracts/src/types';
 import { Host } from './host';
 import { serve } from './codec';
@@ -979,7 +980,9 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
     const sheet = await client.startClubProfile(club.clubId);
     expect(sheet!.squad.length).toBeGreaterThan(10);
     expect(sheet!.stadium.seats).toBeGreaterThan(0);
-    expect(sheet!.staff.map((post) => post.post)).toEqual(['manager']);
+    // A club nobody owns names a holder of every post (→STAFF-49), the manager first.
+    expect(sheet!.staff.map((post) => post.post)).toEqual(CLUB_POSTS);
+    expect(sheet!.staff.every((post) => post.name)).toBe(true);
     await expect(client.startClubProfile('nobody')).rejects.toThrow('인수할 수 없는 구단입니다.');
 
     const reply = await client.takeOver(club.clubId);
@@ -987,12 +990,14 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
     expect(client.state.start).toBeUndefined();
     const w = client.state.view!.world;
     expect(w.playerClub).toBe(club.clubId);
-    // After the takeover any club reads from the career: ours lists every post, a rival its manager.
+    // After the takeover any club reads from the career: ours and a rival list every post.
     const own = await client.clubProfile(club.clubId);
     expect(own.staff[0]).toMatchObject({ post: 'manager', name: w.manager.name });
     expect(own.staff.map((post) => post.post)).toContain('director');
     const rival = w.clubs.find((c) => c.id !== club.clubId)!;
-    const rivalSquad = (await client.clubProfile(rival.id)).squad;
+    const rivalProfile = await client.clubProfile(rival.id);
+    expect(rivalProfile.staff.map((post) => post.post)).toEqual(CLUB_POSTS);
+    const rivalSquad = rivalProfile.squad;
     const found = await client.playerProfile(rivalSquad[0]!.id);
     expect(found).toMatchObject({ club: rival.id, player: { name: rivalSquad[0]!.name } });
     expect(w.build).toBeUndefined();

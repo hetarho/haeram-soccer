@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { staffAuthority } from '../../../../packages/engine/src/testing';
+import { holdRows, staffAuthority } from '../../../../packages/engine/src/testing';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   openShortlistWindow,
@@ -9,7 +9,13 @@ import {
 } from '../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { lineOf } from '../../../../packages/engine/src/player';
-import { directorDecisions, requestName, requestStakes, shortlistRows } from './shortlist';
+import {
+  candidateOrigin,
+  directorDecisions,
+  requestName,
+  requestStakes,
+  shortlistRows,
+} from './shortlist';
 
 function club(seed = 'shortlist-ui') {
   return careerWorld({ country: 'ENG', seed });
@@ -97,5 +103,49 @@ describe('the shortlist by line and slot requests by position (→WEB-43, PLAYER
     // A line request reads as its line, a slot request as its position.
     expect(requestName({ line: 'DF' })).toBe('수비수');
     expect(requestName({ line: 'DF', position: 'CB' })).toBe('센터백');
+  });
+});
+
+describe('where a market candidate is (→CLUB-50, CLUB-51)', () => {
+  it("reads a scout's find: a free agent with no fee, or his club at its asking fee", () => {
+    expect(candidateOrigin({ source: { kind: 'free' }, fee: '0', foreign: false })).toEqual({
+      kind: 'free',
+      abroad: false,
+    });
+    expect(
+      candidateOrigin({ source: { kind: 'club', club: 'ESP-0-0-3' }, fee: '1200', foreign: true }),
+    ).toEqual({ kind: 'club', club: 'ESP-0-0-3', fee: '1200', abroad: true });
+  });
+
+  it('reads a world-market row the same way: his club, or none for a free agent', () => {
+    expect(candidateOrigin({ source: undefined, fee: '0', foreign: true })).toEqual({
+      kind: 'free',
+      abroad: true,
+    });
+    const source = { club: 'ENG-1-0-7', name: 'Club', country: 'ENG', tier: 1, group: 0 };
+    expect(candidateOrigin({ source, fee: '500', foreign: false })).toEqual({
+      kind: 'club',
+      club: 'ENG-1-0-7',
+      fee: '500',
+      abroad: false,
+    });
+  });
+
+  it('names where each shortlisted player is, free or at his club, those abroad marked', () => {
+    const w = club('shortlist-sources');
+    // 해외 스카우트망 3 looks at two top flights abroad and keeps a place per line for them.
+    holdRows(w, { policy: { globalScouting: 3 } });
+    openShortlistWindow(w);
+    const entries = shortlistRows(w, transferOffers(w)).flatMap((row) => row.entries);
+    expect(entries.length).toBeGreaterThan(0);
+    for (const { offer, origin } of entries) {
+      expect(origin).toEqual(candidateOrigin(offer));
+      expect(origin.kind).toBe(offer.source.kind);
+      expect(origin.abroad).toBe(offer.foreign);
+      if (origin.kind === 'club') expect(origin.fee).toBe(offer.fee);
+    }
+    expect(entries.some(({ origin }) => origin.kind === 'club' && origin.abroad)).toBe(true);
+    expect(entries.some(({ origin }) => !origin.abroad)).toBe(true);
+    expect(entries.some(({ origin }) => origin.kind === 'free')).toBe(true);
   });
 });

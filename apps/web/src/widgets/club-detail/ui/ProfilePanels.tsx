@@ -106,7 +106,10 @@ export function SquadPanel({
   );
 }
 
-/** 코치진: the manager first, then every post the club keeps, a vacant one named as such. */
+/**
+ * 코치진: the manager first, then every post — a club nobody owns names a holder of each
+ * (→STAFF-49), ours may show one vacant.
+ */
 export function StaffPanel({
   profile,
   onPerson,
@@ -174,11 +177,6 @@ export function StaffPanel({
                 <p className={s.note}>
                   {richMessage('copy.ProfilePanels.4c2825ff82', { p0: school })}
                 </p>
-              ),
-            )}
-            {localizeValue(
-              staff.length === 1 && (
-                <p className={s.note}>{richMessage('copy.ProfilePanels.dd4461bddb')}</p>
               ),
             )}
           </section>

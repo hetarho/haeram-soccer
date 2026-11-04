@@ -665,6 +665,16 @@
   line-height: 16px;
   font-weight: 500;
 }
+/* Where the row's player is (→CLUB-50), under his name and outside its button: his club links. */
+.rowSource {
+  display: block;
+  margin-top: -6px;
+  padding: 0 8px 4px;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 16px;
+}
 .potentialValue {
   display: inline-grid;
   justify-items: center;
@@ -780,8 +790,12 @@
     font-size: 12px;
     line-height: 18px;
   }
-  .playerName small {
+  .playerName small,
+  .rowSource {
     font-size: 11px;
+  }
+  .rowSource {
+    padding: 0 3px 4px;
   }
   .wageColumn {
     display: none;

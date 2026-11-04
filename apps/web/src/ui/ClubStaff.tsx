@@ -8,6 +8,7 @@ import type {
   ContractTerm,
   Manager,
   Staff,
+  StaffCandidate,
   StaffRole,
   TrainingCoach,
   World,
@@ -49,6 +50,8 @@ import { OvrBadge } from './OvrBadge';
 import { StaffRoleBadge } from './StaffRoleBadge';
 import { compactMoney, contractLine } from './format';
 import { directorDecisions } from './shortlist';
+import { staffOrigin } from './staffMarket';
+import { ClubLink } from '../entities/club';
 import { Money } from './Money';
 import s from './ClubStaff.module.css';
 import management from './ManagementView.module.css';
@@ -176,6 +179,67 @@ function TermCosts({
         })}
       </small>
     </p>
+  );
+}
+
+/**
+ * Where a staff candidate comes from and what signing him pays (→STAFF-49, CLUB-50): 자유계약 with
+ * his wage and signing fee, or his club with its compensation (웃돈) and the fee and compensation
+ * together. `link` off names the club as text, inside a control that already answers the tap.
+ */
+function StaffTerms({
+  w,
+  candidate,
+  link = true,
+  costs = true,
+}: {
+  w: World;
+  candidate: StaffCandidate;
+  link?: boolean;
+  /** Off where the wage and fee already have a line of their own. */
+  costs?: boolean;
+}) {
+  useTextLocale();
+  const origin = staffOrigin(candidate),
+    club = clubOf(w);
+  const plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />;
+  const named =
+    origin.kind === 'club' &&
+    (link ? (
+      <ClubLink w={w} id={origin.club} crest={12} />
+    ) : (
+      (w.clubs.find((c) => c.id === origin.club)?.name ?? origin.club)
+    ));
+  return (
+    <>
+      <small className={s.source} data-source={origin.kind}>
+        {localizeValue(
+          origin.kind === 'club'
+            ? richMessage('staff.source.club', {
+                club: named,
+                compensation: plain(origin.compensation),
+              })
+            : richMessage('staff.source.free'),
+        )}
+      </small>
+      {localizeValue(
+        costs && (
+          <small>
+            {localizeValue(
+              origin.kind === 'club'
+                ? richMessage('staff.cost.club', {
+                    wage: plain(candidate.wage),
+                    total: plain(origin.total),
+                  })
+                : richMessage('copy.ClubStaff.88938e8749', {
+                    p0: plain(candidate.wage),
+                    p1: plain(origin.fee),
+                  }),
+            )}
+          </small>
+        ),
+      )}
+    </>
   );
 }
 
@@ -733,12 +797,7 @@ export function CoachingStaff({
                             p1: staffImpact(w, role),
                           })}
                         </small>
-                        <small>
-                          {richMessage('copy.ClubStaff.88938e8749', {
-                            p0: plain(candidate.wage),
-                            p1: plain(candidate.fee),
-                          })}
-                        </small>
+                        <StaffTerms w={w} candidate={candidate} link={false} />
                       </button>
                     )),
                   )}
@@ -750,6 +809,13 @@ export function CoachingStaff({
             {localizeValue(
               chosen?.person && (
                 <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+              ),
+            )}
+            {localizeValue(
+              chosen?.club && (
+                <p className={s.note}>
+                  {richMessage('copy.Rich.dc1e71653d', { p0: <ClubLink w={w} id={chosen.club} /> })}
+                </p>
               ),
             )}
             {localizeValue(
@@ -873,8 +939,7 @@ export function StaffMarket({
   const [pick, setPick] = useTaskState<string | undefined>(w.id, 'staff-market-pick', undefined);
   const [term, setTerm] = useTaskState<ContractTerm>(w.id, 'staff-market-term', DELEGATED_TERM);
   const club = clubOf(w);
-  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />,
-    plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />;
+  const format = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const projected = useGameState((state) => state.view?.coaches[role]);
   const candidates = projected ?? staffCandidates(w, role);
   const current = w.staff?.find((member) => member.role === role);
@@ -955,12 +1020,7 @@ export function StaffMarket({
                       p0: hiredImpact(w, role, candidate),
                     })}
                   </small>
-                  <small>
-                    {richMessage('copy.ClubStaff.88938e8749', {
-                      p0: plain(candidate.wage),
-                      p1: plain(candidate.fee),
-                    })}
-                  </small>
+                  <StaffTerms w={w} candidate={candidate} />
                   <button
                     type="button"
                     data-ui="primary"
@@ -1023,6 +1083,13 @@ export function StaffMarket({
             {localizeValue(
               chosen.person && (
                 <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+              ),
+            )}
+            {localizeValue(
+              chosen.club && (
+                <p className={s.note}>
+                  {richMessage('copy.Rich.dc1e71653d', { p0: <ClubLink w={w} id={chosen.club} /> })}
+                </p>
               ),
             )}
             <TermDial
@@ -1162,6 +1229,7 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
                     : sourceMessage('copy.ClubStaff.7cff642737'),
                 )}
               </span>
+              <StaffTerms w={w} candidate={pick} costs={false} />
               <small>
                 {richMessage('copy.ClubStaff.adbb8848ea', {
                   p0: money(pick.wage),

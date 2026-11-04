@@ -2,23 +2,77 @@ import { message as sourceMessage } from '../../../../packages/contracts/src/mes
 import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import { richMessage } from '../presentation/LocalizedMessage';
 import { openStaff } from './state';
-import type { Line } from '../../../../packages/contracts/src/types';
-import type { World } from '../../../../packages/contracts/src/types';
+import type { Line, ScoutOffer, World } from '../../../../packages/contracts/src/types';
 import { nextShortlistDraw } from '../../../../packages/engine/src/signings';
 import { seasonDayLabel } from '../../../../packages/engine/src/calendar';
 import { staffMember } from '../../../../packages/engine/src/staff-info';
 import { clubOf, overall } from '../../../../packages/engine/src/player-state';
-import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
+import { ClubLink } from '../entities/club';
+import { clubDivision } from './league';
 import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
-import { REQUEST_WHY, requestName, requestStakes, LINE_NAMES, shortlistRows } from './shortlist';
+import {
+  type CandidateOrigin,
+  REQUEST_WHY,
+  requestName,
+  requestStakes,
+  LINE_NAMES,
+  shortlistRows,
+} from './shortlist';
 import s from './ScoutShortlist.module.css';
 
 /**
+ * Where a candidate is (→CLUB-50): 자유계약 · 이적료 없음, or his club as a link with its asking
+ * fee, marked 해외 when he was found abroad (→CLUB-51). `division` names the club's division after
+ * it; `fee` off leaves the fee to a column of its own.
+ */
+export function CandidateSource({
+  w,
+  origin,
+  division = false,
+  fee = true,
+}: {
+  w: World;
+  origin: CandidateOrigin;
+  division?: boolean;
+  fee?: boolean;
+}) {
+  useTextLocale();
+  const club = clubOf(w);
+  const at = origin.kind === 'club' ? w.clubs.find((c) => c.id === origin.club) : undefined;
+  const link = origin.kind === 'club' && <ClubLink w={w} id={origin.club} crest={12} />;
+  const named =
+    division && at ? (
+      <>
+        {localizeValue(link)} · {localizeValue(clubDivision(w, at))}
+      </>
+    ) : (
+      link
+    );
+  return (
+    <span className={s.source} data-source={origin.kind}>
+      {localizeValue(
+        origin.kind === 'free'
+          ? richMessage('market.source.free')
+          : fee
+            ? richMessage('market.source.club', {
+                club: named,
+                fee: <Money value={origin.fee} code={club.country} year={w.year} plain />,
+              })
+            : named,
+      )}
+      {localizeValue(
+        origin.abroad && <i className={s.abroad}>{richMessage('market.source.abroad')}</i>,
+      )}
+    </span>
+  );
+}
+
+/**
  * 스카우트 명단 at the end of 이적시장 (→WEB-43, →CLUB-33): the chief scout's candidates by role
- * with the day they were drawn and the next draw, the manager's requests with his picks marked
- * 감독 지목, and what an unmet request costs while a window is open. A tap opens the candidate as
- * the market list would.
+ * with the day they were drawn and the next draw, each with where he is (→CLUB-50), the manager's
+ * requests with his picks marked 감독 지목, and what an unmet request costs while a window is
+ * open. A tap opens the candidate as the market list would.
  */
 export function ScoutShortlist({
   w,
@@ -27,7 +81,7 @@ export function ScoutShortlist({
   onOpen,
 }: {
   w: World;
-  offers: readonly TransferOffer[];
+  offers: readonly ScoutOffer[];
   disabled: boolean;
   onOpen: (index: number) => void;
 }) {
@@ -91,54 +145,51 @@ export function ScoutShortlist({
                     )}
                   </h4>
                   {localizeValue(
-                    row.entries.map(({ index, offer, pick }) => (
-                      <button
-                        key={offer.player.id}
-                        data-ui="navigation"
-                        data-surface="detail"
-                        type="button"
-                        className={pick ? s.picked : undefined}
-                        disabled={disabled}
-                        data-testid={`shortlist-${offer.player.id}`}
-                        onClick={() => onOpen(index)}
-                      >
-                        <OvrBadge value={overall(offer.player)} role={offer.player.position} />
-                        <span className={s.who}>
-                          <b>
-                            {offer.player.name}
-                            {localizeValue(
-                              pick && (
-                                <i className={s.pickTag}>
-                                  {richMessage('copy.ScoutShortlist.5e6082ac28')}
-                                </i>
-                              ),
-                            )}
-                          </b>
-                          <small>
-                            {richMessage('copy.ScoutShortlist.1489be8297', {
-                              p0: offer.player.position,
-                              p1: LINE_NAMES[row.line],
-                              p2: ' ',
-                              p3: Math.round(offer.player.potential),
-                              p4: w.year - offer.player.born,
-                            })}
-                          </small>
-                        </span>
-                        <span className={s.money}>
-                          <b>
-                            {localizeValue(
-                              offer.freeAgent
-                                ? sourceMessage('copy.PlayerCompare.f201ec1d4f')
-                                : cash(offer.fee),
-                            )}
-                          </b>
-                          <small>
-                            {richMessage('copy.ScoutShortlist.572ddadbfc', {
-                              p0: cash(offer.player.wage),
-                            })}
-                          </small>
-                        </span>
-                      </button>
+                    row.entries.map(({ index, offer, origin, pick }) => (
+                      <div key={offer.player.id} className={s.entry}>
+                        <button
+                          data-ui="navigation"
+                          data-surface="detail"
+                          type="button"
+                          className={pick ? `${s.open} ${s.picked}` : s.open}
+                          disabled={disabled}
+                          data-testid={`shortlist-${offer.player.id}`}
+                          onClick={() => onOpen(index)}
+                        >
+                          <OvrBadge value={overall(offer.player)} role={offer.player.position} />
+                          <span className={s.who}>
+                            <b>
+                              {offer.player.name}
+                              {localizeValue(
+                                pick && (
+                                  <i className={s.pickTag}>
+                                    {richMessage('copy.ScoutShortlist.5e6082ac28')}
+                                  </i>
+                                ),
+                              )}
+                            </b>
+                            <small>
+                              {richMessage('copy.ScoutShortlist.1489be8297', {
+                                p0: offer.player.position,
+                                p1: LINE_NAMES[row.line],
+                                p2: ' ',
+                                p3: Math.round(offer.player.potential),
+                                p4: w.year - offer.player.born,
+                              })}
+                            </small>
+                          </span>
+                          <span className={s.money}>
+                            <small>
+                              {richMessage('copy.ScoutShortlist.572ddadbfc', {
+                                p0: cash(offer.player.wage),
+                              })}
+                            </small>
+                          </span>
+                        </button>
+                        <small className={s.entrySource}>
+                          <CandidateSource w={w} origin={origin} />
+                        </small>
+                      </div>
                     )),
                   )}
                 </div>
@@ -158,7 +209,7 @@ export function RecruitmentNeeds({
   onRole,
 }: {
   w: World;
-  offers: readonly TransferOffer[];
+  offers: readonly ScoutOffer[];
   onRole: (line: Line) => void;
 }) {
   useTextLocale();

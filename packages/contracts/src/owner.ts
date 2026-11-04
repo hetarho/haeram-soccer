@@ -210,7 +210,8 @@ export interface ClubPost {
 /**
  * Any club as its detail opens it (→WEB-15, WEB-58): squad, 코치진, stadium and history, read by
  * the worker (runtime `clubProfile`) from the world in play, or from the generated world before
- * a takeover. A club nobody owns keeps only its manager; ours lists every post, vacant ones too.
+ * a takeover. Every post is listed, the manager first: a club nobody owns names a holder of each
+ * (→STAFF-49), ours may leave one vacant.
  */
 export interface ClubProfile {
   crest?: CrestDesign;
