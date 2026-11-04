@@ -484,6 +484,6 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
       'developer',
     );
     expect(replaced.manager.until).toBe(replaced.year + 1);
-    expect(replaced.inbox!.at(-1)!.detail).toContain('선호 학파·감독 기조에 맞지 않고');
+    expect(replaced.inbox!.at(-1)!.detail).toContain('선호 학파·감독 기조·연봉 한도에 맞지 않고');
   });
 });
