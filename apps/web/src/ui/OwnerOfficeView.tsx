@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
@@ -42,17 +45,25 @@ const ApprovalWorkbench = lazy(() =>
   import('./Rich').then((module) => ({ default: module.ApprovalWorkbench })),
 );
 const WORKBENCH_LABELS: Record<ResponsibilityKey, string> = {
-  manager: '감독 선임·재계약',
-  staff: '스태프 채용·계약 관리',
-  contracts: '선수 계약 협상',
-  recruitment: '영입·임대·이적 협상',
-  sales: '선수별 매각 방침·도착한 제안',
-  academy: '유소년 승격·방출',
-  sponsors: '스폰서 계약 선택',
+  manager: sourceMessage('copy.OwnerOfficeView.ff794c03f8'),
+  staff: sourceMessage('copy.OwnerOfficeView.1fcd726524'),
+  contracts: sourceMessage('copy.OwnerOfficeView.7daa4792b6'),
+  recruitment: sourceMessage('copy.OwnerOfficeView.76bf376002'),
+  sales: sourceMessage('copy.OwnerOfficeView.2f5473eaf9'),
+  academy: sourceMessage('copy.OwnerOfficeView.dc639eb0dc'),
+  sponsors: sourceMessage('copy.OwnerOfficeView.cfada40360'),
 };
 const OBSERVATIONS = [
-  ['matchEve', '경기 전날 보고', '위임하면 스태프가 경기를 치르고 결과를 전달해요.'],
-  ['windowOpen', '이적시장 개장 보고', '위임하면 개장 보고 확인을 기다리지 않고 업무를 계속해요.'],
+  [
+    'matchEve',
+    sourceMessage('copy.OwnerOfficeView.281583de02'),
+    sourceMessage('copy.OwnerOfficeView.bd4986f13a'),
+  ],
+  [
+    'windowOpen',
+    sourceMessage('copy.OwnerOfficeView.d7995e9f8e'),
+    sourceMessage('copy.OwnerOfficeView.8793f332bd'),
+  ],
 ] as const;
 export function OfficeRow({
   label,
@@ -71,56 +82,86 @@ export function OfficeRow({
   observation?: boolean;
   assignee?: ReactNode;
 }) {
+  useTextLocale();
   return (
     <div className={`${s.row} ${s.responsibilityRow}`}>
       <span>
-        <b>{label}</b>
-        <small>{detail}</small>
+        <b>{localizeValue(label)}</b>
+        <small>{localizeValue(detail)}</small>
       </span>
       <div className={s.rowControls}>
-        {assignee && (
-          <div className={s.assignee} aria-label="위임 대상">
-            {assignee}
-          </div>
-        )}
-        <div className={s.choices} role="group" aria-label={label} data-ui="choices">
-          {([false, true] as const).map((value) => (
-            <button
-              key={String(value)}
-              data-ui={delegated === value ? 'secondary' : undefined}
-              aria-pressed={delegated === value}
-              disabled={blocked}
-              onClick={() => {
-                if (delegated !== value) onSelect(value);
-              }}
+        {localizeValue(
+          assignee && (
+            <div
+              className={s.assignee}
+              aria-label={displayMessage('copy.ApprovalQueue.1d27c18bbd')}
             >
-              {observation ? (value ? '위임' : '보고받기') : value ? '자동' : '직접'}
-            </button>
-          ))}
+              {localizeValue(assignee)}
+            </div>
+          ),
+        )}
+        <div className={s.choices} role="group" aria-label={localizeValue(label)} data-ui="choices">
+          {localizeValue(
+            ([false, true] as const).map((value) => (
+              <button
+                key={String(value)}
+                data-ui={delegated === value ? 'secondary' : undefined}
+                aria-pressed={delegated === value}
+                disabled={blocked}
+                onClick={() => {
+                  if (delegated !== value) onSelect(value);
+                }}
+              >
+                {localizeValue(
+                  observation
+                    ? value
+                      ? sourceMessage('copy.ApprovalQueue.e4b0c79fac')
+                      : sourceMessage('copy.OwnerOfficeView.1febc223bb')
+                    : value
+                      ? sourceMessage('copy.ControllerBackgrounds.ca7eb2ef0a')
+                      : sourceMessage('copy.ApprovalQueue.20c483bdda'),
+                )}
+              </button>
+            )),
+          )}
         </div>
       </div>
     </div>
   );
 }
 export function PendingHandover({ proposal }: { proposal: OfficeProposal }) {
+  useTextLocale();
   if (!proposal.pending.length) return null;
   return (
-    <section className={s.preview} aria-label="대기 업무 이관 미리보기">
-      <h3>함께 넘길 대기 업무</h3>
+    <section className={s.preview} aria-label={displayMessage('copy.OwnerOfficeView.5c967dce5a')}>
+      <h3>{richMessage('copy.OwnerOfficeView.39cc3c0774')}</h3>
       <ul>
-        {proposal.pending.map((item) => (
-          <li key={item.key}>
-            {item.count > 0 && (
-              <>
-                대기 중인 {RESPONSIBILITY_LABELS[item.key]} {item.count}건도{' '}
-                {item.to === 'delegated' ? '위임됩니다' : '보고받고 승인하게 됩니다'}.
-              </>
-            )}
-            {(item.held ?? 0) > 0 && (
-              <> 공동 승인 {item.held}건은 다른 업무의 구단주 승인이 필요해 대기해요.</>
-            )}
-          </li>
-        ))}
+        {localizeValue(
+          proposal.pending.map((item) => (
+            <li key={item.key}>
+              {localizeValue(
+                item.count > 0 && (
+                  <>
+                    {richMessage('copy.OwnerOfficeView.21aab38c4f', {
+                      p0: RESPONSIBILITY_LABELS[item.key],
+                      p1: item.count,
+                      p2: ' ',
+                      p3:
+                        item.to === 'delegated'
+                          ? sourceMessage('copy.OwnerOfficeView.e0becc4639')
+                          : sourceMessage('copy.OwnerOfficeView.ae39dc2655'),
+                    })}
+                  </>
+                ),
+              )}
+              {localizeValue(
+                (item.held ?? 0) > 0 && (
+                  <>{richMessage('copy.OwnerOfficeView.01e9d1412f', { p0: item.held })}</>
+                ),
+              )}
+            </li>
+          )),
+        )}
       </ul>
     </section>
   );
@@ -136,6 +177,7 @@ export function OwnerOffice({
   scope?: readonly ResponsibilityKey[];
   focus?: ResponsibilityKey | 'finance';
 }) {
+  useTextLocale();
   const state = useGameState((state) => state),
     w = state.view!.world,
     settings = settingsOf(w);
@@ -170,7 +212,9 @@ export function OwnerOffice({
       await applyOfficeChange(client, controller, next);
       setProposal(undefined);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '변경하지 못했어요. 다시 시도해 주세요.');
+      setMessage(
+        error instanceof Error ? error.message : sourceMessage('copy.ApprovalQueue.def8fed41f'),
+      );
     } finally {
       inFlight.current = false;
       setApplying(false);
@@ -193,270 +237,351 @@ export function OwnerOffice({
     (keys.length > 0
       ? proposal.change.responsibilities?.[keys[0]] === 'delegated'
       : observations.length > 0 && proposal.change.observations?.[observations[0][0]] === false);
-  const title = delegated ? '자동으로 처리하겠습니다.' : '직접 결재하겠습니다.';
+  const title = delegated
+    ? sourceMessage('copy.OwnerOfficeView.9a4efaffe0')
+    : sourceMessage('copy.ApprovalQueue.33dbc38b17');
   const { delegated: delegatedCount, total: totalCount } = delegationCounts(w);
   return (
     <div className={s.office} data-testid={scope ? 'desk-responsibilities' : 'owner-office'}>
-      {!scope && (
-        <div
-          className={s.bulkActions}
-          role="group"
-          aria-label="전체 보고·위임 설정"
-          data-ui="choices"
-        >
-          {(['direct', 'delegated'] as const).map((value) => (
-            <button
-              key={value}
-              data-ui={
-                (value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0)
-                  ? 'secondary'
-                  : undefined
-              }
-              aria-pressed={
-                value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0
-              }
-              disabled={blocked}
-              onClick={() => {
-                const change = officeBulkChange(w, value);
-                if (change) propose(change);
-              }}
-            >
-              {value === 'delegated' ? '전체 자동' : '전체 직접'}
-            </button>
-          ))}
-        </div>
-      )}
-      {!scope && <FacilityArt kind="manager" world={w} className={s.hero} eager />}
-      {state.readonly && <p className={s.message}>읽기 전용 상태에서는 변경할 수 없어요.</p>}
-      {message && !proposal && (
-        <p role="alert" className={s.message}>
-          {message}
-        </p>
-      )}
-      <section data-surface="panel" className={s.section} aria-label="보고·위임 설정">
-        <div className={s.sectionHead}>
-          <h3>결재 담당</h3>
-          <small>
-            {scope
-              ? scope.filter((key) => settings.responsibilities[key] === 'delegated').length
-              : delegatedCount}{' '}
-            / {scope?.length ?? totalCount}개 자동
-          </small>
-        </div>
-        <p>
-          직접은 구단주가 승인해요. 자동은 담당 스태프가 아래 지침에 따라 처리하고 결과를 보고해요.
-          지침은 각 업무 아래에서 정합니다.
-        </p>
-        <div className={s.rows}>
-          {!scope &&
-            OBSERVATIONS.map(([key, label, detail]) => (
-              <OfficeRow
-                key={key}
-                observation
-                label={label}
-                detail={detail}
-                delegated={!settings.observations[key]}
-                blocked={blocked}
-                onSelect={(delegated) => propose({ observations: { [key]: !delegated } })}
-              />
-            ))}
-          {(scope ?? RESPONSIBILITY_KEYS).map((key) => (
-            <article
-              key={key}
-              id={`office-decision-${key}`}
-              className={s.responsibility}
-              data-surface="inset"
-              aria-label={`${RESPONSIBILITY_LABELS[key]} 지침`}
-            >
-              <OfficeRow
-                label={RESPONSIBILITY_LABELS[key]}
-                detail={DETAILS[key]}
-                assignee={responsibilityAssignees(w, key).map(({ post, label }) => (
-                  <button
-                    key={post}
-                    type="button"
-                    data-ui="link"
-                    aria-haspopup="dialog"
-                    aria-label={`현재 ${label} 정보 보기`}
-                    onClick={(event) => {
-                      event.currentTarget.focus();
-                      setAssigneePost(post);
-                    }}
-                  >
-                    {label}
-                  </button>
-                ))}
-                delegated={settings.responsibilities[key] === 'delegated'}
-                blocked={blocked}
-                onSelect={(delegated) =>
-                  propose({ responsibilities: { [key]: delegated ? 'delegated' : 'direct' } })
-                }
-              />
-              <div className={s.guidelines}>
-                {DECISION_POLICIES[key].map(
-                  (policy) =>
-                    policy === 'recruitment' && (
-                      <RecruitmentGuideline key={policy} w={w} client={client} />
-                    ),
-                )}
-                {DECISION_DIRECTIONS[key].map((direction) => (
-                  <DirectionSetting
-                    key={direction}
-                    w={w}
-                    client={client}
-                    directionKey={direction}
-                  />
-                ))}
-                {DECISION_BUILDS[key].map((slot) => (
-                  <BuildSetting key={slot} w={w} client={client} slot={slot} />
-                ))}
-                {key !== 'sales' && key !== 'sponsors' && (
-                  <WageBudgetSetting w={w} client={client} responsibility={key} />
-                )}
-                {key !== 'sponsors' && (
-                  <DecisionFinanceSetting w={w} client={client} responsibility={key} />
-                )}
-                <DecisionRuleFacts w={w} responsibility={key} />
+      {localizeValue(
+        !scope && (
+          <div
+            className={s.bulkActions}
+            role="group"
+            aria-label={displayMessage('copy.OwnerOfficeView.d214358c34')}
+            data-ui="choices"
+          >
+            {localizeValue(
+              (['direct', 'delegated'] as const).map((value) => (
                 <button
-                  type="button"
-                  data-ui="secondary"
-                  className={s.workbenchButton}
-                  aria-haspopup="dialog"
-                  onClick={() => setWorkbench(key)}
+                  key={value}
+                  data-ui={
+                    (value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0)
+                      ? 'secondary'
+                      : undefined
+                  }
+                  aria-pressed={
+                    value === 'delegated' ? delegatedCount === totalCount : delegatedCount === 0
+                  }
+                  disabled={blocked}
+                  onClick={() => {
+                    const change = officeBulkChange(w, value);
+                    if (change) propose(change);
+                  }}
                 >
-                  {WORKBENCH_LABELS[key]} 열기
+                  {localizeValue(
+                    value === 'delegated'
+                      ? sourceMessage('copy.OwnerOfficeView.7140de83b3')
+                      : sourceMessage('copy.ApprovalQueue.0878910c76'),
+                  )}
                 </button>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-      {workbench && (
-        <Dialog label={WORKBENCH_LABELS[workbench]} wide onClose={() => setWorkbench(undefined)}>
-          <Suspense fallback={<p role="status">업무 화면을 여는 중…</p>}>
-            <ApprovalWorkbench
-              state={state}
-              client={client}
-              controller={controller}
-              responsibility={workbench}
-            />
-          </Suspense>
-        </Dialog>
-      )}
-      {!scope && settings.mode === 'automatic' && (
-        <section data-surface="panel" className={s.section} aria-label="경기 결과 알림">
-          <label className={s.check}>
-            <input
-              type="checkbox"
-              checked={background.resultNotice}
-              disabled={blocked}
-              onChange={(event) => controller.setBackground({ resultNotice: event.target.checked })}
-            />
-            경기 결과 알림
-          </label>
-        </section>
-      )}
-      {!scope && settings.mode === 'automatic' && (
-        <section
-          data-surface="panel"
-          className={s.section}
-          aria-label="자동 모드의 백그라운드 진행"
-        >
-          <h3>자리를 비운 동안</h3>
-          <label className={s.check}>
-            <input
-              type="checkbox"
-              checked={background.hidden}
-              disabled={blocked}
-              onChange={(event) => controller.setBackground({ hidden: event.target.checked })}
-            />
-            부재 중에도 업무 계속
-          </label>
-          <label className={s.row}>
-            <b>부재 중 업무 진행 한도</b>
-            <Select
-              aria-label="자리 비운 동안 진행 한도"
-              disabled={blocked}
-              value={background.away}
-              onValueChange={(value) => controller.setBackground({ away: value as AwayLimit })}
-            >
-              {Object.entries(AWAY_LIMITS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </Select>
-          </label>
-        </section>
-      )}
-      {assigneePost && (
-        <AssigneeProfile
-          w={w}
-          post={assigneePost}
-          client={client}
-          onClose={() => setAssigneePost(undefined)}
-        />
-      )}
-      {proposal && (
-        <Dialog
-          label={title}
-          onClose={close}
-          actions={
-            <div className={s.actions}>
-              <button disabled={applying} onClick={close}>
-                취소
-              </button>
-              <button
-                data-ui="primary"
-                disabled={blocked || w.id !== proposal.id}
-                onClick={() => void apply(proposal)}
-              >
-                {delegated ? '자동으로 맡기기' : '직접 결재하기'}
-              </button>
-            </div>
-          }
-        >
-          <div className={s.confirmation} aria-busy={applying}>
-            <FacilityArt
-              kind={delegated ? 'staff' : 'manager'}
-              world={w}
-              className={s.hero}
-              eager
-            />
-            <p>
-              {[
-                ...observations.map(([, label]) => label),
-                ...keys.map((key) => RESPONSIBILITY_LABELS[key]),
-              ].join(' · ')}
-            </p>
-            <strong>
-              {delegated
-                ? '담당 스태프에게 판단과 실행을 맡깁니다.'
-                : '보고를 받고 필요한 사안은 제가 승인하겠습니다.'}
-            </strong>
-            <ul>
-              {observations.map(([key, label, detail]) => (
-                <li key={key}>
-                  {label}: {delegated ? detail : '구단주의 확인을 기다립니다.'}
-                </li>
-              ))}
-              {keys.map((key) => (
-                <li key={key}>{DETAILS[key]}</li>
-              ))}
-            </ul>
-            <p>
-              {delegated
-                ? '정해 둔 방침에 따라 처리하고 결과를 보고합니다.'
-                : '결정이 필요한 사안은 제게 보고하고 승인을 기다립니다.'}
-            </p>
-            <PendingHandover proposal={proposal} />
-            {message && (
-              <p role="alert" className={s.message}>
-                {message}
-              </p>
+              )),
             )}
           </div>
-        </Dialog>
+        ),
+      )}
+      {localizeValue(!scope && <FacilityArt kind="manager" world={w} className={s.hero} eager />)}
+      {localizeValue(
+        state.readonly && (
+          <p className={s.message}>{richMessage('copy.OwnerOfficeView.c6b3435977')}</p>
+        ),
+      )}
+      {localizeValue(
+        message && !proposal && (
+          <p role="alert" className={s.message}>
+            {localizeValue(message)}
+          </p>
+        ),
+      )}
+      <section
+        data-surface="panel"
+        className={s.section}
+        aria-label={displayMessage('copy.OwnerOfficeView.2760beeb88')}
+      >
+        <div className={s.sectionHead}>
+          <h3>{richMessage('copy.OwnerOfficeView.ea69dde801')}</h3>
+          <small>
+            {richMessage('copy.OwnerOfficeView.3aef7bc1a8', {
+              p0: scope
+                ? scope.filter((key) => settings.responsibilities[key] === 'delegated').length
+                : delegatedCount,
+              p1: ' ',
+              p2: scope?.length ?? totalCount,
+            })}
+          </small>
+        </div>
+        <p>{richMessage('copy.OwnerOfficeView.674aa7fd09')}</p>
+        <div className={s.rows}>
+          {localizeValue(
+            !scope &&
+              OBSERVATIONS.map(([key, label, detail]) => (
+                <OfficeRow
+                  key={key}
+                  observation
+                  label={localizeValue(label)}
+                  detail={detail}
+                  delegated={!settings.observations[key]}
+                  blocked={blocked}
+                  onSelect={(delegated) => propose({ observations: { [key]: !delegated } })}
+                />
+              )),
+          )}
+          {localizeValue(
+            (scope ?? RESPONSIBILITY_KEYS).map((key) => (
+              <article
+                key={key}
+                id={`office-decision-${key}`}
+                className={s.responsibility}
+                data-surface="inset"
+                aria-label={displayMessage('copy.OwnerOfficeView.27ab9d77e9', {
+                  p0: RESPONSIBILITY_LABELS[key],
+                })}
+              >
+                <OfficeRow
+                  label={localizeValue(RESPONSIBILITY_LABELS[key])}
+                  detail={DETAILS[key]}
+                  assignee={responsibilityAssignees(w, key).map(({ post, label }) => (
+                    <button
+                      key={post}
+                      type="button"
+                      data-ui="link"
+                      aria-haspopup="dialog"
+                      aria-label={displayMessage('copy.OwnerOfficeView.60ee64b3c8', { p0: label })}
+                      onClick={(event) => {
+                        event.currentTarget.focus();
+                        setAssigneePost(post);
+                      }}
+                    >
+                      {localizeValue(label)}
+                    </button>
+                  ))}
+                  delegated={settings.responsibilities[key] === 'delegated'}
+                  blocked={blocked}
+                  onSelect={(delegated) =>
+                    propose({ responsibilities: { [key]: delegated ? 'delegated' : 'direct' } })
+                  }
+                />
+                <div className={s.guidelines}>
+                  {localizeValue(
+                    DECISION_POLICIES[key].map(
+                      (policy) =>
+                        policy === 'recruitment' && (
+                          <RecruitmentGuideline key={policy} w={w} client={client} />
+                        ),
+                    ),
+                  )}
+                  {localizeValue(
+                    DECISION_DIRECTIONS[key].map((direction) => (
+                      <DirectionSetting
+                        key={direction}
+                        w={w}
+                        client={client}
+                        directionKey={direction}
+                      />
+                    )),
+                  )}
+                  {localizeValue(
+                    DECISION_BUILDS[key].map((slot) => (
+                      <BuildSetting key={slot} w={w} client={client} slot={slot} />
+                    )),
+                  )}
+                  {localizeValue(
+                    key !== 'sales' && key !== 'sponsors' && (
+                      <WageBudgetSetting w={w} client={client} responsibility={key} />
+                    ),
+                  )}
+                  {localizeValue(
+                    key !== 'sponsors' && (
+                      <DecisionFinanceSetting w={w} client={client} responsibility={key} />
+                    ),
+                  )}
+                  <DecisionRuleFacts w={w} responsibility={key} />
+                  <button
+                    type="button"
+                    data-ui="secondary"
+                    className={s.workbenchButton}
+                    aria-haspopup="dialog"
+                    onClick={() => setWorkbench(key)}
+                  >
+                    {richMessage('copy.stories.a779e41652', { p0: WORKBENCH_LABELS[key] })}
+                  </button>
+                </div>
+              </article>
+            )),
+          )}
+        </div>
+      </section>
+      {localizeValue(
+        workbench && (
+          <Dialog
+            label={localizeValue(WORKBENCH_LABELS[workbench])}
+            wide
+            onClose={() => setWorkbench(undefined)}
+          >
+            <Suspense
+              fallback={<p role="status">{richMessage('copy.OwnerOfficeView.d82fac75b0')}</p>}
+            >
+              <ApprovalWorkbench
+                state={state}
+                client={client}
+                controller={controller}
+                responsibility={workbench}
+              />
+            </Suspense>
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        !scope && settings.mode === 'automatic' && (
+          <section
+            data-surface="panel"
+            className={s.section}
+            aria-label={displayMessage('copy.OwnerOfficeView.0b17ee2b4f')}
+          >
+            <label className={s.check}>
+              {richMessage('copy.OwnerOfficeView.2576957358', {
+                p0: (
+                  <input
+                    type="checkbox"
+                    checked={background.resultNotice}
+                    disabled={blocked}
+                    onChange={(event) =>
+                      controller.setBackground({ resultNotice: event.target.checked })
+                    }
+                  />
+                ),
+              })}
+            </label>
+          </section>
+        ),
+      )}
+      {localizeValue(
+        !scope && settings.mode === 'automatic' && (
+          <section
+            data-surface="panel"
+            className={s.section}
+            aria-label={displayMessage('copy.OwnerOfficeView.80f971650a')}
+          >
+            <h3>{richMessage('copy.AwaySummary.5cb298a46d')}</h3>
+            <label className={s.check}>
+              {richMessage('copy.OwnerOfficeView.7578f9d7cc', {
+                p0: (
+                  <input
+                    type="checkbox"
+                    checked={background.hidden}
+                    disabled={blocked}
+                    onChange={(event) => controller.setBackground({ hidden: event.target.checked })}
+                  />
+                ),
+              })}
+            </label>
+            <label className={s.row}>
+              <b>{richMessage('copy.OwnerOfficeView.996d14a015')}</b>
+              <Select
+                aria-label={displayMessage('copy.OwnerOfficeView.8d7d7184d2')}
+                disabled={blocked}
+                value={background.away}
+                onValueChange={(value) => controller.setBackground({ away: value as AwayLimit })}
+              >
+                {localizeValue(
+                  Object.entries(AWAY_LIMITS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {localizeValue(label)}
+                    </option>
+                  )),
+                )}
+              </Select>
+            </label>
+          </section>
+        ),
+      )}
+      {localizeValue(
+        assigneePost && (
+          <AssigneeProfile
+            w={w}
+            post={assigneePost}
+            client={client}
+            onClose={() => setAssigneePost(undefined)}
+          />
+        ),
+      )}
+      {localizeValue(
+        proposal && (
+          <Dialog
+            label={localizeValue(title)}
+            onClose={close}
+            actions={
+              <div className={s.actions}>
+                <button disabled={applying} onClick={close}>
+                  {richMessage('common.cancel')}
+                </button>
+                <button
+                  data-ui="primary"
+                  disabled={blocked || w.id !== proposal.id}
+                  onClick={() => void apply(proposal)}
+                >
+                  {localizeValue(
+                    delegated
+                      ? sourceMessage('copy.OwnerOfficeView.1c0244d4e4')
+                      : sourceMessage('copy.ApprovalQueue.2157d80d03'),
+                  )}
+                </button>
+              </div>
+            }
+          >
+            <div className={s.confirmation} aria-busy={applying}>
+              <FacilityArt
+                kind={delegated ? 'staff' : 'manager'}
+                world={w}
+                className={s.hero}
+                eager
+              />
+              <p>
+                {localizeValue(
+                  [
+                    ...observations.map(([, label]) => label),
+                    ...keys.map((key) => RESPONSIBILITY_LABELS[key]),
+                  ].join(' · '),
+                )}
+              </p>
+              <strong>
+                {localizeValue(
+                  delegated
+                    ? sourceMessage('copy.OwnerOfficeView.4c91111c2d')
+                    : sourceMessage('copy.OwnerOfficeView.75dfb5ad23'),
+                )}
+              </strong>
+              <ul>
+                {localizeValue(
+                  observations.map(([key, label, detail]) => (
+                    <li key={key}>
+                      {localizeValue(label)}:{' '}
+                      {localizeValue(
+                        delegated ? detail : sourceMessage('copy.OwnerOfficeView.72d0e7aafc'),
+                      )}
+                    </li>
+                  )),
+                )}
+                {localizeValue(keys.map((key) => <li key={key}>{localizeValue(DETAILS[key])}</li>))}
+              </ul>
+              <p>
+                {localizeValue(
+                  delegated
+                    ? sourceMessage('copy.OwnerOfficeView.263b958bf3')
+                    : sourceMessage('copy.OwnerOfficeView.21dd03a4d5'),
+                )}
+              </p>
+              <PendingHandover proposal={proposal} />
+              {localizeValue(
+                message && (
+                  <p role="alert" className={s.message}>
+                    {localizeValue(message)}
+                  </p>
+                ),
+              )}
+            </div>
+          </Dialog>
+        ),
       )}
     </div>
   );

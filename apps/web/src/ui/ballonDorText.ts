@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { World } from '../../../../packages/contracts/src/types';
 import { ballonDorPremium, ballonDorRecord } from '../../../../packages/engine/src/ballon-dor';
 import { seasonName } from './format';
@@ -10,16 +11,25 @@ export function ballonDorLine(history: World['history'], id: string) {
   const record = ballonDorRecord(history, id);
   const parts = [
     record.wins.length
-      ? `수상 ${record.wins.length}회 (${record.wins.map(seasonName).join(', ')})`
+      ? sourceMessage('copy.ballonDorText.d6ff4dc76c', {
+          p0: record.wins.length,
+          p1: record.wins.map(seasonName).join(', '),
+        })
       : '',
     ...([2, 3] as const).map((place) => {
       const seasons = record.podiums.filter((entry) => entry.place === place);
       return seasons.length
-        ? `${place}위 ${seasons.length}회 (${seasons.map((entry) => seasonName(entry.year)).join(', ')})`
+        ? sourceMessage('copy.ballonDorText.4bce6565df', {
+            p0: place,
+            p1: seasons.length,
+            p2: seasons.map((entry) => seasonName(entry.year)).join(', '),
+          })
         : '';
     }),
   ].filter(Boolean);
-  return parts.length ? `발롱도르 ${parts.join(' · ')}` : undefined;
+  return parts.length
+    ? sourceMessage('copy.ballonDorText.73d63e1a0a', { p0: parts.join(' · ') })
+    : undefined;
 }
 
 /**
@@ -29,6 +39,13 @@ export function ballonDorLine(history: World['history'], id: string) {
 export function ballonDorPremiumLine(w: Pick<World, 'history' | 'year'>, id: string) {
   const premium = ballonDorPremium(w.history, w.year, id);
   if (premium.factor === 1 || premium.year === undefined) return undefined;
-  const place = premium.place === 1 ? '수상' : `${premium.place}위`;
-  return `발롱도르 ${place} (${seasonName(premium.year)}) · 요구 +${Math.round((premium.factor - 1) * 100)}%`;
+  const place =
+    premium.place === 1
+      ? sourceMessage('copy.BallonDorView.936c3936af')
+      : sourceMessage('copy.BallonDorView.5094d45cea', { p0: premium.place });
+  return sourceMessage('copy.ballonDorText.6fa4042c60', {
+    p0: place,
+    p1: seasonName(premium.year),
+    p2: Math.round((premium.factor - 1) * 100),
+  });
 }

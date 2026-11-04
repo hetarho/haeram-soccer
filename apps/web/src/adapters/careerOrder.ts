@@ -1,5 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 const MAX_ROWS = 1_000_000;
-const failure = () => new Error('인물 이력 순서 스트림 손상');
+const failure = () => new Error(sourceMessage('copy.careerOrder.d0c01b17e5'));
 function base64(bytes: Uint8Array) {
   let value = '';
   for (let i = 0; i < bytes.length; i += 8192)

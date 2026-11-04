@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { FacilityPart, World } from '../../contracts/src/types';
 import { dayCountedFrom } from './calendar';
 import { addEvent } from './events';
@@ -41,14 +42,14 @@ export {
  * which finish on their scheduled day.
  */
 export const WORK_INFO: Record<StadiumWork | 'level', { label: string; days: number }> = {
-  expansion: { label: '증축', days: 180 },
-  rebuild: { label: '재건축', days: 540 },
-  level: { label: '공사', days: 90 },
+  expansion: { label: sourceMessage('copy.facilities.9c75a54841'), days: 180 },
+  rebuild: { label: sourceMessage('copy.facilities.68176b115a'), days: 540 },
+  level: { label: sourceMessage('copy.facilities.25e5184374'), days: 90 },
 };
 export const FACILITY_PART_LABEL: Record<FacilityPart, string> = {
-  stadium: '경기장',
-  training: '훈련장',
-  academy: '유소년 시설',
+  stadium: sourceMessage('copy.ClubOperations.64779ec1ad'),
+  training: sourceMessage('copy.outcome.e9dbbe23f3'),
+  academy: sourceMessage('copy.outcome.09de5cf710'),
 };
 
 /** Days of work to build a part up to `level`. */
@@ -83,7 +84,7 @@ export function nextWork(w: World, part: FacilityPart) {
     kind: step ? (step.work as StadiumWork) : ('level' as const),
     label: step
       ? `${WORK_INFO[step.work as StadiumWork].label} · ${step.name}`
-      : `${FACILITY_PART_LABEL[part]} ${to}단계`,
+      : sourceMessage('copy.facilities.8c01bbd55b', { p0: FACILITY_PART_LABEL[part], p1: to }),
     capacity: step?.capacity,
     days: workDays(part, to),
     units: partCostUnits(part, to),
@@ -96,11 +97,12 @@ export function nextWork(w: World, part: FacilityPart) {
  * validates its displayed quote first; the calibration harness can also build by its own rule.
  */
 export function startFacilityWork(w: World, part: FacilityPart, pay: (amount: string) => void) {
-  if (!FACILITY_PARTS.includes(part)) throw new Error('시설 부문을 확인하세요.');
+  if (!FACILITY_PARTS.includes(part)) throw new Error(sourceMessage('copy.facilities.7038e27864'));
   if (w.facilityWorks?.[part])
-    throw new Error(`${FACILITY_PART_LABEL[part]} 공사가 이미 진행 중입니다.`);
+    throw new Error(sourceMessage('copy.facilities.4c738d3593', { p0: FACILITY_PART_LABEL[part] }));
   const next = nextWork(w, part);
-  if (!next) throw new Error(`${FACILITY_PART_LABEL[part]}은(는) 이미 최고 단계입니다.`);
+  if (!next)
+    throw new Error(sourceMessage('copy.facilities.198b4bded8', { p0: FACILITY_PART_LABEL[part] }));
   pay(next.cost);
   w.facilityWorks = {
     ...w.facilityWorks,
@@ -109,8 +111,14 @@ export function startFacilityWork(w: World, part: FacilityPart, pay: (amount: st
   addEvent(
     w,
     'facility',
-    `${FACILITY_PART_LABEL[part]} 공사 시작 · ${next.label}`,
-    `${next.days}일 공사${next.capacity ? ` · 완공 후 ${next.capacity.toLocaleString('en-US')}석` : ''}${next.kind === 'expansion' ? ' · 공사 중에는 관중석 10% 폐쇄' : ''}`,
+    sourceMessage('copy.facilities.4ef73586df', { p0: FACILITY_PART_LABEL[part], p1: next.label }),
+    sourceMessage('copy.facilities.a1df534a97', {
+      p0: next.days,
+      p1: next.capacity
+        ? sourceMessage('copy.facilities.f876faa93a', { p0: next.capacity.toLocaleString('en-US') })
+        : '',
+      p2: next.kind === 'expansion' ? sourceMessage('copy.facilities.51567a8c17') : '',
+    }),
     next.cost,
   );
 }
@@ -129,14 +137,28 @@ export function progressFacilityWorks(w: World) {
     addEvent(
       w,
       'facility-open',
-      `${FACILITY_PART_LABEL[part]} 완공 · ${
-        part === 'stadium' ? STADIUM_STEPS[work.to].name : `${work.to}단계`
-      }`,
+      sourceMessage('copy.facilities.f1f4a77cef', {
+        p0: FACILITY_PART_LABEL[part],
+        p1:
+          part === 'stadium'
+            ? STADIUM_STEPS[work.to].name
+            : sourceMessage('copy.FacilityParts.bda7274853', { p0: work.to }),
+      }),
       part === 'stadium'
-        ? `${STADIUM_STEPS[work.to].capacity.toLocaleString('en-US')}석`
+        ? sourceMessage('copy.ClubOperations.e718a2e7a8', {
+            p0: STADIUM_STEPS[work.to].capacity.toLocaleString('en-US'),
+          })
         : part === 'training'
-          ? `선수 성장 ×${TRAINING_GROUND[work.to].growth} · 추가 피로 회복 +${TRAINING_GROUND[work.to].recoveryBonus} · 협상 호감 +${TRAINING_GROUND[work.to].goodwill}%`
-          : `입단 +${ACADEMY_FACILITY[work.to].intake}명 · 잠재력 +${ACADEMY_FACILITY[work.to].potential} · 성장 ×${ACADEMY_FACILITY[work.to].growth}`,
+          ? sourceMessage('copy.FacilityParts.22f747ccff', {
+              p0: TRAINING_GROUND[work.to].growth,
+              p1: TRAINING_GROUND[work.to].recoveryBonus,
+              p2: TRAINING_GROUND[work.to].goodwill,
+            })
+          : sourceMessage('copy.InvestmentView.87c8b2640a', {
+              p0: ACADEMY_FACILITY[work.to].intake,
+              p1: ACADEMY_FACILITY[work.to].potential,
+              p2: ACADEMY_FACILITY[work.to].growth,
+            }),
     );
   }
   if (!works.stadium && !works.training && !works.academy) delete w.facilityWorks;

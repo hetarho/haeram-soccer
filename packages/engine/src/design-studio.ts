@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import {
   CREST_EMBLEMS,
   CREST_PATTERNS,
@@ -82,9 +83,10 @@ export function designDrafts(seed: string, colours: IdentityColours, count: numb
 
 /** Pays the designer and keeps the drafts it delivers, replacing any not yet adopted. */
 export function commissionDesign(w: World, studio: DesignStudio, colours: IdentityColours) {
-  if (!DESIGN_STUDIOS.includes(studio)) throw new Error('디자이너를 확인해 주세요.');
+  if (!DESIGN_STUDIOS.includes(studio))
+    throw new Error(sourceMessage('copy.design_studio.19939a8ef0'));
   if (!identityColoursSchema.safeParse(colours).success)
-    throw new Error('구단 색상을 확인해 주세요.');
+    throw new Error(sourceMessage('copy.design_studio.50e860cbee'));
   const fee = designFee(w, studio);
   debit(w, fee);
   const { label, drafts } = DESIGNERS[studio];
@@ -93,13 +95,19 @@ export function commissionDesign(w: World, studio: DesignStudio, colours: Identi
     colours: [...colours] as IdentityColours,
     drafts: designDrafts(`${w.seed}:design:${w.revision}:${studio}`, colours, drafts),
   };
-  addEvent(w, 'design', '구단 디자인 의뢰', `${label} · 시안 ${drafts}개`, fee);
+  addEvent(
+    w,
+    'design',
+    sourceMessage('copy.design_studio.c281a0a446'),
+    sourceMessage('copy.design_studio.b7eb573797', { p0: label, p1: drafts }),
+    fee,
+  );
 }
 
 /** Pays half the fee for a fresh set of drafts from the same designer in the same colours. */
 export function redrawDesigns(w: World) {
   const commission = w.designCommission;
-  if (!commission) throw new Error('다시 그릴 시안이 없어요.');
+  if (!commission) throw new Error(sourceMessage('copy.design_studio.4b47b02412'));
   const { studio, colours } = commission;
   const fee = redrawFee(w, studio);
   debit(w, fee);
@@ -109,13 +117,19 @@ export function redrawDesigns(w: World) {
     colours,
     drafts: designDrafts(`${w.seed}:design:${w.revision}:${studio}`, colours, drafts),
   };
-  addEvent(w, 'design', '구단 디자인 재설정', `${label} · 시안 ${drafts}개 · 반값`, fee);
+  addEvent(
+    w,
+    'design',
+    sourceMessage('copy.design_studio.8b5b2e2e91'),
+    sourceMessage('copy.design_studio.9a20585214', { p0: label, p1: drafts }),
+    fee,
+  );
 }
 
 /** Applies one delivered draft as the club's design; the commission ends with it. */
 export function adoptDesign(w: World, draft: number) {
   const chosen = w.designCommission?.drafts[draft];
-  if (!chosen) throw new Error('시안이 없어요. 디자이너에게 다시 의뢰해 주세요.');
+  if (!chosen) throw new Error(sourceMessage('copy.design_studio.b247eaaaa0'));
   applyClubIdentity(w, chosen);
   delete w.designCommission;
   // A new identity costs the owner the supporters' standing (→OWNER-12).
@@ -124,6 +138,6 @@ export function adoptDesign(w: World, draft: number) {
 
 /** Throws the delivered drafts away unused; the fee stays spent. */
 export function discardDesigns(w: World) {
-  if (!w.designCommission) throw new Error('버릴 시안이 없어요.');
+  if (!w.designCommission) throw new Error(sourceMessage('copy.design_studio.f6e8c95b0f'));
   delete w.designCommission;
 }

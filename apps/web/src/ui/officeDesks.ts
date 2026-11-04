@@ -1,13 +1,14 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 import type { AreaKey } from './areas';
 import { operationsAddress } from './clubSections';
 
 export const OFFICE_DESKS = [
-  ['players', '선수 계약'],
-  ['staff', '스태프 계약'],
-  ['investment', '재정·투자'],
-  ['sponsor', '후원'],
-  ['identity', '구단 디자인'],
+  ['players', sourceMessage('copy.stories.cb2c18aee9')],
+  ['staff', sourceMessage('copy.officeDesks.1d8aa9e4e6')],
+  ['investment', sourceMessage('club.operations.investment')],
+  ['sponsor', sourceMessage('club.operations.sponsor')],
+  ['identity', sourceMessage('club.operations.identity')],
 ] as const;
 export type WorkDesk = (typeof OFFICE_DESKS)[number][0];
 export const DESK_RESPONSIBILITIES: Record<WorkDesk, readonly ResponsibilityKey[]> = {

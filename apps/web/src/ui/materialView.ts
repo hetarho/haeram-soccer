@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * View models of an own match's post-match material (→WEB-84, MATCH-25): the read helpers of
  * `material.ts` turned into shapes on the 1.9:1 pitch and sentences of the tactical report. Every
@@ -42,26 +43,30 @@ export function cellAt(vx: number, vy: number) {
 
 /** The lanes as Korean football media name them, keyed like the grid. */
 export const LANE_LABELS: Record<(typeof LANE_KEYS)[number], string> = {
-  leftWide: '왼쪽 측면',
-  leftHalf: '왼쪽 하프스페이스',
-  central: '중앙',
-  rightHalf: '오른쪽 하프스페이스',
-  rightWide: '오른쪽 측면',
+  leftWide: sourceMessage('copy.glossaryEntries.7087773f6a'),
+  leftHalf: sourceMessage('copy.glossaryEntries.e6042799eb'),
+  central: sourceMessage('copy.glossaryEntries.25c630c275'),
+  rightHalf: sourceMessage('copy.glossaryEntries.ab7d5aa356'),
+  rightWide: sourceMessage('copy.glossaryEntries.4646f1d7c9'),
 };
 const laneLabel = (lane: number) => LANE_LABELS[LANE_KEYS[lane]!];
-const THIRDS = ['수비 지역', '중원', '공격 지역'] as const;
+const THIRDS = [
+  sourceMessage('copy.materialView.e7fd4ac2da'),
+  sourceMessage('copy.materialView.11d52c4180'),
+  sourceMessage('copy.materialView.8afef20069'),
+] as const;
 const OUTCOMES: Record<ShotResult, string> = {
-  goal: '골',
-  save: '선방',
-  block: '블록',
-  miss: '빗나감',
+  goal: sourceMessage('copy.summary.68a6cf8ed8'),
+  save: sourceMessage('copy.RecordsRoom.2a022bd612'),
+  block: sourceMessage('copy.materialView.4cda5cda28'),
+  miss: sourceMessage('copy.materialView.be09794bf9'),
 };
 
 /** 로 or 으로 after a Korean word: 으로 after a final consonant other than ㄹ. */
 export function towards(word: string) {
   const code = word.charCodeAt(word.length - 1) - 0xac00;
   const final = code >= 0 && code < 11172 ? code % 28 : 0;
-  return `${word}${final === 0 || final === 8 ? '로' : '으로'}`;
+  return `${word}${final === 0 || final === 8 ? sourceMessage('copy.materialView.c522383bf3') : sourceMessage('copy.materialView.f3db88d1c1')}`;
 }
 
 /** The own side of the match, from the own club. */
@@ -93,7 +98,11 @@ export function shotDots(record: MatchRecord, w: Pick<World, 'players' | 'player
   return shotMap(record)
     .map((shot): ShotDot => {
       const mine = shot.side === own;
-      const who = (mine && nameOf(w, shot.player)) || (mine ? '우리 선수' : '상대 선수');
+      const who =
+        (mine && nameOf(w, shot.player)) ||
+        (mine
+          ? sourceMessage('copy.EventCenter.45d9ddc729')
+          : sourceMessage('copy.materialView.56afb7f831'));
       return {
         cx: px(shot.x),
         cy: py(shot.y),
@@ -103,7 +112,7 @@ export function shotDots(record: MatchRecord, w: Pick<World, 'players' | 'player
         header: shot.header,
         label: `${who} · ${cellName(cellOf([shot.x, shot.y]))} · xG ${shot.xg.toFixed(2)} · ${
           OUTCOMES[shot.outcome]
-        }${shot.header ? ' · 헤더' : ''}`,
+        }${shot.header ? sourceMessage('copy.materialView.96252d8ea3') : ''}`,
       };
     })
     .sort((a, b) => Number(a.goal) - Number(b.goal) || b.r - a.r);
@@ -155,7 +164,11 @@ export function heatCells(map: HeatMap | undefined): HeatCell[] {
       touches,
       share,
       shade: most ? touches / most : 0,
-      label: `${cellName(cell)} · 터치 ${touches}번 (${Math.round(share * 100)}%)`,
+      label: sourceMessage('copy.materialView.2724192be5', {
+        p0: cellName(cell),
+        p1: touches,
+        p2: Math.round(share * 100),
+      }),
     };
   });
 }
@@ -164,8 +177,8 @@ export function heatCells(map: HeatMap | undefined): HeatCell[] {
 export function heatChoices(record: MatchRecord, w: Pick<World, 'players' | 'playerClub'>) {
   const own = ownSide(record, w);
   const choices: { id: string; label: string }[] = [
-    { id: 'own', label: '우리 팀' },
-    { id: 'opponent', label: '상대 팀' },
+    { id: 'own', label: sourceMessage('copy.BallonDorView.8434ac1486') },
+    { id: 'opponent', label: sourceMessage('copy.MatchBriefing.1a46398092') },
   ];
   for (const node of passNetwork(record, own)?.nodes ?? [])
     if (node.player && node.touches > 0)
@@ -198,7 +211,9 @@ export function networkView(record: MatchRecord, w: Pick<World, 'players' | 'pla
     joined.set(key, line);
   }
   const mostJoined = Math.max(1, ...[...joined.values()].map((l) => l.passes));
-  const name = (line: number) => nameOf(w, at.get(line)?.player) ?? `${line + 1}번째 선수`;
+  const name = (line: number) =>
+    nameOf(w, at.get(line)?.player) ??
+    sourceMessage('copy.materialView.921afb8470', { p0: line + 1 });
   return {
     nodes: nodes.map((n) => {
       const full = name(n.line);
@@ -208,7 +223,11 @@ export function networkView(record: MatchRecord, w: Pick<World, 'players' | 'pla
         cy: py(n.y),
         r: 2.6 + 2.4 * Math.sqrt(n.touches / mostTouches),
         short: shortName(full),
-        label: `${full} · 평균 위치 ${cellName(cellOf([n.x, n.y]))} · 터치 ${n.touches}번`,
+        label: sourceMessage('copy.materialView.38aeab08e9', {
+          p0: full,
+          p1: cellName(cellOf([n.x, n.y])),
+          p2: n.touches,
+        }),
       };
     }),
     links: [...joined.values()]
@@ -224,7 +243,11 @@ export function networkView(record: MatchRecord, w: Pick<World, 'players' | 'pla
           y2: py(b.y),
           width: 0.4 + 2.6 * (l.passes / mostJoined),
           passes: l.passes,
-          label: `${name(l.from)} ↔ ${name(l.to)} · 패스 ${l.passes}번`,
+          label: sourceMessage('copy.materialView.9e20aac524', {
+            p0: name(l.from),
+            p1: name(l.to),
+            p2: l.passes,
+          }),
         };
       }),
     mostPasses,
@@ -249,41 +272,69 @@ export function reportView(report: TacticalReport): ReportView {
   const totalEntries = entries.reduce((a, b) => a + b, 0);
   if (totalEntries) {
     const lane = most(entries);
-    sentences.push(`${towards(laneLabel(lane))} ${entries[lane]}번 진입했어요`);
-    sentences.push(`파이널 서드 진입은 모두 ${totalEntries}번이에요`);
-  } else sentences.push('파이널 서드에 들어간 장면이 없었어요');
+    sentences.push(
+      sourceMessage('copy.materialView.f4f68247d7', {
+        p0: towards(laneLabel(lane)),
+        p1: entries[lane],
+      }),
+    );
+    sentences.push(sourceMessage('copy.materialView.e67b3e201d', { p0: totalEntries }));
+  } else sentences.push(sourceMessage('copy.materialView.606b44fd42'));
   const box = report.boxEntries.reduce((a, b) => a + b, 0);
   if (box) {
     const lane = most(report.boxEntries);
     sentences.push(
-      `박스에는 ${box}번 들어갔고, ${towards(laneLabel(lane))} 가장 많이(${report.boxEntries[lane]}번) 들어갔어요`,
+      sourceMessage('copy.materialView.5610a5272e', {
+        p0: box,
+        p1: towards(laneLabel(lane)),
+        p2: report.boxEntries[lane],
+      }),
     );
   }
   const regains = report.regains.reduce((a, b) => a + b, 0);
   if (regains) {
     const third = most(report.regains);
-    sentences.push(`공은 ${THIRDS[third]}에서 가장 많이 되찾았어요 (${report.regains[third]}번)`);
+    sentences.push(
+      sourceMessage('copy.materialView.ec305617d2', {
+        p0: THIRDS[third],
+        p1: report.regains[third],
+      }),
+    );
   }
   const losses = report.losses.reduce((a, b) => a + b, 0);
   if (losses) {
     const third = most(report.losses);
-    sentences.push(`공은 ${THIRDS[third]}에서 가장 많이 잃었어요 (${report.losses[third]}번)`);
+    sentences.push(
+      sourceMessage('copy.materialView.6b91fed884', {
+        p0: THIRDS[third],
+        p1: report.losses[third],
+      }),
+    );
   }
   sentences.push(
     report.setPieceShots
-      ? `세트피스에서 슛 ${report.setPieceShots}번, 골 ${report.setPieceGoals}번이 나왔어요`
-      : '세트피스에서 나온 슛은 없었어요',
+      ? sourceMessage('copy.materialView.497c3fb511', {
+          p0: report.setPieceShots,
+          p1: report.setPieceGoals,
+        })
+      : sourceMessage('copy.materialView.0d3f6cf08f'),
   );
   if (report.counterAttacks)
-    sentences.push(`역습 ${report.counterAttacks}번에서 슛 ${report.counterShots}번을 만들었어요`);
+    sentences.push(
+      sourceMessage('copy.materialView.74ceb5bce1', {
+        p0: report.counterAttacks,
+        p1: report.counterShots,
+      }),
+    );
   const duel = (label: string, x: { won: number; total: number }) =>
     x.total ? `${label} ${x.won}/${x.total}` : undefined;
   const duels = [
-    duel('공중볼', report.aerials),
-    duel('드리블', report.takeOns),
-    duel('태클', report.tackles),
+    duel(sourceMessage('copy.materialView.fbdef67817'), report.aerials),
+    duel(sourceMessage('copy.materialView.1658226456'), report.takeOns),
+    duel(sourceMessage('copy.Pitch.3f6ba38a9e'), report.tackles),
   ].filter(Boolean);
-  if (duels.length) sentences.push(`경합 승리는 ${duels.join(' · ')}이에요`);
+  if (duels.length)
+    sentences.push(sourceMessage('copy.materialView.1dbabaa79a', { p0: duels.join(' · ') }));
   return {
     sentences,
     lanes: entries.map((n, lane) => ({

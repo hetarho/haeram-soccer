@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import type { HTMLAttributes, ReactNode } from 'react';
 import s from './OfficeDesk.module.css';
 
@@ -5,17 +6,25 @@ export type DeskStat = { label: string; value: ReactNode; note?: ReactNode };
 
 /** A work's live figures as one row of tiles. */
 export function DeskStats({ label, stats }: { label: string; stats: readonly DeskStat[] }) {
+  useTextLocale();
   return (
-    <dl className={s.stats} data-count={stats.length} aria-label={label} data-testid="desk-stats">
-      {stats.map((stat) => (
-        <div key={stat.label} data-ui="stat-tile">
-          <dt>{stat.label}</dt>
-          <dd>
-            <b>{stat.value}</b>
-            {stat.note != null && <small>{stat.note}</small>}
-          </dd>
-        </div>
-      ))}
+    <dl
+      className={s.stats}
+      data-count={stats.length}
+      aria-label={localizeValue(label)}
+      data-testid="desk-stats"
+    >
+      {localizeValue(
+        stats.map((stat) => (
+          <div key={stat.label} data-ui="stat-tile">
+            <dt>{localizeValue(stat.label)}</dt>
+            <dd>
+              <b>{localizeValue(stat.value)}</b>
+              {localizeValue(stat.note != null && <small>{localizeValue(stat.note)}</small>)}
+            </dd>
+          </div>
+        )),
+      )}
     </dl>
   );
 }
@@ -25,9 +34,10 @@ export function DeskBody({
   children,
   ...props
 }: { children: ReactNode } & Omit<HTMLAttributes<HTMLDivElement>, 'className'>) {
+  useTextLocale();
   return (
     <div {...props} className={s.body}>
-      {children}
+      {localizeValue(children)}
     </div>
   );
 }
@@ -37,14 +47,16 @@ export function DeskBody({
  * the team content below, all as wide as the queue.
  */
 export function OfficeOverview({ children }: { children: ReactNode }) {
+  useTextLocale();
   return (
     <div className={s.overview} data-office-view="lobby">
-      {children}
+      {localizeValue(children)}
     </div>
   );
 }
 
 /** A desk's approval line and criteria side by side on wide screens, stacked on phones. */
 export function DeskSettings({ children }: { children: ReactNode }) {
-  return <div className={s.settings}>{children}</div>;
+  useTextLocale();
+  return <div className={s.settings}>{localizeValue(children)}</div>;
 }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import {
   FIRST_TEAM_TABS,
   STAFF_TABS,
@@ -23,7 +24,6 @@ import { eventDesk, type ApprovalRequest } from './eventRouting';
 import { QUEUE_RETURN, type QueueReturn } from './approvalOrder';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { ResponsibilityKey, StaffRole } from '../../../../packages/contracts/src/types';
-import type { PlayerScope } from './playerAnalysis';
 import type {
   ManagerHistoryPage,
   ManagerSourceSeason,
@@ -454,42 +454,6 @@ if (typeof window !== 'undefined')
   });
 
 /**
- * The clubs whose team sheets are open, oldest first: a club named inside a sheet opens on top
- * of it and closing returns to the one below (→WEB-58). Opening a club already in the stack
- * returns to its sheet instead of stacking it twice.
- */
-export const useTeamSheet = create<{
-  ids: string[];
-  open: (id: string) => void;
-  close: () => void;
-  reset: () => void;
-}>((set) => ({
-  ids: [],
-  open: (id) =>
-    set(({ ids }) => ({
-      ids: ids.includes(id) ? ids.slice(0, ids.indexOf(id) + 1) : [...ids, id],
-    })),
-  close: () => set(({ ids }) => ({ ids: ids.slice(0, -1) })),
-  reset: () => set({ ids: [] }),
-}));
-
-/**
- * The player of ours whose sheet is open: one at a time, from any view and over any dialog, the
- * way team sheets open. `scope` is the record it starts on; players who left only have their club
- * career.
- */
-export const usePlayerSheet = create<{
-  id?: string;
-  scope: PlayerScope;
-  open: (id: string, scope?: PlayerScope) => void;
-  close: () => void;
-}>((set) => ({
-  scope: 'career',
-  open: (id, scope = 'career') => set({ id, scope }),
-  close: () => set({ id: undefined }),
-}));
-
-/**
  * A season asked for on the league page from elsewhere, such as a records-room season row. The
  * league page takes it once: a closed season opens on its final table in our league that season.
  */
@@ -506,22 +470,22 @@ export function openLeagueSeason(year: number, currentYear?: number) {
 
 /** A closed season's tabs on the league page, in tab-bar order; the review comes first. */
 export const PAST_TABS = [
-  ['table', '순위표'],
-  ['matches', '일정·결과'],
-  ['rank', '팀 기록'],
-  ['scorers', '선수 기록'],
+  ['table', sourceMessage('copy.LiveSeason.a6fecd0870')],
+  ['matches', sourceMessage('copy.LiveSeason.b5eac83230')],
+  ['rank', sourceMessage('copy.LiveSeason.ae97e3f103')],
+  ['scorers', sourceMessage('copy.stories.c50c28f608')],
 ] as const;
 export type PastTab = (typeof PAST_TABS)[number][0];
 
 /** The records room's tabs, in tab-bar order; the first one keeps no ?view= in the address. */
 export const RECORD_TABS = [
-  ['seasons', '시즌별 기록'],
-  ['trends', '구단 성장'],
-  ['honours', '명예·최고기록'],
-  ['players', '선수 통산'],
-  ['transfers', '이적 기록'],
-  ['managers', '감독 이력'],
-  ['ballonDor', '발롱도르'],
+  ['seasons', sourceMessage('copy.ClubTrends.f402b0218e')],
+  ['trends', sourceMessage('copy.state.a1513c5550')],
+  ['honours', sourceMessage('copy.state.3d6ee5e3e4')],
+  ['players', sourceMessage('copy.state.69cdb0e091')],
+  ['transfers', sourceMessage('copy.state.101c4c0a7b')],
+  ['managers', sourceMessage('copy.RecordsRoom.2c80205cf2')],
+  ['ballonDor', sourceMessage('start.history.ballonDor')],
 ] as const;
 export type RecordTab = (typeof RECORD_TABS)[number][0];
 
@@ -661,24 +625,26 @@ export function beginTaskDetour(target: Page, address?: string) {
   const view = new URLSearchParams(location.search).get('view');
   const label =
     page === 'team'
-      ? '팀'
+      ? sourceMessage('navigation.team')
       : page === 'firstTeam'
-        ? (FIRST_TEAM_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ?? '1군')
+        ? (FIRST_TEAM_TABS.find(([id]) => id === (view ?? 'players'))?.[1] ??
+          sourceMessage('team.view.players'))
         : page === 'staff'
-          ? (STAFF_TABS.find(([id]) => id === (view ?? 'manager'))?.[1] ?? '코치진')
+          ? (STAFF_TABS.find(([id]) => id === (view ?? 'manager'))?.[1] ??
+            sourceMessage('copy.investmentAreas.243be11e44'))
           : page === 'training'
-            ? '훈련장'
+            ? sourceMessage('copy.outcome.e9dbbe23f3')
             : page === 'academy'
-              ? '유소년'
+              ? sourceMessage('team.view.academy')
               : page === 'operations'
-                ? '구단 운영'
+                ? sourceMessage('club.operations.title')
                 : page === 'history'
-                  ? '클럽 시즌 기록'
+                  ? sourceMessage('copy.state.5abcab3c02')
                   : page === 'league' || page === 'leagueHistory'
-                    ? '리그'
+                    ? sourceMessage('navigation.league')
                     : page === 'europe' || page === 'cupHistory'
-                      ? '컵 대회'
-                      : '클럽 홈';
+                      ? sourceMessage('copy.ClubTrends.cf5a6ab3e0')
+                      : sourceMessage('copy.TaskReturn.eb3de82bf1');
   useTaskMemory.setState({
     parents:
       prior.returning && isTaskDestination(prior.returning.target, page)

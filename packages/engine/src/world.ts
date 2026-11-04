@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { continuousSquad } from './npc-continuity';
 import { generateQualities } from './aptitude';
 import { COUNTRIES, country } from '../../catalogs/src/index';
@@ -527,6 +528,6 @@ export function findClub(w: World, id: string) {
     clubMaps.set(w.clubs, map);
   }
   const c = map.get(id);
-  if (!c) throw new Error('경기 클럽 식별자 오류');
+  if (!c) throw new Error(sourceMessage('copy.world.c93911c504'));
   return c;
 }

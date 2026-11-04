@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { World } from '../../contracts/src/types';
 import { delegatedSponsors, sponsorEnding } from './sponsors';
 
@@ -30,8 +31,8 @@ export function delegatedBusiness(w: World) {
  * its label and following share.
  */
 export const CAMPAIGNS = [
-  { kind: 'outreach', label: '동네와 함께', fans: 0.08 },
-  { kind: 'tickets', label: '새로운 관중', fans: 0.12 },
-  { kind: 'merchandise', label: '클럽을 입다', fans: 0.04 },
-  { kind: 'player', label: '선수의 이야기', fans: 0.16 },
+  { kind: 'outreach', label: sourceMessage('copy.ops_commercial.eb6c4f1057'), fans: 0.08 },
+  { kind: 'tickets', label: sourceMessage('copy.ops_commercial.4ed8f3b17e'), fans: 0.12 },
+  { kind: 'merchandise', label: sourceMessage('copy.ops_commercial.1bbe9f0588'), fans: 0.04 },
+  { kind: 'player', label: sourceMessage('copy.ops_commercial.2bb255cea3'), fans: 0.16 },
 ];

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { clearDebt } from './books';
 import { cohesionAfterSummer } from './adaptation';
 import type { Club, World } from '../../contracts/src/types';
@@ -99,8 +100,8 @@ function announceProject(w: World, c: Club) {
   if (!own || c.country !== own.country || Math.abs(c.tier - own.tier) > 1) return;
   pushInbox(w, {
     kind: 'staff-report',
-    title: `${c.name}, 대형 투자 유치`,
-    detail: `새 구단주와 대규모 투자로 앞으로 몇 시즌 동안 전력이 크게 오를 전망이에요. 지금 전력 ${c.strength}.`,
+    title: sourceMessage('copy.dynamics.d1735c6a1e', { p0: c.name }),
+    detail: sourceMessage('copy.dynamics.f3616ce2a8', { p0: c.strength }),
     attention: false,
   });
 }

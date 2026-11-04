@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import s from './App.module.css';
 
 /**
@@ -17,24 +18,27 @@ export function Segments<T extends string>({
   onChange: (value: T) => void;
   wrap?: boolean;
 }) {
+  useTextLocale();
   return (
     <div
       className={`${s.segments} ${wrap ? s.segmentsWrap : ''}`}
       role="group"
-      aria-label={label}
+      aria-label={localizeValue(label)}
       data-ui="choices"
     >
-      {options.map(([id, text]) => (
-        <button
-          key={id}
-          type="button"
-          aria-pressed={value === id}
-          className={value === id ? s.selected : undefined}
-          onClick={() => onChange(id)}
-        >
-          {text}
-        </button>
-      ))}
+      {localizeValue(
+        options.map(([id, text]) => (
+          <button
+            key={id}
+            type="button"
+            aria-pressed={value === id}
+            className={value === id ? s.selected : undefined}
+            onClick={() => onChange(id)}
+          >
+            {localizeValue(text)}
+          </button>
+        )),
+      )}
     </div>
   );
 }

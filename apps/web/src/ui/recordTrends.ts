@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Club, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { eloOf, eloRank } from '../../../../packages/engine/src/elo';
@@ -29,11 +30,18 @@ export function leaguePositionDetail(
     next = seasons[index + 1]?.tier ?? tierNow;
   return [
     seasonName(h.year),
-    `${divisionName(code, h.tier, h.group)} ${h.rank}위`,
-    `승점 ${h.points}`,
-    `피라미드 ${pyramidPosition(code, h)}위`,
-    ...(h.rank === 1 ? ['우승'] : []),
-    ...(next < h.tier ? ['승격'] : next > h.tier ? ['강등'] : []),
+    sourceMessage('copy.CareerRecordBook.2df6533b51', {
+      p0: divisionName(code, h.tier, h.group),
+      p1: h.rank,
+    }),
+    sourceMessage('copy.ClubHub.7776cad992', { p0: h.points }),
+    sourceMessage('copy.recordTrends.542d2ae702', { p0: pyramidPosition(code, h) }),
+    ...(h.rank === 1 ? [sourceMessage('copy.CupHistory.31e52393f3')] : []),
+    ...(next < h.tier
+      ? [sourceMessage('copy.AcademyPanel.8e70a8dda1')]
+      : next > h.tier
+        ? [sourceMessage('copy.CareerRecordBook.7e6e321ef0')]
+        : []),
   ].join(' · ');
 }
 
@@ -46,8 +54,13 @@ export function eloDetail(h: SeasonArchive) {
   return [
     seasonName(h.year),
     `Elo ${Math.round(h.elo ?? 0)}`,
-    ...(h.eloRank ? [`전체 ${h.eloRank}위`] : []),
-    ...(range ? [`리그 ${range[3]}–${range[2]}`, `세계 ${range[1]}–${range[0]}`] : []),
+    ...(h.eloRank ? [sourceMessage('copy.recordTrends.5d27ad9013', { p0: h.eloRank })] : []),
+    ...(range
+      ? [
+          sourceMessage('copy.recordTrends.e02871cc58', { p0: range[3], p1: range[2] }),
+          sourceMessage('copy.recordTrends.ad35a138f3', { p0: range[1], p1: range[0] }),
+        ]
+      : []),
   ].join(' · ');
 }
 

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { World } from '../../../../packages/contracts/src/types';
 import { fixtureDate, fixtureDay } from '../../../../packages/engine/src/calendar';
 import { domesticCupName } from '../../../../packages/engine/src/competition-keys';
@@ -82,18 +83,34 @@ export function currentCupBriefings(w: World) {
     // The continental stage advances while completed qualifier rounds remain retained.
     const status =
       cup.key === 'cup' && !domestic
-        ? '대진 정보 없음'
+        ? sourceMessage('copy.competitionNavigation.6652d68b45')
         : !entered
-          ? '미참가'
+          ? sourceMessage('copy.competitionNavigation.dc6440131d')
           : cup.winner === w.playerClub
-            ? '우승'
+            ? sourceMessage('copy.CupHistory.31e52393f3')
             : cup.ownExit ||
-              (eliminated ? `${round!.label} 탈락` : cup.stage || round?.label || '대진 추첨 대기');
+              (eliminated
+                ? sourceMessage('copy.CupsView.9f7893bf1b', { p0: round!.label })
+                : cup.stage ||
+                  round?.label ||
+                  sourceMessage('copy.competitionNavigation.56f140f6fe'));
     const detail =
       entered && next && !eliminated && !cup.ownExit && !cup.winner
-        ? `다음 ${fixtureDate(w, next)} · ${next.home === w.playerClub ? '홈' : '원정'} ${clubName(next.home === w.playerClub ? next.away : next.home)}`
+        ? sourceMessage('copy.competitionNavigation.ae7e0e6a39', {
+            p0: fixtureDate(w, next),
+            p1:
+              next.home === w.playerClub
+                ? sourceMessage('fixture.home')
+                : sourceMessage('fixture.away'),
+            p2: clubName(next.home === w.playerClub ? next.away : next.home),
+          })
         : entered && last?.score
-          ? `최근 ${clubName(last.home)} ${last.score.home}–${last.score.away} ${clubName(last.away)}`
+          ? sourceMessage('copy.competitionNavigation.6e9fe581dc', {
+              p0: clubName(last.home),
+              p1: last.score.home,
+              p2: last.score.away,
+              p3: clubName(last.away),
+            })
           : '';
     return {
       key: cup.key,
@@ -101,7 +118,9 @@ export function currentCupBriefings(w: World) {
       active: (cup.key !== 'cup' || !!domestic) && !cup.winner,
       status,
       detail,
-      winner: cup.winner ? `대회 우승 · ${clubName(cup.winner)}` : '',
+      winner: cup.winner
+        ? sourceMessage('copy.competitionNavigation.21a034bfb4', { p0: clubName(cup.winner) })
+        : '',
     };
   });
 }

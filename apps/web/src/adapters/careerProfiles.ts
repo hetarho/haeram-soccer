@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /** Intention, retirement, coaching and management scalars. */
 const WIDTHS = [4, 5, 5, 5];
 /**
@@ -5,7 +6,7 @@ const WIDTHS = [4, 5, 5, 5];
  * day, changed). Its seven columns are read as written; unpacking drops the last three.
  */
 const LEGACY_INTENTION_WIDTH = 7;
-const failure = () => new Error('인물 진로 프로필 열 또는 구간 손상');
+const failure = () => new Error(sourceMessage('copy.careerProfiles.57e9acfab9'));
 /** Version-three profile columns retain every scalar; runs alternate absent/present. */
 export function packCareerProfiles(people: unknown[][]): unknown[][] {
   return people.map((values, column) => {

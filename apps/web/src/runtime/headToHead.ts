@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
 
 /** One meeting with a club, from our side. */
@@ -66,7 +67,7 @@ export function headToHead(matches: readonly Played[], own: string, club: string
     const home = m.home === own,
       gf = home ? m.score.home : m.score.away,
       ga = home ? m.score.away : m.score.home,
-      shootout = m.highlights.find((h) => h.player === '승부차기');
+      shootout = m.highlights.find((h) => h.player === sourceMessage('copy.headToHead.16fa957ea6'));
     const meeting: Meeting = {
       id: m.id,
       year: m.year,

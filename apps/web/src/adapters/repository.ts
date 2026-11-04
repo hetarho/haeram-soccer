@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   isSaveCompatibilityError,
@@ -126,8 +127,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     await this.requireIndexed().previous.clear();
   }
   private requireIndexed() {
-    if (!this.indexed)
-      throw new Error('게임 저장에는 IndexedDB가 필요해요. 브라우저의 저장 권한을 확인하세요.');
+    if (!this.indexed) throw new Error(sourceMessage('copy.repository.5616a93734'));
     return this.indexed;
   }
   async load() {
@@ -191,7 +191,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
             result.envelope.generation !==
               (source === declared ? header.generation : header.parentGeneration))
         ) {
-          errors.push('체크포인트와 매니페스트 계보가 일치하지 않습니다.');
+          errors.push(sourceMessage('copy.repository.871cf45824'));
           // An interrupted active/manifest write can leave the committed generation in previous.
           // Only take it after validating active, so incompatible newer data still stays protected.
           if (declared === ACTIVE) {
@@ -236,9 +236,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
       }
     }
     if (manifest || errors.length)
-      throw new Error(
-        '유효한 저장을 찾지 못했습니다. 파일 가져오기로 복구하세요. ' + errors.join(' '),
-      );
+      throw new Error(sourceMessage('copy.repository.481d428b9e') + errors.join(' '));
     // Confirmed deletion may have removed the previously protected career.
     this.incompatible = undefined;
     this.protectedRaw = undefined;
@@ -261,7 +259,7 @@ export class SaveRepository<W extends SaveWorldMetadata = World> {
     if (this.incompatible && !options.replaceIncompatible) throw this.incompatible;
     const envelope = options.envelope ?? (await this.inspect(raw)).envelope;
     if (envelope.generation <= this.generation)
-      throw new Error('더 새로운 저장이 이미 있어 오래된 체크포인트를 쓰지 않았습니다.');
+      throw new Error(sourceMessage('copy.repository.2838685025'));
     const lineage: Lineage = {
       worldId: envelope.worldId,
       generation: envelope.generation,

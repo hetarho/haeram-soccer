@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import type { ReactNode } from 'react';
 import type { PolicyKey, World } from '../../../../packages/contracts/src/types';
 import { POLICY_INFO, policyEffects, policyOf } from '../../../../packages/engine/src/policy';
@@ -44,22 +46,35 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
       const ground = TRAINING_GROUND[w.trainingGround];
       const build = buildEffects(w);
       return {
-        meta: `${POLICY_INFO.support.levels[policy.support - 1].name} · 훈련장 ${w.trainingGround}/${partTop('training')}단계`,
+        meta: sourceMessage('copy.InvestmentTotals.7c59ec3469', {
+          p0: POLICY_INFO.support.levels[policy.support - 1].name,
+          p1: w.trainingGround,
+          p2: partTop('training'),
+        }),
         rows: [
           [
-            '연간 운영비',
+            sourceMessage('copy.InvestmentTotals.d9eefc91be'),
             money(BigInt(costs.expenses) + BigInt(facilityPartUpkeep(w, 'training'))),
           ],
-          ['협상 호감', `${signed(effects.goodwill + ground.goodwill)}%`],
-          ['선수 성장', times(effects.developmentMultiplier * ground.growth)],
-          ['추가 피로 회복', signed(effects.recoveryBonus + ground.recoveryBonus)],
           [
-            '21세 이하 성장',
+            sourceMessage('copy.InvestmentTotals.4d46fe50b9'),
+            `${signed(effects.goodwill + ground.goodwill)}%`,
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.f5d5d839bb'),
+            times(effects.developmentMultiplier * ground.growth),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.2aa2ff71ea'),
+            signed(effects.recoveryBonus + ground.recoveryBonus),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.ba02c71f0d'),
             times(effects.developmentMultiplier * ground.growth * build.youthGrowth),
           ],
-          ['분위기 기준점', rounded(office.moraleBaseline)],
+          [sourceMessage('copy.ClubSettingControl.6a3eb5782b'), rounded(office.moraleBaseline)],
         ],
-        note: '지원비와 훈련장 유지비를 합산합니다. 성장에는 지원·훈련장·유망주 상시 효과를 곱하고, 분위기 기준점에는 문화·감독·시너지를 함께 반영합니다.',
+        note: sourceMessage('copy.InvestmentTotals.c2f8d48010'),
       };
     }
     case 'youth': {
@@ -69,19 +84,40 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
         (player) => player.status === 'active',
       ).length;
       return {
-        meta: `${POLICY_INFO.academy.levels[policy.academy - 1].name} · 유소년 시설 ${w.academyFacility}/${partTop('academy')}단계`,
+        meta: sourceMessage('copy.InvestmentTotals.d51692b2ef', {
+          p0: POLICY_INFO.academy.levels[policy.academy - 1].name,
+          p1: w.academyFacility,
+          p2: partTop('academy'),
+        }),
         rows: [
-          ['연간 운영비', money(BigInt(costs.academy) + BigInt(facilityPartUpkeep(w, 'academy')))],
-          ['유소년 성장', times(office.academy.growth)],
           [
-            '다음 입단 인원',
-            `${Math.min(office.academy.intake, Math.max(0, office.academy.limit - count))}명`,
+            sourceMessage('copy.InvestmentTotals.d9eefc91be'),
+            money(BigInt(costs.academy) + BigInt(facilityPartUpkeep(w, 'academy'))),
           ],
-          ['잠재력 보너스', signed(office.academy.potential + staff.academyQuality)],
-          ['입단 기량 보정', signed(facility.potential + Math.round(staff.academyQuality / 4))],
-          ['현재 유소년', `${count}/${office.academy.limit}명`],
+          [sourceMessage('copy.InvestmentTotals.f695772131'), times(office.academy.growth)],
+          [
+            sourceMessage('copy.InvestmentTotals.00de51daf9'),
+            sourceMessage('copy.CareerRecordBook.e414915261', {
+              p0: Math.min(office.academy.intake, Math.max(0, office.academy.limit - count)),
+            }),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.80d5f9cdea'),
+            signed(office.academy.potential + staff.academyQuality),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.97f572795e'),
+            signed(facility.potential + Math.round(staff.academyQuality / 4)),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.dd3378ebe5'),
+            sourceMessage('copy.InvestmentTotals.94bfe0de7d', {
+              p0: count,
+              p1: office.academy.limit,
+            }),
+          ],
         ],
-        note: '유소년 투자와 시설 유지비를 합산합니다. 성장에는 코치·시설·투자 효과가 반영되며, 입단 능력은 선수별 기본값과 상한에 따라 달라집니다.',
+        note: sourceMessage('copy.InvestmentTotals.4fe6367342'),
       };
     }
     case 'coaches': {
@@ -92,16 +128,25 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
         (option) => option.id === directionOf(w, 'coaches'),
       )!;
       return {
-        meta: '현재 재직 스태프 기준',
+        meta: sourceMessage('copy.InvestmentTotals.bc16198267'),
         rows: [
-          ['연간 스태프 급여', money(costs.staffWages)],
-          ['재직 인원', `${count}/${STAFF_ROLES.length}명`],
-          ['부문별 성장', `${times(Math.min(...factors))}–${times(Math.max(...factors))}`],
-          ['1군 유망주 성장', times(staff.youthDevelopment)],
-          ['유소년 성장', times(staff.academyGrowth)],
-          ['추가 피로 회복', signed(staff.recoveryBonus)],
+          [sourceMessage('copy.InvestmentTotals.5bbadf590b'), money(costs.staffWages)],
+          [
+            sourceMessage('copy.InvestmentTotals.f0b225e54d'),
+            sourceMessage('copy.InvestmentTotals.94bfe0de7d', {
+              p0: count,
+              p1: STAFF_ROLES.length,
+            }),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.155df6d121'),
+            `${times(Math.min(...factors))}–${times(Math.max(...factors))}`,
+          ],
+          [sourceMessage('copy.ClubSettingControl.b71dbf73eb'), times(staff.youthDevelopment)],
+          [sourceMessage('copy.InvestmentTotals.f695772131'), times(staff.academyGrowth)],
+          [sourceMessage('copy.InvestmentTotals.2aa2ff71ea'), signed(staff.recoveryBonus)],
         ],
-        note: `재직 중인 스태프의 실제 합산 효과입니다. 부문별 성장 배율은 담당 능력마다 다릅니다. 채용 지침(${choice.name})은 결재 설정의 스태프 인사에서 관리합니다.`,
+        note: sourceMessage('copy.InvestmentTotals.e7348f8975', { p0: choice.name }),
       };
     }
     case 'stadium': {
@@ -109,17 +154,29 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
       return {
         meta: STADIUM_STEPS[w.stadium].name,
         rows: [
-          ['연간 유지비', money(facilityPartUpkeep(w, 'stadium'))],
-          ['현재 수용 인원', `${number(stadiumCapacity(w))}석`],
-          ['예상 홈 관중', `${number(gate.attendanceLow)}–${number(gate.attendanceHigh)}명`],
           [
-            '예상 홈 수입',
+            sourceMessage('copy.InvestmentTotals.7993f638ba'),
+            money(facilityPartUpkeep(w, 'stadium')),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.1647c3415a'),
+            sourceMessage('copy.ClubOperations.e718a2e7a8', { p0: number(stadiumCapacity(w)) }),
+          ],
+          [
+            sourceMessage('copy.ClubSettingControl.02739c722e'),
+            sourceMessage('copy.ClubSettingControl.af70cdc2c5', {
+              p0: number(gate.attendanceLow),
+              p1: number(gate.attendanceHigh),
+            }),
+          ],
+          [
+            sourceMessage('copy.ClubSettingControl.34a401372c'),
             <>
-              {money(gate.incomeLow)}–{money(gate.incomeHigh)}
+              {localizeValue(money(gate.incomeLow))}–{localizeValue(money(gate.incomeHigh))}
             </>,
           ],
         ],
-        note: '관중과 수입은 현재 가격·시설·팬 기반에서 동급 상대와 치르는 리그 홈 경기 기준입니다. 증축 중 닫힌 좌석도 반영합니다.',
+        note: sourceMessage('copy.InvestmentTotals.89840e9508'),
       };
     }
     case 'scouting': {
@@ -127,16 +184,26 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
       const build = buildEffects(w);
       const synergy = office.synergy;
       return {
-        meta: `${POLICY_INFO.globalScouting.levels[policy.globalScouting - 1].name} · 현재 스카우팅 환경`,
+        meta: sourceMessage('copy.InvestmentTotals.20c70a9ad2', {
+          p0: POLICY_INFO.globalScouting.levels[policy.globalScouting - 1].name,
+        }),
         rows: [
-          ['연간 투자', money(policyCost('globalScouting'))],
+          [sourceMessage('copy.InvestmentTotals.1ed6e49616'), money(policyCost('globalScouting'))],
           [
-            '영입 후보 인원',
-            `${Math.max(4, staff.scoutCandidates + build.marketCandidates + effects.scoutCandidates)}명`,
+            sourceMessage('copy.InvestmentTotals.ee6e8e042b'),
+            sourceMessage('copy.CareerRecordBook.e414915261', {
+              p0: Math.max(
+                4,
+                staff.scoutCandidates + build.marketCandidates + effects.scoutCandidates,
+              ),
+            }),
           ],
-          ['해외 후보', `${effects.scoutCandidates}명`],
           [
-            '잠재력 보정',
+            sourceMessage('copy.InvestmentTotals.83f8c5e865'),
+            sourceMessage('copy.CareerRecordBook.e414915261', { p0: effects.scoutCandidates }),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.087b0956c7'),
             signed(
               staff.scoutPotential +
                 build.marketPotential +
@@ -144,13 +211,13 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
                 effects.scoutPotential,
             ),
           ],
-          ['능력 보정', signed(build.marketAbility)],
+          [sourceMessage('copy.InvestmentTotals.8463f3a14a'), signed(build.marketAbility)],
           [
-            '협상 비용 배율',
+            sourceMessage('copy.InvestmentTotals.543598fb18'),
             times(staff.feeMultiplier * synergy.feeMultiplier * askedFeeFactor(w)),
           ],
         ],
-        note: '스카우트·망·방식·구단 시너지의 상시 효과를 합산합니다. 후보의 나이·유형은 결재 설정의 선수 영입 지침에서 정하며, 기조 자체는 이적료를 보정하지 않습니다.',
+        note: sourceMessage('copy.InvestmentTotals.98f706b029'),
       };
     }
     case 'community': {
@@ -159,53 +226,90 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
       const synergy = office.synergy;
       const tour = office.tour;
       return {
-        meta: '지역 투자 · 해외 마케팅 · 현재 팬 기반',
+        meta: sourceMessage('copy.InvestmentTotals.191ff9a57f'),
         rows: [
-          ['연간 투자', money(policyCost('localInvest') + policyCost('globalMarketing'))],
-          ['지역 기반', rounded(w.localBase ?? 0)],
-          ['글로벌 인지도', rounded(w.globalReach ?? 0)],
-          ['홍보 수요 배율', times(office.gate.marketing)],
-          ['라운드 홍보 팬 증가', signed(office.marketingFans)],
-          ['지역 후원 가치', times(bases.localSponsor * build.sponsor * synergy.sponsor)],
-          ['글로벌 후원 가치', times(bases.globalSponsor * build.sponsor * synergy.sponsor)],
-          ['지역 서포터', `${number(office.localSupporters)}명`],
-          ['시즌 시작 투어 수입', money(tour.income)],
-          ['투어 효과', `인지도 +${tour.reach} · 피로 +${tour.fatigue}`],
+          [
+            sourceMessage('copy.InvestmentTotals.1ed6e49616'),
+            money(policyCost('localInvest') + policyCost('globalMarketing')),
+          ],
+          [sourceMessage('copy.InvestmentTotals.254a2547b3'), rounded(w.localBase ?? 0)],
+          [sourceMessage('copy.InvestmentTotals.4e1d9fdfc3'), rounded(w.globalReach ?? 0)],
+          [sourceMessage('copy.InvestmentTotals.5187941134'), times(office.gate.marketing)],
+          [sourceMessage('copy.InvestmentTotals.d9a37d2983'), signed(office.marketingFans)],
+          [
+            sourceMessage('copy.InvestmentTotals.136b63adc9'),
+            times(bases.localSponsor * build.sponsor * synergy.sponsor),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.b4f3558db1'),
+            times(bases.globalSponsor * build.sponsor * synergy.sponsor),
+          ],
+          [
+            sourceMessage('copy.ClubOverview.cb2dfd3966'),
+            sourceMessage('copy.CareerRecordBook.e414915261', {
+              p0: number(office.localSupporters),
+            }),
+          ],
+          [sourceMessage('copy.InvestmentTotals.8efd128329'), money(tour.income)],
+          [
+            sourceMessage('copy.InvestmentTotals.48920f0011'),
+            sourceMessage('copy.InvestmentTotals.edd5e904bb', { p0: tour.reach, p1: tour.fatigue }),
+          ],
         ],
-        note: `해외 마케팅의 팬 증가와 현재 홍보·기반 효과입니다. 기반 목표는 지역 ${effects.baseTargets.local}, 글로벌 ${effects.baseTargets.global}입니다.`,
+        note: sourceMessage('copy.InvestmentTotals.ec34036684', {
+          p0: effects.baseTargets.local,
+          p1: effects.baseTargets.global,
+        }),
       };
     }
     case 'finance': {
       const build = buildEffects(w),
         synergy = office.synergy;
       return {
-        meta: '현재 자금 · 계약 · 수익 모델',
+        meta: sourceMessage('copy.InvestmentTotals.3d4e4a105f'),
         rows: [
-          ['구단 자금', money(w.cash)],
-          ['사업자금', w.owner ? money(w.owner.fortune) : '구단주 없음'],
-          ['연간 고정 지출', money(costs.annual)],
-          ['후원 제안 배율', times(build.sponsor * synergy.sponsor)],
-          ['신규 연봉 배율', times(build.wage)],
-          ['배당 비율', `${w.owner?.dividendShare ?? 0}%`],
+          [sourceMessage('copy.HudCash.5008c66043'), money(w.cash)],
+          [
+            sourceMessage('copy.InvestmentTotals.aa2afbf21f'),
+            w.owner ? money(w.owner.fortune) : sourceMessage('copy.InvestmentTotals.bf8fa4f1dd'),
+          ],
+          [sourceMessage('copy.BusinessWorkbench.d69ab3db74'), money(costs.annual)],
+          [
+            sourceMessage('copy.InvestmentTotals.696ec7e130'),
+            times(build.sponsor * synergy.sponsor),
+          ],
+          [sourceMessage('copy.InvestmentTotals.79fba02452'), times(build.wage)],
+          [sourceMessage('copy.influences.9ecab69458'), `${w.owner?.dividendShare ?? 0}%`],
         ],
-        note: '현재 계약의 고정 지출과 수익 모델의 상시 효과입니다. 사업 투자·자금 투입·배당은 아래에서 관리하고, 담당자의 연봉·지출 한도는 결재 설정의 각 업무 아래에서 정합니다.',
+        note: sourceMessage('copy.InvestmentTotals.51f049e2fb'),
       };
     }
     case 'identity':
       return {
-        meta: '현재 구단 · 디자인 의뢰 · 경기복',
+        meta: sourceMessage('copy.InvestmentTotals.7c877f7005'),
         rows: [
-          ['구단', club.name],
-          ['구단 자금', money(w.cash)],
-          ['디자인 의뢰', w.designCommission ? '시안 선택 대기' : '없음'],
-          ['경기 유니폼', w.kitChoice ? KIT_ROLE_LABELS[w.kitChoice.role] : '자동 선택'],
+          [sourceMessage('copy.InvestmentTotals.47dfdfd818'), club.name],
+          [sourceMessage('copy.HudCash.5008c66043'), money(w.cash)],
+          [
+            sourceMessage('copy.InvestmentTotals.eadb246cf4'),
+            w.designCommission
+              ? sourceMessage('copy.InvestmentTotals.e50f2c9014')
+              : sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.6f94240307'),
+            w.kitChoice
+              ? KIT_ROLE_LABELS[w.kitChoice.role]
+              : sourceMessage('copy.DecisionRuleFacts.67e7ba0fc0'),
+          ],
         ],
-        note: '구단 디자인 의뢰·재의뢰·채택과 다음 경기 유니폼을 관리합니다. 의뢰 비용과 민심 변화는 선택 화면에 표시합니다.',
+        note: sourceMessage('copy.InvestmentTotals.5a68684178'),
       };
   }
 }
 
 export function InvestmentTotals({ w, area }: { w: World; area: InvestmentArea }) {
+  useTextLocale();
   const title = INVESTMENT_AREAS.find((item) => item.id === area)!.title;
   const office = useOfficeRead(w);
   if (!office) return null;
@@ -213,23 +317,33 @@ export function InvestmentTotals({ w, area }: { w: World; area: InvestmentArea }
   return (
     <Card
       surface="ticket"
-      title={`${title} 종합 효과`}
-      meta={`현재 적용 · ${meta}`}
+      title={displayMessage('copy.InvestmentTotals.da53a41e1e', { p0: title })}
+      meta={sourceMessage('copy.InvestmentTotals.4cc8a528aa', { p0: meta })}
       className={s.panel}
-      aria-label={`${title} 합산 현황`}
+      aria-label={displayMessage('copy.InvestmentTotals.35a1b36c14', { p0: title })}
     >
       <dl className={`${s.totalFacts} ${rows.length === 6 ? s.totalFactsSix : ''}`}>
-        {rows.map(([label, value]) => (
-          <div
-            key={label}
-            data-wide={['예상 홈 관중', '예상 홈 수입', '부문별 성장'].includes(label) || undefined}
-          >
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
+        {localizeValue(
+          rows.map(([label, value]) => (
+            <div
+              key={label}
+              data-wide={
+                (
+                  [
+                    sourceMessage('copy.ClubSettingControl.02739c722e'),
+                    sourceMessage('copy.ClubSettingControl.34a401372c'),
+                    sourceMessage('copy.InvestmentTotals.155df6d121'),
+                  ] as readonly string[]
+                ).includes(label) || undefined
+              }
+            >
+              <dt>{localizeValue(label)}</dt>
+              <dd>{localizeValue(value)}</dd>
+            </div>
+          )),
+        )}
       </dl>
-      <p className={s.note}>{note}</p>
+      <p className={s.note}>{localizeValue(note)}</p>
     </Card>
   );
 }

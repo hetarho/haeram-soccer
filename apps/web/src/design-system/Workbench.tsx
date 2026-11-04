@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { PackRegistry } from '../presentation/contracts';
 import { resolvePackEntry } from '../presentation/registry';
@@ -5,12 +8,13 @@ import { copyPreviewText } from './session';
 import { componentSource, GROUPS, matchingStories, previewAddress, STORIES } from './catalog';
 
 const WIDTHS = [
-  ['responsive', '채우기'],
-  ['390', '모바일 390'],
-  ['768', '태블릿 768'],
-  ['1280', '데스크톱 1280'],
+  ['responsive', sourceMessage('copy.Workbench.5d3513ae38')],
+  ['390', sourceMessage('copy.Workbench.a9e22cfe35')],
+  ['768', sourceMessage('copy.Workbench.b0de8dab07')],
+  ['1280', sourceMessage('copy.Workbench.c76b72ec68')],
 ] as const;
 export default function Workbench({ themeRegistry }: { themeRegistry: PackRegistry<'theme'> }) {
+  useTextLocale();
   const params = new URLSearchParams(location.search);
   const [theme, setTheme] = useState(() => resolvePackEntry(themeRegistry, params.get('theme')).id);
   const [selected, setSelected] = useState(params.get('story') ?? STORIES[0].id);
@@ -44,100 +48,121 @@ export default function Workbench({ themeRegistry }: { themeRegistry: PackRegist
     <div className="ds-workbench">
       <header className="ds-topbar">
         <a className="ds-brand" href="/design-system">
-          <span className="ds-brand-symbol">H</span>
+          <span className="ds-brand-symbol">{richMessage('copy.Workbench.44bd7ae60f')}</span>
           <span>
-            HAERAM <b>디자인 시스템</b>
-            <small>DEVELOPMENT WORKBENCH</small>
+            {richMessage('copy.Workbench.35a9400a94', {
+              p0: <b>{richMessage('copy.Workbench.5f94edae56')}</b>,
+              p1: <small>{richMessage('copy.Workbench.5121b3762f')}</small>,
+            })}
           </span>
         </a>
         <div className="ds-top-actions">
-          <span className="ds-dev">DEV ONLY</span>
+          <span className="ds-dev">{richMessage('copy.Workbench.1db19df944')}</span>
           <label>
-            테마
-            <select
-              aria-label="미리보기 테마"
-              value={theme}
-              onChange={(event) => setTheme(event.target.value)}
-            >
-              {themeRegistry.entries.map((entry) => (
-                <option key={entry.id} value={entry.id}>
-                  {entry.label}
-                </option>
-              ))}
-            </select>
+            {richMessage('copy.Workbench.50c3741cf4', {
+              p0: (
+                <select
+                  aria-label={displayMessage('copy.Workbench.8bdb80945e')}
+                  value={theme}
+                  onChange={(event) => setTheme(event.target.value)}
+                >
+                  {localizeValue(
+                    themeRegistry.entries.map((entry) => (
+                      <option key={entry.id} value={entry.id}>
+                        {localizeValue(entry.label)}
+                      </option>
+                    )),
+                  )}
+                </select>
+              ),
+            })}
           </label>
           <a href="/" target="_blank" rel="noreferrer">
-            게임 열기 ↗
+            {richMessage('copy.Workbench.47ffd0da00')}
           </a>
         </div>
       </header>
       <aside className="ds-sidebar">
         <label className="ds-search">
-          <span>컴포넌트 검색</span>
+          <span>{richMessage('copy.Workbench.a16cab5083')}</span>
           <input
             type="search"
             value={query}
-            placeholder="이름, 화면, 파일명…"
+            placeholder={displayMessage('copy.Workbench.02848125fa')}
             onChange={(event) => setQuery(event.target.value)}
           />
         </label>
         <label className="ds-category">
-          분류
-          <select value={group} onChange={(event) => setGroup(event.target.value)}>
-            <option value="">전체 · {STORIES.length}개 미리보기</option>
-            {GROUPS.map((name) => (
-              <option key={name}>{name}</option>
-            ))}
-          </select>
+          {richMessage('copy.Workbench.35e64f9ea2', {
+            p0: (
+              <select value={group} onChange={(event) => setGroup(event.target.value)}>
+                <option value="">
+                  {richMessage('copy.Workbench.71d0b398b0', { p0: STORIES.length })}
+                </option>
+                {localizeValue(
+                  GROUPS.map((name) => <option key={name}>{localizeValue(name)}</option>),
+                )}
+              </select>
+            ),
+          })}
         </label>
-        <nav aria-label="컴포넌트 목록">
-          {GROUPS.filter((name) => filtered.some((item) => item.group === name)).map((name) => (
-            <section key={name}>
-              <h2>
-                {name}
-                <span>{filtered.filter((item) => item.group === name).length}</span>
-              </h2>
-              {filtered
-                .filter((item) => item.group === name)
-                .map((item) => (
-                  <button
-                    key={item.id}
-                    aria-current={current.id === item.id ? 'page' : undefined}
-                    onClick={() => setSelected(item.id)}
-                  >
-                    {item.title}
-                    <span>↗</span>
-                  </button>
-                ))}
-            </section>
-          ))}
-          {!filtered.length && <p className="ds-empty">일치하는 컴포넌트가 없습니다.</p>}
+        <nav aria-label={displayMessage('copy.Workbench.ad2f080bc9')}>
+          {localizeValue(
+            GROUPS.filter((name) => filtered.some((item) => item.group === name)).map((name) => (
+              <section key={name}>
+                <h2>
+                  {localizeValue(name)}
+                  <span>
+                    {localizeValue(filtered.filter((item) => item.group === name).length)}
+                  </span>
+                </h2>
+                {localizeValue(
+                  filtered
+                    .filter((item) => item.group === name)
+                    .map((item) => (
+                      <button
+                        key={item.id}
+                        aria-current={current.id === item.id ? 'page' : undefined}
+                        onClick={() => setSelected(item.id)}
+                      >
+                        {localizeValue(item.title)}
+                        <span>↗</span>
+                      </button>
+                    )),
+                )}
+              </section>
+            )),
+          )}
+          {localizeValue(
+            !filtered.length && (
+              <p className="ds-empty">{richMessage('copy.Workbench.473a59b238')}</p>
+            ),
+          )}
         </nav>
         <p className="ds-sidebar-note">
-          실제 화면 컴포넌트를 사용합니다.
-          <br />
-          소스를 수정하면 바로 반영됩니다.
+          {richMessage('copy.Workbench.95a86bbfef', { p0: <br /> })}
         </p>
       </aside>
       <main className="ds-main">
         <div className="ds-heading">
           <div>
             <p>
-              {current.group} <span>/ {String(index + 1).padStart(2, '0')}</span>
+              {localizeValue(current.group)}{' '}
+              <span>/ {localizeValue(String(index + 1).padStart(2, '0'))}</span>
             </p>
-            <h1>{current.title}</h1>
-            <p className="ds-description">{current.description}</p>
+            <h1>{localizeValue(current.title)}</h1>
+            <p className="ds-description">{localizeValue(current.description)}</p>
           </div>
           <div className="ds-paging">
             <button
-              aria-label="이전 미리보기"
+              aria-label={displayMessage('copy.Workbench.bdac14e188')}
               disabled={!index}
               onClick={() => setSelected(STORIES[index - 1].id)}
             >
               ←
             </button>
             <button
-              aria-label="다음 미리보기"
+              aria-label={displayMessage('copy.Workbench.78c3ced4f9')}
               disabled={index === STORIES.length - 1}
               onClick={() => setSelected(STORIES[index + 1].id)}
             >
@@ -146,15 +171,19 @@ export default function Workbench({ themeRegistry }: { themeRegistry: PackRegist
           </div>
         </div>
         <div className="ds-toolbar">
-          <div role="group" aria-label="미리보기 화면 너비">
-            {WIDTHS.map(([value, label]) => (
-              <button key={value} aria-pressed={width === value} onClick={() => setWidth(value)}>
-                {label}
-              </button>
-            ))}
+          <div role="group" aria-label={displayMessage('copy.Workbench.04e5831e94')}>
+            {localizeValue(
+              WIDTHS.map(([value, label]) => (
+                <button key={value} aria-pressed={width === value} onClick={() => setWidth(value)}>
+                  {localizeValue(label)}
+                </button>
+              )),
+            )}
           </div>
           <div>
-            <button onClick={() => setReload((value) => value + 1)}>초기화 ↻</button>
+            <button onClick={() => setReload((value) => value + 1)}>
+              {richMessage('copy.Workbench.5df17fc444')}
+            </button>
             <button
               onClick={() => {
                 void copyPreviewText(location.href)
@@ -162,10 +191,14 @@ export default function Workbench({ themeRegistry }: { themeRegistry: PackRegist
                   .catch(() => setCopied(false));
               }}
             >
-              {copied ? '복사됨 ✓' : '링크 복사'}
+              {localizeValue(
+                copied
+                  ? sourceMessage('copy.Workbench.215a44ed74')
+                  : sourceMessage('copy.Workbench.d6ceeabf7e'),
+              )}
             </button>
             <a href={previewAddress(current, theme)} target="_blank" rel="noreferrer">
-              독립 창 ↗
+              {richMessage('copy.Workbench.a15543a831')}
             </a>
           </div>
         </div>
@@ -173,7 +206,7 @@ export default function Workbench({ themeRegistry }: { themeRegistry: PackRegist
           <iframe
             key={`${current.id}-${reload}`}
             ref={frame}
-            title={`${current.title} 미리보기`}
+            title={displayMessage('copy.Workbench.3cccf7e442', { p0: current.title })}
             src={frameUrl}
             style={{ width: width === 'responsive' ? '100%' : `${width}px` }}
             onLoad={() =>
@@ -185,25 +218,27 @@ export default function Workbench({ themeRegistry }: { themeRegistry: PackRegist
           />
         </div>
         <details className="ds-source" open>
-          <summary>사용하는 실제 컴포넌트 · {current.components.length}</summary>
+          <summary>
+            {richMessage('copy.Workbench.99323ca799', { p0: current.components.length })}
+          </summary>
           <div>
-            {current.components.map((name) => (
-              <button
-                key={name}
-                onClick={() => {
-                  void copyPreviewText(`apps/web/${componentSource(name)}`).catch(() => {});
-                }}
-                title="소스 경로 복사"
-              >
-                <code>{componentSource(name)}</code>
-                <span>복사</span>
-              </button>
-            ))}
+            {localizeValue(
+              current.components.map((name) => (
+                <button
+                  key={name}
+                  onClick={() => {
+                    void copyPreviewText(`apps/web/${componentSource(name)}`).catch(() => {});
+                  }}
+                  title={displayMessage('copy.Workbench.730c331895')}
+                >
+                  <code>{localizeValue(componentSource(name))}</code>
+                  <span>{richMessage('copy.Workbench.37b3d3b11b')}</span>
+                </button>
+              )),
+            )}
           </div>
         </details>
-        <footer className="ds-footnote">
-          샘플 데이터 · 저장된 게임과 별도 · 자동 시간 진행 없음 · pnpm dev에서만 제공
-        </footer>
+        <footer className="ds-footnote">{richMessage('copy.Workbench.6d08b1f1cb')}</footer>
       </main>
     </div>
   );

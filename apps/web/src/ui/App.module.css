@@ -1057,6 +1057,15 @@
   overscroll-behavior: contain;
   padding: 24px;
 }
+/* A dialog whose content changes in place keeps one height and scrolls inside, the scrollbar's
+   room kept, so switching a tab or a read arriving never moves it. */
+.modal.fixed {
+  height: min(760px, calc(100dvh - 48px));
+}
+.fixed .modalBody {
+  flex: 1 1 auto;
+  scrollbar-gutter: stable;
+}
 .modalActions {
   flex: 0 0 auto;
   padding: 16px 24px;
@@ -1212,6 +1221,9 @@
     max-height: calc(90dvh - env(safe-area-inset-top));
     /* Edge-aligned sheets keep square corners. */
     border-radius: 0;
+  }
+  .modal.fixed {
+    height: calc(90dvh - env(safe-area-inset-top));
   }
   .modalBackdrop:not(.picker) .sheetHandle {
     display: block;

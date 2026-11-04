@@ -1,0 +1,193 @@
+/* A club's detail (→WEB-15, WEB-58): its identity, then 개요 · 선수단 · 코치진 · 역사 tabs. */
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.head > div {
+  display: grid;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+.head h2 {
+  margin: 0;
+  font-size: 20px;
+  overflow-wrap: anywhere;
+}
+.head small {
+  color: var(--text-muted);
+}
+.panel {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+.facts div {
+  padding: 8px 10px;
+  border-radius: var(--card-radius);
+  text-align: center;
+}
+.facts dt {
+  font-size: 12px;
+  color: var(--text-faint);
+  font-family: var(--display);
+}
+.facts dd {
+  margin: 2px 0 0;
+  font-weight: 700;
+}
+.sub {
+  margin: 4px 0 0;
+  font-size: 14px;
+}
+.sub small {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+  font-family: var(--display);
+}
+/* Match rows: a centred W-D-L marker, what and where, and the score aligned right. */
+.results {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.results li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: var(--card-radius);
+  font-size: 13px;
+}
+.results li > b {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  min-height: 28px;
+  text-align: center;
+  border-radius: var(--badge-radius);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+.results li > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.results em {
+  min-width: 40px;
+  font-style: normal;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.win {
+  color: var(--text);
+}
+.loss {
+  color: var(--danger);
+}
+.draw {
+  color: var(--text-muted);
+}
+/* All-time head-to-head: the record line, then its facts and the recent meetings. */
+.total {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.total b {
+  font-size: 16px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.when {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+/* People rows (선수단, 코치진): fixed columns, one line each, so names never move a column. */
+.people {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.people li {
+  display: grid;
+  grid-template-columns: 4.2em minmax(0, 1fr) 3em 2.4em;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-size: 13px;
+}
+.people li > :nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.people small {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+}
+.people b {
+  text-align: right;
+  font-family: var(--display);
+  font-variant-numeric: tabular-nums;
+}
+/* 코치진 rows lead with the post, wider than a position badge. */
+.staff li {
+  grid-template-columns: 6.6em minmax(0, 1fr) 3em 2.4em;
+}
+.people [data-vacant] {
+  color: var(--text-faint);
+}
+.role {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+.seasons {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.seasons li {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.seasons li b {
+  text-align: right;
+  font-family: var(--display);
+}
+@media (max-width: 420px) {
+  .facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

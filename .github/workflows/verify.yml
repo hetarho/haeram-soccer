@@ -33,6 +33,7 @@ jobs:
       - run: pnpm run test:contract
       - run: pnpm run validate:catalogs
       - run: pnpm run validate:presentation
+      - run: pnpm run validate:i18n
       - run: pnpm run build
 
   unit:

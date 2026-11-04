@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { memo, useId } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
@@ -78,6 +79,7 @@ export const CrestMark = memo(function CrestMark({
   label?: string;
   className?: string;
 }) {
+  useTextLocale();
   const clip = `crest-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   const holes = `${clip}-holes`;
   const { primary, secondary, accent } = crest;
@@ -101,7 +103,7 @@ export const CrestMark = memo(function CrestMark({
       height={Math.round(size * 1.2)}
       viewBox="0 0 40 48"
       role={label ? 'img' : undefined}
-      aria-label={label}
+      aria-label={localizeValue(label)}
       aria-hidden={label ? undefined : true}
       focusable="false"
     >
@@ -109,36 +111,40 @@ export const CrestMark = memo(function CrestMark({
         <clipPath id={clip}>
           <path d={outline} />
         </clipPath>
-        {secondary === undefined && (
-          // White keeps the primary; black cuts the pattern, the disc's ring and an emblem
-          // without an accent out of it.
-          <mask id={holes} maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="48">
-            <rect width="40" height="48" fill="#fff" />
-            {pattern && <path d={pattern} fill="#000" />}
-            <circle cx="20" cy="25" r="8.6" fill="#fff" stroke="#000" strokeWidth="1.8" />
-            {accent === undefined && emblem('#000')}
-          </mask>
+        {localizeValue(
+          secondary === undefined && (
+            // White keeps the primary; black cuts the pattern, the disc's ring and an emblem
+            // without an accent out of it.
+            <mask id={holes} maskUnits="userSpaceOnUse" x="0" y="0" width="40" height="48">
+              <rect width="40" height="48" fill="#fff" />
+              {localizeValue(pattern && <path d={pattern} fill="#000" />)}
+              <circle cx="20" cy="25" r="8.6" fill="#fff" stroke="#000" strokeWidth="1.8" />
+              {localizeValue(accent === undefined && emblem('#000'))}
+            </mask>
+          ),
         )}
       </defs>
-      {secondary !== undefined ? (
-        <>
-          <g clipPath={`url(#${clip})`}>
-            <rect width="40" height="48" fill={primary} />
-            {pattern && <path d={pattern} fill={secondary} />}
-          </g>
-          {border}
-          <circle cx="20" cy="25" r="8.6" fill={primary} stroke={secondary} strokeWidth="1.8" />
-          {emblem(accent ?? secondary)}
-        </>
-      ) : (
-        <>
-          <g mask={`url(#${holes})`}>
-            <rect width="40" height="48" fill={primary} clipPath={`url(#${clip})`} />
-            <circle cx="20" cy="25" r="8.6" fill={primary} />
-          </g>
-          {border}
-          {accent !== undefined && emblem(accent)}
-        </>
+      {localizeValue(
+        secondary !== undefined ? (
+          <>
+            <g clipPath={`url(#${clip})`}>
+              <rect width="40" height="48" fill={primary} />
+              {localizeValue(pattern && <path d={pattern} fill={secondary} />)}
+            </g>
+            {localizeValue(border)}
+            <circle cx="20" cy="25" r="8.6" fill={primary} stroke={secondary} strokeWidth="1.8" />
+            {localizeValue(emblem(accent ?? secondary))}
+          </>
+        ) : (
+          <>
+            <g mask={`url(#${holes})`}>
+              <rect width="40" height="48" fill={primary} clipPath={`url(#${clip})`} />
+              <circle cx="20" cy="25" r="8.6" fill={primary} />
+            </g>
+            {localizeValue(border)}
+            {localizeValue(accent !== undefined && emblem(accent))}
+          </>
+        ),
       )}
     </svg>
   );
@@ -158,5 +164,13 @@ export function ClubCrest({
   label?: string;
   className?: string;
 }) {
-  return <CrestMark crest={crestOf(w, id)} size={size} label={label} className={className} />;
+  useTextLocale();
+  return (
+    <CrestMark
+      crest={crestOf(w, id)}
+      size={size}
+      label={localizeValue(label)}
+      className={className}
+    />
+  );
 }

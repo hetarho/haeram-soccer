@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Player, World } from '../../contracts/src/types';
 import { buildEffects, buildOf } from './build';
 import { policyEffects, policyOf } from './policy';
@@ -106,8 +107,8 @@ export function seasonTour(w: World) {
   addEvent(
     w,
     'tour',
-    tour === 2 ? '긴 해외 투어' : '짧은 해외 투어',
-    `글로벌 인지도 +${terms.reach} · 모든 선수 피로 +${terms.fatigue}`,
+    tour === 2 ? sourceMessage('copy.bases.cb01fb04d9') : sourceMessage('copy.bases.246e6cc8d4'),
+    sourceMessage('copy.bases.86e672010c', { p0: terms.reach, p1: terms.fatigue }),
     terms.income,
   );
 }

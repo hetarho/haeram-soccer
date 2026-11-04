@@ -672,8 +672,8 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 30 | 30 | - | 2 |
-| WEB | 207 | 207 | - | 0 |
+| ARCH | 31 | 31 | - | 2 |
+| WEB | 208 | 208 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
@@ -726,11 +726,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- T692 complete locally: /constants explains 78 gameplay outcomes, 295 factors and 27 action links across eight areas. Review causal relationships before balance changes; T691 takeover direction removal remains. Browser/integration validation is still a release gate.
+- T693 complete locally: every registered locale has 6,499 messages; hardcoded copy and missing translations/parameters fail lint/CI. Review machine-translated football prose and run the release browser/integration gate before publication. T692's influence map and the existing owner/refactoring changes are preserved.
 - The nv04 continuation is published on main at 96eb899c; the full local gate and actual code-push CI run 41772636192 succeeded. Keep the primary checkout on local main and preserve its unrelated changes; use the isolated codex/nv04 worktree for further work.
 - T689 remains todo with its existing realism gate unmet. The exploration has ended, all evidence is retained, and no scoring-engine candidate is applied. No additional balance tasks.
 
 ## log
+- 261105 design club and player detail: end d7m3; club/player links and detail dialogs become feature-sliced entities and widgets with one host each, worker reads through shared useRead and runtime clubProfile, ESLint layer rules; committed with the localization (T707) and T706, whose combined tree passed typecheck, lint, format and the unit suite; integration, contract, build and browser runs left to CI.
+- 261105 T693 done locally: 12 complete locale packs / 6,499 messages / 8,285 validated references; source prose and saved facts preserved, AGENTS + ESLint + CI enforce resource-only copy. 1,260 affected unit tests, type/lint/format/resource checks and build pass; translation editorial review and release browser/integration gates remain. i804
+- 261104 T693 start: owner requests complete localization and prevention of future hardcoded copy; preserve existing checkout changes, source facts and save formats. i804
 - 261104 design owner office: end cx04; finalize investment pages, modal approvals/settings/overview, categorical radios and independent annual wage limits; move office calculations into worker reads and update regressions/portable season facts. Type/lint/format, 2098 unit and 46 contract tests, and build pass. Percentage budgets cancelled. Integration/browser release checks and SSOT alignment for the approved owner controls remain pending.
 - 261104 nv04 release: verified 96eb899c published to main; 2081 unit tests, 1177 integration tests (4 existing skips) and 346 Chromium journeys pass; actual CI 41772636192 succeeds (confirmed directly after CLI HTML conclusion-parser failure). Primary main checkout and unrelated work preserved. nx04
 - 261104 fix start: re-arm a generation-card timer that wakes before its fractional deadline, avoiding a permanently held club list; two regression tests and six existing schedule tests pass, with typecheck/lint/format. nx04
@@ -748,6 +751,3 @@
 - 261104 T678 done: the start plays the world's history while a later decade is generated — engine `seasonDigest` (Elo top 10, champions, European winners, 발롱도르, greatest feat) on every progress reply, a self-closing one-at-a-time feat card schedule and 22 messages in all 12 packs; 129 affected unit files (1153 tests), validate:presentation, typecheck, lint, format and build pass; host.generation integration test and the 1950 start journeys left to the host batch. nv04
 - 261104 T686 done: books read the following a club's reputation commands (ECON-36: 30 of 41 first owned seasons within ±25%, was 6 of 23); tier multiples 1.3 → 1.6 and living 0.25% → 0.2% (no passive owner bankrupt before season 17); 석유 재벌's giants still bankrupt (wages 1.8–3.3× income) and lower tiers reach the top flight in every career — update-ssot proposed; golden and prepared worlds regenerated, 994 affected unit tests and fast checks pass. nv04
 - 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
-- 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
-- 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
-- 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.

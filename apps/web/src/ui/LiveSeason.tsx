@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { competitionRoute, selectedYear } from './competitionNavigation';
 import { useTaskMemory, useTaskState } from './taskMemory';
 import { CompetitionRecords, UnavailableLeagueRecord } from './CompetitionRecords';
@@ -43,6 +46,7 @@ const LazyFullStats = lazy(() =>
   import('./LeagueFullStats').then((module) => ({ default: module.LeagueFullStats })),
 );
 function LeagueFullStats(props: ComponentProps<typeof LazyFullStats>) {
+  useTextLocale();
   return (
     <Suspense fallback={null}>
       <LazyFullStats {...props} />
@@ -71,11 +75,11 @@ import s from './App.module.css';
 import t from './LiveSeason.module.css';
 
 const TABS = [
-  ['match', '경기'],
-  ['table', '순위표'],
-  ['results', '일정·결과'],
-  ['teams', '팀 기록'],
-  ['players', '선수 기록'],
+  ['match', sourceMessage('copy.LabPage.e56314e9a1')],
+  ['table', sourceMessage('copy.LiveSeason.a6fecd0870')],
+  ['results', sourceMessage('copy.LiveSeason.b5eac83230')],
+  ['teams', sourceMessage('copy.LiveSeason.ae97e3f103')],
+  ['players', sourceMessage('copy.stories.c50c28f608')],
 ] as const;
 type Tab = (typeof TABS)[number][0];
 const LEAGUE_TABS = TABS.filter(([id]) => id !== 'match');
@@ -99,6 +103,7 @@ const pastOf = (tab: Tab): PastTab =>
 
 /** Reveal the running result, then return to management for the next match eve. */
 function NextMatchAction({ controls }: { controls: PitchControls }) {
+  useTextLocale();
   const live = useGameState((state) => !!state.playback);
   const setPage = useNavigation((state) => state.setPage);
   const reveal = live && !controls.finished;
@@ -106,25 +111,39 @@ function NextMatchAction({ controls }: { controls: PitchControls }) {
     <button
       data-ui="primary"
       className={t.watch}
-      aria-label={reveal ? '결과 보기' : '홈으로'}
+      aria-label={localizeValue(
+        reveal
+          ? sourceMessage('copy.LiveSeason.1547b2a6d2')
+          : sourceMessage('copy.LiveSeason.ffe893bace'),
+      )}
       aria-describedby="match-next-hint"
       data-testid="match-next-action"
       onClick={reveal ? controls.reveal : () => setPage('dashboard')}
     >
       <b>
-        {reveal ? '결과 보기' : '홈으로'}{' '}
+        {localizeValue(
+          reveal
+            ? sourceMessage('copy.LiveSeason.1547b2a6d2')
+            : sourceMessage('copy.LiveSeason.ffe893bace'),
+        )}
+        {localizeValue(' ')}
         <PixelIcon name={reveal ? 'chevronRight' : 'home'} size={16} />
       </b>
       {/* Both hints keep one line in a 360px half-width cell, so revealing the result never
           grows the action row under the bottom menu. */}
       <small id="match-next-hint">
-        {reveal ? '종료 휘슬까지 바로 넘어가요' : '다음 일정과 구단을 확인해요'}
+        {localizeValue(
+          reveal
+            ? sourceMessage('copy.LiveSeason.5ddbe8eeab')
+            : sourceMessage('copy.LiveSeason.43a0c21210'),
+        )}
       </small>
     </button>
   );
 }
 
 function MatchFeedback({ finished }: { finished: boolean }) {
+  useTextLocale();
   const w = useGameState(selectStrategyWorld)!;
   const playback = useGameState((state) => state.playback);
   const next = nextOwnFixture(w);
@@ -141,27 +160,44 @@ function MatchFeedback({ finished }: { finished: boolean }) {
       className={t.feedback}
       data-ui="match-feedback"
       data-testid="match-feedback"
-      aria-label="경기 결과와 다음 준비"
+      aria-label={displayMessage('copy.LiveSeason.a6b6db5502')}
     >
-      {finished && record ? (
-        <div className={t.result} data-testid="match-result-summary">
-          <strong>
-            {ownGoals! > otherGoals! ? '승리' : ownGoals === otherGoals ? '무승부' : '패배'}{' '}
-            {ownGoals}–{otherGoals}
-          </strong>
-          <span>
-            슛 {record.metrics[side][4]}–{record.metrics[1 - side][4]} · 유효 슛{' '}
-            {record.metrics[side][5]}–{record.metrics[1 - side][5]}
-          </span>
-        </div>
-      ) : (
-        <div className={t.result}>
-          <strong>다음 상대</strong>
-          <span>{opponent?.name || '다음 시즌을 준비해요'}</span>
-        </div>
+      {localizeValue(
+        finished && record ? (
+          <div className={t.result} data-testid="match-result-summary">
+            <strong>
+              {localizeValue(
+                ownGoals! > otherGoals!
+                  ? sourceMessage('result.win.label')
+                  : ownGoals === otherGoals
+                    ? sourceMessage('result.draw.label')
+                    : sourceMessage('result.loss.label'),
+              )}
+              {localizeValue(' ')}
+              {localizeValue(ownGoals)}–{localizeValue(otherGoals)}
+            </strong>
+            <span>
+              {richMessage('copy.LiveSeason.5ebfe89271', {
+                p0: record.metrics[side][4],
+                p1: record.metrics[1 - side][4],
+                p2: ' ',
+                p3: record.metrics[side][5],
+                p4: record.metrics[1 - side][5],
+              })}
+            </span>
+          </div>
+        ) : (
+          <div className={t.result}>
+            <strong>{richMessage('copy.LiveSeason.0b25b7d6ac')}</strong>
+            <span>{localizeValue(opponent?.name || sourceMessage('copy.ClubHub.1015d8ff31'))}</span>
+          </div>
+        ),
       )}
       <p data-testid="match-readiness">
-        다음 선발 · {tacticLabel[w.tactic]} · 피로 {readiness.fatigue}/100
+        {richMessage('copy.LiveSeason.e8f5bd237a', {
+          p0: tacticLabel[w.tactic],
+          p1: readiness.fatigue,
+        })}
       </p>
     </div>
   );
@@ -174,6 +210,7 @@ const MatchPane = memo(function MatchPane({
   onPrepare: () => void;
   showDate: boolean;
 }) {
+  useTextLocale();
   const w = useGameState(selectMatchWorld)!;
   const playback = useGameState((state) => state.playback);
   const [finishedWorld, setFinishedWorld] = useState<World>();
@@ -205,11 +242,13 @@ const MatchPane = memo(function MatchPane({
   }, []);
   return (
     <div className={t.matchPane} data-testid="match-theatre">
-      <h2 className={t.srOnly}>매치데이</h2>
-      {showDate && (
-        <span className={t.srOnly} data-testid="game-date">
-          {todayStamp(w)}
-        </span>
+      <h2 className={t.srOnly}>{richMessage('copy.LiveSeason.b082e409a4')}</h2>
+      {localizeValue(
+        showDate && (
+          <span className={t.srOnly} data-testid="game-date">
+            {localizeValue(todayStamp(w))}
+          </span>
+        ),
       )}
       <section>
         <Suspense fallback={<div className={s.pitch} aria-busy="true" />}>
@@ -222,7 +261,7 @@ const MatchPane = memo(function MatchPane({
               <button
                 data-ui="icon"
                 className={t.back}
-                aria-label="홈"
+                aria-label={displayMessage('fixture.home')}
                 onClick={() => setPage('dashboard')}
               >
                 <PixelIcon name="chevronLeft" size={22} />
@@ -232,7 +271,7 @@ const MatchPane = memo(function MatchPane({
               <div className={t.coreActions} data-ui="match-actions">
                 <MatchFeedback finished={finished} />
                 <div className={t.nextActions}>
-                  <button onClick={onPrepare}>상세 리포트</button>
+                  <button onClick={onPrepare}>{richMessage('copy.ClubHub.f2bef7802a')}</button>
                   <NextMatchAction controls={controls} />
                 </div>
               </div>
@@ -240,16 +279,18 @@ const MatchPane = memo(function MatchPane({
           />
         </Suspense>
       </section>
-      {finished && finishedWorld && completed.current === playback?.record.id && (
-        <div className={s.afterMatch}>
-          <LeagueOverview w={finishedWorld} onOpenLeague={() => setPage('league')} />
-          <section data-surface="panel" className={s.panel}>
-            <div className={s.panelHead}>
-              <h3>경기 뒤의 순위표</h3>
-            </div>
-            <Standings w={finishedWorld} ids={ownLeagueIds(finishedWorld)} limit={6} />
-          </section>
-        </div>
+      {localizeValue(
+        finished && finishedWorld && completed.current === playback?.record.id && (
+          <div className={s.afterMatch}>
+            <LeagueOverview w={finishedWorld} onOpenLeague={() => setPage('league')} />
+            <section data-surface="panel" className={s.panel}>
+              <div className={s.panelHead}>
+                <h3>{richMessage('copy.LiveSeason.9bc84721dc')}</h3>
+              </div>
+              <Standings w={finishedWorld} ids={ownLeagueIds(finishedWorld)} limit={6} />
+            </section>
+          </div>
+        ),
       )}
     </div>
   );
@@ -263,11 +304,12 @@ const TablePane = memo(function TablePane({
   client: GameClient;
   league?: LeagueChoice;
 }) {
+  useTextLocale();
   const w = useGameState(selectLeagueWorld)!;
   const fixtures = useLeagueFixtures(client, w, league);
   return (
     <>
-      <h2 className={s.seasonPaneTitle}>리그 순위표</h2>
+      <h2 className={s.seasonPaneTitle}>{richMessage('copy.LeagueInsights.7c477b094f')}</h2>
       <section data-surface="panel" className={s.panel}>
         <Standings w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
       </section>
@@ -287,6 +329,7 @@ const TeamPane = memo(function TeamPane({
   part: 'table' | 'rank';
   onPart: (value: 'table' | 'rank') => void;
 }) {
+  useTextLocale();
   const w = useGameState(selectLeagueWorld)!,
     other = league && !sameLeague(league, ownLeague(w));
   const rows = leagueIds(w, league).flatMap((id) =>
@@ -295,29 +338,31 @@ const TeamPane = memo(function TeamPane({
   return (
     <>
       <Segments
-        label="팀 기록 보기"
+        label={displayMessage('copy.LiveSeason.dd0271790e')}
         options={
           [
-            ['table', '팀 성적'],
-            ['rank', '순위 추이'],
+            ['table', sourceMessage('copy.LiveSeason.cfb04aa930')],
+            ['rank', sourceMessage('copy.LiveSeason.352637b1e4')],
           ] as const
         }
         value={part}
         onChange={onPart}
       />
-      {part === 'table' ? (
-        <>
-          <CompetitionRecords w={w} rows={rows} />
-          <LeagueFullStats client={client} league={league} lens="teams" />
-        </>
-      ) : other ? (
-        <UnavailableLeagueRecord
-          league={league!}
-          label="라운드별 순위 추이"
-          onOwn={() => onLeague(undefined)}
-        />
-      ) : (
-        <RankHistoryGraph w={w} year={w.year} />
+      {localizeValue(
+        part === 'table' ? (
+          <>
+            <CompetitionRecords w={w} rows={rows} />
+            <LeagueFullStats client={client} league={league} lens="teams" />
+          </>
+        ) : other ? (
+          <UnavailableLeagueRecord
+            league={league!}
+            label={displayMessage('copy.LiveSeason.72f03b4d8c')}
+            onOwn={() => onLeague(undefined)}
+          />
+        ) : (
+          <RankHistoryGraph w={w} year={w.year} />
+        ),
       )}
     </>
   );
@@ -335,6 +380,7 @@ const PlayerPane = memo(function PlayerPane({
   part: 'scorers' | 'trend';
   onPart: (value: 'scorers' | 'trend') => void;
 }) {
+  useTextLocale();
   const w = useGameState(selectScorerWorld)!,
     other = league && !sameLeague(league, ownLeague(w)),
     // With complete statistics another league's leaders come from the lens below (→WEB-89); only
@@ -343,31 +389,39 @@ const PlayerPane = memo(function PlayerPane({
   return (
     <>
       <Segments
-        label="선수 기록 보기"
+        label={displayMessage('copy.LiveSeason.145050ed3a')}
         options={
           [
-            ['scorers', '득점 순위'],
-            ['trend', '득점왕 추이'],
+            ['scorers', sourceMessage('copy.LiveSeason.12543e95b4')],
+            ['trend', sourceMessage('copy.LiveSeason.d332850f5a')],
           ] as const
         }
         value={part}
         onChange={onPart}
       />
-      {other ? (
-        full && part === 'scorers' ? null : (
-          <UnavailableLeagueRecord
-            league={league!}
-            label={full ? '라운드별 득점왕 기록' : '선수별 득점 기록'}
-            onOwn={() => onLeague(undefined)}
-          />
-        )
-      ) : part === 'trend' ? (
-        <ScorerHistory w={w} />
-      ) : (
-        <ScorerStandings w={w} />
+      {localizeValue(
+        other ? (
+          full && part === 'scorers' ? null : (
+            <UnavailableLeagueRecord
+              league={league!}
+              label={localizeValue(
+                full
+                  ? sourceMessage('copy.LiveSeason.805e3ca9c4')
+                  : sourceMessage('copy.LiveSeason.446a9e597e'),
+              )}
+              onOwn={() => onLeague(undefined)}
+            />
+          )
+        ) : part === 'trend' ? (
+          <ScorerHistory w={w} />
+        ) : (
+          <ScorerStandings w={w} />
+        ),
       )}
-      {part === 'scorers' && <LeagueFullStats client={client} league={league} lens="players" />}
-      {part === 'scorers' && <DisciplineTable league={league} />}
+      {localizeValue(
+        part === 'scorers' && <LeagueFullStats client={client} league={league} lens="players" />,
+      )}
+      {localizeValue(part === 'scorers' && <DisciplineTable league={league} />)}
     </>
   );
 });
@@ -381,11 +435,12 @@ const LeagueScope = memo(function LeagueScope({
   onLeague: (league?: LeagueChoice) => void;
   onSeason: (year: number) => void;
 }) {
+  useTextLocale();
   const w = useGameState(selectLeagueWorld)!;
   return (
     <CompetitionHeader page="league">
       <b className={s.srOnly}>
-        {leagueName(league ?? ownLeague(w))} · {seasonName(w.year)}
+        {localizeValue(leagueName(league ?? ownLeague(w)))} · {localizeValue(seasonName(w.year))}
       </b>
       <LeaguePicker league={league} onLeague={onLeague} onSeason={onSeason} />
     </CompetitionHeader>
@@ -400,6 +455,7 @@ const ResultsPane = memo(function ResultsPane({
   league?: LeagueChoice;
   onLeague: (league?: LeagueChoice) => void;
 }) {
+  useTextLocale();
   const w = useGameState(selectLeagueWorld)!,
     fixtures = useLeagueFixtures(client, w, league),
     other = league && !sameLeague(league, ownLeague(w));
@@ -407,32 +463,34 @@ const ResultsPane = memo(function ResultsPane({
   return (
     <>
       <Segments
-        label="일정·결과 보기"
+        label={displayMessage('copy.LiveSeason.94260fee4b')}
         options={
           [
-            ['rounds', '라운드 결과'],
-            ['ours', '우리 경기'],
+            ['rounds', sourceMessage('copy.LeagueInsights.e0d0bdbc96')],
+            ['ours', sourceMessage('copy.LiveSeason.7be4af1e16')],
           ] as const
         }
         value={part}
         onChange={setPart}
       />
-      {part === 'ours' ? (
-        other ? (
-          <UnavailableLeagueRecord
-            league={league!}
-            label="우리 구단 경기"
-            onOwn={() => onLeague(undefined)}
-          />
+      {localizeValue(
+        part === 'ours' ? (
+          other ? (
+            <UnavailableLeagueRecord
+              league={league!}
+              label={displayMessage('copy.LiveSeason.69936299ca')}
+              onOwn={() => onLeague(undefined)}
+            />
+          ) : (
+            <FixtureNotebook w={w} client={client} />
+          )
+        ) : other && !fixtures ? (
+          <p className={s.muted} role="status">
+            {richMessage('copy.LiveSeason.f21c11a229', { p0: leagueName(league!) })}
+          </p>
         ) : (
-          <FixtureNotebook w={w} client={client} />
-        )
-      ) : other && !fixtures ? (
-        <p className={s.muted} role="status">
-          {leagueName(league!)} 경기를 불러오는 중…
-        </p>
-      ) : (
-        <RoundResults w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
+          <RoundResults w={w} ids={leagueIds(w, league)} fixtures={fixtures} />
+        ),
       )}
     </>
   );
@@ -450,6 +508,7 @@ export const LiveSeason = memo(function LiveSeason({
   client: GameClient;
   controller: ProgressionController;
 }) {
+  useTextLocale();
   const archive = page === 'leagueHistory';
   const leaguePage = page === 'league' || archive;
   const active = page === 'match' || leaguePage;
@@ -660,98 +719,125 @@ export const LiveSeason = memo(function LiveSeason({
   const inTabs = (id: Tab) => visibleTabs.some(([visible]) => visible === id);
   return (
     <div hidden={!active} data-testid="live-season" className={t.liveSeason}>
-      {archive && reviewYear === undefined && (
-        <p className={s.muted}>아직 마감된 리그 시즌이 없어요.</p>
+      {localizeValue(
+        archive && reviewYear === undefined && (
+          <p className={s.muted}>{richMessage('copy.LiveSeason.e1a33edddf')}</p>
+        ),
       )}
-      {page === 'league' && !reviewing && (
-        <div className={t.navigation} data-ui="toolbar">
-          <LeagueScope league={league} onLeague={setLeague} onSeason={pickSeason} />
-          <div className={`${s.seasonTabs} ${t.tabs}`} role="tablist" aria-label="리그 보기">
-            {visibleTabs.map(([id, label], i) => (
-              <button
-                key={id}
-                id={`season-tab-${id}`}
-                role="tab"
-                aria-selected={tab === id}
-                aria-controls={`season-panel-${id}`}
-                tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
-                onKeyDown={(event) => keyboard(event, i)}
-                onClick={() => setLeagueTab(id)}
-              >
-                {label}
-              </button>
-            ))}
+      {localizeValue(
+        page === 'league' && !reviewing && (
+          <div className={t.navigation} data-ui="toolbar">
+            <LeagueScope league={league} onLeague={setLeague} onSeason={pickSeason} />
+            <div
+              className={`${s.seasonTabs} ${t.tabs}`}
+              role="tablist"
+              aria-label={displayMessage('copy.LiveSeason.ad7980a9c9')}
+            >
+              {localizeValue(
+                visibleTabs.map(([id, label], i) => (
+                  <button
+                    key={id}
+                    id={`season-tab-${id}`}
+                    role="tab"
+                    aria-selected={tab === id}
+                    aria-controls={`season-panel-${id}`}
+                    tabIndex={tab === id || (i === 0 && !inTabs(tab)) ? 0 : -1}
+                    onKeyDown={(event) => keyboard(event, i)}
+                    onClick={() => setLeagueTab(id)}
+                  >
+                    {localizeValue(label)}
+                  </button>
+                )),
+              )}
+            </div>
           </div>
-        </div>
+        ),
       )}
-      {TABS.map(([id, label]) => (
-        <section
-          key={id}
-          id={`season-panel-${id}`}
-          className={`${s.seasonPane} ${t.pane}`}
-          role={id === 'match' ? undefined : 'tabpanel'}
-          aria-labelledby={id !== 'match' && inTabs(id) ? `season-tab-${id}` : undefined}
-          aria-label={id === 'match' ? '경기 관전' : inTabs(id) ? undefined : label}
-          hidden={tab !== id || reviewing || (archive && id !== 'match')}
-        >
-          {id === 'match' ? (
-            <MatchPane onPrepare={onPrepare} showDate={page === 'match'} />
-          ) : !opened.includes(id) ? null : id === 'table' ? (
-            <TablePane client={client} league={league} />
-          ) : id === 'teams' ? (
-            <TeamPane
+      {localizeValue(
+        TABS.map(([id, label]) => (
+          <section
+            key={id}
+            id={`season-panel-${id}`}
+            className={`${s.seasonPane} ${t.pane}`}
+            role={id === 'match' ? undefined : 'tabpanel'}
+            aria-labelledby={id !== 'match' && inTabs(id) ? `season-tab-${id}` : undefined}
+            aria-label={localizeValue(
+              id === 'match'
+                ? sourceMessage('copy.LiveSeason.84d7e527ed')
+                : inTabs(id)
+                  ? undefined
+                  : label,
+            )}
+            hidden={tab !== id || reviewing || (archive && id !== 'match')}
+          >
+            {localizeValue(
+              id === 'match' ? (
+                <MatchPane onPrepare={onPrepare} showDate={page === 'match'} />
+              ) : !opened.includes(id) ? null : id === 'table' ? (
+                <TablePane client={client} league={league} />
+              ) : id === 'teams' ? (
+                <TeamPane
+                  client={client}
+                  league={league}
+                  onLeague={setLeague}
+                  part={teamPart}
+                  onPart={setTeamPart}
+                />
+              ) : id === 'players' ? (
+                <PlayerPane
+                  client={client}
+                  league={league}
+                  onLeague={setLeague}
+                  part={playerPart}
+                  onPart={setPlayerPart}
+                />
+              ) : (
+                <ResultsPane client={client} league={league} onLeague={setLeague} />
+              ),
+            )}
+          </section>
+        )),
+      )}
+      {localizeValue(
+        reviewing && (
+          <Suspense
+            fallback={
+              <p className={s.muted} role="status">
+                {richMessage('copy.LiveSeason.97317e5d34')}
+              </p>
+            }
+          >
+            <ClosedSeason
               client={client}
+              year={reviewYear}
+              tab={pastTab}
+              onTab={setPastTab}
               league={league}
               onLeague={setLeague}
-              part={teamPart}
-              onPart={setTeamPart}
+              teamPart={teamPart}
+              onTeamPart={setTeamPart}
+              playerPart={playerPart}
+              onPlayerPart={setPlayerPart}
+              onYear={pickSeason}
             />
-          ) : id === 'players' ? (
-            <PlayerPane
-              client={client}
-              league={league}
-              onLeague={setLeague}
-              part={playerPart}
-              onPart={setPlayerPart}
-            />
-          ) : (
-            <ResultsPane client={client} league={league} onLeague={setLeague} />
-          )}
-        </section>
-      ))}
-      {reviewing && (
-        <Suspense
-          fallback={
-            <p className={s.muted} role="status">
-              지난 시즌을 펼치는 중…
-            </p>
-          }
-        >
-          <ClosedSeason
-            client={client}
-            year={reviewYear}
-            tab={pastTab}
-            onTab={setPastTab}
-            league={league}
-            onLeague={setLeague}
-            teamPart={teamPart}
-            onTeamPart={setTeamPart}
-            playerPart={playerPart}
-            onPlayerPart={setPlayerPart}
-            onYear={pickSeason}
-          />
-          {pastTab === 'scorers' && playerPart === 'scorers' && (
-            <p className={s.muted}>지난 시즌 징계 기록은 보관하지 않아요.</p>
-          )}
-        </Suspense>
+            {localizeValue(
+              pastTab === 'scorers' && playerPart === 'scorers' && (
+                <p className={s.muted}>{richMessage('copy.LiveSeason.fa4f80b195')}</p>
+              ),
+            )}
+          </Suspense>
+        ),
       )}
-      {preparing && page === 'match' && (
-        <StrategyPanelSheet client={client} onClose={() => setPreparing(false)} />
+      {localizeValue(
+        preparing && page === 'match' && (
+          <StrategyPanelSheet client={client} onClose={() => setPreparing(false)} />
+        ),
       )}
     </div>
   );
 });
 function StrategyPanelSheet({ client, onClose }: { client: GameClient; onClose: () => void }) {
+  useTextLocale();
   const w = useGameState(selectStrategyWorld)!;
   return <StrategyPanel w={w} client={client} onClose={onClose} />;
 }

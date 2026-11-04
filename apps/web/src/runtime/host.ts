@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { newsBefore, newsTotal } from '../../../../packages/engine/src/news';
 import { NEWS_LIMITS } from '../../../../packages/contracts/src/news';
 import { initializeReadModels, needsReadModels } from '../../../../packages/engine/src/read-models';
@@ -51,7 +52,7 @@ import { clubListings } from '../../../../packages/engine/src/listing';
 import { tierFortune } from '../../../../packages/engine/src/club-value';
 import { careerEnded, ENDED_MESSAGE } from '../../../../packages/engine/src/owner';
 import type { StartChoice, TakeoverDecade } from '../../../../packages/contracts/src/owner';
-import { clubSheetFacts } from './clubSheet';
+import { clubProfile, squadPlayer } from './clubProfile';
 import type {
   ManagerHistorySeason,
   ManagerHistorySource,
@@ -96,7 +97,7 @@ function adoptIdentities(w: World, revised: boolean): World {
   if (!installMissingIdentities(candidate)) return w;
   if (!revised) {
     if (!Number.isSafeInteger(candidate.revision + 1))
-      throw new Error('저장 revision 범위를 초과했습니다.');
+      throw new Error(sourceMessage('copy.host.b53dad7fec'));
     candidate.revision++;
   }
   return candidate;
@@ -321,7 +322,7 @@ export class Host {
     const candidate = structuredClone(w);
     if (!revised) {
       if (!Number.isSafeInteger(candidate.revision + 1))
-        throw new Error('저장 revision 범위를 초과했습니다.');
+        throw new Error(sourceMessage('copy.host.b53dad7fec'));
       candidate.revision++;
     }
     activateMatchModel(candidate, this.release);
@@ -337,7 +338,7 @@ export class Host {
   private adoptManagerHistory(w: World, revised: boolean): World {
     if (w.managerHistory || settledAhead(this.world, w)) return w;
     if (!revised && !Number.isSafeInteger(w.revision + 1))
-      throw new Error('저장 revision 범위를 초과했습니다.');
+      throw new Error(sourceMessage('copy.host.b53dad7fec'));
     const candidate = { ...w, revision: revised ? w.revision : w.revision + 1 };
     ensureManagerHistory(candidate);
     return candidate;
@@ -359,7 +360,8 @@ export class Host {
       type === 'club-records' ||
       type === 'archive' ||
       type === 'manager-history' ||
-      type === 'club-sheet'
+      type === 'club-profile' ||
+      type === 'player-profile'
     )
       return this.round ? this.afterRound(input) : Promise.resolve(this.read(input));
     const task = this.queue.then(() => this.execute(input));
@@ -541,16 +543,17 @@ export class Host {
       const body = request.body,
         w = this.world;
       if (this.session && this.session !== request.session)
-        throw new Error('이전 세션의 요청입니다.');
-      if (body.type === 'club-sheet') {
-        if (!this.start) throw new Error('먼저 세계를 생성하세요.');
-        const sheet = clubSheetFacts(this.start.world, body.clubId);
-        if (!sheet) throw new Error('인수할 수 없는 구단입니다.');
-        return { requestId: request.requestId, ok: true, clubSheet: sheet };
+        throw new Error(sourceMessage('copy.host.a147f90dfc'));
+      // Before the takeover a profile reads the generated world; after it, only the career asked.
+      if (body.type === 'club-profile' && !body.world) {
+        if (!this.start) throw new Error(sourceMessage('copy.host.f3db275cee'));
+        const profile = clubProfile(this.start.world, body.clubId);
+        if (!profile) throw new Error(sourceMessage('copy.host.fd5ef98e05'));
+        return { requestId: request.requestId, ok: true, clubProfile: profile };
       }
-      if (!w) throw new Error('먼저 구단을 인수하세요.');
+      if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
       if (body.type === 'news-page') {
-        if (body.world !== w.id) throw new Error('다른 커리어의 뉴스 요청입니다.');
+        if (body.world !== w.id) throw new Error(sourceMessage('copy.host.ef27d088a0'));
         const items = newsBefore(w, body.before, body.tag);
         return {
           requestId: request.requestId,
@@ -589,9 +592,20 @@ export class Host {
           ok: true,
           mediationPreview: mediationPreview(w, body.id, body.support),
         };
+      if (body.type === 'club-profile' || body.type === 'player-profile') {
+        if (body.world !== w.id) throw new Error(sourceMessage('copy.host.f8fc259198'));
+        if (body.type === 'club-profile') {
+          const profile = clubProfile(w, body.clubId);
+          if (!profile) throw new Error(sourceMessage('copy.host.3267b02d4a'));
+          return { requestId: request.requestId, ok: true, clubProfile: profile };
+        }
+        const found = squadPlayer(w, body.playerId, body.clubId);
+        if (!found) throw new Error(sourceMessage('copy.host.03e3c7ff36'));
+        return { requestId: request.requestId, ok: true, playerProfile: found };
+      }
       if (body.type === 'person-career') {
         const detail = personCareer(w, body.person);
-        if (!detail) throw new Error('기록된 인물 경력이 없습니다.');
+        if (!detail) throw new Error(sourceMessage('copy.host.8200815f77'));
         return { requestId: request.requestId, ok: true, personCareer: detail };
       }
       if (body.type === 'archive')
@@ -607,7 +621,7 @@ export class Host {
         };
       if (body.type === 'manager-history') {
         if (body.world !== undefined && body.world !== w.id)
-          throw new Error('다른 커리어의 감독 이력 요청입니다.');
+          throw new Error(sourceMessage('copy.host.0d9fb2bcbc'));
         return {
           requestId: request.requestId,
           ok: true,
@@ -634,9 +648,9 @@ export class Host {
           ok: true,
           clubRecords: clubRecords(w.ownMatches, w.playerClub),
         };
-      if (body.type !== 'head-to-head') throw new Error('읽기 요청이 아닙니다.');
+      if (body.type !== 'head-to-head') throw new Error(sourceMessage('copy.host.1cc4f9bb1d'));
       if (body.club === w.playerClub || !w.clubs.some((club) => club.id === body.club))
-        throw new Error('맞대결 상대를 찾을 수 없습니다.');
+        throw new Error(sourceMessage('copy.host.1eb67cbfd4'));
       return {
         requestId: request.requestId,
         ok: true,
@@ -652,8 +666,8 @@ export class Host {
    */
   private save(r: Request): Reply {
     const w = this.world;
-    if (!w) throw new Error('먼저 구단을 인수하세요.');
-    if (!this.codec) throw new Error('저장 Worker가 연결되지 않았습니다.');
+    if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
+    if (!this.codec) throw new Error(sourceMessage('copy.host.c64421732a'));
     this.codec.postMessage({
       id: r.requestId,
       world: w,
@@ -667,14 +681,16 @@ export class Host {
     try {
       request = requestSchema.parse(input);
       const r = request;
-      if (this.session && this.session !== r.session) throw new Error('이전 세션의 요청입니다.');
+      if (this.session && this.session !== r.session)
+        throw new Error(sourceMessage('copy.host.a147f90dfc'));
       this.session = r.session;
       const previous = this.acknowledgments.get(r.requestId);
       if (previous) return previous;
       if (r.body.type === 'save') return this.save(r);
       if (r.body.type !== 'inspect' && r.expectedRevision !== (this.world?.revision ?? -1))
-        throw new Error('세계가 변경되었습니다. 오래된 요청은 적용하지 않습니다.');
-      if (this.world?.receiptIds.includes(r.requestId)) throw new Error('이미 처리된 요청입니다.');
+        throw new Error(sourceMessage('copy.host.724fb562f2'));
+      if (this.world?.receiptIds.includes(r.requestId))
+        throw new Error(sourceMessage('copy.host.e7fd0c8c21'));
       let playback: MatchPlayback | undefined,
         raw: string | undefined,
         envelope: Reply['envelope'],
@@ -686,7 +702,7 @@ export class Host {
       this.cancelled = false;
       if (r.body.type === 'inspect') {
         if (r.body.upgrade && !r.body.activate)
-          throw new Error('규칙 업그레이드는 활성화할 때만 가능합니다.');
+          throw new Error(sourceMessage('copy.host.c1ad8fe4da'));
         const result =
           this.inspected?.raw === r.body.raw ? this.inspected.result : await decode(r.body.raw);
         this.inspected = r.body.activate ? undefined : { raw: r.body.raw, result };
@@ -716,8 +732,7 @@ export class Host {
         if (upgraded) raw = await encode(activated, r.generation, r.parentGeneration);
         envelope = result.envelope;
       } else if (r.body.type === 'generate') {
-        if (this.world && !r.body.replace)
-          throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
+        if (this.world && !r.body.replace) throw new Error(sourceMessage('copy.host.76a7247c60'));
         const { choice } = r.body,
           total = seasonsBefore(choice.decade);
         // One generation at a time; a new one drops the world an earlier one left untaken.
@@ -742,9 +757,8 @@ export class Host {
           fortune: tierFortune(world, choice.tier),
         };
       } else if (r.body.type === 'take-over') {
-        if (!this.start) throw new Error('먼저 세계를 생성하세요.');
-        if (this.world && !r.body.replace)
-          throw new Error('현재 세계가 있습니다. 파일 내보내기 후 새 게임을 시작하세요.');
+        if (!this.start) throw new Error(sourceMessage('copy.host.f3db275cee'));
+        if (this.world && !r.body.replace) throw new Error(sourceMessage('copy.host.76a7247c60'));
         // `takeOver` refuses before it changes anything, so a refused club leaves the list open.
         this.world = takeOver(
           this.start.world,
@@ -758,7 +772,7 @@ export class Host {
         changed = true;
       } else {
         const w = this.world;
-        if (!w) throw new Error('먼저 구단을 인수하세요.');
+        if (!w) throw new Error(sourceMessage('copy.client.a198ec6115'));
         if (r.body.type === 'command') {
           const cmd = r.body.command;
           // Only the inbox can be read once the career has ended (→OWNER-16, ECON-24).
@@ -772,7 +786,7 @@ export class Host {
               if (++days % 14 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
             }
           } else if (cmd.type === 'advance-days' || cmd.type === 'next-match') {
-            if (w.critical) throw new Error('중요한 알림을 확인한 후 계속하세요.');
+            if (w.critical) throw new Error(sourceMessage('copy.host.0224ffabb2'));
             const matchCount = w.ownMatches.length,
               year = w.year,
               stop = new Set(cmd.type === 'advance-days' ? cmd.stop : []),
@@ -812,7 +826,7 @@ export class Host {
           } else if (cmd.type === 'advance' || cmd.type === 'season') {
             const limit = cmd.type === 'season' ? 46 - w.round : cmd.rounds;
             if (cmd.type === 'season' && w.critical)
-              throw new Error('중요한 알림을 확인한 후 계속하세요.');
+              throw new Error(sourceMessage('copy.host.0224ffabb2'));
             for (let n = 0; n < limit; n++) {
               if (this.cancelled) break;
               if (w.round >= 46) {

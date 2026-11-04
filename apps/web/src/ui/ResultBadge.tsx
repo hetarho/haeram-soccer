@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useLocale } from '../presentation/react';
 import s from './ResultBadge.module.css';
 
@@ -10,6 +11,7 @@ export function ResultBadge({
   result: keyof typeof outcomes;
   score?: readonly [number, number];
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const outcome = outcomes[result];
   const scoreText = score ? `${score[0]}–${score[1]}` : undefined;
@@ -20,13 +22,17 @@ export function ResultBadge({
       data-outcome={outcome}
       data-with-score={score ? '' : undefined}
       role="img"
-      aria-label={`${t(`result.${outcome}.label`)}${scoreText ? ` ${scoreText}` : ''}`}
+      aria-label={localizeValue(
+        `${t(`result.${outcome}.label`)}${scoreText ? ` ${scoreText}` : ''}`,
+      )}
     >
-      <strong className={s.mark}>{t(`result.${outcome}`)}</strong>
-      {scoreText && (
-        <span className={s.score} dir="ltr">
-          {scoreText}
-        </span>
+      <strong className={s.mark}>{localizeValue(t(`result.${outcome}`))}</strong>
+      {localizeValue(
+        scoreText && (
+          <span className={s.score} dir="ltr">
+            {localizeValue(scoreText)}
+          </span>
+        ),
       )}
     </span>
   );

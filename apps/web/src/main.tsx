@@ -1,3 +1,4 @@
+import { richMessage } from './presentation/LocalizedMessage';
 import { createRoot } from 'react-dom/client';
 import { App } from './ui/App';
 import { PresentationSettings } from './ui/PresentationSettings';
@@ -8,8 +9,8 @@ void startPresentation(
   root,
   /^\/design-system(?:\/|\.html)?$/.test(location.pathname) ? (
     <main style={{ padding: 24 }}>
-      <h1>개발 모드에서만 사용할 수 있어요.</h1>
-      <a href="/">게임으로 돌아가기</a>
+      <h1>{richMessage('copy.main.10ac389f48')}</h1>
+      <a href="/">{richMessage('copy.main.0bf2b10d97')}</a>
     </main>
   ) : (
     <>

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r207 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r208 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -434,8 +434,8 @@
 - WEB-90 [o] Locale availability comes from one central registry and its message resources, with `ko-KR` as the default (→ARCH-32).
   - Offer English (`en-GB`), Spanish (`es-ES`), Brazilian Portuguese (`pt-BR`), French (`fr-FR`), German (`de-DE`), Italian (`it-IT`), Dutch (`nl-NL`), Turkish (`tr-TR`), Arabic (`ar-SA`), Japanese (`ja-JP`) and Indonesian (`id-ID`), with native-language registry labels and Arabic right-to-left direction. Every shipped pack translates all default-pack message IDs and preserves their parameters, with locale-appropriate plural forms.
   - Existing Korean labels in this SSOT describe the default locale. Shared translation and number/date-formatting services accept the selected registry locale; adding a locale resource and its registry entry requires no locale-specific components, switches or feature edits.
-  - Localize the shared shell/navigation, save/import/export, game slots, presentation settings, facility-image descriptions and extracted match cues through the selected message pack. Remaining feature/engine source copy is outside this translated inventory; additional packs do not imply complete translation of the game.
-  - Previously stored titles, details, names and historical prose remain unchanged; no translation-key migration, retrospective translation, save-format change or relocalization of saved strings is required.
+  - Localize all interface copy, accessibility labels, feature explanations, development screens, Canvas labels, errors, commentary and generated news through the selected message pack. Whole sentences, including rich inline content and count/unit parameters, are translation units; every registered pack carries each message.
+  - Keep stored titles, details, names and historical prose unchanged in saves. At display boundaries, recognized source labels and generated-prose templates use the selected locale; unknown legacy prose and user-entered names remain readable as stored. Language changes never rewrite facts or require a save-format migration.
   - Language and theme settings are accessible before founding, on game slots and in the HUD menu. Both controls derive their choices from their registry even when each has one option. Preferences apply to the browser across games, survive reload when storage is available, and remain usable in read-only game tabs without taking save ownership.
   - A preference change preserves game facts, navigation, pending drafts, progression and playback position. An unavailable preference uses its registered default, and failed resource loading preserves a usable selection with retry (→ARCH-32).
 - WEB-91 [o] A theme replaces the interface concept through a shared data contract for typography, palette, component surfaces/shape, icons, image treatment and background image sets; it does not require a theme-specific screen implementation (→ARCH-32).
@@ -592,6 +592,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r208 261104 WEB-90✎ extracted shell-only translations→all interface/feature/generated copy in every registered pack; display-time translation of recognized stored prose without changing saves; whole-sentence rich parameters
 - r207 261104 WEB-15✎ takeover direction picker and presets→no picker, standard defaults for new careers; existing saved directions kept
 - r206 261103 WEB-15✎ generation progress with the season reached→the world's history while it is generated; WEB-115+ history at generation speed: season, Club Elo top 10, champions, European winners, 발롱도르, self-closing cards for great feats only
 - r205 261103 WEB-62✎ legacy release reset→no automatic cleanup under SAVE-29; ordinary confirmation unchanged

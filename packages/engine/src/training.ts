@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Player, TrainingFocus, World } from '../../contracts/src/types';
 import { ATTRIBUTES, type Attribute } from '../../contracts/src/player';
 import {
@@ -36,20 +37,20 @@ export const trainingFocusInfo: Record<
   { label: string; description: string; recovery: number; developmentMultiplier: number }
 > = {
   balanced: {
-    label: '균형 훈련',
-    description: '성장과 회복을 함께 · 라운드마다 피로 11 회복',
+    label: sourceMessage('copy.outcome.b536a5c844'),
+    description: sourceMessage('copy.training.a677dccd1a'),
     recovery: 11,
     developmentMultiplier: 1,
   },
   recovery: {
-    label: '회복 훈련',
-    description: '피로 16 회복 · 성장은 0.4배로 쉬어갑니다',
+    label: sourceMessage('copy.outcome.2f521e400c'),
+    description: sourceMessage('copy.training.e35203f819'),
     recovery: 16,
     developmentMultiplier: 0.4,
   },
   hard: {
-    label: '하드 트레이닝',
-    description: '성장 1.6배 · 피로 회복은 6',
+    label: sourceMessage('copy.TrainingView.80b3f4a762'),
+    description: sourceMessage('copy.training.4b7a30bb73'),
     recovery: 6,
     developmentMultiplier: 1.6,
   },
@@ -278,8 +279,14 @@ export function revisePotential(w: World, player: Player) {
     addEvent(
       w,
       change > 0 ? 'potential-breakthrough' : 'potential-stall',
-      change > 0 ? `${player.name} 잠재력 폭발` : `${player.name} 성장 정체`,
-      `${age}세 · 잠재력 ${Math.round(before)} → ${Math.round(next)}`,
+      change > 0
+        ? sourceMessage('copy.training.0aaa96dfe8', { p0: player.name })
+        : sourceMessage('copy.training.2fca202d5a', { p0: player.name }),
+      sourceMessage('copy.training.9254fdd66f', {
+        p0: age,
+        p1: Math.round(before),
+        p2: Math.round(next),
+      }),
     );
 }
 
@@ -371,8 +378,8 @@ export function developmentOutlook(w: World) {
     style = managerStyleEffects(w),
     build = buildOf(w);
   const school = w.manager.interim
-      ? '임시 감독 · 학파 효과 없음'
-      : `${w.manager.name} · ${w.manager.style ? STYLE_INFO[w.manager.style].label : '기본형'}`,
+      ? sourceMessage('copy.training.db28c085e4')
+      : `${w.manager.name} · ${w.manager.style ? STYLE_INFO[w.manager.style].label : sourceMessage('copy.StyleCard.2add9ce620')}`,
     developers = STAFF_ROLES.filter((role) => staffMember(w, role)?.trait === 'developer').map(
       (role) => STAFF_INFO[role].label,
     ),
@@ -382,15 +389,15 @@ export function developmentOutlook(w: World) {
   const factors: DevelopmentFactor[] = [
     {
       key: 'focus',
-      label: '훈련 방향',
+      label: sourceMessage('copy.TrainingView.5c1363ff75'),
       value: info.developmentMultiplier,
       applies: 'all',
       home: 'training/training',
-      detail: `${info.label} · 수석코치가 정함`,
+      detail: sourceMessage('copy.training.d22c3eb25e', { p0: info.label }),
     },
     {
       key: 'investment',
-      label: '선수단 투자',
+      label: sourceMessage('copy.contracts.31d8ccedbf'),
       value: effects.developmentMultiplier,
       applies: 'all',
       home: 'business/strategy',
@@ -398,23 +405,23 @@ export function developmentOutlook(w: World) {
     },
     {
       key: 'base',
-      label: '감독 육성',
+      label: sourceMessage('copy.training.5ee7330d98'),
       value: developmentBase(w),
       applies: 'all',
       home: 'people/manager',
-      detail: `감독 육성 ${Math.round(w.manager.youth)}`,
+      detail: sourceMessage('copy.training.e5ffb86a1e', { p0: Math.round(w.manager.youth) }),
     },
     {
       key: 'facility',
-      label: '훈련장',
+      label: sourceMessage('copy.outcome.e9dbbe23f3'),
       value: ground.growth,
       applies: 'all',
       home: 'business/facility',
-      detail: `훈련장 ${w.trainingGround}단계`,
+      detail: sourceMessage('copy.training.ef428a47c3', { p0: w.trainingGround }),
     },
     {
       key: 'style',
-      label: '감독 학파',
+      label: sourceMessage('copy.training.3f98a2f644'),
       value: style.growth,
       applies: 'all',
       home: 'people/manager',
@@ -422,7 +429,7 @@ export function developmentOutlook(w: World) {
     },
     {
       key: 'style-youth',
-      label: '감독 학파',
+      label: sourceMessage('copy.training.3f98a2f644'),
       value: style.youthGrowth,
       applies: 'u21',
       home: 'people/manager',
@@ -430,25 +437,26 @@ export function developmentOutlook(w: World) {
     },
     {
       key: 'coaches-youth',
-      label: '코치진',
+      label: sourceMessage('copy.investmentAreas.243be11e44'),
       value: staff.youthDevelopment,
       applies: 'u21',
       home: 'people/coaches',
       detail: developers.length
         ? `${STAFF_TRAIT_INFO.developer.label} ${developers.join('·')}`
-        : `${STAFF_TRAIT_INFO.developer.label} 코치 없음`,
+        : sourceMessage('copy.training.6e524686ba', { p0: STAFF_TRAIT_INFO.developer.label }),
     },
     {
       key: 'build-youth',
-      label: '방향',
+      label: sourceMessage('copy.news.d7895d7647'),
       value: buildEffects(w).youthGrowth,
       applies: 'u21',
       home: 'business/strategy',
       // 데뷔 시점 빠른 데뷔 lifts the same growth (→CLUB-32).
       detail:
-        [...youthCards, ...(w.direction?.debut === 'early' ? ['데뷔 시점 빠른 데뷔'] : [])].join(
-          ' · ',
-        ) || '21세 이하 성장 카드 없음',
+        [
+          ...youthCards,
+          ...(w.direction?.debut === 'early' ? [sourceMessage('copy.training.a9e031f356')] : []),
+        ].join(' · ') || sourceMessage('copy.training.3b4b3e3563'),
     },
   ];
   const growing: GrowingPlayer[] = activePlayers(w)

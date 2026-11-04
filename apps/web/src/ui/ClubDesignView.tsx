@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useState } from 'react';
 import {
   CREST_PALETTE,
@@ -24,12 +27,22 @@ import s from './ClubDesignView.module.css';
  * page.
  */
 
-const KIT_LABEL = { home: '홈', away: '원정', third: '서드' } as const;
+const KIT_LABEL = {
+  home: sourceMessage('fixture.home'),
+  away: sourceMessage('fixture.away'),
+  third: sourceMessage('copy.ClubDesignView.0969b0e255'),
+} as const;
 /** Each colour step: its name, what it paints, and whether it may be left out. */
 const SLOTS = [
-  ['메인', '엠블럼 바탕과 홈 유니폼에 쓰여요.'],
-  ['보조', '무늬와 원정 유니폼에 쓰여요.'],
-  ['포인트', '선과 장식에 쓰여요.'],
+  [
+    sourceMessage('copy.ClubDesignView.0b39b6a4e2'),
+    sourceMessage('copy.ClubDesignView.87d0c67cd0'),
+  ],
+  [
+    sourceMessage('copy.ClubDesignView.931b1921eb'),
+    sourceMessage('copy.ClubDesignView.68d14e8d7a'),
+  ],
+  [sourceMessage('copy.BallonDorView.e5f25ab092'), sourceMessage('copy.ClubDesignView.69094662a0')],
 ] as const;
 type Step = 'home' | 0 | 1 | 2 | 'confirm';
 /** A colour step's answer: a colour, `null` for 없음, or nothing yet. */
@@ -59,20 +72,27 @@ export function designFormAfter(form: DesignForm, command: DesignCommand['type']
 
 /** A design at a glance: the crest and the three shirts. */
 function DesignCard({ identity, size = 48 }: { identity: ClubIdentity; size?: number }) {
+  useTextLocale();
   return (
     <div className={s.design}>
-      <CrestMark crest={identity.crest} size={size} label="엠블럼" />
+      <CrestMark
+        crest={identity.crest}
+        size={size}
+        label={displayMessage('copy.ClubDesignView.4a84e980c4')}
+      />
       <div className={s.kits}>
-        {KIT_ROLES.map((role) => (
-          <figure key={role}>
-            <KitSwatch
-              shirt={identity.kits[role]}
-              label={`${KIT_LABEL[role]} 유니폼`}
-              size={size}
-            />
-            <figcaption>{KIT_LABEL[role]}</figcaption>
-          </figure>
-        ))}
+        {localizeValue(
+          KIT_ROLES.map((role) => (
+            <figure key={role}>
+              <KitSwatch
+                shirt={identity.kits[role]}
+                label={displayMessage('copy.stories.d4f4589c92', { p0: KIT_LABEL[role] })}
+                size={size}
+              />
+              <figcaption>{localizeValue(KIT_LABEL[role])}</figcaption>
+            </figure>
+          )),
+        )}
       </div>
     </div>
   );
@@ -80,18 +100,21 @@ function DesignCard({ identity, size = 48 }: { identity: ClubIdentity; size?: nu
 
 /** The colours chosen so far, each named. */
 function Chosen({ colours }: { colours: readonly ColourPick[] }) {
+  useTextLocale();
   return (
-    <ul className={s.chosen} aria-label="고른 색">
-      {SLOTS.map(([label], index) => (
-        <li key={label}>
-          <span
-            className={s.chip}
-            style={{ background: colours[index] ?? undefined }}
-            data-empty={!colours[index] || undefined}
-          />
-          {label}
-        </li>
-      ))}
+    <ul className={s.chosen} aria-label={displayMessage('copy.ClubDesignView.5ff6b17715')}>
+      {localizeValue(
+        SLOTS.map(([label], index) => (
+          <li key={label}>
+            <span
+              className={s.chip}
+              style={{ background: colours[index] ?? undefined }}
+              data-empty={!colours[index] || undefined}
+            />
+            {localizeValue(label)}
+          </li>
+        )),
+      )}
     </ul>
   );
 }
@@ -110,37 +133,47 @@ function Palette({
   disabled: boolean;
   onPick: (colour: string | null) => void;
 }) {
+  useTextLocale();
   return (
-    <div className={s.palette} role="group" aria-label={`${SLOTS[index]![0]} 색`}>
-      {index > 0 && (
-        <button
-          type="button"
-          className={s.none}
-          aria-pressed={value === null}
-          disabled={disabled}
-          onClick={() => onPick(null)}
-        >
-          없음
-        </button>
+    <div
+      className={s.palette}
+      role="group"
+      aria-label={displayMessage('copy.ClubDesignView.0ad3fc64a8', { p0: SLOTS[index]![0] })}
+    >
+      {localizeValue(
+        index > 0 && (
+          <button
+            type="button"
+            className={s.none}
+            aria-pressed={value === null}
+            disabled={disabled}
+            onClick={() => onPick(null)}
+          >
+            {richMessage('copy.BusinessWorkbench.72ea3d64ac')}
+          </button>
+        ),
       )}
-      {CREST_PALETTE.map((colour) => (
-        <button
-          key={colour}
-          type="button"
-          className={s.swatch}
-          aria-label={colour}
-          aria-pressed={value === colour}
-          disabled={disabled || (value !== colour && taken.includes(colour))}
-          onClick={() => onPick(colour)}
-        >
-          <span className={s.fill} style={{ background: colour }} aria-hidden="true" />
-        </button>
-      ))}
+      {localizeValue(
+        CREST_PALETTE.map((colour) => (
+          <button
+            key={colour}
+            type="button"
+            className={s.swatch}
+            aria-label={localizeValue(colour)}
+            aria-pressed={value === colour}
+            disabled={disabled || (value !== colour && taken.includes(colour))}
+            onClick={() => onPick(colour)}
+          >
+            <span className={s.fill} style={{ background: colour }} aria-hidden="true" />
+          </button>
+        )),
+      )}
     </div>
   );
 }
 
 export function ClubDesignView({ state, client }: { state: ClientState; client: GameClient }) {
+  useTextLocale();
   const w = state.view!.world;
   const code = w.clubs.find((club) => club.id === w.playerClub)!.country;
   const applied = identityOf(w, w.playerClub);
@@ -160,7 +193,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
     const reply = await client.command(command);
     setPending(false);
     if (!reply?.ok) {
-      setError(client.state.error ?? '요청을 처리하지 못했어요.');
+      setError(client.state.error ?? sourceMessage('copy.ClubDesignView.19b291120c'));
       return;
     }
     const form = designFormAfter({ step, colours, studio }, command.type);
@@ -173,29 +206,36 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   if (commission) {
     const redraw = redrawFee(w, commission.studio);
     return (
-      <section className={s.view} aria-label="구단 디자인">
-        <div data-surface="panel" className={s.panel} aria-label="받은 시안">
-          <h3>받은 시안</h3>
+      <section className={s.view} aria-label={displayMessage('club.operations.identity')}>
+        <div
+          data-surface="panel"
+          className={s.panel}
+          aria-label={displayMessage('copy.ClubDesignView.632b0bf141')}
+        >
+          <h3>{richMessage('copy.ClubDesignView.632b0bf141')}</h3>
           <p className={s.note}>
-            {DESIGNERS[commission.studio].label}가 보낸 시안이에요. 고르면 바로 구단 디자인이
-            바뀌고, 아직 치르지 않은 경기부터 입어요.
+            {richMessage('copy.ClubDesignView.e5a36cf47b', {
+              p0: DESIGNERS[commission.studio].label,
+            })}
           </p>
           <Chosen colours={commission.colours} />
           <ol className={s.drafts}>
-            {commission.drafts.map((draft, index) => (
-              <li key={index} className={s.draft}>
-                <b>시안 {index + 1}</b>
-                <DesignCard identity={draft} />
-                <button
-                  type="button"
-                  data-ui="primary"
-                  disabled={busy}
-                  onClick={() => void send({ type: 'adopt-design', draft: index })}
-                >
-                  이 시안으로 결정
-                </button>
-              </li>
-            ))}
+            {localizeValue(
+              commission.drafts.map((draft, index) => (
+                <li key={index} className={s.draft}>
+                  <b>{richMessage('copy.ClubDesignView.9517fa3d89', { p0: index + 1 })}</b>
+                  <DesignCard identity={draft} />
+                  <button
+                    type="button"
+                    data-ui="primary"
+                    disabled={busy}
+                    onClick={() => void send({ type: 'adopt-design', draft: index })}
+                  >
+                    {richMessage('copy.ClubDesignView.efc7b98645')}
+                  </button>
+                </li>
+              )),
+            )}
           </ol>
           <div className={s.nav}>
             <button
@@ -203,20 +243,24 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
               disabled={busy}
               onClick={() => void send({ type: 'discard-designs' })}
             >
-              전부 버리기
+              {richMessage('copy.ClubDesignView.742223c321')}
             </button>
             <button
               type="button"
               disabled={busy || BigInt(w.cash) < BigInt(redraw)}
               onClick={() => void send({ type: 'redraw-designs' })}
             >
-              재설정 · 반값 <Money value={redraw} code={code} year={w.year} plain />
+              {richMessage('copy.ClubDesignView.98ffc505d2', {
+                p0: <Money value={redraw} code={code} year={w.year} plain />,
+              })}
             </button>
           </div>
-          {error && (
-            <p className={s.warn} role="alert">
-              {error}
-            </p>
+          {localizeValue(
+            error && (
+              <p className={s.warn} role="alert">
+                {localizeValue(error)}
+              </p>
+            ),
           )}
         </div>
       </section>
@@ -225,13 +269,11 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
 
   if (step === 'home')
     return (
-      <section className={s.view} aria-label="구단 디자인">
+      <section className={s.view} aria-label={displayMessage('club.operations.identity')}>
         <div data-surface="panel" className={s.panel}>
-          <h3>지금 디자인</h3>
+          <h3>{richMessage('copy.ClubDesignView.a3a717bf6e')}</h3>
           <DesignCard identity={applied} size={64} />
-          <p className={s.note}>
-            색만 정해서 디자이너에게 맡기면, 엠블럼과 유니폼을 시안 몇 개로 그려 와요.
-          </p>
+          <p className={s.note}>{richMessage('copy.ClubDesignView.a0d8a4ddac')}</p>
           <button
             type="button"
             data-ui="primary"
@@ -243,9 +285,11 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
               setStep(0);
             }}
           >
-            변경 의뢰
+            {richMessage('copy.ClubDesignView.5edef58fc5')}
           </button>
-          {readonly && <p className={s.note}>읽기 전용 상태에서는 의뢰할 수 없어요.</p>}
+          {localizeValue(
+            readonly && <p className={s.note}>{richMessage('copy.ClubDesignView.b095395188')}</p>,
+          )}
         </div>
       </section>
     );
@@ -262,7 +306,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
   const header = (
     <div className={s.stepHead}>
       <span className={s.count}>
-        {position} / {total}
+        {localizeValue(position)} / {localizeValue(total)}
       </span>
       <Chosen colours={colours} />
     </div>
@@ -273,30 +317,41 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
     const short = BigInt(w.cash) < BigInt(fee);
     const chosen = colours.filter((colour) => typeof colour === 'string') as IdentityColours;
     return (
-      <section className={s.view} aria-label="구단 디자인">
+      <section className={s.view} aria-label={displayMessage('club.operations.identity')}>
         <div data-surface="panel" className={s.panel}>
-          {header}
-          <h3>디자이너</h3>
+          {localizeValue(header)}
+          <h3>{richMessage('copy.ClubDesignView.81223d1051')}</h3>
           <Segments
-            label="디자이너"
+            label={displayMessage('copy.ClubDesignView.81223d1051')}
             options={DESIGN_STUDIOS.map((id) => [id, DESIGNERS[id].label] as const)}
             value={studio}
             onChange={setStudio}
           />
           <p className={s.terms}>
-            의뢰비 <Money value={fee} code={code} year={w.year} /> · 시안{' '}
-            <b>{DESIGNERS[studio].drafts}개</b>
+            {richMessage('copy.ClubDesignView.4861691393', {
+              p0: <Money value={fee} code={code} year={w.year} />,
+              p1: ' ',
+              p2: (
+                <b>
+                  {richMessage('copy.ConstantsPage.f62174360f', { p0: DESIGNERS[studio].drafts })}
+                </b>
+              ),
+            })}
           </p>
-          <p className={s.ask}>이대로 요청할까요?</p>
-          {short && <p className={s.warn}>운영 자금이 의뢰비보다 적어요.</p>}
-          {error && (
-            <p className={s.warn} role="alert">
-              {error}
-            </p>
+          <p className={s.ask}>{richMessage('copy.ClubDesignView.d0d47619f9')}</p>
+          {localizeValue(
+            short && <p className={s.warn}>{richMessage('copy.ClubDesignView.a4a9dbf5dc')}</p>,
+          )}
+          {localizeValue(
+            error && (
+              <p className={s.warn} role="alert">
+                {localizeValue(error)}
+              </p>
+            ),
           )}
           <div className={s.nav}>
             <button type="button" disabled={pending} onClick={() => setStep(back())}>
-              아니요
+              {richMessage('copy.ClubDesignView.9474acc753')}
             </button>
             <button
               type="button"
@@ -304,7 +359,11 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
               disabled={busy || short}
               onClick={() => void send({ type: 'design-commission', studio, colours: chosen })}
             >
-              {pending ? '요청하는 중…' : '예'}
+              {localizeValue(
+                pending
+                  ? sourceMessage('copy.ClubDesignView.b69f111481')
+                  : sourceMessage('copy.ClubDesignView.2eb73fba69'),
+              )}
             </button>
           </div>
         </div>
@@ -314,13 +373,13 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
 
   const [label, hint] = SLOTS[step]!;
   return (
-    <section className={s.view} aria-label="구단 디자인">
+    <section className={s.view} aria-label={displayMessage('club.operations.identity')}>
       <div data-surface="panel" className={s.panel}>
-        {header}
-        <h3>{label} 색을 골라 주세요</h3>
+        {localizeValue(header)}
+        <h3>{richMessage('copy.ClubDesignView.1234fdea49', { p0: label })}</h3>
         <p className={s.note}>
-          {hint}
-          {step > 0 && ' 없어도 돼요.'}
+          {localizeValue(hint)}
+          {localizeValue(step > 0 && sourceMessage('copy.ClubDesignView.3b896c8b15'))}
         </p>
         <Palette
           index={step}
@@ -341,7 +400,11 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
         />
         <div className={s.nav}>
           <button type="button" onClick={() => setStep(back())}>
-            {step === 0 ? '취소' : '이전'}
+            {localizeValue(
+              step === 0
+                ? sourceMessage('common.cancel')
+                : sourceMessage('copy.ClubDesignView.da7e61c67c'),
+            )}
           </button>
           <button
             type="button"
@@ -349,7 +412,7 @@ export function ClubDesignView({ state, client }: { state: ClientState; client: 
             disabled={colours[step] === undefined}
             onClick={() => setStep(next())}
           >
-            다음
+            {richMessage('copy.ClubDesignView.aef613c661')}
           </button>
         </div>
       </div>

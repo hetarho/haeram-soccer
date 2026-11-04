@@ -1,9 +1,10 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 // Opaque, reversible BMP text. Exclude ASCII, surrogates and Unicode noncharacters.
 const BASE = 63198n;
 const BLOCK = 127;
 const DIGITS = 64;
 const MAX_BYTES = 16 * 1024 * 1024;
-const failure = () => new Error('BMP 저장 데이터 손상');
+const failure = () => new Error(sourceMessage('copy.bmp127.0917f0f73b'));
 function character(digit: number) {
   let code = digit + 0x100;
   if (code >= 0xd800) code += 0x800;

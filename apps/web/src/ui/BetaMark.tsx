@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useLocale } from '../presentation/react';
 import { BETA_MARK, isBetaVersion, shortVersion, versionLabel } from './versionLabel';
 import m from './BetaMark.module.css';
@@ -8,14 +9,17 @@ import m from './BetaMark.module.css';
  * (`v0.7 BETA`) on the start and save-slot screens. A label, never a control.
  */
 export function BetaMark({ version = false }: { version?: boolean }) {
+  useTextLocale();
   const { t } = useLocale();
   if (!isBetaVersion()) return null;
   return (
     <span className={m.mark}>
       <span className={m.pill} data-testid="beta-mark" aria-hidden="true">
-        {version ? versionLabel() : BETA_MARK}
+        {localizeValue(version ? versionLabel() : BETA_MARK)}
       </span>
-      <span className={m.srOnly}>{t('shell.beta', { version: shortVersion() })}</span>
+      <span className={m.srOnly}>
+        {localizeValue(t('shell.beta', { version: shortVersion() }))}
+      </span>
     </span>
   );
 }

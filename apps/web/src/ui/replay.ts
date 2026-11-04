@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { NEUTRAL_FRAME_PACE } from '../../../../packages/contracts/src/match-model';
 import type {
   MatchRecord,
@@ -9,7 +10,9 @@ import type {
 export function archivePlayback(record: MatchRecord): MatchPlayback {
   const frames: MatchFrame[] = Array.from({ length: 90 }, (_, i) => {
     const minute = i + 1,
-      goals = record.highlights.filter((h) => h.action === '골' && h.minute <= minute),
+      goals = record.highlights.filter(
+        (h) => h.action === sourceMessage('copy.summary.68a6cf8ed8') && h.minute <= minute,
+      ),
       event = record.highlights.find((h) => h.minute === minute);
     return {
       minute,
@@ -22,7 +25,7 @@ export function archivePlayback(record: MatchRecord): MatchPlayback {
       ball: event ? [event.side === 0 ? 95 : 5, 50] : [50, 50],
       side: event?.side || 0,
       player: 0,
-      action: event?.action || '기록 요약',
+      action: event?.action || sourceMessage('copy.replay.80d4693205'),
       period: minute <= 45 ? 1 : 2,
       label: String(minute),
       pace: NEUTRAL_FRAME_PACE,

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Player, World } from '../../contracts/src/types';
 import { registrationRule, type RegistrationRule } from '../../catalogs/src/index';
 import { activePlayers, clubOf } from './player-state';
@@ -42,19 +43,31 @@ export function registrationLabel(rule: RegistrationRule, allowed = rule.max) {
   const parts: string[] = [];
   if (rule.exempt?.ageAtMost !== undefined)
     parts.push(
-      `${rule.exempt.ageAtMost}세 이하 제외${rule.exempt.loansCount ? '(임대 선수는 포함)' : ''}`,
+      sourceMessage('copy.registration.529802b5fa', {
+        p0: rule.exempt.ageAtMost,
+        p1: rule.exempt.loansCount ? sourceMessage('copy.registration.7d89ecb17f') : '',
+      }),
     );
-  if (rule.exempt?.goalkeepers) parts.push('골키퍼 제외');
+  if (rule.exempt?.goalkeepers) parts.push(sourceMessage('copy.registration.a42c5da312'));
   if (rule.exempt?.graduatesAgeAtMost !== undefined)
-    parts.push(`아카데미 출신 ${rule.exempt.graduatesAgeAtMost}세 이하 제외`);
-  if (rule.bandiera) parts.push(`장기 소속 추가 최대 ${rule.bandiera.extra}명`);
-  return `${allowed}명${parts.length ? ` · ${parts.join(' · ')}` : ''}`;
+    parts.push(
+      sourceMessage('copy.registration.62f95ebcf1', { p0: rule.exempt.graduatesAgeAtMost }),
+    );
+  if (rule.bandiera)
+    parts.push(sourceMessage('copy.registration.a4c300e907', { p0: rule.bandiera.extra }));
+  return sourceMessage('copy.ProfilePanels.fd0076ac0a', {
+    p0: allowed,
+    p1: parts.length ? ` · ${parts.join(' · ')}` : '',
+  });
 }
 /** Existing over-limit squads keep everyone; only exempt arrivals can bypass the counted limit. */
 export function registrationRoom(w: World, player: Registrant) {
   const state = registration(w);
-  if (state.total >= state.ceiling) return `선수단은 최대 ${state.ceiling}명이에요.`;
+  if (state.total >= state.ceiling)
+    return sourceMessage('copy.registration.e5901e6714', { p0: state.ceiling });
   if (!registrationExempt(state.rule, w.year, player) && state.counted >= state.allowed)
-    return `선수단 등록 한도가 가득 찼어요 (${registrationLabel(state.rule, state.allowed)})`;
+    return sourceMessage('copy.registration.ee43eef0c1', {
+      p0: registrationLabel(state.rule, state.allowed),
+    });
   return undefined;
 }

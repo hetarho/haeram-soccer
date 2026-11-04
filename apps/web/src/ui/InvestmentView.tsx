@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useState } from 'react';
 import type {
   FacilityPart,
@@ -55,6 +58,7 @@ function Amount({
   value: string | bigint;
   plain?: boolean;
 }) {
+  useTextLocale();
   return <Money value={value} code={clubOf(w).country} year={w.year} plain={plain} />;
 }
 
@@ -69,6 +73,7 @@ function BudgetSetting({
   policyKey: PolicyKey;
   office: OfficeRead;
 }) {
+  useTextLocale();
   const policy = policyOf(w);
   const current = policy[policyKey];
   const [selected, setSelected] = useState<PolicyLevel>(current);
@@ -90,83 +95,101 @@ function BudgetSetting({
   return (
     <Card
       surface="sheet"
-      title={info.label}
-      meta={policyKey === 'tour' ? '시즌 운영' : '운영 투자'}
+      title={localizeValue(info.label)}
+      meta={
+        policyKey === 'tour'
+          ? sourceMessage('copy.InvestmentView.bd55bc0e4f')
+          : sourceMessage('copy.InvestmentView.09710fcbef')
+      }
       className={s.panel}
       data-control={`policy:${policyKey}`}
     >
       <p className={s.note}>
-        현재 적용 · {info.levels.find((level) => level.level === current)!.name}
+        {richMessage('copy.InvestmentTotals.4cc8a528aa', {
+          p0: info.levels.find((level) => level.level === current)!.name,
+        })}
       </p>
       <InvestmentSlider
-        label={`${info.label} 수준`}
+        label={displayMessage('copy.InvestmentView.8740e5b543', { p0: info.label })}
         options={info.levels.map((level) => ({ value: level.level, name: level.name }))}
         value={selected}
         disabled={action.blocked}
         onChange={setSelected}
       />
       <div className={s.selection} data-surface="inset">
-        {policyKey === 'support' ? (
-          <dl className={s.supportFacts}>
-            <div>
-              <dt>연간 운영비</dt>
-              <dd>
-                <Amount w={w} value={preview.expenses} />
-              </dd>
-            </div>
-            <div>
-              <dt>협상 호감</dt>
-              <dd>
-                {effects.goodwill > 0 ? '+' : ''}
-                {effects.goodwill}%
-              </dd>
-            </div>
-            <div>
-              <dt>선수 성장</dt>
-              <dd>×{effects.developmentMultiplier}</dd>
-            </div>
-            <div>
-              <dt>추가 피로 회복</dt>
-              <dd>
-                {effects.recoveryBonus > 0 ? '+' : ''}
-                {effects.recoveryBonus}
-              </dd>
-            </div>
-          </dl>
-        ) : (
-          <>
-            <b>{option.name}</b>
-            <p>{option.summary}</p>
-            {annual !== undefined && (
-              <DeskStats
-                label={`${info.label} 비용`}
-                stats={[
-                  { label: '이 항목 연간 투자', value: <Amount w={w} value={annual} /> },
-                  {
-                    label: '다음 라운드 지출',
-                    value: (
-                      <Amount w={w} value={roundShare(annual, w.round >= 46 ? 0 : w.round + 1)} />
-                    ),
-                  },
-                  {
-                    label: '구단 연간 고정비 합계',
-                    value: <Amount w={w} value={preview.annual} />,
-                  },
-                ]}
-              />
-            )}
-          </>
+        {localizeValue(
+          policyKey === 'support' ? (
+            <dl className={s.supportFacts}>
+              <div>
+                <dt>{richMessage('copy.InvestmentTotals.d9eefc91be')}</dt>
+                <dd>
+                  <Amount w={w} value={preview.expenses} />
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.InvestmentTotals.4d46fe50b9')}</dt>
+                <dd>
+                  {localizeValue(effects.goodwill > 0 ? '+' : '')}
+                  {localizeValue(effects.goodwill)}%
+                </dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.InvestmentTotals.f5d5d839bb')}</dt>
+                <dd>×{localizeValue(effects.developmentMultiplier)}</dd>
+              </div>
+              <div>
+                <dt>{richMessage('copy.InvestmentTotals.2aa2ff71ea')}</dt>
+                <dd>
+                  {localizeValue(effects.recoveryBonus > 0 ? '+' : '')}
+                  {localizeValue(effects.recoveryBonus)}
+                </dd>
+              </div>
+            </dl>
+          ) : (
+            <>
+              <b>{localizeValue(option.name)}</b>
+              <p>{localizeValue(option.summary)}</p>
+              {localizeValue(
+                annual !== undefined && (
+                  <DeskStats
+                    label={displayMessage('copy.InvestmentView.767f615ef4', { p0: info.label })}
+                    stats={[
+                      {
+                        label: sourceMessage('copy.InvestmentView.0cdfeb52d0'),
+                        value: <Amount w={w} value={annual} />,
+                      },
+                      {
+                        label: sourceMessage('copy.InvestmentView.131f0bd98f'),
+                        value: (
+                          <Amount
+                            w={w}
+                            value={roundShare(annual, w.round >= 46 ? 0 : w.round + 1)}
+                          />
+                        ),
+                      },
+                      {
+                        label: sourceMessage('copy.InvestmentView.d0bc06a2f8'),
+                        value: <Amount w={w} value={preview.annual} />,
+                      },
+                    ]}
+                  />
+                ),
+              )}
+            </>
+          ),
         )}
       </div>
       <div className={s.apply}>
         <p className={s.note}>
-          {policyKey === 'recruitment'
-            ? '실제 이적료와 급여는 영입 계약을 체결할 때 결정됩니다.'
-            : policyKey === 'support'
-              ? '지원 운영비는 다음 정산부터 반영됩니다. 기존 선수·감독·스태프 급여는 별도입니다.'
-              : policyKey === 'tour'
-                ? '시즌 시작에 투어 수입·인지도·피로가 함께 반영됩니다.'
-                : '반복 지출은 다음 정산부터 반영됩니다.'}
+          {localizeValue(
+            policyKey === 'recruitment'
+              ? sourceMessage('copy.InvestmentView.3e9d654214')
+              : policyKey === 'support'
+                ? sourceMessage('copy.InvestmentView.a480936d6c')
+                : policyKey === 'tour'
+                  ? sourceMessage('copy.InvestmentView.afb698d0e3')
+                  : sourceMessage('copy.InvestmentView.fc0aadef44'),
+          )}
         </p>
         <button
           type="button"
@@ -175,31 +198,50 @@ function BudgetSetting({
           onClick={() =>
             void action.apply(
               { type: 'club-policy', key: policyKey, level: selected },
-              `${info.label} 수준을 적용했어요.`,
+              sourceMessage('copy.InvestmentView.3d07a90bf0', { p0: info.label }),
             )
           }
         >
-          {action.busy ? '적용 중…' : policyKey === 'tour' ? '투어 일정 적용' : '투자 수준 적용'}
+          {localizeValue(
+            action.busy
+              ? sourceMessage('copy.ClubSettingControl.304d48a5d2')
+              : policyKey === 'tour'
+                ? sourceMessage('copy.InvestmentView.5ce3a5c330')
+                : sourceMessage('copy.InvestmentView.235d04c236'),
+          )}
         </button>
       </div>
-      {action.error && <p role="alert">{action.error}</p>}
-      {action.message && (
-        <p role="status" className={s.note}>
-          {action.message}
-        </p>
+      {localizeValue(action.error && <p role="alert">{localizeValue(action.error)}</p>)}
+      {localizeValue(
+        action.message && (
+          <p role="status" className={s.note}>
+            {localizeValue(action.message)}
+          </p>
+        ),
       )}
     </Card>
   );
 }
 
 function facilityEffect(part: FacilityPart, level: number) {
-  if (part === 'stadium') return `${number(STADIUM_STEPS[level].capacity)}석`;
+  if (part === 'stadium')
+    return sourceMessage('copy.ClubOperations.e718a2e7a8', {
+      p0: number(STADIUM_STEPS[level].capacity),
+    });
   if (part === 'training') {
     const terms = TRAINING_GROUND[level];
-    return `선수 성장 ×${terms.growth} · 추가 피로 회복 +${terms.recoveryBonus} · 협상 호감 +${terms.goodwill}%`;
+    return sourceMessage('copy.FacilityParts.22f747ccff', {
+      p0: terms.growth,
+      p1: terms.recoveryBonus,
+      p2: terms.goodwill,
+    });
   }
   const effect = ACADEMY_FACILITY[level];
-  return `입단 +${effect.intake}명 · 잠재력 +${effect.potential} · 성장 ×${effect.growth}`;
+  return sourceMessage('copy.InvestmentView.87c8b2640a', {
+    p0: effect.intake,
+    p1: effect.potential,
+    p2: effect.growth,
+  });
 }
 
 function facilityBenefits(
@@ -209,25 +251,38 @@ function facilityBenefits(
   if (part === 'training') {
     const terms = TRAINING_GROUND[level];
     return [
-      ['선수 성장', `×${terms.growth}`],
-      ['추가 피로 회복', `+${terms.recoveryBonus}`],
-      ['협상 호감', `+${terms.goodwill}%`],
+      [sourceMessage('copy.InvestmentTotals.f5d5d839bb'), `×${terms.growth}`],
+      [sourceMessage('copy.InvestmentTotals.2aa2ff71ea'), `+${terms.recoveryBonus}`],
+      [sourceMessage('copy.InvestmentTotals.4d46fe50b9'), `+${terms.goodwill}%`],
     ];
   }
   if (part === 'academy') {
     const terms = ACADEMY_FACILITY[level];
     return [
-      ['유소년 성장', `×${terms.growth}`],
-      ['추가 입단 인원', `+${terms.intake}명`],
-      ['입단 잠재력', `+${terms.potential}`],
+      [sourceMessage('copy.InvestmentTotals.f695772131'), `×${terms.growth}`],
+      [
+        sourceMessage('copy.InvestmentView.45b26f37cf'),
+        sourceMessage('copy.InvestmentView.81485f02e2', { p0: terms.intake }),
+      ],
+      [sourceMessage('copy.ClubSettingControl.8b55b3cb94'), `+${terms.potential}`],
     ];
   }
-  return [['수용 인원', `${number(STADIUM_STEPS[level].capacity)}석`]];
+  return [
+    [
+      sourceMessage('copy.InvestmentView.57d5273aac'),
+      sourceMessage('copy.ClubOperations.e718a2e7a8', {
+        p0: number(STADIUM_STEPS[level].capacity),
+      }),
+    ],
+  ];
 }
 
 function facilityUpgradeTitle(part: FacilityPart, expansion: boolean) {
-  if (part === 'stadium') return expansion ? '경기장 증축' : '경기장 재건축';
-  return `${FACILITY_PART_LABEL[part]} 업그레이드`;
+  if (part === 'stadium')
+    return expansion
+      ? sourceMessage('copy.InvestmentView.6a917c7c3d')
+      : sourceMessage('copy.InvestmentView.b9b72199fd');
+  return sourceMessage('copy.InvestmentView.9ac1f3f25a', { p0: FACILITY_PART_LABEL[part] });
 }
 
 function FacilitySnapshot({
@@ -243,6 +298,7 @@ function FacilitySnapshot({
   maintenance: string;
   future?: boolean;
 }) {
+  useTextLocale();
   const scene = {
     ...w,
     ...(part === 'training'
@@ -254,10 +310,16 @@ function FacilitySnapshot({
   return (
     <Card
       surface="detail"
-      title={future ? '완공 후' : '현재'}
+      title={localizeValue(
+        future
+          ? sourceMessage('copy.InvestmentView.5c31b4aa99')
+          : sourceMessage('copy.InvestmentView.72d2bae2a7'),
+      )}
       className={s.facilitySnapshot}
       data-future={future || undefined}
-      aria-label={`${future ? '완공 후' : '현재'} ${FACILITY_PART_LABEL[part]}`}
+      aria-label={localizeValue(
+        `${future ? sourceMessage('copy.InvestmentView.5c31b4aa99') : sourceMessage('copy.InvestmentView.72d2bae2a7')} ${FACILITY_PART_LABEL[part]}`,
+      )}
     >
       <div className={s.compareScene}>
         <FacilityArt
@@ -268,22 +330,24 @@ function FacilitySnapshot({
           eager
         />
         <div className={s.overlay}>
-          {part === 'stadium' && <small>{STADIUM_STEPS[level].name}</small>}
-          <b>
-            {level}/{partTop(part)}단계
-          </b>
+          {localizeValue(
+            part === 'stadium' && <small>{localizeValue(STADIUM_STEPS[level].name)}</small>,
+          )}
+          <b>{richMessage('copy.InvestmentView.5186c5563f', { p0: level, p1: partTop(part) })}</b>
         </div>
       </div>
       <dl className={s.benefitFacts}>
-        {facilityBenefits(part, level).map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
+        {localizeValue(
+          facilityBenefits(part, level).map(([label, value]) => (
+            <div key={label}>
+              <dt>{localizeValue(label)}</dt>
+              <dd>{localizeValue(value)}</dd>
+            </div>
+          )),
+        )}
       </dl>
       <div className={s.maintenance}>
-        <span>연간 유지비</span>
+        <span>{richMessage('copy.InvestmentTotals.7993f638ba')}</span>
         <b>
           <Amount w={w} value={maintenance} plain />
         </b>
@@ -303,6 +367,7 @@ function FacilityUpgrade({
   part: FacilityPart;
   office: OfficeRead;
 }) {
+  useTextLocale();
   const level = partLevel(w, part);
   const preview = office.facilities[part];
   const running = facilityWork(w, part);
@@ -324,8 +389,8 @@ function FacilityUpgrade({
   return (
     <Card
       surface="sheet"
-      title={label}
-      meta="시설 투자"
+      title={localizeValue(label)}
+      meta={sourceMessage('copy.InvestmentView.f6ce82d21d')}
       className={s.panel}
       id={`investment-facility-${part}`}
     >
@@ -338,195 +403,237 @@ function FacilityUpgrade({
           eager
         />
         <div className={`${s.overlay} ${s.facilityCaption}`}>
-          <b>
-            {level}/{partTop(part)}단계
-          </b>
-          <p>{facilityEffect(part, level)}</p>
+          <b>{richMessage('copy.InvestmentView.5186c5563f', { p0: level, p1: partTop(part) })}</b>
+          <p>{localizeValue(facilityEffect(part, level))}</p>
         </div>
       </div>
-      {running ? (
-        <div className={s.selection} data-surface="inset" role="status">
-          <b>
-            {running.to}단계 공사 중 · 완공까지 {running.left}일
-          </b>
-          <progress
-            max={running.days}
-            value={running.days - running.left}
-            aria-label={`${label} 공사 진행`}
-          />
-          <p>완공 후 {facilityEffect(part, running.to)}</p>
-        </div>
-      ) : next ? (
-        <>
-          <div className={s.facilityAction}>
-            <button
-              type="button"
-              data-ui="primary"
-              disabled={action.blocked || !preview.affordable || !preview.eligible}
-              onClick={() =>
-                setQuote({
-                  from: level,
-                  to: next.to,
-                  cost: next.cost,
-                  days: next.days,
-                  maintenanceBefore: preview.partMaintenanceBefore,
-                  maintenanceAfter: preview.partMaintenanceAfter,
-                  cashBefore: w.cash,
-                  cashAfter: preview.cashAfter,
-                  capacityDuring: preview.capacityDuring,
-                  expansion: next.kind === 'expansion',
-                })
-              }
-            >
-              {part === 'stadium'
-                ? `${facilityUpgradeTitle(part, next.kind === 'expansion')}하기`
-                : `${label} ${next.to}단계로 업그레이드`}
-            </button>
-            {!preview.affordable && (
-              <p className={s.note}>공사를 시작하기에는 보유 자금이 부족합니다.</p>
-            )}
+      {localizeValue(
+        running ? (
+          <div className={s.selection} data-surface="inset" role="status">
+            <b>
+              {richMessage('copy.InvestmentView.5619d2ed25', { p0: running.to, p1: running.left })}
+            </b>
+            <progress
+              max={running.days}
+              value={running.days - running.left}
+              aria-label={displayMessage('copy.InvestmentView.4cf5e9130e', { p0: label })}
+            />
+            <p>
+              {richMessage('copy.InvestmentView.8962810e09', {
+                p0: facilityEffect(part, running.to),
+              })}
+            </p>
           </div>
-        </>
-      ) : (
-        <p className={s.note}>최고 단계 시설입니다.</p>
-      )}
-      {action.error && !quote && <p role="alert">{action.error}</p>}
-      {quote && (
-        <Dialog
-          label={`${facilityUpgradeTitle(part, quote.expansion)} · ${quote.days}일 소요`}
-          wide
-          onClose={() => {
-            if (!action.busy) setQuote(undefined);
-          }}
-          summary={
-            <dl className={s.upgradeFinances}>
-              <div>
-                <dt>공사비</dt>
-                <dd>
-                  <b>
-                    <Amount w={w} value={quote.cost} plain />
-                  </b>
-                </dd>
-              </div>
-              <div>
-                <dt>재정 · 구단 잔고</dt>
-                <dd className={s.balanceChange}>
-                  <span className={s.previousMoney}>
-                    <Amount w={w} value={quote.cashBefore} plain />
-                  </span>
-                  <span aria-hidden="true">→</span>
-                  <b>
-                    <Amount w={w} value={quote.cashAfter} plain />
-                  </b>
-                </dd>
-              </div>
-            </dl>
-          }
-          actions={
-            <div className={s.dialogActions}>
-              <button type="button" disabled={action.busy} onClick={() => setQuote(undefined)}>
-                취소
-              </button>
+        ) : next ? (
+          <>
+            <div className={s.facilityAction}>
               <button
                 type="button"
                 data-ui="primary"
-                disabled={action.blocked}
-                onClick={async () => {
-                  if (
-                    await action.apply(
-                      { type: 'facility-upgrade', part, from: quote.from, cost: quote.cost },
-                      '시설 공사를 시작했어요.',
-                    )
-                  )
-                    setQuote(undefined);
-                }}
+                disabled={action.blocked || !preview.affordable || !preview.eligible}
+                onClick={() =>
+                  setQuote({
+                    from: level,
+                    to: next.to,
+                    cost: next.cost,
+                    days: next.days,
+                    maintenanceBefore: preview.partMaintenanceBefore,
+                    maintenanceAfter: preview.partMaintenanceAfter,
+                    cashBefore: w.cash,
+                    cashAfter: preview.cashAfter,
+                    capacityDuring: preview.capacityDuring,
+                    expansion: next.kind === 'expansion',
+                  })
+                }
               >
-                {action.busy ? '시작 중…' : '공사비 지불하고 시작'}
+                {localizeValue(
+                  part === 'stadium'
+                    ? sourceMessage('copy.InvestmentView.50ab8a9c19', {
+                        p0: facilityUpgradeTitle(part, next.kind === 'expansion'),
+                      })
+                    : sourceMessage('copy.InvestmentView.89e6fab330', { p0: label, p1: next.to }),
+                )}
               </button>
+              {localizeValue(
+                !preview.affordable && (
+                  <p className={s.note}>{richMessage('copy.InvestmentView.59cd37be3b')}</p>
+                ),
+              )}
             </div>
-          }
-        >
-          <div className={s.upgradeComparison}>
-            <FacilitySnapshot
-              w={w}
-              part={part}
-              level={quote.from}
-              maintenance={quote.maintenanceBefore}
-            />
-            <span className={s.comparisonArrow} aria-hidden="true">
-              →
-            </span>
-            <FacilitySnapshot
-              w={w}
-              part={part}
-              level={quote.to}
-              maintenance={quote.maintenanceAfter}
-              future
-            />
-          </div>
-          <div className={s.upgradeNotes}>
-            {quote.expansion && <p>증축 중 수용 인원 {number(quote.capacityDuring)}석</p>}
-            <p>공사비는 지금 지불하고, 효과와 유지비는 완공일부터 적용됩니다.</p>
-            {part === 'training' && (
-              <p>
-                성장 배율은 27세 미만 선수, 회복은 훈련 정산, 협상 호감은 완공 후 시작하는 협상에
-                적용됩니다.
-              </p>
-            )}
-          </div>
-          {action.error && <p role="alert">{action.error}</p>}
-        </Dialog>
+          </>
+        ) : (
+          <p className={s.note}>{richMessage('copy.InvestmentView.c36d1bbda5')}</p>
+        ),
+      )}
+      {localizeValue(action.error && !quote && <p role="alert">{localizeValue(action.error)}</p>)}
+      {localizeValue(
+        quote && (
+          <Dialog
+            label={displayMessage('copy.InvestmentView.8383739d64', {
+              p0: facilityUpgradeTitle(part, quote.expansion),
+              p1: quote.days,
+            })}
+            wide
+            onClose={() => {
+              if (!action.busy) setQuote(undefined);
+            }}
+            summary={
+              <dl className={s.upgradeFinances}>
+                <div>
+                  <dt>{richMessage('copy.InvestmentView.8195d755b6')}</dt>
+                  <dd>
+                    <b>
+                      <Amount w={w} value={quote.cost} plain />
+                    </b>
+                  </dd>
+                </div>
+                <div>
+                  <dt>{richMessage('copy.InvestmentView.5f3f7a7be9')}</dt>
+                  <dd className={s.balanceChange}>
+                    <span className={s.previousMoney}>
+                      <Amount w={w} value={quote.cashBefore} plain />
+                    </span>
+                    <span aria-hidden="true">→</span>
+                    <b>
+                      <Amount w={w} value={quote.cashAfter} plain />
+                    </b>
+                  </dd>
+                </div>
+              </dl>
+            }
+            actions={
+              <div className={s.dialogActions}>
+                <button type="button" disabled={action.busy} onClick={() => setQuote(undefined)}>
+                  {richMessage('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  data-ui="primary"
+                  disabled={action.blocked}
+                  onClick={async () => {
+                    if (
+                      await action.apply(
+                        { type: 'facility-upgrade', part, from: quote.from, cost: quote.cost },
+                        sourceMessage('copy.InvestmentView.05b58d46d5'),
+                      )
+                    )
+                      setQuote(undefined);
+                  }}
+                >
+                  {localizeValue(
+                    action.busy
+                      ? sourceMessage('copy.InvestmentView.b3e37d48d2')
+                      : sourceMessage('copy.InvestmentView.625fb343b0'),
+                  )}
+                </button>
+              </div>
+            }
+          >
+            <div className={s.upgradeComparison}>
+              <FacilitySnapshot
+                w={w}
+                part={part}
+                level={quote.from}
+                maintenance={quote.maintenanceBefore}
+              />
+              <span className={s.comparisonArrow} aria-hidden="true">
+                →
+              </span>
+              <FacilitySnapshot
+                w={w}
+                part={part}
+                level={quote.to}
+                maintenance={quote.maintenanceAfter}
+                future
+              />
+            </div>
+            <div className={s.upgradeNotes}>
+              {localizeValue(
+                quote.expansion && (
+                  <p>
+                    {richMessage('copy.InvestmentView.a52fe9a32c', {
+                      p0: number(quote.capacityDuring),
+                    })}
+                  </p>
+                ),
+              )}
+              <p>{richMessage('copy.InvestmentView.f393fd1495')}</p>
+              {localizeValue(
+                part === 'training' && <p>{richMessage('copy.InvestmentView.bba1582516')}</p>,
+              )}
+            </div>
+            {localizeValue(action.error && <p role="alert">{localizeValue(action.error)}</p>)}
+          </Dialog>
+        ),
       )}
     </Card>
   );
 }
 
 function CoachingInvestment({ w, office }: { w: World; office: OfficeRead }) {
+  useTextLocale();
   const count = STAFF_ROLES.filter((post) => staffMember(w, post)).length;
   return (
     <>
       <Card
         surface="sheet"
-        title={`현재 코치진 · ${count}/${STAFF_ROLES.length}명`}
+        title={displayMessage('copy.InvestmentView.3c901b69a8', {
+          p0: count,
+          p1: STAFF_ROLES.length,
+        })}
         className={s.panel}
       >
         <DeskStats
-          label="코치진 비용"
+          label={displayMessage('copy.InvestmentView.b72edcb499')}
           stats={[
-            { label: '연간 스태프 급여', value: <Amount w={w} value={office.costs.staffWages} /> },
-            { label: '공석', value: `${STAFF_ROLES.length - count}자리` },
+            {
+              label: sourceMessage('copy.InvestmentTotals.5bbadf590b'),
+              value: <Amount w={w} value={office.costs.staffWages} />,
+            },
+            {
+              label: sourceMessage('team.vacant'),
+              value: sourceMessage('copy.ClubOperations.df32dea4ca', {
+                p0: STAFF_ROLES.length - count,
+              }),
+            },
           ]}
         />
         <dl className={s.staff}>
-          {STAFF_ROLES.map((post) => {
-            const member = staffMember(w, post);
-            return (
-              <div key={post}>
-                <dt>{STAFF_INFO[post].label}</dt>
-                <dd>
-                  {member ? (
-                    <>
-                      {member.name} <small>OVR {member.ability}</small>
-                    </>
-                  ) : (
-                    '공석'
-                  )}
-                </dd>
-              </div>
-            );
-          })}
+          {localizeValue(
+            STAFF_ROLES.map((post) => {
+              const member = staffMember(w, post);
+              return (
+                <div key={post}>
+                  <dt>{localizeValue(STAFF_INFO[post].label)}</dt>
+                  <dd>
+                    {localizeValue(
+                      member ? (
+                        <>
+                          {member.name}{' '}
+                          <small>
+                            {richMessage('copy.InvestmentView.7071838530', {
+                              p0: localizeValue(member.ability),
+                            })}
+                          </small>
+                        </>
+                      ) : (
+                        sourceMessage('team.vacant')
+                      ),
+                    )}
+                  </dd>
+                </div>
+              );
+            }),
+          )}
         </dl>
-        <p className={s.note}>
-          현재 재직자의 능력이 만드는 상시 효과입니다. 채용 지침과 인사는 결재 설정의 스태프
-          인사에서 관리합니다.
-        </p>
+        <p className={s.note}>{richMessage('copy.InvestmentView.9520835cd6')}</p>
         <button
           type="button"
           data-ui="secondary"
           aria-haspopup="dialog"
           onClick={() => openDecisionSettings('staff')}
         >
-          결재 설정 · 스태프 인사
+          {richMessage('copy.InvestmentView.f6db5d8cfa')}
         </button>
       </Card>
     </>
@@ -542,52 +649,83 @@ function InvestmentDetails({
   state: ClientState;
   client: GameClient;
 }) {
+  useTextLocale();
   const w = state.view!.world;
   const blocked = useGameState(gameActionsBlocked);
   const office = useOfficeRead(w);
-  if (!office) return <p role="status">투자 현황을 불러오는 중…</p>;
+  if (!office) return <p role="status">{richMessage('copy.InvestmentView.d6008342de')}</p>;
   return (
     <>
-      {PASSIVE_POLICIES[area].map((key) => (
-        <BudgetSetting key={key} w={w} client={client} policyKey={key} office={office} />
-      ))}
-      {PASSIVE_BUILDS[area].map((slot) => (
-        <Card key={slot} surface="sheet" title="상시 운영 효과" className={s.panel}>
-          <BuildSetting w={w} client={client} slot={slot} />
-        </Card>
-      ))}
-      {area === 'firstTeam' && (
-        <FacilityUpgrade w={w} client={client} part="training" office={office} />
+      {localizeValue(
+        PASSIVE_POLICIES[area].map((key) => (
+          <BudgetSetting key={key} w={w} client={client} policyKey={key} office={office} />
+        )),
       )}
-      {area === 'youth' && <FacilityUpgrade w={w} client={client} part="academy" office={office} />}
-      {area === 'stadium' && (
-        <>
-          <Card surface="sheet" title="입장 수입" className={s.panel}>
-            <TicketSetting w={w} client={client} />
+      {localizeValue(
+        PASSIVE_BUILDS[area].map((slot) => (
+          <Card
+            key={slot}
+            surface="sheet"
+            title={displayMessage('copy.InvestmentView.2155a52da0')}
+            className={s.panel}
+          >
+            <BuildSetting w={w} client={client} slot={slot} />
           </Card>
-          <FacilityUpgrade w={w} client={client} part="stadium" office={office} />
-        </>
+        )),
       )}
-      {area === 'coaches' && <CoachingInvestment w={w} office={office} />}
-      {area === 'finance' && (
-        <>
-          {w.owner && <OwnerFunds client={client} />}
-          <BusinessWorkbench state={state} client={client} part="finance" />
-        </>
+      {localizeValue(
+        area === 'firstTeam' && (
+          <FacilityUpgrade w={w} client={client} part="training" office={office} />
+        ),
       )}
-      {area === 'identity' && (
-        <>
-          <BusinessWorkbench state={state} client={client} part="identity" />
-          <Card surface="sheet" title="다음 경기 유니폼" className={s.panel}>
-            <FixtureKitSelector client={client} blocked={blocked} />
-          </Card>
-        </>
+      {localizeValue(
+        area === 'youth' && (
+          <FacilityUpgrade w={w} client={client} part="academy" office={office} />
+        ),
+      )}
+      {localizeValue(
+        area === 'stadium' && (
+          <>
+            <Card
+              surface="sheet"
+              title={displayMessage('copy.InvestmentView.e2b01b5f19')}
+              className={s.panel}
+            >
+              <TicketSetting w={w} client={client} />
+            </Card>
+            <FacilityUpgrade w={w} client={client} part="stadium" office={office} />
+          </>
+        ),
+      )}
+      {localizeValue(area === 'coaches' && <CoachingInvestment w={w} office={office} />)}
+      {localizeValue(
+        area === 'finance' && (
+          <>
+            {localizeValue(w.owner && <OwnerFunds client={client} />)}
+            <BusinessWorkbench state={state} client={client} part="finance" />
+          </>
+        ),
+      )}
+      {localizeValue(
+        area === 'identity' && (
+          <>
+            <BusinessWorkbench state={state} client={client} part="identity" />
+            <Card
+              surface="sheet"
+              title={displayMessage('copy.InvestmentView.33dc0d2f31')}
+              className={s.panel}
+            >
+              <FixtureKitSelector client={client} blocked={blocked} />
+            </Card>
+          </>
+        ),
       )}
     </>
   );
 }
 
 export function InvestmentView({ state, client }: { state: ClientState; client: GameClient }) {
+  useTextLocale();
   const w = state.view!.world;
   const [view] = useAddressTab('view', OPERATIONS_VIEWS, 'investment', {
     world: w.id,
@@ -619,61 +757,75 @@ export function InvestmentView({ state, client }: { state: ClientState; client: 
       </div>
     );
   return (
-    <section className={s.page} aria-label={selected ? `${selected.title} 투자` : '구단주 사무실'}>
-      {selected ? (
-        <>
-          <header className={s.title}>
-            <h2>{selected.title}</h2>
-            <p>{selected.description}</p>
-          </header>
-          <InvestmentTotals w={w} area={selected.id} />
-          {selected.id !== 'firstTeam' && selected.id !== 'youth' && selected.id !== 'stadium' && (
-            <div className={s.hero}>
-              <FacilityArt kind={selected.art} world={w} className={s.art} eager />
-              <div className={s.overlay}>
-                <b>{selected.title}</b>
-              </div>
+    <section
+      className={s.page}
+      aria-label={localizeValue(
+        selected
+          ? sourceMessage('copy.InvestmentView.3c4ac6460f', { p0: selected.title })
+          : sourceMessage('copy.catalog.9a8019d09c'),
+      )}
+    >
+      {localizeValue(
+        selected ? (
+          <>
+            <header className={s.title}>
+              <h2>{localizeValue(selected.title)}</h2>
+              <p>{localizeValue(selected.description)}</p>
+            </header>
+            <InvestmentTotals w={w} area={selected.id} />
+            {localizeValue(
+              selected.id !== 'firstTeam' &&
+                selected.id !== 'youth' &&
+                selected.id !== 'stadium' && (
+                  <div className={s.hero}>
+                    <FacilityArt kind={selected.art} world={w} className={s.art} eager />
+                    <div className={s.overlay}>
+                      <b>{localizeValue(selected.title)}</b>
+                    </div>
+                  </div>
+                ),
+            )}
+            <div className={s.details} key={`${w.id}:${selected.id}`}>
+              <InvestmentDetails area={selected.id} state={state} client={client} />
             </div>
-          )}
-          <div className={s.details} key={`${w.id}:${selected.id}`}>
-            <InvestmentDetails area={selected.id} state={state} client={client} />
-          </div>
-        </>
-      ) : (
-        <>
-          <header className={s.title}>
-            <h2>구단주 사무실</h2>
-            <p>
-              투자·시설·상시 운영 효과를 관리하세요. 담당자의 판단 지침과 인사·계약은 결재 설정에서
-              정합니다.
-            </p>
-          </header>
-          <div className={s.gallery}>
-            {INVESTMENT_AREAS.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={s.destination}
-                aria-label={`${item.title} 투자 관리`}
-                onClick={() => openInvestment(item.id)}
-              >
-                <FacilityArt
-                  kind={item.art}
-                  world={w}
-                  view={item.id === 'stadium' ? 'exterior' : undefined}
-                  className={s.art}
-                />
-                <span className={s.overlay}>
-                  <b>{item.title}</b>
-                  <span>{item.description}</span>
-                </span>
-                <span className={s.enter} aria-hidden="true">
-                  <PixelIcon name="chevronRight" size={24} />
-                </span>
-              </button>
-            ))}
-          </div>
-        </>
+          </>
+        ) : (
+          <>
+            <header className={s.title}>
+              <h2>{richMessage('copy.catalog.9a8019d09c')}</h2>
+              <p>{richMessage('copy.InvestmentView.e761d77b64')}</p>
+            </header>
+            <div className={s.gallery}>
+              {localizeValue(
+                INVESTMENT_AREAS.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={s.destination}
+                    aria-label={displayMessage('copy.InvestmentView.8767428e28', {
+                      p0: item.title,
+                    })}
+                    onClick={() => openInvestment(item.id)}
+                  >
+                    <FacilityArt
+                      kind={item.art}
+                      world={w}
+                      view={item.id === 'stadium' ? 'exterior' : undefined}
+                      className={s.art}
+                    />
+                    <span className={s.overlay}>
+                      <b>{localizeValue(item.title)}</b>
+                      <span>{localizeValue(item.description)}</span>
+                    </span>
+                    <span className={s.enter} aria-hidden="true">
+                      <PixelIcon name="chevronRight" size={24} />
+                    </span>
+                  </button>
+                )),
+              )}
+            </div>
+          </>
+        ),
       )}
     </section>
   );

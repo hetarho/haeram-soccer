@@ -1,12 +1,15 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { TransferLedgerEntry } from '../../../../packages/engine/src/transfer-records';
 import { Panel } from './App';
 import { LEADER_PAGE } from './careerRecords';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { seasonName } from './format';
 import { Money } from './Money';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 import { Segments } from './Segments';
 import { Select } from './Select';
 import { useTaskState } from './taskMemory';
@@ -20,8 +23,8 @@ import {
 import s from './App.module.css';
 
 const BOARD_TITLE: Record<TransferBoard, string> = {
-  in: '역대 최고 이적료 영입',
-  out: '역대 최고 이적료 매각',
+  in: sourceMessage('copy.TransferRecords.2502d33be0'),
+  out: sourceMessage('copy.TransferRecords.c1b38e9b92'),
 };
 const ALL = 'all';
 type BoardWorld = TransferWorld & Pick<World, 'id' | 'seed'>;
@@ -37,6 +40,7 @@ export function TransferRecords({
   w: BoardWorld;
   ledger: readonly TransferLedgerEntry[];
 }) {
+  useTextLocale();
   const [direction, setDirection] = useTaskState<TransferBoard>(w.id, 'transfer-board', 'in');
   const [season, setSeason] = useTaskState<string>(w.id, 'transfer-season', ALL);
   const seasons = transferSeasons(w, ledger),
@@ -45,22 +49,24 @@ export function TransferRecords({
     <>
       <div className={s.recordControls}>
         <Segments
-          label="이적 기록 종류"
+          label={displayMessage('copy.TransferRecords.c2f0b0501d')}
           options={TRANSFER_BOARDS}
           value={direction}
           onChange={setDirection}
         />
         <Select
-          aria-label="이적 기록 시즌"
+          aria-label={displayMessage('copy.TransferRecords.c22f174075')}
           value={year === undefined ? ALL : String(year)}
           onValueChange={(value) => setSeason(value)}
         >
-          <option value={ALL}>전체 시즌</option>
-          {seasons.map((y) => (
-            <option key={y} value={String(y)}>
-              {seasonName(y)}
-            </option>
-          ))}
+          <option value={ALL}>{richMessage('copy.TransferRecords.15d1e79b79')}</option>
+          {localizeValue(
+            seasons.map((y) => (
+              <option key={y} value={String(y)}>
+                {localizeValue(seasonName(y))}
+              </option>
+            )),
+          )}
         </Select>
       </div>
       {/* Another board or season starts again at ten (→WEB-54). */}
@@ -71,10 +77,7 @@ export function TransferRecords({
         direction={direction}
         year={year}
       />
-      <p className={s.muted}>
-        이적료는 물가와 화폐 변화를 반영한 오늘 가치로 비교하고, 옆에 당시 금액을 적어요. 기록이
-        시작되기 전의 거래는 장부에 남은 내용 그대로 보여줘요.
-      </p>
+      <p className={s.muted}>{richMessage('copy.TransferRecords.f0afae6da6')}</p>
     </>
   );
 }
@@ -90,61 +93,84 @@ function TransferTable({
   direction: TransferBoard;
   year?: number;
 }) {
+  useTextLocale();
   const [shown, setShown] = useState(LEADER_PAGE);
   const { rows, next } = transferRecordsView(w, ledger, { direction, year, shown }),
     code = w.clubs.find((c) => c.id === w.playerClub)!.country,
     title = BOARD_TITLE[direction];
   return (
     <Panel
-      title={title}
-      note={`우리 클럽 · ${year === undefined ? '전체 시즌' : seasonName(year)}`}
+      title={localizeValue(title)}
+      note={sourceMessage('copy.TransferRecords.5ddc097395', {
+        p0:
+          year === undefined ? sourceMessage('copy.TransferRecords.15d1e79b79') : seasonName(year),
+      })}
     >
-      {rows.length ? (
-        <div className={s.tableWrap}>
-          <table className={s.leaderTable} aria-label={title}>
-            <thead>
-              <tr>
-                <th scope="col">순위</th>
-                <th scope="col">선수</th>
-                <th scope="col">{direction === 'in' ? '전 소속' : '이적한 클럽'}</th>
-                <th scope="col">시즌</th>
-                <th scope="col">형태</th>
-                <th scope="col">이적료 (오늘 가치 · 당시)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.key}>
-                  <td>{row.rank}</td>
-                  <td>
-                    {row.player ? <PlayerLink id={row.player} name={row.label} /> : row.label}
-                  </td>
-                  <td>{row.club ? <ClubLink w={w} id={row.club} crest={14} /> : '—'}</td>
-                  <td>{seasonName(row.year)}</td>
-                  <td>{row.kind ?? '—'}</td>
-                  <td>
-                    <Money value={row.today} code={code} year={w.year} />{' '}
-                    <small className={s.muted}>
-                      (<Money value={row.fee} code={code} year={row.year} />)
-                    </small>
-                  </td>
+      {localizeValue(
+        rows.length ? (
+          <div className={s.tableWrap}>
+            <table className={s.leaderTable} aria-label={localizeValue(title)}>
+              <thead>
+                <tr>
+                  <th scope="col">{richMessage('copy.BallonDorView.8f363885a3')}</th>
+                  <th scope="col">{richMessage('team.column.player')}</th>
+                  <th scope="col">
+                    {localizeValue(
+                      direction === 'in'
+                        ? sourceMessage('copy.TransferRecords.7017c0f5e0')
+                        : sourceMessage('copy.TransferRecords.a7fd765a59'),
+                    )}
+                  </th>
+                  <th scope="col">{richMessage('copy.ClubTrends.a3142392a3')}</th>
+                  <th scope="col">{richMessage('copy.TransferRecords.e1b56dd677')}</th>
+                  <th scope="col">{richMessage('copy.TransferRecords.d0c166b5f1')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-          {next > shown && (
-            <button
-              data-ui="link"
-              type="button"
-              className={s.textButton}
-              onClick={() => setShown(next)}
-            >
-              더 보기 · {shown + 1}–{next}위
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className={s.empty}>기록된 이적료 거래가 없어요.</div>
+              </thead>
+              <tbody>
+                {localizeValue(
+                  rows.map((row) => (
+                    <tr key={row.key}>
+                      <td>{localizeValue(row.rank)}</td>
+                      <td>
+                        {localizeValue(
+                          row.player ? <PlayerLink id={row.player} name={row.label} /> : row.label,
+                        )}
+                      </td>
+                      <td>
+                        {localizeValue(
+                          row.club ? <ClubLink w={w} id={row.club} crest={14} /> : '—',
+                        )}
+                      </td>
+                      <td>{localizeValue(seasonName(row.year))}</td>
+                      <td>{localizeValue(row.kind ?? '—')}</td>
+                      <td>
+                        <Money value={row.today} code={code} year={w.year} />
+                        {localizeValue(' ')}
+                        <small className={s.muted}>
+                          (<Money value={row.fee} code={code} year={row.year} />)
+                        </small>
+                      </td>
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+            {localizeValue(
+              next > shown && (
+                <button
+                  data-ui="link"
+                  type="button"
+                  className={s.textButton}
+                  onClick={() => setShown(next)}
+                >
+                  {richMessage('copy.CareerRecordBook.c263a34471', { p0: shown + 1, p1: next })}
+                </button>
+              ),
+            )}
+          </div>
+        ) : (
+          <div className={s.empty}>{richMessage('copy.TransferRecords.10be4611fb')}</div>
+        ),
       )}
     </Panel>
   );

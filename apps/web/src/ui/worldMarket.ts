@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { WorldMarketQuery, WorldMarketTarget } from '../../../../packages/contracts/src/types';
 import { WORLD_MARKET_PAGE_SIZE } from '../../../../packages/contracts/src/schema';
@@ -74,12 +75,15 @@ export function readMarket<T extends { world: string; revision: number }>(
         revision === undefined ||
         value.revision > revision
       ) {
-        publish({ error: '이적시장 정보가 바뀌었어요. 다시 확인해 주세요.' });
+        publish({ error: sourceMessage('copy.worldMarket.bb1ebbe595') });
       } else publish({ value });
     },
     (error: unknown) => {
       if (fresh())
-        publish({ error: error instanceof Error ? error.message : '조회하지 못했어요.' });
+        publish({
+          error:
+            error instanceof Error ? error.message : sourceMessage('copy.worldMarket.5347beb02e'),
+        });
     },
   );
   return {

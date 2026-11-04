@@ -2,7 +2,7 @@ import type { Position } from '../../../../packages/contracts/src/player';
 import { POSITIONS } from '../../../../packages/contracts/src/player';
 import type { Player, StaffRole, World } from '../../../../packages/contracts/src/types';
 import { injuryDaysLeft, overall } from '../../../../packages/engine/src/player-state';
-import { STAFF_ROLES } from '../../../../packages/engine/src/staff-info';
+import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 
 /**
  * Pure reads behind 팀's compact lists (→WEB-112): our actual first team, academy prospects and
@@ -54,14 +54,6 @@ export type AcademySort = (typeof ACADEMY_SORTS)[number];
 export const COACH_SORTS = ['post', 'ability', 'name'] as const;
 export type CoachSort = (typeof COACH_SORTS)[number];
 
-/** The posts in 코치진's order: the manager, the director and scout, then the coaching posts. */
-export const COACH_POSTS: readonly ('manager' | StaffRole)[] = [
-  'manager',
-  'director',
-  'scout',
-  ...STAFF_ROLES.filter((role) => role !== 'director' && role !== 'scout'),
-];
-
 function playerRow(w: World, p: Player): TeamPlayerRow {
   const injury = injuryDaysLeft(w, p);
   return {
@@ -94,7 +86,7 @@ export function academyRows(w: World): TeamPlayerRow[] {
 /** The manager and every supported staff post, a vacant one without a person. */
 export function coachRows(w: World): TeamCoachRow[] {
   const staff = new Map((w.staff ?? []).map((member) => [member.role, member]));
-  return COACH_POSTS.map((post) => {
+  return CLUB_POSTS.map((post) => {
     if (post === 'manager') {
       const m = w.manager;
       return {

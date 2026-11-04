@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Connect, Plugin } from 'vite';
 
 export const SAMPLE_PATH = '/__design-system';
@@ -29,7 +30,7 @@ export function designSystem(): Plugin {
             let body = '';
             for await (const chunk of req) {
               body += chunk;
-              if (body.length > 16384) throw new Error('미리보기 요청이 너무 큽니다.');
+              if (body.length > 16384) throw new Error(sourceMessage('copy.server.816ded1f97'));
             }
             res.end(JSON.stringify(await sample.sampleRead(JSON.parse(body))));
           } else {

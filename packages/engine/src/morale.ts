@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { ownStarters } from './world';
 import { clamp } from './primitives';
@@ -19,11 +20,11 @@ export function moraleStrength(w: World) {
 }
 export type MoraleState = 'peak' | 'good' | 'steady' | 'low' | 'crisis';
 export const MORALE_LABEL: Record<MoraleState, string> = {
-  peak: '최고조',
-  good: '좋음',
-  steady: '보통',
-  low: '저조',
-  crisis: '위기',
+  peak: sourceMessage('copy.morale.dbb996a758'),
+  good: sourceMessage('copy.stories.4b15b49bbe'),
+  steady: sourceMessage('copy.teamState.666599febd'),
+  low: sourceMessage('copy.morale.ebf5c2ee87'),
+  crisis: sourceMessage('copy.teamState.32baa3b7ac'),
 };
 export function moraleState(value: number): MoraleState {
   return value >= 75

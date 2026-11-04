@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /** The scout's verdict on a market candidate (→CLUB-47): a grade A–E and the facts behind it. */
 import type { World } from '../../contracts/src/types';
 import { LINE_NAME, requestLabel } from './player';
@@ -36,11 +37,11 @@ export const VERDICT_CONFIG = {
 };
 
 export const GRADE_LABEL: Readonly<Record<ScoutGrade, string>> = {
-  A: '즉시 주전',
-  B: '주전 보강',
-  C: '경쟁 보강',
-  D: '백업',
-  E: '보강 효과 없음',
+  A: sourceMessage('copy.scout_verdict.2d1ec1ec21'),
+  B: sourceMessage('copy.scout_verdict.f775780c2e'),
+  C: sourceMessage('copy.scout_verdict.2047341e52'),
+  D: sourceMessage('copy.scout_verdict.5948d5a94d'),
+  E: sourceMessage('copy.scout_verdict.d3966ffecc'),
 };
 
 type Fit = ReturnType<typeof recruitmentFit>;
@@ -78,17 +79,19 @@ export function scoutVerdict(w: World, offer: TransferOffer & { own?: boolean },
     room = Math.round(player.potential) - overall(player),
     money = signingVerdict(w, player, offer.fee);
   const pros = [
-    picked && '감독이 고른 선수',
-    met && `감독 요청 충족 · ${requestLabel(met)}`,
-    short && `부족한 ${LINE_NAME[line]} 채움`,
-    room >= c.growthRoom && age <= c.prospectAge && `성장 여지 +${room} · ${age}세`,
-    offer.freeAgent && '자유계약 · 이적료 없음',
-    fit.fitDelta > 0 && `전술 적합도 +${fit.fitDelta}`,
+    picked && sourceMessage('copy.scout_verdict.a4a3073d56'),
+    met && sourceMessage('copy.scout_verdict.2f44de7c6d', { p0: requestLabel(met) }),
+    short && sourceMessage('copy.scout_verdict.faae6c2da0', { p0: LINE_NAME[line] }),
+    room >= c.growthRoom &&
+      age <= c.prospectAge &&
+      sourceMessage('copy.scout_verdict.cebb4afdcc', { p0: room, p1: age }),
+    offer.freeAgent && sourceMessage('copy.RecruitmentDesk.6bf42e22d3'),
+    fit.fitDelta > 0 && sourceMessage('copy.scout_verdict.d8545ab5e6', { p0: fit.fitDelta }),
   ].filter((reason): reason is string => !!reason);
   const cons = [
     slot.settled - slot.arrival >= c.adaptationDrop &&
-      `적응 전 ${slot.arrival} · 적응 후 ${slot.settled}`,
-    age >= c.declineAge && `${age}세 · 속도·체력이 해마다 떨어지는 나이`,
+      sourceMessage('copy.scout_verdict.995377e3ed', { p0: slot.arrival, p1: slot.settled }),
+    age >= c.declineAge && sourceMessage('copy.scout_verdict.535d69bbd6', { p0: age }),
     !money.ok && money.reason,
   ].filter((reason): reason is string => !!reason);
   return {

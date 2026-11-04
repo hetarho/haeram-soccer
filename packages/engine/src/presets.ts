@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ClubPolicy, Direction, World } from '../../contracts/src/types';
 import { BUILD_SLOTS, type ClubBuild } from '../../contracts/src/build';
 import { BUILD_PRESETS, cardOf } from './build';
@@ -45,7 +46,7 @@ export function presetBoard(preset: Pick<Preset, 'build' | 'rows'>): DirectionBo
 export function foundWithPreset(w: World, id: string | undefined) {
   if (id === undefined) return;
   const preset = presetById(id);
-  if (!preset) throw new Error('구단 방향을 확인하세요.');
+  if (!preset) throw new Error(sourceMessage('copy.presets.c7db97e536'));
   const board = presetBoard(preset);
   const build = board.build;
   if (Object.keys(build).length) {
@@ -53,7 +54,12 @@ export function foundWithPreset(w: World, id: string | undefined) {
     const cards = BUILD_SLOTS.filter((slot) => build[slot]).map(
       (slot) => cardOf(build, slot).label,
     );
-    addEvent(w, 'build', `방향 · ${preset.label}`, cards.join(' · '));
+    addEvent(
+      w,
+      'build',
+      sourceMessage('copy.build.018abc891d', { p0: preset.label }),
+      cards.join(' · '),
+    );
   }
   if (POLICY_KEYS.some((key) => board.policy[key] !== POLICY_DEFAULTS[key]))
     w.policy = { ...POLICY_DEFAULTS, ...board.policy };

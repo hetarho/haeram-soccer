@@ -1,3 +1,4 @@
+import { message as sourceMessage } from './messages';
 /**
  * The continuous-match and complete aggregate-result model's shared contracts (→MATCH-12/17/22/26/27,
  * HIST-17, SAVE-23; spec/ssot/MATCH.md): its revision, a world's activation and coverage
@@ -304,9 +305,7 @@ const record = (value: unknown): value is Record<string, unknown> =>
 /** A revision string this version does not know comes from a newer game (→SAVE-11, SAVE-23). */
 function assertRevision(value: unknown) {
   if (typeof value === 'string' && !isMatchModelRevision(value))
-    throw new SaveCompatibilityError(
-      '이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내보내 보관하세요.',
-    );
+    throw new SaveCompatibilityError(sourceMessage('copy.matchModelPacking.248f2751b7'));
 }
 /**
  * Bounded preflight over a World-shaped value: a future `matchModel`, NPC season or own-record model
@@ -320,6 +319,6 @@ export function assertMatchModelFormat(value: unknown): void {
   if (record(npcSeason)) assertRevision(npcSeason.model);
   if (!Array.isArray(ownMatches)) return;
   if (ownMatches.length > MAX_RECORDS)
-    throw new Error('저장 데이터의 크기가 허용 범위를 넘습니다.');
+    throw new Error(sourceMessage('copy.identitySchema.e49688e79a'));
   for (const match of ownMatches) if (record(match)) assertRevision(match.model);
 }

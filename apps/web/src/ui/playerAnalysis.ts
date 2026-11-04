@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Line, Metrics, Player, Position } from '../../../../packages/contracts/src/types';
 import { LINES } from '../../../../packages/contracts/src/player';
 import { lineOf } from '../../../../packages/engine/src/player';
@@ -11,7 +12,9 @@ export {
   type PlayerTally,
   type Tallies,
 } from '../runtime/playerTallies';
-export type PlayerScope = 'season' | 'career';
+import type { PlayerScope } from '../entities/player';
+
+export type { PlayerScope };
 export type PlayerOrder = 'roster' | 'ability' | 'minutes' | 'fatigue' | 'goals90';
 
 export function per90(metrics: Metrics, index: number) {
@@ -23,26 +26,29 @@ export const ofScope = (pair: [number, number] | undefined, scope: PlayerScope) 
 /** "12경기", or "12경기 · 교체 3" when he came on in some of them. */
 export function appearanceText(tally: PlayerTally | undefined, scope: PlayerScope) {
   const sub = ofScope(tally?.sub, scope);
-  return `${ofScope(tally?.apps, scope)}경기${sub ? ` · 교체 ${sub}` : ''}`;
+  return sourceMessage('copy.managerHistoryView.8afd61210f', {
+    p0: ofScope(tally?.apps, scope),
+    p1: sub ? sourceMessage('copy.playerAnalysis.513b0ff3fd', { p0: sub }) : '',
+  });
 }
 /** Where a player of ours stands now; a loan that ran out is archived as a retirement. */
 export function playerStatus(p: Player) {
   return p.status === 'active'
-    ? '현역'
+    ? sourceMessage('copy.playerAnalysis.8180ac8f7b')
     : p.status === 'sold'
-      ? '이적'
+      ? sourceMessage('copy.NewsFeed.832934e8a8')
       : p.loanUntil !== undefined
-        ? '임대 종료'
-        : '은퇴';
+        ? sourceMessage('copy.playerAnalysis.c5ce9f2009')
+        : sourceMessage('copy.Rich.fc798874df');
 }
 export function performanceRows(metrics: Metrics) {
   return (
     [
-      ['골', 0],
-      ['도움', 1],
-      ['슈팅', 4],
-      ['태클', 6],
-      ['선방', 9],
+      [sourceMessage('copy.summary.68a6cf8ed8'), 0],
+      [sourceMessage('copy.BallonDorView.8d901cc28d'), 1],
+      [sourceMessage('copy.summary.da1cc31972'), 4],
+      [sourceMessage('copy.Pitch.3f6ba38a9e'), 6],
+      [sourceMessage('copy.RecordsRoom.2a022bd612'), 9],
     ] as const
   ).map(([label, index]) => ({ label, total: metrics[index], per90: per90(metrics, index) }));
 }

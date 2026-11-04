@@ -1,3 +1,4 @@
+import { richMessage } from './LocalizedMessage';
 /**
  * The presentation bootstrap every entry shares (→ARCH-32): the locale/theme controller, its
  * document bindings and the provider/boundary the screens render inside, so the game and the match
@@ -8,6 +9,7 @@ import type { Root } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import { PresentationBoundary, PresentationProvider } from './react';
 import { setLocaleFormatters } from '../ui/format';
+import { displayMessage, localizeValue, setTextLocale } from './text';
 import { createBrowserThemeTransition } from '../adapters/themeTransition';
 import '../adapters/themeTransition.css';
 import './imageUi.css';
@@ -32,9 +34,27 @@ export async function startPresentation(root: Root, children: ReactNode) {
     prepareTheme: prepareThemeResources,
     transitionTheme: createBrowserThemeTransition(document, flushSync),
     applyLocale(locale) {
+      setLocaleFormatters(locale.formatters);
+      setTextLocale(locale);
+      const page = location.pathname;
+      document.title = displayMessage(
+        page.endsWith('/lab.html')
+          ? 'page.lab.title'
+          : page.endsWith('/constants.html')
+            ? 'page.constants.title'
+            : page.endsWith('/design-system.html')
+              ? 'page.designSystem.title'
+              : 'page.game.title',
+      );
+      let description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
+      if (!description) {
+        description = document.createElement('meta');
+        description.name = 'description';
+        document.head.append(description);
+      }
+      description.content = displayMessage('page.description');
       document.documentElement.lang = locale.id;
       document.documentElement.dir = locale.direction;
-      setLocaleFormatters(locale.formatters);
     },
   });
   controller.subscribe(() => {
@@ -48,7 +68,7 @@ export async function startPresentation(root: Root, children: ReactNode) {
   });
   root.render(
     <PresentationProvider controller={controller}>
-      <PresentationBoundary>{children}</PresentationBoundary>
+      <PresentationBoundary>{localizeValue(children)}</PresentationBoundary>
     </PresentationProvider>,
   );
   void controller.initialize();
@@ -58,8 +78,8 @@ export async function startPresentation(root: Root, children: ReactNode) {
 export function presentationFailed(root: Root) {
   root.render(
     <main style={{ padding: 24 }}>
-      <p role="alert">화면 설정을 불러오지 못했어요. 다시 시도해 주세요.</p>
-      <button onClick={() => location.reload()}>다시 시도</button>
+      <p role="alert">{richMessage('copy.react.16f89a11ed')}</p>
+      <button onClick={() => location.reload()}>{richMessage('presentation.retry')}</button>
     </main>,
   );
 }

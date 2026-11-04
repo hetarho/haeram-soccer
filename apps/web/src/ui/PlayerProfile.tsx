@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { careerAssessment } from '../../../../packages/engine/src/career-assessment';
 import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
 import { scoutRangeScale } from '../../../../packages/engine/src/owner-traits';
@@ -71,6 +74,7 @@ export function PlayerProfile({
   own: boolean;
   compact?: boolean;
 }) {
+  useTextLocale();
   const assessment = careerAssessment(w, player, own);
   const ovr = overall(player);
   const slot = own ? startingSlot(w, player) : undefined;
@@ -82,108 +86,151 @@ export function PlayerProfile({
   const range = scoutRangeScale(w);
   const unsettled = own && player.unsettled !== undefined;
   return (
-    <section className={`${s.profile} ${compact ? s.compact : ''}`} aria-label="선수 프로필">
-      {!compact && (
-        <div className={s.head}>
-          <OvrBadge value={ovr} role={player.position} large />
-          <div className={s.headText}>
-            <b>{POSITION_LABEL[player.position]}</b>
-            <span data-testid="profile-effective">
-              실효 OVR {effective}
-              {slot ? ` · 선발 ${slot.position} ${ROLE_LABEL[slot.role]}` : ''}
-            </span>
-            {own && (
-              <span data-testid="profile-adaptation">
-                적응도 {player.adaptation.toFixed(2)} · {multiplierLabel(multiplier)}
-                {unsettled && (
-                  <em data-ui="label" className={s.flag}>
-                    적응 실패
-                  </em>
-                )}
+    <section
+      className={`${s.profile} ${compact ? s.compact : ''}`}
+      aria-label={displayMessage('copy.PlayerProfile.2f5041549c')}
+    >
+      {localizeValue(
+        !compact && (
+          <div className={s.head}>
+            <OvrBadge value={ovr} role={player.position} large />
+            <div className={s.headText}>
+              <b>{localizeValue(POSITION_LABEL[player.position])}</b>
+              <span data-testid="profile-effective">
+                {richMessage('copy.PlayerProfile.4e1f9baf86', {
+                  p0: effective,
+                  p1: slot
+                    ? sourceMessage('copy.PlayerProfile.24ed34f7e7', {
+                        p0: slot.position,
+                        p1: ROLE_LABEL[slot.role],
+                      })
+                    : '',
+                })}
               </span>
-            )}
+              {localizeValue(
+                own && (
+                  <span data-testid="profile-adaptation">
+                    {richMessage('copy.PlayerProfile.14f671458b', {
+                      p0: player.adaptation.toFixed(2),
+                      p1: multiplierLabel(multiplier),
+                      p2: unsettled && (
+                        <em data-ui="label" className={s.flag}>
+                          {richMessage('copy.PlayerProfile.b45089d8aa')}
+                        </em>
+                      ),
+                    })}
+                  </span>
+                ),
+              )}
+            </div>
           </div>
-        </div>
+        ),
       )}
       <div className={s.columns}>
         <PositionMap positions={player.positions} main={player.position} />
         <div className={s.side}>
-          <h4>주요 역할</h4>
+          <h4>{richMessage('copy.PlayerProfile.d23767d850')}</h4>
           <ul className={s.roles}>
-            {bestRoles(player).map(({ role, ovr: value }) => (
-              <li key={role}>
-                <span>{ROLE_LABEL[role]}</span>
-                <b>{value}</b>
-              </li>
-            ))}
+            {localizeValue(
+              bestRoles(player).map(({ role, ovr: value }) => (
+                <li key={role}>
+                  <span>{localizeValue(ROLE_LABEL[role])}</span>
+                  <b>{localizeValue(value)}</b>
+                </li>
+              )),
+            )}
           </ul>
-          <h4>성격</h4>
+          <h4>{richMessage('copy.PlayerProfile.9b3edda555')}</h4>
           <dl className={s.personality} data-testid="profile-personality">
-            {(Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => (
-              <div key={key}>
-                <dt>{PERSONALITY_LABEL[key]}</dt>
-                <dd>{gradeLabel(player.personality[key], own, scout, range)}</dd>
-              </div>
-            ))}
+            {localizeValue(
+              (Object.keys(PERSONALITY_LABEL) as (keyof Personality)[]).map((key) => (
+                <div key={key}>
+                  <dt>{localizeValue(PERSONALITY_LABEL[key])}</dt>
+                  <dd>{localizeValue(gradeLabel(player.personality[key], own, scout, range))}</dd>
+                </div>
+              )),
+            )}
           </dl>
-          {!own && <small className={s.note}>성격은 수석 스카우트가 본 범위예요.</small>}
-          <h4>지도자 자질</h4>
+          {localizeValue(
+            !own && (
+              <small className={s.note}>{richMessage('copy.PlayerProfile.b532a0bda0')}</small>
+            ),
+          )}
+          <h4>{richMessage('copy.PlayerProfile.082cda7da0')}</h4>
           <dl className={s.personality} data-testid="profile-aptitude">
             <div>
-              <dt>코치 자질</dt>
-              <dd>{assessment.coaching ?? '평가 없음'}</dd>
+              <dt>{richMessage('copy.PlayerProfile.5f964720b6')}</dt>
+              <dd>
+                {localizeValue(
+                  assessment.coaching ?? sourceMessage('copy.PlayerProfile.6a9f94258b'),
+                )}
+              </dd>
             </div>
             <div>
-              <dt>감독 자질</dt>
-              <dd>{assessment.managerial ?? '평가 없음'}</dd>
+              <dt>{richMessage('copy.PlayerProfile.38c11fbcf4')}</dt>
+              <dd>
+                {localizeValue(
+                  assessment.managerial ?? sourceMessage('copy.PlayerProfile.6a9f94258b'),
+                )}
+              </dd>
             </div>
-            {assessment.specialty && (
-              <div>
-                <dt>코칭 전문 분야</dt>
-                <dd>{STAFF_INFO[assessment.specialty].label}</dd>
-              </div>
+            {localizeValue(
+              assessment.specialty && (
+                <div>
+                  <dt>{richMessage('copy.PlayerProfile.502ea188a3')}</dt>
+                  <dd>{localizeValue(STAFF_INFO[assessment.specialty].label)}</dd>
+                </div>
+              ),
             )}
           </dl>
           <small className={s.note}>
-            선수 OVR과 별개의 자질 평가예요.{!own && ' 수석 스카우트가 본 범위예요.'}
+            {richMessage('copy.PlayerProfile.e04f0eef1f', {
+              p0: !own && sourceMessage('copy.PlayerProfile.8b0d4bfaae'),
+            })}
           </small>
-          <h4>플레이 특성</h4>
+          <h4>{richMessage('copy.PlayerCompare.2e0c7616cd')}</h4>
           <p className={s.traits}>
-            {player.traits.length
-              ? player.traits.map((trait) => (
-                  <span data-ui="label" key={trait}>
-                    {TRAIT_LABEL[trait]}
-                  </span>
-                ))
-              : '없음'}
+            {localizeValue(
+              player.traits.length
+                ? player.traits.map((trait) => (
+                    <span data-ui="label" key={trait}>
+                      {localizeValue(TRAIT_LABEL[trait])}
+                    </span>
+                  ))
+                : sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+            )}
           </p>
         </div>
       </div>
       <div className={s.groups} data-testid="profile-attributes">
-        {ATTRIBUTE_GROUPS.map((group) => (
-          <div key={group.label} className={s.group}>
-            <h4>{group.label}</h4>
-            {group.attributes.map((attribute) => {
-              const value = Math.round(player.attrs[attribute]);
-              return (
-                <div
-                  key={attribute}
-                  className={s.bar}
-                  aria-label={`${ATTRIBUTE_LABEL[attribute]} ${value}`}
-                >
-                  <span>{ATTRIBUTE_LABEL[attribute]}</span>
-                  <span data-ui="attribute-meter" aria-hidden="true">
-                    <i
-                      style={{ width: `${Math.max(2, Math.min(100, value))}%` }}
-                      data-tone={value >= 75 ? 'high' : value >= 60 ? 'mid' : 'low'}
-                    />
-                  </span>
-                  <b>{value}</b>
-                </div>
-              );
-            })}
-          </div>
-        ))}
+        {localizeValue(
+          ATTRIBUTE_GROUPS.map((group) => (
+            <div key={group.label} className={s.group}>
+              <h4>{localizeValue(group.label)}</h4>
+              {localizeValue(
+                group.attributes.map((attribute) => {
+                  const value = Math.round(player.attrs[attribute]);
+                  return (
+                    <div
+                      key={attribute}
+                      className={s.bar}
+                      aria-label={localizeValue(`${ATTRIBUTE_LABEL[attribute]} ${value}`)}
+                    >
+                      <span>{localizeValue(ATTRIBUTE_LABEL[attribute])}</span>
+                      <span data-ui="attribute-meter" aria-hidden="true">
+                        <i
+                          style={{ width: `${Math.max(2, Math.min(100, value))}%` }}
+                          data-tone={value >= 75 ? 'high' : value >= 60 ? 'mid' : 'low'}
+                        />
+                      </span>
+                      <b>{localizeValue(value)}</b>
+                    </div>
+                  );
+                }),
+              )}
+            </div>
+          )),
+        )}
       </div>
     </section>
   );

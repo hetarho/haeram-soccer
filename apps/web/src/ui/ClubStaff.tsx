@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useTaskState } from './taskMemory';
 import { PersonCareerLink } from './PersonCareer';
 import { useEffect } from 'react';
@@ -55,6 +58,7 @@ function useActing() {
 }
 
 function Meter({ value }: { value: number }) {
+  useTextLocale();
   return (
     <span className={s.meter} aria-hidden="true">
       <i style={{ width: `${Math.max(4, Math.min(100, value))}%` }} />
@@ -64,7 +68,9 @@ function Meter({ value }: { value: number }) {
 
 /** " · 34세" for a coach with an age; volunteers and older saves have none. */
 function coachAge(w: World, member: Staff) {
-  return member.born === undefined ? '' : ` · ${w.year - member.born}세`;
+  return member.born === undefined
+    ? ''
+    : sourceMessage('copy.AssigneeProfile.c8bdab2932', { p0: w.year - member.born });
 }
 /** The department effect if this candidate replaced the current member. */
 function hiredImpact(w: World, role: StaffRole, candidate: Staff) {
@@ -91,22 +97,25 @@ export function TermDial({
   disabled?: boolean;
   onChange: (term: ContractTerm) => void;
 }) {
+  useTextLocale();
   return (
-    <div className={s.termDial} role="radiogroup" aria-label={label}>
-      {CONTRACT_TERMS.map((term) => (
-        <button
-          key={term}
-          type="button"
-          role="radio"
-          aria-checked={value === term}
-          className={value === term ? `${s.termStep} ${s.planOn}` : s.termStep}
-          disabled={disabled || term > limit}
-          title={term > limit ? why : undefined}
-          onClick={() => onChange(term)}
-        >
-          <b>{term}시즌</b>
-        </button>
-      ))}
+    <div className={s.termDial} role="radiogroup" aria-label={localizeValue(label)}>
+      {localizeValue(
+        CONTRACT_TERMS.map((term) => (
+          <button
+            key={term}
+            type="button"
+            role="radio"
+            aria-checked={value === term}
+            className={value === term ? `${s.termStep} ${s.planOn}` : s.termStep}
+            disabled={disabled || term > limit}
+            title={localizeValue(term > limit ? why : undefined)}
+            onClick={() => onChange(term)}
+          >
+            <b>{richMessage('copy.BallonDorView.3585c2642b', { p0: term })}</b>
+          </button>
+        )),
+      )}
     </div>
   );
 }
@@ -132,6 +141,7 @@ function TermCosts({
   /** Off where the sheet already says when the contract ends. */
   ends?: boolean;
 }) {
+  useTextLocale();
   const club = clubOf(w);
   const format = (value: string | bigint) => (
     <Money value={value} code={club.country} year={w.year} />
@@ -140,17 +150,26 @@ function TermCosts({
   return (
     <p className={s.termCosts} data-testid="term-costs">
       <span>
-        총 {format(total)} · 연봉 {format(wage)} × {term}시즌 + 계약금 {format(fee)}
+        {richMessage('copy.ClubStaff.245d2ffb11', {
+          p0: format(total),
+          p1: format(wage),
+          p2: term,
+          p3: format(fee),
+        })}
       </span>
       <small>
-        {ends && `${contractLine(until, w.year)} · `}중도 해지·교체 보상금{' '}
-        {format(releaseCost(w, { wage, until }))} (남은 {seasonsLeft(w, until)}시즌 × 연봉의 25%)
+        {richMessage('copy.ClubStaff.9146f19581', {
+          p0: ends && `${contractLine(until, w.year)} · `,
+          p1: ' ',
+          p2: format(releaseCost(w, { wage, until })),
+          p3: seasonsLeft(w, until),
+        })}
       </small>
     </p>
   );
 }
 
-const SEVENTY = '70세가 되는 시즌까지만 계약할 수 있어요';
+const SEVENTY = sourceMessage('copy.ClubStaff.005127c822');
 
 /**
  * Renewing the manager whose contract ends at this close (→STAFF-14): nobody renews himself, so
@@ -166,6 +185,7 @@ export function ManagerRenewal({
   client: GameClient;
   disabled: boolean;
 }) {
+  useTextLocale();
   const offer = managerRenewal(w);
   const [term, setTerm] = useTaskState<ContractTerm>(
     w.id,
@@ -178,18 +198,24 @@ export function ManagerRenewal({
   return (
     <>
       <p>
-        재계약하지 않으면 시즌이 끝날 때 떠나고 임시 감독이 팀을 맡아요.
-        {offer.limit === 1 && managerTerm(w.manager) === 1 && ' 소방수는 1시즌씩 계약해요.'}
+        {richMessage('copy.ClubStaff.d5aef91981', {
+          p0:
+            offer.limit === 1 &&
+            managerTerm(w.manager) === 1 &&
+            sourceMessage('copy.ClubStaff.b961053287'),
+        })}
       </p>
-      {offer.limit > 1 && (
-        <TermDial
-          label="감독 재계약 기간"
-          value={chosen}
-          limit={offer.limit}
-          why={SEVENTY}
-          disabled={disabled}
-          onChange={setTerm}
-        />
+      {localizeValue(
+        offer.limit > 1 && (
+          <TermDial
+            label={displayMessage('copy.ClubStaff.5dc3af72e1')}
+            value={chosen}
+            limit={offer.limit}
+            why={SEVENTY}
+            disabled={disabled}
+            onChange={setTerm}
+          />
+        ),
       )}
       <TermCosts w={w} wage={terms.wage} fee={terms.fee} term={chosen} until={terms.until} />
       <button
@@ -198,7 +224,7 @@ export function ManagerRenewal({
         disabled={disabled}
         onClick={() => void client.command({ type: 'renew-manager', term: chosen })}
       >
-        재계약
+        {richMessage('copy.ClubStaff.a199caa699')}
       </button>
     </>
   );
@@ -218,18 +244,21 @@ export function ManagerHireTerm({
   disabled: boolean;
   onChange: (term: ContractTerm) => void;
 }) {
+  useTextLocale();
   const limit = managerTermLimit(candidate, w.year);
   return (
     <>
-      {limit > 1 && (
-        <TermDial
-          label="감독 계약 기간"
-          value={term}
-          limit={limit}
-          why={SEVENTY}
-          disabled={disabled}
-          onChange={onChange}
-        />
+      {localizeValue(
+        limit > 1 && (
+          <TermDial
+            label={displayMessage('copy.ClubStaff.c07f58b5f4')}
+            value={term}
+            limit={limit}
+            why={SEVENTY}
+            disabled={disabled}
+            onChange={onChange}
+          />
+        ),
       )}
       <TermCosts
         w={w}
@@ -248,31 +277,44 @@ export function ManagerHireTerm({
  * responsibility together (→WEB-45), all by 코치 기조 while the staff hire.
  */
 export function CoachingPlan({ w }: { w: World }) {
+  useTextLocale();
   // The 단장's post among them; every post follows the same responsibility, so one department speaks.
   const decision = 'staff' as const,
     auto = coachDelegated(w, 'assistant');
   const expiring = (w.staff || []).filter((member) => isExpiring(w, member));
   return (
-    <section data-surface="sheet" className={s.plan} aria-label="스태프 선임·계약">
+    <section
+      data-surface="sheet"
+      className={s.plan}
+      aria-label={displayMessage('copy.ClubStaff.13ae521048')}
+    >
       <header>
-        <h3>스태프 선임·계약</h3>
+        <h3>{richMessage('copy.ClubStaff.13ae521048')}</h3>
         <span data-testid="coaching-mode">
-          {auto ? '자동 · 스태프가 코치 기조로 고용·재계약' : '직접 · 구단주가 고용·재계약'}
+          {localizeValue(
+            auto
+              ? sourceMessage('copy.ClubStaff.57de55757f')
+              : sourceMessage('copy.ClubStaff.e6146179aa'),
+          )}
         </span>
       </header>
       <DecisionOwner
         w={w}
         decision={decision}
         criteria
-        auto="스태프가 코치 기조로 모든 부서를 채워요. 공석과 무급 자리는 코치 기조에 맞는 첫 후보로 바로 채우고, 맞는 후보가 없으면 무급 코치가 지켜요. 계약 중인 코치는 계약이 끝날 때 코치 기조로 재계약하거나 교체해요."
-        owner="코치 선임·재계약·교체를 직접 해요. 재계약 시즌은 4월 1일이에요."
+        auto={sourceMessage('copy.ClubStaff.c045e61a86')}
+        owner={sourceMessage('copy.ClubStaff.4a63de6ab5')}
       />
       <details data-ui="disclosure" className={management.reference}>
-        <summary>스태프 선임 기준</summary>
+        <summary>{richMessage('copy.ClubStaff.d112f7379a')}</summary>
         <DirectionFacts w={w} rows={['coaches', 'finance']} responsibility="staff" />
       </details>
-      {expiring.length > 0 && (
-        <p className={s.note}>이번 시즌 끝에 계약이 끝나는 코치 {expiring.length}명</p>
+      {localizeValue(
+        expiring.length > 0 && (
+          <p className={s.note}>
+            {richMessage('copy.ClubStaff.b96a621e3c', { p0: expiring.length })}
+          </p>
+        ),
       )}
     </section>
   );
@@ -280,14 +322,24 @@ export function CoachingPlan({ w }: { w: World }) {
 
 /** What the 단장 decides at the current level (→STAFF-20, →WEB-43), each 맡김 or 직접. */
 function DirectorDecides({ w }: { w: World }) {
+  useTextLocale();
   return (
     <small className={s.decides} data-testid="director-decides">
-      {directorDecisions(w).map(({ label, auto }, i) => (
-        <span key={label} data-auto={auto}>
-          {i > 0 && ' · '}
-          {label} <b>{auto ? '맡김' : '직접'}</b>
-        </span>
-      ))}
+      {localizeValue(
+        directorDecisions(w).map(({ label, auto }, i) => (
+          <span key={label} data-auto={auto}>
+            {localizeValue(i > 0 && ' · ')}
+            {localizeValue(label)}{' '}
+            <b>
+              {localizeValue(
+                auto
+                  ? sourceMessage('copy.ClubStaff.6c113d66d2')
+                  : sourceMessage('copy.ApprovalQueue.20c483bdda'),
+              )}
+            </b>
+          </span>
+        )),
+      )}
     </small>
   );
 }
@@ -309,6 +361,7 @@ export function CoachingStaff({
   onCancel?: () => void;
   error?: string;
 }) {
+  useTextLocale();
   const acting = useActing();
   const request = useStaffRequest((store) => store.request);
   const [role, setRole] = useTaskState<StaffRole | undefined>(w.id, 'staff-role', () =>
@@ -354,295 +407,436 @@ export function CoachingStaff({
   const renewal = renewing ? members.get(renewing) : undefined;
   const renewed = renewal && isExpiring(w, renewal) ? renewalTerms(w, renewal, term) : undefined;
   return (
-    <section data-surface="panel" className={s.staff} aria-label="스태프">
+    <section
+      data-surface="panel"
+      className={s.staff}
+      aria-label={displayMessage('copy.ClubStaff.64c4586f7b')}
+    >
       <header>
-        <h3>스태프</h3>
+        <h3>{richMessage('copy.ClubStaff.64c4586f7b')}</h3>
         <span>
-          감독 {w.manager.name}
-          {w.manager.trait && ` · ${MANAGER_TRAIT_INFO[w.manager.trait].label}`}
+          {richMessage('copy.ClubStaff.22896d392f', {
+            p0: w.manager.name,
+            p1: w.manager.trait && ` · ${MANAGER_TRAIT_INFO[w.manager.trait].label}`,
+          })}
         </span>
       </header>
-      {w.manager.trait && (
-        <p className={s.managerTrait}>{MANAGER_TRAIT_INFO[w.manager.trait].effect}</p>
+      {localizeValue(
+        w.manager.trait && (
+          <p className={s.managerTrait}>
+            {localizeValue(MANAGER_TRAIT_INFO[w.manager.trait].effect)}
+          </p>
+        ),
       )}
       <ul>
-        {(
-          [
-            'director',
-            'scout',
-            ...STAFF_ROLES.filter((id) => id !== 'director' && id !== 'scout'),
-          ] as StaffRole[]
-        ).map((id) => {
-          if (selected && id !== selected) return null;
-          const member = members.get(id);
-          return (
-            <li key={id} id={`staff-post-${id}`} data-role={id}>
-              {(id === 'director' || id === 'assistant') && (
-                <h4 className={s.departmentTitle}>
-                  {id === 'director' ? '영입·운영' : '코칭·육성'}
-                </h4>
-              )}
-              <div className={s.role}>
-                {member ? (
-                  <OvrBadge
-                    value={Math.round(member.ability)}
-                    role="OVR"
-                    potential={member.potential}
-                  />
-                ) : (
-                  <span className={s.vacantChip}>공석</span>
+        {localizeValue(
+          (
+            [
+              'director',
+              'scout',
+              ...STAFF_ROLES.filter((id) => id !== 'director' && id !== 'scout'),
+            ] as StaffRole[]
+          ).map((id) => {
+            if (selected && id !== selected) return null;
+            const member = members.get(id);
+            return (
+              <li key={id} id={`staff-post-${id}`} data-role={id}>
+                {localizeValue(
+                  (id === 'director' || id === 'assistant') && (
+                    <h4 className={s.departmentTitle}>
+                      {localizeValue(
+                        id === 'director'
+                          ? sourceMessage('copy.ClubStaff.48e41762cb')
+                          : sourceMessage('copy.ClubStaff.4f9c12ccbd'),
+                      )}
+                    </h4>
+                  ),
                 )}
-                <div>
-                  <StaffRoleBadge post={id} />
-                </div>
-              </div>
-              {member ? (
-                <div className={s.member}>
-                  <span>
-                    {member.name}
-                    {member.person && (
-                      <PersonCareerLink id={member.person} name={member.name} client={client} />
-                    )}
-                    {coachAge(w, member)}
-                    {isExpiring(w, member) && <em className={s.expiring}> 계약 만료 예정</em>}
-                  </span>
-                  <Meter value={member.ability} />
-                  <small>
-                    {member.trait ? STAFF_TRAIT_INFO[member.trait].label : '특성 없음'}
-                    {BigInt(member.wage) > 0n ? (
-                      <> · 연봉 {format(member.wage)}</>
+                <div className={s.role}>
+                  {localizeValue(
+                    member ? (
+                      <OvrBadge
+                        value={Math.round(member.ability)}
+                        role="OVR"
+                        potential={member.potential}
+                      />
                     ) : (
-                      ' · 무급 자원봉사'
-                    )}
-                  </small>
-                  <small>{contractLine(member.until, w.year)}</small>
-                  <small className={s.impact}>{staffImpact(w, id)}</small>
-                  {id === 'director' && <DirectorDecides w={w} />}
-                  {TRAINING_COACHES.includes(id) && (
-                    <small data-testid={`coach-call-${id}`}>
-                      훈련: {callLine(w, id as TrainingCoach).focus} ·{' '}
-                      {callLine(w, id as TrainingCoach).by}
-                    </small>
+                      <span className={s.vacantChip}>{richMessage('team.vacant')}</span>
+                    ),
                   )}
-                  {isExpiring(w, member) && (
-                    <small>
-                      재계약: 연봉 {format(renewalTerms(w, member).wage)} · 계약금{' '}
-                      {format(renewalTerms(w, member).fee)} · 1–5시즌 선택
-                    </small>
+                  <div>
+                    <StaffRoleBadge post={id} />
+                  </div>
+                </div>
+                {localizeValue(
+                  member ? (
+                    <div className={s.member}>
+                      <span>
+                        {member.name}
+                        {localizeValue(
+                          member.person && (
+                            <PersonCareerLink
+                              id={member.person}
+                              name={member.name}
+                              client={client}
+                            />
+                          ),
+                        )}
+                        {localizeValue(coachAge(w, member))}
+                        {localizeValue(
+                          isExpiring(w, member) && (
+                            <em className={s.expiring}>
+                              {richMessage('copy.ClubStaff.9f7c630b1d')}
+                            </em>
+                          ),
+                        )}
+                      </span>
+                      <Meter value={member.ability} />
+                      <small>
+                        {localizeValue(
+                          member.trait
+                            ? STAFF_TRAIT_INFO[member.trait].label
+                            : sourceMessage('copy.ClubStaff.7cff642737'),
+                        )}
+                        {localizeValue(
+                          BigInt(member.wage) > 0n ? (
+                            <>
+                              {richMessage('copy.ClubStaff.143fe39ad3', {
+                                p0: format(member.wage),
+                              })}
+                            </>
+                          ) : (
+                            sourceMessage('copy.ClubStaff.5fad535146')
+                          ),
+                        )}
+                      </small>
+                      <small>{localizeValue(contractLine(member.until, w.year))}</small>
+                      <small className={s.impact}>{localizeValue(staffImpact(w, id))}</small>
+                      {localizeValue(id === 'director' && <DirectorDecides w={w} />)}
+                      {localizeValue(
+                        TRAINING_COACHES.includes(id) && (
+                          <small data-testid={`coach-call-${id}`}>
+                            {richMessage('copy.ClubStaff.d31fae7e7e', {
+                              p0: callLine(w, id as TrainingCoach).focus,
+                              p1: ' ',
+                              p2: callLine(w, id as TrainingCoach).by,
+                            })}
+                          </small>
+                        ),
+                      )}
+                      {localizeValue(
+                        isExpiring(w, member) && (
+                          <small>
+                            {richMessage('copy.ClubStaff.adba59f354', {
+                              p0: format(renewalTerms(w, member).wage),
+                              p1: ' ',
+                              p2: format(renewalTerms(w, member).fee),
+                            })}
+                          </small>
+                        ),
+                      )}
+                    </div>
+                  ) : (
+                    <div className={s.member}>
+                      <span className={s.vacant}>{richMessage('team.vacant')}</span>
+                      <small className={s.impact}>{localizeValue(staffImpact(w, id))}</small>
+                      {localizeValue(id === 'director' && <DirectorDecides w={w} />)}
+                    </div>
+                  ),
+                )}
+                <div className={s.rowActions}>
+                  {localizeValue(
+                    member && isExpiring(w, member) && (
+                      <button
+                        data-ui="primary"
+                        className={s.primary}
+                        disabled={acting}
+                        title={displayMessage('copy.ClubStaff.b0fac1d9d1', {
+                          p0: text(renewalTerms(w, member).wage),
+                          p1: text(renewalTerms(w, member).fee),
+                        })}
+                        onClick={(event) => {
+                          event.currentTarget.focus();
+                          setRenewing(id);
+                          setTerm(DELEGATED_TERM);
+                        }}
+                      >
+                        {richMessage('copy.ClubStaff.a199caa699')}
+                      </button>
+                    ),
                   )}
-                </div>
-              ) : (
-                <div className={s.member}>
-                  <span className={s.vacant}>공석</span>
-                  <small className={s.impact}>{staffImpact(w, id)}</small>
-                  {id === 'director' && <DirectorDecides w={w} />}
-                </div>
-              )}
-              <div className={s.rowActions}>
-                {member && isExpiring(w, member) && (
+                  {localizeValue(
+                    member && TRAINING_COACHES.includes(id) && (
+                      // The coach sets the focus by his rule; 훈련 reads it in full (→WEB-43, WEB-70).
+                      <button onClick={() => openTraining(id === 'youth' ? 'academy' : 'training')}>
+                        {richMessage('copy.ClubStaff.1759b5d978')}
+                      </button>
+                    ),
+                  )}
                   <button
-                    data-ui="primary"
-                    className={s.primary}
                     disabled={acting}
-                    title={`연봉 ${text(renewalTerms(w, member).wage)} · 계약금 ${text(renewalTerms(w, member).fee)} · 기간 선택`}
                     onClick={(event) => {
                       event.currentTarget.focus();
-                      setRenewing(id);
+                      setRole(id);
+                      setPick(undefined);
                       setTerm(DELEGATED_TERM);
                     }}
                   >
-                    재계약
+                    {localizeValue(
+                      member
+                        ? sourceMessage('copy.LabPage.084c5a6dd7')
+                        : sourceMessage('copy.managerHistoryPacking.f163d47d0b'),
+                    )}
                   </button>
-                )}
-                {member && TRAINING_COACHES.includes(id) && (
-                  // The coach sets the focus by his rule; 훈련 reads it in full (→WEB-43, WEB-70).
-                  <button onClick={() => openTraining(id === 'youth' ? 'academy' : 'training')}>
-                    훈련에서 보기
-                  </button>
+                </div>
+                {/* Whom 코치 기조 would hire here while the level hands hiring to the staff (→STAFF-15). */}
+                <details data-ui="disclosure" className={`${s.department} ${management.reference}`}>
+                  <summary>{richMessage('copy.ClubStaff.ab7c6e0c2f')}</summary>
+                  <p className={s.note}>{localizeValue(STAFF_INFO[id].duty)}</p>
+                  <CoachPreview
+                    w={w}
+                    role={id}
+                    title={displayMessage('copy.ClubStaff.cd87e26f98')}
+                  />
+                </details>
+              </li>
+            );
+          }),
+        )}
+      </ul>
+      {localizeValue(
+        role && (
+          <Dialog
+            label={displayMessage('copy.ClubStaff.aeb9824561', { p0: STAFF_INFO[role].label })}
+            onClose={() => {
+              setRole(undefined);
+              onCancel?.();
+            }}
+            actions={
+              <div className={s.sheetActions}>
+                {localizeValue(
+                  current && (
+                    <button
+                      disabled={acting}
+                      onClick={() => {
+                        void client.command({ type: 'release-staff', role });
+                        setRole(undefined);
+                      }}
+                    >
+                      {richMessage('copy.ClubStaff.0021ae0ba5', {
+                        p0: owed !== '0' && <> · {localizeValue(plain(owed))}</>,
+                      })}
+                    </button>
+                  ),
                 )}
                 <button
-                  disabled={acting}
-                  onClick={(event) => {
-                    event.currentTarget.focus();
-                    setRole(id);
-                    setPick(undefined);
-                    setTerm(DELEGATED_TERM);
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={acting || !chosen}
+                  onClick={async () => {
+                    if (!chosen) return;
+                    const reply = await client.command({
+                      type: 'hire-staff',
+                      role,
+                      candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
+                      candidateId: chosen.id,
+                      term,
+                    });
+                    if (reply?.ok) setRole(undefined);
                   }}
                 >
-                  {member ? '교체' : '선임'}
+                  {localizeValue(
+                    chosen
+                      ? sourceMessage('copy.ClubStaff.269839005c', { p0: chosen.name, p1: term })
+                      : sourceMessage('copy.ClubStaff.2d573f96ab'),
+                  )}
                 </button>
               </div>
-              {/* Whom 코치 기조 would hire here while the level hands hiring to the staff (→STAFF-15). */}
-              <details data-ui="disclosure" className={`${s.department} ${management.reference}`}>
-                <summary>담당 업무·추천 후보</summary>
-                <p className={s.note}>{STAFF_INFO[id].duty}</p>
-                <CoachPreview w={w} role={id} title="코치 기조로 뽑는다면" />
-              </details>
-            </li>
-          );
-        })}
-      </ul>
-      {role && (
-        <Dialog
-          label={`${STAFF_INFO[role].label} 선임`}
-          onClose={() => {
-            setRole(undefined);
-            onCancel?.();
-          }}
-          actions={
-            <div className={s.sheetActions}>
-              {current && (
-                <button
+            }
+          >
+            <p className={s.note}>
+              {richMessage('copy.ClubStaff.66fe115236', {
+                p0: STAFF_INFO[role].duty,
+                p1: ' ',
+                p2: current
+                  ? sourceMessage('copy.ClubStaff.578433e364', {
+                      p0: current.name,
+                      p1: Math.round(current.ability),
+                    })
+                  : sourceMessage('team.vacant'),
+              })}
+            </p>
+            {localizeValue(
+              candidates.length ? (
+                <div
+                  className={s.candidates}
+                  role="radiogroup"
+                  aria-label={displayMessage('copy.ClubStaff.f6184e4c8d')}
+                >
+                  {localizeValue(
+                    candidates.map((candidate) => (
+                      <button
+                        key={candidate.id}
+                        role="radio"
+                        aria-checked={pick === candidate.id}
+                        className={pick === candidate.id ? s.picked : undefined}
+                        onClick={() => setPick(candidate.id)}
+                      >
+                        <div className={s.candidateHead}>
+                          <OvrBadge
+                            value={Math.round(candidate.ability)}
+                            role="OVR"
+                            potential={candidate.potential}
+                          />
+                          <div>
+                            <b>{candidate.name}</b>
+                            <span>
+                              {localizeValue(coachAge(w, candidate).replace(/^ · /, ''))}
+                              {localizeValue(
+                                candidate.ability > (current?.ability ?? 0)
+                                  ? sourceMessage('copy.ClubStaff.63a8535984', {
+                                      p0: Math.round(candidate.ability - (current?.ability ?? 0)),
+                                    })
+                                  : '',
+                              )}
+                              {localizeValue(
+                                (candidate.potential ?? 0) > candidate.ability
+                                  ? sourceMessage('copy.ClubStaff.4719fc8cca', {
+                                      p0: candidate.potential! - candidate.ability,
+                                    })
+                                  : '',
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                        <Meter value={candidate.ability} />
+                        <small>
+                          {localizeValue(
+                            candidate.trait
+                              ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
+                              : sourceMessage('copy.ClubStaff.7cff642737'),
+                          )}
+                        </small>
+                        <small className={s.impact}>
+                          {richMessage('copy.ClubStaff.ff36a2eafa', {
+                            p0: hiredImpact(w, role, candidate),
+                            p1: staffImpact(w, role),
+                          })}
+                        </small>
+                        <small>
+                          {richMessage('copy.ClubStaff.88938e8749', {
+                            p0: plain(candidate.wage),
+                            p1: plain(candidate.fee),
+                          })}
+                        </small>
+                      </button>
+                    )),
+                  )}
+                </div>
+              ) : (
+                <p className={s.note}>{richMessage('copy.ClubStaff.6696051fed')}</p>
+              ),
+            )}
+            {localizeValue(
+              chosen?.person && (
+                <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+              ),
+            )}
+            {localizeValue(
+              candidates.length > 0 && (
+                <TermDial
+                  label={displayMessage('copy.ClubStaff.7c33f611a8')}
+                  value={term}
                   disabled={acting}
+                  onChange={setTerm}
+                />
+              ),
+            )}
+            {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+            {localizeValue(
+              chosen && (
+                <TermCosts
+                  w={w}
+                  wage={chosen.wage}
+                  fee={chosen.fee}
+                  term={term}
+                  until={w.year + term}
+                />
+              ),
+            )}
+            {localizeValue(
+              current && owed !== '0' && (
+                <p className={s.note}>
+                  {richMessage('copy.ClubStaff.be3b746167', {
+                    p0: current.name,
+                    p1: format(owed),
+                    p2: ' ',
+                    p3: seasonsLeft(w, current.until),
+                  })}
+                </p>
+              ),
+            )}
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        renewing && renewal && renewed && (
+          <Dialog
+            label={displayMessage('copy.ClubStaff.def7ad57ad', { p0: STAFF_INFO[renewing].label })}
+            onClose={() => {
+              setRenewing(undefined);
+              onCancel?.();
+            }}
+            actions={
+              <div className={s.sheetActions}>
+                <button
                   onClick={() => {
-                    void client.command({ type: 'release-staff', role });
-                    setRole(undefined);
+                    setRenewing(undefined);
+                    onCancel?.();
                   }}
                 >
-                  계약 해지{owed !== '0' && <> · {plain(owed)}</>}
+                  {richMessage('common.cancel')}
                 </button>
-              )}
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting || !chosen}
-                onClick={async () => {
-                  if (!chosen) return;
-                  const reply = await client.command({
-                    type: 'hire-staff',
-                    role,
-                    candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
-                    candidateId: chosen.id,
-                    term,
-                  });
-                  if (reply?.ok) setRole(undefined);
-                }}
-              >
-                {chosen ? `${chosen.name} 선임 · ${term}시즌` : '후보를 고르세요'}
-              </button>
-            </div>
-          }
-        >
-          <p className={s.note}>
-            {STAFF_INFO[role].duty} · 현재{' '}
-            {current ? `${current.name} (능력 ${Math.round(current.ability)})` : '공석'}
-          </p>
-          {candidates.length ? (
-            <div className={s.candidates} role="radiogroup" aria-label="코치 후보">
-              {candidates.map((candidate) => (
                 <button
-                  key={candidate.id}
-                  role="radio"
-                  aria-checked={pick === candidate.id}
-                  className={pick === candidate.id ? s.picked : undefined}
-                  onClick={() => setPick(candidate.id)}
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={acting}
+                  onClick={async () => {
+                    const reply = await client.command({
+                      type: 'renew-staff',
+                      role: renewing,
+                      term,
+                    });
+                    if (reply?.ok) setRenewing(undefined);
+                  }}
                 >
-                  <div className={s.candidateHead}>
-                    <OvrBadge
-                      value={Math.round(candidate.ability)}
-                      role="OVR"
-                      potential={candidate.potential}
-                    />
-                    <div>
-                      <b>{candidate.name}</b>
-                      <span>
-                        {coachAge(w, candidate).replace(/^ · /, '')}
-                        {candidate.ability > (current?.ability ?? 0)
-                          ? ` · 지금보다 +${Math.round(candidate.ability - (current?.ability ?? 0))}`
-                          : ''}
-                        {(candidate.potential ?? 0) > candidate.ability
-                          ? ` · 성장 여지 +${candidate.potential! - candidate.ability}`
-                          : ''}
-                      </span>
-                    </div>
-                  </div>
-                  <Meter value={candidate.ability} />
-                  <small>
-                    {candidate.trait
-                      ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
-                      : '특성 없음'}
-                  </small>
-                  <small className={s.impact}>
-                    선임 시 {hiredImpact(w, role, candidate)} (지금 {staffImpact(w, role)})
-                  </small>
-                  <small>
-                    연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)}
-                  </small>
+                  {richMessage('copy.ClubStaff.41140416e6', { p0: term })}
                 </button>
-              ))}
-            </div>
-          ) : (
-            <p className={s.note}>이번 시즌 이 자리에 맞는 후보가 없어요.</p>
-          )}
-          {chosen?.person && (
-            <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
-          )}
-          {candidates.length > 0 && (
-            <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />
-          )}
-          {error && <p role="alert">{error}</p>}
-          {chosen && (
+              </div>
+            }
+          >
+            <p className={s.note}>
+              {richMessage('copy.ClubStaff.bda7576c1a', {
+                p0: renewal.name,
+                p1: Math.round(renewal.ability),
+              })}
+            </p>
+            {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+            <TermDial
+              label={displayMessage('copy.ClubStaff.5e29d2ae19')}
+              value={term}
+              disabled={acting}
+              onChange={setTerm}
+            />
             <TermCosts
               w={w}
-              wage={chosen.wage}
-              fee={chosen.fee}
+              wage={renewed.wage}
+              fee={renewed.fee}
               term={term}
-              until={w.year + term}
+              until={renewed.until}
             />
-          )}
-          {current && owed !== '0' && (
-            <p className={s.note}>
-              교체·해지 시 {current.name}에게 보상금 {format(owed)} (남은{' '}
-              {seasonsLeft(w, current.until)}시즌 × 연봉의 25%)
-            </p>
-          )}
-        </Dialog>
-      )}
-      {renewing && renewal && renewed && (
-        <Dialog
-          label={`${STAFF_INFO[renewing].label} 재계약`}
-          onClose={() => {
-            setRenewing(undefined);
-            onCancel?.();
-          }}
-          actions={
-            <div className={s.sheetActions}>
-              <button
-                onClick={() => {
-                  setRenewing(undefined);
-                  onCancel?.();
-                }}
-              >
-                취소
-              </button>
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting}
-                onClick={async () => {
-                  const reply = await client.command({ type: 'renew-staff', role: renewing, term });
-                  if (reply?.ok) setRenewing(undefined);
-                }}
-              >
-                재계약 · {term}시즌
-              </button>
-            </div>
-          }
-        >
-          <p className={s.note}>
-            {renewal.name} (능력 {Math.round(renewal.ability)}) · 연봉은 지금 능력으로 다시 정해지고
-            계약 기간 동안 그대로예요.
-          </p>
-          {error && <p role="alert">{error}</p>}
-          <TermDial label="코치 재계약 기간" value={term} disabled={acting} onChange={setTerm} />
-          <TermCosts
-            w={w}
-            wage={renewed.wage}
-            fee={renewed.fee}
-            term={term}
-            until={renewed.until}
-          />
-        </Dialog>
+          </Dialog>
+        ),
       )}
     </section>
   );
@@ -661,6 +855,7 @@ export function StaffMarket({
   client: GameClient;
   roles: readonly StaffRole[];
 }) {
+  useTextLocale();
   const acting = useActing();
   const [stored, setRole] = useTaskState<StaffRole>(w.id, `staff-market-${roles[0]}`, roles[0]);
   const role = roles.includes(stored) ? stored : roles[0];
@@ -675,119 +870,177 @@ export function StaffMarket({
   const chosen = candidates.find((candidate) => candidate.id === pick);
   const owed = releaseCost(w, current);
   return (
-    <section data-surface="panel" className={s.staff} aria-label={`${STAFF_INFO[role].label} 영입`}>
+    <section
+      data-surface="panel"
+      className={s.staff}
+      aria-label={displayMessage('copy.ClubStaff.2d43ec39f3', { p0: STAFF_INFO[role].label })}
+    >
       <header>
-        <h3>{STAFF_INFO[role].label} 후보</h3>
+        <h3>{richMessage('copy.ClubStaff.6011c13d9d', { p0: STAFF_INFO[role].label })}</h3>
         <span>
-          지금 {current ? `${current.name} · OVR ${Math.round(current.ability)}` : '공석'}
+          {richMessage('copy.ClubStaff.ceb2ec9df3', {
+            p0: current
+              ? `${current.name} · OVR ${Math.round(current.ability)}`
+              : sourceMessage('team.vacant'),
+          })}
         </span>
       </header>
-      {roles.length > 1 && (
-        <Segments
-          label="영입할 자리"
-          options={roles.map((id) => [id, STAFF_INFO[id].label] as const)}
-          value={role}
-          onChange={(id) => {
-            setRole(id);
-            setPick(undefined);
-          }}
-          wrap
-        />
+      {localizeValue(
+        roles.length > 1 && (
+          <Segments
+            label={displayMessage('copy.ClubStaff.fda279cf16')}
+            options={roles.map((id) => [id, STAFF_INFO[id].label] as const)}
+            value={role}
+            onChange={(id) => {
+              setRole(id);
+              setPick(undefined);
+            }}
+            wrap
+          />
+        ),
       )}
       <p className={s.note}>
-        {STAFF_INFO[role].duty} · 지금 {staffImpact(w, role)}
+        {richMessage('copy.ClubStaff.d8d9b7ea7c', {
+          p0: STAFF_INFO[role].duty,
+          p1: staffImpact(w, role),
+        })}
       </p>
-      {candidates.length ? (
-        <div className={s.marketCards}>
-          {candidates.map((candidate) => (
-            <article key={candidate.id} className={s.marketCard} data-surface="inset">
-              <div className={s.candidateHead}>
-                <OvrBadge
-                  value={Math.round(candidate.ability)}
-                  role="OVR"
-                  potential={candidate.potential}
-                />
-                <div>
-                  <b>{candidate.name}</b>
-                  <span>
-                    {coachAge(w, candidate).replace(/^ · /, '')}
-                    {candidate.ability > (current?.ability ?? 0)
-                      ? ` · 지금보다 +${Math.round(candidate.ability - (current?.ability ?? 0))}`
-                      : ''}
-                  </span>
-                </div>
-              </div>
-              <Meter value={candidate.ability} />
-              <small>
-                {candidate.trait
-                  ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
-                  : '특성 없음'}
-              </small>
-              <small className={s.impact}>영입 시 {hiredImpact(w, role, candidate)}</small>
-              <small>
-                연봉 {plain(candidate.wage)} · 계약금 {plain(candidate.fee)}
-              </small>
-              <button
-                type="button"
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting}
-                onClick={() => {
-                  setPick(candidate.id);
-                  setTerm(DELEGATED_TERM);
-                }}
-              >
-                영입 제안
-              </button>
-            </article>
-          ))}
-        </div>
-      ) : (
-        <p className={s.note}>이번 시즌 이 자리에 맞는 후보가 없어요.</p>
+      {localizeValue(
+        candidates.length ? (
+          <div className={s.marketCards}>
+            {localizeValue(
+              candidates.map((candidate) => (
+                <article key={candidate.id} className={s.marketCard} data-surface="inset">
+                  <div className={s.candidateHead}>
+                    <OvrBadge
+                      value={Math.round(candidate.ability)}
+                      role="OVR"
+                      potential={candidate.potential}
+                    />
+                    <div>
+                      <b>{candidate.name}</b>
+                      <span>
+                        {localizeValue(coachAge(w, candidate).replace(/^ · /, ''))}
+                        {localizeValue(
+                          candidate.ability > (current?.ability ?? 0)
+                            ? sourceMessage('copy.ClubStaff.63a8535984', {
+                                p0: Math.round(candidate.ability - (current?.ability ?? 0)),
+                              })
+                            : '',
+                        )}
+                      </span>
+                    </div>
+                  </div>
+                  <Meter value={candidate.ability} />
+                  <small>
+                    {localizeValue(
+                      candidate.trait
+                        ? `${STAFF_TRAIT_INFO[candidate.trait].label} · ${STAFF_TRAIT_INFO[candidate.trait].effect}`
+                        : sourceMessage('copy.ClubStaff.7cff642737'),
+                    )}
+                  </small>
+                  <small className={s.impact}>
+                    {richMessage('copy.ClubStaff.999145c9b0', {
+                      p0: hiredImpact(w, role, candidate),
+                    })}
+                  </small>
+                  <small>
+                    {richMessage('copy.ClubStaff.88938e8749', {
+                      p0: plain(candidate.wage),
+                      p1: plain(candidate.fee),
+                    })}
+                  </small>
+                  <button
+                    type="button"
+                    data-ui="primary"
+                    className={s.primary}
+                    disabled={acting}
+                    onClick={() => {
+                      setPick(candidate.id);
+                      setTerm(DELEGATED_TERM);
+                    }}
+                  >
+                    {richMessage('copy.ClubStaff.6e1d7a0faf')}
+                  </button>
+                </article>
+              )),
+            )}
+          </div>
+        ) : (
+          <p className={s.note}>{richMessage('copy.ClubStaff.6696051fed')}</p>
+        ),
       )}
-      {chosen && (
-        <Dialog
-          label={`${STAFF_INFO[role].label} 영입 제안`}
-          onClose={() => setPick(undefined)}
-          actions={
-            <div className={s.sheetActions}>
-              <button onClick={() => setPick(undefined)}>취소</button>
-              <button
-                data-ui="primary"
-                className={s.primary}
-                disabled={acting}
-                onClick={async () => {
-                  const reply = await client.command({
-                    type: 'hire-staff',
-                    role,
-                    candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
-                    candidateId: chosen.id,
-                    term,
-                  });
-                  if (reply?.ok) setPick(undefined);
-                }}
-              >
-                {chosen.name} 영입 · {term}시즌
-              </button>
-            </div>
-          }
-        >
-          <p className={s.note}>
-            {chosen.name} (OVR {Math.round(chosen.ability)}) → {STAFF_INFO[role].label} · 현재{' '}
-            {current ? `${current.name} (OVR ${Math.round(current.ability)})` : '공석'}
-          </p>
-          {chosen.person && (
-            <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
-          )}
-          <TermDial label="코치 계약 기간" value={term} disabled={acting} onChange={setTerm} />
-          <TermCosts w={w} wage={chosen.wage} fee={chosen.fee} term={term} until={w.year + term} />
-          {current && owed !== '0' && (
+      {localizeValue(
+        chosen && (
+          <Dialog
+            label={displayMessage('copy.ClubStaff.c037a387ca', { p0: STAFF_INFO[role].label })}
+            onClose={() => setPick(undefined)}
+            actions={
+              <div className={s.sheetActions}>
+                <button onClick={() => setPick(undefined)}>{richMessage('common.cancel')}</button>
+                <button
+                  data-ui="primary"
+                  className={s.primary}
+                  disabled={acting}
+                  onClick={async () => {
+                    const reply = await client.command({
+                      type: 'hire-staff',
+                      role,
+                      candidate: candidates.findIndex((candidate) => candidate.id === chosen.id),
+                      candidateId: chosen.id,
+                      term,
+                    });
+                    if (reply?.ok) setPick(undefined);
+                  }}
+                >
+                  {richMessage('copy.ClubStaff.7fcc7e0be2', { p0: chosen.name, p1: term })}
+                </button>
+              </div>
+            }
+          >
             <p className={s.note}>
-              {current.name}은 떠나고 보상금 {format(owed)}을 받아요 (남은{' '}
-              {seasonsLeft(w, current.until)}시즌 × 연봉의 25%)
+              {richMessage('copy.ClubStaff.e995612837', {
+                p0: chosen.name,
+                p1: Math.round(chosen.ability),
+                p2: STAFF_INFO[role].label,
+                p3: ' ',
+                p4: current
+                  ? `${current.name} (OVR ${Math.round(current.ability)})`
+                  : sourceMessage('team.vacant'),
+              })}
             </p>
-          )}
-        </Dialog>
+            {localizeValue(
+              chosen.person && (
+                <PersonCareerLink id={chosen.person} name={chosen.name} client={client} />
+              ),
+            )}
+            <TermDial
+              label={displayMessage('copy.ClubStaff.7c33f611a8')}
+              value={term}
+              disabled={acting}
+              onChange={setTerm}
+            />
+            <TermCosts
+              w={w}
+              wage={chosen.wage}
+              fee={chosen.fee}
+              term={term}
+              until={w.year + term}
+            />
+            {localizeValue(
+              current && owed !== '0' && (
+                <p className={s.note}>
+                  {richMessage('copy.ClubStaff.e5fab9815d', {
+                    p0: current.name,
+                    p1: format(owed),
+                    p2: ' ',
+                    p3: seasonsLeft(w, current.until),
+                  })}
+                </p>
+              ),
+            )}
+          </Dialog>
+        ),
       )}
     </section>
   );
@@ -796,55 +1049,76 @@ export function StaffMarket({
 /** One criterion: its name, then its control. */
 /** 감독 선임 (→STAFF-18): who appoints, the rows the staff follow and whom they would appoint. */
 export function ManagerPost({ w }: { w: World; client?: GameClient }) {
+  useTextLocale();
   return (
-    <section data-surface="sheet" className={s.decision} aria-label="감독 선임 위임">
+    <section
+      data-surface="sheet"
+      className={s.decision}
+      aria-label={displayMessage('copy.ClubStaff.cb234cd90e')}
+    >
       <header>
-        <h3>감독 선임</h3>
+        <h3>{richMessage('copy.ClubStaff.10451c4909')}</h3>
       </header>
       <DecisionOwner
         w={w}
         decision="manager"
         criteria
-        auto="감독이 떠나면 단장이 선호 학파와 감독 기조에 맞는 감독을 바로 뽑고, 4월 1일 계약이 끝나는 감독은 감독 기조로 재계약하거나 교체해요. 알림·결정에 보고해요."
-        owner="구단주가 감독을 뽑고 재계약해요."
+        auto={sourceMessage('copy.ClubStaff.27781851a7')}
+        owner={sourceMessage('copy.ClubStaff.894107efbb')}
       />
       <details data-ui="disclosure" className={management.reference}>
-        <summary>감독 선임 기준·추천 후보</summary>
+        <summary>{richMessage('copy.ClubStaff.44d280d2a4')}</summary>
         <DirectionFacts w={w} rows={['school', 'manager', 'finance']} responsibility="manager" />
-        <ManagerPreview w={w} title="지금 방향이면" />
+        <ManagerPreview w={w} title={displayMessage('copy.ClubStaff.d4167cd8d7')} />
       </details>
     </section>
   );
 }
 /** Whom 선호 학파 and 감독 기조 would appoint if the post fell vacant (→STAFF-18), or why nobody. */
 function ManagerPreview({ w, title }: { w: World; title: string }) {
+  useTextLocale();
   const preview = managerPickPreview(w),
     pick = preview.pick,
     club = clubOf(w),
     money = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   return (
     <div data-surface="tile" className={s.preview} data-testid="manager-pick">
-      <b>{title}</b>
-      {pick ? (
-        <div className={s.pick}>
-          <OvrBadge value={pick.ability} role="감독" potential={pick.potential} />
-          <div>
-            <span>
-              {pick.name} · {STYLE_INFO[pick.style].label}
-            </span>
-            <small>
-              연봉 {money(pick.wage)} · 계약금 {money(pick.fee)}
-              {pick.compensation && <> · 보상금(웃돈) {money(pick.compensation)}</>}
-            </small>
-            <small>
-              {preview.fallback
-                ? '감독 기조에 맞는 감독이 없어 가장 나은 자유계약 감독을 뽑아요'
-                : '감독 기조에 맞는 첫 후보 · 감독 자리가 비면 이 감독을 뽑아요'}
-            </small>
+      <b>{localizeValue(title)}</b>
+      {localizeValue(
+        pick ? (
+          <div className={s.pick}>
+            <OvrBadge
+              value={pick.ability}
+              role={sourceMessage('staff.role.manager')}
+              potential={pick.potential}
+            />
+            <div>
+              <span>
+                {pick.name} · {localizeValue(STYLE_INFO[pick.style].label)}
+              </span>
+              <small>
+                {richMessage('copy.ClubStaff.c2d7bdbaae', {
+                  p0: money(pick.wage),
+                  p1: money(pick.fee),
+                  p2: pick.compensation && (
+                    <>
+                      {richMessage('copy.ClubStaff.3e2995c1db', { p0: money(pick.compensation) })}
+                    </>
+                  ),
+                })}
+              </small>
+              <small>
+                {localizeValue(
+                  preview.fallback
+                    ? sourceMessage('copy.ClubStaff.276ae46c9a')
+                    : sourceMessage('copy.ClubStaff.8eb8e5a49d'),
+                )}
+              </small>
+            </div>
           </div>
-        </div>
-      ) : (
-        <p>{preview.reason}</p>
+        ) : (
+          <p>{localizeValue(preview.reason)}</p>
+        ),
       )}
     </div>
   );
@@ -852,6 +1126,7 @@ function ManagerPreview({ w, title }: { w: World; title: string }) {
 
 /** Whom 코치 기조 would hire today in a department (→STAFF-15), or why nobody. */
 function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: string }) {
+  useTextLocale();
   const preview = coachPickPreview(w, role),
     pick = preview.pick,
     c = coachCriteriaOf(w),
@@ -861,22 +1136,35 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
     money = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   return (
     <div data-surface="tile" className={s.preview} data-testid={`coach-pick-${role}`}>
-      <b>{title}</b>
-      {pick ? (
-        <div className={s.pick}>
-          <OvrBadge value={Math.round(pick.ability)} role="OVR" potential={pick.potential} />
-          <div>
-            <span>
-              {pick.name} · {pick.trait ? STAFF_TRAIT_INFO[pick.trait].label : '특성 없음'}
-            </span>
-            <small>
-              연봉 {money(pick.wage)} · 계약금 {money(pick.fee)} · {c.term}시즌
-            </small>
-            {contracted && <small>계약 중인 코치는 계약이 끝날 때 코치 기조로 다시 판단해요</small>}
+      <b>{localizeValue(title)}</b>
+      {localizeValue(
+        pick ? (
+          <div className={s.pick}>
+            <OvrBadge value={Math.round(pick.ability)} role="OVR" potential={pick.potential} />
+            <div>
+              <span>
+                {pick.name} ·{' '}
+                {localizeValue(
+                  pick.trait
+                    ? STAFF_TRAIT_INFO[pick.trait].label
+                    : sourceMessage('copy.ClubStaff.7cff642737'),
+                )}
+              </span>
+              <small>
+                {richMessage('copy.ClubStaff.adbb8848ea', {
+                  p0: money(pick.wage),
+                  p1: money(pick.fee),
+                  p2: c.term,
+                })}
+              </small>
+              {localizeValue(
+                contracted && <small>{richMessage('copy.ClubStaff.c2c0b38fa9')}</small>,
+              )}
+            </div>
           </div>
-        </div>
-      ) : (
-        <p>{preview.reason}</p>
+        ) : (
+          <p>{localizeValue(preview.reason)}</p>
+        ),
       )}
     </div>
   );
@@ -887,29 +1175,37 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
  * stays fixed; a refusal may leave the player unhappy (→CLUB-27).
  */
 export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
+  useTextLocale();
   const stance = financeStance(w, 'contracts');
   return (
-    <section data-surface="sheet" className={s.decision} aria-label="계약 협상 위임">
+    <section
+      data-surface="sheet"
+      className={s.decision}
+      aria-label={displayMessage('copy.ClubStaff.81fb576096')}
+    >
       <header>
-        <h3>계약 협상</h3>
+        <h3>{richMessage('copy.ClubStaff.5ca939d3e3')}</h3>
       </header>
       <DecisionOwner
         w={w}
         decision="contracts"
         criteria
-        auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 단장이 재계약 기조와 재정 기조에 따라 하한을 제시하거나 거절하고 알림·결정에 보고해요."
-        owner="구단주가 협상마다 제시하거나 거절해요."
+        auto={sourceMessage('copy.ClubStaff.5fe81d8483')}
+        owner={sourceMessage('copy.ClubStaff.670fe07b8a')}
       />
       <DirectionFacts w={w} rows={['renewal', 'finance']} responsibility="contracts" />
       <ul className={s.fixed}>
-        <li>{directionOption(w, 'renewal').summary}</li>
-        <li>계약 기간: 이번 시즌 뒤로 2시즌(32세부터 1시즌), 지금 계약보다 먼저 끝나지 않아요.</li>
+        <li>{localizeValue(directionOption(w, 'renewal').summary)}</li>
+        <li>{richMessage('copy.ClubStaff.9d5c92492d')}</li>
         <li>
-          자금: 인상 뒤에도 {stance.runway}라운드 운영비가 남고, 연간 인건비가 최근 12개월 수입의{' '}
-          {Math.round(stance.wageShare * 100)}% 안이며, 이번 시즌 자금 전망도 {stance.runway}라운드
-          운영비 이상으로 끝날 때만 하한을 제시해요.
+          {richMessage('copy.ClubStaff.6084b91f02', {
+            p0: stance.runway,
+            p1: ' ',
+            p2: Math.round(stance.wageShare * 100),
+            p3: stance.runway,
+          })}
         </li>
-        <li>거절하면 감독이 설득하지 못할 때 선수가 언해피가 될 수 있어요.</li>
+        <li>{richMessage('copy.ClubStaff.e257a74a0b')}</li>
       </ul>
     </section>
   );
@@ -919,55 +1215,64 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
  * 제안 응답 (→CLUB-18, CLUB-24): who answers and the sale bar the staff apply, in words.
  */
 export function OfferAnswers({ w }: { w: World }) {
+  useTextLocale();
   const card = cardOf(buildOf(w), 'market').label,
     [bar, prospect] = SALE_BARS[w.build?.market ?? 'standard'],
     [first, second] = financeStance(w, 'sales').sellSteps,
     signing = financeStance(w, 'recruitment').signing,
     hold = w.build?.market === 'hold';
   return (
-    <section data-surface="sheet" className={s.decision} aria-label="이적 제안 위임">
+    <section
+      data-surface="sheet"
+      className={s.decision}
+      aria-label={displayMessage('copy.ClubStaff.ee9dab61b8')}
+    >
       <header>
-        <h3>제안 응답</h3>
+        <h3>{richMessage('copy.ClubStaff.ba835896f9')}</h3>
       </header>
       <DecisionOwner
         w={w}
         decision="sales"
         criteria
-        auto="다른 구단의 제안에 단장이 매각 기조와 재정 기조에 따라 답해요. 결과는 알림·결정에 보고해요."
-        owner="구단주가 우리 선수에게 온 제안마다 수락·거절해요."
+        auto={sourceMessage('copy.ClubStaff.d7d3dab4d0')}
+        owner={sourceMessage('copy.ClubStaff.ed0c775102')}
       />
       <DecisionOwner
         w={w}
         decision="recruitment"
         criteria
-        auto="단장이 스카우트 명단과 감독의 요청을 보고 영입 방침과 재정 기조에 따라 영입해요."
-        owner="구단주가 영입과 영입 협상을 직접 결정해요."
+        auto={sourceMessage('copy.ClubStaff.386ff78aec')}
+        owner={sourceMessage('copy.ClubStaff.093dbc6ce0')}
       />
       <DirectionFacts w={w} rows={['market', 'finance']} responsibility="sales" />
       <ul className={s.fixed}>
-        <li>이적 명단 선수는 들어오는 제안을 받아들여 매각해요.</li>
+        <li>{richMessage('copy.ClubStaff.169f48d4c7')}</li>
         <li>
-          협상 가능 선수는 평가 가치의 {bar}%(유망주: 22세 이하·잠재력이 능력보다 8 이상 높으면{' '}
-          {prospect}%) 이상이면 팔아요.{' '}
-          {hold
-            ? '주전은 팔지 않아요.'
-            : '주전은 같은 역할에 능력 3 안쪽의 후보가 있는 30세 이상일 때만 팔아요.'}
+          {richMessage('copy.ClubStaff.f2a314f736', {
+            p0: bar,
+            p1: ' ',
+            p2: prospect,
+            p3: ' ',
+            p4: hold
+              ? sourceMessage('copy.ClubStaff.f18edf288b')
+              : sourceMessage('copy.ClubStaff.131f1f83e6'),
+          })}
         </li>
+        <li>{richMessage('copy.ClubStaff.cfc5a016a7', { p0: first, p1: second })}</li>
+        <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
-          나이(30–32세 −15%p, 33세 이상 −30%p), 계약(마지막 시즌 −20%p, 1년 남음 −10%p), 자금(
-          {first}라운드 미만 −20%p, {second}라운드 미만 −10%p)만큼 낮추되 80% 밑으로는 내리지
-          않아요.
-        </li>
-        <li>
-          이적 불가 선수의 거액 제안은 감독과 상의해 매각 기조 <b>{card}</b>와 자금 사정으로 정해요.
-        </li>
-        <li>
-          선수 영입을 위임하면 단장이 이적시장이 열린 날과 그 뒤 7일마다 감독이 요청한 자리와 빈
-          자리를 먼저 채우고,{' '}
-          {signing.margin === undefined
-            ? '재정 기조가 신중·안정적이라 주전 보강은 하지 않아요.'
-            : `주전보다 능력이 ${signing.margin} 이상 나은 선수를 이적시장마다 ${signing.upgrades}명까지 데려와요.`}{' '}
-          이적료는 자금 여력을 넘는 현금의 {Math.round(signing.feeShare * 100)}%까지만 써요.
+          {richMessage('copy.ClubStaff.8bfea3920c', {
+            p0: ' ',
+            p1:
+              signing.margin === undefined
+                ? sourceMessage('copy.ClubStaff.e26d4b538e')
+                : sourceMessage('copy.ClubStaff.42b9e5f546', {
+                    p0: signing.margin,
+                    p1: signing.upgrades,
+                  }),
+            p2: ' ',
+            p3: Math.round(signing.feeShare * 100),
+          })}
         </li>
       </ul>
     </section>

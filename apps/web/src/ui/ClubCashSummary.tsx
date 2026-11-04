@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import type { World } from '../../../../packages/contracts/src/types';
 import { Card } from './Card';
 import { DeskStats } from './OfficeDesk';
@@ -10,6 +12,7 @@ import o from './OwnerSheet.module.css';
  * by the unified money dialog and legacy cash view.
  */
 export function ClubCashSummary({ w }: { w: World }) {
+  useTextLocale();
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const format = (value: string) => compactMoney(value, own.country, w.year);
   const state = cashState(w);
@@ -19,50 +22,72 @@ export function ClubCashSummary({ w }: { w: World }) {
   return (
     <>
       <DeskStats
-        label="이번 시즌 수지"
+        label={displayMessage('copy.ClubCashSummary.27b011448c')}
         stats={[
-          { label: '시즌 수입', value: format(books.income), note: '지금까지' },
-          { label: '시즌 지출', value: format(books.expense), note: '지금까지' },
           {
-            label: '시즌 수지',
+            label: sourceMessage('copy.ClubCashSummary.f438ea44a0'),
+            value: format(books.income),
+            note: sourceMessage('copy.ClubCashSummary.6552e756bd'),
+          },
+          {
+            label: sourceMessage('copy.ClubCashSummary.a616282dcf'),
+            value: format(books.expense),
+            note: sourceMessage('copy.ClubCashSummary.6552e756bd'),
+          },
+          {
+            label: sourceMessage('copy.ClubCashSummary.967f1e3a31'),
             value: (
               <span
                 className={result > 0n ? o.up : result < 0n ? o.down : undefined}
                 data-testid="season-result"
               >
-                {result > 0n ? '+' : ''}
-                {format(books.result)}
+                {localizeValue(result > 0n ? '+' : '')}
+                {localizeValue(format(books.result))}
               </span>
             ),
-            note: result > 0n ? '수익' : result < 0n ? '손해' : '본전',
+            note:
+              result > 0n
+                ? sourceMessage('copy.ClubCashSummary.02ca249417')
+                : result < 0n
+                  ? sourceMessage('copy.ClubCashSummary.c68052ebe3')
+                  : sourceMessage('copy.ClubCashSummary.1bc1f8cde0'),
           },
         ]}
       />
       <Card
         as="section"
         surface="ticket"
-        aria-label="지금 상태"
-        meta={`${state.label} ${state.value} · ${state.status}${state.attention ? ' · 주의' : ''}`}
+        aria-label={displayMessage('copy.ClubCashSummary.dbc41a3dd9')}
+        meta={`${state.label} ${state.value} · ${state.status}${state.attention ? sourceMessage('copy.ClubCashSummary.8c8946ae4c') : ''}`}
       >
         <p>
-          {BigInt(w.cash) < 0n
-            ? '운영 자금이 적자예요. 급여와 운영비는 그대로 계속 나가요.'
-            : `급여·시설 유지·운영 경비 기준으로 ${state.value}분 자금이 있어요. 입장 수입·후원·상금처럼 앞으로 들어올 돈은 빼고 셈해요.`}
+          {localizeValue(
+            BigInt(w.cash) < 0n
+              ? sourceMessage('copy.ClubCashSummary.1a886a01ce')
+              : sourceMessage('copy.ClubCashSummary.92f0d1bf5f', { p0: state.value }),
+          )}
         </p>
       </Card>
       <DeskStats
-        label="자금 현황"
+        label={displayMessage('copy.ClubCashSummary.00a2861721')}
         stats={[
-          { label: '보유 현금', value: format(w.cash), note: money(w.cash, own.country, w.year) },
-          { label: '다음 라운드 고정 지출', value: format(costs.nextRound) },
+          {
+            label: sourceMessage('copy.ClubCashSummary.861779d896'),
+            value: format(w.cash),
+            note: money(w.cash, own.country, w.year),
+          },
+          {
+            label: sourceMessage('copy.ClubCashSummary.9ab3a675ca'),
+            value: format(costs.nextRound),
+          },
           { label: state.label, value: state.value, note: state.status },
         ]}
       />
       <DeskStats
-        label="연간 고정비"
+        label={displayMessage('copy.ClubCashSummary.382afa688e')}
         stats={[
           ...costs.kinds.map(([label, amount]) => ({ label, value: format(amount) })),
-          { label: '연간 합계', value: format(costs.annual) },
+          { label: sourceMessage('copy.ClubCashSummary.c186eb9e27'), value: format(costs.annual) },
         ]}
       />
     </>

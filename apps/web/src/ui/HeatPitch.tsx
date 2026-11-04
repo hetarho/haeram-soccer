@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useId, useMemo, useRef, useState, type MouseEvent, type ReactNode } from 'react';
 import type { HeatMap } from '../../../../packages/engine/src/material';
 import {
@@ -20,6 +22,7 @@ export const FIELD = {
 
 /** The pitch lines at their real places, so the 40 cells sit on the boxes they are named after. */
 function Markings() {
+  useTextLocale();
   const box = [LANE_EDGES[1], LANE_EDGES[4]] as const;
   const six = [LANE_EDGES[2], LANE_EDGES[3]] as const;
   const end = (x: number, depth: number, span: readonly [number, number]) => (
@@ -46,10 +49,10 @@ function Markings() {
         fill="currentColor"
         stroke="none"
       />
-      {end(0, BAND_EDGES[2], box)}
-      {end(0, BAND_EDGES[1], six)}
-      {end(PITCH.length, -BAND_EDGES[2], box)}
-      {end(PITCH.length, -BAND_EDGES[1], six)}
+      {localizeValue(end(0, BAND_EDGES[2], box))}
+      {localizeValue(end(0, BAND_EDGES[1], six))}
+      {localizeValue(end(PITCH.length, -BAND_EDGES[2], box))}
+      {localizeValue(end(PITCH.length, -BAND_EDGES[1], six))}
     </g>
   );
 }
@@ -73,6 +76,7 @@ export function MaterialPitch({
   describe?: (cell: number) => string;
   legend?: ReactNode;
 }) {
+  useTextLocale();
   const [note, setNote] = useState<{ cell?: number; text: string }>();
   const groundId = useId();
   const pitch = useRef<SVGSVGElement>(null);
@@ -96,63 +100,69 @@ export function MaterialPitch({
         className={s.pitch}
         viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
         role="img"
-        aria-label={label}
+        aria-label={localizeValue(label)}
         onClick={tap}
         data-testid="material-pitch"
         data-ui="analysis-pitch"
       >
         <rect className={s.grass} width={VIEW.width} height={VIEW.height} />
-        {Array.from({ length: 10 }, (_, i) => (
-          <rect
-            key={i}
-            className={i % 2 ? s.stripe : s.stripeAlt}
-            x={FIELD.x + stripe * i}
-            y={FIELD.y}
-            width={stripe + 0.2}
-            height={FIELD.height}
-          />
-        ))}
-        {skin.textureUrl && (
-          <>
-            <defs>
-              <pattern
-                id={groundId}
-                width={skin.textureSize / 4}
-                height={skin.textureSize / 4}
-                patternUnits="userSpaceOnUse"
-              >
-                <image
-                  href={skin.textureUrl}
+        {localizeValue(
+          Array.from({ length: 10 }, (_, i) => (
+            <rect
+              key={i}
+              className={i % 2 ? s.stripe : s.stripeAlt}
+              x={FIELD.x + stripe * i}
+              y={FIELD.y}
+              width={stripe + 0.2}
+              height={FIELD.height}
+            />
+          )),
+        )}
+        {localizeValue(
+          skin.textureUrl && (
+            <>
+              <defs>
+                <pattern
+                  id={groundId}
                   width={skin.textureSize / 4}
                   height={skin.textureSize / 4}
-                />
-              </pattern>
-            </defs>
-            <rect
-              width={VIEW.width}
-              height={VIEW.height}
-              fill={`url(#${groundId})`}
-              opacity={skin.textureOpacity}
-              pointerEvents="none"
-            />
-          </>
+                  patternUnits="userSpaceOnUse"
+                >
+                  <image
+                    href={skin.textureUrl}
+                    width={skin.textureSize / 4}
+                    height={skin.textureSize / 4}
+                  />
+                </pattern>
+              </defs>
+              <rect
+                width={VIEW.width}
+                height={VIEW.height}
+                fill={`url(#${groundId})`}
+                opacity={skin.textureOpacity}
+                pointerEvents="none"
+              />
+            </>
+          ),
         )}
-        {heat}
+        {localizeValue(heat)}
         <Markings />
         <path
           className={s.arrow}
           d={`M ${VIEW.width - 30} 6 h 18 m -4 -2.5 l 4 2.5 l -4 2.5`}
           aria-hidden="true"
         />
-        {children}
-        {note?.cell !== undefined && (
-          <rect className={s.picked} {...cellRect(note.cell)} pointerEvents="none" />
+        {localizeValue(children)}
+        {localizeValue(
+          note?.cell !== undefined && (
+            <rect className={s.picked} {...cellRect(note.cell)} pointerEvents="none" />
+          ),
         )}
       </svg>
       <figcaption className={s.caption} aria-live="polite">
-        {note?.text ?? '칸이나 표시를 누르면 이름과 기록이 보여요 · 오른쪽으로 공격'}
+        {localizeValue(note?.text ?? sourceMessage('copy.HeatPitch.1c10e2f16d'))}
       </figcaption>
-      {legend}
+      {localizeValue(legend)}
     </figure>
   );
 }
@@ -188,13 +198,18 @@ export function HeatPitch({
   label: string;
   legend?: ReactNode;
 }) {
+  useTextLocale();
   const cells = useMemo(() => heatCells(map), [map]);
   const touches = useMemo(() => cells.map((c) => c.touches), [cells]);
   const url = useMemo(() => paintedHeat(touches), [touches]);
   const busiest = cells.reduce((top, c) => (c.touches > top.touches ? c : top), cells[0]!);
   return (
     <MaterialPitch
-      label={busiest.touches ? `${label} · 가장 많은 곳 ${cellName(busiest.cell)}` : label}
+      label={localizeValue(
+        busiest.touches
+          ? sourceMessage('copy.HeatPitch.9971836ad6', { p0: label, p1: cellName(busiest.cell) })
+          : label,
+      )}
       describe={(cell) => cells[cell]!.label}
       legend={legend}
       heat={

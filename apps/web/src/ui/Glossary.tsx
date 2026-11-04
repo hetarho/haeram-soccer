@@ -1,3 +1,4 @@
+import { useTextLocale } from '../presentation/text';
 import { lazy, Suspense } from 'react';
 import { useGlossary } from './metricGlossary';
 
@@ -8,6 +9,7 @@ const GlossarySheet = lazy(() =>
 
 /** One sheet for the whole app: a single term from a metric label, or every term from the menu. */
 export function GlossaryHost() {
+  useTextLocale();
   const open = useGlossary((state) => state.open);
   if (!open) return null;
   return (

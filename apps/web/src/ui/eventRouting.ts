@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Command, InboxItem, World } from '../../../../packages/contracts/src/types';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
 import type { WorkDesk } from './officeDesks';
@@ -16,7 +17,8 @@ export function eventDesk(item: StopReason): WorkDesk | undefined {
     return 'players';
   if (keys.some((key) => key === 'manager' || key === 'staff')) return 'staff';
   if (keys.includes('sponsors') || item.kind === 'sponsor-ending') return 'sponsor';
-  if (item.kind === 'finance') return item.title.includes('후원') ? 'sponsor' : 'investment';
+  if (item.kind === 'finance')
+    return item.title.includes(sourceMessage('club.operations.sponsor')) ? 'sponsor' : 'investment';
   if (
     [
       'contract-talk',

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from './messages';
 import type { World } from './types';
 
 /**
@@ -112,8 +113,7 @@ export const PARITY_LEVEL_CATALOGS: readonly string[] = [
   '2026-demo-2',
   '2026-demo-3',
 ];
-export const RELEVELLED_MONEY_MESSAGE =
-  '화폐 수준이 바뀌기 전에 저장된 잉글랜드 밖 커리어라 열 수 없습니다. 원본 파일을 보관하세요.';
+export const RELEVELLED_MONEY_MESSAGE = sourceMessage('copy.versions.54108813b4');
 /** Explicitly released historical rules; an arbitrary older semver is not reset permission. */
 export const LEGACY_ENGINE_VERSIONS: readonly string[] = [
   ...Array.from({ length: 23 }, (_, minor) => `1.${minor}.0`),
@@ -158,7 +158,7 @@ export const SAVE_COMPATIBILITY_CODE = 'save-compatibility' as const;
 export class SaveCompatibilityError extends Error {
   readonly code = SAVE_COMPATIBILITY_CODE;
   constructor(
-    message = '지원하지 않는 저장 버전 또는 카탈로그입니다. 원본 파일을 내보내 보관하세요.',
+    message: string = sourceMessage('copy.versions.0c69f5a349'),
     /** The rules version the save was written under, when that is why it cannot open. */
     readonly engine?: string,
   ) {
@@ -174,9 +174,11 @@ export class SaveCompatibilityError extends Error {
 export const isEarlierEngine = (engine: string) => LEGACY_ENGINE_VERSIONS.includes(engine);
 /** What an earlier-rules save says when it is asked to open (→SAVE-16). */
 export const earlierRulesMessage = (engine: string) =>
-  `이 저장은 규칙 ${engine} 커리어입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION} 커리어만 열 수 있습니다. 새 커리어를 시작하세요`;
+  sourceMessage('copy.versions.1d608b421f', { p0: engine, p1: CURRENT_ENGINE_VERSION });
 /** What a save of a version neither supported nor earlier says: it is from a newer game (→SAVE-11). */
-export const NEWER_GAME_MESSAGE = `지원하지 않는 저장 엔진 버전입니다 — 게임 버전 ${CURRENT_ENGINE_VERSION}보다 새로운 게임의 저장일 수 있습니다. 원본 파일을 보관하세요.`;
+export const NEWER_GAME_MESSAGE = sourceMessage('copy.versions.29c62efe49', {
+  p0: CURRENT_ENGINE_VERSION,
+});
 /**
  * The rules version an envelope names in its header, read without decoding its payload; none for a
  * container this version cannot read, whose header is not evidence of earlier rules.
@@ -206,7 +208,7 @@ export function isSaveCompatibilityError(error: unknown): error is SaveCompatibi
 export function upgradeWorldRules(w: World, pin: CatalogPin): World {
   if (w.engine === CURRENT_ENGINE_VERSION && w.catalog === pin.catalog) return w;
   if (!SUPPORTED_ENGINE_VERSIONS.includes(w.engine)) throw new SaveCompatibilityError();
-  if (!Number.isSafeInteger(w.revision + 1)) throw new Error('저장 revision 범위를 초과했습니다.');
+  if (!Number.isSafeInteger(w.revision + 1)) throw new Error(sourceMessage('copy.host.b53dad7fec'));
   return {
     ...w,
     engine: CURRENT_ENGINE_VERSION,

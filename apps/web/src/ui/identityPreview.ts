@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type {
   AppearanceSide,
   ClubIdentity,
@@ -16,9 +17,9 @@ import { describeShirt } from './kitPainting';
  */
 
 export const KIT_ROLE_LABELS: Readonly<Record<KitRole, string>> = {
-  home: '홈',
-  away: '어웨이',
-  third: '세컨',
+  home: sourceMessage('fixture.home'),
+  away: sourceMessage('copy.identityPreview.2f41a055e8'),
+  third: sourceMessage('copy.identityPreview.ec9b859e8d'),
 };
 
 export type PreviewOpponent = 'light' | 'dark';
@@ -55,7 +56,7 @@ export function previewPose(id: string, keeper: boolean, toBall: [number, number
   );
 }
 /** The own side in the preview, never a club of any world. */
-const OWN = { id: 'preview:own', label: '우리 팀' } as const;
+const OWN = { id: 'preview:own', label: sourceMessage('copy.BallonDorView.8434ac1486') } as const;
 
 function frozen<T>(value: T): T {
   if (value && typeof value === 'object') {
@@ -73,7 +74,7 @@ export const PREVIEW_OPPONENTS: Readonly<
 > = frozen({
   light: {
     id: 'preview:light',
-    label: '밝은 상대 예시',
+    label: sourceMessage('copy.identityPreview.6b01b2385d'),
     identity: {
       version: 1,
       colours: ['#ffffff', '#1f4fd1'],
@@ -93,7 +94,7 @@ export const PREVIEW_OPPONENTS: Readonly<
   },
   dark: {
     id: 'preview:dark',
-    label: '어두운 상대 예시',
+    label: sourceMessage('copy.identityPreview.905d7d0ff8'),
     identity: {
       version: 1,
       colours: ['#121212', '#f77f00'],
@@ -157,9 +158,9 @@ export function editorPreviewAppearance(
 }
 
 const WARNING_TEXT: Readonly<Record<KitWarning, string>> = {
-  teams: '두 팀 유니폼이 비슷해 구분하기 어려워요.',
-  grass: '잔디와 비슷한 색의 유니폼이 있어요.',
-  goalkeepers: '골키퍼 색을 충분히 구분하지 못했어요.',
+  teams: sourceMessage('copy.identityPreview.7064148a9c'),
+  grass: sourceMessage('copy.identityPreview.e41399b801'),
+  goalkeepers: sourceMessage('copy.identityPreview.243462ad46'),
 };
 /**
  * The preview's caption, one line each: what it is, both sides' shirts, the worn keepers and
@@ -168,18 +169,27 @@ const WARNING_TEXT: Readonly<Record<KitWarning, string>> = {
 export function previewLines(appearance: MatchAppearance, labels: [string, string]): string[] {
   const [home, away] = appearance.sides;
   const shirt = (side: AppearanceSide, label: string, venue: string) =>
-    `${venue} ${label}: ${KIT_ROLE_LABELS[side.role]} 유니폼 (${describeShirt(side.shirt)})`;
+    sourceMessage('copy.identityPreview.88d88bb390', {
+      p0: venue,
+      p1: label,
+      p2: KIT_ROLE_LABELS[side.role],
+      p3: describeShirt(side.shirt),
+    });
   const keeper = (side: AppearanceSide, i: number) => {
     const design = side.keeper?.shirt ?? { pattern: 'plain' as const, primary: side.goalkeeper };
-    return `${labels[i]} ${describeShirt(design)}${side.keeperFallback ? ' (이번 경기 자동 대체)' : ''}`;
+    return `${labels[i]} ${describeShirt(design)}${side.keeperFallback ? sourceMessage('copy.identityPreview.97e9c4edd6') : ''}`;
   };
   return [
-    '미리보기 · 실제 경기가 아닌 예시 배치예요.',
-    shirt(home, labels[0], '홈'),
-    shirt(away, labels[1], '원정'),
-    `골키퍼 착용: ${appearance.sides.map(keeper).join(' · ')}.`,
+    sourceMessage('copy.identityPreview.66c603d760'),
+    shirt(home, labels[0], sourceMessage('fixture.home')),
+    shirt(away, labels[1], sourceMessage('fixture.away')),
+    sourceMessage('copy.identityPreview.909298791a', {
+      p0: appearance.sides.map(keeper).join(' · '),
+    }),
     ...(appearance.warnings.length
-      ? appearance.warnings.map((warning) => `경고: ${WARNING_TEXT[warning]}`)
-      : ['경고 없음: 두 팀과 골키퍼를 구분할 수 있어요.']),
+      ? appearance.warnings.map((warning) =>
+          sourceMessage('copy.identityPreview.f55edfc210', { p0: WARNING_TEXT[warning] }),
+        )
+      : [sourceMessage('copy.identityPreview.3648dcb8c2')]),
   ];
 }

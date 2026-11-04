@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { currency } from '../../../../packages/catalogs/src/index';
 import type { LocaleFormatters } from '../presentation/locale';
 
@@ -70,8 +71,8 @@ export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2
  */
 export function contractLine(until: number, year: number) {
   return until === year + 1
-    ? `계약 이번 시즌(${seasonName(year)}) 끝까지`
-    : `계약 ${seasonName(until - 1)} 시즌 끝까지`;
+    ? sourceMessage('copy.format.a23c02d1a3', { p0: seasonName(year) })
+    : sourceMessage('copy.format.87aef223c3', { p0: seasonName(until - 1) });
 }
 export const percent = (a: number, b: number) => {
   if (!b) return '—';

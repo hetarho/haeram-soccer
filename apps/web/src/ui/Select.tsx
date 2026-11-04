@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { PixelIcon } from './PixelIcon';
 import {
   Children,
@@ -75,6 +77,7 @@ export function Select({
   hintLayout = 'stacked',
   ...props
 }: Props) {
+  useTextLocale();
   const trigger = useRef<HTMLButtonElement>(null);
   const list = useRef<HTMLDivElement>(null);
   const lookup = useRef({ text: '', at: 0 });
@@ -259,7 +262,7 @@ export function Select({
   };
   return (
     <>
-      {name && <input type="hidden" name={name} value={value} disabled={blocked} />}
+      {localizeValue(name && <input type="hidden" name={name} value={value} disabled={blocked} />)}
       <button
         {...props}
         ref={trigger}
@@ -277,62 +280,75 @@ export function Select({
         onClick={() => (open ? close() : show())}
         onKeyDown={key}
       >
-        <span className={s.value}>{current?.short || current?.label || '선택하세요'}</span>
+        <span className={s.value}>
+          {localizeValue(
+            current?.short || current?.label || sourceMessage('copy.Select.33ae896788'),
+          )}
+        </span>
         <PixelIcon name="chevronDown" size={12} className={s.chevron} />
       </button>
-      {open && !blocked && (
-        <div
-          ref={list}
-          id={id}
-          role="listbox"
-          aria-label={props['aria-label']}
-          aria-labelledby={props['aria-labelledby']}
-          popover="auto"
-          data-select-content=""
-          data-hint-layout={hintLayout}
-          className={s.content}
-          onToggle={(event) => {
-            if (event.newState === 'closed') setOpen(false);
-          }}
-        >
-          {available.map((choice, index) => (
-            <div key={choice.value}>
-              {choice.group && choice.group !== available[index - 1]?.group && (
-                <div className={s.group}>{choice.group}</div>
-              )}
-              <div
-                id={`${id}-${choice.value}`}
-                role="option"
-                data-select-option=""
-                aria-selected={choice.value === String(value)}
-                aria-disabled={choice.disabled || undefined}
-                className={s.item}
-                data-value={choice.value}
-                data-highlighted={choice.value === highlight || undefined}
-                data-disabled={choice.disabled || undefined}
-                data-state={choice.value === String(value) ? 'checked' : 'unchecked'}
-                onPointerMove={(event) => {
-                  if (event.pointerType === 'mouse' && !choice.disabled) setHighlight(choice.value);
-                }}
-                onPointerDown={(event) => event.preventDefault()}
-                onClick={(event) => {
-                  event.preventDefault();
-                  choose(choice);
-                }}
-              >
-                <span className={choice.hint ? s.hinted : undefined}>
-                  <span className={s.optionLabel}>{choice.label}</span>
-                  {choice.hint && <small>{choice.hint}</small>}
-                </span>
-                {choice.value === String(value) && (
-                  <span className={s.check}>
-                    <PixelIcon name="check" size={14} />
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
+      {localizeValue(
+        open && !blocked && (
+          <div
+            ref={list}
+            id={id}
+            role="listbox"
+            aria-label={localizeValue(props['aria-label'])}
+            aria-labelledby={props['aria-labelledby']}
+            popover="auto"
+            data-select-content=""
+            data-hint-layout={hintLayout}
+            className={s.content}
+            onToggle={(event) => {
+              if (event.newState === 'closed') setOpen(false);
+            }}
+          >
+            {localizeValue(
+              available.map((choice, index) => (
+                <div key={choice.value}>
+                  {localizeValue(
+                    choice.group && choice.group !== available[index - 1]?.group && (
+                      <div className={s.group}>{localizeValue(choice.group)}</div>
+                    ),
+                  )}
+                  <div
+                    id={`${id}-${choice.value}`}
+                    role="option"
+                    data-select-option=""
+                    aria-selected={choice.value === String(value)}
+                    aria-disabled={choice.disabled || undefined}
+                    className={s.item}
+                    data-value={choice.value}
+                    data-highlighted={choice.value === highlight || undefined}
+                    data-disabled={choice.disabled || undefined}
+                    data-state={choice.value === String(value) ? 'checked' : 'unchecked'}
+                    onPointerMove={(event) => {
+                      if (event.pointerType === 'mouse' && !choice.disabled)
+                        setHighlight(choice.value);
+                    }}
+                    onPointerDown={(event) => event.preventDefault()}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      choose(choice);
+                    }}
+                  >
+                    <span className={choice.hint ? s.hinted : undefined}>
+                      <span className={s.optionLabel}>{localizeValue(choice.label)}</span>
+                      {localizeValue(choice.hint && <small>{localizeValue(choice.hint)}</small>)}
+                    </span>
+                    {localizeValue(
+                      choice.value === String(value) && (
+                        <span className={s.check}>
+                          <PixelIcon name="check" size={14} />
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )),
+            )}
+          </div>
+        ),
       )}
     </>
   );

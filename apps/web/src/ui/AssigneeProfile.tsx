@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { World } from '../../../../packages/contracts/src/types';
 import { MANAGER_GONE } from '../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../runtime/client';
@@ -20,38 +23,58 @@ export function AssigneeProfile({
   client: GameClient;
   onClose: () => void;
 }) {
+  useTextLocale();
   const { label, member } = responsibilityAssignee(w, post);
   const current = post === 'manager' && member?.name === MANAGER_GONE ? undefined : member;
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
   return (
-    <Dialog label={`현재 ${label}`} onClose={onClose}>
-      {current ? (
-        <>
-          <h3>{current.name}</h3>
-          <p>
-            {label}
-            {current.born === undefined ? '' : ` · ${w.year - current.born}세`}
-          </p>
-          <DeskStats
-            label="담당자 정보"
-            stats={[
-              { label: '능력', value: current.ability },
-              ...(current.potential === undefined
-                ? []
-                : [{ label: '잠재력', value: current.potential }]),
-              { label: '계약', value: contractLine(current.until, w.year) },
-              {
-                label: '연봉',
-                value: <Money value={current.wage} code={club.country} year={w.year} />,
-              },
-            ]}
-          />
-          {current.person && w.people?.[current.person] && (
-            <PersonCareerLink id={current.person} name={current.name} client={client} />
-          )}
-        </>
-      ) : (
-        <p>현재 {label}은 공석입니다.</p>
+    <Dialog
+      label={displayMessage('copy.AssigneeProfile.b188515365', { p0: label })}
+      onClose={onClose}
+    >
+      {localizeValue(
+        current ? (
+          <>
+            <h3>{current.name}</h3>
+            <p>
+              {localizeValue(label)}
+              {localizeValue(
+                current.born === undefined
+                  ? ''
+                  : sourceMessage('copy.AssigneeProfile.c8bdab2932', { p0: w.year - current.born }),
+              )}
+            </p>
+            <DeskStats
+              label={displayMessage('copy.AssigneeProfile.e2a70fb9c3')}
+              stats={[
+                { label: sourceMessage('team.column.ability'), value: current.ability },
+                ...(current.potential === undefined
+                  ? []
+                  : [
+                      {
+                        label: sourceMessage('copy.AssigneeProfile.ad725da0ea'),
+                        value: current.potential,
+                      },
+                    ]),
+                {
+                  label: sourceMessage('team.column.contract'),
+                  value: contractLine(current.until, w.year),
+                },
+                {
+                  label: sourceMessage('team.column.wage'),
+                  value: <Money value={current.wage} code={club.country} year={w.year} />,
+                },
+              ]}
+            />
+            {localizeValue(
+              current.person && w.people?.[current.person] && (
+                <PersonCareerLink id={current.person} name={current.name} client={client} />
+              ),
+            )}
+          </>
+        ) : (
+          <p>{richMessage('copy.AssigneeProfile.7860f7f0f8', { p0: label })}</p>
+        ),
       )}
     </Dialog>
   );

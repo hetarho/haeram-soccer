@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ClubIdentity, ShirtDesign, KitRole } from '../../contracts/src/identity';
 import type { Club, World } from '../../contracts/src/types';
 import { legacyCrestMap, type LegacyCrest } from './identity-legacy';
@@ -48,7 +49,7 @@ export function identityOf(
   clubId: string,
 ): ClubIdentity {
   const club = w.clubs.find((c) => c.id === clubId);
-  if (!club) throw new Error(`알 수 없는 클럽입니다: ${clubId}`);
+  if (!club) throw new Error(sourceMessage('copy.club_identity.2dadb53925', { p0: clubId }));
   if (club.identity) return club.identity;
   const crest = legacyCrests(w).get(clubId) ?? legacyCrests(w, true).get(clubId)!;
   return legacyIdentity(club, crest);
@@ -65,7 +66,7 @@ export function installMissingIdentities(w: World, clubs: readonly Club[] = w.cl
   for (const club of clubs) {
     if (club.identity) continue;
     const crest = legacy.get(club.id);
-    if (!crest) throw new Error(`알 수 없는 클럽입니다: ${club.id}`);
+    if (!crest) throw new Error(sourceMessage('copy.club_identity.2dadb53925', { p0: club.id }));
     club.identity = legacyIdentity(club, crest);
     installed = true;
   }

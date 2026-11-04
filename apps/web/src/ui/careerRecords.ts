@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Player, SeasonArchive, World } from '../../../../packages/contracts/src/types';
 import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { divisionName } from '../presentation/competitionLabels';
@@ -16,10 +17,31 @@ function bestFinish(history: readonly SeasonArchive[]) {
  * theirs. The appearance board ranks by minutes played; match counts come from the view's tallies.
  */
 export const LEADER_BOARDS = [
-  { key: 'apps', title: '역대 최다 출전', short: '출전', index: 10 },
-  { key: 'goals', title: '역대 최다 득점', short: '득점', index: 0 },
-  { key: 'assists', title: '역대 최다 도움', short: '도움', index: 1 },
-  { key: 'saves', title: '역대 골키퍼 최다 선방', short: '선방', index: 9, position: 'GK' },
+  {
+    key: 'apps',
+    title: sourceMessage('copy.careerRecords.53268a6bac'),
+    short: sourceMessage('copy.BallonDorView.b849877c07'),
+    index: 10,
+  },
+  {
+    key: 'goals',
+    title: sourceMessage('copy.careerRecords.2d4df0e89f'),
+    short: sourceMessage('copy.summary.eb4e291be3'),
+    index: 0,
+  },
+  {
+    key: 'assists',
+    title: sourceMessage('copy.careerRecords.1abc9de90d'),
+    short: sourceMessage('copy.BallonDorView.8d901cc28d'),
+    index: 1,
+  },
+  {
+    key: 'saves',
+    title: sourceMessage('copy.careerRecords.2419f69080'),
+    short: sourceMessage('copy.RecordsRoom.2a022bd612'),
+    index: 9,
+    position: 'GK',
+  },
 ] as const;
 export type LeaderBoard = (typeof LEADER_BOARDS)[number];
 
@@ -119,7 +141,8 @@ export function trophyCabinet(w: World) {
     if (!h.runs) cup.unrecorded++;
     const run = h.runs?.find((r) => r.key === 'cup');
     if (run?.champion) cup.wins.push(h.year);
-    if (run && (run.champion || run.reached === '결승')) cup.finals.push(h.year);
+    if (run && (run.champion || run.reached === sourceMessage('copy.CupHistory.d7f030913a')))
+      cup.finals.push(h.year);
     for (const e of h.europe) {
       if (e.winner !== w.playerClub) continue;
       const entry = continental.get(e.name) ?? { kind: e.kind, years: [] };

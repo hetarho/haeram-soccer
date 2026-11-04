@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Ban, World } from '../../../../packages/contracts/src/types';
 import { squad } from '../../../../packages/engine/src/world';
 
@@ -10,9 +11,15 @@ export { cardCounts, leagueReds, perOwnMatches, type Cards } from '../runtime/pl
 
 /** Where a ban counts, as the squad and the league tables say it. */
 export const banScope = (scope: Ban['scope']) =>
-  scope === 'domestic' ? '국내' : scope === 'league' ? '리그' : scope === 'europe' ? '유럽' : '컵';
+  scope === 'domestic'
+    ? sourceMessage('copy.discipline.1583262fcc')
+    : scope === 'league'
+      ? sourceMessage('navigation.league')
+      : scope === 'europe'
+        ? sourceMessage('copy.discipline.4e0665502d')
+        : sourceMessage('navigation.short.europe');
 export const banText = (ban: Pick<Ban, 'matches' | 'scope'>) =>
-  `출장 정지 · ${ban.matches}경기 (${banScope(ban.scope)})`;
+  sourceMessage('copy.discipline.f893e30ca2', { p0: ban.matches, p1: banScope(ban.scope) });
 /** A player's bans still to serve. */
 export const bansOf = (w: Pick<World, 'discipline'>, id: string) =>
   w.discipline?.bans.filter((ban) => ban.player === id) ?? [];
@@ -60,7 +67,9 @@ export function leagueDiscipline(
   const rows: DisciplineRow[] = [];
   for (const id of ids) {
     const bans = d?.bans.filter((ban) => ban.player === id) ?? [];
-    const who = people.get(id) ?? (bans[0] && { name: '선수 정보 없음', club: bans[0].club });
+    const who =
+      people.get(id) ??
+      (bans[0] && { name: sourceMessage('copy.EventCenter.5a281e7e95'), club: bans[0].club });
     if (who && members.has(who.club))
       rows.push({ id, ...who, yellows: d?.yellows[id]?.league ?? 0, reds: reds[id] ?? 0, bans });
   }

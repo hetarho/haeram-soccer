@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useFacilityRequest } from './state';
 import { useEffect } from 'react';
 import type { FacilityPart, World } from '../../../../packages/contracts/src/types';
@@ -21,10 +24,18 @@ import f from './FacilityParts.module.css';
 function levelEffect(part: FacilityPart, level: number) {
   if (part === 'training') {
     const terms = TRAINING_GROUND[level];
-    return `선수 성장 ×${terms.growth} · 추가 피로 회복 +${terms.recoveryBonus} · 협상 호감 +${terms.goodwill}%`;
+    return sourceMessage('copy.FacilityParts.22f747ccff', {
+      p0: terms.growth,
+      p1: terms.recoveryBonus,
+      p2: terms.goodwill,
+    });
   }
   const terms = ACADEMY_FACILITY[level];
-  return `입단 +${terms.intake}명 · 잠재력 +${terms.potential} · 유소년 성장 ×${terms.growth}`;
+  return sourceMessage('copy.FacilityParts.b9bdab5e1d', {
+    p0: terms.intake,
+    p1: terms.potential,
+    p2: terms.growth,
+  });
 }
 
 /**
@@ -34,6 +45,7 @@ function levelEffect(part: FacilityPart, level: number) {
  * scheduled. No career starts a work, so nothing here builds.
  */
 export function FacilityParts({ w }: { w: World }) {
+  useTextLocale();
   const request = useFacilityRequest((store) => store.request);
   useEffect(() => {
     if (!request) return;
@@ -50,8 +62,13 @@ export function FacilityParts({ w }: { w: World }) {
     const running = facilityWork(w, part);
     return running ? (
       <p data-ui="notice" data-tone="warm" className={f.work} data-testid={`facility-work-${part}`}>
-        공사 중 · {part === 'stadium' ? STADIUM_STEPS[running.to].name : `${running.to}단계`} ·
-        완공까지 {running.left}일
+        {richMessage('copy.FacilityParts.90d32b1539', {
+          p0:
+            part === 'stadium'
+              ? STADIUM_STEPS[running.to].name
+              : sourceMessage('copy.FacilityParts.bda7274853', { p0: running.to }),
+          p1: running.left,
+        })}
       </p>
     ) : null;
   };
@@ -60,88 +77,125 @@ export function FacilityParts({ w }: { w: World }) {
       <section
         data-surface="panel"
         className={f.part}
-        aria-label="경기장"
+        aria-label={displayMessage('copy.ClubOperations.64779ec1ad')}
         data-testid="facility-stadium"
       >
         <FacilityArt kind="stadium" world={w} view="exterior" className={f.art} />
         <div className={f.body}>
           <div className={s.panelHeading}>
             <div>
-              <h3>경기장 · {STADIUM_STEPS[w.stadium].name}</h3>
-              <p>{number(STADIUM_STEPS[w.stadium].capacity)}석</p>
+              <h3>
+                {richMessage('copy.FacilityParts.2cc50918f0', {
+                  p0: STADIUM_STEPS[w.stadium].name,
+                })}
+              </h3>
+              <p>
+                {richMessage('copy.ClubOperations.e718a2e7a8', {
+                  p0: number(STADIUM_STEPS[w.stadium].capacity),
+                })}
+              </p>
             </div>
           </div>
-          <ol data-ui="facility-steps" className={f.ladder} aria-label="경기장 단계" tabIndex={0}>
-            {STADIUM_STEPS.map((step, index) => (
-              <li
-                key={step.name}
-                data-ui="facility-step"
-                data-state={
-                  index < w.stadium
-                    ? 'built'
-                    : index === w.stadium
-                      ? 'current'
-                      : w.facilityWorks?.stadium?.to === index
-                        ? 'building'
-                        : undefined
-                }
-                data-testid={`stadium-step-${index}`}
-              >
-                <b>{number(step.capacity)}</b>
-                <small>{step.work ? WORK_INFO[step.work].label : '기본'}</small>
-              </li>
-            ))}
+          <ol
+            data-ui="facility-steps"
+            className={f.ladder}
+            aria-label={displayMessage('copy.FacilityParts.614d34bc36')}
+            tabIndex={0}
+          >
+            {localizeValue(
+              STADIUM_STEPS.map((step, index) => (
+                <li
+                  key={step.name}
+                  data-ui="facility-step"
+                  data-state={
+                    index < w.stadium
+                      ? 'built'
+                      : index === w.stadium
+                        ? 'current'
+                        : w.facilityWorks?.stadium?.to === index
+                          ? 'building'
+                          : undefined
+                  }
+                  data-testid={`stadium-step-${index}`}
+                >
+                  <b>{localizeValue(number(step.capacity))}</b>
+                  <small>
+                    {localizeValue(
+                      step.work
+                        ? WORK_INFO[step.work].label
+                        : sourceMessage('copy.FacilityParts.3603b45811'),
+                    )}
+                  </small>
+                </li>
+              )),
+            )}
           </ol>
           <div className={s.metrics}>
             <div>
-              <span>홈 관중 예상</span>
+              <span>{richMessage('copy.FacilityParts.67973119a4')}</span>
               <b>
-                {number(gate.attendanceLow)}–{number(gate.attendanceHigh)}명
+                {richMessage('copy.ClubSettingControl.af70cdc2c5', {
+                  p0: number(gate.attendanceLow),
+                  p1: number(gate.attendanceHigh),
+                })}
               </b>
             </div>
             <div>
-              <span>좌석이 충분하면 올 관중</span>
-              <b>{number(gate.wanted)}명</b>
+              <span>{richMessage('copy.FacilityParts.f2efd0b8d9')}</span>
+              <b>{richMessage('copy.CareerRecordBook.e414915261', { p0: number(gate.wanted) })}</b>
             </div>
           </div>
-          {work('stadium')}
+          {localizeValue(work('stadium'))}
         </div>
       </section>
-      {(['training', 'academy'] as const).map((part) => (
-        <section
-          data-surface="panel"
-          key={part}
-          className={f.part}
-          aria-label={FACILITY_PART_LABEL[part]}
-          data-testid={`facility-${part}`}
-        >
-          <FacilityArt kind={part} world={w} className={f.art} />
-          <div className={f.body}>
-            <div className={s.panelHeading}>
-              <div>
-                <h3>
-                  {FACILITY_PART_LABEL[part]} · {partLevel(w, part)}/{MAX_LEVEL}단계
-                </h3>
-                <p>{levelEffect(part, partLevel(w, part))}</p>
+      {localizeValue(
+        (['training', 'academy'] as const).map((part) => (
+          <section
+            data-surface="panel"
+            key={part}
+            className={f.part}
+            aria-label={localizeValue(FACILITY_PART_LABEL[part])}
+            data-testid={`facility-${part}`}
+          >
+            <FacilityArt kind={part} world={w} className={f.art} />
+            <div className={f.body}>
+              <div className={s.panelHeading}>
+                <div>
+                  <h3>
+                    {richMessage('copy.FacilityParts.d4747d87b8', {
+                      p0: FACILITY_PART_LABEL[part],
+                      p1: partLevel(w, part),
+                      p2: MAX_LEVEL,
+                    })}
+                  </h3>
+                  <p>{localizeValue(levelEffect(part, partLevel(w, part)))}</p>
+                </div>
               </div>
+              <ol
+                className={f.levels}
+                aria-label={displayMessage('copy.FacilityParts.41e08adcea', {
+                  p0: FACILITY_PART_LABEL[part],
+                })}
+              >
+                {localizeValue(
+                  Array.from({ length: MAX_LEVEL }, (_, i) => i + 1).map((level) => (
+                    <li key={level} data-built={level <= partLevel(w, part) || undefined}>
+                      <b
+                        data-ui="level-mark"
+                        data-state={level <= partLevel(w, part) ? 'built' : undefined}
+                      >
+                        {localizeValue(level)}
+                      </b>
+                      <small>{localizeValue(levelEffect(part, level))}</small>
+                    </li>
+                  )),
+                )}
+              </ol>
+              {localizeValue(work(part))}
             </div>
-            <ol className={f.levels} aria-label={`${FACILITY_PART_LABEL[part]} 단계별 효과`}>
-              {Array.from({ length: MAX_LEVEL }, (_, i) => i + 1).map((level) => (
-                <li key={level} data-built={level <= partLevel(w, part) || undefined}>
-                  <b
-                    data-ui="level-mark"
-                    data-state={level <= partLevel(w, part) ? 'built' : undefined}
-                  >
-                    {level}
-                  </b>
-                  <small>{levelEffect(part, level)}</small>
-                </li>
-              ))}
-            </ol>
-            {work(part)}
-          </div>
-        </section>
-      ))}
+          </section>
+        )),
+      )}
     </div>
   );
 }

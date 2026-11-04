@@ -1,9 +1,10 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { idbRequest } from './games';
 import type { PreviousStore } from './repository';
 
 const MISMATCH = {
-  active: '저장 읽기 검증에 실패했습니다.',
-  previous: '이전 저장본을 다시 읽어 확인하지 못했어요.',
+  active: sourceMessage('copy.previousStore.df2f55e833'),
+  previous: sourceMessage('copy.previousStore.d0b4dc5430'),
 };
 
 /** One checkpoint of the game in play, the active copy or its previous one, in IndexedDB (→SAVE-3). */

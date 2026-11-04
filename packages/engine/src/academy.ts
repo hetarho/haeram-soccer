@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { registration, registrationRoom } from './registration';
 import { movePerson } from './npc-continuity';
 import { baseEffects } from './bases';
@@ -44,9 +45,9 @@ export function promotionAge(w: World) {
 export const ACADEMY_LEAVE_AGE = 21;
 /** The academy's age groups by age in the season, younger ones growing faster (→CLUB-16). */
 export const AGE_GROUPS = [
-  { key: 'u17', label: 'U-17', ages: '15–16세', growth: 1.2 },
-  { key: 'u19', label: 'U-19', ages: '17–18세', growth: 1 },
-  { key: 'u21', label: 'U-21', ages: '19–20세', growth: 0.8 },
+  { key: 'u17', label: 'U-17', ages: sourceMessage('copy.academy.999f207fb0'), growth: 1.2 },
+  { key: 'u19', label: 'U-19', ages: sourceMessage('copy.academy.7af2cda5aa'), growth: 1 },
+  { key: 'u21', label: 'U-21', ages: sourceMessage('copy.academy.778eff523e'), growth: 0.8 },
 ] as const;
 export type AgeGroup = (typeof AGE_GROUPS)[number]['key'];
 export function ageGroupOf(w: Pick<World, 'year'>, player: Player): AgeGroup {
@@ -59,18 +60,18 @@ export const YOUTH_FOCUS_INFO: Record<
   { label: string; description: string; growth: Record<AgeGroup, number> }
 > = {
   balanced: {
-    label: '균형',
-    description: '모든 연령대를 고르게',
+    label: sourceMessage('copy.stories.634269a095'),
+    description: sourceMessage('copy.academy.f1b5914540'),
     growth: { u17: 1, u19: 1, u21: 1 },
   },
   fundamentals: {
-    label: '기본기 집중',
-    description: 'U-17의 기본기를 먼저 · 위 연령대는 조금 덜',
+    label: sourceMessage('copy.academy.41e116643b'),
+    description: sourceMessage('copy.academy.ce37941800'),
     growth: { u17: 1.3, u19: 0.9, u21: 0.9 },
   },
   firstTeam: {
-    label: '1군 준비',
-    description: 'U-19·U-21을 1군 수준으로 · U-17은 조금 덜',
+    label: sourceMessage('copy.academy.ba8ca7f9ea'),
+    description: sourceMessage('copy.academy.077ddf5432'),
     growth: { u17: 0.9, u19: 1.15, u21: 1.25 },
   },
 };
@@ -93,9 +94,9 @@ const hundredths = (value: number) => Math.round(value * 100) / 100;
 
 export type AcademyReadiness = 'ready' | 'growing' | 'review';
 export const ACADEMY_READINESS_LABEL: Record<AcademyReadiness, string> = {
-  ready: '1군 준비 완료',
-  growing: '성장 중',
-  review: '방출 검토',
+  ready: sourceMessage('copy.academy.8798de2d6a'),
+  growing: sourceMessage('copy.TrainingView.949d41b726'),
+  review: sourceMessage('copy.academy.8bef3ea2ad'),
 };
 export interface AcademyProspect {
   player: Player;
@@ -144,7 +145,12 @@ export function runAcademyIntake(w: World): void {
   academy.intakeYear = w.year;
   const count = Math.min(academyIntakeSize(w), Math.max(0, ACADEMY_LIMIT - academy.players.length));
   if (!count) {
-    addEvent(w, 'youth-intake', '유스 입단 보류', `아카데미 정원 ${ACADEMY_LIMIT}명이 찼습니다.`);
+    addEvent(
+      w,
+      'youth-intake',
+      sourceMessage('copy.academy.450167248f'),
+      sourceMessage('copy.academy.91b582add7', { p0: ACADEMY_LIMIT }),
+    );
     return;
   }
   const code = clubOf(w).country,
@@ -182,12 +188,23 @@ export function runAcademyIntake(w: World): void {
   const best = [...prospects].sort(
     (a, b) => b.potential - a.potential || overall(b) - overall(a) || compareIds(a.id, b.id),
   )[0];
-  const headline = `${best.name} · ${best.position} ${w.year - best.born}세 · 능력 ${overall(best)} · 잠재력 ${Math.round(best.potential)}`;
-  addEvent(w, 'youth-intake', `유스 아카데미 입단 ${count}명`, `가장 기대되는 유망주 ${headline}`);
+  const headline = sourceMessage('copy.academy.d59e6aa3c9', {
+    p0: best.name,
+    p1: best.position,
+    p2: w.year - best.born,
+    p3: overall(best),
+    p4: Math.round(best.potential),
+  });
+  addEvent(
+    w,
+    'youth-intake',
+    sourceMessage('copy.academy.972d06b13b', { p0: count }),
+    sourceMessage('copy.academy.4f0b88514e', { p0: headline }),
+  );
   pushInbox(w, {
     kind: 'youth-intake',
-    title: `유스 아카데미에 ${count}명이 입단했어요`,
-    detail: `가장 기대되는 유망주: ${headline}`,
+    title: sourceMessage('copy.academy.e5f882e314', { p0: count }),
+    detail: sourceMessage('copy.academy.729d4236c2', { p0: headline }),
     attention: true,
     ref: best.id,
   });
@@ -256,13 +273,19 @@ export function youthAdvice(w: World): { focus: YouthFocus; reason: string } {
     return {
       focus: 'firstTeam',
       reason: near.gap
-        ? `${near.player.name}이(가) 1군까지 OVR ${Math.ceil(near.gap)} 남았어요.`
-        : `${near.player.name}이(가) 1군 수준이에요.`,
+        ? sourceMessage('copy.academy.5138aaa1af', {
+            p0: near.player.name,
+            p1: Math.ceil(near.gap),
+          })
+        : sourceMessage('copy.academy.e969ffc42b', { p0: near.player.name }),
     };
   const young = prospects.filter((player) => ageGroupOf(w, player) === 'u17').length;
   if (young > prospects.length - young)
-    return { focus: 'fundamentals', reason: `U-17이 ${young}명으로 가장 많아 기본기부터 다져요.` };
-  return { focus: 'balanced', reason: '연령대를 고르게 키워요.' };
+    return {
+      focus: 'fundamentals',
+      reason: sourceMessage('copy.academy.c2a2bb60cd', { p0: young }),
+    };
+  return { focus: 'balanced', reason: sourceMessage('copy.academy.6dcb706fdb') };
 }
 /** The academy's focus this round: the youth director's rule (→CLUB-31). */
 export function youthFocus(w: World): YouthFocus {
@@ -313,11 +336,16 @@ export const LINE_LIMIT: Record<Line, number> = { GK: 3, DF: 8, MF: 8, FW: 7 };
 const lineRoom = (w: World, line: Line) =>
   activePlayers(w).filter((player) => lineOfPlayer(player) === line).length < LINE_LIMIT[line];
 const prospectLine = (w: World, player: Player) =>
-  `${player.name}(${player.position} ${w.year - player.born}세 ${overall(player)})`;
+  sourceMessage('copy.academy.a0f3516562', {
+    p0: player.name,
+    p1: player.position,
+    p2: w.year - player.born,
+    p3: overall(player),
+  });
 function listed(w: World, players: Player[], limit = 4) {
   const shown = players.slice(0, limit).map((player) => prospectLine(w, player));
   return players.length > limit
-    ? `${shown.join(', ')} 외 ${players.length - limit}명`
+    ? sourceMessage('copy.academy.838ab18828', { p0: shown.join(', '), p1: players.length - limit })
     : shown.join(', ');
 }
 const byStrength = (a: Player, b: Player) =>
@@ -325,16 +353,16 @@ const byStrength = (a: Player, b: Player) =>
 
 function takeProspect(w: World, id: string) {
   const player = w.academy?.players.find((prospect) => prospect.id === id);
-  if (!w.academy || !player) throw new Error('아카데미에 없는 선수입니다.');
+  if (!w.academy || !player) throw new Error(sourceMessage('copy.academy.f9f1a326fd'));
   w.academy.players = w.academy.players.filter((prospect) => prospect !== player);
   return player;
 }
 
 export function promoteYouth(w: World, id: string): void {
   const prospect = academyPlayers(w).find((one) => one.id === id);
-  if (!prospect) throw new Error('아카데미에 없는 선수입니다.');
+  if (!prospect) throw new Error(sourceMessage('copy.academy.f9f1a326fd'));
   if (w.year - prospect.born < promotionAge(w))
-    throw new Error(`첫 프로 계약은 ${promotionAge(w)}세부터 맺을 수 있어요.`);
+    throw new Error(sourceMessage('copy.teamState.56c3e9d63b', { p0: promotionAge(w) }));
   const room = registrationRoom(w, { ...prospect, graduate: true, joined: w.year });
   if (room) throw new Error(room);
   const player = takeProspect(w, id);
@@ -352,8 +380,15 @@ export function promoteYouth(w: World, id: string): void {
   addEvent(
     w,
     'youth-promotion',
-    `${player.name} 1군 승격`,
-    `${player.position} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)} · 연봉 ${moneyLabel(w, player.wage)} · 계약 ${player.until}년`,
+    sourceMessage('copy.AcademyPanel.d1f97ef984', { p0: player.name }),
+    sourceMessage('copy.academy.28297c9ad9', {
+      p0: player.position,
+      p1: w.year - player.born,
+      p2: overall(player),
+      p3: Math.round(player.potential),
+      p4: moneyLabel(w, player.wage),
+      p5: player.until,
+    }),
   );
 }
 export function releaseYouth(w: World, id: string): void {
@@ -362,8 +397,13 @@ export function releaseYouth(w: World, id: string): void {
   addEvent(
     w,
     'youth-release',
-    `${player.name} 아카데미 방출`,
-    `${player.position} · ${w.year - player.born}세 · 능력 ${overall(player)} · 잠재력 ${Math.round(player.potential)}`,
+    sourceMessage('copy.academy.d36962954f', { p0: player.name }),
+    sourceMessage('copy.academy.4efa93e7cb', {
+      p0: player.position,
+      p1: w.year - player.born,
+      p2: overall(player),
+      p3: Math.round(player.potential),
+    }),
   );
 }
 function staffReport(w: World, title: string, detail: string, ref?: string) {
@@ -390,8 +430,8 @@ export function seasonAcademy(w: World): void {
     releaseYouth(w, player.id);
     staffReport(
       w,
-      `${player.name} 아카데미 졸업`,
-      `${prospectLine(w, player)} · 유스 연령을 넘겨 팀을 떠났어요.`,
+      sourceMessage('copy.academy.bf39f81a68', { p0: player.name }),
+      sourceMessage('copy.academy.fe539ab44f', { p0: prospectLine(w, player) }),
       player.id,
     );
   }
@@ -406,13 +446,15 @@ export function seasonAcademy(w: World): void {
   if (!isDelegated(w, 'academy')) {
     if (!ready.length && !review.length) return;
     const lines = [
-      ...(ready.length ? [`1군 준비 완료: ${listed(w, ready)}`] : []),
-      ...(review.length ? [`방출 검토: ${listed(w, review)}`] : []),
+      ...(ready.length ? [sourceMessage('copy.academy.c9188e940d', { p0: listed(w, ready) })] : []),
+      ...(review.length
+        ? [sourceMessage('copy.academy.ddb6b0a646', { p0: listed(w, review) })]
+        : []),
     ];
     pushInbox(w, {
       kind: 'staff-report',
-      title: `유스 디렉터 보고: 승격 추천 ${ready.length}명 · 방출 검토 ${review.length}명`,
-      detail: `${lines.join(' / ')} · 결정은 아카데미에서 직접 내려 주세요.`.slice(0, 400),
+      title: sourceMessage('copy.academy.5d97905f68', { p0: ready.length, p1: review.length }),
+      detail: sourceMessage('copy.academy.d5d93f42a4', { p0: lines.join(' / ') }).slice(0, 400),
       attention: true,
     });
     return;
@@ -425,16 +467,25 @@ export function seasonAcademy(w: World): void {
   if (!affordable && ready.length)
     staffReport(
       w,
-      `유스 디렉터가 승격 ${ready.length}명을 미뤘어요`,
-      `운영자금이 재정 기조 ${financeOption(w, 'academy').name}의 기준(운영비 ${years < 1 ? `${Math.round(years * 12)}개월분` : `${years}년분`})보다 적어 1군 급여를 늘리지 않았어요. 자금이 회복되면 다음 시즌에 다시 검토해요. 직접 올리려면 아카데미에서 승격하세요.`,
+      sourceMessage('copy.academy.daeb17db53', { p0: ready.length }),
+      sourceMessage('copy.academy.6a6b9c3ff8', {
+        p0: financeOption(w, 'academy').name,
+        p1:
+          years < 1
+            ? sourceMessage('copy.academy.76367e9ed0', { p0: Math.round(years * 12) })
+            : sourceMessage('copy.academy.e112fae4e0', { p0: years }),
+      }),
     );
   for (const player of affordable ? ready : []) {
     const wage = marketWage(w, player);
     if (!wageWithinLimit(w, 'academy', wage)) {
       staffReport(
         w,
-        `유스 디렉터가 ${player.name}의 승격을 미뤘어요`,
-        `프로 연봉 ${moneyLabel(w, wage)}이 유소년 승격의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'academy')!)}을 넘어요.`,
+        sourceMessage('copy.academy.7e6395c178', { p0: player.name }),
+        sourceMessage('copy.academy.ff44c36d07', {
+          p0: moneyLabel(w, wage),
+          p1: moneyLabel(w, annualWageLimit(w, 'academy')!),
+        }),
         player.id,
       );
       continue;
@@ -445,8 +496,12 @@ export function seasonAcademy(w: World): void {
     promoted.add(player.id);
     staffReport(
       w,
-      `유스 디렉터가 ${player.name}을(를) 1군에 올렸어요`,
-      `${prospectLine(w, player)} · 연봉 ${moneyLabel(w, player.wage)} · 계약 ${player.until}년`,
+      sourceMessage('copy.academy.721c7634e7', { p0: player.name }),
+      sourceMessage('copy.academy.ba4c1787ee', {
+        p0: prospectLine(w, player),
+        p1: moneyLabel(w, player.wage),
+        p2: player.until,
+      }),
       player.id,
     );
   }
@@ -454,8 +509,8 @@ export function seasonAcademy(w: World): void {
     if (!promoted.has(player.id) && wageWithinLimit(w, 'academy', marketWage(w, player)))
       staffReport(
         w,
-        `유스 디렉터가 ${player.name}을(를) 아카데미에 남겼어요`,
-        `${prospectLine(w, player)} · 1군 수준이지만 같은 포지션이나 선수단에 자리가 없어 자리가 날 때까지 기다려요.`,
+        sourceMessage('copy.academy.0162002ab6', { p0: player.name }),
+        sourceMessage('copy.academy.93d4fd6c34', { p0: prospectLine(w, player) }),
         player.id,
       );
   for (const player of review)
@@ -463,8 +518,17 @@ export function seasonAcademy(w: World): void {
       releaseYouth(w, player.id);
       staffReport(
         w,
-        `유스 디렉터가 ${player.name}을(를) 내보냈어요`,
-        `${prospectLine(w, player)} · 잠재력 ${Math.round(player.potential)}로 육성 목표 ${directionOption(w, 'youthGoal').name}의 기준(${releaseRule(w).age}세, 같은 포지션 ${releaseRule(w).against === 'starters' ? '주전 수준' : '1군 최하위'})에 못 미쳐요.`,
+        sourceMessage('copy.academy.cea0579e8f', { p0: player.name }),
+        sourceMessage('copy.academy.960369de37', {
+          p0: prospectLine(w, player),
+          p1: Math.round(player.potential),
+          p2: directionOption(w, 'youthGoal').name,
+          p3: releaseRule(w).age,
+          p4:
+            releaseRule(w).against === 'starters'
+              ? sourceMessage('copy.academy.da1dd04f0f')
+              : sourceMessage('copy.DecisionRuleFacts.1fdaeae257'),
+        }),
         player.id,
       );
     }

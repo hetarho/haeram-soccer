@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import type { HTMLAttributes, ReactNode } from 'react';
 import s from './Card.module.css';
 
@@ -21,6 +22,7 @@ export function Card({
   className,
   ...props
 }: CardProps) {
+  useTextLocale();
   return (
     <Element
       {...props}
@@ -28,14 +30,20 @@ export function Card({
       data-surface={surface}
       className={`${s.card} ${className ?? ''}`}
     >
-      {(meta != null || title != null) && (
-        <header className={s.heading}>
-          {meta != null && <div className={s.meta}>{meta}</div>}
-          {title != null && <h4 className={s.title}>{title}</h4>}
-        </header>
+      {localizeValue(
+        (meta != null || title != null) && (
+          <header className={s.heading}>
+            {localizeValue(meta != null && <div className={s.meta}>{localizeValue(meta)}</div>)}
+            {localizeValue(title != null && <h4 className={s.title}>{localizeValue(title)}</h4>)}
+          </header>
+        ),
       )}
-      {children != null && <div className={s.content}>{children}</div>}
-      {actions != null && <footer className={s.actions}>{actions}</footer>}
+      {localizeValue(
+        children != null && <div className={s.content}>{localizeValue(children)}</div>,
+      )}
+      {localizeValue(
+        actions != null && <footer className={s.actions}>{localizeValue(actions)}</footer>,
+      )}
     </Element>
   );
 }

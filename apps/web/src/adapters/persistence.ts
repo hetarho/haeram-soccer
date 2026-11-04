@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import {
   CATALOG_HASH,
   CATALOG_VERSION,
@@ -83,37 +84,31 @@ async function readEnvelope(raw: string, supported: readonly string[]) {
     raw.length > PORTABLE_FILE_LIMIT ||
     new TextEncoder().encode(raw).length > PORTABLE_FILE_LIMIT
   )
-    throw new Error('저장 파일이 너무 큽니다.');
+    throw new Error(sourceMessage('copy.persistence.02b1e71246'));
   const e = JSON.parse(raw) as Envelope;
   if (!e || typeof e !== 'object' || typeof e.schema !== 'number')
-    throw new Error('저장 헤더가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.persistence.830e86ddaf'));
   if (!isCheckpointSchema(e.schema))
-    throw new SaveCompatibilityError(
-      '지원하지 않는 저장 스키마 버전입니다. 원본 파일을 보관하세요.',
-    );
-  if (typeof e.engine !== 'string') throw new Error('저장 엔진 헤더가 올바르지 않습니다.');
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.52d3e36f5e'));
+  if (typeof e.engine !== 'string') throw new Error(sourceMessage('copy.persistence.6025cca94a'));
   if (!supported.includes(e.engine))
     throw new SaveCompatibilityError(
       isEarlierEngine(e.engine) ? earlierRulesMessage(e.engine) : NEWER_GAME_MESSAGE,
       e.engine,
     );
-  if (typeof e.catalog !== 'string') throw new Error('저장 카탈로그 헤더가 올바르지 않습니다.');
+  if (typeof e.catalog !== 'string') throw new Error(sourceMessage('copy.persistence.0bcc75e929'));
   // An older catalog is accepted by the fingerprint recorded with it (→SAVE-10); the pin moves to
   // the current catalog on writer activation, never while reading.
   const latest = e.catalog === CATALOG_VERSION;
   const pinned = latest ? CATALOG_HASH : PRIOR_CATALOG_HASHES[e.catalog];
-  if (!pinned)
-    throw new SaveCompatibilityError(
-      '지원하지 않는 저장 카탈로그 버전입니다. 원본 파일을 보관하세요.',
-    );
-  if (typeof e.codec !== 'string') throw new Error('저장 코덱 헤더가 올바르지 않습니다.');
+  if (!pinned) throw new SaveCompatibilityError(sourceMessage('copy.persistence.db51c3b436'));
+  if (typeof e.codec !== 'string') throw new Error(sourceMessage('copy.persistence.0ebc0d3b64'));
   if (!SAVE_CODECS.includes(e.codec))
-    throw new SaveCompatibilityError('지원하지 않는 저장 코덱 버전입니다. 원본 파일을 보관하세요.');
-  if (typeof e.catalogHash !== 'string') throw new Error('저장 카탈로그 해시가 올바르지 않습니다.');
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.62a3396f6d'));
+  if (typeof e.catalogHash !== 'string')
+    throw new Error(sourceMessage('copy.persistence.0331a30190'));
   if (e.catalogHash !== pinned)
-    throw new SaveCompatibilityError(
-      '지원하지 않는 저장 카탈로그 해시입니다. 원본 파일을 보관하세요.',
-    );
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.98b9bb6b66'));
   if (
     !Number.isSafeInteger(e.generation) ||
     e.generation < 1 ||
@@ -124,9 +119,10 @@ async function readEnvelope(raw: string, supported: readonly string[]) {
     typeof e.worldId !== 'string' ||
     !/^[a-f0-9]{64}$/.test(e.checksum)
   )
-    throw new Error('저장 헤더가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.persistence.830e86ddaf'));
   const bytes = await decodePayload(e.codec, e.payload);
-  if ((await digest(bytes)) !== e.checksum) throw new Error('체크섬이 일치하지 않습니다.');
+  if ((await digest(bytes)) !== e.checksum)
+    throw new Error(sourceMessage('copy.persistence.0d2cd0c308'));
   return {
     json: JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) as unknown,
     envelope: e,
@@ -160,13 +156,9 @@ async function readCheckpoint(
   // as incompatible rather than recovered over (→SAVE-11).
   const history = carriesManagerHistory(value);
   if (history !== (envelope.schema === MANAGER_HISTORY_CHECKPOINT_SCHEMA))
-    throw new SaveCompatibilityError(
-      '지원하지 않는 저장 컨테이너와 감독 이력 데이터 조합입니다. 원본 파일을 보관하세요.',
-    );
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.030fddf291'));
   if (!history && carriesMatchModel(value) !== (envelope.schema === FULL_MODEL_CHECKPOINT_SCHEMA))
-    throw new SaveCompatibilityError(
-      '지원하지 않는 저장 컨테이너와 경기 모델 데이터 조합입니다. 원본 파일을 보관하세요.',
-    );
+    throw new SaveCompatibilityError(sourceMessage('copy.persistence.bbef3363d2'));
   return { value, envelope };
 }
 /**
@@ -210,7 +202,7 @@ export async function decode(raw: string): Promise<{ world: World; envelope: Env
     world.catalogHash !== e.catalogHash ||
     world.currency !== currency(country, world.year).code
   )
-    throw new Error('저장 헤더와 세계가 일치하지 않습니다.');
+    throw new Error(sourceMessage('copy.persistence.450e2c9cf6'));
   // Only England's money kept its level when the catalog re-levelled the rest (→ECON-35): elsewhere
   // a career's records would mix two levels, so it is refused, never reinterpreted (→SAVE-10).
   if (country !== 'ENG' && PARITY_LEVEL_CATALOGS.includes(world.catalog))

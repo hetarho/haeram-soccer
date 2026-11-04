@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * The match lab page's own state (→LAB-6/7): sides, value overrides, run settings and kept runs,
  * kept in this browser under one versioned key. Pure helpers beside it; types only from the engine
@@ -253,9 +254,9 @@ export function importOverrides(text: string, leaves: readonly TunableLeaf[]): I
   try {
     raw = JSON.parse(text);
   } catch {
-    return { ok: false, message: 'JSON으로 읽을 수 없습니다' };
+    return { ok: false, message: sourceMessage('copy.state.313f63c061') };
   }
-  if (!isRecord(raw)) return { ok: false, message: '경로 → 값 객체가 아닙니다' };
+  if (!isRecord(raw)) return { ok: false, message: sourceMessage('copy.state.415948c8ae') };
   const byPath = new Map(leaves.map((l) => [l.path, l]));
   let overrides: Record<string, number> = {};
   const skipped: SkippedPath[] = [];

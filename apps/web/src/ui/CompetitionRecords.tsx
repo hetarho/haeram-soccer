@@ -1,6 +1,9 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useId, useState } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { TabList, TabPanel } from './PageTabs';
 import type { LeagueChoice } from './league';
 import { leagueName } from './LeaguePicker';
@@ -9,6 +12,7 @@ import s from './App.module.css';
 export type CompetitionRow = { id: string; points: number; gf: number; ga: number };
 /** Only table facts retained for the selected competition; no invented historical W-D-L. */
 export function CompetitionRecords({ w, rows }: { w: World; rows: CompetitionRow[] }) {
+  useTextLocale();
   const [metric, setMetric] = useState<'points' | 'gf' | 'ga' | 'gd'>('points');
   const idPrefix = useId();
   const value = (row: CompetitionRow) => (metric === 'gd' ? row.gf - row.ga : row[metric]);
@@ -17,20 +21,24 @@ export function CompetitionRecords({ w, rows }: { w: World; rows: CompetitionRow
       (metric === 'ga' ? value(a) - value(b) : value(b) - value(a)) || a.id.localeCompare(b.id),
   );
   return (
-    <section data-surface="panel" className={s.panel} aria-label="리그 팀 기록">
+    <section
+      data-surface="panel"
+      className={s.panel}
+      aria-label={displayMessage('copy.CompetitionRecords.806b2bfe20')}
+    >
       <div className={s.panelHeading}>
-        <h3>팀 성적 기록</h3>
+        <h3>{richMessage('copy.CompetitionRecords.7a6fc01cc4')}</h3>
       </div>
       <div className={s.panelBody}>
         <TabList
           idPrefix={idPrefix}
-          label="팀 기록 정렬"
+          label={displayMessage('copy.CompetitionRecords.06798ebd1c')}
           tabs={
             [
-              ['points', '승점'],
-              ['gf', '득점'],
-              ['ga', '최소 실점'],
-              ['gd', '득실차'],
+              ['points', sourceMessage('copy.ClubTrends.e8fd75919a')],
+              ['gf', sourceMessage('copy.summary.eb4e291be3')],
+              ['ga', sourceMessage('copy.CompetitionRecords.a3474aee21')],
+              ['gd', sourceMessage('copy.CompetitionRecords.6832a4ed5d')],
             ] as const
           }
           value={metric}
@@ -39,37 +47,41 @@ export function CompetitionRecords({ w, rows }: { w: World; rows: CompetitionRow
       </div>
       <TabPanel idPrefix={idPrefix} value={metric}>
         <div className={s.tableWrap}>
-          <table aria-label="리그 팀 기록표">
+          <table aria-label={displayMessage('copy.CompetitionRecords.1015ba71c6')}>
             <thead>
               <tr>
-                <th>클럽</th>
-                <th>승점</th>
-                <th>득점</th>
-                <th>실점</th>
-                <th>득실차</th>
+                <th>{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
+                <th>{richMessage('copy.ClubTrends.e8fd75919a')}</th>
+                <th>{richMessage('copy.summary.eb4e291be3')}</th>
+                <th>{richMessage('copy.CompetitionRecords.64b97f7438')}</th>
+                <th>{richMessage('copy.CompetitionRecords.6832a4ed5d')}</th>
               </tr>
             </thead>
             <tbody>
-              {sorted.map((row) => (
-                <tr key={row.id}>
-                  <td>
-                    {w.clubs.some((club) => club.id === row.id) ? (
-                      <ClubLink w={w} id={row.id} crest={14} />
-                    ) : (
-                      '—'
-                    )}
-                  </td>
-                  <td>{row.points}</td>
-                  <td>{row.gf}</td>
-                  <td>{row.ga}</td>
-                  <td>{row.gf - row.ga}</td>
-                </tr>
-              ))}
+              {localizeValue(
+                sorted.map((row) => (
+                  <tr key={row.id}>
+                    <td>
+                      {localizeValue(
+                        w.clubs.some((club) => club.id === row.id) ? (
+                          <ClubLink w={w} id={row.id} crest={14} />
+                        ) : (
+                          '—'
+                        ),
+                      )}
+                    </td>
+                    <td>{localizeValue(row.points)}</td>
+                    <td>{localizeValue(row.gf)}</td>
+                    <td>{localizeValue(row.ga)}</td>
+                    <td>{localizeValue(row.gf - row.ga)}</td>
+                  </tr>
+                )),
+              )}
             </tbody>
           </table>
         </div>
       </TabPanel>
-      <p className={s.panelBody}>선택한 리그 순위표에 남아 있는 승점과 득실 기록이에요.</p>
+      <p className={s.panelBody}>{richMessage('copy.CompetitionRecords.83d4b8eac5')}</p>
     </section>
   );
 }
@@ -82,15 +94,20 @@ export function UnavailableLeagueRecord({
   label: string;
   onOwn: () => void;
 }) {
+  useTextLocale();
   return (
-    <section data-surface="panel" className={s.panel} aria-label="선택 리그 기록 안내">
+    <section
+      data-surface="panel"
+      className={s.panel}
+      aria-label={displayMessage('copy.CompetitionRecords.f1f089aa1c')}
+    >
       <div className={s.panelBody}>
         <h3>
-          {leagueName(league)} · {label}
+          {localizeValue(leagueName(league))} · {localizeValue(label)}
         </h3>
-        <p>선택한 리그의 {label}은 보관되어 있지 않아요.</p>
+        <p>{richMessage('copy.CompetitionRecords.2820f78887', { p0: label })}</p>
         <button type="button" onClick={onOwn}>
-          우리 리그 기록 보기
+          {richMessage('copy.CompetitionRecords.0920a5265f')}
         </button>
       </div>
     </section>

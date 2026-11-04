@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The season close's Ballon d'Or (→PLAYER-27): the podium from the season's complete settled
  * aggregates (→HIST-17), and the bonus a won award pays under its contract clause (→CLUB-29).
@@ -207,8 +208,8 @@ export function payBallonDorBonus(w: World, podium: readonly BallonDorPlace[] | 
   addEvent(
     w,
     'ballon-dor-bonus',
-    `${p.name} 발롱도르 보너스`,
-    `계약 조항 · 연봉 ${moneyLabel(w, p.wage)}의 ${percent}%`,
+    sourceMessage('copy.ballon_dor_award.60f59909ad', { p0: p.name }),
+    sourceMessage('copy.ballon_dor_award.63976aa959', { p0: moneyLabel(w, p.wage), p1: percent }),
     amount,
   );
 }

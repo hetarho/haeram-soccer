@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 export type Control = '직접 선택' | '시작 시 선택' | '자동 변화' | '현재 변경 불가';
 export type Decision = '조건 판정' | '확률' | '계산' | '자동 처리' | '복합 판정' | '정보·표시';
 export interface Factor {
@@ -99,9 +100,9 @@ export function filterInfluences(
 /** Human-readable export with the same numbered hierarchy as the page. */
 export function influenceMarkdown(catalog: GameplayCatalog): string {
   const lines = [
-    '# 게임플레이 영향 요소',
+    sourceMessage('copy.catalog.2dd876b61a'),
     '',
-    '현재 구현의 결과 → 영향을 주는 요소 → 작용 방식. 밸런스 제안이 아닌 구현 설명입니다.',
+    sourceMessage('copy.catalog.b539b1eec9'),
     '',
   ];
   const titles = new Map(
@@ -129,16 +130,29 @@ export function influenceMarkdown(catalog: GameplayCatalog): string {
       lines.push('');
       if (outcome.consequences.length)
         lines.push(
-          `${pad}이어지는 영향: ${outcome.consequences.map((link) => `${link.effect} → ${titles.get(link.outcome)}`).join(' / ')}`,
+          sourceMessage('copy.catalog.2b1b88773d', {
+            p0: pad,
+            p1: outcome.consequences
+              .map((link) => `${link.effect} → ${titles.get(link.outcome)}`)
+              .join(' / '),
+          }),
         );
-      if (outcome.absent.length) lines.push(`${pad}현재 없는 연결: ${outcome.absent.join(' / ')}`);
+      if (outcome.absent.length)
+        lines.push(
+          sourceMessage('copy.catalog.7ed1601971', { p0: pad, p1: outcome.absent.join(' / ') }),
+        );
       lines.push(
-        `${pad}구현 근거: ${outcome.sources.map((source) => `${source.file}:${source.line ?? '?'} (${source.symbol})`).join(', ')}`,
+        sourceMessage('copy.catalog.02c1f38ec2', {
+          p0: pad,
+          p1: outcome.sources
+            .map((source) => `${source.file}:${source.line ?? '?'} (${source.symbol})`)
+            .join(', '),
+        }),
         '',
       );
     });
   }
-  lines.push('## 행동부터 보기', '');
+  lines.push(sourceMessage('copy.catalog.129b656496'), '');
   catalog.actions.forEach((action, index) =>
     lines.push(
       `${index + 1}. **${action.title}** [${action.control}]: ${action.effects.map((effect) => `${effect.effect} → ${titles.get(effect.outcome)}`).join(' / ')}`,

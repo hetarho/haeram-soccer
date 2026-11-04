@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayLocale, displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import type { ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import type { SponsorSlotView } from '../../../../packages/engine/src/sponsors';
@@ -31,40 +33,68 @@ function OperationsFacts({
   label: string;
   sponsors: readonly SponsorSlotView[];
 }) {
+  useTextLocale();
   const club = clubOf(w);
   let stats: DeskStat[], caption: ReactNode;
   if (view === 'investment') {
     const cash = cashState(w);
     const stadium = STADIUM_STEPS[w.stadium];
-    caption = `${stadium.name} · 훈련장 ${w.trainingGround}단계 · 유소년 시설 ${w.academyFacility}단계`;
+    caption = sourceMessage('copy.ClubOperations.8fa355e7e6', {
+      p0: stadium.name,
+      p1: w.trainingGround,
+      p2: w.academyFacility,
+    });
     stats = [
-      { label: '보유 현금', value: compactMoney(w.cash, club.country, w.year) },
+      {
+        label: sourceMessage('copy.ClubCashSummary.861779d896'),
+        value: compactMoney(w.cash, club.country, w.year),
+      },
       { label: cash.label, value: cash.value, note: cash.status },
-      { label: '경기장', value: `${stadium.capacity.toLocaleString('ko-KR')}석` },
-      { label: '진행 중인 공사', value: `${Object.keys(w.facilityWorks ?? {}).length}건` },
+      {
+        label: sourceMessage('copy.ClubOperations.64779ec1ad'),
+        value: sourceMessage('copy.ClubOperations.e718a2e7a8', {
+          p0: stadium.capacity.toLocaleString(displayLocale()),
+        }),
+      },
+      {
+        label: sourceMessage('copy.ClubOperations.d9d196449f'),
+        value: sourceMessage('copy.ClubOperations.7e77eaa28b', {
+          p0: Object.keys(w.facilityWorks ?? {}).length,
+        }),
+      },
     ];
   } else {
     const open = sponsors.filter((slot) => slot.open),
       signed = open.filter((slot) => slot.contract),
       next = sponsors.filter((slot) => !slot.open).sort((a, b) => a.opens - b.opens)[0];
     stats = [
-      { label: '계약한 자리', value: `${signed.length} / ${open.length}` },
       {
-        label: '빈 자리',
-        value: `${open.length - signed.length}자리`,
-        note: open.some((slot) => !slot.contract && slot.offers.length) ? '제안 도착' : undefined,
+        label: sourceMessage('copy.ClubOperations.08f8ad9243'),
+        value: `${signed.length} / ${open.length}`,
       },
       {
-        label: '다음 열리는 자리',
-        value: next?.label ?? '없음',
-        note: next ? `${seasonName(next.opens)} 시즌` : undefined,
+        label: sourceMessage('copy.ClubOperations.0ba335204c'),
+        value: sourceMessage('copy.ClubOperations.df32dea4ca', { p0: open.length - signed.length }),
+        note: open.some((slot) => !slot.contract && slot.offers.length)
+          ? sourceMessage('copy.ClubOperations.e8d89f630f')
+          : undefined,
+      },
+      {
+        label: sourceMessage('copy.ClubOperations.885b2ae92f'),
+        value: next?.label ?? sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+        note: next
+          ? sourceMessage('copy.ClubOperations.515f2f2582', { p0: seasonName(next.opens) })
+          : undefined,
       },
     ];
   }
   return (
     <>
-      {caption && <p data-testid="operations-caption">{caption}</p>}
-      <DeskStats label={`${label} 지표`} stats={stats} />
+      {localizeValue(caption && <p data-testid="operations-caption">{localizeValue(caption)}</p>)}
+      <DeskStats
+        label={displayMessage('copy.ClubOperations.44e5ce43f9', { p0: label })}
+        stats={stats}
+      />
     </>
   );
 }
@@ -85,6 +115,7 @@ export function ClubOperations({
   /** The era's money context under the finances. */
   legacy: ReactNode;
 }) {
+  useTextLocale();
   const { t } = useLocale();
   const w = state.view!.world;
   const [view] = useAddressTab<OperationsView>('view', OPERATIONS_VIEWS, 'investment', {
@@ -106,40 +137,60 @@ export function ClubOperations({
         onChange={(next) => {
           if (next !== view) openOperations(next);
         }}
-        label={t('club.operations.title')}
+        label={localizeValue(t('club.operations.title'))}
         idPrefix="club-operations"
       />
       <TabPanel idPrefix="club-operations" value={view}>
         <DeskBody data-operations-view={view}>
-          {view !== 'identity' && (
-            <OperationsFacts w={w} view={view} label={label} sponsors={state.view!.sponsors} />
+          {localizeValue(
+            view !== 'identity' && (
+              <OperationsFacts
+                w={w}
+                view={view}
+                label={localizeValue(label)}
+                sponsors={state.view!.sponsors}
+              />
+            ),
           )}
-          {view !== 'identity' && (
-            <DeskSettings>
-              {/* Mounted with the section, which loads as its own chunk: a panel arriving later
+          {localizeValue(
+            view !== 'identity' && (
+              <DeskSettings>
+                {/* Mounted with the section, which loads as its own chunk: a panel arriving later
                   would push the offers below it away from an owner's tap. */}
-              {responsibilities.length > 0 && (
-                <OwnerOffice
-                  key={`${w.id}:${view}`}
-                  client={client}
-                  controller={controller}
-                  scope={responsibilities}
-                />
-              )}
-              <DirectionAreas w={w} areas={DESK_AREAS[view]} />
-            </DeskSettings>
+                {localizeValue(
+                  responsibilities.length > 0 && (
+                    <OwnerOffice
+                      key={`${w.id}:${view}`}
+                      client={client}
+                      controller={controller}
+                      scope={responsibilities}
+                    />
+                  ),
+                )}
+                <DirectionAreas w={w} areas={DESK_AREAS[view]} />
+              </DeskSettings>
+            ),
           )}
-          {view === 'investment' ? (
-            <>
-              <FinanceOutlook w={w} />
-              <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
-              <BusinessWorkbench state={state} client={client} part="build" />
-              {w.campaigns.length > 0 && (
-                <BusinessWorkbench state={state} client={client} part="marketing" legacy={legacy} />
-              )}
-            </>
-          ) : (
-            <BusinessWorkbench state={state} client={client} part={view} legacy={legacy} />
+          {localizeValue(
+            view === 'investment' ? (
+              <>
+                <FinanceOutlook w={w} />
+                <BusinessWorkbench state={state} client={client} part="finance" legacy={legacy} />
+                <BusinessWorkbench state={state} client={client} part="build" />
+                {localizeValue(
+                  w.campaigns.length > 0 && (
+                    <BusinessWorkbench
+                      state={state}
+                      client={client}
+                      part="marketing"
+                      legacy={legacy}
+                    />
+                  ),
+                )}
+              </>
+            ) : (
+              <BusinessWorkbench state={state} client={client} part={view} legacy={legacy} />
+            ),
           )}
         </DeskBody>
       </TabPanel>

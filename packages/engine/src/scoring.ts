@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
   Fixture,
   GoalScorerSeason,
@@ -98,7 +99,7 @@ export function recordScorers(w: World, playback: MatchPlayback) {
   for (const { id, metrics } of playback.record.players) {
     if (!(metrics[10]! > 0)) continue;
     const member = members.get(id);
-    if (!member) throw new Error('득점 기록의 선수가 경기 명단에 없습니다.');
+    if (!member) throw new Error(sourceMessage('copy.scoring.2a42b3d05a'));
     const player = member.p;
     const club = member.side === 0 ? playback.record.home : playback.record.away;
     let index = indices.get(id);

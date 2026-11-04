@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type {
   CupRun,
   MatchRecord,
@@ -15,14 +16,20 @@ export function nationName(code: string) {
 
 /** How far we went in one competition of a season, in a word: 우승, 준우승 or "8강 탈락". */
 export function runResult(run: CupRun) {
-  return run.champion ? '우승' : run.reached === '결승' ? '준우승' : `${run.reached} 탈락`;
+  return run.champion
+    ? sourceMessage('copy.CupHistory.31e52393f3')
+    : run.reached === sourceMessage('copy.CupHistory.d7f030913a')
+      ? sourceMessage('copy.CupHistory.adbe7b40f8')
+      : sourceMessage('copy.CupsView.9f7893bf1b', { p0: run.reached });
 }
 
 /** Our line under a season's final: our result, or that we were not in it. */
 export function runLine(season: Pick<SeasonArchive, 'runs'>, key: string) {
-  if (!season.runs) return '우리 클럽의 컵 성적은 기록되지 않은 시즌이에요';
+  if (!season.runs) return sourceMessage('copy.cupRoute.205db39c16');
   const run = season.runs.find((entry) => entry.key === key);
-  return run ? `우리 클럽 · ${runResult(run)}` : '우리 클럽은 나서지 않았어요';
+  return run
+    ? sourceMessage('copy.TransferRecords.5ddc097395', { p0: runResult(run) })
+    : sourceMessage('copy.CupHistory.c594d0de0f');
 }
 
 export interface RouteLeg {
@@ -83,7 +90,7 @@ function scorersOf(m: MatchRecord, own: string) {
   const side = m.home === own ? 0 : 1,
     minutes = new Map<string, number[]>();
   for (const h of [...m.highlights].sort((a, b) => a.minute - b.minute))
-    if (h.action === '골' && h.side === side)
+    if (h.action === sourceMessage('copy.summary.68a6cf8ed8') && h.side === side)
       minutes.set(h.player, [...(minutes.get(h.player) || []), h.minute]);
   return [...minutes]
     .map(([player, at]) => `${player} ${at.map((minute) => `${minute}′`).join(' ')}`)
@@ -118,27 +125,46 @@ function phaseRow(
     else lost++;
   }
   const entry = season?.europe.find((e) => e.kind === key);
-  const table = (label === '2차 조별 리그' ? entry?.secondStandings : entry?.standings) || [];
+  const table =
+    (label === sourceMessage('copy.cupRoute.be35e01438')
+      ? entry?.secondStandings
+      : entry?.standings) || [];
   const rowOf = (id: string) => table.find((row) => w.clubs[row[0]]?.id === id);
   const ours = rowOf(own);
-  let standing = `승점 ${won * 3 + drawn}`;
-  if (ours && label === '리그 페이즈')
-    standing = `${ours[1]}위 · ${table.length}팀 · 승점 ${ours[3]}`;
+  let standing: string = sourceMessage('copy.ClubHub.7776cad992', { p0: won * 3 + drawn });
+  if (ours && label === sourceMessage('copy.competitionLabels.6b9ab4d59c'))
+    standing = sourceMessage('copy.cupRoute.122bf0a87f', {
+      p0: ours[1],
+      p1: table.length,
+      p2: ours[3],
+    });
   else if (ours) {
     const members = [...new Set([own, ...matches.map((m) => (m.home === own ? m.away : m.home))])];
     const rows = members.map(rowOf);
     if (rows.every((row) => row)) {
       const place = rows.sort((a, b) => a![1] - b![1]).findIndex((row) => row === ours) + 1;
-      standing = `조 ${place}위 · ${members.length}팀 · 승점 ${ours[3]}`;
+      standing = sourceMessage('copy.cupRoute.9d8759a693', {
+        p0: place,
+        p1: members.length,
+        p2: ours[3],
+      });
     }
   }
   return {
     kind: 'phase',
     label,
     matches,
-    record: `${won}승 ${drawn}무 ${lost}패 · ${gf}득점 ${ga}실점`,
+    record: sourceMessage('copy.cupRoute.e6ab2ce2a7', {
+      p0: won,
+      p1: drawn,
+      p2: lost,
+      p3: gf,
+      p4: ga,
+    }),
     standing,
-    result: advanced ? '진출' : '탈락',
+    result: advanced
+      ? sourceMessage('copy.cupRoute.e030088bf0')
+      : sourceMessage('copy.CupsView.4084035433'),
   };
 }
 
@@ -191,15 +217,16 @@ export function cupRoute(
     const first = legs[0].match,
       opponent = first.home === own ? first.away : first.home,
       club = w.clubs.find((c) => c.id === opponent),
-      final = label === '결승';
+      final = label === sourceMessage('copy.CupHistory.d7f030913a');
     let tag: string | undefined;
     if (key !== 'cup') tag = club && nationName(club.country);
     else if (archive.season?.standings.length) {
       // Every cup entrant is a professional club in that season's standings (→LEAGUE-5).
       const row = archive.season.standings.find((entry) => w.clubs[entry[0]]?.id === opponent);
-      tag = row && `${row[1] + 1}부`;
+      tag = row && sourceMessage('copy.cupRoute.3d1e4a6467', { p0: row[1] + 1 });
     }
-    const venue = (leg: RouteLeg) => `${leg.home ? '홈' : '원정'} ${leg.score[0]}–${leg.score[1]}`;
+    const venue = (leg: RouteLeg) =>
+      `${leg.home ? sourceMessage('fixture.home') : sourceMessage('fixture.away')} ${leg.score[0]}–${leg.score[1]}`;
     const [ours, theirs] = legs.reduce<[number, number]>(
       (sum, leg) => [sum[0] + leg.score[0], sum[1] + leg.score[1]],
       [0, 0],
@@ -215,10 +242,12 @@ export function cupRoute(
       );
       if (legs.length === 2 && key !== 'cup' && year < 2021 && away[0] !== away[1]) {
         won = away[0] > away[1];
-        decided = '원정 다득점';
+        decided = sourceMessage('copy.Bracket.76f88f090f');
       } else {
         const last = legs.at(-1)!,
-          shootout = last.match.highlights.find((h) => h.player === '승부차기');
+          shootout = last.match.highlights.find(
+            (h) => h.player === sourceMessage('copy.headToHead.16fa957ea6'),
+          );
         // The deciding leg keeps the shoot-out; without it, the title or a later round says who
         // went through.
         won = shootout
@@ -226,7 +255,7 @@ export function cupRoute(
           : final
             ? champion
             : after(legs.map((leg) => leg.match));
-        decided = '승부차기';
+        decided = sourceMessage('copy.headToHead.16fa957ea6');
       }
     }
     const xg = legs.every((leg) => leg.match.xg)
@@ -247,10 +276,28 @@ export function cupRoute(
       summary:
         legs.length === 1
           ? venue(legs[0])
-          : `${legs.map((leg) => `${leg.leg}차전 ${venue(leg)}`).join(' · ')} · 합계 ${ours}–${theirs}`,
+          : sourceMessage('copy.cupRoute.968d2d1647', {
+              p0: legs
+                .map((leg) =>
+                  sourceMessage('copy.cupRoute.dea0454473', { p0: leg.leg, p1: venue(leg) }),
+                )
+                .join(' · '),
+              p1: ours,
+              p2: theirs,
+            }),
       ...(xg ? { xg: `xG ${xg[0].toFixed(1)}–${xg[1].toFixed(1)}` } : {}),
-      result: final ? (won ? '우승' : '준우승') : won ? '진출' : '탈락',
-      ...(decided ? { decided: `${decided} ${won ? '승' : '패'}` } : {}),
+      result: final
+        ? won
+          ? sourceMessage('copy.CupHistory.31e52393f3')
+          : sourceMessage('copy.CupHistory.adbe7b40f8')
+        : won
+          ? sourceMessage('copy.cupRoute.e030088bf0')
+          : sourceMessage('copy.CupsView.4084035433'),
+      ...(decided
+        ? {
+            decided: `${decided} ${won ? sourceMessage('result.win') : sourceMessage('result.loss')}`,
+          }
+        : {}),
     });
   }
   return rows.sort((a, b) => firstRound(a) - firstRound(b));

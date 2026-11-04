@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useId, useState, type CSSProperties } from 'react';
 import { country } from '../../../../packages/catalogs/src/index';
 import type { GenerationDigest } from '../../../../packages/contracts/src/types';
@@ -44,17 +47,17 @@ import {
   traitDifficulty,
   WARTIME,
   WORLD_START,
-  type ClubSheetFacts,
+  type ClubProfile,
 } from './startChoices';
 import presentationStyle from './PresentationSettings.module.css';
 import s from './StartFlow.module.css';
 
 type Step = 'tier' | 'traits' | 'decade';
 const STEPS = [
-  ['tier', '구단주'],
-  ['traits', '특성'],
-  ['decade', '시대'],
-  ['club', '인수'],
+  ['tier', sourceMessage('shell.owner')],
+  ['traits', sourceMessage('copy.StartFlow.1f014f03f3')],
+  ['decade', sourceMessage('copy.StartFlow.0ba34ab95f')],
+  ['club', sourceMessage('copy.StartFlow.314728aaf5')],
 ] as const;
 /** The reference careers' start (→LEAGUE-13): a 1950 takeover by a 중견 사업가. */
 const FIRST_CHOICE = { tier: 'midsize', decade: 1950 } as const;
@@ -74,7 +77,7 @@ export interface StartFlowProps {
   /** Takes the club over with standard operating defaults (→WEB-15). */
   onTakeOver: (clubId: string) => void;
   /** Opens a club's squad, manager, stadium and history for its sheet. */
-  loadClub?: (clubId: string) => Promise<ClubSheetFacts | undefined>;
+  loadClub?: (clubId: string) => Promise<ClubProfile | undefined>;
   /** A generation failure; the flow offers a retry and its choices again. */
   error?: string;
   /** The game slot this career goes into (→WEB-62). */
@@ -107,6 +110,7 @@ export function StartFlow({
   readonly = false,
   initial,
 }: StartFlowProps) {
+  useTextLocale();
   const { t } = useLocale();
   const [choice, setChoice] = useState<StartChoice>(() => ({
     tier: initial?.tier ?? FIRST_CHOICE.tier,
@@ -135,95 +139,123 @@ export function StartFlow({
     onGenerate({ ...choice, seed: choice.seed.trim() || randomSeed() });
   };
   return (
-    <section className={s.start} data-testid="start-flow" aria-label="새 게임">
+    <section className={s.start} data-testid="start-flow" aria-label={displayMessage('slots.new')}>
       <header className={s.head}>
         <div className={`${s.slotBar} ${presentationStyle.startBar}`}>
-          <span>{t('founding.slot', { slot: slot + 1 })}</span>
-          {onBack && (
-            <button type="button" onClick={onBack}>
-              {t('founding.backToSlots')}
-            </button>
+          <span>{localizeValue(t('founding.slot', { slot: slot + 1 }))}</span>
+          {localizeValue(
+            onBack && (
+              <button type="button" onClick={onBack}>
+                {localizeValue(t('founding.backToSlots'))}
+              </button>
+            ),
           )}
         </div>
-        <ol className={s.steps} data-surface="tile" aria-label="새 게임 단계">
-          {STEPS.map(([id, label], index) => (
-            <li
-              key={id}
-              aria-current={index === order ? 'step' : undefined}
-              data-done={index < order || undefined}
-            >
-              <b>{String(index + 1).padStart(2, '0')}</b> {label}
-            </li>
-          ))}
+        <ol
+          className={s.steps}
+          data-surface="tile"
+          aria-label={displayMessage('copy.StartFlow.a84cebe204')}
+        >
+          {localizeValue(
+            STEPS.map(([id, label], index) => (
+              <li
+                key={id}
+                aria-current={index === order ? 'step' : undefined}
+                data-done={index < order || undefined}
+              >
+                <b>{localizeValue(String(index + 1).padStart(2, '0'))}</b> {localizeValue(label)}
+              </li>
+            )),
+          )}
         </ol>
       </header>
-      {view === 'tier' && <TierStep tier={choice.tier} onChange={(tier) => update({ tier })} />}
-      {view === 'traits' && (
-        <TraitStep traits={choice.traits} onChange={(traits) => update({ traits })} />
+      {localizeValue(
+        view === 'tier' && <TierStep tier={choice.tier} onChange={(tier) => update({ tier })} />,
       )}
-      {view === 'decade' && (
-        <DecadeStep
-          decade={choice.decade}
-          seed={choice.seed}
-          onDecade={(decade) => update({ decade })}
-          onSeed={(seed) => update({ seed })}
-        />
+      {localizeValue(
+        view === 'traits' && (
+          <TraitStep traits={choice.traits} onChange={(traits) => update({ traits })} />
+        ),
       )}
-      {view === 'progress' && (
-        <GenerationProgress
-          choice={choice}
-          season={progress?.season ?? digest?.season ?? WORLD_START}
-          digest={digest}
-          card={cards.shown}
-          error={error}
-          onRetry={generate}
-          onChange={() => setGenerating(false)}
-          blocked={busy || readonly}
-        />
+      {localizeValue(
+        view === 'decade' && (
+          <DecadeStep
+            decade={choice.decade}
+            seed={choice.seed}
+            onDecade={(decade) => update({ decade })}
+            onSeed={(seed) => update({ seed })}
+          />
+        ),
       )}
-      {view === 'club' && listings && (
-        <ClubListing
-          listings={listings}
-          fortune={fortune}
-          year={takeoverYear(choice.decade)}
-          busy={busy}
-          readonly={readonly}
-          loadClub={loadClub}
-          onTakeOver={onTakeOver}
-        />
+      {localizeValue(
+        view === 'progress' && (
+          <GenerationProgress
+            choice={choice}
+            season={progress?.season ?? digest?.season ?? WORLD_START}
+            digest={digest}
+            card={cards.shown}
+            error={error}
+            onRetry={generate}
+            onChange={() => setGenerating(false)}
+            blocked={busy || readonly}
+          />
+        ),
       )}
-      {(view === 'tier' || view === 'traits' || view === 'decade') && (
-        <div className={s.actions} data-ui="launch">
-          {view !== 'tier' && (
-            <button
-              type="button"
-              data-ui="secondary"
-              onClick={() => setStep(view === 'decade' ? 'traits' : 'tier')}
-            >
-              ← 이전
-            </button>
-          )}
-          {view === 'decade' ? (
-            <button
-              type="button"
-              data-ui="primary"
-              className={s.next}
-              disabled={busy || readonly}
-              onClick={generate}
-            >
-              {busy ? '세계를 준비하는 중…' : '세계 생성 →'}
-            </button>
-          ) : (
-            <button
-              type="button"
-              data-ui="primary"
-              className={s.next}
-              onClick={() => setStep(view === 'tier' ? 'traits' : 'decade')}
-            >
-              다음 →
-            </button>
-          )}
-        </div>
+      {localizeValue(
+        view === 'club' && listings && (
+          <ClubListing
+            listings={listings}
+            fortune={fortune}
+            year={takeoverYear(choice.decade)}
+            busy={busy}
+            readonly={readonly}
+            loadClub={loadClub}
+            onTakeOver={onTakeOver}
+          />
+        ),
+      )}
+      {localizeValue(
+        (view === 'tier' || view === 'traits' || view === 'decade') && (
+          <div className={s.actions} data-ui="launch">
+            {localizeValue(
+              view !== 'tier' && (
+                <button
+                  type="button"
+                  data-ui="secondary"
+                  onClick={() => setStep(view === 'decade' ? 'traits' : 'tier')}
+                >
+                  {richMessage('copy.StartFlow.fc21be907f')}
+                </button>
+              ),
+            )}
+            {localizeValue(
+              view === 'decade' ? (
+                <button
+                  type="button"
+                  data-ui="primary"
+                  className={s.next}
+                  disabled={busy || readonly}
+                  onClick={generate}
+                >
+                  {localizeValue(
+                    busy
+                      ? sourceMessage('copy.StartFlow.2a7ec63891')
+                      : sourceMessage('copy.StartFlow.d881a69ece'),
+                  )}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  data-ui="primary"
+                  className={s.next}
+                  onClick={() => setStep(view === 'tier' ? 'traits' : 'decade')}
+                >
+                  {richMessage('copy.StartFlow.1a3067051d')}
+                </button>
+              ),
+            )}
+          </div>
+        ),
       )}
     </section>
   );
@@ -237,27 +269,30 @@ export function TierStep({
   tier: WealthTier;
   onChange: (tier: WealthTier) => void;
 }) {
+  useTextLocale();
   const title = useId();
   return (
     <div className={s.step}>
-      <h2 id={title}>어떤 구단주인가요?</h2>
+      <h2 id={title}>{richMessage('copy.StartFlow.578c92d349')}</h2>
       <div className={s.cards} role="group" aria-labelledby={title} data-testid="start-tiers">
-        {WEALTH_TIER_IDS.map((id) => (
-          <button
-            key={id}
-            type="button"
-            className={s.card}
-            aria-pressed={tier === id}
-            onClick={() => onChange(id)}
-          >
-            <b>{OWNER_TIERS[id].label}</b>
-            <span>{TIER_REACH[id]}</span>
-            <small>{tierFortuneLine(id)}</small>
-          </button>
-        ))}
+        {localizeValue(
+          WEALTH_TIER_IDS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              className={s.card}
+              aria-pressed={tier === id}
+              onClick={() => onChange(id)}
+            >
+              <b>{localizeValue(OWNER_TIERS[id].label)}</b>
+              <span>{localizeValue(TIER_REACH[id])}</span>
+              <small>{localizeValue(tierFortuneLine(id))}</small>
+            </button>
+          )),
+        )}
       </div>
       <p className={s.consequence} aria-live="polite">
-        {tierNote(tier)}
+        {localizeValue(tierNote(tier))}
       </p>
     </div>
   );
@@ -271,27 +306,35 @@ export function TraitStep({
   traits: OwnerTrait[];
   onChange: (traits: OwnerTrait[]) => void;
 }) {
+  useTextLocale();
   const difficulty = traitDifficulty(traits.length);
   const full = traits.length >= OWNER_TRAIT_LIMIT;
   const title = useId();
   return (
     <div className={s.step}>
-      <h2 id={title}>어떤 재능을 가졌나요?</h2>
+      <h2 id={title}>{richMessage('copy.StartFlow.0d3e8e0a01')}</h2>
       <div className={s.gauge} data-surface="inset" aria-live="polite" data-testid="trait-gauge">
         <span className={s.gaugeHead}>
           <span>
-            난이도 <b>{difficulty.label}</b>
+            {richMessage('copy.StartFlow.5cbabfce0c', {
+              p0: <b>{localizeValue(difficulty.label)}</b>,
+            })}
           </span>
           <small>
-            특성 {difficulty.count}/{OWNER_TRAIT_LIMIT}
+            {richMessage('copy.StartFlow.4ce8c4ff95', {
+              p0: difficulty.count,
+              p1: OWNER_TRAIT_LIMIT,
+            })}
           </small>
         </span>
         <span className={s.meter} aria-hidden="true">
-          <small>{TRAIT_DIFFICULTY[0]}</small>
-          {TRAIT_DIFFICULTY.map((label, index) => (
-            <i key={label} data-on={index <= difficulty.step || undefined} />
-          ))}
-          <small>{TRAIT_DIFFICULTY.at(-1)}</small>
+          <small>{localizeValue(TRAIT_DIFFICULTY[0])}</small>
+          {localizeValue(
+            TRAIT_DIFFICULTY.map((label, index) => (
+              <i key={label} data-on={index <= difficulty.step || undefined} />
+            )),
+          )}
+          <small>{localizeValue(TRAIT_DIFFICULTY.at(-1))}</small>
         </span>
       </div>
       <div
@@ -300,24 +343,26 @@ export function TraitStep({
         aria-labelledby={title}
         data-testid="start-traits"
       >
-        {OWNER_TRAIT_IDS.map((id) => {
-          const picked = traits.includes(id);
-          return (
-            <button
-              key={id}
-              type="button"
-              className={s.card}
-              aria-pressed={picked}
-              disabled={!picked && full}
-              onClick={() => onChange(toggleTrait(traits, id))}
-            >
-              <b>{OWNER_TRAITS[id].label}</b>
-              <small>{TRAIT_EFFECTS[id]}</small>
-            </button>
-          );
-        })}
+        {localizeValue(
+          OWNER_TRAIT_IDS.map((id) => {
+            const picked = traits.includes(id);
+            return (
+              <button
+                key={id}
+                type="button"
+                className={s.card}
+                aria-pressed={picked}
+                disabled={!picked && full}
+                onClick={() => onChange(toggleTrait(traits, id))}
+              >
+                <b>{localizeValue(OWNER_TRAITS[id].label)}</b>
+                <small>{localizeValue(TRAIT_EFFECTS[id])}</small>
+              </button>
+            );
+          }),
+        )}
       </div>
-      <p className={s.consequence}>고른 특성은 커리어 내내 그대로예요.</p>
+      <p className={s.consequence}>{richMessage('copy.StartFlow.6ab0ed7481')}</p>
     </div>
   );
 }
@@ -334,47 +379,57 @@ export function DecadeStep({
   onDecade: (decade: TakeoverDecade) => void;
   onSeed: (seed: string) => void;
 }) {
+  useTextLocale();
   const before = seasonsBefore(takeoverYear(decade));
   const title = useId();
   return (
     <div className={s.step}>
-      <h2 id={title}>언제 구단을 사나요?</h2>
+      <h2 id={title}>{richMessage('copy.StartFlow.1fd1f26d79')}</h2>
       <div
         className={`${s.cards} ${s.decades}`}
         role="group"
         aria-labelledby={title}
         data-testid="start-decades"
       >
-        {TAKEOVER_DECADES.map((id) => (
-          <button
-            key={id}
-            type="button"
-            className={s.card}
-            aria-pressed={decade === id}
-            onClick={() => onDecade(id)}
-          >
-            <b>{id}년대</b>
-            <small>{DECADE_LINES[id]}</small>
-          </button>
-        ))}
+        {localizeValue(
+          TAKEOVER_DECADES.map((id) => (
+            <button
+              key={id}
+              type="button"
+              className={s.card}
+              aria-pressed={decade === id}
+              onClick={() => onDecade(id)}
+            >
+              <b>{richMessage('copy.StartFlow.ef153d8864', { p0: id })}</b>
+              <small>{localizeValue(DECADE_LINES[id])}</small>
+            </button>
+          )),
+        )}
       </div>
       <p className={s.consequence} aria-live="polite">
-        {decadeSeason(decade)} ·{' '}
-        {before ? `그 전 ${before}시즌을 세계가 먼저 치러요` : '세계가 바로 시작돼요'}
+        {localizeValue(decadeSeason(decade))} ·{localizeValue(' ')}
+        {localizeValue(
+          before
+            ? sourceMessage('copy.StartFlow.3cec68ac0b', { p0: before })
+            : sourceMessage('copy.StartFlow.af486d4f60'),
+        )}
       </p>
       <details data-ui="disclosure" className={s.advanced}>
-        <summary>고급 설정</summary>
+        <summary>{richMessage('copy.StartFlow.eb114fcbc7')}</summary>
         <div>
           <label>
-            세계 생성 시드
-            <input
-              maxLength={80}
-              value={seed}
-              onChange={(event) => onSeed(event.target.value)}
-              autoComplete="off"
-            />
+            {richMessage('copy.StartFlow.5b793818cf', {
+              p0: (
+                <input
+                  maxLength={80}
+                  value={seed}
+                  onChange={(event) => onSeed(event.target.value)}
+                  autoComplete="off"
+                />
+              ),
+            })}
           </label>
-          <p>같은 시드와 시대는 같은 세계를 만들어요.</p>
+          <p>{richMessage('copy.StartFlow.a5a562ea98')}</p>
         </div>
       </details>
     </div>
@@ -428,131 +483,167 @@ export function GenerationProgress({
   onRetry?: () => void;
   onChange?: () => void;
 }) {
+  useTextLocale();
   const year = takeoverYear(choice.decade);
   const share = Math.round(generationShare(season, choice.decade) * 100);
   const difficulty = traitDifficulty(choice.traits.length);
   return (
     <div className={s.progress} data-testid="world-generation">
       <div role="status" aria-live="polite" className={s.progressHead}>
-        <h2>세계를 생성중…</h2>
+        <h2>{richMessage('copy.StartFlow.957e604e90')}</h2>
         <p className={s.season}>
-          <b>{seasonName(Math.min(season, year))}</b> 시즌
+          {richMessage('copy.ClubOperations.515f2f2582', {
+            p0: <b>{localizeValue(seasonName(Math.min(season, year)))}</b>,
+          })}
         </p>
       </div>
-      {year > WORLD_START && <GenerationHistory digest={digest} />}
-      <progress aria-label="세계 생성 진행" max={100} value={share} />
+      {localizeValue(year > WORLD_START && <GenerationHistory digest={digest} />)}
+      <progress aria-label={displayMessage('copy.StartFlow.3ca84950b7')} max={100} value={share} />
       <p className={s.consequence}>
-        {seasonName(WORLD_START)} 시즌부터 {seasonName(year)} 시즌 개막까지 · {share}%
+        {richMessage('copy.StartFlow.97a633734e', {
+          p0: seasonName(WORLD_START),
+          p1: seasonName(year),
+          p2: share,
+        })}
       </p>
-      {year >= WARTIME.restart && (
-        <p className={s.consequence}>
-          {seasonName(WARTIME.last + 1)}–{seasonName(WARTIME.restart - 1)} 시즌은 전쟁으로 열리지
-          않아요.
-        </p>
+      {localizeValue(
+        year >= WARTIME.restart && (
+          <p className={s.consequence}>
+            {richMessage('copy.StartFlow.171d85ae96', {
+              p0: seasonName(WARTIME.last + 1),
+              p1: seasonName(WARTIME.restart - 1),
+            })}
+          </p>
+        ),
       )}
       <dl className={s.summary} data-surface="inset">
         <div>
-          <dt>구단주</dt>
-          <dd>{OWNER_TIERS[choice.tier].label}</dd>
+          <dt>{richMessage('shell.owner')}</dt>
+          <dd>{localizeValue(OWNER_TIERS[choice.tier].label)}</dd>
         </div>
         <div>
-          <dt>특성</dt>
+          <dt>{richMessage('copy.StartFlow.1f014f03f3')}</dt>
           <dd>
-            {choice.traits.length}개 · {difficulty.label}
+            {richMessage('copy.StartFlow.ee02f6b60d', {
+              p0: choice.traits.length,
+              p1: difficulty.label,
+            })}
           </dd>
         </div>
         <div>
-          <dt>시대</dt>
-          <dd>{choice.decade}년대</dd>
+          <dt>{richMessage('copy.StartFlow.0ba34ab95f')}</dt>
+          <dd>{richMessage('copy.StartFlow.ef153d8864', { p0: choice.decade })}</dd>
         </div>
       </dl>
-      {error && (
-        <div className={s.failed} role="alert">
-          <p>{error}</p>
-          <div className={s.actions}>
-            {onChange && (
-              <button type="button" data-ui="secondary" onClick={onChange}>
-                선택 바꾸기
-              </button>
-            )}
-            {onRetry && (
-              <button type="button" data-ui="primary" disabled={blocked} onClick={onRetry}>
-                다시 생성
-              </button>
-            )}
+      {localizeValue(
+        error && (
+          <div className={s.failed} role="alert">
+            <p>{localizeValue(error)}</p>
+            <div className={s.actions}>
+              {localizeValue(
+                onChange && (
+                  <button type="button" data-ui="secondary" onClick={onChange}>
+                    {richMessage('copy.StartFlow.6f68c82242')}
+                  </button>
+                ),
+              )}
+              {localizeValue(
+                onRetry && (
+                  <button type="button" data-ui="primary" disabled={blocked} onClick={onRetry}>
+                    {richMessage('copy.StartFlow.360952ad93')}
+                  </button>
+                ),
+              )}
+            </div>
           </div>
-        </div>
+        ),
       )}
-      {card && <FeatCard key={card.season} card={card} />}
+      {localizeValue(card && <FeatCard key={card.season} card={card} />)}
     </div>
   );
 }
 
 /** The latest season's facts, compact text rows that are no touch targets (→WEB-115). */
 function GenerationHistory({ digest }: { digest?: GenerationDigest }) {
+  useTextLocale();
   const { t } = useLocale();
   if (!digest)
     return (
       <p className={s.consequence} data-testid="generation-history">
-        {t('start.history.waiting')}
+        {localizeValue(t('start.history.waiting'))}
       </p>
     );
   return (
     <section
       className={s.history}
       data-testid="generation-history"
-      aria-label={t('start.history.region')}
+      aria-label={localizeValue(t('start.history.region'))}
     >
       <p className={s.historyHead}>
-        <span>{t('start.history.closed', { season: seasonName(digest.closed) })}</span>
+        <span>
+          {localizeValue(t('start.history.closed', { season: seasonName(digest.closed) }))}
+        </span>
         <span data-testid="generation-ballon-dor">
-          <small>{t('start.history.ballonDor')}</small>{' '}
-          {digest.ballonDor ? (
-            <>
-              <b>{digest.ballonDor.name}</b> · {digest.ballonDor.club.name}
-            </>
-          ) : (
-            t('start.history.ballonDorBefore', { season: seasonName(BALLON_DOR_CONFIG.first) })
+          <small>{localizeValue(t('start.history.ballonDor'))}</small>
+          {localizeValue(' ')}
+          {localizeValue(
+            digest.ballonDor ? (
+              <>
+                <b>{digest.ballonDor.name}</b> · {digest.ballonDor.club.name}
+              </>
+            ) : (
+              t('start.history.ballonDorBefore', { season: seasonName(BALLON_DOR_CONFIG.first) })
+            ),
           )}
         </span>
       </p>
       <div className={s.lists} data-surface="inset">
-        <section className={s.list} aria-label={t('start.history.elo')}>
-          <h3>{t('start.history.elo')}</h3>
+        <section className={s.list} aria-label={localizeValue(t('start.history.elo'))}>
+          <h3>{localizeValue(t('start.history.elo'))}</h3>
           <ol data-testid="generation-elo">
-            {digest.elo.map((row) => (
-              <li key={row.id}>
-                <span className={s.name}>{row.name}</span>
-                <small>{row.country}</small>
-                <b>{row.elo}</b>
-              </li>
-            ))}
+            {localizeValue(
+              digest.elo.map((row) => (
+                <li key={row.id}>
+                  <span className={s.name}>{row.name}</span>
+                  <small>{localizeValue(row.country)}</small>
+                  <b>{localizeValue(row.elo)}</b>
+                </li>
+              )),
+            )}
           </ol>
         </section>
-        <section className={s.list} aria-label={t('start.history.champions')}>
-          <h3>{t('start.history.champions')}</h3>
+        <section className={s.list} aria-label={localizeValue(t('start.history.champions'))}>
+          <h3>{localizeValue(t('start.history.champions'))}</h3>
           <ul data-testid="generation-champions">
-            {digest.champions.map((row) => (
-              <li key={row.country}>
-                <small>{country(row.country).name}</small>
-                <span className={s.name}>{row.club.name}</span>
-              </li>
-            ))}
-          </ul>
-          <h3>{t('start.history.europe')}</h3>
-          {digest.europe.length ? (
-            <ul data-testid="generation-europe">
-              {digest.europe.map((row) => (
-                <li key={row.kind}>
-                  <small>{row.name}</small>
+            {localizeValue(
+              digest.champions.map((row) => (
+                <li key={row.country}>
+                  <small>{localizeValue(country(row.country).name)}</small>
                   <span className={s.name}>{row.club.name}</span>
                 </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={s.listNote}>
-              {t('start.history.europeBefore', { season: seasonName(EUROPE_FIRST) })}
-            </p>
+              )),
+            )}
+          </ul>
+          <h3>{localizeValue(t('start.history.europe'))}</h3>
+          {localizeValue(
+            digest.europe.length ? (
+              <ul className={s.europe} data-testid="generation-europe">
+                {localizeValue(
+                  digest.europe.map((row) => (
+                    <li key={row.kind}>
+                      <small>{localizeValue(row.name)}</small>
+                      <span className={s.name}>{row.club.name}</span>
+                    </li>
+                  )),
+                )}
+              </ul>
+            ) : (
+              <p className={s.listNote}>
+                {localizeValue(
+                  t('start.history.europeBefore', { season: seasonName(EUROPE_FIRST) }),
+                )}
+              </p>
+            ),
           )}
         </section>
       </div>
@@ -562,6 +653,7 @@ function GenerationHistory({ digest }: { digest?: GenerationDigest }) {
 
 /** A great feat's card: no input, closing by itself (→WEB-115). */
 function FeatCard({ card }: { card: GenerationCard }) {
+  useTextLocale();
   const { t } = useLocale();
   const { title, line } = featMessages(card, seasonName);
   return (
@@ -575,10 +667,10 @@ function FeatCard({ card }: { card: GenerationCard }) {
         style={{ '--feat-ms': `${GENERATION_CARD.ms}ms` } as CSSProperties}
       >
         <small>
-          {t('start.feat.label')} · {seasonName(card.closed)}
+          {localizeValue(t('start.feat.label'))} · {localizeValue(seasonName(card.closed))}
         </small>
-        <b>{t(...title)}</b>
-        <span>{t(...line)}</span>
+        <b>{localizeValue(t(...title))}</b>
+        <span>{localizeValue(t(...line))}</span>
       </div>
     </div>
   );

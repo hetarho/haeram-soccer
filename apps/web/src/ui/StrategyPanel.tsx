@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import type { Ban, Player, World } from '../../../../packages/contracts/src/types';
 import {
@@ -38,18 +41,22 @@ type Props = {
 
 /** The era's substitute rule in one line (→MATCH-20). */
 function eraRuleLine(era: EraRules) {
-  if (!era.named) return '교체 없음 (1965년 이전)';
-  if (era.injuryOnly) return `부상 교체 ${era.maxSubs}명`;
-  return `교체 명단 ${era.named}명 · 최대 ${era.maxSubs}명 교체${era.windows ? ` (${era.windows}회)` : ''}`;
+  if (!era.named) return sourceMessage('copy.StrategyPanel.626d4d1b43');
+  if (era.injuryOnly) return sourceMessage('copy.StrategyPanel.281a184e7e', { p0: era.maxSubs });
+  return sourceMessage('copy.StrategyPanel.a041ada37e', {
+    p0: era.named,
+    p1: era.maxSubs,
+    p2: era.windows ? sourceMessage('copy.StrategyPanel.8e012f761c', { p0: era.windows }) : '',
+  });
 }
 /** Where a ban counts: the league, a named domestic cup, every domestic competition or Europe. */
 function banScope(w: World, scope: Ban['scope']) {
-  if (scope === 'league') return '리그';
-  if (scope === 'domestic') return '국내 대회';
-  if (scope === 'europe') return '유럽 대회';
+  if (scope === 'league') return sourceMessage('navigation.league');
+  if (scope === 'domestic') return sourceMessage('copy.StrategyPanel.d9e6be2780');
+  if (scope === 'europe') return sourceMessage('copy.StrategyPanel.69f2bed53a');
   return (
     w.cups?.find((cup) => cup.fixtures.some((f) => `cup:${f.groupKey}` === scope))?.name ||
-    '컵 대회'
+    sourceMessage('copy.ClubTrends.cf5a6ab3e0')
   );
 }
 
@@ -59,35 +66,42 @@ function banScope(w: World, scope: Ban['scope']) {
  * strength and fatigue.
  */
 function ManagerLineup({ w, xi }: { w: World; xi: Player[] }) {
+  useTextLocale();
   const slots = formationOf(w.tactic);
   const summary = lineupSummary(xi, w.tactic);
   const values: { key: keyof typeof summary; label: string }[] = [
-    { key: 'strength', label: '선발 전력' },
-    { key: 'fatigue', label: '평균 피로' },
-    { key: 'attack', label: '공격수 마무리' },
-    { key: 'keeper', label: 'GK 선방 능력' },
+    { key: 'strength', label: sourceMessage('copy.StrategyPanel.a814616f8e') },
+    { key: 'fatigue', label: sourceMessage('copy.StrategyPanel.14314f9cd8') },
+    { key: 'attack', label: sourceMessage('copy.StrategyPanel.d26b1d5457') },
+    { key: 'keeper', label: sourceMessage('copy.StrategyPanel.0289aa796e') },
   ];
   return (
-    <section data-surface="panel" className={s.section} aria-label="감독의 선발">
+    <section
+      data-surface="panel"
+      className={s.section}
+      aria-label={displayMessage('copy.StrategyPanel.36f69f83b2')}
+    >
       <div className={s.sectionHead}>
-        <h3>감독의 선발</h3>
+        <h3>{richMessage('copy.StrategyPanel.36f69f83b2')}</h3>
         <span>
-          {FORMATIONS[w.tactic].name} · {tacticLabel[w.tactic]}
+          {FORMATIONS[w.tactic].name} · {localizeValue(tacticLabel[w.tactic])}
         </span>
       </div>
-      <div className={s.preview} aria-label="선발 전력과 피로">
-        {values.map(({ key, label }) => (
-          <div key={key}>
-            <span>{label}</span>
-            <strong>{summary[key]}</strong>
-          </div>
-        ))}
+      <div className={s.preview} aria-label={displayMessage('copy.StrategyPanel.5d312f4a91')}>
+        {localizeValue(
+          values.map(({ key, label }) => (
+            <div key={key}>
+              <span>{localizeValue(label)}</span>
+              <strong>{localizeValue(summary[key])}</strong>
+            </div>
+          )),
+        )}
       </div>
       <FormationPitch
         tactic={w.tactic}
-        label={`${FORMATIONS[w.tactic].name} 선발 배치`}
+        label={displayMessage('copy.StrategyPanel.a3903b46c3', { p0: FORMATIONS[w.tactic].name })}
         slotLabel={(index) => xi[index]?.name.split(' ').at(-1) ?? '—'}
-        slotTitle={(index) => xi[index]?.name ?? '빈 자리'}
+        slotTitle={(index) => xi[index]?.name ?? sourceMessage('copy.ClubOperations.0ba335204c')}
         slot={(index) => {
           const place = slots[index]!,
             player = xi[index];
@@ -100,26 +114,34 @@ function ManagerLineup({ w, xi }: { w: World; xi: Player[] }) {
               data-level={level ?? 0}
             >
               <small>
-                {place.position} · {ROLE_LABEL[place.role]}
+                {localizeValue(place.position)} · {localizeValue(ROLE_LABEL[place.role])}
               </small>
-              <b>{player ? player.name.split(' ').at(-1) : '—'}</b>
-              {player && (
-                <>
-                  <span>
-                    실효 {Math.round(slotOvr(player, place, ownMultiplier(player)))} ·{' '}
-                    {level ? LEVEL_LABEL[level] : '미숙'}
-                  </span>
-                  <span>적응 {player.adaptation.toFixed(2)}</span>
-                </>
+              <b>{localizeValue(player ? player.name.split(' ').at(-1) : '—')}</b>
+              {localizeValue(
+                player && (
+                  <>
+                    <span>
+                      {richMessage('copy.StrategyPanel.3f4c917b7b', {
+                        p0: Math.round(slotOvr(player, place, ownMultiplier(player))),
+                        p1: ' ',
+                        p2: level
+                          ? LEVEL_LABEL[level]
+                          : sourceMessage('copy.StrategyPanel.101801be09'),
+                      })}
+                    </span>
+                    <span>
+                      {richMessage('copy.StrategyPanel.e570acfafc', {
+                        p0: player.adaptation.toFixed(2),
+                      })}
+                    </span>
+                  </>
+                ),
               )}
             </div>
           );
         }}
       />
-      <p className={s.hint}>
-        감독이 자리마다 실효 능력과 피로를 비교해 선발과 전술을 정해요. 부상이나 징계로 빠진 선수는
-        고르지 않아요.
-      </p>
+      <p className={s.hint}>{richMessage('copy.StrategyPanel.6c08447c4a')}</p>
     </section>
   );
 }
@@ -129,6 +151,7 @@ function ManagerLineup({ w, xi }: { w: World; xi: Player[] }) {
  * substitutes, the set-piece takers as the match picks them, and who is out and why.
  */
 function MatchdaySquad({ w, xi }: { w: World; xi: Player[] }) {
+  useTextLocale();
   const next = nextOwnFixture(w);
   const era = eraRules(w.year);
   const bench = next
@@ -147,58 +170,73 @@ function MatchdaySquad({ w, xi }: { w: World; xi: Player[] }) {
       {
         player,
         reasons: [
-          ...(days > 0 ? [`부상 ${days}일`] : []),
-          ...own.map((ban) => `출장 정지 ${ban.matches}경기 (${banScope(w, ban.scope)})`),
+          ...(days > 0 ? [sourceMessage('copy.StrategyPanel.c57cdfb98a', { p0: days })] : []),
+          ...own.map((ban) =>
+            sourceMessage('copy.StrategyPanel.cc3521e24b', {
+              p0: ban.matches,
+              p1: banScope(w, ban.scope),
+            }),
+          ),
         ],
       },
     ];
   });
   return (
-    <section data-surface="sheet" className={s.matchday} aria-label="감독이 정한 경기 명단">
-      <h4>감독이 정한 경기 명단</h4>
-      <p className={s.hint}>{eraRuleLine(era)}</p>
+    <section
+      data-surface="sheet"
+      className={s.matchday}
+      aria-label={displayMessage('copy.StrategyPanel.fceb0546e2')}
+    >
+      <h4>{richMessage('copy.StrategyPanel.fceb0546e2')}</h4>
+      <p className={s.hint}>{localizeValue(eraRuleLine(era))}</p>
       <dl>
         <div>
-          <dt>교체 명단</dt>
+          <dt>{richMessage('copy.StrategyPanel.b3bb9702d7')}</dt>
           <dd>
-            {bench.length
-              ? bench.map((player) => `${player.name} (${player.position})`).join(' · ')
-              : '없음'}
+            {localizeValue(
+              bench.length
+                ? bench.map((player) => `${player.name} (${player.position})`).join(' · ')
+                : sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+            )}
           </dd>
         </div>
-        {(
-          [
-            ['penalty', '페널티킥'],
-            ['directFreeKick', '직접 프리킥'],
-            ['corner', '코너킥'],
-          ] as const
-        ).map(([key, label]) => (
-          <div key={key}>
-            <dt>{label}</dt>
-            <dd>{takers ? xi[takers[key]]!.name : '—'}</dd>
-          </div>
-        ))}
+        {localizeValue(
+          (
+            [
+              ['penalty', sourceMessage('copy.StrategyPanel.3d0a2ba63c')],
+              ['directFreeKick', sourceMessage('copy.StrategyPanel.44e7ad6ce3')],
+              ['corner', sourceMessage('copy.summary.64f1e3a4bc')],
+            ] as const
+          ).map(([key, label]) => (
+            <div key={key}>
+              <dt>{localizeValue(label)}</dt>
+              <dd>{localizeValue(takers ? xi[takers[key]]!.name : '—')}</dd>
+            </div>
+          )),
+        )}
         <div>
-          <dt>출전 불가</dt>
+          <dt>{richMessage('copy.StrategyPanel.1ee90f04c7')}</dt>
           <dd>
-            {out.length ? (
-              <ul>
-                {out.map(({ player, reasons }) => (
-                  <li key={player.id}>
-                    {player.name} · {player.position} · {reasons.join(' · ')}
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              '없음'
+            {localizeValue(
+              out.length ? (
+                <ul>
+                  {localizeValue(
+                    out.map(({ player, reasons }) => (
+                      <li key={player.id}>
+                        {player.name} · {localizeValue(player.position)} ·{' '}
+                        {localizeValue(reasons.join(' · '))}
+                      </li>
+                    )),
+                  )}
+                </ul>
+              ) : (
+                sourceMessage('copy.BusinessWorkbench.72ea3d64ac')
+              ),
             )}
           </dd>
         </div>
       </dl>
-      <p className={s.hint}>
-        교체 명단과 키커는 감독이 선발에 맞춰 정해요. 부상이나 징계로 빠진 선수는 명단에 오르지
-        않아요.
-      </p>
+      <p className={s.hint}>{richMessage('copy.StrategyPanel.2e274c2052')}</p>
     </section>
   );
 }
@@ -209,6 +247,7 @@ function MatchdaySquad({ w, xi }: { w: World; xi: Player[] }) {
  * tactic and the lineup (→CLUB-6, STAFF-22).
  */
 export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }: Props) {
+  useTextLocale();
   const acting = useGameState(gameActionsBlocked);
   const [open, setOpen] = useState(false);
   // The kit section mounts once queued work has settled, on the fixture that is next then.
@@ -240,33 +279,42 @@ export const StrategyPanel = memo(function StrategyPanel({ w, client, onClose }:
   const xi = startingSquad(w, clubOf(w), nextOwnFixture(w));
   return (
     <>
-      {open && (
-        <Dialog
-          label="다음 경기 상세 리포트"
-          onClose={close}
-          wide
-          actions={
-            <div className={s.actions}>
-              <button data-ui="primary" className={s.primary} onClick={close}>
-                확인하고 홈으로
-              </button>
-            </div>
-          }
-        >
-          <MatchBriefing w={w} xi={xi} />
-          <ManagerLineup w={w} xi={xi} />
-          <MatchdaySquad w={w} xi={xi} />
-          {/* The kit is its own section and command, apart from the manager's calls (→KIT-6). */}
-          <Card as="section" className={s.kit} aria-label="유니폼" title="유니폼">
-            {settling ? (
-              <p className={s.hint} role="status">
-                진행 중인 처리를 마치고 다음 경기 유니폼을 불러오는 중…
-              </p>
-            ) : (
-              <FixtureKitSelector client={client} blocked={blocked} />
-            )}
-          </Card>
-        </Dialog>
+      {localizeValue(
+        open && (
+          <Dialog
+            label={displayMessage('copy.catalog.50b403ba8e')}
+            onClose={close}
+            wide
+            actions={
+              <div className={s.actions}>
+                <button data-ui="primary" className={s.primary} onClick={close}>
+                  {richMessage('copy.StrategyPanel.ee132d1354')}
+                </button>
+              </div>
+            }
+          >
+            <MatchBriefing w={w} xi={xi} />
+            <ManagerLineup w={w} xi={xi} />
+            <MatchdaySquad w={w} xi={xi} />
+            {/* The kit is its own section and command, apart from the manager's calls (→KIT-6). */}
+            <Card
+              as="section"
+              className={s.kit}
+              aria-label={displayMessage('copy.StrategyPanel.77c8c91fbf')}
+              title={displayMessage('copy.StrategyPanel.77c8c91fbf')}
+            >
+              {localizeValue(
+                settling ? (
+                  <p className={s.hint} role="status">
+                    {richMessage('copy.StrategyPanel.333663c6f9')}
+                  </p>
+                ) : (
+                  <FixtureKitSelector client={client} blocked={blocked} />
+                ),
+              )}
+            </Card>
+          </Dialog>
+        ),
       )}
     </>
   );

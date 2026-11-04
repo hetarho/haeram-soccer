@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The owner's own money and career (→OWNER): the business bet and living costs at each settlement,
  * injections, the season-close dividend, his bankruptcy and the end of a career. The day loop calls
@@ -20,9 +21,9 @@ import { credit, debit } from './transactions';
 import { fanMoodDividend, fanMoodInjection } from './fan-mood';
 
 /** Refusal of an owner command while the career has no owner state. */
-export const OWNER_PENDING_MESSAGE = '구단주 기능은 아직 준비 중입니다';
+export const OWNER_PENDING_MESSAGE = sourceMessage('copy.owner.71f5af1271');
 /** Refusal of every command but reading the inbox once the career has ended (→OWNER-16). */
-export const ENDED_MESSAGE = '구단 운영이 끝났어요. 기록을 내보내거나 새 게임을 시작하세요.';
+export const ENDED_MESSAGE = sourceMessage('copy.owner.76e8ad26c8');
 
 export type OwnerCommand = Extract<
   Command,
@@ -114,7 +115,7 @@ export function livingCost(w: World, year = w.year) {
  */
 function settle(w: World, date: CareerDate, close = false) {
   const owner = w.owner!,
-    when = `${seasonDayLabel(date.year, date.day)} 정산`,
+    when = sourceMessage('copy.owner.dec290379c', { p0: seasonDayLabel(date.year, date.day) }),
     staked = stakeAmount(w);
   if (staked !== '0') {
     const chance = businessChance(w),
@@ -124,8 +125,12 @@ function settle(w: World, date: CareerDate, close = false) {
     addEvent(
       w,
       'owner-business',
-      won ? '사업 성공' : '사업 실패',
-      `${when} · 자금의 ${owner.stake}% 투자 · 성공 확률 ${Math.round(chance * 100)}%`,
+      won ? sourceMessage('copy.owner.ed2b47554e') : sourceMessage('copy.owner.6d7167145e'),
+      sourceMessage('copy.owner.63176133cc', {
+        p0: when,
+        p1: owner.stake,
+        p2: Math.round(chance * 100),
+      }),
       result,
     );
   }
@@ -134,16 +139,16 @@ function settle(w: World, date: CareerDate, close = false) {
   addEvent(
     w,
     'owner-living',
-    '구단주 생활비',
-    `${when} · 시작 자산의 ${OWNER_LIVING.rate * 100}%, 물가 반영`,
+    sourceMessage('copy.owner.232cfe2b08'),
+    sourceMessage('copy.owner.bad96cce83', { p0: when, p1: OWNER_LIVING.rate * 100 }),
     living,
   );
   if (close || owner.ownerCrisis || BigInt(owner.fortune) >= 0n) return;
   owner.ownerCrisis = { since: { ...date } };
   pushInbox(w, {
     kind: 'finance',
-    title: '구단주 파산 위기 · 시즌 마감까지 자금을 회복하세요',
-    detail: `구단주 자금이 ${moneyLabel(w, owner.fortune)}예요. 마이너스 자금은 사업에 걸 수 없어요. 시즌 마감의 배당과 생활비 뒤에도 마이너스면 구단주가 파산해 게임이 끝나요.`,
+    title: sourceMessage('copy.owner.0cde9f23e6'),
+    detail: sourceMessage('copy.owner.b7907d4f12', { p0: moneyLabel(w, owner.fortune) }),
     // A status, not a stop (→OWNER-15).
     attention: false,
   });
@@ -174,8 +179,12 @@ function payDividend(w: World) {
   addEvent(
     w,
     'owner-dividend',
-    '구단주 배당',
-    `시즌 순이익 ${moneyLabel(w, result.toString())}의 ${owner.dividendShare}%${amount < share ? ' · 구단 잔고까지만' : ''}`,
+    sourceMessage('copy.fan_mood.eb9f33a674'),
+    sourceMessage('copy.owner.137c121832', {
+      p0: moneyLabel(w, result.toString()),
+      p1: owner.dividendShare,
+      p2: amount < share ? sourceMessage('copy.owner.624de6618b') : '',
+    }),
     amount.toString(),
   );
   fanMoodDividend(w, amount);
@@ -216,8 +225,8 @@ export function ownerClose(w: World) {
   addEvent(
     w,
     'owner-bankruptcy',
-    '구단주 파산',
-    `구단주 자금 ${moneyLabel(w, owner.fortune)} · 시즌 마감의 배당과 생활비 뒤에도 빚이 남아 구단을 떠나요.`,
+    sourceMessage('copy.stories.ca78f66cf8'),
+    sourceMessage('copy.owner.4385f75996', { p0: moneyLabel(w, owner.fortune) }),
   );
 }
 
@@ -288,27 +297,30 @@ function recordFfp(w: World, amount: bigint) {
  */
 function inject(w: World, raw: string) {
   const owner = w.owner!;
-  if (!/^\d{1,40}$/.test(raw) || BigInt(raw) <= 0n) throw new Error('투입할 금액을 확인하세요.');
+  if (!/^\d{1,40}$/.test(raw) || BigInt(raw) <= 0n)
+    throw new Error(sourceMessage('copy.owner.8b20759351'));
   const amount = BigInt(raw),
     fortune = BigInt(owner.fortune);
   if (amount > fortune)
     throw new Error(
       fortune > 0n
-        ? `구단주 자금 ${moneyLabel(w, owner.fortune)}보다 많이 투입할 수 없어요.`
-        : '투입할 구단주 자금이 없어요.',
+        ? sourceMessage('copy.owner.9bc778a358', { p0: moneyLabel(w, owner.fortune) })
+        : sourceMessage('copy.owner.ae4f55fb9c'),
     );
   const room = ffpRoom(w);
   if (room !== undefined && amount > BigInt(room))
     throw new Error(
-      `UEFA 재정적 페어플레이 한도를 넘어요. 최근 ${FFP.window}시즌 남은 한도는 ${moneyLabel(w, room)}예요.`,
+      sourceMessage('copy.owner.61e73d0f38', { p0: FFP.window, p1: moneyLabel(w, room) }),
     );
   owner.fortune = (fortune - amount).toString();
   credit(w, amount.toString());
   addEvent(
     w,
     'owner-injection',
-    '구단주 자금 투입',
-    `구단주 자금 → 구단 잔고 · 매출에 들지 않는 자본${room !== undefined ? ' · UEFA 재정적 페어플레이 한도 안' : ''}`,
+    sourceMessage('copy.fan_mood.3881f2a2d6'),
+    sourceMessage('copy.owner.93ebcff894', {
+      p0: room !== undefined ? sourceMessage('copy.owner.8986617838') : '',
+    }),
     amount.toString(),
   );
   recordFfp(w, amount);
@@ -324,7 +336,7 @@ export function ownerCommand(w: World, cmd: OwnerCommand) {
     case 'owner-stake': {
       const { min, max } = OWNER_BUSINESS.stake;
       if (!Number.isInteger(cmd.percent) || cmd.percent < min || cmd.percent > max)
-        throw new Error(`사업 투자 비중은 ${min}~${max}% 사이의 정수로 정해요.`);
+        throw new Error(sourceMessage('copy.owner.3be6ab2c0e', { p0: min, p1: max }));
       owner.stake = cmd.percent;
       break;
     }
@@ -333,7 +345,7 @@ export function ownerCommand(w: World, cmd: OwnerCommand) {
       break;
     case 'owner-dividend':
       if (!DIVIDEND_SHARES.includes(cmd.share))
-        throw new Error(`배당 비율은 ${DIVIDEND_SHARES.join('·')}% 중에서 골라요.`);
+        throw new Error(sourceMessage('copy.owner.8dfe4740fd', { p0: DIVIDEND_SHARES.join('·') }));
       owner.dividendShare = cmd.share;
       break;
   }

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useMemo, useState, type PointerEvent } from 'react';
 import { ClubCrest } from './ClubCrest';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -9,13 +12,14 @@ import type { SeasonFiles } from './seasonArchive';
 import { seasonStats, share, type Leader, type SeasonStats } from './seasonStats';
 import s from './SeasonReview.module.css';
 import { Term } from './Term';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 
 const one = (value: number) => value.toFixed(1);
 const two = (value?: number) => (value === undefined ? '—' : value.toFixed(2));
 
 /** Cumulative points against expected points by league matchday (two series, one axis). */
 function PointsChart({ stats }: { stats: SeasonStats }) {
+  useTextLocale();
   const [focus, setFocus] = useState<number>();
   const rows = stats.progression;
   if (rows.length < 2) return null;
@@ -44,42 +48,58 @@ function PointsChart({ stats }: { stats: SeasonStats }) {
     <figure data-surface="sheet" className={s.chart}>
       <figcaption>
         <span>
-          <i className={s.keyPoints} aria-hidden="true" />
-          승점 <b>{rows[active].points}</b>
+          {richMessage('copy.SeasonReview.5909975c35', {
+            p0: <i className={s.keyPoints} aria-hidden="true" />,
+            p1: <b>{localizeValue(rows[active].points)}</b>,
+          })}
         </span>
-        {xptsRows.length === rows.length && (
-          <span>
-            <i className={s.keyXpts} aria-hidden="true" />
-            기대 승점 <b>{one(rows[active].xpts!)}</b>
-          </span>
+        {localizeValue(
+          xptsRows.length === rows.length && (
+            <span>
+              {richMessage('copy.SeasonReview.dfa83a11da', {
+                p0: <i className={s.keyXpts} aria-hidden="true" />,
+                p1: <b>{localizeValue(one(rows[active].xpts!))}</b>,
+              })}
+            </span>
+          ),
         )}
-        <small>{active + 1}라운드</small>
+        <small>{richMessage('copy.BusinessWorkbench.fcefde4602', { p0: active + 1 })}</small>
       </figcaption>
       <svg
         viewBox={`0 0 ${W} ${H}`}
         role="img"
-        aria-label={`리그 누적 승점 ${stats.points}${stats.xpts !== undefined ? `, 기대 승점 ${one(stats.xpts)}` : ''}`}
+        aria-label={displayMessage('copy.SeasonReview.c8f4a22cbd', {
+          p0: stats.points,
+          p1:
+            stats.xpts !== undefined
+              ? sourceMessage('copy.SeasonReview.31989325b8', { p0: one(stats.xpts) })
+              : '',
+        })}
         onPointerMove={pick}
         onPointerDown={pick}
         onPointerLeave={() => setFocus(undefined)}
       >
-        {[0, Math.round(max / 2), Math.round(max)].map((tick) => (
-          <g key={tick}>
-            <line x1={L} x2={W - R} y1={y(tick)} y2={y(tick)} className={s.grid} />
-            <text x={L - 4} y={y(tick) + 3} textAnchor="end" className={s.tick}>
-              {tick}
-            </text>
-          </g>
-        ))}
-        {xptsRows.length === rows.length && (
-          <polyline
-            points={rows.map((r, i) => `${x(i)},${y(r.xpts!)}`).join(' ')}
-            fill="none"
-            stroke="#ffcb47"
-            strokeWidth="2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
+        {localizeValue(
+          [0, Math.round(max / 2), Math.round(max)].map((tick) => (
+            <g key={tick}>
+              <line x1={L} x2={W - R} y1={y(tick)} y2={y(tick)} className={s.grid} />
+              <text x={L - 4} y={y(tick) + 3} textAnchor="end" className={s.tick}>
+                {localizeValue(tick)}
+              </text>
+            </g>
+          )),
+        )}
+        {localizeValue(
+          xptsRows.length === rows.length && (
+            <polyline
+              points={rows.map((r, i) => `${x(i)},${y(r.xpts!)}`).join(' ')}
+              fill="none"
+              stroke="#ffcb47"
+              strokeWidth="2"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          ),
         )}
         <polyline
           points={rows.map((r, i) => `${x(i)},${y(r.points)}`).join(' ')}
@@ -98,15 +118,17 @@ function PointsChart({ stats }: { stats: SeasonStats }) {
           stroke="#07110e"
           strokeWidth="2"
         />
-        {rows[active].xpts !== undefined && (
-          <circle
-            cx={x(active)}
-            cy={y(rows[active].xpts!)}
-            r="4"
-            fill="#ffcb47"
-            stroke="#07110e"
-            strokeWidth="2"
-          />
+        {localizeValue(
+          rows[active].xpts !== undefined && (
+            <circle
+              cx={x(active)}
+              cy={y(rows[active].xpts!)}
+              r="4"
+              fill="#ffcb47"
+              stroke="#07110e"
+              strokeWidth="2"
+            />
+          ),
         )}
       </svg>
     </figure>
@@ -118,38 +140,38 @@ function Leaders({
   unit,
   leaders,
   digits,
-  players,
 }: {
   title: string;
   unit: string;
   leaders: Leader[];
   digits?: number;
-  /** Our players' ids: their names open the player sheet (→WEB-59). */
-  players: Set<string>;
 }) {
+  useTextLocale();
   return (
     <div data-surface="sheet" className={s.leader}>
-      <span>{title}</span>
-      {leaders.length ? (
-        <ol>
-          {leaders.map((leader) => (
-            <li key={leader.id}>
-              <b>
-                {players.has(leader.id) ? (
-                  <PlayerLink id={leader.id} name={leader.name} />
-                ) : (
-                  leader.name
-                )}
-              </b>
-              <em>
-                {digits === undefined ? number(leader.value) : leader.value.toFixed(digits)}
-                {unit}
-              </em>
-            </li>
-          ))}
-        </ol>
-      ) : (
-        <p>기록 없음</p>
+      <span>{localizeValue(title)}</span>
+      {localizeValue(
+        leaders.length ? (
+          <ol>
+            {localizeValue(
+              leaders.map((leader) => (
+                <li key={leader.id}>
+                  <b>
+                    <PlayerLink id={leader.id} name={leader.name} />
+                  </b>
+                  <em>
+                    {localizeValue(
+                      digits === undefined ? number(leader.value) : leader.value.toFixed(digits),
+                    )}
+                    {localizeValue(unit)}
+                  </em>
+                </li>
+              )),
+            )}
+          </ol>
+        ) : (
+          <p>{richMessage('copy.SeasonReview.852bf68e8e')}</p>
+        ),
       )}
     </div>
   );
@@ -174,18 +196,18 @@ export function SeasonReview({
   failed?: boolean;
   clubs?: number;
 }) {
+  useTextLocale();
   // Only the club's own seasons have a review; the world's before the takeover kept no own figures.
   const seasons = ownSeasons(w),
     index = seasons.findIndex((h) => h.year === year),
     season = index >= 0 ? seasons[index] : undefined;
   const matches = files?.matches;
   const stats = useMemo(() => (matches ? seasonStats(w, matches) : undefined), [w, matches]);
-  const players = useMemo(() => new Set(w.players.map((p) => p.id)), [w.players]);
   if (!season)
     return (
       <section className={s.empty} data-testid="season-review">
-        <h2>아직 마친 시즌이 없어요</h2>
-        <p>시즌의 마지막 경기가 끝나면 이곳에서 한 시즌을 돌아봐요.</p>
+        <h2>{richMessage('copy.SeasonReview.a03340a233')}</h2>
+        <p>{richMessage('copy.SeasonReview.462e75d9f5')}</p>
       </section>
     );
   const club = clubOf(w),
@@ -204,10 +226,13 @@ export function SeasonReview({
     )?.amount;
   const ribbon =
     move === 'up'
-      ? { text: `승격 · ${from} → ${to}`, tone: s.up }
+      ? { text: sourceMessage('copy.SeasonReview.3128e63b63', { p0: from, p1: to }), tone: s.up }
       : move === 'down'
-        ? { text: `강등 · ${from} → ${to}`, tone: s.down }
-        : { text: `잔류 · ${from}`, tone: s.stay };
+        ? {
+            text: sourceMessage('copy.SeasonReview.057f70a68c', { p0: from, p1: to }),
+            tone: s.down,
+          }
+        : { text: sourceMessage('copy.SeasonReview.a9f48d7c2d', { p0: from }), tone: s.stay };
   const per = (value: number) => (stats?.played ? one(value / stats.played) : '—');
   const xgReady = !!stats?.xgMatches;
   return (
@@ -215,333 +240,494 @@ export function SeasonReview({
       <section data-surface="sheet" className={s.hero}>
         <ClubCrest w={w} id={club.id} size={40} />
         <div className={s.heroText}>
-          <small className={s.kicker}>{seasonName(season.year)} · FINAL WHISTLE</small>
+          <small className={s.kicker}>
+            {richMessage('copy.SeasonReview.1d20dee8a0', {
+              p0: localizeValue(seasonName(season.year)),
+            })}
+          </small>
           <h2>{club.name}</h2>
           <p className={`${s.ribbon} ${ribbon.tone}`} data-testid="season-move">
-            {ribbon.text}
+            {localizeValue(ribbon.text)}
           </p>
         </div>
-        <div className={s.rank} aria-label={`최종 순위 ${season.rank}위`}>
-          <b>{season.rank}</b>
+        <div
+          className={s.rank}
+          aria-label={displayMessage('copy.SeasonReview.ab1d793878', { p0: season.rank })}
+        >
+          <b>{localizeValue(season.rank)}</b>
           <span>
-            위{clubs ? `/${clubs}` : ''}
-            <small>{previous ? `지난 ${previous.rank}위` : '첫 시즌'}</small>
+            {richMessage('copy.SeasonReview.237d36f0f4', {
+              p0: clubs ? `/${clubs}` : '',
+              p1: (
+                <small>
+                  {localizeValue(
+                    previous
+                      ? sourceMessage('copy.SeasonReview.bc231bb64c', { p0: previous.rank })
+                      : sourceMessage('copy.SeasonReview.73092db344'),
+                  )}
+                </small>
+              ),
+            })}
           </span>
         </div>
       </section>
 
       <ul data-ui="inset-list" className={s.kpis}>
         <li>
-          <span>승점</span>
-          <b>{season.points}</b>
-          <small>경기당 {season.played ? (season.points / season.played).toFixed(2) : '0'}</small>
-        </li>
-        <li>
-          <span>전적</span>
-          <b>
-            {season.won}-{season.drawn}-{season.lost}
-          </b>
-          <small>승률 {share(season.won, season.played)}</small>
-        </li>
-        <li>
-          <span>득실</span>
-          <b>
-            {season.gf}:{season.ga}
-          </b>
-          <small>골득실 {signed(season.gf - season.ga)}</small>
-        </li>
-        <li>
-          <span>xG 득실</span>
-          <b>{xgReady ? signed(stats!.xg! - stats!.xga!, 1) : '—'}</b>
+          <span>{richMessage('copy.ClubTrends.e8fd75919a')}</span>
+          <b>{localizeValue(season.points)}</b>
           <small>
-            {xgReady ? `xG ${one(stats!.xg!)} · xGA ${one(stats!.xga!)}` : 'xG 기록 없음'}
+            {richMessage('copy.SeasonReview.9cf0edf807', {
+              p0: season.played ? (season.points / season.played).toFixed(2) : '0',
+            })}
           </small>
         </li>
         <li>
-          <span>기대 승점</span>
-          <b>{xgReady ? one(stats!.xpts!) : '—'}</b>
+          <span>{richMessage('copy.SeasonReview.cbac60f1a6')}</span>
+          <b>
+            {localizeValue(season.won)}-{localizeValue(season.drawn)}-{localizeValue(season.lost)}
+          </b>
           <small>
-            {xgReady && stats!.xgMatches === stats!.played
-              ? `실제와 ${signed(stats!.points - stats!.xpts!, 1)}`
-              : '비교 불가'}
+            {richMessage('copy.SeasonReview.11b6e0e7f5', { p0: share(season.won, season.played) })}
           </small>
         </li>
         <li>
-          <span>서포터</span>
-          <b>{number(season.fans)}</b>
-          <small>{previous ? `${signed(season.fans - previous.fans)}명` : '첫 시즌'}</small>
+          <span>{richMessage('copy.CupsView.24734975b3')}</span>
+          <b>
+            {localizeValue(season.gf)}:{localizeValue(season.ga)}
+          </b>
+          <small>
+            {richMessage('copy.SeasonReview.839b1bb232', { p0: signed(season.gf - season.ga) })}
+          </small>
+        </li>
+        <li>
+          <span>{richMessage('copy.SeasonReview.527ecb28ac')}</span>
+          <b>{localizeValue(xgReady ? signed(stats!.xg! - stats!.xga!, 1) : '—')}</b>
+          <small>
+            {localizeValue(
+              xgReady
+                ? `xG ${one(stats!.xg!)} · xGA ${one(stats!.xga!)}`
+                : sourceMessage('copy.SeasonReview.668f6eb56f'),
+            )}
+          </small>
+        </li>
+        <li>
+          <span>{richMessage('copy.SeasonReview.32c15a3712')}</span>
+          <b>{localizeValue(xgReady ? one(stats!.xpts!) : '—')}</b>
+          <small>
+            {localizeValue(
+              xgReady && stats!.xgMatches === stats!.played
+                ? sourceMessage('copy.SeasonReview.bfc948badb', {
+                    p0: signed(stats!.points - stats!.xpts!, 1),
+                  })
+                : sourceMessage('copy.SeasonReview.c3056ea6be'),
+            )}
+          </small>
+        </li>
+        <li>
+          <span>{richMessage('copy.ClubTrends.2070613ba9')}</span>
+          <b>{localizeValue(number(season.fans))}</b>
+          <small>
+            {localizeValue(
+              previous
+                ? sourceMessage('copy.CareerRecordBook.e414915261', {
+                    p0: signed(season.fans - previous.fans),
+                  })
+                : sourceMessage('copy.SeasonReview.73092db344'),
+            )}
+          </small>
         </li>
       </ul>
 
-      {!stats ? (
-        <p className={s.loading} role="status">
-          {failed
-            ? '경기 기록을 읽지 못했어요. 다시 열어 주세요.'
-            : '시즌 경기 기록을 불러오는 중…'}
-        </p>
-      ) : (
-        <>
-          <PointsChart stats={stats} />
-          <div data-ui="sheet-list" className={s.groups}>
-            <section aria-label="공격">
-              <h3>공격</h3>
-              <dl>
-                <div>
-                  <dt>득점 (경기당)</dt>
-                  <dd>
-                    {stats.gf} ({per(stats.gf)})
-                  </dd>
-                </div>
-                <div>
-                  <dt>xG (경기당)</dt>
-                  <dd>{xgReady ? `${one(stats.xg!)} (${per(stats.xg!)})` : '—'}</dd>
-                </div>
-                <div>
-                  <dt>득점 − xG</dt>
-                  <dd className={xgReady ? (stats.gf >= stats.xg! ? s.good : s.bad) : undefined}>
-                    {xgReady ? signed(stats.gf - stats.xg!, 1) : '—'}
-                  </dd>
-                </div>
-                <div>
-                  <dt>경기당 슈팅</dt>
-                  <dd>{per(stats.shots)}</dd>
-                </div>
-                <div>
-                  <dt>유효 슈팅 비율</dt>
-                  <dd>{share(stats.onTarget, stats.shots)}</dd>
-                </div>
-                <div>
-                  <dt>슈팅 전환율</dt>
-                  <dd>{share(stats.gf, stats.shots)}</dd>
-                </div>
-                {stats.detailMatches > 0 && (
-                  <>
-                    <div>
-                      <dt>
-                        <Term id="big-chance">빅찬스</Term> (결정률)
-                      </dt>
-                      <dd>
-                        {stats.bigChances} ({share(stats.bigChancesScored, stats.bigChances)})
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>
-                        경기당 <Term id="key-pass">키패스</Term>
-                      </dt>
-                      <dd>{one(stats.keyPasses / stats.detailMatches)}</dd>
-                    </div>
-                  </>
-                )}
-              </dl>
-            </section>
-            <section aria-label="수비">
-              <h3>수비</h3>
-              <dl>
-                <div>
-                  <dt>실점 (경기당)</dt>
-                  <dd>
-                    {stats.ga} ({per(stats.ga)})
-                  </dd>
-                </div>
-                <div>
-                  <dt>xGA (경기당)</dt>
-                  <dd>{xgReady ? `${one(stats.xga!)} (${per(stats.xga!)})` : '—'}</dd>
-                </div>
-                <div>
-                  <dt>xGA − 실점</dt>
-                  <dd className={xgReady ? (stats.xga! >= stats.ga ? s.good : s.bad) : undefined}>
-                    {xgReady ? signed(stats.xga! - stats.ga, 1) : '—'}
-                  </dd>
-                </div>
-                <div>
-                  <dt>클린시트</dt>
-                  <dd>
-                    {stats.cleanSheets} ({share(stats.cleanSheets, stats.played)})
-                  </dd>
-                </div>
-                <div>
-                  <dt>선방률</dt>
-                  <dd>{share(stats.saves, stats.onTargetAgainst)}</dd>
-                </div>
-                <div>
-                  <dt>
-                    <Term id="ppda">PPDA</Term>
-                    {stats.ppda === undefined ? '' : '*'}
-                  </dt>
-                  <dd>{two(stats.pressPpda ?? stats.ppda)}</dd>
-                </div>
-              </dl>
-            </section>
-            <section aria-label="경기 운영">
-              <h3>경기 운영</h3>
-              <dl>
-                <div>
-                  <dt>평균 점유율</dt>
-                  <dd>{one(stats.possession)}%</dd>
-                </div>
-                <div>
-                  <dt>패스 성공률</dt>
-                  <dd>
-                    {stats.passAccuracy === undefined ? '—' : `${one(stats.passAccuracy * 100)}%`}
-                  </dd>
-                </div>
-                <div>
-                  <dt>경기당 패스</dt>
-                  <dd>{Math.round(stats.passesPerGame)}</dd>
-                </div>
-                <div>
-                  <dt>경기당 태클+인터셉트</dt>
-                  <dd>{one(stats.defensiveActions)}</dd>
-                </div>
-                {stats.detailMatches > 0 && (
-                  <>
-                    <div>
-                      <dt>
-                        <Term id="final-third">파이널 서드</Term> 성공률
-                      </dt>
-                      <dd>{share(stats.finalThirdCompleted, stats.finalThirdPasses)}</dd>
-                    </div>
-                    <div>
-                      <dt>
-                        <Term id="field-tilt">필드 틸트</Term>
-                      </dt>
-                      <dd>
-                        {stats.fieldTilt === undefined ? '—' : `${one(stats.fieldTilt * 100)}%`}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>
-                        경기당 <Term id="high-turnover">하이 턴오버</Term>
-                      </dt>
-                      <dd>{one(stats.highTurnovers / stats.detailMatches)}</dd>
-                    </div>
-                  </>
-                )}
-                <div>
-                  <dt>홈</dt>
-                  <dd>
-                    {stats.home.won}-{stats.home.drawn}-{stats.home.lost} · {stats.home.points}점
-                  </dd>
-                </div>
-                <div>
-                  <dt>원정</dt>
-                  <dd>
-                    {stats.away.won}-{stats.away.drawn}-{stats.away.lost} · {stats.away.points}점
-                  </dd>
-                </div>
-              </dl>
-            </section>
-          </div>
-          <ul data-ui="inset-list" className={s.records}>
-            <li>
-              <span>최다 연속 무패</span>
-              <b>{stats.longestUnbeaten}경기</b>
-            </li>
-            <li>
-              <span>최다 연승</span>
-              <b>{stats.longestWinning}경기</b>
-            </li>
-            <li>
-              <span>최다 점수 차 승리</span>
-              <b>
-                {stats.biggestWin
-                  ? `${stats.biggestWin.score} vs ${stats.biggestWin.opponent}`
-                  : '—'}
-              </b>
-            </li>
-            <li>
-              <span>최다 점수 차 패배</span>
-              <b>
-                {stats.heaviestDefeat
-                  ? `${stats.heaviestDefeat.score} vs ${stats.heaviestDefeat.opponent}`
-                  : '—'}
-              </b>
-            </li>
-          </ul>
-          <section className={s.leaders} aria-label="시즌 리더">
-            <Leaders title="득점" unit="골" leaders={stats.leaders.goals} players={players} />
-            <Leaders title="도움" unit="개" leaders={stats.leaders.assists} players={players} />
-            {stats.leaders.xa.length > 0 && (
-              <Leaders
-                title="기대 도움 (xA)"
-                unit=""
-                leaders={stats.leaders.xa}
-                digits={2}
-                players={players}
-              />
+      {localizeValue(
+        !stats ? (
+          <p className={s.loading} role="status">
+            {localizeValue(
+              failed
+                ? sourceMessage('copy.PastSeason.5edf6161ac')
+                : sourceMessage('copy.PastSeason.5ae912ceaf'),
             )}
-            {stats.leaders.keyPasses.length > 0 && (
-              <Leaders
-                title="키패스"
-                unit="개"
-                leaders={stats.leaders.keyPasses}
-                players={players}
-              />
-            )}
-            <Leaders
-              title="수비 (태클+인터셉트)"
-              unit="회"
-              leaders={stats.leaders.defending}
-              players={players}
-            />
-            <Leaders title="출전" unit="분" leaders={stats.leaders.minutes} players={players} />
-            <Leaders title="선방" unit="회" leaders={stats.leaders.saves} players={players} />
-          </section>
-          <p className={s.footnote}>
-            리그 {stats.played}경기 기준.{' '}
-            {stats.xgMatches < stats.played &&
-              `xG·기대 승점은 기록이 있는 ${stats.xgMatches}경기만 셉니다. `}
-            {stats.detailMatches > 0 &&
-              stats.detailMatches < stats.played &&
-              `고급 지표(PPDA·빅찬스·키패스·파이널 서드·필드 틸트·하이 턴오버)는 기록이 있는 ${stats.detailMatches}경기만 셉니다. `}
-            {stats.detailMatches
-              ? 'PPDA는 상대가 자기 진영 2/3에서 한 패스 ÷ 그 구역에서의 우리 태클·인터셉트예요. '
-              : '* PPDA는 전 구역 기준 근사치(상대 패스 ÷ 우리 태클·인터셉트)예요. '}
-            낮을수록 강하게 압박했다는 뜻이에요. 기대 승점은 경기마다 양 팀 xG를 포아송 분포로
-            계산했어요. 지표 이름을 누르면 정의를 볼 수 있어요.
           </p>
-        </>
-      )}
-
-      {!!season.runs?.length && (
-        <section data-surface="sheet" className={s.next} aria-label="컵 대회 성적">
-          <h3>컵 대회</h3>
-          <ul>
-            {season.runs.map((run) => (
-              <li key={run.key}>
-                {run.name} · {run.champion ? '우승' : run.reached}
-              </li>
-            ))}
-            {season.elo !== undefined && (
+        ) : (
+          <>
+            <PointsChart stats={stats} />
+            <div data-ui="sheet-list" className={s.groups}>
+              <section aria-label={displayMessage('position.family.FW')}>
+                <h3>{richMessage('position.family.FW')}</h3>
+                <dl>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.d8cf03f821')}</dt>
+                    <dd>
+                      {localizeValue(stats.gf)} ({localizeValue(per(stats.gf))})
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.b54a9307bd')}</dt>
+                    <dd>
+                      {localizeValue(xgReady ? `${one(stats.xg!)} (${per(stats.xg!)})` : '—')}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.dc53b01006')}</dt>
+                    <dd className={xgReady ? (stats.gf >= stats.xg! ? s.good : s.bad) : undefined}>
+                      {localizeValue(xgReady ? signed(stats.gf - stats.xg!, 1) : '—')}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.3460d5cb6a')}</dt>
+                    <dd>{localizeValue(per(stats.shots))}</dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.bf28e1c289')}</dt>
+                    <dd>{localizeValue(share(stats.onTarget, stats.shots))}</dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.c5c103a81a')}</dt>
+                    <dd>{localizeValue(share(stats.gf, stats.shots))}</dd>
+                  </div>
+                  {localizeValue(
+                    stats.detailMatches > 0 && (
+                      <>
+                        <div>
+                          <dt>
+                            {richMessage('copy.SeasonReview.f52e20f43c', {
+                              p0: (
+                                <Term id="big-chance">
+                                  {richMessage('copy.LeagueFullStats.233a5dfe38')}
+                                </Term>
+                              ),
+                            })}
+                          </dt>
+                          <dd>
+                            {localizeValue(stats.bigChances)} (
+                            {localizeValue(share(stats.bigChancesScored, stats.bigChances))})
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>
+                            {richMessage('copy.SeasonReview.9cf0edf807', {
+                              p0: (
+                                <Term id="key-pass">
+                                  {richMessage('copy.MatchReport.532ac6f371')}
+                                </Term>
+                              ),
+                            })}
+                          </dt>
+                          <dd>{localizeValue(one(stats.keyPasses / stats.detailMatches))}</dd>
+                        </div>
+                      </>
+                    ),
+                  )}
+                </dl>
+              </section>
+              <section aria-label={displayMessage('position.family.DF')}>
+                <h3>{richMessage('position.family.DF')}</h3>
+                <dl>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.26d36e3f45')}</dt>
+                    <dd>
+                      {localizeValue(stats.ga)} ({localizeValue(per(stats.ga))})
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.5507e6cdc0')}</dt>
+                    <dd>
+                      {localizeValue(xgReady ? `${one(stats.xga!)} (${per(stats.xga!)})` : '—')}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.46c69aaf33')}</dt>
+                    <dd className={xgReady ? (stats.xga! >= stats.ga ? s.good : s.bad) : undefined}>
+                      {localizeValue(xgReady ? signed(stats.xga! - stats.ga, 1) : '—')}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.2d238e2626')}</dt>
+                    <dd>
+                      {localizeValue(stats.cleanSheets)} (
+                      {localizeValue(share(stats.cleanSheets, stats.played))})
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.81e3b8ff0c')}</dt>
+                    <dd>{localizeValue(share(stats.saves, stats.onTargetAgainst))}</dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <Term id="ppda">{richMessage('copy.SeasonReview.069e77d412')}</Term>
+                      {localizeValue(stats.ppda === undefined ? '' : '*')}
+                    </dt>
+                    <dd>{localizeValue(two(stats.pressPpda ?? stats.ppda))}</dd>
+                  </div>
+                </dl>
+              </section>
+              <section aria-label={displayMessage('copy.SeasonReview.842b1e7ccb')}>
+                <h3>{richMessage('copy.SeasonReview.842b1e7ccb')}</h3>
+                <dl>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.513c1cb562')}</dt>
+                    <dd>{localizeValue(one(stats.possession))}%</dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.summary.5101559c4e')}</dt>
+                    <dd>
+                      {localizeValue(
+                        stats.passAccuracy === undefined
+                          ? '—'
+                          : `${one(stats.passAccuracy * 100)}%`,
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.783efa0fcf')}</dt>
+                    <dd>{localizeValue(Math.round(stats.passesPerGame))}</dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('copy.SeasonReview.97df3c6f89')}</dt>
+                    <dd>{localizeValue(one(stats.defensiveActions))}</dd>
+                  </div>
+                  {localizeValue(
+                    stats.detailMatches > 0 && (
+                      <>
+                        <div>
+                          <dt>
+                            {richMessage('copy.SeasonReview.7277c98985', {
+                              p0: (
+                                <Term id="final-third">
+                                  {richMessage('copy.MatchReport.ce19759276')}
+                                </Term>
+                              ),
+                            })}
+                          </dt>
+                          <dd>
+                            {localizeValue(
+                              share(stats.finalThirdCompleted, stats.finalThirdPasses),
+                            )}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>
+                            <Term id="field-tilt">
+                              {richMessage('copy.SeasonReview.c7c1a585f2')}
+                            </Term>
+                          </dt>
+                          <dd>
+                            {localizeValue(
+                              stats.fieldTilt === undefined
+                                ? '—'
+                                : `${one(stats.fieldTilt * 100)}%`,
+                            )}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt>
+                            {richMessage('copy.SeasonReview.9cf0edf807', {
+                              p0: (
+                                <Term id="high-turnover">
+                                  {richMessage('copy.PlayerAdvancedStats.11212f27d2')}
+                                </Term>
+                              ),
+                            })}
+                          </dt>
+                          <dd>{localizeValue(one(stats.highTurnovers / stats.detailMatches))}</dd>
+                        </div>
+                      </>
+                    ),
+                  )}
+                  <div>
+                    <dt>{richMessage('fixture.home')}</dt>
+                    <dd>
+                      {richMessage('copy.SeasonReview.ce517e15f4', {
+                        p0: stats.home.won,
+                        p1: stats.home.drawn,
+                        p2: stats.home.lost,
+                        p3: stats.home.points,
+                      })}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{richMessage('fixture.away')}</dt>
+                    <dd>
+                      {richMessage('copy.SeasonReview.ce517e15f4', {
+                        p0: stats.away.won,
+                        p1: stats.away.drawn,
+                        p2: stats.away.lost,
+                        p3: stats.away.points,
+                      })}
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+            </div>
+            <ul data-ui="inset-list" className={s.records}>
               <li>
-                클럽 Elo {season.elo}
-                {season.eloRank ? ` · 전체 ${season.eloRank}위` : ''}
+                <span>{richMessage('copy.SeasonReview.1cbaecb27b')}</span>
+                <b>
+                  {richMessage('copy.SeasonAnalysis.f0536ece4c', { p0: stats.longestUnbeaten })}
+                </b>
               </li>
-            )}
-          </ul>
-        </section>
+              <li>
+                <span>{richMessage('copy.RecordsRoom.a23530b619')}</span>
+                <b>{richMessage('copy.SeasonAnalysis.f0536ece4c', { p0: stats.longestWinning })}</b>
+              </li>
+              <li>
+                <span>{richMessage('copy.SeasonReview.9859baa4c3')}</span>
+                <b>
+                  {localizeValue(
+                    stats.biggestWin
+                      ? `${stats.biggestWin.score} vs ${stats.biggestWin.opponent}`
+                      : '—',
+                  )}
+                </b>
+              </li>
+              <li>
+                <span>{richMessage('copy.SeasonReview.4f6e094e0c')}</span>
+                <b>
+                  {localizeValue(
+                    stats.heaviestDefeat
+                      ? `${stats.heaviestDefeat.score} vs ${stats.heaviestDefeat.opponent}`
+                      : '—',
+                  )}
+                </b>
+              </li>
+            </ul>
+            <section
+              className={s.leaders}
+              aria-label={displayMessage('copy.SeasonReview.387a6ad9d5')}
+            >
+              <Leaders
+                title={displayMessage('copy.summary.eb4e291be3')}
+                unit={sourceMessage('copy.summary.68a6cf8ed8')}
+                leaders={stats.leaders.goals}
+              />
+              <Leaders
+                title={displayMessage('copy.BallonDorView.8d901cc28d')}
+                unit={sourceMessage('copy.ClubHub.a57ab05712')}
+                leaders={stats.leaders.assists}
+              />
+              {localizeValue(
+                stats.leaders.xa.length > 0 && (
+                  <Leaders
+                    title={displayMessage('copy.SeasonReview.3b07cae7d8')}
+                    unit=""
+                    leaders={stats.leaders.xa}
+                    digits={2}
+                  />
+                ),
+              )}
+              {localizeValue(
+                stats.leaders.keyPasses.length > 0 && (
+                  <Leaders
+                    title={displayMessage('copy.MatchReport.532ac6f371')}
+                    unit={sourceMessage('copy.ClubHub.a57ab05712')}
+                    leaders={stats.leaders.keyPasses}
+                  />
+                ),
+              )}
+              <Leaders
+                title={displayMessage('copy.SeasonReview.e3934e2f1c')}
+                unit={sourceMessage('copy.SeasonReview.0ef6c01e0a')}
+                leaders={stats.leaders.defending}
+              />
+              <Leaders
+                title={displayMessage('copy.BallonDorView.b849877c07')}
+                unit={sourceMessage('copy.PlayerComparison.ca4a187881')}
+                leaders={stats.leaders.minutes}
+              />
+              <Leaders
+                title={displayMessage('copy.RecordsRoom.2a022bd612')}
+                unit={sourceMessage('copy.SeasonReview.0ef6c01e0a')}
+                leaders={stats.leaders.saves}
+              />
+            </section>
+            <p className={s.footnote}>
+              {richMessage('copy.SeasonReview.03f03078b3', {
+                p0: stats.played,
+                p1: ' ',
+                p2:
+                  stats.xgMatches < stats.played &&
+                  sourceMessage('copy.SeasonReview.75b1c0d3fb', { p0: stats.xgMatches }),
+                p3:
+                  stats.detailMatches > 0 &&
+                  stats.detailMatches < stats.played &&
+                  sourceMessage('copy.SeasonReview.2cd2e20be4', { p0: stats.detailMatches }),
+                p4: stats.detailMatches
+                  ? sourceMessage('copy.SeasonReview.86cfb3d957')
+                  : sourceMessage('copy.SeasonReview.2cd69aa855'),
+              })}
+            </p>
+          </>
+        ),
       )}
 
-      <section data-ui="inset-list" className={s.money} aria-label="시즌 재정">
+      {localizeValue(
+        !!season.runs?.length && (
+          <section
+            data-surface="sheet"
+            className={s.next}
+            aria-label={displayMessage('copy.SeasonReview.9f8d725a40')}
+          >
+            <h3>{richMessage('copy.ClubTrends.cf5a6ab3e0')}</h3>
+            <ul>
+              {localizeValue(
+                season.runs.map((run) => (
+                  <li key={run.key}>
+                    {localizeValue(run.name)} ·{' '}
+                    {localizeValue(
+                      run.champion ? sourceMessage('copy.CupHistory.31e52393f3') : run.reached,
+                    )}
+                  </li>
+                )),
+              )}
+              {localizeValue(
+                season.elo !== undefined && (
+                  <li>
+                    {richMessage('copy.SeasonReview.c8f945c1c3', {
+                      p0: season.elo,
+                      p1: season.eloRank
+                        ? sourceMessage('copy.SeasonReview.caaf413c52', { p0: season.eloRank })
+                        : '',
+                    })}
+                  </li>
+                ),
+              )}
+            </ul>
+          </section>
+        ),
+      )}
+
+      <section
+        data-ui="inset-list"
+        className={s.money}
+        aria-label={displayMessage('copy.SeasonReview.3f596b8af1')}
+      >
         <div>
-          <span>수입</span>
-          <b>{format(season.income)}</b>
+          <span>{richMessage('copy.SeasonReview.2b599954c4')}</span>
+          <b>{localizeValue(format(season.income))}</b>
         </div>
         <div>
-          <span>지출</span>
-          <b>{format(season.expense)}</b>
+          <span>{richMessage('copy.SeasonReview.1ed4f1ad1c')}</span>
+          <b>{localizeValue(format(season.expense))}</b>
         </div>
         <div>
-          <span>손익</span>
+          <span>{richMessage('copy.SeasonReview.3a6bb0387b')}</span>
           <b className={net < 0n ? s.bad : s.good}>
-            {net > 0n ? '+' : ''}
-            {format(net.toString())}
+            {localizeValue(net > 0n ? '+' : '')}
+            {localizeValue(format(net.toString()))}
           </b>
         </div>
         <div>
-          <span>시즌 말 자금</span>
-          <b>{format(season.cash)}</b>
-          <small>{prize ? <>순위 배분금 {format(prize)} 포함</> : '순위 배분금 없음'}</small>
+          <span>{richMessage('copy.SeasonReview.35bfe8ff7d')}</span>
+          <b>{localizeValue(format(season.cash))}</b>
+          <small>
+            {localizeValue(
+              prize ? (
+                <>{richMessage('copy.SeasonReview.d96447e86d', { p0: format(prize) })}</>
+              ) : (
+                sourceMessage('copy.SeasonReview.886d9aea4d')
+              ),
+            )}
+          </small>
         </div>
       </section>
     </div>

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
   Player,
   TrainingCoach,
@@ -39,12 +40,12 @@ export function playerTrainingCall(
     return {
       focus: own,
       own: true,
-      reason: `피로도 ${Math.round(p.fatigue)}라 회복부터 시켜야 해요.`,
+      reason: sourceMessage('copy.coach_training.210696eb93', { p0: Math.round(p.fatigue) }),
     };
   squad ??= activeTrainingFocus(w);
   return {
     focus: squad,
     own: false,
-    reason: `팀과 같은 ${trainingFocusInfo[squad].label}을(를) 소화해요.`,
+    reason: sourceMessage('copy.coach_training.9b087192fc', { p0: trainingFocusInfo[squad].label }),
   };
 }

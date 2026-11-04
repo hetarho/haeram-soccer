@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { z } from 'zod';
 import type { PersonCareer } from '../../../../packages/contracts/src/types';
 import { personCareerSchema } from '../../../../packages/contracts/src/schema';
@@ -121,7 +122,7 @@ export function packCareerRows(
     version: 1,
     people: Object.entries(people).map(([key, source]) => {
       const p = personCareerSchema.parse(source);
-      if (key !== p.id) throw new Error('인물 레지스트리 키 손상');
+      if (key !== p.id) throw new Error(sourceMessage('copy.careerPacking.a001ce9d51'));
       return [
         id(p.id),
         id(p.name),
@@ -195,7 +196,8 @@ export function packCareerRows(
   };
 }
 function date(year: number | null, day: number | null) {
-  if ((year === null) !== (day === null)) throw new Error('인물 날짜 압축 차원 손상');
+  if ((year === null) !== (day === null))
+    throw new Error(sourceMessage('copy.careerPacking.a7f5ac7990'));
   return year === null ? undefined : { year, day: day! };
 }
 export function unpackCareers(
@@ -206,11 +208,9 @@ export function unpackCareers(
 ): Record<string, PersonCareer> {
   const header = z.object({ version: z.number().int() }).safeParse(input);
   if (header.success && header.data.version > 3)
-    throw new SaveCompatibilityError(
-      '지원하지 않는 인물 이력 압축 버전입니다. 원본 파일을 보관하세요.',
-    );
+    throw new SaveCompatibilityError(sourceMessage('copy.careerPacking.adf66c6fc8'));
   if (header.success && (header.data.version === 2 || header.data.version === 3)) {
-    if (!context) throw new Error('인물 이력 압축 구단 정보 손상');
+    if (!context) throw new Error(sourceMessage('copy.careerPacking.7709e7c765'));
     const restored = unpackCareerColumns(input, context);
     input = restored.data;
     read = restored.read;
@@ -304,7 +304,7 @@ export function unpackCareers(
         : {}),
     };
     const p = deferred ? (value as PersonCareer) : personCareerSchema.parse(value);
-    if (people[p.id]) throw new Error('중복 압축 인물 참조');
+    if (people[p.id]) throw new Error(sourceMessage('copy.careerPacking.b09444e3c0'));
     people[p.id] = p;
   }
   return people;

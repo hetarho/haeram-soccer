@@ -1,3 +1,4 @@
+import { captureRender } from './render.testkit';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -339,7 +340,7 @@ describe('current competition briefing markup', () => {
       { key: 'ucl', name: 'European Cup', clubs: [], fixtures: [], rounds: [] },
     ] as unknown as World['europe'];
     const close = vi.fn();
-    const overview = CupBriefing({ w, onOpen: close });
+    const overview = captureRender(() => CupBriefing({ w, onOpen: close }));
     const entries = overview.props.children;
     entries[1].props.actions.props.onClick();
     expect(close).toHaveBeenCalledOnce();

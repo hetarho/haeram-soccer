@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { useLayoutEffect, useRef, useState } from 'react';
 import type { ShirtDesign, WornKit, WornKeeper } from '../../../../packages/contracts/src/identity';
 import { startingShorts, startingSocks } from '../../../../packages/engine/src/kit-wear';
@@ -32,6 +34,7 @@ export function KitSwatch({
   outline?: string;
   className?: string;
 }) {
+  useTextLocale();
   const canvas = useRef<HTMLCanvasElement>(null);
   // One painter, and so one sprite cache, per mounted swatch.
   const [painter] = useState(() => createFigurePainter());
@@ -78,7 +81,9 @@ export function KitSwatch({
       ref={canvas}
       className={`${s.swatch} ${className || ''}`}
       role="img"
-      aria-label={`${label}: ${describeShirt(shirt)}${kit ? `, 하의 ${kit.shorts}, 양말 ${kit.socks}${'gloves' in kit ? `, 장갑 ${kit.gloves}` : ''}` : ''}`}
+      aria-label={localizeValue(
+        `${label}: ${describeShirt(shirt)}${kit ? sourceMessage('copy.KitSwatch.4f48c78cd4', { p0: kit.shorts, p1: kit.socks, p2: 'gloves' in kit ? sourceMessage('copy.KitSwatch.4a4f16832b', { p0: kit.gloves }) : '' }) : ''}`,
+      )}
       style={{ width: size, height: size }}
       width={size}
       height={size}

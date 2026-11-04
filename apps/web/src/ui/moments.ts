@@ -1,10 +1,11 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Incident, MatchFrame, MatchRecord } from '../../../../packages/contracts/src/types';
 
 export function recordedGoals(record: MatchRecord) {
   let home = 0,
     away = 0;
   return record.highlights
-    .filter((h) => h.action === '골')
+    .filter((h) => h.action === sourceMessage('copy.summary.68a6cf8ed8'))
     .slice()
     .sort((a, b) => a.minute - b.minute)
     .map((h) => {

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { DesignStudio } from '../../contracts/src/identity';
 import type { World } from '../../contracts/src/types';
 import { clubOf } from './player-state';
@@ -12,9 +13,9 @@ import { quote } from './quotes';
 export const DESIGNERS: Readonly<
   Record<DesignStudio, { label: string; units: number; drafts: number }>
 > = {
-  local: { label: '동네 디자이너', units: 10, drafts: 2 },
-  studio: { label: '디자인 스튜디오', units: 30, drafts: 3 },
-  star: { label: '유명 디자이너', units: 80, drafts: 4 },
+  local: { label: sourceMessage('copy.design_fees.727b9a2c49'), units: 10, drafts: 2 },
+  studio: { label: sourceMessage('copy.design_fees.85e039ddff'), units: 30, drafts: 3 },
+  star: { label: sourceMessage('copy.design_fees.8dc748bb76'), units: 80, drafts: 4 },
 };
 
 /** What a designer charges this club now. */

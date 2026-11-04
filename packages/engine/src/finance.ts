@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { roundShare as readRoundShare, seasonResult as readSeasonResult } from './finance-read';
 import { eventsInSeason, matchesInSeason } from './season-index';
 import { baseEffects } from './bases';
@@ -432,11 +433,11 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
 
 /** Sponsor slots as the ledger and the 후원 tab name them (→ECON-8). */
 export const SPONSOR_SLOT_LABELS: Record<SponsorSlot, string> = {
-  local: '지역 후원',
-  kit: '용품 후원',
-  shirt: '메인 스폰서',
-  stadium: '경기장 명명권',
-  sleeve: '소매 스폰서',
+  local: sourceMessage('copy.finance.7d6fb1c75a'),
+  kit: sourceMessage('copy.finance.371e9fcdaf'),
+  shirt: sourceMessage('copy.finance.1c7a9b2492'),
+  stadium: sourceMessage('copy.finance.a3702e991f'),
+  sleeve: sourceMessage('copy.finance.9ff7306ef3'),
 };
 
 /**
@@ -447,7 +448,12 @@ export const SPONSOR_SLOT_LABELS: Record<SponsorSlot, string> = {
 export function matchBonus(w: World, match: MatchRecord) {
   const own = match.home === w.playerClub ? match.score.home : match.score.away;
   const other = match.home === w.playerClub ? match.score.away : match.score.home;
-  const result = own > other ? '승리' : own === other ? '무승부' : '패배';
+  const result =
+    own > other
+      ? sourceMessage('result.win.label')
+      : own === other
+        ? sourceMessage('result.draw.label')
+        : sourceMessage('result.loss.label');
   const prestige = 1 + Math.max(0, 3 - clubOf(w).tier) * 0.35;
   const games = ownLeagueGames(w);
   const amount = isLeagueMatch(match.kind)
@@ -467,25 +473,25 @@ export function matchBonus(w: World, match: MatchRecord) {
 }
 
 const incomeKinds: Record<string, string> = {
-  'league-share': '리그 분배금',
-  'league-merit': '리그 순위 배분금',
-  parachute: '강등 보전금',
-  gate: '홈 경기 입장·상품',
+  'league-share': sourceMessage('copy.finance.2d1ae295d1'),
+  'league-merit': sourceMessage('copy.finance.8873d9546b'),
+  parachute: sourceMessage('copy.finance.28f00ca15d'),
+  gate: sourceMessage('copy.finance.21979537d2'),
   // Each slot's contract, its base installments and bonus together (→ECON-8).
   ...Object.fromEntries(
     Object.entries(SPONSOR_SLOT_LABELS).map(([slot, label]) => [`sponsor:${slot}`, label]),
   ),
-  'match-bonus': '컵·대륙 경기 성과 보너스',
-  tour: '해외 투어',
-  'campaign-result': '마케팅 회수금',
-  'transfer-out': '선수 매각',
-  'free-transfer-compensation': '계약 만료 보상금',
+  'match-bonus': sourceMessage('copy.finance.470820a9d4'),
+  tour: sourceMessage('copy.influences.f39e48758d'),
+  'campaign-result': sourceMessage('copy.finance.d182304a02'),
+  'transfer-out': sourceMessage('copy.intervention.5ea61dab56'),
+  'free-transfer-compensation': sourceMessage('copy.finance.f8551691f2'),
   // Owner capital, outside turnover (→OWNER-9, ECON-30).
-  'owner-injection': '구단주 자금 투입',
-  'cup-prize': '국내 컵 상금',
-  'cup-honor': '국내 컵 우승 상금',
-  'europe-prize': '클럽대항전 수당',
-  'europe-honor': '클럽대항전 우승 상금',
+  'owner-injection': sourceMessage('copy.fan_mood.3881f2a2d6'),
+  'cup-prize': sourceMessage('copy.finance.3412a0b56f'),
+  'cup-honor': sourceMessage('copy.finance.1481d52ee9'),
+  'europe-prize': sourceMessage('copy.finance.346658f3e6'),
+  'europe-honor': sourceMessage('copy.finance.f21388fce6'),
 };
 /** Every income ledger kind (→ECON-10), each sponsor slot's among them. */
 export const INCOME_KINDS: readonly string[] = Object.keys(incomeKinds);
@@ -493,24 +499,24 @@ export const INCOME_KINDS: readonly string[] = Object.keys(incomeKinds);
 export const isIncomeKind = (kind: string) =>
   Object.hasOwn(incomeKinds, kind) || kind.startsWith('sponsor:');
 const expenseKinds: Record<string, string> = {
-  'operating-cost': '급여·시설 유지',
-  'operating-expenses': '운영 경비',
-  'match-cost': '홈 경기 개최비',
-  campaign: '마케팅 집행',
-  'transfer-in': '선수 영입·임대',
-  'manager-hire': '감독 선임·보상',
-  'manager-renew': '감독 재계약',
-  'staff-hire': '스태프 선임·보상',
-  'staff-release': '스태프 계약 해지',
-  'staff-renew': '코치 재계약',
-  training: '훈련 지원',
-  facility: '시설 공사',
+  'operating-cost': sourceMessage('copy.finance.9df2ce4df3'),
+  'operating-expenses': sourceMessage('copy.FinancialBreakdown.2d914c9be2'),
+  'match-cost': sourceMessage('copy.finance.aeee208c2a'),
+  campaign: sourceMessage('copy.finance.ce68299a4f'),
+  'transfer-in': sourceMessage('copy.finance.9c050684a4'),
+  'manager-hire': sourceMessage('copy.finance.268761201b'),
+  'manager-renew': sourceMessage('copy.finance.ddb2236cce'),
+  'staff-hire': sourceMessage('copy.finance.8a43583acd'),
+  'staff-release': sourceMessage('copy.finance.350fb92d3a'),
+  'staff-renew': sourceMessage('copy.finance.0ec0b65c66'),
+  training: sourceMessage('copy.finance.4d6a1bd07c'),
+  facility: sourceMessage('copy.finance.da397a5520'),
   // A won award's contract bonus (→CLUB-29).
-  'ballon-dor-bonus': '발롱도르 보너스',
+  'ballon-dor-bonus': sourceMessage('copy.finance.c2dc60fe60'),
   // The debt taken over, repaid as a fixed cost of the league rounds (→ECON-38).
-  'loan-repayment': '인수 부채 상환',
+  'loan-repayment': sourceMessage('copy.FinancialBreakdown.ddebd211b6'),
   // The owner's share of the season's profit, taken at the close (→OWNER-11).
-  'owner-dividend': '구단주 배당',
+  'owner-dividend': sourceMessage('copy.fan_mood.eb9f33a674'),
 };
 /** A season's money entries in the currency its books were kept in. */
 function seasonEntries(w: World, year: number, money: string) {
@@ -533,7 +539,11 @@ function ledgerLines(period: Event[], kinds: Record<string, string>, total: stri
   }));
   const remainder = BigInt(total) - rows.reduce((sum, row) => sum + BigInt(row.amount), 0n);
   if (remainder !== 0n)
-    rows.push({ key: 'older-ledger', label: '이전·기타 장부', amount: remainder.toString() });
+    rows.push({
+      key: 'older-ledger',
+      label: sourceMessage('copy.finance.746c39bf26'),
+      amount: remainder.toString(),
+    });
   return rows;
 }
 
@@ -570,7 +580,7 @@ export function financialBreakdown(w: World) {
 
 /** A division as the ledger names it: 1부, 2부 … */
 export function divisionLabel(tier: number) {
-  return `${tier + 1}부`;
+  return sourceMessage('copy.cupRoute.3d1e4a6467', { p0: tier + 1 });
 }
 /**
  * The equal share every club of a division earns in a season (→ECON-28), in this season's money on

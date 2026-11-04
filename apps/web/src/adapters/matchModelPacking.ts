@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { PLAYER_DETAIL_SIZE, TEAM_DETAIL_SIZE } from '../../../../packages/contracts/src/detail';
 import {
   carriesMatchModel,
@@ -67,7 +68,8 @@ const MAX_ROWS = 1_000_000;
 const KINDS: readonly Fixture['kind'][] = ['league', 'cup', 'europe', 'playoff'];
 const COVERAGES: readonly MatchModelState['coverage'][] = ['founding', 'activation'];
 
-const corrupt = (detail: string) => new Error(`경기 모델 압축 데이터 손상: ${detail}`);
+const corrupt = (detail: string) =>
+  new Error(sourceMessage('copy.matchModelPacking.ce010eae47', { p0: detail }));
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 const isCount = (value: unknown, max: number): value is number =>
@@ -90,10 +92,12 @@ function bitsOf(values: readonly number[]) {
  */
 export function packSparseTable(values: readonly number[], width: number): SparseTable {
   const rows = values.length / width;
-  if (!Number.isInteger(rows) || rows > MAX_ROWS) throw corrupt('표 차원');
+  if (!Number.isInteger(rows) || rows > MAX_ROWS)
+    throw corrupt(sourceMessage('copy.matchModelPacking.8d0e0187ba'));
   const columns = Array.from({ length: width }, (_, column): SparseColumn => {
     const cells = Array.from({ length: rows }, (_, row) => values[row * width + column]);
-    if (cells.some((n) => !Number.isSafeInteger(n) || n < 0)) throw corrupt('정수가 아닌 값');
+    if (cells.some((n) => !Number.isSafeInteger(n) || n < 0))
+      throw corrupt(sourceMessage('copy.matchModelPacking.bc66548488'));
     const nonzero = cells.filter((n) => n !== 0);
     const dense = rows * bitsOf(cells);
     const sparse = (nonzero.length < rows ? rows : 0) + nonzero.length * bitsOf(nonzero);
@@ -116,24 +120,28 @@ export function readSparseTable(table: unknown, width: number, maxRows = MAX_ROW
     !Array.isArray(table.columns) ||
     table.columns.length !== width
   )
-    throw corrupt('표 차원');
+    throw corrupt(sourceMessage('copy.matchModelPacking.8d0e0187ba'));
   const rows = table.rows;
   const out = Array<number>(rows * width);
   table.columns.forEach((column: unknown, c) => {
     if (!Array.isArray(column) || (column.length !== 1 && column.length !== 2))
-      throw corrupt('열 형식');
+      throw corrupt(sourceMessage('copy.matchModelPacking.95f1fc0f2d'));
     const first = readBitColumns(column[0] as BitColumns, 1);
-    if ((column[0] as BitColumns).count !== rows) throw corrupt('열 길이');
+    if ((column[0] as BitColumns).count !== rows)
+      throw corrupt(sourceMessage('copy.matchModelPacking.3d18832123'));
     const cells = first.take(rows);
     first.done();
     if (column.length === 2) {
-      if (cells.some((n) => n > 1)) throw corrupt('존재 표시');
+      if (cells.some((n) => n > 1))
+        throw corrupt(sourceMessage('copy.matchModelPacking.3b3c384121'));
       const present = cells.filter(Boolean).length;
-      if ((column[1] as BitColumns).count !== present) throw corrupt('값 개수');
+      if ((column[1] as BitColumns).count !== present)
+        throw corrupt(sourceMessage('copy.matchModelPacking.9cfe6b8dc7'));
       const values = readBitColumns(column[1] as BitColumns, 1);
       const nonzero = values.take(present);
       values.done();
-      if (nonzero.some((n) => n === 0)) throw corrupt('존재하는 0');
+      if (nonzero.some((n) => n === 0))
+        throw corrupt(sourceMessage('copy.matchModelPacking.7596eb8985'));
       let next = 0;
       cells.forEach((flag, row) => (cells[row] = flag ? nonzero[next++] : 0));
     }
@@ -144,32 +152,34 @@ export function readSparseTable(table: unknown, width: number, maxRows = MAX_ROW
 
 /** Throws unless every key is distinct: a ledger never counts one club, player or scope twice. */
 function assertDistinct(keys: readonly string[], what: string) {
-  if (new Set(keys).size !== keys.length) throw corrupt(`중복 ${what}`);
+  if (new Set(keys).size !== keys.length)
+    throw corrupt(sourceMessage('copy.matchModelPacking.2feed9abe5', { p0: what }));
 }
 /** The aggregate ledger's uniqueness rules, shared by the writer and the reader. */
 function assertLedgerKeys(season: NpcSeasonStats) {
   assertDistinct(
     season.competitions.map((c) => `${c.kind}\u0000${c.groupKey}`),
-    '대회',
+    sourceMessage('copy.matchModelPacking.7255709b1f'),
   );
   for (const competition of season.competitions) {
     assertDistinct(
       competition.clubs.map((c) => c.club),
-      '클럽',
+      sourceMessage('copy.matchModelPacking.6d641f69b7'),
     );
     assertDistinct(
       competition.players.map((p) => p.id),
-      '선수',
+      sourceMessage('team.column.player'),
     );
     for (const player of competition.players)
       assertDistinct(
         player.clubs.map((c) => c.club),
-        '소속 기여',
+        sourceMessage('copy.matchModelPacking.1ecc2e7814'),
       );
   }
 }
 function exactRow(values: readonly number[], width: number, what: string) {
-  if (!Array.isArray(values) || values.length !== width) throw corrupt(`${what} 차원`);
+  if (!Array.isArray(values) || values.length !== width)
+    throw corrupt(sourceMessage('copy.managerHistoryPacking.bcccd541ad', { p0: what }));
   return values;
 }
 
@@ -226,7 +236,7 @@ function packSeason(
     contributions: number[] = [];
   for (const c of season.competitions) {
     const kind = KINDS.indexOf(c.kind);
-    if (kind < 0) throw corrupt('대회 종류');
+    if (kind < 0) throw corrupt(sourceMessage('copy.matchModelPacking.5472360f2b'));
     competitions.push(kind, ref(c.groupKey), c.clubs.length, c.players.length);
     for (const club of c.clubs)
       clubs.push(
@@ -234,8 +244,12 @@ function packSeason(
         club.matches,
         club.xg,
         club.xga,
-        ...exactRow(club.metrics, METRICS, '클럽 지표'),
-        ...exactRow(club.detail, TEAM_DETAIL_SIZE, '클럽 고급 지표'),
+        ...exactRow(club.metrics, METRICS, sourceMessage('copy.matchModelPacking.c19717224b')),
+        ...exactRow(
+          club.detail,
+          TEAM_DETAIL_SIZE,
+          sourceMessage('copy.matchModelPacking.47b07fca58'),
+        ),
       );
     for (const player of c.players) {
       players.push(ref(player.id), ref(player.name), ref(player.position), player.clubs.length);
@@ -244,8 +258,12 @@ function packSeason(
           ref(share.club),
           share.appearances,
           share.starts,
-          ...exactRow(share.metrics, METRICS, '선수 지표'),
-          ...exactRow(share.detail, PLAYER_DETAIL_SIZE, '선수 고급 지표'),
+          ...exactRow(share.metrics, METRICS, sourceMessage('copy.matchModelPacking.3ca967cecc')),
+          ...exactRow(
+            share.detail,
+            PLAYER_DETAIL_SIZE,
+            sourceMessage('copy.matchModelPacking.91b477874c'),
+          ),
         );
     }
   }
@@ -270,23 +288,20 @@ function packSeason(
  * malformed in the header or revision table is corruption. Returns the revision table.
  */
 export function readMatchModelFormat(section: unknown): MatchModelRevision[] {
-  if (!isObject(section)) throw corrupt('형식');
+  if (!isObject(section)) throw corrupt(sourceMessage('copy.identityPacking.d1a42ea591'));
   const { version, revisions } = section;
   if (typeof version === 'number' && Number.isSafeInteger(version) && version > VERSION)
-    throw new SaveCompatibilityError(
-      '이 저장은 더 새로운 경기 모델 형식으로 기록되었습니다. 원본 파일을 내보내 보관하세요.',
-    );
-  if (version !== VERSION) throw corrupt('버전');
+    throw new SaveCompatibilityError(sourceMessage('copy.matchModelPacking.9e11622b4f'));
+  if (version !== VERSION) throw corrupt(sourceMessage('copy.identityPacking.002f73c32e'));
   if (!Array.isArray(revisions) || revisions.length < 1 || revisions.length > MAX_REVISIONS)
-    throw corrupt('모델 목록');
+    throw corrupt(sourceMessage('copy.matchModelPacking.b461aeb630'));
   for (const value of revisions) {
-    if (typeof value !== 'string') throw corrupt('모델 목록');
+    if (typeof value !== 'string')
+      throw corrupt(sourceMessage('copy.matchModelPacking.b461aeb630'));
     if (!isMatchModelRevision(value))
-      throw new SaveCompatibilityError(
-        '이 저장은 더 새로운 경기 모델로 기록되었습니다. 원본 파일을 내보내 보관하세요.',
-      );
+      throw new SaveCompatibilityError(sourceMessage('copy.matchModelPacking.248f2751b7'));
   }
-  assertDistinct(revisions as string[], '모델');
+  assertDistinct(revisions as string[], sourceMessage('copy.matchModelPacking.f9f4d4113a'));
   return revisions as MatchModelRevision[];
 }
 
@@ -310,7 +325,8 @@ export function unpackMatchModel(
   const p = section as unknown as PackedMatchModel;
   const used = new Set<number>();
   const revision = (n: number) => {
-    if (!isCount(n, revisions.length - 1)) throw corrupt('모델 참조');
+    if (!isCount(n, revisions.length - 1))
+      throw corrupt(sourceMessage('copy.matchModelPacking.5319918337'));
     used.add(n);
     return revisions[n];
   };
@@ -322,9 +338,9 @@ export function unpackMatchModel(
       s.length !== STATE_WIDTH ||
       !s.every((n) => isCount(n, Number.MAX_SAFE_INTEGER))
     )
-      throw corrupt('모델 상태');
+      throw corrupt(sourceMessage('copy.matchModelPacking.f2e2e18951'));
     const coverage = COVERAGES[s[7]];
-    if (!coverage) throw corrupt('관측 범위');
+    if (!coverage) throw corrupt(sourceMessage('copy.managerHistoryPacking.c6e7a8f342'));
     out.matchModel = {
       revision: revision(s[0]),
       activated: { year: s[1], day: s[2], revision: s[3] },
@@ -335,7 +351,7 @@ export function unpackMatchModel(
   if (p.records !== undefined) {
     const runs = p.records;
     if (!Array.isArray(runs) || runs.length % 2 || runs.length > 2 * MAX_RECORDS)
-      throw corrupt('기록 모델 구간');
+      throw corrupt(sourceMessage('copy.matchModelPacking.513f5dfd2a'));
     for (let i = 0; i < runs.length; i += 2) {
       const [r, length] = [runs[i], runs[i + 1]];
       if (
@@ -345,16 +361,17 @@ export function unpackMatchModel(
         (i && runs[i - 2] === r) ||
         out.records.length + length > recordCount
       )
-        throw corrupt('기록 모델 구간');
+        throw corrupt(sourceMessage('copy.matchModelPacking.513f5dfd2a'));
       const model = r === 0 ? undefined : revision(r - 1);
       for (let n = 0; n < length; n++) out.records.push(model);
     }
     if (out.records.length !== recordCount || out.records.every((m) => m === undefined))
-      throw corrupt('기록 모델 구간');
+      throw corrupt(sourceMessage('copy.matchModelPacking.513f5dfd2a'));
   } else out.records = Array<undefined>(recordCount).fill(undefined);
   if (p.season !== undefined) out.npcSeason = unpackSeason(p.season, revision, str);
   // A section without data names no model, so this also refuses an empty one.
-  if (used.size !== revisions.length) throw corrupt('사용되지 않은 모델');
+  if (used.size !== revisions.length)
+    throw corrupt(sourceMessage('copy.matchModelPacking.448ba1ac6f'));
   return out;
 }
 function unpackSeason(
@@ -362,14 +379,14 @@ function unpackSeason(
   revision: (n: number) => MatchModelRevision,
   str: (n: number) => string,
 ): NpcSeasonStats {
-  if (!isObject(season)) throw corrupt('시즌 집계 형식');
+  if (!isObject(season)) throw corrupt(sourceMessage('copy.matchModelPacking.41eb0fa63e'));
   const header = season.header;
   if (
     !Array.isArray(header) ||
     header.length !== HEADER_WIDTH ||
     !header.every((n) => isCount(n, Number.MAX_SAFE_INTEGER))
   )
-    throw corrupt('시즌 집계 머리');
+    throw corrupt(sourceMessage('copy.matchModelPacking.0bb66e687c'));
   // Each table is bounded by the rows the one before it declares, so a crafted count is refused
   // before its rows are allocated.
   const competitionRows = readSparseTable(season.competitions, COMPETITION_WIDTH, MAX_COMPETITIONS);
@@ -378,7 +395,8 @@ function unpackSeason(
     contributionTotal = 0;
   for (let at = 0; at < competitionRows.length; at += COMPETITION_WIDTH) {
     const [, , clubCount, playerCount] = competitionRows.slice(at, at + COMPETITION_WIDTH);
-    if (clubCount > MAX_CLUBS || playerCount > MAX_PLAYERS) throw corrupt('대회 차원');
+    if (clubCount > MAX_CLUBS || playerCount > MAX_PLAYERS)
+      throw corrupt(sourceMessage('copy.matchModelPacking.9b23012615'));
     clubTotal += clubCount;
     playerTotal += playerCount;
   }
@@ -386,7 +404,8 @@ function unpackSeason(
   const playerRows = readSparseTable(season.players, PLAYER_WIDTH, Math.min(playerTotal, MAX_ROWS));
   // A player row ends with the number of clubs he played for.
   for (let at = PLAYER_WIDTH - 1; at < playerRows.length; at += PLAYER_WIDTH) {
-    if (playerRows[at] < 1 || playerRows[at] > MAX_CONTRIBUTIONS) throw corrupt('소속 기여 차원');
+    if (playerRows[at] < 1 || playerRows[at] > MAX_CONTRIBUTIONS)
+      throw corrupt(sourceMessage('copy.matchModelPacking.29a64c5766'));
     contributionTotal += playerRows[at];
   }
   const contributionRows = readSparseTable(
@@ -398,7 +417,8 @@ function unpackSeason(
     player = 0,
     contribution = 0;
   const row = (rows: number[], width: number, index: number, what: string) => {
-    if ((index + 1) * width > rows.length) throw corrupt(`${what} 행 부족`);
+    if ((index + 1) * width > rows.length)
+      throw corrupt(sourceMessage('copy.matchModelPacking.588faabe8c', { p0: what }));
     return rows.slice(index * width, (index + 1) * width);
   };
   const competitions: NpcCompetitionStats[] = [];
@@ -407,15 +427,20 @@ function unpackSeason(
       competitionRows,
       COMPETITION_WIDTH,
       c,
-      '대회',
+      sourceMessage('copy.matchModelPacking.7255709b1f'),
     );
     const kind = KINDS[kindIndex];
-    if (!kind) throw corrupt('대회 종류');
+    if (!kind) throw corrupt(sourceMessage('copy.matchModelPacking.5472360f2b'));
     competitions.push({
       kind,
       groupKey: str(groupKey),
       clubs: Array.from({ length: clubCount }, () => {
-        const r = row(clubRows, CLUB_WIDTH, club++, '클럽');
+        const r = row(
+          clubRows,
+          CLUB_WIDTH,
+          club++,
+          sourceMessage('copy.matchModelPacking.6d641f69b7'),
+        );
         return {
           club: str(r[0]),
           matches: r[1],
@@ -426,13 +451,23 @@ function unpackSeason(
         };
       }),
       players: Array.from({ length: playerCount }, () => {
-        const [id, name, position, shares] = row(playerRows, PLAYER_WIDTH, player++, '선수');
+        const [id, name, position, shares] = row(
+          playerRows,
+          PLAYER_WIDTH,
+          player++,
+          sourceMessage('team.column.player'),
+        );
         return {
           id: str(id),
           name: str(name),
           position: str(position) as Position,
           clubs: Array.from({ length: shares }, () => {
-            const r = row(contributionRows, CONTRIBUTION_WIDTH, contribution++, '소속 기여');
+            const r = row(
+              contributionRows,
+              CONTRIBUTION_WIDTH,
+              contribution++,
+              sourceMessage('copy.matchModelPacking.1ecc2e7814'),
+            );
             return {
               club: str(r[0]),
               appearances: r[1],
@@ -450,7 +485,7 @@ function unpackSeason(
     player * PLAYER_WIDTH !== playerRows.length ||
     contribution * CONTRIBUTION_WIDTH !== contributionRows.length
   )
-    throw corrupt('잔여 행');
+    throw corrupt(sourceMessage('copy.matchModelPacking.d4cd094752'));
   const out: NpcSeasonStats = {
     year: header[0],
     model: revision(header[1]),

@@ -1,9 +1,18 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { World } from '../../contracts/src/types';
 import { currentDay, SEASON_END_DAY, seasonDayOf } from './calendar';
 
 export const WINDOW_INFO = {
-  summer: { name: '여름 이적시장', deadline: '9월 1일', opening: '시즌 종료 직후' },
-  winter: { name: '겨울 이적시장', deadline: '2월 1일', opening: '1월 1일' },
+  summer: {
+    name: sourceMessage('copy.transfer_window.7da140dfca'),
+    deadline: sourceMessage('copy.transfer_window.818a560979'),
+    opening: sourceMessage('copy.transfer_window.da4fa9163f'),
+  },
+  winter: {
+    name: sourceMessage('copy.transfer_window.86410a0228'),
+    deadline: sourceMessage('copy.transfer_window.abc1dceb43'),
+    opening: sourceMessage('copy.transfer_window.d6954fcad2'),
+  },
 } as const;
 
 export interface TransferWindowState {
@@ -34,14 +43,21 @@ export function transferWindow(w: World, day = currentDay(w)): TransferWindowSta
   const open = (kind: 'summer' | 'winter', until: number): TransferWindowState => ({
     open: true,
     kind,
-    label: `${WINDOW_INFO[kind].name} · ${WINDOW_INFO[kind].deadline} 마감 · ${dLabel(until - day)}`,
+    label: sourceMessage('copy.transfer_window.d747cf5ede', {
+      p0: WINDOW_INFO[kind].name,
+      p1: WINDOW_INFO[kind].deadline,
+      p2: dLabel(until - day),
+    }),
     until,
     daysLeft: until - day,
   });
   const closed = (kind: 'summer' | 'winter', until: number): TransferWindowState => ({
     open: false,
     kind,
-    label: `이적시장 닫힘 · ${WINDOW_INFO[kind].opening} 개장 · ${dLabel(until - day)}`,
+    label: sourceMessage('copy.transfer_window.866b1c742e', {
+      p0: WINDOW_INFO[kind].opening,
+      p1: dLabel(until - day),
+    }),
     until,
     daysLeft: until - day,
   });
@@ -54,5 +70,5 @@ export function transferWindow(w: World, day = currentDay(w)): TransferWindowSta
 /** Fee-bearing moves need an open window; free agents sign at any time. */
 export function assertTransferWindow(w: World, freeAgent = false): void {
   if (!freeAgent && !transferWindow(w).open)
-    throw new Error('이적시장이 닫혀 있어요. 자유계약 선수만 언제든 영입할 수 있어요.');
+    throw new Error(sourceMessage('copy.transfer_window.3614ce9700'));
 }

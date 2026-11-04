@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { competitionRoute, COMPETITION_PATHS } from './competitionNavigation';
 import { useTaskMemory, useTaskState } from './taskMemory';
 import { SeasonReview } from './SeasonReview';
@@ -14,7 +17,7 @@ import { Panel } from './App';
 import { AnalysisExport } from './AnalysisExport';
 import { CareerRecordBook, ClubLeaders, TrophyCabinet } from './CareerRecordBook';
 import { divisionName } from './careerRecords';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { ClubTrends, SeasonTable } from './ClubTrends';
 import { OwnerSeasons, SeasonsBeforeOwner } from './OwnerEras';
 import { Dialog } from './Dialog';
@@ -22,7 +25,7 @@ import { kindLabel, number, seasonName } from './format';
 import { Money } from './Money';
 import { replaceQuery, TabList, useAddressTab } from './PageTabs';
 import { Pitch } from './Pitch';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 import { archivePlayback } from './replay';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { TransferRecords } from './TransferRecords';
@@ -90,7 +93,7 @@ function useSeasonArchive(client: GameClient, w: World, year: number, enabled: b
   useEffect(() => {
     if (!enabled) return;
     let valid = true;
-    const failed = '시즌 기록을 읽지 못했어요. 시즌을 다시 선택해보세요.',
+    const failed = sourceMessage('copy.RecordsRoom.2cf51ea64d'),
       world = w.id;
     void client
       .archive(year)
@@ -109,6 +112,7 @@ function useSeasonArchive(client: GameClient, w: World, year: number, enabled: b
 
 /** Club seasons lead to their own analysis; competition tables are explicit contextual visits. */
 export function RecordsRoom({ state, client }: Props) {
+  useTextLocale();
   const w = state.view!.world;
   // The records tab stays in the page's address, so a reload keeps it.
   const [tab, setTab] = useAddressTab('view', RECORD_TABS, 'seasons', {
@@ -193,100 +197,115 @@ export function RecordsRoom({ state, client }: Props) {
   const seasonOpen = tab === 'seasons' && year !== undefined;
   return (
     <>
-      <h2 className={s.srOnly}>클럽 기록실</h2>
+      <h2 className={s.srOnly}>{richMessage('copy.catalog.e123f414e6')}</h2>
       <div className={s.recordsNav} data-ui="toolbar">
         <TabList
           tabs={RECORD_TABS}
           value={tab}
           onChange={selectTab}
-          label="기록실 보기"
+          label={displayMessage('copy.RecordsRoom.cb9f9c3bbe')}
           idPrefix="records"
         />
       </div>
-      {seasonOpen && (
-        <div className={s.recordNavigator} data-ui="record-navigator">
-          <button
-            data-ui="link"
-            type="button"
-            className={s.navigatorBack}
-            aria-label={managerReturn ? '감독 이력 목록으로' : '시즌별 기록 목록으로'}
-            onClick={returnToList}
-          >
-            <PixelIcon name="chevronLeft" size={16} />
-            {managerReturn ? '감독 이력' : '시즌별 기록'}
-          </button>
-          <h3>
-            {seasonName(year)} · 구단 시즌 기록{year === w.year ? ' · 진행 중' : ''}
-          </h3>
-        </div>
+      {localizeValue(
+        seasonOpen && (
+          <div className={s.recordNavigator} data-ui="record-navigator">
+            <button
+              data-ui="link"
+              type="button"
+              className={s.navigatorBack}
+              aria-label={localizeValue(
+                managerReturn
+                  ? sourceMessage('copy.RecordsRoom.cc9ddba1a3')
+                  : sourceMessage('copy.RecordsRoom.cf6886065f'),
+              )}
+              onClick={returnToList}
+            >
+              <PixelIcon name="chevronLeft" size={16} />
+              {localizeValue(
+                managerReturn
+                  ? sourceMessage('copy.RecordsRoom.2c80205cf2')
+                  : sourceMessage('copy.ClubTrends.f402b0218e'),
+              )}
+            </button>
+            <h3>
+              {richMessage('copy.RecordsRoom.9ca2616c61', {
+                p0: seasonName(year),
+                p1: year === w.year ? sourceMessage('copy.LeagueInsights.b2801e8117') : '',
+              })}
+            </h3>
+          </div>
+        ),
       )}
       <div
         className={s.recordStack}
         {...(seasonOpen
-          ? { role: 'region', 'aria-label': '구단 시즌 기록' }
+          ? { role: 'region', 'aria-label': sourceMessage('copy.RecordsRoom.460e6c9891') }
           : { id: 'records-panel', role: 'tabpanel', 'aria-labelledby': `records-tab-${tab}` })}
       >
-        {tab === 'seasons' ? (
-          year === undefined ? (
-            <>
-              <SeasonTable w={w} onSeason={openSeason} />
-              <OwnerSeasons w={w} />
-              <SeasonsBeforeOwner w={w} seasons={state.view!.preOwner} />
-            </>
+        {localizeValue(
+          tab === 'seasons' ? (
+            year === undefined ? (
+              <>
+                <SeasonTable w={w} onSeason={openSeason} />
+                <OwnerSeasons w={w} />
+                <SeasonsBeforeOwner w={w} seasons={state.view!.preOwner} />
+              </>
+            ) : (
+              <>
+                <div className={s.recordControls}>
+                  <div className={s.recordLinks}>
+                    <button
+                      data-ui="link"
+                      className={s.textButton}
+                      type="button"
+                      aria-label={displayMessage('copy.RecordsRoom.ec97e1d076')}
+                      onClick={() => openLeagueSeason(year, w.year)}
+                    >
+                      {richMessage('copy.LeagueInsights.7c477b094f')}
+                    </button>
+                    <button
+                      data-ui="link"
+                      className={s.textButton}
+                      type="button"
+                      aria-label={displayMessage('copy.RecordsRoom.0784d5370a')}
+                      onClick={() => openCupSeason(year, 'cup', w.year)}
+                    >
+                      {richMessage('copy.RecordsRoom.228e58565a')}
+                    </button>
+                  </div>
+                </div>
+                <SeasonRecords
+                  key={year}
+                  state={state}
+                  year={year}
+                  onYear={setYear}
+                  archive={archive?.data}
+                  error={archive?.error}
+                />
+              </>
+            )
+          ) : tab === 'honours' ? (
+            <Summary w={w} client={client} totalMatches={state.view!.totalMatches} />
+          ) : tab === 'trends' ? (
+            <ClubTrends w={w} />
+          ) : tab === 'players' ? (
+            <ClubLeaders w={w} />
+          ) : tab === 'transfers' ? (
+            <TransferRecords w={w} ledger={state.view!.transferLedger ?? []} />
+          ) : tab === 'ballonDor' ? (
+            <BallonDorView w={w} />
           ) : (
             <>
-              <div className={s.recordControls}>
-                <div className={s.recordLinks}>
-                  <button
-                    data-ui="link"
-                    className={s.textButton}
-                    type="button"
-                    aria-label="이 시즌 리그 순위표"
-                    onClick={() => openLeagueSeason(year, w.year)}
-                  >
-                    리그 순위표
-                  </button>
-                  <button
-                    data-ui="link"
-                    className={s.textButton}
-                    type="button"
-                    aria-label="이 시즌 컵 대회 기록"
-                    onClick={() => openCupSeason(year, 'cup', w.year)}
-                  >
-                    컵 대회 기록
-                  </button>
-                </div>
-              </div>
-              <SeasonRecords
-                key={year}
-                state={state}
-                year={year}
-                onYear={setYear}
-                archive={archive?.data}
-                error={archive?.error}
+              <ManagerRecords
+                client={client}
+                world={w.id}
+                historyKey={state.view!.managerHistoryKey}
+                onOpenSeason={openManagerSeason}
               />
+              <ManagerSeasons w={w} archive={archive?.data} error={archive?.error} />
             </>
-          )
-        ) : tab === 'honours' ? (
-          <Summary w={w} client={client} totalMatches={state.view!.totalMatches} />
-        ) : tab === 'trends' ? (
-          <ClubTrends w={w} />
-        ) : tab === 'players' ? (
-          <ClubLeaders w={w} />
-        ) : tab === 'transfers' ? (
-          <TransferRecords w={w} ledger={state.view!.transferLedger ?? []} />
-        ) : tab === 'ballonDor' ? (
-          <BallonDorView w={w} />
-        ) : (
-          <>
-            <ManagerRecords
-              client={client}
-              world={w.id}
-              historyKey={state.view!.managerHistoryKey}
-              onOpenSeason={openManagerSeason}
-            />
-            <ManagerSeasons w={w} archive={archive?.data} error={archive?.error} />
-          </>
+          ),
         )}
       </div>
     </>
@@ -295,8 +314,8 @@ export function RecordsRoom({ state, client }: Props) {
 
 /** Honours and career records remain separate from season history and growth. */
 const SUMMARY_PARTS = [
-  ['trophies', '트로피'],
-  ['records', '기타 기록'],
+  ['trophies', sourceMessage('copy.RecordsRoom.57192ccc74')],
+  ['records', sourceMessage('copy.RecordsRoom.7f4b9c3806')],
 ] as const;
 type SummaryPart = (typeof SUMMARY_PARTS)[number][0];
 
@@ -310,6 +329,7 @@ function Summary({
   client: GameClient;
   totalMatches: number;
 }) {
+  useTextLocale();
   const [part, setPart] = useTaskState<SummaryPart>(w.id, 'honours-part', () =>
     new URLSearchParams(location.search).get('part') === 'records' ? 'records' : 'trophies',
   );
@@ -317,19 +337,21 @@ function Summary({
     <>
       <div className={s.recordControls}>
         <Segments
-          label="명예·최고기록 보기"
+          label={displayMessage('copy.RecordsRoom.3c92f24df1')}
           options={SUMMARY_PARTS}
           value={part}
           onChange={setPart}
         />
       </div>
-      {part === 'trophies' ? (
-        <TrophyCabinet w={w} />
-      ) : (
-        <>
-          <MatchRecords w={w} client={client} totalMatches={totalMatches} />
-          <CareerRecordBook w={w} />
-        </>
+      {localizeValue(
+        part === 'trophies' ? (
+          <TrophyCabinet w={w} />
+        ) : (
+          <>
+            <MatchRecords w={w} client={client} totalMatches={totalMatches} />
+            <CareerRecordBook w={w} />
+          </>
+        ),
       )}
     </>
   );
@@ -348,6 +370,7 @@ function MatchRecords({
   client: GameClient;
   totalMatches: number;
 }) {
+  useTextLocale();
   const [read, setRead] = useState<{ world: string; records?: ClubRecords; failed?: boolean }>();
   useEffect(() => {
     let valid = true;
@@ -365,11 +388,18 @@ function MatchRecords({
     m && (
       <>
         <b>
-          {m.own}–{m.other}
+          {localizeValue(m.own)}–{localizeValue(m.other)}
         </b>
         <ClubLink w={w} id={m.opponent} crest={14} />
         <p className={a.note}>
-          {seasonName(m.year)} · {kindLabel[m.kind]} R{m.round} · {m.home ? '홈' : '원정'}
+          {richMessage('copy.RecordsRoom.7f4de59e2a', {
+            p0: localizeValue(seasonName(m.year)),
+            p1: localizeValue(kindLabel[m.kind]),
+            p2: localizeValue(m.round),
+            p3: localizeValue(
+              m.home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+            ),
+          })}
         </p>
       </>
     );
@@ -379,50 +409,89 @@ function MatchRecords({
     r.to && (
       <>
         <b>
-          {r.length}
-          {unit}
+          {localizeValue(r.length)}
+          {localizeValue(unit)}
         </b>
         <p className={a.note}>
-          {seasonName(r.from.year)} R{r.from.round} → {seasonName(r.to.year)} R{r.to.round}
-          {r.live ? ' · 진행 중' : ''}
+          {richMessage('copy.RecordsRoom.0e154df1de', {
+            p0: localizeValue(seasonName(r.from.year)),
+            p1: localizeValue(r.from.round),
+            p2: localizeValue(seasonName(r.to.year)),
+            p3: localizeValue(r.to.round),
+            p4: localizeValue(r.live ? sourceMessage('copy.LeagueInsights.b2801e8117') : ''),
+          })}
         </p>
       </>
     );
   const cards: [string, ReactNode][] = records
     ? [
-        ['최다 골차 승리', match(records.biggestWin)],
-        ['최다 골차 패배', match(records.biggestLoss)],
-        ['한 경기 최다 득점', match(records.mostScored)],
-        ['최다 연승', run(records.winning, '연승')],
-        ['최장 무패', run(records.unbeaten, '경기')],
-        ['최다 연속 무실점', run(records.cleanSheets, '경기')],
-        ['최다 연패', run(records.losing, '연패')],
-        ['최장 무승', run(records.winless, '경기')],
+        [sourceMessage('copy.RecordsRoom.6d13947e70'), match(records.biggestWin)],
+        [sourceMessage('copy.RecordsRoom.7dea468cef'), match(records.biggestLoss)],
+        [sourceMessage('copy.RecordsRoom.59000a3912'), match(records.mostScored)],
+        [
+          sourceMessage('copy.RecordsRoom.a23530b619'),
+          run(records.winning, sourceMessage('copy.RecordsRoom.41d614374c')),
+        ],
+        [
+          sourceMessage('copy.RecordsRoom.1dcca0d380'),
+          run(records.unbeaten, sourceMessage('copy.LabPage.e56314e9a1')),
+        ],
+        [
+          sourceMessage('copy.RecordsRoom.bee1020476'),
+          run(records.cleanSheets, sourceMessage('copy.LabPage.e56314e9a1')),
+        ],
+        [
+          sourceMessage('copy.RecordsRoom.c3d231fc8a'),
+          run(records.losing, sourceMessage('copy.RecordsRoom.87d094d815')),
+        ],
+        [
+          sourceMessage('copy.RecordsRoom.9c3abbc1f7'),
+          run(records.winless, sourceMessage('copy.LabPage.e56314e9a1')),
+        ],
       ]
     : [];
   return (
-    <Panel title="경기 기록" note={records ? `공식전 ${number(records.played)}경기` : undefined}>
-      <section className={`${s.panelBody} ${a.book}`} aria-label="경기 기록">
-        {!records ? (
-          <p className={s.muted} role={read?.failed ? 'alert' : 'status'}>
-            {read?.failed ? '경기 기록을 읽지 못했어요.' : '경기 기록을 모으는 중…'}
-          </p>
-        ) : records.played ? (
-          <div className={a.cards}>
-            {cards.map(([label, body]) => (
-              <article data-surface="panel" key={label} aria-label={label}>
-                <h4>{label}</h4>
-                {body || <p className={a.note}>아직 없어요.</p>}
-              </article>
-            ))}
-          </div>
-        ) : (
-          <p className={s.muted}>첫 공식전이 끝나면 경기 기록이 시작돼요.</p>
+    <Panel
+      title={displayMessage('copy.RecordsRoom.d161661e3a')}
+      note={
+        records
+          ? sourceMessage('copy.RecordsRoom.9a9c21031b', { p0: number(records.played) })
+          : undefined
+      }
+    >
+      <section
+        className={`${s.panelBody} ${a.book}`}
+        aria-label={displayMessage('copy.RecordsRoom.d161661e3a')}
+      >
+        {localizeValue(
+          !records ? (
+            <p className={s.muted} role={read?.failed ? 'alert' : 'status'}>
+              {localizeValue(
+                read?.failed
+                  ? sourceMessage('copy.CupHistory.1886147a5c')
+                  : sourceMessage('copy.RecordsRoom.f2c9a60677'),
+              )}
+            </p>
+          ) : records.played ? (
+            <div className={a.cards}>
+              {localizeValue(
+                cards.map(([label, body]) => (
+                  <article data-surface="panel" key={label} aria-label={localizeValue(label)}>
+                    <h4>{localizeValue(label)}</h4>
+                    {localizeValue(
+                      body || (
+                        <p className={a.note}>{richMessage('copy.RecordsRoom.3cdb4ce9b8')}</p>
+                      ),
+                    )}
+                  </article>
+                )),
+              )}
+            </div>
+          ) : (
+            <p className={s.muted}>{richMessage('copy.RecordsRoom.9ef90a2673')}</p>
+          ),
         )}
-        <p className={a.note}>
-          모든 대회의 정규 90분 결과예요. 승부차기로 가린 경기는 무승부로 세고, 연속 기록은 시즌을
-          넘어 이어져요.
-        </p>
+        <p className={a.note}>{richMessage('copy.RecordsRoom.d644e9266c')}</p>
       </section>
     </Panel>
   );
@@ -443,6 +512,7 @@ function ManagerRecords({
   historyKey?: string;
   onOpenSeason: ManagerHistoryProps['onOpenSeason'];
 }) {
+  useTextLocale();
   const props = useManagerHistory(client, world, historyKey, onOpenSeason);
   useEffect(() => {
     const scroll = returnedToManagers(world);
@@ -453,30 +523,41 @@ function ManagerRecords({
 
 /** The managers' seasons: every hiring and departure, then the man in charge now. */
 function ManagerSeasons({ w, archive, error }: { w: World; archive?: Archive; error?: string }) {
+  useTextLocale();
   return (
-    <Panel title="감독들이 남긴 계절">
+    <Panel title={displayMessage('copy.RecordsRoom.9c14511562')}>
       <div className={s.panelBody}>
-        {!archive && (
-          <p className={s.muted} role={error ? 'alert' : 'status'}>
-            {error || '감독 기록을 펼치는 중…'}
-          </p>
+        {localizeValue(
+          !archive && (
+            <p className={s.muted} role={error ? 'alert' : 'status'}>
+              {localizeValue(error || sourceMessage('copy.RecordsRoom.0ea24f2ba2'))}
+            </p>
+          ),
         )}
         <ul className={s.timeline}>
-          {archive?.managers
-            .filter((e) => e.kind === 'manager-hire' || e.kind === 'manager-departure')
-            .map((e, i) => (
-              <li key={i}>
-                <small>
-                  {e.year} · ROUND {e.round}
-                </small>
-                <b>{e.title}</b>
-                <p>{e.detail}</p>
-              </li>
-            ))}
+          {localizeValue(
+            archive?.managers
+              .filter((e) => e.kind === 'manager-hire' || e.kind === 'manager-departure')
+              .map((e, i) => (
+                <li key={i}>
+                  <small>
+                    {richMessage('copy.RecordsRoom.a8324f9843', {
+                      p0: localizeValue(e.year),
+                      p1: localizeValue(e.round),
+                    })}
+                  </small>
+                  <b>{localizeValue(e.title)}</b>
+                  <p>{localizeValue(e.detail)}</p>
+                </li>
+              )),
+          )}
           <li>
-            <b>{w.manager.name} · 현재</b>
+            <b>{richMessage('copy.RecordsRoom.deec60c968', { p0: w.manager.name })}</b>
             <p>
-              {w.manager.since}년부터 · {tacticLabel[w.manager.philosophy]}
+              {richMessage('copy.RecordsRoom.325b66c2d7', {
+                p0: w.manager.since,
+                p1: tacticLabel[w.manager.philosophy],
+              })}
             </p>
           </li>
         </ul>
@@ -486,12 +567,15 @@ function ManagerSeasons({ w, archive, error }: { w: World; archive?: Archive; er
 }
 
 const SEASON_PARTS = [
-  ['overview', '분석'],
-  ['matches', '경기'],
-  ['decisions', '결정'],
+  ['overview', sourceMessage('copy.NewsFeed.45ec3425c8')],
+  ['matches', sourceMessage('copy.LabPage.e56314e9a1')],
+  ['decisions', sourceMessage('copy.RecordsRoom.3725567246')],
 ] as const;
 /** The competition filter's choices: every competition, then each kind. */
-const RECORD_COMPETITIONS = [['all', '모든 대회'], ...Object.entries(kindLabel)] as const;
+const RECORD_COMPETITIONS = [
+  ['all', sourceMessage('copy.FixtureNotebook.4be0674739')],
+  ...Object.entries(kindLabel),
+] as const;
 
 /**
  * One season of ours (→WEB-54): arrows around the season list and the competition filter, then
@@ -511,6 +595,7 @@ function SeasonRecords({
   archive?: Archive;
   error?: string;
 }) {
+  useTextLocale();
   const w = state.view!.world,
     c = w.clubs.find((club) => club.id === w.playerClub)!,
     [match, setMatch] = useState<MatchRecord>(),
@@ -528,10 +613,11 @@ function SeasonRecords({
   const years = [...ownSeasons(w).map((season) => season.year), w.year],
     at = Math.max(0, years.indexOf(year));
   const f = (n: string, y = year) => <Money value={n} code={c.country} year={y} />;
-  const scope = filter === 'all' ? '모든 대회' : kindLabel[filter];
+  const scope =
+    filter === 'all' ? sourceMessage('copy.FixtureNotebook.4be0674739') : kindLabel[filter];
   const pending = !archive && (
     <p className={s.muted} role={error ? 'alert' : 'status'}>
-      {error || '선택한 시즌 기록을 펼치는 중…'}
+      {localizeValue(error || sourceMessage('copy.RecordsRoom.a1f87a2f56'))}
     </p>
   );
   return (
@@ -542,35 +628,37 @@ function SeasonRecords({
             className={`${t.seasonPicker} ${s.recordSeason}`}
             data-ui="season-picker"
             role="group"
-            aria-label="기록 시즌 선택"
+            aria-label={displayMessage('copy.RecordsRoom.d2731b4598')}
           >
             <button
               data-ui="link"
               type="button"
               className={t.seasonStep}
-              aria-label="이전 기록 시즌"
+              aria-label={displayMessage('copy.RecordsRoom.f9daea4a64')}
               disabled={at === 0}
               onClick={() => onYear(years[at - 1])}
             >
               <PixelIcon name="chevronLeft" size={20} />
             </button>
             <Select
-              aria-label="기록 시즌"
+              aria-label={displayMessage('copy.RecordsRoom.36bba428f0')}
               className={t.seasonSelect}
               value={year}
               onValueChange={(value) => onYear(Number(value))}
             >
-              {[...years].reverse().map((y) => (
-                <option key={y} value={y}>
-                  {seasonName(y)}
-                </option>
-              ))}
+              {localizeValue(
+                [...years].reverse().map((y) => (
+                  <option key={y} value={y}>
+                    {localizeValue(seasonName(y))}
+                  </option>
+                )),
+              )}
             </Select>
             <button
               data-ui="link"
               type="button"
               className={t.seasonStep}
-              aria-label="다음 기록 시즌"
+              aria-label={displayMessage('copy.RecordsRoom.935d69c347')}
               disabled={at === years.length - 1}
               onClick={() => onYear(years[at + 1])}
             >
@@ -578,185 +666,242 @@ function SeasonRecords({
             </button>
           </div>
           <label className={s.recordScope}>
-            <span className={s.srOnly}>대회 범위</span>
+            <span className={s.srOnly}>{richMessage('copy.RecordsRoom.67a99ac7e3')}</span>
             <Select
-              aria-label="기록 대회 범위"
+              aria-label={displayMessage('copy.RecordsRoom.ba22d30366')}
               value={filter}
               onValueChange={(value) => setFilter(value)}
             >
-              {RECORD_COMPETITIONS.map(([id, label]) => (
-                <option key={id} value={id}>
-                  {label}
-                </option>
-              ))}
+              {localizeValue(
+                RECORD_COMPETITIONS.map(([id, label]) => (
+                  <option key={id} value={id}>
+                    {localizeValue(label)}
+                  </option>
+                )),
+              )}
             </Select>
           </label>
           <span className={s.pill}>
-            {matches.length}경기 · 전체 {state.view!.totalMatches}경기 보존
+            {richMessage('copy.RecordsRoom.faa6412633', {
+              p0: matches.length,
+              p1: state.view!.totalMatches,
+            })}
           </span>
         </div>
-        <Segments label="시즌 기록 보기" options={SEASON_PARTS} value={part} onChange={setPart} />
+        <Segments
+          label={displayMessage('copy.RecordsRoom.8e538dcd32')}
+          options={SEASON_PARTS}
+          value={part}
+          onChange={setPart}
+        />
       </div>
-      {part === 'overview' ? (
-        <>
-          {h && (
-            <div className={s.stats}>
-              {(
-                [
-                  [
-                    '리그 성적',
-                    `${divisionName(c.country, h.tier, h.group)} ${h.rank}위 · ${h.points}pts`,
-                  ],
-                  ['서포터', number(h.fans)],
-                  ['당시 자금', f(h.cash)],
-                  ['당시 손익', f((BigInt(h.income) - BigInt(h.expense)).toString())],
-                ] as [string, ReactNode][]
-              ).map(([label, value]) => (
-                <div data-surface="inset" className={s.stat} key={label}>
-                  <div className={s.label}>{label}</div>
-                  <strong>{value}</strong>
+      {localizeValue(
+        part === 'overview' ? (
+          <>
+            {localizeValue(
+              h && (
+                <div className={s.stats}>
+                  {localizeValue(
+                    (
+                      [
+                        [
+                          sourceMessage('copy.RecordsRoom.d88e556226'),
+                          sourceMessage('copy.RecordsRoom.c45f87bb0d', {
+                            p0: divisionName(c.country, h.tier, h.group),
+                            p1: h.rank,
+                            p2: h.points,
+                          }),
+                        ],
+                        [sourceMessage('copy.ClubTrends.2070613ba9'), number(h.fans)],
+                        [sourceMessage('copy.RecordsRoom.70b1b5a635'), f(h.cash)],
+                        [
+                          sourceMessage('copy.RecordsRoom.04e0271ff6'),
+                          f((BigInt(h.income) - BigInt(h.expense)).toString()),
+                        ],
+                      ] as [string, ReactNode][]
+                    ).map(([label, value]) => (
+                      <div data-surface="inset" className={s.stat} key={label}>
+                        <div className={s.label}>{localizeValue(label)}</div>
+                        <strong>{localizeValue(value)}</strong>
+                      </div>
+                    )),
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-          {archive ? <SeasonAnalysis w={w} records={matches} year={year} scope={scope} /> : pending}
-          {h && archive && (
-            <details data-ui="disclosure" className={s.seasonDeepDive}>
-              <summary>리그 심층 분석·구단 재정 결산</summary>
-              <p className={a.note}>
-                리그 경기의 xG·기대 승점·선수 기록과 구단의 시즌 결산이에요. 위 대회 범위별 분석과
-                집계 범위가 달라요.
-              </p>
-              <SeasonReview w={w} year={year} files={archive} />
-            </details>
-          )}
-          <AnalysisExport w={w} records={matches} year={year} scope={scope} ready={!!archive} />
-        </>
-      ) : part === 'matches' ? (
-        <>
-          {pending}
-          <Panel title="경기의 페이지" note={`${seasonName(year)} · ${scope}`}>
-            <div className={s.tableWrap}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>라운드</th>
-                    <th>홈 클럽</th>
-                    <th>결과</th>
-                    <th>원정 클럽</th>
-                    <th>대회</th>
-                    <th>기록</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {matches.map((m) => (
-                    <tr key={m.id}>
-                      <td>{m.round}</td>
-                      <td>
-                        <ClubLink w={w} id={m.home} crest={14} />
-                      </td>
-                      <td>
-                        <b>
-                          {m.score.home}–{m.score.away}
-                        </b>
-                      </td>
-                      <td>
-                        <ClubLink w={w} id={m.away} crest={14} />
-                      </td>
-                      <td>{kindLabel[m.kind]}</td>
-                      <td>
-                        <button onClick={() => setMatch(m)}>경기 기록 보기</button>
-                      </td>
+              ),
+            )}
+            {localizeValue(
+              archive ? (
+                <SeasonAnalysis w={w} records={matches} year={year} scope={scope} />
+              ) : (
+                pending
+              ),
+            )}
+            {localizeValue(
+              h && archive && (
+                <details data-ui="disclosure" className={s.seasonDeepDive}>
+                  <summary>{richMessage('copy.RecordsRoom.f05cfd8eb4')}</summary>
+                  <p className={a.note}>{richMessage('copy.RecordsRoom.b683290fc3')}</p>
+                  <SeasonReview w={w} year={year} files={archive} />
+                </details>
+              ),
+            )}
+            <AnalysisExport w={w} records={matches} year={year} scope={scope} ready={!!archive} />
+          </>
+        ) : part === 'matches' ? (
+          <>
+            {localizeValue(pending)}
+            <Panel
+              title={displayMessage('copy.RecordsRoom.ce5fd530f9')}
+              note={`${seasonName(year)} · ${scope}`}
+            >
+              <div className={s.tableWrap}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{richMessage('copy.ClubHub.0fcb288d12')}</th>
+                      <th>{richMessage('copy.RecordsRoom.b6c147db1a')}</th>
+                      <th>{richMessage('copy.LabPage.109383e344')}</th>
+                      <th>{richMessage('copy.RecordsRoom.6135e3a7cb')}</th>
+                      <th>{richMessage('copy.matchModelPacking.7255709b1f')}</th>
+                      <th>{richMessage('navigation.history')}</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              {archive && !matches.length && (
-                <div className={s.empty}>아직 기록된 경기가 없습니다.</div>
-              )}
-            </div>
-          </Panel>
-        </>
-      ) : (
-        <>
-          {pending}
-          <Panel title="그해의 결정들" note={seasonName(year)}>
-            <div className={s.panelBody}>
-              <ul className={s.timeline}>
-                {archive?.events
-                  .filter((e) => e.kind !== 'gate')
-                  .map((e, i) => (
-                    <li key={i}>
-                      <small>
-                        {e.year} · ROUND {e.round}{' '}
-                        {e.amount && `· ${e.amount} ${e.currency} (원래 최소 단위)`}
-                      </small>
-                      <b>{e.kind === 'build' ? readBuildTitle(e.title) : e.title}</b>
-                      <p>{e.detail}</p>
-                    </li>
-                  ))}
-              </ul>
-              {archive && !archive.events.some((e) => e.kind !== 'gate') && (
-                <div className={s.empty}>이 시즌에 기록된 결정이 없어요.</div>
-              )}
-            </div>
-          </Panel>
-        </>
+                  </thead>
+                  <tbody>
+                    {localizeValue(
+                      matches.map((m) => (
+                        <tr key={m.id}>
+                          <td>{localizeValue(m.round)}</td>
+                          <td>
+                            <ClubLink w={w} id={m.home} crest={14} />
+                          </td>
+                          <td>
+                            <b>
+                              {localizeValue(m.score.home)}–{localizeValue(m.score.away)}
+                            </b>
+                          </td>
+                          <td>
+                            <ClubLink w={w} id={m.away} crest={14} />
+                          </td>
+                          <td>{localizeValue(kindLabel[m.kind])}</td>
+                          <td>
+                            <button onClick={() => setMatch(m)}>
+                              {richMessage('copy.RecordsRoom.acceaac37b')}
+                            </button>
+                          </td>
+                        </tr>
+                      )),
+                    )}
+                  </tbody>
+                </table>
+                {localizeValue(
+                  archive && !matches.length && (
+                    <div className={s.empty}>{richMessage('copy.RecordsRoom.8d08e08c9e')}</div>
+                  ),
+                )}
+              </div>
+            </Panel>
+          </>
+        ) : (
+          <>
+            {localizeValue(pending)}
+            <Panel title={displayMessage('copy.RecordsRoom.68b41fe86c')} note={seasonName(year)}>
+              <div className={s.panelBody}>
+                <ul className={s.timeline}>
+                  {localizeValue(
+                    archive?.events
+                      .filter((e) => e.kind !== 'gate')
+                      .map((e, i) => (
+                        <li key={i}>
+                          <small>
+                            {richMessage('copy.RecordsRoom.4754a30b3f', {
+                              p0: localizeValue(e.year),
+                              p1: localizeValue(e.round),
+                              p2: localizeValue(' '),
+                              p3: localizeValue(
+                                e.amount &&
+                                  sourceMessage('copy.RecordsRoom.3440e597a2', {
+                                    p0: e.amount,
+                                    p1: e.currency,
+                                  }),
+                              ),
+                            })}
+                          </small>
+                          <b>
+                            {localizeValue(e.kind === 'build' ? readBuildTitle(e.title) : e.title)}
+                          </b>
+                          <p>{localizeValue(e.detail)}</p>
+                        </li>
+                      )),
+                  )}
+                </ul>
+                {localizeValue(
+                  archive && !archive.events.some((e) => e.kind !== 'gate') && (
+                    <div className={s.empty}>{richMessage('copy.RecordsRoom.ad9aff9574')}</div>
+                  ),
+                )}
+              </div>
+            </Panel>
+          </>
+        ),
       )}
-      {match && <MatchSheet w={w} match={match} onClose={() => setMatch(undefined)} />}
+      {localizeValue(
+        match && <MatchSheet w={w} match={match} onClose={() => setMatch(undefined)} />,
+      )}
     </>
   );
 }
 
 /** A past match replayed from its stored goals, with our players' lines. */
 function MatchSheet({ w, match, onClose }: { w: World; match: MatchRecord; onClose: () => void }) {
+  useTextLocale();
   return (
-    <Dialog label="지난 경기 상세" onClose={onClose} wide>
-      <button onClick={onClose}>닫기</button>
+    <Dialog label={displayMessage('copy.RecordsRoom.96c6813cd1')} onClose={onClose} wide>
+      <button onClick={onClose}>{richMessage('copy.EventCenter.1e8c10206f')}</button>
       <h2>
-        {seasonName(match.year)} · {kindLabel[match.kind]}
+        {localizeValue(seasonName(match.year))} · {localizeValue(kindLabel[match.kind])}
       </h2>
       <Pitch playback={archivePlayback(match)} summary world={w} />
-      <h3>선수별 기록 · 우리 클럽</h3>
+      <h3>{richMessage('copy.RecordsRoom.2e0357962b')}</h3>
       <div className={s.tableWrap}>
         <table>
           <thead>
             <tr>
-              <th>득점</th>
-              <th>선수</th>
-              <th>도움</th>
-              <th>패스 성공/시도</th>
-              <th>슈팅/유효</th>
-              <th>태클</th>
-              <th>선방</th>
+              <th>{richMessage('copy.summary.eb4e291be3')}</th>
+              <th>{richMessage('team.column.player')}</th>
+              <th>{richMessage('copy.BallonDorView.8d901cc28d')}</th>
+              <th>{richMessage('copy.RecordsRoom.a5cb2717bc')}</th>
+              <th>{richMessage('copy.RecordsRoom.3caa569233')}</th>
+              <th>{richMessage('copy.Pitch.3f6ba38a9e')}</th>
+              <th>{richMessage('copy.RecordsRoom.2a022bd612')}</th>
             </tr>
           </thead>
           <tbody>
-            {match.players.map((p) => {
-              const player = w.players.find((owned) => owned.id === p.id);
-              return (
-                <tr key={p.id}>
-                  <td>{p.metrics[0]}</td>
-                  <td>{player && <PlayerLink id={player.id} name={player.name} />}</td>
-                  <td>{p.metrics[1]}</td>
-                  <td>
-                    {p.metrics[3]}/{p.metrics[2]}
-                  </td>
-                  <td>
-                    {p.metrics[4]}/{p.metrics[5]}
-                  </td>
-                  <td>{p.metrics[6]}</td>
-                  <td>{p.metrics[9]}</td>
-                </tr>
-              );
-            })}
+            {localizeValue(
+              match.players.map((p) => {
+                const player = w.players.find((owned) => owned.id === p.id);
+                return (
+                  <tr key={p.id}>
+                    <td>{localizeValue(p.metrics[0])}</td>
+                    <td>
+                      {localizeValue(player && <PlayerLink id={player.id} name={player.name} />)}
+                    </td>
+                    <td>{localizeValue(p.metrics[1])}</td>
+                    <td>
+                      {localizeValue(p.metrics[3])}/{localizeValue(p.metrics[2])}
+                    </td>
+                    <td>
+                      {localizeValue(p.metrics[4])}/{localizeValue(p.metrics[5])}
+                    </td>
+                    <td>{localizeValue(p.metrics[6])}</td>
+                    <td>{localizeValue(p.metrics[9])}</td>
+                  </tr>
+                );
+              }),
+            )}
           </tbody>
         </table>
       </div>
-      <p className={s.muted}>
-        전체 경기 기록은 보존됩니다. 과거 관전에서는 저장된 골 이벤트를 재생하며, 상세 분 단위
-        패스와 이동 경로는 저장하지 않습니다.
-      </p>
+      <p className={s.muted}>{richMessage('copy.RecordsRoom.a5b46f2800')}</p>
     </Dialog>
   );
 }

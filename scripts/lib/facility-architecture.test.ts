@@ -5,17 +5,21 @@ import { dependencies, sourceGraph } from './source-graph';
 const closure = (entry: string) =>
   dependencies(sourceGraph(process.cwd()), [entry]).map((file) => relative(process.cwd(), file));
 const MODEL = 'packages/engine/src/facility-model.ts';
+const SOURCE_MESSAGES = [
+  'packages/contracts/src/messages.ts',
+  'packages/contracts/src/source-messages.ts',
+];
 
 describe('facility architecture boundaries', () => {
   it('keeps the completed-facility model a leaf', () => {
-    expect(closure(MODEL)).toEqual([MODEL]);
+    expect(closure(MODEL)).toEqual([...SOURCE_MESSAGES, MODEL]);
   });
   it('selects facility artwork from completed facts, without construction or the world', () => {
     const images = 'apps/web/src/presentation/facilityImages.ts';
     const files = closure(images);
     for (const forbidden of ['facilities', 'world', 'season', 'calendar', 'events', 'quotes'])
       expect(files, forbidden).not.toContain(`packages/engine/src/${forbidden}.ts`);
-    const allowed = [images, 'apps/web/src/presentation/contracts.ts', MODEL];
+    const allowed = [images, 'apps/web/src/presentation/contracts.ts', MODEL, ...SOURCE_MESSAGES];
     expect(files.filter((file) => !allowed.includes(file))).toEqual([]);
     expect(files).toContain(MODEL);
   });

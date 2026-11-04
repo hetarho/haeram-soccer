@@ -976,16 +976,25 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
     expect(BigInt(start.fortune!)).toBeGreaterThan(0n);
     const club = start.listings!.find((listing) => listing.affordable && listing.division === 0)!;
     expect(club).toBeDefined();
-    const sheet = await client.clubSheet(club.clubId);
+    const sheet = await client.startClubProfile(club.clubId);
     expect(sheet!.squad.length).toBeGreaterThan(10);
     expect(sheet!.stadium.seats).toBeGreaterThan(0);
-    await expect(client.clubSheet('nobody')).rejects.toThrow('인수할 수 없는 구단입니다.');
+    expect(sheet!.staff.map((post) => post.post)).toEqual(['manager']);
+    await expect(client.startClubProfile('nobody')).rejects.toThrow('인수할 수 없는 구단입니다.');
 
     const reply = await client.takeOver(club.clubId);
     expect(reply?.ok).toBe(true);
     expect(client.state.start).toBeUndefined();
     const w = client.state.view!.world;
     expect(w.playerClub).toBe(club.clubId);
+    // After the takeover any club reads from the career: ours lists every post, a rival its manager.
+    const own = await client.clubProfile(club.clubId);
+    expect(own.staff[0]).toMatchObject({ post: 'manager', name: w.manager.name });
+    expect(own.staff.map((post) => post.post)).toContain('director');
+    const rival = w.clubs.find((c) => c.id !== club.clubId)!;
+    const rivalSquad = (await client.clubProfile(rival.id)).squad;
+    const found = await client.playerProfile(rivalSquad[0]!.id);
+    expect(found).toMatchObject({ club: rival.id, player: { name: rivalSquad[0]!.name } });
     expect(w.build).toBeUndefined();
     expect(w.policy).toBeUndefined();
     expect(w.direction).toBeUndefined();

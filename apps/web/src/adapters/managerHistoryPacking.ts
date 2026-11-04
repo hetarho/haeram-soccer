@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import {
   managerHistoryFactsSchema,
   managerTenureId,
@@ -55,7 +56,8 @@ const MAX_RECORDS = 100000;
 const MAX_TENURES = 100000;
 const MAX_OUTCOMES = 100000;
 
-const corrupt = (detail: string) => new Error(`감독 이력 압축 데이터 손상: ${detail}`);
+const corrupt = (detail: string) =>
+  new Error(sourceMessage('copy.managerHistoryPacking.ead86e5f67', { p0: detail }));
 const isObject = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 const isCount = (value: unknown, max = Number.MAX_SAFE_INTEGER): value is number =>
@@ -82,7 +84,7 @@ export function packManagerHistory(
 ): PackedManagerHistory | undefined {
   if (!carriesManagerHistory(w)) return undefined;
   const facts = w.managerHistory;
-  if (!facts) throw corrupt('사실 없는 경기 연결');
+  if (!facts) throw corrupt(sourceMessage('copy.managerHistoryPacking.d59c00a297'));
   const index = new Map(facts.tenures.map((t, i) => [t.id, i]));
   const packed: PackedManagerHistory = {
     version: VERSION,
@@ -109,7 +111,8 @@ export function packManagerHistory(
     ]),
     outcomes: facts.outcomes.flatMap((o) => {
       const tenure = index.get(o.tenure);
-      if (tenure === undefined) throw corrupt('성과 감독 참조');
+      if (tenure === undefined)
+        throw corrupt(sourceMessage('copy.managerHistoryPacking.8c91c2331d'));
       const s = o.source;
       const source =
         s.kind === 'league-finish'
@@ -132,7 +135,8 @@ export function packManagerHistory(
     const runs: number[] = [];
     for (const m of w.ownMatches) {
       const tenure = m.managerTenure === undefined ? undefined : index.get(m.managerTenure);
-      if (m.managerTenure !== undefined && tenure === undefined) throw corrupt('경기 감독 참조');
+      if (m.managerTenure !== undefined && tenure === undefined)
+        throw corrupt(sourceMessage('copy.managerHistoryPacking.de4b68c6fa'));
       const r = tenure === undefined ? 0 : tenure + 1;
       if (runs.length && runs[runs.length - 2] === r) runs[runs.length - 1]++;
       else runs.push(r, 1);
@@ -147,13 +151,11 @@ export function packManagerHistory(
  * section version is a compatibility failure (→SAVE-11), any other version corruption.
  */
 export function readManagerHistoryFormat(section: unknown) {
-  if (!isObject(section)) throw corrupt('형식');
+  if (!isObject(section)) throw corrupt(sourceMessage('copy.identityPacking.d1a42ea591'));
   const { version } = section;
   if (isCount(version) && version > VERSION)
-    throw new SaveCompatibilityError(
-      '이 저장은 더 새로운 감독 이력 형식으로 기록되었습니다. 원본 파일을 내보내 보관하세요.',
-    );
-  if (version !== VERSION) throw corrupt('버전');
+    throw new SaveCompatibilityError(sourceMessage('copy.managerHistoryPacking.62240597b0'));
+  if (version !== VERSION) throw corrupt(sourceMessage('copy.identityPacking.002f73c32e'));
 }
 
 function rows(values: unknown, width: number, max: number, what: string) {
@@ -163,7 +165,7 @@ function rows(values: unknown, width: number, max: number, what: string) {
     values.length > width * max ||
     !values.every((n) => isCount(n))
   )
-    throw corrupt(`${what} 차원`);
+    throw corrupt(sourceMessage('copy.managerHistoryPacking.bcccd541ad', { p0: what }));
   return Array.from({ length: values.length / width }, (_, i) =>
     (values as number[]).slice(i * width, (i + 1) * width),
   );
@@ -171,7 +173,8 @@ function rows(values: unknown, width: number, max: number, what: string) {
 /** A stored date pair; `optional` allows the absent `0, 0`, nothing else may be partly zero. */
 function readDate(year: number, day: number, optional: boolean, what: string) {
   if (optional && year === 0) {
-    if (day !== 0) throw corrupt(`${what} 날짜`);
+    if (day !== 0)
+      throw corrupt(sourceMessage('copy.managerHistoryPacking.413fb58404', { p0: what }));
     return undefined;
   }
   return { year, day };
@@ -197,17 +200,28 @@ export function unpackManagerHistory(
   const p = section as unknown as PackedManagerHistory;
   const h = p.header;
   if (!Array.isArray(h) || h.length !== HEADER_WIDTH || !h.every((n) => isCount(n)))
-    throw corrupt('머리말');
+    throw corrupt(sourceMessage('copy.managerHistoryPacking.cb6aa1843e'));
   const coverage = COVERAGES[h[4]];
-  if (!coverage) throw corrupt('관측 범위');
-  const tenures = rows(p.tenures, TENURE_WIDTH, MAX_TENURES, '감독').map((t, i): ManagerTenure => {
+  if (!coverage) throw corrupt(sourceMessage('copy.managerHistoryPacking.c6e7a8f342'));
+  const tenures = rows(
+    p.tenures,
+    TENURE_WIDTH,
+    MAX_TENURES,
+    sourceMessage('staff.role.manager'),
+  ).map((t, i): ManagerTenure => {
     const optional = (value: number) => (value === 0 ? undefined : str(value - 1));
-    if (t[3] > 1) throw corrupt('대행 표시');
+    if (t[3] > 1) throw corrupt(sourceMessage('copy.managerHistoryPacking.368f14ec6a'));
     const departure = t[11] === 0 ? undefined : DEPARTURES[t[11] - 1];
-    if (t[11] !== 0 && !departure) throw corrupt('떠난 이유');
+    if (t[11] !== 0 && !departure)
+      throw corrupt(sourceMessage('copy.managerHistoryPacking.4f9400e9c8'));
     const person = optional(t[1]),
-      appointed = readDate(t[6], t[7], true, '선임'),
-      ended = readDate(t[9], t[10], true, '퇴임'),
+      appointed = readDate(
+        t[6],
+        t[7],
+        true,
+        sourceMessage('copy.managerHistoryPacking.f163d47d0b'),
+      ),
+      ended = readDate(t[9], t[10], true, sourceMessage('copy.managerHistoryPacking.8bfce3c950')),
       departureKey = optional(t[13]);
     return {
       id: managerTenureId(str(h[0]), i + 1),
@@ -215,7 +229,12 @@ export function unpackManagerHistory(
       ...(person !== undefined ? { person } : {}),
       name: str(t[2]),
       interim: t[3] === 1,
-      trackedFrom: readDate(t[4], t[5], false, '추적')!,
+      trackedFrom: readDate(
+        t[4],
+        t[5],
+        false,
+        sourceMessage('copy.managerHistoryPacking.adcc56b19e'),
+      )!,
       ...(appointed ? { appointed } : {}),
       ...(t[8] !== 0 ? { knownSince: t[8] } : {}),
       ...(ended ? { ended } : {}),
@@ -224,34 +243,38 @@ export function unpackManagerHistory(
       ...(departureKey !== undefined ? { departureKey } : {}),
     };
   });
-  const outcomes = rows(p.outcomes, OUTCOME_WIDTH, MAX_OUTCOMES, '성과').map(
-    (o): ManagerOutcome => {
-      const kind = KINDS[o[0]],
-        tenure = tenures[o[2]];
-      if (!kind) throw corrupt('성과 종류');
-      if (!tenure) throw corrupt('성과 감독 참조');
-      const s = o.slice(5);
-      const used = kind === 'league-finish' ? 3 : kind === 'cup-title' ? 1 : 7;
-      if (s.slice(used).some((n) => n !== 0)) throw corrupt('성과 빈 열');
-      const year = o[1];
-      return {
-        source:
-          kind === 'league-finish'
-            ? { kind, year, country: str(s[0]), tier: s[1], group: s[2] }
-            : kind === 'cup-title'
-              ? { kind, year, competition: str(s[0]) }
-              : {
-                  kind,
-                  year,
-                  club: str(s[0]),
-                  from: { country: str(s[1]), tier: s[2], group: s[3] },
-                  to: { country: str(s[4]), tier: s[5], group: s[6] },
-                },
-        tenure: tenure.id,
-        at: readDate(o[3], o[4], false, '성과')!,
-      };
-    },
-  );
+  const outcomes = rows(
+    p.outcomes,
+    OUTCOME_WIDTH,
+    MAX_OUTCOMES,
+    sourceMessage('copy.managerHistoryPacking.2f790fbbcb'),
+  ).map((o): ManagerOutcome => {
+    const kind = KINDS[o[0]],
+      tenure = tenures[o[2]];
+    if (!kind) throw corrupt(sourceMessage('copy.managerHistoryPacking.ecb18ddf0d'));
+    if (!tenure) throw corrupt(sourceMessage('copy.managerHistoryPacking.8c91c2331d'));
+    const s = o.slice(5);
+    const used = kind === 'league-finish' ? 3 : kind === 'cup-title' ? 1 : 7;
+    if (s.slice(used).some((n) => n !== 0))
+      throw corrupt(sourceMessage('copy.managerHistoryPacking.07af0b726e'));
+    const year = o[1];
+    return {
+      source:
+        kind === 'league-finish'
+          ? { kind, year, country: str(s[0]), tier: s[1], group: s[2] }
+          : kind === 'cup-title'
+            ? { kind, year, competition: str(s[0]) }
+            : {
+                kind,
+                year,
+                club: str(s[0]),
+                from: { country: str(s[1]), tier: s[2], group: s[3] },
+                to: { country: str(s[4]), tier: s[5], group: s[6] },
+              },
+      tenure: tenure.id,
+      at: readDate(o[3], o[4], false, sourceMessage('copy.managerHistoryPacking.2f790fbbcb'))!,
+    };
+  });
   const parsed = managerHistoryFactsSchema.safeParse({
     club: str(h[0]),
     trackedFrom: { year: h[1], day: h[2], revision: h[3] },
@@ -260,12 +283,15 @@ export function unpackManagerHistory(
     tenures,
     outcomes,
   });
-  if (!parsed.success) throw corrupt(parsed.error.issues[0]?.message ?? '사실');
+  if (!parsed.success)
+    throw corrupt(
+      parsed.error.issues[0]?.message ?? sourceMessage('copy.managerHistoryPacking.c087c91deb'),
+    );
   const records: (string | undefined)[] = [];
   if (p.records !== undefined) {
     const runs = p.records;
     if (!Array.isArray(runs) || runs.length % 2 || runs.length > 2 * MAX_RECORDS)
-      throw corrupt('경기 감독 구간');
+      throw corrupt(sourceMessage('copy.managerHistoryPacking.690238b970'));
     for (let i = 0; i < runs.length; i += 2) {
       const [r, length] = [runs[i], runs[i + 1]];
       if (
@@ -275,12 +301,12 @@ export function unpackManagerHistory(
         (i && runs[i - 2] === r) ||
         records.length + length > recordCount
       )
-        throw corrupt('경기 감독 구간');
+        throw corrupt(sourceMessage('copy.managerHistoryPacking.690238b970'));
       const tenure = r === 0 ? undefined : tenures[r - 1]!.id;
       for (let n = 0; n < length; n++) records.push(tenure);
     }
     if (records.length !== recordCount || records.every((t) => t === undefined))
-      throw corrupt('경기 감독 구간');
+      throw corrupt(sourceMessage('copy.managerHistoryPacking.690238b970'));
   } else records.push(...Array<undefined>(recordCount).fill(undefined));
   return { facts: parsed.data, records };
 }

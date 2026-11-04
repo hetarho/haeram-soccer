@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
  * One complete aggregate match (→MATCH-6, MATCH-22, MATCH-26, MATCH-27): a fixture's prepared
  * match, its matchday rosters and its participation plan condition the team kernel; extra time
@@ -143,7 +144,7 @@ export function matchdayRosters(
   for (const side of [0, 1] as const) {
     const club: Club = prepared.teams[side];
     if (new Set(prepared.squads[side].map((p) => p.id)).size !== 11)
-      throw new Error(`집계 경기 선발 11명이 아닙니다: ${club.id} ${f.id}`);
+      throw new Error(sourceMessage('copy.engine.9c28025341', { p0: club.id, p1: f.id }));
   }
   return fixtureRosters(w, f, prepared, era);
 }
@@ -314,7 +315,7 @@ export interface AggregateMatch {
  */
 export const UNPLANNED: AggregateSkillAccess = {
   skill: () => {
-    throw new Error('집계 경기의 실효 능력은 출전 계획 뒤에 읽습니다');
+    throw new Error(sourceMessage('copy.engine.d655627d6f'));
   },
   finishing: (shooting, keeping) => finishing(shooting, keeping),
   targetChance: (goal, shooting) => targetChance(goal, shooting),
@@ -454,7 +455,7 @@ export function aggregateRecord(
         minute: shot.minute,
         side: credit.side,
         player: rosters[credit.side][credit.shooter]!.name,
-        action: '골',
+        action: sourceMessage('copy.summary.68a6cf8ed8'),
       });
   }
   highlights.sort((a, b) => a.minute - b.minute || a.side - b.side);
@@ -463,8 +464,10 @@ export function aggregateRecord(
     highlights.push({
       minute: 120,
       side,
-      player: '승부차기',
-      action: `승부차기 ${side === 0 ? '홈' : '원정'} 승리`,
+      player: sourceMessage('copy.headToHead.16fa957ea6'),
+      action: sourceMessage('copy.match.35ef500e6b', {
+        p0: side === 0 ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+      }),
     });
   }
   const record: MatchRecord = {

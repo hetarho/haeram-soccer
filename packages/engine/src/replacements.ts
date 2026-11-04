@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { callUpFor, SQUAD_TARGET } from './squad-target';
 import { activePlayers } from './player-state';
 import { refillPosition } from './world';
@@ -23,8 +24,8 @@ export function openNeed(w: World, player: Player, day = currentDay(w)) {
   if (!isDelegated(w, 'recruitment'))
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${player.name} 이탈 · 대체 영입 필요`,
-      detail: `대체 영입 필요 · ${need.line} · 영입은 구단주가 직접 결정해요.`,
+      title: sourceMessage('copy.replacements.a322d5271f', { p0: player.name }),
+      detail: sourceMessage('copy.replacements.af5947ab63', { p0: need.line }),
       attention: false,
       ref: player.id,
     });
@@ -67,7 +68,7 @@ export function windowCallUps(w: World) {
     recommendations.push(
       existing.has(player.id)
         ? `${player.name}(${POSITION_LABEL[player.position]})`
-        : `${POSITION_LABEL[player.position]} 승격 후보 없음`,
+        : sourceMessage('copy.replacements.442718d63c', { p0: POSITION_LABEL[player.position] }),
     );
     return true;
   };
@@ -82,11 +83,10 @@ export function windowCallUps(w: World) {
   if (direct && recommendations.length)
     pushInbox(w, {
       kind: 'staff-report',
-      title: '유스 디렉터 보고 · 이적시장 마감 보충 추천',
-      detail: `${recommendations.join(' → ')} · 승격은 아카데미에서 직접 결정해 주세요.`.slice(
-        0,
-        400,
-      ),
+      title: sourceMessage('copy.replacements.dbaa9e78de'),
+      detail: sourceMessage('copy.replacements.32a94291e4', {
+        p0: recommendations.join(' → '),
+      }).slice(0, 400),
       attention: true,
       ref,
     });

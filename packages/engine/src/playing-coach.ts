@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ContractTerm, PlayingCoachProposal, Staff, World } from '../../contracts/src/types';
 import { initializeCoaching, personCoachingGrade } from './coaching-entry';
 import { atCareerDate, careerDate, openEmployment } from './person-careers';
@@ -94,8 +95,13 @@ export function submitPlayingCoachProposal(w: World, proposal: PlayingCoachPropo
   addEvent(
     w,
     'playing-coach-proposal',
-    `${w.people![id].name} 플레잉 코치 제안`,
-    `선수 연봉 ${moneyLabel(w, proposal.playerWage)} · 코치 연봉 ${moneyLabel(w, proposal.coachWage)} · 합계 ${moneyLabel(w, proposal.totalWage)} · 선납 ${moneyLabel(w, proposal.upfront)}`,
+    sourceMessage('copy.playing_coach.945e4a3bfc', { p0: w.people![id].name }),
+    sourceMessage('copy.playing_coach.53c58855ec', {
+      p0: moneyLabel(w, proposal.playerWage),
+      p1: moneyLabel(w, proposal.coachWage),
+      p2: moneyLabel(w, proposal.totalWage),
+      p3: moneyLabel(w, proposal.upfront),
+    }),
   );
   if (isDelegated(w, 'contracts') && isDelegated(w, 'staff')) handoverPlayingCoaches(w);
   return w.playingCoachProposals![id];
@@ -103,7 +109,7 @@ export function submitPlayingCoachProposal(w: World, proposal: PlayingCoachPropo
 /** Validate both halves on a private candidate world, then publish one complete mutation. */
 export function answerPlayingCoach(w: World, id: string, accept: boolean) {
   const proposal = w.playingCoachProposals?.[id];
-  if (!proposal) throw new Error('플레잉 코치 계약안을 확인하세요.');
+  if (!proposal) throw new Error(sourceMessage('copy.playing_coach.fc93ac3ed2'));
   if (proposal.status !== 'pending') return;
   if (!accept) {
     proposal.status = 'declined';
@@ -111,15 +117,16 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
     addEvent(
       w,
       'playing-coach-decline',
-      `${w.people![id].name} 플레잉 코치 제안 철회`,
-      '선수와 코치 계약은 바뀌지 않았어요.',
+      sourceMessage('copy.playing_coach.bcfbb8b86d', { p0: w.people![id].name }),
+      sourceMessage('copy.playing_coach.589044d483'),
     );
     return;
   }
   const current = playingCoachQuote(w, id, proposal.years, proposal.term);
   if (!current || current.stamp !== proposal.stamp)
-    throw new Error('계약 조건이 바뀌었어요. 계약안을 다시 확인해 주세요.');
-  if (BigInt(w.cash) < BigInt(proposal.upfront)) throw new Error('보유 자금이 부족합니다.');
+    throw new Error(sourceMessage('copy.playing_coach.8165d8718b'));
+  if (BigInt(w.cash) < BigInt(proposal.upfront))
+    throw new Error(sourceMessage('copy.playing_coach.8791d586e5'));
   const trial = structuredClone(w),
     p = trial.players.find((p) => p.id === id)!,
     person = trial.people![id];
@@ -163,8 +170,12 @@ export function answerPlayingCoach(w: World, id: string, accept: boolean) {
     addEvent(
       trial,
       'playing-coach-accept',
-      `${person.name} 플레잉 코치 합의`,
-      `선수 연봉 ${moneyLabel(trial, proposal.playerWage)} + 코치 연봉 ${moneyLabel(trial, proposal.coachWage)} · 은퇴 ${proposal.playingEnd + 1}년 시즌 종료`,
+      sourceMessage('copy.playing_coach.d26bb19b48', { p0: person.name }),
+      sourceMessage('copy.playing_coach.529bd24f8d', {
+        p0: moneyLabel(trial, proposal.playerWage),
+        p1: moneyLabel(trial, proposal.coachWage),
+        p2: proposal.playingEnd + 1,
+      }),
       proposal.upfront,
     );
     Object.assign(w, trial);
@@ -284,8 +295,8 @@ export function expirePlayingCoachProposals(w: World) {
     addEvent(
       w,
       'playing-coach-expire',
-      '플레잉 코치 계약 검토 종료',
-      '선수의 은퇴·소속·가능 기간이 바뀌어 계약안이 종료됐어요. 두 계약을 새로 체결하지 않았어요.',
+      sourceMessage('copy.playing_coach.26de7e708b'),
+      sourceMessage('copy.playing_coach.8a043bd85a'),
     );
   }
 }

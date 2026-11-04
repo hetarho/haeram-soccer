@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 export const CATALOG_VERSION = '2026-demo-5';
 import squadRulesData from '../data/squad-rules.json' with { type: 'json' };
 import priceData from '../data/prices.json' with { type: 'json' };
@@ -35,7 +36,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'ENG',
     iso: 'GBR',
-    name: '잉글랜드',
+    name: sourceMessage('copy.stories.4b8e088602'),
     flag: '🏴',
     groups: [[20], [24], [24], [24]],
     moves: [3, 3, 4],
@@ -51,7 +52,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'ESP',
     iso: 'ESP',
-    name: '스페인',
+    name: sourceMessage('copy.index.499ed95176'),
     flag: '🇪🇸',
     groups: [[20], [22]],
     moves: [3],
@@ -67,7 +68,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'GER',
     iso: 'DEU',
-    name: '독일',
+    name: sourceMessage('copy.index.9d9072d230'),
     flag: '🇩🇪',
     groups: [[18], [18], [20]],
     moves: [3, 3],
@@ -84,7 +85,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'ITA',
     iso: 'ITA',
-    name: '이탈리아',
+    name: sourceMessage('copy.index.8b69efcf3a'),
     flag: '🇮🇹',
     groups: [[20], [20], [20, 20, 20]],
     moves: [3, 4],
@@ -100,7 +101,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'FRA',
     iso: 'FRA',
-    name: '프랑스',
+    name: sourceMessage('copy.index.3ddaded874'),
     flag: '🇫🇷',
     groups: [[18], [18], [18]],
     moves: [3, 3],
@@ -116,7 +117,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'POR',
     iso: 'PRT',
-    name: '포르투갈',
+    name: sourceMessage('copy.index.9b656e8829'),
     flag: '🇵🇹',
     groups: [[18], [18]],
     moves: [3],
@@ -132,7 +133,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'NED',
     iso: 'NLD',
-    name: '네덜란드',
+    name: sourceMessage('copy.index.1f28b0fd52'),
     flag: '🇳🇱',
     groups: [[18], [20]],
     moves: [3],
@@ -148,7 +149,7 @@ export const COUNTRIES: CountryProfile[] = [
   {
     code: 'BEL',
     iso: 'BEL',
-    name: '벨기에',
+    name: sourceMessage('copy.index.cd4015e39a'),
     flag: '🇧🇪',
     groups: [[18], [15]],
     moves: [3],
@@ -165,7 +166,7 @@ export const COUNTRIES: CountryProfile[] = [
 ];
 export const country = (code: string) => {
   const c = COUNTRIES.find((c) => c.code === code);
-  if (!c) throw new Error('지원하지 않는 국가입니다.');
+  if (!c) throw new Error(sourceMessage('copy.index.6147522878'));
   return c;
 };
 function rawPriceIndex(
@@ -199,7 +200,7 @@ function rawPriceIndex(
   return {
     value: values[last] * 1.02 ** (year - last),
     status: 'projected',
-    source: '최근 관측 이후 연 2% 가정',
+    source: sourceMessage('copy.index.8beedc2554'),
   };
 }
 const priceCache = new Map<string, ReturnType<typeof rawPriceIndex>>();
@@ -241,7 +242,7 @@ interface IndexEra {
 }
 function observation(value: string): Observation {
   if (value === 'observed' || value === 'estimated' || value === 'projected') return value;
-  throw new Error(`카탈로그 관측 상태가 올바르지 않습니다: ${value}`);
+  throw new Error(sourceMessage('copy.index.708c59e6e8', { p0: value }));
 }
 /** The less certain of two statuses: a football estimate on an observed price stays an estimate. */
 function leastCertain(a: Observation, b: Observation): Observation {
@@ -252,7 +253,7 @@ const footballSources: Record<string, string> = footballData.sources;
 function attribute(note: string, keys: readonly string[]) {
   const texts = keys.map((key) => {
     const source = footballSources[key];
-    if (!source) throw new Error(`카탈로그 출처가 없습니다: ${key}`);
+    if (!source) throw new Error(sourceMessage('copy.index.469b582937', { p0: key }));
     return source;
   });
   return `${note} — ${texts.join('; ')}`;
@@ -356,7 +357,7 @@ export function broadcastingIndex(code: string, year: number): BroadcastingIndex
 }
 export function sponsorSlotOpens(code: string, slot: SponsorSlot): SponsorSlotEra {
   const era = sponsorEras[country(code).code][slot];
-  if (!era) throw new Error('지원하지 않는 후원 슬롯입니다.');
+  if (!era) throw new Error(sourceMessage('copy.index.5bd01c0783'));
   return era;
 }
 /** What a load reads from the catalog to bring a world from older rules forward (→SAVE-10). */

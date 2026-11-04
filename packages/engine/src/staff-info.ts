@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /** Staff roles, traits, contract terms and member reads: a leaf the UI may read (→ARCH-4). */
 import type {
   ContractTerm,
@@ -20,49 +21,95 @@ export const STAFF_ROLES: readonly StaffRole[] = [
   'youth',
   'scout',
 ];
+/** A club's posts as its 코치진 lists them: the manager, the director and scout, then the coaches. */
+export const CLUB_POSTS: readonly ('manager' | StaffRole)[] = [
+  'manager',
+  'director',
+  'scout',
+  ...STAFF_ROLES.filter((role) => role !== 'director' && role !== 'scout'),
+];
 export const STAFF_INFO: Record<StaffRole, { label: string; duty: string; traits: StaffTrait[] }> =
   {
     director: {
-      label: '단장',
-      duty: '이적·계약 협상과 감독 선임',
+      label: sourceMessage('staff.role.director'),
+      duty: sourceMessage('copy.staff_info.4d3eb786e7'),
       traits: ['negotiator', 'closer'],
     },
     assistant: {
-      label: '수석코치',
-      duty: '훈련 방향과 미드필더 패스 성장',
+      label: sourceMessage('staff.role.assistant'),
+      duty: sourceMessage('copy.staff_info.b4dcd4c659'),
       traits: ['developer', 'specialist'],
     },
-    attack: { label: '공격 코치', duty: '공격 능력 성장', traits: ['specialist', 'developer'] },
-    defense: { label: '수비 코치', duty: '수비 능력 성장', traits: ['specialist', 'developer'] },
-    goalkeeping: { label: '골키퍼 코치', duty: '골키퍼 능력 성장', traits: ['specialist'] },
+    attack: {
+      label: sourceMessage('staff.role.attack'),
+      duty: sourceMessage('copy.staff_info.f45ecb8f21'),
+      traits: ['specialist', 'developer'],
+    },
+    defense: {
+      label: sourceMessage('staff.role.defense'),
+      duty: sourceMessage('copy.staff_info.ec0aeb90b5'),
+      traits: ['specialist', 'developer'],
+    },
+    goalkeeping: {
+      label: sourceMessage('staff.role.goalkeeping'),
+      duty: sourceMessage('copy.staff_info.cb4c6ba2cc'),
+      traits: ['specialist'],
+    },
     fitness: {
-      label: '피지컬 코치',
-      duty: '체력 성장과 피로 회복',
+      label: sourceMessage('staff.role.fitness'),
+      duty: sourceMessage('copy.staff_info.571b27cc16'),
       traits: ['recovery', 'specialist'],
     },
     youth: {
-      label: '유스 디렉터',
-      duty: '아카데미 입단 수준과 유소년 성장',
+      label: sourceMessage('staff.role.youth'),
+      duty: sourceMessage('copy.staff_info.ada918345c'),
       traits: ['developer', 'spotter'],
     },
     scout: {
-      label: '수석 스카우트',
-      duty: '이적 시장 후보 수와 잠재력',
+      label: sourceMessage('staff.role.scout'),
+      duty: sourceMessage('copy.staff_info.f2b238750e'),
       traits: ['spotter'],
     },
   };
 export const STAFF_TRAIT_INFO: Record<StaffTrait, { label: string; effect: string }> = {
-  developer: { label: '육성형', effect: '21세 이하 선수 성장이 빨라져요' },
-  specialist: { label: '전문가', effect: '담당 능력 성장이 더 빨라져요' },
-  recovery: { label: '회복 전문', effect: '라운드마다 피로를 더 많이 풀어요' },
-  spotter: { label: '발굴가', effect: '잠재력 높은 선수를 찾아와요' },
-  closer: { label: '속전속결', effect: '요구액보다 더 주고 빨리 끝내요' },
-  negotiator: { label: '협상가', effect: '이적료를 낮추고 낮은 제안부터 흥정해요' },
+  developer: {
+    label: sourceMessage('copy.staff_info.c4a9093e6c'),
+    effect: sourceMessage('copy.staff_info.fb752d9e2b'),
+  },
+  specialist: {
+    label: sourceMessage('copy.staff_info.3e29e4abab'),
+    effect: sourceMessage('copy.staff_info.e93e4ee1f0'),
+  },
+  recovery: {
+    label: sourceMessage('copy.staff_info.4ae85088ba'),
+    effect: sourceMessage('copy.staff_info.2967335103'),
+  },
+  spotter: {
+    label: sourceMessage('copy.staff_info.84c07cc496'),
+    effect: sourceMessage('copy.staff_info.6a0c1d7558'),
+  },
+  closer: {
+    label: sourceMessage('copy.staff_info.7d478cec8b'),
+    effect: sourceMessage('copy.staff_info.473fc211a6'),
+  },
+  negotiator: {
+    label: sourceMessage('copy.staff_info.e644d5bbfb'),
+    effect: sourceMessage('copy.staff_info.26a98d9ce2'),
+  },
 };
 export const MANAGER_TRAIT_INFO: Record<ManagerTrait, { label: string; effect: string }> = {
-  youth: { label: '유망주 중용', effect: '자동 선발에서 21세 이하 선수를 더 자주 기용해요' },
-  rotation: { label: '로테이션', effect: '지친 선수를 적극적으로 쉬게 해요' },
-  stable: { label: '베스트 일레븐', effect: '피로가 있어도 주전을 꾸준히 기용해요' },
+  youth: {
+    label: sourceMessage('copy.staff_info.8824c227ab'),
+    effect: sourceMessage('copy.staff_info.53adb37b1e'),
+  },
+  rotation: {
+    label: sourceMessage('copy.staff_info.f955ae7976'),
+    effect: sourceMessage('copy.staff_info.4b5213a190'),
+  },
+  stable: {
+    label: sourceMessage('copy.staff_info.272cfc1a0a'),
+    effect: sourceMessage('copy.staff_info.1caba8f4eb'),
+  },
 };
 
 export function staffMember(w: World, role: StaffRole): Staff | undefined {
@@ -101,4 +148,4 @@ export const AUTO_PLAYER_RECOVERY = 40;
 export function isExpiring(w: World, member: Staff) {
   return BigInt(member.wage) > 0n && member.until <= w.year + 1;
 }
-export const MANAGER_GONE = '감독이 떠났습니다. 새 감독을 선임하세요.';
+export const MANAGER_GONE = sourceMessage('copy.staff_info.400b3efe70');

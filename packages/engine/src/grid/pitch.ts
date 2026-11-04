@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /** The 40-cell grid pitch: geometry, cell names and attack-frame helpers (→MATCH-14, MATCH-16). */
 import { HOST_MATH, type MatchMath } from '../portable-math';
 
@@ -21,21 +22,21 @@ export type Band = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export type Point = readonly [number, number];
 
 const LANE_NAMES = [
-  '왼쪽 측면',
-  '왼쪽 하프스페이스',
-  '중앙',
-  '오른쪽 하프스페이스',
-  '오른쪽 측면',
+  sourceMessage('copy.glossaryEntries.7087773f6a'),
+  sourceMessage('copy.glossaryEntries.e6042799eb'),
+  sourceMessage('copy.glossaryEntries.25c630c275'),
+  sourceMessage('copy.glossaryEntries.ab7d5aa356'),
+  sourceMessage('copy.glossaryEntries.4646f1d7c9'),
 ] as const;
 const BAND_NAMES = [
-  '우리 골 에어리어',
-  '우리 박스',
-  '수비 지역',
-  '우리 진영 중원',
-  '상대 진영 중원',
-  '박스 앞',
-  '박스 안',
-  '골 에어리어',
+  sourceMessage('copy.pitch.a59365551d'),
+  sourceMessage('copy.pitch.c2d3bffe1a'),
+  sourceMessage('copy.materialView.e7fd4ac2da'),
+  sourceMessage('copy.pitch.1d6def4a95'),
+  sourceMessage('copy.pitch.bc8c5a90fb'),
+  sourceMessage('copy.pitch.3e10cf9403'),
+  sourceMessage('copy.pitch.0a625b4b17'),
+  sourceMessage('copy.pitch.bae9aed8c3'),
 ] as const;
 
 const GOAL: Point = [PITCH.length, PITCH.width / 2];
@@ -78,14 +79,22 @@ export function cellKey(cell: number): string {
 export function cellName(cell: number, post?: 'near' | 'far'): string {
   const lane = cellLane(cell);
   const band = cellBand(cell);
-  const side = lane < 2 ? '왼쪽' : '오른쪽';
-  if (band === 5 && lane === 2) return '아크 정면';
-  if (band === 6 && lane === 2) return '페널티 스폿 부근';
-  if (band === 7 && (lane === 1 || lane === 3)) return `${side} 컷백 구역`;
+  const side =
+    lane < 2 ? sourceMessage('copy.pitch.dc0103c11a') : sourceMessage('copy.pitch.f594aa6a15');
+  if (band === 5 && lane === 2) return sourceMessage('copy.pitch.a2e316095a');
+  if (band === 6 && lane === 2) return sourceMessage('copy.pitch.2504868ccd');
+  if (band === 7 && (lane === 1 || lane === 3))
+    return sourceMessage('copy.pitch.87ce7b9e3c', { p0: side });
   if (band === 7 && lane === 2)
-    return post === 'near' ? '니어 포스트' : post === 'far' ? '파 포스트' : '골 에어리어';
-  if (band === 6 && (lane === 0 || lane === 4)) return `${side} 박스 옆 측면`;
-  if (band === 7 && (lane === 0 || lane === 4)) return `${side} 코너 부근`;
+    return post === 'near'
+      ? sourceMessage('copy.pitch.f46b04e5f7')
+      : post === 'far'
+        ? sourceMessage('copy.pitch.ac34cef542')
+        : sourceMessage('copy.pitch.bae9aed8c3');
+  if (band === 6 && (lane === 0 || lane === 4))
+    return sourceMessage('copy.pitch.d7726f7e1b', { p0: side });
+  if (band === 7 && (lane === 0 || lane === 4))
+    return sourceMessage('copy.pitch.c95cab374d', { p0: side });
   return `${LANE_NAMES[lane]} ${BAND_NAMES[band]}`;
 }
 

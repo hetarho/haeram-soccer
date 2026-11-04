@@ -1,6 +1,9 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { Select } from './Select';
-import { ClubLink } from './ClubLink';
-import { PlayerLink } from './PlayerSheet';
+import { ClubLink } from '../entities/club';
+import { PlayerLink } from '../entities/player';
 import { memo, useMemo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../packages/contracts/src/types';
 import { useGameState } from '../runtime/store';
@@ -23,104 +26,138 @@ function sameScorerState({ w: a }: Props, { w: b }: Props) {
 }
 
 function TrackingNote({ w }: Props) {
+  useTextLocale();
   const since = w.scorerSeason?.trackedSinceRound;
   return since && since > 1 ? (
-    <p className={s.note}>
-      이전 저장은 {since}라운드부터 기록합니다. 그 전 경기의 선수별 득점은 포함되지 않습니다.
-    </p>
+    <p className={s.note}>{richMessage('copy.ScorerPanels.18f8efb3d9', { p0: since })}</p>
   ) : !w.scorerSeason && w.round > 0 ? (
-    <p className={s.note}>이전 저장의 선수별 득점 기록은 다음 리그 경기부터 시작합니다.</p>
+    <p className={s.note}>{richMessage('copy.ScorerPanels.ffb704b74a')}</p>
   ) : null;
 }
 
 const playerLabel = (w: World, player: GoalScorer) =>
   `${player.name} · ${(player.clubs?.map((part) => part.club) ?? [player.club]).map((id) => w.clubs.find((club) => club.id === id)?.short || id).join(' → ')}`;
-const roundLabel = (round: number) => (round === 0 ? '개막 전' : `${round}라운드`);
+const roundLabel = (round: number) =>
+  round === 0
+    ? sourceMessage('copy.LeagueInsights.df47c98b9c')
+    : sourceMessage('copy.BusinessWorkbench.fcefde4602', { p0: round });
 
 export const ScorerStandings = memo(function ScorerStandings({ w }: Props) {
+  useTextLocale();
   const players = w.scorerSeason?.year === w.year ? w.scorerSeason.players : [];
   const ranked = rankedScorers(players);
   const own = ranked.find((player) => player.club === w.playerClub);
   const ownRank = own ? ranked.indexOf(own) + 1 : undefined;
-  // Our own players open their player sheet; other clubs' players have none to open.
-  const ours = new Set(w.players.map((player) => player.id));
-  const name = (player: GoalScorer) =>
-    ours.has(player.id) ? (
-      <PlayerLink id={player.id} name={player.name} scope="season" />
-    ) : (
-      player.name
-    );
+  // Every scorer opens his detail: ours from the view, another club's from his club (→WEB-59).
+  const name = (player: GoalScorer) => (
+    <PlayerLink id={player.id} name={player.name} scope="season" club={player.club} />
+  );
   return (
-    <section data-surface="panel" className={s.panel} aria-label="리그 득점왕 순위">
+    <section
+      data-surface="panel"
+      className={s.panel}
+      aria-label={displayMessage('copy.ScorerPanels.74c32e83f7')}
+    >
       <div className={s.head}>
         <div>
-          <h3>득점왕 경쟁</h3>
-          <p>{seasonName(w.year)} · 우리 팀 리그의 모든 선수 · 상위 20명</p>
+          <h3>{richMessage('copy.ScorerPanels.29a86f509f')}</h3>
+          <p>{richMessage('copy.ScorerPanels.8d7a55a4a7', { p0: seasonName(w.year) })}</p>
         </div>
-        {ranked.length > 0 && <span className={s.tag}>선두 {ranked[0].goals}골</span>}
+        {localizeValue(
+          ranked.length > 0 && (
+            <span className={s.tag}>
+              {richMessage('copy.ScorerPanels.e2b6c4d46d', { p0: ranked[0].goals })}
+            </span>
+          ),
+        )}
       </div>
       <TrackingNote w={w} />
-      {!ranked.length ? (
-        <p className={s.empty}>
-          아직 기록된 리그 득점이 없습니다. 골이 나오면 득점왕 경쟁이 시작됩니다.
-        </p>
-      ) : (
-        <>
-          <div className={s.tableWrap}>
-            <table className={s.standings} aria-label="리그 득점 순위표">
-              <thead>
-                <tr>
-                  <th scope="col">순위</th>
-                  <th scope="col">선수</th>
-                  <th scope="col">클럽</th>
-                  <th scope="col">포지션</th>
-                  <th scope="col">출전</th>
-                  <th scope="col">득점</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ranked.slice(0, 20).map((player, i) => (
-                  <tr key={player.id} className={player.club === w.playerClub ? s.own : ''}>
-                    <td>{i + 1}</td>
-                    <th scope="row" className={s.player}>
-                      {name(player)}
-                      {player.club === w.playerClub && <span className={s.ownBadge}>우리 팀</span>}
-                    </th>
-                    <td className={s.club}>
-                      {player.clubs ? (
-                        player.clubs.map((part) => (
-                          <span key={part.club}>
-                            <ClubLink w={w} id={part.club} crest={14} /> {part.goals}골 ·{' '}
-                            {part.appearances}경기
-                            <br />
-                          </span>
-                        ))
-                      ) : (
-                        <ClubLink w={w} id={player.club} crest={14} />
-                      )}
-                    </td>
-                    <td>{player.position}</td>
-                    <td>{player.appearances}</td>
-                    <td className={s.goals}>{player.goals}</td>
+      {localizeValue(
+        !ranked.length ? (
+          <p className={s.empty}>{richMessage('copy.ScorerPanels.31278ae48b')}</p>
+        ) : (
+          <>
+            <div className={s.tableWrap}>
+              <table
+                className={s.standings}
+                aria-label={displayMessage('copy.ScorerPanels.2e24003221')}
+              >
+                <thead>
+                  <tr>
+                    <th scope="col">{richMessage('copy.BallonDorView.8f363885a3')}</th>
+                    <th scope="col">{richMessage('team.column.player')}</th>
+                    <th scope="col">{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
+                    <th scope="col">{richMessage('copy.BallonDorView.cb34c0f691')}</th>
+                    <th scope="col">{richMessage('copy.BallonDorView.b849877c07')}</th>
+                    <th scope="col">{richMessage('copy.summary.eb4e291be3')}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {own && ownRank && ownRank > 20 && (
-            <p className={s.ownSummary}>
-              우리 팀 최고 득점자 <b>{name(own)}</b> · {ownRank}위 · {own.goals}골 · 선두와{' '}
-              {ranked[0].goals - own.goals}골 차
-            </p>
-          )}
-          <p className={s.note}>리그 득점만 집계합니다. 동률: 적은 출전 수 → 선수 ID.</p>
-        </>
+                </thead>
+                <tbody>
+                  {localizeValue(
+                    ranked.slice(0, 20).map((player, i) => (
+                      <tr key={player.id} className={player.club === w.playerClub ? s.own : ''}>
+                        <td>{localizeValue(i + 1)}</td>
+                        <th scope="row" className={s.player}>
+                          {localizeValue(name(player))}
+                          {localizeValue(
+                            player.club === w.playerClub && (
+                              <span className={s.ownBadge}>
+                                {richMessage('copy.BallonDorView.8434ac1486')}
+                              </span>
+                            ),
+                          )}
+                        </th>
+                        <td className={s.club}>
+                          {localizeValue(
+                            player.clubs ? (
+                              player.clubs.map((part) => (
+                                <span key={part.club}>
+                                  {richMessage('copy.ScorerPanels.3d497bca55', {
+                                    p0: <ClubLink w={w} id={part.club} crest={14} />,
+                                    p1: part.goals,
+                                    p2: ' ',
+                                    p3: part.appearances,
+                                    p4: <br />,
+                                  })}
+                                </span>
+                              ))
+                            ) : (
+                              <ClubLink w={w} id={player.club} crest={14} />
+                            ),
+                          )}
+                        </td>
+                        <td>{localizeValue(player.position)}</td>
+                        <td>{localizeValue(player.appearances)}</td>
+                        <td className={s.goals}>{localizeValue(player.goals)}</td>
+                      </tr>
+                    )),
+                  )}
+                </tbody>
+              </table>
+            </div>
+            {localizeValue(
+              own && ownRank && ownRank > 20 && (
+                <p className={s.ownSummary}>
+                  {richMessage('copy.ScorerPanels.7b03aaba50', {
+                    p0: <b>{localizeValue(name(own))}</b>,
+                    p1: ownRank,
+                    p2: own.goals,
+                    p3: ' ',
+                    p4: ranked[0].goals - own.goals,
+                  })}
+                </p>
+              ),
+            )}
+            <p className={s.note}>{richMessage('copy.ScorerPanels.b3147306d1')}</p>
+          </>
+        ),
       )}
     </section>
   );
 }, sameScorerState);
 
 export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
+  useTextLocale();
   const [selectedPlayer, setSelectedPlayer] = useState('own');
   const [selectedComparison, setSelectedComparison] = useState('rival');
   const [metric, setMetric] = useState<'goals' | 'rank'>('goals');
@@ -191,190 +228,267 @@ export const ScorerHistory = memo(function ScorerHistory({ w }: Props) {
       : [...new Set([1, Math.ceil(max / 2), max])];
   const available = [...ranked, ...players.filter((player) => !player.goals)];
   return (
-    <section data-surface="panel" className={s.panel} aria-label="득점왕 추이">
+    <section
+      data-surface="panel"
+      className={s.panel}
+      aria-label={displayMessage('copy.LiveSeason.d332850f5a')}
+    >
       <div className={s.head}>
         <div>
-          <h3>득점왕 추이</h3>
+          <h3>{richMessage('copy.LiveSeason.d332850f5a')}</h3>
           <p>
-            {seasonName(w.year)} · 라운드별 {metric === 'goals' ? '누적 득점' : '득점 순위'}
+            {richMessage('copy.ScorerPanels.f1132fb64c', {
+              p0: seasonName(w.year),
+              p1:
+                metric === 'goals'
+                  ? sourceMessage('copy.ScorerPanels.97cbaa56ce')
+                  : sourceMessage('copy.LiveSeason.12543e95b4'),
+            })}
           </p>
         </div>
-        <div data-surface="sheet" className={s.metric} role="group" aria-label="득점왕 추이 지표">
+        <div
+          data-surface="sheet"
+          className={s.metric}
+          role="group"
+          aria-label={displayMessage('copy.ScorerPanels.147ba41a04')}
+        >
           <button aria-pressed={metric === 'goals'} onClick={() => setMetric('goals')}>
-            누적 득점
+            {richMessage('copy.ScorerPanels.97cbaa56ce')}
           </button>
           <button aria-pressed={metric === 'rank'} onClick={() => setMetric('rank')}>
-            득점 순위
+            {richMessage('copy.LiveSeason.12543e95b4')}
           </button>
         </div>
       </div>
       <TrackingNote w={w} />
-      {!timeline.length || !primary ? (
-        <p className={s.empty}>
-          첫 리그 라운드가 끝나면 선수별 누적 득점과 득점 순위를 함께 기록합니다.
-        </p>
-      ) : (
-        <>
-          <div className={s.filters}>
-            <label>
-              주목 선수
-              <Select
-                aria-label="득점 추이 선수 선택"
-                value={choice}
-                onValueChange={(value) => setSelectedPlayer(value)}
-              >
-                <option value="own">우리 팀 최고 득점자</option>
-                <option value="leader">현재 득점 선두</option>
-                <optgroup label="우리 팀">
-                  {available
-                    .filter((player) => player.club === w.playerClub)
-                    .map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {player.name} · {player.goals}골
-                      </option>
-                    ))}
-                </optgroup>
-                <optgroup label="다른 팀">
-                  {available
-                    .filter((player) => player.club !== w.playerClub)
-                    .map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {playerLabel(w, player)} · {player.goals}골
-                      </option>
-                    ))}
-                </optgroup>
-              </Select>
-            </label>
-            <label>
-              비교 선수
-              <Select
-                aria-label="득점 추이 비교 선수 선택"
-                value={comparisonChoice}
-                onValueChange={(value) => setSelectedComparison(value)}
-              >
-                <option value="rival">가까운 득점 경쟁자</option>
-                <option value="leader">현재 득점 선두</option>
-                <option value="none">한 선수만 보기</option>
-                {available
-                  .filter((player) => player.id !== primary.id)
-                  .map((player) => (
-                    <option key={player.id} value={player.id}>
-                      {playerLabel(w, player)} · {player.goals}골
-                    </option>
-                  ))}
-              </Select>
-            </label>
-          </div>
-          <figure className={s.chart}>
-            <svg
-              viewBox="0 0 650 210"
-              role="img"
-              aria-label={`${primary.name} ${metric === 'goals' ? '누적 득점' : '득점 순위'} 추이. 아래 표에서 라운드별 수치를 확인할 수 있습니다.`}
-            >
-              {ticks.map((value) => (
-                <g key={value}>
-                  <line
-                    x1="46"
-                    x2="610"
-                    y1={y(value)}
-                    y2={y(value)}
-                    stroke="#dce2d5"
-                    strokeDasharray="3 5"
-                  />
-                  <text x="36" y={y(value) + 4} textAnchor="end">
-                    {value}
-                    {metric === 'goals' ? '골' : '위'}
-                  </text>
-                </g>
-              ))}
-              {[...series].reverse().map((player) => {
-                const points = timeline.flatMap((round) => {
-                  const data = round.players.find((row) => row.id === player.id);
-                  const value = metric === 'goals' ? data?.goals : data?.rank;
-                  return value === undefined ? [] : [{ round: round.round, value }];
-                });
-                const color = player.id === primary.id ? '#28654b' : '#b57f54';
-                return (
-                  <g key={player.id}>
-                    <polyline
-                      points={points
-                        .map((point) => `${x(point.round)},${y(point.value)}`)
-                        .join(' ')}
-                      fill="none"
-                      stroke={color}
-                      strokeWidth={player.id === primary.id ? 3 : 2}
-                      strokeLinejoin="round"
-                    />
-                    {points.map((point) => (
-                      <circle
-                        key={point.round}
-                        cx={x(point.round)}
-                        cy={y(point.value)}
-                        r={timeline.length > 20 ? 2 : 3}
-                        fill={color}
-                      >
-                        <title>
-                          {player.name} · {roundLabel(point.round)} · {point.value}
-                          {metric === 'goals' ? '골' : '위'}
-                        </title>
-                      </circle>
-                    ))}
-                  </g>
-                );
-              })}
-              <text x="46" y="200">
-                {roundLabel(startRound)}
-              </text>
-              {lastRound !== startRound && (
-                <text x="610" y="200" textAnchor="end">
-                  {roundLabel(lastRound)}
-                </text>
-              )}
-            </svg>
-            <figcaption>
-              {series.map((player, i) => (
-                <span key={player.id}>
-                  <i className={i === 0 ? s.primaryDot : s.comparisonDot} />
-                  {playerLabel(w, player)} · {player.goals}골
-                </span>
-              ))}
-            </figcaption>
-          </figure>
-          {metric === 'rank' && (
-            <p className={s.note}>
-              위로 올라갈수록 높은 순위입니다. 무득점 선수는 득점 순위가 없습니다.
-            </p>
-          )}
-          <details data-ui="disclosure" className={s.details}>
-            <summary>라운드별 득점과 순위 보기</summary>
-            <div className={s.tableWrap}>
-              <table aria-label="라운드별 선수 득점 기록">
-                <thead>
-                  <tr>
-                    <th scope="col">라운드</th>
-                    {series.map((player) => (
-                      <th key={player.id} scope="col">
-                        {player.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {timeline.map((round) => (
-                    <tr key={round.round}>
-                      <th scope="row">{roundLabel(round.round)}</th>
-                      {round.players.map((player) => (
-                        <td key={player.id}>
-                          {player.goals}골 · {player.rank ? `${player.rank}위` : '득점 없음'}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+      {localizeValue(
+        !timeline.length || !primary ? (
+          <p className={s.empty}>{richMessage('copy.ScorerPanels.929d56bb43')}</p>
+        ) : (
+          <>
+            <div className={s.filters}>
+              <label>
+                {richMessage('copy.ScorerPanels.dfcd4deb00', {
+                  p0: (
+                    <Select
+                      aria-label={displayMessage('copy.ScorerPanels.80b9b3bc51')}
+                      value={choice}
+                      onValueChange={(value) => setSelectedPlayer(value)}
+                    >
+                      <option value="own">{richMessage('copy.ScorerPanels.db8a4ec49c')}</option>
+                      <option value="leader">{richMessage('copy.ScorerPanels.987e949982')}</option>
+                      <optgroup label={displayMessage('copy.BallonDorView.8434ac1486')}>
+                        {localizeValue(
+                          available
+                            .filter((player) => player.club === w.playerClub)
+                            .map((player) => (
+                              <option key={player.id} value={player.id}>
+                                {richMessage('copy.ScorerPanels.5d8cd2bdc9', {
+                                  p0: player.name,
+                                  p1: player.goals,
+                                })}
+                              </option>
+                            )),
+                        )}
+                      </optgroup>
+                      <optgroup label={displayMessage('copy.ScorerPanels.ede488d3e0')}>
+                        {localizeValue(
+                          available
+                            .filter((player) => player.club !== w.playerClub)
+                            .map((player) => (
+                              <option key={player.id} value={player.id}>
+                                {richMessage('copy.ScorerPanels.5d8cd2bdc9', {
+                                  p0: playerLabel(w, player),
+                                  p1: player.goals,
+                                })}
+                              </option>
+                            )),
+                        )}
+                      </optgroup>
+                    </Select>
+                  ),
+                })}
+              </label>
+              <label>
+                {richMessage('copy.ScorerPanels.99c971f4c2', {
+                  p0: (
+                    <Select
+                      aria-label={displayMessage('copy.ScorerPanels.f1362b19f1')}
+                      value={comparisonChoice}
+                      onValueChange={(value) => setSelectedComparison(value)}
+                    >
+                      <option value="rival">{richMessage('copy.ScorerPanels.f9ac7d2c69')}</option>
+                      <option value="leader">{richMessage('copy.ScorerPanels.987e949982')}</option>
+                      <option value="none">{richMessage('copy.ScorerPanels.061d6adcf1')}</option>
+                      {localizeValue(
+                        available
+                          .filter((player) => player.id !== primary.id)
+                          .map((player) => (
+                            <option key={player.id} value={player.id}>
+                              {richMessage('copy.ScorerPanels.5d8cd2bdc9', {
+                                p0: playerLabel(w, player),
+                                p1: player.goals,
+                              })}
+                            </option>
+                          )),
+                      )}
+                    </Select>
+                  ),
+                })}
+              </label>
             </div>
-          </details>
-        </>
+            <figure className={s.chart}>
+              <svg
+                viewBox="0 0 650 210"
+                role="img"
+                aria-label={displayMessage('copy.ScorerPanels.89164d9c77', {
+                  p0: primary.name,
+                  p1:
+                    metric === 'goals'
+                      ? sourceMessage('copy.ScorerPanels.97cbaa56ce')
+                      : sourceMessage('copy.LiveSeason.12543e95b4'),
+                })}
+              >
+                {localizeValue(
+                  ticks.map((value) => (
+                    <g key={value}>
+                      <line
+                        x1="46"
+                        x2="610"
+                        y1={y(value)}
+                        y2={y(value)}
+                        stroke="#dce2d5"
+                        strokeDasharray="3 5"
+                      />
+                      <text x="36" y={y(value) + 4} textAnchor="end">
+                        {localizeValue(value)}
+                        {localizeValue(
+                          metric === 'goals'
+                            ? sourceMessage('copy.summary.68a6cf8ed8')
+                            : sourceMessage('copy.ScorerPanels.e0bebb354d'),
+                        )}
+                      </text>
+                    </g>
+                  )),
+                )}
+                {localizeValue(
+                  [...series].reverse().map((player) => {
+                    const points = timeline.flatMap((round) => {
+                      const data = round.players.find((row) => row.id === player.id);
+                      const value = metric === 'goals' ? data?.goals : data?.rank;
+                      return value === undefined ? [] : [{ round: round.round, value }];
+                    });
+                    const color = player.id === primary.id ? '#28654b' : '#b57f54';
+                    return (
+                      <g key={player.id}>
+                        <polyline
+                          points={points
+                            .map((point) => `${x(point.round)},${y(point.value)}`)
+                            .join(' ')}
+                          fill="none"
+                          stroke={color}
+                          strokeWidth={player.id === primary.id ? 3 : 2}
+                          strokeLinejoin="round"
+                        />
+                        {localizeValue(
+                          points.map((point) => (
+                            <circle
+                              key={point.round}
+                              cx={x(point.round)}
+                              cy={y(point.value)}
+                              r={timeline.length > 20 ? 2 : 3}
+                              fill={color}
+                            >
+                              <title>
+                                {player.name} · {localizeValue(roundLabel(point.round))} ·{' '}
+                                {localizeValue(point.value)}
+                                {localizeValue(
+                                  metric === 'goals'
+                                    ? sourceMessage('copy.summary.68a6cf8ed8')
+                                    : sourceMessage('copy.ScorerPanels.e0bebb354d'),
+                                )}
+                              </title>
+                            </circle>
+                          )),
+                        )}
+                      </g>
+                    );
+                  }),
+                )}
+                <text x="46" y="200">
+                  {localizeValue(roundLabel(startRound))}
+                </text>
+                {localizeValue(
+                  lastRound !== startRound && (
+                    <text x="610" y="200" textAnchor="end">
+                      {localizeValue(roundLabel(lastRound))}
+                    </text>
+                  ),
+                )}
+              </svg>
+              <figcaption>
+                {localizeValue(
+                  series.map((player, i) => (
+                    <span key={player.id}>
+                      {richMessage('copy.ScorerPanels.898f8fa7a5', {
+                        p0: <i className={i === 0 ? s.primaryDot : s.comparisonDot} />,
+                        p1: playerLabel(w, player),
+                        p2: player.goals,
+                      })}
+                    </span>
+                  )),
+                )}
+              </figcaption>
+            </figure>
+            {localizeValue(
+              metric === 'rank' && (
+                <p className={s.note}>{richMessage('copy.ScorerPanels.7d9bde4ba4')}</p>
+              ),
+            )}
+            <details data-ui="disclosure" className={s.details}>
+              <summary>{richMessage('copy.ScorerPanels.db5e25a51d')}</summary>
+              <div className={s.tableWrap}>
+                <table aria-label={displayMessage('copy.ScorerPanels.480d58e7f1')}>
+                  <thead>
+                    <tr>
+                      <th scope="col">{richMessage('copy.ClubHub.0fcb288d12')}</th>
+                      {localizeValue(
+                        series.map((player) => (
+                          <th key={player.id} scope="col">
+                            {player.name}
+                          </th>
+                        )),
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {localizeValue(
+                      timeline.map((round) => (
+                        <tr key={round.round}>
+                          <th scope="row">{localizeValue(roundLabel(round.round))}</th>
+                          {localizeValue(
+                            round.players.map((player) => (
+                              <td key={player.id}>
+                                {richMessage('copy.ScorerPanels.7a411f145c', {
+                                  p0: player.goals,
+                                  p1: player.rank
+                                    ? sourceMessage('copy.BallonDorView.5094d45cea', {
+                                        p0: player.rank,
+                                      })
+                                    : sourceMessage('copy.ScorerPanels.e8fcc30a98'),
+                                })}
+                              </td>
+                            )),
+                          )}
+                        </tr>
+                      )),
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </details>
+          </>
+        ),
       )}
     </section>
   );
@@ -394,6 +508,7 @@ const selectDisciplineWorld = worldSelector([
  * and current bans from the discipline state, league reds from this season's records.
  */
 export function DisciplineTable({ league }: { league?: LeagueChoice }) {
+  useTextLocale();
   const w = useGameState(selectDisciplineWorld)!;
   const reds = useGameState((state) => state.view?.tallies.leagueReds);
   const rows = useMemo(
@@ -404,50 +519,59 @@ export function DisciplineTable({ league }: { league?: LeagueChoice }) {
     <section
       data-surface="panel"
       className={s.panel}
-      aria-label="리그 징계 기록"
+      aria-label={displayMessage('copy.ScorerPanels.d5224cfdfe')}
       data-testid="league-discipline"
     >
       <div className={s.head}>
         <div>
-          <h3>징계</h3>
-          <p>{seasonName(w.year)} · 리그 경고·퇴장과 남은 출장 정지</p>
+          <h3>{richMessage('copy.ScorerPanels.5b16495c71')}</h3>
+          <p>{richMessage('copy.ScorerPanels.957903df3a', { p0: seasonName(w.year) })}</p>
         </div>
       </div>
-      {rows.length ? (
-        <div className={s.tableWrap}>
-          <table className={s.standings} aria-label="리그 징계 기록표">
-            <thead>
-              <tr>
-                <th scope="col">선수</th>
-                <th scope="col">클럽</th>
-                <th scope="col">경고</th>
-                <th scope="col">퇴장</th>
-                <th scope="col">출장 정지</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.id} className={row.club === w.playerClub ? s.own : ''}>
-                  <th scope="row" className={s.player}>
-                    {row.club === w.playerClub ? (
-                      <PlayerLink id={row.id} name={row.name} scope="season" />
-                    ) : (
-                      row.name
-                    )}
-                  </th>
-                  <td className={s.club}>
-                    <ClubLink w={w} id={row.club} crest={14} />
-                  </td>
-                  <td>{row.yellows}</td>
-                  <td>{row.reds}</td>
-                  <td>{row.bans.map(banText).join(' · ') || '—'}</td>
+      {localizeValue(
+        rows.length ? (
+          <div className={s.tableWrap}>
+            <table
+              className={s.standings}
+              aria-label={displayMessage('copy.ScorerPanels.2913b18cd3')}
+            >
+              <thead>
+                <tr>
+                  <th scope="col">{richMessage('team.column.player')}</th>
+                  <th scope="col">{richMessage('copy.matchModelPacking.6d641f69b7')}</th>
+                  <th scope="col">{richMessage('copy.LabPage.6c0f751064')}</th>
+                  <th scope="col">{richMessage('copy.LabPage.68e69c7b9c')}</th>
+                  <th scope="col">{richMessage('copy.ScorerPanels.5bd265a724')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <p className={s.empty}>이번 시즌 리그 경고·퇴장이나 출장 정지가 아직 없어요.</p>
+              </thead>
+              <tbody>
+                {localizeValue(
+                  rows.map((row) => (
+                    <tr key={row.id} className={row.club === w.playerClub ? s.own : ''}>
+                      <th scope="row" className={s.player}>
+                        {localizeValue(
+                          row.club === w.playerClub ? (
+                            <PlayerLink id={row.id} name={row.name} scope="season" />
+                          ) : (
+                            row.name
+                          ),
+                        )}
+                      </th>
+                      <td className={s.club}>
+                        <ClubLink w={w} id={row.club} crest={14} />
+                      </td>
+                      <td>{localizeValue(row.yellows)}</td>
+                      <td>{localizeValue(row.reds)}</td>
+                      <td>{localizeValue(row.bans.map(banText).join(' · ') || '—')}</td>
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className={s.empty}>{richMessage('copy.ScorerPanels.37400b7127')}</p>
+        ),
       )}
     </section>
   );

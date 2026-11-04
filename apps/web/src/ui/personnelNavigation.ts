@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 
 /**
@@ -6,10 +7,10 @@ import type { ResponsibilityKey } from '../../../../packages/contracts/src/types
  * older manager address lands there, with the replacement market open when it asked for it.
  */
 export const FIRST_TEAM_TABS = [
-  ['players', '선수 목록'],
-  ['market', '이적시장'],
+  ['players', sourceMessage('copy.personnelNavigation.f7bac266fd')],
+  ['market', sourceMessage('personnel.market')],
 ] as const;
-export const STAFF_TABS = [['coaches', '코치진']] as const;
+export const STAFF_TABS = [['coaches', sourceMessage('copy.investmentAreas.243be11e44')]] as const;
 /**
  * The saved responsibilities each personnel workflow edits in place (→WEB-79/43), each in one
  * home: the office's player and staff desks used to compose them; the shared component and its

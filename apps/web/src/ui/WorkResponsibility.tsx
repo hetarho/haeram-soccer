@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
@@ -17,12 +20,18 @@ export function WorkResponsibility({
   controller: ProgressionController;
   scope: readonly ResponsibilityKey[];
 }) {
+  useTextLocale();
   return (
-    <section data-surface="sheet" aria-label="결재 담당">
+    <section data-surface="sheet" aria-label={displayMessage('copy.OwnerOfficeView.ea69dde801')}>
       <p>
-        {scope
-          .map((key) => `${RESPONSIBILITY_LABELS[key]} · ${isDelegated(w, key) ? '자동' : '직접'}`)
-          .join(' / ')}
+        {localizeValue(
+          scope
+            .map(
+              (key) =>
+                `${RESPONSIBILITY_LABELS[key]} · ${isDelegated(w, key) ? sourceMessage('copy.ControllerBackgrounds.ca7eb2ef0a') : sourceMessage('copy.ApprovalQueue.20c483bdda')}`,
+            )
+            .join(' / '),
+        )}
       </p>
       <button
         type="button"
@@ -30,7 +39,7 @@ export function WorkResponsibility({
         aria-haspopup="dialog"
         onClick={() => openDecisionSettings(scope[0] ?? 'finance')}
       >
-        결재 설정에서 담당·지침 바꾸기
+        {richMessage('copy.WorkResponsibility.c66e6d2a73')}
       </button>
     </section>
   );

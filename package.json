@@ -20,6 +20,7 @@
     "test:contract": "vitest run --project contract",
     "validate:catalogs": "tsx scripts/validate-catalogs.ts",
     "validate:presentation": "tsx scripts/validate-presentation.ts",
+    "validate:i18n": "tsx scripts/validate-i18n.ts",
     "art:check": "node scripts/optimize-presentation-art.mjs",
     "art:optimize": "node scripts/optimize-presentation-art.mjs --write",
     "test:e2e": "PREVIEW_BUILD=1 playwright test",

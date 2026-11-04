@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { registrationRoom } from './registration';
 import type { Line, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
@@ -127,14 +128,14 @@ export function recruitmentPreview(w: World, offer: TransferOffer, loan = false)
     cashAfter > 0n && annualAfter > 0n ? (cashAfter * BigInt(SEASON_ROUNDS)) / annualAfter : 0n;
   const reason =
     !offer.available || alreadyOwned
-      ? '이미 계약한 선수입니다.'
+      ? sourceMessage('copy.recruitment.a831dc1d01')
       : full
         ? registrationReason!
         : !affordable
-          ? '보유 자금이 부족합니다.'
+          ? sourceMessage('copy.playing_coach.8791d586e5')
           : fit.willStart
-            ? '현재 능력과 피로 기준으로 자동 선발 후보입니다.'
-            : '현재 자동 선발은 유지됩니다. 로테이션 후보로 비교하세요.';
+            ? sourceMessage('copy.recruitment.d02fa95e5e')
+            : sourceMessage('copy.recruitment.220bcc37f2');
   return {
     ...fit,
     fee,
