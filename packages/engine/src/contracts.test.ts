@@ -223,7 +223,8 @@ describe('market values (→CLUB-25)', () => {
     holdRows(w, { policy: { recruitment: 5 } });
     for (const { player, fee } of transferOffers(w).slice(1)) {
       const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
-      expect(amount(fee)).toBeCloseTo(amount(value) * 1.3, -1);
+      // Recruitment changes the shortlist; the retired stance fee factor does not price it.
+      expect(fee).toBe(value);
     }
   });
 });
