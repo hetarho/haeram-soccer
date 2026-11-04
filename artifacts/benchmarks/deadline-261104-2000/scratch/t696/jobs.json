@@ -1,0 +1,632 @@
+[
+ {
+  "name": "prepare-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/prepare-0",
+  "args": [
+   "scripts/owner-balance.ts",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--prepare",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0"
+  ]
+ },
+ {
+  "name": "prepare-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/prepare-1",
+  "args": [
+   "scripts/owner-balance.ts",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--prepare",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1"
+  ]
+ },
+ {
+  "name": "candidate-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/candidate-0",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-0",
+   "--years",
+   "1950,1970,1990,2010",
+   "--countries",
+   "ENG,ESP,FRA,GER",
+   "--until",
+   "2010",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/candidate-0.json",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means"
+  ]
+ },
+ {
+  "name": "candidate-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/candidate-1",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-1",
+   "--years",
+   "1950,1970,1990,2010",
+   "--countries",
+   "ENG,ESP,FRA,GER",
+   "--until",
+   "2010",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/candidate-1.json",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means"
+  ]
+ },
+ {
+  "name": "candidate-2",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/candidate-2",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-2",
+   "--years",
+   "1960,1980,2000",
+   "--countries",
+   "ENG,ESP,GER,ITA,FRA,POR,NED,BEL",
+   "--until",
+   "2009",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/candidate-2.json",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means"
+  ]
+ },
+ {
+  "name": "candidate-3",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/candidate-3",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-3",
+   "--years",
+   "1960,1980,2000",
+   "--countries",
+   "ENG,ESP,GER,ITA,FRA,POR,NED,BEL",
+   "--until",
+   "2009",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/candidate-3.json",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means"
+  ]
+ },
+ {
+  "name": "released-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/released-0",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-0",
+   "--years",
+   "1950,1970,1990,2010",
+   "--countries",
+   "ENG,ESP,FRA,GER",
+   "--until",
+   "2010",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/released-0.json"
+  ]
+ },
+ {
+  "name": "released-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/released-1",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-1",
+   "--years",
+   "1950,1970,1990,2010",
+   "--countries",
+   "ENG,ESP,FRA,GER",
+   "--until",
+   "2010",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/released-1.json"
+  ]
+ },
+ {
+  "name": "released-2",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/released-2",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-2",
+   "--years",
+   "1960,1980,2000",
+   "--countries",
+   "ENG,ESP,GER,ITA,FRA,POR,NED,BEL",
+   "--until",
+   "2009",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/released-2.json"
+  ]
+ },
+ {
+  "name": "released-3",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/released-3",
+  "args": [
+   "scripts/era-wage-spread.ts",
+   "--seeds",
+   "owner-balance-3",
+   "--years",
+   "1960,1980,2000",
+   "--countries",
+   "ENG,ESP,GER,ITA,FRA,POR,NED,BEL",
+   "--until",
+   "2009",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/books/released-3.json"
+  ]
+ },
+ {
+  "name": "career-oil-ENG-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-ENG-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "ENG",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-ENG-0.json"
+  ]
+ },
+ {
+  "name": "career-oil-ENG-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-ENG-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "ENG",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-ENG-1.json"
+  ]
+ },
+ {
+  "name": "career-oil-ESP-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-ESP-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "ESP",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-ESP-0.json"
+  ]
+ },
+ {
+  "name": "career-oil-ESP-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-ESP-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "ESP",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-ESP-1.json"
+  ]
+ },
+ {
+  "name": "career-oil-FRA-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-FRA-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "FRA",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-FRA-0.json"
+  ]
+ },
+ {
+  "name": "career-oil-FRA-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-FRA-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "FRA",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-FRA-1.json"
+  ]
+ },
+ {
+  "name": "career-oil-GER-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-GER-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "GER",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-GER-0.json"
+  ]
+ },
+ {
+  "name": "career-oil-GER-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-oil-GER-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "oil",
+   "--countries",
+   "GER",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/oil-GER-1.json"
+  ]
+ },
+ {
+  "name": "career-midsize-ENG-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-ENG-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "ENG",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-ENG-0.json"
+  ]
+ },
+ {
+  "name": "career-midsize-ENG-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-ENG-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "ENG",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-ENG-1.json"
+  ]
+ },
+ {
+  "name": "career-midsize-ESP-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-ESP-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "ESP",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-ESP-0.json"
+  ]
+ },
+ {
+  "name": "career-midsize-ESP-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-ESP-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "ESP",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-ESP-1.json"
+  ]
+ },
+ {
+  "name": "career-midsize-FRA-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-FRA-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "FRA",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-FRA-0.json"
+  ]
+ },
+ {
+  "name": "career-midsize-FRA-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-FRA-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "FRA",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-FRA-1.json"
+  ]
+ },
+ {
+  "name": "career-midsize-GER-0",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-GER-0",
+  "after": [
+   "prepare-0"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "GER",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "0",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-GER-0.json"
+  ]
+ },
+ {
+  "name": "career-midsize-GER-1",
+  "log": "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/logs/career-midsize-GER-1",
+  "after": [
+   "prepare-1"
+  ],
+  "args": [
+   "scripts/owner-balance.ts",
+   "--tiers",
+   "midsize",
+   "--countries",
+   "GER",
+   "--seeds",
+   "1",
+   "--first-seed",
+   "1",
+   "--until",
+   "1969",
+   "--purse-apart",
+   "--spread",
+   "artifacts/benchmarks/T696/candidate.json",
+   "--means",
+   "--world-dir",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/worlds",
+   "--out",
+   "/home/deep/haeram/haeram-soccor-balance/.tmp/t696/careers/midsize-GER-1.json"
+  ]
+ }
+]

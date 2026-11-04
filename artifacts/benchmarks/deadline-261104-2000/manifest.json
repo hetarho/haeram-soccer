@@ -1,0 +1,3871 @@
+{
+  "schemaVersion": 1,
+  "label": "safety-1955",
+  "deadline": "2026-11-04T20:00:00+09:00",
+  "capturedAt": "2026-11-04T10:55:00.003Z",
+  "rawSnapshot": "9e10e2c7caa9333247699bd30801ce85c1a52578",
+  "sourceHead": "44a341eee0f2622155621682abf6975e5e75bfc6",
+  "sourceBranch": "codex/football-balance",
+  "files": [
+    {
+      "source": ".tmp/T694/books-cal-0.json",
+      "bytes": 347688,
+      "sha256": "f6a684d87a1b57733a578914c231d87c62f177054f3aeebd5e32bbfb24e96b5a",
+      "modified": "2026-11-04T09:40:46.282Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-cal-0.json",
+          "sha256": "f6a684d87a1b57733a578914c231d87c62f177054f3aeebd5e32bbfb24e96b5a",
+          "bytes": 347688
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-cal-0.log",
+      "bytes": 182,
+      "sha256": "aca3a5ec249e2b1ff06ffa7aff39611c7c738384860acd06ffa02cff54fd3f37",
+      "modified": "2026-11-04T09:40:46.282Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-cal-0.log",
+          "sha256": "aca3a5ec249e2b1ff06ffa7aff39611c7c738384860acd06ffa02cff54fd3f37",
+          "bytes": 182
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-cal-1.json",
+      "bytes": 351524,
+      "sha256": "8756c32c169a42a3e933eeec4e2c8e86eaf38b6c5b705157f531ce3b4a321fd4",
+      "modified": "2026-11-04T09:40:49.570Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-cal-1.json",
+          "sha256": "8756c32c169a42a3e933eeec4e2c8e86eaf38b6c5b705157f531ce3b4a321fd4",
+          "bytes": 351524
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-cal-1.log",
+      "bytes": 182,
+      "sha256": "6e75295e78896cea047b6c701abf0db173d370e7d8547cf17057edc2a687302e",
+      "modified": "2026-11-04T09:40:49.570Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-cal-1.log",
+          "sha256": "6e75295e78896cea047b6c701abf0db173d370e7d8547cf17057edc2a687302e",
+          "bytes": 182
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-held-2.json",
+      "bytes": 496566,
+      "sha256": "326e66ab3127632430d732cf42981f1f5053b520581a0b8324ca1ff82ad7cae9",
+      "modified": "2026-11-04T09:40:18.441Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-held-2.json",
+          "sha256": "326e66ab3127632430d732cf42981f1f5053b520581a0b8324ca1ff82ad7cae9",
+          "bytes": 496566
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-held-2.log",
+      "bytes": 139,
+      "sha256": "1e784d41557d2880df392c64de0a47aa61f7ed223a2422b2ff9b75c31d5ed00c",
+      "modified": "2026-11-04T09:40:18.441Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-held-2.log",
+          "sha256": "1e784d41557d2880df392c64de0a47aa61f7ed223a2422b2ff9b75c31d5ed00c",
+          "bytes": 139
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-held-3.json",
+      "bytes": 502971,
+      "sha256": "b1261416460b2ee6f4098e841e066e3cbbea4e2f165780e924087e4340d73f56",
+      "modified": "2026-11-04T09:40:15.489Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-held-3.json",
+          "sha256": "b1261416460b2ee6f4098e841e066e3cbbea4e2f165780e924087e4340d73f56",
+          "bytes": 502971
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/books-held-3.log",
+      "bytes": 139,
+      "sha256": "cb82ce0195da7c5210d4609f945fc34f42ad2aef889e9c178a4a664acb273cae",
+      "modified": "2026-11-04T09:40:15.493Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/books-held-3.log",
+          "sha256": "cb82ce0195da7c5210d4609f945fc34f42ad2aef889e9c178a4a664acb273cae",
+          "bytes": 139
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/compare.mjs",
+      "bytes": 1840,
+      "sha256": "e3ba15b6b5cc7f9cc9960700cbfa626c91c9bf38999cee22f237004447006e70",
+      "modified": "2026-11-04T09:38:34.719Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/compare.mjs",
+          "sha256": "e3ba15b6b5cc7f9cc9960700cbfa626c91c9bf38999cee22f237004447006e70",
+          "bytes": 1840
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/run.mjs",
+      "bytes": 1540,
+      "sha256": "bf666f07e5f7e9ea1720039567342540e8fe0ae4f3010b929c09ce62b48fd77f",
+      "modified": "2026-11-04T09:38:05.090Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/run.mjs",
+          "sha256": "bf666f07e5f7e9ea1720039567342540e8fe0ae4f3010b929c09ce62b48fd77f",
+          "bytes": 1540
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/summary.mjs",
+      "bytes": 1668,
+      "sha256": "4818aad606d01292f91677f3ca38a37c3894c568e0c3c615531e87127a57abdf",
+      "modified": "2026-11-04T09:44:18.270Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/summary.mjs",
+          "sha256": "4818aad606d01292f91677f3ca38a37c3894c568e0c3c615531e87127a57abdf",
+          "bytes": 1668
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/t693/books-cal-0.json",
+      "bytes": 303445,
+      "sha256": "f23d33e0124b802f48afc35d126bff16fadf55bc21851a3439260003824602c3",
+      "modified": "2026-11-04T07:19:30.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/t693/books-cal-0.json",
+          "sha256": "f23d33e0124b802f48afc35d126bff16fadf55bc21851a3439260003824602c3",
+          "bytes": 303445
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/t693/books-cal-1.json",
+      "bytes": 305832,
+      "sha256": "3c466a88a876b63e05c70fb848264fb424fdfa97342524aa903d2fead0d98f46",
+      "modified": "2026-11-04T07:19:33.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/t693/books-cal-1.json",
+          "sha256": "3c466a88a876b63e05c70fb848264fb424fdfa97342524aa903d2fead0d98f46",
+          "bytes": 305832
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/t693/books-held-2.json",
+      "bytes": 454141,
+      "sha256": "31d065d4d860a8e9ddd9b7925bd4487dcdd0dc79b3d13be929522a7f7def6500",
+      "modified": "2026-11-04T07:22:30.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/t693/books-held-2.json",
+          "sha256": "31d065d4d860a8e9ddd9b7925bd4487dcdd0dc79b3d13be929522a7f7def6500",
+          "bytes": 454141
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/T694/t693/books-held-3.json",
+      "bytes": 458117,
+      "sha256": "ef9a6f9f6b0806d70a701dc78a06e2cb0748d430721c8a765816a395fb017d51",
+      "modified": "2026-11-04T07:22:30.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/T694/t693/books-held-3.json",
+          "sha256": "ef9a6f9f6b0806d70a701dc78a06e2cb0748d430721c8a765816a395fb017d51",
+          "bytes": 458117
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/adapter.json",
+      "bytes": 135,
+      "sha256": "bf1c1ed9ccb76f15bf551e045aad4e6982971eae4e830eb87934b6ed7dc3f7c4",
+      "modified": "2026-11-04T07:00:14.147Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/adapter.json",
+          "sha256": "bf1c1ed9ccb76f15bf551e045aad4e6982971eae4e830eb87934b6ed7dc3f7c4",
+          "bytes": 135
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/adapter.mjs",
+      "bytes": 989,
+      "sha256": "91b3c962f8ec38c80991f7e8fdbac1613707b9013f06f6c002c6d6354d9ca234",
+      "modified": "2026-11-04T06:57:13.839Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/adapter.mjs",
+          "sha256": "91b3c962f8ec38c80991f7e8fdbac1613707b9013f06f6c002c6d6354d9ca234",
+          "bytes": 989
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/ci-html.mjs",
+      "bytes": 794,
+      "sha256": "9491a438fdcad6a59825bd11eaff265a90d4de2c725bdbf0496d0fdc5b9e9d66",
+      "modified": "2026-11-04T06:58:42.689Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/ci-html.mjs",
+          "sha256": "9491a438fdcad6a59825bd11eaff265a90d4de2c725bdbf0496d0fdc5b9e9d66",
+          "bytes": 794
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/ci-html.test.mjs",
+      "bytes": 1159,
+      "sha256": "93fe4c8a2fbf46f41a57d49c744649391ce5d6d570eda1ad4f303b86b51e309a",
+      "modified": "2026-11-04T06:58:42.689Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/ci-html.test.mjs",
+          "sha256": "93fe4c8a2fbf46f41a57d49c744649391ce5d6d570eda1ad4f303b86b51e309a",
+          "bytes": 1159
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/deadline-state.json",
+      "bytes": 526,
+      "sha256": "1df3cce8eedf329b3ce05e4922fbffaca04c5fe654637660ff4ec3488f30e9c8",
+      "modified": "2026-11-04T09:30:22.524Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/deadline-state.json",
+          "sha256": "1df3cce8eedf329b3ce05e4922fbffaca04c5fe654637660ff4ec3488f30e9c8",
+          "bytes": 526
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/deadline.mjs",
+      "bytes": 10305,
+      "sha256": "cddefbcebc4b84bb2a7c2379f6ef3a65bdfbd9b8b64a2c3cc9d38baff566b906",
+      "modified": "2026-11-04T09:30:14.731Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/deadline.mjs",
+          "sha256": "cddefbcebc4b84bb2a7c2379f6ef3a65bdfbd9b8b64a2c3cc9d38baff566b906",
+          "bytes": 10305
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/host.mjs",
+      "bytes": 4530,
+      "sha256": "b5aa6f7ab478ee0f24556beadbc4df45a60b299355cbfd021aec2b3387f8a464",
+      "modified": "2026-11-04T06:58:42.689Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/host.mjs",
+          "sha256": "b5aa6f7ab478ee0f24556beadbc4df45a60b299355cbfd021aec2b3387f8a464",
+          "bytes": 4530
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/owner.json",
+      "bytes": 10943,
+      "sha256": "7ce2681c15fd32ec79672842fa1a9237c335c7fdc717f0c4e9f383b025e29c68",
+      "modified": "2026-11-04T09:30:14.731Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/owner.json",
+          "sha256": "7ce2681c15fd32ec79672842fa1a9237c335c7fdc717f0c4e9f383b025e29c68",
+          "bytes": 10943
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04/window.json",
+      "bytes": 268,
+      "sha256": "dcb13546a502849155df05d001de9fdb93a10077d79d7d5e948a3d16bacabe81",
+      "modified": "2026-11-04T07:00:14.147Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04/window.json",
+          "sha256": "dcb13546a502849155df05d001de9fdb93a10077d79d7d5e948a3d16bacabe81",
+          "bytes": 268
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-gate-related.log",
+      "bytes": 31145,
+      "sha256": "811ba82727a0463281395cd42cd2fa14f698b59effaf9f65d1f1073bfe307987",
+      "modified": "2026-11-04T09:53:52.038Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-gate-related.log",
+          "sha256": "811ba82727a0463281395cd42cd2fa14f698b59effaf9f65d1f1073bfe307987",
+          "bytes": 31145
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-gate-units.log",
+      "bytes": 31639,
+      "sha256": "5a707cc01886848cf1858d9f9927ed03eebe90ff4701148b19d7cfd71a2ba3b2",
+      "modified": "2026-11-04T09:51:11.527Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-gate-units.log",
+          "sha256": "5a707cc01886848cf1858d9f9927ed03eebe90ff4701148b19d7cfd71a2ba3b2",
+          "bytes": 31639
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/books-cal-0.json",
+      "bytes": 303445,
+      "sha256": "f23d33e0124b802f48afc35d126bff16fadf55bc21851a3439260003824602c3",
+      "modified": "2026-11-04T07:19:30.919Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/books-cal-0.json",
+          "sha256": "f23d33e0124b802f48afc35d126bff16fadf55bc21851a3439260003824602c3",
+          "bytes": 303445
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/books-cal-1.json",
+      "bytes": 305832,
+      "sha256": "3c466a88a876b63e05c70fb848264fb424fdfa97342524aa903d2fead0d98f46",
+      "modified": "2026-11-04T07:19:33.187Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/books-cal-1.json",
+          "sha256": "3c466a88a876b63e05c70fb848264fb424fdfa97342524aa903d2fead0d98f46",
+          "bytes": 305832
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/books-held-2.json",
+      "bytes": 454141,
+      "sha256": "31d065d4d860a8e9ddd9b7925bd4487dcdd0dc79b3d13be929522a7f7def6500",
+      "modified": "2026-11-04T07:22:30.067Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/books-held-2.json",
+          "sha256": "31d065d4d860a8e9ddd9b7925bd4487dcdd0dc79b3d13be929522a7f7def6500",
+          "bytes": 454141
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/books-held-3.json",
+      "bytes": 458117,
+      "sha256": "ef9a6f9f6b0806d70a701dc78a06e2cb0748d430721c8a765816a395fb017d51",
+      "modified": "2026-11-04T07:22:30.915Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/books-held-3.json",
+          "sha256": "ef9a6f9f6b0806d70a701dc78a06e2cb0748d430721c8a765816a395fb017d51",
+          "bytes": 458117
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/candidate.json",
+      "bytes": 126,
+      "sha256": "ed4f247e5b4a92037b7a0019e74ce458f09550005eb16d6b2b05e26c6f0c9d6f",
+      "modified": "2026-11-04T07:20:32.652Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/candidate.json",
+          "sha256": "ed4f247e5b4a92037b7a0019e74ce458f09550005eb16d6b2b05e26c6f0c9d6f",
+          "bytes": 126
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ENG-0.json",
+      "bytes": 9422,
+      "sha256": "581c18a768bf649f087952ff570b667ad3079977ec3054697e99b36db5a24e5c",
+      "modified": "2026-11-04T08:31:25.706Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ENG-0.json",
+          "sha256": "581c18a768bf649f087952ff570b667ad3079977ec3054697e99b36db5a24e5c",
+          "bytes": 9422
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ENG-0.log",
+      "bytes": 3478,
+      "sha256": "8ee2ac350aae2f37eece166445ba14795af62878613c174682f601bcb827eb14",
+      "modified": "2026-11-04T08:31:25.750Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ENG-0.log",
+          "sha256": "8ee2ac350aae2f37eece166445ba14795af62878613c174682f601bcb827eb14",
+          "bytes": 3478
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ENG-1.json",
+      "bytes": 9448,
+      "sha256": "e8bf6052d4c348c87c4cb7fc79be7ce53383ef72c2465b78aee35efc0be4a835",
+      "modified": "2026-11-04T08:33:13.248Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ENG-1.json",
+          "sha256": "e8bf6052d4c348c87c4cb7fc79be7ce53383ef72c2465b78aee35efc0be4a835",
+          "bytes": 9448
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ENG-1.log",
+      "bytes": 3491,
+      "sha256": "5d878163da6ae28cca7220458dc36dd49cd93a6bee2c5bb85a5faa54ae88e9ef",
+      "modified": "2026-11-04T08:33:13.280Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ENG-1.log",
+          "sha256": "5d878163da6ae28cca7220458dc36dd49cd93a6bee2c5bb85a5faa54ae88e9ef",
+          "bytes": 3491
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ESP-0.json",
+      "bytes": 9452,
+      "sha256": "9d5cb54a3fe71254c036f550da1ba0adafc8dde7df3d199acea55c0477099569",
+      "modified": "2026-11-04T08:31:17.082Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ESP-0.json",
+          "sha256": "9d5cb54a3fe71254c036f550da1ba0adafc8dde7df3d199acea55c0477099569",
+          "bytes": 9452
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ESP-0.log",
+      "bytes": 3473,
+      "sha256": "2e961197c60e3dc5bba92e3ed55908a5c854f14dfe9ff59e65e0289dbba6281b",
+      "modified": "2026-11-04T08:31:17.114Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ESP-0.log",
+          "sha256": "2e961197c60e3dc5bba92e3ed55908a5c854f14dfe9ff59e65e0289dbba6281b",
+          "bytes": 3473
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ESP-1.json",
+      "bytes": 9438,
+      "sha256": "5549fb0b158522534b5736dc6cf252265b577b5433cc2401f103be96d483bf66",
+      "modified": "2026-11-04T08:44:34.766Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ESP-1.json",
+          "sha256": "5549fb0b158522534b5736dc6cf252265b577b5433cc2401f103be96d483bf66",
+          "bytes": 9438
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-ESP-1.log",
+      "bytes": 3479,
+      "sha256": "c09473ece8837897a944e84df892bda07dae18305c6abee92482460608a9d26e",
+      "modified": "2026-11-04T08:44:34.798Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-ESP-1.log",
+          "sha256": "c09473ece8837897a944e84df892bda07dae18305c6abee92482460608a9d26e",
+          "bytes": 3479
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-FRA-0.json",
+      "bytes": 9415,
+      "sha256": "d7e69516e13cd36d972abd3981ed9c8849e9f297e535df65666e1dbc589f5ec3",
+      "modified": "2026-11-04T08:31:34.486Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-FRA-0.json",
+          "sha256": "d7e69516e13cd36d972abd3981ed9c8849e9f297e535df65666e1dbc589f5ec3",
+          "bytes": 9415
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-FRA-0.log",
+      "bytes": 3478,
+      "sha256": "952339a66ca07dffcbb2d2f23d33a64fbb3e59914c17bd619a2a65cb65d19edb",
+      "modified": "2026-11-04T08:31:34.530Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-FRA-0.log",
+          "sha256": "952339a66ca07dffcbb2d2f23d33a64fbb3e59914c17bd619a2a65cb65d19edb",
+          "bytes": 3478
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-FRA-1.json",
+      "bytes": 9497,
+      "sha256": "9ee01553415c9020482c91e70ff4019c6ac6a5ec611e47cb0813cdeb821c9d26",
+      "modified": "2026-11-04T08:44:38.414Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-FRA-1.json",
+          "sha256": "9ee01553415c9020482c91e70ff4019c6ac6a5ec611e47cb0813cdeb821c9d26",
+          "bytes": 9497
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-FRA-1.log",
+      "bytes": 3506,
+      "sha256": "dc6a8b6a5611aa7e666a30b972454fef068b37c8090994171204d8d4a68b01a3",
+      "modified": "2026-11-04T08:44:38.442Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-FRA-1.log",
+          "sha256": "dc6a8b6a5611aa7e666a30b972454fef068b37c8090994171204d8d4a68b01a3",
+          "bytes": 3506
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-GER-0.json",
+      "bytes": 9477,
+      "sha256": "b1a3ecbf63dc261d87318819a0d17649dc1e2e06ba0cff1e15d6f265abddc4bf",
+      "modified": "2026-11-04T08:31:22.390Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-GER-0.json",
+          "sha256": "b1a3ecbf63dc261d87318819a0d17649dc1e2e06ba0cff1e15d6f265abddc4bf",
+          "bytes": 9477
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-GER-0.log",
+      "bytes": 3477,
+      "sha256": "332a13f549752189e7ef3bcdb60ff18922e9e1d27e134733733d99ae55cee149",
+      "modified": "2026-11-04T08:31:22.422Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-GER-0.log",
+          "sha256": "332a13f549752189e7ef3bcdb60ff18922e9e1d27e134733733d99ae55cee149",
+          "bytes": 3477
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-GER-1.json",
+      "bytes": 9483,
+      "sha256": "d15c90a85ff38d02df04b265c74e0c0564d158cea35ba75e3d3a1233fe27e82d",
+      "modified": "2026-11-04T08:45:24.199Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-GER-1.json",
+          "sha256": "d15c90a85ff38d02df04b265c74e0c0564d158cea35ba75e3d3a1233fe27e82d",
+          "bytes": 9483
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/chaebol-GER-1.log",
+      "bytes": 3482,
+      "sha256": "b3f0f18cb077ea4805ad806a0ace7c262540b54f1e81dddf93de66df56ee62b3",
+      "modified": "2026-11-04T08:45:24.235Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/chaebol-GER-1.log",
+          "sha256": "b3f0f18cb077ea4805ad806a0ace7c262540b54f1e81dddf93de66df56ee62b3",
+          "bytes": 3482
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ENG-0.json",
+      "bytes": 9446,
+      "sha256": "72fe5e5f6b2cbd73b310012af2183de4b2e8adf5fae626602796d379447f3ba0",
+      "modified": "2026-11-04T08:15:34.006Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ENG-0.json",
+          "sha256": "72fe5e5f6b2cbd73b310012af2183de4b2e8adf5fae626602796d379447f3ba0",
+          "bytes": 9446
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ENG-0.log",
+      "bytes": 3544,
+      "sha256": "9628d1c55dc93798afa97cf4ad1255c344697a27b558b2ae0f871747193b9b36",
+      "modified": "2026-11-04T08:15:34.042Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ENG-0.log",
+          "sha256": "9628d1c55dc93798afa97cf4ad1255c344697a27b558b2ae0f871747193b9b36",
+          "bytes": 3544
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ENG-1.json",
+      "bytes": 9423,
+      "sha256": "458ccd263cf284115c9662013d41947d5ca0fea541183cd2d469493bc27edf68",
+      "modified": "2026-11-04T08:16:38.639Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ENG-1.json",
+          "sha256": "458ccd263cf284115c9662013d41947d5ca0fea541183cd2d469493bc27edf68",
+          "bytes": 9423
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ENG-1.log",
+      "bytes": 3504,
+      "sha256": "a6f503c4ba54728741223b4c4e6c6d7de0a7b4d3f7eb890939a6192130bb4f12",
+      "modified": "2026-11-04T08:16:38.671Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ENG-1.log",
+          "sha256": "a6f503c4ba54728741223b4c4e6c6d7de0a7b4d3f7eb890939a6192130bb4f12",
+          "bytes": 3504
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ESP-0.json",
+      "bytes": 9455,
+      "sha256": "46fd7a67b3024577feae33f3b0c910e49d93151b55b76b006381d0310b7ff740",
+      "modified": "2026-11-04T08:15:34.226Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ESP-0.json",
+          "sha256": "46fd7a67b3024577feae33f3b0c910e49d93151b55b76b006381d0310b7ff740",
+          "bytes": 9455
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ESP-0.log",
+      "bytes": 3516,
+      "sha256": "0492be8625a89981456289e2e8aeb3348fa1815425c191001173fc88c54a323c",
+      "modified": "2026-11-04T08:15:34.258Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ESP-0.log",
+          "sha256": "0492be8625a89981456289e2e8aeb3348fa1815425c191001173fc88c54a323c",
+          "bytes": 3516
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ESP-1.json",
+      "bytes": 9395,
+      "sha256": "b9f36e00e9183de8117577fa75d691f3e900f9cb2af7900d6ae551713aa9d9cf",
+      "modified": "2026-11-04T08:16:39.151Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ESP-1.json",
+          "sha256": "b9f36e00e9183de8117577fa75d691f3e900f9cb2af7900d6ae551713aa9d9cf",
+          "bytes": 9395
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-ESP-1.log",
+      "bytes": 3541,
+      "sha256": "f7405872ea18328907d8c2decd6238d0dae9dd78b68139d486fc8a20f5e187eb",
+      "modified": "2026-11-04T08:16:39.179Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-ESP-1.log",
+          "sha256": "f7405872ea18328907d8c2decd6238d0dae9dd78b68139d486fc8a20f5e187eb",
+          "bytes": 3541
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-FRA-0.json",
+      "bytes": 9554,
+      "sha256": "1f2a27a6836c55ba628a72b1d52a37997b05be71ba22f8c4c9ae14efc9defe51",
+      "modified": "2026-11-04T08:15:18.366Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-FRA-0.json",
+          "sha256": "1f2a27a6836c55ba628a72b1d52a37997b05be71ba22f8c4c9ae14efc9defe51",
+          "bytes": 9554
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-FRA-0.log",
+      "bytes": 3517,
+      "sha256": "87a582dd2530dcbd4923d6fd58a10f20c49a1c9492fef4702bf6a57f12ecd327",
+      "modified": "2026-11-04T08:15:18.402Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-FRA-0.log",
+          "sha256": "87a582dd2530dcbd4923d6fd58a10f20c49a1c9492fef4702bf6a57f12ecd327",
+          "bytes": 3517
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-FRA-1.json",
+      "bytes": 9561,
+      "sha256": "8dfd238e3028251952c46ea4adcb5c04ab2a7952ab7c5e12a7c6bad142d9678b",
+      "modified": "2026-11-04T08:29:14.412Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-FRA-1.json",
+          "sha256": "8dfd238e3028251952c46ea4adcb5c04ab2a7952ab7c5e12a7c6bad142d9678b",
+          "bytes": 9561
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-FRA-1.log",
+      "bytes": 3519,
+      "sha256": "c69ca9ec6bc405b310556b7239ebc6248b9de59c0f772d884e3024fd32cb1575",
+      "modified": "2026-11-04T08:29:14.448Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-FRA-1.log",
+          "sha256": "c69ca9ec6bc405b310556b7239ebc6248b9de59c0f772d884e3024fd32cb1575",
+          "bytes": 3519
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-GER-0.json",
+      "bytes": 9473,
+      "sha256": "c7a1b23393c398e7fe1403a85a984a5558d64d45fb6b5a248cbb16328281e639",
+      "modified": "2026-11-04T08:16:51.091Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-GER-0.json",
+          "sha256": "c7a1b23393c398e7fe1403a85a984a5558d64d45fb6b5a248cbb16328281e639",
+          "bytes": 9473
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-GER-0.log",
+      "bytes": 3515,
+      "sha256": "154c798ef89681fc612c5e2504d52f118204396846a138b2bb9226c3fbd0c17e",
+      "modified": "2026-11-04T08:16:51.123Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-GER-0.log",
+          "sha256": "154c798ef89681fc612c5e2504d52f118204396846a138b2bb9226c3fbd0c17e",
+          "bytes": 3515
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-GER-1.json",
+      "bytes": 9466,
+      "sha256": "9fe39cada12053e0806fc1c873b085ddc85f1524f6aa0e7d3ef66dfa22b44252",
+      "modified": "2026-11-04T08:30:14.821Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-GER-1.json",
+          "sha256": "9fe39cada12053e0806fc1c873b085ddc85f1524f6aa0e7d3ef66dfa22b44252",
+          "bytes": 9466
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/industrial-GER-1.log",
+      "bytes": 3513,
+      "sha256": "de83f6d2d80460e22325a68dd1cbb383c229a99ce5cec94c603795de036ea696",
+      "modified": "2026-11-04T08:30:14.853Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/industrial-GER-1.log",
+          "sha256": "de83f6d2d80460e22325a68dd1cbb383c229a99ce5cec94c603795de036ea696",
+          "bytes": 3513
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ENG-0.json",
+      "bytes": 9423,
+      "sha256": "9e37e3bd178d82d5c5c6fdd43b922adc33f93dc18bd5c1c17b8e56972eecceff",
+      "modified": "2026-11-04T07:29:48.208Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ENG-0.json",
+          "sha256": "9e37e3bd178d82d5c5c6fdd43b922adc33f93dc18bd5c1c17b8e56972eecceff",
+          "bytes": 9423
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ENG-0.log",
+      "bytes": 3038,
+      "sha256": "e85b6cd7d041b4bde11817f7f40996a17fc5f89a793c26acb19d3eecbbf2fa28",
+      "modified": "2026-11-04T07:29:48.260Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ENG-0.log",
+          "sha256": "e85b6cd7d041b4bde11817f7f40996a17fc5f89a793c26acb19d3eecbbf2fa28",
+          "bytes": 3038
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ENG-1.json",
+      "bytes": 9458,
+      "sha256": "cf24392d826e1fc00f9c2549ad8a08f320fe210389cc56cb51adf7373f360da9",
+      "modified": "2026-11-04T07:29:44.836Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ENG-1.json",
+          "sha256": "cf24392d826e1fc00f9c2549ad8a08f320fe210389cc56cb51adf7373f360da9",
+          "bytes": 9458
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ENG-1.log",
+      "bytes": 3041,
+      "sha256": "45c1445d2d0ef51ed58f0d49639855795292a45e550364c24568bdbee43696ce",
+      "modified": "2026-11-04T07:29:44.864Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ENG-1.log",
+          "sha256": "45c1445d2d0ef51ed58f0d49639855795292a45e550364c24568bdbee43696ce",
+          "bytes": 3041
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ESP-0.json",
+      "bytes": 9441,
+      "sha256": "ec3f7b011582ef80cac33488ffcfe7aa738f402154d81a1897af196c5fd804a5",
+      "modified": "2026-11-04T07:29:19.999Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ESP-0.json",
+          "sha256": "ec3f7b011582ef80cac33488ffcfe7aa738f402154d81a1897af196c5fd804a5",
+          "bytes": 9441
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ESP-0.log",
+      "bytes": 3103,
+      "sha256": "b25b28e1527fb3ad67b07393e104d60be425a26bfe6e1b16fd33154d4740c32f",
+      "modified": "2026-11-04T07:29:20.031Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ESP-0.log",
+          "sha256": "b25b28e1527fb3ad67b07393e104d60be425a26bfe6e1b16fd33154d4740c32f",
+          "bytes": 3103
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ESP-1.json",
+      "bytes": 9437,
+      "sha256": "2af25659d717ba5b4b807c935d990ae916dce64916e25b3b5c206482ea19aeb4",
+      "modified": "2026-11-04T07:29:13.083Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ESP-1.json",
+          "sha256": "2af25659d717ba5b4b807c935d990ae916dce64916e25b3b5c206482ea19aeb4",
+          "bytes": 9437
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-ESP-1.log",
+      "bytes": 3077,
+      "sha256": "cd3a0c24699bee20cfab96f8cfaf68754ec53c6dd47b46188dc925fc22d28f79",
+      "modified": "2026-11-04T07:29:13.115Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-ESP-1.log",
+          "sha256": "cd3a0c24699bee20cfab96f8cfaf68754ec53c6dd47b46188dc925fc22d28f79",
+          "bytes": 3077
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-FRA-0.json",
+      "bytes": 9504,
+      "sha256": "2ac53e54df58524631841fa28e317aceb4aedc395771f8f721132fd0490a28f2",
+      "modified": "2026-11-04T07:28:40.674Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-FRA-0.json",
+          "sha256": "2ac53e54df58524631841fa28e317aceb4aedc395771f8f721132fd0490a28f2",
+          "bytes": 9504
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-FRA-0.log",
+      "bytes": 3026,
+      "sha256": "421e06ca765038557338092b43ad7dc39919e6ae5991a908999cc2bc3b2f0bfa",
+      "modified": "2026-11-04T07:28:40.710Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-FRA-0.log",
+          "sha256": "421e06ca765038557338092b43ad7dc39919e6ae5991a908999cc2bc3b2f0bfa",
+          "bytes": 3026
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-FRA-1.json",
+      "bytes": 9518,
+      "sha256": "e9545e0883195727eb3793142390f284e521fd480128e2d9d56dc4f673d66abb",
+      "modified": "2026-11-04T07:28:59.651Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-FRA-1.json",
+          "sha256": "e9545e0883195727eb3793142390f284e521fd480128e2d9d56dc4f673d66abb",
+          "bytes": 9518
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-FRA-1.log",
+      "bytes": 3038,
+      "sha256": "3de94bc5250190ed856f0ff90bc7746cc696f9e6361646b8d4f83838d3df1664",
+      "modified": "2026-11-04T07:28:59.683Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-FRA-1.log",
+          "sha256": "3de94bc5250190ed856f0ff90bc7746cc696f9e6361646b8d4f83838d3df1664",
+          "bytes": 3038
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-GER-0.json",
+      "bytes": 9515,
+      "sha256": "4e4717af6f22c0202eea17dcd891b973092c23e66d4f0256445f86ab39f18619",
+      "modified": "2026-11-04T07:28:55.747Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-GER-0.json",
+          "sha256": "4e4717af6f22c0202eea17dcd891b973092c23e66d4f0256445f86ab39f18619",
+          "bytes": 9515
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-GER-0.log",
+      "bytes": 3024,
+      "sha256": "974db659a51ca97fda0aff7ca7d8787b06c3918a221c5a0540dfab4855239490",
+      "modified": "2026-11-04T07:28:55.779Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-GER-0.log",
+          "sha256": "974db659a51ca97fda0aff7ca7d8787b06c3918a221c5a0540dfab4855239490",
+          "bytes": 3024
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-GER-1.json",
+      "bytes": 9441,
+      "sha256": "df0215eee6a2f7204b3d5fb6b3d91da186667c2aec69e91b10416c095825cb5c",
+      "modified": "2026-11-04T07:43:52.137Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-GER-1.json",
+          "sha256": "df0215eee6a2f7204b3d5fb6b3d91da186667c2aec69e91b10416c095825cb5c",
+          "bytes": 9441
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/local-GER-1.log",
+      "bytes": 3476,
+      "sha256": "87161eaac3ea8c7d643ebbf0dd1d92b14150d429b3a0ae02220f0b9902d08775",
+      "modified": "2026-11-04T07:43:52.169Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/local-GER-1.log",
+          "sha256": "87161eaac3ea8c7d643ebbf0dd1d92b14150d429b3a0ae02220f0b9902d08775",
+          "bytes": 3476
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ENG-0.json",
+      "bytes": 9521,
+      "sha256": "165e9e7e1fd1c46462a1ccb9e7804415425ef500371ff281a47665d780fc21db",
+      "modified": "2026-11-04T07:59:43.700Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ENG-0.json",
+          "sha256": "165e9e7e1fd1c46462a1ccb9e7804415425ef500371ff281a47665d780fc21db",
+          "bytes": 9521
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ENG-0.log",
+      "bytes": 4361,
+      "sha256": "23f48ab43ac861cd371f836f9a525346dcadf7503c57f6ab02423ea39d7ff47f",
+      "modified": "2026-11-04T07:59:43.736Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ENG-0.log",
+          "sha256": "23f48ab43ac861cd371f836f9a525346dcadf7503c57f6ab02423ea39d7ff47f",
+          "bytes": 4361
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ENG-1.json",
+      "bytes": 9391,
+      "sha256": "4e866efb977c7482cf0c970eee25be88f638246a7195af2610b1daa3639f0a26",
+      "modified": "2026-11-04T08:00:32.977Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ENG-1.json",
+          "sha256": "4e866efb977c7482cf0c970eee25be88f638246a7195af2610b1daa3639f0a26",
+          "bytes": 9391
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ENG-1.log",
+      "bytes": 4358,
+      "sha256": "0f549f45d97c404f4082cecaf65f7e9d72bc89c79fdd0a1f6e9e8b0407f8f50c",
+      "modified": "2026-11-04T08:00:33.021Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ENG-1.log",
+          "sha256": "0f549f45d97c404f4082cecaf65f7e9d72bc89c79fdd0a1f6e9e8b0407f8f50c",
+          "bytes": 4358
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ESP-0.json",
+      "bytes": 9504,
+      "sha256": "07ac362827db14a784f2d59a6c4832f4a81aa806bc67e50fb9d0cd7285256158",
+      "modified": "2026-11-04T07:59:07.608Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ESP-0.json",
+          "sha256": "07ac362827db14a784f2d59a6c4832f4a81aa806bc67e50fb9d0cd7285256158",
+          "bytes": 9504
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ESP-0.log",
+      "bytes": 4380,
+      "sha256": "d874b3ac04ef1e5c3fb8d5c831e587349bb182028b97516ab4befd14f9bceecc",
+      "modified": "2026-11-04T07:59:07.648Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ESP-0.log",
+          "sha256": "d874b3ac04ef1e5c3fb8d5c831e587349bb182028b97516ab4befd14f9bceecc",
+          "bytes": 4380
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ESP-1.json",
+      "bytes": 9417,
+      "sha256": "40f4a20447d2ea436c90eac26082f6491d2c3ccac61c23047342ae89e96d879c",
+      "modified": "2026-11-04T08:01:04.885Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ESP-1.json",
+          "sha256": "40f4a20447d2ea436c90eac26082f6491d2c3ccac61c23047342ae89e96d879c",
+          "bytes": 9417
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-ESP-1.log",
+      "bytes": 4362,
+      "sha256": "7478bc685fbc25ca41ec868656e6e3bb3139b0131deb9d421d8c023cee268946",
+      "modified": "2026-11-04T08:01:04.917Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-ESP-1.log",
+          "sha256": "7478bc685fbc25ca41ec868656e6e3bb3139b0131deb9d421d8c023cee268946",
+          "bytes": 4362
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-FRA-0.json",
+      "bytes": 9454,
+      "sha256": "a24ea3bf98cfca97a3f81ffcba6b46a5959ea6a5423713a12ccce490707e9e1b",
+      "modified": "2026-11-04T07:59:22.312Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-FRA-0.json",
+          "sha256": "a24ea3bf98cfca97a3f81ffcba6b46a5959ea6a5423713a12ccce490707e9e1b",
+          "bytes": 9454
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-FRA-0.log",
+      "bytes": 4358,
+      "sha256": "ed71eeef22d68150ba701e2f9609da789cf7ad74301c97de8124c131e547b16e",
+      "modified": "2026-11-04T07:59:22.392Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-FRA-0.log",
+          "sha256": "ed71eeef22d68150ba701e2f9609da789cf7ad74301c97de8124c131e547b16e",
+          "bytes": 4358
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-FRA-1.json",
+      "bytes": 9412,
+      "sha256": "a535bef535016b757446be97c7f4a07965fce516104fa08170076e5ecd942523",
+      "modified": "2026-11-04T08:00:25.117Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-FRA-1.json",
+          "sha256": "a535bef535016b757446be97c7f4a07965fce516104fa08170076e5ecd942523",
+          "bytes": 9412
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-FRA-1.log",
+      "bytes": 4371,
+      "sha256": "0ceea86ed42eb2819070be4308f6b2d7f9ab70c5bb467b603ed06681f9e3717d",
+      "modified": "2026-11-04T08:00:25.153Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-FRA-1.log",
+          "sha256": "0ceea86ed42eb2819070be4308f6b2d7f9ab70c5bb467b603ed06681f9e3717d",
+          "bytes": 4371
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-GER-0.json",
+      "bytes": 9502,
+      "sha256": "a47145423b13f23e23bd25e4c5ab83d4aeed0c9396e274ad5aee2a6ac6ddbad6",
+      "modified": "2026-11-04T07:59:38.800Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-GER-0.json",
+          "sha256": "a47145423b13f23e23bd25e4c5ab83d4aeed0c9396e274ad5aee2a6ac6ddbad6",
+          "bytes": 9502
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-GER-0.log",
+      "bytes": 4370,
+      "sha256": "7d18cb5db7bfb0e361fed842d7a1f61b4b571f5a0379bd7b3ce9e109632786af",
+      "modified": "2026-11-04T07:59:38.832Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-GER-0.log",
+          "sha256": "7d18cb5db7bfb0e361fed842d7a1f61b4b571f5a0379bd7b3ce9e109632786af",
+          "bytes": 4370
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-GER-1.json",
+      "bytes": 9497,
+      "sha256": "1a81471c5ad78e74c72130143ee2ffa4ea7275e659f47c9ca68477d3727c82b6",
+      "modified": "2026-11-04T08:14:38.109Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-GER-1.json",
+          "sha256": "1a81471c5ad78e74c72130143ee2ffa4ea7275e659f47c9ca68477d3727c82b6",
+          "bytes": 9497
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/midsize-GER-1.log",
+      "bytes": 4363,
+      "sha256": "6fade00ca47b9a64f5ab902864d6089a196130124a30795dabfa739551843e5b",
+      "modified": "2026-11-04T08:14:38.145Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/midsize-GER-1.log",
+          "sha256": "6fade00ca47b9a64f5ab902864d6089a196130124a30795dabfa739551843e5b",
+          "bytes": 4363
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ENG-0.json",
+      "bytes": 9469,
+      "sha256": "78a756c7a25ad54d4d0a08c40bd2dd1fdf5c6fdea25a7437af7f0e3f6947b0eb",
+      "modified": "2026-11-04T08:46:40.960Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ENG-0.json",
+          "sha256": "78a756c7a25ad54d4d0a08c40bd2dd1fdf5c6fdea25a7437af7f0e3f6947b0eb",
+          "bytes": 9469
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ENG-0.log",
+      "bytes": 3499,
+      "sha256": "ac69b52b35a27c235be1e0b87c37097b3bc5af6e890d4f2b04a77cb9455fd283",
+      "modified": "2026-11-04T08:46:40.992Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ENG-0.log",
+          "sha256": "ac69b52b35a27c235be1e0b87c37097b3bc5af6e890d4f2b04a77cb9455fd283",
+          "bytes": 3499
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ENG-1.json",
+      "bytes": 9416,
+      "sha256": "06469491cffb40d2725815baeaf525c644bf2088c3266726f3b4d861e8c2defd",
+      "modified": "2026-11-04T08:46:59.684Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ENG-1.json",
+          "sha256": "06469491cffb40d2725815baeaf525c644bf2088c3266726f3b4d861e8c2defd",
+          "bytes": 9416
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ENG-1.log",
+      "bytes": 3494,
+      "sha256": "bf439665826142bc2feec8097f6d39353f581482040a7b10b0d3873670f06273",
+      "modified": "2026-11-04T08:46:59.712Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ENG-1.log",
+          "sha256": "bf439665826142bc2feec8097f6d39353f581482040a7b10b0d3873670f06273",
+          "bytes": 3494
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ESP-0.json",
+      "bytes": 590,
+      "sha256": "6653e4cc8334aef17d0193590d4f8b1fb7c686711e0154d063b503ddb45eed28",
+      "modified": "2026-11-04T08:31:41.570Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ESP-0.json",
+          "sha256": "6653e4cc8334aef17d0193590d4f8b1fb7c686711e0154d063b503ddb45eed28",
+          "bytes": 590
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ESP-0.log",
+      "bytes": 2476,
+      "sha256": "fe684b55c28bdc17880f3c252352be501cb5385c129cd241f60bfadc97b0e886",
+      "modified": "2026-11-04T08:31:41.602Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ESP-0.log",
+          "sha256": "fe684b55c28bdc17880f3c252352be501cb5385c129cd241f60bfadc97b0e886",
+          "bytes": 2476
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ESP-1.json",
+      "bytes": 591,
+      "sha256": "a9150f29ce0c295b932f62a3388a09c9251a4c6cec4214bfacf3af793efe83bd",
+      "modified": "2026-11-04T08:32:52.187Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ESP-1.json",
+          "sha256": "a9150f29ce0c295b932f62a3388a09c9251a4c6cec4214bfacf3af793efe83bd",
+          "bytes": 591
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-ESP-1.log",
+      "bytes": 2476,
+      "sha256": "a64049f9e2bce4bbff8722717a573bef093ebde7ea19c71fd67aaf0989d26af1",
+      "modified": "2026-11-04T08:32:52.219Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-ESP-1.log",
+          "sha256": "a64049f9e2bce4bbff8722717a573bef093ebde7ea19c71fd67aaf0989d26af1",
+          "bytes": 2476
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-FRA-0.json",
+      "bytes": 586,
+      "sha256": "ddf083ab6681744791ed8701ef65afc861ec159f71c89292caa1a4d2caae0d84",
+      "modified": "2026-11-04T08:31:48.307Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-FRA-0.json",
+          "sha256": "ddf083ab6681744791ed8701ef65afc861ec159f71c89292caa1a4d2caae0d84",
+          "bytes": 586
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-FRA-0.log",
+      "bytes": 2472,
+      "sha256": "7a67aac1e412d1efd821526925d27e59abac7389a32d807b73de946103908836",
+      "modified": "2026-11-04T08:31:48.335Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-FRA-0.log",
+          "sha256": "7a67aac1e412d1efd821526925d27e59abac7389a32d807b73de946103908836",
+          "bytes": 2472
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-FRA-1.json",
+      "bytes": 589,
+      "sha256": "22364be973fb7273494380348e29c5e666c1d7b49f81cad28b76f76fc8b17132",
+      "modified": "2026-11-04T08:33:03.796Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-FRA-1.json",
+          "sha256": "22364be973fb7273494380348e29c5e666c1d7b49f81cad28b76f76fc8b17132",
+          "bytes": 589
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-FRA-1.log",
+      "bytes": 2473,
+      "sha256": "1476f5ff1c2736aa4bcf4f021bc62014a8f3ae5d514f6de7ce72c235b9ec1704",
+      "modified": "2026-11-04T08:33:03.824Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-FRA-1.log",
+          "sha256": "1476f5ff1c2736aa4bcf4f021bc62014a8f3ae5d514f6de7ce72c235b9ec1704",
+          "bytes": 2473
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-GER-0.json",
+      "bytes": 588,
+      "sha256": "83ac1fcb6e9c526c6fa48a7fef16056b5fb2ad2357375c61e5620fc9e1c67ecd",
+      "modified": "2026-11-04T08:32:31.811Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-GER-0.json",
+          "sha256": "83ac1fcb6e9c526c6fa48a7fef16056b5fb2ad2357375c61e5620fc9e1c67ecd",
+          "bytes": 588
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-GER-0.log",
+      "bytes": 2473,
+      "sha256": "e2c7fe33f6d334f53f73a0dd1e1856328a15239d38062aac97343dc7ff341a3c",
+      "modified": "2026-11-04T08:32:31.843Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-GER-0.log",
+          "sha256": "e2c7fe33f6d334f53f73a0dd1e1856328a15239d38062aac97343dc7ff341a3c",
+          "bytes": 2473
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-GER-1.json",
+      "bytes": 588,
+      "sha256": "79eff1f6d60d04cae30909ed47bd9232a1cd423d8ee2335fb79552a0dfa83eb3",
+      "modified": "2026-11-04T08:33:16.052Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-GER-1.json",
+          "sha256": "79eff1f6d60d04cae30909ed47bd9232a1cd423d8ee2335fb79552a0dfa83eb3",
+          "bytes": 588
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/oil-GER-1.log",
+      "bytes": 2473,
+      "sha256": "9031ac75e644522eda9286d384db3cb9bca83ca80ba757d916a08939e3cd479c",
+      "modified": "2026-11-04T08:33:16.076Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/oil-GER-1.log",
+          "sha256": "9031ac75e644522eda9286d384db3cb9bca83ca80ba757d916a08939e3cd479c",
+          "bytes": 2473
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/prepare.log",
+      "bytes": 78,
+      "sha256": "ab8e426ebce32350e4afa416644d90f58226695ff4c7bf5b9a7356382f35d11a",
+      "modified": "2026-11-04T07:14:33.164Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/prepare.log",
+          "sha256": "ab8e426ebce32350e4afa416644d90f58226695ff4c7bf5b9a7356382f35d11a",
+          "bytes": 78
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-ENG-0.json",
+      "bytes": 9436,
+      "sha256": "6c5447cd1dd9b486f7b89630daa28f201048251a029cc98bea4e30cb6b947a0a",
+      "modified": "2026-11-04T07:45:15.501Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-ENG-0.json",
+          "sha256": "6c5447cd1dd9b486f7b89630daa28f201048251a029cc98bea4e30cb6b947a0a",
+          "bytes": 9436
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-ENG-0.log",
+      "bytes": 3525,
+      "sha256": "e7211480d68482aee8a4ff41b37f4d69cd590eeb9de766b37cb090e7c5eb2a91",
+      "modified": "2026-11-04T07:45:15.529Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-ENG-0.log",
+          "sha256": "e7211480d68482aee8a4ff41b37f4d69cd590eeb9de766b37cb090e7c5eb2a91",
+          "bytes": 3525
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-ENG-1.json",
+      "bytes": 9414,
+      "sha256": "0bc86d9e7e89124ea5554162705e646017894c45b631d815860ccb99095c1c1b",
+      "modified": "2026-11-04T07:45:45.556Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-ENG-1.json",
+          "sha256": "0bc86d9e7e89124ea5554162705e646017894c45b631d815860ccb99095c1c1b",
+          "bytes": 9414
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-ENG-1.log",
+      "bytes": 3526,
+      "sha256": "c2859a9917ca885e005d98b1240d7455d5ee8526602fde923a1af6d529be9cc9",
+      "modified": "2026-11-04T07:45:45.588Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-ENG-1.log",
+          "sha256": "c2859a9917ca885e005d98b1240d7455d5ee8526602fde923a1af6d529be9cc9",
+          "bytes": 3526
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-ESP-0.log",
+      "bytes": 2002,
+      "sha256": "6e31a6bc6e905718c1f34b6f689c7ce1d8487e32b259ff014401bfdd56827ea1",
+      "modified": "2026-11-04T07:29:02.275Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-ESP-0.log",
+          "sha256": "6e31a6bc6e905718c1f34b6f689c7ce1d8487e32b259ff014401bfdd56827ea1",
+          "bytes": 2002
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-ESP-1.log",
+      "bytes": 2002,
+      "sha256": "948e63afa1cb51aef13d2573b1a0a27e795956a733b506aae8001e266ed15a74",
+      "modified": "2026-11-04T07:29:46.584Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-ESP-1.log",
+          "sha256": "948e63afa1cb51aef13d2573b1a0a27e795956a733b506aae8001e266ed15a74",
+          "bytes": 2002
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-FRA-0.json",
+      "bytes": 9441,
+      "sha256": "943da30178a5b86c5f32f1cbd59f73e150636ce7c3a52cc77acec6fa24405f26",
+      "modified": "2026-11-04T07:43:52.109Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-FRA-0.json",
+          "sha256": "943da30178a5b86c5f32f1cbd59f73e150636ce7c3a52cc77acec6fa24405f26",
+          "bytes": 9441
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-FRA-0.log",
+      "bytes": 3516,
+      "sha256": "b522cdfc4b0547967d31f8aaef3845f33716ef0e29ed2c897ef3130fb0a6abb8",
+      "modified": "2026-11-04T07:43:52.145Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-FRA-0.log",
+          "sha256": "b522cdfc4b0547967d31f8aaef3845f33716ef0e29ed2c897ef3130fb0a6abb8",
+          "bytes": 3516
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-FRA-1.json",
+      "bytes": 9500,
+      "sha256": "9fa5f5a28ed602a488bc264f8797780e80f3a243aea869d4759134f1eeb44788",
+      "modified": "2026-11-04T07:44:59.229Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-FRA-1.json",
+          "sha256": "9fa5f5a28ed602a488bc264f8797780e80f3a243aea869d4759134f1eeb44788",
+          "bytes": 9500
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-FRA-1.log",
+      "bytes": 3517,
+      "sha256": "313a94d9d77d0264f912680a794476552e7e9bb8bafd970e557d1efea38ff01c",
+      "modified": "2026-11-04T07:44:59.261Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-FRA-1.log",
+          "sha256": "313a94d9d77d0264f912680a794476552e7e9bb8bafd970e557d1efea38ff01c",
+          "bytes": 3517
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-GER-0.json",
+      "bytes": 9488,
+      "sha256": "19d48df6abdc83e28cbade663d8b905dde0a1e63a5005fca216e34b193403801",
+      "modified": "2026-11-04T07:45:02.757Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-GER-0.json",
+          "sha256": "19d48df6abdc83e28cbade663d8b905dde0a1e63a5005fca216e34b193403801",
+          "bytes": 9488
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-GER-0.log",
+      "bytes": 3519,
+      "sha256": "09b17b55308e91a3c470d2ecd1502c5b66230ce071d1d0e3c8d66bf208fbab1c",
+      "modified": "2026-11-04T07:45:02.793Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-GER-0.log",
+          "sha256": "09b17b55308e91a3c470d2ecd1502c5b66230ce071d1d0e3c8d66bf208fbab1c",
+          "bytes": 3519
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-GER-1.json",
+      "bytes": 9459,
+      "sha256": "bf01c7c868b309d7bacbb12b9a6994abdefdde474295f56186aa0a63f823f6af",
+      "modified": "2026-11-04T07:44:37.773Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-GER-1.json",
+          "sha256": "bf01c7c868b309d7bacbb12b9a6994abdefdde474295f56186aa0a63f823f6af",
+          "bytes": 9459
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-base/selfmade-GER-1.log",
+      "bytes": 3517,
+      "sha256": "e6302ea10f684070bba922de4bf3494f01a3f41f50b915379ee6e4095b5e92cb",
+      "modified": "2026-11-04T07:44:37.809Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-base/selfmade-GER-1.log",
+          "sha256": "e6302ea10f684070bba922de4bf3494f01a3f41f50b915379ee6e4095b5e92cb",
+          "bytes": 3517
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ENG-0.json",
+      "bytes": 9498,
+      "sha256": "d8979120a3ab1d7610d952b2f4cc3ff8845468f757419ffce14107203c405a45",
+      "modified": "2026-11-04T08:40:47.411Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ENG-0.json",
+          "sha256": "d8979120a3ab1d7610d952b2f4cc3ff8845468f757419ffce14107203c405a45",
+          "bytes": 9498
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ENG-0.log",
+      "bytes": 3574,
+      "sha256": "fff6a3d59285c7ee6639279ec746fed76b979a6a396aa6c5c5f6d32a33e64795",
+      "modified": "2026-11-04T08:40:47.443Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ENG-0.log",
+          "sha256": "fff6a3d59285c7ee6639279ec746fed76b979a6a396aa6c5c5f6d32a33e64795",
+          "bytes": 3574
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ENG-1.json",
+      "bytes": 9464,
+      "sha256": "74dcf93f8e88a829e8b01ac589eb0c66c5583b43ab1dbd1dff9d6d7a952aadd0",
+      "modified": "2026-11-04T08:55:28.096Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ENG-1.json",
+          "sha256": "74dcf93f8e88a829e8b01ac589eb0c66c5583b43ab1dbd1dff9d6d7a952aadd0",
+          "bytes": 9464
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ENG-1.log",
+      "bytes": 3578,
+      "sha256": "e67b09c526d6b1d79da25173fae9d28272b3d3249e29a8d49c6e353e0ad0b67f",
+      "modified": "2026-11-04T08:55:28.128Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ENG-1.log",
+          "sha256": "e67b09c526d6b1d79da25173fae9d28272b3d3249e29a8d49c6e353e0ad0b67f",
+          "bytes": 3578
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ESP-0.json",
+      "bytes": 9471,
+      "sha256": "e44ae6b1ac45cbed0a3327891083b6d36c45afd2096be1faed66498850186ffd",
+      "modified": "2026-11-04T08:40:35.666Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ESP-0.json",
+          "sha256": "e44ae6b1ac45cbed0a3327891083b6d36c45afd2096be1faed66498850186ffd",
+          "bytes": 9471
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ESP-0.log",
+      "bytes": 3574,
+      "sha256": "49bff68c97fb9e3d28494f16b37bea5eb19d7ed3a14bbee8e4458984d279a9d4",
+      "modified": "2026-11-04T08:40:35.698Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ESP-0.log",
+          "sha256": "49bff68c97fb9e3d28494f16b37bea5eb19d7ed3a14bbee8e4458984d279a9d4",
+          "bytes": 3574
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ESP-1.json",
+      "bytes": 9431,
+      "sha256": "84e07a036d007d74291301d9cc46cc0355a308ae17bcbfaf4b3f7e9763baef16",
+      "modified": "2026-11-04T08:48:17.053Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ESP-1.json",
+          "sha256": "84e07a036d007d74291301d9cc46cc0355a308ae17bcbfaf4b3f7e9763baef16",
+          "bytes": 9431
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-ESP-1.log",
+      "bytes": 3594,
+      "sha256": "dc892050e2e9ae93044aa7c5372ee75e8b17a3f6f6a82825cc5be3e0648ded0a",
+      "modified": "2026-11-04T08:48:17.085Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-ESP-1.log",
+          "sha256": "dc892050e2e9ae93044aa7c5372ee75e8b17a3f6f6a82825cc5be3e0648ded0a",
+          "bytes": 3594
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-FRA-0.json",
+      "bytes": 9428,
+      "sha256": "731ee0b1d83ba01c1fa8652bff0ddf22ea638ad0194766e4357f0e1e93d63d73",
+      "modified": "2026-11-04T08:54:58.263Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-FRA-0.json",
+          "sha256": "731ee0b1d83ba01c1fa8652bff0ddf22ea638ad0194766e4357f0e1e93d63d73",
+          "bytes": 9428
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-FRA-0.log",
+      "bytes": 3607,
+      "sha256": "f36fe9326ed7abfd69e53cd8098434110798c08d52897fd4c34c7745648f76b5",
+      "modified": "2026-11-04T08:54:58.295Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-FRA-0.log",
+          "sha256": "f36fe9326ed7abfd69e53cd8098434110798c08d52897fd4c34c7745648f76b5",
+          "bytes": 3607
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-FRA-1.json",
+      "bytes": 9513,
+      "sha256": "701a4f8e4c4992ef65870d78038824e4dbe8af632315f45c36563934983b2403",
+      "modified": "2026-11-04T08:40:16.650Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-FRA-1.json",
+          "sha256": "701a4f8e4c4992ef65870d78038824e4dbe8af632315f45c36563934983b2403",
+          "bytes": 9513
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-FRA-1.log",
+      "bytes": 3612,
+      "sha256": "fafaed527d69f78435cc29c496f750f36e5ef1761ada81d39903bcfdd6382ae3",
+      "modified": "2026-11-04T08:40:16.682Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-FRA-1.log",
+          "sha256": "fafaed527d69f78435cc29c496f750f36e5ef1761ada81d39903bcfdd6382ae3",
+          "bytes": 3612
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-GER-0.json",
+      "bytes": 9445,
+      "sha256": "6e37100d4abb9eee54f7dc5c3bf00f26382b3f1bee362852b835a0d8213bc1eb",
+      "modified": "2026-11-04T08:54:58.759Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-GER-0.json",
+          "sha256": "6e37100d4abb9eee54f7dc5c3bf00f26382b3f1bee362852b835a0d8213bc1eb",
+          "bytes": 9445
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-GER-0.log",
+      "bytes": 3573,
+      "sha256": "bcef4e5109e01f1fe80b7df329e6364443eebaba00bc9c4a7cf5fa1d3c9e6ac3",
+      "modified": "2026-11-04T08:54:58.799Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-GER-0.log",
+          "sha256": "bcef4e5109e01f1fe80b7df329e6364443eebaba00bc9c4a7cf5fa1d3c9e6ac3",
+          "bytes": 3573
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-GER-1.json",
+      "bytes": 9419,
+      "sha256": "3bd45e27207955e994632d198554c3b44b88bee838707b68424fa1a2aaa84ac8",
+      "modified": "2026-11-04T08:25:58.390Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-GER-1.json",
+          "sha256": "3bd45e27207955e994632d198554c3b44b88bee838707b68424fa1a2aaa84ac8",
+          "bytes": 9419
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/chaebol-GER-1.log",
+      "bytes": 3596,
+      "sha256": "c4d2bdf3d01078dbd0c2e1a91046a55a868f9908bd378a08e19aafcd6bd7fa86",
+      "modified": "2026-11-04T08:25:58.418Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/chaebol-GER-1.log",
+          "sha256": "c4d2bdf3d01078dbd0c2e1a91046a55a868f9908bd378a08e19aafcd6bd7fa86",
+          "bytes": 3596
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ENG-0.json",
+      "bytes": 9480,
+      "sha256": "44a3350069e4dcafda02efcb0f4dbb07356d23aaf8d5103c795a943868f81bf8",
+      "modified": "2026-11-04T09:17:51.808Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ENG-0.json",
+          "sha256": "44a3350069e4dcafda02efcb0f4dbb07356d23aaf8d5103c795a943868f81bf8",
+          "bytes": 9480
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ENG-0.log",
+      "bytes": 3623,
+      "sha256": "9219607f432e6c401b1ee11e783fa0ccb4f7a5c65385f6832529efa2d505670e",
+      "modified": "2026-11-04T09:17:51.928Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ENG-0.log",
+          "sha256": "9219607f432e6c401b1ee11e783fa0ccb4f7a5c65385f6832529efa2d505670e",
+          "bytes": 3623
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ENG-1.json",
+      "bytes": 9446,
+      "sha256": "f76a78615104d5c74b1aab1a972cf95eff560710914275797b223f4d37dbde28",
+      "modified": "2026-11-04T09:24:07.095Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ENG-1.json",
+          "sha256": "f76a78615104d5c74b1aab1a972cf95eff560710914275797b223f4d37dbde28",
+          "bytes": 9446
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ENG-1.log",
+      "bytes": 3623,
+      "sha256": "5c1cde08aca0404cf18adbbdada710d0fabd594ba97a4c560e98a5ef3273a952",
+      "modified": "2026-11-04T09:24:07.119Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ENG-1.log",
+          "sha256": "5c1cde08aca0404cf18adbbdada710d0fabd594ba97a4c560e98a5ef3273a952",
+          "bytes": 3623
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ESP-0.json",
+      "bytes": 9459,
+      "sha256": "d003602fea779e8a1b9d345fb94f23ec924ec32bd1f9091066ded45204edf985",
+      "modified": "2026-11-04T09:17:34.291Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ESP-0.json",
+          "sha256": "d003602fea779e8a1b9d345fb94f23ec924ec32bd1f9091066ded45204edf985",
+          "bytes": 9459
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ESP-0.log",
+      "bytes": 3627,
+      "sha256": "f9610c5c55915cdc827007a1f34d89c50bd5a6bf75a19c665ab773964d90a79b",
+      "modified": "2026-11-04T09:17:34.395Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ESP-0.log",
+          "sha256": "f9610c5c55915cdc827007a1f34d89c50bd5a6bf75a19c665ab773964d90a79b",
+          "bytes": 3627
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ESP-1.json",
+      "bytes": 9397,
+      "sha256": "f3934cb9758a360dda770d8e1c8ea8fbb2644ffe1027f9c9b183db835d2cd125",
+      "modified": "2026-11-04T09:18:56.073Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ESP-1.json",
+          "sha256": "f3934cb9758a360dda770d8e1c8ea8fbb2644ffe1027f9c9b183db835d2cd125",
+          "bytes": 9397
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-ESP-1.log",
+      "bytes": 3628,
+      "sha256": "fd027af4f8554ab264c772ce9bbf1ec4357507d193415ef9e0aaaa4e3c8720e9",
+      "modified": "2026-11-04T09:18:56.105Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-ESP-1.log",
+          "sha256": "fd027af4f8554ab264c772ce9bbf1ec4357507d193415ef9e0aaaa4e3c8720e9",
+          "bytes": 3628
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-FRA-0.json",
+      "bytes": 9436,
+      "sha256": "064fc2b5b99d8d787a3dbff2046ec93ee326449c66e44378863076eb08e9fdff",
+      "modified": "2026-11-04T09:17:10.603Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-FRA-0.json",
+          "sha256": "064fc2b5b99d8d787a3dbff2046ec93ee326449c66e44378863076eb08e9fdff",
+          "bytes": 9436
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-FRA-0.log",
+      "bytes": 3605,
+      "sha256": "370a389bada7258e525e0593d79a53116dc72f6a4b3fc56f211dceee0d85e1a0",
+      "modified": "2026-11-04T09:17:10.635Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-FRA-0.log",
+          "sha256": "370a389bada7258e525e0593d79a53116dc72f6a4b3fc56f211dceee0d85e1a0",
+          "bytes": 3605
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-FRA-1.json",
+      "bytes": 9485,
+      "sha256": "7a10b26fe5cb0ceb43a8fa3495712a026078b4c60452a84654376e5841fd4f1b",
+      "modified": "2026-11-04T09:10:45.503Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-FRA-1.json",
+          "sha256": "7a10b26fe5cb0ceb43a8fa3495712a026078b4c60452a84654376e5841fd4f1b",
+          "bytes": 9485
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-FRA-1.log",
+      "bytes": 3611,
+      "sha256": "a5e44a7a2d6a338acfbd252c19f911796907d632a71a4503137acbb98532279c",
+      "modified": "2026-11-04T09:10:45.543Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-FRA-1.log",
+          "sha256": "a5e44a7a2d6a338acfbd252c19f911796907d632a71a4503137acbb98532279c",
+          "bytes": 3611
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-GER-0.json",
+      "bytes": 9452,
+      "sha256": "c1cff038d97a29dbb4d5a08cd47d96baa1af3e314558dbc17021599248a22462",
+      "modified": "2026-11-04T09:17:09.999Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-GER-0.json",
+          "sha256": "c1cff038d97a29dbb4d5a08cd47d96baa1af3e314558dbc17021599248a22462",
+          "bytes": 9452
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-GER-0.log",
+      "bytes": 3608,
+      "sha256": "ac326d94c56a16e40b80f800969f1d3e4b1ec9d9286b8ad5dc795608f9aa1a6b",
+      "modified": "2026-11-04T09:17:10.031Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-GER-0.log",
+          "sha256": "ac326d94c56a16e40b80f800969f1d3e4b1ec9d9286b8ad5dc795608f9aa1a6b",
+          "bytes": 3608
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-GER-1.json",
+      "bytes": 9407,
+      "sha256": "abbf1cdbba6dddc37f6fa7d7be2403d390f0986b70996184820cef3a596c99f7",
+      "modified": "2026-11-04T09:03:27.381Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-GER-1.json",
+          "sha256": "abbf1cdbba6dddc37f6fa7d7be2403d390f0986b70996184820cef3a596c99f7",
+          "bytes": 9407
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/industrial-GER-1.log",
+      "bytes": 3624,
+      "sha256": "94a8cb808edf58ce18021663f2e23dc8f961438c21a60e1d844a7bbb281da240",
+      "modified": "2026-11-04T09:03:27.417Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/industrial-GER-1.log",
+          "sha256": "94a8cb808edf58ce18021663f2e23dc8f961438c21a60e1d844a7bbb281da240",
+          "bytes": 3624
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ENG-0.json",
+      "bytes": 9409,
+      "sha256": "e9fce4611c1d2ab95c19e853aac6a93ab55e1b1f21d8d2c8bd81c3bd9f0604fc",
+      "modified": "2026-11-04T07:39:45.952Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ENG-0.json",
+          "sha256": "e9fce4611c1d2ab95c19e853aac6a93ab55e1b1f21d8d2c8bd81c3bd9f0604fc",
+          "bytes": 9409
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ENG-0.log",
+      "bytes": 3597,
+      "sha256": "87f23df47710a0378ab9ea89cbd6519c4c2fe43d683b1cfa2e8c3dca2d8559ec",
+      "modified": "2026-11-04T07:39:45.984Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ENG-0.log",
+          "sha256": "87f23df47710a0378ab9ea89cbd6519c4c2fe43d683b1cfa2e8c3dca2d8559ec",
+          "bytes": 3597
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ENG-1.json",
+      "bytes": 9517,
+      "sha256": "3f1a466403239c8513bf666d4e54fd4cbba6abe3ce7d50a9b7b47f8d53c8e182",
+      "modified": "2026-11-04T09:11:00.348Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ENG-1.json",
+          "sha256": "3f1a466403239c8513bf666d4e54fd4cbba6abe3ce7d50a9b7b47f8d53c8e182",
+          "bytes": 9517
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ENG-1.log",
+      "bytes": 3598,
+      "sha256": "f5054aaed93d465be55335da760b54964506b2809f49f1a2b43731ff541387fe",
+      "modified": "2026-11-04T09:11:00.376Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ENG-1.log",
+          "sha256": "f5054aaed93d465be55335da760b54964506b2809f49f1a2b43731ff541387fe",
+          "bytes": 3598
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ESP-0.json",
+      "bytes": 9424,
+      "sha256": "d9644654e30d07ed2e029d113a630a36e9db8465c23558526b29802217612ce5",
+      "modified": "2026-11-04T07:38:55.503Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ESP-0.json",
+          "sha256": "d9644654e30d07ed2e029d113a630a36e9db8465c23558526b29802217612ce5",
+          "bytes": 9424
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ESP-0.log",
+      "bytes": 3660,
+      "sha256": "d767a304918f4f890581c8337ea22c1aa44514cc2ab77d6d28b50aee3fd2d8d3",
+      "modified": "2026-11-04T07:38:55.535Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ESP-0.log",
+          "sha256": "d767a304918f4f890581c8337ea22c1aa44514cc2ab77d6d28b50aee3fd2d8d3",
+          "bytes": 3660
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ESP-1.json",
+      "bytes": 9469,
+      "sha256": "c69fdafae726acb0e06a0ef17aa427afbc32b1ec11d5751d4ed7d73ffa1410f4",
+      "modified": "2026-11-04T09:10:33.451Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ESP-1.json",
+          "sha256": "c69fdafae726acb0e06a0ef17aa427afbc32b1ec11d5751d4ed7d73ffa1410f4",
+          "bytes": 9469
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-ESP-1.log",
+      "bytes": 3635,
+      "sha256": "addc887bdcce2c5e4430dc664dff23e4781865cb51811103846e93676f02831a",
+      "modified": "2026-11-04T09:10:33.491Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-ESP-1.log",
+          "sha256": "addc887bdcce2c5e4430dc664dff23e4781865cb51811103846e93676f02831a",
+          "bytes": 3635
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-FRA-0.json",
+      "bytes": 9481,
+      "sha256": "ccba3dea9d2c4ad0a1cce40603adce6f6a8e5bc42a5e0ff43caa0e94411e2615",
+      "modified": "2026-11-04T07:38:45.391Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-FRA-0.json",
+          "sha256": "ccba3dea9d2c4ad0a1cce40603adce6f6a8e5bc42a5e0ff43caa0e94411e2615",
+          "bytes": 9481
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/local-FRA-0.log",
+      "bytes": 3585,
+      "sha256": "8e232df9b9abf888effd5fb73b28e421123a29eca69f9335c4b86f7931f23dd3",
+      "modified": "2026-11-04T07:38:45.423Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/local-FRA-0.log",
+          "sha256": "8e232df9b9abf888effd5fb73b28e421123a29eca69f9335c4b86f7931f23dd3",
+          "bytes": 3585
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ENG-0.json",
+      "bytes": 9479,
+      "sha256": "2bf6e92b42657cc0b7eba18eaca7d4ddb3693eed351a3313fdcfd895448a5b4c",
+      "modified": "2026-11-04T09:03:07.545Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ENG-0.json",
+          "sha256": "2bf6e92b42657cc0b7eba18eaca7d4ddb3693eed351a3313fdcfd895448a5b4c",
+          "bytes": 9479
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ENG-0.log",
+      "bytes": 4484,
+      "sha256": "d5c747d872efef9efc243d083b7e7b499ce5daa8919991ee9acc19c69770f055",
+      "modified": "2026-11-04T09:03:07.581Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ENG-0.log",
+          "sha256": "d5c747d872efef9efc243d083b7e7b499ce5daa8919991ee9acc19c69770f055",
+          "bytes": 4484
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ENG-1.json",
+      "bytes": 9397,
+      "sha256": "e3e67598f163807fcd45caed7250530d18bbe0fdafe40395a742a05f363465a8",
+      "modified": "2026-11-04T09:02:43.148Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ENG-1.json",
+          "sha256": "e3e67598f163807fcd45caed7250530d18bbe0fdafe40395a742a05f363465a8",
+          "bytes": 9397
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ENG-1.log",
+      "bytes": 4485,
+      "sha256": "77ef83309e0b51918ccf8579939b1c469239a730bbd0d6a5aa4d9ec771d34a43",
+      "modified": "2026-11-04T09:02:43.184Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ENG-1.log",
+          "sha256": "77ef83309e0b51918ccf8579939b1c469239a730bbd0d6a5aa4d9ec771d34a43",
+          "bytes": 4485
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ESP-0.json",
+      "bytes": 9469,
+      "sha256": "389cd31a009f39009042bc9543f27579e88f744c2a213e454ea53574ed36e508",
+      "modified": "2026-11-04T09:02:54.389Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ESP-0.json",
+          "sha256": "389cd31a009f39009042bc9543f27579e88f744c2a213e454ea53574ed36e508",
+          "bytes": 9469
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ESP-0.log",
+      "bytes": 4485,
+      "sha256": "dbb854eadb5a851c1ee92e40216fb0aeab4200a3da87cf32699e0e18a546ec52",
+      "modified": "2026-11-04T09:02:54.429Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ESP-0.log",
+          "sha256": "dbb854eadb5a851c1ee92e40216fb0aeab4200a3da87cf32699e0e18a546ec52",
+          "bytes": 4485
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ESP-1.json",
+      "bytes": 9481,
+      "sha256": "5f3957428bbaae331963a785114972f01cbed3aa3062968002430d60b8c08245",
+      "modified": "2026-11-04T09:02:48.620Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ESP-1.json",
+          "sha256": "5f3957428bbaae331963a785114972f01cbed3aa3062968002430d60b8c08245",
+          "bytes": 9481
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-ESP-1.log",
+      "bytes": 4469,
+      "sha256": "d4ae4ee00097832bad0df4e52ab5dacd5b7a6aacafbb5f5db0d0f3c0878d1ec3",
+      "modified": "2026-11-04T09:02:48.656Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-ESP-1.log",
+          "sha256": "d4ae4ee00097832bad0df4e52ab5dacd5b7a6aacafbb5f5db0d0f3c0878d1ec3",
+          "bytes": 4469
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-FRA-0.json",
+      "bytes": 9422,
+      "sha256": "1f5a1afbc70c0258f925674ee5d324114f705f1401ccc486dfed5cbbd7bf9b72",
+      "modified": "2026-11-04T09:01:50.575Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-FRA-0.json",
+          "sha256": "1f5a1afbc70c0258f925674ee5d324114f705f1401ccc486dfed5cbbd7bf9b72",
+          "bytes": 9422
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-FRA-0.log",
+      "bytes": 4465,
+      "sha256": "c56884ecb6c8d96a3149838688ec5a9b89154bb0a3e5923899b53cb029665b3d",
+      "modified": "2026-11-04T09:01:50.607Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-FRA-0.log",
+          "sha256": "c56884ecb6c8d96a3149838688ec5a9b89154bb0a3e5923899b53cb029665b3d",
+          "bytes": 4465
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-FRA-1.json",
+      "bytes": 9468,
+      "sha256": "8b9829e667c436ac1ea4202c179c01c6e08ad17d28b17394b8bf209736853c59",
+      "modified": "2026-11-04T09:15:46.925Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-FRA-1.json",
+          "sha256": "8b9829e667c436ac1ea4202c179c01c6e08ad17d28b17394b8bf209736853c59",
+          "bytes": 9468
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-FRA-1.log",
+      "bytes": 4474,
+      "sha256": "21cb9dfe8e95a174ca7cc923574469ec4f6d070c888ba71726776d0357ff94bc",
+      "modified": "2026-11-04T09:15:46.961Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-FRA-1.log",
+          "sha256": "21cb9dfe8e95a174ca7cc923574469ec4f6d070c888ba71726776d0357ff94bc",
+          "bytes": 4474
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-GER-0.json",
+      "bytes": 9445,
+      "sha256": "0c657c4e05fe274116b5f267d726322baea660eaac22e08e30f18f735848fb51",
+      "modified": "2026-11-04T09:02:09.435Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-GER-0.json",
+          "sha256": "0c657c4e05fe274116b5f267d726322baea660eaac22e08e30f18f735848fb51",
+          "bytes": 9445
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-GER-0.log",
+      "bytes": 4475,
+      "sha256": "d604e8855dcaeb9b19da8129cdcfe2c4ca3db91335aa3c86de5d0dbb44a59102",
+      "modified": "2026-11-04T09:02:09.479Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-GER-0.log",
+          "sha256": "d604e8855dcaeb9b19da8129cdcfe2c4ca3db91335aa3c86de5d0dbb44a59102",
+          "bytes": 4475
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-GER-1.json",
+      "bytes": 9453,
+      "sha256": "1e194c3450286968a92a5fb0a6691c67b2df1f37c46ff2e5735d474e03890dae",
+      "modified": "2026-11-04T09:16:13.766Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-GER-1.json",
+          "sha256": "1e194c3450286968a92a5fb0a6691c67b2df1f37c46ff2e5735d474e03890dae",
+          "bytes": 9453
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/midsize-GER-1.log",
+      "bytes": 4468,
+      "sha256": "c0b2c308dfec93a9df69154c6015fcdafd7df74e121d083967b7f79e393158ab",
+      "modified": "2026-11-04T09:16:13.794Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/midsize-GER-1.log",
+          "sha256": "c0b2c308dfec93a9df69154c6015fcdafd7df74e121d083967b7f79e393158ab",
+          "bytes": 4468
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ENG-0.json",
+      "bytes": 9376,
+      "sha256": "f82bc6fc1cc71c39b84b4380fcea9a2025a9751b771855cf67b3bfda6c60d64d",
+      "modified": "2026-11-04T07:54:25.377Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ENG-0.json",
+          "sha256": "f82bc6fc1cc71c39b84b4380fcea9a2025a9751b771855cf67b3bfda6c60d64d",
+          "bytes": 9376
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ENG-0.log",
+      "bytes": 3605,
+      "sha256": "b01c0a35f498007f9a1e26239a2638ed3dcbb78eec9c7b07e9268edd5eac38d8",
+      "modified": "2026-11-04T07:54:25.417Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ENG-0.log",
+          "sha256": "b01c0a35f498007f9a1e26239a2638ed3dcbb78eec9c7b07e9268edd5eac38d8",
+          "bytes": 3605
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ENG-1.json",
+      "bytes": 9427,
+      "sha256": "17a984fa676171e26463ec3846eab7d4a9b63879e3512fe9bbfc4532890b888a",
+      "modified": "2026-11-04T08:10:10.297Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ENG-1.json",
+          "sha256": "17a984fa676171e26463ec3846eab7d4a9b63879e3512fe9bbfc4532890b888a",
+          "bytes": 9427
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ENG-1.log",
+      "bytes": 3606,
+      "sha256": "b9a0f3104235f8cc3f35c7430dcdded833fa307e8db6270b3e7504b42cc7fe7b",
+      "modified": "2026-11-04T08:10:10.333Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ENG-1.log",
+          "sha256": "b9a0f3104235f8cc3f35c7430dcdded833fa307e8db6270b3e7504b42cc7fe7b",
+          "bytes": 3606
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ESP-0.json",
+      "bytes": 9461,
+      "sha256": "75fdc7d7d9d2445fc25c03919f2d3368d96f8478059a58bd7ea326c5df46e1c4",
+      "modified": "2026-11-04T07:54:16.001Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ESP-0.json",
+          "sha256": "75fdc7d7d9d2445fc25c03919f2d3368d96f8478059a58bd7ea326c5df46e1c4",
+          "bytes": 9461
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ESP-0.log",
+      "bytes": 3607,
+      "sha256": "8b9b1a6b53554e28b73274235a160b9e139bc261d366d4a8a6eb0b90ec5373c2",
+      "modified": "2026-11-04T07:54:16.037Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ESP-0.log",
+          "sha256": "8b9b1a6b53554e28b73274235a160b9e139bc261d366d4a8a6eb0b90ec5373c2",
+          "bytes": 3607
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ESP-1.json",
+      "bytes": 9407,
+      "sha256": "e00e4a7c2a76e8cb8d1df53342ce443e381afef7ff99a6f840c34cd4aac15e43",
+      "modified": "2026-11-04T08:09:54.752Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ESP-1.json",
+          "sha256": "e00e4a7c2a76e8cb8d1df53342ce443e381afef7ff99a6f840c34cd4aac15e43",
+          "bytes": 9407
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-ESP-1.log",
+      "bytes": 3589,
+      "sha256": "3091e6250abcd855d498ecf96bf7fad3a892bdb5d7948c7ae455548026dda76b",
+      "modified": "2026-11-04T08:09:54.784Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-ESP-1.log",
+          "sha256": "3091e6250abcd855d498ecf96bf7fad3a892bdb5d7948c7ae455548026dda76b",
+          "bytes": 3589
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-FRA-0.json",
+      "bytes": 9463,
+      "sha256": "b492ac0ba7e11fcf7239ee3753075e6dc3651ee186753e7641212a16af2d24f6",
+      "modified": "2026-11-04T07:54:17.893Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-FRA-0.json",
+          "sha256": "b492ac0ba7e11fcf7239ee3753075e6dc3651ee186753e7641212a16af2d24f6",
+          "bytes": 9463
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-FRA-0.log",
+      "bytes": 3596,
+      "sha256": "b8b3815b31abc605c3749c69f4765349f736843a2596de8586a758f8fd1d096a",
+      "modified": "2026-11-04T07:54:17.925Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-FRA-0.log",
+          "sha256": "b8b3815b31abc605c3749c69f4765349f736843a2596de8586a758f8fd1d096a",
+          "bytes": 3596
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-FRA-1.json",
+      "bytes": 9471,
+      "sha256": "29932f1c2075199b1b1b77963d1b271da13124ed7df7b3c9cdf628162ea0c6c2",
+      "modified": "2026-11-04T08:25:09.321Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-FRA-1.json",
+          "sha256": "29932f1c2075199b1b1b77963d1b271da13124ed7df7b3c9cdf628162ea0c6c2",
+          "bytes": 9471
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-FRA-1.log",
+      "bytes": 3604,
+      "sha256": "5d7b65366f06447b05cd24d1854637f27b432a42176de713e942d8bacbfd8221",
+      "modified": "2026-11-04T08:25:09.353Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-FRA-1.log",
+          "sha256": "5d7b65366f06447b05cd24d1854637f27b432a42176de713e942d8bacbfd8221",
+          "bytes": 3604
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-GER-0.json",
+      "bytes": 9480,
+      "sha256": "716984bce33d746efc9942053ed18d3aa1f18210d84478a483f08788f2859b8b",
+      "modified": "2026-11-04T08:11:00.658Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-GER-0.json",
+          "sha256": "716984bce33d746efc9942053ed18d3aa1f18210d84478a483f08788f2859b8b",
+          "bytes": 9480
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-GER-0.log",
+      "bytes": 3611,
+      "sha256": "9a9ec454bb1ef6eb90b3dcd77b1c6e40840289f6610187c47cb67d0cf319557a",
+      "modified": "2026-11-04T08:11:00.694Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-GER-0.log",
+          "sha256": "9a9ec454bb1ef6eb90b3dcd77b1c6e40840289f6610187c47cb67d0cf319557a",
+          "bytes": 3611
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-GER-1.json",
+      "bytes": 9447,
+      "sha256": "5386a910d94e0bb8987e78b188987dd31765b5510128f3e12fd8a2f1c0f6fc1d",
+      "modified": "2026-11-04T08:25:04.349Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-GER-1.json",
+          "sha256": "5386a910d94e0bb8987e78b188987dd31765b5510128f3e12fd8a2f1c0f6fc1d",
+          "bytes": 9447
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/oil-GER-1.log",
+      "bytes": 3615,
+      "sha256": "7799f4a566ee6adb68b74c70ea3d285dd8cd533a65699d7900273b29a377e359",
+      "modified": "2026-11-04T08:25:04.377Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/oil-GER-1.log",
+          "sha256": "7799f4a566ee6adb68b74c70ea3d285dd8cd533a65699d7900273b29a377e359",
+          "bytes": 3615
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand/prepare.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "modified": "2026-11-04T08:55:14.319Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand/prepare.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver-1.json",
+      "bytes": 802,
+      "sha256": "7f7a44732ce202a72dd37099904c2e1c46f13d848ff1c7e7d9a08477797e236a",
+      "modified": "2026-11-04T08:25:09.593Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver-1.json",
+          "sha256": "7f7a44732ce202a72dd37099904c2e1c46f13d848ff1c7e7d9a08477797e236a",
+          "bytes": 802
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver-2.json",
+      "bytes": 297,
+      "sha256": "dd29836fa619e7d7692e833a738d9f87e88e973e606f7724b4e8fe7eb32c0171",
+      "modified": "2026-11-04T08:54:59.099Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver-2.json",
+          "sha256": "dd29836fa619e7d7692e833a738d9f87e88e973e606f7724b4e8fe7eb32c0171",
+          "bytes": 297
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver-3.json",
+      "bytes": 228,
+      "sha256": "ade48f976f1d0aa13c2c520a47ec2701204bfc5caa1e5a2826b50db0b8aa53ba",
+      "modified": "2026-11-04T09:24:07.267Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver-3.json",
+          "sha256": "ade48f976f1d0aa13c2c520a47ec2701204bfc5caa1e5a2826b50db0b8aa53ba",
+          "bytes": 228
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver-base.json",
+      "bytes": 3623,
+      "sha256": "d0894663dc2f66bf47c18e0c61ab3f93ff5cff3160fe1c0ec010983ff415dd22",
+      "modified": "2026-11-04T08:46:59.912Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver-base.json",
+          "sha256": "d0894663dc2f66bf47c18e0c61ab3f93ff5cff3160fe1c0ec010983ff415dd22",
+          "bytes": 3623
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver-r.json",
+      "bytes": 245,
+      "sha256": "b4deb961c51c576f533374706a8c7dc49a3fe9a4348ada2d62681542233bfa8d",
+      "modified": "2026-11-04T09:18:56.277Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver-r.json",
+          "sha256": "b4deb961c51c576f533374706a8c7dc49a3fe9a4348ada2d62681542233bfa8d",
+          "bytes": 245
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver-r1.json",
+      "bytes": 311,
+      "sha256": "e1da76178e3204ecaa578c028d71f6d5ea91fb1beea058224e63407a3e22e4b2",
+      "modified": "2026-11-04T09:10:45.827Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver-r1.json",
+          "sha256": "e1da76178e3204ecaa578c028d71f6d5ea91fb1beea058224e63407a3e22e4b2",
+          "bytes": 311
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers-cand-held/driver.json",
+      "bytes": 921,
+      "sha256": "5b12d23f7232a4c2e24942cc2118d0aed455849da8676b520409c26cc907cd03",
+      "modified": "2026-11-04T09:17:52.256Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers-cand-held/driver.json",
+          "sha256": "5b12d23f7232a4c2e24942cc2118d0aed455849da8676b520409c26cc907cd03",
+          "bytes": 921
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/careers.mjs",
+      "bytes": 2913,
+      "sha256": "d0629e6df57e46691c8a4967eb904cd5e95d2634b789ebbdea382018f36189cb",
+      "modified": "2026-11-04T07:21:16.525Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/careers.mjs",
+          "sha256": "d0629e6df57e46691c8a4967eb904cd5e95d2634b789ebbdea382018f36189cb",
+          "bytes": 2913
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/concat.mjs",
+      "bytes": 486,
+      "sha256": "73e71d1395a619a3e621920fb548599acfded975b32d72e1bb6ea94d5a8c8e92",
+      "modified": "2026-11-04T08:47:50.077Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/concat.mjs",
+          "sha256": "73e71d1395a619a3e621920fb548599acfded975b32d72e1bb6ea94d5a8c8e92",
+          "bytes": 486
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/hold.mjs",
+      "bytes": 620,
+      "sha256": "beeff51a4e8435026f9bbfec7330670d08972d1477e62100ccd3a30459db4bf5",
+      "modified": "2026-11-04T07:27:30.501Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/hold.mjs",
+          "sha256": "beeff51a4e8435026f9bbfec7330670d08972d1477e62100ccd3a30459db4bf5",
+          "bytes": 620
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/keep/contracts.ts",
+      "bytes": 34679,
+      "sha256": "24f3d170b8d6a950c9fc15229cf511757646b9ca459ff7dcdf893bcae33129a2",
+      "modified": "2026-11-04T09:22:15.957Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/keep/contracts.ts",
+          "sha256": "24f3d170b8d6a950c9fc15229cf511757646b9ca459ff7dcdf893bcae33129a2",
+          "bytes": 34679
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/keep/engine.patch",
+      "bytes": 13000,
+      "sha256": "66610c158901f3bfa27a1a84e8d6f7421c4e9397332976d2141679d4577fcbe8",
+      "modified": "2026-11-04T09:22:22.285Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/keep/engine.patch",
+          "sha256": "66610c158901f3bfa27a1a84e8d6f7421c4e9397332976d2141679d4577fcbe8",
+          "bytes": 13000
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/keep/market-prices.test.ts",
+      "bytes": 14243,
+      "sha256": "5253a054ca8e18e56d49143fc273b7055d7233343cf7c3bca23ba65e56ed2975",
+      "modified": "2026-11-04T09:22:15.957Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/keep/market-prices.test.ts",
+          "sha256": "5253a054ca8e18e56d49143fc273b7055d7233343cf7c3bca23ba65e56ed2975",
+          "bytes": 14243
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/keep/market-prices.ts",
+      "bytes": 9485,
+      "sha256": "27ffb013879c218cbfe45e5967ba9aedcd271b653375d27871016c5d322938e5",
+      "modified": "2026-11-04T09:22:15.957Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/keep/market-prices.ts",
+          "sha256": "27ffb013879c218cbfe45e5967ba9aedcd271b653375d27871016c5d322938e5",
+          "bytes": 9485
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/smoke.json",
+      "bytes": 24912,
+      "sha256": "309adc90875d07cb0fe4bb3b10cf21ce9108d85cf1b17b8fb367937bfddc94c8",
+      "modified": "2026-11-04T07:17:00.692Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/smoke.json",
+          "sha256": "309adc90875d07cb0fe4bb3b10cf21ce9108d85cf1b17b8fb367937bfddc94c8",
+          "bytes": 24912
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/spread-ratio.mjs",
+      "bytes": 1318,
+      "sha256": "de807660df4344342082f5af53736fc7467f07d2bd8f618609e27a5569694d07",
+      "modified": "2026-11-04T07:25:55.563Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/spread-ratio.mjs",
+          "sha256": "de807660df4344342082f5af53736fc7467f07d2bd8f618609e27a5569694d07",
+          "bytes": 1318
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/wait-text.mjs",
+      "bytes": 466,
+      "sha256": "f274be587ca6b0b7853c7993a1afaa7091f02ce76df585a2bdb794897a0189a0",
+      "modified": "2026-11-04T09:20:55.927Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/wait-text.mjs",
+          "sha256": "f274be587ca6b0b7853c7993a1afaa7091f02ce76df585a2bdb794897a0189a0",
+          "bytes": 466
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t693/wait.mjs",
+      "bytes": 524,
+      "sha256": "b184deb911b52a782f69680806e328cf3eeee85eb512dbfe2c3455fa1bdc530a",
+      "modified": "2026-11-04T07:28:31.326Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t693/wait.mjs",
+          "sha256": "b184deb911b52a782f69680806e328cf3eeee85eb512dbfe2c3455fa1bdc530a",
+          "bytes": 524
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/ba04-t694plan/w80-check.ts",
+      "bytes": 2713,
+      "sha256": "e40e552aa09be9def6b916e4bb783fbcd587b9e561750ef7ebfebca9fdb4418d",
+      "modified": "2026-11-04T09:29:57.331Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/ba04-t694plan/w80-check.ts",
+          "sha256": "e40e552aa09be9def6b916e4bb783fbcd587b9e561750ef7ebfebca9fdb4418d",
+          "bytes": 2713
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-0.extra.json",
+      "bytes": 71528,
+      "sha256": "819a6c30dce66359bfa52648c1db5c3b7e7a8971851ecf4212ab0acd69340d3d",
+      "modified": "2026-11-04T10:33:24.716Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-0.extra.json",
+          "sha256": "819a6c30dce66359bfa52648c1db5c3b7e7a8971851ecf4212ab0acd69340d3d",
+          "bytes": 71528
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-0.json",
+      "bytes": 269460,
+      "sha256": "a01c78c74f56cd4076f56e9763c857ae58a453d28f0a8413e445d7d709810aff",
+      "modified": "2026-11-04T10:33:24.712Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-0.json",
+          "sha256": "a01c78c74f56cd4076f56e9763c857ae58a453d28f0a8413e445d7d709810aff",
+          "bytes": 269460
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-1.extra.json",
+      "bytes": 70252,
+      "sha256": "64c7f5d0871b0c2f15f0f31f3bf0c9b6bfc6d7b442f9580b95aa6b3703533bfd",
+      "modified": "2026-11-04T10:33:25.744Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-1.extra.json",
+          "sha256": "64c7f5d0871b0c2f15f0f31f3bf0c9b6bfc6d7b442f9580b95aa6b3703533bfd",
+          "bytes": 70252
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-1.json",
+      "bytes": 269448,
+      "sha256": "86aeb6649fde720bd6d4a670eda226401f032038d71cba263938cfa06aed4853",
+      "modified": "2026-11-04T10:33:25.744Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-1.json",
+          "sha256": "86aeb6649fde720bd6d4a670eda226401f032038d71cba263938cfa06aed4853",
+          "bytes": 269448
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-2.extra.json",
+      "bytes": 74414,
+      "sha256": "9f73f084721c1c272c95974ab7086e62e5f8b06a4910b710d259e88ac3ee31da",
+      "modified": "2026-11-04T10:33:22.436Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-2.extra.json",
+          "sha256": "9f73f084721c1c272c95974ab7086e62e5f8b06a4910b710d259e88ac3ee31da",
+          "bytes": 74414
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-2.json",
+      "bytes": 375704,
+      "sha256": "250bcbc03a0bce67dd95e20e8eb937af95825f1d50f9d4175613e4be17fcceb4",
+      "modified": "2026-11-04T10:33:22.436Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-2.json",
+          "sha256": "250bcbc03a0bce67dd95e20e8eb937af95825f1d50f9d4175613e4be17fcceb4",
+          "bytes": 375704
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-3.extra.json",
+      "bytes": 75125,
+      "sha256": "81115419041897988bd9bea1b1657b16773663dbc700230752a72d804e0759ef",
+      "modified": "2026-11-04T10:33:21.168Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-3.extra.json",
+          "sha256": "81115419041897988bd9bea1b1657b16773663dbc700230752a72d804e0759ef",
+          "bytes": 75125
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/candidate-3.json",
+      "bytes": 375662,
+      "sha256": "a7e0084e8fc811ea0969f37814a753af8b63b77636b3ef07bd39cab38548f123",
+      "modified": "2026-11-04T10:33:21.164Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/candidate-3.json",
+          "sha256": "a7e0084e8fc811ea0969f37814a753af8b63b77636b3ef07bd39cab38548f123",
+          "bytes": 375662
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-0.extra.json",
+      "bytes": 27643,
+      "sha256": "8057e9a0a2ec547dd45b5b8d6fa3654e6a70b1f45a5186275d92e932b5245ee1",
+      "modified": "2026-11-04T10:32:59.015Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-0.extra.json",
+          "sha256": "8057e9a0a2ec547dd45b5b8d6fa3654e6a70b1f45a5186275d92e932b5245ee1",
+          "bytes": 27643
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-0.json",
+      "bytes": 330875,
+      "sha256": "b9460ab3e6b544589fa9a7405f21933c33212e4030f0c3d7cb7e36bcec49f307",
+      "modified": "2026-11-04T10:32:59.011Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-0.json",
+          "sha256": "b9460ab3e6b544589fa9a7405f21933c33212e4030f0c3d7cb7e36bcec49f307",
+          "bytes": 330875
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-1.extra.json",
+      "bytes": 27653,
+      "sha256": "0457293e5e7ce999a53ea9ab118d7f338ddd9105dbe92c536e766a5addf57f92",
+      "modified": "2026-11-04T10:32:59.315Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-1.extra.json",
+          "sha256": "0457293e5e7ce999a53ea9ab118d7f338ddd9105dbe92c536e766a5addf57f92",
+          "bytes": 27653
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-1.json",
+      "bytes": 334724,
+      "sha256": "9d4f9f3359a0953b87423561f5a152da0777df5ef3948125a3274040aedb0773",
+      "modified": "2026-11-04T10:32:59.315Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-1.json",
+          "sha256": "9d4f9f3359a0953b87423561f5a152da0777df5ef3948125a3274040aedb0773",
+          "bytes": 334724
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-2.extra.json",
+      "bytes": 27270,
+      "sha256": "7a19ce7e53014fe5495c0306f0d87165f50b430d8046433aeebdeddb22db336c",
+      "modified": "2026-11-04T10:32:59.687Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-2.extra.json",
+          "sha256": "7a19ce7e53014fe5495c0306f0d87165f50b430d8046433aeebdeddb22db336c",
+          "bytes": 27270
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-2.json",
+      "bytes": 472872,
+      "sha256": "7a367d4e4e24b179f8a9efa469e292e29ec8ab907258b90bf18b7c1199a28cf4",
+      "modified": "2026-11-04T10:32:59.683Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-2.json",
+          "sha256": "7a367d4e4e24b179f8a9efa469e292e29ec8ab907258b90bf18b7c1199a28cf4",
+          "bytes": 472872
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-3.extra.json",
+      "bytes": 27218,
+      "sha256": "80acf3ff7009da79b86bca96db85b6f3a78a3ed34c6f4ccf5c49637676039104",
+      "modified": "2026-11-04T10:32:55.159Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-3.extra.json",
+          "sha256": "80acf3ff7009da79b86bca96db85b6f3a78a3ed34c6f4ccf5c49637676039104",
+          "bytes": 27218
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/books/released-3.json",
+      "bytes": 479294,
+      "sha256": "fbcc6019535e0653d62d6beb581f5fcf2930a0165e03da72cecc25300c713a4f",
+      "modified": "2026-11-04T10:32:55.159Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/books/released-3.json",
+          "sha256": "fbcc6019535e0653d62d6beb581f5fcf2930a0165e03da72cecc25300c713a4f",
+          "bytes": 479294
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/midsize-ENG-0.json",
+      "bytes": 9493,
+      "sha256": "5804432ea11dbc759166bd6e69c8de404de45fe1d2539821921790cbf55e155c",
+      "modified": "2026-11-04T10:49:06.801Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/midsize-ENG-0.json",
+          "sha256": "5804432ea11dbc759166bd6e69c8de404de45fe1d2539821921790cbf55e155c",
+          "bytes": 9493
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/midsize-ENG-1.json",
+      "bytes": 9386,
+      "sha256": "d64be7a6dfc738a6900c1ea4a063bc7b5099cb02f2b4fb46b03c97668267556f",
+      "modified": "2026-11-04T10:48:36.285Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/midsize-ENG-1.json",
+          "sha256": "d64be7a6dfc738a6900c1ea4a063bc7b5099cb02f2b4fb46b03c97668267556f",
+          "bytes": 9386
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-ENG-0.json",
+      "bytes": 9478,
+      "sha256": "6316dcd4ec1008bde34257389e1e03f3df2e0e9eab2cb33b7ee2e62a3526c32d",
+      "modified": "2026-11-04T10:46:28.164Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-ENG-0.json",
+          "sha256": "6316dcd4ec1008bde34257389e1e03f3df2e0e9eab2cb33b7ee2e62a3526c32d",
+          "bytes": 9478
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-ENG-1.json",
+      "bytes": 9500,
+      "sha256": "45bf057466f23f6099af18d56fd0daf358f0dff790a231fc55ef8d30528198c4",
+      "modified": "2026-11-04T10:45:59.524Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-ENG-1.json",
+          "sha256": "45bf057466f23f6099af18d56fd0daf358f0dff790a231fc55ef8d30528198c4",
+          "bytes": 9500
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-ESP-0.json",
+      "bytes": 9434,
+      "sha256": "86312fb2f80d1ffdcb4bf5b9a33219b2725fc12acb9dda3d4633bcb848c6a20f",
+      "modified": "2026-11-04T10:48:16.061Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-ESP-0.json",
+          "sha256": "86312fb2f80d1ffdcb4bf5b9a33219b2725fc12acb9dda3d4633bcb848c6a20f",
+          "bytes": 9434
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-ESP-1.json",
+      "bytes": 9391,
+      "sha256": "e1d23ff69a07cc79761d37e45b69064b9460aeaf4e696902c7e1ca48d6269144",
+      "modified": "2026-11-04T10:48:09.537Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-ESP-1.json",
+          "sha256": "e1d23ff69a07cc79761d37e45b69064b9460aeaf4e696902c7e1ca48d6269144",
+          "bytes": 9391
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-FRA-0.json",
+      "bytes": 9459,
+      "sha256": "838ea2a8f733470750b1e538dbd1c2dcef2ad2093f630b8b77b1d86920497264",
+      "modified": "2026-11-04T10:47:41.469Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-FRA-0.json",
+          "sha256": "838ea2a8f733470750b1e538dbd1c2dcef2ad2093f630b8b77b1d86920497264",
+          "bytes": 9459
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-FRA-1.json",
+      "bytes": 9458,
+      "sha256": "4e2f38fd52bb5e541270dbf2399cea9ef66a99dbd34176ed0b3a79efeeabba7b",
+      "modified": "2026-11-04T10:47:56.825Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-FRA-1.json",
+          "sha256": "4e2f38fd52bb5e541270dbf2399cea9ef66a99dbd34176ed0b3a79efeeabba7b",
+          "bytes": 9458
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-GER-0.json",
+      "bytes": 9441,
+      "sha256": "9254a3d842416b80fec40e48564579a4ed1f75081c04c8767412e8ae5d93d1ed",
+      "modified": "2026-11-04T10:48:14.061Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-GER-0.json",
+          "sha256": "9254a3d842416b80fec40e48564579a4ed1f75081c04c8767412e8ae5d93d1ed",
+          "bytes": 9441
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/careers/oil-GER-1.json",
+      "bytes": 9423,
+      "sha256": "2cd70ec11b4600b94a0bd50288ddaba69deb7d30b6c8a96c675236da2fe98c98",
+      "modified": "2026-11-04T10:48:38.025Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/careers/oil-GER-1.json",
+          "sha256": "2cd70ec11b4600b94a0bd50288ddaba69deb7d30b6c8a96c675236da2fe98c98",
+          "bytes": 9423
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/champs.mjs",
+      "bytes": 1297,
+      "sha256": "cefc4ddd38c2ebe3d3f00883ecee3c77fc1a904eb393f4bd0cff7dbf550b017f",
+      "modified": "2026-11-04T10:36:33.809Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/champs.mjs",
+          "sha256": "cefc4ddd38c2ebe3d3f00883ecee3c77fc1a904eb393f4bd0cff7dbf550b017f",
+          "bytes": 1297
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/fit-calibration.md",
+      "bytes": 8282,
+      "sha256": "f38d827e618e46b0e8aca3c5ec9c9d1213469322d4a9407a63517637a16bd665",
+      "modified": "2026-11-04T10:30:35.701Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/fit-calibration.md",
+          "sha256": "f38d827e618e46b0e8aca3c5ec9c9d1213469322d4a9407a63517637a16bd665",
+          "bytes": 8282
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/fit-held-out.md",
+      "bytes": 11907,
+      "sha256": "b334d1afeb0d913d5aff18980f80df84aa5b87ee1e85cc5ca64b72b0641f083c",
+      "modified": "2026-11-04T10:30:55.297Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/fit-held-out.md",
+          "sha256": "b334d1afeb0d913d5aff18980f80df84aa5b87ee1e85cc5ca64b72b0641f083c",
+          "bytes": 11907
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/jobs.json",
+      "bytes": 13848,
+      "sha256": "8f486554438359eec302d18634bef248415052ed0fbd9cd68ae977edf21a83fe",
+      "modified": "2026-11-04T10:30:17.025Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/jobs.json",
+          "sha256": "8f486554438359eec302d18634bef248415052ed0fbd9cd68ae977edf21a83fe",
+          "bytes": 13848
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/jobs.json.status.json",
+      "bytes": 1367,
+      "sha256": "9c59e755b98b9a777b5be2500a6f197bdbcb4acf40ba541dfa3c2a80f6fbba00",
+      "modified": "2026-11-04T10:49:07.217Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/jobs.json.status.json",
+          "sha256": "9c59e755b98b9a777b5be2500a6f197bdbcb4acf40ba541dfa3c2a80f6fbba00",
+          "bytes": 1367
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/jobs.mjs",
+      "bytes": 2191,
+      "sha256": "cd40cf6b39084b79e7ef324a510ac811f5561511fa30c7d065699eb2982c9437",
+      "modified": "2026-11-04T10:30:16.329Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/jobs.mjs",
+          "sha256": "cd40cf6b39084b79e7ef324a510ac811f5561511fa30c7d065699eb2982c9437",
+          "bytes": 2191
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/run.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "modified": "2026-11-04T10:30:24.481Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/run.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "bytes": 0
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/run.mjs",
+      "bytes": 1831,
+      "sha256": "a23cb29320910b18d885f16eb5cb071240208cbd2ab3d25204e135d66eabe622",
+      "modified": "2026-11-04T10:30:05.708Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/run.mjs",
+          "sha256": "a23cb29320910b18d885f16eb5cb071240208cbd2ab3d25204e135d66eabe622",
+          "bytes": 1831
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/t694rows/books-cal-0.json",
+      "bytes": 347688,
+      "sha256": "f6a684d87a1b57733a578914c231d87c62f177054f3aeebd5e32bbfb24e96b5a",
+      "modified": "2026-11-04T09:40:46.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/t694rows/books-cal-0.json",
+          "sha256": "f6a684d87a1b57733a578914c231d87c62f177054f3aeebd5e32bbfb24e96b5a",
+          "bytes": 347688
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/t694rows/books-cal-1.json",
+      "bytes": 351524,
+      "sha256": "8756c32c169a42a3e933eeec4e2c8e86eaf38b6c5b705157f531ce3b4a321fd4",
+      "modified": "2026-11-04T09:40:49.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/t694rows/books-cal-1.json",
+          "sha256": "8756c32c169a42a3e933eeec4e2c8e86eaf38b6c5b705157f531ce3b4a321fd4",
+          "bytes": 351524
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/t694rows/books-held-2.json",
+      "bytes": 496566,
+      "sha256": "326e66ab3127632430d732cf42981f1f5053b520581a0b8324ca1ff82ad7cae9",
+      "modified": "2026-11-04T09:40:18.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/t694rows/books-held-2.json",
+          "sha256": "326e66ab3127632430d732cf42981f1f5053b520581a0b8324ca1ff82ad7cae9",
+          "bytes": 496566
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/t694rows/books-held-3.json",
+      "bytes": 502971,
+      "sha256": "b1261416460b2ee6f4098e841e066e3cbbea4e2f165780e924087e4340d73f56",
+      "modified": "2026-11-04T09:40:15.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/t694rows/books-held-3.json",
+          "sha256": "b1261416460b2ee6f4098e841e066e3cbbea4e2f165780e924087e4340d73f56",
+          "bytes": 502971
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696/wait.mjs",
+      "bytes": 556,
+      "sha256": "4d5d241b2d35f07beab5d9359a5d9f0441561a82f7cb19ab382f94b06976a0b8",
+      "modified": "2026-11-04T10:37:38.085Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696/wait.mjs",
+          "sha256": "4d5d241b2d35f07beab5d9359a5d9f0441561a82f7cb19ab382f94b06976a0b8",
+          "bytes": 556
+        }
+      ],
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696-read/books-cal-0.json",
+      "bytes": 347688,
+      "sha256": "f6a684d87a1b57733a578914c231d87c62f177054f3aeebd5e32bbfb24e96b5a",
+      "modified": "2026-11-04T09:40:46.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696-read/books-cal-0.json",
+          "sha256": "f6a684d87a1b57733a578914c231d87c62f177054f3aeebd5e32bbfb24e96b5a",
+          "bytes": 347688
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696-read/books-cal-1.json",
+      "bytes": 351524,
+      "sha256": "8756c32c169a42a3e933eeec4e2c8e86eaf38b6c5b705157f531ce3b4a321fd4",
+      "modified": "2026-11-04T09:40:49.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696-read/books-cal-1.json",
+          "sha256": "8756c32c169a42a3e933eeec4e2c8e86eaf38b6c5b705157f531ce3b4a321fd4",
+          "bytes": 351524
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696-read/books-held-2.json",
+      "bytes": 496566,
+      "sha256": "326e66ab3127632430d732cf42981f1f5053b520581a0b8324ca1ff82ad7cae9",
+      "modified": "2026-11-04T09:40:18.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696-read/books-held-2.json",
+          "sha256": "326e66ab3127632430d732cf42981f1f5053b520581a0b8324ca1ff82ad7cae9",
+          "bytes": 496566
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696-read/books-held-3.json",
+      "bytes": 502971,
+      "sha256": "b1261416460b2ee6f4098e841e066e3cbbea4e2f165780e924087e4340d73f56",
+      "modified": "2026-11-04T09:40:15.000Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696-read/books-held-3.json",
+          "sha256": "b1261416460b2ee6f4098e841e066e3cbbea4e2f165780e924087e4340d73f56",
+          "bytes": 502971
+        }
+      ],
+      "jsonComplete": true,
+      "encoding": "plain"
+    },
+    {
+      "source": ".tmp/t696-read/costs.mjs",
+      "bytes": 1514,
+      "sha256": "47546d6723621f138b4d6100e879a7c6ff6b128a4af8179676ac4ea2689cc86a",
+      "modified": "2026-11-04T10:14:38.012Z",
+      "stored": [
+        {
+          "path": "artifacts/benchmarks/deadline-261104-2000/scratch/t696-read/costs.mjs",
+          "sha256": "47546d6723621f138b4d6100e879a7c6ff6b128a4af8179676ac4ea2689cc86a",
+          "bytes": 1514
+        }
+      ],
+      "encoding": "plain"
+    }
+  ],
+  "totalBytes": 12830609,
+  "omitted": [
+    {
+      "path": ".tmp/ba04/result.json",
+      "reason": "stale preflight result from before active loop"
+    },
+    {
+      "path": ".tmp/ba04-t693/worlds-base",
+      "reason": "reproducible world/build/tool cache"
+    },
+    {
+      "path": ".tmp/ba04-t693/worlds-cand",
+      "reason": "reproducible world/build/tool cache"
+    },
+    {
+      "path": ".tmp/t696/worlds",
+      "reason": "reproducible world/build/tool cache"
+    }
+  ],
+  "note": "WIP preservation, not release verification. Source/STATE/tasks come from the raw worktree snapshot. Scratch measurement results and private automation handoff are included; reproducible caches and private save/credential inputs are not. jsonComplete describes parsing only, not a passed simulation or accepted candidate."
+}

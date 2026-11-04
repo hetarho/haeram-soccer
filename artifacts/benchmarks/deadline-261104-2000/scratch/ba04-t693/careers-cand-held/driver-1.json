@@ -1,0 +1,57 @@
+[
+ {
+  "name": "local-FRA-0",
+  "code": 0,
+  "minutes": 15.22335
+ },
+ {
+  "name": "local-ESP-0",
+  "code": 0,
+  "minutes": 15.392683333333334
+ },
+ {
+  "name": "local-ENG-0",
+  "code": 0,
+  "minutes": 16.232966666666666
+ },
+ {
+  "name": "oil-ESP-0",
+  "code": 0,
+  "minutes": 15.341716666666667
+ },
+ {
+  "name": "oil-FRA-0",
+  "code": 0,
+  "minutes": 14.535083333333333
+ },
+ {
+  "name": "oil-ENG-0",
+  "code": 0,
+  "minutes": 15.66805
+ },
+ {
+  "name": "oil-ESP-1",
+  "code": 0,
+  "minutes": 15.489116666666666
+ },
+ {
+  "name": "oil-ENG-1",
+  "code": 0,
+  "minutes": 15.872733333333333
+ },
+ {
+  "name": "oil-GER-0",
+  "code": 0,
+  "minutes": 16.744866666666667
+ },
+ {
+  "name": "oil-GER-1",
+  "code": 0,
+  "minutes": 14.9003
+ },
+ {
+  "name": "oil-FRA-1",
+  "code": 0,
+  "minutes": 15.241383333333333
+ }
+]

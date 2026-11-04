@@ -1,0 +1,33 @@
+oil FRA none none seed 1: FRA:0:0:4, 0 seasons, ended club 1950 in 10 s
+# Owner balance — 1 careers from a 1950 takeover to 1969/70, every responsibility delegated, 기본 방향 (OWNER_TIERS 10/1.6/1.6/1.6/1.6/1.6, living 0.2% a settlement, reference purse apart)
+
+### LEAGUE-13 — reference careers by wealth tier
+
+| tier | traits | policy | careers | first top-flight title | first title: median / fastest season | titles after the first | top flight reached | top-flight seasons (avg) | club bankrupt | owner bankrupt | 퇴진 | seasons played (avg) | band |
+|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|
+| oil | none | none | 1 | 0 (0.0%) | - | - | 0 (0.0%) | 0.0 | 1 (median 1th season) | 0 | 0 | 0.0 of 20 | most careers win, median first title within 10 seasons; 35% or less after; none bankrupt |
+
+### Growth — top-flight reach and operating result by tier
+
+| tier | traits | policy | careers | division bought (median) | started in the top flight | reached it from below | first top-flight season (median / range, of those from below) | operating result / revenue | wage bill / revenue | player sales / revenue |
+|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|
+| oil | none | none | 1 | 1 | 1 | 0 of 0 | - | - | - | - |
+
+### The start — 1950 price units of the bought club's country (anchor in English units), medians
+
+| tier | clubs bought | division bought (1 = top) | clubs in the country's reach | anchor | starting fortune | price | fortune left | price / books' last income | first-season turnover / books' last income | debt taken over | cash taken over | living costs a season at the start | seasons of living costs the fortune left pays (no growth) |
+|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| oil | 1 | 1부 ×1 | 3 | 508,236 | 5,082,356 | 509,609 | 4,572,747 | 8.36 | - (0) | 88,614 | 0 | 40,659 | 112.5 |
+
+### 팬 민심 (OWNER-12/13) by tier, traits and policy
+
+| tier | traits | policy | seasons | mood at the close: median (p10–p90) | lowest after a round (median career) | rounds below the floor a season | owner fortune at the last close (median, units) | living costs paid a season (median) |
+|---|---|---|---:|---|---:|---:|---:|---:|
+
+### Careers
+
+| tier | traits | policy | country | seed | club | seasons | divisions (seasons) | titles | end |
+|---|---|---|---|---|---|---:|---|---:|---|
+| oil | none | none | FRA | owner-balance-1 | FRA:0:0:4 | 0 |  | 0 | club 1950 |
+
+_10 s_

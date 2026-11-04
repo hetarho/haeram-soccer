@@ -1,0 +1,227 @@
+
+ RUN  v5.0.3 /home/deep/haeram/haeram-soccor-balance
+
+·x···x··xxx·xxxxxxx······xx·····x··········x····································································································································································································································································································································································································································································································································································································································································································xxxx······································································································································································································································································································································
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 20 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |unit| packages/engine/src/facility-parts.test.ts > facility works (→ECON-32) > runs one work per part, the parts side by side, each with its own effect
+AssertionError: expected 1.17 to be close to 1.23, received difference is 0.06000000000000005, but expected 5e-11
+ ❯ packages/engine/src/facility-parts.test.ts:99:32
+     97|     expect(w.trainingGround).toBe(1);
+     98|     expect(w.academyFacility).toBe(2);
+     99|     expect(developmentBase(w)).toBeCloseTo(base + 0.06, 10);
+       |                                ^
+    100|     expect(academyIntakeSize(w)).toBe(intake + 1);
+    101|     // The stand is still being built.
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/20]⎯
+
+ FAIL  |unit| apps/web/src/constants/catalog.test.ts > implemented gameplay relationships > keeps direct actions, start choices, automatic state and unavailable old controls distinct
+AssertionError: expected '직접 선택' to be '현재 변경 불가' // Object.is equality
+
+Expected: "현재 변경 불가"
+Received: "직접 선택"
+
+ ❯ apps/web/src/constants/catalog.test.ts:33:74
+     31|     );
+     32|     for (const id of ['tactics-lineup', 'training-control', 'direction…
+     33|       expect(PLAYER_ACTIONS.find((action) => action.id === id)?.contro…
+       |                                                                          ^
+     34|     expect(find('wage-demand').factors[0]!.control).toBe('자동 변화');
+     35|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/20]⎯
+
+ FAIL  |unit| apps/web/src/constants/catalog.test.ts > causal hierarchy presentation > renders nested numbered factors with practical effects and control availability
+AssertionError: expected '<ol class="_factors_3c22af"><li><div …' to contain '현재 변경 불가'
+
+Expected: "현재 변경 불가"
+Received: "<ol class="_factors_3c22af"><li><div class="_factorHead_3c22af"><strong>구단이 제시하는 연봉</strong><span class="_control_3c22af" data-control="직접 선택">직접 선택</span></div><p>하한 이상이면 합의합니다. 더 많이 주더라도 별도의 성공률 보너스는 없고 인건비가 늘어납니다.</p></li><li><div class="_factorHead_3c22af"><strong>선수의 최소 수락 연봉</strong><span class="_control_3c22af" data-control="자동 변화">자동 변화</span></div><p>요구를 낼 때의 연봉과 협상 호감으로 정해 협상에 저장합니다. 요구액이 높거나 호감이 낮으면 더 많이 제시해야 합니다.</p><ol class="_factors_3c22af"><li><div class="_factorHead_3c22af"><strong>시장 연봉</strong><span class="_control_3c22af" data-control="자동 변화">자동 변화</span></div><p>선수 OVR·나이·잠재력·소속 리그 수준·국가와 시대의 금액 수준으로 계산합니다.</p></li><li><div class="_factorHead_3c22af"><strong>최근 발롱도르 이력·에이전트</strong><span class="_control_3c22af" data-control="자동 변화">자동 변화</span></div><p>수상 프리미엄과 높은 에이전트 등급은 요구액을 올립니다.</p></li><li><div class="_factorHead_3c22af"><strong>선수단 분위기·협상의 달인 특성</strong><span class="_control_3c22af" data-control="자동 변화">자동 변화</span></div><p>요구 생성 때의 좋은 분위기는 양보 폭을 늘리고, 구단주 협상 특성은 요구액을 낮춥니다.</p></li><li><div class="_factorHead_3c22af"><strong>선수단 투자·라커룸 문화·긴축 카드</strong><span class="_control_3c22af" data-control="직접 선택">직접 선택</span></div><p>사무실의 선수단 투자·라커룸 문화·수익 모델이 새 계약의 요구액과 양보 폭에 반영됩니다.</p></li></ol></li><li><div class="_factorHead_3c22af"><strong>제시 계약 기간</strong><span class="_control_3c22af" data-control="직접 선택">직접 선택</span></div><p>여름·겨울에 허용된 기간 안이어야 합니다. 기간은 계약 종료 시점을 바꿉니다.</p></li><li><div class="_factorHead_3c22af"><strong>협상 가능 상태·불만 원인</strong><span class="_control_3c22af" data-control="자동 변화">자동 변화</span></div><p>유효한 협상이나 해소 가능한 계약 불만이 있어야 합니다. 빅클럽 이적 무산 불만은 연봉으로 해결하지 못합니다.</p></li></ol>"
+
+ ❯ apps/web/src/constants/catalog.test.ts:92:20
+     90|     expect(markup).toContain('시장 연봉');
+     91|     expect(markup).toContain('직접 선택');
+     92|     expect(markup).toContain('현재 변경 불가');
+       |                    ^
+     93|     expect(factorCount(factors)).toBe(8);
+     94|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/ClubNavigation.test.ts > the office section bar (→WEB-10/69/112) > lists the three office sections as page tabs with the current one selected
+ FAIL  |unit| apps/web/src/ui/ClubNavigation.test.ts > the office section bar (→WEB-10/69/112) > shows on the office and its working pages, never on 팀, our people, home or competitions
+TypeError: Cannot read properties of undefined (reading 'world')
+ ❯ apps/web/src/ui/ApprovalButtons.tsx:8:49
+      6| /** Shared by the controller and the owner's workspace toolbar. */
+      7| export function ApprovalButtons() {
+      8|   const w = useGameState((state) => state.view!.world);
+       |                                                 ^
+      9|   const requests = approvalRequests(w);
+     10|   const late = overdueSummary(w, requests).overdue;
+ ❯ node_modules/.pnpm/zustand@5.0.15_@types+react@19.3.0_react@19.3.0/node_modules/zustand/esm/react.mjs:9:29
+ ❯ Object.useSyncExternalStore node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:10316:18
+ ❯ Object.process.env.NODE_ENV.exports.useSyncExternalStore node_modules/.pnpm/react@19.3.0/node_modules/react/cjs/react.development.js:1316:34
+ ❯ useStore node_modules/.pnpm/zustand@5.0.15_@types+react@19.3.0_react@19.3.0/node_modules/zustand/esm/react.mjs:6:23
+ ❯ useGameState apps/web/src/runtime/store.ts:92:10
+ ❯ ApprovalButtons apps/web/src/ui/ApprovalButtons.tsx:8:13
+ ❯ Object.react_stack_bottom_frame node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:10371:18
+ ❯ renderWithHooks node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5361:19
+ ❯ renderElement node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5796:23
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/ClubNavigation.test.ts > the office section bar (→WEB-10/69/112) > leads with the office, which opens its queue rather than the home briefing
+AssertionError: expected [ 'business', '오버뷰' ] to deeply equal [ 'business', 'club.section.office' ]
+
+- Expected
++ Received
+
+  [
+    "business",
+-   "club.section.office",
++   "오버뷰",
+  ]
+
+ ❯ apps/web/src/ui/ClubNavigation.test.ts:66:30
+     64|   it('leads with the office, which opens its queue rather than the hom…
+     65|     // The first tab, which Home and the first arrow step reach, is th…
+     66|     expect(CLUB_SECTIONS[0]).toEqual(['business', 'club.section.office…
+       |                              ^
+     67|     expect(CLUB_SECTIONS.map(([id]) => id)).not.toContain('dashboard');
+     68|     const first = render('business').match(/<[^>]*role="tab"[^>]*>/)?.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/ClubNavigation.test.ts > the office section bar (→WEB-10/69/112) > names every section and operations view in each registered locale
+AssertionError: ko-KR 오버뷰: expected false to be truthy
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ apps/web/src/ui/ClubNavigation.test.ts:113:85
+    111|       for (const key of keys) {
+    112|         const message = pack.messages[key];
+    113|         expect(typeof message === 'string' && message.trim(), `${entry…
+       |                                                                                     ^
+    114|       }
+    115|       // Neither the home briefing nor our people are sections, so no …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/Operations.test.ts > owner-office overview navigation > lands a directly addressed overview on the 결재함, where it opens as the modal
+AssertionError: expected '<section class="_overview_a5e7f3" ari…' to contain 'data-testid="approval-queue"'
+
+Expected: "data-testid="approval-queue""
+Received: "<section class="_overview_a5e7f3" aria-label="우리 팀 오버뷰"><header class="_heading_a5e7f3"><div class="_identity_a5e7f3"><svg class="_crest_bf4a44 " width="40" height="48" viewBox="0 0 40 48" aria-hidden="true" focusable="false"><defs><clipPath id="crest-_R_l_"><path d="M4 9L10 4L15 9L20 4L25 9L30 4L36 9V24C36 35 28 41 20 45C12 41 4 35 4 24Z"></path></clipPath></defs><g clip-path="url(#crest-_R_l_)"><rect width="40" height="48" fill="#fcbf49"></rect><path d="M6 0H11V48H6Z M16 0H21V48H16Z M26 0H31V48H26Z" fill="#6f4518"></path></g><path d="M4 9L10 4L15 9L20 4L25 9L30 4L36 9V24C36 35 28 41 20 45C12 41 4 35 4 24Z" fill="none" class="_outline_bf4a44" stroke-width="2.4" stroke-linejoin="round"></path><circle cx="20" cy="25" r="8.6" fill="#fcbf49" stroke="#6f4518" stroke-width="1.8"></circle><path transform="translate(14 19)" d="M6 0.5A5.5 5.5 0 1 1 5.99 0.5ZM6 2A4 4 0 1 0 6.01 2Z M5.3 2.2H6.7V9.8H5.3Z M2.2 5.3H5.3V6.7H2.2Z M6.7 5.3H9.8V6.7H6.7Z" fill="#6f4518" fill-rule="evenodd"></path></svg><div><h2>Norwich Ironworks A1</h2><p>1950/51 시즌 · 4부</p></div></div><span class="_league_a5e7f3">리그 개막 전</span></header><div class="_metrics_a5e7f3"><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">팀 OVR</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3">37</strong><p class="_note_a5e7f3">리그 전력 19/24위</p></div></article><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">1군 선수</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3">20<small>명</small></strong><p class="_note_a5e7f3">유소년 0명 별도</p></div></article><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">출전 가능</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3">20<small> / 20명</small></strong><p class="_note_a5e7f3">부상 0 · 출장 정지 0</p></div></article><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">보유 자금</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3 _money_a5e7f3"><button type="button" class="_money_9a9842 " title="£4,827 15s 6d" aria-label="£4,827 · 정확히 £4,827 15s 6d" aria-expanded="false" data-money="">£4,827</button></strong><p class="_note_a5e7f3" data-tone="good">자금 여력 약 20개월 · 안정</p></div></article></div><div class="_cards_a5e7f3"><article data-ui="card" data-surface="sheet" class="_card_af2e10 _wide_a5e7f3"><header class="_heading_af2e10"><div class="_meta_af2e10">FANS</div><h4 class="_title_af2e10">팬 민심</h4></header><div class="_content_af2e10"><div class="_fans_a5e7f3"><div class="_fanGauge_a5e7f3"><strong class="_value_a5e7f3" data-testid="owner-fan-mood">60<small>/ 100</small></strong><div class="_meter_a5e7f3" role="meter" aria-label="팬 민심" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60" style="--mood:60%;--floor:15%"><span></span></div><p class="_note_a5e7f3">15 아래로 8라운드 이어지면 구단주가 물러나요</p></div></div></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">SQUAD</div><h4 class="_title_af2e10">선수단 구성</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>1군 / 유소년</dt><dd>20명 / 0명</dd></div><div><dt>선수 평균 OVR</dt><dd>37.1</dd></div><div><dt>선수 평균 나이</dt><dd>26.9세</dd></div><div><dt>임대 합류</dt><dd>0명</dd></div><div><dt>리그 등록</dt><dd>20/40</dd></div></dl><p class="_note_a5e7f3">등록 한도 40명 · 추정 · 전체 20/40</p></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">CONDITION</div><h4 class="_title_af2e10">선수단 컨디션</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>선발 평균 피로</dt><dd><span data-tone="good">0 <small>· 상쾌</small></span></dd></div><div><dt>팀 분위기</dt><dd><span data-tone="good">60 <small>· 좋음</small></span></dd></div><div><dt>부상 / 출장 정지</dt><dd>0명 / 0명</dd></div><div><dt>불만 선수</dt><dd>0명</dd></div><div><dt>감독 입지</dt><dd><span data-tone="ok">65 <small>· 안정</small></span></dd></div></dl><p class="_note_a5e7f3">출장 정지는 모든 대회의 잔여 징계를 포함합니다.</p></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">FINANCE</div><h4 class="_title_af2e10">구단 재정</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>시즌 누적 수입</dt><dd><button type="button" class="_money_9a9842 " title="£0 0s 0d" aria-label="£0 · 정확히 £0 0s 0d" aria-expanded="false" data-money="">£0</button></dd></div><div><dt>시즌 누적 지출</dt><dd><button type="button" class="_money_9a9842 " title="£0 0s 0d" aria-label="£0 · 정확히 £0 0s 0d" aria-expanded="false" data-money="">£0</button></dd></div><div><dt>시즌 수지</dt><dd><span><button type="button" class="_money_9a9842 " title="£0 0s 0d" aria-label="£0 · 정확히 £0 0s 0d" aria-expanded="false" data-money="">£0</button></span></dd></div><div><dt>다음 라운드 고정 지출</dt><dd><button type="button" class="_money_9a9842 " title="£54 2s 7d" aria-label="£54 · 정확히 £54 2s 7d" aria-expanded="false" data-money="">£54</button></dd></div><div><dt>연간 고정비</dt><dd><button type="button" class="_money_9a9842 " title="£2,490 2s 2d" aria-label="£2,490 · 정확히 £2,490 2s 2d" aria-expanded="false" data-money="">£2,490</button></dd></div></dl><p class="_note_a5e7f3">자금 여력은 현재 잔고와 고정비 기준이며, 미래 수입은 포함하지 않습니다.</p></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">CLUB</div><h4 class="_title_af2e10">스태프 · 구단 기반</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>감독</dt><dd>Duncan Armstrong</dd></div><div><dt>단장</dt><dd>Howard Moss</dd></div><div><dt>스태프 재직</dt><dd>8 / 8명</dd></div><div><dt>경기장 수용 인원</dt><dd>5,000석</dd></div><div><dt>지역 서포터</dt><dd>6,720명</dd></div><div><dt>구단 평판</dt><dd>30</dd></div></dl><p class="_note_a5e7f3">스태프 인원은 감독을 제외한 직무 기준입니다.</p></div></article></div></section>"
+
+ ❯ apps/web/src/ui/Operations.test.ts:35:18
+     33|     vi.stubGlobal('location', { search: '?view=office' });
+     34|     const html = office();
+     35|     expect(html).toContain('data-testid="approval-queue"');
+       |                  ^
+     36|     expect(html).toContain('<h2>결재함</h2>');
+     37|     expect(html).not.toContain('<section aria-label="결재라인 모아보기">');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/Operations.test.ts > owner-office overview (→WEB-39/44) > opens on the live queue with no room scene, then one read-only club summary
+AssertionError: expected -1 to be greater than -1
+ ❯ apps/web/src/ui/Operations.test.ts:58:19
+     56|       team = html.indexOf('aria-label="팀 현황"'),
+     57|       situation = html.indexOf('data-testid="club-situation"');
+     58|     expect(queue).toBeGreaterThan(-1);
+       |                   ^
+     59|     expect(queue).toBeLessThan(team);
+     60|     expect(team).toBeLessThan(situation);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > keeps every report/delegation/background edit disabled across automatic day calculations
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > renders applied authority pairs with no enclosing dialog or global apply footer
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > allows manual with match eve off and hides only background controls
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > marks the bulk choice only when all rows are direct
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > marks the bulk choice only when all rows are delegated
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > scopes each player work confirmation to its single saved responsibility
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > shares the editor with each desk without exposing unrelated authority or background settings
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > disables every mutation in readonly state
+TypeError: Cannot read properties of undefined (reading 'findIndex')
+ ❯ clubOf packages/engine/src/player-state.ts:19:25
+     17|   const known = ownIndex.get(w.clubs);
+     18|   if (known !== undefined && w.clubs[known]?.id === w.playerClub) retu…
+     19|   const index = w.clubs.findIndex((c) => c.id === w.playerClub);
+       |                         ^
+     20|   ownIndex.set(w.clubs, index);
+     21|   return w.clubs[index]!;
+ ❯ WageBudgetSetting apps/web/src/ui/ClubSettingControl.tsx:192:16
+ ❯ Object.react_stack_bottom_frame node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:10371:18
+ ❯ renderWithHooks node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5361:19
+ ❯ renderElement node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:5796:23
+ ❯ retryNode node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6783:21
+ ❯ renderNodeDestructive node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6717:11
+ ❯ renderNode node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:7268:18
+ ❯ renderChildrenArray node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:7029:11
+ ❯ retryNode node_modules/.pnpm/react-dom@19.3.0_react@19.3.0/node_modules/react-dom/cjs/react-dom-server-legacy.node.development.js:6796:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > only proposes a changed explicit choice; inspecting an applied choice submits nothing
+AssertionError: expected 'choices' to be 'secondary' // Object.is equality
+
+Expected: "secondary"
+Received: "choices"
+
+ ❯ apps/web/src/ui/OwnerOffice.test.ts:167:41
+    165|     });
+    166|     const choices = row.props.children[1].props.children;
+    167|     expect(choices[1].props['data-ui']).toBe('secondary');
+       |                                         ^
+    168|     expect(choices[0].props['data-ui']).toBeUndefined();
+    169|     choices[1].props.onClick();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/OwnerOffice.test.ts > owner office page > fills only applied office choices, leaving a mixed bulk choice unselected
+AssertionError: expected 'choices' to be undefined
+
+- Expected:
+undefined
+
++ Received:
+"choices"
+
+ ❯ apps/web/src/ui/OwnerOffice.test.ts:185:60
+    183|       });
+    184|       const buttons = row.props.children[1].props.children;
+    185|       expect(buttons[Number(!delegated)].props['data-ui']).toBeUndefin…
+       |                                                            ^
+    186|       expect(buttons[Number(delegated)].props['aria-pressed']).toBe(tr…
+    187|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/20]⎯
+
+ FAIL  |unit| apps/web/src/ui/managementLock.test.ts > management screen calendar locks > locks the 결재함's 직접/위임 over automatic ticks, keeping its titles open, with no quick actions
+AssertionError: expected '<section class="_overview_a5e7f3" ari…' to contain 'aria-label="결재 항목"'
+
+Expected: "aria-label="결재 항목""
+Received: "<section class="_overview_a5e7f3" aria-label="우리 팀 오버뷰"><header class="_heading_a5e7f3"><div class="_identity_a5e7f3"><svg class="_crest_bf4a44 " width="40" height="48" viewBox="0 0 40 48" aria-hidden="true" focusable="false"><defs><clipPath id="crest-_R_l_"><path d="M4 4H36V31C36 35 33 38 29 38H24L20 45L16 38H11C7 38 4 35 4 31Z"></path></clipPath></defs><g clip-path="url(#crest-_R_l_)"><rect width="40" height="48" fill="#c9184a"></rect><path d="M20 0H40V48H20Z" fill="#c8a27a"></path></g><path d="M4 4H36V31C36 35 33 38 29 38H24L20 45L16 38H11C7 38 4 35 4 31Z" fill="none" class="_outline_bf4a44" stroke-width="2.4" stroke-linejoin="round"></path><circle cx="20" cy="25" r="8.6" fill="#c9184a" stroke="#c8a27a" stroke-width="1.8"></circle><path transform="translate(14 19)" d="M1.5 0.5H3.5V2H5V0.5H7V2H8.5V0.5H10.5V4H9.5V11.5H2.5V4H1.5Z M5 8V11.5H7V8A1 1 0 0 0 5 8Z" fill="#c8a27a" fill-rule="evenodd"></path></svg><div><h2>Oxford Railway A1</h2><p>1950/51 시즌 · 4부</p></div></div><span class="_league_a5e7f3">리그 개막 전</span></header><div class="_metrics_a5e7f3"><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">팀 OVR</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3">41</strong><p class="_note_a5e7f3">리그 전력 17/24위</p></div></article><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">1군 선수</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3">20<small>명</small></strong><p class="_note_a5e7f3">유소년 0명 별도</p></div></article><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">출전 가능</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3">20<small> / 20명</small></strong><p class="_note_a5e7f3">부상 0 · 출장 정지 0</p></div></article><article data-ui="card" data-surface="detail" class="_card_af2e10 _metric_a5e7f3"><header class="_heading_af2e10"><h4 class="_title_af2e10">보유 자금</h4></header><div class="_content_af2e10"><strong class="_value_a5e7f3 _money_a5e7f3"><button type="button" class="_money_9a9842 " title="£4,166,666,666 13s 3d" aria-label="£4.16B · 정확히 £4,166,666,666 13s 3d" aria-expanded="false" data-money="">£4.16B</button></strong><p class="_note_a5e7f3" data-tone="good">자금 여력 1년 이상 · 안정</p></div></article></div><div class="_cards_a5e7f3"><article data-ui="card" data-surface="sheet" class="_card_af2e10 _wide_a5e7f3"><header class="_heading_af2e10"><div class="_meta_af2e10">FANS</div><h4 class="_title_af2e10">팬 민심</h4></header><div class="_content_af2e10"><div class="_fans_a5e7f3"><div class="_fanGauge_a5e7f3"><strong class="_value_a5e7f3" data-testid="owner-fan-mood">60<small>/ 100</small></strong><div class="_meter_a5e7f3" role="meter" aria-label="팬 민심" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60" style="--mood:60%;--floor:15%"><span></span></div><p class="_note_a5e7f3">15 아래로 8라운드 이어지면 구단주가 물러나요</p></div></div></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">SQUAD</div><h4 class="_title_af2e10">선수단 구성</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>1군 / 유소년</dt><dd>20명 / 0명</dd></div><div><dt>선수 평균 OVR</dt><dd>41.1</dd></div><div><dt>선수 평균 나이</dt><dd>26.9세</dd></div><div><dt>임대 합류</dt><dd>0명</dd></div><div><dt>리그 등록</dt><dd>20/40</dd></div></dl><p class="_note_a5e7f3">등록 한도 40명 · 추정 · 전체 20/40</p></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">CONDITION</div><h4 class="_title_af2e10">선수단 컨디션</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>선발 평균 피로</dt><dd><span data-tone="good">0 <small>· 상쾌</small></span></dd></div><div><dt>팀 분위기</dt><dd><span data-tone="good">60 <small>· 좋음</small></span></dd></div><div><dt>부상 / 출장 정지</dt><dd>0명 / 0명</dd></div><div><dt>불만 선수</dt><dd>0명</dd></div><div><dt>감독 입지</dt><dd><span data-tone="ok">65 <small>· 안정</small></span></dd></div></dl><p class="_note_a5e7f3">출장 정지는 모든 대회의 잔여 징계를 포함합니다.</p></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">FINANCE</div><h4 class="_title_af2e10">구단 재정</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>시즌 누적 수입</dt><dd><button type="button" class="_money_9a9842 " title="£0 0s 0d" aria-label="£0 · 정확히 £0 0s 0d" aria-expanded="false" data-money="">£0</button></dd></div><div><dt>시즌 누적 지출</dt><dd><button type="button" class="_money_9a9842 " title="£0 0s 0d" aria-label="£0 · 정확히 £0 0s 0d" aria-expanded="false" data-money="">£0</button></dd></div><div><dt>시즌 수지</dt><dd><span><button type="button" class="_money_9a9842 " title="£0 0s 0d" aria-label="£0 · 정확히 £0 0s 0d" aria-expanded="false" data-money="">£0</button></span></dd></div><div><dt>다음 라운드 고정 지출</dt><dd><button type="button" class="_money_9a9842 " title="£59 6s 4d" aria-label="£59 · 정확히 £59 6s 4d" aria-expanded="false" data-money="">£59</button></dd></div><div><dt>연간 고정비</dt><dd><button type="button" class="_money_9a9842 " title="£2,728 14s 5d" aria-label="£2,728 · 정확히 £2,728 14s 5d" aria-expanded="false" data-money="">£2,728</button></dd></div></dl><p class="_note_a5e7f3">자금 여력은 현재 잔고와 고정비 기준이며, 미래 수입은 포함하지 않습니다.</p></div></article><article data-ui="card" data-surface="sheet" class="_card_af2e10 "><header class="_heading_af2e10"><div class="_meta_af2e10">CLUB</div><h4 class="_title_af2e10">스태프 · 구단 기반</h4></header><div class="_content_af2e10"><dl class="_facts_a5e7f3"><div><dt>감독</dt><dd>Peter McCarthy</dd></div><div><dt>단장</dt><dd>Michael Osborne</dd></div><div><dt>스태프 재직</dt><dd>8 / 8명</dd></div><div><dt>경기장 수용 인원</dt><dd>10,000석</dd></div><div><dt>지역 서포터</dt><dd>8,000명</dd></div><div><dt>구단 평판</dt><dd>30</dd></div></dl><p class="_note_a5e7f3">스태프 인원은 감독을 제외한 직무 기준입니다.</p></div></article></div></section>"
+
+ ❯ apps/web/src/ui/managementLock.test.ts:221:22
+    219|       gameStore.setState({ processing });
+    220|       const markup = renderToStaticMarkup(office());
+    221|       expect(markup).toContain('aria-label="결재 항목"');
+       |                      ^
+    222|       const entries = buttons(markup);
+    223|       expect(entries.filter((button) => button.label.includes('바로 할 수 …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/20]⎯
+
+
+ Test Files  6 failed | 108 passed (114)
+      Tests  20 failed | 1030 passed (1050)
+   Start at  18:51:30
+   Duration  141.64s (tests 86%, import 13%, transform 1%)
+

@@ -1,0 +1,102 @@
+[
+ {
+  "name": "prepare-1",
+  "code": 0,
+  "seconds": 23.363
+ },
+ {
+  "name": "prepare-0",
+  "code": 0,
+  "seconds": 23.713
+ },
+ {
+  "name": "released-3",
+  "code": 0,
+  "seconds": 150.872
+ },
+ {
+  "name": "released-0",
+  "code": 0,
+  "seconds": 154.776
+ },
+ {
+  "name": "released-1",
+  "code": 0,
+  "seconds": 155.039
+ },
+ {
+  "name": "released-2",
+  "code": 0,
+  "seconds": 155.39
+ },
+ {
+  "name": "candidate-3",
+  "code": 0,
+  "seconds": 176.93
+ },
+ {
+  "name": "candidate-2",
+  "code": 0,
+  "seconds": 178.165
+ },
+ {
+  "name": "candidate-0",
+  "code": 0,
+  "seconds": 180.806
+ },
+ {
+  "name": "candidate-1",
+  "code": 0,
+  "seconds": 181.652
+ },
+ {
+  "name": "career-oil-ENG-1",
+  "code": 0,
+  "seconds": 912.016
+ },
+ {
+  "name": "career-oil-ENG-0",
+  "code": 0,
+  "seconds": 940.33
+ },
+ {
+  "name": "career-oil-FRA-0",
+  "code": 0,
+  "seconds": 882.251
+ },
+ {
+  "name": "career-oil-FRA-1",
+  "code": 0,
+  "seconds": 897.714
+ },
+ {
+  "name": "career-oil-ESP-1",
+  "code": 0,
+  "seconds": 910.609
+ },
+ {
+  "name": "career-oil-GER-0",
+  "code": 0,
+  "seconds": 893.044
+ },
+ {
+  "name": "career-oil-ESP-0",
+  "code": 0,
+  "seconds": 921.034
+ },
+ {
+  "name": "career-midsize-ENG-1",
+  "code": 0,
+  "seconds": 910.465
+ },
+ {
+  "name": "career-oil-GER-1",
+  "code": 0,
+  "seconds": 915.755
+ },
+ {
+  "name": "career-midsize-ENG-0",
+  "code": 0,
+  "seconds": 941.885
+ }
+]

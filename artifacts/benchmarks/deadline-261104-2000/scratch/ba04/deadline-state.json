@@ -1,0 +1,19 @@
+{
+  "deadline": "2026-11-04T20:00:00+09:00",
+  "branch": "wip/bd0420",
+  "receipts": [
+    {
+      "label": "initial-preservation",
+      "branch": "wip/bd0420",
+      "commit": "1a798ce78c0b3155d779593411b771520e05e9d5",
+      "remoteConfirmed": true,
+      "rawSnapshot": "59b51f327dc3638c3939549dd2e5da2e202a276b",
+      "files": 202,
+      "totalBytes": 2697429,
+      "capturedAt": "2026-11-04T09:30:14.930Z",
+      "pushedAt": "2026-11-04T09:30:22.523Z",
+      "loopRunning": true,
+      "completedUnits": 2
+    }
+  ]
+}

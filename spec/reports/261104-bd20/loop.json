@@ -1,0 +1,119 @@
+{
+  "tag": "ba04",
+  "startedAt": "2026-11-04T07:00:14.854Z",
+  "units": 7,
+  "running": true,
+  "reason": null,
+  "error": null,
+  "report": "spec/reports/261104-ba04.md",
+  "priorityTask": null,
+  "recovery": null,
+  "dispatches": [
+    {
+      "unit": 1,
+      "head": "20e7040552d608b001d44cb5b0ae7fa8e298991b",
+      "at": "2026-11-04T07:10:34.743Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "planning",
+        "id": "T693",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "implementation: T693 (CLUB r52 era star pay spread, explore 150m: baseline books + every tier's reference careers on released source first, then calibrate/hold out); then plan organic lower-club growth on T693's baseline. Spec-only planning commit bb7a1e55 published to origin/next as 2e0f0241 via plan-push (merged back 20e70405); no code pushed, report left to host."
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/a67eb0b0-7208-4795-a503-0fb6fe76a8c9.log"
+    },
+    {
+      "unit": 2,
+      "head": "12a3b32de6c8513354ea93631c33b9b163904edd",
+      "at": "2026-11-04T09:26:18.871Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "task",
+        "id": "T693",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "fix: released main's pre-existing typecheck/format/unit failures (inbox suggest ARCH-30), then planning: CLUB-48 revision from T693 (inbox suggest CLUB-48 LEAGUE-10), then the lower-club growth slice"
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/e2a13760-c2f3-422a-8d4a-d720c2146867.log"
+    },
+    {
+      "unit": 3,
+      "head": "44f68bf99e1cefd472811e71ede01614ef3ea359",
+      "at": "2026-11-04T09:31:40.045Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "planning",
+        "id": "T694",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "implement-task T694"
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/a3857a70-ddb5-4c37-9fe8-adbdf2206e30.log"
+    },
+    {
+      "unit": 4,
+      "head": "e5c625b925032f1e91638f1672aa8715058cf5db",
+      "at": "2026-11-04T09:47:36.722Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "task",
+        "id": "T694",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "fix"
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/d83029f2-4dac-474c-998a-01167682f60b.log"
+    },
+    {
+      "unit": 5,
+      "head": "057fa080c0c4888ec485b97f9b46c76a4bd6c3ea",
+      "at": "2026-11-04T10:03:18.035Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "planning",
+        "id": "T695",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "implement-task T695"
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/0bf733cd-2218-4f80-82c9-d161c3f93d1e.log"
+    },
+    {
+      "unit": 6,
+      "head": "8c2457a2ccb6fadd3dc98a5897e1bc112b84e2b4",
+      "at": "2026-11-04T10:12:54.656Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "task",
+        "id": "T695",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "planning: update-ssot CLUB LEAGUE + create-task for CLUB-48's second mechanism (a club nobody owns keeps only the stars its books pay), re-reading the spread's pre-1990 anchors on T694's books; do not implement T689 next. T695 is done: merge 9c33cfd5 brings in released main fb868d3d, and done commit 8c2457a2 adds owner-controls.test.ts. Typecheck, lint, format and 2,112 merge-related unit tests pass. policy.test.ts and bases.test.ts (integration tier), contract, e2e and build were not run here and are left to the host's final gate."
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/8bcf362e-56ea-496e-810b-fc5ee1c7a7e7.log"
+    },
+    {
+      "unit": 7,
+      "head": "44a341eee0f2622155621682abf6975e5e75bfc6",
+      "at": "2026-11-04T10:22:48.520Z",
+      "exitCode": 0,
+      "result": {
+        "kind": "planning",
+        "id": "T696",
+        "outcome": "completed",
+        "pushed": false,
+        "next": "implementation"
+      },
+      "stopped": null,
+      "log": "/home/deep/haeram/haeram-soccor/.git/haeram/v1/loops/ba04/b1b52089-5cbe-4933-9cee-97e52a32a897.log"
+    }
+  ],
+  "batches": []
+}

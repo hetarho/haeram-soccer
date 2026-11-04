@@ -1,0 +1,242 @@
+[
+ {
+  "name": "local-FRA-0",
+  "code": 0,
+  "minutes": 14.128083333333333
+ },
+ {
+  "name": "local-GER-0",
+  "code": 0,
+  "minutes": 14.380966666666666
+ },
+ {
+  "name": "local-FRA-1",
+  "code": 0,
+  "minutes": 14.444616666666667
+ },
+ {
+  "name": "selfmade-ESP-0",
+  "code": 0,
+  "minutes": 0.0418
+ },
+ {
+  "name": "local-ESP-1",
+  "code": 0,
+  "minutes": 14.66815
+ },
+ {
+  "name": "local-ESP-0",
+  "code": 0,
+  "minutes": 14.78515
+ },
+ {
+  "name": "local-ENG-1",
+  "code": 0,
+  "minutes": 15.1973
+ },
+ {
+  "name": "selfmade-ESP-1",
+  "code": 0,
+  "minutes": 0.025033333333333335
+ },
+ {
+  "name": "local-ENG-0",
+  "code": 0,
+  "minutes": 15.25315
+ },
+ {
+  "name": "selfmade-FRA-0",
+  "code": 0,
+  "minutes": 14.831
+ },
+ {
+  "name": "local-GER-1",
+  "code": 0,
+  "minutes": 15.191133333333333
+ },
+ {
+  "name": "selfmade-GER-1",
+  "code": 0,
+  "minutes": 14.825933333333333
+ },
+ {
+  "name": "selfmade-FRA-1",
+  "code": 0,
+  "minutes": 15.213283333333333
+ },
+ {
+  "name": "selfmade-GER-0",
+  "code": 0,
+  "minutes": 15.82675
+ },
+ {
+  "name": "selfmade-ENG-0",
+  "code": 0,
+  "minutes": 16.326716666666666
+ },
+ {
+  "name": "selfmade-ENG-1",
+  "code": 0,
+  "minutes": 16.422983333333335
+ },
+ {
+  "name": "midsize-ESP-0",
+  "code": 0,
+  "minutes": 15.256816666666667
+ },
+ {
+  "name": "midsize-FRA-0",
+  "code": 0,
+  "minutes": 14.744416666666666
+ },
+ {
+  "name": "midsize-GER-0",
+  "code": 0,
+  "minutes": 14.6621
+ },
+ {
+  "name": "midsize-ENG-0",
+  "code": 0,
+  "minutes": 15.859866666666667
+ },
+ {
+  "name": "midsize-FRA-1",
+  "code": 0,
+  "minutes": 14.659916666666666
+ },
+ {
+  "name": "midsize-ENG-1",
+  "code": 0,
+  "minutes": 15.504666666666667
+ },
+ {
+  "name": "midsize-ESP-1",
+  "code": 0,
+  "minutes": 15.824166666666667
+ },
+ {
+  "name": "midsize-GER-1",
+  "code": 0,
+  "minutes": 15.509616666666666
+ },
+ {
+  "name": "industrial-FRA-0",
+  "code": 0,
+  "minutes": 15.577983333333334
+ },
+ {
+  "name": "industrial-ENG-0",
+  "code": 0,
+  "minutes": 16.193066666666667
+ },
+ {
+  "name": "industrial-ESP-0",
+  "code": 0,
+  "minutes": 15.922416666666667
+ },
+ {
+  "name": "industrial-ENG-1",
+  "code": 0,
+  "minutes": 16.093833333333333
+ },
+ {
+  "name": "industrial-ESP-1",
+  "code": 0,
+  "minutes": 15.569466666666667
+ },
+ {
+  "name": "industrial-GER-0",
+  "code": 0,
+  "minutes": 16.433516666666666
+ },
+ {
+  "name": "industrial-FRA-1",
+  "code": 0,
+  "minutes": 14.60475
+ },
+ {
+  "name": "industrial-GER-1",
+  "code": 0,
+  "minutes": 14.9412
+ },
+ {
+  "name": "chaebol-ESP-0",
+  "code": 0,
+  "minutes": 15.714683333333333
+ },
+ {
+  "name": "chaebol-GER-0",
+  "code": 0,
+  "minutes": 14.721683333333333
+ },
+ {
+  "name": "chaebol-ENG-0",
+  "code": 0,
+  "minutes": 15.862833333333333
+ },
+ {
+  "name": "chaebol-FRA-0",
+  "code": 0,
+  "minutes": 14.931883333333333
+ },
+ {
+  "name": "oil-ESP-0",
+  "code": 0,
+  "minutes": 0.2607833333333333
+ },
+ {
+  "name": "oil-FRA-0",
+  "code": 0,
+  "minutes": 0.22683333333333333
+ },
+ {
+  "name": "oil-GER-0",
+  "code": 0,
+  "minutes": 0.8383833333333334
+ },
+ {
+  "name": "oil-ESP-1",
+  "code": 0,
+  "minutes": 0.33995
+ },
+ {
+  "name": "oil-FRA-1",
+  "code": 0,
+  "minutes": 0.19143333333333334
+ },
+ {
+  "name": "chaebol-ENG-1",
+  "code": 0,
+  "minutes": 16.368583333333333
+ },
+ {
+  "name": "oil-GER-1",
+  "code": 0,
+  "minutes": 0.20421666666666666
+ },
+ {
+  "name": "chaebol-ESP-1",
+  "code": 0,
+  "minutes": 15.33845
+ },
+ {
+  "name": "chaebol-FRA-1",
+  "code": 0,
+  "minutes": 14.395033333333334
+ },
+ {
+  "name": "chaebol-GER-1",
+  "code": 0,
+  "minutes": 14.1171
+ },
+ {
+  "name": "oil-ENG-0",
+  "code": 0,
+  "minutes": 15.3093
+ },
+ {
+  "name": "oil-ENG-1",
+  "code": 0,
+  "minutes": 15.19115
+ }
+]
