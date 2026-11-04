@@ -726,7 +726,8 @@ const request = z.strictObject({
 const shortlist = z.strictObject({
   year: season,
   day: z.number().int().min(0).max(400),
-  entries: z.array(z.strictObject({ playerId: id, line })).max(12),
+  // At most five per line: an 80+ chief scout's four and a scouting card's one more (→CLUB-51).
+  entries: z.array(z.strictObject({ playerId: id, line })).max(20),
   requests: z.array(request).max(3),
   window: z
     .strictObject({

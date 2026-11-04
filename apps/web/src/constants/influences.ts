@@ -345,7 +345,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         ],
         [
           ...src('market-prices', 'marketValueUnits', 'transferPremium'),
-          ...src('ops-squad', 'transferOffers'),
+          ...src('scout-search', 'transferOffers'),
         ],
         [
           link('bid-acceptance', '같은 제시액도 요구액이 높으면 수락에 불리'),
@@ -396,7 +396,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '이적료가 없거나 적어도 인원 제한과 연봉 부담이 사라지는 것은 아닙니다.',
           ),
         ],
-        src('ops-squad', 'squadCommand', 'transferOffers'),
+        [...src('ops-squad', 'squadCommand'), ...src('scout-search', 'transferOffers')],
         [
           link('operating-cost', '연봉 부담 발생'),
           link('team-selection', '임대 종료 때 선수층 감소 가능'),
@@ -478,15 +478,18 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
       ),
       o(
         'scouting',
-        '스카우트 후보 수·질과 정보 정확도',
+        '스카우트가 찾는 범위와 정보 정확도',
         '복합 판정',
         '어떤 후보를 만나는지와 성격을 얼마나 좁게 알 수 있는지를 구분합니다.',
         [
-          f('스카우트 능력·발굴 특성·공석', '후보 수와 잠재력 보정을 바꿉니다.'),
+          f(
+            '스카우트 능력·발굴 특성·공석',
+            '국내 탐색 범위와 라인마다 올리는 인원, 젊은 선수의 정렬을 바꿉니다. 선수를 만들거나 기량을 올리지 않습니다.',
+          ),
           f('원석 감별사 구단주 특성', '타 구단 선수의 성격 추정 범위를 좁힙니다.'),
           direct(
             '영입 기조·스카우팅 카드·해외 스카우트망',
-            '후보의 연령·기량 범위·해외 후보 조건에 작용합니다.',
+            '찾는 연령·기량 범위와 정렬, 해외 1부 리그 범위에 작용합니다.',
           ),
           f(
             '자리·역할·적응도와 현재 주전',
@@ -494,7 +497,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('staff', 'applyDepartment'),
+          ...src('scout-search', 'scoutReach', 'transferOffers'),
           ...src('player', 'personalityRange'),
           ...src('recruitment', 'recruitmentFit'),
         ],

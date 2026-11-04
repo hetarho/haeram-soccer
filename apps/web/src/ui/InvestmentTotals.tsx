@@ -124,33 +124,33 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
     }
     case 'scouting': {
       const staff = office.staff;
-      const build = buildEffects(w);
       const synergy = office.synergy;
+      const scout = office.scout;
       return {
         meta: `${POLICY_INFO.globalScouting.levels[policy.globalScouting - 1].name} · 현재 스카우팅 환경`,
         rows: [
           ['연간 투자', money(policyCost('globalScouting'))],
+          ['국내 탐색', scout.homeLabel],
+          ['해외 탐색', scout.abroad.length ? `${scout.abroad.length}개국 1부 리그` : '하지 않음'],
+          ['라인마다 명단', `${scout.perLine}명 · 해외 몫 ${scout.abroadPlaces}명`],
           [
-            '영입 후보 인원',
-            `${Math.max(4, staff.scoutCandidates + build.marketCandidates + effects.scoutCandidates)}명`,
+            '찾는 선수',
+            `${scout.age[0]}–${scout.age[1]}세 · 능력 ${scout.ability[0]}–${scout.ability[1]}`,
           ],
-          ['해외 후보', `${effects.scoutCandidates}명`],
           [
-            '잠재력 보정',
-            signed(
-              staff.scoutPotential +
-                build.marketPotential +
-                synergy.marketPotential +
-                effects.scoutPotential,
-            ),
+            '정렬',
+            scout.potentialFirst === 'all'
+              ? '잠재력 먼저'
+              : scout.potentialFirst === 'young'
+                ? `${scout.youngAge}세 이하는 잠재력 먼저`
+                : '능력 먼저',
           ],
-          ['능력 보정', signed(build.marketAbility)],
           [
             '협상 비용 배율',
             times(staff.feeMultiplier * synergy.feeMultiplier * askedFeeFactor(w)),
           ],
         ],
-        note: '스카우트·망·방식·구단 시너지의 상시 효과를 합산합니다. 후보의 나이·유형은 결재 설정의 선수 영입 지침에서 정하며, 기조 자체는 이적료를 보정하지 않습니다.',
+        note: '수석 스카우트는 실제로 있는 다른 구단 선수와 자유계약 선수 중에서 찾아요. 스카우트 능력이 국내 범위와 인원을, 해외 스카우트망이 해외 범위를, 방향 카드가 인원·능력 범위·정렬을 바꿔요. 기조 자체는 이적료를 보정하지 않습니다.',
       };
     }
     case 'community': {

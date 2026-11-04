@@ -66,7 +66,7 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { handTo, holdRows, staffAuthority } from './testing';
+import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -1058,12 +1058,22 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     const w = world();
     w.cash = '999999999999';
     w.calendar = { day: 10 };
-    const offers = transferOffers(w);
-    operate(w, { type: 'recruit', candidate: 0 });
-    operate(w, { type: 'recruit', candidate: 1, loan: true });
-    const free = w.players.find((p) => p.id === offers[0].player.id)!,
-      loaned = w.players.find((p) => p.id === offers[1].player.id)!;
-    expect(free.clauses).toEqual(settleClauses(w.seed, free, free.agent!, w.year, currentDay(w)));
+    const offers = transferOffers(w),
+      agent = offers.find((o) => o.freeAgent)!,
+      club = offers.find((o) => !o.freeAgent)!;
+    // A free agent signs at once; another club's player joins on loan through an accepted bid.
+    operate(w, { type: 'recruit', candidate: offers.indexOf(agent) });
+    buyOffer(
+      w,
+      transferOffers(w).findIndex((o) => o.player.id === club.player.id),
+      true,
+    );
+    const free = w.players.find((p) => p.id === agent.player.id)!,
+      loaned = w.players.find((p) => p.id === club.player.id)!;
+    // An able free agent is a Ballon d'Or star whose contract may carry its bonus (→CLUB-29).
+    expect(free.clauses).toEqual(
+      settleClauses(w.seed, free, free.agent!, w.year, currentDay(w), ballonDorStar(w, free)),
+    );
     expect(loaned.clauses).toBeUndefined();
     const prospect = makePlayer('ENG', w.seed, 'academy:clauses', w.year, 45, 'CM', 17);
     w.academy = { players: [prospect] };

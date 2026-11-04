@@ -13,6 +13,7 @@ import { judgePromises, cancelPromises } from './promises';
 import { lineOf } from './player';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { careerWorld } from './career.testkit';
+import { buyOffer } from './testing';
 function fixture(winter = false, line: 'MF' | 'GK' = 'MF') {
   const w = careerWorld({ seed: 'promise' });
   if (winter) {
@@ -75,7 +76,9 @@ describe('fixed-deadline reinforcement commitments', () => {
       );
       expect(index).toBeGreaterThanOrEqual(0);
       const id = offers[index].player.id;
-      operate(w, { type: 'recruit', candidate: index, ...(kind === 'loan' ? { loan: true } : {}) });
+      // A free agent signs at once; another club's player through his club's accepted bid.
+      if (kind === 'free') operate(w, { type: 'recruit', candidate: index });
+      else buyOffer(w, index, kind === 'loan');
       const player = w.players.find((p) => p.id === id)!;
       player.status = 'sold';
       judgePromises(w);

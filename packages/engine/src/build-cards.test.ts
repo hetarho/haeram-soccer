@@ -57,9 +57,14 @@ const HELPS: Partial<Record<keyof BuildEffects, 1 | -1>> = {
   academyIntake: 1,
   academyPotential: 1,
   youthGrowth: 1,
-  marketCandidates: 1,
-  marketPotential: 1,
-  marketAbility: 1,
+  // The scout's search (→CLUB-51): listing more, an abler band, reach abroad and prospects first
+  // help; listing nobody abroad and never ranking potential first cost.
+  scoutPerLine: 1,
+  scoutAbilityShift: 1,
+  scoutAbroadExtra: 1,
+  scoutPotentialFirst: 1,
+  scoutNeverPotentialFirst: -1,
+  scoutNoAbroad: -1,
   incomingBids: 1,
   saleFee: 1,
   sponsor: 1,
@@ -283,7 +288,9 @@ describe('club builds', () => {
       member.role === 'scout' ? { ...member, ability: 65 } : member,
     );
     expect(state().active).toBe(true);
-    expect(synergyEffects(w)).toMatchObject({ academyPotential: 2, marketPotential: 2 });
+    // Its bonus is the intake's: a setting never makes a found player abler (→CLUB-50).
+    expect(synergyEffects(w)).toMatchObject({ academyPotential: 2 });
+    expect(synergyEffects(w)).not.toHaveProperty('marketPotential');
   });
 
   it('founds with a preset as its direction; absent stays 기본 방향, unknown is refused', () => {
@@ -343,7 +350,8 @@ describe('club builds', () => {
     expect(gateProjection(community).attendanceHigh).toBeGreaterThanOrEqual(
       gateProjection(plain).attendanceHigh,
     );
-    expect(transferOffers(network).length).toBe(transferOffers(plain).length + 3);
+    // 광역 네트워크 lists one more per line (→CLUB-51), each one a player the world holds.
+    expect(transferOffers(network).length).toBe(transferOffers(plain).length + 4);
     expect(buildEffects(plain)).toMatchObject({ sponsor: 1, saleFee: 1, gateDemand: 0 });
   });
 });

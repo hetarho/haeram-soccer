@@ -35,6 +35,11 @@ import {
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { TICKET_LEVELS } from '../../../../packages/engine/src/tickets';
+import {
+  SCOUT_CONFIG,
+  SCOUT_HOME_LABEL,
+  scoutReach,
+} from '../../../../packages/engine/src/scout-search';
 
 /** Quoted costs and current effects are computed on the worker, then sent as ordinary view data. */
 export function officeRead(w: World) {
@@ -91,6 +96,10 @@ export function officeRead(w: World) {
       limit: ACADEMY_LIMIT,
     },
     synergy: synergyEffects(w),
+    scout: (() => {
+      const reach = scoutReach(w);
+      return { ...reach, homeLabel: SCOUT_HOME_LABEL[reach.home], youngAge: SCOUT_CONFIG.youngAge };
+    })(),
     bases: baseEffects(w),
     localSupporters: localSupporters(w),
     moraleBaseline: moraleBaseline(w),

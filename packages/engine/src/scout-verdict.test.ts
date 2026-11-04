@@ -7,7 +7,7 @@ import { recruitmentFit, type TransferOffer } from './recruitment';
 import { scoutVerdict, VERDICT_CONFIG } from './scout-verdict';
 import { shortLines } from './signings';
 import { squad, startingSquad } from './world';
-import { transferOffers } from './ops-squad';
+import { transferOffers } from './scout-search';
 import { worldMarketDetail } from './world-market';
 import { worldMarketFixture } from './world-market.testkit';
 import { careerWorld } from './career.testkit';

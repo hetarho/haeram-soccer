@@ -10,7 +10,6 @@ import {
   marketingFanGain,
   marketWage,
   moneyLabel,
-  operate,
   operatingCosts,
   overall,
   POLICY_DEFAULTS,
@@ -29,6 +28,9 @@ import {
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { buyOffer } from './testing';
+import { marketValueAt } from './market-prices';
+import { clubById } from './world';
 
 /** The club on the pre-feature path: club policy, not the match model, is the subject. */
 function world(policy?: Partial<ClubPolicy>) {
@@ -60,10 +62,7 @@ function academy(policy?: Partial<ClubPolicy>) {
 const sum = (values: number[]) => values.reduce((total, value) => total + value, 0);
 const developed = (w: World) => sum(w.players.map((player) => player.developed || 0));
 const fatigue = (w: World) => sum(w.players.map((player) => player.fatigue));
-const offerFees = (w: World) =>
-  transferOffers(w)
-    .slice(1)
-    .reduce((total, offer) => total + BigInt(offer.fee), 0n);
+const mean = (values: number[]) => sum(values) / values.length;
 const withoutPolicy = (w: World) => canonical({ ...w, policy: undefined });
 /** `w` after `rounds` unobserved rounds. */
 function played(w: World, rounds: number) {
@@ -143,15 +142,13 @@ describe('club operating policy', () => {
       investUnits: 0,
       fanGrowth: 0,
       gateBoost: 0,
-      scoutCandidates: 0,
-      scoutPotential: 0,
       baseTargets: { local: 0, global: 0 },
       tour: 0,
       academyUnits: 0,
       academyIntake: 0,
       academyPotential: 0,
       academyGrowth: 1,
-      offer: { ability: [40, 85], age: [18, 30], potentialBonus: 0 },
+      offer: { ability: [40, 85], age: [18, 30], potentialFirst: false },
     });
   });
 
@@ -234,28 +231,42 @@ describe('club operating policy', () => {
       balanced = world(),
       veterans = world({ recruitment: 5 });
     const ages = (w: World) => transferOffers(w).map((offer) => w.year - offer.player.born);
-    const ability = (w: World) => sum(transferOffers(w).map((offer) => overall(offer.player)));
+    const ability = (w: World) => mean(transferOffers(w).map((offer) => overall(offer.player)));
     const headroom = (w: World) =>
-      sum(transferOffers(w).map((offer) => offer.player.potential - overall(offer.player)));
+      mean(transferOffers(w).map((offer) => offer.player.potential - overall(offer.player)));
     expect(Math.max(...ages(prospects))).toBeLessThanOrEqual(21);
     expect(Math.min(...ages(prospects))).toBeGreaterThanOrEqual(17);
     expect(Math.min(...ages(veterans))).toBeGreaterThanOrEqual(26);
     expect(Math.max(...ages(veterans))).toBeLessThanOrEqual(33);
-    expect(sum(ages(prospects))).toBeLessThan(sum(ages(balanced)));
-    expect(sum(ages(veterans))).toBeGreaterThan(sum(ages(balanced)));
+    // Means: the world may hold fewer players of a line in a search's ages (→CLUB-50).
+    expect(mean(ages(prospects))).toBeLessThan(mean(ages(balanced)));
+    expect(mean(ages(veterans))).toBeGreaterThan(mean(ages(balanced)));
     expect(ability(prospects)).toBeLessThan(ability(balanced));
     expect(ability(veterans)).toBeGreaterThan(ability(balanced));
     expect(headroom(prospects)).toBeGreaterThan(headroom(balanced));
-    expect(offerFees(prospects)).toBeLessThan(offerFees(balanced));
-    expect(offerFees(veterans)).toBeGreaterThan(offerFees(balanced));
+    // Each club asks his value at its own division, by one rule at every level (→ECON-16).
+    for (const w of [prospects, balanced, veterans])
+      for (const offer of transferOffers(w))
+        expect(offer.fee).toBe(
+          offer.source.kind === 'club'
+            ? marketValueAt(
+                clubOf(w).country,
+                w.year,
+                clubById(w, offer.source.club)!.tier,
+                offer.player,
+              )
+            : '0',
+        );
     for (const w of [prospects, balanced, veterans])
       for (const offer of transferOffers(w)) {
         expect(offer.player.potential).toBeLessThanOrEqual(99);
         expect(offer.player.potential).toBeGreaterThanOrEqual(overall(offer.player));
       }
 
-    const offer = transferOffers(prospects)[2];
-    operate(prospects, { type: 'recruit', candidate: 2 });
+    // Another club's prospect joins through his club's accepted bid, as found (→CLUB-4).
+    const index = transferOffers(prospects).findIndex((o) => !o.freeAgent),
+      offer = transferOffers(prospects)[index]!;
+    buyOffer(prospects, index);
     const signed = prospects.players.find((player) => player.id === offer.player.id)!;
     // He signs as offered, with the clauses his signing settles (→CLUB-29), starting to settle
     // at his 적응력's start (→PLAYER-11).

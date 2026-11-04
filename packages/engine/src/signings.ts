@@ -9,6 +9,7 @@ import type {
   Line,
   Player,
   Position,
+  ScoutOffer,
   SigningRequest,
   TransferBid,
   World,
@@ -21,7 +22,6 @@ import { MARKET_REFRESH_ROUNDS } from './managerMarket';
 import { clamp, compareIds, ratio, scaleBy } from './primitives';
 import {
   activePlayers,
-  clubOf,
   lineOfPlayer,
   overall,
   formationOf,
@@ -33,10 +33,10 @@ import { joinClub, ownStarters } from './world';
 import { annualWageLimit, financeOption, financeStance, wageWithinLimit } from './direction';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';
-import { signingClauses } from './contracts';
 import { pushInbox } from './inbox';
 import { isDelegated } from './responsibilities';
-import { isForeignCandidate, transferOffers, squadCommand } from './ops-squad';
+import { signFreeAgent, squadCommand } from './ops-squad';
+import { isForeignCandidate, transferOffers } from './scout-search';
 import { POLICY_INFO, policyOf } from './policy';
 import { placeBid } from './transfers';
 import { transferWindow, transferWindowDays } from './transfer-window';
@@ -51,8 +51,6 @@ export const SIGNING_CONFIG = {
   squadMinimum: SQUAD_TARGET,
   /** He looks for upgrades only while the squad has at most this many players. */
   upgradeSquad: 24,
-  /** Candidates the chief scout lists per line. */
-  shortlistPerLine: 3,
   /** A shortlisted candidate must beat a slot's starter there by this much to be requested. */
   requestMargin: 5,
   /** The level a candidate must play a slot's position at to fit it: 준수 (→PLAYER-4). */
@@ -62,7 +60,7 @@ export const SIGNING_CONFIG = {
   unmetTrust: 3,
 };
 
-type Offer = ReturnType<typeof transferOffers>[number];
+type Offer = ScoutOffer;
 /**
  * Why the 단장 wants a player: a short role, or an upgrade over a starter; `requested` when the
  * manager asked for the role (→CLUB-33).
@@ -352,18 +350,12 @@ function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
 }
 /**
  * The chief scout's draw (→CLUB-33), on a window's opening day and after every 4th league round:
- * up to three candidates per role from the market list as 영입's rows shape it, free agents first,
- * then by ability, potential and id, with the manager's requests. A window's requests stay as
- * they were at its opening.
+ * his list (→CLUB-51), his reach's count per line with its places abroad, free agents first, then
+ * by ability, potential and id, as 영입's rows shape it, with the manager's requests. A window's
+ * requests stay as they were at its opening.
  */
 export function drawShortlist(w: World) {
-  const offers = listable(w).map(({ offer }) => offer);
-  const listed = LINES.flatMap((line) =>
-    offers
-      .filter((offer) => lineOfPlayer(offer.player) === line)
-      .sort(byCandidate)
-      .slice(0, SIGNING_CONFIG.shortlistPerLine),
-  );
+  const listed = listable(w).map(({ offer }) => offer);
   const window = w.shortlist?.window;
   w.shortlist = {
     year: w.year,
@@ -416,7 +408,7 @@ export function noteSigning(w: World, player: Player, sourceClub?: string) {
   // Establish the real seller before moving a previously unretained player, including his loan
   // parent. Reads never enroll players; only the completed move opens this employment fact.
   if (source) movePerson(w, player, source.id);
-  const foreign = source ? source.country !== clubOf(w).country : isForeignCandidate(player.id);
+  const foreign = isForeignCandidate(w, player.id, source?.id);
   closeNeedFor(w, player);
   movePerson(w, player, w.playerClub, true, player.loanUntil);
   (w.recruitmentArrivals ??= []).push({
@@ -486,13 +478,10 @@ function upgradeNeeds(w: World, margin: number): SigningNeed[] {
     }));
 }
 
-/** A free agent joins at once on the market's terms, with his signing's clauses (→CLUB-29). */
-function signFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
-  const p = structuredClone(offer.player),
+/** The 단장 signs a free agent: he leaves the pool at once on the offer's terms (→CLUB-49). */
+function directorSignsFreeAgent(w: World, offer: Offer, need: SigningNeed, why: string) {
+  const p = signFreeAgent(w, offer),
     day = currentDay(w);
-  p.clauses = signingClauses(w, p);
-  w.players.push(p);
-  noteSigning(w, p);
   // The signing is kept as a completed staff bid, so the window's count sees it.
   w.bids = [
     ...(w.bids || []),
@@ -640,7 +629,7 @@ export function staffSignings(w: World) {
       const fee = offer.freeAgent ? '0' : ratio(offer.fee, BigInt(staffBidShare(w)), 100n);
       const verdict = signingVerdict(w, offer.player, fee);
       if (!verdict.ok) continue;
-      if (offer.freeAgent) signFreeAgent(w, offer, need, verdict.reason);
+      if (offer.freeAgent) directorSignsFreeAgent(w, offer, need, verdict.reason);
       else {
         placeBid(w, index, fee, false, need.kind);
         const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
@@ -709,7 +698,7 @@ export function pursueRequest(
               squad: activePlayers(w).length,
               requested: request,
             };
-      signFreeAgent(w, offer, need, verdict.reason);
+      directorSignsFreeAgent(w, offer, need, verdict.reason);
     } else placeBid(w, index, fee, false, request.kind);
   } else {
     if (BigInt(w.cash) < BigInt(fee)) return '보유 자금이 부족해요.';

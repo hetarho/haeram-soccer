@@ -5,7 +5,8 @@ import { WORLD_MARKET_PAGE_SIZE } from '../../contracts/src/schema';
 import { worldMarketDetail, worldMarketOffer, worldMarketPage } from './world-market';
 import { worldMarketFixture } from './world-market.testkit';
 import { squad, invalidateNpcSquads, makePlayer } from './world';
-import { transferOffers, squadCommand } from './ops-squad';
+import { squadCommand } from './ops-squad';
+import { transferOffers } from './scout-search';
 import { placeBid, respondBid, bidBoard, dailyMarket } from './transfers';
 import { continuousSquad, movePerson, returnLoan } from './npc-continuity';
 import { overall } from './player-state';
@@ -39,15 +40,23 @@ function spanishReturnFixture(age = 22, graduate = true) {
   return { w, original, target };
 }
 
+/** A free agent of the world's pool (→CLUB-49), of any age: the owner's search is not the scout's. */
+function poolPlayer(w: ReturnType<typeof worldMarketFixture>, n: number, age = 26) {
+  return {
+    ...makePlayer('ENG', w.seed, `pool:${n}`, w.year, 50, 'CM', age, 0),
+    freeSince: w.year,
+  };
+}
+
 // The fixture holds just current squads. Dated cases settle only the market, never fixtures or a whole day.
 describe('bounded whole-world market', () => {
-  it('finds every represented club and available scout identity, including our inspectable players', () => {
+  it('finds every represented club and the whole free-agent pool, including our inspectable players', () => {
     const w = worldMarketFixture();
+    // One free agent past every search's ages: the scout never lists him, the market does.
+    w.freeAgents = [poolPlayer(w, 0), poolPlayer(w, 1, 38)];
+    expect(transferOffers(w).some((o) => o.player.id === 'pool:1')).toBe(false);
     const before = structuredClone(w);
-    const expected = [
-      ...w.clubs.flatMap((c) => squad(w, c)),
-      ...transferOffers(w).map((o) => o.player),
-    ];
+    const expected = [...w.clubs.flatMap((c) => squad(w, c)), ...w.freeAgents];
     const found = query(w, { pageSize: WORLD_MARKET_PAGE_SIZE });
     const next = query(w, { page: 1, pageSize: WORLD_MARKET_PAGE_SIZE });
     expect(found.total).toBe(expected.length);
@@ -62,6 +71,17 @@ describe('bounded whole-world market', () => {
     expect(
       query(w, { team: 'representative' }).items.every((o) => o.source?.country === 'HUN'),
     ).toBe(true);
+    const pool = query(w, { name: w.freeAgents[1]!.name }).items.find(
+      (o) => o.player.id === 'pool:1',
+    )!;
+    expect(pool).toMatchObject({
+      target: { world: w.id, kind: 'offer', playerId: 'pool:1' },
+      freeAgent: true,
+      fee: '0',
+      loanFee: '0',
+      available: true,
+    });
+    expect(pool.source).toBeUndefined();
     expect(w).toEqual(before);
     own.items[0].player.attrs.pace = 1;
     expect(w.players[0].attrs.pace).toBe(before.players[0].attrs.pace);
@@ -265,12 +285,15 @@ describe('stable-identity approaches', () => {
     w.calendar = { day: 40 };
     const closed = structuredClone(w);
     expect(() => placeBid(w, target, offer.fee)).toThrow('닫혀');
-    const free = transferOffers(w)[0];
-    squadCommand(w, {
-      type: 'recruit',
-      target: { world: w.id, kind: 'offer', playerId: free.player.id },
-    });
-    expect(w.players.some((p) => p.id === free.player.id)).toBe(true);
+    // A free agent signs out of the pool at once, even with the window closed.
+    const free = poolPlayer(w, 0);
+    w.freeAgents = [free];
+    const loan = { world: w.id, kind: 'offer' as const, playerId: free.id };
+    expect(() => squadCommand(w, { type: 'recruit', target: loan, loan: true })).toThrow('임대');
+    squadCommand(w, { type: 'recruit', target: loan });
+    expect(w.players.some((p) => p.id === free.id)).toBe(true);
+    expect(w.freeAgents).toEqual([]);
+    expect(worldMarketOffer(w, loan)).toBeUndefined();
     w.calendar = { day: 3 };
     w.cash = '0';
     const poor = structuredClone(w);
@@ -575,28 +598,40 @@ describe('stable-identity approaches', () => {
     },
   );
 
-  it('retains legacy index bids, pinned generated bids and saved bids without offer snapshots', () => {
-    const w = worldMarketFixture(),
-      offer = transferOffers(w)[1];
-    placeBid(w, 1, offer.fee);
+  it('keeps index bids on the found player at his club and lapses saved bids on generated ones', () => {
+    // 해외 정보원 reaches Spain's top flight (→CLUB-51), the fixture's foreign club.
+    const w = worldMarketFixture();
+    w.policy = { recruitment: 3, support: 3, globalScouting: 2 };
+    const index = transferOffers(w).findIndex((o) => !o.freeAgent),
+      offer = transferOffers(w)[index]!;
+    expect(offer.source).toEqual({ kind: 'club', club: 'foreign' });
+    placeBid(w, index, offer.fee);
     const bid = w.bids![0];
+    expect(bid).toMatchObject({ club: 'foreign', playerId: offer.player.id });
     bid.status = 'countered';
-    w.policy = { recruitment: 1, support: 3 };
+    // A setting changed meanwhile keeps the bid's player and terms (→ECON-16).
+    w.policy = { ...w.policy, recruitment: 1 };
+    expect(transferOffers(w).some((o) => o.player.id === offer.player.id)).toBe(false);
     respondBid(w, bid.id, true);
     expect(w.players.some((p) => p.id === offer.player.id)).toBe(true);
-    const legacy = transferOffers(w, w.year, true)[2];
+    expect(w.transfers!.facts.at(-1)).toMatchObject({ club: 'foreign', player: offer.player.id });
+    // An older save's bid for a generated candidate finds nobody: it lapses, nothing paid.
     w.bids!.push({
       id: 'legacy',
       direction: 'out',
-      playerId: legacy.player.id,
-      fee: legacy.fee,
+      playerId: `market:${w.year}:2`,
+      fee: '1000',
       year: w.year,
       day: 3,
       due: 5,
       status: 'countered',
     });
-    respondBid(w, 'legacy', true);
-    expect(w.players.some((p) => p.id === legacy.player.id)).toBe(true);
+    const cash = w.cash;
+    expect(() => respondBid(w, 'legacy', true)).toThrow('없는 선수');
+    dailyMarket(w);
+    expect(w.bids!.find((b) => b.id === 'legacy')!.status).toBe('expired');
+    expect(w.cash).toBe(cash);
+    expect(w.players.some((p) => p.id === `market:${w.year}:2`)).toBe(false);
     expect(bidBoard(w).find((entry) => entry.bid.id === bid.id)?.player?.id).toBe(offer.player.id);
   });
 });

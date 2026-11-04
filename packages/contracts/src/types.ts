@@ -263,7 +263,10 @@ export interface Shortlist {
   /** The season and season day of the draw. */
   year: number;
   day: number;
-  /** Up to three market candidates per line, best first; one no longer available drops on reading. */
+  /**
+   * The players the chief scout found, his reach's count per line (→CLUB-51), best first; one no
+   * longer on his list drops on reading.
+   */
   entries: { playerId: string; line: Line }[];
   /** At most three: every short line, then the upgrade a candidate makes most (→CLUB-33). */
   requests: SigningRequest[];
@@ -480,7 +483,10 @@ export interface Academy {
   /** Last season year whose intake was settled. */
   intakeYear?: number;
 }
-/** A recruitment target is never a page offset or a scout-list index. */
+/**
+ * A recruitment target is never a page offset or a scout-list index: another club's player, or
+ * (`offer`) a free agent of the world's pool (→CLUB-49).
+ */
 export type WorldMarketTarget = { world: string } & (
   { kind: 'club'; playerId: string; clubId: string } | { kind: 'offer'; playerId: string }
 );
@@ -517,6 +523,22 @@ export interface WorldMarketOffer {
   /** Same-country or cross-country recruitment adaptation, retained on approach. */
   foreign: boolean;
 }
+/** Where a recruitment candidate is (→CLUB-50): another club's player, or a free agent. */
+export type CandidateSource = { kind: 'club'; club: string } | { kind: 'free' };
+/** A player the chief scout found within his reach (→CLUB-51), with the terms we would face. */
+export interface ScoutOffer {
+  /** On our division's market wage and the term he would sign (→CLUB-25). */
+  player: Player;
+  /** His club's asking transfer and loan fee; '0' for a free agent. */
+  fee: string;
+  loanFee: string;
+  /** A free agent signs at once, outside windows too, for no fee, and is never loaned. */
+  freeAgent: boolean;
+  available: boolean;
+  source: CandidateSource;
+  /** His club's country, or a free agent's nationality, is not ours (→PLAYER-11). */
+  foreign: boolean;
+}
 export interface WorldMarketPage {
   world: string;
   revision: number;
@@ -537,8 +559,8 @@ export interface TransferBid {
   fee: string;
   loan?: boolean;
   /**
-   * The market player and asking terms an `out` bid was made for (rules 1.15.0); a bid pending
-   * from before has none and finds him in its season's list.
+   * The player and asking terms an `out` bid was made for (rules 1.15.0); a bid pending from
+   * before has none and takes his current terms. Either way he is found by his id in the world.
    */
   offer?: { player: Player; fee: string; loanFee: string };
   year: number;

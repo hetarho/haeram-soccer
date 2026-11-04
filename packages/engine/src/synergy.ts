@@ -20,7 +20,6 @@ export interface SynergyEffects {
   fatigueRelief: number;
   academyGrowth: number;
   academyPotential: number;
-  marketPotential: number;
   feeMultiplier: number;
   sponsor: number;
   moraleBaseline: number;
@@ -34,7 +33,6 @@ export const NEUTRAL_SYNERGY: Readonly<SynergyEffects> = Object.freeze({
   fatigueRelief: 0,
   academyGrowth: 1,
   academyPotential: 0,
-  marketPotential: 0,
   feeMultiplier: 1,
   sponsor: 1,
   moraleBaseline: 0,
@@ -163,8 +161,8 @@ const RULES: readonly SynergyRule[] = [
     id: 'moneyball',
     label: '머니볼',
     idea: '데이터 스카우팅 · 발굴에 강한 수석 스카우트나 협상에 강한 단장 · 젊은 선수 위주 영입',
-    bonus: '영입 후보 잠재력 +3 · 이적료 ×0.92',
-    effects: { marketPotential: 3, feeMultiplier: 0.92 },
+    bonus: '이적료 ×0.92',
+    effects: { feeMultiplier: 0.92 },
     conditions: (w) => [
       { label: '스카우팅 · 데이터 스카우팅', met: buildOf(w).scouting === 'data' },
       {
@@ -221,8 +219,8 @@ const RULES: readonly SynergyRule[] = [
     id: 'trading-machine',
     label: '트레이딩 머신',
     idea: '지표로 찾고 · 1군에서 뛰게 해 키우고 · 비싸게 파는 순환',
-    bonus: '영입 후보 잠재력 +2 · 아카데미 성장 ×1.1',
-    effects: { marketPotential: 2, academyGrowth: 1.1 },
+    bonus: '아카데미 성장 ×1.1',
+    effects: { academyGrowth: 1.1 },
     conditions: (w) => {
       const build = buildOf(w);
       return [
@@ -239,8 +237,8 @@ const RULES: readonly SynergyRule[] = [
     id: 'global-scouting',
     label: '글로벌 스카우팅',
     idea: '해외 유스 스카우트 · 넓은 해외 스카우트망 · 숨은 재능을 알아보는 수석 스카우트',
-    bonus: '유스 입단 잠재력 +2 · 영입 후보 잠재력 +2',
-    effects: { academyPotential: 2, marketPotential: 2 },
+    bonus: '유스 입단 잠재력 +2',
+    effects: { academyPotential: 2 },
     conditions: (w) => [
       { label: '유입 방식 · 해외 유스 스카우트', met: buildOf(w).youth === 'worldwide' },
       { label: '해외 스카우트망 3단계 이상', met: policyOf(w).globalScouting >= 3 },

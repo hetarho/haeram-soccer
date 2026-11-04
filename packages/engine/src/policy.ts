@@ -65,16 +65,16 @@ export const POLICY_INFO: Record<
       {
         level: 1,
         name: '유망주 발굴',
-        summary: '17–21세 · 능력 35–65 · 잠재력 보정 +12인 영입 후보를 찾아요',
+        summary: '17–21세 · 능력 35–65인 선수를 잠재력 먼저 보고 찾아요',
       },
       {
         level: 2,
         name: '젊은 선수 위주',
-        summary: '18–25세 · 능력 38–75 · 잠재력 보정 +6인 영입 후보를 찾아요',
+        summary: '18–25세 · 능력 38–75인 선수를 잠재력 먼저 보고 찾아요',
       },
-      { level: 3, name: '균형', summary: '18–30세 · 능력 40–85인 영입 후보를 찾아요' },
-      { level: 4, name: '경험 위주', summary: '23–31세 · 능력 50–88인 영입 후보를 찾아요' },
-      { level: 5, name: '즉시 전력', summary: '26–33세 · 능력 60–92인 영입 후보를 찾아요' },
+      { level: 3, name: '균형', summary: '18–30세 · 능력 40–85인 선수를 찾아요' },
+      { level: 4, name: '경험 위주', summary: '23–31세 · 능력 50–88인 선수를 찾아요' },
+      { level: 5, name: '즉시 전력', summary: '26–33세 · 능력 60–92인 선수를 찾아요' },
     ],
   },
   academy: {
@@ -158,26 +158,29 @@ export const POLICY_INFO: Record<
   globalScouting: {
     label: '해외 스카우트망',
     levels: [
-      { level: 1, name: '없음', summary: '추가 비용 없음' },
+      { level: 1, name: '없음', summary: '추가 비용 없음 · 국내에서만 찾아요' },
       {
         level: 2,
         name: '해외 정보원',
-        summary: '라운드마다 소액 지출 · 영입 후보 +1명 · 글로벌 인지도 목표 +10',
+        summary:
+          '라운드마다 소액 지출 · 해외 1개국 1부 · 라인마다 해외 1자리 · 글로벌 인지도 목표 +10',
       },
       {
         level: 3,
         name: '지역 스카우트',
-        summary: '라운드마다 지출 · 영입 후보 +2명 · 잠재력 +1 · 글로벌 인지도 목표 +20',
+        summary: '라운드마다 지출 · 해외 2개국 1부 · 라인마다 해외 1자리 · 글로벌 인지도 목표 +20',
       },
       {
         level: 4,
         name: '대륙 스카우트망',
-        summary: '라운드마다 큰 지출 · 영입 후보 +3명 · 잠재력 +1 · 글로벌 인지도 목표 +30',
+        summary:
+          '라운드마다 큰 지출 · 해외 4개국 1부 · 라인마다 해외 2자리 · 글로벌 인지도 목표 +30',
       },
       {
         level: 5,
         name: '세계 스카우트망',
-        summary: '라운드마다 최대 지출 · 영입 후보 +4명 · 잠재력 +2 · 글로벌 인지도 목표 +45',
+        summary:
+          '라운드마다 최대 지출 · 해외 7개국 1부 · 라인마다 해외 2자리 · 글로벌 인지도 목표 +45',
       },
     ],
   },
@@ -212,9 +215,6 @@ export interface PolicyEffects {
   /** 해외 마케팅's fan growth per settled round and 주변 투자's gate demand. */
   fanGrowth: number;
   gateBoost: number;
-  /** 해외 스카우트망's extra candidates and potential. */
-  scoutCandidates: number;
-  scoutPotential: number;
   /** The targets the rows set for 지역 기반 and 글로벌 인지도 (→ECON-34), each at most 100. */
   baseTargets: { local: number; global: number };
   /** 해외 투어: 0 none, 1 short, 2 long. */
@@ -224,10 +224,11 @@ export interface PolicyEffects {
   academyIntake: number;
   academyPotential: number;
   academyGrowth: number;
+  /** The scout's search (→CLUB-51): the ages and abilities he looks at, and potential first. */
   offer: {
     ability: [number, number];
     age: [number, number];
-    potentialBonus: number;
+    potentialFirst: boolean;
   };
 }
 
@@ -240,8 +241,6 @@ export const SUPPORT_EXPENSES = [0.9, 0.95, 1, 1.1, 1.2];
 const INVEST_UNITS = [0, 1, 2.5, 4.5, 7];
 const GLOBAL_FANS = [0, 0.004, 0.008, 0.013, 0.02];
 const LOCAL_GATE = [0, 0.02, 0.04, 0.06, 0.08];
-const SCOUT_CANDIDATES = [0, 1, 2, 3, 4];
-const SCOUT_POTENTIAL = [0, 0, 1, 1, 2];
 /** The base a main row aims at, and what its second row adds (→ECON-34). */
 const MAIN_TARGET = [0, 20, 40, 65, 100];
 const SIDE_TARGET = [0, 10, 20, 30, 45];
@@ -250,13 +249,13 @@ const ACADEMY_UNITS = [0, 1, 2.5, 4.5, 7];
 const ACADEMY_INTAKE = [0, 0, 1, 1, 2];
 const ACADEMY_POTENTIAL = [0, 3, 5, 8, 11];
 const ACADEMY_GROWTH = [1, 1.1, 1.2, 1.3, 1.45];
-/** Level 3 is exactly the pre-policy transfer market. */
+/** 영입 기조's search by level (→ECON-16); transfer fees are the same at every level. */
 const OFFERS: PolicyEffects['offer'][] = [
-  { ability: [35, 65], age: [17, 21], potentialBonus: 12 },
-  { ability: [38, 75], age: [18, 25], potentialBonus: 6 },
-  { ability: [40, 85], age: [18, 30], potentialBonus: 0 },
-  { ability: [50, 88], age: [23, 31], potentialBonus: 0 },
-  { ability: [60, 92], age: [26, 33], potentialBonus: 0 },
+  { ability: [35, 65], age: [17, 21], potentialFirst: true },
+  { ability: [38, 75], age: [18, 25], potentialFirst: true },
+  { ability: [40, 85], age: [18, 30], potentialFirst: false },
+  { ability: [50, 88], age: [23, 31], potentialFirst: false },
+  { ability: [60, 92], age: [26, 33], potentialFirst: false },
 ];
 
 export function policyOf(w: World): ClubPolicy {
@@ -285,8 +284,6 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     investUnits: INVEST_UNITS[local] + INVEST_UNITS[global] + INVEST_UNITS[scout],
     fanGrowth: GLOBAL_FANS[global],
     gateBoost: LOCAL_GATE[local],
-    scoutCandidates: SCOUT_CANDIDATES[scout],
-    scoutPotential: SCOUT_POTENTIAL[scout],
     baseTargets: {
       local: MAIN_TARGET[local],
       global: Math.min(100, MAIN_TARGET[global] + SIDE_TARGET[scout]),
@@ -299,7 +296,7 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     offer: {
       ability: [offer.ability[0], offer.ability[1]],
       age: [offer.age[0], offer.age[1]],
-      potentialBonus: offer.potentialBonus,
+      potentialFirst: offer.potentialFirst,
     },
   };
 }

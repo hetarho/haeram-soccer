@@ -1164,7 +1164,16 @@ export function RecruitmentDesk({
               const offer = state.view!.transfers[index];
               if (!offer) return;
               setPanel(undefined);
-              setViewing({ world: w.id, kind: 'offer', playerId: offer.player.id });
+              setViewing(
+                offer.source.kind === 'club'
+                  ? {
+                      world: w.id,
+                      kind: 'club',
+                      clubId: offer.source.club,
+                      playerId: offer.player.id,
+                    }
+                  : { world: w.id, kind: 'offer', playerId: offer.player.id },
+              );
             }}
           />
           <OfferAnswers w={w} />

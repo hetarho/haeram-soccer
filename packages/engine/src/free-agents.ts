@@ -9,7 +9,7 @@ import type { Club, FreeAgent, Line, Player, World } from '../../contracts/src/t
 import { ATTRIBUTES, FREE_AGENT_CAP } from '../../contracts/src/player';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds, random, zeroMetrics } from './primitives';
-import { clubOf, overall } from './player-state';
+import { overall } from './player-state';
 import { clubById, invalidateNpcSquad, invalidateNpcSquads, joinClub, squad } from './world';
 import { movePerson } from './npc-continuity';
 import { closeEmployment, openEmployment } from './person-careers';
@@ -19,8 +19,8 @@ import { AGEING, lineOf } from './player';
 import { divisionFor, signingClauses } from './contracts';
 import { marketWage, marketWageAt } from './market-prices';
 import { suitorFor } from './transfers';
-import { isForeignCandidate } from './ops-squad';
 import { registrationRoom } from './registration';
+import { isForeignCandidate } from './scout-search';
 import { addEvent } from './events';
 import { moneyLabel } from './finance';
 
@@ -34,6 +34,8 @@ export const FREE_AGENT_CONFIG = {
   joinChance: 0.2,
   /** The most the world holds; above it the least able retire at the close. */
   cap: FREE_AGENT_CAP,
+  /** Seasons a free signing's contract runs past this one, as a generated youngster's (`makePlayer`). */
+  term: 3,
 } as const;
 
 /** The pool, empty for a world made before it. */
@@ -47,7 +49,7 @@ export function nationalityOf(w: World, id: string): string | undefined {
   return originClub(w, id)?.country;
 }
 /** The club a generated player's ID names: the one whose generated place he holds. */
-function originClub(w: World, id: string) {
+export function originClub(w: World, id: string) {
   const parts = id.split(':');
   return clubById(w, parts.slice(0, 4).join(':')) ?? clubById(w, parts.slice(0, 2).join(':'));
 }
@@ -55,11 +57,6 @@ function originClub(w: World, id: string) {
 function freePlace(w: World, id: string) {
   const club = originClub(w, id);
   if (club) invalidateNpcSquad(w, club.id);
-}
-/** Whether a player joining our club comes from abroad (→PLAYER-11). */
-function fromAbroad(w: World, id: string) {
-  const code = nationalityOf(w, id);
-  return code ? code !== clubOf(w).country : isForeignCandidate(id);
 }
 
 /**
@@ -293,8 +290,7 @@ export function signFreeAgentAtClose(
   if (registrationRoom(w, { ...agent, joined: w.year })) return 'full';
   const p = takeFreeAgent(w, agent.id)!;
   p.wage = marketWage(w, p);
-  // The term the close's generated youngsters sign as well (`makePlayer`).
-  p.until = w.year + 3;
+  p.until = w.year + FREE_AGENT_CONFIG.term;
   p.clauses = signingClauses(w, p);
   // A former player of ours keeps his career with the club on the row he left.
   const prior = w.players.findIndex((row) => row.id === p.id);
@@ -303,7 +299,7 @@ export function signFreeAgentAtClose(
     if (w.players[prior]!.graduate) p.graduate = true;
     w.players[prior] = p;
   } else w.players.push(p);
-  joinClub(p, fromAbroad(w, p.id) ? 'abroad' : 'domestic', w.year);
+  joinClub(p, isForeignCandidate(w, p.id) ? 'abroad' : 'domestic', w.year);
   movePerson(w, p, w.playerClub, true);
   addEvent(
     w,

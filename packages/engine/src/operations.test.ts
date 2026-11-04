@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { handTo, staffAuthority } from './testing';
+import { buyOffer, handTo, staffAuthority } from './testing';
 import {
   advanceRound,
   contractSeason,
@@ -37,14 +37,20 @@ describe('club decisions', () => {
     expect(() => operate(w, { type: 'contract-decline', player })).toThrow('협상');
     expect(w).toEqual(before);
   });
-  /** Candidate 2 on loan and the local sponsor, each signed once; the second signing is refused. */
+  /**
+   * Another club's player on loan (his club accepting our bid at the loan fee) and the local
+   * sponsor, each signed once; the second signing is refused.
+   */
   const loanAndSponsor = (w: ReturnType<typeof world>) => {
     w.cash = '999999999';
-    const offer = transferOffers(w)[2];
+    const index = transferOffers(w).findIndex((o) => !o.freeAgent),
+      offer = transferOffers(w)[index]!;
     const before = BigInt(w.cash);
-    operate(w, { type: 'recruit', candidate: 2, loan: true });
+    buyOffer(w, index, true);
     expect(BigInt(w.cash)).toBe(before - BigInt(offer.loanFee));
-    expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('이미');
+    const club = offer.source.kind === 'club' ? offer.source.club : '';
+    const target = { world: w.id, kind: 'club' as const, clubId: club, playerId: offer.player.id };
+    expect(() => operate(w, { type: 'recruit', target })).toThrow('이미');
     operate(w, { type: 'sign-sponsor', slot: 'local', offer: 0 });
     expect(() => operate(w, { type: 'sign-sponsor', slot: 'local', offer: 2 })).toThrow('남아');
     return offer;
@@ -126,8 +132,10 @@ describe('club decisions', () => {
   it('writes amounts in event texts in the app notation, never in raw minor units', () => {
     const w = world();
     w.cash = '999999999';
-    const signing = transferOffers(w)[0];
-    operate(w, { type: 'recruit', candidate: 0 });
+    // A free agent signs at once, so his signing's line is the last event.
+    const free = transferOffers(w).findIndex((o) => o.freeAgent),
+      signing = transferOffers(w)[free]!;
+    operate(w, { type: 'recruit', candidate: free });
     const signed = w.events.at(-1)!.detail;
     expect(signed).toContain(`연봉 ${moneyLabel(w, signing.player.wage)}`);
     expect(signed).not.toContain(`연봉 ${signing.player.wage}`);

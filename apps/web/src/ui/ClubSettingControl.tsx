@@ -492,9 +492,12 @@ const EFFECT_LABELS: Record<keyof BuildEffects, string> = {
   academyIntake: '입단 인원',
   academyPotential: '입단 잠재력',
   youthGrowth: '1군 유망주 성장',
-  marketCandidates: '영입 후보',
-  marketPotential: '후보 잠재력',
-  marketAbility: '후보 능력',
+  scoutPerLine: '라인마다 스카우트 명단',
+  scoutAbilityShift: '스카우트 탐색 능력 범위',
+  scoutAbroadExtra: '해외 탐색 국가',
+  scoutPotentialFirst: '스카우트 잠재력 먼저 정렬',
+  scoutNeverPotentialFirst: '스카우트 잠재력 먼저 정렬 안 함',
+  scoutNoAbroad: '해외 탐색 안 함',
   incomingBids: '이적 제안 빈도',
   saleFee: '매각 수입',
   sponsor: '후원 제안',
@@ -518,18 +521,25 @@ const MULTIPLIERS = new Set<keyof BuildEffects>([
   'winFans',
   'wage',
 ]);
+/** Effects that switch a rule on rather than add an amount: named without a number. */
+const FLAGS = new Set<keyof BuildEffects>([
+  'scoutPotentialFirst',
+  'scoutNeverPotentialFirst',
+  'scoutNoAbroad',
+]);
 function effectsSummary(effects: Partial<BuildEffects>) {
   return (
     (Object.entries(effects) as [keyof BuildEffects, number][])
-      .map(
-        ([key, value]) =>
-          `${EFFECT_LABELS[key]} ${
-            MULTIPLIERS.has(key)
-              ? `×${value}`
-              : key === 'gateDemand'
-                ? `${value >= 0 ? '+' : ''}${Number((value * 100).toFixed(2))}%`
-                : `${value >= 0 ? '+' : ''}${value}`
-          }`,
+      .map(([key, value]) =>
+        FLAGS.has(key)
+          ? EFFECT_LABELS[key]
+          : `${EFFECT_LABELS[key]} ${
+              MULTIPLIERS.has(key)
+                ? `×${value}`
+                : key === 'gateDemand'
+                  ? `${value >= 0 ? '+' : ''}${Number((value * 100).toFixed(2))}%`
+                  : `${value >= 0 ? '+' : ''}${value}`
+            }`,
       )
       .join(' · ') || '추가 보정 없이 기본 효과를 적용해요.'
   );

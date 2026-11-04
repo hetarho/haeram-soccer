@@ -38,6 +38,7 @@ import { currentDay, seasonDayOf } from './calendar';
 import { COACH_CAREER, coachProspect, coachSeason } from './coaching';
 import { hasTrait, networkCandidates, networkedCandidate } from './owner-traits';
 import { STYLE_INFO } from './styles';
+import { reachBand, SCOUT_CONFIG, SCOUT_HOME_LABEL } from './scout-search';
 import {
   coachCriteriaOf,
   coachDelegated,
@@ -89,10 +90,6 @@ export interface StaffEffects {
   academyQuality: number;
   /** Academy round development multiplier. */
   academyGrowth: number;
-  /** Potential added to market candidates. */
-  scoutPotential: number;
-  /** Number of transfer market candidates. */
-  scoutCandidates: number;
   /** Multiplier on asking transfer fees. */
   feeMultiplier: number;
   /** Added to the chance that a selling club accepts our bid (0–1 scale). */
@@ -163,8 +160,6 @@ function neutralEffects(): StaffEffects {
     recoveryBonus: 0,
     academyQuality: 0,
     academyGrowth: 1,
-    scoutPotential: 0,
-    scoutCandidates: 8,
     feeMultiplier: 1,
     bidAcceptance: 0,
   };
@@ -190,14 +185,6 @@ function applyDepartment(effects: StaffEffects, role: StaffRole, member: Staff |
     effects.academyGrowth = member
       ? departmentMultiplier(member.ability) * (member.trait === 'developer' ? 1.3 : 1)
       : VACANT_MULTIPLIER;
-  }
-  if (role === 'scout') {
-    effects.scoutPotential = member
-      ? whole((member.ability - NEUTRAL_ABILITY) / 10) + (member.trait === 'spotter' ? 6 : 0)
-      : -3;
-    effects.scoutCandidates = member
-      ? clamp(8 + whole((member.ability - NEUTRAL_ABILITY) / 15), 5, 12)
-      : 6;
   }
   // The 단장 carries the transfer negotiation (→STAFF-20).
   if (role === 'director') {
@@ -237,11 +224,12 @@ export function staffImpact(w: World, role: StaffRole): string {
       `입단 잠재력 ${signed(effects.academyQuality)}`,
       `아카데미 성장 ${times(effects.academyGrowth)}`,
     );
-  if (role === 'scout')
-    lines.push(
-      `이적 후보 ${effects.scoutCandidates}명`,
-      `후보 잠재력 ${signed(effects.scoutPotential)}`,
-    );
+  // How far he looks and how many he lists per line (→CLUB-51), before the club's settings.
+  if (role === 'scout') {
+    const band = reachBand(member?.ability);
+    lines.push(`탐색 ${SCOUT_HOME_LABEL[band.home]}`, `라인마다 ${band.perLine}명`);
+    if (member?.trait === 'spotter') lines.push(`${SCOUT_CONFIG.youngAge}세 이하 잠재력 우선`);
+  }
   if (role === 'director') {
     lines.push(`협상 성공률 ${signed(Math.round(effects.bidAcceptance * 100))}%p`);
     if (effects.feeMultiplier !== 1) lines.push(`이적료 ${times(effects.feeMultiplier)}`);

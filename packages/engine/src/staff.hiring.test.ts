@@ -570,10 +570,11 @@ describe('the 단장 (STAFF-20)', () => {
   });
 
   it('carries the transfer negotiation the chief scout carried', () => {
-    // The chance of a bid at a candidate's asking fee, whichever list the settings draw.
+    // The chance of a bid at a club player's asking fee, whomever the scout finds.
+    const club = (w: World) => transferOffers(w).findIndex((offer) => !offer.freeAgent);
     const base = world('director-talks'),
-      asking = transferOffers(base)[2].fee,
-      chance = (w: World) => bidOutlook(w, 2, transferOffers(w)[2].fee).chance;
+      asking = transferOffers(base)[club(base)]!.fee,
+      chance = (w: World) => bidOutlook(w, club(w), transferOffers(w)[club(w)]!.fee).chance;
     const set = (w: World, role: StaffRole, ability: number, trait?: StaffTrait) => {
       w.staff = w.staff!.map((member) =>
         member.role === role ? { ...member, ability, ...(trait ? { trait } : {}) } : member,
@@ -582,7 +583,7 @@ describe('the 단장 (STAFF-20)', () => {
     };
     // His ability alone keeps the list as it is and moves the chance by (ability − 50)/250.
     const able = set(world('director-talks'), 'director', 75);
-    expect(transferOffers(able)[2].fee).toBe(asking);
+    expect(transferOffers(able)[club(able)]!.fee).toBe(asking);
     expect(chance(able)).toBeCloseTo(chance(base) + 0.1, 10);
     // A chief scout of any ability or trait no longer negotiates.
     const scout = set(world('director-talks'), 'scout', 90, 'negotiator');
@@ -591,9 +592,7 @@ describe('the 단장 (STAFF-20)', () => {
     // A negotiator asks less of every selling club: the list's fees fall by a tenth.
     const negotiator = set(world('director-talks'), 'director', 50, 'negotiator');
     const fees = (w: World) =>
-      transferOffers(w)
-        .slice(1)
-        .reduce((sum, offer) => sum + BigInt(offer.fee), 0n);
+      transferOffers(w).reduce((sum, offer) => sum + BigInt(offer.fee), 0n);
     expect(staffEffects(negotiator)).toMatchObject({ feeMultiplier: 0.9, bidAcceptance: 0.1 });
     expect(Number((fees(negotiator) * 1000n) / fees(base)) / 1000).toBeLessThan(1);
     // A vacant post costs 5 points.

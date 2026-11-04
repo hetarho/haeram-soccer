@@ -26,11 +26,17 @@ import { holdRows, sellPlayer, unreadAttention } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
 import { CAREER_YEAR } from './career.testkit';
+import { clubById, squad } from './world';
 
 const share = (amount: string, percent: number) =>
   ((BigInt(amount) * BigInt(percent)) / 100n || 1n).toString();
 
 const outBids = (w: World) => (w.bids || []).filter((b) => b.direction === 'out');
+/** The scout's list positions of other clubs' players, who join only through a bid (→CLUB-4). */
+const clubIndexes = (w: World) =>
+  transferOffers(w).flatMap((offer, i) => (offer.freeAgent ? [] : [i]));
+const clubIndex = (w: World) => clubIndexes(w)[0]!;
+const freeIndex = (w: World) => transferOffers(w).findIndex((offer) => offer.freeAgent);
 
 /** The default world after 45 unobserved rounds, one round before the season's last. */
 const round45 = () =>
@@ -44,7 +50,7 @@ const round45 = () =>
 function bidAll(percent: number, seed?: string, fresh = false) {
   const w = world(seed, fresh);
   const offers = transferOffers(w);
-  for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].fee, percent));
+  for (const i of clubIndexes(w)) placeBid(w, i, share(offers[i].fee, percent));
   const cash = BigInt(w.cash);
   advanceDays(w, 4);
   return { w, offers, cash };
@@ -115,23 +121,35 @@ describe('transfer windows', () => {
 
   it('refuses fee-bearing purchases, loans and sales while closed but signs free agents', () => {
     const w = on(world(), 10, 1);
-    const offers = transferOffers(w);
-    expect(offers[0].freeAgent).toBe(true);
+    const offers = transferOffers(w),
+      free = freeIndex(w),
+      [club, other] = clubIndexes(w);
+    expect(offers[free]!.freeAgent).toBe(true);
     const before = canonical(w);
     expect(() => assertTransferWindow(w)).toThrow(CLOSED);
-    expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow(CLOSED);
-    expect(() => operate(w, { type: 'recruit', candidate: 3, loan: true })).toThrow(CLOSED);
-    expect(() => operate(w, { type: 'recruit', candidate: 0, loan: true })).toThrow(CLOSED);
+    expect(() => operate(w, { type: 'recruit', candidate: club! })).toThrow(CLOSED);
+    expect(() => operate(w, { type: 'recruit', candidate: other!, loan: true })).toThrow(CLOSED);
+    // A free agent is never loaned: he signs at once (→CLUB-4).
+    expect(() => operate(w, { type: 'recruit', candidate: free, loan: true })).toThrow('임대');
     const seller = activePlayers(w).find((p) => lineOf(p.position) === 'MF')!;
-    expect(() => operate(w, { type: 'bid', candidate: 2, fee: offers[2].fee })).toThrow(CLOSED);
+    expect(() => operate(w, { type: 'bid', candidate: club!, fee: offers[club!]!.fee })).toThrow(
+      CLOSED,
+    );
     expect(canonical(w)).toBe(before);
-    operate(w, { type: 'recruit', candidate: 0 });
-    expect(w.players.some((p) => p.id === offers[0].player.id)).toBe(true);
+    operate(w, { type: 'recruit', candidate: free });
+    expect(w.players.some((p) => p.id === offers[free]!.player.id)).toBe(true);
     on(w, 1, 15);
     sellPlayer(w, seller.id);
-    operate(w, { type: 'recruit', candidate: 2 });
+    // Another club's player is approached with a bid at his asking fee, never bought outright.
+    const target = transferOffers(w)[clubIndex(w)]!;
+    operate(w, { type: 'recruit', candidate: clubIndex(w) });
     expect(seller.status).toBe('sold');
-    expect(w.players.some((p) => p.id === offers[2].player.id)).toBe(true);
+    expect(outBids(w).at(-1)).toMatchObject({
+      playerId: target.player.id,
+      fee: target.fee,
+      status: 'pending',
+    });
+    expect(w.players.some((p) => p.id === target.player.id)).toBe(false);
   });
 
   it('opens the summer window at the season close and announces each opening once', () => {
@@ -189,27 +207,30 @@ describe('player value', () => {
 describe('outgoing bids', () => {
   it('validates the candidate, price, window and squad before recording a pending bid', () => {
     const w = world();
-    const offers = transferOffers(w);
-    expect(() => placeBid(w, 0, '1')).toThrow('자유계약');
+    const offers = transferOffers(w),
+      club = clubIndex(w);
+    expect(() => placeBid(w, freeIndex(w), '1')).toThrow('자유계약');
     expect(() => placeBid(w, 99, '1')).toThrow('없는 선수');
-    expect(() => placeBid(w, 2, '0')).toThrow('금액');
-    expect(() => placeBid(w, 2, '-5')).toThrow('금액');
+    expect(() => placeBid(w, club, '0')).toThrow('금액');
+    expect(() => placeBid(w, club, '-5')).toThrow('금액');
     w.cash = '10';
-    expect(() => placeBid(w, 2, '11')).toThrow('부족');
+    expect(() => placeBid(w, club, '11')).toThrow('부족');
     w.cash = '999999999999';
     const cash = w.cash;
-    operate(w, { type: 'bid', candidate: 2, fee: share(offers[2].fee, 90) });
+    operate(w, { type: 'bid', candidate: club, fee: share(offers[club]!.fee, 90) });
     expect(w.cash).toBe(cash);
     const [bid] = outBids(w);
     expect(bid).toMatchObject({ direction: 'out', status: 'pending', year: w.year, day: 0 });
     expect(bid.due).toBeGreaterThanOrEqual(2);
     expect(bid.due).toBeLessThanOrEqual(4);
     expect(w.events.at(-1)?.kind).toBe('transfer-bid');
-    expect(() => placeBid(w, 2, offers[2].fee)).toThrow('협상 중');
+    // The bid names the selling club the scout found him at (→CLUB-14).
+    expect(bid.club).toBe((offers[club]!.source as { club: string }).club);
+    expect(() => placeBid(w, club, offers[club]!.fee)).toThrow('협상 중');
     const full = world();
     for (let i = 0; full.players.filter((p) => p.status === 'active').length < 40; i++)
       full.players.push({ ...structuredClone(full.players[4]), id: `extra:${i}` });
-    expect(() => placeBid(full, 2, offers[2].fee)).toThrow('40');
+    expect(() => placeBid(full, clubIndex(full), offers[club]!.fee)).toThrow('40');
     expect(validateWorld(w).id).toBe(w.id);
   });
 
@@ -247,10 +268,11 @@ describe('outgoing bids', () => {
     expect(canonical(first.w)).toBe(canonical(again.w));
     const statuses = outBids(first.w).map((b) => b.status);
     expect(statuses).toContain('countered');
-    expect(statuses).toContain('rejected');
     expect(statuses).not.toContain('pending');
     const other = bidAll(80, 'another-market');
     expect(canonical(outBids(other.w))).not.toBe(canonical(outBids(first.w)));
+    // Across both markets some modest bids are refused outright.
+    expect([...statuses, ...outBids(other.w).map((b) => b.status)]).toContain('rejected');
     const lowball = bidAll(1);
     expect(outBids(lowball.w).filter((b) => b.status === 'rejected').length).toBeGreaterThanOrEqual(
       6,
@@ -288,7 +310,7 @@ describe('outgoing bids', () => {
     const w = world();
     const offers = transferOffers(w);
     const fees = offers.map((o) => share(o.fee, 500));
-    for (let i = 1; i < offers.length; i++) placeBid(w, i, fees[i]);
+    for (const i of clubIndexes(w)) placeBid(w, i, fees[i]!);
     w.cash = '1';
     advanceDays(w, 4);
     expect(outBids(w).some((b) => b.status === 'completed')).toBe(false);
@@ -303,7 +325,7 @@ describe('outgoing bids', () => {
   it('answers late bids by the deadline and expires open negotiations when the window closes', () => {
     const w = on(world(), 8, 30);
     const offers = transferOffers(w);
-    for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].fee, 80));
+    for (const i of clubIndexes(w)) placeBid(w, i, share(offers[i]!.fee, 80));
     expect(outBids(w).every((b) => b.due === 31)).toBe(true);
     advanceDays(w, 2);
     expect(transferWindow(w).daysLeft).toBe(0);
@@ -312,7 +334,7 @@ describe('outgoing bids', () => {
     expect(outBids(w).some((b) => b.status === 'pending')).toBe(false);
     // A deadline-day bid is answered at once.
     const late = on(world(), 9, 1);
-    placeBid(late, 3, share(transferOffers(late)[3].fee, 500));
+    placeBid(late, clubIndex(late), share(transferOffers(late)[clubIndex(late)]!.fee, 500));
     expect(outBids(late)[0].status).not.toBe('pending');
     advanceDays(w, 1);
     expect(transferWindow(w).open).toBe(false);
@@ -330,31 +352,36 @@ describe('outgoing bids', () => {
       advanceDays(w, SEASON_END_DAY - 2 - currentDay(w));
       return w;
     });
-    const offers = transferOffers(w);
+    const offers = transferOffers(w),
+      [first, second] = clubIndexes(w);
     // 1.2.0 opened the summer window on 14 June, during the final rounds.
     const bid: TransferBid = {
       id: 'out:legacy',
       direction: 'out',
-      playerId: offers[5].player.id,
-      fee: share(offers[5].fee, 500),
+      playerId: offers[first!]!.player.id,
+      fee: share(offers[first!]!.fee, 500),
       year: w.year,
       day: currentDay(w),
       due: currentDay(w) + 4,
       status: 'pending',
     };
     w.bids = [bid];
-    expect(() => placeBid(w, 6, share(offers[6].fee, 500))).toThrow('이적시장이 닫혀');
+    expect(() => placeBid(w, second!, share(offers[second!]!.fee, 500))).toThrow('이적시장이 닫혀');
     advanceDays(w, 1);
     expect(w.year).toBe(CAREER_YEAR);
     expect(w.bids?.[0]).toMatchObject({ id: 'out:legacy', status: 'expired' });
     expect(validateWorld(w).id).toBe(w.id);
   });
 
-  it('closes a negotiation once the player was signed directly', () => {
+  it('closes a negotiation once the player joined by another route', () => {
     const w = world();
-    placeBid(w, 4, share(transferOffers(w)[4].fee, 90));
-    operate(w, { type: 'recruit', candidate: 4 });
-    expect(bidOutlook(w, 4, '100').chance).toBe(0);
+    const offer = transferOffers(w)[clubIndex(w)]!,
+      club = (offer.source as { club: string }).club;
+    placeBid(w, clubIndex(w), share(offer.fee, 90));
+    // He arrives some other way (a loan return, an older save's direct signing).
+    w.players.push(structuredClone(offer.player));
+    const target = { world: w.id, kind: 'club' as const, clubId: club, playerId: offer.player.id };
+    expect(bidOutlook(w, target, '100').chance).toBe(0);
     advanceDays(w, 1);
     const [bid] = outBids(w);
     expect(bid.status).toBe('expired');
@@ -381,20 +408,21 @@ describe('outgoing bids', () => {
 
   it('describes the chance without consuming randomness or changing the world', () => {
     const w = world();
-    const before = canonical(w),
-      asking = transferOffers(w)[2].fee;
-    const low = bidOutlook(w, 2, share(asking, 50)),
-      even = bidOutlook(w, 2, asking),
-      high = bidOutlook(w, 2, share(asking, 200));
+    const club = clubIndex(w),
+      before = canonical(w),
+      asking = transferOffers(w)[club]!.fee;
+    const low = bidOutlook(w, club, share(asking, 50)),
+      even = bidOutlook(w, club, asking),
+      high = bidOutlook(w, club, share(asking, 200));
     expect(canonical(w)).toBe(before);
     expect(low).toMatchObject({ label: '낮음', asking, counterPossible: false, chance: 0.05 });
     expect(even.counterPossible).toBe(true);
     expect(even.chance).toBeGreaterThan(low.chance);
     expect(high).toMatchObject({ label: '높음', chance: 0.95 });
-    expect(bidOutlook(w, 0, '100').chance).toBe(0);
-    expect(bidOutlook(w, 2, 'abc').chance).toBe(0);
-    expect(bidOutlook(w, 3, transferOffers(w)[3].loanFee, true).asking).toBe(
-      transferOffers(w)[3].loanFee,
+    expect(bidOutlook(w, freeIndex(w), '100').chance).toBe(0);
+    expect(bidOutlook(w, club, 'abc').chance).toBe(0);
+    expect(bidOutlook(w, club, transferOffers(w)[club]!.loanFee, true).asking).toBe(
+      transferOffers(w)[club]!.loanFee,
     );
   });
 
@@ -403,8 +431,9 @@ describe('outgoing bids', () => {
       read = world();
     operate(read, { type: 'read-inbox' });
     expect(read.revision).toBe(plain.revision + 1);
-    const fee = share(transferOffers(plain)[3].fee, 90);
-    for (const w of [plain, read]) operate(w, { type: 'bid', candidate: 3, fee });
+    const club = clubIndex(plain),
+      fee = share(transferOffers(plain)[club]!.fee, 90);
+    for (const w of [plain, read]) operate(w, { type: 'bid', candidate: club, fee });
     const [bid] = outBids(plain);
     expect(bid.id).toBe(`out:${plain.year}:0:0:${bid.playerId}`);
     expect(outBids(read)).toEqual([bid]);
@@ -416,10 +445,10 @@ describe('outgoing bids', () => {
 
   it('gives a renewed bid on the same day its own ID', () => {
     const w = on(world(), 9, 1);
-    placeBid(w, 3, '1');
+    placeBid(w, clubIndex(w), '1');
     const [first] = outBids(w);
     expect(first.status).toBe('rejected');
-    placeBid(w, 3, '1');
+    placeBid(w, clubIndex(w), '1');
     const [, renewed] = outBids(w);
     expect(first.id).toBe(`out:${w.year}:${first.day}:0:${first.playerId}`);
     expect(renewed.id).toBe(`out:${w.year}:${first.day}:1:${first.playerId}`);
@@ -429,7 +458,7 @@ describe('outgoing bids', () => {
   it('completes a negotiated loan like a direct loan', () => {
     const w = world();
     const offers = transferOffers(w);
-    for (let i = 1; i < offers.length; i++) placeBid(w, i, share(offers[i].loanFee, 500), true);
+    for (const i of clubIndexes(w)) placeBid(w, i, share(offers[i]!.loanFee, 500), true);
     advanceDays(w, 4);
     const done = outBids(w).filter((b) => b.status === 'completed');
     expect(done.length).toBeGreaterThan(0);
@@ -447,25 +476,32 @@ describe('market identity', () => {
     return { id, name, position, born, attrs, potential, wage };
   };
 
-  it('draws one list per combination of settings and the same list on switching back', () => {
+  it('finds world players under each setting and the same ones on switching back', () => {
     const w = world();
     const balanced = transferOffers(w),
       before = ids(w);
-    for (const id of before) expect(id).toMatch(/^market:\d{4}:[0-9a-z]{7}:f?\d+$/);
+    // Every listed player is a club's or the pool's: no setting makes one (→CLUB-50).
+    for (const offer of balanced)
+      expect(
+        offer.source.kind === 'club'
+          ? squad(w, clubById(w, offer.source.club)!).some((p) => p.id === offer.player.id)
+          : w.freeAgents!.some((p) => p.id === offer.player.id),
+      ).toBe(true);
     holdRows(w, { policy: { recruitment: 1 } });
-    const prospects = ids(w);
-    expect(prospects.filter((id) => before.includes(id))).toEqual([]);
+    expect(ids(w)).not.toEqual(before);
     holdRows(w, { policy: { recruitment: 3 } });
     expect(transferOffers(w)).toEqual(balanced);
     w.build = { scouting: 'data' };
-    expect(ids(w).filter((id) => [...before, ...prospects].includes(id))).toEqual([]);
+    expect(ids(w)).not.toEqual(before);
+    delete w.build;
+    expect(transferOffers(w)).toEqual(balanced);
   });
 
   it('signs the player a bid was made for at its fee after the list changed', () => {
     const w = world();
-    const offer = transferOffers(w)[2],
+    const offer = transferOffers(w)[clubIndex(w)]!,
       fee = share(offer.fee, 500);
-    placeBid(w, 2, fee);
+    placeBid(w, clubIndex(w), fee);
     const [bid] = outBids(w);
     expect(bid.offer).toEqual({ player: offer.player, fee: offer.fee, loanFee: offer.loanFee });
     holdRows(w, { policy: { recruitment: 5 } });
@@ -483,31 +519,39 @@ describe('market identity', () => {
     expect(validateWorld(w).id).toBe(w.id);
   });
 
-  it('answers a bid pending from before 1.15.0 through its season list', () => {
+  it('finds a bid saved without terms by its player id; one for a generated player lapses', () => {
     const w = world();
-    const legacy = transferOffers(w, w.year, true)[2];
-    expect(legacy.player.id).toBe(`market:${w.year}:2`);
-    const fee = share(legacy.fee, 500);
+    const offer = transferOffers(w)[clubIndex(w)]!;
+    const fee = share(offer.fee, 500);
+    // Before 1.15.0 a bid kept no terms and no club: he is found by his id where he plays.
     const bid: TransferBid = {
-      id: `out:${w.year}:0:0:${legacy.player.id}`,
+      id: `out:${w.year}:0:0:${offer.player.id}`,
       direction: 'out',
-      playerId: legacy.player.id,
+      playerId: offer.player.id,
       fee,
       year: w.year,
       day: 0,
       due: 2,
       status: 'pending',
     };
-    w.bids = [bid];
-    expect(bidBoard(w)[0]).toMatchObject({ player: legacy.player, asking: legacy.fee });
+    // A scout-generated candidate of an older save exists nowhere (→CLUB-50).
+    const ghost: TransferBid = { ...bid, id: 'out:ghost', playerId: `market:${w.year}:2` };
+    w.bids = [bid, ghost];
+    expect(bidBoard(w).find((entry) => entry.bid.id === bid.id)).toMatchObject({
+      player: offer.player,
+      asking: offer.fee,
+    });
     const cash = BigInt(w.cash);
     advanceDays(w, 2);
+    expect(ghost.status).toBe('expired');
+    expect(w.inbox?.filter((item) => item.ref === ghost.id)).toHaveLength(1);
     expect(bid.status).toBe('completed');
     expect(bid.offer).toBeUndefined();
     expect(BigInt(w.cash)).toBe(cash - BigInt(fee));
-    expect(profile(w.players.find((p) => p.id === legacy.player.id)!)).toEqual(
-      profile(legacy.player),
+    expect(profile(w.players.find((p) => p.id === offer.player.id)!)).toEqual(
+      profile(offer.player),
     );
+    expect(w.players.some((p) => p.id === ghost.playerId)).toBe(false);
     expect(validateWorld(w).id).toBe(w.id);
   });
 });

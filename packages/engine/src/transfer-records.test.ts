@@ -5,6 +5,13 @@ import { activePlayers, advanceDays, currentDay, operate, placeBid, transferOffe
 import { addEvent } from './events';
 import { inTodayMoney, transferLedger, transferRanking } from './transfer-records';
 import { incoming, world } from './transfers.testkit';
+import { buyOffer } from './testing';
+
+/** The scout's list positions of other clubs' players, who join only through a bid (→CLUB-4). */
+const clubIndexes = (w: World) =>
+  transferOffers(w).flatMap((offer, i) => (offer.freeAgent ? [] : [i]));
+const at = (w: World, id: string) => transferOffers(w).findIndex((o) => o.player.id === id);
+const clubOfOffer = (offer: { source: { kind: string; club?: string } }) => offer.source.club!;
 
 const fact = (w: World, year: number, fee: string, name: string): TransferFact => ({
   direction: 'in',
@@ -21,21 +28,29 @@ describe('own-club transfer facts (→HIST-20)', () => {
   it('records a fee signing, a loan and a sale', () => {
     const w = world();
     const offers = transferOffers(w),
+      [first, second] = clubIndexes(w),
+      bought = offers[first!]!,
+      loaned = offers[second!]!,
       day = currentDay(w);
-    operate(w, { type: 'recruit', candidate: 1 });
-    operate(w, { type: 'recruit', candidate: 2, loan: true });
+    buyOffer(w, first!);
+    buyOffer(w, at(w, loaned.player.id), true);
     const sold = activePlayers(w).find((p) => p.position !== 'GK')!;
     const bid = incoming(w, sold.id, '12345');
     operate(w, { type: 'respond-bid', id: bid.id, accept: true });
-    expect(w.transfers!.ledgerBefore).toBe(w.events.length - 3);
+    // The record starts at the first fee signing's ledger line, the bid's own line before it.
+    expect(w.events[w.transfers!.ledgerBefore]).toMatchObject({
+      kind: 'transfer-in',
+      amount: bought.fee,
+    });
     expect(w.transfers!.facts).toEqual([
       {
         direction: 'in',
         loan: false,
-        player: offers[1].player.id,
-        person: offers[1].player.id,
-        name: offers[1].player.name,
-        fee: offers[1].fee,
+        player: bought.player.id,
+        person: bought.player.id,
+        name: bought.player.name,
+        club: clubOfOffer(bought),
+        fee: bought.fee,
         currency: w.currency,
         year: w.year,
         day,
@@ -43,10 +58,11 @@ describe('own-club transfer facts (→HIST-20)', () => {
       {
         direction: 'in',
         loan: true,
-        player: offers[2].player.id,
-        person: offers[2].player.id,
-        name: offers[2].player.name,
-        fee: offers[2].loanFee,
+        player: loaned.player.id,
+        person: loaned.player.id,
+        name: loaned.player.name,
+        club: clubOfOffer(loaned),
+        fee: loaned.loanFee,
         currency: w.currency,
         year: w.year,
         day,
@@ -70,7 +86,7 @@ describe('own-club transfer facts (→HIST-20)', () => {
   it('records an accepted bid as it completes', () => {
     const w = world();
     const offers = transferOffers(w);
-    for (let i = 1; i < offers.length; i++) placeBid(w, i, (BigInt(offers[i].fee) * 5n).toString());
+    for (const i of clubIndexes(w)) placeBid(w, i, (BigInt(offers[i]!.fee) * 5n).toString());
     advanceDays(w, 4);
     const completed = (w.bids || []).filter(
       (b) => b.direction === 'out' && b.status === 'completed',
@@ -84,8 +100,9 @@ describe('own-club transfer facts (→HIST-20)', () => {
 
   it('records nothing for a free agent', () => {
     const w = world();
-    expect(transferOffers(w)[0].fee).toBe('0');
-    operate(w, { type: 'recruit', candidate: 0 });
+    const free = transferOffers(w).findIndex((offer) => offer.freeAgent);
+    expect(transferOffers(w)[free]!.fee).toBe('0');
+    operate(w, { type: 'recruit', candidate: free });
     expect(w.events.at(-1)).toMatchObject({ kind: 'transfer-in' });
     expect(w.transfers).toBeUndefined();
   });
@@ -125,8 +142,10 @@ describe('own-club transfer facts (→HIST-20)', () => {
     expect(transferRanking(w, { direction: 'in' })).toEqual([
       { source: 'ledger', event: w.events[start], index: start, today: '700000' },
     ]);
-    operate(w, { type: 'recruit', candidate: 1 });
-    expect(w.transfers!.ledgerBefore).toBe(start + 3);
+    buyOffer(w, clubIndexes(w)[0]!);
+    // The bid's own line (no amount, no ledger entry) comes before the signing's.
+    expect(w.events[start + 3]!.kind).toBe('transfer-bid');
+    expect(w.transfers!.ledgerBefore).toBe(start + 4);
     expect(transferLedger(w).map((entry) => entry.index)).toEqual([start, start + 2]);
     const rows = transferRanking(w, { direction: 'in' });
     // The new signing's own ledger entry is not ranked a second time.

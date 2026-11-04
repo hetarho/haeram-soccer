@@ -1,16 +1,18 @@
 import { registrationRoom } from './registration';
-import type { Line, World } from '../../contracts/src/types';
+import type { Line, ScoutOffer, World } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
 import { SEASON_ROUNDS, nextOwnFixture } from './calendar';
 import { operatingCost } from './transactions';
-import { transferOffers } from './ops-squad';
 import { clubOf, fatigueLoad, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
 import { startingSquad } from './world';
 import { adaptationMultiplier, adaptationStart, ADAPTATION_NEUTRAL } from './player';
-import { isForeignCandidate } from './ops-squad';
 import { lineupSummary, npcTactic, tacticalProfile } from './strategy';
 
-export type TransferOffer = ReturnType<typeof transferOffers>[number] & { foreign?: boolean };
+/** What a recruitment read needs of a candidate, a scout's find or a world-market row alike. */
+export type TransferOffer = Pick<
+  ScoutOffer,
+  'player' | 'fee' | 'loanFee' | 'freeAgent' | 'available' | 'foreign'
+>;
 
 /** A simple current-XI need, without claiming the line guarantees better match results. */
 export function recruitmentLineNeed(w: World): Line {
@@ -53,7 +55,7 @@ export function recruitmentFit(w: World, offer: TransferOffer, context = recruit
     ...offer.player,
     adaptation: adaptationStart(
       offer.player.personality.adaptability,
-      (offer.foreign ?? isForeignCandidate(offer.player.id)) ? 'abroad' : 'domestic',
+      offer.foreign ? 'abroad' : 'domestic',
     ),
   };
   // A returning player replaces his retained historical row rather than adding a second ID.

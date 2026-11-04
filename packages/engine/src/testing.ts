@@ -15,7 +15,8 @@ import type {
 import { clubOf } from './player-state';
 import { advanceDays } from './season';
 import { currentDay, seasonLength } from './calendar';
-import { playerValue, respondBid } from './transfers';
+import { placeBid, playerValue, respondBid } from './transfers';
+import { transferOffers } from './scout-search';
 import { POLICY_KEYS, policyOf } from './policy';
 import { DIRECTION_DEFAULT } from './direction';
 import { startFacilityWork } from './facilities';
@@ -104,6 +105,24 @@ export function sellPlayer(w: World, id: string) {
   };
   w.bids = [...(w.bids || []), bid];
   respondBid(w, bid.id, true);
+  return bid;
+}
+
+/**
+ * Signs another club's player from the chief scout's list as his club's yes to our bid at the
+ * asking fee would (→CLUB-4): no instant purchase exists, so the bid is answered with a counter at
+ * the same fee and accepted (window must be open). Returns the completed bid.
+ */
+export function buyOffer(w: World, candidate: number, loan = false) {
+  const offer = transferOffers(w)[candidate]!;
+  const fee = loan ? offer.loanFee : offer.fee;
+  placeBid(w, candidate, fee, loan);
+  const bid = w.bids!.findLast((one) => one.playerId === offer.player.id)!;
+  if (bid.status !== 'completed') {
+    bid.status = 'countered';
+    bid.counterFee = fee;
+    respondBid(w, bid.id, true);
+  }
   return bid;
 }
 

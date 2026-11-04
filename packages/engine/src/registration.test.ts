@@ -1,5 +1,5 @@
 import { placeBid, respondBid } from './transfers';
-import { transferOffers } from './ops-squad';
+import { transferOffers } from './scout-search';
 import { movePerson } from './npc-continuity';
 import { describe, it, expect } from 'vitest';
 import { makePlayer, clubOf, joinClub } from './world';

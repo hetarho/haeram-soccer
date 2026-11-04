@@ -15,7 +15,7 @@ import { investmentCommand } from './ops-investment';
 
 // Read models and limits the app and other modules import from here.
 export { sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
-export { transferOffers } from './ops-squad';
+export { transferOffers } from './scout-search';
 export { MANAGER_GONE, managerRenewal } from './ops-staff';
 export { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from './settlement';
 

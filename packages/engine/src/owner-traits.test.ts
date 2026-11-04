@@ -18,7 +18,7 @@ import { effectiveGap } from './match-rules';
 import { buildGridSetup } from './grid/setup';
 import { findClub, ratingOf, squad } from './world';
 import { talkTerms } from './contracts';
-import { transferOffers } from './ops-squad';
+import { transferOffers } from './scout-search';
 import { worldMarketOffer } from './world-market';
 import { managerCandidates, refreshManagerMarket } from './managerMarket';
 import { staffCandidates } from './staff';

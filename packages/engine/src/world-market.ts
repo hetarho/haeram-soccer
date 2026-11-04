@@ -1,6 +1,7 @@
-/** Whole-world recruitment reads. Ordinary worker views keep their legacy scout offers. */
+/** Whole-world recruitment reads: every club's players and the world's free agents (→WEB-43). */
 import type {
   Club,
+  FreeAgent,
   Player,
   World,
   WorldMarketOffer,
@@ -16,17 +17,86 @@ import { lineOf } from './player';
 import { MARKET_CONFIG, marketValueAt, marketWageAt } from './contracts';
 import { compareIds, scaleBy } from './primitives';
 import { staffEffects } from './staff';
+import { synergyEffects } from './synergy';
 import { askedFeeFactor } from './owner-traits';
-import { transferOffers, isForeignCandidate } from './ops-squad';
+import { FREE_AGENT_CONFIG, freeAgentsOf } from './free-agents';
+import { isForeignCandidate } from './scout-search';
 import { bidOutlook } from './transfers';
 import { recruitmentPreview, recruitmentContext, recruitmentFit } from './recruitment';
 import { scoutVerdict } from './scout-verdict';
 
 const recommendedIds = (w: World) =>
   new Set(w.shortlist?.year === w.year ? w.shortlist.entries.map((entry) => entry.playerId) : []);
-const graduateIds = (w: World) => new Set(w.players.filter((p) => p.graduate).map((p) => p.id));
-/** The share of his value a club asks us: the 단장's negotiation and 협상의 달인 (→STAFF-20, OWNER-5). */
-const askingMultiplier = (w: World) => staffEffects(w).feeMultiplier * askedFeeFactor(w);
+export const graduateIds = (w: World) =>
+  new Set(w.players.filter((p) => p.graduate).map((p) => p.id));
+/**
+ * The share of his value a club asks us: the 단장's negotiation, 머니볼's fees (→CLUB-21) and
+ * 협상의 달인 (→STAFF-20, →OWNER-5).
+ */
+export const askingMultiplier = (w: World) =>
+  staffEffects(w).feeMultiplier * synergyEffects(w).feeMultiplier * askedFeeFactor(w);
+
+/** A club player nobody can sign: retired or gone, on loan there, or announced to retire. */
+export function unavailableAtClub(w: World, player: Player) {
+  return (
+    player.status !== 'active' ||
+    !!player.loanUntil ||
+    !!player.retiring ||
+    !!w.people?.[player.id]?.loan ||
+    !!w.people?.[player.id]?.retirement
+  );
+}
+/**
+ * What another club's player would cost us (→CLUB-25): his club asks his value at its own
+ * division, quoted in our currency, and he would join on our division's market wage. Our
+ * academy qualification survives a spell at another club (→CLUB-44).
+ */
+export function clubTerms(
+  w: World,
+  club: Club,
+  player: Player,
+  feeMultiplier = askingMultiplier(w),
+  graduates = graduateIds(w),
+) {
+  const buyer = clubOf(w);
+  const value = marketValueAt(buyer.country, w.year, club.tier, player);
+  return {
+    player: {
+      ...player,
+      ...(graduates.has(player.id) ? { graduate: true as const } : {}),
+      wage: marketWageAt(buyer.country, w.year, buyer.tier, player),
+    },
+    fee: scaleBy(value, feeMultiplier, 1000n),
+    loanFee: scaleBy(value, MARKET_CONFIG.loan, 1000n),
+  };
+}
+/**
+ * What a free agent would sign for (→CLUB-49): no fee, our division's market wage and the term
+ * a free signing takes; he leaves the pool's bookkeeping behind.
+ */
+export function freeAgentTerms(w: World, agent: FreeAgent, graduates = graduateIds(w)) {
+  const buyer = clubOf(w);
+  const { freeSince: _since, ...player } = agent;
+  void _since;
+  return {
+    player: {
+      ...player,
+      ...(graduates.has(agent.id) ? { graduate: true as const } : {}),
+      wage: marketWageAt(buyer.country, w.year, buyer.tier, agent),
+      until: w.year + FREE_AGENT_CONFIG.term,
+    } satisfies Player,
+    fee: '0',
+    loanFee: '0',
+  };
+}
+
+/** A player at a club, if he really is there now: in its squad and, when recorded, active there. */
+export function clubPlayer(w: World, club: Club, id: string): Player | undefined {
+  const player = squad(w, club).find((p) => p.id === id);
+  const person = player && w.people?.[id];
+  if (person && (person.club !== club.id || person.playing !== 'active')) return undefined;
+  return player;
+}
 
 function clubOffer(
   w: World,
@@ -38,16 +108,7 @@ function clubOffer(
   graduates = graduateIds(w),
 ): WorldMarketOffer {
   const own = club.id === w.playerClub;
-  // Asking fees and contractual wages are quoted in the buying club's currency, as scout offers
-  // are. The seller's actual division sets value; the buyer's sets the new contract wage.
-  const buyer = clubOf(w);
-  const fee = marketValueAt(buyer.country, w.year, club.tier, player);
-  const unavailable =
-    player.status !== 'active' ||
-    !!player.loanUntil ||
-    !!player.retiring ||
-    !!w.people?.[player.id]?.loan ||
-    !!w.people?.[player.id]?.retirement;
+  const terms = clubTerms(w, club, player, feeMultiplier, graduates);
   return {
     target: { world: w.id, kind: 'club', clubId: club.id, playerId: player.id },
     source: {
@@ -57,21 +118,32 @@ function clubOffer(
       tier: club.tier,
       group: club.group,
     },
-    player: own
-      ? player
-      : {
-          ...player,
-          // Our academy qualification survives a spell at another club (→CLUB-44).
-          ...(graduates.has(player.id) ? { graduate: true as const } : {}),
-          wage: marketWageAt(buyer.country, w.year, buyer.tier, player),
-        },
-    fee: scaleBy(fee, feeMultiplier, 1000n),
-    loanFee: scaleBy(fee, MARKET_CONFIG.loan, 1000n),
+    player: own ? player : terms.player,
+    fee: terms.fee,
+    loanFee: terms.loanFee,
     freeAgent: false,
     own,
-    foreign: club.country !== buyer.country,
-    available: !own && !unavailable && !owned.has(player.id),
+    foreign: club.country !== clubOf(w).country,
+    available: !own && !unavailableAtClub(w, player) && !owned.has(player.id),
     recommended: !own && recommended.has(player.id),
+  };
+}
+/** A free agent of the pool as a market row: `offer` targets are free agents (→CLUB-49). */
+function freeAgentOffer(
+  w: World,
+  agent: FreeAgent,
+  recommended: Set<string>,
+  owned = new Set(activePlayers(w).map((p) => p.id)),
+  graduates = graduateIds(w),
+): WorldMarketOffer {
+  return {
+    ...freeAgentTerms(w, agent, graduates),
+    target: { world: w.id, kind: 'offer', playerId: agent.id },
+    freeAgent: true,
+    own: false,
+    foreign: isForeignCandidate(w, agent.id),
+    available: agent.status === 'active' && !owned.has(agent.id),
+    recommended: recommended.has(agent.id),
   };
 }
 
@@ -83,23 +155,13 @@ export function worldMarketOffer(
   if (target.world !== w.id) return undefined;
   const recommended = recommendedIds(w);
   if (target.kind === 'offer') {
-    const offer = transferOffers(w).find((o) => o.player.id === target.playerId);
-    if (!offer) return undefined;
-    return {
-      ...offer,
-      target,
-      own: false,
-      recommended: recommended.has(target.playerId),
-      foreign: isForeignCandidate(target.playerId),
-    };
+    const agent = freeAgentsOf(w).find((p) => p.id === target.playerId);
+    return agent && freeAgentOffer(w, agent, recommended);
   }
   const club = w.clubs.find((c) => c.id === target.clubId);
   if (!club) return undefined;
-  const player = squad(w, club).find((p) => p.id === target.playerId);
-  if (!player) return undefined;
-  const person = w.people?.[player.id];
-  if (person && (person.club !== club.id || person.playing !== 'active')) return undefined;
-  return clubOffer(w, club, player, recommended);
+  const player = clubPlayer(w, club, target.playerId);
+  return player && clubOffer(w, club, player, recommended);
 }
 
 /** Pure bounded query. Only rows on this page leave the worker; no previews are built here. */
@@ -159,17 +221,12 @@ export function worldMarketPage(w: World, input: WorldMarketQuery): WorldMarketP
     for (const player of squad(w, club))
       include(clubOffer(w, club, player, recommended, feeMultiplier, owned, graduates));
   }
-  for (const offer of transferOffers(w)) {
-    // An already signed scout identity is represented by its current club row.
-    if (seen.has(offer.player.id) || !offer.available) continue;
-    include({
-      ...offer,
-      target: { world: w.id, kind: 'offer', playerId: offer.player.id },
-      own: false,
-      foreign: isForeignCandidate(offer.player.id),
-      recommended: recommended.has(offer.player.id),
-    });
-  }
+  // The whole pool, whatever the chief scout's reach (→CLUB-51): the owner's search is not his.
+  if (!q.team && !q.league)
+    for (const agent of freeAgentsOf(w)) {
+      const offer = freeAgentOffer(w, agent, recommended, owned, graduates);
+      if (offer.available) include(offer);
+    }
   const sort = q.sort ?? 'ovr',
     direction = q.direction === 'asc' ? 1 : -1;
   const moneyCompare = (a: string, b: string) =>

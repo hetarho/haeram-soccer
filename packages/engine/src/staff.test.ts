@@ -36,6 +36,7 @@ import {
   STYLE_INFO,
 } from './index';
 import { lastRound, world } from './staff.testkit';
+import { scoutReach } from './scout-search';
 import { handTo } from './testing';
 
 const NEUTRAL = {
@@ -44,8 +45,6 @@ const NEUTRAL = {
   recoveryBonus: 0,
   academyQuality: 0,
   academyGrowth: 1,
-  scoutPotential: 0,
-  scoutCandidates: 8,
   feeMultiplier: 1,
   bidAcceptance: 0,
 };
@@ -128,6 +127,9 @@ describe('coaching staff', () => {
     const at = (role: StaffRole, ability: number, trait?: StaffTrait) =>
       // `coach` replaces the staff list without touching its members, so a shallow copy will do.
       staffEffects(coach({ ...baseline }, role, ability, trait));
+    // The chief scout's ability sets how far he looks and how many he lists (→CLUB-51).
+    const reachAt = (ability: number, trait?: StaffTrait) =>
+      scoutReach(coach({ ...baseline }, 'scout', ability, trait));
     expect(departmentMultiplier(50)).toBe(1);
     expect(departmentMultiplier(70)).toBeCloseTo(1.1, 10);
     expect(departmentMultiplier(100)).toBe(1.25);
@@ -149,8 +151,7 @@ describe('coaching staff', () => {
       expect(high('fitness').recoveryBonus).toBeGreaterThanOrEqual(low('fitness').recoveryBonus);
       expect(high('youth').academyQuality).toBeGreaterThanOrEqual(low('youth').academyQuality);
       expect(high('youth').academyGrowth).toBeGreaterThanOrEqual(low('youth').academyGrowth);
-      expect(high('scout').scoutPotential).toBeGreaterThanOrEqual(low('scout').scoutPotential);
-      expect(high('scout').scoutCandidates).toBeGreaterThanOrEqual(low('scout').scoutCandidates);
+      expect(reachAt(ability + 10).perLine).toBeGreaterThanOrEqual(reachAt(ability).perLine);
       expect(high('director').bidAcceptance).toBeGreaterThan(low('director').bidAcceptance);
       // The chief scout no longer negotiates (→STAFF-20).
       expect(high('scout').bidAcceptance).toBe(0);
@@ -172,9 +173,16 @@ describe('coaching staff', () => {
     expect(at('fitness', 20).recoveryBonus).toBe(-1);
     expect(at('youth', 70).academyQuality).toBe(4);
     expect(at('youth', 70, 'spotter').academyQuality).toBe(10);
-    expect(at('scout', 80, 'spotter').scoutPotential).toBe(9);
-    expect(at('scout', 95).scoutCandidates).toBe(11);
-    expect(at('scout', 10).scoutCandidates).toBe(5);
+    expect(reachAt(80, 'spotter')).toMatchObject({
+      home: 'country',
+      perLine: 4,
+      potentialFirst: 'young',
+    });
+    expect(reachAt(95)).toMatchObject({ home: 'country', perLine: 4, potentialFirst: 'none' });
+    expect(reachAt(10)).toMatchObject({ home: 'adjacent', perLine: 2 });
+    expect(staffImpact(coach(world(), 'scout', 85, 'spotter'), 'scout')).toBe(
+      '탐색 국내 전체 리그 · 라인마다 4명 · 23세 이하 잠재력 우선',
+    );
     // The 단장 carries the negotiation: (ability − 50)/250, a negotiator +0.1 and fees ×0.9.
     expect(at('director', 50)).toMatchObject({ feeMultiplier: 1, bidAcceptance: 0 });
     expect(at('director', 70).bidAcceptance).toBeCloseTo(0.08, 10);
@@ -216,8 +224,6 @@ describe('coaching staff', () => {
       recoveryBonus: -1,
       academyQuality: -5,
       academyGrowth: 0.9,
-      scoutPotential: -3,
-      scoutCandidates: 6,
       feeMultiplier: 1,
       bidAcceptance: -0.05,
     });
@@ -225,7 +231,8 @@ describe('coaching staff', () => {
     expect(releases).toHaveLength(8);
     expect(releases.every((event) => event.amount === undefined)).toBe(true);
     expect(() => releaseStaff(w, 'scout')).toThrow('비어 있는');
-    expect(staffImpact(w, 'scout')).toContain('공석');
+    expect(staffImpact(w, 'scout')).toBe('공석 · 탐색 우리 리그와 위아래 리그 · 라인마다 2명');
+    expect(scoutReach(w)).toMatchObject({ home: 'adjacent', perLine: 2 });
     expect(staffImpact(w, 'director')).toBe('공석 · 협상 성공률 -5%p');
     const fwd = (x: World) => activePlayers(x).find((player) => player.position === 'ST')!;
     const vacant = trainingWorld();
