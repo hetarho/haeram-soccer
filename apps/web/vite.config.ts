@@ -6,6 +6,14 @@ import { gameplayInfluences } from './src/constants/server.ts';
 
 const page = (name: string) => fileURLToPath(new URL(name, import.meta.url));
 
+/** Watch shared source directories so Git replacing an imported file does not lose its watch. */
+const sharedSourceWatch = (): Plugin => ({
+  name: 'haeram-shared-source-watch',
+  configureServer(server) {
+    server.watcher.add([page('../../packages/engine/src'), page('../../packages/contracts/src')]);
+  },
+});
+
 /** Standalone tools use the same addresses in development, preview and deployment. */
 const rewriteLab: Connect.NextHandleFunction = (req, _res, next) => {
   if (req.url && /^\/(lab|constants)\/?(?:[?#]|$)/.test(req.url))
@@ -20,7 +28,7 @@ const labAddress = (): Plugin => ({
 
 export default defineConfig({
   root: page('.'),
-  plugins: [react(), labAddress(), gameplayInfluences(), designSystem()],
+  plugins: [react(), sharedSourceWatch(), labAddress(), gameplayInfluences(), designSystem()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,

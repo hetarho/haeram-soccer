@@ -77,6 +77,7 @@ import {
   OWNER_TIERS,
 } from '../packages/engine/src/owner-config';
 import { STAR_SPREAD_CONFIG } from '../packages/engine/src/market-prices';
+import { MEANS_LEVEL } from '../packages/engine/src/dynamics';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string) => {
@@ -121,6 +122,16 @@ if (SPREAD) {
   const table = JSON.parse(readFileSync(SPREAD, 'utf8')) as typeof STAR_SPREAD_CONFIG;
   STAR_SPREAD_CONFIG.shared = table.shared;
   STAR_SPREAD_CONFIG.own = table.own;
+}
+/**
+ * --means: LEAGUE-10's means level on in the careers and their worlds (→T696), a measurement
+ * override of `MEANS_LEVEL`, never a game setting; it enters only with a `--spread` table, as
+ * CLUB-48 admits it, so its worlds too belong in their own --world-dir.
+ */
+const MEANS = args.includes('--means');
+if (MEANS) {
+  if (!SPREAD) throw new Error('--means enters only with CLUB-48 table: give it with --spread');
+  MEANS_LEVEL.inForce = true;
 }
 const TAKEOVER_YEAR = 1950;
 /** ECON-29's career averages: the first fifty seasons. */
@@ -931,7 +942,7 @@ console.log(
     .map((t) => t.multiple)
     .join(
       '/',
-    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}${SPREAD ? `, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}` : ''})`,
+    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}${SPREAD ? `, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}` : ''}${MEANS ? ", LEAGUE-10's means level on" : ''})`,
 );
 /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
 if (option('note', '')) console.log(`\n${option('note', '')}`);

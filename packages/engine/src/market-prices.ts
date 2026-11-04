@@ -70,11 +70,18 @@ export const MARKET_CONFIG = {
 
 /**
  * The era's star pay spread s (스타 임금 격차, →CLUB-48), from 0 to 1: a wage above an ordinary
- * OVR-80 player's is W80 × (W / W80)^s, so at 0 every star earns an 80's wage and at 1 the star
+ * OVR-80 player's is W80 × (W / W80)^s, W80 the same player's wage at OVR 80 with his own age and
+ * potential, so at 0 every star earns an ordinary 80's wage of his age and promise and at 1 the star
  * terms count in full (CLUB-25, CLUB-26's Ballon d'Or premium); wages at 80 or below never move.
- * The table holds the released curve (s = 1 in every season, no own anchor): T693's calibrated
- * candidate (artifacts/benchmarks/T693) missed CLUB-48's band in 2000 and 2010, so its anchors wait
- * for CLUB-48's revision; scripts read candidates through `--spread`.
+ *
+ * In force (CLUB-48): s = 1 in every country and season, no shared or own anchor below 1, so every
+ * star term counts in full. A table enters only when, on measured worlds' season books (→ECON-36),
+ * its shared anchors are the least compression at which the median of each country's three strongest
+ * top-flight clubs pays at most 70% of its revenue in wages and no club without a project pays more
+ * than its revenue, and on held-out worlds no club without a project pays more than its revenue.
+ * England's maximum wage (s = 0 through 1960/61) enters with the first table that passes, never
+ * alone. T693's candidate (artifacts/benchmarks/T693) failed that gate; scripts read candidates
+ * through `--spread`, a measurement override, never a game setting.
  */
 export const STAR_SPREAD_CONFIG = {
   /**
@@ -112,8 +119,11 @@ export function divisionShare(division: number) {
   return shares[low] + (shares[high] - shares[low]) * (at - low);
 }
 
-/** Ability with his promise and his age counted, the scale wages and values grow on. */
-function marketPoints(ability: number, age: number, potential: number, promise: number) {
+/**
+ * Ability with his promise and his age counted, the scale wages and values grow on; `promise` is
+ * the share of his headroom counted (`MARKET_CONFIG.promise.wage` or `.value`).
+ */
+export function marketPoints(ability: number, age: number, potential: number, promise: number) {
   const { full, none } = MARKET_CONFIG.promise;
   const youth = clamp((none - age) / (none - full), 0, 1);
   return (
@@ -143,7 +153,8 @@ export function transferPremium(year: number) {
 /**
  * Yearly market wage in 1901 units at football index 1, at the era's star pay `spread`
  * (→CLUB-48; 1, the star terms in full, unless given): above OVR 80 it is W80 × (W / W80)^spread,
- * W80 the same player's wage at 80 with his potential lowered alike.
+ * W80 the same player's wage at 80 with his own age and potential (`ordinaryWageUnits`), so at every
+ * spread a wage never falls as his OVR or his potential rises.
  */
 export function marketWageUnits(
   division: number,
@@ -152,11 +163,17 @@ export function marketWageUnits(
   potential: number,
   spread = 1,
 ) {
-  const full = starredWageUnits(division, ability, age, potential),
-    from = MARKET_CONFIG.star.from;
-  if (spread === 1 || ability <= from) return full;
-  const ordinary = starredWageUnits(division, from, age, potential - (ability - from));
+  const full = starredWageUnits(division, ability, age, potential);
+  if (spread === 1 || ability <= MARKET_CONFIG.star.from) return full;
+  const ordinary = ordinaryWageUnits(division, age, potential);
   return ordinary * (full / ordinary) ** spread;
+}
+/**
+ * W80 (→CLUB-48): the yearly wage a player of this age and potential earns at OVR 80, an ordinary
+ * OVR-80 player's of his age and promise, from which a star's wage below a spread of 1 is read.
+ */
+export function ordinaryWageUnits(division: number, age: number, potential: number) {
+  return starredWageUnits(division, MARKET_CONFIG.star.from, age, potential);
 }
 /** CLUB-25's wage with every star term counted in full. */
 function starredWageUnits(division: number, ability: number, age: number, potential: number) {

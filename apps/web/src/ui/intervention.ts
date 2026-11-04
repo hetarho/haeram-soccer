@@ -43,7 +43,13 @@ export const RESPONSIBILITY_DELEGATES: Readonly<
 export function responsibilityAssignee(w: World, post: ResponsibilityPost) {
   const labels = { director: '단장', manager: '감독', youth: STAFF_INFO.youth.label };
   const member = post === 'manager' ? w.manager : staffMember(w, post);
-  return { post, label: labels[post], name: member?.name ?? '공석', person: member?.person, member };
+  return {
+    post,
+    label: labels[post],
+    name: member?.name ?? '공석',
+    person: member?.person,
+    member,
+  };
 }
 export function responsibilityAssignees(w: World, key: ResponsibilityKey) {
   return RESPONSIBILITY_DELEGATES[key].map((post) => responsibilityAssignee(w, post));

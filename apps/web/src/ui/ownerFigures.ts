@@ -31,7 +31,7 @@ import {
   OWNER_TIERS,
   OWNER_TRAITS,
 } from '../../../../packages/engine/src/owner-config';
-import { seasonResult } from '../../../../packages/engine/src/finance';
+import { seasonResult } from '../../../../packages/engine/src/finance-read';
 import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { quote } from '../../../../packages/engine/src/quotes';

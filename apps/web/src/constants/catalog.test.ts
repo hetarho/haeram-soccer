@@ -29,8 +29,10 @@ describe('implemented gameplay relationships', () => {
     expect(PLAYER_ACTIONS.find((action) => action.id === 'start-choices')?.control).toBe(
       '시작 시 선택',
     );
-    for (const id of ['tactics-lineup', 'training-control', 'direction-control', 'facility-work'])
+    for (const id of ['tactics-lineup', 'training-control'])
       expect(PLAYER_ACTIONS.find((action) => action.id === id)?.control).toBe('현재 변경 불가');
+    for (const id of ['direction-control', 'facility-work', 'decision-guidelines'])
+      expect(PLAYER_ACTIONS.find((action) => action.id === id)?.control).toBe('직접 선택');
     expect(find('wage-demand').factors[0]!.control).toBe('자동 변화');
   });
 
@@ -89,7 +91,7 @@ describe('causal hierarchy presentation', () => {
     expect(markup).toContain('최소 수락 연봉');
     expect(markup).toContain('시장 연봉');
     expect(markup).toContain('직접 선택');
-    expect(markup).toContain('현재 변경 불가');
+    expect(markup).toContain('자동 변화');
     expect(factorCount(factors)).toBe(8);
   });
 

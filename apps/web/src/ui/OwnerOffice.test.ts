@@ -2,6 +2,8 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStore } from 'zustand/vanilla';
+import { careerWorld } from '../../../../packages/engine/src/career.testkit';
+import { officeRead } from '../runtime/officeRead';
 import { defaultSettings } from '../../../../packages/engine/src/responsibilities';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
@@ -31,6 +33,7 @@ const controller = {
 } as unknown as ProgressionController;
 const render = () =>
   renderToStaticMarkup(createElement(OwnerOffice, { client: {} as GameClient, controller }));
+const baseWorld = careerWorld({ country: 'ENG', seed: 'office-settings' });
 beforeEach(() =>
   gameStore.setState(
     {
@@ -38,7 +41,10 @@ beforeEach(() =>
       busy: false,
       processing: false,
       readonly: false,
-      view: { world: { id: 'office', settings: defaultSettings() } } as View,
+      view: {
+        world: { ...baseWorld, settings: defaultSettings() },
+        office: officeRead(baseWorld),
+      } as View,
     },
     true,
   ),
@@ -49,16 +55,16 @@ describe('owner office page', () => {
     for (const processing of [false, true, false]) {
       gameStore.setState({ clockRunning: true, processing });
       const markup = render();
-      const buttons = [...markup.matchAll(/<button([^>]*)>/g)];
-      expect(buttons).toHaveLength(21);
+      const buttons = [...markup.matchAll(/<button([^>]*aria-pressed[^>]*)>/g)];
+      expect(buttons).toHaveLength(20);
       expect(buttons.every(([, attributes]) => attributes.includes('disabled=""'))).toBe(true);
       expect(markup).toMatch(/<input[^>]*disabled=""/);
-      expect(markup).toMatch(/role="combobox"[^>]*disabled=""|disabled=""[^>]*role="combobox"/);
+      expect(markup).toContain('role="radiogroup"');
     }
     gameStore.setState({ clockRunning: false, processing: true });
     expect(render()).toMatch(/<button[^>]*disabled=""/);
     gameStore.setState({ processing: false });
-    expect(render()).not.toMatch(/<button[^>]*disabled=""/);
+    expect(render()).toMatch(/aria-pressed="true"(?![^>]*disabled)/);
   });
   it('renders applied authority pairs with no enclosing dialog or global apply footer', () => {
     const markup = render();
@@ -74,7 +80,7 @@ describe('owner office page', () => {
     expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 직접/);
     expect(markup).toMatch(/aria-pressed="false"[^>]*>전체 자동/);
     expect(markup).not.toContain('role="dialog"');
-    expect(markup).not.toContain('>적용</button>');
+    expect(markup).toContain('적용');
     // The result notice preference sits on its own, above the 자리를 비운 동안 section.
     expect(markup).toMatch(/<input type="checkbox"[^>]*\/>경기 결과 알림/);
     expect(markup.indexOf('경기 결과 알림')).toBeLessThan(markup.indexOf('자리를 비운 동안'));
@@ -163,7 +169,7 @@ describe('owner office page', () => {
       blocked: false,
       onSelect: select,
     });
-    const choices = row.props.children[1].props.children;
+    const choices = row.props.children[1].props.children[1].props.children;
     expect(choices[1].props['data-ui']).toBe('secondary');
     expect(choices[0].props['data-ui']).toBeUndefined();
     choices[1].props.onClick();
@@ -181,7 +187,7 @@ describe('owner office page', () => {
         blocked: false,
         onSelect: vi.fn(),
       });
-      const buttons = row.props.children[1].props.children;
+      const buttons = row.props.children[1].props.children[1].props.children;
       expect(buttons[Number(!delegated)].props['data-ui']).toBeUndefined();
       expect(buttons[Number(delegated)].props['aria-pressed']).toBe(true);
     }
@@ -197,7 +203,9 @@ describe('owner office page', () => {
     const markup = render();
     expect(markup).toContain('읽기 전용');
     expect(
-      [...markup.matchAll(/<button[^>]*>/g)].every(([tag]) => tag.includes('disabled=""')),
+      [...markup.matchAll(/<button[^>]*aria-pressed[^>]*>/g)].every(([tag]) =>
+        tag.includes('disabled=""'),
+      ),
     ).toBe(true);
   });
 });

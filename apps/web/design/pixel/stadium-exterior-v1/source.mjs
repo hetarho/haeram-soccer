@@ -8,7 +8,13 @@ export function stadiumExteriorSource() {
   const path = (d, fill) => shapes.push(`<path d="${d}" fill="${fill}"/>`);
   rect(0, 0, 240, 80, '#172b40');
   rect(0, 17, 240, 15, '#243e50');
-  for (const [x, y] of [[18, 8], [69, 4], [132, 10], [178, 6], [224, 12]])
+  for (const [x, y] of [
+    [18, 8],
+    [69, 4],
+    [132, 10],
+    [178, 6],
+    [224, 12],
+  ])
     rect(x, y, 1, 1, '#abb8a3');
   for (const x of [47, 188]) {
     rect(x, 9, 2, 29, '#0d1d28');
@@ -42,12 +48,14 @@ export function stadiumExteriorSource() {
   path('M81 43V34H97V31H108V28H130V31H141V34H157V68H81Z', '#805040');
   for (let y = 36; y < 66; y += 4) {
     if (y >= 50) rect(14, y, 64, 1, '#76503e');
-    for (let x = 83 + (y % 8 ? 4 : 0); x < 155; x += 8)
-      rect(x, y, 5, 1, '#a16d4b');
+    for (let x = 83 + (y % 8 ? 4 : 0); x < 155; x += 8) rect(x, y, 5, 1, '#a16d4b');
     if (y >= 50) for (let x = 162; x < 226; x += 8) rect(x, y, 5, 1, '#906349');
   }
   path('M78 32H95V29H106V25H132V28H144V32H160V35H142V32H130V29H108V32H97V35H78Z', '#c1a47a');
-  for (const [x, width] of [[91, 5], [144, 5]]) {
+  for (const [x, width] of [
+    [91, 5],
+    [144, 5],
+  ]) {
     rect(x, 39, width, 29, '#bda47c');
     rect(x, 38, width, 2, '#d2bc93');
     rect(x + 3, 42, 2, 24, '#8e785d');

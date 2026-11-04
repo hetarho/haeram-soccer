@@ -59,36 +59,25 @@ describe('world-scoped approval navigation', () => {
       address: '/direction?view=players&work=recruitment&request=r1&requestWorld=w1',
     });
   });
-  it('keeps the request identity in canonical history and leaves the work unresolved', () => {
+  it('opens a world-scoped review over the current page and returns to the inbox without navigation', () => {
     openApprovalRequest('world', first);
-    expect(location.pathname).toBe('/direction');
+    expect(location.pathname).toBe('/journal');
     expect(approvalId()).toBe(first.id);
-    expect(routeOf(location.pathname, location.search)).toEqual({
-      page: 'business',
-      view: 'players',
-    });
     expect(useTaskMemory.getState().approvalRequests[first.id].item).toEqual(first);
-    expect(history.pushState).toHaveBeenCalledOnce();
-    // Reviewed from home, the request keeps home as a named return beside the 결재함.
-    expect(useTaskMemory.getState().returning).toMatchObject({
-      page: 'dashboard',
-      label: '클럽 홈',
-      target: 'business',
-    });
+    expect(history.pushState).not.toHaveBeenCalled();
+    expect(useTaskMemory.getState().returning).toBeUndefined();
     returnApprovalHome(useTaskMemory.getState().approvalRequests[first.id]);
-    // Every way out of a review leads to the queue itself, unresolved (→WEB-100).
-    expect(location.pathname + location.search).toBe('/direction');
-    expect(useNavigation.getState().page).toBe('business');
+    expect(location.pathname + location.search).toBe('/journal');
+    expect(useNavigation.getState().page).toBe('dashboard');
     expect(approvalId()).toBeUndefined();
-    expect(useTaskMemory.getState().addresses.business).toBe('/direction');
     expect(useTaskMemory.getState().values[QUEUE_RETURN]).toEqual({
       id: first.id,
       index: 0,
       back: true,
     });
-    // The browser can revisit the old request and display its live/resolved state.
     expect(useTaskMemory.getState().approvalRequests[first.id].item).toEqual(first);
   });
+
   it('returns a review opened from the queue to its place there, without a detour', () => {
     history.pushState(null, '', '/direction');
     useNavigation.setState({ page: 'business' });

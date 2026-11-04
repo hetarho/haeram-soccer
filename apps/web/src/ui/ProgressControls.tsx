@@ -5,11 +5,7 @@ import { PixelIcon } from './PixelIcon';
 import { currentDay, seasonLength } from '../../../../packages/engine/src/calendar';
 import { lazy, memo, Suspense, useEffect, useRef, useState } from 'react';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
-import {
-  useProgression,
-  type Pace,
-  type ProgressionController,
-} from '../runtime/progression';
+import { useProgression, type Pace, type ProgressionController } from '../runtime/progression';
 import type { GameClient } from '../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { ownDivisionRound } from './league';

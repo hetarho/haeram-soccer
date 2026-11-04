@@ -125,7 +125,10 @@ export function fixedCosts(w: World) {
 export function seasonBooks(w: World) {
   const result = BigInt(seasonResult(w));
   const injected = w.events
-    .filter((e) => e.kind === 'owner-injection' && e.year === w.year && e.currency === w.currency && e.amount)
+    .filter(
+      (e) =>
+        e.kind === 'owner-injection' && e.year === w.year && e.currency === w.currency && e.amount,
+    )
     .reduce((sum, e) => sum + BigInt(e.amount!), 0n);
   const income = BigInt(w.income) - injected;
   return {

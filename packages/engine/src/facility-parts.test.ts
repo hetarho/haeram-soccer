@@ -8,6 +8,7 @@ import {
   nextWork,
   progressFacilityWorks,
   stadiumCapacity,
+  trainingGroundTerms,
 } from './index';
 import { startWork } from './testing';
 import { careerWorld } from './career.testkit';
@@ -96,7 +97,8 @@ describe('facility works (→ECON-32)', () => {
     pass(w, 'academy', 90);
     expect(w.trainingGround).toBe(1);
     expect(w.academyFacility).toBe(2);
-    expect(developmentBase(w)).toBeCloseTo(base + 0.06, 10);
+    expect(developmentBase(w)).toBe(base);
+    expect(trainingGroundTerms(w)).toMatchObject({ growth: 1.06, recoveryBonus: 1, goodwill: 1 });
     expect(academyIntakeSize(w)).toBe(intake + 1);
     // The stand is still being built.
     expect(w.stadium).toBe(0);

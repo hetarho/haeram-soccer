@@ -15,6 +15,7 @@ import { scaleBy } from '../../../../packages/engine/src/primitives';
 import { withOwner } from '../../../../packages/engine/src/testing';
 import type { ClientState } from '../runtime/client';
 import type { View } from '../runtime/protocol';
+import { officeRead } from '../runtime/officeRead';
 import { gameStore, initialClientState } from '../runtime/store';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { CashAlarm } from './CashAlarm';
@@ -245,17 +246,25 @@ describe('the season books the money sheet leads with', () => {
     w.income = '1000';
     w.expense = '1600';
     const sheet = renderToStaticMarkup(
-      createElement(OwnerSheetBody, { w, sending: false, message: '', onCommand: async () => true }),
+      createElement(OwnerSheetBody, {
+        w,
+        sending: false,
+        message: '',
+        onCommand: async () => true,
+      }),
     );
     expect(sheet).not.toContain('<details');
     expect(sheet).toContain('data-testid="season-result"');
     expect(sheet).toContain('손해');
     expect(sheet.indexOf('season-result')).toBeLessThan(sheet.indexOf('보유 현금'));
     expect(sheet).not.toContain('owner-fan-mood');
+    gameStore.setState({ view: { world: w, office: officeRead(w) } as View });
     const overview = renderToStaticMarkup(createElement(ClubOverview, { w }));
     expect(overview).toContain('data-testid="owner-fan-mood"');
     expect(overview.indexOf('owner-fan-mood')).toBeLessThan(overview.indexOf('선수단 구성'));
-    expect(renderToStaticMarkup(createElement(ClubOverview, { w: founded() }))).not.toContain(
+    const fresh = founded();
+    gameStore.setState({ view: { world: fresh, office: officeRead(fresh) } as View });
+    expect(renderToStaticMarkup(createElement(ClubOverview, { w: fresh }))).not.toContain(
       'owner-fan-mood',
     );
   });

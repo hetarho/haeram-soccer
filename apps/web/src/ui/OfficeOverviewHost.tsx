@@ -53,7 +53,11 @@ export function OfficeOverviewHost({
 }) {
   const id = useGameState((state) => state.view!.world.id);
   const [open, setOpen] = useTaskState(id, 'office-overview', false);
-  const [focus] = useTaskState<ResponsibilityKey | 'finance' | undefined>(id, 'office-focus', undefined);
+  const [focus] = useTaskState<ResponsibilityKey | 'finance' | undefined>(
+    id,
+    'office-focus',
+    undefined,
+  );
   useEffect(() => {
     const close = () => setOpen(false);
     window.addEventListener('popstate', close);
