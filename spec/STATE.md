@@ -701,7 +701,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 30 | 30 | - | 2 |
-| WEB | 209 | 209 | - | 0 |
+| WEB | 210 | 210 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
@@ -744,6 +744,7 @@
 | T703 | staff markets from clubs and free agents | STAFF CLUB OWNER ARCH | - | todo |
 | T704 | staff careers and tenure results | STAFF HIST LEAGUE ARCH | T703 | todo |
 | T705 | recruitment sources in the market | WEB CLUB STAFF ARCH | T702 T703 | todo |
+| T706 | the office's effects in force, area totals from their own controls, and the areas on home | WEB CLUB OWNER | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -767,6 +768,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- oe05: T706 is implemented on local branch work/office-effects over a snapshot of the primary checkout's uncommitted localization (locally T693 and WEB r208, which collide with next's T693 and r208); land T706 on main after that work is renumbered and published.
 - rs01: implement-task T701, then T702 and T703, T704, T705 in the worktree .claude/worktrees/rs01 (branch worktree-rs01); the primary checkout is in a design session and stays untouched. Final gate once, then merge into main.
 - ba04 T693 next (CLUB r52 era star pay spread): baseline books and every tier's reference careers on the released source first, then calibrate and hold out; do not start T689 before it.
 - Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers and wage change, one mechanism, and implement it.
@@ -796,6 +798,7 @@
 - ba04 records: T699 turned CLUB-48's table, LEAGUE-10's means level and competition money on together; CLUB r59, LEAGUE r18, ECON r48 state them in force with LEAGUE-13's and ECON-29's measured lines on these rules.
 
 ## log
+- 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
 - 261104 update-ssot CLUB r52 + create-task T693: an era star pay spread prices every wage term above an ordinary OVR-80 player's (England's maximum wage to 1960/61), calibrated on the strongest clubs' books with held-out seeds, countries and years; the growth slice follows on T693's baseline. ba04
 - 261104 ba04 start: owner requests sequential football-realism calibration in a new isolated worktree; base main 7241867b, released planning documents synchronized to next without code, primary checkout preserved.
 - 261104 nv04 release: verified 96eb899c published to main; 2081 unit tests, 1177 integration tests (4 existing skips) and 346 Chromium journeys pass; actual CI 41772636192 succeeds (confirmed directly after CLI HTML conclusion-parser failure). Primary main checkout and unrelated work preserved. nx04
@@ -815,4 +818,3 @@
 - 261104 update-ssot CLUB r57 LEAGUE r17 + create-task T698: LEAGUE-10 records the real leagues' 1980/81–2009/10 champions (4–9 different, the most titles 7–17, per country); CLUB-48's champions part reads that spread pooled over the seeds with released + the most any of 19 placebo sets (1930/31's results drawn afresh) ends further out; T698 adds the placebo draw, measures the noise, then re-reads T697's and T696's archived candidates. ba04
 - 261104 create-task T701–T705 (CLUB r60 STAFF r40 ECON r49 OWNER r5 WEB r209): free-agent pool, scout search over existing players, staff markets from clubs and free agents, staff careers with tenure finishes, market sources in the UI. rs01
 - 261104 update-ssot CLUB r60 STAFF r40 ECON r49 OWNER r5 WEB r209: every recruitment candidate is another club's or a real free agent, none created by a read (CLUB-50); a player free-agent pool (CLUB-49); the chief scout finds existing players within his reach (CLUB-51); every club's 단장, chief scout and coaches derived and poachable, per-post free-agent pools (STAFF-49); staff careers recorded only on a move, tenure results read from archived standings (STAFF-50). rs01
-- 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
