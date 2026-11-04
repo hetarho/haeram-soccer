@@ -675,6 +675,25 @@
   font-size: 12px;
   line-height: 16px;
 }
+/*
+ * One text line, so four rows still open a 360x740 phone before its optional panels (→WEB-43):
+ * the club link keeps the line's height instead of a name's 32 px box, and what does not fit
+ * (division, 해외) ends in an ellipsis; the candidate's detail reads it in full.
+ */
+.rowSource > [data-source] {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.candidateTable .rowSource button[data-ui='link'] {
+  min-height: 0;
+}
+.rowSource button[data-ui='link'] > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .potentialValue {
   display: inline-grid;
   justify-items: center;

@@ -49,6 +49,7 @@ import {
   changeMarketQuery,
   marketLeagueKey,
   marketLeagues,
+  signedFreeAgentTarget,
   toggleMarketComparison,
   useMarketDetail,
   useMarketPage,
@@ -699,6 +700,14 @@ export function RecruitmentDesk({
       { background: true },
     );
     if (!currentWorld()) return;
+    if (reply?.ok && candidate.offer.freeAgent) {
+      // He has left the pool for our squad: open cards read him with us, signed (→CLUB-49).
+      const signed = candidate.offer.target;
+      setViewing((current) => signedFreeAgentTarget(current, signed, w.playerClub));
+      setComparison((current) =>
+        current.map((target) => signedFreeAgentTarget(target, signed, w.playerClub)),
+      );
+    }
     setMessage({
       world: w.id,
       text: reply?.ok
