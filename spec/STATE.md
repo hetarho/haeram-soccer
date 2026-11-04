@@ -744,7 +744,6 @@
 | T703 | staff markets from clubs and free agents | STAFF CLUB OWNER ARCH | - | todo |
 | T704 | staff careers and tenure results | STAFF HIST LEAGUE ARCH | T703 | todo |
 | T705 | recruitment sources in the market | WEB CLUB STAFF ARCH | T702 T703 | todo |
-| T706 | the office's effects in force, area totals from their own controls, and the areas on home | WEB CLUB OWNER | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -769,7 +768,6 @@
 
 ## next
 - T707 (the complete localization, i804) is on main with the design session d7m3 and T706: every registered locale carries all 6,576 messages and hardcoded copy, missing translations or parameters fail lint/CI; machine-translated football prose still deserves an editorial pass.
-- oe05: T706 is implemented on local branch work/office-effects over a snapshot of the primary checkout's uncommitted localization (locally T693 and WEB r208, which collide with next's T693 and r208); land T706 on main after that work is renumbered and published.
 - rs01: implement-task T701, then T702 and T703, T704, T705 in the worktree .claude/worktrees/rs01 (branch worktree-rs01); the primary checkout is in a design session and stays untouched. Final gate once, then merge into main.
 - ba04 T693 next (CLUB r52 era star pay spread): baseline books and every tier's reference careers on the released source first, then calibrate and hold out; do not start T689 before it.
 - Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers and wage change, one mechanism, and implement it.
@@ -799,6 +797,7 @@
 - ba04 records: T699 turned CLUB-48's table, LEAGUE-10's means level and competition money on together; CLUB r59, LEAGUE r18, ECON r48 state them in force with LEAGUE-13's and ECON-29's measured lines on these rules.
 
 ## log
+- 261105 T706 done: 구단주 사무실 opens on the effects in force with factors leading to their controls, areas' totals from their own controls, the areas on home; published on main with the design session d7m3 and T707; integration, contract, build and browser runs left to CI. oe05
 - 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
 - 261105 design club and player detail: end d7m3; club/player links and detail dialogs become feature-sliced entities and widgets with one host each, worker reads through shared useRead and runtime clubProfile, ESLint layer rules; committed with the localization (T707) and T706, whose combined tree passed typecheck, lint, format and the unit suite; integration, contract, build and browser runs left to CI.
 - 261105 T707 done locally: 12 complete locale packs / 6,499 messages / 8,285 validated references; source prose and saved facts preserved, AGENTS + ESLint + CI enforce resource-only copy. 1,260 affected unit tests, type/lint/format/resource checks and build pass; translation editorial review and release browser/integration gates remain. i804
@@ -818,4 +817,3 @@
 - 261104 update-ssot ECON r46 CLUB r54 WEB r208 + create-task T695: SSOT aligned with the owner controls released on main without SSOT changes (owner-set dials, ticket preset, cards, rows and facility works; per-decision 재정 기조 and wage caps; grassroots and recruitment fee factors retired; training ground growth/recovery/goodwill; office on its investment directory with menu modals); T695 merges main fb868d3d here and verifies it, superseding the release-gate fix the owner already made. ba04
 - 261104 update-ssot LEAGUE r15 CLUB r55 + create-task T696: LEAGUE-10's means level (a club nobody owns keeps only the stars its last closed book pays at break-even) enters with CLUB-48's table (0.22 through 1970, 0.57 at 1990, 1 from 2008; England 0 through 1960/61) only through CLUB-48's gate (fit without the means level, books and champions with both); until then s = 1 and no means level. ba04
 - 261104 update-ssot ECON r47 CLUB r56 LEAGUE r16 + create-task T697: a club nobody owns' book counts its cup and continental money as the owner's club is paid (prizes, result bonuses, home gates unscaled), in force only with CLUB-48's table and LEAGUE-10's means level through CLUB-48's gate, every part read on books counting it; T697 screens on T696's worlds, re-fits the table and re-runs the gate. ba04
-- 261104 update-ssot CLUB r57 LEAGUE r17 + create-task T698: LEAGUE-10 records the real leagues' 1980/81–2009/10 champions (4–9 different, the most titles 7–17, per country); CLUB-48's champions part reads that spread pooled over the seeds with released + the most any of 19 placebo sets (1930/31's results drawn afresh) ends further out; T698 adds the placebo draw, measures the noise, then re-reads T697's and T696's archived candidates. ba04

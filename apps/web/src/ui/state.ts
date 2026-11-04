@@ -298,6 +298,14 @@ export function openOperations(view: OperationsView = 'investment') {
 export function openInvestment(area?: InvestmentArea) {
   visit(`${operationsAddress('investment')}${area ? `&area=${area}` : ''}`);
 }
+/**
+ * Opens an investment area on one of its controls (→WEB-116): `control` is the control's id or
+ * `data-control`, which the area scrolls to and marks once it shows.
+ */
+export function openControl(area: InvestmentArea, control: string) {
+  useControlRequest.getState().open(control);
+  openInvestment(area);
+}
 /** An office desk address left without a selected request goes where its work lives now. */
 export function leaveDesk() {
   visit(taskAddress(), true);
@@ -685,6 +693,8 @@ export function openAcademyProspect(id: string) {
   openPersonnel({ page: 'academy' });
 }
 export const useFacilityRequest = oneShot<'stadium' | 'training' | 'academy'>();
+/** A control an investment area shows first: its element id or `data-control`. */
+export const useControlRequest = oneShot<string>();
 export function openFacility(part: 'stadium' | 'training' | 'academy') {
   beginTaskDetour('operations', operationsAddress('investment'));
   useFacilityRequest.getState().open(part);

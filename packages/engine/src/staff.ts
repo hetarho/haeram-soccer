@@ -143,7 +143,7 @@ export const DEPARTMENT_ATTRIBUTES: Partial<Record<StaffRole, readonly Attribute
   fitness: ['pace', 'stamina', 'strength'],
 };
 /** A developer coach's pull on growth of players aged 21 or younger, multiplied across roles. */
-const YOUTH_DEVELOPER: Partial<Record<StaffRole, number>> = {
+export const YOUTH_DEVELOPER: Partial<Record<StaffRole, number>> = {
   assistant: 1.3,
   youth: 1.1,
   attack: 1.05,
@@ -214,6 +214,15 @@ export function staffEffects(w: World): StaffEffects {
   const effects = neutralEffects();
   if (!w.staff) return effects;
   for (const role of STAFF_ROLES) applyDepartment(effects, role, staffMember(w, role));
+  return effects;
+}
+/**
+ * What one department adds on its own, every other effect neutral: `staffEffects` applies the
+ * departments in turn, so these combine to it (→WEB-116).
+ */
+export function departmentEffects(w: World, role: StaffRole): StaffEffects {
+  const effects = neutralEffects();
+  if (w.staff) applyDepartment(effects, role, staffMember(w, role));
   return effects;
 }
 

@@ -112,12 +112,16 @@ export interface AcademyProspect {
 export function academyIntakeDay(w: World) {
   return seasonDayOf(w.year, 3, 15);
 }
+/** The intake's standard size, and the prospect a youth director of this ability adds. */
+export const ACADEMY_INTAKE = { standard: 3, director: { ability: 70, extra: 1 } } as const;
 /** Prospects that arrive at the next intake: 3, +1 with a strong youth director, +1 with academy facilities 2+. */
 export function academyIntakeSize(w: World) {
   const director = staffMember(w, 'youth');
   return (
-    3 +
-    (director && director.ability >= 70 ? 1 : 0) +
+    ACADEMY_INTAKE.standard +
+    (director && director.ability >= ACADEMY_INTAKE.director.ability
+      ? ACADEMY_INTAKE.director.extra
+      : 0) +
     academyFacilityTerms(w).intake +
     policyEffects(policyOf(w)).academyIntake +
     buildEffects(w).academyIntake +

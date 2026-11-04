@@ -64,6 +64,13 @@ export const signed = (value: number, digits = 0) => {
     : number(Math.abs(value));
   return value > 0 ? `+${text}` : value < 0 ? `−${text}` : text;
 };
+/** A number at exactly `digits` decimal places, without grouping: "1.45". */
+export const decimal = (value: number, digits: number) =>
+  localeFormatters?.decimal(Number(value.toFixed(digits)), {
+    useGrouping: false,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }) ?? value.toFixed(digits);
 export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2)}`;
 /**
  * When a contract that runs `until` that year ends, in seasons rather than a bare year:

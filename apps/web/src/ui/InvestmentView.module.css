@@ -34,7 +34,7 @@
   border-radius: var(--scene-radius, var(--card-radius));
   background: var(--surface-deep);
 }
-.page .gallery > button.destination {
+.gallery > button.destination {
   width: 100%;
   min-height: clamp(168px, 22vw, 280px);
   padding: 0;
@@ -467,4 +467,66 @@
   .art {
     transition: none;
   }
+}
+
+/* On home the areas sit under the office entrance: four across, two on phones, shorter. */
+.homeGallery {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.homeGallery > button.destination {
+  min-height: clamp(112px, 13vw, 168px);
+}
+.homeGallery .overlay {
+  inset: auto 12px 12px;
+}
+.homeGallery .overlay b {
+  font-size: 17px;
+}
+@media (max-width: 1000px) {
+  .homeGallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .homeGallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .homeGallery .overlay > span,
+  .homeGallery .enter {
+    display: none;
+  }
+}
+
+/* A control the office sent the owner to marks itself once (→WEB-116). */
+.details [data-control-focus] {
+  animation: control-focus 1.6s ease-out 1;
+}
+@keyframes control-focus {
+  0%,
+  40% {
+    box-shadow: 0 0 0 3px var(--focus);
+  }
+  100% {
+    box-shadow: 0 0 0 3px transparent;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .details [data-control-focus] {
+    animation: none;
+  }
+}
+
+/* An area's totals end with what they leave out and the way to the whole values. */
+.totalsNote {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+.totalsNote > .note {
+  flex: 1 1 240px;
+  margin: 0;
 }

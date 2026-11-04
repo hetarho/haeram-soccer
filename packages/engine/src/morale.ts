@@ -46,22 +46,36 @@ export function leadersInLastXi(w: World) {
   const ids = new Set(last.players.map((line) => line.id));
   return w.players.filter((p) => ids.has(p.id) && p.traits.includes('leader')).length;
 }
+/** The morale baseline stays within these bounds, whatever its terms add up to. */
+export const MORALE_BASELINE_BOUNDS = [30, 80] as const;
+/** Each term of the morale baseline, summed in this order (→WEB-116 reads them one by one). */
+export function moraleBaselineTerms(w: World) {
+  return {
+    standard: 58,
+    leaders: Math.min(LEADER_MORALE.most, leadersInLastXi(w) * LEADER_MORALE.each),
+    support: (policyOf(w).support - 3) * 4,
+    trust: (w.manager.trust - 50) / 10,
+    style: managerStyleEffects(w).moraleBaseline,
+    build: buildEffects(w).moraleBaseline,
+    synergy: synergyEffects(w).moraleBaseline,
+  };
+}
 /**
  * Where morale settles between results: squad support, the manager's standing and the dressing
  * room's 리더. A standard club with a trusted manager settles at the neutral 60, so ordinary
  * results never drag it down.
  */
 export function moraleBaseline(w: World) {
+  const terms = moraleBaselineTerms(w);
   return clamp(
-    58 +
-      Math.min(LEADER_MORALE.most, leadersInLastXi(w) * LEADER_MORALE.each) +
-      (policyOf(w).support - 3) * 4 +
-      (w.manager.trust - 50) / 10 +
-      managerStyleEffects(w).moraleBaseline +
-      buildEffects(w).moraleBaseline +
-      synergyEffects(w).moraleBaseline,
-    30,
-    80,
+    terms.standard +
+      terms.leaders +
+      terms.support +
+      terms.trust +
+      terms.style +
+      terms.build +
+      terms.synergy,
+    ...MORALE_BASELINE_BOUNDS,
   );
 }
 /** Results move morale; wide margins move it further. */

@@ -377,6 +377,8 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   const capacity = stadiumCapacity(w);
   const demand = Math.exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
   const form = recentForm(w, excluding);
+  // Recent form scales home demand from 0.6 to 1.15.
+  const formDemand = 0.6 + form * 0.55;
   const supporters = localSupporters(w);
   const draw = opponentDraw(w, opponent);
   // 주변 투자 while paid and 지역 기반 lift home demand (→ECON-9, →ECON-34).
@@ -393,10 +395,7 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
   // The club build moves home demand on its own: community clubs fill seats, commercial ones lose some.
   const build = 1 + buildEffects(w).gateDemand;
   // No campaign brings more than every local supporter.
-  const wanted = Math.min(
-    supporters,
-    supporters * demand * (0.6 + form * 0.55) * draw * marketing * build,
-  );
+  const wanted = Math.min(supporters, supporters * demand * formDemand * draw * marketing * build);
   const expected = Math.min(capacity, wanted);
   const low = Math.round(expected * 0.8);
   const high = Math.round(expected);
@@ -413,6 +412,7 @@ export function gateProjection(w: World, excluding?: string, opponent?: string) 
     capacity,
     demand,
     form,
+    formDemand,
     marketing,
     /** Local supporters within the catchment, the most who could come. */
     supporters,

@@ -30,14 +30,14 @@ import { FacilityArt } from './FacilityArt';
 import { Dialog } from './Dialog';
 import { DeskStats } from './OfficeDesk';
 import { Money } from './Money';
-import { PixelIcon } from './PixelIcon';
 import { number } from './format';
 import { useAddressTab } from './PageTabs';
 import { OPERATIONS_VIEWS, operationsAddress } from './clubSections';
 import { INVESTMENT_AREAS, INVESTMENT_PAGES, type InvestmentArea } from './investmentAreas';
-import { openInvestment, openDecisionSettings, useFacilityRequest } from './state';
+import { openDecisionSettings, useControlRequest, useFacilityRequest } from './state';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { InvestmentTotals } from './InvestmentTotals';
+import { OfficeEffects } from './OfficeEffects';
 import {
   BuildSetting,
   InvestmentSlider,
@@ -750,6 +750,28 @@ export function InvestmentView({ state, client }: { state: ClientState; client: 
     );
     return () => cancelAnimationFrame(frame);
   }, [request, selected]);
+  // A factor the office opened (→WEB-116): its control comes into view and marks itself once.
+  const control = useControlRequest((store) => store.request);
+  useEffect(() => {
+    if (!control || !selected) return;
+    const frame = requestAnimationFrame(() => {
+      useControlRequest.getState().take();
+      const element =
+        document.getElementById(control) ??
+        document.querySelector(`[data-control="${CSS.escape(control)}"]`);
+      if (!element) return;
+      element.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      element.setAttribute('data-control-focus', '');
+      element.addEventListener(
+        'animationend',
+        () => element.removeAttribute('data-control-focus'),
+        {
+          once: true,
+        },
+      );
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [control, selected]);
   if (view !== 'investment')
     return (
       <div className={s.page}>
@@ -793,37 +815,9 @@ export function InvestmentView({ state, client }: { state: ClientState; client: 
           <>
             <header className={s.title}>
               <h2>{richMessage('copy.catalog.9a8019d09c')}</h2>
-              <p>{richMessage('copy.InvestmentView.e761d77b64')}</p>
+              <p>{displayMessage('office.effects.lead')}</p>
             </header>
-            <div className={s.gallery}>
-              {localizeValue(
-                INVESTMENT_AREAS.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={s.destination}
-                    aria-label={displayMessage('copy.InvestmentView.8767428e28', {
-                      p0: item.title,
-                    })}
-                    onClick={() => openInvestment(item.id)}
-                  >
-                    <FacilityArt
-                      kind={item.art}
-                      world={w}
-                      view={item.id === 'stadium' ? 'exterior' : undefined}
-                      className={s.art}
-                    />
-                    <span className={s.overlay}>
-                      <b>{localizeValue(item.title)}</b>
-                      <span>{localizeValue(item.description)}</span>
-                    </span>
-                    <span className={s.enter} aria-hidden="true">
-                      <PixelIcon name="chevronRight" size={24} />
-                    </span>
-                  </button>
-                )),
-              )}
-            </div>
+            <OfficeEffects w={w} />
           </>
         ),
       )}

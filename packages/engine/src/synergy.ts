@@ -49,6 +49,8 @@ export interface SynergyState {
   conditions: { label: string; met: boolean }[];
   active: boolean;
   bonus: string;
+  /** What it adds while active, in `synergyEffects`' terms. */
+  effects: Partial<SynergyEffects>;
 }
 
 interface SynergyRule {
@@ -270,6 +272,7 @@ export function synergyStates(w: World): SynergyState[] {
       conditions,
       active: conditions.every((condition) => condition.met),
       bonus: rule.bonus,
+      effects: rule.effects,
     };
   });
 }

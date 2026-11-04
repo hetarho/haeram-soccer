@@ -554,7 +554,7 @@ export function RecruitmentGuideline({ w, client }: { w: World; client: GameClie
 const EFFECT_LABELS: Record<keyof BuildEffects, string> = {
   academyIntake: sourceMessage('copy.ClubSettingControl.5f570520eb'),
   academyPotential: sourceMessage('copy.ClubSettingControl.8b55b3cb94'),
-  youthGrowth: sourceMessage('copy.ClubSettingControl.b71dbf73eb'),
+  youthGrowth: sourceMessage('office.effect.youthGrowth'),
   marketCandidates: sourceMessage('copy.ClubSettingControl.2051d3609a'),
   marketPotential: sourceMessage('copy.ClubSettingControl.527760f774'),
   marketAbility: sourceMessage('copy.ClubSettingControl.7d315fdd9a'),

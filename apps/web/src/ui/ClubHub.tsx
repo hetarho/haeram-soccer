@@ -17,6 +17,7 @@ import { StrategyPanel } from './LazyStrategyPanel';
 import { Dialog } from './Dialog';
 import s from './ClubHub.module.css';
 import { FacilityArt } from './FacilityArt';
+import { InvestmentGallery } from './InvestmentGallery';
 import { Card } from './Card';
 import { PixelIcon } from './PixelIcon';
 import { HomeAwayBadge } from './HomeAwayBadge';
@@ -343,6 +344,7 @@ export function ClubHub({ w, client }: { w: World; client: GameClient }) {
       <SeasonCard w={w} active={!away} />
       <NextMatchCard w={w} onPrepare={() => setPreparing(true)} />
       <OfficeEntrance w={w} />
+      <InvestmentGallery w={w} className={s.areas} />
 
       {localizeValue(
         preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />,
