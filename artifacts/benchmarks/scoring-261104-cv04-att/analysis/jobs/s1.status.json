@@ -1,0 +1,80 @@
+{
+ "seconds": 170,
+ "status": [
+  {
+   "name": "entries-e4-200-200",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "entries-e4p2-200-200",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "entries-e4-0-200",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "entries-Bid-0-200",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "entries-e4p2-0-200",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "entries-e4p4-0-200",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "entries-e6p2-200-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-e6p2-0-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-e4p4-200-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-e4p2c2-200-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-e4p2c2-0-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-e4p2r2-0-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-e4p2r3-200-200",
+   "code": 0,
+   "seconds": 49
+  },
+  {
+   "name": "entries-e4p2r3-0-200",
+   "code": 0,
+   "seconds": 49
+  },
+  {
+   "name": "entries-e4p2r2-200-200",
+   "code": 0,
+   "seconds": 50
+  }
+ ]
+}

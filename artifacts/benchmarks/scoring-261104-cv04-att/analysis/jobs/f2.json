@@ -1,0 +1,20 @@
+[
+ {
+  "name": "core-e8p8pp03r5w30a085fa-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp03r5w30a085fa.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/core-e8p8pp03r5w30a085fa-validation-1.json"
+  ]
+ }
+]

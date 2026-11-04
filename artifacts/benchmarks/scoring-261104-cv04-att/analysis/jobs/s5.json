@@ -1,0 +1,132 @@
+[
+ {
+  "name": "entries-e8p8pp03fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp03fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8pp03fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8pp03fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp03fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8pp03fa-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8pp01fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp01fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8pp01fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8pp01fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp01fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8pp01fa-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8cp2n4fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8cp2n4fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8cp2n4fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8cp2n4fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8cp2n4fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8cp2n4fa-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8cp2n5fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8cp2n5fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8cp2n5fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8cp2n5fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8cp2n5fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8cp2n5fa-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8pp03cp2n4fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp03cp2n4fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8pp03cp2n4fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8pp03cp2n4fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8pp03cp2n4fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8pp03cp2n4fa-200-200.json"
+  ]
+ }
+]

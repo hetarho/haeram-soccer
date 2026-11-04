@@ -1,0 +1,197 @@
+[
+ {
+  "name": "entries-Bid-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/Bid.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-Bid-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p4-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p4-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p4-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p4-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e6p2-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e6p2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e6p2-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e6p2-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e6p2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e6p2-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2c2-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2c2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2c2-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2c2-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2c2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2c2-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2r2-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2r2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2r2-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2r2-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2r2.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2r2-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2r3-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2r3.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2r3-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2r3-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2r3.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2r3-200-200.json"
+  ]
+ }
+]

@@ -1,0 +1,100 @@
+[
+ {
+  "name": "bands-e8p8fa-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8fa.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-bk35e16e8p8fa-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/bk35e16e8p8fa.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "entries-e8p8l1fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8l1fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8l1fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8l1fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8l1fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8l1fa-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8l2fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8l2fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8l2fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-e8p8l2fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e8p8l2fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e8p8l2fa-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-bk35e16e8p8l1fa-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/bk35e16e8p8l1fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-bk35e16e8p8l1fa-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-bk35e16e8p8l1fa-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/bk35e16e8p8l1fa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-bk35e16e8p8l1fa-200-200.json"
+  ]
+ }
+]
