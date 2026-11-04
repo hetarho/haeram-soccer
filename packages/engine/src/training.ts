@@ -182,7 +182,13 @@ export function settleTraining(w: World) {
   for (const player of activePlayers(w)) {
     const focus = focuses.get(player.id)!,
       info = trainingFocusInfo[focus],
-      recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus + trainingGroundTerms(w).recoveryBonus);
+      recovery = Math.max(
+        0,
+        info.recovery +
+          policy.recoveryBonus +
+          staff.recoveryBonus +
+          trainingGroundTerms(w).recoveryBonus,
+      );
     const gain = roundGain(w, player, policy, staff, focus);
     recordDevelopment(
       player,
@@ -320,7 +326,15 @@ export type DevelopmentHome =
   | 'people/coaches'
   | 'business/facility';
 export interface DevelopmentFactor {
-  key: 'focus' | 'investment' | 'base' | 'facility' | 'style' | 'style-youth' | 'coaches-youth' | 'build-youth';
+  key:
+    | 'focus'
+    | 'investment'
+    | 'base'
+    | 'facility'
+    | 'style'
+    | 'style-youth'
+    | 'coaches-youth'
+    | 'build-youth';
   label: string;
   /** What the term multiplies a settled round's growth by. */
   value: number;
@@ -468,7 +482,10 @@ export function developmentOutlook(w: World) {
       label: info.label,
       developmentMultiplier: info.developmentMultiplier,
       /** Fatigue recovered at the next settled round, with staff, policy and facility bonuses. */
-      recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus + ground.recoveryBonus),
+      recovery: Math.max(
+        0,
+        info.recovery + effects.recoveryBonus + staff.recoveryBonus + ground.recoveryBonus,
+      ),
       /** What squad investment, the training ground and the fitness coach add to recovery. */
       recoveryBonus: effects.recoveryBonus + staff.recoveryBonus + ground.recoveryBonus,
     },

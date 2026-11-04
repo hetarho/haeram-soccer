@@ -26,7 +26,10 @@ export function ClubCashSummary({ w }: { w: World }) {
           {
             label: '시즌 수지',
             value: (
-              <span className={result > 0n ? o.up : result < 0n ? o.down : undefined} data-testid="season-result">
+              <span
+                className={result > 0n ? o.up : result < 0n ? o.down : undefined}
+                data-testid="season-result"
+              >
                 {result > 0n ? '+' : ''}
                 {format(books.result)}
               </span>

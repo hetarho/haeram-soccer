@@ -63,10 +63,11 @@ describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
   });
 
   it('rises toward the targets the rows set, faster up than down, and fades without investment', () => {
-    // A main row and its second row add up, never past 100.
-    expect(
-      policyEffects({ ...POLICY_DEFAULTS, localInvest: 3, grassroots: 2 }).baseTargets,
-    ).toEqual({ local: 50, global: 0 });
+    // Local investment is the only local target; the two global rows add up, capped at 100.
+    expect(policyEffects({ ...POLICY_DEFAULTS, localInvest: 3 }).baseTargets).toEqual({
+      local: 40,
+      global: 0,
+    });
     expect(
       policyEffects({ ...POLICY_DEFAULTS, globalMarketing: 5, globalScouting: 5 }).baseTargets,
     ).toEqual({ local: 0, global: 100 });
@@ -125,9 +126,6 @@ describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
     expect(academyPotentialBonus(local)).toBe(academyPotentialBonus(plain) + 4);
     global.build = { youth: 'worldwide' };
     expect(baseEffects(global)).toMatchObject({ intakePotential: 3, intake: 0 });
-    // 풀뿌리 유망주 투자 adds its own potential while paid.
-    const grass = world({ grassroots: 5 });
-    expect(academyPotentialBonus(grass)).toBe(academyPotentialBonus(world()) + 4);
   });
 
   it('widens and lifts the transfer list through 해외 스카우트망', () => {

@@ -35,7 +35,7 @@ export const DIRECTION_AREAS: readonly DirectionArea[] = [
   { key: 'market', label: '매각', card: 'market', rows: [] },
   { key: 'youth', label: '유소년', card: 'youth', rows: ['youthGoal', 'debut', 'academy'] },
   { key: 'staff', label: '스태프', rows: ['school', 'manager', 'coaches'] },
-  { key: 'finance', label: '재정', card: 'revenue', rows: ['finance', 'support', 'renewal'] },
+  { key: 'finance', label: '재정', card: 'revenue', rows: ['support', 'renewal'] },
   {
     key: 'local',
     label: '지역',

@@ -63,6 +63,16 @@ function deployment() {
           write(scene.src, 'synthetic image file');
           for (const variant of scene.variants) write(variant.src, 'synthetic variant file');
         }
+    if (pack.images.facility.exterior) {
+      const exterior = resolver.facility({
+        era: 'heritage',
+        kind: 'stadium',
+        stage: 0,
+        view: 'exterior',
+      });
+      write(exterior.src, 'synthetic exterior image');
+      for (const variant of exterior.variants) write(variant.src, 'synthetic exterior variant');
+    }
     for (const [role, icon] of Object.entries(pack.icons))
       for (const variant of [undefined, ...Object.keys(icon.variants ?? {})]) {
         const resource = resolver.icon(role, variant);

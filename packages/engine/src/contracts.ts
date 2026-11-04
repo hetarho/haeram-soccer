@@ -40,7 +40,13 @@ import { wageDemandFactor } from './owner-traits';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
-import { directionOption, financeStance } from './direction';
+import {
+  annualWageLimit,
+  directionOption,
+  financeOption,
+  financeStance,
+  wageWithinLimit,
+} from './direction';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './transactions';
@@ -581,14 +587,19 @@ export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
     rule = talkRuleOf(w),
     renewal = directionOption(w, 'renewal').name,
-    stance = financeStance(w),
-    finance = directionOption(w, 'finance').name,
+    stance = financeStance(w, 'contracts'),
+    finance = financeOption(w, 'contracts').name,
     ceiling = scaleBy(playerWorth(w, p), rule.maxPay, 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),
     term = staffTerm(w, p),
     age = w.year - p.born;
+  if (!wageWithinLimit(w, 'contracts', talk.floor))
+    return {
+      accept: false as const,
+      reason: `요구 연봉 ${moneyLabel(w, talk.floor)}이 선수 계약의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'contracts')!)}을 넘어 거절했어요.`,
+    };
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,

@@ -100,8 +100,7 @@ export function transferOffers(w: World, year = w.year, legacy = false) {
     .padStart(7, '0');
   // 협상의 달인 lowers what every selling club asks (→OWNER-5); his list stays the same players.
   const own = clubOf(w),
-    feeMultiplier =
-      scouting.feeMultiplier * synergy.feeMultiplier * askedFeeFactor(w);
+    feeMultiplier = scouting.feeMultiplier * synergy.feeMultiplier * askedFeeFactor(w);
   return Array.from({ length: count }, (_, i) => {
     // The candidates 해외 스카우트망 adds come from abroad (→PLAYER-11).
     const foreign = i >= count - policy.scoutCandidates;

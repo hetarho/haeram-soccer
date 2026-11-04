@@ -269,7 +269,7 @@ export function CoachingPlan({ w }: { w: World }) {
       />
       <details data-ui="disclosure" className={management.reference}>
         <summary>스태프 선임 기준</summary>
-        <DirectionFacts w={w} rows={['coaches', 'finance']} />
+        <DirectionFacts w={w} rows={['coaches', 'finance']} responsibility="staff" />
       </details>
       {expiring.length > 0 && (
         <p className={s.note}>이번 시즌 끝에 계약이 끝나는 코치 {expiring.length}명</p>
@@ -810,7 +810,7 @@ export function ManagerPost({ w }: { w: World; client?: GameClient }) {
       />
       <details data-ui="disclosure" className={management.reference}>
         <summary>감독 선임 기준·추천 후보</summary>
-        <DirectionFacts w={w} rows={['school', 'manager', 'finance']} />
+        <DirectionFacts w={w} rows={['school', 'manager', 'finance']} responsibility="manager" />
         <ManagerPreview w={w} title="지금 방향이면" />
       </details>
     </section>
@@ -887,7 +887,7 @@ function CoachPreview({ w, role, title }: { w: World; role: StaffRole; title: st
  * stays fixed; a refusal may leave the player unhappy (→CLUB-27).
  */
 export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
-  const stance = financeStance(w);
+  const stance = financeStance(w, 'contracts');
   return (
     <section data-surface="sheet" className={s.decision} aria-label="계약 협상 위임">
       <header>
@@ -900,7 +900,7 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
         auto="이적시장이 열릴 때 재계약·계약 개선을 요구하는 선수에게 단장이 재계약 기조와 재정 기조에 따라 하한을 제시하거나 거절하고 알림·결정에 보고해요."
         owner="구단주가 협상마다 제시하거나 거절해요."
       />
-      <DirectionFacts w={w} rows={['renewal', 'finance']} />
+      <DirectionFacts w={w} rows={['renewal', 'finance']} responsibility="contracts" />
       <ul className={s.fixed}>
         <li>{directionOption(w, 'renewal').summary}</li>
         <li>계약 기간: 이번 시즌 뒤로 2시즌(32세부터 1시즌), 지금 계약보다 먼저 끝나지 않아요.</li>
@@ -921,8 +921,8 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
 export function OfferAnswers({ w }: { w: World }) {
   const card = cardOf(buildOf(w), 'market').label,
     [bar, prospect] = SALE_BARS[w.build?.market ?? 'standard'],
-    [first, second] = financeStance(w).sellSteps,
-    signing = financeStance(w).signing,
+    [first, second] = financeStance(w, 'sales').sellSteps,
+    signing = financeStance(w, 'recruitment').signing,
     hold = w.build?.market === 'hold';
   return (
     <section data-surface="sheet" className={s.decision} aria-label="이적 제안 위임">
@@ -943,7 +943,7 @@ export function OfferAnswers({ w }: { w: World }) {
         auto="단장이 스카우트 명단과 감독의 요청을 보고 영입 방침과 재정 기조에 따라 영입해요."
         owner="구단주가 영입과 영입 협상을 직접 결정해요."
       />
-      <DirectionFacts w={w} rows={['market', 'finance']} />
+      <DirectionFacts w={w} rows={['market', 'finance']} responsibility="sales" />
       <ul className={s.fixed}>
         <li>이적 명단 선수는 들어오는 제안을 받아들여 매각해요.</li>
         <li>

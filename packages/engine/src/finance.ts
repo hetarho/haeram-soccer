@@ -1,3 +1,4 @@
+import { roundShare as readRoundShare, seasonResult as readSeasonResult } from './finance-read';
 import { eventsInSeason, matchesInSeason } from './season-index';
 import { baseEffects } from './bases';
 import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
@@ -169,15 +170,7 @@ export function seasonTurnover(w: World) {
  * it at the close.
  */
 export function seasonResult(w: World): string {
-  let owner = 0n;
-  for (let i = w.events.length - 1; i >= 0; i--) {
-    const e = w.events[i];
-    if (e.year < w.year) break;
-    if (e.year !== w.year || e.currency !== w.currency || !e.amount) continue;
-    if (e.kind === 'owner-injection') owner -= BigInt(e.amount);
-    else if (e.kind === 'owner-dividend') owner += BigInt(e.amount);
-  }
-  return (BigInt(w.income) - BigInt(w.expense) + owner).toString();
+  return readSeasonResult(w);
 }
 /**
  * The club's revenue over the last 12 months, the income a wage bill can rest on (→CLUB-26): this
@@ -203,11 +196,7 @@ export function scaleOperatingExpenses(amount: string, factor: number) {
 }
 
 export function roundShare(annual: string, round: number, count = 46) {
-  if (round <= 0 || count <= 0) return '0';
-  return (
-    BigInt(ratio(annual, BigInt(round), BigInt(count))) -
-    BigInt(ratio(annual, BigInt(round - 1), BigInt(count)))
-  ).toString();
+  return readRoundShare(annual, round, count);
 }
 
 /**

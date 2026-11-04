@@ -6,7 +6,13 @@
   right: 0;
   margin-inline: auto;
   width: min(480px, calc(100vw - 24px));
-  max-height: min(360px, calc(100dvh - max(var(--toast-clearance, 0px), env(safe-area-inset-bottom)) - 32px - env(safe-area-inset-top)));
+  max-height: min(
+    360px,
+    calc(
+      100dvh - max(var(--toast-clearance, 0px), env(safe-area-inset-bottom)) - 32px -
+        env(safe-area-inset-top)
+    )
+  );
   overflow-y: auto;
   padding: 12px 14px;
   border-radius: var(--card-radius);

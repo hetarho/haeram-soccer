@@ -82,14 +82,21 @@ export function ActionOutcome() {
   useLayoutEffect(() => {
     const toast = element.current;
     if (!visible || !toast) return;
-    const controls = Array.from(document.querySelectorAll<HTMLElement>(
-      '[data-ui="season-transport"], [data-ui="game-shell"] > nav',
-    ));
+    const controls = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-ui="season-transport"], [data-ui="game-shell"] > nav',
+      ),
+    );
     const place = () => {
       let edge = window.innerHeight;
       for (const control of controls) {
         const bounds = control.getBoundingClientRect();
-        if (bounds.width > 0 && bounds.height > 0 && bounds.top < window.innerHeight && bounds.bottom > 0)
+        if (
+          bounds.width > 0 &&
+          bounds.height > 0 &&
+          bounds.top < window.innerHeight &&
+          bounds.bottom > 0
+        )
           edge = Math.min(edge, Math.max(0, bounds.top));
       }
       toast.style.setProperty('--toast-clearance', `${window.innerHeight - edge}px`);

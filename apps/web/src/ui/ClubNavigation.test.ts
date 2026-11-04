@@ -13,9 +13,18 @@ import { PresentationProvider } from '../presentation/react';
 import { validateRegistry } from '../presentation/registry';
 import { createThemeResolver } from '../presentation/theme';
 import { ClubNavigation } from './ClubNavigation';
-import { CLUB_SECTIONS, clubSection, OPERATIONS_VIEWS } from './clubSections';
+import { clubSection, OPERATIONS_VIEWS } from './clubSections';
 import type { Page } from './state';
 
+vi.mock('./ApprovalButtons', () => ({
+  ApprovalButtons: () =>
+    createElement(
+      'div',
+      null,
+      createElement('button', null, '결재함'),
+      createElement('button', null, '결재 설정'),
+    ),
+}));
 const snapshot: PresentationSnapshot = {
   locale: createLoadedLocale(
     validateRegistry(localeRegistryData, 'locale'),
@@ -47,34 +56,18 @@ const render = (page: Page) =>
   );
 
 describe('the office section bar (→WEB-10/69/112)', () => {
-  it('lists the three office sections as page tabs with the current one selected', () => {
+  it('shows a compact home link and overview, inbox and settings actions without retired tabs', () => {
     const html = render('operations');
-    expect(html).toContain('role="tablist" aria-label="구단 섹션"');
-    expect([...html.matchAll(/role="tab"[^>]*>([^<]+)</g)].map((match) => match[1])).toEqual([
-      '사무실',
-      '훈련',
-      '운영',
-    ]);
-    expect(html).toMatch(/id="club-section-tab-operations"[^>]*aria-selected="true"/);
-    expect(html.match(/aria-selected="true"/g)).toHaveLength(1);
-    // The tabs open pages of their own, so none names a panel that does not exist.
-    expect(html).not.toContain('aria-controls');
-  });
-
-  it('leads with the office, which opens its queue rather than the home briefing', () => {
-    // The first tab, which Home and the first arrow step reach, is the office itself.
-    expect(CLUB_SECTIONS[0]).toEqual(['business', 'club.section.office']);
-    expect(CLUB_SECTIONS.map(([id]) => id)).not.toContain('dashboard');
-    const first = render('business').match(/<[^>]*role="tab"[^>]*>/)?.[0];
-    expect(first).toContain('id="club-section-tab-business"');
-    expect(first).toContain('aria-selected="true"');
+    expect(html).toContain('aria-label="클럽하우스 홈으로"');
+    expect(html).toContain('role="group" aria-label="사무실 메뉴"');
+    for (const label of ['오버뷰', '결재함', '결재 설정']) expect(html).toContain(label);
+    expect(html).not.toContain('role="tab"');
+    expect(html).not.toContain('role="tablist"');
   });
 
   it('shows on the office and its working pages, never on 팀, our people, home or competitions', () => {
     for (const page of ['business', 'training', 'operations'] as const)
-      expect(render(page), page).toMatch(
-        new RegExp(`id="club-section-tab-${page}"[^>]*aria-selected="true"`),
-      );
+      expect(render(page), page).toMatch(/role="group" aria-label="사무실 메뉴"/);
     // Our people belong to the primary 팀 entry, its list and detailed pages alike (→WEB-112).
     for (const page of [
       'team',
@@ -96,7 +89,6 @@ describe('the office section bar (→WEB-10/69/112)', () => {
     const keys = [
       'club.sections',
       'club.operations.title',
-      ...CLUB_SECTIONS.map(([, key]) => key),
       ...OPERATIONS_VIEWS.map(([, key]) => key),
     ];
     for (const entry of localeRegistryData.entries) {

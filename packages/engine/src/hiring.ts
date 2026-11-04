@@ -36,12 +36,7 @@ export const COACH_CRITERIA_DEFAULT: Readonly<CoachCriteria> = Object.freeze({
 /** 110% of the market wage, the default squad investment's old pay ceiling (→CLUB-26). */
 export const TALK_RULE_DEFAULT: Readonly<TalkRule> = Object.freeze({ maxPay: 1.1, minOvr: 0 });
 
-export const MANAGER_PRIORITY_INFO: Record<ManagerCriteria['priority'], string> = {
-  ovr: 'OVR 높은 순',
-  potential: '잠재력 높은 순',
-  wage: '연봉 낮은 순',
-  youth: '육성 높은 순',
-};
+export { MANAGER_PRIORITY_INFO } from './hiring-info';
 
 /** Whether the staff hire and renew this department's coaches (→STAFF-15). */
 export function coachDelegated(w: Pick<World, 'settings'>, role: StaffRole) {

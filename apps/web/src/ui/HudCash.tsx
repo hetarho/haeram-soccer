@@ -14,9 +14,15 @@ import o from './OwnerSheet.module.css';
 
 export function CashSheet({ w, onClose }: { w: World; onClose: () => void }) {
   return (
-    <Dialog label="운영 자금" onClose={onClose} actions={
-      <button data-ui="primary" onClick={onClose}>확인</button>
-    }>
+    <Dialog
+      label="운영 자금"
+      onClose={onClose}
+      actions={
+        <button data-ui="primary" onClick={onClose}>
+          확인
+        </button>
+      }
+    >
       <ClubCashSummary w={w} />
     </Dialog>
   );
@@ -34,9 +40,18 @@ export function HudCash({ client }: { client?: GameClient } = {}) {
   const label = `구단 자금 ${exact}${fortuneExact ? ` · 사업자금 ${fortuneExact}` : ''} · 자금 관리`;
   const symbol = currency(own.country, w.year).symbol;
   const amount = (value: string) => {
-    const text = compactMoney(value, own.country, w.year), at = text.indexOf(symbol);
+    const text = compactMoney(value, own.country, w.year),
+      at = text.indexOf(symbol);
     if (at < 0) return text;
-    return <>{text.slice(0, at)}<span className={s.hudCurrency} data-ui="currency">{symbol}</span>{text.slice(at + symbol.length)}</>;
+    return (
+      <>
+        {text.slice(0, at)}
+        <span className={s.hudCurrency} data-ui="currency">
+          {symbol}
+        </span>
+        {text.slice(at + symbol.length)}
+      </>
+    );
   };
   return (
     <>
@@ -58,14 +73,26 @@ export function HudCash({ client }: { client?: GameClient } = {}) {
           <AnimatedMoney value={w.cash} format={amount} upClass={s.cashUp} downClass={s.cashDown} />
         </span>
         {w.owner && (
-          <span className={o.businessBalance} data-negative={BigInt(w.owner.fortune) < 0n || undefined}>
-            <AnimatedMoney value={w.owner.fortune} format={amount} className={o.businessAmount} upClass={s.cashUp} downClass={s.cashDown} />
+          <span
+            className={o.businessBalance}
+            data-negative={BigInt(w.owner.fortune) < 0n || undefined}
+          >
+            <AnimatedMoney
+              value={w.owner.fortune}
+              format={amount}
+              className={o.businessAmount}
+              upClass={s.cashUp}
+              downClass={s.cashDown}
+            />
           </span>
         )}
       </button>
-      {open && (w.owner
-        ? <OwnerSheet client={client} onClose={() => setOpen(false)} />
-        : <CashSheet w={w} onClose={() => setOpen(false)} />)}
+      {open &&
+        (w.owner ? (
+          <OwnerSheet client={client} onClose={() => setOpen(false)} />
+        ) : (
+          <CashSheet w={w} onClose={() => setOpen(false)} />
+        ))}
     </>
   );
 }
