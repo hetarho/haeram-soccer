@@ -1,0 +1,104 @@
+[
+ {
+  "name": "bands-su4-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su4.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-su0-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-su0fr2-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0fr2.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "conc-su0-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/conc-su0-calibration1200.json"
+  ]
+ },
+ {
+  "name": "stress-su0-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/stress-su0-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-su0-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/stress-su0-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-su0-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/stress-su0-val-3.json"
+  ]
+ },
+ {
+  "name": "conc-su4-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su4.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/conc-su4-calibration1200.json"
+  ]
+ },
+ {
+  "name": "conc-su0fr2-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-ori/candidates/su0fr2.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-ori/conc-su0fr2-calibration1200.json"
+  ]
+ }
+]

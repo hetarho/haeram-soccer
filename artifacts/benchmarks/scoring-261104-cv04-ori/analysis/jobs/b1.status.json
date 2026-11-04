@@ -1,0 +1,35 @@
+{
+ "seconds": 158,
+ "status": [
+  {
+   "name": "bands-f95-400",
+   "code": 0,
+   "seconds": 131
+  },
+  {
+   "name": "bands-f80-400",
+   "code": 0,
+   "seconds": 144
+  },
+  {
+   "name": "bands-B-400",
+   "code": 0,
+   "seconds": 145
+  },
+  {
+   "name": "bands-f95rc17-400",
+   "code": 0,
+   "seconds": 152
+  },
+  {
+   "name": "bands-f95rc15-400",
+   "code": 0,
+   "seconds": 157
+  },
+  {
+   "name": "bands-rc17-400",
+   "code": 0,
+   "seconds": 158
+  }
+ ]
+}
