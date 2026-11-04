@@ -1,0 +1,25 @@
+{
+ "seconds": 446,
+ "status": [
+  {
+   "name": "bands-sn01a090-400",
+   "code": 0,
+   "seconds": 109
+  },
+  {
+   "name": "tactics-ctl-calibration",
+   "code": 0,
+   "seconds": 234
+  },
+  {
+   "name": "tactics-sn01a100-calibration",
+   "code": 0,
+   "seconds": 242
+  },
+  {
+   "name": "conc-sn01a100-validation2400",
+   "code": 0,
+   "seconds": 446
+  }
+ ]
+}

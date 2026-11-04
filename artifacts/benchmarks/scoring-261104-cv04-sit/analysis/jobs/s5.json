@@ -1,0 +1,77 @@
+[
+ {
+  "name": "tactics-snK-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/snK.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/tactics-snK-calibration.json"
+  ]
+ },
+ {
+  "name": "tactics-snR-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/snR.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/tactics-snR-calibration.json"
+  ]
+ },
+ {
+  "name": "stress-sn01a100-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/stress-sn01a100-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-sn01a100-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/stress-sn01a100-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-sn01a100-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/stress-sn01a100-val-3.json"
+  ]
+ }
+]

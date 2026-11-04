@@ -1,0 +1,30 @@
+{
+ "seconds": 200,
+ "status": [
+  {
+   "name": "bands-sn-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "bands-sna110-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "bands-sna100-400",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "bands-sn08a110-400",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "tactics-sna110-calibration",
+   "code": 0,
+   "seconds": 200
+  }
+ ]
+}

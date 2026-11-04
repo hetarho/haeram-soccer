@@ -1,0 +1,35 @@
+{
+ "seconds": 420,
+ "status": [
+  {
+   "name": "stress-sn01o08h25-val-1",
+   "code": 0,
+   "seconds": 51
+  },
+  {
+   "name": "bands-snC3-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "stress-sn01o08h25-val-2",
+   "code": 0,
+   "seconds": 52
+  },
+  {
+   "name": "stress-sn01o08h25-val-3",
+   "code": 0,
+   "seconds": 53
+  },
+  {
+   "name": "pc-snC3-calibration-2",
+   "code": 0,
+   "seconds": 195
+  },
+  {
+   "name": "conc-sn01o08h25-validation2400",
+   "code": 0,
+   "seconds": 420
+  }
+ ]
+}

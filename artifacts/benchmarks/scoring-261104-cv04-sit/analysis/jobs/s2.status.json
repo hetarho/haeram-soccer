@@ -1,0 +1,25 @@
+{
+ "seconds": 67,
+ "status": [
+  {
+   "name": "bands-sna085-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-sn05a085-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-sn01a100-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sn05a100-400",
+   "code": 0,
+   "seconds": 67
+  }
+ ]
+}

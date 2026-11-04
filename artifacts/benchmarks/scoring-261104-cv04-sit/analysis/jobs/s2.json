@@ -1,0 +1,42 @@
+[
+ {
+  "name": "bands-sn05a100-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn05a100.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sn01a100-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sna085-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sna085.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sn05a085-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn05a085.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

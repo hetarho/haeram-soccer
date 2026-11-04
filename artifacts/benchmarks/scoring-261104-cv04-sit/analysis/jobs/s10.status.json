@@ -1,0 +1,20 @@
+{
+ "seconds": 264,
+ "status": [
+  {
+   "name": "bands-snc2-400",
+   "code": 0,
+   "seconds": 92
+  },
+  {
+   "name": "bands-snc2a090-400",
+   "code": 0,
+   "seconds": 95
+  },
+  {
+   "name": "pc-snc2-calibration-2",
+   "code": 0,
+   "seconds": 264
+  }
+ ]
+}

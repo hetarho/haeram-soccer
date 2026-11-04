@@ -1,0 +1,15 @@
+{
+ "seconds": 213,
+ "status": [
+  {
+   "name": "pc-ctl-calibration-2",
+   "code": 0,
+   "seconds": 207
+  },
+  {
+   "name": "pc-sn01a100-calibration-2",
+   "code": 0,
+   "seconds": 213
+  }
+ ]
+}
