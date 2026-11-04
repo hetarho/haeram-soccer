@@ -17,7 +17,7 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
-import { debutRule, directionOf, directionOption, financeStance, releaseRule } from './direction';
+import { annualWageLimit, debutRule, directionOf, directionOption, financeOption, financeStance, releaseRule, wageWithinLimit } from './direction';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
 
@@ -369,7 +369,7 @@ function staffReport(w: World, title: string, detail: string, ref?: string) {
 /** Season boundary: academy ages, and delegated staff promote or release prospects. */
 /** Cash below which the delegated youth director defers promotions: 재정 기조's floor (→ECON-33). */
 export function promotionFloor(w: World) {
-  const years = financeStance(w).promotionYears;
+  const years = financeStance(w, 'academy').promotionYears;
   return (BigInt(operatingCosts(w).annual) * BigInt(Math.round(years * 100))) / 100n;
 }
 export function seasonAcademy(w: World): void {
@@ -411,15 +411,20 @@ export function seasonAcademy(w: World): void {
   const promoted = new Set<string>();
   // Every promotion adds a first-team wage, so the director waits while cash is under 재정 기조's
   // promotion floor (→ECON-33; a year of operating costs at 표준).
-  const years = financeStance(w).promotionYears,
+  const years = financeStance(w, 'academy').promotionYears,
     affordable = BigInt(w.cash) >= promotionFloor(w);
   if (!affordable && ready.length)
     staffReport(
       w,
       `유스 디렉터가 승격 ${ready.length}명을 미뤘어요`,
-      `운영자금이 재정 기조 ${directionOption(w, 'finance').name}의 기준(운영비 ${years < 1 ? `${Math.round(years * 12)}개월분` : `${years}년분`})보다 적어 1군 급여를 늘리지 않았어요. 자금이 회복되면 다음 시즌에 다시 검토해요. 직접 올리려면 아카데미에서 승격하세요.`,
+      `운영자금이 재정 기조 ${financeOption(w, 'academy').name}의 기준(운영비 ${years < 1 ? `${Math.round(years * 12)}개월분` : `${years}년분`})보다 적어 1군 급여를 늘리지 않았어요. 자금이 회복되면 다음 시즌에 다시 검토해요. 직접 올리려면 아카데미에서 승격하세요.`,
     );
   for (const player of affordable ? ready : []) {
+    const wage = marketWage(w, player);
+    if (!wageWithinLimit(w, 'academy', wage)) {
+      staffReport(w, `유스 디렉터가 ${player.name}의 승격을 미뤘어요`, `프로 연봉 ${moneyLabel(w, wage)}이 유소년 승격의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'academy')!)}을 넘어요.`, player.id);
+      continue;
+    }
     if (registrationRoom(w, { ...player, graduate: true, joined: w.year })) continue;
     if (!lineRoom(w, lineOfPlayer(player))) continue;
     promoteYouth(w, player.id);
@@ -432,7 +437,7 @@ export function seasonAcademy(w: World): void {
     );
   }
   for (const player of affordable ? ready : [])
-    if (!promoted.has(player.id))
+    if (!promoted.has(player.id) && wageWithinLimit(w, 'academy', marketWage(w, player)))
       staffReport(
         w,
         `유스 디렉터가 ${player.name}을(를) 아카데미에 남겼어요`,

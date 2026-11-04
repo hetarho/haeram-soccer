@@ -28,8 +28,8 @@ import {
   type OfficeProposal,
 } from './officeChanges';
 import { delegationCounts } from './officeSummary';
-import { BuildSetting, DirectionSetting, RecruitmentGuideline } from './ClubSettingControl';
-import { DECISION_BUILDS, DECISION_DIRECTIONS, DECISION_POLICIES, SHARED_DECISION_DIRECTIONS } from './clubControls';
+import { BuildSetting, DecisionFinanceSetting, DirectionSetting, RecruitmentGuideline, WageBudgetSetting } from './ClubSettingControl';
+import { DECISION_BUILDS, DECISION_DIRECTIONS, DECISION_POLICIES } from './clubControls';
 import { DecisionRuleFacts } from './DecisionRuleFacts';
 import s from './OwnerOffice.module.css';
 const ApprovalWorkbench = lazy(() => import('./Rich').then((module) => ({ default: module.ApprovalWorkbench })));
@@ -134,7 +134,7 @@ export function OwnerOffice({
   const blocked = modeSwitchBlocked(state) || applying;
   useEffect(() => {
     if (!focus) return;
-    const frame = requestAnimationFrame(() => document.getElementById(`office-decision-${focus}`)?.scrollIntoView({ block: 'start' }));
+    const frame = requestAnimationFrame(() => document.getElementById(`office-decision-${focus === 'finance' ? 'recruitment' : focus}`)?.scrollIntoView({ block: 'start' }));
     return () => cancelAnimationFrame(frame);
   }, [focus, w.id]);
   const propose = (change: OfficeChange) => {
@@ -208,13 +208,6 @@ export function OwnerOffice({
         </div>
       )}
       {!scope && <FacilityArt kind="manager" world={w} className={s.hero} eager />}
-      {!scope && (
-        <section data-surface="inset" className={s.guidance} aria-label="공통 재정 지침" id="office-decision-finance">
-          <h3>공통 재정 지침</h3>
-          <p>영입·인사·재계약·매각·유소년 승격에 함께 적용할 자금 기준입니다.</p>
-          {SHARED_DECISION_DIRECTIONS.map((key) => <DirectionSetting key={key} w={w} client={client} directionKey={key} />)}
-        </section>
-      )}
       {state.readonly && <p className={s.message}>읽기 전용 상태에서는 변경할 수 없어요.</p>}
       {message && !proposal && (
         <p role="alert" className={s.message}>
@@ -275,6 +268,8 @@ export function OwnerOffice({
               {DECISION_POLICIES[key].map((policy) => policy === 'recruitment' && <RecruitmentGuideline key={policy} w={w} client={client} />)}
               {DECISION_DIRECTIONS[key].map((direction) => <DirectionSetting key={direction} w={w} client={client} directionKey={direction} />)}
               {DECISION_BUILDS[key].map((slot) => <BuildSetting key={slot} w={w} client={client} slot={slot} />)}
+              {key !== 'sales' && key !== 'sponsors' && <WageBudgetSetting w={w} client={client} responsibility={key} />}
+              {key !== 'sponsors' && <DecisionFinanceSetting w={w} client={client} responsibility={key} />}
               <DecisionRuleFacts w={w} responsibility={key} />
               <button type="button" data-ui="secondary" className={s.workbenchButton}
                 aria-haspopup="dialog" onClick={() => setWorkbench(key)}>{WORKBENCH_LABELS[key]} 열기</button>

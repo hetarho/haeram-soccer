@@ -10,6 +10,7 @@ import { ATTRIBUTE_LABEL } from './player';
 import { moraleOf } from './morale';
 import type {
   Club,
+  BudgetResponsibility,
   CoachCriteria,
   ContractTerm,
   ManagerStyle,
@@ -30,7 +31,7 @@ import { clamp, compareIds, integer, random, ratio, scaleBy } from './primitives
 import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
-import { directionLine, financeStance } from './direction';
+import { annualWageLimit, directionLine, financeStance, wageWithinLimit } from './direction';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
@@ -520,9 +521,9 @@ export function volunteer(w: World, role: StaffRole): Staff {
   };
 }
 /** Cash left after `spend` still keeps 재정 기조's runway with `wage` added to the costs (→ECON-33). */
-export function affordable(w: World, spend: bigint, wage: bigint) {
+export function affordable(w: World, spend: bigint, wage: bigint, responsibility: BudgetResponsibility = 'staff') {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
-  return BigInt(w.cash) - spend >= perRound * BigInt(financeStance(w).runway);
+  return BigInt(w.cash) - spend >= perRound * BigInt(financeStance(w, responsibility).runway);
 }
 /** A match this much abler beats an expiring coach who meets the criteria, under 능력 높은 순. */
 export const COACH_RENEWAL_MARGIN = 3;
@@ -546,6 +547,7 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
     cap = c.maxWageOvr === undefined ? undefined : BigInt(coachWage(w, c.maxWageOvr));
   return [
     [`능력 ${c.minAbility} 이상인 후보가 없어요`, (coach) => coach.ability >= c.minAbility],
+    [`1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'staff') ?? '0')} 안의 후보가 없어요`, (coach) => wageWithinLimit(w, 'staff', coach.wage)],
     ...(trait
       ? [
           [
@@ -746,7 +748,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
   }
   const terms = renewalTerms(w, member, c.term),
     payable =
-      !c.volunteer && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
+      !c.volunteer && wageWithinLimit(w, 'staff', terms.wage) && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
     beaten =
       !!first &&
       (c.priority === 'ability'
@@ -889,14 +891,14 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
       detail: `${
         fits
           ? `단장이 ${directionLine(w, 'manager')}(${MANAGER_PRIORITY_INFO[c.priority]})으로 더 나은 ${managerLine(w, first)} 감독을 찾았어요 (지금 OVR ${m.ability}/${m.potential ?? m.ability} · 재계약 연봉 ${moneyLabel(w, kept.wage)})`
-          : `${m.name} 감독은 선호 학파·감독 기조에 맞지 않고, 맞는 ${managerLine(w, first)} 감독이 있어요`
+          : `${m.name} 감독은 선호 학파·감독 기조·연봉 한도에 맞지 않고, 맞는 ${managerLine(w, first)} 감독이 있어요`
       } · 시즌이 끝나면 떠나고 단장이 그때 감독 기조에 맞는 감독을 선임해요`.slice(0, 400),
       attention: false,
       ref: m.id,
     });
     return true;
   }
-  if (!affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage))) return false;
+  if (!wageWithinLimit(w, 'manager', kept.wage) || !affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage), 'manager')) return false;
   renewManager(w, term, true);
   pushInbox(w, {
     kind: 'staff-report',

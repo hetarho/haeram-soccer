@@ -23,7 +23,7 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
-import { gameSettingsSchema } from '../../../../packages/contracts/src/schema';
+import { budgetResponsibilitySchema, financeChoiceSchema, gameSettingsSchema, wageResponsibilitySchema } from '../../../../packages/contracts/src/schema';
 import {
   DIVIDEND_SHARES,
   OWNER_TRAIT_IDS,
@@ -108,6 +108,13 @@ const command = z.discriminatedUnion('type', [
     choice: z.string().min(1).max(40),
   }),
   z.strictObject({ type: z.literal('club-ticket'), price: z.number().finite().min(0.01).max(1) }),
+  z.strictObject({
+    type: z.literal('decision-wage-limit'), responsibility: wageResponsibilitySchema,
+    amount: z.string().regex(/^\d{1,40}$/).nullable(),
+  }),
+  z.strictObject({
+    type: z.literal('decision-finance'), responsibility: budgetResponsibilitySchema, choice: financeChoiceSchema,
+  }),
   z.strictObject({
     type: z.literal('facility-upgrade'),
     part: z.enum(['training', 'academy', 'stadium']),

@@ -592,7 +592,7 @@ export function saleBar(w: World, p: Player) {
     runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     prospect = isProspect(w, p),
     base = SALE_BARS[w.build?.market ?? 'standard'][prospect ? 1 : 0],
-    [first, second] = financeStance(w).sellSteps,
+    [first, second] = financeStance(w, 'sales').sellSteps,
     cuts: string[] = [];
   let percent = base;
   const cut = (points: number, why: string) => {
@@ -757,7 +757,7 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
     card = cardOf(buildOf(w), 'market').label,
-    [first, second] = financeStance(w).sellSteps;
+    [first, second] = financeStance(w, 'sales').sellSteps;
   if (runway < first)
     return { accept: true, reason: `자금 여력 ${runway}주의 운영자금 위기라 매각을 택했어요.` };
   if (market === 'hold')

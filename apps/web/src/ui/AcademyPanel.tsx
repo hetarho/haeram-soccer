@@ -258,7 +258,7 @@ export function AcademyPanel({
                 auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 알림·결정에 보고해요."
                 owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
               />
-              <DirectionFacts w={w} rows={['youthGoal', 'debut', 'finance']} />
+              <DirectionFacts w={w} rows={['youthGoal', 'debut', 'finance']} responsibility="academy" />
               <ul className={s.rule}>
                 <li>
                   <b>승격</b>

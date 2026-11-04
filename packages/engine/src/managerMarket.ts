@@ -42,6 +42,7 @@ const MARKET_START = TAKEOVER_DECADES[0];
 import { ownLeagueClubs } from './season';
 import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';
+import { annualWageLimit, wageWithinLimit } from './direction';
 import { networkCandidates, networkedCandidate } from './owner-traits';
 
 /** The market moves every four league rounds and at the season close (→STAFF-17). */
@@ -305,6 +306,7 @@ function managerChecks(w: World, c: ManagerCriteria): ManagerCheck[] {
     trait === 'none' ? '성향 없음' : MANAGER_TRAIT_INFO[trait].label;
   return [
     [`OVR ${c.minOvr} 이상인 후보가 없어요`, (m) => m.ability >= c.minOvr],
+    [`연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'manager') ?? '0')} 안의 후보가 없어요`, (m) => wageWithinLimit(w, 'manager', m.wage)],
     [
       `${c.schools.map((style) => STYLE_INFO[style].label).join('·')} 학파의 후보가 없어요`,
       (m) => !c.schools.length || (!!m.style && c.schools.includes(m.style)),
@@ -359,6 +361,7 @@ function affordableManager(w: World, m: ManagerCandidate) {
     BigInt(m.wage) -
       BigInt(w.manager.wage) -
       BigInt((m.person && w.staff?.find((member) => member.person === m.person)?.wage) || '0'),
+    'manager',
   );
 }
 /** Free agents, and other clubs' managers too when the criteria allow poaching. */
@@ -379,6 +382,7 @@ export function managerMatches(w: World): ManagerCandidate[] {
 export function bestFreeAgent(w: World): ManagerCandidate | undefined {
   return managerCandidates(w)
     .filter((m) => m.source !== 'club')
+    .filter((m) => wageWithinLimit(w, 'manager', m.wage))
     .filter((m) => affordableManager(w, m))
     .sort(byPriority(managerCriteriaOf(w).priority))[0];
 }

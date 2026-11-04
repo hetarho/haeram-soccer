@@ -106,6 +106,13 @@ export const clubBuildSchema = z.strictObject({
   culture: z.enum(BUILD_OPTIONS.culture).optional(),
 });
 const policyLevel = z.literal([1, 2, 3, 4, 5]);
+export const budgetResponsibilitySchema = z.enum(['manager', 'staff', 'contracts', 'recruitment', 'sales', 'academy']);
+export const wageResponsibilitySchema = z.enum(['manager', 'staff', 'contracts', 'recruitment', 'academy']);
+export const financeChoiceSchema = z.enum(['aggressive', 'bold', 'standard', 'careful', 'stable']);
+const decisionBudgetSchema = z.strictObject({
+  finance: financeChoiceSchema.optional(),
+  maxAnnualWage: z.string().regex(/^\d{1,40}$/).optional(),
+});
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
 const clubBooks = z.strictObject({
   seasons: z
@@ -1203,6 +1210,7 @@ const worldSchema: z.ZodType<World> = z.object({
       debut: z.enum(['early', 'ready', 'late']).optional(),
     })
     .optional(),
+  decisionBudgets: z.partialRecord(budgetResponsibilitySchema, decisionBudgetSchema).optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),

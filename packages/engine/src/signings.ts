@@ -30,7 +30,7 @@ import {
 } from './player-state';
 import { addEvent } from './events';
 import { joinClub, ownStarters } from './world';
-import { directionOption, financeStance } from './direction';
+import { annualWageLimit, directionOption, financeOption, financeStance, wageWithinLimit } from './direction';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';
 import { signingClauses } from './contracts';
@@ -136,8 +136,8 @@ export function shortLines(w: World): ShortNeed[] {
  * runway, and with his wage the runway, the wage bill ceiling and the season's cash projection.
  */
 export function signingVerdict(w: World, player: Player, fee: string) {
-  const stance = financeStance(w),
-    finance = directionOption(w, 'finance').name,
+  const stance = financeStance(w, 'recruitment'),
+    finance = financeOption(w, 'recruitment').name,
     perRound = (BigInt(operatingCosts(w).annual) + BigInt(player.wage)) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),
     spare = BigInt(w.cash) - runway,
@@ -146,6 +146,8 @@ export function signingVerdict(w: World, player: Player, fee: string) {
     ok: false as const,
     reason: `${reason}(재정 기조 ${finance})`,
   });
+  if (!wageWithinLimit(w, 'recruitment', player.wage))
+    return no(`요구 연봉 ${moneyLabel(w, player.wage)}이 선수 영입의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'recruitment')!)}을 넘어요`);
   if (spare < BigInt(fee))
     return no(`이적료를 내면 운영자금이 ${stance.runway}라운드 운영비에 못 미쳐요`);
   if (BigInt(fee) > BigInt(cap))
@@ -190,7 +192,7 @@ export function needLine(w: World, need: SigningNeed) {
         ? `${LINE_NAME[need.line]}가 ${need.count}명뿐이라 ${need.minimum}명을 채워요`
         : `선수단이 ${need.squad}명뿐이라 ${SIGNING_CONFIG.squadMinimum}명을 채워요`)
     );
-  return `${asked}${POSITION_LABEL[need.position]} 자리 주전 ${need.starter.name}(그 자리 OVR ${Math.round(need.level)})보다 그 자리에서 ${need.margin} 이상 나은 선수를 찾아요(재정 기조 ${directionOption(w, 'finance').name})`;
+  return `${asked}${POSITION_LABEL[need.position]} 자리 주전 ${need.starter.name}(그 자리 OVR ${Math.round(need.level)})보다 그 자리에서 ${need.margin} 이상 나은 선수를 찾아요(재정 기조 ${financeOption(w, 'recruitment').name})`;
 }
 /** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
 const pickNote = (need: SigningNeed, player: Player) =>
@@ -597,7 +599,7 @@ export function staffSignings(w: World) {
   if (!regular && !retry && !replacements.length) return;
   const squad = activePlayers(w).length;
   if (squad >= registration(w).ceiling) return;
-  const stance = financeStance(w),
+  const stance = financeStance(w, 'recruitment'),
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,

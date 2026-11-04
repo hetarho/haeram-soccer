@@ -17,7 +17,6 @@ export const DECISION_POLICIES: Record<ResponsibilityKey, readonly PolicyKey[]> 
 export const DECISION_BUILDS: Record<ResponsibilityKey, readonly BuildSlot[]> = {
   manager: [], staff: [], contracts: [], recruitment: [], sales: ['market'], academy: [], sponsors: [],
 };
-export const SHARED_DECISION_DIRECTIONS = ['finance'] as const satisfies readonly DirectionKey[];
 export const PASSIVE_POLICIES = {
   firstTeam: ['support'], youth: ['academy'], coaches: [], stadium: [],
   scouting: ['globalScouting'], community: ['localInvest', 'globalMarketing', 'tour'], finance: [], identity: [],

@@ -1,17 +1,20 @@
-import type { World } from '../../../../packages/contracts/src/types';
+import type { BudgetResponsibility, World } from '../../../../packages/contracts/src/types';
 import { buildLabel, buildOf } from '../../../../packages/engine/src/build';
 import { areaBase, DIRECTION_AREAS, rowInForce, type AreaKey, type RowKey } from './areas';
+import { financeOption } from '../../../../packages/engine/src/direction';
 import s from './DirectionFacts.module.css';
 
 /**
  * A compact read of the current operating effects and approval instructions; editing lives in
  * the owner's office detail pages and approval settings.
  */
-export function DirectionFacts({ w, rows }: { w: World; rows: readonly RowKey[] }) {
+export function DirectionFacts({ w, rows, responsibility }: { w: World; rows: readonly RowKey[]; responsibility?: BudgetResponsibility }) {
   return (
     <dl className={s.lines}>
       {rows.map((row) => {
-        const { label, value } = rowInForce(w, row);
+        const { label, value } = row === 'finance' && responsibility
+          ? { label: '이 업무의 지출 기준', value: financeOption(w, responsibility).name }
+          : rowInForce(w, row);
         return (
           <div key={row} className={s.line} data-row={row}>
             <dt>{label}</dt>

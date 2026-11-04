@@ -153,7 +153,7 @@ function totalsOf(w: World, area: InvestmentArea): Totals {
           ['신규 연봉 배율', times(build.wage)],
           ['배당 비율', `${w.owner?.dividendShare ?? 0}%`],
         ],
-        note: '현재 계약의 고정 지출과 수익 모델의 상시 효과입니다. 사업 투자·자금 투입·배당은 아래에서 관리하고, 담당자의 지출 한도는 결재 설정의 공통 재정 지침에서 정합니다.',
+        note: '현재 계약의 고정 지출과 수익 모델의 상시 효과입니다. 사업 투자·자금 투입·배당은 아래에서 관리하고, 담당자의 연봉·지출 한도는 결재 설정의 각 업무 아래에서 정합니다.',
       };
     }
     case 'identity': return {

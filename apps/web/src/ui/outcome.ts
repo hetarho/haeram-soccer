@@ -33,6 +33,8 @@ const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'club-direction': '의사결정 지침을 바꿨어요',
   'club-build': '구단 운영 방식을 바꿨어요',
   'club-ticket': '티켓 가격을 바꿨어요',
+  'decision-wage-limit': '연봉 한도를 바꿨어요',
+  'decision-finance': '업무별 재정 기준을 바꿨어요',
   'coaching-investment': '코치진 채용 기준을 바꿨어요',
   'facility-upgrade': '시설 공사를 시작했어요',
   advance: '한 라운드를 진행했어요',

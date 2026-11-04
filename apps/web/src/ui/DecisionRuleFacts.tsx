@@ -1,13 +1,15 @@
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import { managerCriteriaOf, coachCriteriaOf, talkRuleOf, MANAGER_PRIORITY_INFO } from '../../../../packages/engine/src/hiring';
-import { financeStance, debutRule, releaseRule } from '../../../../packages/engine/src/direction';
+import { annualWageLimit, financeStance, debutRule, releaseRule } from '../../../../packages/engine/src/direction';
 import { SALE_BARS } from '../../../../packages/engine/src/transfers';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
+import { clubOf } from '../../../../packages/engine/src/player-state';
+import { compactMoney } from './format';
 import s from './OwnerOffice.module.css';
 
-/** The actual criteria produced by the owner's sliders, including shared financial limits. */
+/** The actual criteria produced by the owner's instructions and this duty's spending limits. */
 export function DecisionRuleFacts({ w, responsibility }: { w: World; responsibility: ResponsibilityKey }) {
-  const finance = financeStance(w);
+  const finance = financeStance(w, responsibility === 'sponsors' ? undefined : responsibility);
   const rows: [string, string][] = [];
   if (responsibility === 'manager') {
     const rule = managerCriteriaOf(w);
@@ -42,8 +44,12 @@ export function DecisionRuleFacts({ w, responsibility }: { w: World; responsibil
     rows.push(['자동 선택', '열린 빈 후원 자리마다 보장 기본금이 가장 높은 안정형 계약'],
       ['계약 중 교체', '현재 계약이 끝난 뒤 새 계약'], ['직접 선택', '보장형·성과형·독점형·물가연동형 제안을 비교하고 계약']);
   }
-  if (responsibility !== 'sponsors' && responsibility !== 'sales')
-    rows.push(['남길 운영 자금', `고정비 ${finance.runway}라운드분`], ['임금 총액 한도', `연간 수입의 ${Math.round(finance.wageShare * 100)}%`]);
+  if (responsibility !== 'sponsors' && responsibility !== 'sales') {
+    const cap = annualWageLimit(w, responsibility);
+    rows.push(['1인당 연봉 한도', cap === undefined ? '별도 상한 없음' : `${compactMoney(cap, clubOf(w).country, w.year)} / 년`]);
+    if (responsibility !== 'academy') rows.push(['남길 운영 자금', `고정비 ${finance.runway}라운드분`]);
+    if (responsibility === 'contracts' || responsibility === 'recruitment') rows.push(['임금 총액 한도', `연간 수입의 ${Math.round(finance.wageShare * 100)}%`]);
+  }
   return <details data-ui="disclosure" className={s.ruleFacts}>
     <summary>현재 지침에 따른 판단 기준</summary>
     <dl>{rows.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>

@@ -182,6 +182,15 @@ export interface Direction {
   debut?: 'early' | 'ready' | 'late';
 }
 export type DirectionKey = keyof Direction;
+/** Independent spending instructions for each decision, in the club's nominal currency. */
+export type BudgetResponsibility = Exclude<ResponsibilityKey, 'sponsors'>;
+export type WageResponsibility = Exclude<BudgetResponsibility, 'sales'>;
+export type FinanceChoice = NonNullable<Direction['finance']> | 'standard';
+export interface DecisionBudget {
+  finance?: FinanceChoice;
+  /** Maximum annual wage per person; absent has no additional monetary cap, zero is unpaid. */
+  maxAnnualWage?: string;
+}
 /** Seasons a contract is signed for (→CLUB-26, STAFF-14). */
 export type ContractTerm = 1 | 2 | 3 | 4 | 5;
 /**
@@ -1286,6 +1295,7 @@ export interface World {
   sponsors?: SponsorContract[];
   /** The direction rows the delegated staff follow (→ECON-25); absent rows are at their default. */
   direction?: Direction;
+  decisionBudgets?: Partial<Record<BudgetResponsibility, DecisionBudget>>;
   /** 지역 기반 and 글로벌 인지도, 0–100 (→ECON-34); absent is 0. */
   localBase?: number;
   globalReach?: number;
@@ -1338,6 +1348,8 @@ export type Command =
   | { type: 'club-direction'; key: DirectionKey; choice: string }
   | { type: 'club-build'; slot: keyof ClubBuild; choice: string }
   | { type: 'club-ticket'; price: number }
+  | { type: 'decision-wage-limit'; responsibility: WageResponsibility; amount: string | null }
+  | { type: 'decision-finance'; responsibility: BudgetResponsibility; choice: FinanceChoice }
   | { type: 'coaching-investment'; choice: string }
   | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
   | { type: 'next-event' }
