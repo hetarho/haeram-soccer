@@ -290,8 +290,10 @@ function competitionSeason(seed = 'npc-books-cups') {
 }
 
 describe('competition money in the books (→ECON-36, LEAGUE-5, EURO-7)', () => {
+  // Production's value, restored after every case that switches it.
+  const inForce = BOOK_COMPETITIONS.inForce;
   afterEach(() => {
-    BOOK_COMPETITIONS.inForce = false;
+    BOOK_COMPETITIONS.inForce = inForce;
     delete BOOK_COMPETITIONS.observe;
   });
 
@@ -396,7 +398,8 @@ describe('competition money in the books (→ECON-36, LEAGUE-5, EURO-7)', () => 
     expect(bookCompetitionMoney(w, top)).toEqual(none);
   });
 
-  it('leaves every book released while off, observed or not', () => {
+  it('leaves every book released with the switch off, observed or not', () => {
+    BOOK_COMPETITIONS.inForce = false;
     const released = competitionSeason();
     released.w.cups = [];
     released.w.europe = [];
@@ -420,6 +423,7 @@ describe('competition money in the books (→ECON-36, LEAGUE-5, EURO-7)', () => 
       counted = competitionSeason();
     for (const { top } of [released, counted]) top.books = { seasons: [], cash: '0', debt: '0' };
     const money = bookCompetitionMoney(counted.w, counted.top).total;
+    BOOK_COMPETITIONS.inForce = false;
     const plain = settleNpcBooks(released.w, released.top).seasons[0]!;
     BOOK_COMPETITIONS.inForce = true;
     const book = settleNpcBooks(counted.w, counted.top).seasons[0]!;

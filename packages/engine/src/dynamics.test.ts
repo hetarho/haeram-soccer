@@ -43,8 +43,10 @@ function takeoverSummer(w: World, c: Club) {
 }
 
 describe("a club nobody owns keeps only the stars its book pays (LEAGUE-10's means level)", () => {
+  // Production's value, restored after every case that switches it.
+  const inForce = MEANS_LEVEL.inForce;
   afterEach(() => {
-    MEANS_LEVEL.inForce = false;
+    MEANS_LEVEL.inForce = inForce;
   });
   const bookClubs = (w: World) =>
     w.clubs.filter((c) => keepsBooks(w, c) && c.project === undefined && !takeoverSummer(w, c));

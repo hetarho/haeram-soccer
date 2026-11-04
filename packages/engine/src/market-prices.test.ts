@@ -384,24 +384,54 @@ describe('era star pay spread (CLUB-48)', () => {
     expect(falls.slice(0, 5)).toEqual([]);
   });
 
-  it('holds production at s = 1 in every playable country and season, with no own anchor (CLUB-48 in force)', () => {
-    expect(prices.STAR_SPREAD_CONFIG.own).toEqual({});
-    expect(prices.STAR_SPREAD_CONFIG.shared.every(([, s]) => s === 1)).toBe(true);
+  it("holds T697's table in production: 0.28 through 1970, 0.61 at 1990, 1 from 2008, England 0 through 1960/61 (CLUB-48 in force)", () => {
     for (const code of codes)
       for (let year = 1930; year <= 2030; year++) {
-        expect(prices.starPaySpread(code, year)).toBe(1);
+        const s = prices.starPaySpread(code, year);
+        if (code === 'ENG' && year <= 1960) expect(s).toBe(0);
+        else if (year <= 1970) expect(s).toBe(0.28);
+        else if (year === 1980) expect(s).toBeCloseTo(0.445, 9);
+        else if (year === 1990) expect(s).toBeCloseTo(0.61, 9);
+        else if (year >= 2008) expect(s).toBe(1);
+        else if (year < 1990) expect(s).toBeCloseTo(0.28 + (0.33 * (year - 1970)) / 20, 9);
+        else expect(s).toBeCloseTo(0.61 + (0.39 * (year - 1990)) / 18, 9);
+      }
+    // England's maximum wage: an OVR-95 star earns an ordinary 80's wage of his age and promise.
+    for (const [age, potential] of [
+      [27, 95],
+      [19, 99],
+    ])
+      for (const division of [0, 2])
+        expect(prices.marketWageAt('ENG', 1955, division, player(95, age, potential, 1955))).toBe(
+          prices.marketWageAt('ENG', 1955, division, player(80, age, potential, 1955)),
+        );
+    // Every wage of 2010 is the s = 1 curve, every star term in full.
+    for (const code of codes)
+      for (let ability = 60; ability <= 99; ability += 3)
+        for (const [age, potential] of [
+          [18, Math.min(99, ability + 12)],
+          [27, ability],
+        ])
+          for (const division of [0, 2])
+            expect(
+              prices.marketWageAt(code, 2010, division, player(ability, age, potential, 2010)),
+            ).toBe(released(code, 2010, division, ability, age, potential));
+    // Wages at OVR 80 or below are the s = 1 curve in every playable country and year.
+    for (const code of codes)
+      for (let year = 1930; year <= 2030; year++)
         for (const [ability, age, potential] of [
-          [92, 18, 99],
-          [95, 27, 95],
+          [80, 18, 99],
+          [80, 27, 80],
+          [72, 22, 88],
+          [55, 31, 55],
         ])
           expect(prices.marketWageAt(code, year, 0, player(ability, age, potential, year))).toBe(
             released(code, year, 0, ability, age, potential),
           );
-      }
   });
 
-  // Production holds s = 1 with no own anchor (CLUB-48 in force); the mechanism is checked on
-  // England's maximum-wage anchor as a table that passes CLUB-48's gate would carry it.
+  // The mechanism on its own, on a table of its own: England's maximum-wage anchor beside another
+  // shared table.
   it("pays an English star an 80's wage under an own anchor of 0, through its season only", () => {
     const table = {
       shared: [[1970, 0.5] as [number, number], [2008, 1] as [number, number]],

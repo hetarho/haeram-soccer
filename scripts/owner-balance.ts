@@ -949,7 +949,7 @@ console.log(
     .map((t) => t.multiple)
     .join(
       '/',
-    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}${SPREAD ? `, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}` : ''}${MEANS ? ", LEAGUE-10's means level on" : ''}${CUPS ? ', competition money in the books' : ''})`,
+    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''})`,
 );
 /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
 if (option('note', '')) console.log(`\n${option('note', '')}`);
