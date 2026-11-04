@@ -7,7 +7,10 @@ const logs = root + '.tmp/cv04/logs/';
 const dst = root + 'artifacts/benchmarks/scoring-261104-cv04-rec/';
 mkdirSync(dst + 'bands', { recursive: true });
 let n = 0;
-for (const name of readdirSync(dst + 'candidates').map((f) => f.replace(/\.json$/, ''))) {
+// `ctl` is cv04's (its band log is cv04's evidence); this window ran only its diagnostic.
+for (const name of readdirSync(dst + 'candidates')
+  .map((f) => f.replace(/\.json$/, ''))
+  .filter((n) => n !== 'ctl')) {
   const f = `bands-${name}-400.log`;
   if (!existsSync(logs + f)) continue;
   copyFileSync(logs + f, dst + 'bands/' + f.replace(/\.log$/, '.txt'));

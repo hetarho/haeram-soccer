@@ -1,0 +1,42 @@
+[
+ {
+  "name": "bands-sp70bx40-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp70bx40s085-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70bx40s085.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp70ls6-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70ls6.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sp70m10-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sym/candidates/sp70m10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

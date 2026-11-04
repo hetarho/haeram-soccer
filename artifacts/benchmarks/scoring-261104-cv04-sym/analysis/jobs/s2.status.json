@@ -1,0 +1,35 @@
+{
+ "seconds": 66,
+ "status": [
+  {
+   "name": "bands-sp70ah15-400",
+   "code": 0,
+   "seconds": 62
+  },
+  {
+   "name": "bands-sp70rc12-400",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "bands-sp70rc12ah15-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp55rc12ah15-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp55a080-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp70a085-400",
+   "code": 0,
+   "seconds": 66
+  }
+ ]
+}

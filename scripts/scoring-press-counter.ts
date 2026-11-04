@@ -61,7 +61,11 @@ const INCIDENTS = new Set(['yellow', 'secondYellow', 'red', 'sub', 'injury', 'wh
 const bucket = (x: number, edges: number[]) => {
   let k = 0;
   while (k < edges.length && x >= edges[k]!) k++;
-  return k === 0 ? `<${edges[0]}` : k === edges.length ? `>=${edges[k - 1]}` : `${edges[k - 1]}-${edges[k]}`;
+  return k === 0
+    ? `<${edges[0]}`
+    : k === edges.length
+      ? `>=${edges[k - 1]}`
+      : `${edges[k - 1]}-${edges[k]}`;
 };
 const lineBand = (x: number) => bucket(x, [30, 40, 50]);
 const dtBand = (x: number) => bucket(x, [8, 15, 25]);
@@ -71,7 +75,13 @@ let played = 0;
 const goals: Record<string, number> = {};
 for (let i = start; i < start + matches; i++) {
   const { w, home, away } = pairs[i % pairs.length]!;
-  const f: Fixture = { ...w.fixtures[0]!, id: `t689pc:${i}`, year: 2024, home: home.id, away: away.id };
+  const f: Fixture = {
+    ...w.fixtures[0]!,
+    id: `t689pc:${i}`,
+    year: 2024,
+    home: home.id,
+    away: away.id,
+  };
   const tactics: [Tactic, Tactic] = i % 2 === 0 ? ['press', 'counter'] : ['counter', 'press'];
   const setup = buildGridSetup(w, f, {
     observe: true,
@@ -165,7 +175,12 @@ for (let i = start; i < start + matches; i++) {
     if (e.result === undefined) return;
     const tac = tactics[e.side];
     if (e.result === 'goal') goals[tac] = (goals[tac] ?? 0) + 1;
-    if (e.action === 'penalty' || e.kind === 'penalty' || RESTARTS.has(e.action) || k <= setPieceUntil) {
+    if (
+      e.action === 'penalty' ||
+      e.kind === 'penalty' ||
+      RESTARTS.has(e.action) ||
+      k <= setPieceUntil
+    ) {
       add(`shot|${tac}|setPiece`, e.result === 'goal', e.xg ?? 0);
       return;
     }

@@ -275,8 +275,12 @@ export const SHOT_CONFIG = {
   blockThen: { corner: 0.65 },
   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
   maxXg: 0.8,
-  /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
-  candidate: { header: 0.42 },
+  /**
+   * Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`.
+   * `setPieceHeader` (T689 cv04-sym experiment, default off at 0): a set piece's delivered header's
+   * chance quality, in place of `header`.
+   */
+  candidate: { header: 0.42, setPieceHeader: 0 },
   /**
    * Revision 9 (T579, →MATCH-35 r42, MATCH-11): the keeper narrows the angle. From the shot, he
    * covers the goal mouth within `reach` m either side of him; a shot's chance scales by the share
@@ -309,6 +313,7 @@ export function chanceXg(
     pressure?: number;
     freeKick?: boolean;
     candidate?: boolean;
+    headerQuality?: number;
   } = {},
   math: MatchMath = HOST_MATH,
 ): number {
@@ -316,7 +321,9 @@ export function chanceXg(
   const z = C.a + C.b * goalDistance(p, math) + C.c * goalAngle(p, math);
   return (
     sigmoid(z, math) *
-    (opts.header ? (opts.candidate ? C.candidate.header : C.header) : 1) *
+    (opts.header
+      ? (opts.headerQuality ?? (opts.candidate ? C.candidate.header : C.header))
+      : 1) *
     (opts.cutBack ? C.cutBack : 1) *
     (opts.freeKick ? C.freeKickWall : 1) *
     Math.max(C.pressureFloor, 1 - C.pressure * (opts.pressure ?? 0))
@@ -925,7 +932,13 @@ export function resolveShot(
   tags: Pick<Tags, 'pressure'>,
   ctx: ShotContext,
   r: () => number,
-  opts: { header?: boolean; cutBack?: boolean; freeKick?: boolean; kickAt?: number } = {},
+  opts: {
+    header?: boolean;
+    cutBack?: boolean;
+    freeKick?: boolean;
+    kickAt?: number;
+    headerQuality?: number;
+  } = {},
 ): ShotOutcome {
   const C = SHOT_CONFIG;
   const { kickAt = 0, ...kind } = opts;
@@ -1098,8 +1111,14 @@ export function resolveCross(
   }
   const won = aerialDelivery(s, side, attacker, tags, r, [attacker.pos[0], attacker.pos[1]]);
   if (won.kind !== 'header') return won;
+  // T689 cv04-sym experiment (default off at 0): a set piece's header's own chance quality.
+  const SP = SHOT_CONFIG.candidate.setPieceHeader;
+  const quality = SP > 0 && onCandidate(s) && tags.phase === 'setPiece' ? { headerQuality: SP } : {};
   return {
-    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, { header: true }),
+    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, {
+      header: true,
+      ...quality,
+    }),
     header: true,
     ...(won.aerial === undefined ? {} : { aerial: won.aerial }),
   };

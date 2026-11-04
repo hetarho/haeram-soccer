@@ -1,0 +1,40 @@
+{
+ "seconds": 125,
+ "status": [
+  {
+   "name": "bands-rc12-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-w0a7ah3hb35-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp55-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp90-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-sp70-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-ah15-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-hp06-400",
+   "code": 0,
+   "seconds": 59
+  }
+ ]
+}

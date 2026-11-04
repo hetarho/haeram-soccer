@@ -1,0 +1,15 @@
+{
+ "seconds": 229,
+ "status": [
+  {
+   "name": "pc-sp70-calibration-2",
+   "code": 0,
+   "seconds": 229
+  },
+  {
+   "name": "pc-sp90-calibration-2",
+   "code": 0,
+   "seconds": 229
+  }
+ ]
+}

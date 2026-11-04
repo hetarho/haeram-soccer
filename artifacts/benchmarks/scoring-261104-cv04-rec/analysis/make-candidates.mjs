@@ -62,6 +62,14 @@ const variants = {
     decide: { candidate: { revision9: { clear: { within: 0, alone: 7 } } } },
     shot: { a: -0.9 },
   }),
+  w0a7ah3hb35a080: merge(merge(ahead(3), hb(0.35)), {
+    decide: { candidate: { revision9: { clear: { within: 0, alone: 7 } } } },
+    shot: { a: -0.8 },
+  }),
+  w0a7ah3hb35a070: merge(merge(ahead(3), hb(0.35)), {
+    decide: { candidate: { revision9: { clear: { within: 0, alone: 7 } } } },
+    shot: { a: -0.7 },
+  }),
 };
 for (const [name, v] of Object.entries(variants))
   writeFileSync(new URL(name + '.json', dir), JSON.stringify(merge(base, v)) + '\n');

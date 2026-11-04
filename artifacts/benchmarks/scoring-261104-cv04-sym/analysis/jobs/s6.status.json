@@ -1,0 +1,30 @@
+{
+ "seconds": 362,
+ "status": [
+  {
+   "name": "bands-sp80bx40s085-400",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "bands-sp70s085-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "pc-sp70bx40s085-calibration-2",
+   "code": 0,
+   "seconds": 188
+  },
+  {
+   "name": "conc-sp90-validation2400",
+   "code": 0,
+   "seconds": 361
+  },
+  {
+   "name": "conc-sp70bx40s085-validation2400",
+   "code": 0,
+   "seconds": 362
+  }
+ ]
+}
