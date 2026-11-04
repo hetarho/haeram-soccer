@@ -146,6 +146,7 @@
     "facility.era.terraces": "Años 1970–90",
     "facility.era.contemporary": "Desde 2000",
     "facility.stadium": "Estadio de nivel {stage}",
+    "facility.stadium.exterior": "Exterior del estadio",
     "facility.locker": "Vestuario del estadio de nivel {stage}",
     "facility.training.base": "Campo de entrenamiento básico",
     "facility.training.stage": "Campo de entrenamiento de nivel {stage}",

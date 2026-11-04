@@ -86,9 +86,8 @@ export function nextWork(w: World, part: FacilityPart) {
 }
 
 /**
- * Starts the next work on a part, paying for it now (→ECON-32). No command or staff rule reaches it:
- * only ECON-29's reference club, which builds by its own rule in the calibration harness, and
- * tests that need a work under way.
+ * Starts the next work on a part, paying for it now (→ECON-32). The owner's investment command
+ * validates its displayed quote first; the calibration harness can also build by its own rule.
  */
 export function startFacilityWork(w: World, part: FacilityPart, pay: (amount: string) => void) {
   if (!FACILITY_PARTS.includes(part)) throw new Error('시설 부문을 확인하세요.');

@@ -1,0 +1,16 @@
+{
+  "method": "Native integer-grid SVG; lossless PNG",
+  "date": "2026-11-04",
+  "source": "apps/web/design/pixel/stadium-exterior-v1",
+  "purpose": "General exterior cover for the stadium investment destination, independent of completed stage and era.",
+  "assets": [
+    {
+      "file": "exterior.png",
+      "source": "source.mjs",
+      "bytes": 3190,
+      "sha256": "a57e6e7055c3d59dfeeadd04e525073d269a7eb86a802b199a2b5a623c395328",
+      "width": 240,
+      "height": 80
+    }
+  ]
+}

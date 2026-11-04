@@ -292,6 +292,12 @@ sales, the market's recruitment, 코치진's manager and staff, 유소년's acad
 구단 운영 › 후원); offers for our players are answered in the market's 이적 협상, not copied
 onto the roster (→WEB-71).
 
+Working stadium investment covers (2026-11-04) use the street-facing entrance, outer facade and
+stand roofs in both the destination card and its detail header. Give destinations recognizably
+different subjects and viewpoints: another grass pitch and goal silhouette reads like training
+or youth at card size. Centre the entrance so the subject survives the narrow card crop; keep
+captions live. These general covers do not illustrate the current capacity or construction target.
+
 Spend colour on meaning, not decoration. A change reads by sign: a rise in `--danger` red, a fall
 in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons; the primary
 colour marks the one main action. A detail that already fills its dialog needs no plate of its

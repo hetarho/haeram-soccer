@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import type { Command, World } from '../../../../packages/contracts/src/types';
 type Entry = { command: Command; before: World; after: World };
 import { useGameState } from '../runtime/store';
@@ -6,10 +7,11 @@ import { describeOutcome } from './outcome';
 import s from './ActionOutcome.module.css';
 import { PixelIcon } from './PixelIcon';
 import { fadeOutOnRemove } from './motion';
+import { useNavigation } from './state';
 
 const outcomeExit = fadeOutOnRemove([
   { opacity: 1, transform: 'none' },
-  { opacity: 0, transform: 'translateY(-10px) scale(0.98)' },
+  { opacity: 0, transform: 'translateY(10px) scale(0.98)' },
 ]);
 
 const VISIBLE_MS = 8000;
@@ -19,6 +21,12 @@ const VISIBLE_MS = 8000;
  * every dialog has closed. Each keeps its own before/after, because the clock may run between them.
  */
 export function ActionOutcome() {
+  const page = useNavigation((state) => state.page);
+  const element = useRef<HTMLElement | null>(null);
+  const attach = useCallback((node: HTMLElement | null) => {
+    element.current = node;
+    return outcomeExit(node);
+  }, []);
   const lastAction = useGameState((state) => state.lastAction);
   const world = useGameState((state) => state.view?.world);
   const [batch, setBatch] = useState<{
@@ -70,11 +78,36 @@ export function ActionOutcome() {
     timer.current = window.setTimeout(() => setBatch(undefined), VISIBLE_MS);
     return () => window.clearTimeout(timer.current);
   }, [visible, batch?.seen]);
+  // Anchor above the actual bottom controls; their heights vary by viewport and theme.
+  useLayoutEffect(() => {
+    const toast = element.current;
+    if (!visible || !toast) return;
+    const controls = Array.from(document.querySelectorAll<HTMLElement>(
+      '[data-ui="season-transport"], [data-ui="game-shell"] > nav',
+    ));
+    const place = () => {
+      let edge = window.innerHeight;
+      for (const control of controls) {
+        const bounds = control.getBoundingClientRect();
+        if (bounds.width > 0 && bounds.height > 0 && bounds.top < window.innerHeight && bounds.bottom > 0)
+          edge = Math.min(edge, Math.max(0, bounds.top));
+      }
+      toast.style.setProperty('--toast-clearance', `${window.innerHeight - edge}px`);
+    };
+    place();
+    const observer = new ResizeObserver(place);
+    controls.forEach((control) => observer.observe(control));
+    window.addEventListener('resize', place);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', place);
+    };
+  }, [visible, batch?.seen, page]);
   if (!visible || !outcome) return null;
-  return (
+  return createPortal(
     <aside
       key={batch!.seen}
-      ref={outcomeExit}
+      ref={attach}
       className={s.outcome}
       role="status"
       aria-live="polite"
@@ -118,6 +151,7 @@ export function ActionOutcome() {
           {earlier.map((entry) => entry.title.replace(/했어요$|바꿨어요$/, '')).join(', ')}
         </p>
       )}
-    </aside>
+    </aside>,
+    document.body,
   );
 }

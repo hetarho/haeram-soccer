@@ -29,6 +29,9 @@ export interface Outcome {
 }
 
 const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
+  'club-policy': '구단 투자 수준을 바꿨어요',
+  'coaching-investment': '코치진 채용 기준을 바꿨어요',
+  'facility-upgrade': '시설 공사를 시작했어요',
   advance: '한 라운드를 진행했어요',
   'advance-days': '하루를 진행했어요',
   'next-match': '다음 경기까지 진행했어요',

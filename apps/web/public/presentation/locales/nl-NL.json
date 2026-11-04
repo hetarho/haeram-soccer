@@ -143,6 +143,7 @@
     "facility.era.terraces": "Jaren 1970–90",
     "facility.era.contemporary": "Vanaf 2000",
     "facility.stadium": "Stadion niveau {stage}",
+    "facility.stadium.exterior": "Buitenkant van het stadion",
     "facility.locker": "Kleedkamer stadion niveau {stage}",
     "facility.training.base": "Eenvoudig trainingsveld",
     "facility.training.stage": "Trainingsveld niveau {stage}",

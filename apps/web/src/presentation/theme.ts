@@ -24,6 +24,7 @@ export interface FacilityImageSelection {
   era: FacilityEra;
   kind: FacilityKind;
   stage: number;
+  view?: 'exterior';
 }
 export type ThemeImageNeed =
   | { type: 'icon'; role: string; variant?: string }
@@ -137,7 +138,7 @@ export function createThemeResolver(input: ThemePack, options: { url: string }) 
       : resource;
   }
 
-  function facility({ era, kind, stage }: FacilityImageSelection) {
+  function facility({ era, kind, stage, view }: FacilityImageSelection) {
     if (
       !FACILITY_ERAS.includes(era) ||
       !FACILITY_KINDS.includes(kind) ||
@@ -146,6 +147,7 @@ export function createThemeResolver(input: ThemePack, options: { url: string }) 
     )
       throw new PresentationValidationError('Invalid semantic facility selection');
     const slot = pack.images.facility;
+    const exterior = kind === 'stadium' && view === 'exterior' ? slot.exterior : undefined;
     const resource = (imageSlot: typeof slot) =>
       resolveResourceUrl(
         imageSlot.overrides?.[`${era}.${kind}.${stage}`] ??
@@ -155,12 +157,19 @@ export function createThemeResolver(input: ThemePack, options: { url: string }) 
         options.url,
       );
     return {
-      src: resource(slot),
-      variants: (slot.variants ?? []).map((variant) => ({
-        src: resource(variant),
-        width: variant.width,
-        height: variant.height,
-      })),
+      src: exterior ? resolveResourceUrl(exterior.resource, options.url) : resource(slot),
+      variants: exterior
+        ? (exterior.variants ?? []).map((variant) => ({
+            src: resolveResourceUrl(variant.resource, options.url),
+            width: variant.width,
+            height: variant.height,
+          }))
+        : (slot.variants ?? []).map((variant) => ({
+            src: resource(variant),
+            width: variant.width,
+            height: variant.height,
+          })),
+      view: exterior ? ('exterior' as const) : undefined,
       era,
       kind,
       stage,

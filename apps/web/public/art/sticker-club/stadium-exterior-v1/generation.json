@@ -1,0 +1,22 @@
+{
+  "method": "Built-in image_gen; compact responsive WebP",
+  "date": "2026-11-04",
+  "source": "apps/web/design/sticker-club/stadium-exterior-v1",
+  "purpose": "General exterior cover for the stadium investment destination, independent of completed stage and era.",
+  "assets": [
+    {
+      "file": "exterior.webp",
+      "width": 960,
+      "height": 320,
+      "bytes": 86556,
+      "sha256": "793dcbfd8e21dcd05ab52a7e37c3d8251c3ac87648e84b9ba5f686c16c5cb5aa"
+    },
+    {
+      "file": "exterior.small.webp",
+      "width": 480,
+      "height": 160,
+      "bytes": 25478,
+      "sha256": "683133809e80f615f57cc7793144b927c3d8777f1be7795485caac3788abd7c6"
+    }
+  ]
+}

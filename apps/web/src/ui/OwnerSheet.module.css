@@ -1,92 +1,77 @@
-/* The HUD's two pots (→WEB-114): the club's cash pinned top right, the owner's fortune beside it. */
-.hudMoney {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.hudFortune {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  min-height: 40px;
-  padding: 4px 10px 4px 5px;
-  border-radius: var(--card-radius);
-  border: 1px solid transparent;
-  background: transparent;
-  box-shadow: none;
-  font: inherit;
-  color: inherit;
-  text-align: left;
-}
-.hudFortune > span {
+/* One compact HUD control: club cash above the smaller business-fund balance. */
+.combinedMoney[data-testid='hud-cash'] {
   display: grid;
-  line-height: 1.15;
+  justify-items: end;
+  gap: 2px;
+  text-align: right;
 }
-.hudFortune small {
-  font-size: var(--label-size);
-  color: var(--text-faint);
-  letter-spacing: 0.4px;
+.combinedMoney .clubBalance {
+  display: grid;
+  justify-items: end;
+}
+.combinedMoney .clubBalance > b {
+  font-size: 17px;
+  font-weight: 600;
+}
+.combinedMoney .businessBalance {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  color: var(--text-muted);
   font-family: var(--display);
-}
-.hudFortune b {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text);
-  font-variant-numeric: var(--numeric-variant);
+  font-size: 9px;
+  line-height: 1.2;
   white-space: nowrap;
 }
-.hudFortune [data-ui='currency'] {
-  display: inline;
-  margin-right: 1px;
-  font-size: 0.6em;
-  font-weight: 800;
+.combinedMoney[data-testid='hud-cash'] .businessBalance > .businessAmount {
+  color: inherit;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
 }
-.hudFortune .mark {
-  display: none;
+.combinedMoney .businessBalance [data-ui='currency'] {
+  font-size: 0.7em;
 }
-.hudFortune:active:not(:disabled) {
-  transform: translateY(1px);
-}
-.hudFortuneNegative {
-  border-color: var(--danger-edge);
-}
-.hudFortuneNegative b {
+.combinedMoney .businessBalance[data-negative] {
   color: var(--danger);
 }
-/* Phones: the two pots stack in the cash's own column, so the centred date keeps its room. */
+.balances {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.balances > p {
+  min-width: 0;
+}
+.balances b {
+  overflow-wrap: anywhere;
+}
+.balances > .businessFunds {
+  align-content: end;
+}
+.balances .businessFunds > .businessAmount {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.cashDetails {
+  min-width: 0;
+  border-block: 1px solid var(--line);
+}
+.cashDetails > summary {
+  padding-block: 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.cashSummary {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 14px;
+}
 @media (max-width: 760px) {
-  .hudMoney {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0;
-  }
-  .hudMoney > button {
-    min-height: 22px;
-    padding: 0 4px;
-  }
-  .hudMoney > button small {
-    display: none;
-  }
-  .hudMoney > .hudFortune b {
-    font-size: 11px;
-    color: var(--text-muted);
-  }
-  .hudMoney > .hudFortuneNegative b {
-    color: var(--danger);
-  }
-  /* A short owner mark tells the stacked pots apart; long translations clip, the amount never. */
-  .hudFortune .mark {
-    display: inline-block;
-    max-width: 3.5em;
-    margin-right: 2px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: bottom;
-    color: var(--text-faint);
-    font-family: var(--display);
-    font-size: 9px;
-    font-weight: 700;
+  .combinedMoney .clubBalance > b {
+    font-size: 14px;
   }
 }
 
@@ -167,6 +152,14 @@
   width: 100%;
   min-height: 44px;
   margin: 0;
+}
+.sliderScale {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-variant-numeric: var(--numeric-variant);
 }
 .outcomes {
   display: grid;

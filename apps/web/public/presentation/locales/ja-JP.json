@@ -140,6 +140,7 @@
     "facility.era.terraces": "1970〜90年代",
     "facility.era.contemporary": "2000年以降",
     "facility.stadium": "レベル{stage}のスタジアム",
+    "facility.stadium.exterior": "スタジアムの外観",
     "facility.locker": "レベル{stage}のスタジアム更衣室",
     "facility.training.base": "基本練習場",
     "facility.training.stage": "レベル{stage}の練習場",

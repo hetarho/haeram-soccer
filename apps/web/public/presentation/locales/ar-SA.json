@@ -155,6 +155,7 @@
     "facility.era.terraces": "السبعينيات حتى التسعينيات",
     "facility.era.contemporary": "منذ 2000",
     "facility.stadium": "ملعب من المستوى {stage}",
+    "facility.stadium.exterior": "الواجهة الخارجية للملعب",
     "facility.locker": "غرفة ملابس ملعب المستوى {stage}",
     "facility.training.base": "ملعب تدريب أساسي",
     "facility.training.stage": "ملعب تدريب من المستوى {stage}",

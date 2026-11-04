@@ -18,6 +18,7 @@ export function facilityScene(
     locale: Pick<LoadedLocale, 't'>;
     theme: ThemeResolver;
     themeLabel: string;
+    view?: 'exterior';
   },
 ) {
   const day = w.calendar?.day ?? w.round * 7;
@@ -25,16 +26,20 @@ export function facilityScene(
   const era = year < 1970 ? 'heritage' : year < 2000 ? 'terraces' : 'contemporary';
   const stage = facilityStage(kind, w);
   const { t } = presentation.locale;
+  const image = presentation.theme.facility({ era, kind, stage, view: presentation.view });
   const label =
     kind === 'training' || kind === 'academy'
       ? t(stage ? `facility.${kind}.stage` : `facility.${kind}.base`, { stage })
       : t(`facility.${kind}`, { stage: stage + 1 });
   return {
-    ...presentation.theme.facility({ era, kind, stage }),
-    alt: t('facility.alt', {
-      era: t(`facility.era.${era}`),
-      label,
-      theme: presentation.themeLabel,
-    }),
+    ...image,
+    alt:
+      image.view === 'exterior'
+        ? t('facility.stadium.exterior')
+        : t('facility.alt', {
+            era: t(`facility.era.${era}`),
+            label,
+            theme: presentation.themeLabel,
+          }),
   };
 }

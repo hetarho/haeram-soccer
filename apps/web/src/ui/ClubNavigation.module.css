@@ -1,16 +1,19 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  padding-inline: 4px;
+  white-space: nowrap;
+}
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
-  margin-bottom: var(--page-tabs-margin-bottom, 14px);
   min-width: 0;
-}
-.tabs {
-  composes: seasonTabs from './App.module.css';
-  flex: 0 1 auto;
-  margin-bottom: 0;
+  margin-bottom: var(--page-tabs-margin-bottom, 14px);
 }
 .actions {
   display: flex;

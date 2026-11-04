@@ -10,6 +10,26 @@ const OwnerOffice = lazy(() =>
 const ApprovalInbox = lazy(() =>
   import('./Rich').then((module) => ({ default: module.ApprovalInbox })),
 );
+const ClubOverview = lazy(() =>
+  import('./ClubOverview').then((module) => ({ default: module.ClubOverview })),
+);
+export function ClubOverviewHost() {
+  const w = useGameState((state) => state.view!.world);
+  const [open, setOpen] = useTaskState(w.id, 'club-summary-open', false);
+  useEffect(() => {
+    const close = () => setOpen(false);
+    window.addEventListener('popstate', close);
+    return () => window.removeEventListener('popstate', close);
+  }, [setOpen]);
+  if (!open) return null;
+  return (
+    <Dialog label="우리 팀 오버뷰" wide onClose={() => setOpen(false)}>
+      <Suspense fallback={<p role="status">구단 현황을 여는 중…</p>}>
+        <ClubOverview w={w} />
+      </Suspense>
+    </Dialog>
+  );
+}
 export function ApprovalInboxHost({
   client,
   controller,

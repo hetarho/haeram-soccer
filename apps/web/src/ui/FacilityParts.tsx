@@ -60,7 +60,7 @@ export function FacilityParts({ w }: { w: World }) {
         aria-label="경기장"
         data-testid="facility-stadium"
       >
-        <FacilityArt kind="stadium" world={w} className={f.art} />
+        <FacilityArt kind="stadium" world={w} view="exterior" className={f.art} />
         <div className={f.body}>
           <div className={s.panelHeading}>
             <div>

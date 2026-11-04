@@ -1,0 +1,134 @@
+.overview {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.heading,
+.identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.heading {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.identity > div {
+  min-width: 0;
+}
+.identity > :first-child {
+  flex: none;
+}
+.heading h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 20px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.heading p,
+.league,
+.overview .note {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+.metric {
+  --card-padding: 16px;
+}
+.value {
+  display: block;
+  font-family: var(--score);
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 800;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.value small {
+  margin-left: 4px;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 500;
+}
+.money {
+  font-size: clamp(22px, 2.6vw, 30px);
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 14px;
+  min-width: 0;
+}
+.facts {
+  display: grid;
+  margin: 0;
+}
+.facts > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 0;
+}
+.facts > div + div {
+  border-top: 1px solid var(--line);
+}
+.facts dt {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.facts dd {
+  margin: 0;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.facts dd small {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+.overview [data-negative],
+.overview [data-tone='bad'] {
+  color: var(--danger);
+}
+.overview [data-tone='warn'] {
+  color: var(--warm);
+}
+@media (max-width: 760px) {
+  .overview {
+    gap: 12px;
+  }
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .metric {
+    --card-padding: 12px;
+  }
+  .cards {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .heading h2 {
+    font-size: 18px;
+  }
+}

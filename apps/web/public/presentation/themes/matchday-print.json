@@ -459,7 +459,24 @@
           "width": 960,
           "height": 320
         }
-      ]
+      ],
+      "exterior": {
+        "resource": "/art/matchday-print/stadium-exterior-v1/exterior.webp",
+        "width": 960,
+        "height": 320,
+        "variants": [
+          {
+            "resource": "/art/matchday-print/stadium-exterior-v1/exterior.small.webp",
+            "width": 480,
+            "height": 160
+          },
+          {
+            "resource": "/art/matchday-print/stadium-exterior-v1/exterior.webp",
+            "width": 960,
+            "height": 320
+          }
+        ]
+      }
     },
     "ui": {
       "image-art-frame-button": {

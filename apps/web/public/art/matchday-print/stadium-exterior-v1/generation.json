@@ -1,0 +1,22 @@
+{
+  "method": "Built-in image_gen; compact responsive WebP",
+  "date": "2026-11-04",
+  "source": "apps/web/design/matchday-print/stadium-exterior-v1",
+  "purpose": "General exterior cover for the stadium investment destination, independent of completed stage and era.",
+  "assets": [
+    {
+      "file": "exterior.webp",
+      "width": 960,
+      "height": 320,
+      "bytes": 133628,
+      "sha256": "0a4894b4a800066c7f0af2ebe582a06190749b8eb706e48fda9cf47021e6ff0f"
+    },
+    {
+      "file": "exterior.small.webp",
+      "width": 480,
+      "height": 160,
+      "bytes": 28940,
+      "sha256": "fcb553a620a4b4f392fbba6b2a27c287483ed0d8fe290d40a7fa19b7a9a371c0"
+    }
+  ]
+}

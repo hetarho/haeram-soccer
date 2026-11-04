@@ -8,7 +8,7 @@ import { Card } from './Card';
 import { Dialog } from './Dialog';
 import { Money } from './Money';
 import { DeskStats } from './OfficeDesk';
-import { Segments } from './Segments';
+import { ClubCashSummary } from './ClubCashSummary';
 import { compactMoney, percent, seasonName } from './format';
 import {
   DIVIDEND_DIAL,
@@ -17,7 +17,6 @@ import {
   ffpRoom,
   injectionLimit,
   injectionOutlook,
-  injectionSteps,
   lastDividend,
   mood,
   moodChange,
@@ -54,7 +53,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
   const id = useId();
   const [stake, setStake] = useState(owner.stake);
   const [dividend, setDividend] = useState<DividendShare>(owner.dividendShare);
-  const [injection, setInjection] = useState<string>();
+  const [injectionPercent, setInjectionPercent] = useState(0);
   const disabled = !!lock || sending;
   const identity = ownerIdentity(owner);
   const statuses = ownerStatuses(w);
@@ -64,8 +63,8 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
   const business = stakeOutlook(w, stake);
   const limit = injectionLimit(w);
   const ffp = ffpRoom(w);
-  const steps = injectionSteps(w);
-  const chosen = injection !== undefined && steps.includes(injection) ? injection : undefined;
+  const injection = ((BigInt(limit.max) * BigInt(injectionPercent)) / 100n).toString();
+  const chosen = BigInt(injection) > 0n ? injection : undefined;
   const put = chosen === undefined ? undefined : injectionOutlook(w, chosen);
   const take = dividendOutlook(w, dividend);
   const last = lastDividend(owner);
@@ -76,15 +75,21 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
       <Card
         as="section"
         surface="ticket"
-        aria-label="구단주 자금"
+        aria-label="자금 현황"
         meta={[identity.tier, ...identity.traits].join(' · ')}
       >
-        <p className={s.fortune}>
-          <small>구단주 자금</small>
-          <b className={fortune < 0n ? s.negative : undefined} data-testid="owner-fortune">
-            {money(owner.fortune)}
-          </b>
-        </p>
+        <div className={s.balances}>
+          <p className={s.fortune}>
+            <small>구단 자금</small>
+            <b className={BigInt(w.cash) < 0n ? s.negative : undefined}>{money(w.cash)}</b>
+          </p>
+          <p className={`${s.fortune} ${s.businessFunds}`}>
+            <small>사업자금</small>
+            <b className={`${s.businessAmount} ${fortune < 0n ? s.negative : ''}`} data-testid="owner-fortune">
+              {money(owner.fortune)}
+            </b>
+          </p>
+        </div>
         {statuses.map((status) => (
           <p key={status.id} className={s.crisis} role="status">
             <b>{status.title}</b> {status.detail}
@@ -99,10 +104,15 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
               note: business.next.close ? '시즌 마감' : `${business.next.days}일 뒤`,
             },
             { label: '생활비', value: ownMoney(w, business.living), note: '정산마다' },
-            { label: '구단 자금', value: ownMoney(w, w.cash), note: '따로 관리' },
+            { label: '사업 투자 비중', value: `${owner.stake}%` },
           ]}
         />
       </Card>
+
+      <details className={s.cashDetails}>
+        <summary>구단 운영비 · 자금 여력</summary>
+        <div className={s.cashSummary}><ClubCashSummary w={w} /></div>
+      </details>
 
       <section className={s.section} aria-labelledby={`${id}-business`}>
         <h3 id={`${id}-business`}>
@@ -143,7 +153,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
           <p className={s.note}>
             {business.staked
               ? `사업에 걸지 않아요. 정산 뒤 ${ownMoney(w, business.win)}`
-              : '구단주 자금이 0 이하라 사업에 걸 돈이 없어요.'}
+              : '사업자금이 0 이하라 사업에 걸 돈이 없어요.'}
           </p>
         )}
         <p className={s.note}>
@@ -178,14 +188,25 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
             {ownMoney(w, ffp.used)} 사용
           </p>
         )}
-        {steps.length ? (
+        {BigInt(limit.max) > 0n ? (
           <>
-            <Segments
-              label="투입 금액"
-              options={steps.map((amount) => [amount, ownMoney(w, amount)] as const)}
-              value={chosen ?? ''}
-              onChange={setInjection}
-            />
+            <label className={s.slider}>
+              <span>투입 금액 <b>{ownMoney(w, injection)}</b> · 한도의 {injectionPercent}%</span>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                step={1}
+                value={injectionPercent}
+                aria-label="자금 투입 금액"
+                aria-valuetext={`${ownMoney(w, injection)} · 투입 가능 한도의 ${injectionPercent}%`}
+                disabled={sending}
+                onChange={(event) => setInjectionPercent(Number(event.currentTarget.value))}
+              />
+              <span className={s.sliderScale} aria-hidden="true">
+                <span>{ownMoney(w, '0')}</span><span>{ownMoney(w, limit.max)}</span>
+              </span>
+            </label>
             {put && chosen ? (
               <dl className={s.facts}>
                 <div>
@@ -195,7 +216,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
                   </dd>
                 </div>
                 <div>
-                  <dt>구단주 자금</dt>
+                  <dt>사업자금</dt>
                   <dd>
                     {ownMoney(w, owner.fortune)} →{' '}
                     <b className={s.down}>{ownMoney(w, put.fortune)}</b>
@@ -222,7 +243,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
           <p className={s.note}>
             {ffp && BigInt(ffp.left) <= 0n
               ? 'FFP 한도를 다 써서 이번 시즌에는 더 넣을 수 없어요.'
-              : '구단주 자금이 0 이하라 넣을 돈이 없어요.'}
+              : '사업자금이 0 이하라 넣을 돈이 없어요.'}
           </p>
         )}
         <div className={s.actions}>
@@ -236,7 +257,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
                 { type: 'owner-inject', amount: chosen },
                 `구단에 ${ownMoney(w, chosen)} 투입했어요.`,
               );
-              if (done) setInjection(undefined);
+              if (done) setInjectionPercent(0);
             }}
           >
             {chosen ? `${ownMoney(w, chosen)} 넣기` : '금액을 고르세요'}
@@ -248,12 +269,23 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
         <h3 id={`${id}-dividend`}>
           배당 <span>지금 {owner.dividendShare}%</span>
         </h3>
-        <Segments
-          label="배당 비율"
-          options={DIVIDEND_DIAL.map((share) => [String(share), `${share}%`] as const)}
-          value={String(dividend)}
-          onChange={(value) => setDividend(Number(value) as DividendShare)}
-        />
+        <label className={s.slider}>
+          <span>시즌 이익의 <b>{dividend}%</b>를 배당받기</span>
+          <input
+            type="range"
+            min={0}
+            max={DIVIDEND_DIAL.length - 1}
+            step={1}
+            value={DIVIDEND_DIAL.indexOf(dividend)}
+            aria-label="배당 비율"
+            aria-valuetext={`${dividend}%`}
+            disabled={sending}
+            onChange={(event) => setDividend(DIVIDEND_DIAL[Number(event.currentTarget.value)])}
+          />
+          <span className={s.sliderScale} aria-hidden="true">
+            {DIVIDEND_DIAL.map((share) => <span key={share}>{share}%</span>)}
+          </span>
+        </label>
         <dl className={s.facts}>
           <div>
             <dt>이번 시즌 수지</dt>
@@ -281,7 +313,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
           </div>
         </dl>
         <p className={s.note}>
-          시즌 마감 때 그 시즌 이익의 몫만 구단 자금에서 구단주 자금으로 옮겨요. 적자 시즌에는 받지
+          시즌 마감 때 그 시즌 이익의 몫만 구단 자금에서 사업자금으로 옮겨요. 적자 시즌에는 받지
           않아요.
         </p>
         <div className={s.actions}>
@@ -389,7 +421,7 @@ export function OwnerSheet({ client, onClose }: { client?: GameClient; onClose: 
     }
   };
   return (
-    <Dialog label="구단주" onClose={onClose} actions={null}>
+    <Dialog label="자금 관리" onClose={onClose} actions={null} wide>
       <OwnerSheetBody w={w} lock={lock} sending={sending} message={message} onCommand={send} />
     </Dialog>
   );

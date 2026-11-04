@@ -10,16 +10,18 @@ export function FacilityArt({
   world,
   className,
   eager = false,
+  view,
 }: {
   kind: FacilityScene;
   world: World;
   className?: string;
   eager?: boolean;
+  view?: 'exterior';
 }) {
   const locale = useLocale();
   const theme = useTheme();
   const themeLabel = usePresentation().themeEntry!.label;
-  const scene = facilityScene(kind, world, { locale, theme, themeLabel });
+  const scene = facilityScene(kind, world, { locale, theme, themeLabel, view });
   const element = useRef<HTMLSpanElement>(null);
   const [width, setWidth] = useState(0);
   useLayoutEffect(() => {
@@ -38,6 +40,7 @@ export function FacilityArt({
           era: scene.era,
           kind,
           stage: scene.stage,
+          view,
           width: width * (globalThis.devicePixelRatio || 1),
         }
       : undefined,
@@ -49,6 +52,7 @@ export function FacilityArt({
       data-facility-art={kind}
       data-era={scene.era}
       data-stage={scene.stage}
+      data-facility-view={scene.view}
       style={{ '--facility-overlay': scene.treatment.overlay } as CSSProperties}
     >
       <img

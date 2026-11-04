@@ -15,6 +15,7 @@ import {
 } from './competitionNavigation';
 import { deskDestination, OFFICE_DESKS, resolveOffice, type WorkDesk } from './officeDesks';
 import { operationsAddress, operationsRoute, type OperationsView } from './clubSections';
+import type { InvestmentArea } from './investmentAreas';
 import { teamAddress, teamRoute, type TeamView } from './teamNavigation';
 import { isTaskDestination, rememberTask, taskAddress, useTaskMemory } from './taskMemory';
 import { create } from 'zustand';
@@ -100,6 +101,12 @@ export function routeOf(pathname: string, search: string): Route {
     };
   const view = officeView(asked);
   const params = new URLSearchParams(search);
+  if (view === 'lobby' && !params.has('request')) {
+    const target = new URL(operationsAddress('investment'), 'https://haeram.invalid');
+    for (const [key, value] of params)
+      if (!OFFICE_KEYS.includes(key)) target.searchParams.append(key, value);
+    return { page: 'operations', view: 'investment', address: target.pathname + target.search };
+  }
   // An unselected desk is the work it stands for; a selected request keeps its office review.
   if (view !== 'lobby' && view !== 'office' && !params.has('request')) {
     const target = new URL(deskDestination(view, params.get('work')), 'https://haeram.invalid');
@@ -203,7 +210,7 @@ export const usePeopleView = oneShot<'candidates'>();
 if (arrival?.market) usePeopleView.getState().open('candidates');
 /** An office view asked for while the office is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<OfficeView>();
-/** The office entrance opens the workspace overview; the inbox has its own modal action. */
+/** The office entrance opens the investment directory; summaries and approvals use dialogs. */
 export function openOfficeLobby() {
   useTaskMemory.setState((memory) => ({
     values: {
@@ -211,10 +218,10 @@ export function openOfficeLobby() {
       [APPROVAL_INBOX_OPEN]: false,
       [APPROVAL_DIALOG_REQUEST]: undefined,
       'office-overview': false,
+      'club-summary-open': false,
     },
   }));
-  visit(officeAddress('lobby'));
-  useBusinessView.getState().open('lobby');
+  openInvestment();
 }
 export const APPROVAL_INBOX_OPEN = 'approval-inbox-open';
 export const APPROVAL_DIALOG_REQUEST = 'approval-dialog-request';
@@ -234,6 +241,11 @@ export function openApprovalInbox() {
 export function openOwnerOffice() {
   const memory = useTaskMemory.getState();
   useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true } });
+}
+export function openClubOverview() {
+  useTaskMemory.setState((memory) => ({
+    values: { ...memory.values, 'club-summary-open': true },
+  }));
 }
 
 /** Explicit action links select their canonical workflow, never the last unrelated subview. */
@@ -276,6 +288,9 @@ export function openTeam(view: TeamView = 'players') {
 export function openOperations(view: OperationsView = 'investment') {
   visit(operationsAddress(view));
 }
+export function openInvestment(area?: InvestmentArea) {
+  visit(`${operationsAddress('investment')}${area ? `&area=${area}` : ''}`);
+}
 /** An office desk address left without a selected request goes where its work lives now. */
 export function leaveDesk() {
   visit(taskAddress(), true);
@@ -288,7 +303,11 @@ export function openBusiness(
   destination: OfficeView | 'strategy' | 'build' | 'finance' | 'facility' | 'marketing',
 ) {
   const view = officeView(destination);
-  if (view !== 'lobby' && view !== 'office') {
+  if (view === 'lobby') {
+    openOfficeLobby();
+    return;
+  }
+  if (view !== 'office') {
     visit(officeAddress(view));
     return;
   }
@@ -388,10 +407,7 @@ export function returnApprovalHome(request?: ApprovalRequest) {
       [QUEUE_RETURN]: { id, index: from?.id === id ? from.index : 0, back: true },
     },
   });
-  history.pushState(null, '', officeAddress('lobby'));
-  if (useNavigation.getState().page === 'business') useBusinessView.getState().open('lobby');
-  useNavigation.setState({ page: 'business' });
-  if (typeof window !== 'undefined') window.dispatchEvent(new Event('tasknavigate'));
+  openInvestment();
 }
 /** Opens the page and tab where a setting lives (→WEB-71). */
 export function openHome(home: Home) {
@@ -696,7 +712,7 @@ export const useFacilityRequest = oneShot<'stadium' | 'training' | 'academy'>();
 export function openFacility(part: 'stadium' | 'training' | 'academy') {
   beginTaskDetour('operations', operationsAddress('investment'));
   useFacilityRequest.getState().open(part);
-  openOperations('investment');
+  openInvestment(part === 'training' ? 'firstTeam' : part === 'academy' ? 'youth' : 'stadium');
 }
 
 export const useRecordRequest = oneShot<{ year: number }>();

@@ -50,6 +50,8 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
+import { ClubOverview } from './ClubOverview';
+import { InvestmentView } from './InvestmentView';
 import { ApprovalQueue } from './ApprovalQueue';
 import { EventCard } from './EventCenter';
 import { MediationReview } from './MediationReview';
@@ -1289,13 +1291,9 @@ export default function Rich({
         )}
       </>
     );
-  if (page === 'operations' || page === 'training')
-    return (
-      <section
-        aria-label={page === 'operations' ? '투자' : '오버뷰'}
-        style={{ minHeight: '50vh' }}
-      />
-    );
+  if (page === 'training') return <ClubOverview w={state.view!.world} />;
+  if (page === 'operations')
+    return <InvestmentView state={state} client={client} />;
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;
   return (

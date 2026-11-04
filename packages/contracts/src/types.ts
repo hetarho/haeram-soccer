@@ -1335,6 +1335,9 @@ export interface DisciplineState {
 }
 export type Command =
   | { type: 'settings'; settings: GameSettings }
+  | { type: 'club-policy'; key: PolicyKey; level: PolicyLevel }
+  | { type: 'coaching-investment'; choice: string }
+  | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
   | { type: 'next-event' }
   | { type: 'advance'; rounds: number }
   /** Stops early on the day a new unread attention item of a `stop` kind arrives. */

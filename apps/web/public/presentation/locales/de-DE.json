@@ -143,6 +143,7 @@
     "facility.era.terraces": "1970er–90er",
     "facility.era.contemporary": "Ab 2000",
     "facility.stadium": "Stadion Stufe {stage}",
+    "facility.stadium.exterior": "Stadionfassade",
     "facility.locker": "Umkleide im Stadion Stufe {stage}",
     "facility.training.base": "Einfacher Trainingsplatz",
     "facility.training.stage": "Trainingsplatz Stufe {stage}",

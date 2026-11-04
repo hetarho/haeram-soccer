@@ -11,6 +11,7 @@ import { applySettings } from './settings';
 import { chooseMatchKit } from './identity-operations';
 import { adoptDesign, commissionDesign, discardDesigns, redrawDesigns } from './design-studio';
 import { ENDED_MESSAGE, ownerCommand } from './owner';
+import { investmentCommand } from './ops-investment';
 
 // Read models and limits the app and other modules import from here.
 export { sponsorAnnual, sponsorOffers, sponsorSlots } from './ops-commercial';
@@ -26,6 +27,11 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
   if (w.bankrupt && cmd.type !== 'read-inbox') throw new Error(BANKRUPT_MESSAGE);
   if (w.ended && cmd.type !== 'read-inbox') throw new Error(ENDED_MESSAGE);
   switch (cmd.type) {
+    case 'club-policy':
+    case 'coaching-investment':
+    case 'facility-upgrade':
+      investmentCommand(w, cmd);
+      break;
     case 'next-event':
       advanceToNextEvent(w);
       break;

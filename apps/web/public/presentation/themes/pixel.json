@@ -422,6 +422,11 @@
         "terraces.staff.0": "/art/scenes/staff-office-v2.webp",
         "contemporary.manager.0": "/art/scenes/manager-office-v2.webp",
         "contemporary.staff.0": "/art/scenes/staff-office-v2.webp"
+      },
+      "exterior": {
+        "resource": "/art/pixel/stadium-exterior-v1/exterior.png",
+        "width": 240,
+        "height": 80
       }
     },
     "ui": {

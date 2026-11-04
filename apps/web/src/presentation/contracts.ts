@@ -179,6 +179,13 @@ export interface FacilityImageVariant extends SemanticImageSlot {
   width: number;
   height: number;
 }
+/** A general facility cover; it makes no completed-stage or capacity claim. */
+export interface FacilityCoverImage {
+  resource: string;
+  width: number;
+  height: number;
+  variants?: { resource: string; width: number; height: number }[];
+}
 export interface ThemePack {
   schemaVersion: 1;
   id: string;
@@ -193,7 +200,10 @@ export interface ThemePack {
   };
   fonts: FontResource[];
   images: {
-    facility: SemanticImageSlot & { variants?: FacilityImageVariant[] };
+    facility: SemanticImageSlot & {
+      variants?: FacilityImageVariant[];
+      exterior?: FacilityCoverImage;
+    };
     ui?: Record<string, UiImageResource>;
   };
   icons: Record<string, ThemeIcon>;
@@ -425,6 +435,11 @@ const facilitySlotSchema = z.strictObject({
     )
     .optional(),
 });
+const facilityCoverSourceSchema = z.strictObject({
+  resource: resourceReferenceSchema,
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
 const themeSchema = z.strictObject({
   schemaVersion: z.literal(1),
   id: packIdSchema,
@@ -446,6 +461,9 @@ const themeSchema = z.strictObject({
   fonts: z.array(fontSchema).min(1),
   images: z.strictObject({
     facility: facilitySlotSchema.extend({
+      exterior: facilityCoverSourceSchema
+        .extend({ variants: z.array(facilityCoverSourceSchema).optional() })
+        .optional(),
       variants: z
         .array(
           facilitySlotSchema.extend({

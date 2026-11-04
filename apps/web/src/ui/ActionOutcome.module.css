@@ -1,10 +1,12 @@
 .outcome {
   position: fixed;
   z-index: 90;
-  top: calc(150px + env(safe-area-inset-top));
-  right: 16px;
-  width: min(400px, calc(100vw - 24px));
-  max-height: calc(100dvh - 180px);
+  bottom: calc(max(var(--toast-clearance, 0px), env(safe-area-inset-bottom)) + 12px);
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  width: min(480px, calc(100vw - 24px));
+  max-height: min(360px, calc(100dvh - max(var(--toast-clearance, 0px), env(safe-area-inset-bottom)) - 32px - env(safe-area-inset-top)));
   overflow-y: auto;
   padding: 12px 14px;
   border-radius: var(--card-radius);
@@ -97,15 +99,7 @@
 @keyframes outcome-in {
   from {
     opacity: 0;
-    transform: translateY(-12px) scale(0.97);
-  }
-}
-@media (max-width: 760px) {
-  .outcome {
-    top: calc(128px + env(safe-area-inset-top));
-    left: 12px;
-    right: 12px;
-    width: auto;
+    transform: translateY(12px) scale(0.97);
   }
 }
 @media (prefers-reduced-motion: reduce) {

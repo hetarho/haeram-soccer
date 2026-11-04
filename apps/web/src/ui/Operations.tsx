@@ -18,9 +18,10 @@ import {
 } from './state';
 import { Dialog } from './Dialog';
 import { DeskBody } from './OfficeDesk';
+import { ClubOverview } from './ClubOverview';
 
 /**
- * A selected approval opens its authoritative work form in a dialog. The workspace below stays empty.
+ * The workspace overview or a selected approval's authoritative work form in a dialog.
  */
 export function OperationsView({
   state,
@@ -61,7 +62,7 @@ export function OperationsView({
     officeView(new URLSearchParams(location.search).get('view')),
   );
   const area = BUSINESS_TABS.find(([id]) => id === (selectedRequest?.desk ?? view));
-  // Older settings addresses still open the settings dialog over the blank workspace.
+  // Older settings addresses still open the settings dialog over the workspace.
   useEffect(() => {
     if (selectedRequest || view !== 'office') return;
     history.replaceState(history.state, '', officeAddress('lobby'));
@@ -71,7 +72,7 @@ export function OperationsView({
   useEffect(() => {
     if (area && !requestId) leaveDesk();
   }, [area, requestId]);
-  if (!area) return <section aria-label="오버뷰" style={{ minHeight: '50vh' }} />;
+  if (!area) return <ClubOverview w={w} />;
   if (!requestId) return null;
   const [id, label] = area;
   return (

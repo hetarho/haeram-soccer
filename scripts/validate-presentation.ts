@@ -124,6 +124,12 @@ export async function validatePresentation(
         }
     for (const reference of Object.values(pack.images.facility.overrides ?? {}))
       await asset(resolveResourceUrl(reference, url), `theme image override ${entry.id}`);
+    if (pack.images.facility.exterior) {
+      const exterior = theme.facility({ era: 'heritage', kind: 'stadium', stage: 0, view: 'exterior' });
+      await asset(exterior.src, `stadium exterior ${entry.id}`);
+      for (const variant of exterior.variants)
+        await asset(variant.src, `responsive stadium exterior ${entry.id}`);
+    }
     for (const [role, icon] of Object.entries(pack.icons))
       for (const variant of [undefined, ...Object.keys(icon.variants ?? {})]) {
         const resource = theme.icon(role, variant);

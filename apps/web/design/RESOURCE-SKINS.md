@@ -28,6 +28,12 @@ supplies `srcset`/`sizes`; the theme-change collector chooses the same represent
 mounted slot's pixel demand. Offscreen scenes remain lazy. The installer preflights shared UI
 skins and mounted semantic needs, rather than every trophy variant in the icon inventory.
 
+The stadium investment destination can request `view: exterior` through the same facility slot.
+Its optional `images.facility.exterior` supplies a general exterior cover with source dimensions
+and responsive variants. It depicts the entrance facade rather than a completed capacity or era;
+live investment facts explain the current stage. Packs without this resource fall back to their
+ordinary stadium scene. The theme-change collector resolves the mounted viewpoint and width.
+
 Preparation uses compact encodings: smooth frames up to 192px wide, pictograms 64px, material
 tiles 256px, and facilities 960×320 with 480×160 variants. Pixel resources keep their native
 lossless grid. `scripts/art-resources.mjs` and `scripts/ui-art-resources.mjs` apply generation

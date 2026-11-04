@@ -1,0 +1,22 @@
+{
+  "method": "Built-in image_gen; compact responsive WebP",
+  "date": "2026-11-04",
+  "source": "apps/web/design/standard/stadium-exterior-v1",
+  "purpose": "General exterior cover for the stadium investment destination, independent of completed stage and era.",
+  "assets": [
+    {
+      "file": "exterior.webp",
+      "width": 960,
+      "height": 320,
+      "bytes": 97592,
+      "sha256": "5e60779c62f4e82642a1d95f1e4d6a648a3e50a34cf8c942d9660b68cd45a46d"
+    },
+    {
+      "file": "exterior.small.webp",
+      "width": 480,
+      "height": 160,
+      "bytes": 25040,
+      "sha256": "032bd9bd4d655cbd234d4aca59bfdf4fd9569b4b32c47d27136796afb3fb22d1"
+    }
+  ]
+}

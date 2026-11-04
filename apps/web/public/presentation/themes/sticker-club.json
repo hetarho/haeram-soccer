@@ -466,7 +466,24 @@
           "width": 960,
           "height": 320
         }
-      ]
+      ],
+      "exterior": {
+        "resource": "/art/sticker-club/stadium-exterior-v1/exterior.webp",
+        "width": 960,
+        "height": 320,
+        "variants": [
+          {
+            "resource": "/art/sticker-club/stadium-exterior-v1/exterior.small.webp",
+            "width": 480,
+            "height": 160
+          },
+          {
+            "resource": "/art/sticker-club/stadium-exterior-v1/exterior.webp",
+            "width": 960,
+            "height": 320
+          }
+        ]
+      }
     },
     "ui": {
       "image-art-frame-button": {

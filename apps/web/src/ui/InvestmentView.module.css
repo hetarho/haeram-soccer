@@ -1,0 +1,304 @@
+.page {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  width: 100%;
+  max-width: 1180px;
+  min-width: 0;
+  margin: 0 auto;
+}
+.title h2 {
+  margin: 0;
+  font-size: 20px;
+}
+.title p,
+.page .note {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.destination,
+.hero {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 180px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--scene-radius, var(--card-radius));
+  background: var(--surface-deep);
+}
+.page .gallery > button.destination {
+  width: 100%;
+  min-height: clamp(168px, 22vw, 280px);
+  padding: 0;
+  border: 0;
+  border-image: none;
+  box-shadow: none;
+  text-align: left;
+  cursor: pointer;
+}
+.destination::after,
+.hero::after,
+.facilityScene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 15%, rgb(9 14 16 / 0.5) 65%, rgb(9 14 16 / 0.86));
+}
+.destination:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 4px;
+}
+.destination:hover .art {
+  transform: scale(1.035);
+}
+.destination > .art,
+.hero > .art,
+.facilityScene > .art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.art {
+  transition: transform 180ms ease;
+}
+.overlay {
+  position: absolute;
+  inset: auto 16px 16px;
+  z-index: 2;
+  display: grid;
+  gap: 4px;
+  padding-right: 24px;
+  color: #fff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.7);
+  pointer-events: none;
+}
+.overlay b,
+.overlay h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+.overlay > span,
+.overlay p {
+  margin: 0;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.enter {
+  position: absolute;
+  right: 14px;
+  bottom: 23px;
+  z-index: 2;
+  color: #fff;
+  pointer-events: none;
+}
+.hero {
+  min-height: clamp(150px, 20vw, 230px);
+}
+.details {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.panel {
+  --card-padding: 18px;
+}
+.options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
+  gap: 8px;
+  margin-block: 14px;
+}
+.options button {
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  min-height: 60px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: normal;
+  word-break: keep-all;
+}
+.options small {
+  font-size: 11px;
+  font-weight: 400;
+}
+.budgetSlider {
+  display: grid;
+  gap: 2px;
+  margin-block: 12px;
+  min-width: 0;
+}
+.budgetSlider > b {
+  font-size: 15px;
+}
+.budgetSlider > input {
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+}
+.sliderNames {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+.sliderNames > :first-child {
+  text-align: left;
+}
+.sliderNames > :last-child {
+  text-align: right;
+}
+.sliderNames > [data-selected] {
+  color: var(--text);
+  font-weight: 700;
+}
+.supportFacts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+.supportFacts > div {
+  min-width: 0;
+}
+.supportFacts dt {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.supportFacts dd {
+  margin: 4px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.selection {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+  margin-block: 10px;
+}
+.selection p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.selection progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.apply {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+.apply {
+  margin-top: 14px;
+}
+.apply > button {
+  margin-left: auto;
+}
+.facilityScene {
+  position: relative;
+  min-height: clamp(168px, 22vw, 280px);
+  margin-top: 8px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--scene-radius, var(--card-radius));
+  background: var(--surface-deep);
+}
+.facilityCaption {
+  padding-right: 0;
+}
+.facilityAction {
+  display: grid;
+  gap: 6px;
+  margin-top: 12px;
+}
+.facilityAction > button {
+  width: 100%;
+  min-height: 44px;
+}
+.staff {
+  margin: 14px 0;
+}
+.staff > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 12px;
+  padding: 10px 0;
+}
+.staff > div + div {
+  border-top: 1px solid var(--line);
+}
+.staff dt {
+  color: var(--text-muted);
+}
+.staff dd {
+  margin: 0;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.staff small {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+@media (max-width: 1000px) {
+  .gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .supportFacts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .gallery {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .panel {
+    --card-padding: 12px;
+  }
+  .selection {
+    padding: 10px;
+  }
+  .options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .art {
+    transition: none;
+  }
+}
