@@ -43,20 +43,19 @@ export function OperationsView({
   const w = state.view!.world;
   const requests = useTaskMemory((memory) => memory.approvalRequests);
   const requestId =
-    selectedRequest?.item.id ??
-    new URLSearchParams(location.search).get('request') ??
-    undefined;
+    selectedRequest?.item.id ?? new URLSearchParams(location.search).get('request') ?? undefined;
   const liveRequest = requestId
     ? approvalRequests(w).find((item) => item.id === requestId)
     : undefined;
-  const [request] = useState(() =>
-    selectedRequest ??
-    (requestId && approvalWorld() === w.id
-      ? (requests[requestId] ??
-        (liveRequest && eventDesk(liveRequest)
-          ? { world: w.id, desk: eventDesk(liveRequest)!, item: liveRequest }
-          : undefined))
-      : undefined),
+  const [request] = useState(
+    () =>
+      selectedRequest ??
+      (requestId && approvalWorld() === w.id
+        ? (requests[requestId] ??
+          (liveRequest && eventDesk(liveRequest)
+            ? { world: w.id, desk: eventDesk(liveRequest)!, item: liveRequest }
+            : undefined))
+        : undefined),
   );
   const [view, setView] = useState<OfficeView>(() =>
     officeView(new URLSearchParams(location.search).get('view')),

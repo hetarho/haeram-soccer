@@ -1,3 +1,4 @@
+import { SALE_BARS } from './transfer-policy';
 import { worldMarketOffer } from './world-market';
 import { openNeed, windowCallUps } from './replacements';
 import { bidCeiling, haggling } from './director-bidding';
@@ -592,7 +593,7 @@ export function saleBar(w: World, p: Player) {
     runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     prospect = isProspect(w, p),
     base = SALE_BARS[w.build?.market ?? 'standard'][prospect ? 1 : 0],
-    [first, second] = financeStance(w).sellSteps,
+    [first, second] = financeStance(w, 'sales').sellSteps,
     cuts: string[] = [];
   let percent = base;
   const cut = (points: number, why: string) => {
@@ -618,13 +619,7 @@ export function saleAllowed(w: World, starter: boolean, age: number, covered: bo
  * The sale bar's base by the 매각 기조 card (→CLUB-18), of value and for a prospect: the club's
  * stance on selling sets how good an offer must be before the staff take it.
  */
-export const SALE_BARS: Readonly<Record<string, readonly [number, number]>> = {
-  selling: [110, 160],
-  showcase: [120, 180],
-  standard: [130, 200],
-  hardball: [150, 230],
-  hold: [150, 250],
-};
+export { SALE_BARS } from './transfer-policy';
 const SALE_BAR_FLOOR = 80;
 /** "유망주 기준 200%" or "기준 95%(130%에서 31세 −15%p · …)" for the staff report. */
 function saleBarLabel(bar: ReturnType<typeof saleBar>) {
@@ -757,7 +752,7 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
     card = cardOf(buildOf(w), 'market').label,
-    [first, second] = financeStance(w).sellSteps;
+    [first, second] = financeStance(w, 'sales').sellSteps;
   if (runway < first)
     return { accept: true, reason: `자금 여력 ${runway}주의 운영자금 위기라 매각을 택했어요.` };
   if (market === 'hold')

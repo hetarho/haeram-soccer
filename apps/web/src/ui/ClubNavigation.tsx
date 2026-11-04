@@ -18,12 +18,16 @@ function subscribeAddress(change: () => void) {
 
 /** Office actions stay above the investment directory and its detail pages. */
 export function ClubNavigation({ page }: { page: Page }) {
-  const search = useSyncExternalStore(subscribeAddress, () => location.search, () => '');
-  const params = new URLSearchParams(search);
-  const detail = page === 'operations' && (
-    operationsView(params.get('view')) !== 'investment' ||
-    INVESTMENT_AREAS.some((area) => area.id === params.get('area'))
+  const search = useSyncExternalStore(
+    subscribeAddress,
+    () => location.search,
+    () => '',
   );
+  const params = new URLSearchParams(search);
+  const detail =
+    page === 'operations' &&
+    (operationsView(params.get('view')) !== 'investment' ||
+      INVESTMENT_AREAS.some((area) => area.id === params.get('area')));
   if (!clubSection(page)) return null;
   return (
     <div className={s.toolbar}>
@@ -32,7 +36,7 @@ export function ClubNavigation({ page }: { page: Page }) {
         data-ui="link"
         className={s.back}
         aria-label={detail ? '구단주 사무실로' : '클럽하우스 홈으로'}
-        onClick={() => detail ? openInvestment() : openPrimary('dashboard')}
+        onClick={() => (detail ? openInvestment() : openPrimary('dashboard'))}
       >
         <PixelIcon name="chevronLeft" size={16} />
         {detail ? '사무실로' : '홈'}

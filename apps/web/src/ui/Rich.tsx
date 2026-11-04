@@ -1165,33 +1165,77 @@ function Roster({ state, client }: Props) {
   );
 }
 /** Manual actions are also reachable beside their instructions, through the same forms. */
-export function ApprovalWorkbench({ state, client, controller, responsibility }: Props & {
+export function ApprovalWorkbench({
+  state,
+  client,
+  controller,
+  responsibility,
+}: Props & {
   controller: ProgressionController;
   responsibility: ResponsibilityKey;
 }) {
   const w = state.view!.world;
   const [market, setMarket] = useState(false);
   const [mediationId, setMediationId] = useState<string>();
-  const pending = approvalRequests(w).filter((item) => item.responsibility === responsibility || item.responsibilities?.includes(responsibility));
+  const pending = approvalRequests(w).filter(
+    (item) =>
+      item.responsibility === responsibility || item.responsibilities?.includes(responsibility),
+  );
   const mediation = w.mediations?.find((record) => record.id === mediationId);
-  return <>
-    {pending.filter((item) => item.kind === 'incoming-bid' || item.kind === 'bid-response').map((item) =>
-      <EventCard key={item.id} client={client} controller={controller} item={item} inDesk />)}
-    {(responsibility === 'staff' || responsibility === 'contracts') && w.players
-      .filter((player) => w.playingCoachProposals?.[player.id]?.status === 'pending')
-      .map((player) => <PlayingCoachReview key={player.id} w={w} client={client} player={player} />)}
-    {responsibility === 'recruitment' && w.mediations?.filter((record) => record.status === 'pending').map((record) =>
-      <button key={record.id} type="button" data-ui="secondary" onClick={() => setMediationId(record.id)}>감독·단장 영입 중재 검토</button>)}
-    {mediation && <MediationReview record={mediation} w={w} client={client} onClose={() => setMediationId(undefined)} />}
-    {responsibility === 'manager' ? <>
-      <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
-      {market && <ManagerMarket state={state} client={client} inline onClose={() => setMarket(false)} />}
-    </> : responsibility === 'staff' ? <CoachingStaff w={w} client={client} />
-      : responsibility === 'contracts' || responsibility === 'sales' ? <Roster state={state} client={client} />
-      : responsibility === 'recruitment' ? <RecruitmentDesk state={state} client={client} />
-      : responsibility === 'academy' ? <AcademyPanel w={w} client={client} />
-      : <BusinessWorkbench state={state} client={client} part="sponsor" />}
-  </>;
+  return (
+    <>
+      {pending
+        .filter((item) => item.kind === 'incoming-bid' || item.kind === 'bid-response')
+        .map((item) => (
+          <EventCard key={item.id} client={client} controller={controller} item={item} inDesk />
+        ))}
+      {(responsibility === 'staff' || responsibility === 'contracts') &&
+        w.players
+          .filter((player) => w.playingCoachProposals?.[player.id]?.status === 'pending')
+          .map((player) => (
+            <PlayingCoachReview key={player.id} w={w} client={client} player={player} />
+          ))}
+      {responsibility === 'recruitment' &&
+        w.mediations
+          ?.filter((record) => record.status === 'pending')
+          .map((record) => (
+            <button
+              key={record.id}
+              type="button"
+              data-ui="secondary"
+              onClick={() => setMediationId(record.id)}
+            >
+              감독·단장 영입 중재 검토
+            </button>
+          ))}
+      {mediation && (
+        <MediationReview
+          record={mediation}
+          w={w}
+          client={client}
+          onClose={() => setMediationId(undefined)}
+        />
+      )}
+      {responsibility === 'manager' ? (
+        <>
+          <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
+          {market && (
+            <ManagerMarket state={state} client={client} inline onClose={() => setMarket(false)} />
+          )}
+        </>
+      ) : responsibility === 'staff' ? (
+        <CoachingStaff w={w} client={client} />
+      ) : responsibility === 'contracts' || responsibility === 'sales' ? (
+        <Roster state={state} client={client} />
+      ) : responsibility === 'recruitment' ? (
+        <RecruitmentDesk state={state} client={client} />
+      ) : responsibility === 'academy' ? (
+        <AcademyPanel w={w} client={client} />
+      ) : (
+        <BusinessWorkbench state={state} client={client} part="sponsor" />
+      )}
+    </>
+  );
 }
 /** The inbox and each review overlay the current page, without changing its address. */
 export function ApprovalInbox({
@@ -1332,8 +1376,7 @@ export default function Rich({
       </>
     );
   if (page === 'training') return <ClubOverview w={state.view!.world} />;
-  if (page === 'operations')
-    return <InvestmentView state={state} client={client} />;
+  if (page === 'operations') return <InvestmentView state={state} client={client} />;
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;
   return (

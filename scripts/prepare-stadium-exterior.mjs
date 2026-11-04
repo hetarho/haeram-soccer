@@ -46,23 +46,34 @@ for (const theme of ['matchday-print', 'standard', 'sticker-club', 'pixel']) {
       resolve(output, 'exterior.webp'),
     );
     const { small, ...full } = encoded;
-    assets = [{ file: 'exterior.webp', ...full }, { file: 'exterior.small.webp', ...small }];
+    assets = [
+      { file: 'exterior.webp', ...full },
+      { file: 'exterior.small.webp', ...small },
+    ];
     const resource = `/art/${theme}/${family}/exterior.webp`;
     image = {
       resource,
       width: full.width,
       height: full.height,
       variants: [
-        { resource: resource.replace('.webp', '.small.webp'), width: small.width, height: small.height },
+        {
+          resource: resource.replace('.webp', '.small.webp'),
+          width: small.width,
+          height: small.height,
+        },
         { resource, width: full.width, height: full.height },
       ],
     };
   }
   await json(manifestPath, {
-    method: theme === 'pixel' ? 'Native integer-grid SVG; lossless PNG' : 'Built-in image_gen; compact responsive WebP',
+    method:
+      theme === 'pixel'
+        ? 'Native integer-grid SVG; lossless PNG'
+        : 'Built-in image_gen; compact responsive WebP',
     date: '2026-11-04',
     source: `apps/web/design/${theme}/${family}`,
-    purpose: 'General exterior cover for the stadium investment destination, independent of completed stage and era.',
+    purpose:
+      'General exterior cover for the stadium investment destination, independent of completed stage and era.',
     assets,
   });
   const themePath = resolve(root, 'apps/web/public/presentation/themes', `${theme}.json`);

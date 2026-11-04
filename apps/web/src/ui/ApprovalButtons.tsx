@@ -28,7 +28,9 @@ export function ApprovalButtons() {
           {requests.length > 99 ? '99+' : requests.length}
         </b>
         {late > 0 && (
-          <b className={p.late} aria-hidden="true">지연 {late}</b>
+          <b className={p.late} aria-hidden="true">
+            지연 {late}
+          </b>
         )}
       </button>
       <button

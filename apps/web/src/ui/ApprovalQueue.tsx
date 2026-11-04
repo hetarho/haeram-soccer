@@ -219,7 +219,9 @@ function DelegationConfirm({
             <li key={key}>
               <b>{RESPONSIBILITY_LABELS[key]}</b>
               <span>
-                {next ? `→ ${delegates(w, key).join(' · ')}` : RESPONSIBILITY_DETAILS[key]}
+                {next
+                  ? `→ ${responsibilityDelegates(w, key).join(' · ')}`
+                  : RESPONSIBILITY_DETAILS[key]}
               </span>
             </li>
           ))}
@@ -267,7 +269,9 @@ export function ApprovalQueue({
     if (changed.length)
       propose({ responsibilities: Object.fromEntries(changed.map((key) => [key, value])) });
   };
-  const groups = approvalGroups(w, pending).filter((group) => !requestsOnly || group.items.length > 0);
+  const groups = approvalGroups(w, pending).filter(
+    (group) => !requestsOnly || group.items.length > 0,
+  );
   const late = overdueSummary(w, pending);
   const empty = useRef<HTMLParagraphElement>(null);
   const shown = useRef(groups.flatMap((group) => group.items));
@@ -320,26 +324,28 @@ export function ApprovalQueue({
             '지금 결재할 업무가 없어요'
           )}
         </p>
-        {!requestsOnly && <div className={s.bulk} role="group" aria-label="전체 결재 방식" data-ui="choices">
-          {(['direct', 'delegated'] as const).map((value) => {
-            const all =
-              value === 'delegated'
-                ? delegatedCount === RESPONSIBILITY_KEYS.length
-                : delegatedCount === 0;
-            return (
-              <button
-                key={value}
-                type="button"
-                data-ui={all ? 'secondary' : undefined}
-                aria-pressed={all}
-                disabled={blocked}
-                onClick={() => bulk(value)}
-              >
-                {value === 'delegated' ? '전체 위임' : '전체 직접'}
-              </button>
-            );
-          })}
-        </div>}
+        {!requestsOnly && (
+          <div className={s.bulk} role="group" aria-label="전체 결재 방식" data-ui="choices">
+            {(['direct', 'delegated'] as const).map((value) => {
+              const all =
+                value === 'delegated'
+                  ? delegatedCount === RESPONSIBILITY_KEYS.length
+                  : delegatedCount === 0;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  data-ui={all ? 'secondary' : undefined}
+                  aria-pressed={all}
+                  disabled={blocked}
+                  onClick={() => bulk(value)}
+                >
+                  {value === 'delegated' ? '전체 위임' : '전체 직접'}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
       <ol className={s.titles} aria-label="결재 항목">
         {groups.map(({ title, items }) => {
@@ -372,18 +378,20 @@ export function ApprovalQueue({
                   />
                 )}
               </header>
-              {!requestsOnly && <p className={s.delegate}>
-                {responsibility ? (
-                  <>
-                    <span className={s.delegateMark}>{delegated ? '위임 중' : '위임 대상'}</span>
-                    {responsibilityDelegates(w, responsibility).join(' · ')}
-                  </>
-                ) : (
-                  <>
-                    <span className={s.delegateMark}>결재</span>구단주 직접
-                  </>
-                )}
-              </p>}
+              {!requestsOnly && (
+                <p className={s.delegate}>
+                  {responsibility ? (
+                    <>
+                      <span className={s.delegateMark}>{delegated ? '위임 중' : '위임 대상'}</span>
+                      {responsibilityDelegates(w, responsibility).join(' · ')}
+                    </>
+                  ) : (
+                    <>
+                      <span className={s.delegateMark}>결재</span>구단주 직접
+                    </>
+                  )}
+                </p>
+              )}
               {items.length ? (
                 <ApprovalRows w={w} items={items} onReview={review} tagged={false} />
               ) : (

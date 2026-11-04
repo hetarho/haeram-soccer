@@ -214,8 +214,8 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
       expect(useNavigation.getState().page).toBe(page);
     }
     openPrimary('business');
-    expect(at()).toBe('/direction');
-    expect(useNavigation.getState().page).toBe('business');
+    expect(at()).toBe('/club-operations?view=investment');
+    expect(useNavigation.getState().page).toBe('operations');
   });
   it('replaces a stale desk address in place without making it the office entry', () => {
     const entries = browser();
@@ -228,13 +228,13 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
     expect(useNavigation.getState().page).toBe('operations');
     expect(entries).toEqual([]);
     openPrimary('business');
-    expect(at()).toBe('/direction');
+    expect(at()).toBe('/club-operations?view=investment');
   });
   it('opens a facility in 재정·투자 with a named return, all scoped to one game', () => {
     browser();
     openTraining('academy');
     openFacility('academy');
-    expect(at()).toBe('/club-operations?view=investment');
+    expect(at()).toBe('/club-operations?view=investment&area=youth');
     expect(useFacilityRequest.getState().request).toBe('academy');
     expect(useTaskMemory.getState().returning).toMatchObject({
       page: 'academy',
@@ -259,15 +259,15 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
 });
 
 describe('primary office entry', () => {
-  it('opens the 결재함 itself and leaves an earlier detour behind', () => {
+  it('opens the investment directory and leaves an earlier detour behind', () => {
     browser();
     openTraining('training');
     beginTaskDetour('business');
     expect(useTaskMemory.getState().returning).toMatchObject({ page: 'training' });
     // The clubhouse entrance and the controller open the queue, never a desk or a room door.
     openPrimary('business');
-    expect(location.pathname + location.search).toBe('/direction');
-    expect(useNavigation.getState().page).toBe('business');
+    expect(location.pathname + location.search).toBe('/club-operations?view=investment');
+    expect(useNavigation.getState().page).toBe('operations');
     expect(useTaskMemory.getState().returning).toBeUndefined();
   });
 });

@@ -16,4 +16,3 @@ covers and update their optional `images.facility.exterior` metadata. Generated 
 live in `apps/web/public/art/standard/stadium-exterior-v1/`. The script's `--check` mode compares
 deployed hashes without regeneration. This records working artwork awaiting the owner's visual
 review, not an independently approved product rule.
-

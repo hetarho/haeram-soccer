@@ -83,7 +83,10 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
           </p>
           <p className={`${s.fortune} ${s.businessFunds}`}>
             <small>사업자금</small>
-            <b className={`${s.businessAmount} ${fortune < 0n ? s.negative : ''}`} data-testid="owner-fortune">
+            <b
+              className={`${s.businessAmount} ${fortune < 0n ? s.negative : ''}`}
+              data-testid="owner-fortune"
+            >
               {money(owner.fortune)}
             </b>
           </p>
@@ -109,7 +112,9 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
 
       <section className={s.section} aria-labelledby={`${id}-cash`}>
         <h3 id={`${id}-cash`}>구단 운영비 · 자금 여력</h3>
-        <div className={s.cashSummary}><ClubCashSummary w={w} /></div>
+        <div className={s.cashSummary}>
+          <ClubCashSummary w={w} />
+        </div>
       </section>
 
       <section className={s.section} aria-labelledby={`${id}-business`}>
@@ -189,7 +194,9 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
         {BigInt(limit.max) > 0n ? (
           <>
             <label className={s.slider}>
-              <span>투입 금액 <b>{ownMoney(w, injection)}</b> · 한도의 {injectionPercent}%</span>
+              <span>
+                투입 금액 <b>{ownMoney(w, injection)}</b> · 한도의 {injectionPercent}%
+              </span>
               <input
                 type="range"
                 min={0}
@@ -202,7 +209,8 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
                 onChange={(event) => setInjectionPercent(Number(event.currentTarget.value))}
               />
               <span className={s.sliderScale} aria-hidden="true">
-                <span>{ownMoney(w, '0')}</span><span>{ownMoney(w, limit.max)}</span>
+                <span>{ownMoney(w, '0')}</span>
+                <span>{ownMoney(w, limit.max)}</span>
               </span>
             </label>
             {put && chosen ? (
@@ -268,7 +276,9 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
           배당 <span>지금 {owner.dividendShare}%</span>
         </h3>
         <label className={s.slider}>
-          <span>시즌 이익의 <b>{dividend}%</b>를 배당받기</span>
+          <span>
+            시즌 이익의 <b>{dividend}%</b>를 배당받기
+          </span>
           <input
             type="range"
             min={0}
@@ -281,7 +291,9 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
             onChange={(event) => setDividend(DIVIDEND_DIAL[Number(event.currentTarget.value)])}
           />
           <span className={s.sliderScale} aria-hidden="true">
-            {DIVIDEND_DIAL.map((share) => <span key={share}>{share}%</span>)}
+            {DIVIDEND_DIAL.map((share) => (
+              <span key={share}>{share}%</span>
+            ))}
           </span>
         </label>
         <dl className={s.facts}>
@@ -371,5 +383,9 @@ export function OwnerFunds({ client }: { client?: GameClient }) {
   return <OwnerSheetBody w={w} lock={lock} sending={sending} message={message} onCommand={send} />;
 }
 export function OwnerSheet({ client, onClose }: { client?: GameClient; onClose: () => void }) {
-  return <Dialog label="자금 관리" onClose={onClose} actions={null} wide><OwnerFunds client={client} /></Dialog>;
+  return (
+    <Dialog label="자금 관리" onClose={onClose} actions={null} wide>
+      <OwnerFunds client={client} />
+    </Dialog>
+  );
 }

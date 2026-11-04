@@ -19,6 +19,8 @@ import { ProgressControls } from './ProgressControls';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import Rich from './Rich';
+import { OwnerOffice } from './OwnerOfficeView';
+import { officeRead } from '../runtime/officeRead';
 
 vi.mock('../presentation/react', async (original) => ({
   ...(await original<typeof import('../presentation/react')>()),
@@ -84,7 +86,12 @@ vi.mock('./worldMarket', async (original) => ({
 const world = careerWorld({ country: 'ENG', seed: 'calendar-lock' });
 world.cash = '999999999999';
 const controller = {
-  store: createStore(() => ({ running: true, pace: 'x1', reason: '' })),
+  store: createStore(() => ({
+    running: true,
+    pace: 'x1',
+    reason: '',
+    background: { hidden: true, away: 'season', resultNotice: false },
+  })),
 } as unknown as ProgressionController;
 const client = {} as GameClient;
 function state(): ClientState {
@@ -96,6 +103,7 @@ function state(): ClientState {
     clockRunning: true,
     view: {
       world,
+      office: officeRead(world),
       coaches: {},
       totalMatches: 0,
       milestones: clubMilestones(world),
@@ -213,17 +221,16 @@ describe('management screen calendar locks', () => {
     // The office offers no immediate owner action (→WEB-39); its titles stay readable while the
     // clock runs, and their delegation switches lock like every management change (→WEB-97).
     vi.stubGlobal('location', { origin: 'https://game.test', pathname: '/business', search: '' });
-    const office = () =>
-      createElement(Rich, { state: gameStore.getState(), client, page: 'business', controller });
+    const office = () => createElement(OwnerOffice, { client, controller });
     for (const processing of [false, true]) {
       gameStore.setState({ processing });
       const markup = renderToStaticMarkup(office());
-      expect(markup).toContain('aria-label="결재 항목"');
+      expect(markup).toContain('aria-label="보고·위임 설정"');
       const entries = buttons(markup);
       expect(entries.filter((button) => button.label.includes('바로 할 수 있는 일'))).toEqual([]);
       expect(entries.some((button) => button.label === '결재라인 모아보기')).toBe(false);
     }
-    expectLocked(office, /^(직접|위임|전체 직접|전체 위임)$/);
+    expectLocked(office, /^(직접|자동|전체 직접|전체 자동)$/);
   });
   it("locks adopting or discarding the designer's drafts while the calendar runs", () => {
     const entry = identityOf(world, world.playerClub);

@@ -28,12 +28,17 @@ export function AssigneeProfile({
       {current ? (
         <>
           <h3>{current.name}</h3>
-          <p>{label}{current.born === undefined ? '' : ` · ${w.year - current.born}세`}</p>
+          <p>
+            {label}
+            {current.born === undefined ? '' : ` · ${w.year - current.born}세`}
+          </p>
           <DeskStats
             label="담당자 정보"
             stats={[
               { label: '능력', value: current.ability },
-              ...(current.potential === undefined ? [] : [{ label: '잠재력', value: current.potential }]),
+              ...(current.potential === undefined
+                ? []
+                : [{ label: '잠재력', value: current.potential }]),
               { label: '계약', value: contractLine(current.until, w.year) },
               {
                 label: '연봉',
@@ -45,7 +50,9 @@ export function AssigneeProfile({
             <PersonCareerLink id={current.person} name={current.name} client={client} />
           )}
         </>
-      ) : <p>현재 {label}은 공석입니다.</p>}
+      ) : (
+        <p>현재 {label}은 공석입니다.</p>
+      )}
     </Dialog>
   );
 }

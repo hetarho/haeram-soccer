@@ -240,7 +240,9 @@ export function openApprovalInbox() {
 /** Overview overlays the current task, including an existing department sheet. */
 export function openOwnerOffice() {
   const memory = useTaskMemory.getState();
-  useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true, 'office-focus': undefined } });
+  useTaskMemory.setState({
+    values: { ...memory.values, 'office-overview': true, 'office-focus': undefined },
+  });
 }
 export function openDecisionSettings(key: ResponsibilityKey | 'finance') {
   useTaskMemory.setState((memory) => ({
@@ -378,8 +380,11 @@ export function returnApprovalHome(request?: ApprovalRequest) {
     const memory = useTaskMemory.getState();
     if (
       request &&
-      (memory.world !== request.world || selected.world !== request.world || selected.item.id !== request.item.id)
-    ) return;
+      (memory.world !== request.world ||
+        selected.world !== request.world ||
+        selected.item.id !== request.item.id)
+    )
+      return;
     const from = memory.values[QUEUE_RETURN] as QueueReturn | undefined;
     useTaskMemory.setState({
       values: {

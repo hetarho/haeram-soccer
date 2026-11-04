@@ -6,6 +6,7 @@ import { mediationPreview } from '../../../../packages/engine/src/mediation';
 import { fullStatsRead } from '../../../../packages/engine/src/npc-stats';
 import { personCareer } from './personCareer';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
+import { officeRead } from './officeRead';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
 import { startingSquad } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
@@ -517,6 +518,7 @@ export class Host {
       annualCost: operatingCost(w),
       coefficient: europeanCoefficient(w),
       finance: financialBreakdown(w),
+      office: officeRead(w),
       news: this.news(w),
       newsTotal: newsTotal(w),
       managerHistoryKey: managerHistoryKey(w),
