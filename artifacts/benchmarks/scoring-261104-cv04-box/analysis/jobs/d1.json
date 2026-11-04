@@ -1,0 +1,41 @@
+[
+ {
+  "name": "entries-B-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/B.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-B-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-B-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/B.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-B-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-ctl-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ctl.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ctl-0-200.json"
+  ]
+ }
+]

@@ -1,0 +1,80 @@
+[
+ {
+  "name": "entries-ao17-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ao17.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ao17-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-ao17-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ao17.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ao17-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-ho17ao17-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ho17ao17.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ho17ao17-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-ho17ao17-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ho17ao17.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ho17ao17-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-ho20ao20-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ho20ao20.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ho20ao20-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-ho20ao20-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/ho20ao20.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-ho20ao20-200-200.json"
+  ]
+ }
+]

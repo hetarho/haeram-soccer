@@ -1,0 +1,15 @@
+[
+ {
+  "name": "entries-B-0-4",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/B.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-B-0-4.json"
+  ]
+ }
+]
