@@ -817,6 +817,7 @@
 - ba04 records: T699 turned CLUB-48's table, LEAGUE-10's means level and competition money on together; CLUB r59, LEAGUE r18, ECON r48 state them in force with LEAGUE-13's and ECON-29's measured lines on these rules.
 
 ## log
+- 261105 fix integration test: contracts.test.ts's market-value case checks fees on the scout list's club players only (free agents asking none), each at his club's division times the asking settings, and the recruitment dial against the same players' asking fees, since T702's list holds real free agents and club players instead of generated candidates. rs01
 - 261105 T705 done
 - 261105 merge origin/main bed03100 into worktree-rs01: main's finite ledger bounds (a61de001) on the scout's new office values and its two integration test fixes (bed03100). rs01
 - 261105 merge origin/main d708cd17 (T706 office effects, T707 localization, feature-sliced club/player detail) into worktree-rs01: T701–T704 kept on main's localized form, their copy moved into message resources in all 12 packs, the office ledger's shortlist values replaced by the scout's reach (CLUB-51). rs01
@@ -836,4 +837,3 @@
 - 261104 update-ssot CLUB r52 + create-task T693: an era star pay spread prices every wage term above an ordinary OVR-80 player's (England's maximum wage to 1960/61), calibrated on the strongest clubs' books with held-out seeds, countries and years; the growth slice follows on T693's baseline. ba04
 - 261104 ba04 start: owner requests sequential football-realism calibration in a new isolated worktree; base main 7241867b, released planning documents synchronized to next without code, primary checkout preserved.
 - 261104 nv04 release: verified 96eb899c published to main; 2081 unit tests, 1177 integration tests (4 existing skips) and 346 Chromium journeys pass; actual CI 41772636192 succeeds (confirmed directly after CLI HTML conclusion-parser failure). Primary main checkout and unrelated work preserved. nx04
-- 261104 fix start: re-arm a generation-card timer that wakes before its fractional deadline, avoiding a permanently held club list; two regression tests and six existing schedule tests pass, with typecheck/lint/format. nx04
