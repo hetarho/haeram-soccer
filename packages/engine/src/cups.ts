@@ -41,6 +41,24 @@ export const CUP_PRIZE_CONFIG = {
   ties: [7, 3.5, 1.8, 0.9] as readonly number[],
   honor: 27,
 };
+/**
+ * The prize for a cup tie won with `left` rounds after it (1 for a semi-final, →LEAGUE-5), on the
+ * broadcasting index of country `code` in `year` (→ECON-31); a final won (`left` 0) pays its title
+ * instead. The owner's club and a club nobody owns' book (→ECON-36) are paid by this one rule.
+ */
+export function cupTiePrize(code: string, year: number, left: number) {
+  if (left <= 0) return '0';
+  const ties = CUP_PRIZE_CONFIG.ties;
+  return broadcastQuote(code, year, ties[Math.min(left - 1, ties.length - 1)]);
+}
+/** The cup title's prize on the broadcasting index of country `code` in `year` (→LEAGUE-5, ECON-31). */
+export function cupTitlePrize(code: string, year: number) {
+  return broadcastQuote(code, year, CUP_PRIZE_CONFIG.honor);
+}
+/** The rounds left after round `index` of a cup drawn from `entrants` clubs: 0 for the final. */
+export function cupRoundsLeft(entrants: number, index: number) {
+  return roundsFor(entrants) - 1 - index;
+}
 
 /** Every professional club of the country (→LEAGUE-5); higher divisions are seeded first. */
 function entrants(w: World, code: string) {
@@ -109,16 +127,11 @@ function progress(w: World, cup: DomesticCup) {
     if (!decideTie(tie, legs, false)) return;
     changed = true;
     if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
-    const left = roundsFor(cup.clubs.length) - 1 - index;
+    const left = cupRoundsLeft(cup.clubs.length, index);
     // Winning the final is the title itself, paid with the trophy below.
     if (tie.winner === w.playerClub && left > 0) {
       // Cup prizes keep their rule and grow with the broadcasting index (→LEAGUE-5, →ECON-31).
-      const ties = CUP_PRIZE_CONFIG.ties,
-        prize = broadcastQuote(
-          clubOf(w).country,
-          w.year,
-          ties[Math.min(left - 1, ties.length - 1)],
-        );
+      const prize = cupTiePrize(clubOf(w).country, w.year, left);
       credit(w, prize);
       addEvent(w, 'cup-prize', `${cup.name} ${round.label} 통과`, `${cup.name} 상금`, prize);
     } else if (tie.winner !== w.playerClub)
@@ -133,7 +146,7 @@ function progress(w: World, cup: DomesticCup) {
     if (cup.winner === w.playerClub) {
       // Credited to the manager in charge as the final is decided (→HIST-19).
       captureCupTitle(w, 'cup');
-      const prize = broadcastQuote(clubOf(w).country, w.year, CUP_PRIZE_CONFIG.honor);
+      const prize = cupTitlePrize(clubOf(w).country, w.year);
       credit(w, prize);
       addEvent(
         w,

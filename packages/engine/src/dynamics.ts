@@ -70,7 +70,8 @@ export function squadCostAt(w: World, c: Club, strength: number, tier: number, y
  * The highest strength from the floor to `upTo` whose generated squad, in `tier` and the book's
  * season, costs at most `c`'s means (`meansOf`); the floor when none does, undefined without a
  * closed book. Each strength is generated once (`cost`); a squad's cost rises with its strength,
- * so a binary search finds the strength that fits with the next one up costing more.
+ * so a binary search finds the strength that fits with the next one up costing more. `extra`
+ * adds to the means, in the book's money: a measurement's counterfactual (T697), 0 in play.
  */
 export function meansLevel(
   w: World,
@@ -78,10 +79,12 @@ export function meansLevel(
   tier: number,
   upTo: number = EVOLUTION.ceiling,
   cost = memoCost(w, c, tier),
+  extra = 0n,
 ) {
   const means = meansOf(c);
   if (!means) return undefined;
-  const fits = (strength: number) => cost(strength, means.year) <= means.budget;
+  const budget = means.budget + extra;
+  const fits = (strength: number) => cost(strength, means.year) <= budget;
   if (fits(upTo)) return upTo;
   let low: number = EVOLUTION.floor,
     high = upTo;

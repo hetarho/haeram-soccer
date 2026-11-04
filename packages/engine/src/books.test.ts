@@ -1,8 +1,17 @@
-import { describe, expect, it } from 'vitest';
-import type { Club, World } from '../../contracts/src/types';
+import { afterEach, describe, expect, it } from 'vitest';
+import type {
+  Club,
+  DomesticCup,
+  EuropeTournament,
+  Fixture,
+  MatchRecord,
+  World,
+} from '../../contracts/src/types';
 import { currency } from '../../catalogs/src/index';
 import { fanFollowing } from './fans';
 import {
+  BOOK_COMPETITIONS,
+  bookCompetitionMoney,
   bookIncomeLines,
   booksClose,
   booksOpen,
@@ -15,8 +24,24 @@ import { CLUB_BOOKS } from './owner-config';
 import { scaleBy } from './primitives';
 import { facilityStage } from './club-value';
 import { historyWorld } from './history';
-import { evolveClubs } from './dynamics';
-import { operatingExpensesAt } from './finance';
+import { evolveClubs, MEANS_LEVEL } from './dynamics';
+import { STAR_SPREAD_CONFIG } from './market-prices';
+import {
+  EXPENSE_CONFIG,
+  FINANCE_CONFIG,
+  leagueMatchFactor,
+  matchBonus,
+  operatingExpensesAt,
+  resultBonus,
+} from './finance';
+import { CUP_PRIZE_CONFIG, cupTiePrize, cupTitlePrize } from './cups';
+import {
+  EUROPE_PRIZE_CONFIG,
+  europeMatchPrize,
+  europeTiePrize,
+  europeTitlePrize,
+} from './europe';
+import { broadcastQuote } from './quotes';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
 
@@ -198,5 +223,231 @@ describe('season books of clubs nobody owns (→ECON-36)', () => {
     const stage = facilityStage(w, giant);
     expect(stage.stadium).toBeGreaterThanOrEqual(5);
     expect(facilityStage(w, club(w, 'ENG', 3)).stadium).toBeLessThan(stage.stadium);
+  });
+});
+
+/**
+ * A small competition season for one English top-flight club (`top`): an eight-club cup it wins
+ * (a home quarter-final 2–1, an away semi-final 1–1 won on penalties, a home final 1–0) and a
+ * continental competition with two group matches (a home win, an away defeat) and a two-legged
+ * knockout tie it loses (a home draw, an away defeat). Synthetic, on the ownerless 1930 world.
+ */
+function competitionSeason(seed = 'npc-books-cups') {
+  const w = world(seed);
+  const eng = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0 && !c.representative);
+  const [top, a, b, c, d, e] = eng as [Club, Club, Club, Club, Club, Club];
+  const fixture = (id: string, kind: Fixture['kind'], home: Club, away: Club, score: number[]) =>
+    ({
+      id,
+      year: w.year,
+      round: 5,
+      kind,
+      home: home.id,
+      away: away.id,
+      country: kind === 'cup' ? 'ENG' : 'UEFA',
+      groupKey: kind === 'cup' ? 'cup:ENG' : 'ucl',
+      score: { home: score[0]!, away: score[1]! },
+    }) as Fixture;
+  const cup: DomesticCup = {
+    country: 'ENG',
+    name: 'FA Cup',
+    clubs: eng.slice(0, 8).map((one) => one.id),
+    rounds: [
+      { label: '8강', round: 28, legs: 1, ties: [{ home: top.id, away: a.id, winner: top.id }] },
+      {
+        label: '4강',
+        round: 35,
+        legs: 1,
+        ties: [{ home: b.id, away: top.id, winner: top.id, decided: 'pens' }],
+      },
+      { label: '결승', round: 42, legs: 1, ties: [{ home: top.id, away: c.id, winner: top.id }] },
+    ],
+    fixtures: [
+      fixture('1930:cup:ENG:k0:0', 'cup', top, a, [2, 1]),
+      fixture('1930:cup:ENG:k1:0', 'cup', b, top, [1, 1]),
+      fixture('1930:cup:ENG:k2:0', 'cup', top, c, [1, 0]),
+    ],
+    winner: top.id,
+  };
+  const europe = {
+    key: 'ucl',
+    name: 'European Cup',
+    field: 16,
+    format: 'groups',
+    games: 6,
+    stage: '우승 확정',
+    clubs: [top.id, d.id, e.id],
+    fixtures: [
+      fixture('1930:ucl:phase:0:0', 'europe', top, d, [3, 0]),
+      fixture('1930:ucl:phase:1:0', 'europe', e, top, [2, 0]),
+      fixture('1930:ucl:k0:0', 'europe', top, e, [1, 1]),
+      fixture('1930:ucl:k0:0:2', 'europe', e, top, [1, 0]),
+    ],
+    standings: {},
+    rounds: [
+      { label: '8강', round: 31, legs: 2, ties: [{ home: top.id, away: e.id, winner: e.id }] },
+    ],
+    winner: e.id,
+  } as EuropeTournament;
+  w.cups = [cup];
+  w.europe = [europe];
+  return { w, top, a, cup };
+}
+
+describe('competition money in the books (→ECON-36, LEAGUE-5, EURO-7)', () => {
+  afterEach(() => {
+    BOOK_COMPETITIONS.inForce = false;
+    delete BOOK_COMPETITIONS.observe;
+  });
+
+  it('enters production only with CLUB-48’s table and LEAGUE-10’s means level, never alone', () => {
+    const table =
+      Object.keys(STAR_SPREAD_CONFIG.own).length > 0 ||
+      STAR_SPREAD_CONFIG.shared.some(([, s]) => s < 1);
+    expect(BOOK_COMPETITIONS.inForce).toBe(table);
+    expect(MEANS_LEVEL.inForce).toBe(table);
+  });
+
+  it('prices every prize and bonus by the helpers the owner is paid by', () => {
+    const { w } = competitionSeason();
+    const y = w.year;
+    // The helpers are the configs' rules on the broadcasting index (→ECON-31).
+    expect(cupTiePrize('ENG', y, 1)).toBe(broadcastQuote('ENG', y, CUP_PRIZE_CONFIG.ties[0]!));
+    expect(cupTiePrize('ENG', y, 9)).toBe(broadcastQuote('ENG', y, CUP_PRIZE_CONFIG.ties.at(-1)!));
+    expect(cupTiePrize('ENG', y, 0)).toBe('0');
+    expect(cupTitlePrize('ENG', y)).toBe(broadcastQuote('ENG', y, CUP_PRIZE_CONFIG.honor));
+    const pay = EUROPE_PRIZE_CONFIG;
+    expect(europeMatchPrize('ENG', y, 'win')).toBe(broadcastQuote('ENG', y, pay.match + pay.win));
+    expect(europeMatchPrize('ENG', y, 'draw')).toBe(
+      broadcastQuote('ENG', y, pay.match + pay.draw),
+    );
+    expect(europeMatchPrize('ENG', y, 'loss')).toBe(broadcastQuote('ENG', y, pay.match));
+    expect(europeTiePrize('ENG', y)).toBe(broadcastQuote('ENG', y, pay.knockout));
+    expect(europeTitlePrize('ENG', y)).toBe(broadcastQuote('ENG', y, pay.honor));
+    expect(resultBonus('ENG', y, 0, 'win')).toBe(
+      broadcastQuote('ENG', y, FINANCE_CONFIG.winBonus * 2.05),
+    );
+    expect(resultBonus('ENG', y, 5, 'draw')).toBe(
+      broadcastQuote('ENG', y, FINANCE_CONFIG.drawBonus),
+    );
+    expect(resultBonus('ENG', y, 0, 'loss')).toBe('0');
+    // The owner's cup or continental result money is the same rule for the same match.
+    const second = w.clubs.find((one) => one.tier === 1 && one.country === 'ENG')!;
+    const owned = { ...w, playerClub: second.id };
+    for (const [score, result] of [
+      [{ home: 2, away: 1 }, 'win'],
+      [{ home: 1, away: 1 }, 'draw'],
+    ] as const) {
+      const match = { home: second.id, away: 'x', score, kind: 'cup' } as MatchRecord;
+      expect(matchBonus(owned, match).amount).toBe(resultBonus('ENG', y, 1, result));
+    }
+  });
+
+  it('sums each prize kind, each result bonus and one unscaled gate a home match', () => {
+    const { w, top } = competitionSeason();
+    const y = w.year,
+      n = (value: string) => BigInt(value);
+    const money = bookCompetitionMoney(w, top);
+    expect(money.prizes).toBe(
+      n(cupTiePrize('ENG', y, 2)) +
+        n(cupTiePrize('ENG', y, 1)) +
+        n(cupTitlePrize('ENG', y)) +
+        n(europeMatchPrize('ENG', y, 'win')) +
+        n(europeMatchPrize('ENG', y, 'loss')) +
+        n(europeTiePrize('ENG', y)),
+    );
+    const results = ['win', 'draw', 'win', 'win', 'loss', 'draw', 'loss'] as const;
+    expect(money.bonuses).toBe(
+      results.reduce((sum, r) => sum + n(resultBonus('ENG', y, top.tier, r)), 0n),
+    );
+    // Four home matches: the cup's quarter-final and final, a group match, the tie's first leg.
+    expect(money.gates % 4n).toBe(0n);
+    const one = money.gates / 4n;
+    expect(one).toBeGreaterThan(0n);
+    expect(money.total).toBe(money.prizes + money.bonuses + money.gates);
+    // One gate is the book's league gate a match at scale 1 (→ECON-19), rounding apart.
+    const own = w.fixtures.filter((f) => f.home === top.id || f.away === top.id);
+    const homeGames = own.filter((f) => f.kind === 'league' && f.home === top.id).length;
+    const league = bookIncomeLines(w, top).gate / BigInt(homeGames);
+    const factor = leagueMatchFactor({ ...w, fixtures: own, playerClub: top.id });
+    expect(factor).toBeGreaterThan(1);
+    expect(Math.abs(Number(league) - Number(one) * factor)).toBeLessThanOrEqual(3);
+  });
+
+  it('adds a gate only at home, nothing for a club without them or for league matches', () => {
+    const { w, top, a, cup } = competitionSeason();
+    const before = bookCompetitionMoney(w, top);
+    // The first cup tie away instead of at home: one gate fewer, prizes and bonuses as before.
+    const first = cup.fixtures[0]!;
+    [first.home, first.away] = [first.away, first.home];
+    first.score = { home: first.score!.away, away: first.score!.home };
+    const away = bookCompetitionMoney(w, top);
+    expect([away.prizes, away.bonuses]).toEqual([before.prizes, before.bonuses]);
+    expect(away.gates).toBe((before.gates / 4n) * 3n);
+    // The opponent beaten in that tie, now at home, earns its gate and no prize.
+    const loser = bookCompetitionMoney(w, a);
+    expect(loser.prizes).toBe(0n);
+    expect(loser.bonuses).toBe(0n);
+    expect(loser.gates).toBeGreaterThan(0n);
+    // A club without cup or continental matches adds nothing; league results change nothing.
+    const idle = w.clubs.find(
+      (one) => one.country === 'GER' && !one.representative && !cup.clubs.includes(one.id),
+    )!;
+    const none = { prizes: 0n, bonuses: 0n, gates: 0n, total: 0n };
+    expect(bookCompetitionMoney(w, idle)).toEqual(none);
+    for (const f of w.fixtures) f.score = { home: 3, away: 0 };
+    expect(bookCompetitionMoney(w, top)).toEqual(away);
+    // Without its cups and continental competitions the same club adds nothing.
+    w.cups = [];
+    w.europe = [];
+    expect(bookCompetitionMoney(w, top)).toEqual(none);
+  });
+
+  it('leaves every book released while off, observed or not', () => {
+    const released = competitionSeason();
+    released.w.cups = [];
+    released.w.europe = [];
+    const off = competitionSeason(),
+      observed = competitionSeason();
+    const seen = new Map<string, bigint>();
+    BOOK_COMPETITIONS.observe = (one, money) => seen.set(one.id, money.total);
+    booksClose(observed.w);
+    delete BOOK_COMPETITIONS.observe;
+    booksClose(off.w);
+    booksClose(released.w);
+    const books = (w: World) => w.clubs.map((one) => one.books);
+    expect(books(off.w)).toEqual(books(released.w));
+    expect(books(observed.w)).toEqual(books(released.w));
+    expect(seen.get(observed.top.id)).toBe(bookCompetitionMoney(off.w, off.top).total);
+    expect(seen.get(observed.top.id)).toBeGreaterThan(0n);
+  });
+
+  it('counts it in the income while in force, and next season’s operating share reads it (→ECON-30)', () => {
+    const released = competitionSeason(),
+      counted = competitionSeason();
+    for (const { top } of [released, counted]) top.books = { seasons: [], cash: '0', debt: '0' };
+    const money = bookCompetitionMoney(counted.w, counted.top).total;
+    const plain = settleNpcBooks(released.w, released.top).seasons[0]!;
+    BOOK_COMPETITIONS.inForce = true;
+    const book = settleNpcBooks(counted.w, counted.top).seasons[0]!;
+    expect(BigInt(book.income)).toBe(BigInt(plain.income) + money);
+    expect([book.wages, book.costs]).toEqual([plain.wages, plain.costs]);
+    expect(bookIncomeLines(counted.w, counted.top).competitions).toBe(money);
+    // The next season in the same division pays the larger of its amount and that income's share.
+    const { w, top } = counted;
+    w.history = [
+      { year: w.year, standings: [[w.clubs.indexOf(top), top.tier]] },
+    ] as unknown as World['history'];
+    w.year += 1;
+    w.cups = [];
+    w.europe = [];
+    const next = settleNpcBooks(w, top).seasons[0]!;
+    const floor = operatingExpensesAt('ENG', w.year, top.tier);
+    const share = scaleBy(book.income, EXPENSE_CONFIG.share, 10000n);
+    expect(BigInt(share)).toBeGreaterThan(BigInt(floor));
+    expect(next.costs).toBe(share);
+    expect(BigInt(next.costs)).toBeGreaterThan(
+      BigInt(scaleBy(plain.income, EXPENSE_CONFIG.share, 10000n)),
+    );
   });
 });

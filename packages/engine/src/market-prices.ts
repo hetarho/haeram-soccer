@@ -75,13 +75,17 @@ export const MARKET_CONFIG = {
  * terms count in full (CLUB-25, CLUB-26's Ballon d'Or premium); wages at 80 or below never move.
  *
  * In force (CLUB-48): s = 1 in every country and season, no shared or own anchor below 1, so every
- * star term counts in full. A table enters only when, on measured worlds' season books (→ECON-36),
- * its shared anchors are the least compression at which the median of each country's three strongest
- * top-flight clubs pays at most 70% of its revenue in wages and no club without a project pays more
- * than its revenue, and on held-out worlds no club without a project pays more than its revenue.
- * England's maximum wage (s = 0 through 1960/61) enters with the first table that passes, never
- * alone. T693's candidate (artifacts/benchmarks/T693) failed that gate; scripts read candidates
- * through `--spread`, a measurement override, never a game setting.
+ * star term counts in full. A table enters only together with LEAGUE-10's means level
+ * (`MEANS_LEVEL`, dynamics.ts) and only through CLUB-48's gate: its shared anchors are the least
+ * compression at which, on worlds without the means level, the median of each country's three
+ * strongest top-flight clubs pays at most 70% of its revenue in wages (fit); on worlds lived with both
+ * every calibration case meets that median and no club without a project pays more than its revenue,
+ * held-out worlds included (books); each country's champions stay within LEAGUE-10's spread or no
+ * further out than released (champions). England's maximum wage (s = 0 through 1960/61) enters with
+ * the first table that passes, never alone. T693's candidate failed the books (artifacts/benchmarks/
+ * T693); T696's table with the means level passed fit and books but failed champions (GER, POR;
+ * artifacts/benchmarks/T696). Scripts read candidates through `--spread` (and `--means`),
+ * measurement overrides, never game settings.
  */
 export const STAR_SPREAD_CONFIG = {
   /**
