@@ -1,0 +1,7 @@
+{
+ "done": "/home/deep/haeram/haeram-soccor-nv04/.tmp/nx04/runs/report.done",
+ "jobs": [
+  { "name": "report-arrHoldEZ60", "patch": ".tmp/nx04/candidates/arrHoldEZ60.json", "args": ["scripts/grid-bands.ts", "--report", "--partition", "calibration", "--scale", "0.25", "--only", "core,tactics", "--jobs", "5", "--out", ".tmp/nx04/runs/report-arrHoldEZ60-calibration.json"], "log": "/home/deep/haeram/haeram-soccor-nv04/.tmp/nx04/runs/report-arrHoldEZ60-calibration.log" },
+  { "name": "report-earlyZones", "patch": ".tmp/nx04/candidates/earlyZones.json", "args": ["scripts/grid-bands.ts", "--report", "--partition", "calibration", "--scale", "0.25", "--only", "core,tactics", "--jobs", "5", "--out", ".tmp/nx04/runs/report-earlyZones-calibration.json"], "log": "/home/deep/haeram/haeram-soccor-nv04/.tmp/nx04/runs/report-earlyZones-calibration.log" }
+ ]
+}

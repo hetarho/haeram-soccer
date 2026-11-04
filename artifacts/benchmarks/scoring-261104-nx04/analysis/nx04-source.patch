@@ -1,0 +1,50 @@
+diff --git a/packages/engine/src/grid/shape.ts b/packages/engine/src/grid/shape.ts
+index 30c5ddf0..3a67c654 100644
+--- a/packages/engine/src/grid/shape.ts
++++ b/packages/engine/src/grid/shape.ts
+@@ -151,6 +151,19 @@ export const SHAPE_CONFIG = {
+      * at 0.
+      */
+     secondStriker: { drop: 0, roles: ['targetMan'] as readonly RoleId[] },
++    /**
++     * T689 experiment (default off, →MATCH-33's timed arrival): in possession a forward with no run
++     * waits no deeper than `out` m from the goal line (the attack frame) instead of on the offside
++     * line, so he reaches the goal area only on a run. Off at 0.
++     */
++    hold: { out: 0 },
++    /**
++     * T689 experiment (default off, →MATCH-17/33 support arriving): in possession with the ball
++     * from `from` m up (attack frame), an attacking midfielder, a winger or a box-run role waits at
++     * least as far up as `out` m from the goal line and `narrow` of the way in toward the centre,
++     * so the carrier finds several men in scoring positions, not the striker alone. Off at 0.
++     */
++    arrive: { from: 0, out: 14, narrow: 0.3 },
+     /**
+      * The flank beside a back three (T399, →MATCH-8, MATCH-17): out of possession, with the ball
+      * at least `wide` m off the centre line and no further up the pitch than `upTo` m (the
+@@ -671,6 +684,25 @@ export function shapePlace(
+       FORMATION_FACTS[tactic].twoForwards
+     )
+       x -= SS.drop;
++    const H = SHAPE_CONFIG.candidate.hold;
++    if (H.out > 0 && s.setup.model !== undefined && line === 'FW')
++      x = Math.min(x, PITCH.length - H.out);
++    const A = SHAPE_CONFIG.candidate.arrive;
++    const pos = jobSlot.position;
++    if (
++      A.from > 0 &&
++      s.setup.model !== undefined &&
++      bx >= A.from &&
++      pos !== 'ST' &&
++      (pos === 'AM' ||
++        pos === 'LW' ||
++        pos === 'RW' ||
++        BOX_ROLES.includes(jobSlot.role) ||
++        SHAPE_CONFIG.candidate.boxRun.extra.includes(jobSlot.role))
++    ) {
++      x = Math.max(x, PITCH.length - A.out);
++      y += (CENTRE - y) * A.narrow;
++    }
+     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
+     return toEngine(side, [x, y]);
+   }
