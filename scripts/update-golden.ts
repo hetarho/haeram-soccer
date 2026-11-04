@@ -1,4 +1,5 @@
 import { writeFileSync } from 'node:fs';
+import { transferOffers } from '../packages/engine/src/scout-search';
 import { ENGINE_VERSION } from '../packages/engine/src/world';
 import { CATALOG_VERSION } from '../packages/catalogs/src/index';
 import { fixtureCareer, runFixture, type FixtureDefinition } from '../tests/fixtures/run';
@@ -7,6 +8,11 @@ if (!process.argv.includes('--write'))
 const input = { country: 'ENG' as const, seed: 'portable-release-1' };
 // The squad member the staff propose as a playing coach (`run.ts`'s staff-playing-coach setup).
 const playingCoach = fixtureCareer({ input }).players[6]!.id;
+// The scout's first club player (free agents list first and are never loaned, →CLUB-49/50); the
+// fixture's settings and policy leave the scout's list as the fresh career has it.
+const loanable = transferOffers(fixtureCareer({ input })).findIndex(
+  (offer) => offer.source.kind === 'club' && offer.available,
+);
 const definitions: FixtureDefinition[] = [
   {
     name: 'takeover-and-commercial-decisions',
@@ -14,7 +20,7 @@ const definitions: FixtureDefinition[] = [
     policy: { localInvest: 3 },
     commands: [
       { type: 'sign-sponsor', slot: 'local', offer: 0 },
-      { type: 'recruit', candidate: 0, loan: true },
+      { type: 'recruit', candidate: loanable, loan: true },
       { type: 'advance', rounds: 5 },
     ],
   },
