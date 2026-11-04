@@ -1,0 +1,15 @@
+{
+ "seconds": 68,
+ "status": [
+  {
+   "name": "bands-best_ar10-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "bands-best_h18-400",
+   "code": 0,
+   "seconds": 68
+  }
+ ]
+}

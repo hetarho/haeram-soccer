@@ -1,0 +1,30 @@
+{
+ "seconds": 198,
+ "status": [
+  {
+   "name": "stress-sn01a100-val-1",
+   "code": 0,
+   "seconds": 55
+  },
+  {
+   "name": "stress-sn01a100-val-2",
+   "code": 0,
+   "seconds": 55
+  },
+  {
+   "name": "stress-sn01a100-val-3",
+   "code": 0,
+   "seconds": 50
+  },
+  {
+   "name": "tactics-snK-calibration",
+   "code": 0,
+   "seconds": 197
+  },
+  {
+   "name": "tactics-snR-calibration",
+   "code": 0,
+   "seconds": 198
+  }
+ ]
+}

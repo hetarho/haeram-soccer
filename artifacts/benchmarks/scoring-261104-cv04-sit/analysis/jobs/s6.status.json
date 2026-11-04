@@ -1,0 +1,25 @@
+{
+ "seconds": 222,
+ "status": [
+  {
+   "name": "bands-sn01an20-400",
+   "code": 0,
+   "seconds": 93
+  },
+  {
+   "name": "bands-sn01an16-400",
+   "code": 0,
+   "seconds": 94
+  },
+  {
+   "name": "tactics-sn01an20-calibration",
+   "code": 0,
+   "seconds": 219
+  },
+  {
+   "name": "tactics-sn01an16-calibration",
+   "code": 0,
+   "seconds": 222
+  }
+ ]
+}

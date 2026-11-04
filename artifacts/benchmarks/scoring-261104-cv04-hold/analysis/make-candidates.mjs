@@ -101,6 +101,8 @@ list.sit20 = merge(list.best_ar10f50, sit(0.2));
 list.sit20nr15 = merge(list.sit20, reach(1.5));
 list.sit20a115 = merge(list.sit20, logit(-1.15));
 list.sit20nr15a115 = merge(list.sit20nr15, logit(-1.15));
+list.sit20a100 = merge(list.sit20, logit(-1));
+list.sit20a090 = merge(list.sit20, logit(-0.9));
 // best_ar10f50 without the keeper's release (hold, handsOff, quick): what the keeper fix does to MATCH-29.
 list.nokq_ar10f50 = merge(
   merge(

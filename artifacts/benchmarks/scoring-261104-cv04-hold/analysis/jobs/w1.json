@@ -1,0 +1,74 @@
+[
+ {
+  "name": "regain-ctl",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/ctl.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/regain-ctl-600-720.json"
+  ]
+ },
+ {
+  "name": "regain-h4",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h4.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/regain-h4-600-720.json"
+  ]
+ },
+ {
+  "name": "regain-h4o16",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h4o16.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/regain-h4o16-600-720.json"
+  ]
+ },
+ {
+  "name": "regain-h6o20",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h6o20.json",
+  "script": "scripts/scoring-regain-shots.ts",
+  "args": [
+   "--start",
+   "600",
+   "--matches",
+   "120",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/regain-h6o20-600-720.json"
+  ]
+ },
+ {
+  "name": "bands-h4o16-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h4o16.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-h6o20-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h6o20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

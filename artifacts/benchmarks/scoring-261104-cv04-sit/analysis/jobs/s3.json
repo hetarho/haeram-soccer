@@ -1,0 +1,61 @@
+[
+ {
+  "name": "conc-sn01a100-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/conc-sn01a100-validation2400.json"
+  ]
+ },
+ {
+  "name": "tactics-sn01a100-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/tactics-sn01a100-calibration.json"
+  ]
+ },
+ {
+  "name": "tactics-ctl-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/ctl.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/tactics-ctl-calibration.json"
+  ]
+ },
+ {
+  "name": "bands-sn01a090-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a090.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

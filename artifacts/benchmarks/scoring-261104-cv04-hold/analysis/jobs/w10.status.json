@@ -1,0 +1,15 @@
+{
+ "seconds": 396,
+ "status": [
+  {
+   "name": "conc-ko30s06-validation2400",
+   "code": 0,
+   "seconds": 384
+  },
+  {
+   "name": "conc-ko25an12s07-validation2400",
+   "code": 0,
+   "seconds": 396
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "seconds": 147,
+ "status": [
+  {
+   "name": "bands-nr0an12s07a170-400",
+   "code": 0,
+   "seconds": 79
+  },
+  {
+   "name": "bands-nr0an12s07a150-400",
+   "code": 0,
+   "seconds": 80
+  },
+  {
+   "name": "bands-nr0s06a170-400",
+   "code": 0,
+   "seconds": 68
+  }
+ ]
+}

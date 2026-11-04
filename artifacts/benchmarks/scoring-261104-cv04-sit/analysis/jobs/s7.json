@@ -1,0 +1,38 @@
+[
+ {
+  "name": "pc-ctl-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/ctl.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/pc-ctl-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-sn01a100-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01a100.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/pc-sn01a100-calibration-2.json"
+  ]
+ }
+]

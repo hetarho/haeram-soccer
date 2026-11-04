@@ -1,0 +1,33 @@
+[
+ {
+  "name": "report-best_ar10-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/best_ar10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "core,tactics",
+   "--jobs",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/report-best_ar10-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-best_ar12f50-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/best_ar12f50.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-best_ar12f50-validation2400.json"
+  ]
+ }
+]

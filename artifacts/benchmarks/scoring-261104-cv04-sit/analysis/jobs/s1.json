@@ -1,0 +1,60 @@
+[
+ {
+  "name": "bands-sn-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sna110-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sna110.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sna100-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sna100.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sn08a110-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn08a110.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "tactics-sna110-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sna110.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/tactics-sna110-calibration.json"
+  ]
+ }
+]

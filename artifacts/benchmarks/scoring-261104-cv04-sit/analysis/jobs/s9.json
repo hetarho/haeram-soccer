@@ -1,0 +1,82 @@
+[
+ {
+  "name": "pc-snC3-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/snC3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/pc-snC3-calibration-2.json"
+  ]
+ },
+ {
+  "name": "conc-sn01o08h25-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01o08h25.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/conc-sn01o08h25-validation2400.json"
+  ]
+ },
+ {
+  "name": "bands-snC3-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/snC3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "stress-sn01o08h25-val-1",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01o08h25.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/stress-sn01o08h25-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-sn01o08h25-val-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01o08h25.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/stress-sn01o08h25-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-sn01o08h25-val-3",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/sn01o08h25.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/stress-sn01o08h25-val-3.json"
+  ]
+ }
+]

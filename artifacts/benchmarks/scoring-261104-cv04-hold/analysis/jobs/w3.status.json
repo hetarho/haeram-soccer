@@ -1,0 +1,35 @@
+{
+ "seconds": 278,
+ "status": [
+  {
+   "name": "bands-h6o20kqpf-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "bands-h6o20kqpfan12s14-400",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "bands-h6o20kqpfan12-400",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "conc-h6o20kqpf-calibration",
+   "code": 0,
+   "seconds": 204
+  },
+  {
+   "name": "conc-h6o20kqpfan12-calibration",
+   "code": 0,
+   "seconds": 207
+  },
+  {
+   "name": "conc-h6o20kqpfan12s14-calibration",
+   "code": 0,
+   "seconds": 206
+  }
+ ]
+}

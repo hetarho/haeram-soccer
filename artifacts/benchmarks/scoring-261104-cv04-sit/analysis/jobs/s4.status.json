@@ -1,0 +1,20 @@
+{
+ "seconds": 317,
+ "status": [
+  {
+   "name": "bands-snA-400",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "tactics-snW-calibration",
+   "code": 0,
+   "seconds": 309
+  },
+  {
+   "name": "tactics-snA-calibration",
+   "code": 0,
+   "seconds": 317
+  }
+ ]
+}

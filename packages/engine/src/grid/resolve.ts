@@ -276,7 +276,12 @@ export const SHOT_CONFIG = {
    * (`keeperNarrowing`), so a keeper off his line toward the ball takes chances away and one caught
    * out of position gives them.
    */
-  revision9: { narrow: { reach: 1.5 } },
+  /**
+   * `set`, `corridor`: T689 experiment, default off at `set` 0: `reach` only against a shooter
+   * through on goal (no outfield opponent within `corridor` m of the line from him to the goal's
+   * middle, between them); `set` m against one with a defender between.
+   */
+  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6 } },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -859,7 +864,23 @@ export function keeperNarrowing(
   const { atan2, hypot } = s.math;
   const depth = PITCH.length - from[0];
   if (depth <= 0) return 1;
-  const reach = SHOT_CONFIG.revision9.narrow.reach;
+  const N = SHOT_CONFIG.revision9.narrow;
+  let reach: number = N.reach;
+  if (N.set > 0) {
+    const gx = PITCH.length,
+      gy = PITCH.width / 2;
+    const dd = hypot(gx - from[0], gy - from[1]);
+    for (const gp of s.players[other(side)]) {
+      if (!onPitch(gp) || gp.slot === 0 || dd <= 0) continue;
+      const p = attackFrame(side, gp.pos);
+      const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
+      if (t <= 0 || t >= 1) continue;
+      if (Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd < N.corridor) {
+        reach = N.set;
+        break;
+      }
+    }
+  }
   const lo = atan2(PITCH.width / 2 - BOX_CONFIG.post - from[1], depth),
     hi = atan2(PITCH.width / 2 + BOX_CONFIG.post - from[1], depth);
   /** The share of the mouth [lo, hi] open past a keeper at `k`. */
