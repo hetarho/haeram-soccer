@@ -4,6 +4,7 @@ import type { ProgressionController } from '../runtime/progression';
 import { useGameState } from '../runtime/store';
 import { useTaskState } from './taskMemory';
 import { Dialog } from './Dialog';
+import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 const OwnerOffice = lazy(() =>
   import('./OwnerOfficeView').then((m) => ({ default: m.OwnerOffice })),
 );
@@ -52,6 +53,7 @@ export function OfficeOverviewHost({
 }) {
   const id = useGameState((state) => state.view!.world.id);
   const [open, setOpen] = useTaskState(id, 'office-overview', false);
+  const [focus] = useTaskState<ResponsibilityKey | 'finance' | undefined>(id, 'office-focus', undefined);
   useEffect(() => {
     const close = () => setOpen(false);
     window.addEventListener('popstate', close);
@@ -61,7 +63,7 @@ export function OfficeOverviewHost({
   return (
     <Dialog label="결재 설정" wide onClose={() => setOpen(false)}>
       <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
-        <OwnerOffice key={id} client={client} controller={controller} />
+        <OwnerOffice key={id} client={client} controller={controller} focus={focus} />
       </Suspense>
     </Dialog>
   );

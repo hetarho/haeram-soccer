@@ -19,7 +19,10 @@ import f from './FacilityParts.module.css';
 
 /** What one level of a part does, in the owner's words (→ECON-32). */
 function levelEffect(part: FacilityPart, level: number) {
-  if (part === 'training') return `선수 성장 기반 +${TRAINING_GROUND[level].base}`;
+  if (part === 'training') {
+    const terms = TRAINING_GROUND[level];
+    return `선수 성장 ×${terms.growth} · 추가 피로 회복 +${terms.recoveryBonus} · 협상 호감 +${terms.goodwill}%`;
+  }
   const terms = ACADEMY_FACILITY[level];
   return `입단 +${terms.intake}명 · 잠재력 +${terms.potential} · 유소년 성장 ×${terms.growth}`;
 }

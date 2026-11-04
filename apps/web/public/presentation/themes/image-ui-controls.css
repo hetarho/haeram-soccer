@@ -1020,10 +1020,21 @@ html[data-theme] {
     --text-faint: var(--image-faint);
     color: var(--image-ink-color);
     border: 1px solid transparent !important;
+    /* A chosen option reads at a glance: the selected artwork drawn wide enough to show its
+       accent band (outset, so the layout never moves) over a tinted copy of the quiet material.
+       A theme whose selected artwork has no bright band adds an accent ring around it. */
     border-image: var(--image-selected-frame)
-      var(--image-art-frame-selected-slice, var(--image-frame-slice, 22)) / 3px stretch !important;
-    background: var(--image-quiet) var(--image-quiet-material) repeat padding-box;
+      var(--image-art-frame-selected-slice, var(--image-frame-slice, 22)) /
+      var(--image-selected-frame-width, 3px) / var(--image-selected-frame-outset, 0px) stretch !important;
+    background:
+      linear-gradient(
+          var(--image-selected-tint, transparent),
+          var(--image-selected-tint, transparent)
+        )
+        padding-box,
+      var(--image-quiet) var(--image-quiet-material) repeat padding-box;
     background-size: var(--image-material-size, 256px);
+    box-shadow: var(--image-selected-ring, var(--image-control-shadow, none));
     font-weight: 700;
   }
 

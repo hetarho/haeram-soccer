@@ -32,7 +32,7 @@ export const BUILD_PRESETS: {
     label: '유스 순혈주의',
     model: '지역 출신 유스로 1군을 꾸리는 칸테라 정책',
     aim: '시너지 우리 동네 아이들 바로 발동',
-    summary: '주변 투자·풀뿌리 유망주 투자 늘리기 · 티켓 저렴 · 모두 붙잡기 · 1군 공급 · 재정 신중',
+    summary: '주변 투자 늘리기 · 티켓 저렴 · 모두 붙잡기 · 1군 공급 · 재정 신중',
     build: {
       youth: 'homegrown',
       scouting: 'local',
@@ -42,7 +42,7 @@ export const BUILD_PRESETS: {
       culture: 'family',
     },
     rows: {
-      policy: { localInvest: 3, grassroots: 3 },
+      policy: { localInvest: 3 },
       ticket: 0.035,
       direction: { renewal: 'keepAll', youthGoal: 'firstTeam', finance: 'careful' },
     },

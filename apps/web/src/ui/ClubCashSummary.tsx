@@ -2,16 +2,39 @@ import type { World } from '../../../../packages/contracts/src/types';
 import { Card } from './Card';
 import { DeskStats } from './OfficeDesk';
 import { compactMoney, money } from './format';
-import { cashState, fixedCosts } from './teamState';
+import { cashState, fixedCosts, seasonBooks } from './teamState';
+import o from './OwnerSheet.module.css';
 
-/** Club cash, fixed costs and runway, shared by the unified money dialog and legacy cash view. */
+/**
+ * This season's income, spending and result first, then club cash, fixed costs and runway, shared
+ * by the unified money dialog and legacy cash view.
+ */
 export function ClubCashSummary({ w }: { w: World }) {
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
   const format = (value: string) => compactMoney(value, own.country, w.year);
   const state = cashState(w);
   const costs = fixedCosts(w);
+  const books = seasonBooks(w);
+  const result = BigInt(books.result);
   return (
     <>
+      <DeskStats
+        label="이번 시즌 수지"
+        stats={[
+          { label: '시즌 수입', value: format(books.income), note: '지금까지' },
+          { label: '시즌 지출', value: format(books.expense), note: '지금까지' },
+          {
+            label: '시즌 수지',
+            value: (
+              <span className={result > 0n ? o.up : result < 0n ? o.down : undefined} data-testid="season-result">
+                {result > 0n ? '+' : ''}
+                {format(books.result)}
+              </span>
+            ),
+            note: result > 0n ? '수익' : result < 0n ? '손해' : '본전',
+          },
+        ]}
+      />
       <Card
         as="section"
         surface="ticket"

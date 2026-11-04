@@ -92,6 +92,7 @@ export function Dialog({
   onClose,
   wide = false,
   picker = false,
+  summary,
   actions: footerActions,
 }: {
   label: string;
@@ -100,6 +101,8 @@ export function Dialog({
   wide?: boolean;
   /** A small centered panel over a light dim that keeps the page behind it visible. */
   picker?: boolean;
+  /** Persistent context below the title, above the scrolling body. */
+  summary?: ReactNode;
   actions?: ReactNode;
 }) {
   const element = useRef<HTMLElement>(null);
@@ -242,6 +245,7 @@ export function Dialog({
             <PixelIcon name="close" size={20} />
           </button>
         </header>
+        {summary && <div className={s.modalSummary}>{summary}</div>}
         <div className={s.modalBody} data-ui="dialog-body">
           {content}
         </div>

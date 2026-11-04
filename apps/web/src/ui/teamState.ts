@@ -11,7 +11,7 @@ import { activePlayers, clubOf, isInjured } from '../../../../packages/engine/sr
 import { rating, startingSquad } from '../../../../packages/engine/src/world';
 import { MORALE_LABEL, moraleOf, moraleState } from '../../../../packages/engine/src/morale';
 import { fixedCostRunway } from '../../../../packages/engine/src/investment';
-import { operatingCosts } from '../../../../packages/engine/src/finance';
+import { operatingCosts, seasonResult } from '../../../../packages/engine/src/finance';
 import { academySummary } from '../../../../packages/engine/src/academy';
 import {
   focusLabel,
@@ -116,6 +116,23 @@ export function fixedCosts(w: World) {
     ] as const
   ).filter(([label, amount]) => label === '선수 급여' || BigInt(amount) !== 0n);
   return { nextRound: costs.nextRound, annual: costs.annual, kinds };
+}
+
+/**
+ * This season's books so far as the club earned and spent them: the owner's injections and
+ * dividends move money between his pots, so the result is the dividend's own (→OWNER-11).
+ */
+export function seasonBooks(w: World) {
+  const result = BigInt(seasonResult(w));
+  const injected = w.events
+    .filter((e) => e.kind === 'owner-injection' && e.year === w.year && e.currency === w.currency && e.amount)
+    .reduce((sum, e) => sum + BigInt(e.amount!), 0n);
+  const income = BigInt(w.income) - injected;
+  return {
+    income: income.toString(),
+    expense: (income - result).toString(),
+    result: result.toString(),
+  };
 }
 
 /** Cash is shown in the HUD, whose sheet explains it (→WEB-44); it has no summary tile. */

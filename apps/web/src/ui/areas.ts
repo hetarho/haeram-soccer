@@ -26,7 +26,7 @@ export interface DirectionArea {
 /**
  * The club's direction by the decisions it steers (→ECON-25): each area's card says how the club
  * goes about it, its dials how much it puts in and its direction rows how the delegated staff
- * choose. Every row is set at founding and changed by nobody in a career. The training focus is
+ * choose. Editing now lives in office detail pages or approval settings. The training focus is
  * no row: the coaches set it (→CLUB-13).
  */
 export const DIRECTION_AREAS: readonly DirectionArea[] = [
@@ -40,7 +40,7 @@ export const DIRECTION_AREAS: readonly DirectionArea[] = [
     key: 'local',
     label: '지역',
     card: 'fans',
-    rows: ['localInvest', 'grassroots', 'ticket'],
+    rows: ['localInvest', 'ticket'],
     base: 'local',
   },
   {

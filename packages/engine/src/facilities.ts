@@ -6,6 +6,7 @@ import {
   FACILITY_PARTS,
   facilityUpkeepUnits,
   partCostUnits,
+  partUpkeepUnits,
   partLevel,
   partTop,
   STADIUM_STEPS,
@@ -32,11 +33,12 @@ export {
   type StadiumWork,
   TRAINING_GROUND,
   trainingGroundBase,
+  trainingGroundTerms,
 } from './facility-model';
 
 /**
- * Construction on the facility ladders (→ECON-32): timing and opening works. No career starts one;
- * a work under way finishes as scheduled.
+ * Construction on the facility ladders (→ECON-32): quoted owner investments start works,
+ * which finish on their scheduled day.
  */
 export const WORK_INFO: Record<StadiumWork | 'level', { label: string; days: number }> = {
   expansion: { label: '증축', days: 180 },
@@ -63,6 +65,10 @@ export function facilityWork(w: World, part: FacilityPart) {
 /** A year's facility upkeep in the club's money. */
 export function facilityUpkeep(w: World) {
   return footballQuote(clubOf(w).country, w.year, facilityUpkeepUnits(w));
+}
+/** Annual upkeep of one completed facility in the club's current currency. */
+export function facilityPartUpkeep(w: World, part: FacilityPart) {
+  return footballQuote(clubOf(w).country, w.year, partUpkeepUnits(w, part));
 }
 
 /** What the next work on a part would build, cost and take; none at the top. */
@@ -129,7 +135,7 @@ export function progressFacilityWorks(w: World) {
       part === 'stadium'
         ? `${STADIUM_STEPS[work.to].capacity.toLocaleString('en-US')}석`
         : part === 'training'
-          ? `선수 성장 기반 +${TRAINING_GROUND[work.to].base}`
+          ? `선수 성장 ×${TRAINING_GROUND[work.to].growth} · 추가 피로 회복 +${TRAINING_GROUND[work.to].recoveryBonus} · 협상 호감 +${TRAINING_GROUND[work.to].goodwill}%`
           : `입단 +${ACADEMY_FACILITY[work.to].intake}명 · 잠재력 +${ACADEMY_FACILITY[work.to].potential} · 성장 ×${ACADEMY_FACILITY[work.to].growth}`,
     );
   }

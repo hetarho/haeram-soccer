@@ -1,13 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import type { Command, FacilityPart, PolicyKey, PolicyLevel, World } from '../../../../packages/contracts/src/types';
+import { useEffect, useState } from 'react';
+import type { FacilityPart, PolicyKey, PolicyLevel, World } from '../../../../packages/contracts/src/types';
 import { POLICY_INFO, policyEffects, policyOf } from '../../../../packages/engine/src/policy';
-import { DIRECTION_INFO, directionOf } from '../../../../packages/engine/src/direction';
 import {
   ACADEMY_FACILITY, FACILITY_PART_LABEL, TRAINING_GROUND, STADIUM_STEPS,
-  facilityWork, partLevel, partTop, stadiumCapacity,
+  facilityWork, partLevel, partTop,
 } from '../../../../packages/engine/src/facilities';
 import { facilityInvestmentPreview } from '../../../../packages/engine/src/investment';
-import { operatingCosts, roundShare, gateProjection } from '../../../../packages/engine/src/finance';
+import { operatingCosts, roundShare } from '../../../../packages/engine/src/finance';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { STAFF_INFO, STAFF_ROLES, staffMember } from '../../../../packages/engine/src/staff-info';
 import type { ClientState, GameClient } from '../runtime/client';
@@ -22,39 +21,17 @@ import { number } from './format';
 import { useAddressTab } from './PageTabs';
 import { OPERATIONS_VIEWS, operationsAddress } from './clubSections';
 import { INVESTMENT_AREAS, INVESTMENT_PAGES, type InvestmentArea } from './investmentAreas';
-import { openInvestment, openPersonnel, useFacilityRequest } from './state';
+import { openInvestment, openDecisionSettings, useFacilityRequest } from './state';
 import { BusinessWorkbench } from './BusinessWorkbench';
+import { InvestmentTotals } from './InvestmentTotals';
+import { BuildSetting, InvestmentSlider, TicketSetting, useClubSettingAction as useInvestmentAction } from './ClubSettingControl';
+import { PASSIVE_BUILDS, PASSIVE_POLICIES } from './clubControls';
+import { OwnerFunds } from './OwnerSheet';
+import { FixtureKitSelector } from './FixtureKitSelector';
 import s from './InvestmentView.module.css';
 
-function Amount({ w, value }: { w: World; value: string | bigint }) {
-  return <Money value={value} code={clubOf(w).country} year={w.year} />;
-}
-
-function useInvestmentAction(client: GameClient) {
-  const blocked = useGameState(gameActionsBlocked);
-  const pending = useRef(false);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
-  const [message, setMessage] = useState('');
-  const apply = async (command: Command, success: string) => {
-    if (blocked || pending.current) return false;
-    pending.current = true;
-    setBusy(true);
-    setError('');
-    setMessage('');
-    try {
-      await client.command(command);
-      setMessage(success);
-      return true;
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
-      return false;
-    } finally {
-      pending.current = false;
-      setBusy(false);
-    }
-  };
-  return { blocked: blocked || busy, busy, error, message, apply };
+function Amount({ w, value, plain = false }: { w: World; value: string | bigint; plain?: boolean }) {
+  return <Money value={value} code={clubOf(w).country} year={w.year} plain={plain} />;
 }
 
 function BudgetSetting({ w, client, policyKey }: { w: World; client: GameClient; policyKey: PolicyKey }) {
@@ -72,43 +49,15 @@ function BudgetSetting({ w, client, policyKey }: { w: World; client: GameClient;
     : policyKey === 'recruitment' || policyKey === 'tour' ? undefined
     : (BigInt(preview.annual) - BigInt(base.annual)).toString();
   return (
-    <Card surface="sheet" title={info.label} meta="운영 투자" className={s.panel}>
+    <Card surface="sheet" title={info.label} meta={policyKey === 'tour' ? '시즌 운영' : '운영 투자'} className={s.panel} data-control={`policy:${policyKey}`}>
       <p className={s.note}>현재 적용 · {info.levels.find((level) => level.level === current)!.name}</p>
-      {policyKey === 'support' ? (
-        <label className={s.budgetSlider}>
-          <b>{option.name}</b>
-          <input
-            type="range"
-            min={1}
-            max={info.levels.length}
-            step={1}
-            value={selected}
-            aria-label="선수단 투자 수준"
-            aria-valuetext={option.name}
-            disabled={action.blocked}
-            onChange={(event) => setSelected(Number(event.currentTarget.value) as PolicyLevel)}
-          />
-          <span className={s.sliderNames} aria-hidden="true">
-            {info.levels.map((level) => (
-              <span key={level.level} data-selected={selected === level.level || undefined}>{level.name}</span>
-            ))}
-          </span>
-        </label>
-      ) : <div className={s.options} role="group" aria-label={`${info.label} 수준`}>
-        {info.levels.map((level) => (
-          <button
-            key={level.level}
-            type="button"
-            data-ui={selected === level.level ? 'secondary' : undefined}
-            aria-pressed={selected === level.level}
-            disabled={action.blocked}
-            onClick={() => setSelected(level.level)}
-          >
-            <small>{level.level}단계</small>
-            <span>{level.name}</span>
-          </button>
-        ))}
-      </div>}
+      <InvestmentSlider
+        label={`${info.label} 수준`}
+        options={info.levels.map((level) => ({ value: level.level, name: level.name }))}
+        value={selected}
+        disabled={action.blocked}
+        onChange={setSelected}
+      />
       <div className={s.selection} data-surface="inset">
         {policyKey === 'support' ? (
           <dl className={s.supportFacts}>
@@ -134,10 +83,11 @@ function BudgetSetting({ w, client, policyKey }: { w: World; client: GameClient;
           ? '실제 이적료와 급여는 영입 계약을 체결할 때 결정됩니다.'
           : policyKey === 'support'
             ? '지원 운영비는 다음 정산부터 반영됩니다. 기존 선수·감독·스태프 급여는 별도입니다.'
+            : policyKey === 'tour' ? '시즌 시작에 투어 수입·인지도·피로가 함께 반영됩니다.'
             : '반복 지출은 다음 정산부터 반영됩니다.'}</p>
         <button type="button" data-ui="primary" disabled={action.blocked || selected === current}
           onClick={() => void action.apply({ type: 'club-policy', key: policyKey, level: selected }, `${info.label} 수준을 적용했어요.`)}>
-          {action.busy ? '적용 중…' : '투자 수준 적용'}
+          {action.busy ? '적용 중…' : policyKey === 'tour' ? '투어 일정 적용' : '투자 수준 적용'}
         </button>
       </div>
       {action.error && <p role="alert">{action.error}</p>}
@@ -148,9 +98,77 @@ function BudgetSetting({ w, client, policyKey }: { w: World; client: GameClient;
 
 function facilityEffect(part: FacilityPart, level: number) {
   if (part === 'stadium') return `${number(STADIUM_STEPS[level].capacity)}석`;
-  if (part === 'training') return `선수 성장 기반 +${TRAINING_GROUND[level].base}`;
+  if (part === 'training') {
+    const terms = TRAINING_GROUND[level];
+    return `선수 성장 ×${terms.growth} · 추가 피로 회복 +${terms.recoveryBonus} · 협상 호감 +${terms.goodwill}%`;
+  }
   const effect = ACADEMY_FACILITY[level];
   return `입단 +${effect.intake}명 · 잠재력 +${effect.potential} · 성장 ×${effect.growth}`;
+}
+
+function facilityBenefits(part: FacilityPart, level: number): readonly (readonly [string, string])[] {
+  if (part === 'training') {
+    const terms = TRAINING_GROUND[level];
+    return [
+      ['선수 성장', `×${terms.growth}`],
+      ['추가 피로 회복', `+${terms.recoveryBonus}`],
+      ['협상 호감', `+${terms.goodwill}%`],
+    ];
+  }
+  if (part === 'academy') {
+    const terms = ACADEMY_FACILITY[level];
+    return [
+      ['유소년 성장', `×${terms.growth}`],
+      ['추가 입단 인원', `+${terms.intake}명`],
+      ['입단 잠재력', `+${terms.potential}`],
+    ];
+  }
+  return [['수용 인원', `${number(STADIUM_STEPS[level].capacity)}석`]];
+}
+
+function facilityUpgradeTitle(part: FacilityPart, expansion: boolean) {
+  if (part === 'stadium') return expansion ? '경기장 증축' : '경기장 재건축';
+  return `${FACILITY_PART_LABEL[part]} 업그레이드`;
+}
+
+function FacilitySnapshot({ w, part, level, maintenance, future = false }: {
+  w: World;
+  part: FacilityPart;
+  level: number;
+  maintenance: string;
+  future?: boolean;
+}) {
+  const scene = {
+    ...w,
+    ...(part === 'training' ? { trainingGround: level }
+      : part === 'academy' ? { academyFacility: level } : { stadium: level }),
+  };
+  return (
+    <Card
+      surface="detail"
+      title={future ? '완공 후' : '현재'}
+      className={s.facilitySnapshot}
+      data-future={future || undefined}
+      aria-label={`${future ? '완공 후' : '현재'} ${FACILITY_PART_LABEL[part]}`}
+    >
+      <div className={s.compareScene}>
+        <FacilityArt kind={part} world={scene} view={part === 'stadium' ? 'exterior' : undefined} className={s.art} eager />
+        <div className={s.overlay}>
+          {part === 'stadium' && <small>{STADIUM_STEPS[level].name}</small>}
+          <b>{level}/{partTop(part)}단계</b>
+        </div>
+      </div>
+      <dl className={s.benefitFacts}>
+        {facilityBenefits(part, level).map(([label, value]) => (
+          <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+        ))}
+      </dl>
+      <div className={s.maintenance}>
+        <span>연간 유지비</span>
+        <b><Amount w={w} value={maintenance} plain /></b>
+      </div>
+    </Card>
+  );
 }
 
 function FacilityUpgrade({ w, client, part }: { w: World; client: GameClient; part: FacilityPart }) {
@@ -163,9 +181,10 @@ function FacilityUpgrade({ w, client, part }: { w: World; client: GameClient; pa
     from: number;
     to: number;
     cost: string;
-    title: string;
     days: number;
-    maintenanceIncrease: string;
+    maintenanceBefore: string;
+    maintenanceAfter: string;
+    cashBefore: string;
     cashAfter: string;
     capacityDuring: number;
     expansion: boolean;
@@ -194,14 +213,17 @@ function FacilityUpgrade({ w, client, part }: { w: World; client: GameClient; pa
                 from: level,
                 to: next.to,
                 cost: next.cost,
-                title: next.label,
                 days: next.days,
-                maintenanceIncrease: preview.maintenanceIncrease,
+                maintenanceBefore: preview.partMaintenanceBefore,
+                maintenanceAfter: preview.partMaintenanceAfter,
+                cashBefore: w.cash,
                 cashAfter: preview.cashAfter,
                 capacityDuring: preview.capacityDuring,
                 expansion: next.kind === 'expansion',
               })}>
-              {label} {next.to}단계로 업그레이드
+              {part === 'stadium'
+                ? `${facilityUpgradeTitle(part, next.kind === 'expansion')}하기`
+                : `${label} ${next.to}단계로 업그레이드`}
             </button>
             {!preview.affordable && <p className={s.note}>공사를 시작하기에는 보유 자금이 부족합니다.</p>}
           </div>
@@ -209,7 +231,24 @@ function FacilityUpgrade({ w, client, part }: { w: World; client: GameClient; pa
       ) : <p className={s.note}>최고 단계 시설입니다.</p>}
       {action.error && !quote && <p role="alert">{action.error}</p>}
       {quote && (
-        <Dialog label={quote.title} onClose={() => { if (!action.busy) setQuote(undefined); }} actions={
+        <Dialog
+          label={`${facilityUpgradeTitle(part, quote.expansion)} · ${quote.days}일 소요`}
+          wide
+          onClose={() => { if (!action.busy) setQuote(undefined); }}
+          summary={
+            <dl className={s.upgradeFinances}>
+              <div><dt>공사비</dt><dd><b><Amount w={w} value={quote.cost} plain /></b></dd></div>
+              <div>
+                <dt>재정 · 구단 잔고</dt>
+                <dd className={s.balanceChange}>
+                  <span className={s.previousMoney}><Amount w={w} value={quote.cashBefore} plain /></span>
+                  <span aria-hidden="true">→</span>
+                  <b><Amount w={w} value={quote.cashAfter} plain /></b>
+                </dd>
+              </div>
+            </dl>
+          }
+          actions={
           <div className={s.dialogActions}>
             <button type="button" disabled={action.busy} onClick={() => setQuote(undefined)}>취소</button>
             <button type="button" data-ui="primary" disabled={action.blocked} onClick={async () => {
@@ -217,16 +256,15 @@ function FacilityUpgrade({ w, client, part }: { w: World; client: GameClient; pa
             }}>{action.busy ? '시작 중…' : '공사비 지불하고 시작'}</button>
           </div>
         }>
-          <div className={s.selection} data-surface="inset">
-            <p>완공 후 {facilityEffect(part, quote.to)}</p>
-            <DeskStats label={`${label} 공사 견적`} stats={[
-              { label: '공사비', value: <Amount w={w} value={quote.cost} /> },
-              { label: '공사 기간', value: `${quote.days}일` },
-              { label: '연간 유지비 증가', value: <Amount w={w} value={quote.maintenanceIncrease} /> },
-              { label: '공사 후 잔고', value: <Amount w={w} value={quote.cashAfter} /> },
-            ]} />
-            {quote.expansion && <p>증축 중에는 관중석 일부가 닫힙니다. 공사 중 수용 {number(quote.capacityDuring)}석</p>}
-            <p>공사비는 시작할 때 결제되며, 시설 효과와 유지비는 완공일부터 적용됩니다.</p>
+          <div className={s.upgradeComparison}>
+            <FacilitySnapshot w={w} part={part} level={quote.from} maintenance={quote.maintenanceBefore} />
+            <span className={s.comparisonArrow} aria-hidden="true">→</span>
+            <FacilitySnapshot w={w} part={part} level={quote.to} maintenance={quote.maintenanceAfter} future />
+          </div>
+          <div className={s.upgradeNotes}>
+            {quote.expansion && <p>증축 중 수용 인원 {number(quote.capacityDuring)}석</p>}
+            <p>공사비는 지금 지불하고, 효과와 유지비는 완공일부터 적용됩니다.</p>
+            {part === 'training' && <p>성장 배율은 27세 미만 선수, 회복은 훈련 정산, 협상 호감은 완공 후 시작하는 협상에 적용됩니다.</p>}
           </div>
           {action.error && <p role="alert">{action.error}</p>}
         </Dialog>
@@ -235,35 +273,10 @@ function FacilityUpgrade({ w, client, part }: { w: World; client: GameClient; pa
   );
 }
 
-function CoachingInvestment({ w, client }: { w: World; client: GameClient }) {
-  const current = directionOf(w, 'coaches');
-  const [choice, setChoice] = useState(current);
-  useEffect(() => setChoice(current), [current]);
-  const action = useInvestmentAction(client);
-  const options = DIRECTION_INFO.coaches.options;
-  const option = options.find((option) => option.id === choice)!;
+function CoachingInvestment({ w }: { w: World }) {
   const count = STAFF_ROLES.filter((post) => staffMember(w, post)).length;
   return (
     <>
-      <Card surface="sheet" title="코치진 채용 투자 수준" meta="스태프 투자" className={s.panel}>
-        <p className={s.note}>현재 적용 · {options.find((option) => option.id === current)!.name}</p>
-        <div className={s.options} role="group" aria-label="코치진 채용 투자 수준">
-          {options.map((option) => (
-            <button key={option.id} type="button" aria-pressed={choice === option.id} data-ui={choice === option.id ? 'secondary' : undefined}
-              disabled={action.blocked} onClick={() => setChoice(option.id)}>{option.name}</button>
-          ))}
-        </div>
-        <div className={s.selection} data-surface="inset"><b>{option.name}</b><p>{option.summary}</p></div>
-        <div className={s.apply}>
-          <p className={s.note}>자동 채용·재계약의 기준입니다. 현재 계약한 코치의 연봉과 계약은 유지됩니다.</p>
-          <button type="button" data-ui="primary" disabled={action.blocked || current === choice}
-            onClick={() => void action.apply({ type: 'coaching-investment', choice }, '코치진 채용 기준을 적용했어요.')}>
-            {action.busy ? '적용 중…' : '채용 투자 수준 적용'}
-          </button>
-        </div>
-        {action.error && <p role="alert">{action.error}</p>}
-        {action.message && <p role="status" className={s.note}>{action.message}</p>}
-      </Card>
       <Card surface="sheet" title={`현재 코치진 · ${count}/${STAFF_ROLES.length}명`} className={s.panel}>
         <DeskStats label="코치진 비용" stats={[
           { label: '연간 스태프 급여', value: <Amount w={w} value={operatingCosts(w).staffWages} /> },
@@ -275,26 +288,37 @@ function CoachingInvestment({ w, client }: { w: World; client: GameClient }) {
             return <div key={post}><dt>{STAFF_INFO[post].label}</dt><dd>{member ? <>{member.name} <small>OVR {member.ability}</small></> : '공석'}</dd></div>;
           })}
         </dl>
-        <button type="button" data-ui="secondary" onClick={() => openPersonnel({ page: 'staff', view: 'coaches' })}>코치진 채용·계약 관리 ↗</button>
+        <p className={s.note}>현재 재직자의 능력이 만드는 상시 효과입니다. 채용 지침과 인사는 결재 설정의 스태프 인사에서 관리합니다.</p>
+        <button type="button" data-ui="secondary" aria-haspopup="dialog" onClick={() => openDecisionSettings('staff')}>결재 설정 · 스태프 인사</button>
       </Card>
     </>
   );
 }
 
-function InvestmentDetails({ area, w, client }: { area: InvestmentArea; w: World; client: GameClient }) {
-  if (area === 'firstTeam') return <><BudgetSetting w={w} client={client} policyKey="support" /><FacilityUpgrade w={w} client={client} part="training" /></>;
-  if (area === 'youth') return <><BudgetSetting w={w} client={client} policyKey="academy" /><FacilityUpgrade w={w} client={client} part="academy" /><BudgetSetting w={w} client={client} policyKey="grassroots" /></>;
-  if (area === 'coaches') return <CoachingInvestment w={w} client={client} />;
-  if (area === 'scouting') return <><BudgetSetting w={w} client={client} policyKey="recruitment" /><BudgetSetting w={w} client={client} policyKey="globalScouting" /></>;
-  if (area === 'community') return <><DeskStats label="팬 기반" stats={[
-    { label: '지역 기반', value: Math.round(w.localBase ?? 0) },
-    { label: '글로벌 인지도', value: Math.round(w.globalReach ?? 0) },
-  ]} /><BudgetSetting w={w} client={client} policyKey="localInvest" /><BudgetSetting w={w} client={client} policyKey="globalMarketing" /></>;
-  const gate = gateProjection(w);
-  return <><DeskStats label="경기장 현황" stats={[
-    { label: '현재 수용 인원', value: `${number(stadiumCapacity(w))}석` },
-    { label: '예상 홈 관중', value: `${number(gate.attendanceLow)}–${number(gate.attendanceHigh)}명` },
-  ]} /><FacilityUpgrade w={w} client={client} part="stadium" /></>;
+function InvestmentDetails({ area, state, client }: { area: InvestmentArea; state: ClientState; client: GameClient }) {
+  const w = state.view!.world;
+  const blocked = useGameState(gameActionsBlocked);
+  return <>
+    {PASSIVE_POLICIES[area].map((key) => <BudgetSetting key={key} w={w} client={client} policyKey={key} />)}
+    {PASSIVE_BUILDS[area].map((slot) => <Card key={slot} surface="sheet" title="상시 운영 효과" className={s.panel}>
+      <BuildSetting w={w} client={client} slot={slot} />
+    </Card>)}
+    {area === 'firstTeam' && <FacilityUpgrade w={w} client={client} part="training" />}
+    {area === 'youth' && <FacilityUpgrade w={w} client={client} part="academy" />}
+    {area === 'stadium' && <>
+      <Card surface="sheet" title="입장 수입" className={s.panel}><TicketSetting w={w} client={client} /></Card>
+      <FacilityUpgrade w={w} client={client} part="stadium" />
+    </>}
+    {area === 'coaches' && <CoachingInvestment w={w} />}
+    {area === 'finance' && <>
+      {w.owner && <OwnerFunds client={client} />}
+      <BusinessWorkbench state={state} client={client} part="finance" />
+    </>}
+    {area === 'identity' && <>
+      <BusinessWorkbench state={state} client={client} part="identity" />
+      <Card surface="sheet" title="다음 경기 유니폼" className={s.panel}><FixtureKitSelector client={client} blocked={blocked} /></Card>
+    </>}
+  </>;
 }
 
 export function InvestmentView({ state, client }: { state: ClientState; client: GameClient }) {
@@ -318,19 +342,19 @@ export function InvestmentView({ state, client }: { state: ClientState; client: 
     <section className={s.page} aria-label={selected ? `${selected.title} 투자` : '구단주 사무실'}>
       {selected ? (
         <>
-          {selected.id === 'firstTeam' || selected.id === 'youth' || selected.id === 'stadium' ? (
-            <header className={s.title}><h2>{selected.title}</h2><p>{selected.description}</p></header>
-          ) : (
-            <header className={s.hero}>
+          <header className={s.title}><h2>{selected.title}</h2><p>{selected.description}</p></header>
+          <InvestmentTotals w={w} area={selected.id} />
+          {selected.id !== 'firstTeam' && selected.id !== 'youth' && selected.id !== 'stadium' && (
+            <div className={s.hero}>
               <FacilityArt kind={selected.art} world={w} className={s.art} eager />
-              <div className={s.overlay}><h2>{selected.title}</h2><p>{selected.description}</p></div>
-            </header>
+              <div className={s.overlay}><b>{selected.title}</b></div>
+            </div>
           )}
-          <div className={s.details} key={`${w.id}:${selected.id}`}><InvestmentDetails area={selected.id} w={w} client={client} /></div>
+          <div className={s.details} key={`${w.id}:${selected.id}`}><InvestmentDetails area={selected.id} state={state} client={client} /></div>
         </>
       ) : (
         <>
-          <header className={s.title}><h2>구단주 사무실</h2><p>투자할 분야를 선택하세요.</p></header>
+          <header className={s.title}><h2>구단주 사무실</h2><p>투자·시설·상시 운영 효과를 관리하세요. 담당자의 판단 지침과 인사·계약은 결재 설정에서 정합니다.</p></header>
           <div className={s.gallery}>
             {INVESTMENT_AREAS.map((item) => (
               <button key={item.id} type="button" className={s.destination} aria-label={`${item.title} 투자 관리`} onClick={() => openInvestment(item.id)}>

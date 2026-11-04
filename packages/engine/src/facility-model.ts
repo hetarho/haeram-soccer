@@ -25,14 +25,14 @@ export type StadiumWork = 'expansion' | 'rebuild';
 /** An expansion closes part of the ground while its stand is built; a rebuild happens elsewhere. */
 export const EXPANSION_CAPACITY = 0.9;
 export const MAX_LEVEL = 5;
-/** The training ground by level: unit cost and the development base it adds (→CLUB-12). */
+/** Completed training grounds multiply growth and add recovery and negotiation goodwill. */
 export const TRAINING_GROUND = [
-  { cost: 0, base: 0 },
-  { cost: 1500, base: 0.06 },
-  { cost: 6000, base: 0.2 },
-  { cost: 24000, base: 0.37 },
-  { cost: 96000, base: 0.53 },
-  { cost: 384000, base: 0.75 },
+  { cost: 0, base: 0, growth: 1, recoveryBonus: 0, goodwill: 0 },
+  { cost: 1500, base: 0.06, growth: 1.06, recoveryBonus: 1, goodwill: 1 },
+  { cost: 6000, base: 0.2, growth: 1.2, recoveryBonus: 2, goodwill: 2 },
+  { cost: 24000, base: 0.37, growth: 1.37, recoveryBonus: 3, goodwill: 3 },
+  { cost: 96000, base: 0.53, growth: 1.53, recoveryBonus: 4, goodwill: 4 },
+  { cost: 384000, base: 0.75, growth: 1.75, recoveryBonus: 5, goodwill: 5 },
 ] as const;
 /** The academy facilities by level: unit cost, intake, intake potential and growth (→CLUB-16). */
 export const ACADEMY_FACILITY = [
@@ -76,16 +76,15 @@ export function stadiumCapacity(w: Pick<World, 'stadium' | 'facilityWorks'>) {
     ? Math.round(built * EXPANSION_CAPACITY)
     : built;
 }
-/** A year's upkeep in units: the stadium by its seats, the other parts by level. */
-export function facilityUpkeepUnits(w: Parts) {
+/** One part's annual upkeep in units: the stadium by its seats, the other parts by level. */
+export function partUpkeepUnits(w: Parts, part: FacilityPart) {
+  if (part !== 'stadium') return LEVEL_UPKEEP[partLevel(w, part)];
   const level = (STADIUM_STEPS[w.stadium].capacity - 2500) / 5000;
-  return (
-    180 +
-    40 * level +
-    5 * level * level +
-    LEVEL_UPKEEP[w.trainingGround] +
-    LEVEL_UPKEEP[w.academyFacility]
-  );
+  return 180 + 40 * level + 5 * level * level;
+}
+/** The sum of every completed facility's annual upkeep. */
+export function facilityUpkeepUnits(w: Parts) {
+  return FACILITY_PARTS.reduce((total, part) => total + partUpkeepUnits(w, part), 0);
 }
 /** Units spent building every part to where it stands, for the club's value (→HIST-12). */
 export function facilityBuiltUnits(w: Parts) {
@@ -94,9 +93,12 @@ export function facilityBuiltUnits(w: Parts) {
     for (let level = 1; level <= partLevel(w, part); level++) units += partCostUnits(part, level);
   return units;
 }
-/** The training ground's development base (→CLUB-12). */
+/** Legacy additive coefficient, retained for readers of the earlier facility model. */
 export function trainingGroundBase(w: Pick<World, 'trainingGround'>) {
   return TRAINING_GROUND[w.trainingGround].base;
+}
+export function trainingGroundTerms(w: Pick<World, 'trainingGround'>) {
+  return TRAINING_GROUND[w.trainingGround];
 }
 /** The academy facilities' terms (→CLUB-16). */
 export function academyFacilityTerms(w: Pick<World, 'academyFacility'>) {

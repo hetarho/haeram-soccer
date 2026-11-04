@@ -4,8 +4,8 @@ import { areaBase, DIRECTION_AREAS, rowInForce, type AreaKey, type RowKey } from
 import s from './DirectionFacts.module.css';
 
 /**
- * The direction rows a decision follows, as the club holds them (→ECON-25, STAFF-15/18/26): set at
- * founding and changed by no owner action or staff rule, so each line only reads.
+ * A compact read of the current operating effects and approval instructions; editing lives in
+ * the owner's office detail pages and approval settings.
  */
 export function DirectionFacts({ w, rows }: { w: World; rows: readonly RowKey[] }) {
   return (
@@ -25,8 +25,7 @@ export function DirectionFacts({ w, rows }: { w: World; rows: readonly RowKey[] 
 
 /**
  * A section's direction areas in force (→WEB-14, WEB-110): each area's card, investment levels,
- * ticket price and staff rows by name, beside the base its rows build (→ECON-34). Nothing here
- * edits: the club keeps the direction it was founded with.
+ * ticket price and staff rows by name, beside the base its rows build (→ECON-34).
  */
 export function DirectionAreas({ w, areas }: { w: World; areas: readonly AreaKey[] }) {
   if (!areas.length) return null;

@@ -31,6 +31,7 @@ import {
   OWNER_TIERS,
   OWNER_TRAITS,
 } from '../../../../packages/engine/src/owner-config';
+import { seasonResult } from '../../../../packages/engine/src/finance';
 import { ownSeasons } from '../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../packages/engine/src/primitives';
 import { quote } from '../../../../packages/engine/src/quotes';
@@ -282,7 +283,8 @@ export function injectionOutlook(w: World, amount: string) {
  * per 1% of the season's turnover so far. The close settles on the whole season.
  */
 export function dividendOutlook(w: World, dividend: DividendShare) {
-  const result = BigInt(w.income) - BigInt(w.expense);
+  // The close's own result: an injection is the owner's money, not profit (→OWNER-11).
+  const result = BigInt(seasonResult(w));
   const profit = positive(result),
     cash = positive(BigInt(w.cash));
   let amount = BigInt(ratio(profit.toString(), BigInt(dividend), 100n));

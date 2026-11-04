@@ -55,19 +55,9 @@
   font-weight: 500;
   line-height: 1.2;
 }
-.cashDetails {
-  min-width: 0;
-  border-block: 1px solid var(--line);
-}
-.cashDetails > summary {
-  padding-block: 12px;
-  font-size: 13px;
-  cursor: pointer;
-}
 .cashSummary {
   display: grid;
   gap: 12px;
-  padding-bottom: 14px;
 }
 @media (max-width: 760px) {
   .combinedMoney .clubBalance > b {
@@ -242,59 +232,6 @@
 }
 .actions button {
   min-height: 44px;
-}
-/* 팬 민심 from 0 to 100, its floor marked where 퇴진 압박 starts counting (→OWNER-13). */
-.meter {
-  position: relative;
-  height: 10px;
-  border-radius: 999px;
-  background: var(--surface-deep);
-  overflow: hidden;
-}
-.meter > span {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--mood);
-  border-radius: inherit;
-  background: var(--accent, var(--gold));
-}
-.meter > .meterLow {
-  background: var(--danger);
-}
-.meter::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: var(--floor);
-  width: 2px;
-  background: var(--danger);
-}
-.movers {
-  display: grid;
-  gap: 2px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.movers li {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 4px 0;
-  border-bottom: 1px solid var(--line);
-  font-size: 12.5px;
-}
-.movers li:last-child {
-  border-bottom: 0;
-}
-.movers span {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.movers b {
-  flex-shrink: 0;
-  font-variant-numeric: var(--numeric-variant);
 }
 .lock {
   margin: 0;

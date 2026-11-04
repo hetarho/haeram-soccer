@@ -29,7 +29,7 @@ import { developAcademy } from './academy';
 import { settleMorale } from './morale';
 import { managerStyleEffects, STYLE_INFO } from './styles';
 import { buildEffects, buildOf, cardOf } from './build';
-import { trainingGroundBase } from './facilities';
+import { trainingGroundTerms } from './facility-model';
 
 export const trainingFocusInfo: Record<
   TrainingFocus,
@@ -130,10 +130,9 @@ export function focusFor(w: World, p: Player, squad = activeTrainingFocus(w)): T
   return autoPlayerFocus(w, p) ?? squad;
 }
 
-/** The manager's youth work and the training ground, the base a round's growth multiplies (→CLUB-12). */
+/** The manager's youth work, before the training ground's growth multiplier. */
 export function developmentBase(w: World) {
-  // Twenty facility levels give the same top bonus thirty used to (→ECON-12).
-  return 0.5 + w.manager.youth / 100 + trainingGroundBase(w);
+  return 0.5 + w.manager.youth / 100;
 }
 
 function roundGain(
@@ -157,6 +156,7 @@ function roundGain(
       trainingFocusInfo[focus].developmentMultiplier *
       PROFESSIONALISM_RATE[player.personality.professionalism - 1] *
       policy.developmentMultiplier *
+      trainingGroundTerms(w).growth *
       style.growth *
       (age <= 21 ? staff.youthDevelopment * style.youthGrowth * buildEffects(w).youthGrowth : 1),
   );
@@ -182,7 +182,7 @@ export function settleTraining(w: World) {
   for (const player of activePlayers(w)) {
     const focus = focuses.get(player.id)!,
       info = trainingFocusInfo[focus],
-      recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus);
+      recovery = Math.max(0, info.recovery + policy.recoveryBonus + staff.recoveryBonus + trainingGroundTerms(w).recoveryBonus);
     const gain = roundGain(w, player, policy, staff, focus);
     recordDevelopment(
       player,
@@ -219,7 +219,7 @@ export function developAnnually(w: World, player: Player) {
     variation = random(`${w.seed}:growth:${player.id}:${w.year}`);
   const growth =
     age < 27
-      ? Math.min(3, gap / 20 + w.manager.youth / 100 + (trainingGroundBase(w) * 27) / 4)
+      ? Math.min(3, (gap / 20 + w.manager.youth / 100) * trainingGroundTerms(w).growth)
       : age <= 30
         ? 0.3
         : 0;
@@ -320,7 +320,7 @@ export type DevelopmentHome =
   | 'people/coaches'
   | 'business/facility';
 export interface DevelopmentFactor {
-  key: 'focus' | 'investment' | 'base' | 'style' | 'style-youth' | 'coaches-youth' | 'build-youth';
+  key: 'focus' | 'investment' | 'base' | 'facility' | 'style' | 'style-youth' | 'coaches-youth' | 'build-youth';
   label: string;
   /** What the term multiplies a settled round's growth by. */
   value: number;
@@ -352,6 +352,7 @@ export function developmentOutlook(w: World) {
     info = trainingFocusInfo[focus],
     policy = policyOf(w),
     effects = policyEffects(policy),
+    ground = trainingGroundTerms(w),
     staff = staffEffects(w),
     style = managerStyleEffects(w),
     build = buildOf(w);
@@ -383,11 +384,19 @@ export function developmentOutlook(w: World) {
     },
     {
       key: 'base',
-      label: '감독 육성·훈련장',
+      label: '감독 육성',
       value: developmentBase(w),
       applies: 'all',
+      home: 'people/manager',
+      detail: `감독 육성 ${Math.round(w.manager.youth)}`,
+    },
+    {
+      key: 'facility',
+      label: '훈련장',
+      value: ground.growth,
+      applies: 'all',
       home: 'business/facility',
-      detail: `감독 육성 ${Math.round(w.manager.youth)} · 훈련장 ${w.trainingGround}단계`,
+      detail: `훈련장 ${w.trainingGround}단계`,
     },
     {
       key: 'style',
@@ -458,10 +467,10 @@ export function developmentOutlook(w: World) {
       focus,
       label: info.label,
       developmentMultiplier: info.developmentMultiplier,
-      /** Fatigue recovered at the next settled round, staff and policy bonuses included. */
-      recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus),
-      /** What the squad investment and the fitness coach add to every focus's recovery. */
-      recoveryBonus: effects.recoveryBonus + staff.recoveryBonus,
+      /** Fatigue recovered at the next settled round, with staff, policy and facility bonuses. */
+      recovery: Math.max(0, info.recovery + effects.recoveryBonus + staff.recoveryBonus + ground.recoveryBonus),
+      /** What squad investment, the training ground and the fitness coach add to recovery. */
+      recoveryBonus: effects.recoveryBonus + staff.recoveryBonus + ground.recoveryBonus,
     },
     factors,
     /** Each coach's multiplier on the skills he owns, applied after the factors. */

@@ -22,8 +22,6 @@ const f = (
 });
 const direct = (name: string, effect: string, children: Factor[] = []) =>
   f(name, effect, children, '직접 선택');
-const fixed = (name: string, effect: string, children: Factor[] = []) =>
-  f(name, effect, children, '현재 변경 불가');
 const src = (file: string, ...symbols: string[]): SourceRef[] =>
   symbols.map((symbol) => ({ file: `packages/engine/src/${file}.ts`, symbol }));
 const link = (outcome: string, effect: string): Consequence => ({ outcome, effect });
@@ -70,9 +68,9 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
                 '선수단 분위기·협상의 달인 특성',
                 '요구 생성 때의 좋은 분위기는 양보 폭을 늘리고, 구단주 협상 특성은 요구액을 낮춥니다.',
               ),
-              fixed(
+              direct(
                 '선수단 투자·라커룸 문화·긴축 카드',
-                '현재 기본값 또는 기존 세이브 설정이 요구액과 양보 폭에 반영됩니다.',
+                '사무실의 선수단 투자·라커룸 문화·수익 모델이 새 계약의 요구액과 양보 폭에 반영됩니다.',
               ),
             ],
           ),
@@ -159,7 +157,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '계약 업무의 직접 처리·위임',
             '위임하면 단장이 처리합니다. 선수의 수락 조건 자체가 완화되지는 않습니다.',
           ),
-          fixed('재계약 기조', '시장가 대비 허용 연봉·주전 여부·나이로 유지할 선수를 거릅니다.'),
+          direct('재계약 기조', '시장가 대비 허용 연봉·주전 여부·나이로 유지할 선수를 거릅니다.'),
           f(
             '인상 후 현금·연간 인건비·최근 매출',
             '보유 현금 외에도 운영자금 유보액과 매출 대비 인건비 제한을 봅니다.',
@@ -336,9 +334,9 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '축구 물가와 시대별 이적료 프리미엄을 적용합니다. 고가 선수는 시대별 상승을 더 크게 받습니다.',
           ),
           f('협상가 단장·협상의 달인', '영입 요구 이적료를 낮추는 효과가 있습니다.'),
-          fixed(
+          direct(
             '영입·매각 관련 카드와 기준',
-            '현재 기본값 또는 기존 세이브의 조건이 가격에 작용합니다.',
+            '사무실의 스카우팅 환경과 결재 설정의 매각 기조가 작용합니다. 영입 기조 자체는 이적료를 할증·할인하지 않습니다.',
           ),
         ],
         [
@@ -411,7 +409,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '선수 상태와 이미 열린 협상이 새 제안을 제한합니다.',
           ),
           f('선수 가치·상대 구단', '선수 수준에 맞는 구단과 가격을 정합니다.'),
-          fixed('매각 카드·재정 압박에 따른 기준', '제안 빈도와 매각 압박에 영향을 줍니다.'),
+          direct('매각 카드·재정 압박에 따른 기준', '제안 빈도와 매각 압박에 영향을 줍니다.'),
         ],
         src('transfers', 'incomingBid', 'listedOffers', 'suitorFor'),
         [link('sale-approval', '받은 제안을 승인할지 판단')],
@@ -478,7 +476,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         [
           f('스카우트 능력·발굴 특성·공석', '후보 수와 잠재력 보정을 바꿉니다.'),
           f('원석 감별사 구단주 특성', '타 구단 선수의 성격 추정 범위를 좁힙니다.'),
-          fixed(
+          direct(
             '영입 기조·스카우팅 카드·해외 스카우트망',
             '후보의 연령·기량 범위·해외 후보 조건에 작용합니다.',
           ),
@@ -835,8 +833,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '분위기·어린 선발 수·육성형 코치',
             '몸 상태와 분위기가 좋고 육성 조건이 맞으면 하드를 택합니다.',
           ),
-          fixed(
-            '유지 중인 데뷔 기준',
+          direct(
+            '결재 설정의 데뷔 기준',
             '조기 데뷔 기준이 하드 훈련 조건에 작용합니다. 현재 구단주의 훈련 지시 기능은 없습니다.',
           ),
         ],
@@ -862,7 +860,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '자동 훈련 강도·감독 육성력·담당 코치',
             '강도별 성장 배율과 담당 부서의 능력·특성이 적용됩니다.',
           ),
-          fixed(
+          direct(
             '훈련 시설·선수단 투자·유소년 성장 카드',
             '유지 중인 시설·정책·카드가 성장 환경을 바꿉니다.',
           ),
@@ -976,8 +974,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         '유입 인원과 초기 능력·잠재력은 서로 다른 보정으로 계산합니다.',
         [
           f('유소년 책임자 능력·발굴 특성·공석', '입단 질과 인원에 작용합니다.'),
-          fixed('유스 시설·아카데미·풀뿌리 투자', '시설과 유지 중인 투자가 인원·질을 바꿉니다.'),
-          fixed(
+          direct('유스 시설·아카데미 투자', '시설과 유지 중인 투자가 인원·질을 바꿉니다.'),
+          direct(
             '유입 카드·시너지·지역 기반·글로벌 인지도',
             '조합 조건이 맞을 때 잠재력과 인원에 추가 효과가 붙습니다.',
           ),
@@ -1000,7 +998,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         [
           f('연령대·잠재력 대비 기량·프로의식', '성장 여지와 속도를 바꿉니다.'),
           f('유소년 책임자·자동 육성 방향', '코치의 능력·특성과 선택된 훈련 방향이 적용됩니다.'),
-          fixed('유스 시설·투자·육성 목표·데뷔 기준', '성장과 승격 준비 판단을 바꿉니다.'),
+          direct('유스 시설·투자·육성 목표·데뷔 기준', '성장과 승격 준비 판단을 바꿉니다.'),
           f(
             '같은 자리 1군의 수준',
             '유스가 승격 가능한 기량인지 비교합니다. 이곳에서는 실제로 유스와 1군의 능력 비교를 씁니다.',
@@ -1023,7 +1021,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '프로 계약 가능 나이·등록 여유·포지션 인원',
             '가능한 승격과 자동 인원 구성의 한계입니다.',
           ),
-          fixed('육성 목표·데뷔·방출 기준', '언제 어떤 선수를 올리거나 남기는지에 작용합니다.'),
+          direct('육성 목표·데뷔·방출 기준', '언제 어떤 선수를 올리거나 남기는지에 작용합니다.'),
           f('유스의 능력·잠재력 대비 같은 자리 1군', '자동 승격과 보유 가치를 판단합니다.'),
         ],
         src('academy', 'promoteYouth', 'releaseYouth', 'seasonAcademy'),
@@ -1141,7 +1139,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '후보가 될 수 있는 사람과 필요한 영입 비용을 바꿉니다.',
           ),
           f('마당발 구단주 특성', '후보 수와 후보 능력에 유리합니다.'),
-          fixed('감독·코치 선임 기조', '위임된 선임에서는 학파·기량·비용 기준에 맞는지 봅니다.'),
+          direct('감독·코치 선임 기조', '위임된 선임에서는 학파·기량·비용 기준에 맞는지 봅니다.'),
           f(
             '구단이 감당 가능한 선임비·연봉·계약 기간',
             '원하는 후보라도 자동 선임 기준을 통과하지 못할 수 있습니다.',
@@ -1315,7 +1313,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         '선수·감독·스태프 인건비와 시설·리그 운영비가 매 라운드 지출됩니다.',
         [
           f('선수·감독·코치의 계약 연봉', '고가 계약이나 인원을 늘리면 반복 지출이 늘어납니다.'),
-          fixed(
+          direct(
             '경기장·훈련장·유스 시설 수준',
             '보유 수준별 유지비가 듭니다. 시설은 효과만 주는 무료 자산이 아닙니다.',
           ),
@@ -1324,8 +1322,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '분배금·이전 매출 등으로 정해진 운영 경비와 인수 부채 상환이 작용합니다.',
           ),
           f(
-            '정치력·유지 중인 선수단 투자',
-            '정치력은 운영 경비를 줄이고 기존 투자 기준은 운영비를 바꿉니다.',
+            '정치력·현재 선수단 투자',
+            '정치력은 운영 경비를 줄이고 사무실의 선수단 투자는 운영비를 바꿉니다.',
           ),
         ],
         src('finance', 'operatingCosts', 'assessOperatingExpenses', 'wageBill'),
@@ -1346,7 +1344,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '세계 팬이 많아도 전부 입장하는 것은 아니며 수요와 좌석 중 작은 쪽에 제한됩니다.',
           ),
           f('최근 경기력·상대 구단의 흥행력', '같은 홈 경기라도 수요가 달라집니다.'),
-          fixed(
+          direct(
             '티켓 가격·지역 투자·지역 기반·관중 관련 카드',
             '비싼 표는 1인당 수입을 올리지만 수요를 줄여 총수입이 단순 증가하지는 않습니다.',
           ),
@@ -1376,7 +1374,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '지역 기반·글로벌 인지도·마케팅 귀재',
             '지역 후원과 나머지 후원에 서로 다른 효과가 붙습니다.',
           ),
-          fixed(
+          direct(
             '상업 카드·시너지·경기장 규모',
             '새 제안 금액과 경기장 명명권 같은 자격에 작용합니다.',
           ),
@@ -1434,15 +1432,15 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '평판과 현재 팬 수의 차이·승패',
             '평판에 맞는 규모로 이동하고 결과가 추가 증감을 만듭니다.',
           ),
-          fixed(
+          direct(
             '글로벌 마케팅·캠페인·팬 관련 카드',
             '유지 중인 설정이 성장과 승리 효과를 바꿉니다.',
           ),
-          fixed(
+          direct(
             '지역·해외 투자와 축적된 기반',
             '투자 목표로 기반이 쌓이거나 줄며, 글로벌 인지도는 평판이 만드는 팬층을 키웁니다.',
           ),
-          fixed('기존 해외 투어', '시즌 초 수입·인지도를 얻지만 모든 선수의 피로도 생깁니다.'),
+          direct('해외 투어', '시즌 초 수입·인지도를 얻지만 모든 선수의 피로도 생깁니다.'),
         ],
         [
           ...src('fans', 'driftFans', 'fansAfterMatch'),
@@ -1459,21 +1457,21 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         'facilities',
         '보유 시설이 플레이에 주는 효과',
         '계산',
-        '현재 수준의 시설 효과와 비용은 유지되지만 구단주의 신규 공사 명령은 제거된 상태입니다.',
+        '사무실에서 공사를 시작할 수 있습니다. 공사비는 착공 때 내며 효과와 유지비는 완공된 수준을 따릅니다.',
         [
-          fixed(
-            '경기장 수준·진행 중인 기존 공사',
-            '수용 인원과 일부 상업 계약 자격을 바꿉니다. 기존 공사는 완료될 수 있습니다.',
+          direct(
+            '경기장 수준·진행 중인 공사',
+            '수용 인원과 일부 상업 계약 자격을 바꿉니다. 증축 중 사용 가능한 좌석도 반영합니다.',
           ),
-          fixed('훈련장 수준', '1군 성장 환경을 바꿉니다.'),
-          fixed('유스 시설 수준', '입단 인원·기량·잠재력과 유스 성장에 작용합니다.'),
+          direct('훈련장 수준', '선수 성장 배율·추가 피로 회복·신규 계약의 협상 호감을 바꿉니다.'),
+          direct('유스 시설 수준', '입단 인원·기량·잠재력과 유스 성장에 작용합니다.'),
           f('시설 유지비', '높은 수준은 구단 고정 지출에도 영향을 줍니다.'),
         ],
         [
           ...src(
             'facility-model',
             'stadiumCapacity',
-            'trainingGroundBase',
+            'TRAINING_GROUND',
             'academyFacilityTerms',
             'facilityUpkeepUnits',
           ),
@@ -1498,7 +1496,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
           f('선발 중 리더·감독 신뢰', '분위기가 돌아가려는 평소 기준에 작용합니다.'),
           f('피로·불만 선발·연속 하드 훈련·결재 지연', '각각 분위기를 깎는 원인이 됩니다.'),
-          fixed('선수단 투자·라커룸 카드·시너지', '평소 분위기 기준과 효과를 바꿉니다.'),
+          direct('선수단 투자·라커룸 카드·시너지', '평소 분위기 기준과 효과를 바꿉니다.'),
         ],
         src('morale', 'moraleBaseline', 'moraleAfterMatch', 'settleMorale'),
         [
@@ -1699,7 +1697,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '배당·핵심 선수 매각·디자인 채택',
             '팬 민심에 비용이 생깁니다. 핵심 선수 매각은 시장당 적용 제한이 있습니다.',
           ),
-          fixed('기본값보다 높은 티켓 가격', '해당 홈 리그 경기에서 민심 비용이 생깁니다.'),
+          direct('기본값보다 높은 티켓 가격', '해당 홈 리그 경기에서 민심 비용이 생깁니다.'),
           f('팬들의 친구 특성', '하락을 줄이지만 상승을 확대하는 효과는 아닙니다.'),
         ],
         src(
@@ -2088,12 +2086,19 @@ export const PLAYER_ACTIONS: PlayerAction[] = [
   action('training-control', '팀·개인 훈련 강도 직접 변경', '현재 변경 불가', [
     link('training-focus', '현재는 수석코치가 자동 결정'),
   ]),
-  action('direction-control', '구단 방향·투자·티켓·운영 기조 변경', '현재 변경 불가', [
-    link('wage-demand', '기본값 또는 기존 설정의 효과는 유지'),
+  action('direction-control', '사무실에서 상시 투자·구단 효과·티켓 가격 바꾸기', '직접 선택', [
+    link('wage-demand', '새 요구에 투자·문화·운영 방식 반영'),
     link('gate-income', '현재 가격과 투자 기준으로 계산'),
-    link('auto-signing', '기본값 또는 기존 기준으로 심사'),
+    link('auto-signing', '현재 스카우팅 환경과 자금 여력으로 심사'),
   ]),
-  action('facility-work', '시설 신규 공사 시작', '현재 변경 불가', [
-    link('facilities', '보유 수준의 효과와 기존 공사 완료만 유지'),
+  action('decision-guidelines', '결재 설정에서 업무별 판단 지침 바꾸기', '직접 선택', [
+    link('manager-hiring', '감독 기조·선호 학파·스태프 채용 기준'),
+    link('auto-renewal', '재계약 기조와 공통 재정 한도'),
+    link('auto-signing', '영입 후보 성향·단장/감독 지원·지출 한도'),
+    link('incoming-bids', '매각 기조와 자금 압박 기준'),
+    link('youth-promotion', '육성 목표·데뷔 시점·승격 자금 기준'),
+  ]),
+  action('facility-work', '훈련장·유소년 시설·경기장 공사 시작', '직접 선택', [
+    link('facilities', '공사비 지출 후 완공일부터 새 효과·유지비 반영'),
   ]),
 ];

@@ -28,6 +28,9 @@ export function operate(w: World, cmd: Exclude<Command, { type: 'advance' | 'sea
   if (w.ended && cmd.type !== 'read-inbox') throw new Error(ENDED_MESSAGE);
   switch (cmd.type) {
     case 'club-policy':
+    case 'club-direction':
+    case 'club-build':
+    case 'club-ticket':
     case 'coaching-investment':
     case 'facility-upgrade':
       investmentCommand(w, cmd);

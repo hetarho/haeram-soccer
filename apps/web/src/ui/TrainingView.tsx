@@ -158,7 +158,7 @@ function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outl
           라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙고, 훈련만으로는 적응도가{' '}
           {ADAPTATION_NEUTRAL.toFixed(2)}까지만 올라요.
           {focus.recoveryBonus !== 0 &&
-            ` 피로 회복에는 선수단 투자와 피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
+            ` 피로 회복에는 선수단 투자·훈련장·피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
         </p>
         <div data-surface="sheet" className={s.delegate}>
           <p>수석코치는 라운드마다 이 기준으로 골라요.</p>

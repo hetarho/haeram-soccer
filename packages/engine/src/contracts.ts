@@ -29,6 +29,7 @@ export {
 } from './market-prices';
 import { ownStarters, tierLevel } from './world';
 import { policyEffects, policyOf } from './policy';
+import { trainingGroundTerms } from './facility-model';
 import { talkRuleOf } from './hiring';
 import { buildEffects } from './build';
 import { wageDemandFactor } from './owner-traits';
@@ -250,13 +251,16 @@ export interface GoodwillPart {
 }
 /**
  * How far below his demand a player settles (→CLUB-26), each source with its percent: squad
- * investment, the locker-room culture card, austerity and squad morale, within −10 to +30%.
+ * investment, the completed training ground, the locker-room culture card, austerity and squad
+ * morale, within −10 to +30%.
  */
 export function talkGoodwill(w: World, p: Player) {
   const build = w.build ?? {},
     parts: GoodwillPart[] = [
       { label: '선수단 투자', percent: policyEffects(policyOf(w)).goodwill },
     ];
+  const facilityGoodwill = trainingGroundTerms(w).goodwill;
+  if (facilityGoodwill) parts.push({ label: '훈련장', percent: facilityGoodwill });
   if (build.culture === 'family') parts.push({ label: '가족 같은 클럽', percent: 5 });
   if (build.culture === 'stars' && overall(p) >= 70)
     parts.push({ label: '스타 대우', percent: 10 });

@@ -1078,10 +1078,16 @@ const worldSchema: z.ZodType<World> = z.object({
       recruitment: policyLevel,
       academy: policyLevel.optional(),
       localInvest: policyLevel.optional(),
+      // Accepted only to read earlier saves; the retired investment is discarded on decode.
       grassroots: policyLevel.optional(),
       globalMarketing: policyLevel.optional(),
       globalScouting: policyLevel.optional(),
       tour: z.literal([1, 2, 3]).optional(),
+    })
+    .transform((saved) => {
+      const policy = { ...saved };
+      delete policy.grassroots;
+      return policy;
     })
     .optional(),
   localBase: z.number().finite().min(0).max(100).optional(),

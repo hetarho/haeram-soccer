@@ -1045,6 +1045,12 @@
   font-size: 27px;
   line-height: 1;
 }
+.modalSummary {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--popover-edge);
+  background: var(--surface-grain, none) var(--surface);
+}
 .modalBody {
   min-height: 0;
   overflow-y: auto;

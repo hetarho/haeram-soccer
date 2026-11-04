@@ -1,17 +1,19 @@
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { activePlayers, clubOf, overall } from '../../../../packages/engine/src/player-state';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
 import { stadiumCapacity } from '../../../../packages/engine/src/facilities';
 import { localSupporters } from '../../../../packages/engine/src/fans';
+import { FAN_MOOD } from '../../../../packages/engine/src/owner-config';
 import { MANAGER_GONE, STAFF_ROLES, staffMember } from '../../../../packages/engine/src/staff-info';
 import { Card } from './Card';
 import { ClubCrest } from './ClubCrest';
 import { Money } from './Money';
 import { clubDivision, orderIds, ownLeagueIds } from './league';
 import { number, seasonName } from './format';
+import { fanMovers, mood, moodChange } from './ownerFigures';
 import { squadRegistration } from './squadRegistration';
-import { cashState, squadAvailability, teamStates, type StateKey } from './teamState';
+import { cashState, seasonBooks, squadAvailability, teamStates, type StateKey } from './teamState';
 import s from './ClubOverview.module.css';
 
 function Facts({ rows }: { rows: readonly (readonly [string, ReactNode])[] }) {
@@ -24,6 +26,59 @@ function Facts({ rows }: { rows: readonly (readonly [string, ReactNode])[] }) {
         </div>
       ))}
     </dl>
+  );
+}
+
+/**
+ * 팬 민심 (→OWNER-12/13) with its 퇴진 floor marked and what moved it last; a club without an owner
+ * has none.
+ */
+function FanMood({ w }: { w: World }) {
+  const owner = w.owner;
+  if (!owner) return null;
+  const movers = fanMovers(w);
+  const low = owner.fanMood < FAN_MOOD.floor;
+  return (
+    <Card surface="sheet" title="팬 민심" meta="FANS" className={s.wide}>
+      <div className={s.fans}>
+        <div className={s.fanGauge}>
+          <strong className={s.value} data-tone={low ? 'bad' : undefined} data-testid="owner-fan-mood">
+            {mood(owner.fanMood)}<small>/ {FAN_MOOD.max}</small>
+          </strong>
+          <div
+            className={s.meter}
+            role="meter"
+            aria-label="팬 민심"
+            aria-valuemin={FAN_MOOD.min}
+            aria-valuemax={FAN_MOOD.max}
+            aria-valuenow={owner.fanMood}
+            style={{ '--mood': `${owner.fanMood}%`, '--floor': `${FAN_MOOD.floor}%` } as CSSProperties}
+          >
+            <span className={low ? s.meterLow : undefined} />
+          </div>
+          <p className={s.note}>
+            {FAN_MOOD.floor} 아래로 {FAN_MOOD.rounds}라운드 이어지면 구단주가 물러나요
+            {owner.fanCrisis?.rounds ? ` · 지금 ${owner.fanCrisis.rounds}라운드째` : ''}
+          </p>
+        </div>
+        {movers.length > 0 && (
+          <ul className={s.movers} aria-label="최근 움직임">
+            {movers.map((mover) => (
+              <li key={mover.label}>
+                <span>{mover.label}</span>
+                <b data-trend={mover.direction}>
+                  {mover.change !== undefined
+                    ? moodChange(mover.change)
+                    : mover.direction === 'up'
+                      ? '상승'
+                      : '하락'}
+                </b>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </Card>
   );
 }
 
@@ -42,7 +97,8 @@ export function ClubOverview({ w }: { w: World }) {
   const manager = state('manager');
   const finance = cashState(w);
   const costs = operatingCosts(w);
-  const net = BigInt(w.income) - BigInt(w.expense);
+  const books = seasonBooks(w);
+  const net = BigInt(books.result);
   const league = orderIds(ownLeagueIds(w), w.tables);
   const table = w.tables[club.id];
   const average = (value: (player: (typeof squad)[number]) => number) =>
@@ -91,6 +147,7 @@ export function ClubOverview({ w }: { w: World }) {
       </div>
 
       <div className={s.cards}>
+        <FanMood w={w} />
         <Card surface="sheet" title="선수단 구성" meta="SQUAD">
           <Facts rows={[
             ['1군 / 유소년', `${squad.length}명 / ${youth.length}명`],
@@ -113,8 +170,8 @@ export function ClubOverview({ w }: { w: World }) {
         </Card>
         <Card surface="sheet" title="구단 재정" meta="FINANCE">
           <Facts rows={[
-            ['시즌 누적 수입', money(w.income)],
-            ['시즌 누적 지출', money(w.expense)],
+            ['시즌 누적 수입', money(books.income)],
+            ['시즌 누적 지출', money(books.expense)],
             ['시즌 수지', <span data-negative={net < 0n || undefined}>{money(net)}</span>],
             ['다음 라운드 고정 지출', money(costs.nextRound)],
             ['연간 고정비', money(costs.annual)],

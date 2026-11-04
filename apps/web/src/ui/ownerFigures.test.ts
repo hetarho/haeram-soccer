@@ -18,9 +18,11 @@ import type { View } from '../runtime/protocol';
 import { gameStore, initialClientState } from '../runtime/store';
 import korean from '../../public/presentation/locales/ko-KR.json';
 import { CashAlarm } from './CashAlarm';
+import { ClubOverview } from './ClubOverview';
 import { GameOver } from './GameOver';
 import { HudCash } from './HudCash';
 import { OwnerSheetBody } from './OwnerSheet';
+import { seasonBooks } from './teamState';
 import {
   businessChance,
   careerOver,
@@ -220,6 +222,45 @@ describe('자금 투입 within FFP (→OWNER-9/10)', () => {
   });
 });
 
+describe('the season books the money sheet leads with', () => {
+  it('counts an injection as the owner’s money, not the club’s income or profit', () => {
+    const w = owned();
+    w.income = '1500';
+    w.expense = '600';
+    w.cash = '5000';
+    w.events.push({
+      year: w.year,
+      round: w.round,
+      kind: 'owner-injection',
+      title: '구단주 자금 투입',
+      detail: '',
+      amount: '500',
+      currency: w.currency,
+    });
+    expect(seasonBooks(w)).toEqual({ income: '1000', expense: '600', result: '400' });
+    expect(dividendOutlook(w, 50)).toMatchObject({ result: '400', amount: '200' });
+  });
+  it('shows the result and runway always open, and 팬 민심 only in the team overview', () => {
+    const w = owned();
+    w.income = '1000';
+    w.expense = '1600';
+    const sheet = renderToStaticMarkup(
+      createElement(OwnerSheetBody, { w, sending: false, message: '', onCommand: async () => true }),
+    );
+    expect(sheet).not.toContain('<details');
+    expect(sheet).toContain('data-testid="season-result"');
+    expect(sheet).toContain('손해');
+    expect(sheet.indexOf('season-result')).toBeLessThan(sheet.indexOf('보유 현금'));
+    expect(sheet).not.toContain('owner-fan-mood');
+    const overview = renderToStaticMarkup(createElement(ClubOverview, { w }));
+    expect(overview).toContain('data-testid="owner-fan-mood"');
+    expect(overview.indexOf('owner-fan-mood')).toBeLessThan(overview.indexOf('선수단 구성'));
+    expect(renderToStaticMarkup(createElement(ClubOverview, { w: founded() }))).not.toContain(
+      'owner-fan-mood',
+    );
+  });
+});
+
 describe('the 배당 dial (→OWNER-11)', () => {
   it('takes its share of a positive result, never more than the cash above zero', () => {
     const w = owned();
@@ -299,12 +340,11 @@ describe('the HUD and the 구단주 sheet (→WEB-114, WEB-97)', () => {
     show(founded());
     const plain = renderToStaticMarkup(createElement(HudCash));
     expect(plain).toContain('data-testid="hud-cash"');
-    expect(plain).not.toContain('hud-fortune');
+    expect(plain).not.toContain('사업자금');
     show(owned());
     const markup = renderToStaticMarkup(createElement(HudCash));
     expect(markup).toContain('data-testid="hud-cash"');
-    expect(markup).toContain('data-testid="hud-fortune"');
-    expect(markup).toContain('구단주 자금');
+    expect(markup).toContain('사업자금');
   });
   it('locks the controls while the clock runs and keeps the drafts open', () => {
     const w = owned();
@@ -320,7 +360,7 @@ describe('the HUD and the 구단주 sheet (→WEB-114, WEB-97)', () => {
         onCommand: async () => true,
       }),
     );
-    for (const heading of ['사업 투자', '자금 투입', '배당', '팬 민심'])
+    for (const heading of ['구단 운영비 · 자금 여력', '사업 투자', '자금 투입', '배당'])
       expect(markup).toContain(heading);
     expect(markup).toContain('data-testid="owner-lock"');
     const primaries = [...markup.matchAll(/<button([^>]*data-ui="primary"[^>]*)>/g)];

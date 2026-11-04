@@ -90,13 +90,24 @@ const command = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('settings'), settings: gameSettingsSchema }),
   z.strictObject({
     type: z.literal('club-policy'),
-    key: z.enum(['support', 'recruitment', 'academy', 'localInvest', 'grassroots', 'globalMarketing', 'globalScouting', 'tour']),
+    key: z.enum(['support', 'recruitment', 'academy', 'localInvest', 'globalMarketing', 'globalScouting', 'tour']),
     level: term,
   }),
   z.strictObject({
     type: z.literal('coaching-investment'),
     choice: z.enum(['volunteer', 'cheap', 'standard', 'elite']),
   }),
+  z.strictObject({
+    type: z.literal('club-direction'),
+    key: z.enum(['recruitmentSupport', 'renewal', 'school', 'manager', 'coaches', 'finance', 'youthGoal', 'debut']),
+    choice: z.string().min(1).max(40),
+  }),
+  z.strictObject({
+    type: z.literal('club-build'),
+    slot: z.enum(['youth', 'scouting', 'market', 'revenue', 'fans', 'culture']),
+    choice: z.string().min(1).max(40),
+  }),
+  z.strictObject({ type: z.literal('club-ticket'), price: z.number().finite().min(0.01).max(1) }),
   z.strictObject({
     type: z.literal('facility-upgrade'),
     part: z.enum(['training', 'academy', 'stadium']),

@@ -6,7 +6,6 @@ export const POLICY_KEYS: readonly PolicyKey[] = [
   'recruitment',
   'academy',
   'localInvest',
-  'grassroots',
   'globalMarketing',
   'globalScouting',
   'tour',
@@ -18,7 +17,6 @@ export const POLICY_DEFAULTS: ClubPolicy = Object.freeze({
   recruitment: 3,
   academy: 1,
   localInvest: 1,
-  grassroots: 1,
   globalMarketing: 1,
   globalScouting: 1,
   tour: 1,
@@ -67,16 +65,16 @@ export const POLICY_INFO: Record<
       {
         level: 1,
         name: '유망주 발굴',
-        summary: '17–21세 · 능력 35–65 · 잠재력 +12 · 이적료 −15%',
+        summary: '17–21세 · 능력 35–65 · 잠재력 보정 +12인 영입 후보를 찾아요',
       },
       {
         level: 2,
         name: '젊은 선수 위주',
-        summary: '18–25세 · 능력 38–75 · 잠재력 +6 · 이적료 −5%',
+        summary: '18–25세 · 능력 38–75 · 잠재력 보정 +6인 영입 후보를 찾아요',
       },
-      { level: 3, name: '균형', summary: '18–30세 · 능력 40–85 · 기본 이적료' },
-      { level: 4, name: '경험 위주', summary: '23–31세 · 능력 50–88 · 이적료 +15%' },
-      { level: 5, name: '즉시 전력', summary: '26–33세 · 능력 60–92 · 이적료 +30%' },
+      { level: 3, name: '균형', summary: '18–30세 · 능력 40–85인 영입 후보를 찾아요' },
+      { level: 4, name: '경험 위주', summary: '23–31세 · 능력 50–88인 영입 후보를 찾아요' },
+      { level: 5, name: '즉시 전력', summary: '26–33세 · 능력 60–92인 영입 후보를 찾아요' },
     ],
   },
   academy: {
@@ -128,32 +126,6 @@ export const POLICY_INFO: Record<
         level: 5,
         name: '도시 재생 사업',
         summary: '라운드마다 최대 지출 · 관중 수요 +8% · 지역 기반 목표 100',
-      },
-    ],
-  },
-  grassroots: {
-    label: '풀뿌리 유망주 투자',
-    levels: [
-      { level: 1, name: '없음', summary: '추가 비용 없음' },
-      {
-        level: 2,
-        name: '동네 축구교실',
-        summary: '라운드마다 소액 지출 · 입단 잠재력 +1 · 지역 기반 목표 +10',
-      },
-      {
-        level: 3,
-        name: '지역 리그 후원',
-        summary: '라운드마다 지출 · 입단 잠재력 +2 · 지역 기반 목표 +20',
-      },
-      {
-        level: 4,
-        name: '학교 축구 지원',
-        summary: '라운드마다 큰 지출 · 입단 잠재력 +3 · 지역 기반 목표 +30',
-      },
-      {
-        level: 5,
-        name: '지역 유소년 네트워크',
-        summary: '라운드마다 최대 지출 · 입단 잠재력 +4 · 지역 기반 목표 +45',
       },
     ],
   },
@@ -240,8 +212,7 @@ export interface PolicyEffects {
   /** 해외 마케팅's fan growth per settled round and 주변 투자's gate demand. */
   fanGrowth: number;
   gateBoost: number;
-  /** 풀뿌리 유망주 투자's intake potential; 해외 스카우트망's extra candidates and potential. */
-  grassrootsPotential: number;
+  /** 해외 스카우트망's extra candidates and potential. */
   scoutCandidates: number;
   scoutPotential: number;
   /** The targets the rows set for 지역 기반 and 글로벌 인지도 (→ECON-34), each at most 100. */
@@ -257,7 +228,6 @@ export interface PolicyEffects {
     ability: [number, number];
     age: [number, number];
     potentialBonus: number;
-    feeMultiplier: number;
   };
 }
 
@@ -270,7 +240,6 @@ export const SUPPORT_EXPENSES = [0.9, 0.95, 1, 1.1, 1.2];
 const INVEST_UNITS = [0, 1, 2.5, 4.5, 7];
 const GLOBAL_FANS = [0, 0.004, 0.008, 0.013, 0.02];
 const LOCAL_GATE = [0, 0.02, 0.04, 0.06, 0.08];
-const GRASSROOTS_POTENTIAL = [0, 1, 2, 3, 4];
 const SCOUT_CANDIDATES = [0, 1, 2, 3, 4];
 const SCOUT_POTENTIAL = [0, 0, 1, 1, 2];
 /** The base a main row aims at, and what its second row adds (→ECON-34). */
@@ -283,15 +252,21 @@ const ACADEMY_POTENTIAL = [0, 3, 5, 8, 11];
 const ACADEMY_GROWTH = [1, 1.1, 1.2, 1.3, 1.45];
 /** Level 3 is exactly the pre-policy transfer market. */
 const OFFERS: PolicyEffects['offer'][] = [
-  { ability: [35, 65], age: [17, 21], potentialBonus: 12, feeMultiplier: 0.85 },
-  { ability: [38, 75], age: [18, 25], potentialBonus: 6, feeMultiplier: 0.95 },
-  { ability: [40, 85], age: [18, 30], potentialBonus: 0, feeMultiplier: 1 },
-  { ability: [50, 88], age: [23, 31], potentialBonus: 0, feeMultiplier: 1.15 },
-  { ability: [60, 92], age: [26, 33], potentialBonus: 0, feeMultiplier: 1.3 },
+  { ability: [35, 65], age: [17, 21], potentialBonus: 12 },
+  { ability: [38, 75], age: [18, 25], potentialBonus: 6 },
+  { ability: [40, 85], age: [18, 30], potentialBonus: 0 },
+  { ability: [50, 88], age: [23, 31], potentialBonus: 0 },
+  { ability: [60, 92], age: [26, 33], potentialBonus: 0 },
 ];
 
 export function policyOf(w: World): ClubPolicy {
-  return { ...POLICY_DEFAULTS, ...w.policy };
+  const policy = { ...POLICY_DEFAULTS };
+  // Only active keys enter the runtime policy; retired save fields have no effect.
+  for (const key of POLICY_KEYS) {
+    const saved = w.policy?.[key];
+    if (saved !== undefined) policy[key] = saved;
+  }
+  return policy;
 }
 
 export function policyEffects(policy: ClubPolicy): PolicyEffects {
@@ -299,7 +274,6 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
   const support = policy.support - 1,
     academy = level('academy'),
     local = level('localInvest'),
-    grass = level('grassroots'),
     global = level('globalMarketing'),
     scout = level('globalScouting'),
     offer = OFFERS[policy.recruitment - 1];
@@ -309,14 +283,13 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     recoveryBonus: SUPPORT_RECOVERY[support],
     operatingFactor: SUPPORT_EXPENSES[support],
     investUnits:
-      INVEST_UNITS[local] + INVEST_UNITS[grass] + INVEST_UNITS[global] + INVEST_UNITS[scout],
+      INVEST_UNITS[local] + INVEST_UNITS[global] + INVEST_UNITS[scout],
     fanGrowth: GLOBAL_FANS[global],
     gateBoost: LOCAL_GATE[local],
-    grassrootsPotential: GRASSROOTS_POTENTIAL[grass],
     scoutCandidates: SCOUT_CANDIDATES[scout],
     scoutPotential: SCOUT_POTENTIAL[scout],
     baseTargets: {
-      local: Math.min(100, MAIN_TARGET[local] + SIDE_TARGET[grass]),
+      local: MAIN_TARGET[local],
       global: Math.min(100, MAIN_TARGET[global] + SIDE_TARGET[scout]),
     },
     tour: level('tour'),
@@ -328,7 +301,6 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
       ability: [offer.ability[0], offer.ability[1]],
       age: [offer.age[0], offer.age[1]],
       potentialBonus: offer.potentialBonus,
-      feeMultiplier: offer.feeMultiplier,
     },
   };
 }

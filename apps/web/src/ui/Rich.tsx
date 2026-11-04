@@ -14,6 +14,7 @@ import type {
   ContractTerm,
   ManagerTrait,
   Player,
+  ResponsibilityKey,
   TalkTerm,
   TransferStance,
   World,
@@ -52,6 +53,7 @@ import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
 import { ClubOverview } from './ClubOverview';
 import { InvestmentView } from './InvestmentView';
+import { BusinessWorkbench } from './BusinessWorkbench';
 import { ApprovalQueue } from './ApprovalQueue';
 import { EventCard } from './EventCenter';
 import { MediationReview } from './MediationReview';
@@ -98,7 +100,7 @@ import {
   StaffMarket,
   TalkRulePanel,
 } from './ClubStaff';
-import { Segments } from './Segments';
+import { TabList, TabPanel } from './PageTabs';
 import { AcademyPanel } from './AcademyPanel';
 import { TrainingView } from './TrainingView';
 import { WorkResponsibility } from './WorkResponsibility';
@@ -232,19 +234,28 @@ function MarketHub({ state, client }: Props) {
   const kind = MARKET_KINDS.some(([id]) => id === stored) ? stored : 'players';
   return (
     <>
-      <Segments label="영입 대상" options={MARKET_KINDS} value={kind} onChange={setKind} />
-      {kind === 'players' || kind === 'youth' ? (
-        <RecruitmentDesk key={kind} state={state} client={client} youth={kind === 'youth'} />
-      ) : kind === 'manager' ? (
-        <ManagerMarket state={state} client={client} onClose={() => setKind('players')} inline />
-      ) : (
-        <StaffMarket
-          key={kind}
-          w={w}
-          client={client}
-          roles={kind === 'director' ? ['director'] : COACH_ROLES}
-        />
-      )}
+      {/* The market's own page tabs (→WEB-69): each kind is a page of the market, not a filter. */}
+      <TabList
+        tabs={MARKET_KINDS}
+        value={kind}
+        onChange={setKind}
+        label="영입 대상"
+        idPrefix="market-kind"
+      />
+      <TabPanel idPrefix="market-kind" value={kind}>
+        {kind === 'players' || kind === 'youth' ? (
+          <RecruitmentDesk key={kind} state={state} client={client} youth={kind === 'youth'} />
+        ) : kind === 'manager' ? (
+          <ManagerMarket state={state} client={client} onClose={() => setKind('players')} inline />
+        ) : (
+          <StaffMarket
+            key={kind}
+            w={w}
+            client={client}
+            roles={kind === 'director' ? ['director'] : COACH_ROLES}
+          />
+        )}
+      </TabPanel>
     </>
   );
 }
@@ -1152,6 +1163,35 @@ function Roster({ state, client }: Props) {
       )}
     </>
   );
+}
+/** Manual actions are also reachable beside their instructions, through the same forms. */
+export function ApprovalWorkbench({ state, client, controller, responsibility }: Props & {
+  controller: ProgressionController;
+  responsibility: ResponsibilityKey;
+}) {
+  const w = state.view!.world;
+  const [market, setMarket] = useState(false);
+  const [mediationId, setMediationId] = useState<string>();
+  const pending = approvalRequests(w).filter((item) => item.responsibility === responsibility || item.responsibilities?.includes(responsibility));
+  const mediation = w.mediations?.find((record) => record.id === mediationId);
+  return <>
+    {pending.filter((item) => item.kind === 'incoming-bid' || item.kind === 'bid-response').map((item) =>
+      <EventCard key={item.id} client={client} controller={controller} item={item} inDesk />)}
+    {(responsibility === 'staff' || responsibility === 'contracts') && w.players
+      .filter((player) => w.playingCoachProposals?.[player.id]?.status === 'pending')
+      .map((player) => <PlayingCoachReview key={player.id} w={w} client={client} player={player} />)}
+    {responsibility === 'recruitment' && w.mediations?.filter((record) => record.status === 'pending').map((record) =>
+      <button key={record.id} type="button" data-ui="secondary" onClick={() => setMediationId(record.id)}>감독·단장 영입 중재 검토</button>)}
+    {mediation && <MediationReview record={mediation} w={w} client={client} onClose={() => setMediationId(undefined)} />}
+    {responsibility === 'manager' ? <>
+      <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
+      {market && <ManagerMarket state={state} client={client} inline onClose={() => setMarket(false)} />}
+    </> : responsibility === 'staff' ? <CoachingStaff w={w} client={client} />
+      : responsibility === 'contracts' || responsibility === 'sales' ? <Roster state={state} client={client} />
+      : responsibility === 'recruitment' ? <RecruitmentDesk state={state} client={client} />
+      : responsibility === 'academy' ? <AcademyPanel w={w} client={client} />
+      : <BusinessWorkbench state={state} client={client} part="sponsor" />}
+  </>;
 }
 /** The inbox and each review overlay the current page, without changing its address. */
 export function ApprovalInbox({

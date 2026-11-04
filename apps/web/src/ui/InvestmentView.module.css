@@ -117,27 +117,6 @@
 .panel {
   --card-padding: 18px;
 }
-.options {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr));
-  gap: 8px;
-  margin-block: 14px;
-}
-.options button {
-  display: grid;
-  align-content: center;
-  gap: 4px;
-  min-height: 60px;
-  padding: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: normal;
-  word-break: keep-all;
-}
-.options small {
-  font-size: 11px;
-  font-weight: 400;
-}
 .budgetSlider {
   display: grid;
   gap: 2px;
@@ -161,6 +140,7 @@
   text-align: center;
   line-height: 1.5;
   word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 .sliderNames > :first-child {
   text-align: left;
@@ -191,6 +171,38 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
+}
+.totalFacts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 20px;
+  margin: 4px 0 12px;
+}
+.totalFacts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+.totalFacts dt {
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.totalFacts dd {
+  flex: none;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.totalFactsSix {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.totalFacts > [data-wide] {
+  grid-column: span 2;
 }
 .selection {
   display: grid;
@@ -242,6 +254,146 @@
   width: 100%;
   min-height: 44px;
 }
+.upgradeFinances {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1.3fr);
+  align-items: start;
+  gap: 12px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.upgradeFinances dt {
+  margin-bottom: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.upgradeFinances dd {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.balanceChange {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+.balanceChange .previousMoney {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.upgradeComparison {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  min-width: 0;
+}
+.comparisonArrow {
+  align-self: center;
+  color: var(--text-muted);
+  font-size: 24px;
+  text-align: center;
+}
+.facilitySnapshot {
+  --card-padding: 12px;
+}
+.compareScene {
+  position: relative;
+  min-height: clamp(130px, 18vw, 190px);
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: var(--scene-radius, var(--card-radius));
+  background: var(--surface-deep);
+}
+.compareScene > .art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.compareScene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent 40%, rgb(9 14 16 / 0.8));
+}
+.compareScene .overlay {
+  inset: auto 10px 10px;
+  padding: 0;
+}
+.compareScene .overlay b {
+  font-size: 14px;
+}
+.compareScene .overlay small {
+  color: #fff;
+  font-size: 11px;
+}
+.benefitFacts {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+}
+.benefitFacts > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 2px 8px;
+}
+.benefitFacts dt {
+  min-width: 0;
+}
+.benefitFacts dt,
+.maintenance > span {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+.benefitFacts dd {
+  flex: none;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.facilitySnapshot[data-future] .benefitFacts dd {
+  color: var(--text);
+  font-weight: 700;
+}
+.maintenance {
+  display: grid;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.maintenance > b {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.facilitySnapshot[data-future] .maintenance > b {
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 800;
+}
+.upgradeNotes {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+}
+.upgradeNotes > p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
 .staff {
   margin: 14px 0;
 }
@@ -278,6 +430,24 @@
   }
 }
 @media (max-width: 600px) {
+  .totalFacts,
+  .totalFactsSix {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .totalFacts dd {
+    font-size: 17px;
+  }
+  .upgradeComparison {
+    grid-template-columns: minmax(0, 1fr) 16px minmax(0, 1fr);
+    gap: 6px;
+  }
+  .facilitySnapshot {
+    --card-padding: 8px;
+  }
+  .comparisonArrow {
+    font-size: 18px;
+  }
   .supportFacts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
@@ -291,10 +461,6 @@
   }
   .selection {
     padding: 10px;
-  }
-  .options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 6px;
   }
 }
 @media (prefers-reduced-motion: reduce) {

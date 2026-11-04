@@ -30,6 +30,9 @@ export interface Outcome {
 
 const titles: Record<Exclude<Command['type'], 'settings'>, string> = {
   'club-policy': '구단 투자 수준을 바꿨어요',
+  'club-direction': '의사결정 지침을 바꿨어요',
+  'club-build': '구단 운영 방식을 바꿨어요',
+  'club-ticket': '티켓 가격을 바꿨어요',
   'coaching-investment': '코치진 채용 기준을 바꿨어요',
   'facility-upgrade': '시설 공사를 시작했어요',
   advance: '한 라운드를 진행했어요',
@@ -230,7 +233,7 @@ export function describeOutcome(
   if (command.type === 'hire-staff' || command.type === 'renew-staff')
     note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 선수단 › 스태프에서 관리해요.';
   return {
-    title: titles[command.type],
+    title: command.type === 'club-policy' && command.key === 'recruitment' ? '영입 지침을 바꿨어요' : titles[command.type],
     changes,
     events: shown.map(({ title, detail }) => ({ title, detail })),
     hiddenEvents: records.length - shown.length,

@@ -85,6 +85,16 @@ When an applied choice uses an explicit secondary or tertiary role, preserve tha
 artwork and contrasting text through the pressed state. Generic selection-frame rules must not
 replace it with an outline. Keep unapplied choices quiet and retain `aria-pressed` for access.
 
+A chosen option (a pressed card, segment or radio) changes both its edge and its fill, so it is
+found at a glance among equal siblings such as the new-game tier, trait and decade cards. The
+shared rule draws the selected artwork at `image-selected-frame-width`, pushed out by
+`image-selected-frame-outset` so the layout never moves, and lays `image-selected-tint` over the
+quiet material. Choose the width that shows the artwork's accent band rather than squeezing it
+to a hairline (Sticker Football Club's yellow ring needs about 11px of its 36px slice). A theme
+whose selected artwork has no bright band, as Stadium Green's dark frame, adds
+`image-selected-ring` in its accent colour. Compare a selected card beside unselected ones in
+every theme: an edge alone, or a fill alone, is not enough.
+
 Rating tiers are a separate ordered value scale. Their background and frame can change together
 to identify rarity, while the live number stays readable. Do not reuse that colourful scale as
 the definition of button priority. The current Matchday Print treatment and regeneration recipe

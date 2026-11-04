@@ -73,7 +73,7 @@ export function baseEffects(w: Pick<World, 'localBase' | 'globalReach' | 'build'
 }
 
 /** What a tour at `tour` (0 none, 1 short, 2 long) pays and does as a season starts (→ECON-16). */
-function tourTerms(w: World, tour: number) {
+export function tourTerms(w: World, tour: number) {
   const club = clubOf(w);
   return {
     income: tour

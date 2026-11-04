@@ -1,6 +1,22 @@
 .office {
   min-width: 0;
 }
+.guidance, .responsibility {
+  padding: 16px;
+  min-width: 0;
+}
+.guidance h3 { margin: 0; font-size: 16px; }
+.guidance > p { color: var(--text-muted); font-size: 12px; line-height: 1.7; }
+.rows { display: grid; gap: 14px; }
+.responsibility .responsibilityRow { padding-top: 0; padding-bottom: 14px; }
+.guidelines { border-top: 1px solid var(--line); }
+.guidelines .workbenchButton { width: 100%; margin-top: 14px; }
+.ruleFacts { margin-top: 12px; font-size: 12px; }
+.ruleFacts summary { padding-block: 10px; }
+.ruleFacts dl { display: grid; gap: 8px; margin: 12px 0; }
+.ruleFacts dl > div { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.ruleFacts dt { flex: none; color: var(--text-muted); }
+.ruleFacts dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
 .hero {
   display: block;
   width: 100%;
@@ -148,6 +164,7 @@
   }
 }
 @media (max-width: 600px) {
+  .guidance, .responsibility { padding: 12px; }
   .row {
     flex-wrap: wrap;
     gap: var(--control-gap);

@@ -121,7 +121,6 @@ export function academyIntakeSize(w: World) {
 export function academyPotentialBonus(w: World) {
   return (
     policyEffects(policyOf(w)).academyPotential +
-    policyEffects(policyOf(w)).grassrootsPotential +
     buildEffects(w).academyPotential +
     synergyEffects(w).academyPotential +
     baseEffects(w).intakePotential +

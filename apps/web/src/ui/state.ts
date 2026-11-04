@@ -22,7 +22,7 @@ import { create } from 'zustand';
 import { eventDesk, type ApprovalRequest } from './eventRouting';
 import { QUEUE_RETURN, type QueueReturn } from './approvalOrder';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
-import type { StaffRole } from '../../../../packages/contracts/src/types';
+import type { ResponsibilityKey, StaffRole } from '../../../../packages/contracts/src/types';
 import type { PlayerScope } from './playerAnalysis';
 import type {
   ManagerHistoryPage,
@@ -240,7 +240,12 @@ export function openApprovalInbox() {
 /** Overview overlays the current task, including an existing department sheet. */
 export function openOwnerOffice() {
   const memory = useTaskMemory.getState();
-  useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true } });
+  useTaskMemory.setState({ values: { ...memory.values, 'office-overview': true, 'office-focus': undefined } });
+}
+export function openDecisionSettings(key: ResponsibilityKey | 'finance') {
+  useTaskMemory.setState((memory) => ({
+    values: { ...memory.values, 'office-overview': true, 'office-focus': key },
+  }));
 }
 export function openClubOverview() {
   useTaskMemory.setState((memory) => ({

@@ -68,7 +68,7 @@ export type YouthFocus = 'balanced' | 'fundamentals' | 'firstTeam';
 export type TrainingCoach = 'assistant' | 'youth';
 /**
  * The board's dials (→ECON-16): squad investment, recruitment, academy investment and, from rules
- * 1.19, the 지역 and 글로벌 rows (주변 투자, 풀뿌리 유망주 투자, 해외 마케팅, 해외 스카우트망 and
+ * 1.19, the 지역 and 글로벌 rows (주변 투자, 해외 마케팅, 해외 스카우트망 and
  * 해외 투어, which has three levels) in place of the marketing dial.
  */
 export type PolicyKey =
@@ -76,7 +76,6 @@ export type PolicyKey =
   | 'recruitment'
   | 'academy'
   | 'localInvest'
-  | 'grassroots'
   | 'globalMarketing'
   | 'globalScouting'
   | 'tour';
@@ -1336,6 +1335,9 @@ export interface DisciplineState {
 export type Command =
   | { type: 'settings'; settings: GameSettings }
   | { type: 'club-policy'; key: PolicyKey; level: PolicyLevel }
+  | { type: 'club-direction'; key: DirectionKey; choice: string }
+  | { type: 'club-build'; slot: keyof ClubBuild; choice: string }
+  | { type: 'club-ticket'; price: number }
   | { type: 'coaching-investment'; choice: string }
   | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
   | { type: 'next-event' }

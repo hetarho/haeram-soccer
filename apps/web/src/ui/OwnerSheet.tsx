@@ -1,4 +1,4 @@
-import { useId, useState, type CSSProperties } from 'react';
+import { useId, useState } from 'react';
 import type { DividendShare } from '../../../../packages/contracts/src/owner';
 import type { Command, World } from '../../../../packages/contracts/src/types';
 import { FAN_MOOD, FFP, OWNER_BUSINESS } from '../../../../packages/engine/src/owner-config';
@@ -13,12 +13,10 @@ import { compactMoney, percent, seasonName } from './format';
 import {
   DIVIDEND_DIAL,
   dividendOutlook,
-  fanMovers,
   ffpRoom,
   injectionLimit,
   injectionOutlook,
   lastDividend,
-  mood,
   moodChange,
   ownerIdentity,
   ownerLock,
@@ -44,9 +42,10 @@ export interface OwnerSheetBodyProps {
 }
 
 /**
- * The 구단주 sheet's content (→WEB-114): the fortune, the business stake with its odds, living
- * costs, 자금 투입 within FFP, the 배당 dial and 팬 민심 with what moved it. Each control is a draft
- * whose effect shows before its one button applies it (→WEB-36).
+ * The 구단주 sheet's content (→WEB-114): the fortune, the club's season result and runway always
+ * open, the business stake with its odds, living costs, 자금 투입 within FFP and the 배당 dial;
+ * 팬 민심 lives in the team overview. Each control is a draft whose effect shows before its one
+ * button applies it (→WEB-36).
  */
 export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSheetBodyProps) {
   const owner = w.owner!;
@@ -68,7 +67,6 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
   const put = chosen === undefined ? undefined : injectionOutlook(w, chosen);
   const take = dividendOutlook(w, dividend);
   const last = lastDividend(owner);
-  const movers = fanMovers(w);
   const fortune = BigInt(owner.fortune);
   return (
     <div className={s.sheet} data-testid="owner-sheet">
@@ -109,10 +107,10 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
         />
       </Card>
 
-      <details className={s.cashDetails}>
-        <summary>구단 운영비 · 자금 여력</summary>
+      <section className={s.section} aria-labelledby={`${id}-cash`}>
+        <h3 id={`${id}-cash`}>구단 운영비 · 자금 여력</h3>
         <div className={s.cashSummary}><ClubCashSummary w={w} /></div>
-      </details>
+      </section>
 
       <section className={s.section} aria-labelledby={`${id}-business`}>
         <h3 id={`${id}-business`}>
@@ -333,56 +331,6 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
         </div>
       </section>
 
-      <section className={s.section} aria-labelledby={`${id}-fans`}>
-        <h3 id={`${id}-fans`}>
-          팬 민심 <span data-testid="owner-fan-mood">{mood(owner.fanMood)}</span>
-        </h3>
-        <div
-          className={s.meter}
-          role="meter"
-          aria-label="팬 민심"
-          aria-valuemin={FAN_MOOD.min}
-          aria-valuemax={FAN_MOOD.max}
-          aria-valuenow={owner.fanMood}
-          style={
-            {
-              '--mood': `${owner.fanMood}%`,
-              '--floor': `${FAN_MOOD.floor}%`,
-            } as CSSProperties
-          }
-        >
-          <span className={owner.fanMood < FAN_MOOD.floor ? s.meterLow : undefined} />
-        </div>
-        <p className={s.note}>
-          {FAN_MOOD.floor} 아래로 {FAN_MOOD.rounds}라운드 이어지면 구단주가 물러나요
-          {owner.fanCrisis?.rounds ? ` · 지금 ${owner.fanCrisis.rounds}라운드째` : ''}
-        </p>
-        {movers.length > 0 && (
-          <ul className={s.movers} aria-label="최근 움직임">
-            {movers.map((mover) => (
-              <li key={mover.label}>
-                <span>{mover.label}</span>
-                <b
-                  className={
-                    mover.direction === 'up'
-                      ? s.up
-                      : mover.direction === 'down'
-                        ? s.down
-                        : undefined
-                  }
-                >
-                  {mover.change !== undefined
-                    ? moodChange(mover.change)
-                    : mover.direction === 'up'
-                      ? '상승'
-                      : '하락'}
-                </b>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
       {lock && (
         <p className={s.lock} role="status" data-testid="owner-lock">
           {lock}
@@ -400,7 +348,7 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
  * locked as →WEB-97 locks every management change. Each command goes through the client, so its
  * outcome card shows once the sheet closes (→WEB-36).
  */
-export function OwnerSheet({ client, onClose }: { client?: GameClient; onClose: () => void }) {
+export function OwnerFunds({ client }: { client?: GameClient }) {
   const w = useGameState((state) => state.view?.world);
   const lock = useGameState((state) => ownerLock(state, !!client));
   const [message, setMessage] = useState('');
@@ -420,9 +368,8 @@ export function OwnerSheet({ client, onClose }: { client?: GameClient; onClose: 
       setSending(false);
     }
   };
-  return (
-    <Dialog label="자금 관리" onClose={onClose} actions={null} wide>
-      <OwnerSheetBody w={w} lock={lock} sending={sending} message={message} onCommand={send} />
-    </Dialog>
-  );
+  return <OwnerSheetBody w={w} lock={lock} sending={sending} message={message} onCommand={send} />;
+}
+export function OwnerSheet({ client, onClose }: { client?: GameClient; onClose: () => void }) {
+  return <Dialog label="자금 관리" onClose={onClose} actions={null} wide><OwnerFunds client={client} /></Dialog>;
 }

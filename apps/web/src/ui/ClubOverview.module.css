@@ -74,6 +74,81 @@
   gap: 14px;
   min-width: 0;
 }
+/* 팬 민심 spans both columns: its gauge beside what moved it, stacked on a phone. */
+.wide {
+  grid-column: 1 / -1;
+}
+.fans {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 8px 24px;
+  min-width: 0;
+}
+.fanGauge {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+/* 0 to 100, its floor marked where 퇴진 압박 starts counting (→OWNER-13). */
+.meter {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--surface-deep);
+  overflow: hidden;
+}
+.meter > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--mood);
+  border-radius: inherit;
+  background: var(--accent, var(--gold));
+}
+.meter > .meterLow {
+  background: var(--danger);
+}
+.meter::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--floor);
+  width: 2px;
+  background: var(--danger);
+}
+.movers {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.movers li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 12.5px;
+}
+.movers li + li {
+  border-top: 1px solid var(--line);
+}
+.movers span {
+  min-width: 0;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+.movers b {
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+/* A rise in red, a fall in blue, as the owner's sheet writes changes. */
+.movers b[data-trend='up'] {
+  color: var(--danger);
+}
+.movers b[data-trend='down'] {
+  color: var(--cool);
+}
 .facts {
   display: grid;
   margin: 0;
@@ -127,6 +202,9 @@
   .cards {
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
+  }
+  .fans {
+    grid-template-columns: minmax(0, 1fr);
   }
   .heading h2 {
     font-size: 18px;
