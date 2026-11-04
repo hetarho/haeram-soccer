@@ -719,7 +719,9 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     for (const player of startersBeforeDepartures)
       if (player.status === 'retired' || (player.status === 'sold' && !player.loanUntil))
         openNeed(w, player, currentDay(w));
-    own.strength = rating(w, own);
+    // A settled XI of grown stars rates past 100 on its adaptation multiplier (up to 1.05,
+    // →PLAYER-10); the club's strength keeps the 0–100 scale every club is read on.
+    own.strength = clamp(rating(w, own));
     // A summer tour pays, spreads the name and tires the rested squad as the season starts
     // (→ECON-16).
     seasonTour(w);
