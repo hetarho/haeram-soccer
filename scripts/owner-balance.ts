@@ -51,7 +51,7 @@ import {
   tierFortune,
 } from '../packages/engine/src/club-value';
 import { pays } from '../packages/engine/src/listing';
-import { bookIncomeLines } from '../packages/engine/src/books';
+import { BOOK_COMPETITIONS, bookIncomeLines } from '../packages/engine/src/books';
 import { readGateDetail } from '../packages/engine/src/settlement';
 import { ffpRoom, livingCost, ownerCommand } from '../packages/engine/src/owner';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
@@ -133,6 +133,13 @@ if (MEANS) {
   if (!SPREAD) throw new Error('--means enters only with CLUB-48 table: give it with --spread');
   MEANS_LEVEL.inForce = true;
 }
+/**
+ * --cups: the books count their clubs' cup and continental money (→ECON-36, T697), a measurement
+ * override of `BOOK_COMPETITIONS`, never a game setting; its worlds belong in their own
+ * --world-dir.
+ */
+const CUPS = args.includes('--cups');
+if (CUPS) BOOK_COMPETITIONS.inForce = true;
 const TAKEOVER_YEAR = 1950;
 /** ECON-29's career averages: the first fifty seasons. */
 const CAREER = 50;
@@ -942,7 +949,7 @@ console.log(
     .map((t) => t.multiple)
     .join(
       '/',
-    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}${SPREAD ? `, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}` : ''}${MEANS ? ", LEAGUE-10's means level on" : ''})`,
+    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}${SPREAD ? `, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}` : ''}${MEANS ? ", LEAGUE-10's means level on" : ''}${CUPS ? ', competition money in the books' : ''})`,
 );
 /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
 if (option('note', '')) console.log(`\n${option('note', '')}`);

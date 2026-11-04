@@ -115,6 +115,21 @@ describe("a club nobody owns keeps only the stars its book pays (LEAGUE-10's mea
     expect(meansLevel(w, club!, club!.tier)).toBeUndefined();
   });
 
+  it('reads money added to the means as the same income in the book (T697)', () => {
+    const w = fresh();
+    const [club] = bookClubs(w).sort((a, b) => b.strength - a.strength);
+    const top = squadCostAt(w, club!, 99, club!.tier, w.year);
+    for (const k of [2, 7, 13]) {
+      const budget = (top * BigInt(k)) / 20n,
+        extra = top / 10n;
+      withBook(club!, w.year, budget + extra);
+      const counted = meansLevel(w, club!, club!.tier, 90)!;
+      withBook(club!, w.year, budget);
+      expect(meansLevel(w, club!, club!.tier, 90, undefined, extra)).toBe(counted);
+      expect(counted).toBeGreaterThanOrEqual(meansLevel(w, club!, club!.tier, 90)!);
+    }
+  });
+
   it('with the switch off every strength equals the released path', () => {
     const w = fresh();
     const released = releasedPath(w);

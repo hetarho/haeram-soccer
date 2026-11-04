@@ -3,7 +3,9 @@
  * distribution, gate, commercial income), wage bill and operating expenses, summed over the season
  * from the scales the owner's club uses, settle into its cash; cash below zero is debt. A club
  * nobody owns never goes bankrupt, and a takeover or project of LEAGUE-10 clears its debt. The
- * current and the last closed season are kept (→SAVE-27).
+ * current and the last closed season are kept (→SAVE-27). Its cup and continental money is read
+ * at every close (`bookCompetitionMoney`) and counts in its income only while `BOOK_COMPETITIONS`
+ * is in force.
  */
 import type { Club, ClubBooks, ClubSeasonBook, Fixture, World } from '../../contracts/src/types';
 import { COUNTRIES, currency, SPONSOR_SLOTS } from '../../catalogs/src/index';
@@ -14,7 +16,18 @@ import {
   leagueMerit,
   leagueShare,
   operatingExpensesAt,
+  resultBonus,
+  type MatchResult,
 } from './finance';
+import { cupRoundsLeft, cupTiePrize, cupTitlePrize } from './cups';
+import {
+  europeMatchPrize,
+  europeTiePrize,
+  europeTitlePrize,
+  isKnockout,
+  paysTitle,
+} from './europe';
+import { footballQuote } from './quotes';
 import { sponsorOffers, sponsorSlotOpen } from './sponsors';
 import { marketWageAt } from './market-prices';
 import { ranked } from './season';
@@ -26,6 +39,30 @@ import { ratio, scaleBy } from './primitives';
 import { seasonAfter } from './wartime';
 import { hasOwner } from './owner';
 import { CLUB_BOOKS } from './owner-config';
+
+/**
+ * ECON-36's competition money: a book counts its club's domestic cup and continental matches as
+ * the owner's club is paid for them (`bookCompetitionMoney`). In force only together with
+ * CLUB-48's table (`STAR_SPREAD_CONFIG`) and LEAGUE-10's means level (`MEANS_LEVEL`), set with
+ * them through CLUB-48's gate, never alone; until then a book's income is its league distribution,
+ * league gate and commercial income. `observe` is a measurement hook, never a setting: at each
+ * close it is given every book's competition money and its income without it.
+ */
+export const BOOK_COMPETITIONS: {
+  inForce: boolean;
+  observe?: (club: Club, money: CompetitionMoney, released: bigint) => void;
+} = { inForce: false };
+
+/** A book's competition money in the season's money: prizes, result bonuses and home gates. */
+export interface CompetitionMoney {
+  /** Cup tie and title prizes, continental match, tie and title prizes (→LEAGUE-5, EURO-7). */
+  prizes: bigint;
+  /** Each cup and continental match's result bonus (→ECON-19). */
+  bonuses: bigint;
+  /** Each cup and continental home match's gate, without the league-match scaling (→ECON-9). */
+  gates: bigint;
+  total: bigint;
+}
 
 /** Whether a club keeps books: a league club of a playable country that is not the owner's. */
 export function keepsBooks(w: World, club: Club) {
@@ -67,7 +104,85 @@ export function booksClose(w: World) {
 interface SeasonIndex {
   fixtures: Map<string, Fixture[]>;
   leagues: Map<string, Club[]>;
+  /** Each club's cup and continental matches, built only while competition money is read. */
+  competitions?: Map<string, CompetitionRecord>;
 }
+
+/**
+ * One club's cup and continental season as the owner's club is paid for it: each cup tie won with
+ * the rounds left after it, its cup titles, each continental phase match's result, each knockout
+ * tie played (qualifiers and the Super Cup's included), each continental title that pays, and every
+ * paid match's result and whether it was at home. The Super Cup, a single match at the close, pays
+ * its tie and no result bonus or gate, as the owner's is paid (→EURO-10).
+ */
+interface CompetitionRecord {
+  cupTies: number[];
+  cupTitles: number;
+  phaseMatches: MatchResult[];
+  knockoutTies: number;
+  titles: number;
+  results: MatchResult[];
+  homeMatches: number;
+}
+const resultOf = (own: number, other: number): MatchResult =>
+  own > other ? 'win' : own === other ? 'draw' : 'loss';
+
+/** Every club's cup and continental record of the closing season, from `w.cups` and `w.europe`. */
+function competitionIndex(w: World) {
+  const records = new Map<string, CompetitionRecord>();
+  const of = (id: string) => {
+    let record = records.get(id);
+    if (!record)
+      records.set(
+        id,
+        (record = {
+          cupTies: [],
+          cupTitles: 0,
+          phaseMatches: [],
+          knockoutTies: 0,
+          titles: 0,
+          results: [],
+          homeMatches: 0,
+        }),
+      );
+    return record;
+  };
+  const paid = (f: Fixture, phase: boolean) => {
+    if (!f.score) return;
+    for (const [id, own, other] of [
+      [f.home, f.score.home, f.score.away],
+      [f.away, f.score.away, f.score.home],
+    ] as const) {
+      const record = of(id),
+        result = resultOf(own, other);
+      record.results.push(result);
+      if (phase) record.phaseMatches.push(result);
+    }
+    of(f.home).homeMatches++;
+  };
+  for (const cup of w.cups ?? []) {
+    cup.rounds.forEach((round, index) => {
+      const left = cupRoundsLeft(cup.clubs.length, index);
+      for (const tie of round.ties) if (tie.winner && left > 0) of(tie.winner).cupTies.push(left);
+    });
+    if (cup.winner) of(cup.winner).cupTitles++;
+    for (const f of cup.fixtures) paid(f, false);
+  }
+  for (const t of w.europe ?? []) {
+    for (const round of t.rounds ?? [])
+      for (const tie of round.ties)
+        if (tie.winner) {
+          of(tie.home).knockoutTies++;
+          of(tie.away).knockoutTies++;
+        }
+    if (t.winner && paysTitle(t)) of(t.winner).titles++;
+    // The Super Cup is played out at the close without a match settlement (`finishEurope`).
+    if (t.key === 'super') continue;
+    for (const f of t.fixtures) paid(f, !isKnockout(f.id));
+  }
+  return records;
+}
+
 function seasonIndex(w: World): SeasonIndex {
   const fixtures = new Map<string, Fixture[]>();
   for (const f of w.fixtures)
@@ -85,7 +200,8 @@ function seasonIndex(w: World): SeasonIndex {
     else groups.set(key, [c]);
   }
   const leagues = new Map([...groups].map(([key, clubs]) => [key, ranked(w, clubs)]));
-  return { fixtures, leagues };
+  const reads = BOOK_COMPETITIONS.inForce || BOOK_COMPETITIONS.observe;
+  return { fixtures, leagues, ...(reads ? { competitions: competitionIndex(w) } : {}) };
 }
 
 /**
@@ -118,7 +234,7 @@ export function clearDebt(club: Club) {
 function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex): ClubSeasonBook {
   const last = books.seasons[0];
   const tierBefore = last && lastTier(w, club, last.year);
-  const income = seasonIncome(w, club, tierBefore, season);
+  const income = seasonIncome(w, club, tierBefore, season, true);
   const wages = squad(w, club).reduce(
     (sum, p) => sum + BigInt(marketWageAt(club.country, w.year, club.tier, p)),
     0n,
@@ -133,17 +249,35 @@ function seasonBook(w: World, club: Club, books: ClubBooks, season: SeasonIndex)
   };
 }
 
-/** Opening cash and closing books use exactly the same season-income scales. */
-function seasonIncome(w: World, club: Club, tierBefore: number | undefined, season: SeasonIndex) {
-  const lines = incomeLines(w, club, tierBefore, season);
-  return lines.distribution + lines.gate + lines.commercial;
+/**
+ * Opening cash and closing books use exactly the same season-income scales; at a close
+ * (`observe`) the competition money is handed to `BOOK_COMPETITIONS.observe`.
+ */
+function seasonIncome(
+  w: World,
+  club: Club,
+  tierBefore: number | undefined,
+  season: SeasonIndex,
+  observe = false,
+) {
+  const { lines, money } = incomeLines(w, club, tierBefore, season);
+  const released = lines.distribution + lines.gate + lines.commercial;
+  if (observe && money) BOOK_COMPETITIONS.observe?.(club, money, released);
+  return released + lines.competitions;
 }
 function incomeLines(w: World, club: Club, tierBefore: number | undefined, season: SeasonIndex) {
   const view = clubView(w, club, season.fixtures.get(club.id) ?? []);
+  const money =
+    season.competitions && competitionMoney(view, club, season.competitions.get(club.id));
   return {
-    distribution: distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!),
-    gate: gateIncome(view, club),
-    commercial: commercial(view),
+    lines: {
+      distribution: distribution(view, club, tierBefore, season.leagues.get(groupKey(club))!),
+      gate: gateIncome(view, club),
+      commercial: commercial(view),
+      /** Cup and continental money, in the income only while competition money is in force. */
+      competitions: BOOK_COMPETITIONS.inForce && money ? money.total : 0n,
+    },
+    money,
   };
 }
 /**
@@ -151,7 +285,57 @@ function incomeLines(w: World, club: Club, tierBefore: number | undefined, seaso
  * books against an owned club's own season; nothing is written.
  */
 export function bookIncomeLines(w: World, club: Club, tierBefore?: number) {
-  return incomeLines(w, club, tierBefore, seasonIndex(w));
+  return incomeLines(w, club, tierBefore, seasonIndex(w)).lines;
+}
+
+/**
+ * The closing season's domestic cup and continental money of `club` (→ECON-36) as the owner's
+ * club is paid for it, every prize and bonus on its country's broadcasting index (→ECON-31):
+ * each cup tie won by the rounds left after it and the cup title (`CUP_PRIZE_CONFIG`); each
+ * continental phase match with its draw or win, each knockout tie played (qualifiers and the Super
+ * Cup's included) and each continental title (`EUROPE_PRIZE_CONFIG`); each match's result bonus
+ * at its division's prestige; each home match's gate at its division and reputation without the
+ * league-match scaling. League matches add nothing. Read whether or not it is in force.
+ */
+export function bookCompetitionMoney(w: World, club: Club): CompetitionMoney {
+  const view = clubView(
+    w,
+    club,
+    w.fixtures.filter((f) => f.home === club.id || f.away === club.id),
+  );
+  return competitionMoney(view, club, competitionIndex(w).get(club.id));
+}
+function competitionMoney(
+  view: World,
+  club: Club,
+  record: CompetitionRecord | undefined,
+): CompetitionMoney {
+  if (!record) return { prizes: 0n, bonuses: 0n, gates: 0n, total: 0n };
+  const code = club.country,
+    year = view.year;
+  const sum = (amounts: string[]) => amounts.reduce((total, a) => total + BigInt(a), 0n);
+  const prizes =
+    sum(record.cupTies.map((left) => cupTiePrize(code, year, left))) +
+    BigInt(cupTitlePrize(code, year)) * BigInt(record.cupTitles) +
+    sum(record.phaseMatches.map((result) => europeMatchPrize(code, year, result))) +
+    BigInt(europeTiePrize(code, year)) * BigInt(record.knockoutTies) +
+    BigInt(europeTitlePrize(code, year)) * BigInt(record.titles);
+  const bonuses = sum(record.results.map((result) => resultBonus(code, year, club.tier, result)));
+  const gates = record.homeMatches ? unscaledGate(view) * BigInt(record.homeMatches) : 0n;
+  return { prizes, bonuses, gates, total: prizes + bonuses + gates };
+}
+
+/**
+ * A cup or continental home match's gate (→ECON-9, ECON-19): the book's league gate (the
+ * midpoint of `gateProjection`) at scale 1, the gate the owner's `gate()` books for a match that
+ * is not a league match. Hosting costs stay outside the books (→ECON-36).
+ */
+function unscaledGate(view: World) {
+  const gate = gateProjection(view),
+    club = view.clubs.find((c) => c.id === view.playerClub)!;
+  const at = (attendance: number) =>
+    BigInt(footballQuote(club.country, view.year, attendance * gate.perFan));
+  return (at(gate.attendanceLow) + at(gate.attendanceHigh)) / 2n;
 }
 
 /**

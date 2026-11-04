@@ -36,6 +36,17 @@
  *   pnpm exec tsx scripts/era-wage-spread.ts --in lived.json --lived --extra lived.extra.json
  *   pnpm exec tsx scripts/era-wage-spread.ts --champions-released a.extra.json \
  *     --champions-candidate b.extra.json                                    LEAGUE-10's champions
+ *
+ * T697: `--cups` lives the world with the books counting their clubs' cup and continental money
+ * (→ECON-36; a measurement override of `BOOK_COMPETITIONS`), beside `--spread` and `--means` or
+ * without them for the fit. `--observe-cups` leaves it out of the income but records, at each
+ * close, every top-flight book's competition money and, for each club the means level sells down,
+ * the level its book would have kept with that season's money in it (`meansLevel`'s own search),
+ * in `<out>.extra.json`; `--screen` reads those extras.
+ *
+ *   pnpm exec tsx scripts/era-wage-spread.ts --seeds owner-balance-0 --spread table.json --means \
+ *     --observe-cups --out screen.json                                     T697's screen world
+ *   pnpm exec tsx scripts/era-wage-spread.ts --screen a.extra.json,b.extra.json
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import type { Club, World } from '../packages/contracts/src/types';
@@ -45,8 +56,8 @@ import { currentDay, SEASON_END_DAY } from '../packages/engine/src/calendar';
 import { squad } from '../packages/engine/src/world';
 import { overall } from '../packages/engine/src/player-state';
 import { footballQuote } from '../packages/engine/src/quotes';
-import { keepsBooks } from '../packages/engine/src/books';
-import { MEANS_LEVEL, squadCostAt } from '../packages/engine/src/dynamics';
+import { BOOK_COMPETITIONS, keepsBooks } from '../packages/engine/src/books';
+import { MEANS_LEVEL, meansLevel, squadCostAt } from '../packages/engine/src/dynamics';
 import {
   MARKET_CONFIG,
   marketPoints,
@@ -106,13 +117,46 @@ interface Row {
 interface Extra {
   seed: string;
   means: boolean;
+  /** T697: competition money in the books' income (`--cups`). */
+  cups?: boolean;
   table?: Table;
   champions: { year: number; code: string; club: string }[];
-  sold: { year: number; code: string; id: string; tier: number; from: number; to: number }[];
+  /**
+   * Every club the means level sold down; with `--observe-cups` also the division its book was
+   * earned in (`book`), the season's competition money (`money`) and the level the book would
+   * have paid with that money in it (`withMoney`, T697's one-step counterfactual).
+   */
+  sold: {
+    year: number;
+    code: string;
+    id: string;
+    tier: number;
+    from: number;
+    to: number;
+    book?: number;
+    money?: number;
+    withMoney?: number;
+  }[];
+  /** `--observe-cups`: each top-flight book's competition money at each close (T697). */
+  competitions?: CompetitionRow[];
   seasons: number;
   seconds: number;
 }
+/** A top-flight book at a close: its strength, its income without competition money and that money. */
+interface CompetitionRow {
+  year: number;
+  code: string;
+  id: string;
+  strength: number;
+  income: number;
+  prizes: number;
+  bonuses: number;
+  gates: number;
+}
 const MEANS = args.includes('--means');
+/** T697: competition money in force (`--cups`), or observed beside the books without it. */
+const CUPS = args.includes('--cups');
+const OBSERVE_CUPS = args.includes('--observe-cups');
 
 function readTable(path: string): Table {
   return JSON.parse(readFileSync(path, 'utf8')) as Table;
@@ -183,13 +227,39 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
     last = Math.max(...years, until);
   const t0 = performance.now();
   const sold: Extra['sold'] = [];
+  const competitions: CompetitionRow[] = [];
+  // Each book's competition money and division at the close, for the summer's counterfactual.
+  const money = new Map<string, { year: number; tier: number; total: bigint }>();
+  if (CUPS) BOOK_COMPETITIONS.inForce = true;
+  if (OBSERVE_CUPS)
+    BOOK_COMPETITIONS.observe = (c, m, released) => {
+      money.set(c.id, { year: w.year, tier: c.tier, total: m.total });
+      if (c.tier === 0)
+        competitions.push({
+          year: w.year,
+          code: c.country,
+          id: c.id,
+          strength: c.strength,
+          income: Number(released),
+          prizes: Number(m.prizes),
+          bonuses: Number(m.bonuses),
+          gates: Number(m.gates),
+        });
+    };
   if (MEANS) {
     if (!table) throw new Error('--means lives a candidate: give its table with --spread');
     STAR_SPREAD_CONFIG.shared = table.shared;
     STAR_SPREAD_CONFIG.own = table.own;
     MEANS_LEVEL.inForce = true;
-    MEANS_LEVEL.observe = (c, from, to) =>
-      sold.push({ year: w.year, code: c.country, id: c.id, tier: c.tier, from, to });
+    MEANS_LEVEL.observe = (c, from, to) => {
+      const entry = { year: w.year, code: c.country, id: c.id, tier: c.tier, from, to };
+      const m = OBSERVE_CUPS ? money.get(c.id) : undefined;
+      if (m && m.year === w.year) {
+        // The same search the means level makes, with the season's competition money in the book.
+        const withMoney = meansLevel(w, c, m.tier, from, undefined, CUPS ? 0n : m.total)!;
+        sold.push({ ...entry, book: m.tier, money: Number(m.total), withMoney });
+      } else sold.push(entry);
+    };
   }
   const first = w.year;
   while (w.year <= last) {
@@ -272,11 +342,13 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
   const extra: Extra = {
     seed,
     means: MEANS,
+    ...(CUPS ? { cups: true } : {}),
     ...(table ? { table } : {}),
     champions: w.history.flatMap((h) =>
       h.champions.map((ch) => ({ year: h.year, code: ch.country, club: ch.club })),
     ),
     sold,
+    ...(OBSERVE_CUPS ? { competitions } : {}),
     seasons: w.history.length,
     seconds: (performance.now() - t0) / 1000,
   };
@@ -623,6 +695,89 @@ function championsReport(released: Extra[], candidate: Extra[], from: number, to
     `\nSeconds per lived season — released: ${cost(released)}; candidate: ${cost(candidate)}.`,
   );
 }
+/**
+ * T697's screen, on worlds lived with the table and the means level and competition money
+ * observed, not in force (`--observe-cups`): per country and decade the share of competition money
+ * in the three strongest top-flight clubs' income, split into prizes with bonuses and home gates;
+ * and every top-flight hold with the level its book would have kept with that season's money in
+ * it. Goes on only if at least a quarter of the top-flight holds in GER and in POR are released.
+ */
+function screenReport(extras: Extra[]) {
+  console.log(
+    `\n### Competition money in the three strongest top-flight clubs' income, per country and decade\n`,
+  );
+  console.log(
+    `Worlds: ${extras.map((e) => e.seed).join(', ')} lived with the table and the means level, competition money observed, not in force. Per season the three strongest top-flight clubs at the close; cell: money / (income + money), mean over seasons and worlds — total (prizes with result bonuses + home gates).\n`,
+  );
+  const rows = extras.flatMap((e) => (e.competitions ?? []).map((r) => ({ ...r, seed: e.seed })));
+  const decades = [...new Set(rows.map((r) => r.year - (r.year % 10)))].sort((a, b) => a - b);
+  const codes = [...new Set(rows.map((r) => r.code))].sort();
+  console.log(`| country | ${decades.map((d) => `${d}s`).join(' | ')} |`);
+  console.log(`|---|${decades.map(() => '---|').join('')}`);
+  const share = (n: number, d: number) => `${((100 * n) / d).toFixed(1)}%`;
+  for (const code of codes) {
+    const cells = decades.map((decade) => {
+      const seasons = new Map<string, typeof rows>();
+      for (const r of rows)
+        if (r.code === code && r.year - (r.year % 10) === decade) {
+          const key = `${r.seed}:${r.year}`;
+          seasons.set(key, [...(seasons.get(key) ?? []), r]);
+        }
+      if (!seasons.size) return '-';
+      let total = 0,
+        prizes = 0,
+        gates = 0;
+      for (const list of seasons.values()) {
+        const three = [...list].sort((a, b) => b.strength - a.strength).slice(0, 3);
+        const money = three.reduce((s, r) => s + r.prizes + r.bonuses + r.gates, 0),
+          income = three.reduce((s, r) => s + r.income, 0) + money;
+        total += money / income;
+        prizes += three.reduce((s, r) => s + r.prizes + r.bonuses, 0) / income;
+        gates += three.reduce((s, r) => s + r.gates, 0) / income;
+      }
+      const k = seasons.size;
+      return `${share(total, k)} (${share(prizes, k)} + ${share(gates, k)})`;
+    });
+    console.log(`| ${code} | ${cells.join(' | ')} |`);
+  }
+  console.log(
+    '\n### Holds the season’s competition money would release (one-step counterfactual)\n',
+  );
+  console.log(
+    'Each club the means level sold down, with the level its book would have kept had that season’s competition money been in it (`meansLevel`, the same search). Released: that level at least the strength before the sale. Points not sold: min(that level, before) − the level sold to. Top flight: the division the book was earned in; pooled over the worlds.\n',
+  );
+  console.log(
+    '| country | top-flight holds | released | share released | points sold | points not sold | every division: holds / released |',
+  );
+  console.log('|---|---:|---:|---:|---:|---:|---|');
+  const holds = extras.flatMap((e) => e.sold.filter((s) => s.withMoney !== undefined));
+  const verdicts: string[] = [];
+  let go = true;
+  for (const code of [...new Set(holds.map((s) => s.code))].sort()) {
+    const all = holds.filter((s) => s.code === code),
+      top = all.filter((s) => s.book === 0);
+    const released = (list: typeof all) => list.filter((s) => s.withMoney! >= s.from).length;
+    const sold = top.reduce((s, h) => s + h.from - h.to, 0),
+      kept = top.reduce((s, h) => s + Math.min(h.withMoney!, h.from) - h.to, 0);
+    const r = released(top);
+    console.log(
+      `| ${code} | ${top.length} | ${r} | ${top.length ? share(r, top.length) : '-'} | ${sold} | ${kept} | ${all.length} / ${released(all)} |`,
+    );
+    if (code === 'GER' || code === 'POR') {
+      const pass = top.length > 0 && r * 4 >= top.length;
+      verdicts.push(`${code} ${r} of ${top.length} (${pass ? 'go' : 'below a quarter'})`);
+      if (!pass) go = false;
+    }
+  }
+  const missing = extras.reduce(
+    (s, e) => s + e.sold.filter((h) => h.withMoney === undefined).length,
+    0,
+  );
+  console.log(
+    `\nScreen: ${verdicts.join('; ')} → ${go ? 'go on' : 'stop: the screen is below its threshold'}${missing ? ` (${missing} holds without an observed book)` : ''}.`,
+  );
+}
+
 const readExtras = (paths: string) =>
   paths
     .split(',')
@@ -638,6 +793,8 @@ if (input) {
   if (args.includes('--fit')) fitReport(rows, table);
   if (args.includes('--lived')) livedReport(rows, readExtras(option('extra', '')));
   else if (table) tableReport(rows, table, option('label', 'Candidate'));
+} else if (option('screen', '')) {
+  screenReport(readExtras(option('screen', '')));
 } else if (option('champions-candidate', '')) {
   championsReport(
     readExtras(option('champions-released', '')),
