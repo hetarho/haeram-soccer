@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r16 | Define the browser-demo rules for domestic seasons and relegation.
+> r17 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -27,6 +27,17 @@
   - strengths stay within 15–99, the very best an owner can build ← a cap below the owner's best would leave one club unbeatable
   - a normal summer's luck (sum of three uniforms, sd ≈ 1.5) and, each year, a 1.5% takeover (+4 to +8) or a 1.5% crisis (−4 to −8); reputation follows →LEAGUE-14.
   - measured 261011 (30 seasons, eight countries): 5–9 different champions per country, the most successful club 8–15 titles, champions average 2.15 points per game.
+  - the real leagues 1980/81–2009/10 (each league's official champions list, titles not awarded left out: Italy 2004/05, France 1992/93; recalled, not yet read against the lists): 4–9 different champions per country, the most successful club 7–17 titles. ← one generic model of giants and big clubs per country should land where real leagues do, from France's nine champions to Portugal's four
+    | country | different champions | most titles of one club |
+    |---|---|---|
+    | ENG | 8 | 11 (Manchester United) |
+    | ESP | 7 | 11 (Real Madrid and Barcelona each) |
+    | ITA | 8 | 9 (Juventus) |
+    | GER | 7 | 16 (Bayern München) |
+    | FRA | 9 | 7 (Lyon) |
+    | NED | 5 | 14 (PSV) |
+    | POR | 4 | 17 (Porto) |
+    | BEL | 7 | 14 (Anderlecht) |
   - a takeover or project clears the club's debt (→ECON-36).
 - LEAGUE-11 [o] The world season is lived one day at a time in one order, whatever advances it — an automatic day step, manual next-event advance, explicit round or an internal season simulation (public controls →WEB-5) — so every mode records the same facts (→ARCH-5). ← the control that advanced time must not change results
   - a midweek cup or continental tie plays on its own day, league round × 7 − 3 (→LEAGUE-5, →EURO-10), before that round's league matches.
@@ -77,6 +88,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r17 261104 LEAGUE-10✎ champions spread: the model's 261011 measurement only→also the real leagues 1980/81–2009/10 (4–9 different champions, the most titles 7–17, per country)
 - r16 261104 LEAGUE-10✎ means level in force only with CLUB-48's table→with CLUB-48's table and the books' competition money (→ECON-36)
 - r15 261104 LEAGUE-10✎ strength bounded by 15–99 only→also by a means level (the strength whose squad its last closed book pays at income − operating expenses; level never above it, sold down at once; projects and a takeover's summer exempt), in force only with CLUB-48's table
 - r14 261104 LEAGUE-13✎ no measured line→measured 261104 on takeover careers (2 seeds × 4 countries, 1950–1969): titles, top-flight reach and club bankruptcies per tier, and 구단주 퇴진 on 50%/25% dividends
