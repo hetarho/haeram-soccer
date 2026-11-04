@@ -1,0 +1,25 @@
+{
+ "seconds": 408,
+ "status": [
+  {
+   "name": "bands-sit20a090-400",
+   "code": 0,
+   "seconds": 102
+  },
+  {
+   "name": "bands-sit20a100-400",
+   "code": 0,
+   "seconds": 103
+  },
+  {
+   "name": "conc-sit20a100-validation2400",
+   "code": 0,
+   "seconds": 408
+  },
+  {
+   "name": "conc-sit20a090-validation2400",
+   "code": 0,
+   "seconds": 408
+  }
+ ]
+}

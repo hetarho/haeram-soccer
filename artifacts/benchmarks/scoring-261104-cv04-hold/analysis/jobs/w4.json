@@ -1,0 +1,48 @@
+[
+ {
+  "name": "bands-h6o20kqpfan12m1-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h6o20kqpfan12m1.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-h6o20kqpfan12s14m1-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h6o20kqpfan12s14m1.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "conc-h6o20kqpfan12m1-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h6o20kqpfan12m1.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-h6o20kqpfan12m1-calibration.json"
+  ]
+ },
+ {
+  "name": "conc-h6o20kqpfan12s14m1-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/h6o20kqpfan12s14m1.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--seeds",
+   "grid-bands-1,grid-bands-2,grid-bands-3,grid-bands-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-h6o20kqpfan12s14m1-calibration.json"
+  ]
+ }
+]

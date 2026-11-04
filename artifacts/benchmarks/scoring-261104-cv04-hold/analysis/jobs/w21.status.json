@@ -1,0 +1,30 @@
+{
+ "seconds": 274,
+ "status": [
+  {
+   "name": "bands-sit20nr15a115-400",
+   "code": 0,
+   "seconds": 77
+  },
+  {
+   "name": "bands-sit20a115-400",
+   "code": 0,
+   "seconds": 93
+  },
+  {
+   "name": "bands-sit20-400",
+   "code": 0,
+   "seconds": 93
+  },
+  {
+   "name": "bands-sit20nr15-400",
+   "code": 0,
+   "seconds": 94
+  },
+  {
+   "name": "tactics-sit20-calibration",
+   "code": 0,
+   "seconds": 274
+  }
+ ]
+}

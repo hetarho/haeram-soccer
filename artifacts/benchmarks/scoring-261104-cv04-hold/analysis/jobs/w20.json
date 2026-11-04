@@ -1,0 +1,38 @@
+[
+ {
+  "name": "tactics-best_ar10f50-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/best_ar10f50.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/tactics-best_ar10f50-calibration.json"
+  ]
+ },
+ {
+  "name": "tactics-nokq_ar10f50-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/nokq_ar10f50.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/tactics-nokq_ar10f50-calibration.json"
+  ]
+ }
+]

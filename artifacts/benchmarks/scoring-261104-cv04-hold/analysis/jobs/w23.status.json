@@ -1,0 +1,25 @@
+{
+ "seconds": 241,
+ "status": [
+  {
+   "name": "tactics-sit20a100-calibration",
+   "code": 0,
+   "seconds": 101
+  },
+  {
+   "name": "stress-sit20a100-val-1",
+   "code": 0,
+   "seconds": 47
+  },
+  {
+   "name": "stress-sit20a100-val-2",
+   "code": 0,
+   "seconds": 46
+  },
+  {
+   "name": "stress-sit20a100-val-3",
+   "code": 0,
+   "seconds": 47
+  }
+ ]
+}

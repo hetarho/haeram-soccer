@@ -1,0 +1,32 @@
+[
+ {
+  "name": "bands-nr0an12s07a150-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/nr0an12s07a150.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-nr0an12s07a170-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/nr0an12s07a170.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-nr0s06a170-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/nr0s06a170.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

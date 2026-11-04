@@ -1,0 +1,35 @@
+{
+ "seconds": 208,
+ "status": [
+  {
+   "name": "regain-h6o20kq",
+   "code": 0,
+   "seconds": 38
+  },
+  {
+   "name": "regain-kq",
+   "code": 0,
+   "seconds": 38
+  },
+  {
+   "name": "bands-kq-400",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "bands-h6o20kq-400",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "conc-h4o16-calibration",
+   "code": 0,
+   "seconds": 208
+  },
+  {
+   "name": "conc-h6o20kq-calibration",
+   "code": 0,
+   "seconds": 208
+  }
+ ]
+}

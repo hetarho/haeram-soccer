@@ -1,0 +1,20 @@
+{
+ "seconds": 54,
+ "status": [
+  {
+   "name": "stress-nr10ko25an12s07a130-val-2",
+   "code": 0,
+   "seconds": 53
+  },
+  {
+   "name": "stress-nr10ko25an12s07a130-val-3",
+   "code": 0,
+   "seconds": 54
+  },
+  {
+   "name": "stress-nr10ko25an12s07a130-val-1",
+   "code": 0,
+   "seconds": 54
+  }
+ ]
+}

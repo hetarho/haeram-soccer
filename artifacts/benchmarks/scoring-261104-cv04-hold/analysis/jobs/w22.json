@@ -1,0 +1,48 @@
+[
+ {
+  "name": "bands-sit20a100-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20a100.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sit20a090-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20a090.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "conc-sit20a100-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20a100.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-sit20a100-validation2400.json"
+  ]
+ },
+ {
+  "name": "conc-sit20a090-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20a090.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-sit20a090-validation2400.json"
+  ]
+ }
+]

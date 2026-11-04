@@ -1,0 +1,35 @@
+{
+ "seconds": 79,
+ "status": [
+  {
+   "name": "regain-h4",
+   "code": 0,
+   "seconds": 43
+  },
+  {
+   "name": "regain-ctl",
+   "code": 0,
+   "seconds": 43
+  },
+  {
+   "name": "regain-h4o16",
+   "code": 0,
+   "seconds": 43
+  },
+  {
+   "name": "regain-h6o20",
+   "code": 0,
+   "seconds": 43
+  },
+  {
+   "name": "bands-h6o20-400",
+   "code": 0,
+   "seconds": 79
+  },
+  {
+   "name": "bands-h4o16-400",
+   "code": 0,
+   "seconds": 79
+  }
+ ]
+}

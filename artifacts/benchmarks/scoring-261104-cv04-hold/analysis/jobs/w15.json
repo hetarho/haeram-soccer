@@ -1,0 +1,22 @@
+[
+ {
+  "name": "bands-best_h18-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/best_h18.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-best_ar10-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/best_ar10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

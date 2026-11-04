@@ -1,0 +1,60 @@
+[
+ {
+  "name": "bands-sit20-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sit20nr15-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20nr15.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sit20a115-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20a115.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-sit20nr15a115-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20nr15a115.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "tactics-sit20-calibration",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/sit20.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "0.25",
+   "--only",
+   "tactics",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/tactics-sit20-calibration.json"
+  ]
+ }
+]

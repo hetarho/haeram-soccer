@@ -1,0 +1,15 @@
+{
+ "seconds": 239,
+ "status": [
+  {
+   "name": "tactics-best_ar10f50-calibration",
+   "code": 0,
+   "seconds": 170
+  },
+  {
+   "name": "tactics-nokq_ar10f50-calibration",
+   "code": 0,
+   "seconds": 239
+  }
+ ]
+}

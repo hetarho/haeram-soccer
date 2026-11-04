@@ -1,0 +1,28 @@
+[
+ {
+  "name": "conc-ko30s06-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/ko30s06.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-ko30s06-validation2400.json"
+  ]
+ },
+ {
+  "name": "conc-ko25an12s07-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-hold/candidates/ko25an12s07.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-hold/conc-ko25an12s07-validation2400.json"
+  ]
+ }
+]

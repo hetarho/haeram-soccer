@@ -1,0 +1,30 @@
+{
+ "seconds": 191,
+ "status": [
+  {
+   "name": "bands-nr10ko25s06-400",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "bands-nr10ko25s05-400",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "bands-nr05s06-400",
+   "code": 0,
+   "seconds": 60
+  },
+  {
+   "name": "bands-ko25s06-400",
+   "code": 0,
+   "seconds": 61
+  },
+  {
+   "name": "bands-nr10s08-400",
+   "code": 0,
+   "seconds": 68
+  }
+ ]
+}

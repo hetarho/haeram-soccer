@@ -1,0 +1,30 @@
+{
+ "seconds": 406,
+ "status": [
+  {
+   "name": "bands-nr10ko25an12-400",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "bands-nr10ko25an12s07-400",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "bands-nr10an12-400",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "bands-nr05an12-400",
+   "code": 0,
+   "seconds": 62
+  },
+  {
+   "name": "conc-nr10ko25-validation2400",
+   "code": 0,
+   "seconds": 406
+  }
+ ]
+}

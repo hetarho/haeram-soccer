@@ -109,6 +109,14 @@ for (let i = start; i < start + matches; i++) {
       add(`gkWonBand|${band(won[0])}`, goal, xg);
       add(`gkShotAfter|${after < 3 ? '<3' : after < 6 ? '3-6' : '6+'}s`, goal, xg);
       add(`gkBy|${prev.by ? pos(prev.by[0] as 0 | 1, prev.by[1] as number) : '-'}`, goal, xg);
+      // How he came to have it: the entry before his distribution (a save he held or a cross he
+      // claimed is the other side's shot or delivery; a back pass is his own side's).
+      const got = trace[k - 2];
+      add(
+        `gkGot|${got ? `${got.side === prev.side ? 'own' : 'opp'}:${got.action}:${got.outcome}` : '-'}`,
+        goal,
+        xg,
+      );
     }
   });
 }
