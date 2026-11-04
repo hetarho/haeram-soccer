@@ -75,25 +75,20 @@ describe('addresses (→WEB-39, WEB-43, WEB-70)', () => {
     expect(routeOf('/', '')).toEqual({ page: 'dashboard' });
   });
 
-  it('routeOf keeps /direction for the approval lobby and its overview (→WEB-39)', () => {
-    expect(routeOf('/direction', '')).toEqual({ page: 'business', view: 'lobby' });
+  it('redirects legacy office overview addresses to the investment directory', () => {
     expect(routeOf('/direction', '?view=office')).toEqual({ page: 'business', view: 'office' });
-    // An unknown view opens the lobby.
-    expect(routeOf('/direction', '?view=campaigns')).toEqual({
-      page: 'business',
-      view: 'lobby',
-      address: '/direction',
-    });
-    expect(routeOf('/business', '')).toEqual({
-      page: 'business',
-      view: 'lobby',
-      address: '/direction',
-    });
     expect(routeOf('/business', '?view=office')).toEqual({
       page: 'business',
       view: 'office',
       address: '/direction?view=office',
     });
+    for (const path of ['/direction', '/business'])
+      for (const search of ['', '?view=campaigns'])
+        expect(routeOf(path, search)).toEqual({
+          page: 'operations',
+          view: 'investment',
+          address: '/club-operations?view=investment',
+        });
   });
 
   it('sends older unselected money, sponsor and design desks to 구단 운영 (→WEB-110)', () => {

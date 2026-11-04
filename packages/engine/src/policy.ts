@@ -282,8 +282,7 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     developmentMultiplier: SUPPORT_DEVELOPMENT[support],
     recoveryBonus: SUPPORT_RECOVERY[support],
     operatingFactor: SUPPORT_EXPENSES[support],
-    investUnits:
-      INVEST_UNITS[local] + INVEST_UNITS[global] + INVEST_UNITS[scout],
+    investUnits: INVEST_UNITS[local] + INVEST_UNITS[global] + INVEST_UNITS[scout],
     fanGrowth: GLOBAL_FANS[global],
     gateBoost: LOCAL_GATE[local],
     scoutCandidates: SCOUT_CANDIDATES[scout],

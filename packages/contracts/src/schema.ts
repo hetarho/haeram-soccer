@@ -106,12 +106,28 @@ export const clubBuildSchema = z.strictObject({
   culture: z.enum(BUILD_OPTIONS.culture).optional(),
 });
 const policyLevel = z.literal([1, 2, 3, 4, 5]);
-export const budgetResponsibilitySchema = z.enum(['manager', 'staff', 'contracts', 'recruitment', 'sales', 'academy']);
-export const wageResponsibilitySchema = z.enum(['manager', 'staff', 'contracts', 'recruitment', 'academy']);
+export const budgetResponsibilitySchema = z.enum([
+  'manager',
+  'staff',
+  'contracts',
+  'recruitment',
+  'sales',
+  'academy',
+]);
+export const wageResponsibilitySchema = z.enum([
+  'manager',
+  'staff',
+  'contracts',
+  'recruitment',
+  'academy',
+]);
 export const financeChoiceSchema = z.enum(['aggressive', 'bold', 'standard', 'careful', 'stable']);
 const decisionBudgetSchema = z.strictObject({
   finance: financeChoiceSchema.optional(),
-  maxAnnualWage: z.string().regex(/^\d{1,40}$/).optional(),
+  maxAnnualWage: z
+    .string()
+    .regex(/^\d{1,40}$/)
+    .optional(),
 });
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
 const clubBooks = z.strictObject({

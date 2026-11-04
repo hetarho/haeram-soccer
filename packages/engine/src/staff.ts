@@ -521,7 +521,12 @@ export function volunteer(w: World, role: StaffRole): Staff {
   };
 }
 /** Cash left after `spend` still keeps 재정 기조's runway with `wage` added to the costs (→ECON-33). */
-export function affordable(w: World, spend: bigint, wage: bigint, responsibility: BudgetResponsibility = 'staff') {
+export function affordable(
+  w: World,
+  spend: bigint,
+  wage: bigint,
+  responsibility: BudgetResponsibility = 'staff',
+) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
   return BigInt(w.cash) - spend >= perRound * BigInt(financeStance(w, responsibility).runway);
 }
@@ -547,7 +552,10 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
     cap = c.maxWageOvr === undefined ? undefined : BigInt(coachWage(w, c.maxWageOvr));
   return [
     [`능력 ${c.minAbility} 이상인 후보가 없어요`, (coach) => coach.ability >= c.minAbility],
-    [`1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'staff') ?? '0')} 안의 후보가 없어요`, (coach) => wageWithinLimit(w, 'staff', coach.wage)],
+    [
+      `1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'staff') ?? '0')} 안의 후보가 없어요`,
+      (coach) => wageWithinLimit(w, 'staff', coach.wage),
+    ],
     ...(trait
       ? [
           [
@@ -748,7 +756,9 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
   }
   const terms = renewalTerms(w, member, c.term),
     payable =
-      !c.volunteer && wageWithinLimit(w, 'staff', terms.wage) && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
+      !c.volunteer &&
+      wageWithinLimit(w, 'staff', terms.wage) &&
+      affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
     beaten =
       !!first &&
       (c.priority === 'ability'
@@ -898,7 +908,11 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
     });
     return true;
   }
-  if (!wageWithinLimit(w, 'manager', kept.wage) || !affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage), 'manager')) return false;
+  if (
+    !wageWithinLimit(w, 'manager', kept.wage) ||
+    !affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage), 'manager')
+  )
+    return false;
   renewManager(w, term, true);
   pushInbox(w, {
     kind: 'staff-report',

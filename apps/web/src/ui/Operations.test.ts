@@ -4,8 +4,15 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { ClientState, GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { careerWorld } from '../../../../packages/engine/src/career.testkit';
+import { officeRead } from '../runtime/officeRead';
+import { gameStore, initialClientState } from '../runtime/store';
+import type { View } from '../runtime/protocol';
 import { OperationsView } from './Operations';
 
+vi.mock('../runtime/store', async (original) => ({
+  ...(await original<typeof import('../runtime/store')>()),
+  useGameState: (selector: (state: ClientState) => unknown) => selector(gameStore.getState()),
+}));
 vi.mock('./OfficeBar', () => ({
   OfficeBar: ({ title }: { title: string }) => createElement('h2', null, title),
 }));
@@ -15,11 +22,15 @@ vi.mock('./FacilityOverview', () => ({
     createElement('figure', { 'data-scene': kind, 'aria-label': title }),
 }));
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  gameStore.setState(initialClientState, true);
+});
 
 const world = careerWorld({ country: 'ENG', seed: 'overview-address' });
-const office = () =>
-  renderToStaticMarkup(
+const office = () => {
+  gameStore.setState({ view: { world, office: officeRead(world) } as View });
+  return renderToStaticMarkup(
     createElement(OperationsView, {
       state: { view: { world, sponsors: [] } } as unknown as ClientState,
       client: {} as GameClient,
@@ -27,43 +38,25 @@ const office = () =>
       personnel: () => null,
     }),
   );
+};
 
-describe('owner-office overview navigation', () => {
-  it('lands a directly addressed overview on the 결재함, where it opens as the modal', () => {
+describe('owner-office overview compatibility', () => {
+  it('renders the read-only overview behind a legacy settings address without embedding the inbox', () => {
     vi.stubGlobal('location', { search: '?view=office' });
     const html = office();
-    expect(html).toContain('data-testid="approval-queue"');
-    expect(html).toContain('<h2>결재함</h2>');
-    expect(html).not.toContain('<section aria-label="결재라인 모아보기">');
-    // The club's section bar is the shell's one shared copy over the office (→WEB-10); the
-    // office renders none of its own.
+    expect(html).toContain('aria-label="우리 팀 오버뷰"');
+    expect(html).not.toContain('data-testid="approval-queue"');
     expect(html).not.toContain('club-section-tab');
-    // An unselected desk is no office place any more: it renders nothing while it leaves for the
-    // club section that holds its work (→WEB-39/110).
     vi.stubGlobal('location', { search: '?view=investment' });
     expect(office()).toBe('');
   });
-});
-
-describe('owner-office overview (→WEB-39/44)', () => {
-  it('opens on the live queue with no room scene, then one read-only club summary', () => {
+  it('shows a single live team summary, with no old room scene or embedded queue', () => {
     vi.stubGlobal('location', { search: '' });
     const html = office();
-    // The 결재함 leads the office the moment it opens: no manager-room scene heads it.
     expect(html).not.toMatch(/<figure[^>]*data-scene/);
-    expect(html).not.toContain('구단주 사무실');
-    const queue = html.indexOf('data-testid="approval-queue"'),
-      team = html.indexOf('aria-label="팀 현황"'),
-      situation = html.indexOf('data-testid="club-situation"');
-    expect(queue).toBeGreaterThan(-1);
-    expect(queue).toBeLessThan(team);
-    expect(team).toBeLessThan(situation);
-    for (const id of ['approval-queue', 'club-situation'])
-      expect(html.match(new RegExp(`data-testid="${id}"`, 'g')), id).toHaveLength(1);
-    // The actual world's facts, with no quick-action tiles and no copy of desk launchers.
-    expect(html).toContain('data-fact="strength"');
-    expect(html).not.toContain('quick-actions');
-    expect(html).not.toContain('data-quick');
+    expect(html).toContain('팀 OVR');
+    expect(html.match(/aria-label="우리 팀 오버뷰"/g)).toHaveLength(1);
+    expect(html).not.toContain('data-testid="approval-queue"');
     expect(html).not.toContain('data-desk-icon');
   });
 });

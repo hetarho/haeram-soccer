@@ -30,7 +30,7 @@ import {
 } from './player-state';
 import { addEvent } from './events';
 import { joinClub, ownStarters } from './world';
-import { annualWageLimit, directionOption, financeOption, financeStance, wageWithinLimit } from './direction';
+import { annualWageLimit, financeOption, financeStance, wageWithinLimit } from './direction';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';
 import { signingClauses } from './contracts';
@@ -147,7 +147,9 @@ export function signingVerdict(w: World, player: Player, fee: string) {
     reason: `${reason}(재정 기조 ${finance})`,
   });
   if (!wageWithinLimit(w, 'recruitment', player.wage))
-    return no(`요구 연봉 ${moneyLabel(w, player.wage)}이 선수 영입의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'recruitment')!)}을 넘어요`);
+    return no(
+      `요구 연봉 ${moneyLabel(w, player.wage)}이 선수 영입의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'recruitment')!)}을 넘어요`,
+    );
   if (spare < BigInt(fee))
     return no(`이적료를 내면 운영자금이 ${stance.runway}라운드 운영비에 못 미쳐요`);
   if (BigInt(fee) > BigInt(cap))

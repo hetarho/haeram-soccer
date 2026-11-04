@@ -23,7 +23,12 @@ import type {
   Event,
 } from '../../../../packages/contracts/src/types';
 import type { Envelope } from '../adapters/repository';
-import { budgetResponsibilitySchema, financeChoiceSchema, gameSettingsSchema, wageResponsibilitySchema } from '../../../../packages/contracts/src/schema';
+import {
+  budgetResponsibilitySchema,
+  financeChoiceSchema,
+  gameSettingsSchema,
+  wageResponsibilitySchema,
+} from '../../../../packages/contracts/src/schema';
 import {
   DIVIDEND_SHARES,
   OWNER_TRAIT_IDS,
@@ -49,6 +54,7 @@ import {
 import type { ManagerHistoryPage } from '../../../../packages/contracts/src/manager-history-view';
 import type { clubMilestones } from '../../../../packages/engine/src/goals';
 import type { financialBreakdown } from '../../../../packages/engine/src/finance';
+import type { OfficeRead } from './officeRead';
 import type { TransferLedgerEntry } from '../../../../packages/engine/src/transfer-records';
 import type { ClubRecords } from './clubRecords';
 import type { HeadToHead } from './headToHead';
@@ -90,7 +96,15 @@ const command = z.discriminatedUnion('type', [
   z.strictObject({ type: z.literal('settings'), settings: gameSettingsSchema }),
   z.strictObject({
     type: z.literal('club-policy'),
-    key: z.enum(['support', 'recruitment', 'academy', 'localInvest', 'globalMarketing', 'globalScouting', 'tour']),
+    key: z.enum([
+      'support',
+      'recruitment',
+      'academy',
+      'localInvest',
+      'globalMarketing',
+      'globalScouting',
+      'tour',
+    ]),
     level: term,
   }),
   z.strictObject({
@@ -99,7 +113,16 @@ const command = z.discriminatedUnion('type', [
   }),
   z.strictObject({
     type: z.literal('club-direction'),
-    key: z.enum(['recruitmentSupport', 'renewal', 'school', 'manager', 'coaches', 'finance', 'youthGoal', 'debut']),
+    key: z.enum([
+      'recruitmentSupport',
+      'renewal',
+      'school',
+      'manager',
+      'coaches',
+      'finance',
+      'youthGoal',
+      'debut',
+    ]),
     choice: z.string().min(1).max(40),
   }),
   z.strictObject({
@@ -109,11 +132,17 @@ const command = z.discriminatedUnion('type', [
   }),
   z.strictObject({ type: z.literal('club-ticket'), price: z.number().finite().min(0.01).max(1) }),
   z.strictObject({
-    type: z.literal('decision-wage-limit'), responsibility: wageResponsibilitySchema,
-    amount: z.string().regex(/^\d{1,40}$/).nullable(),
+    type: z.literal('decision-wage-limit'),
+    responsibility: wageResponsibilitySchema,
+    amount: z
+      .string()
+      .regex(/^\d{1,40}$/)
+      .nullable(),
   }),
   z.strictObject({
-    type: z.literal('decision-finance'), responsibility: budgetResponsibilitySchema, choice: financeChoiceSchema,
+    type: z.literal('decision-finance'),
+    responsibility: budgetResponsibilitySchema,
+    choice: financeChoiceSchema,
   }),
   z.strictObject({
     type: z.literal('facility-upgrade'),
@@ -335,6 +364,7 @@ export interface View {
   annualCost: string;
   coefficient: number;
   finance?: ReturnType<typeof financialBreakdown>;
+  office?: OfficeRead;
   /** Club news derived from the full career; the projected world keeps only recent records. */
   news: NewsItem[];
   newsTotal?: number;

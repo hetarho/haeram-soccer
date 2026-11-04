@@ -731,6 +731,7 @@
 - T689 remains todo with its existing realism gate unmet. The exploration has ended, all evidence is retained, and no scoring-engine candidate is applied. No additional balance tasks.
 
 ## log
+- 261104 design owner office: end cx04; finalize investment pages, modal approvals/settings/overview, categorical radios and independent annual wage limits; move office calculations into worker reads and update regressions/portable season facts. Type/lint/format, 2098 unit and 46 contract tests, and build pass. Percentage budgets cancelled. Integration/browser release checks and SSOT alignment for the approved owner controls remain pending.
 - 261104 nv04 release: verified 96eb899c published to main; 2081 unit tests, 1177 integration tests (4 existing skips) and 346 Chromium journeys pass; actual CI 41772636192 succeeds (confirmed directly after CLI HTML conclusion-parser failure). Primary main checkout and unrelated work preserved. nx04
 - 261104 fix start: re-arm a generation-card timer that wakes before its fractional deadline, avoiding a permanently held club list; two regression tests and six existing schedule tests pass, with typecheck/lint/format. nx04
 - 261104 T689 partial: preserve all cf04/nx04 evidence and restore engine source after the unmet realism gate; exit recorded without marking the task done. Research timing and limited two-seed/position diagnostics clarified. nx04
@@ -750,9 +751,3 @@
 - 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
 - 261103 bl03 publication: owner explicitly requests immediate push without further tests; retain the post-sync 1176 passing integration cases, four skips and one long-career timeout. T689 remains todo with its experiments detached and backed up; no scoring implementation released.
-- 261103 T690 done: progressive elite wages and repeated award premiums; 144000 sensitivity cases, 576 retention decisions, 40 full-season outcomes, 35 unit and 36 contract integration tests plus fast checks passed. bl03
-- 261103 T689 started: paired baseline/passing/shot-volume/support pilots plus independent standard corpus; T690 follows with star wage sensitivity and career budgets. bl03
-- 261103 T688 done: trophy-led Ballon d Or, bounded production and top-six finish points; 39 unit tests and task checks passed. bl03
-- 261103 update-ssot PLAYER r14 and create-task T688: trophy/team-led Ballon d Or first; scoring/wage commits gated on substantial measurements. bl03
-- 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
-- 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03

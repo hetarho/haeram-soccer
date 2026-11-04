@@ -9,34 +9,68 @@ import { addEvent } from './events';
 import { debit } from './transactions';
 import { moneyLabel } from './finance';
 
-type InvestmentCommand = Extract<Command, {
-  type: 'club-policy' | 'club-direction' | 'club-build' | 'club-ticket' | 'coaching-investment' | 'facility-upgrade' | 'decision-wage-limit' | 'decision-finance';
-}>;
+type InvestmentCommand = Extract<
+  Command,
+  {
+    type:
+      | 'club-policy'
+      | 'club-direction'
+      | 'club-build'
+      | 'club-ticket'
+      | 'coaching-investment'
+      | 'facility-upgrade'
+      | 'decision-wage-limit'
+      | 'decision-finance';
+  }
+>;
 
 /** Owner investment choices reuse the existing policy effects, spending and construction rules. */
 export function investmentCommand(w: World, command: InvestmentCommand) {
   switch (command.type) {
     case 'decision-wage-limit': {
-      if (!['manager', 'staff', 'contracts', 'recruitment', 'academy'].includes(command.responsibility)
-        || (command.amount !== null && !/^\d{1,40}$/.test(command.amount)))
+      if (
+        !['manager', 'staff', 'contracts', 'recruitment', 'academy'].includes(
+          command.responsibility,
+        ) ||
+        (command.amount !== null && !/^\d{1,40}$/.test(command.amount))
+      )
         throw new Error('연봉 한도를 확인해 주세요.');
       const budget = { ...w.decisionBudgets?.[command.responsibility] };
       if (command.amount === null) delete budget.maxAnnualWage;
       else budget.maxAnnualWage = BigInt(command.amount).toString();
       w.decisionBudgets = { ...w.decisionBudgets, [command.responsibility]: budget };
-      addEvent(w, 'decision-wage-limit', '업무별 연봉 한도 변경', command.amount === null
-        ? '별도 금액 상한을 해제했습니다. 업무의 재정 기준은 계속 적용합니다.'
-        : `1인당 연간 ${moneyLabel(w, command.amount)}까지 · 이후 자동 판단에 적용됩니다.`);
+      addEvent(
+        w,
+        'decision-wage-limit',
+        '업무별 연봉 한도 변경',
+        command.amount === null
+          ? '별도 금액 상한을 해제했습니다. 업무의 재정 기준은 계속 적용합니다.'
+          : `1인당 연간 ${moneyLabel(w, command.amount)}까지 · 이후 자동 판단에 적용됩니다.`,
+      );
       return;
     }
     case 'decision-finance': {
       const option = DIRECTION_INFO.finance.options.find((option) => option.id === command.choice);
-      if (!['manager', 'staff', 'contracts', 'recruitment', 'sales', 'academy'].includes(command.responsibility) || !option)
+      if (
+        !['manager', 'staff', 'contracts', 'recruitment', 'sales', 'academy'].includes(
+          command.responsibility,
+        ) ||
+        !option
+      )
         throw new Error('업무별 재정 기준을 확인해 주세요.');
-      w.decisionBudgets = { ...w.decisionBudgets, [command.responsibility]: {
-        ...w.decisionBudgets?.[command.responsibility], finance: command.choice,
-      } };
-      addEvent(w, 'decision-finance', `업무별 재정 기준 · ${option.name}`, '이 업무의 이후 자동 판단부터 적용됩니다.');
+      w.decisionBudgets = {
+        ...w.decisionBudgets,
+        [command.responsibility]: {
+          ...w.decisionBudgets?.[command.responsibility],
+          finance: command.choice,
+        },
+      };
+      addEvent(
+        w,
+        'decision-finance',
+        `업무별 재정 기준 · ${option.name}`,
+        '이 업무의 이후 자동 판단부터 적용됩니다.',
+      );
       return;
     }
     case 'club-direction': {
@@ -58,8 +92,15 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
       if (command.choice === 'standard') delete build[command.slot];
       else Object.assign(build, { [command.slot]: command.choice });
       w.build = build;
-      const option = (BUILD_CARDS[command.slot] as Record<string, { label: string }>)[command.choice];
-      addEvent(w, 'club-build', `${BUILD_SLOT_INFO[command.slot].label} · ${option?.label ?? '표준'}`, '이후 판단과 정산부터 적용됩니다. 이미 맺은 계약은 유지됩니다.');
+      const option = (BUILD_CARDS[command.slot] as Record<string, { label: string }>)[
+        command.choice
+      ];
+      addEvent(
+        w,
+        'club-build',
+        `${BUILD_SLOT_INFO[command.slot].label} · ${option?.label ?? '표준'}`,
+        '이후 판단과 정산부터 적용됩니다. 이미 맺은 계약은 유지됩니다.',
+      );
       return;
     }
     case 'club-ticket': {
@@ -80,7 +121,10 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
     case 'coaching-investment': {
       const option = DIRECTION_INFO.coaches.options.find((option) => option.id === command.choice);
       if (!option) throw new Error('코치진 투자 수준을 확인해 주세요.');
-      w.direction = { ...w.direction, coaches: option.id };
+      w.direction = {
+        ...w.direction,
+        coaches: command.choice === 'standard' ? undefined : command.choice,
+      };
       addEvent(w, 'coaching-investment', `코치 채용 기준 · ${option.name}`, option.summary);
       return;
     }

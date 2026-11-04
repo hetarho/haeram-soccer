@@ -235,7 +235,10 @@ export function describeOutcome(
   if (command.type === 'hire-staff' || command.type === 'renew-staff')
     note = '다음 라운드부터 반영돼요. 계약과 자동 결정은 선수단 › 스태프에서 관리해요.';
   return {
-    title: command.type === 'club-policy' && command.key === 'recruitment' ? '영입 지침을 바꿨어요' : titles[command.type],
+    title:
+      command.type === 'club-policy' && command.key === 'recruitment'
+        ? '영입 지침을 바꿨어요'
+        : titles[command.type],
     changes,
     events: shown.map(({ title, detail }) => ({ title, detail })),
     hiddenEvents: records.length - shown.length,

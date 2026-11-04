@@ -83,7 +83,6 @@ describe('club operating policy', () => {
       recruitment: 3,
       academy: 1,
       localInvest: 1,
-      grassroots: 1,
       globalMarketing: 1,
       globalScouting: 1,
       tour: 1,
@@ -118,13 +117,12 @@ describe('club operating policy', () => {
     expect(absentPlayed.events.some((event) => event.detail.includes('마케팅'))).toBe(false);
   });
 
-  it('describes eight ordered decisions with five levels each (the tour three) and their real effects', () => {
+  it('describes seven operating choices with five levels each (the tour three) and their real effects', () => {
     expect(POLICY_KEYS).toEqual([
       'support',
       'recruitment',
       'academy',
       'localInvest',
-      'grassroots',
       'globalMarketing',
       'globalScouting',
       'tour',
@@ -145,7 +143,6 @@ describe('club operating policy', () => {
       investUnits: 0,
       fanGrowth: 0,
       gateBoost: 0,
-      grassrootsPotential: 0,
       scoutCandidates: 0,
       scoutPotential: 0,
       baseTargets: { local: 0, global: 0 },
@@ -154,7 +151,7 @@ describe('club operating policy', () => {
       academyIntake: 0,
       academyPotential: 0,
       academyGrowth: 1,
-      offer: { ability: [40, 85], age: [18, 30], potentialBonus: 0, feeMultiplier: 1 },
+      offer: { ability: [40, 85], age: [18, 30], potentialBonus: 0 },
     });
   });
 

@@ -10,10 +10,7 @@ const page = (name: string) => fileURLToPath(new URL(name, import.meta.url));
 const sharedSourceWatch = (): Plugin => ({
   name: 'haeram-shared-source-watch',
   configureServer(server) {
-    server.watcher.add([
-      page('../../packages/engine/src'),
-      page('../../packages/contracts/src'),
-    ]);
+    server.watcher.add([page('../../packages/engine/src'), page('../../packages/contracts/src')]);
   },
 });
 

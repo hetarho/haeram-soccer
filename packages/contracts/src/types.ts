@@ -1350,7 +1350,7 @@ export type Command =
   | { type: 'club-ticket'; price: number }
   | { type: 'decision-wage-limit'; responsibility: WageResponsibility; amount: string | null }
   | { type: 'decision-finance'; responsibility: BudgetResponsibility; choice: FinanceChoice }
-  | { type: 'coaching-investment'; choice: string }
+  | { type: 'coaching-investment'; choice: 'volunteer' | 'cheap' | 'standard' | 'elite' }
   | { type: 'facility-upgrade'; part: FacilityPart; from: number; cost: string }
   | { type: 'next-event' }
   | { type: 'advance'; rounds: number }

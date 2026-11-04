@@ -1,4 +1,11 @@
-import type { BudgetResponsibility, DirectionKey, FinanceChoice, ManagerStyle, WageResponsibility, World } from '../../contracts/src/types';
+import type {
+  BudgetResponsibility,
+  DirectionKey,
+  FinanceChoice,
+  ManagerStyle,
+  WageResponsibility,
+  World,
+} from '../../contracts/src/types';
 import { MANAGER_STYLES, STYLE_INFO } from './styles';
 
 /**
@@ -294,19 +301,40 @@ export function directionLine(w: Pick<World, 'direction'>, key: DirectionKey) {
   return `${DIRECTION_INFO[key].label} ${directionOption(w, key).name}`;
 }
 /** 재정 기조 in force (→ECON-33). */
-export function financeChoiceOf(w: Pick<World, 'direction' | 'decisionBudgets'>, responsibility?: BudgetResponsibility): FinanceChoice {
-  return (responsibility && w.decisionBudgets?.[responsibility]?.finance) || directionOf(w, 'finance') as FinanceChoice;
+export function financeChoiceOf(
+  w: Pick<World, 'direction' | 'decisionBudgets'>,
+  responsibility?: BudgetResponsibility,
+): FinanceChoice {
+  return (
+    (responsibility && w.decisionBudgets?.[responsibility]?.finance) ||
+    (directionOf(w, 'finance') as FinanceChoice)
+  );
 }
-export function financeOption(w: Pick<World, 'direction' | 'decisionBudgets'>, responsibility: BudgetResponsibility) {
-  return DIRECTION_INFO.finance.options.find((option) => option.id === financeChoiceOf(w, responsibility))!;
+export function financeOption(
+  w: Pick<World, 'direction' | 'decisionBudgets'>,
+  responsibility: BudgetResponsibility,
+) {
+  return DIRECTION_INFO.finance.options.find(
+    (option) => option.id === financeChoiceOf(w, responsibility),
+  )!;
 }
-export function financeStance(w: Pick<World, 'direction' | 'decisionBudgets'>, responsibility?: BudgetResponsibility): FinanceStance {
+export function financeStance(
+  w: Pick<World, 'direction' | 'decisionBudgets'>,
+  responsibility?: BudgetResponsibility,
+): FinanceStance {
   return FINANCE_STANCES[financeChoiceOf(w, responsibility)];
 }
-export function annualWageLimit(w: Pick<World, 'decisionBudgets'>, responsibility: WageResponsibility) {
+export function annualWageLimit(
+  w: Pick<World, 'decisionBudgets'>,
+  responsibility: WageResponsibility,
+) {
   return w.decisionBudgets?.[responsibility]?.maxAnnualWage;
 }
-export function wageWithinLimit(w: Pick<World, 'decisionBudgets'>, responsibility: WageResponsibility, wage: string) {
+export function wageWithinLimit(
+  w: Pick<World, 'decisionBudgets'>,
+  responsibility: WageResponsibility,
+  wage: string,
+) {
   const cap = annualWageLimit(w, responsibility);
   return cap === undefined || BigInt(wage) <= BigInt(cap);
 }

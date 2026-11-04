@@ -306,7 +306,10 @@ function managerChecks(w: World, c: ManagerCriteria): ManagerCheck[] {
     trait === 'none' ? '성향 없음' : MANAGER_TRAIT_INFO[trait].label;
   return [
     [`OVR ${c.minOvr} 이상인 후보가 없어요`, (m) => m.ability >= c.minOvr],
-    [`연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'manager') ?? '0')} 안의 후보가 없어요`, (m) => wageWithinLimit(w, 'manager', m.wage)],
+    [
+      `연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'manager') ?? '0')} 안의 후보가 없어요`,
+      (m) => wageWithinLimit(w, 'manager', m.wage),
+    ],
     [
       `${c.schools.map((style) => STYLE_INFO[style].label).join('·')} 학파의 후보가 없어요`,
       (m) => !c.schools.length || (!!m.style && c.schools.includes(m.style)),

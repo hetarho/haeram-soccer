@@ -17,7 +17,16 @@ import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
-import { annualWageLimit, debutRule, directionOf, directionOption, financeOption, financeStance, releaseRule, wageWithinLimit } from './direction';
+import {
+  annualWageLimit,
+  debutRule,
+  directionOf,
+  directionOption,
+  financeOption,
+  financeStance,
+  releaseRule,
+  wageWithinLimit,
+} from './direction';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
 
@@ -422,7 +431,12 @@ export function seasonAcademy(w: World): void {
   for (const player of affordable ? ready : []) {
     const wage = marketWage(w, player);
     if (!wageWithinLimit(w, 'academy', wage)) {
-      staffReport(w, `유스 디렉터가 ${player.name}의 승격을 미뤘어요`, `프로 연봉 ${moneyLabel(w, wage)}이 유소년 승격의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'academy')!)}을 넘어요.`, player.id);
+      staffReport(
+        w,
+        `유스 디렉터가 ${player.name}의 승격을 미뤘어요`,
+        `프로 연봉 ${moneyLabel(w, wage)}이 유소년 승격의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'academy')!)}을 넘어요.`,
+        player.id,
+      );
       continue;
     }
     if (registrationRoom(w, { ...player, graduate: true, joined: w.year })) continue;

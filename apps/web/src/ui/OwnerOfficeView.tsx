@@ -28,14 +28,27 @@ import {
   type OfficeProposal,
 } from './officeChanges';
 import { delegationCounts } from './officeSummary';
-import { BuildSetting, DecisionFinanceSetting, DirectionSetting, RecruitmentGuideline, WageBudgetSetting } from './ClubSettingControl';
+import {
+  BuildSetting,
+  DecisionFinanceSetting,
+  DirectionSetting,
+  RecruitmentGuideline,
+  WageBudgetSetting,
+} from './ClubSettingControl';
 import { DECISION_BUILDS, DECISION_DIRECTIONS, DECISION_POLICIES } from './clubControls';
 import { DecisionRuleFacts } from './DecisionRuleFacts';
 import s from './OwnerOffice.module.css';
-const ApprovalWorkbench = lazy(() => import('./Rich').then((module) => ({ default: module.ApprovalWorkbench })));
+const ApprovalWorkbench = lazy(() =>
+  import('./Rich').then((module) => ({ default: module.ApprovalWorkbench })),
+);
 const WORKBENCH_LABELS: Record<ResponsibilityKey, string> = {
-  manager: '감독 선임·재계약', staff: '스태프 채용·계약 관리', contracts: '선수 계약 협상',
-  recruitment: '영입·임대·이적 협상', sales: '선수별 매각 방침·도착한 제안', academy: '유소년 승격·방출', sponsors: '스폰서 계약 선택',
+  manager: '감독 선임·재계약',
+  staff: '스태프 채용·계약 관리',
+  contracts: '선수 계약 협상',
+  recruitment: '영입·임대·이적 협상',
+  sales: '선수별 매각 방침·도착한 제안',
+  academy: '유소년 승격·방출',
+  sponsors: '스폰서 계약 선택',
 };
 const OBSERVATIONS = [
   ['matchEve', '경기 전날 보고', '위임하면 스태프가 경기를 치르고 결과를 전달해요.'],
@@ -66,7 +79,9 @@ export function OfficeRow({
       </span>
       <div className={s.rowControls}>
         {assignee && (
-          <div className={s.assignee} aria-label="위임 대상">{assignee}</div>
+          <div className={s.assignee} aria-label="위임 대상">
+            {assignee}
+          </div>
         )}
         <div className={s.choices} role="group" aria-label={label} data-ui="choices">
           {([false, true] as const).map((value) => (
@@ -134,7 +149,11 @@ export function OwnerOffice({
   const blocked = modeSwitchBlocked(state) || applying;
   useEffect(() => {
     if (!focus) return;
-    const frame = requestAnimationFrame(() => document.getElementById(`office-decision-${focus === 'finance' ? 'recruitment' : focus}`)?.scrollIntoView({ block: 'start' }));
+    const frame = requestAnimationFrame(() =>
+      document
+        .getElementById(`office-decision-${focus === 'finance' ? 'recruitment' : focus}`)
+        ?.scrollIntoView({ block: 'start' }),
+    );
     return () => cancelAnimationFrame(frame);
   }, [focus, w.id]);
   const propose = (change: OfficeChange) => {
@@ -224,7 +243,10 @@ export function OwnerOffice({
             / {scope?.length ?? totalCount}개 자동
           </small>
         </div>
-        <p>직접은 구단주가 승인해요. 자동은 담당 스태프가 아래 지침에 따라 처리하고 결과를 보고해요. 지침은 각 업무 아래에서 정합니다.</p>
+        <p>
+          직접은 구단주가 승인해요. 자동은 담당 스태프가 아래 지침에 따라 처리하고 결과를 보고해요.
+          지침은 각 업무 아래에서 정합니다.
+        </p>
         <div className={s.rows}>
           {!scope &&
             OBSERVATIONS.map(([key, label, detail]) => (
@@ -239,41 +261,72 @@ export function OwnerOffice({
               />
             ))}
           {(scope ?? RESPONSIBILITY_KEYS).map((key) => (
-            <article key={key} id={`office-decision-${key}`} className={s.responsibility} data-surface="inset" aria-label={`${RESPONSIBILITY_LABELS[key]} 지침`}>
-            <OfficeRow
-              label={RESPONSIBILITY_LABELS[key]}
-              detail={DETAILS[key]}
-              assignee={responsibilityAssignees(w, key).map(({ post, label }) => (
+            <article
+              key={key}
+              id={`office-decision-${key}`}
+              className={s.responsibility}
+              data-surface="inset"
+              aria-label={`${RESPONSIBILITY_LABELS[key]} 지침`}
+            >
+              <OfficeRow
+                label={RESPONSIBILITY_LABELS[key]}
+                detail={DETAILS[key]}
+                assignee={responsibilityAssignees(w, key).map(({ post, label }) => (
+                  <button
+                    key={post}
+                    type="button"
+                    data-ui="link"
+                    aria-haspopup="dialog"
+                    aria-label={`현재 ${label} 정보 보기`}
+                    onClick={(event) => {
+                      event.currentTarget.focus();
+                      setAssigneePost(post);
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+                delegated={settings.responsibilities[key] === 'delegated'}
+                blocked={blocked}
+                onSelect={(delegated) =>
+                  propose({ responsibilities: { [key]: delegated ? 'delegated' : 'direct' } })
+                }
+              />
+              <div className={s.guidelines}>
+                {DECISION_POLICIES[key].map(
+                  (policy) =>
+                    policy === 'recruitment' && (
+                      <RecruitmentGuideline key={policy} w={w} client={client} />
+                    ),
+                )}
+                {DECISION_DIRECTIONS[key].map((direction) => (
+                  <DirectionSetting
+                    key={direction}
+                    w={w}
+                    client={client}
+                    directionKey={direction}
+                  />
+                ))}
+                {DECISION_BUILDS[key].map((slot) => (
+                  <BuildSetting key={slot} w={w} client={client} slot={slot} />
+                ))}
+                {key !== 'sales' && key !== 'sponsors' && (
+                  <WageBudgetSetting w={w} client={client} responsibility={key} />
+                )}
+                {key !== 'sponsors' && (
+                  <DecisionFinanceSetting w={w} client={client} responsibility={key} />
+                )}
+                <DecisionRuleFacts w={w} responsibility={key} />
                 <button
-                  key={post}
                   type="button"
-                  data-ui="link"
+                  data-ui="secondary"
+                  className={s.workbenchButton}
                   aria-haspopup="dialog"
-                  aria-label={`현재 ${label} 정보 보기`}
-                  onClick={(event) => {
-                    event.currentTarget.focus();
-                    setAssigneePost(post);
-                  }}
+                  onClick={() => setWorkbench(key)}
                 >
-                  {label}
+                  {WORKBENCH_LABELS[key]} 열기
                 </button>
-              ))}
-              delegated={settings.responsibilities[key] === 'delegated'}
-              blocked={blocked}
-              onSelect={(delegated) =>
-                propose({ responsibilities: { [key]: delegated ? 'delegated' : 'direct' } })
-              }
-            />
-            <div className={s.guidelines}>
-              {DECISION_POLICIES[key].map((policy) => policy === 'recruitment' && <RecruitmentGuideline key={policy} w={w} client={client} />)}
-              {DECISION_DIRECTIONS[key].map((direction) => <DirectionSetting key={direction} w={w} client={client} directionKey={direction} />)}
-              {DECISION_BUILDS[key].map((slot) => <BuildSetting key={slot} w={w} client={client} slot={slot} />)}
-              {key !== 'sales' && key !== 'sponsors' && <WageBudgetSetting w={w} client={client} responsibility={key} />}
-              {key !== 'sponsors' && <DecisionFinanceSetting w={w} client={client} responsibility={key} />}
-              <DecisionRuleFacts w={w} responsibility={key} />
-              <button type="button" data-ui="secondary" className={s.workbenchButton}
-                aria-haspopup="dialog" onClick={() => setWorkbench(key)}>{WORKBENCH_LABELS[key]} 열기</button>
-            </div>
+              </div>
             </article>
           ))}
         </div>
@@ -281,7 +334,12 @@ export function OwnerOffice({
       {workbench && (
         <Dialog label={WORKBENCH_LABELS[workbench]} wide onClose={() => setWorkbench(undefined)}>
           <Suspense fallback={<p role="status">업무 화면을 여는 중…</p>}>
-            <ApprovalWorkbench state={state} client={client} controller={controller} responsibility={workbench} />
+            <ApprovalWorkbench
+              state={state}
+              client={client}
+              controller={controller}
+              responsibility={workbench}
+            />
           </Suspense>
         </Dialog>
       )}
