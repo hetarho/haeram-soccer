@@ -71,8 +71,8 @@ export interface StartFlowProps {
   listings?: Listing[];
   /** The chosen tier's fortune in pounds, minor units (→OWNER-3). */
   fortune?: string;
-  /** Takes the club over with the chosen direction; no preset is 기본 방향 (→WEB-15). */
-  onTakeOver: (clubId: string, preset?: string) => void;
+  /** Takes the club over with standard operating defaults (→WEB-15). */
+  onTakeOver: (clubId: string) => void;
   /** Opens a club's squad, manager, stadium and history for its sheet. */
   loadClub?: (clubId: string) => Promise<ClubSheetFacts | undefined>;
   /** A generation failure; the flow offers a retry and its choices again. */

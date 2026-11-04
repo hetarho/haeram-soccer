@@ -18,7 +18,7 @@ import { eventCard, reviewInOffice } from './events';
 import { openClubhouse } from './competition-navigation';
 import { continueSlot } from './slots';
 import { savedWorld } from './club-identity-helpers';
-import { startCareer } from './start';
+import { importLegacyDirection } from './legacy-direction';
 
 /**
  * A club on 1 January 1951 whose owner answers contract talks: one player in his contract's final
@@ -158,8 +158,8 @@ test('the talk rule shows under 선수 as the club was taken over', async ({ pag
   test.skip(browserName !== 'chromium', 'One browser covers the journey.');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  // 알뜰 생존 takes the club over at 재계약 기조 짠물 and 재정 기조 안정적 (→ECON-22).
-  await startCareer(page, { seed: 'talk-rule-journey', preset: 'shoestring' });
+  // An existing 알뜰 생존 save retains 재계약 기조 짠물 and 재정 기조 안정적 (→ECON-22).
+  await importLegacyDirection(page, 'shoestring', 'talk-rule-journey');
   await openPersonnel(page, 'players');
   // The owner holds contracts; the delegated criteria remain visible for a later handover.
   const talks = page.getByRole('region', { name: '계약 협상 위임' });

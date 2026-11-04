@@ -764,8 +764,7 @@ function StartFlowStory({
     }, 90);
     return () => clearTimeout(timer);
   }, [run, listed, w]);
-  const takeOver = (clubId: string, preset?: string) =>
-    notify(`${clubId} 인수 · ${preset ?? '기본 방향'} (미리보기)`);
+  const takeOver = (clubId: string) => notify(`${clubId} 인수 (미리보기)`);
   const loadClub = (clubId: string) =>
     new Promise<ClubSheetFacts | undefined>((resolve) =>
       setTimeout(

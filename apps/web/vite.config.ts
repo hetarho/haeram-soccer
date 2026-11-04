@@ -2,13 +2,14 @@ import { defineConfig, type Connect, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 import { designSystem } from './src/design-system/server.ts';
+import { gameplayInfluences } from './src/constants/server.ts';
 
 const page = (name: string) => fileURLToPath(new URL(name, import.meta.url));
 
-/** `/lab` serves the match lab's own entry (→LAB-1), as `_redirects` does on Netlify. */
+/** Standalone tools use the same addresses in development, preview and deployment. */
 const rewriteLab: Connect.NextHandleFunction = (req, _res, next) => {
-  if (req.url && /^\/lab\/?(?:[?#]|$)/.test(req.url))
-    req.url = '/lab.html' + req.url.replace(/^\/lab\/?/, '');
+  if (req.url && /^\/(lab|constants)\/?(?:[?#]|$)/.test(req.url))
+    req.url = req.url.replace(/^\/(lab|constants)\/?/, '/$1.html');
   next();
 };
 const labAddress = (): Plugin => ({
@@ -19,12 +20,14 @@ const labAddress = (): Plugin => ({
 
 export default defineConfig({
   root: page('.'),
-  plugins: [react(), labAddress(), designSystem()],
+  plugins: [react(), labAddress(), gameplayInfluences(), designSystem()],
   build: {
     outDir: 'dist',
     emptyOutDir: true,
-    // The lab is a second entry with its own chunks: the game's initial download stays as it was.
-    rolldownOptions: { input: { main: page('index.html'), lab: page('lab.html') } },
+    // Standalone tools keep their code and inventory outside the game entry.
+    rolldownOptions: {
+      input: { main: page('index.html'), lab: page('lab.html'), constants: page('constants.html') },
+    },
   },
   // The project's own dev port (1950, the founding year, plus a zero), kept fixed so a busy port
   // fails loudly instead of moving the game to another address.

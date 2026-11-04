@@ -44,7 +44,7 @@ describe('the worker protocol (→ECON-25, WEB-15)', () => {
       ).toBe(false);
   });
 
-  it('takes a club over with any preset as the direction, or none', () => {
+  it('takes a club over with defaults and refuses every direction preset', () => {
     const takeOver = (preset?: string) =>
       requestSchema.safeParse(
         request({
@@ -54,7 +54,7 @@ describe('the worker protocol (→ECON-25, WEB-15)', () => {
         }),
       ).success;
     expect(takeOver()).toBe(true);
-    for (const preset of BUILD_PRESETS) expect(takeOver(preset.id)).toBe(true);
+    for (const preset of BUILD_PRESETS) expect(takeOver(preset.id)).toBe(false);
     expect(takeOver('')).toBe(false);
   });
 

@@ -50,8 +50,8 @@ async function expectStepFits(page: Page, scope: Locator) {
 }
 
 for (const viewport of [
-  { width: 360, height: 740, tier: 'industrial' as const, preset: 'youth-academy' },
-  { width: 390, height: 844, tier: 'oil' as const, preset: undefined },
+  { width: 360, height: 740, tier: 'industrial' as const },
+  { width: 390, height: 844, tier: 'oil' as const },
 ]) {
   test(`fits every start step and takes a club over at ${viewport.width}x${viewport.height}`, async ({
     page,
@@ -97,7 +97,7 @@ for (const viewport of [
     await expect(sheet).toContainText('감독');
     await expect(sheet).toContainText('경기장');
     await settle(page);
-    await takeOverClub(page, name, viewport.preset);
+    await takeOverClub(page, name);
 
     // The career on screen is the one the engine makes from the same choices (→WORLD-13).
     const actual = await exportWorld(page);
@@ -105,12 +105,7 @@ for (const viewport of [
       tier: viewport.tier,
       traits: ['talisman', 'fansFriend'] as ('talisman' | 'fansFriend')[],
     };
-    const reference = takeOver(
-      generateHistory(seed, 1930),
-      actual.playerClub,
-      choice,
-      viewport.preset,
-    );
+    const reference = takeOver(generateHistory(seed, 1930), actual.playerClub, choice);
     expect(actual.clubs.find((club) => club.id === actual.playerClub)!.name).toBe(name);
     expect(actual.id).toBe(reference.id);
     expect(actual.owner).toEqual(reference.owner);
@@ -164,20 +159,23 @@ for (const viewport of [
   });
 }
 
-test('takes over with a preset as its direction, which the club keeps', async ({ page }) => {
+test('takes over without a direction choice and starts with standard defaults', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   const listing = await generateWorld(page, { seed: 'start-direction' });
   await filterListing(listing, { country: 'ENG', division: 1 });
   const { name } = await openClub(listing);
-  await takeOverClub(page, name, 'youth-academy');
+  await takeOverClub(page, name);
   const w = await exportWorld(page);
   expect(w.clubs.find((club) => club.id === w.playerClub)!.tier).toBe(1);
-  expect(w.build).toEqual({ youth: 'elite', culture: 'meritocracy' });
-  expect(w.direction).toMatchObject({ debut: 'early', coaches: 'elite' });
+  expect(w.build).toBeUndefined();
+  expect(w.policy).toBeUndefined();
+  expect(w.direction).toBeUndefined();
   await openDirectionInForce(page);
   const areas = page.getByTestId('direction-areas');
-  await expect(areas.getByRole('heading', { level: 3 })).toHaveText('구단 방향 · 유스 명가');
+  await expect(areas.getByRole('heading', { level: 3 })).toHaveText('구단 방향 · 기본 방향');
   await expect(areas.getByRole('button')).toHaveCount(0);
 });
 
@@ -207,7 +205,7 @@ test('the owner adds to the club’s opening cash, and the guide reads the takeo
   const guide = page.getByRole('dialog', { name: '클럽 키우기 가이드' });
   await expect(page.getByRole('dialog')).toHaveCount(1);
   await expect(guide.getByRole('listitem')).toHaveCount(3);
-  await expect(guide).toContainText('인수 때 정한 구단 방향을 따르고');
+  await expect(guide).toContainText('구단의 운영 기준을 따르고');
   const close = guide.getByRole('button', { name: '가이드 확인 마치기', exact: true });
   await settle(page);
   const bounds = await close.boundingBox();

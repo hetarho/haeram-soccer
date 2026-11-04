@@ -1,5 +1,5 @@
 # OWNER Owner fortune, takeover start, traits and standing
-> r3 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
+> r4 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
 
 ## decisions
 - OWNER-1 [o] The owner's fortune (구단주 자금) and the club's cash (구단 자금) are separate pots; money moves between them only by an injection (→OWNER-9) or a dividend (→OWNER-11). From the takeover the fortune is kept in the club's currency and converts with it (→ECON-5/6). ← the owner's own money and the club's books are different stakes
@@ -17,7 +17,7 @@
   - a tier's anchor is the median price (→ECON-37), in the takeover season, of the clubs in its reach across the playable countries, valued in pounds and converted into the bought club's currency at the takeover (→ECON-35).
   - the tier is fixed for the career; it never changes the rules, only the start.
   - the 1.6 multiple leaves the buyer of his country's median-priced club in the reach a fortune to live on (→OWNER-8): a country's band median costs up to 1.28× the anchor (measured 261104 on LEAGUE-13's reference careers), so at 1.3× its buyer kept 2–3% of his fortune.
-- OWNER-4 [o] Wherever another rule speaks of founding, the founding moment is the takeover: the founding squad is the squad taken over, the founding direction is the direction chosen at the takeover (→WEB-15), and history starts there (→HIST-21). The club's manager at the takeover keeps his own school, style and level; the neutral founding manager of →STAFF-14/45 applies to no one. Each player taken over starts at an adaptation equal to the club's 조직력 at the takeover (→LEAGUE-12, →PLAYER-10). ← one meaning for every rule written for a founded club
+- OWNER-4 [o] Wherever another rule speaks of founding, the founding moment is the takeover: the founding squad is the squad taken over, the founding direction uses standard defaults without a choice at the takeover (→WEB-15), and history starts there (→HIST-21). The club's manager at the takeover keeps his own school, style and level; the neutral founding manager of →STAFF-14/45 applies to no one. Each player taken over starts at an adaptation equal to the club's 조직력 at the takeover (→LEAGUE-12, →PLAYER-10). ← one meaning for every rule written for a founded club
 - OWNER-5 [o] The owner picks 0 to 5 of eight traits at the start, fixed for the career:
   | trait | effect (OWNER_TRAITS) |
   |---|---|
@@ -65,6 +65,7 @@
 - End: club bankruptcy | owner bankruptcy | 구단주 퇴진 → game-over page
 
 ## chg
+- r4 261104 OWNER-4✎ founding direction chosen at takeover→standard defaults without a choice
 - r3 261104 OWNER-3✎ starting fortune of the five tiers below 석유 재벌 1.3→1.6 × anchor, +the multiple's measured reason; OWNER-8✎ living costs 0.25%→0.2% a settlement, +no owner who moves no money bankrupt within 15 seasons, measured 261104
 - r2 261103 OWNER-3✎ reach by divisions→a band of the price ranking (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%), any club the fortune pays may be bought; OWNER-8✎ living costs 1%→0.25% a settlement; OWNER-12✎ dividend −1→−0.5 per 1% of turnover, star sale −8→−4 at most once a window
 - r1 261103 initial: owner fortune apart from club cash, six wealth tiers, eight traits taken 0–5, the takeover as founding, quarterly business bet and living costs, injections within FFP from 2011/12, season-close dividend dial, 팬 민심 with 퇴진 압박, 구단주 파산 위기, three game-over causes, season records

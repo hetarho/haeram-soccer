@@ -720,16 +720,15 @@ export class GameClient {
     });
   }
   /**
-   * Takes a club of the generated world over with the chosen direction (→ECON-38, WEB-15): the
+   * Takes a club of the generated world over with standard operating defaults (→ECON-38, WEB-15): the
    * career's first world, saved at once.
    */
-  takeOver(clubId: string, preset?: string) {
+  takeOver(clubId: string) {
     return this.enqueue(async () => {
       const replace = !!this.state.start?.replace;
       const reply = await this.mutate({
         type: 'take-over',
         clubId,
-        ...(preset ? { preset } : {}),
         ...(replace ? { replace } : {}),
       });
       delete this.state.start;

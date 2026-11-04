@@ -9,6 +9,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { format } from 'prettier';
 import ts from 'typescript';
+import { leadingComment, trailingComment } from './source-comments';
 import {
   GRID_TUNABLES,
   LOAD_TIME_LEAVES,
@@ -34,29 +35,6 @@ export interface CatalogGroup {
 }
 export interface Catalog {
   groups: CatalogGroup[];
-}
-
-/** A comment's text without its markers, one line. */
-function clean(raw: string): string {
-  return raw
-    .replace(/^\/\*\*?|\*\/$/g, '')
-    .split('\n')
-    .map((l) => l.replace(/^\s*(\*|\/\/)\s?/, '').trim())
-    .filter(Boolean)
-    .join(' ')
-    .trim();
-}
-
-function leadingComment(text: string, node: ts.Node): string {
-  const ranges = ts.getLeadingCommentRanges(text, node.getFullStart()) ?? [];
-  return ranges.map((r) => clean(text.slice(r.pos, r.end))).join(' ');
-}
-
-/** A `// …` after the property on its own line (past its comma). */
-function trailingComment(text: string, node: ts.Node): string {
-  const end = text[node.getEnd()] === ',' ? node.getEnd() + 1 : node.getEnd();
-  const ranges = ts.getTrailingCommentRanges(text, end) ?? [];
-  return ranges.map((r) => clean(text.slice(r.pos, r.end))).join(' ');
 }
 
 /** Comments by path from each `export const X_CONFIG = { … }` literal, and each export's file. */

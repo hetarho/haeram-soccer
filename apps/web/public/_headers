@@ -51,3 +51,15 @@
   Cache-Control: no-cache
 /lab.html
   Cache-Control: no-cache
+
+/constants
+  Cache-Control: no-cache
+/constants/
+  Cache-Control: no-cache
+/constants.html
+  Cache-Control: no-cache
+/gameplay-influences.json
+  Cache-Control: no-cache
+
+/gameplay-influences.md
+  Cache-Control: no-cache

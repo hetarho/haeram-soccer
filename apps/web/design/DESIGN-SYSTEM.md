@@ -17,6 +17,15 @@ game styles, fonts and artwork are installed by the shared presentation bootstra
 documents, including independent preview windows. Preserve this document boundary instead of
 adding selector overrides to fight game skins in the surrounding workbench.
 
+The read-only `/constants` influence map is an independent tool document: its filters and
+nested outcome/factor lists keep a fixed appearance, and it loads neither game presentation packs
+nor career saves. Keep causal explanations visible and source symbols behind expandable evidence.
+Preserve the full parent hierarchy when a nested factor matches a search.
+Standalone tool documents scope their shell tokens with an explicit body data attribute. A local
+CSS module class inside a fully global selector keeps its untransformed name and cannot match the
+rendered class. Inspect actual card backgrounds and borders in the browser; layout alone can still
+look correct while every colour using an unset token disappears.
+
 Keep home summary slots concise enough to survive a phone width: the cup slot shows the live
 count, while the overview uses actual Card components for competition status and entry actions.
 Adjacent slots share one continuous material plane and have square internal joins. Team sheets

@@ -321,8 +321,8 @@ const ConnectedStart = memo(function ConnectedStart({
       error={start?.error}
       onGenerate={(choice) => void client.generate(choice, replace)}
       loadClub={(clubId) => client.clubSheet(clubId)}
-      onTakeOver={(clubId, preset) =>
-        void client.takeOver(clubId, preset).then((reply) => {
+      onTakeOver={(clubId) =>
+        void client.takeOver(clubId).then((reply) => {
           if (reply?.ok) onDone();
         })
       }

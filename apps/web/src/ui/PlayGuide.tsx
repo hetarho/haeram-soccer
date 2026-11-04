@@ -48,8 +48,8 @@ export function PlayGuide({ goals, onClose }: { goals: ClubGoal[]; onClose: () =
             <h3>내일의 전력을 키워요 {done('player-growth') && <span>완료 ✓</span>}</h3>
             <p>
               1군에서 선수 목록·이적시장·훈련을, 유소년에서 유망주 육성을, 코치진에서 감독·스태프를
-              살펴요. 투자와 스태프 기준은 인수 때 정한 구단 방향을 따르고, 구단 운영의
-              재정·투자에서 읽어요.
+              살펴요. 투자와 스태프 기준은 구단의 운영 기준을 따르고, 구단 운영의 재정·투자에서
+              읽어요.
             </p>
           </div>
         </li>

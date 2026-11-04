@@ -2,12 +2,13 @@ import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
 import { openDirectionInForce } from './office';
 import { startCareer } from './start';
+import { importLegacyDirection } from './legacy-direction';
 
 test('reads the direction taken over with, every row named and none editable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  // The direction is chosen at the takeover's confirmation (→WEB-15).
-  await startCareer(page, { preset: 'local-pride' });
+  // A saved preset remains effective after new takeovers stop offering the choice.
+  await importLegacyDirection(page, 'local-pride');
   await openDirectionInForce(page);
   const areas = page.getByTestId('direction-areas');
   // The owner reads a direction, never a "build" (빌드업 is the football phase of play).

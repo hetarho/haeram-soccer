@@ -3,7 +3,6 @@ import type { ClubListing as Listing } from '../../../../packages/contracts/src/
 import type { CountryCode } from '../../../../packages/contracts/src/types';
 import { country } from '../../../../packages/catalogs/src/index';
 import { TAKEOVER_DEBT } from '../../../../packages/engine/src/owner-config';
-import { BUILD_PRESETS } from '../../../../packages/engine/src/preset-data';
 import { CrestMark } from './ClubCrest';
 import { Dialog } from './Dialog';
 import { compactMoney, number, seasonName } from './format';
@@ -43,8 +42,8 @@ export interface ClubListingProps {
   readonly?: boolean;
   /** Opens a club's squad, manager, stadium and history for its sheet. */
   loadClub?: (clubId: string) => Promise<ClubSheetFacts | undefined>;
-  /** Takes the club over with the chosen direction; no preset is 기본 방향 (→WEB-15, ECON-22). */
-  onTakeOver: (clubId: string, preset?: string) => void;
+  /** Takes the club over with standard operating defaults (→WEB-15, ECON-22). */
+  onTakeOver: (clubId: string) => void;
 }
 
 /**
@@ -201,7 +200,7 @@ export function ClubListing({
           busy={busy}
           blocked={busy || readonly || !canAfford(selected, fortune)}
           onBack={() => setConfirming(undefined)}
-          onConfirm={(preset) => onTakeOver(selected.clubId, preset)}
+          onConfirm={() => onTakeOver(selected.clubId)}
         />
       )}
     </section>
@@ -404,8 +403,8 @@ function ClubSheet({
   );
 }
 
-/** The takeover's confirmation with the club's direction (→WEB-15, ECON-22, ECON-38). */
-function TakeoverConfirm({
+/** The takeover's confirmation with its price, cash and debt (→WEB-15, ECON-22, ECON-38). */
+export function TakeoverConfirm({
   listing,
   fortune,
   year,
@@ -420,11 +419,8 @@ function TakeoverConfirm({
   busy: boolean;
   blocked: boolean;
   onBack: () => void;
-  onConfirm: (preset?: string) => void;
+  onConfirm: () => void;
 }) {
-  // 기본 방향 shows selected; a preset fills every row of the club's direction (→ECON-22).
-  const [preset, setPreset] = useState('default');
-  const chosen = BUILD_PRESETS.find((item) => item.id === preset);
   const amount = (value: string) => compactMoney(value, listing.country, year);
   const indebted = BigInt(listing.debt) > 0n;
   return (
@@ -436,12 +432,7 @@ function TakeoverConfirm({
           <button type="button" onClick={onBack}>
             ← 구단 정보
           </button>
-          <button
-            type="button"
-            data-ui="primary"
-            disabled={blocked}
-            onClick={() => onConfirm(preset === 'default' ? undefined : preset)}
-          >
+          <button type="button" data-ui="primary" disabled={blocked} onClick={onConfirm}>
             {busy ? '구단을 인수하는 중…' : '인수 확정'}
           </button>
         </div>
@@ -458,23 +449,6 @@ function TakeoverConfirm({
               : '갚아야 할 부채가 없어요.'}
           </li>
         </ul>
-        <label className={s.direction}>
-          구단 방향
-          <Select aria-label="구단 방향" value={preset} onValueChange={setPreset}>
-            <option value="default" data-hint="모든 줄이 표준 · 인수 뒤에는 바꾸지 않아요">
-              기본 방향
-            </option>
-            {BUILD_PRESETS.map((item) => (
-              <option key={item.id} value={item.id} data-hint={`${item.model} · ${item.summary}`}>
-                {item.label}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <p className={s.note}>
-          {chosen ? `${chosen.model}. ${chosen.aim}.` : '모든 줄을 표준으로 시작해요.'} 구단은 이
-          방향을 커리어 내내 지켜요.
-        </p>
       </div>
     </Dialog>
   );

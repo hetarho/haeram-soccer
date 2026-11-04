@@ -213,7 +213,7 @@ export function AcademyPanel({
               <span>
                 <b>유소년 투자 · 유입 방식</b>
                 <small>
-                  {investment} · {cardOf(buildOf(w), 'youth').label} · 인수 때 정한 방향 · 반복
+                  {investment} · {cardOf(buildOf(w), 'youth').label} · 구단 운영 기준 · 반복
                   운영비와 다음 입단에 반영
                 </small>
               </span>

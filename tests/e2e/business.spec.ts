@@ -1,4 +1,5 @@
 import { watchNext } from './watch';
+import { importLegacyDirection } from './legacy-direction';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
@@ -46,10 +47,11 @@ const exportWorld = (page: Page): Promise<World> =>
     return (await decode(raw)).world;
   });
 
-/** Takes the seed's first club over, with `preset` as its direction when named (→WEB-15). */
+/** Starts a standard takeover, or imports an existing saved direction for legacy coverage. */
 async function found(page: Page, seed: string, preset?: string) {
+  if (preset) return importLegacyDirection(page, preset, seed);
   await page.goto('/');
-  await startCareer(page, { seed, preset });
+  await startCareer(page, { seed });
 }
 
 /** The owner office's area `area`, the direction in force unless named (→WEB-39, WEB-110). */

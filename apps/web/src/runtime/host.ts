@@ -748,7 +748,7 @@ export class Host {
           this.start.world,
           r.body.clubId,
           this.start.choice,
-          r.body.preset,
+          undefined,
           this.release,
         );
         initializeReadModels(this.world);

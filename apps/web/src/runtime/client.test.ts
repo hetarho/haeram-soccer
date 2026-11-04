@@ -981,11 +981,14 @@ describe('a new game by takeover (→WEB-2, WORLD-13, ECON-38, SAVE-27)', () => 
     expect(sheet!.stadium.seats).toBeGreaterThan(0);
     await expect(client.clubSheet('nobody')).rejects.toThrow('인수할 수 없는 구단입니다.');
 
-    const reply = await client.takeOver(club.clubId, 'youth-academy');
+    const reply = await client.takeOver(club.clubId);
     expect(reply?.ok).toBe(true);
     expect(client.state.start).toBeUndefined();
     const w = client.state.view!.world;
     expect(w.playerClub).toBe(club.clubId);
+    expect(w.build).toBeUndefined();
+    expect(w.policy).toBeUndefined();
+    expect(w.direction).toBeUndefined();
     expect(w.engine).toBe(CURRENT_ENGINE_VERSION);
     expect(w.owner).toMatchObject({ tier: 'oil', traits: choice.traits });
     expect(w.owner!.takeover).toMatchObject({ year: 1930, clubId: club.clubId });

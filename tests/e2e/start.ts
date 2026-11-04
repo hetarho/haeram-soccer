@@ -1,7 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import type { OwnerTrait, TakeoverDecade, WealthTier } from '../../packages/contracts/src/owner';
 import { OWNER_TIERS, OWNER_TRAITS } from '../../packages/engine/src/owner-config';
-import { BUILD_PRESETS } from '../../packages/engine/src/preset-data';
 import { chooseOption } from './select';
 
 /**
@@ -20,8 +19,6 @@ export interface CareerStart {
   /** The list's country (`ENG`…) and division (0 the top flight) before the club is picked. */
   country?: string;
   division?: number;
-  /** A direction preset's ID (`youth-academy`…); else 기본 방향. */
-  preset?: string;
 }
 
 export const DEFAULT_START = {
@@ -116,20 +113,15 @@ export async function openClub(listing: Locator, club?: string) {
 }
 
 /**
- * Takes the open club over: 인수 검토 →, the direction, 인수 확정; resolves once the career is on
+ * Takes the open club over: 인수 검토 →, 인수 확정, with standard defaults; resolves once the career is on
  * screen and its first checkpoint saved.
  */
-export async function takeOverClub(page: Page, name: string, preset?: string) {
+export async function takeOverClub(page: Page, name: string) {
   const sheet = page.getByRole('dialog', { name, exact: true });
   await sheet.getByRole('button', { name: '인수 검토 →', exact: true }).click();
   const confirm = page.getByRole('dialog', { name: `${name} 인수`, exact: true });
   await expect(confirm.getByTestId('takeover-confirm')).toBeVisible();
-  if (preset) {
-    const label = BUILD_PRESETS.find((item) => item.id === preset)!.label;
-    const direction = confirm.getByRole('combobox', { name: '구단 방향', exact: true });
-    await chooseOption(direction, preset);
-    await expect(direction).toContainText(label);
-  }
+  await expect(confirm.getByRole('combobox', { name: '구단 방향', exact: true })).toHaveCount(0);
   await confirm.getByRole('button', { name: '인수 확정', exact: true }).click();
   await expect(page.getByTestId('club-hub')).toBeVisible({ timeout: 30000 });
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
@@ -167,6 +159,6 @@ export async function startCareer(page: Page, start: CareerStart = {}) {
   const listing = await generateWorld(page, start);
   await filterListing(listing, start);
   const { name } = await openClub(listing, start.club);
-  await takeOverClub(page, name, start.preset);
+  await takeOverClub(page, name);
   return name;
 }

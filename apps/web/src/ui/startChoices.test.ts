@@ -1,4 +1,5 @@
-import { createElement, type ReactElement } from 'react';
+import { createElement, type ReactElement, type ReactNode } from 'react';
+import { TakeoverConfirm } from './ClubListing';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import localeRegistryData from '../../public/presentation/locales/index.json';
@@ -65,6 +66,10 @@ const controller: PresentationController = {
   registerNeed: () => () => {},
   dispose: vi.fn(),
 };
+vi.mock('./Dialog', () => ({
+  Dialog: ({ children, actions }: { children: ReactNode; actions: ReactNode }) =>
+    createElement('section', null, children, actions),
+}));
 const markup = (children: ReactElement) =>
   renderToStaticMarkup(createElement(PresentationProvider, { controller, children }));
 const text = (html: string) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ');
@@ -280,6 +285,24 @@ describe('start flow screens', () => {
     expect(text(html)).toContain('1939/40–1945/46 시즌은 전쟁으로 열리지 않아요');
     expect(html).toContain(`value="${Math.round(generationShare(1947, 1960) * 100)}"`);
     expect(text(html)).toContain(OWNER_TIERS.oil.label);
+  });
+  it('confirms a takeover with price and books but no direction choice', () => {
+    const html = markup(
+      createElement(TakeoverConfirm, {
+        listing: listing('Rovers', { cash: '480000', debt: '1200000' }),
+        fortune: '999999999',
+        year: 1950,
+        busy: false,
+        blocked: false,
+        onBack: () => {},
+        onConfirm: () => {},
+      }),
+    );
+    expect(text(html)).toContain('인수 확정');
+    expect(text(html)).toContain('구단 현금');
+    expect(text(html)).toContain('부채');
+    expect(text(html)).not.toContain('구단 방향');
+    expect(html).not.toContain('combobox');
   });
   it('lists the clubs with price, books, strength and affordability once they arrive', () => {
     const clubs = [

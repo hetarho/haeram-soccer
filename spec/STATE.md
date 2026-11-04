@@ -673,19 +673,19 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 30 | 30 | - | 2 |
-| WEB | 206 | 206 | - | 0 |
-| LAB | 5 | 5 | - | 0 |
+| WEB | 207 | 207 | - | 0 |
+| LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
 | CLUB | 51 | 51 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 14 | 14 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
-| ECON | 44 | 44 | - | 0 |
+| ECON | 45 | 45 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 3 | 3 | - | 0 |
+| OWNER | 4 | 4 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
 ## review
@@ -726,6 +726,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- T692 complete locally: /constants explains 78 gameplay outcomes, 295 factors and 27 action links across eight areas. Review causal relationships before balance changes; T691 takeover direction removal remains. Browser/integration validation is still a release gate.
 - The nv04 continuation is published on main at 96eb899c; the full local gate and actual code-push CI run 41772636192 succeeded. Keep the primary checkout on local main and preserve its unrelated changes; use the isolated codex/nv04 worktree for further work.
 - T689 remains todo with its existing realism gate unmet. The exploration has ended, all evidence is retained, and no scoring-engine candidate is applied. No additional balance tasks.
 
@@ -736,6 +737,11 @@
 - 261104 T689 continue: nw04 research commit 8b6c840d retained; supersede its unnecessary owner-approval parking and use the remaining original exploration window for a structural candidate. No new task or source publication. nx04
 - 261104 T689 partial, stays todo: `occupy` (earlySupport plus MATCH-33 box-occupation knobs) on validation 10,200 and calibration 10,200 matches: goals 2.67 / 2.88 inside, 23/38 rows, shots 16.1, FW goals 74.6%, hat-tricks 0.073 outside, club top-scorer share 38.9% / 39.9%, ST shot share 46 → 40% with the top scorer's goal share 43.6%; invariants clean, gate unmet, no scoring source changed. nv04
 - 261104 T689 partial, stays todo: the released source re-measured (MATCH-28 core+tactics, calibration 2,550 / validation 10,200 matches): core goals 3.83, shots 20.7 a team, box shots 16.9, FW goals 79%, hat-tricks 0.158, club top-scorer share 42.5%, 22/38 rows inside, invariants clean; `scripts/scoring-concentration.ts` shows the ST slot takes 46% of shots and the top scorer a third of his side's (76/77 clubs), press pairings 4.3–6.3 goals; gate unmet, no scoring source changed; evidence artifacts/benchmarks/scoring-261104. nv04
+- 261104 T692 done: replace raw numeric rows with an eight-area influence map (78 outcomes, 295 factors, 27 action links, 60 evidence files), nested search and readable Markdown export. Renewal is a fixed-at-opening wage threshold, not a random acceptance rate; team OVR is not a direct renewal input. Affected unit suite 2089 tests and final export tests pass; typecheck, lint, format, build and development/preview parity pass. Browser/integration left to release; no commit or push. cx04
+- 261104 update-ssot LAB r7 and create-task T692 start: replace raw numeric rows with implemented gameplay outcomes, causal factors and action consequences. cx04
+- 261104 T691 done: remove the takeover direction picker and public preset field; preserve saved directions; source-generate /constants across nine areas with search, expressions, code locations and JSON export (199 files, 16,058 entries). Affected unit tests, typecheck, lint, format and build pass; development/built HTTP catalog parity confirmed. Integration/e2e left to the release gate; no commit or push. cx04
+- 261104 create-task T691: WEB r207 ECON r45 OWNER r4 LAB r6, then implement in this checkout. cx04
+- 261104 update-ssot WEB ECON OWNER LAB start: remove takeover direction selection and index gameplay constants in one read-only page. cx04
 - 261104 update-ssot OWNER r3 LEAGUE r14 ECON r44 ARCH r30: T686's 1.6× tier multiple and 0.2% living costs with the passive-owner bound, T686's measured lines in LEAGUE-13 and ECON-29, T679's measured note in ARCH-28; the code already holds every value, so no task (tasked = rev). T689 cites none of them. nv04
 - 261104 T679 done: with the history view on, the preview generates 2000 in 129.8 s at process-wide 4x (2.06 s a season, budget 5 s; 1970 1.85 s) on an M1 Max; the view adds about 0.1% in the worker (Node A/B +0.6%, inside the spread) and a 3.2–3.5 s list hold behind its last card (at most 5.6%); `generation-budget.ts` records load, per-season time, digests and cards, `generation-digest-cost.ts` is the A/B; fast checks pass. nv04
 - 261104 T678 done: the start plays the world's history while a later decade is generated — engine `seasonDigest` (Elo top 10, champions, European winners, 발롱도르, greatest feat) on every progress reply, a self-closing one-at-a-time feat card schedule and 22 messages in all 12 packs; 129 affected unit files (1153 tests), validate:presentation, typecheck, lint, format and build pass; host.generation integration test and the 1950 start journeys left to the host batch. nv04

@@ -206,12 +206,11 @@ export const requestSchema = z.object({
         seed: z.string().min(1).max(80),
       }),
     }),
-    // The takeover of a club of the generated world with the direction chosen (→ECON-38, WEB-15).
+    // The takeover of a club of the generated world with standard operating defaults (→ECON-38, WEB-15).
     z.strictObject({
       type: z.literal('take-over'),
       replace: z.boolean().optional(),
       clubId: ref,
-      preset: z.string().min(1).max(40).optional(),
     }),
     // A club's sheet in the generated world before the takeover (→WEB-15).
     z.strictObject({ type: z.literal('club-sheet'), clubId: ref }),

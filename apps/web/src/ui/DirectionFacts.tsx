@@ -39,7 +39,7 @@ export function DirectionAreas({ w, areas }: { w: World; areas: readonly AreaKey
     >
       <header className={s.head}>
         <h3>구단 방향 · {buildLabel(buildOf(w))}</h3>
-        <small>인수 때 정한 방향 · 자동 처리가 따르는 기준</small>
+        <small>자동 처리가 따르는 구단 운영 기준</small>
       </header>
       {areas.map((key) => {
         const area = DIRECTION_AREAS.find((item) => item.key === key)!,

@@ -919,6 +919,7 @@ export function LabPage() {
     <div className={styles.page}>
       <header className={styles.header}>
         <h1>경기 실험실</h1>
+        <a href="/constants">게임플레이 영향 요소 ↗</a>
         <p className={styles.muted}>
           게임 저장과 상관없는 실험 공간입니다. 여기서 바꾼 수치는 이 페이지의 실험에만 쓰입니다.
         </p>
