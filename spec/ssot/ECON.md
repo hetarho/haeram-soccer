@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r46 | Define the browser-demo rules for historical club economy.
+> r47 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -208,6 +208,8 @@
 
 - ECON-36 [o] Every club nobody owns keeps season books from the world's first season: income (league distribution →ECON-28, gate on its division and reputation →ECON-9, commercial income on its following →ECON-8), a wage bill on its strength and division (→CLUB-25), operating expenses (→ECON-30), the result, its cash and its debt. ← a club's value, and how much it spends, must exist before anyone buys it
   - books settle once at each season close from the same income and cost scales the owner's club uses, summed over the season, not round by round.
+  - competition money: its domestic cup and continental matches (→LEAGUE-5, →EURO-7) count in its income as the owner's club is paid for them — each tie and title prize and each result bonus on the broadcasting index (→ECON-31), and each home match's gate at its division and reputation without the league-match scaling (→ECON-9); league matches add nothing to it. ← the owner's club is paid for every cup and European night it plays, so a book without them reads a cup or European club's income short; its home gates, not its prizes, are most of that money while the gate carries the game
+  - competition money is in force only together with CLUB-48's table and LEAGUE-10's means level, through CLUB-48's gate, never alone (→!CLUB-48); until then a book's income is its league distribution, league gate and commercial income. ← at s = 1 without the means level a book moves no club's strength, only the takeover's price, cash and first-season expenses that LEAGUE-13's and OWNER-8's bounds were measured on without it
   - cash below zero is debt; a club nobody owns never goes bankrupt, and a takeover or project of →LEAGUE-10 clears its debt.
   - a club nobody owns lives within its means: in the world's first season its books open with CLUB_BOOKS.opening (half a season) of its income in cash; at each close cash above CLUB_BOOKS.cashSeasons (1) season of its income is spent on the club and leaves the books, and debt beyond CLUB_BOOKS.debtSeasons (1.5) seasons of its income is written off. ← unbounded books left 38 of 40 top clubs owing 3.8–15 seasons of income in 1950 while lower clubs held four seasons of turnover, and a 1930 takeover started with nothing
   - measured against the owner's club: a club taken over earns in its first owned season within ±25% of its books' last season income.
@@ -217,6 +219,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r47 261104 ECON-36✎ income league distribution, league gate, commercial→+competition money (cup and continental prizes, result bonuses, home gates unscaled), in force only with CLUB-48's table and LEAGUE-10's means level through CLUB-48's gate
 - r46 261104 ECON-16✎ no owner action or staff rule changes a dial→the owner sets each dial in 구단 운영 or 결재 설정, no staff rule; a saved key not listed has no effect; grassroots (풀뿌리 유망주 투자) row→removed; recruitment transfer fee ×0.85/0.95/1/1.15/1.3→the same fee at every level; ECON-17✎ no owner action changes the ticket price→the owner chooses a preset; ECON-22✎ no owner action changes the build→the owner changes a card, signed contracts kept; ECON-25✎ rows changed by no owner action→changed only by the owner, 지역 rows 주변 투자, 풀뿌리 유망주 투자, 티켓 가격→주변 투자, 티켓 가격; ECON-32✎ no facility work starts in a career→the owner starts the next work at its quoted cost; training ground development base +0.06/0.2/0.37/0.53/0.75 (summer ×27/4)→growth ×1.06/1.2/1.37/1.53/1.75 with round recovery +1–5 and talk goodwill +1–5%; ECON-33✎ one money rule→per-decision 재정 기조 and per-person annual wage caps the owner sets; ECON-34✎ both rows' targets add→지역 기반 from 주변 투자 alone, 글로벌 인지도's two rows add; ECON-22✎ 유스 순혈주의 preset −풀뿌리 유망주 투자 지역 리그 후원
 - r45 261104 ECON-22/25✎ direction chosen at takeover→standard cards and default rows at new takeovers; saved builds and presets preserved
 - r44 261104 ECON-29✎ measured 261015 on founding careers only→also measured 261104 on the 중견 사업가 takeover reference (8 careers, 1950–1969), with the facility rule and as played
