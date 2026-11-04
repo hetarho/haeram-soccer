@@ -1,0 +1,58 @@
+[
+ {
+  "name": "pc-soK-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/soK.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/pc-soK-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-soVol-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/soVol.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-sit/pc-soVol-calibration-2.json"
+  ]
+ },
+ {
+  "name": "bands-soVol-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/soVol.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-soK-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-sit/candidates/soK.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

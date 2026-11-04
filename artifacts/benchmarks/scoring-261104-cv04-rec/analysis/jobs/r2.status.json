@@ -1,0 +1,45 @@
+{
+ "seconds": 219,
+ "status": [
+  {
+   "name": "bands-cb5-400",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "bands-dr6l30-400",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "bands-cb3-400",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "bands-dr4l35-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "pc-cb5-calibration-2",
+   "code": 1,
+   "seconds": 214
+  },
+  {
+   "name": "pc-dr6l30-calibration-2",
+   "code": 1,
+   "seconds": 215
+  },
+  {
+   "name": "bands-cb8-400",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "bands-dr8l30f8-400",
+   "code": 0,
+   "seconds": 73
+  }
+ ]
+}

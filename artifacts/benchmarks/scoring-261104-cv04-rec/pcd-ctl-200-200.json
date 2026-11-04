@@ -1,0 +1,787 @@
+{
+ "kind": "t689-press-counter",
+ "model": "continuous-aggregate-10",
+ "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/ctl.json",
+ "seeds": [
+  "grid-bands-1",
+  "grid-bands-2",
+  "grid-bands-3",
+  "grid-bands-4"
+ ],
+ "start": 200,
+ "matches": 200,
+ "goals": {
+  "press": 279,
+  "counter": 271
+ },
+ "rows": [
+  {
+   "key": "poss|counter|regain",
+   "n": 11812,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|final|<30",
+   "n": 1115,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|final|30-40",
+   "n": 34,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|midOpp|<30",
+   "n": 872,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|midOpp|30-40",
+   "n": 1287,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|midOpp|40-50",
+   "n": 5,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|ownHalf|<30",
+   "n": 162,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|ownHalf|>=50",
+   "n": 2348,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|ownHalf|30-40",
+   "n": 1895,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|regain|ownHalf|40-50",
+   "n": 4094,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|restart",
+   "n": 3542,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|counter|restart|none|none",
+   "n": 3542,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain",
+   "n": 10161,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain|final|<30",
+   "n": 1105,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain|midOpp|<30",
+   "n": 1715,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain|ownHalf|<30",
+   "n": 6105,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain|ownHalf|>=50",
+   "n": 14,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain|ownHalf|30-40",
+   "n": 880,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|regain|ownHalf|40-50",
+   "n": 342,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|restart",
+   "n": 5213,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "poss|press|restart|none|none",
+   "n": 5213,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "shot|counter|dt|<8",
+   "n": 651,
+   "goals": 59,
+   "xg": 46.12
+  },
+  {
+   "key": "shot|counter|dt|>=25",
+   "n": 1283,
+   "goals": 63,
+   "xg": 54.912
+  },
+  {
+   "key": "shot|counter|dt|15-25",
+   "n": 1143,
+   "goals": 42,
+   "xg": 44.31
+  },
+  {
+   "key": "shot|counter|dt|8-15",
+   "n": 900,
+   "goals": 28,
+   "xg": 29.189
+  },
+  {
+   "key": "shot|counter|gs|0",
+   "n": 941,
+   "goals": 47,
+   "xg": 44.876
+  },
+  {
+   "key": "shot|counter|gs|1",
+   "n": 1432,
+   "goals": 82,
+   "xg": 76.359
+  },
+  {
+   "key": "shot|counter|gs|2",
+   "n": 1072,
+   "goals": 49,
+   "xg": 39.117
+  },
+  {
+   "key": "shot|counter|gs|3",
+   "n": 532,
+   "goals": 14,
+   "xg": 14.179
+  },
+  {
+   "key": "shot|counter|open",
+   "n": 3977,
+   "goals": 192,
+   "xg": 174.53
+  },
+  {
+   "key": "shot|counter|regain",
+   "n": 3272,
+   "goals": 164,
+   "xg": 147.524
+  },
+  {
+   "key": "shot|counter|regain|dt|<8|gs|0",
+   "n": 184,
+   "goals": 22,
+   "xg": 16.219
+  },
+  {
+   "key": "shot|counter|regain|dt|<8|gs|1",
+   "n": 229,
+   "goals": 23,
+   "xg": 20.073
+  },
+  {
+   "key": "shot|counter|regain|dt|<8|gs|2",
+   "n": 154,
+   "goals": 12,
+   "xg": 7.536
+  },
+  {
+   "key": "shot|counter|regain|dt|<8|gs|3",
+   "n": 64,
+   "goals": 2,
+   "xg": 2.084
+  },
+  {
+   "key": "shot|counter|regain|dt|>=25|gs|0",
+   "n": 184,
+   "goals": 8,
+   "xg": 6.58
+  },
+  {
+   "key": "shot|counter|regain|dt|>=25|gs|1",
+   "n": 339,
+   "goals": 19,
+   "xg": 18.855
+  },
+  {
+   "key": "shot|counter|regain|dt|>=25|gs|2",
+   "n": 280,
+   "goals": 17,
+   "xg": 11.33
+  },
+  {
+   "key": "shot|counter|regain|dt|>=25|gs|3",
+   "n": 145,
+   "goals": 3,
+   "xg": 3.014
+  },
+  {
+   "key": "shot|counter|regain|dt|15-25|gs|0",
+   "n": 205,
+   "goals": 6,
+   "xg": 7.843
+  },
+  {
+   "key": "shot|counter|regain|dt|15-25|gs|1",
+   "n": 338,
+   "goals": 17,
+   "xg": 17.607
+  },
+  {
+   "key": "shot|counter|regain|dt|15-25|gs|2",
+   "n": 247,
+   "goals": 7,
+   "xg": 7.76
+  },
+  {
+   "key": "shot|counter|regain|dt|15-25|gs|3",
+   "n": 101,
+   "goals": 2,
+   "xg": 2.881
+  },
+  {
+   "key": "shot|counter|regain|dt|8-15|gs|0",
+   "n": 205,
+   "goals": 7,
+   "xg": 6.941
+  },
+  {
+   "key": "shot|counter|regain|dt|8-15|gs|1",
+   "n": 292,
+   "goals": 11,
+   "xg": 9.534
+  },
+  {
+   "key": "shot|counter|regain|dt|8-15|gs|2",
+   "n": 188,
+   "goals": 5,
+   "xg": 6.056
+  },
+  {
+   "key": "shot|counter|regain|dt|8-15|gs|3",
+   "n": 117,
+   "goals": 3,
+   "xg": 3.211
+  },
+  {
+   "key": "shot|counter|regain|final|<30",
+   "n": 609,
+   "goals": 62,
+   "xg": 49.427
+  },
+  {
+   "key": "shot|counter|regain|final|30-40",
+   "n": 21,
+   "goals": 0,
+   "xg": 0.789
+  },
+  {
+   "key": "shot|counter|regain|midOpp|<30",
+   "n": 355,
+   "goals": 16,
+   "xg": 14.245
+  },
+  {
+   "key": "shot|counter|regain|midOpp|30-40",
+   "n": 456,
+   "goals": 18,
+   "xg": 18.706
+  },
+  {
+   "key": "shot|counter|regain|midOpp|40-50",
+   "n": 2,
+   "goals": 0,
+   "xg": 0.027
+  },
+  {
+   "key": "shot|counter|regain|ownHalf|<30",
+   "n": 59,
+   "goals": 1,
+   "xg": 2.047
+  },
+  {
+   "key": "shot|counter|regain|ownHalf|>=50",
+   "n": 318,
+   "goals": 13,
+   "xg": 9.931
+  },
+  {
+   "key": "shot|counter|regain|ownHalf|30-40",
+   "n": 652,
+   "goals": 23,
+   "xg": 24.902
+  },
+  {
+   "key": "shot|counter|regain|ownHalf|40-50",
+   "n": 800,
+   "goals": 31,
+   "xg": 27.449
+  },
+  {
+   "key": "shot|counter|restart",
+   "n": 705,
+   "goals": 28,
+   "xg": 27.007
+  },
+  {
+   "key": "shot|counter|restart|dt|<8|gs|0",
+   "n": 5,
+   "goals": 0,
+   "xg": 0.044
+  },
+  {
+   "key": "shot|counter|restart|dt|<8|gs|1",
+   "n": 4,
+   "goals": 0,
+   "xg": 0.031
+  },
+  {
+   "key": "shot|counter|restart|dt|<8|gs|2",
+   "n": 10,
+   "goals": 0,
+   "xg": 0.125
+  },
+  {
+   "key": "shot|counter|restart|dt|<8|gs|3",
+   "n": 1,
+   "goals": 0,
+   "xg": 0.009
+  },
+  {
+   "key": "shot|counter|restart|dt|>=25|gs|0",
+   "n": 65,
+   "goals": 2,
+   "xg": 3.603
+  },
+  {
+   "key": "shot|counter|restart|dt|>=25|gs|1",
+   "n": 125,
+   "goals": 8,
+   "xg": 6.928
+  },
+  {
+   "key": "shot|counter|restart|dt|>=25|gs|2",
+   "n": 97,
+   "goals": 6,
+   "xg": 3.521
+  },
+  {
+   "key": "shot|counter|restart|dt|>=25|gs|3",
+   "n": 48,
+   "goals": 0,
+   "xg": 1.083
+  },
+  {
+   "key": "shot|counter|restart|dt|15-25|gs|0",
+   "n": 66,
+   "goals": 1,
+   "xg": 1.98
+  },
+  {
+   "key": "shot|counter|restart|dt|15-25|gs|1",
+   "n": 84,
+   "goals": 4,
+   "xg": 2.879
+  },
+  {
+   "key": "shot|counter|restart|dt|15-25|gs|2",
+   "n": 64,
+   "goals": 2,
+   "xg": 2.093
+  },
+  {
+   "key": "shot|counter|restart|dt|15-25|gs|3",
+   "n": 38,
+   "goals": 3,
+   "xg": 1.267
+  },
+  {
+   "key": "shot|counter|restart|dt|8-15|gs|0",
+   "n": 27,
+   "goals": 1,
+   "xg": 1.666
+  },
+  {
+   "key": "shot|counter|restart|dt|8-15|gs|1",
+   "n": 21,
+   "goals": 0,
+   "xg": 0.454
+  },
+  {
+   "key": "shot|counter|restart|dt|8-15|gs|2",
+   "n": 32,
+   "goals": 0,
+   "xg": 0.697
+  },
+  {
+   "key": "shot|counter|restart|dt|8-15|gs|3",
+   "n": 18,
+   "goals": 1,
+   "xg": 0.63
+  },
+  {
+   "key": "shot|counter|restart|none|none",
+   "n": 705,
+   "goals": 28,
+   "xg": 27.007
+  },
+  {
+   "key": "shot|counter|setPiece",
+   "n": 559,
+   "goals": 79,
+   "xg": 73.538
+  },
+  {
+   "key": "shot|counter|via|other",
+   "n": 3545,
+   "goals": 173,
+   "xg": 161.887
+  },
+  {
+   "key": "shot|counter|via|through",
+   "n": 432,
+   "goals": 19,
+   "xg": 12.643
+  },
+  {
+   "key": "shot|press|dt|<8",
+   "n": 387,
+   "goals": 43,
+   "xg": 42.4
+  },
+  {
+   "key": "shot|press|dt|>=25",
+   "n": 1213,
+   "goals": 84,
+   "xg": 72.446
+  },
+  {
+   "key": "shot|press|dt|15-25",
+   "n": 428,
+   "goals": 29,
+   "xg": 24.991
+  },
+  {
+   "key": "shot|press|dt|8-15",
+   "n": 270,
+   "goals": 19,
+   "xg": 13.624
+  },
+  {
+   "key": "shot|press|gs|0",
+   "n": 118,
+   "goals": 17,
+   "xg": 23.194
+  },
+  {
+   "key": "shot|press|gs|1",
+   "n": 358,
+   "goals": 62,
+   "xg": 49.176
+  },
+  {
+   "key": "shot|press|gs|2",
+   "n": 670,
+   "goals": 68,
+   "xg": 57.42
+  },
+  {
+   "key": "shot|press|gs|3",
+   "n": 1152,
+   "goals": 28,
+   "xg": 23.67
+  },
+  {
+   "key": "shot|press|open",
+   "n": 2298,
+   "goals": 175,
+   "xg": 153.46
+  },
+  {
+   "key": "shot|press|regain",
+   "n": 1636,
+   "goals": 135,
+   "xg": 123.014
+  },
+  {
+   "key": "shot|press|regain|dt|<8|gs|0",
+   "n": 28,
+   "goals": 8,
+   "xg": 10.086
+  },
+  {
+   "key": "shot|press|regain|dt|<8|gs|1",
+   "n": 73,
+   "goals": 18,
+   "xg": 13.755
+  },
+  {
+   "key": "shot|press|regain|dt|<8|gs|2",
+   "n": 114,
+   "goals": 13,
+   "xg": 12.683
+  },
+  {
+   "key": "shot|press|regain|dt|<8|gs|3",
+   "n": 151,
+   "goals": 4,
+   "xg": 5.419
+  },
+  {
+   "key": "shot|press|regain|dt|>=25|gs|0",
+   "n": 41,
+   "goals": 3,
+   "xg": 5.57
+  },
+  {
+   "key": "shot|press|regain|dt|>=25|gs|1",
+   "n": 116,
+   "goals": 20,
+   "xg": 16.858
+  },
+  {
+   "key": "shot|press|regain|dt|>=25|gs|2",
+   "n": 220,
+   "goals": 27,
+   "xg": 20.533
+  },
+  {
+   "key": "shot|press|regain|dt|>=25|gs|3",
+   "n": 398,
+   "goals": 8,
+   "xg": 7.991
+  },
+  {
+   "key": "shot|press|regain|dt|15-25|gs|0",
+   "n": 11,
+   "goals": 2,
+   "xg": 2.643
+  },
+  {
+   "key": "shot|press|regain|dt|15-25|gs|1",
+   "n": 49,
+   "goals": 8,
+   "xg": 6.806
+  },
+  {
+   "key": "shot|press|regain|dt|15-25|gs|2",
+   "n": 81,
+   "goals": 6,
+   "xg": 7.24
+  },
+  {
+   "key": "shot|press|regain|dt|15-25|gs|3",
+   "n": 155,
+   "goals": 5,
+   "xg": 2.452
+  },
+  {
+   "key": "shot|press|regain|dt|8-15|gs|0",
+   "n": 16,
+   "goals": 3,
+   "xg": 2.967
+  },
+  {
+   "key": "shot|press|regain|dt|8-15|gs|1",
+   "n": 32,
+   "goals": 4,
+   "xg": 2.948
+  },
+  {
+   "key": "shot|press|regain|dt|8-15|gs|2",
+   "n": 60,
+   "goals": 4,
+   "xg": 3.181
+  },
+  {
+   "key": "shot|press|regain|dt|8-15|gs|3",
+   "n": 91,
+   "goals": 2,
+   "xg": 1.883
+  },
+  {
+   "key": "shot|press|regain|final|<30",
+   "n": 421,
+   "goals": 51,
+   "xg": 49.174
+  },
+  {
+   "key": "shot|press|regain|midOpp|<30",
+   "n": 312,
+   "goals": 23,
+   "xg": 23.475
+  },
+  {
+   "key": "shot|press|regain|ownHalf|<30",
+   "n": 793,
+   "goals": 57,
+   "xg": 44.081
+  },
+  {
+   "key": "shot|press|regain|ownHalf|30-40",
+   "n": 76,
+   "goals": 1,
+   "xg": 3.691
+  },
+  {
+   "key": "shot|press|regain|ownHalf|40-50",
+   "n": 34,
+   "goals": 3,
+   "xg": 2.593
+  },
+  {
+   "key": "shot|press|restart",
+   "n": 662,
+   "goals": 40,
+   "xg": 30.446
+  },
+  {
+   "key": "shot|press|restart|dt|<8|gs|1",
+   "n": 3,
+   "goals": 0,
+   "xg": 0.104
+  },
+  {
+   "key": "shot|press|restart|dt|<8|gs|2",
+   "n": 2,
+   "goals": 0,
+   "xg": 0
+  },
+  {
+   "key": "shot|press|restart|dt|<8|gs|3",
+   "n": 16,
+   "goals": 0,
+   "xg": 0.354
+  },
+  {
+   "key": "shot|press|restart|dt|>=25|gs|0",
+   "n": 17,
+   "goals": 1,
+   "xg": 1.653
+  },
+  {
+   "key": "shot|press|restart|dt|>=25|gs|1",
+   "n": 58,
+   "goals": 7,
+   "xg": 5.59
+  },
+  {
+   "key": "shot|press|restart|dt|>=25|gs|2",
+   "n": 136,
+   "goals": 13,
+   "xg": 10.556
+  },
+  {
+   "key": "shot|press|restart|dt|>=25|gs|3",
+   "n": 227,
+   "goals": 5,
+   "xg": 3.694
+  },
+  {
+   "key": "shot|press|restart|dt|15-25|gs|0",
+   "n": 3,
+   "goals": 0,
+   "xg": 0.251
+  },
+  {
+   "key": "shot|press|restart|dt|15-25|gs|1",
+   "n": 16,
+   "goals": 2,
+   "xg": 1.9
+  },
+  {
+   "key": "shot|press|restart|dt|15-25|gs|2",
+   "n": 42,
+   "goals": 4,
+   "xg": 2.683
+  },
+  {
+   "key": "shot|press|restart|dt|15-25|gs|3",
+   "n": 71,
+   "goals": 2,
+   "xg": 1.016
+  },
+  {
+   "key": "shot|press|restart|dt|8-15|gs|0",
+   "n": 2,
+   "goals": 0,
+   "xg": 0.024
+  },
+  {
+   "key": "shot|press|restart|dt|8-15|gs|1",
+   "n": 11,
+   "goals": 3,
+   "xg": 1.215
+  },
+  {
+   "key": "shot|press|restart|dt|8-15|gs|2",
+   "n": 15,
+   "goals": 1,
+   "xg": 0.544
+  },
+  {
+   "key": "shot|press|restart|dt|8-15|gs|3",
+   "n": 43,
+   "goals": 2,
+   "xg": 0.862
+  },
+  {
+   "key": "shot|press|restart|none|none",
+   "n": 662,
+   "goals": 40,
+   "xg": 30.446
+  },
+  {
+   "key": "shot|press|setPiece",
+   "n": 409,
+   "goals": 104,
+   "xg": 89.517
+  },
+  {
+   "key": "shot|press|via|other",
+   "n": 1859,
+   "goals": 135,
+   "xg": 123.95
+  },
+  {
+   "key": "shot|press|via|through",
+   "n": 439,
+   "goals": 40,
+   "xg": 29.51
+  }
+ ]
+}

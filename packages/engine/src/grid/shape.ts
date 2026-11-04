@@ -86,7 +86,7 @@ export const SHAPE_CONFIG = {
      */
     revision9: {
       /** `set`, `corridor`: T689 experiment, default off at `set` 0 (see `keeperOut`). */
-      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6 },
+      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6, crowd: 1, ahead: 0 },
       markRadius: 14,
     },
     /**
@@ -178,6 +178,10 @@ export const SHAPE_CONFIG = {
      * so the carrier finds several men in scoring positions, not the striker alone. Off at 0.
      */
     arrive: { from: 0, out: 14, narrow: 0.3 },
+    /** T689 experiment (default off at `seconds` 0): the back line's drop after a loss (`shapePlace`). */
+    drop: { seconds: 0, line: 35, free: 6 },
+    /** T689 experiment (default off at 0): every keeper steps up behind a high line as a sweeper keeper does. */
+    sweepAll: 0,
     /**
      * The flank beside a back three (T399, →MATCH-8, MATCH-17): out of possession, with the ball
      * at least `wide` m off the centre line and no further up the pitch than `upTo` m (the
@@ -635,7 +639,10 @@ export function shapePlace(
   if (own === 'GK') {
     const out = keeperOut(s, side, bx, by);
     if (out) return toEngine(side, out);
-    const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
+    // T689 experiment (default off at 0, →MATCH-11): every keeper sweeps behind a high line.
+    const sweeper =
+      slotOf(s, gp).role === 'sweeperKeeper' ||
+      (SHAPE_CONFIG.candidate.sweepAll > 0 && s.setup.model !== undefined);
     const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
     const high = sweeper && df >= 40;
     let x = 4 + (bx - MID) * SHAPE_CONFIG.keeperPull;
@@ -777,6 +784,28 @@ export function shapePlace(
   )
     return toEngine(side, boxBackLine(s, side, y));
   if (line === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
+  // T689 experiment (default off at `seconds` 0, →MATCH-17/32): for `seconds` after losing the
+  // ball, with nobody of the side within `free` m of it, the back line drops to at most `line` m
+  // from its goal — no pressure on the ball, the line drops rather than holding high.
+  const D = SHAPE_CONFIG.candidate.drop;
+  if (
+    line === 'DF' &&
+    D.seconds > 0 &&
+    s.setup.model !== undefined &&
+    x > D.line &&
+    s.lastLoss?.side === side &&
+    s.elapsed - s.lastLoss.at < D.seconds
+  ) {
+    let pressed = false;
+    for (const mate of s.players[side]) {
+      if (!onPitch(mate) || mate.slot === 0) continue;
+      if (hypot(mate.pos[0] - s.ball[0], mate.pos[1] - s.ball[1]) < D.free) {
+        pressed = true;
+        break;
+      }
+    }
+    if (!pressed) x = D.line;
+  }
   return toEngine(side, [x, y]);
 }
 
@@ -972,19 +1001,18 @@ function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | u
   const R9 = SHAPE_CONFIG.candidate.revision9.keeperOut;
   // T689 experiment (default off at `set` 0): half of the way only to a carrier through on goal (no
   // outfield teammate of the keeper within `corridor` m of the line from the ball to the goal's
-  // middle); `set` of the way to one with a defender between him and the goal.
+  // middle); `set` of the way to one with at least `crowd` defenders between him and the goal.
   let share: number = R9.share;
   if (R9.set > 0) {
+    let between = 0;
     for (const gp of s.players[side]) {
       if (!onPitch(gp) || gp.slot === 0) continue;
       const p = attackFrame(side, gp.pos);
       const t = ((p[0] - bx) * -bx + (p[1] - by) * (CENTRE - by)) / (d * d);
-      if (t <= 0 || t >= 1) continue;
-      if (Math.abs((p[0] - bx) * (CENTRE - by) - (p[1] - by) * -bx) / d < R9.corridor) {
-        share = R9.set;
-        break;
-      }
+      if (t <= 0 || t >= 1 || t * d < R9.ahead) continue;
+      if (Math.abs((p[0] - bx) * (CENTRE - by) - (p[1] - by) * -bx) / d < R9.corridor) between++;
     }
+    if (between >= R9.crowd) share = R9.set;
   }
   const reach = modelAtLeast(s.setup, 9)
     ? Math.max(0, Math.min(K.most, d * share, d - R9.gap))

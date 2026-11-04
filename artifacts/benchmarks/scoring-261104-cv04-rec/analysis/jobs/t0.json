@@ -1,0 +1,15 @@
+[
+ {
+  "name": "pcd-ctl-0-4",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/ctl.json",
+  "script": "scripts/scoring-press-counter.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pcd-ctl-0-4.json"
+  ]
+ }
+]

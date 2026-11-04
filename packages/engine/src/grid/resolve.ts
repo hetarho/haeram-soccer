@@ -213,6 +213,14 @@ export const DUEL_CONFIG = {
      */
     crossKeeper: 0.47,
     /**
+     * T689 experiment (default off at 0, →MATCH-18/33): a cross neither delivered nor overhit is
+     * blocked behind for a corner by the defender at the crosser's foot this share of the time,
+     * scaled by the pressure on the crosser (at most 1).
+     */
+    crossBlockBehind: 0,
+    /** T689 experiment (default off at 0): a defender who wins a delivery's aerial duel heads it behind this share of the time. */
+    headBehind: 0,
+    /**
      * The deepest a won take-on ends (T437, →MATCH-11, the attack frame's metres), though always
      * a metre past the man he beat: a defender beaten in the box leaves the attacker a strike from
      * where he went past him, not a run into the six-yard box. Neutral at 104.5 (`takeOn.past`'s
@@ -279,9 +287,10 @@ export const SHOT_CONFIG = {
   /**
    * `set`, `corridor`: T689 experiment, default off at `set` 0: `reach` only against a shooter
    * through on goal (no outfield opponent within `corridor` m of the line from him to the goal's
-   * middle, between them); `set` m against one with a defender between.
+   * middle, between them); `set` m against one with at least `crowd` defenders between.
    */
-  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6 } },
+  // `ahead` (cv04-rec, default 0): a defender counts as between only `ahead` m or more nearer the goal along the line than the shooter.
+  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6, crowd: 1, ahead: 0 } },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -870,16 +879,16 @@ export function keeperNarrowing(
     const gx = PITCH.length,
       gy = PITCH.width / 2;
     const dd = hypot(gx - from[0], gy - from[1]);
+    let between = 0;
     for (const gp of s.players[other(side)]) {
       if (!onPitch(gp) || gp.slot === 0 || dd <= 0) continue;
       const p = attackFrame(side, gp.pos);
       const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
-      if (t <= 0 || t >= 1) continue;
-      if (Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd < N.corridor) {
-        reach = N.set;
-        break;
-      }
+      if (t <= 0 || t >= 1 || t * dd < N.ahead) continue;
+      if (Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd < N.corridor)
+        between++;
     }
+    if (between >= N.crowd) reach = N.set;
   }
   const lo = atan2(PITCH.width / 2 - BOX_CONFIG.post - from[1], depth),
     hi = atan2(PITCH.width / 2 + BOX_CONFIG.post - from[1], depth);
@@ -1069,6 +1078,17 @@ export function resolveCross(
   if (!delivered || !attacker) {
     const over = crossOverhit(s, side, idx, r);
     if (over) return over;
+    // T689 experiment (default off): blocked behind by the defender at the crosser's foot.
+    const BB = DUEL_CONFIG.candidate.crossBlockBehind;
+    if (BB > 0 && onCandidate(s) && tags.pressure > 0 && r() < BB * Math.min(1, tags.pressure)) {
+      const y = clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width);
+      return {
+        kind: 'out',
+        at: toEngine(side, [PITCH.length, y]),
+        lastTouch: foe,
+        over: 'byline',
+      };
+    }
     const spot: Point = attacker
       ? attackFrame(side, attacker.pos)
       : [PITCH.length - 10, PITCH.width / 2];
@@ -1164,8 +1184,18 @@ function aerialDelivery(
     }, undefined)?.gp;
   if (defender) {
     const duel = resolveAerial(s, [side, attacker.idx], [foe, defender.idx], [88.5, at[1]], r);
-    if (duel.kind === 'loose' && duel.winner[0] === foe)
+    if (duel.kind === 'loose' && duel.winner[0] === foe) {
+      // T689 experiment (default off at 0, →MATCH-18): a defender's header heads it behind.
+      const HB = DUEL_CONFIG.candidate.headBehind;
+      if (HB > 0 && onCandidate(s) && r() < HB)
+        return {
+          kind: 'out',
+          at: toEngine(side, [PITCH.length, clamp(at[1], 0, PITCH.width)]),
+          lastTouch: foe,
+          over: 'byline',
+        };
       return { kind: 'loose', at: toEngine(side, [88.5, at[1]]), winner: duel.winner, aerial: foe };
+    }
   }
   const aerial = defender ? { aerial: side } : {};
   if (r() < (tags.phase === 'setPiece' ? X.control.setPiece : X.control.open))

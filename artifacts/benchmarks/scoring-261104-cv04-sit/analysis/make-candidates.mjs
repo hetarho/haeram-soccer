@@ -27,8 +27,6 @@ const list = {
   sna110: merge(sn(1, 0.25), logit(-1.1)),
   sna100: merge(sn(1, 0.25), logit(-1)),
   sn08a110: merge(sn(0.8, 0.25), logit(-1.1)),
-  sn08a100: merge(sn(0.8, 0.25), logit(-1)),
-  snar12a110: merge(merge(sn(1, 0.25), logit(-1.1)), arrive({ out: 12, from: 50 })),
   // More relief where a defender stands between (reach 0.5 m, or none: 0.01 m), goals back up.
   sn05a100: merge(sn(0.5, 0.25), logit(-1)),
   sn01a100: merge(sn(0.01, 0.25), logit(-1)),
@@ -39,7 +37,7 @@ const list = {
   snA: merge(merge(sn(1, 0.25), logit(-1.1)), arrive({ out: 14, from: 60 })),
   snW: merge(merge(sn(1, 0.25), logit(-1.1)), { decide: { candidate: { revision9: { clear: { within: 0 } } } } }),
   // … without the keeper's release (hold, handsOff, quick) | without the between-relief (released
-  // narrowing for every shot) | the control's volume scale 0.1 | the released box fouls 0.046.
+  // narrowing for every shot).
   snK: merge(merge(sn(1, 0.25), logit(-1.1)), {
     decide: { keeper: { hold: 0, quick: 0 } },
     shape: { candidate: { handsOff: 0 } },
@@ -48,8 +46,6 @@ const list = {
     shot: { revision9: { narrow: { set: 0 } } },
     shape: { candidate: { revision9: { keeperOut: { set: 0 } } } },
   }),
-  snV: merge(merge(sn(1, 0.25), logit(-1.1)), { decide: { candidate: { revision4: { shotScale: 0.1 } } } }),
-  snP: merge(merge(sn(1, 0.25), logit(-1.1)), { duel: { candidate: { boxFoul: 0.046 } } }),
   // sn01a100 with the alone clause within 16 m | 20 m (MATCH-16's shooting distance) instead of 12 m.
   sn01an16: merge(sn(0.01, 0.25), merge(logit(-1), { decide: { candidate: { revision9: { clear: { within: 16 } } } } })),
   sn01an20: merge(sn(0.01, 0.25), merge(logit(-1), { decide: { candidate: { revision9: { clear: { within: 20 } } } } })),
@@ -70,8 +66,25 @@ const list = {
       shape: { candidate: { revision9: { keeperOut: { corridor: 3 } } } },
     }),
   ),
+  // sn01o08h25 relieved only with two or more defenders between (`crowd` 2, this window's switch):
+  // a lone recovering defender ahead of a breakaway keeps the keeper's narrowing and come-out.
+  snc2: merge(
+    sn(0.01, 0.25),
+    merge(logit(-1), {
+      restart: { offside: { candidate: { base: 0.08, highLineFactor: 2.5 } } },
+      shot: { revision9: { narrow: { crowd: 2 } } },
+      shape: { candidate: { revision9: { keeperOut: { crowd: 2 } } } },
+    }),
+  ),
   // cv04's control, copied for this window's calibration MATCH-29 read beside the candidates.
   ctl: base('ctl'),
 };
+list.snc2a090 = merge(list.snc2, logit(-0.9));
+// Resolving-size decomposition on sn01o08h25: without the keeper's release | with the control's shot
+// volume (alone clause anywhere, `shotScale` 0.1).
+list.soK = merge(list.sn01o08h25, { decide: { keeper: { hold: 0, quick: 0 } }, shape: { candidate: { handsOff: 0 } } });
+list.soVol = merge(list.sn01o08h25, {
+  decide: { candidate: { revision4: { shotScale: 0.1 }, revision9: { clear: { within: 0 } } } },
+});
 for (const [n, c] of Object.entries(list)) writeFileSync(dir + n + '.json', JSON.stringify(c));
 console.log(Object.keys(list).join(' '));

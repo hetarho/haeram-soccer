@@ -1,0 +1,15 @@
+{
+ "seconds": 98,
+ "status": [
+  {
+   "name": "core-ctl-validation-1",
+   "code": 0,
+   "seconds": 95
+  },
+  {
+   "name": "core-sn01o08h25-validation-1",
+   "code": 0,
+   "seconds": 98
+  }
+ ]
+}

@@ -1,0 +1,98 @@
+[
+ {
+  "name": "pc-cb5-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/cb5.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pc-cb5-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-dr6l30-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/dr6l30.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-rec/pc-dr6l30-calibration-2.json"
+  ]
+ },
+ {
+  "name": "bands-cb5-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/cb5.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-dr6l30-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/dr6l30.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-cb3-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/cb3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-dr4l35-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/dr4l35.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-cb8-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/cb8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-dr8l30f8-400",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-rec/candidates/dr8l30f8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]

@@ -1,0 +1,25 @@
+{
+ "seconds": 51,
+ "status": [
+  {
+   "name": "pcd-ctl-0-200",
+   "code": 0,
+   "seconds": 50
+  },
+  {
+   "name": "pcd-ctl-200-200",
+   "code": 0,
+   "seconds": 50
+  },
+  {
+   "name": "pcd-sn01o08h25-200-200",
+   "code": 0,
+   "seconds": 51
+  },
+  {
+   "name": "pcd-sn01o08h25-0-200",
+   "code": 0,
+   "seconds": 51
+  }
+ ]
+}

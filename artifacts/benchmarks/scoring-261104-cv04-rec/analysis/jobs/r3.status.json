@@ -1,0 +1,20 @@
+{
+ "seconds": 232,
+ "status": [
+  {
+   "name": "pc-hb35cb8-calibration-2",
+   "code": 0,
+   "seconds": 221
+  },
+  {
+   "name": "pc-s10-calibration-2",
+   "code": 0,
+   "seconds": 221
+  },
+  {
+   "name": "pc-sw5m28-calibration-2",
+   "code": 0,
+   "seconds": 232
+  }
+ ]
+}
