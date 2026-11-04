@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r48 | Define the browser-demo rules for historical club economy.
+> r49 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -70,14 +70,14 @@
   | key | default | effect by level 1→5 |
   |---|---|---|
   | support | 3 | contract talks: goodwill −5/0/+5/+10/+15% (→CLUB-26) · round development ×0.8/0.9/1/1.12/1.25 · round fatigue recovery −2/−1/0/+1/+2 · operating expenses ×0.9/0.95/1/1.1/1.2 (→ECON-30) |
-  | recruitment | 3 | market offers age 17–21/18–25/18–30/23–31/26–33 · ability 35–65/38–75/40–85/50–88/60–92 · potential +12/+6/0/0/0; transfer fees are the same at every level |
+  | recruitment | 3 | the scout searches ages 17–21/18–25/18–30/23–31/26–33 · ability 35–65/38–75/40–85/50–88/60–92 (→CLUB-51) · levels 1–2 rank potential before ability; transfer fees are the same at every level |
   | academy | 1 | per-round spend 0/1/2.5/4.5/7 units · intake +0/0/1/1/2 prospects · intake potential +0/3/5/8/11 · academy growth ×1/1.1/1.2/1.3/1.45 |
   | localInvest (주변 투자) | 1 | per-round spend 0/1/2.5/4.5/7 units (1901 prices, billed with operating costs) · gate demand +0/2/4/6/8% · 지역 기반 aims at 0/20/40/65/100 (→ECON-34) |
   | globalMarketing (해외 마케팅) | 1 | per-round spend 0/1/2.5/4.5/7 units · fans +0/0.4/0.8/1.3/2% per settled round · 글로벌 인지도 aims at 0/20/40/65/100 |
-  | globalScouting (해외 스카우트망) | 1 | per-round spend 0/1/2.5/4.5/7 units · market candidates +0/1/2/3/4 · candidate potential +0/0/1/1/2 · 글로벌 인지도 aims at +0/10/20/30/45 |
+  | globalScouting (해외 스카우트망) | 1 | per-round spend 0/1/2.5/4.5/7 units · the scout's reach abroad (→CLUB-51) · 글로벌 인지도 aims at +0/10/20/30/45 |
   | tour (해외 투어) | 1 | none / a short tour / a long tour each summer: income 20 + 2 × reputation / 40 + 4 × reputation units when the season starts, 글로벌 인지도 +5 / +10 at once, every player's fatigue +10 / +20 |
   - the support setting is shown as squad investment (선수단 투자): the training and medical environment and how the club treats its players in talks, paid for through the operating expenses it scales. ← with no cost every club would run it at the top
-  - each combination of settings draws its own market list under its own IDs; a pending bid keeps its player and terms (→CLUB-14).
+  - a setting shapes the next shortlist draw only and creates no player (→CLUB-14, →CLUB-50); a pending bid keeps its player and terms.
 - ECON-17 [o] The ticket price is one of five presets over the existing ticket rule: 0.02/0.035/0.05/0.08/0.12 (1901 base price); a club keeps the price its founding direction set (0.05 by default, →ECON-22) until the owner chooses another preset in 구단 운영 (→WEB-14). A non-preset price from an older save stays in force, shown as custom, until the owner chooses a preset.
 
 - ECON-18 [o] Operations show a read-only cash projection to season end and to 365 days ahead as low–high ranges, carrying forward current contracts, wages, staff, policy, sponsor terms and gate demand, with labelled lines. Uncertain campaign results and new decisions are excluded.
@@ -105,14 +105,14 @@
   - a new takeover starts with 기본 방향 (every row at its default), without a preset choice (→WEB-15).
   | slot | card | effects |
   |---|---|---|
-  | 유입 방식 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
+  | 유입 방식 | 성골 유스 | intake +1, intake potential +3; the shortlist lists one fewer per line (→CLUB-51) |
   | 유입 방식 | 유소년 클럽 제휴 | intake +2; intake potential −2 |
   | 유입 방식 | 해외 유스 스카우트 | intake potential +5; intake −1 |
   | 유입 방식 | 엘리트 선발 | intake potential +8; intake −2 |
-  | 스카우팅 | 데이터 스카우팅 | candidate potential +3, candidates +1; candidate ability −2 |
-  | 스카우팅 | 즉시 전력 | candidate ability +4; player wages ×1.05 |
-  | 스카우팅 | 광역 네트워크 | candidates +3; candidate potential −1 |
-  | 스카우팅 | 지역 인재 우선 | home gate demand +2%, player wages ×0.97; candidates −1 |
+  | 스카우팅 | 데이터 스카우팅 | the scout ranks potential before ability and lists one more per line; his search's ability band −2 (→CLUB-51) |
+  | 스카우팅 | 즉시 전력 | the scout's search's ability band +4 (→CLUB-51); player wages ×1.05 |
+  | 스카우팅 | 광역 네트워크 | one more per line and the top flight of one more country abroad (→CLUB-51); potential never ranks first |
+  | 스카우팅 | 지역 인재 우선 | home gate demand +2%, player wages ×0.97; one fewer per line and no players abroad (→CLUB-51) |
   | 매각 기조 | 셀링 클럽 | other clubs' offers ×1.6, sale fees ×1.25; morale baseline −2 |
   | 매각 기조 | 쇼케이스 | offers ×1.3, sale fees ×1.1; morale baseline −1 |
   | 매각 기조 | 핵심 지키기 | morale baseline +2; offers ×0.5 |
@@ -220,6 +220,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r49 261104 ECON-22✎ 스카우팅/유입 cards' candidate ability, potential and count→the scout's search (band, ranking, per line, reach abroad →CLUB-51); ECON-16✎ recruitment market offers age/ability bands with potential +12/+6→the scout's search bands, levels 1–2 ranking potential first; 해외 스카우트망 market candidates +0–4 and potential +0–2→the scout's reach abroad (→CLUB-51); each setting combination draws its own list→a setting shapes the next shortlist draw and creates no player
 - r48 261104 ECON-36✎ competition money in force only through CLUB-48's gate, until then distribution, league gate and commercial only→in force with CLUB-48's table and the means level, the gate passed (measured 261104); ECON-29✎ +measured 261104 on the rules in force (중견 사업가 reference as played: wage bill 39.8%, operating result +23.2%), the earlier 261104 line marked before CLUB-48's table
 - r47 261104 ECON-36✎ income league distribution, league gate, commercial→+competition money (cup and continental prizes, result bonuses, home gates unscaled), in force only with CLUB-48's table and LEAGUE-10's means level through CLUB-48's gate
 - r46 261104 ECON-16✎ no owner action or staff rule changes a dial→the owner sets each dial in 구단 운영 or 결재 설정, no staff rule; a saved key not listed has no effect; grassroots (풀뿌리 유망주 투자) row→removed; recruitment transfer fee ×0.85/0.95/1/1.15/1.3→the same fee at every level; ECON-17✎ no owner action changes the ticket price→the owner chooses a preset; ECON-22✎ no owner action changes the build→the owner changes a card, signed contracts kept; ECON-25✎ rows changed by no owner action→changed only by the owner, 지역 rows 주변 투자, 풀뿌리 유망주 투자, 티켓 가격→주변 투자, 티켓 가격; ECON-32✎ no facility work starts in a career→the owner starts the next work at its quoted cost; training ground development base +0.06/0.2/0.37/0.53/0.75 (summer ×27/4)→growth ×1.06/1.2/1.37/1.53/1.75 with round recovery +1–5 and talk goodwill +1–5%; ECON-33✎ one money rule→per-decision 재정 기조 and per-person annual wage caps the owner sets; ECON-34✎ both rows' targets add→지역 기반 from 주변 투자 alone, 글로벌 인지도's two rows add; ECON-22✎ 유스 순혈주의 preset −풀뿌리 유망주 투자 지역 리그 후원
