@@ -255,6 +255,89 @@
       "codePushed": true,
       "priorityTask": null,
       "recovery": null
+    },
+    {
+      "schemaVersion": 1,
+      "tag": "nv04",
+      "provider": "claude",
+      "permissionMode": "acceptEdits",
+      "cwd": "/Users/ihaelam/project/haeram-soccer/.tmp/nv04",
+      "concurrency": "solo",
+      "route": "choose",
+      "limits": {
+        "maxUnits": 100,
+        "maxHours": 1.0238377777777778,
+        "batchSize": 3,
+        "timeoutMs": 16200000
+      },
+      "verify": {
+        "task": [
+          "pnpm run typecheck",
+          "pnpm run lint",
+          "pnpm run format:check",
+          "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests"
+        ],
+        "batch": [
+          "pnpm run test:unit",
+          "pnpm run test:contract",
+          "pnpm run build"
+        ],
+        "ci": [],
+        "guidance": [
+          "- ARCH-21 [o] Testing is required for behavior that protects continuity and correctness.",
+          "  - Vitest: deterministic engine, calendars, money, contract effects, IDs, and migrations.",
+          "  - fast-check: seeded invariants for league/group capacities, fixture settlement, balance conservation, transitions, and save round trips.",
+          "  - Portable fixtures: command sequences and canonical expected facts consumed by the web engine now and the Dart engine later.",
+          "  - Playwright: start and takeover → watch/advance → compare metrics → recruit → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.",
+          "  - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.",
+          "  - A fast unit test isolates a function or component with minimal prepared data; whole-world progression, host/codec round trips and multi-match statistical checks belong to the integration tier. Every existing case remains in exactly one of unit, integration or contract.",
+          "  - A test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per dependency fingerprint and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). Cache identities include local transitive runtime imports, builder inputs and relevant toolchain/configuration; unrelated UI/assets/tests do not invalidate engine-only worlds. Generic JSON caching and release constants have no simulation imports. UI-only browser journeys may load versioned validated prepared checkpoints; separate live-engine integration cases retain writer coverage. ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes",
+          "- ARCH-22 [o] Scaffolding must provide these executable verification scripts.",
+          "  - `pnpm run typecheck`",
+          "  - `pnpm run lint`",
+          "  - `pnpm run format:check`",
+          "  - `pnpm run test:unit`",
+          "  - `pnpm run test:integration`",
+          "  - `pnpm run test:contract`",
+          "  - `pnpm run validate:catalogs`",
+          "  - `pnpm run build`",
+          "  - `pnpm run test:e2e`",
+          "  - `pnpm run benchmark`",
+          "  - `pnpm run verify`",
+          "  - `verify` runs type/lint/format, unit/integration/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.",
+          "  - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.",
+          "- ARCH-30 [o] Verification runs in tiers; no task runs the whole suite or any browser spec. ← the serial suite took about 22 minutes, 15½ of them browser tests, while a task's own checks take about a minute; even the covering Chromium specs made each task too slow",
+          "  - a task never runs browser specs (`playwright`, `tests/e2e`), not even for a UI, browser-journey, storage or worker change; such a task runs `pnpm run build` beside the task checks.",
+          "  - an acceptance item naming `tests/e2e` specs is confirmed by the release run, not by the task session: the task writes or updates those specs, checks the item `- [v]` once the build passes, lists only the commands it ran in `- verified:` and names the specs left to the release run in `- limits:`.",
+          "  - `HAERAM_DIFF_BASE` is the commit the task started from: the work CLI sets it, a standalone session sets it itself.",
+          "  - release, once, by the last session still working (no other live session with a task in progress): merge `main` into `next`, run `pnpm run verify:batch` (unit, integration, contract, catalogs, presentation, build and every journey on Chromium) through `vibe check --tier batch`, fix what fails, then merge `next` into `main` and push `main`, which deploys. Every other session only gathers its work on `next`. ← sessions running full suites and browser journeys side by side overloaded the shared host; one gate before each deploy is enough",
+          "  - browser specs run only in the release run; a failing spec there stops the release until it is fixed.",
+          "  - CI, after a push to `main` (pushes to `next` start none): ARCH-23 runs every browser. One waiting command reads the result once per push, never repeated model polling; a failure becomes a fix task. A push touching only `spec/`, `artifacts/` or Markdown starts no CI and needs no wait.",
+          "  - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.",
+          "  - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).",
+          "- ARCH-33 [o] Verification and measurement dependencies follow computation boundaries.",
+          "  - Match rules, action/skill primitives and fixture reconstruction are leaf modules: the grid kernel does not import campaign lifecycle/orchestration, and the save codec rebuilds fixtures without importing the season orchestrator. Existing entry points may re-export leaves for compatibility.",
+          "  - Expensive measurement reuse is keyed by the runner/workload and its transitive runtime dependencies, catalog inputs, codec and toolchain. Preserve a separate full-source/build provenance fingerprint; unrelated visual assets or test edits do not invalidate simulation-only phases. A relevant source change always invalidates reuse.",
+          "  - Keep historical measurements immutable and label later values by source, command, environment, selected checks and cache state; structural dependency/selection checks do not imply runtime speedups."
+        ],
+        "declared": true
+      },
+      "batchVerify": [
+        "pnpm run verify:batch"
+      ],
+      "directory": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04",
+      "stopFile": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/STOP",
+      "manifest": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/loops/nv04/loop.json",
+      "freshSessionPerUnit": true,
+      "pushEachUnit": false,
+      "ok": false,
+      "reason": "failed",
+      "error": "묶음 검증 실패: pnpm run verify:batch",
+      "units": 7,
+      "report": "spec/reports/261103-nv04.md",
+      "codePushed": false,
+      "priorityTask": null,
+      "recovery": null
     }
   ],
   "checkpoints": [
@@ -374,6 +457,39 @@
       "changed": true,
       "commit": "cc6e18c1d156354318d53777a0d8ea6886e40c92",
       "tree": "4df8a54e8b6cf9fcce414e5f99a7cadbe0da6f16",
+      "branch": "wip/nv04",
+      "pushed": true,
+      "pushError": null,
+      "remoteConfirmed": true
+    },
+    {
+      "at": "2026-11-03T23:08:34.171Z",
+      "schemaVersion": 1,
+      "changed": true,
+      "commit": "b63b66ab08f65f2b28ede0022dbc04ef7a441800",
+      "tree": "a8f59e4e174801c197c9739a74162fd0f81eec85",
+      "branch": "wip/nv04",
+      "pushed": true,
+      "pushError": null,
+      "remoteConfirmed": true
+    },
+    {
+      "at": "2026-11-04T00:08:28.916Z",
+      "schemaVersion": 1,
+      "changed": true,
+      "commit": "630a03f40e5fa2065ae796a9188221033b3da61e",
+      "tree": "7f14a731b40bdb57d0e5eec6792a4ca1ca7edd53",
+      "branch": "wip/nv04",
+      "pushed": true,
+      "pushError": null,
+      "remoteConfirmed": true
+    },
+    {
+      "at": "2026-11-04T00:10:03.934Z",
+      "schemaVersion": 1,
+      "changed": true,
+      "commit": "5a41bab04f77575ef4fec8733e4bd71a20a4ef81",
+      "tree": "e46adb7877fe4e7def08321bccbb2484ef0520e9",
       "branch": "wip/nv04",
       "pushed": true,
       "pushError": null,
@@ -573,5 +689,6 @@
       ]
     }
   ],
-  "status": "starting"
+  "status": "stopped",
+  "finished": "2026-11-04T00:10:03.940Z"
 }
