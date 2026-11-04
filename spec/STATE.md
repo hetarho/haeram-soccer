@@ -18,8 +18,13 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| rs01 | ihaelam-ui-MacBookPro | autopilot | 2026-11-04T14:36Z | 2026-11-04T14:36Z | - |
 
 ## inbox
+- 261104 decided CLUB-49 CLUB-50 T701: where real free-agent players come from in a world whose clubs nobody owns redraw their squads each season → our unsigned expiries plus each such club's two least able players aged 21+ let go at the close (and once at a world's start), 20% leaving per refresh, a whole unsigned season retiring, a 200 cap, decline without growth (alt: persist every NPC squad across seasons, a larger world-model change | keep the generated shortlist players and only relabel them, which the owner rejected). rs01
+- 261104 decided CLUB-51 ECON-16 ECON-22 T702: what the chief scout and the scouting settings do once candidates are existing players → his ability sets home reach (adjacent divisions / whole country) and per-line count 2/3/4, 해외 스카우트망 levels add the top flights of 0/1/2/4/7 countries, cards shift the search band, per-line count, ranking and reach instead of creating ability or potential (alt: keep the old candidate-count numbers as a list length | let the owner pick countries). rs01
+- 261104 decided STAFF-49 STAFF-50 T703 T704: how other clubs' backrooms exist without storing hundreds of staff → derived holders per club and post from seed and a holder count, as managers already are, poachable for one annual wage among the six ablest of our league and the division above; per-post free pools of 3–6; careers recorded only on a move and tenure finishes read from archived standings (alt: 1.5× compensation as for managers | store every club's staff). rs01
+- 261104 decided T701 T702 T703 T704 T705: run the implementation units in this worktree with one delegated session per task rather than `vibe loop`, because the shared STATE also lists ba04's live T693–T700 and T689 as runnable and the loop has no task filter (alt: vibe loop, which could claim another session's tasks). rs01
 - 261104 decided CLUB-48 CLUB-25 CLUB-26 ECON-36 LEAGUE-13 T693: which mechanism first makes a giant's books payable across eras (in 1950 every country's strongest club pays 1.8–3.3× its income in wages, so 6 of 8 석유 재벌 references go bankrupt in 1950–51) → an era star pay spread s (0–1) on every wage term above an ordinary OVR-80 player's (points above 80, T690's scarcity premium, top-flight terms, the Ballon d'Or premium), wages at 80 or below never moving: one year table for every country, 1 from 2008 at the latest so T690's modern ratios stand, calibrated as the least compression keeping the median of each country's three strongest clubs at ≤70% wages/revenue with no non-project club above 100%; England's own s = 0 through 1960/61 from the EFL's primary record of the maximum wage; held out on seeds 2–3 × eight countries × other years; T693 explores 150 min with its baseline first (alt: era-scale the whole wage slope, which moves the ordinary 80/60 and second-tier targets ECON-29 is calibrated on | bind NPC squad strength to their books' means, a larger world-model change better judged once prices are right | apply England's statutory cap worldwide, which no primary record supports | raise giants' income, a subsidy). ba04
 - 261104 decided ECON-29 ECON-30 LEAGUE-13 T693: plan the organic lower-club growth correction now, on T686's readings, or after T693 → after: T686's lower-tier readings predate the released investment controls, T693's baseline re-runs every tier's reference careers on them and its wage change moves the same books, so the growth slice is planned next on those readings, one mechanism at a time (alt: recalibrate ECON-30's operating share now on T686's +18.9% as-played surplus). ba04
 - 261104 decided T689 ARCH-30: the owner now explicitly orders an automatic, sequential football-realism balance pass in a new worktree; the prior stop-before-additional-balance-tasks instruction applied to the previous release and is superseded for this pass. Use update-ssot/create-task for new reversible policy changes, measure before selecting candidates, retain T689's original realism gate, and preserve the primary main checkout. Order: era-aware financial viability and lower-club growth, transfer/retention, owner reach/dividend risk, scoring, then a fresh check of the old calibration memo (alt: start another isolated T689 run before fixing the economic and retention findings). ba04
@@ -696,19 +701,19 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 30 | 30 | - | 2 |
-| WEB | 208 | 208 | - | 0 |
+| WEB | 209 | 209 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
-| CLUB | 59 | 59 | - | 0 |
+| CLUB | 60 | 60 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
-| STAFF | 39 | 39 | - | 0 |
-| ECON | 48 | 48 | - | 0 |
+| STAFF | 40 | 40 | - | 0 |
+| ECON | 49 | 49 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 4 | 4 | - | 0 |
+| OWNER | 5 | 5 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
 ## review
@@ -734,6 +739,11 @@
 | T698 | CLUB-48's champions part on the real leagues' spread and history's noise | CLUB LEAGUE | - | todo |
 | T699 | CLUB-48's careers' check on T697's table, then the table, the means level and competition money in force together | CLUB LEAGUE ECON OWNER | - | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | - | todo |
+| T701 | player free-agent pool | CLUB PLAYER ARCH | - | todo |
+| T702 | scout finds existing players | CLUB ECON STAFF WEB PLAYER ARCH | T701 | todo |
+| T703 | staff markets from clubs and free agents | STAFF CLUB OWNER ARCH | - | todo |
+| T704 | staff careers and tenure results | STAFF HIST LEAGUE ARCH | T703 | todo |
+| T705 | recruitment sources in the market | WEB CLUB STAFF ARCH | T702 T703 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -757,6 +767,7 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
+- rs01: implement-task T701, then T702 and T703, T704, T705 in the worktree .claude/worktrees/rs01 (branch worktree-rs01); the primary checkout is in a design session and stays untouched. Final gate once, then merge into main.
 - ba04 T693 next (CLUB r52 era star pay spread): baseline books and every tier's reference careers on the released source first, then calibrate and hold out; do not start T689 before it.
 - Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers and wage change, one mechanism, and implement it.
 - Continue one issue at a time: transfers/retention, owner reach/dividend risk, then existing T689 and a fresh read of the old calibration memo. New balance tasks are authorized for this pass; preserve published contracts/history and every measurement/release gate.
@@ -802,6 +813,6 @@
 - 261104 update-ssot LEAGUE r15 CLUB r55 + create-task T696: LEAGUE-10's means level (a club nobody owns keeps only the stars its last closed book pays at break-even) enters with CLUB-48's table (0.22 through 1970, 0.57 at 1990, 1 from 2008; England 0 through 1960/61) only through CLUB-48's gate (fit without the means level, books and champions with both); until then s = 1 and no means level. ba04
 - 261104 update-ssot ECON r47 CLUB r56 LEAGUE r16 + create-task T697: a club nobody owns' book counts its cup and continental money as the owner's club is paid (prizes, result bonuses, home gates unscaled), in force only with CLUB-48's table and LEAGUE-10's means level through CLUB-48's gate, every part read on books counting it; T697 screens on T696's worlds, re-fits the table and re-runs the gate. ba04
 - 261104 update-ssot CLUB r57 LEAGUE r17 + create-task T698: LEAGUE-10 records the real leagues' 1980/81–2009/10 champions (4–9 different, the most titles 7–17, per country); CLUB-48's champions part reads that spread pooled over the seeds with released + the most any of 19 placebo sets (1930/31's results drawn afresh) ends further out; T698 adds the placebo draw, measures the noise, then re-reads T697's and T696's archived candidates. ba04
-- 261104 update-ssot CLUB r58 + create-task T699: CLUB-48's gate gains its careers part (석유 재벌/중견 사업가 references lived with the three end in no more club or owner bankruptcies than on the released rules) and its in-force line names T697's table on books counting competition money (0.28 through 1970, 0.61 at 1990, 1 from 2008; England 0 through 1960/61); T699 reads the careers and, on a pass, activates the three together. ba04
-- 261104 update-ssot CLUB r59 LEAGUE r18 ECON r48 + create-task T700: CLUB-48, LEAGUE-10 and ECON-36 state T697's table, the means level and competition money in force since T699's gate pass; LEAGUE-13 and ECON-29 gain measured 261104 lines on these rules; T700 re-reads the lower tiers on them, splits a delegated club's rise below the top flight into its sources and screens the ability-fit wage, with no engine change. ba04
+- 261104 create-task T701–T705 (CLUB r60 STAFF r40 ECON r49 OWNER r5 WEB r209): free-agent pool, scout search over existing players, staff markets from clubs and free agents, staff careers with tenure finishes, market sources in the UI. rs01
+- 261104 update-ssot CLUB r60 STAFF r40 ECON r49 OWNER r5 WEB r209: every recruitment candidate is another club's or a real free agent, none created by a read (CLUB-50); a player free-agent pool (CLUB-49); the chief scout finds existing players within his reach (CLUB-51); every club's 단장, chief scout and coaches derived and poachable, per-post free-agent pools (STAFF-49); staff careers recorded only on a move, tenure results read from archived standings (STAFF-50). rs01
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
