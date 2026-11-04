@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * 팬 민심, the supporters' standing of the owner (→OWNER-12/13), moved by the day loop's hooks: own
  * league results, each settled league round, the season close, completed transfers and a new
@@ -44,7 +45,12 @@ function move(w: World, change: number, why?: { title: string; detail: string })
     w,
     'fan-mood',
     why.title,
-    `${why.detail} · 팬 민심 ${moved >= 0 ? '+' : '−'}${Math.abs(moved).toFixed(1)} → ${owner.fanMood.toFixed(1)}`,
+    sourceMessage('copy.fan_mood.8447102cff', {
+      p0: why.detail,
+      p1: moved >= 0 ? '+' : '−',
+      p2: Math.abs(moved).toFixed(1),
+      p3: owner.fanMood.toFixed(1),
+    }),
   );
 }
 /** `amount` as a percentage of `turnover`, to hundredths; undefined without a turnover. */
@@ -91,16 +97,24 @@ export function fanMoodRound(w: World) {
     addEvent(
       w,
       'owner-ousted',
-      '구단주 퇴진',
-      `팬 민심 ${owner.fanMood.toFixed(1)} · ${rounds}라운드 연속 ${FAN_MOOD.floor} 아래 · 팬들의 퇴진 요구에 구단을 떠나요.`,
+      sourceMessage('copy.stories.4e6b8dec47'),
+      sourceMessage('copy.fan_mood.dc235a5468', {
+        p0: owner.fanMood.toFixed(1),
+        p1: rounds,
+        p2: FAN_MOOD.floor,
+      }),
     );
     return;
   }
   if (rounds === 1)
     pushInbox(w, {
       kind: 'finance',
-      title: `퇴진 압박 · ${FAN_MOOD.rounds}라운드 안에 팬 민심을 ${FAN_MOOD.floor} 이상으로`,
-      detail: `팬 민심이 ${owner.fanMood.toFixed(1)}예요. ${FAN_MOOD.floor} 아래로 ${FAN_MOOD.rounds}라운드가 이어지면 구단주가 물러나 게임이 끝나요.`,
+      title: sourceMessage('copy.fan_mood.0590215d59', { p0: FAN_MOOD.rounds, p1: FAN_MOOD.floor }),
+      detail: sourceMessage('copy.fan_mood.d1e688664c', {
+        p0: owner.fanMood.toFixed(1),
+        p1: FAN_MOOD.floor,
+        p2: FAN_MOOD.rounds,
+      }),
       // A status, not a stop (→OWNER-15).
       attention: false,
     });
@@ -112,29 +126,32 @@ function closeDrivers(w: World) {
     own = clubOf(w);
   if (!season || season.year !== w.year) return;
   const titles = [
-    ...(season.rank === 1 ? ['리그 우승'] : []),
+    ...(season.rank === 1 ? [sourceMessage('start.history.champions')] : []),
     ...(season.champions.find((c) => c.country === own.country)?.cup === w.playerClub
-      ? ['컵 우승']
+      ? [sourceMessage('copy.managerHistoryView.5b012994d1')]
       : []),
-    ...season.europe.filter((t) => t.winner === w.playerClub).map((t) => `${t.name} 우승`),
+    ...season.europe
+      .filter((t) => t.winner === w.playerClub)
+      .map((t) => sourceMessage('copy.CareerRecordBook.2bfc53c804', { p0: t.name })),
   ];
-  for (const title of titles) move(w, FAN_MOOD.title, { title, detail: '시즌 마감' });
+  for (const title of titles)
+    move(w, FAN_MOOD.title, { title, detail: sourceMessage('copy.OwnerSheet.ce1c739e52') });
   if (own.tier < season.tier)
     move(w, FAN_MOOD.promotion, {
-      title: '승격',
-      detail: `${season.tier + 1}부 → ${own.tier + 1}부`,
+      title: sourceMessage('copy.AcademyPanel.8e70a8dda1'),
+      detail: sourceMessage('copy.fan_mood.93306a044e', { p0: season.tier + 1, p1: own.tier + 1 }),
     });
   else if (own.tier > season.tier)
     move(w, FAN_MOOD.relegation, {
-      title: '강등',
-      detail: `${season.tier + 1}부 → ${own.tier + 1}부`,
+      title: sourceMessage('copy.CareerRecordBook.7e6e321ef0'),
+      detail: sourceMessage('copy.fan_mood.93306a044e', { p0: season.tier + 1, p1: own.tier + 1 }),
     });
   const lowest = country(own.country).groups.length - 1,
     clubs = season.standings.filter((row) => row[1] === season.tier && row[2] === season.group);
   if (season.tier === lowest && season.rank === clubs.length)
     move(w, FAN_MOOD.lastInLowest, {
-      title: '최하위',
-      detail: `${season.tier + 1}부 꼴찌로 시즌 마감`,
+      title: sourceMessage('copy.fan_mood.b7bcb3bb83'),
+      detail: sourceMessage('copy.fan_mood.aba5fd4e60', { p0: season.tier + 1 }),
     });
 }
 /** The season's owner money of one event kind, in the money it closed in. */
@@ -178,7 +195,10 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
       signing = rows.find((row) => row.source === 'fact' && row.fact === fact),
       record = rows.find((row) => row !== signing);
     if (signing && record && BigInt(signing.today) > BigInt(record.today))
-      move(w, FAN_MOOD.recordSigning, { title: '구단 최고 이적료 영입', detail: fact.name });
+      move(w, FAN_MOOD.recordSigning, {
+        title: sourceMessage('copy.fan_mood.4dbaafd6be'),
+        detail: fact.name,
+      });
     return;
   }
   // Ties count against the sale: he is one of the three only with fewer than three others at his
@@ -197,7 +217,7 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
   ) {
     owner.starSaleWindow = { year: w.year, kind: window.kind };
     move(w, FAN_MOOD.starSale.change, {
-      title: '주축 선수 매각',
+      title: sourceMessage('copy.fan_mood.19741d722e'),
       detail: `${fact.name} · OVR ${ovr}`,
     });
   }
@@ -206,7 +226,10 @@ export function fanMoodTransfer(w: World, fact: TransferFact) {
 /** A designer draft adopted as the club's identity (→OWNER-12, KIT-9). */
 export function fanMoodIdentity(w: World) {
   if (!live(w)) return;
-  move(w, FAN_MOOD.identity, { title: '구단 정체성 변경', detail: '디자이너 시안 적용' });
+  move(w, FAN_MOOD.identity, {
+    title: sourceMessage('copy.fan_mood.2d44d44e0c'),
+    detail: sourceMessage('copy.fan_mood.6902fa4e38'),
+  });
 }
 
 /**
@@ -219,9 +242,11 @@ export function fanMoodInjection(w: World, amount: bigint) {
     percent = percentOf(amount, last === undefined ? undefined : BigInt(last)),
     { perPercent, max } = FAN_MOOD.injection;
   move(w, percent === undefined ? max : Math.min(max, percent * perPercent), {
-    title: '구단주 자금 투입',
+    title: sourceMessage('copy.fan_mood.3881f2a2d6'),
     detail:
-      percent === undefined ? '직전 시즌 매출 없음' : `직전 시즌 매출의 ${percent.toFixed(1)}%`,
+      percent === undefined
+        ? sourceMessage('copy.fan_mood.c084fa3596')
+        : sourceMessage('copy.fan_mood.f85507dce3', { p0: percent.toFixed(1) }),
   });
 }
 /**
@@ -241,8 +266,8 @@ export function fanMoodDividend(w: World, amount: bigint) {
   if (!live(w) || amount <= 0n) return;
   const percent = percentOf(amount, seasonTurnover(w)) ?? 100;
   move(w, percent * FAN_MOOD.dividend.perPercent, {
-    title: '구단주 배당',
-    detail: `시즌 매출의 ${percent.toFixed(1)}%`,
+    title: sourceMessage('copy.fan_mood.eb9f33a674'),
+    detail: sourceMessage('copy.fan_mood.65d2c22e42', { p0: percent.toFixed(1) }),
   });
 }
 

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useRef, useState } from 'react';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import type { StopReason } from '../../../../packages/engine/src/stopping';
@@ -48,7 +51,11 @@ function requestTag(item: StopReason) {
   const key = requestKeys(item)[0];
   if (key) return RESPONSIBILITY_LABELS[key];
   const desk = eventDesk(item);
-  return desk === 'sponsor' ? '후원' : desk === 'investment' ? '재정' : '결재';
+  return desk === 'sponsor'
+    ? sourceMessage('club.operations.sponsor')
+    : desk === 'investment'
+      ? sourceMessage('copy.ApprovalQueue.e999efbc68')
+      : sourceMessage('copy.ApprovalQueue.d47c78190a');
 }
 
 /**
@@ -67,53 +74,61 @@ export function ApprovalRows({
   /** Off under a 결재함 title, which already names the kind. */
   tagged?: boolean;
 }) {
+  useTextLocale();
   return (
-    <ul className={s.requests} aria-label="결재 대기 업무">
-      {items.map((item, index) => {
-        const standing = approvalStanding(w, item.id);
-        const subject = requestSubject(w, item);
-        return (
-          <li key={item.id} data-request-id={item.id} data-tagged={tagged || undefined}>
-            {tagged && (
-              <span data-ui="label" className={s.tag}>
-                {requestTag(item)}
+    <ul className={s.requests} aria-label={displayMessage('copy.ApprovalQueue.7aa3d9f618')}>
+      {localizeValue(
+        items.map((item, index) => {
+          const standing = approvalStanding(w, item.id);
+          const subject = requestSubject(w, item);
+          return (
+            <li key={item.id} data-request-id={item.id} data-tagged={tagged || undefined}>
+              {localizeValue(
+                tagged && (
+                  <span data-ui="label" className={s.tag}>
+                    {localizeValue(requestTag(item))}
+                  </span>
+                ),
+              )}
+              <span className={s.request}>
+                <b>{localizeValue(item.title)}</b>
+                <small className={s.meta}>
+                  {localizeValue(subject && <span>{localizeValue(subject)} · </span>)}
+                  <span
+                    className={standing.overdue ? s.overdue : s.due}
+                    data-testid="approval-deadline"
+                  >
+                    {localizeValue(standing.label)}
+                  </span>
+                </small>
               </span>
-            )}
-            <span className={s.request}>
-              <b>{item.title}</b>
-              <small className={s.meta}>
-                {subject && <span>{subject} · </span>}
-                <span
-                  className={standing.overdue ? s.overdue : s.due}
-                  data-testid="approval-deadline"
-                >
-                  {standing.label}
-                </span>
-              </small>
-            </span>
-            <button
-              type="button"
-              className={s.review}
-              data-review-id={item.id}
-              // Requests of one kind share a title, so the action names its subject as well.
-              aria-label={`${item.title}${subject ? ` · ${subject}` : ''} · 검토하기`}
-              onClick={() => {
-                onReview?.(item, index);
-                openApprovalRequest(w.id, item);
-              }}
-            >
-              검토
-            </button>
-          </li>
-        );
-      })}
+              <button
+                type="button"
+                className={s.review}
+                data-review-id={item.id}
+                // Requests of one kind share a title, so the action names its subject as well.
+                aria-label={displayMessage('copy.ApprovalQueue.e0a25467b9', {
+                  p0: item.title,
+                  p1: subject ? ` · ${subject}` : '',
+                })}
+                onClick={() => {
+                  onReview?.(item, index);
+                  openApprovalRequest(w.id, item);
+                }}
+              >
+                {richMessage('copy.ApprovalQueue.7e0e212667')}
+              </button>
+            </li>
+          );
+        }),
+      )}
     </ul>
   );
 }
 
 const TITLE_LABELS: Record<Exclude<ApprovalTitle, ResponsibilityKey>, string> = {
-  finance: '재정·투자',
-  other: '기타 결재',
+  finance: sourceMessage('club.operations.investment'),
+  other: sourceMessage('copy.ApprovalQueue.8cb77e12b4'),
 };
 /** One title's 직접/위임: a pressed pair that proposes the other choice. */
 function DelegationSwitch({
@@ -127,28 +142,37 @@ function DelegationSwitch({
   disabled: boolean;
   onPropose: (change: OfficeChange) => void;
 }) {
+  useTextLocale();
   return (
     <div
       className={s.switch}
       role="group"
-      aria-label={`${RESPONSIBILITY_LABELS[title]} 결재 방식`}
+      aria-label={displayMessage('copy.ApprovalQueue.437c2908c9', {
+        p0: RESPONSIBILITY_LABELS[title],
+      })}
       data-ui="choices"
     >
-      {([false, true] as const).map((value) => (
-        <button
-          key={String(value)}
-          type="button"
-          data-ui={delegated === value ? 'secondary' : undefined}
-          aria-pressed={delegated === value}
-          disabled={disabled}
-          onClick={() => {
-            if (delegated !== value)
-              onPropose({ responsibilities: { [title]: value ? 'delegated' : 'direct' } });
-          }}
-        >
-          {value ? '위임' : '직접'}
-        </button>
-      ))}
+      {localizeValue(
+        ([false, true] as const).map((value) => (
+          <button
+            key={String(value)}
+            type="button"
+            data-ui={delegated === value ? 'secondary' : undefined}
+            aria-pressed={delegated === value}
+            disabled={disabled}
+            onClick={() => {
+              if (delegated !== value)
+                onPropose({ responsibilities: { [title]: value ? 'delegated' : 'direct' } });
+            }}
+          >
+            {localizeValue(
+              value
+                ? sourceMessage('copy.ApprovalQueue.e4b0c79fac')
+                : sourceMessage('copy.ApprovalQueue.20c483bdda'),
+            )}
+          </button>
+        )),
+      )}
     </div>
   );
 }
@@ -170,6 +194,7 @@ function DelegationConfirm({
   controller: ProgressionController;
   onDone: () => void;
 }) {
+  useTextLocale();
   const blocked = useGameState(modeSwitchBlocked);
   const [applying, setApplying] = useState(false);
   const [message, setMessage] = useState('');
@@ -188,19 +213,25 @@ function DelegationConfirm({
       await applyOfficeChange(client, controller, proposal);
       onDone();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : '변경하지 못했어요. 다시 시도해 주세요.');
+      setMessage(
+        error instanceof Error ? error.message : sourceMessage('copy.ApprovalQueue.def8fed41f'),
+      );
     } finally {
       setApplying(false);
     }
   };
   return (
     <Dialog
-      label={next ? '위임하겠습니다.' : '직접 결재하겠습니다.'}
+      label={localizeValue(
+        next
+          ? sourceMessage('copy.ApprovalQueue.44b4c69072')
+          : sourceMessage('copy.ApprovalQueue.33dbc38b17'),
+      )}
       onClose={close}
       actions={
         <div className={s.dialogActions}>
           <button type="button" disabled={applying} onClick={close}>
-            취소
+            {richMessage('common.cancel')}
           </button>
           <button
             type="button"
@@ -208,31 +239,43 @@ function DelegationConfirm({
             disabled={blocked || applying || w.id !== proposal.id}
             onClick={() => void apply()}
           >
-            {next ? (one ? `${one}에게 위임` : `${changed.length}개 업무 위임`) : '직접 결재하기'}
+            {localizeValue(
+              next
+                ? one
+                  ? sourceMessage('copy.ApprovalQueue.c45086de02', { p0: one })
+                  : sourceMessage('copy.ApprovalQueue.2f9cc9b110', { p0: changed.length })
+                : sourceMessage('copy.ApprovalQueue.2157d80d03'),
+            )}
           </button>
         </div>
       }
     >
       <div className={s.confirm} aria-busy={applying}>
         <ul className={s.confirmList}>
-          {changed.map((key) => (
-            <li key={key}>
-              <b>{RESPONSIBILITY_LABELS[key]}</b>
-              <span>
-                {next
-                  ? `→ ${responsibilityDelegates(w, key).join(' · ')}`
-                  : RESPONSIBILITY_DETAILS[key]}
-              </span>
-            </li>
-          ))}
+          {localizeValue(
+            changed.map((key) => (
+              <li key={key}>
+                <b>{localizeValue(RESPONSIBILITY_LABELS[key])}</b>
+                <span>
+                  {localizeValue(
+                    next
+                      ? `→ ${responsibilityDelegates(w, key).join(' · ')}`
+                      : RESPONSIBILITY_DETAILS[key],
+                  )}
+                </span>
+              </li>
+            )),
+          )}
         </ul>
         <strong>
-          {next
-            ? '담당자에게 판단과 실행을 맡기고 결과를 보고받아요.'
-            : '필요한 사안은 구단주가 직접 승인해요.'}
+          {localizeValue(
+            next
+              ? sourceMessage('copy.ApprovalQueue.ad5a5a1fb5')
+              : sourceMessage('copy.ApprovalQueue.a75b4320f0'),
+          )}
         </strong>
         <PendingHandover proposal={proposal} />
-        {message && <p role="alert">{message}</p>}
+        {localizeValue(message && <p role="alert">{localizeValue(message)}</p>)}
       </div>
     </Dialog>
   );
@@ -257,6 +300,7 @@ export function ApprovalQueue({
   controller: ProgressionController;
   requestsOnly?: boolean;
 }) {
+  useTextLocale();
   const blocked = useGameState(modeSwitchBlocked);
   const [proposal, setProposal] = useState<OfficeProposal>();
   const propose = (change: OfficeChange) => {
@@ -306,112 +350,171 @@ export function ApprovalQueue({
     });
   };
   return (
-    <section className={s.queue} aria-label="결재함" data-testid="approval-queue">
-      {!requestsOnly && <TaskReturn />}
-      {!requestsOnly && <OfficeBar title="결재함" />}
+    <section
+      className={s.queue}
+      aria-label={displayMessage('copy.ApprovalButtons.216a759610')}
+      data-testid="approval-queue"
+    >
+      {localizeValue(!requestsOnly && <TaskReturn />)}
+      {localizeValue(
+        !requestsOnly && <OfficeBar title={displayMessage('copy.ApprovalButtons.216a759610')} />,
+      )}
       <div className={s.summary}>
         <p data-testid="approval-counts" ref={empty} tabIndex={-1}>
-          {pending.length ? (
-            <>
-              대기 <b>{pending.length}</b>건
-              {late.overdue > 0 && (
-                <b className={s.overdue}>
-                  {` · 지연 ${late.overdue}건 · 라운드마다 분위기 −${late.morale}`}
-                </b>
-              )}
-            </>
-          ) : (
-            '지금 결재할 업무가 없어요'
+          {localizeValue(
+            pending.length ? (
+              <>
+                {richMessage('copy.ApprovalQueue.619fea260a', {
+                  p0: <b>{localizeValue(pending.length)}</b>,
+                  p1: late.overdue > 0 && (
+                    <b className={s.overdue}>
+                      {displayMessage('copy.ApprovalQueue.1a9b5a1063', {
+                        p0: late.overdue,
+                        p1: late.morale,
+                      })}
+                    </b>
+                  ),
+                })}
+              </>
+            ) : (
+              sourceMessage('copy.ApprovalQueue.bcbd9f66de')
+            ),
           )}
         </p>
-        {!requestsOnly && (
-          <div className={s.bulk} role="group" aria-label="전체 결재 방식" data-ui="choices">
-            {(['direct', 'delegated'] as const).map((value) => {
-              const all =
-                value === 'delegated'
-                  ? delegatedCount === RESPONSIBILITY_KEYS.length
-                  : delegatedCount === 0;
-              return (
-                <button
-                  key={value}
-                  type="button"
-                  data-ui={all ? 'secondary' : undefined}
-                  aria-pressed={all}
-                  disabled={blocked}
-                  onClick={() => bulk(value)}
-                >
-                  {value === 'delegated' ? '전체 위임' : '전체 직접'}
-                </button>
-              );
-            })}
-          </div>
+        {localizeValue(
+          !requestsOnly && (
+            <div
+              className={s.bulk}
+              role="group"
+              aria-label={displayMessage('copy.ApprovalQueue.bbe9a6c28a')}
+              data-ui="choices"
+            >
+              {localizeValue(
+                (['direct', 'delegated'] as const).map((value) => {
+                  const all =
+                    value === 'delegated'
+                      ? delegatedCount === RESPONSIBILITY_KEYS.length
+                      : delegatedCount === 0;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      data-ui={all ? 'secondary' : undefined}
+                      aria-pressed={all}
+                      disabled={blocked}
+                      onClick={() => bulk(value)}
+                    >
+                      {localizeValue(
+                        value === 'delegated'
+                          ? sourceMessage('copy.ApprovalQueue.d2002255a1')
+                          : sourceMessage('copy.ApprovalQueue.0878910c76'),
+                      )}
+                    </button>
+                  );
+                }),
+              )}
+            </div>
+          ),
         )}
       </div>
-      <ol className={s.titles} aria-label="결재 항목">
-        {groups.map(({ title, items }) => {
-          const responsibility = title !== 'finance' && title !== 'other' ? title : undefined;
-          const delegated = responsibility && isDelegated(w, responsibility);
-          return (
-            <li
-              key={title}
-              className={s.title}
-              data-title={title}
-              data-waiting={items.length > 0 || undefined}
-            >
-              <header className={s.titleHead}>
-                <h3>
-                  {responsibility
-                    ? RESPONSIBILITY_LABELS[responsibility]
-                    : TITLE_LABELS[title as 'finance' | 'other']}
-                  {items.length > 0 && (
-                    <span data-ui="count" className={s.titleCount}>
-                      {items.length}
-                    </span>
+      <ol className={s.titles} aria-label={displayMessage('copy.ApprovalQueue.86301db843')}>
+        {localizeValue(
+          groups.map(({ title, items }) => {
+            const responsibility = title !== 'finance' && title !== 'other' ? title : undefined;
+            const delegated = responsibility && isDelegated(w, responsibility);
+            return (
+              <li
+                key={title}
+                className={s.title}
+                data-title={title}
+                data-waiting={items.length > 0 || undefined}
+              >
+                <header className={s.titleHead}>
+                  <h3>
+                    {localizeValue(
+                      responsibility
+                        ? RESPONSIBILITY_LABELS[responsibility]
+                        : TITLE_LABELS[title as 'finance' | 'other'],
+                    )}
+                    {localizeValue(
+                      items.length > 0 && (
+                        <span data-ui="count" className={s.titleCount}>
+                          {localizeValue(items.length)}
+                        </span>
+                      ),
+                    )}
+                  </h3>
+                  {localizeValue(
+                    !requestsOnly && responsibility && (
+                      <DelegationSwitch
+                        title={localizeValue(responsibility)}
+                        delegated={!!delegated}
+                        disabled={blocked}
+                        onPropose={propose}
+                      />
+                    ),
                   )}
-                </h3>
-                {!requestsOnly && responsibility && (
-                  <DelegationSwitch
-                    title={responsibility}
-                    delegated={!!delegated}
-                    disabled={blocked}
-                    onPropose={propose}
-                  />
+                </header>
+                {localizeValue(
+                  !requestsOnly && (
+                    <p className={s.delegate}>
+                      {localizeValue(
+                        responsibility ? (
+                          <>
+                            <span className={s.delegateMark}>
+                              {localizeValue(
+                                delegated
+                                  ? sourceMessage('copy.ApprovalQueue.6e6a9d207d')
+                                  : sourceMessage('copy.ApprovalQueue.1d27c18bbd'),
+                              )}
+                            </span>
+                            {localizeValue(responsibilityDelegates(w, responsibility).join(' · '))}
+                          </>
+                        ) : (
+                          <>
+                            {richMessage('copy.ApprovalQueue.b792756148', {
+                              p0: (
+                                <span className={s.delegateMark}>
+                                  {richMessage('copy.ApprovalQueue.d47c78190a')}
+                                </span>
+                              ),
+                            })}
+                          </>
+                        ),
+                      )}
+                    </p>
+                  ),
                 )}
-              </header>
-              {!requestsOnly && (
-                <p className={s.delegate}>
-                  {responsibility ? (
-                    <>
-                      <span className={s.delegateMark}>{delegated ? '위임 중' : '위임 대상'}</span>
-                      {responsibilityDelegates(w, responsibility).join(' · ')}
-                    </>
+                {localizeValue(
+                  items.length ? (
+                    <ApprovalRows w={w} items={items} onReview={review} tagged={false} />
                   ) : (
-                    <>
-                      <span className={s.delegateMark}>결재</span>구단주 직접
-                    </>
-                  )}
-                </p>
-              )}
-              {items.length ? (
-                <ApprovalRows w={w} items={items} onReview={review} tagged={false} />
-              ) : (
-                <p className={s.quiet}>
-                  {responsibility && RESPONSIBILITY_DETAILS[responsibility]} ·{' '}
-                  {delegated ? '위임받은 담당자가 처리하고 결과를 보고해요' : '대기 없음'}
-                </p>
-              )}
-            </li>
-          );
-        })}
+                    <p className={s.quiet}>
+                      {localizeValue(responsibility && RESPONSIBILITY_DETAILS[responsibility])} ·
+                      {localizeValue(' ')}
+                      {localizeValue(
+                        delegated
+                          ? sourceMessage('copy.ApprovalQueue.36f27b901e')
+                          : sourceMessage('copy.ApprovalQueue.d57737a605'),
+                      )}
+                    </p>
+                  ),
+                )}
+              </li>
+            );
+          }),
+        )}
       </ol>
-      {proposal && (
-        <DelegationConfirm
-          w={w}
-          proposal={proposal}
-          client={client}
-          controller={controller}
-          onDone={() => setProposal(undefined)}
-        />
+      {localizeValue(
+        proposal && (
+          <DelegationConfirm
+            w={w}
+            proposal={proposal}
+            client={client}
+            controller={controller}
+            onDone={() => setProposal(undefined)}
+          />
+        ),
       )}
     </section>
   );

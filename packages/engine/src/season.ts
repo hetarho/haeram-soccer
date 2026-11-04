@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { refreshReadModels } from './read-models';
 import { openNeed } from './replacements';
 import { callUpFor } from './squad-target';
@@ -453,7 +454,7 @@ function cupRuns(w: World): CupRun[] {
     const rounds = t.rounds || [];
     const knockout = ownReached(
       w,
-      rounds.filter((r) => !r.label.startsWith('예선')),
+      rounds.filter((r) => !r.label.startsWith(sourceMessage('copy.bracketTree.dbad85ccbc'))),
     );
     const played = (marker: string) =>
       t.fixtures.some(
@@ -462,12 +463,12 @@ function cupRuns(w: World): CupRun[] {
     const reached =
       knockout?.label ??
       (played(':second:')
-        ? '2차 조별 리그'
+        ? sourceMessage('copy.cupRoute.be35e01438')
         : played(':phase:')
           ? t.format === 'league'
-            ? '리그 페이즈'
-            : '조별 리그'
-          : (ownReached(w, rounds)?.label ?? '예선'));
+            ? sourceMessage('copy.competitionLabels.6b9ab4d59c')
+            : sourceMessage('copy.competitionLabels.6fcd805067')
+          : (ownReached(w, rounds)?.label ?? sourceMessage('copy.bracketTree.dbad85ccbc')));
     runs.push({
       key: t.key,
       name: t.name,
@@ -572,7 +573,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   // Clubs of our league as it was played, to see who went down once the season is closed.
   const leagueTiers = new Map(ownLeagueClubs(w).map((club) => [club.id, club.tier]));
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
-    throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
+    throw new Error(sourceMessage('copy.season.fcf04b4e69'));
   // Every path closes on the day after the final round, the day a day step closes on (→LEAGUE-9).
   if (currentDay(w) < SEASON_END_DAY + 1) w.calendar = { day: SEASON_END_DAY + 1 };
   finishCups(w);
@@ -651,16 +652,22 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     addEvent(
       w,
       own.tier < oldTier ? 'promotion' : 'relegation',
-      own.tier < oldTier ? '새로운 무대로' : '다시 올라갈 준비',
-      `${oldTier + 1}부 → ${own.tier + 1}부`,
+      own.tier < oldTier
+        ? sourceMessage('copy.season.a04944d36e')
+        : sourceMessage('copy.season.d1a6287927'),
+      sourceMessage('copy.fan_mood.93306a044e', { p0: oldTier + 1, p1: own.tier + 1 }),
     );
   // Titles, promotion and relegation are known: the supporters judge the owner's season.
   fanMoodClose(w);
   addEvent(
     w,
     'season',
-    '시즌의 마지막 페이지',
-    `${w.year}/${String(w.year + 1).slice(2)} · ${table.points}점`,
+    sourceMessage('copy.season.09891565b6'),
+    sourceMessage('copy.season.f51bc92c53', {
+      p0: w.year,
+      p1: String(w.year + 1).slice(2),
+      p2: table.points,
+    }),
   );
   refreshReadModels(w);
   // The next season opens on 1 August; after 1938/39 the war skips to 1946 (→WORLD-14).
@@ -691,7 +698,12 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     for (const p of activePlayers(w)) {
       if (p.loanUntil && p.loanUntil <= w.year) {
         returnLoan(w, p);
-        addEvent(w, 'loan-return', `${p.name}의 다음 장`, '임대 기간이 끝났습니다.');
+        addEvent(
+          w,
+          'loan-return',
+          sourceMessage('copy.careers.a1549f3110', { p0: p.name }),
+          sourceMessage('copy.season.f3d7a85a92'),
+        );
         continue;
       }
       developAnnually(w, p);
@@ -767,7 +779,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
  */
 function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   if (w.round < 46 || w.fixtures.some((f) => !f.score))
-    throw new Error('아직 정규 시즌이 끝나지 않았습니다.');
+    throw new Error(sourceMessage('copy.season.fcf04b4e69'));
   if (currentDay(w) < SEASON_END_DAY + 1) w.calendar = { day: SEASON_END_DAY + 1 };
   finishCups(w);
   (finishEurope || finishContinental)(w);
@@ -953,7 +965,7 @@ function playRound(
 }
 /** Records an older save may lack, set up before its first day is lived. */
 function beginDays(w: World) {
-  if (pendingRounds.has(w)) throw new Error('결과를 기다리는 라운드가 있습니다.');
+  if (pendingRounds.has(w)) throw new Error(sourceMessage('copy.season.b9a483fa8a'));
   w.calendar ||= { day: currentDay(w) };
   if (!w.rankHistory) snapshotStandings(w);
   ensureScorers(w);
@@ -1027,7 +1039,7 @@ export function completeRound(
   settlement?: Settlement,
 ) {
   const phase = pendingRounds.get(w);
-  if (!phase) throw new Error('결과를 기다리는 라운드가 없습니다.');
+  if (!phase) throw new Error(sourceMessage('copy.season.44c7a79148'));
   pendingRounds.delete(w);
   let ownPlayback: MatchPlayback | undefined;
   playRound(w, phase, results, (world, p) => {
@@ -1076,7 +1088,7 @@ export function advanceDays(
   observe = true,
 ) {
   if (!Number.isInteger(days) || days < 1 || days > 366)
-    throw new Error('진행할 날짜 범위가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.season.27d269ae1b'));
   if (w.critical || careerEnded(w)) return undefined;
   beginDays(w);
   let ownPlayback: MatchPlayback | undefined;

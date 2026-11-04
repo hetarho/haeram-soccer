@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
  * The aggregate kernel (→MATCH-22, MATCH-26): one fixture's coupled team facts from a small joint
  * latent match state and grouped conditional draws over the 40 grid cells. Passing flows, carries
@@ -149,7 +150,10 @@ export function generateTeamFacts(
   participation: AggregateParticipation,
 ): AggregateTeamFacts {
   const issues = participationIssues(input, participation);
-  if (issues.length) throw new Error(`집계 출전 계획 불일치: ${issues.slice(0, 5).join('; ')}`);
+  if (issues.length)
+    throw new Error(
+      sourceMessage('copy.participation.830f33bf6d', { p0: issues.slice(0, 5).join('; ') }),
+    );
   const r = streams.draw('latent');
   const latent: Latent = {
     tempo: Math.exp(C.latent.tempoSd * normal(r)),

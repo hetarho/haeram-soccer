@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import { MANAGER_PRIORITY_INFO } from '../../../../packages/engine/src/hiring-info';
 import { useOfficeRead } from './useOfficeRead';
@@ -21,6 +24,7 @@ export function DecisionRuleFacts({
   w: World;
   responsibility: ResponsibilityKey;
 }) {
+  useTextLocale();
   const office = useOfficeRead(w);
   if (!office) return null;
   const finance = financeStance(w, responsibility === 'sponsors' ? undefined : responsibility);
@@ -28,91 +32,189 @@ export function DecisionRuleFacts({
   if (responsibility === 'manager') {
     const rule = office.managerCriteria;
     rows.push(
-      ['우선순위', MANAGER_PRIORITY_INFO[rule.priority]],
-      ['기본 계약 기간', `${rule.term}시즌`],
-      ['육성 최소', `${rule.minYouth}`],
-      ['선호 학파', rule.schools.map((school) => STYLE_INFO[school].label).join(' · ') || '전체'],
-      ['다른 구단 감독', rule.poach ? '보상금을 내고 영입 가능' : '자유계약만'],
+      [sourceMessage('copy.DecisionRuleFacts.32ae423352'), MANAGER_PRIORITY_INFO[rule.priority]],
       [
-        '맞는 후보가 없을 때',
-        rule.whenNone === 'best' ? '감당 가능한 최선의 자유계약 후보' : '대행 체제로 대기',
+        sourceMessage('copy.DecisionRuleFacts.3bbfd0b0be'),
+        sourceMessage('copy.BallonDorView.3585c2642b', { p0: rule.term }),
+      ],
+      [sourceMessage('copy.DecisionRuleFacts.f4112139f5'), `${rule.minYouth}`],
+      [
+        sourceMessage('copy.DecisionRuleFacts.6b8a766f44'),
+        rule.schools.map((school) => STYLE_INFO[school].label).join(' · ') ||
+          sourceMessage('copy.DecisionRuleFacts.a4b69faf0c'),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.3b9eef79b1'),
+        rule.poach
+          ? sourceMessage('copy.DecisionRuleFacts.2bd83b8e58')
+          : sourceMessage('copy.DecisionRuleFacts.58565d61a0'),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.0d688c4c9d'),
+        rule.whenNone === 'best'
+          ? sourceMessage('copy.DecisionRuleFacts.8136d36cd8')
+          : sourceMessage('copy.DecisionRuleFacts.5986598913'),
       ],
     );
   } else if (responsibility === 'staff') {
     const rule = office.coachCriteria;
     rows.push(
-      ['최소 능력', rule.volunteer ? '능력 50 자원봉사' : `${rule.minAbility}`],
-      ['우선순위', rule.priority === 'ability' ? '능력 높은 순' : '연봉 낮은 순'],
-      ['기본 계약 기간', `${rule.term}시즌`],
+      [
+        sourceMessage('copy.DecisionRuleFacts.06a7364655'),
+        rule.volunteer ? sourceMessage('copy.DecisionRuleFacts.1fa180496c') : `${rule.minAbility}`,
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.32ae423352'),
+        rule.priority === 'ability'
+          ? sourceMessage('team.sort.ability')
+          : sourceMessage('copy.DecisionRuleFacts.f96961c954'),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.3bbfd0b0be'),
+        sourceMessage('copy.BallonDorView.3585c2642b', { p0: rule.term }),
+      ],
     );
   } else if (responsibility === 'contracts') {
     const rule = office.talkRule;
     rows.push(
-      ['연봉 수락 상한', `시장가의 ${Math.round(rule.maxPay * 100)}%`],
-      ['붙잡을 선수', rule.startersOnly ? '주전 11명' : '전체'],
-      ['나이 제한', rule.maxAge ? `${rule.maxAge}세 미만` : '없음'],
+      [
+        sourceMessage('copy.DecisionRuleFacts.e71a6c33af'),
+        sourceMessage('copy.DecisionRuleFacts.e231958584', { p0: Math.round(rule.maxPay * 100) }),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.4c6407981b'),
+        rule.startersOnly
+          ? sourceMessage('copy.DecisionRuleFacts.173c289afd')
+          : sourceMessage('copy.DecisionRuleFacts.a4b69faf0c'),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.4039d1bad8'),
+        rule.maxAge
+          ? sourceMessage('copy.DecisionRuleFacts.460e216041', { p0: rule.maxAge })
+          : sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+      ],
     );
   } else if (responsibility === 'recruitment') {
     rows.push(
       [
-        '보강 기준',
+        sourceMessage('copy.DecisionRuleFacts.240516ddab'),
         finance.signing.margin === undefined
-          ? '빈자리만 보강'
-          : `주전보다 ${finance.signing.margin} 이상 우수`,
+          ? sourceMessage('copy.ClubSettingControl.dfc8cdd784')
+          : sourceMessage('copy.DecisionRuleFacts.a034883172', { p0: finance.signing.margin }),
       ],
-      ['시장별 보강 상한', `${finance.signing.upgrades}명`],
-      ['이적료 지출 상한', `여유 자금의 ${Math.round(finance.signing.feeShare * 100)}%`],
+      [
+        sourceMessage('copy.DecisionRuleFacts.484bee05ce'),
+        sourceMessage('copy.CareerRecordBook.e414915261', { p0: finance.signing.upgrades }),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.ae532c93e1'),
+        sourceMessage('copy.DecisionRuleFacts.fc43ee6f67', {
+          p0: Math.round(finance.signing.feeShare * 100),
+        }),
+      ],
     );
   } else if (responsibility === 'sales') {
     const bar = SALE_BARS[w.build?.market ?? 'standard'];
     rows.push(
-      ['일반 선수 수락선', `선수 가치의 ${bar[0]}%`],
-      ['유망주 수락선', `선수 가치의 ${bar[1]}%`],
-      ['자금 압박 구간', `고정비 ${finance.sellSteps[0]} / ${finance.sellSteps[1]}라운드분 미만`],
-      ['추가 판단', '나이·남은 계약·주전 여부·대체 선수·선수별 이적 상태'],
+      [
+        sourceMessage('copy.DecisionRuleFacts.194ebe196c'),
+        sourceMessage('copy.DecisionRuleFacts.6ab7b15bab', { p0: bar[0] }),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.3b0fabd181'),
+        sourceMessage('copy.DecisionRuleFacts.6ab7b15bab', { p0: bar[1] }),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.51ca5e6d9e'),
+        sourceMessage('copy.DecisionRuleFacts.cf9392769e', {
+          p0: finance.sellSteps[0],
+          p1: finance.sellSteps[1],
+        }),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.05c37fed85'),
+        sourceMessage('copy.DecisionRuleFacts.f6242a4a68'),
+      ],
     );
   } else if (responsibility === 'academy') {
     const debut = debutRule(w),
       release = releaseRule(w);
     rows.push(
-      ['승격 재정 기준', `운영비 ${finance.promotionYears}년분 이상`],
-      ['주전 대비 허용 격차', `${debut.startersMargin}`],
-      ['최소 검토 나이', debut.fromAge ? `${debut.fromAge}세` : '별도 제한 없음'],
       [
-        '방출 판단',
+        sourceMessage('copy.DecisionRuleFacts.a0a245c001'),
+        sourceMessage('copy.DecisionRuleFacts.3ccd6678a3', { p0: finance.promotionYears }),
+      ],
+      [sourceMessage('copy.DecisionRuleFacts.cb4f822ddd'), `${debut.startersMargin}`],
+      [
+        sourceMessage('copy.DecisionRuleFacts.94c4c8d265'),
+        debut.fromAge
+          ? sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: debut.fromAge })
+          : sourceMessage('copy.DecisionRuleFacts.24e57b1004'),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.3e1fff66f0'),
         Number.isFinite(release.age)
-          ? `${release.age}세부터 잠재력이 같은 포지션 ${release.against === 'starters' ? '주전' : '1군 최하위'}에 못 미치면 방출`
-          : '21세까지 육성 유지',
+          ? sourceMessage('copy.DecisionRuleFacts.c5eb052b25', {
+              p0: release.age,
+              p1:
+                release.against === 'starters'
+                  ? sourceMessage('copy.DecisionRuleFacts.466151385d')
+                  : sourceMessage('copy.DecisionRuleFacts.1fdaeae257'),
+            })
+          : sourceMessage('copy.DecisionRuleFacts.925b3fa9ea'),
       ],
     );
   } else {
     rows.push(
-      ['자동 선택', '열린 빈 후원 자리마다 보장 기본금이 가장 높은 안정형 계약'],
-      ['계약 중 교체', '현재 계약이 끝난 뒤 새 계약'],
-      ['직접 선택', '보장형·성과형·독점형·물가연동형 제안을 비교하고 계약'],
+      [
+        sourceMessage('copy.DecisionRuleFacts.67e7ba0fc0'),
+        sourceMessage('copy.DecisionRuleFacts.ce2f162105'),
+      ],
+      [
+        sourceMessage('copy.DecisionRuleFacts.03d3131adb'),
+        sourceMessage('copy.DecisionRuleFacts.762bf8c7b6'),
+      ],
+      [
+        sourceMessage('copy.influences.636b022e8b'),
+        sourceMessage('copy.DecisionRuleFacts.74dc30bc6b'),
+      ],
     );
   }
   if (responsibility !== 'sponsors' && responsibility !== 'sales') {
     const cap = annualWageLimit(w, responsibility);
     rows.push([
-      '1인당 연봉 한도',
-      cap === undefined ? '별도 상한 없음' : `${compactMoney(cap, clubOf(w).country, w.year)} / 년`,
+      sourceMessage('copy.DecisionRuleFacts.415d9bc84f'),
+      cap === undefined
+        ? sourceMessage('copy.ClubSettingControl.5d57a45e99')
+        : sourceMessage('copy.ClubSettingControl.1db473c2be', {
+            p0: compactMoney(cap, clubOf(w).country, w.year),
+          }),
     ]);
     if (responsibility !== 'academy')
-      rows.push(['남길 운영 자금', `고정비 ${finance.runway}라운드분`]);
+      rows.push([
+        sourceMessage('copy.DecisionRuleFacts.d1a8a12997'),
+        sourceMessage('copy.DecisionRuleFacts.3978ca1d5b', { p0: finance.runway }),
+      ]);
     if (responsibility === 'contracts' || responsibility === 'recruitment')
-      rows.push(['임금 총액 한도', `연간 수입의 ${Math.round(finance.wageShare * 100)}%`]);
+      rows.push([
+        sourceMessage('copy.DecisionRuleFacts.2af6383499'),
+        sourceMessage('copy.DecisionRuleFacts.75b19a3ba2', {
+          p0: Math.round(finance.wageShare * 100),
+        }),
+      ]);
   }
   return (
     <details data-ui="disclosure" className={s.ruleFacts}>
-      <summary>현재 지침에 따른 판단 기준</summary>
+      <summary>{richMessage('copy.DecisionRuleFacts.8f29be123c')}</summary>
       <dl>
-        {rows.map(([label, value]) => (
-          <div key={label}>
-            <dt>{label}</dt>
-            <dd>{value}</dd>
-          </div>
-        ))}
+        {localizeValue(
+          rows.map(([label, value]) => (
+            <div key={label}>
+              <dt>{localizeValue(label)}</dt>
+              <dd>{localizeValue(value)}</dd>
+            </div>
+          )),
+        )}
       </dl>
     </details>
   );

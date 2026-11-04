@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
   BudgetResponsibility,
   DirectionKey,
@@ -94,157 +95,228 @@ export const FINANCE_STANCES: Readonly<Record<string, FinanceStance>> = {
   },
 };
 const years = (value: number) =>
-  value < 1 ? `${Math.round(value * 12)}개월분` : value === 1 ? '1년분' : `${value}년분`;
+  value < 1
+    ? sourceMessage('copy.academy.76367e9ed0', { p0: Math.round(value * 12) })
+    : value === 1
+      ? sourceMessage('copy.direction.c492c27533')
+      : sourceMessage('copy.academy.e112fae4e0', { p0: value });
 const financeSummary = (id: string) => {
   const stance = FINANCE_STANCES[id];
-  return `지출 뒤 고정비 ${stance.runway}라운드분을 남기고, 임금 총액은 수입의 ${Math.round(stance.wageShare * 100)}%까지, 현금이 운영비 ${years(stance.promotionYears)}보다 적으면 승격을 미뤄요 · 스카우트는 여유 자금의 ${Math.round(stance.signing.feeShare * 100)}%까지 쓰고 ${stance.signing.margin === undefined ? '빈 자리만 채워요' : `주전보다 ${stance.signing.margin} 이상 나은 선수를 이적시장마다 ${stance.signing.upgrades}명까지 데려와요`}`;
+  return sourceMessage('copy.direction.f4a5e54811', {
+    p0: stance.runway,
+    p1: Math.round(stance.wageShare * 100),
+    p2: years(stance.promotionYears),
+    p3: Math.round(stance.signing.feeShare * 100),
+    p4:
+      stance.signing.margin === undefined
+        ? sourceMessage('copy.direction.2e0ad8a457')
+        : sourceMessage('copy.direction.433e73e8a4', {
+            p0: stance.signing.margin,
+            p1: stance.signing.upgrades,
+          }),
+  });
 };
 
 export const DIRECTION_INFO: Readonly<
   Record<DirectionKey, { label: string; options: readonly DirectionOption[] }>
 > = {
   recruitmentSupport: {
-    label: '단장·감독 지원',
+    label: sourceMessage('copy.direction.7395b71a41'),
     options: [
       {
         id: 'director',
-        name: '단장 우선',
-        summary: '자동 중재 때 단장의 설명에 더 무게를 둬요. 기존 재정 한도는 그대로예요.',
+        name: sourceMessage('copy.MediationReview.2841b94571'),
+        summary: sourceMessage('copy.direction.5ba4847a57'),
       },
       {
         id: 'balanced',
-        name: '균형',
-        summary:
-          '자동 중재 때 단장과 감독의 설명을 균형 있게 고려해요. 기존 재정 한도는 그대로예요.',
+        name: sourceMessage('copy.stories.634269a095'),
+        summary: sourceMessage('copy.direction.c3ff005889'),
       },
       {
         id: 'manager',
-        name: '감독 우선',
-        summary: '자동 중재 때 감독의 설명에 더 무게를 둬요. 기존 재정 한도는 그대로예요.',
+        name: sourceMessage('copy.MediationReview.4d8060891b'),
+        summary: sourceMessage('copy.direction.5bf528c57b'),
       },
     ],
   },
   renewal: {
-    label: '재계약 기조',
+    label: sourceMessage('copy.influences.ab3ba3b4eb'),
     options: [
-      { id: 'standard', name: '표준', summary: '모두 붙잡되 시장가의 110%까지 줘요' },
-      { id: 'keepAll', name: '모두 붙잡기', summary: '모두 붙잡고 시장가의 140%까지 줘요' },
+      {
+        id: 'standard',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: sourceMessage('copy.direction.4447df3977'),
+      },
+      {
+        id: 'keepAll',
+        name: sourceMessage('copy.direction.39d77c1327'),
+        summary: sourceMessage('copy.direction.1b722afbd8'),
+      },
       {
         id: 'coreOnly',
-        name: '핵심만 붙잡기',
-        summary: '주전 11명만 시장가의 140%까지 주고 붙잡아요. 나머지는 보내요',
+        name: sourceMessage('copy.direction.fbe1bfad0c'),
+        summary: sourceMessage('copy.direction.3bad2ff505'),
       },
-      { id: 'frugal', name: '짠물', summary: '누구든 시장가까지만 줘요' },
+      {
+        id: 'frugal',
+        name: sourceMessage('copy.direction.5ec703d9c6'),
+        summary: sourceMessage('copy.direction.4e037fd22a'),
+      },
       {
         id: 'youngFirst',
-        name: '젊은 선수 우선',
-        summary: '30세 이상은 보내고, 나머지는 시장가의 110%까지 줘요',
+        name: sourceMessage('copy.direction.dcce9eb3c4'),
+        summary: sourceMessage('copy.direction.fe69a88dc0'),
       },
     ],
   },
   school: {
-    label: '선호 학파',
+    label: sourceMessage('copy.DecisionRuleFacts.6b8a766f44'),
     options: [
-      { id: 'any', name: '상관없음', summary: '학파를 가리지 않아요' },
+      {
+        id: 'any',
+        name: sourceMessage('copy.direction.64e37cabfc'),
+        summary: sourceMessage('copy.direction.d4e568728a'),
+      },
       ...MANAGER_STYLES.map((style) => ({
         id: style,
         name: STYLE_INFO[style].label,
-        summary: `${STYLE_INFO[style].label} 학파 감독만 데려오고 재계약해요`,
+        summary: sourceMessage('copy.direction.59fd1462ff', { p0: STYLE_INFO[style].label }),
       })),
     ],
   },
   manager: {
-    label: '감독 기조',
+    label: sourceMessage('copy.direction.87d61d5f88'),
     options: [
       {
         id: 'standard',
-        name: '표준',
-        summary: 'OVR 높은 순으로 2시즌 계약해요. 맞는 후보가 없으면 대행 체제로 기다려요',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: sourceMessage('copy.direction.1d92ded78c'),
       },
       {
         id: 'developer',
-        name: '육성가',
-        summary: '육성 60 이상 중 육성 높은 순으로 3시즌 계약해요',
+        name: sourceMessage('copy.direction.3e586cc06a'),
+        summary: sourceMessage('copy.direction.e520f136dd'),
       },
       {
         id: 'proven',
-        name: '검증된 승부사',
-        summary: '다른 구단 감독까지 웃돈을 주고 OVR 높은 순으로 3시즌 계약해요',
+        name: sourceMessage('copy.direction.6d05effb8d'),
+        summary: sourceMessage('copy.direction.5b82820c65'),
       },
-      { id: 'young', name: '젊은 감독', summary: '잠재력 높은 순으로 3시즌 계약해요' },
-      { id: 'cheap', name: '저비용', summary: '연봉 낮은 순으로 2시즌 계약해요' },
+      {
+        id: 'young',
+        name: sourceMessage('copy.direction.c12c54fe91'),
+        summary: sourceMessage('copy.direction.ef2dcb9b46'),
+      },
+      {
+        id: 'cheap',
+        name: sourceMessage('copy.direction.2802c1a4c4'),
+        summary: sourceMessage('copy.direction.2b21e9a778'),
+      },
     ],
   },
   coaches: {
-    label: '코치 기조',
+    label: sourceMessage('copy.direction.3f7683d5c9'),
     options: [
       {
         id: 'volunteer',
-        name: '자원봉사',
-        summary: '모든 자리를 무급 자원봉사자(능력 50)로 채워요',
+        name: sourceMessage('copy.direction.db7179aec9'),
+        summary: sourceMessage('copy.direction.8c0ad72cbb'),
       },
-      { id: 'cheap', name: '저비용', summary: '능력 45 이상 중 연봉 낮은 순으로 2시즌 계약해요' },
-      { id: 'standard', name: '표준', summary: '능력 55 이상 중 연봉 낮은 순으로 2시즌 계약해요' },
+      {
+        id: 'cheap',
+        name: sourceMessage('copy.direction.2802c1a4c4'),
+        summary: sourceMessage('copy.direction.db729ea09d'),
+      },
+      {
+        id: 'standard',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: sourceMessage('copy.direction.785e3d67cd'),
+      },
       {
         id: 'elite',
-        name: '최고 수준',
-        summary: '능력 65 이상 중 능력 높은 순으로 3시즌 계약해요',
+        name: sourceMessage('copy.direction.befcee018a'),
+        summary: sourceMessage('copy.direction.f868e909cc'),
       },
     ],
   },
   finance: {
-    label: '재정 기조',
+    label: sourceMessage('copy.direction.8d47afe1b5'),
     options: [
-      { id: 'aggressive', name: '공격적', summary: financeSummary('aggressive') },
-      { id: 'bold', name: '적극', summary: financeSummary('bold') },
-      { id: 'standard', name: '표준', summary: financeSummary('standard') },
-      { id: 'careful', name: '신중', summary: financeSummary('careful') },
-      { id: 'stable', name: '안정적', summary: financeSummary('stable') },
+      {
+        id: 'aggressive',
+        name: sourceMessage('copy.direction.be829627d2'),
+        summary: financeSummary('aggressive'),
+      },
+      {
+        id: 'bold',
+        name: sourceMessage('copy.direction.c41a48f2a9'),
+        summary: financeSummary('bold'),
+      },
+      {
+        id: 'standard',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: financeSummary('standard'),
+      },
+      {
+        id: 'careful',
+        name: sourceMessage('copy.direction.3ac9642af9'),
+        summary: financeSummary('careful'),
+      },
+      {
+        id: 'stable',
+        name: sourceMessage('copy.direction.92005ab199'),
+        summary: financeSummary('stable'),
+      },
     ],
   },
   youthGoal: {
-    label: '육성 목표',
+    label: sourceMessage('copy.direction.1046577cf5'),
     options: [
       {
         id: 'standard',
-        name: '표준',
-        summary: '19세에 잠재력이 같은 포지션 1군 최하위에 못 미치는 아이를 내보내요',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: sourceMessage('copy.direction.83a8df0ce9'),
       },
       {
         id: 'firstTeam',
-        name: '1군 공급',
-        summary: '21세가 될 때까지 아무도 내보내지 않고 키워요',
+        name: sourceMessage('copy.direction.d0529b70ec'),
+        summary: sourceMessage('copy.direction.6008298fb5'),
       },
       {
         id: 'sell',
-        name: '판매용 육성',
-        summary: '표준처럼 키우고, 이적을 맡기면 21세 이하 비주전을 이적 명단에 올려요',
+        name: sourceMessage('copy.direction.e0718f101a'),
+        summary: sourceMessage('copy.direction.cf6c4e83e5'),
       },
       {
         id: 'minimal',
-        name: '최소 운영',
-        summary: '18세에 잠재력이 같은 포지션 주전 수준에 못 미치면 일찍 내보내요',
+        name: sourceMessage('copy.direction.64068d31fd'),
+        summary: sourceMessage('copy.direction.98b5b3c691'),
       },
     ],
   },
   debut: {
-    label: '데뷔 시점',
+    label: sourceMessage('copy.direction.801589279c'),
     options: [
       {
         id: 'standard',
-        name: '표준',
-        summary: '같은 포지션 1군 최하위만큼, 또는 주전 수준 −10이면 올려요',
+        name: sourceMessage('copy.ClubSettingControl.54af05f0bf'),
+        summary: sourceMessage('copy.direction.5dfc0fb45a'),
       },
       {
         id: 'early',
-        name: '빠른 데뷔',
-        summary: '1군 최하위 −3이나 주전 수준 −15면 올리고, 21세 이하 성장 ×1.2 · 분위기 기준점 −1',
+        name: sourceMessage('copy.direction.d16c4195e9'),
+        summary: sourceMessage('copy.direction.1f46cb6e29'),
       },
-      { id: 'ready', name: '준비된 뒤', summary: '같은 포지션 주전 수준이 돼야 올려요' },
+      {
+        id: 'ready',
+        name: sourceMessage('copy.direction.c4f7d2e2aa'),
+        summary: sourceMessage('copy.direction.ec0d1d466b'),
+      },
       {
         id: 'late',
-        name: '늦게',
-        summary: '19세 전에는 올리지 않고 U-21에서 다듬어요(U-21 성장 ×1.15)',
+        name: sourceMessage('copy.direction.f953561284'),
+        summary: sourceMessage('copy.direction.129dd292d3'),
       },
     ],
   },

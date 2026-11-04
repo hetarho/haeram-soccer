@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 import { stampAt, LENGTH } from './clock';
 export { stampAt } from './clock';
 /**
@@ -183,32 +184,32 @@ interface Leg {
 const SECONDS_PER_MOTION = 60 / PLAYBACK_CONFIG.motionSecondsPerMinute;
 
 const CARRIES = new Set(['carry', 'takeOn', 'holdUp']);
-const NOTABLE = new Set([
-  '슛',
-  '선방',
-  '경고',
-  '교체',
-  '부상',
-  '오프사이드',
-  '파울',
-  '코너킥',
-  '프리킥',
-  '페널티킥',
+const NOTABLE = new Set<string>([
+  sourceMessage('copy.commentary.2ec47beeb8'),
+  sourceMessage('copy.RecordsRoom.2a022bd612'),
+  sourceMessage('copy.LabPage.6c0f751064'),
+  sourceMessage('copy.LabPage.084c5a6dd7'),
+  sourceMessage('copy.Pitch.0e9e3ce22b'),
+  sourceMessage('copy.summary.7858515c16'),
+  sourceMessage('copy.summary.a9d93d66a9'),
+  sourceMessage('copy.summary.64f1e3a4bc'),
+  sourceMessage('copy.commentary.ce1432907c'),
+  sourceMessage('copy.StrategyPanel.3d0a2ba63c'),
 ]);
 const RESTART_LABEL: Record<string, string> = {
-  throwIn: '스로인',
-  goalKick: '골킥',
-  corner: '코너킥',
-  freeKick: '프리킥',
-  indirectFreeKick: '프리킥',
-  penalty: '페널티킥',
+  throwIn: sourceMessage('copy.commentary.d03bda1489'),
+  goalKick: sourceMessage('copy.commentary.4ed0f773e0'),
+  corner: sourceMessage('copy.summary.64f1e3a4bc'),
+  freeKick: sourceMessage('copy.commentary.ce1432907c'),
+  indirectFreeKick: sourceMessage('copy.commentary.ce1432907c'),
+  penalty: sourceMessage('copy.StrategyPanel.3d0a2ba63c'),
 };
 const INCIDENT_LABEL: Record<string, string> = {
-  yellow: '경고',
-  secondYellow: '퇴장',
-  red: '퇴장',
-  sub: '교체',
-  injury: '부상',
+  yellow: sourceMessage('copy.LabPage.6c0f751064'),
+  secondYellow: sourceMessage('copy.LabPage.68e69c7b9c'),
+  red: sourceMessage('copy.LabPage.68e69c7b9c'),
+  sub: sourceMessage('copy.LabPage.084c5a6dd7'),
+  injury: sourceMessage('copy.Pitch.0e9e3ce22b'),
 };
 
 const units = (p: readonly [number, number]): Units => [
@@ -791,34 +792,40 @@ function timeline(p: 1 | 2 | 3 | 4, entries: TraceEntry[], r: () => number): Per
 /** The frame label of an entry. */
 function labelOf(e: TraceEntry): string {
   if (e.outcome === 'incident') return INCIDENT_LABEL[e.action] ?? '';
-  if (e.result === 'goal') return '골';
-  if (e.result === 'save') return '선방';
-  if (e.result) return '슛';
-  if (e.outcome === 'foul') return '파울';
-  if (e.outcome === 'offside') return '오프사이드';
-  if (e.spot) return RESTART_LABEL[e.action] ?? '패스';
-  if (e.outcome === 'intercepted') return '인터셉트';
-  if (e.outcome === 'tackled') return '태클';
+  if (e.result === 'goal') return sourceMessage('copy.summary.68a6cf8ed8');
+  if (e.result === 'save') return sourceMessage('copy.RecordsRoom.2a022bd612');
+  if (e.result) return sourceMessage('copy.commentary.2ec47beeb8');
+  if (e.outcome === 'foul') return sourceMessage('copy.summary.a9d93d66a9');
+  if (e.outcome === 'offside') return sourceMessage('copy.summary.7858515c16');
+  if (e.spot) return RESTART_LABEL[e.action] ?? sourceMessage('copy.summary.17242c9658');
+  if (e.outcome === 'intercepted') return sourceMessage('copy.Pitch.818d05f8ab');
+  if (e.outcome === 'tackled') return sourceMessage('copy.Pitch.3f6ba38a9e');
   switch (e.action) {
     case 'cross':
-      return '크로스';
+      return sourceMessage('copy.summary.0796453f8e');
     case 'cutBack':
-      return '컷백';
+      return sourceMessage('copy.PlayerAdvancedStats.cf8188e2fc');
     case 'carry':
     case 'holdUp':
-      return '운반';
+      return sourceMessage('copy.commentary.8721afdd59');
     case 'takeOn':
-      return '돌파';
+      return sourceMessage('copy.OwnPlayerSheet.f16160e08a');
     case 'clearance':
-      return '걷어내기';
+      return sourceMessage('copy.playback.a41cff8ca1');
     default:
-      return '패스';
+      return sourceMessage('copy.summary.17242c9658');
   }
 }
 
 /** How much a minute's last entry of this label should lead it: goals, then sendings-off, then other incidents. */
 function weightOf(label: string): number {
-  return label === '골' ? 3 : label === '퇴장' ? 2 : NOTABLE.has(label) ? 1 : 0;
+  return label === sourceMessage('copy.summary.68a6cf8ed8')
+    ? 3
+    : label === sourceMessage('copy.LabPage.68e69c7b9c')
+      ? 2
+      : NOTABLE.has(label)
+        ? 1
+        : 0;
 }
 
 function kindOf(e: TraceEntry): MatchEvent['kind'] {
@@ -894,7 +901,10 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
   const candidate = setup.model !== undefined;
   const frames: MatchFrame[] = [];
   const weights: number[] = [];
-  let lead = { action: '패스', player: 0 };
+  let lead: { action: string; player: number } = {
+    action: sourceMessage('copy.summary.17242c9658'),
+    player: 0,
+  };
   for (const [p, entries] of [...byPeriod].sort((a, b) => a[0] - b[0])) {
     const P = timeline(p, entries, r);
     // Breakpoints: player snapshots and, on a candidate trace, waypoints; on a pre-feature trace,

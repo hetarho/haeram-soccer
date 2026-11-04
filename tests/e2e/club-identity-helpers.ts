@@ -9,7 +9,7 @@ import type { CanvasImage } from '../fixtures/figure-evidence';
 import { continueSlot } from './slots';
 import { watchNext } from './watch';
 import { configureResponsibilities, reportKit } from './events';
-import { aroundOffice, openOfficeArea, outsideOffice } from './office';
+import { aroundOffice, openArea, outsideOffice } from './office';
 import { startCareer, startFlow, type CareerStart } from './start';
 
 /**
@@ -204,8 +204,7 @@ export const draftsPanel = (view: Locator) =>
   view.getByRole('heading', { name: '받은 시안', exact: true });
 /** 구단 운영 › 구단 디자인 from home, once its lazily loaded section is there (→WEB-108/110). */
 export async function openDesign(page: Page) {
-  await openOfficeArea(page, '구단 디자인');
-  await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
+  await openArea(page, '구단 디자인');
   const view = designView(page);
   await expect(appliedPanel(view).or(draftsPanel(view))).toBeVisible();
   return view;

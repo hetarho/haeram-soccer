@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Line, SigningRequest, World } from '../../../../packages/contracts/src/types';
 import { LINES } from '../../../../packages/contracts/src/player';
 import { lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
@@ -6,10 +7,10 @@ import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 
 export const LINE_NAMES: Readonly<Record<Line, string>> = {
-  GK: '골키퍼',
-  DF: '수비수',
-  MF: '미드필더',
-  FW: '공격수',
+  GK: sourceMessage('position.family.GK'),
+  DF: sourceMessage('copy.RecruitmentDesk.48e2d845b6'),
+  MF: sourceMessage('copy.RecruitmentDesk.7d50bd87b5'),
+  FW: sourceMessage('copy.RecruitmentDesk.736f1ff574'),
 };
 
 /** What a request asks for: its line, or the formation slot's position (→CLUB-33). */
@@ -54,8 +55,8 @@ export function shortlistRows(w: World, offers: readonly TransferOffer[]): Short
 
 /** Why the manager asks for a role: short of the minimum (부족) or a starter to beat (보강). */
 export const REQUEST_WHY: Readonly<Record<SigningRequest['kind'], string>> = {
-  short: '부족',
-  upgrade: '보강',
+  short: sourceMessage('copy.shortlist.da5d28ca3f'),
+  upgrade: sourceMessage('copy.shortlist.895deac203'),
 };
 
 /**
@@ -68,18 +69,18 @@ export function requestStakes(w: World): string | undefined {
     return undefined;
   const roles = window.requests.map(requestName).join('·');
   return window.met
-    ? `요청한 ${roles} 자리에 선수가 합류했어요 · 이번 이적시장은 감독 신뢰가 떨어지지 않아요`
-    : `이적시장이 닫힐 때까지 ${roles} 자리에 아무도 오지 않으면 감독 신뢰 −3`;
+    ? sourceMessage('copy.shortlist.62f74f0a1b', { p0: roles })
+    : sourceMessage('copy.shortlist.95019059e0', { p0: roles });
 }
 
 /** What the 단장 decides under the settings in force (→STAFF-20), each 맡김 or 직접. */
 export function directorDecisions(w: Pick<World, 'settings'>) {
   return (
     [
-      ['재계약 협상', 'contracts'],
-      ['감독 선임', 'manager'],
-      ['선수 영입', 'recruitment'],
-      ['선수 매각', 'sales'],
+      [sourceMessage('copy.shortlist.83b5121b8d'), 'contracts'],
+      [sourceMessage('copy.ClubStaff.10451c4909'), 'manager'],
+      [sourceMessage('copy.intervention.d12b6b87e1'), 'recruitment'],
+      [sourceMessage('copy.intervention.5ea61dab56'), 'sales'],
     ] as const
   ).map(([label, key]) => ({ label, auto: isDelegated(w, key) }));
 }

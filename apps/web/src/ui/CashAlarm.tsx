@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useGameState } from '../runtime/store';
 import { BANKRUPTCY_ROUNDS, CASH_WARNING_ROUNDS } from '../../../../packages/engine/src/settlement';
 import { operatingCosts } from '../../../../packages/engine/src/finance';
@@ -12,6 +15,7 @@ import s from './App.module.css';
  * as their own statuses beside it. None opens a modal or halts the clock.
  */
 export function CashAlarm() {
+  useTextLocale();
   const w = useGameState((state) => state.view?.world);
   if (!w || careerOver(w)) return null;
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
@@ -21,42 +25,57 @@ export function CashAlarm() {
   const club = cash < 0n || runway < CASH_WARNING_ROUNDS;
   if (!club && !owner.length) return null;
   // With an owner beside it the club's own crisis is named apart from his (→OWNER-15).
-  const crisis = w.owner ? '구단 파산 위기' : '파산 위기';
+  const crisis = w.owner
+    ? sourceMessage('copy.CashAlarm.7c6b2c4fa1')
+    : sourceMessage('copy.CashAlarm.be03d028d1');
   return (
     <>
-      {club && (
-        <div
-          data-ui="notice"
-          data-tone="danger"
-          className={s.cashAlarm}
-          role="status"
-          data-testid="cash-alarm"
-        >
-          {cash < 0n ? (
-            <>
-              <b>{crisis}</b> 잔고 <Money value={w.cash} code={own.country} year={w.year} /> ·{' '}
-              {BANKRUPTCY_ROUNDS - (w.insolvent ?? 0)}라운드 안에 흑자로 돌아오지 못하면 파산해요
-            </>
-          ) : (
-            <>
-              <b>자금 위기</b> 운영비 약 {runway}주분 남음 · 바닥난 채 {BANKRUPTCY_ROUNDS}라운드가
-              지나면 파산해요
-            </>
-          )}
-        </div>
+      {localizeValue(
+        club && (
+          <div
+            data-ui="notice"
+            data-tone="danger"
+            className={s.cashAlarm}
+            role="status"
+            data-testid="cash-alarm"
+          >
+            {localizeValue(
+              cash < 0n ? (
+                <>
+                  {richMessage('copy.CashAlarm.466cd5aa0d', {
+                    p0: <b>{localizeValue(crisis)}</b>,
+                    p1: <Money value={w.cash} code={own.country} year={w.year} />,
+                    p2: ' ',
+                    p3: BANKRUPTCY_ROUNDS - (w.insolvent ?? 0),
+                  })}
+                </>
+              ) : (
+                <>
+                  {richMessage('copy.CashAlarm.8773252530', {
+                    p0: <b>{richMessage('copy.CashAlarm.027b8b25f5')}</b>,
+                    p1: runway,
+                    p2: BANKRUPTCY_ROUNDS,
+                  })}
+                </>
+              ),
+            )}
+          </div>
+        ),
       )}
-      {owner.map((status) => (
-        <div
-          key={status.id}
-          data-ui="notice"
-          data-tone="danger"
-          className={s.cashAlarm}
-          role="status"
-          data-testid={`${status.id}-crisis`}
-        >
-          <b>{status.title}</b> {status.detail}
-        </div>
-      ))}
+      {localizeValue(
+        owner.map((status) => (
+          <div
+            key={status.id}
+            data-ui="notice"
+            data-tone="danger"
+            className={s.cashAlarm}
+            role="status"
+            data-testid={`${status.id}-crisis`}
+          >
+            <b>{localizeValue(status.title)}</b> {localizeValue(status.detail)}
+          </div>
+        )),
+      )}
     </>
   );
 }

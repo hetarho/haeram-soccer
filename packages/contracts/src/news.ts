@@ -1,3 +1,4 @@
+import { message as sourceMessage } from './messages';
 /** Persisted fact-backed headlines and the counters needed for the next one (HIST-11/22). */
 import { z } from 'zod';
 
@@ -12,7 +13,16 @@ export const newsItemSchema = z.object({
   year: z.number().int().min(1901).max(4000),
   round: count,
   order: count,
-  tag: z.enum(['경기', '기록', '선수', '순위', '분석', '구단', '이적', '유스']),
+  tag: z.enum([
+    sourceMessage('copy.LabPage.e56314e9a1'),
+    sourceMessage('navigation.history'),
+    sourceMessage('team.column.player'),
+    sourceMessage('copy.BallonDorView.8f363885a3'),
+    sourceMessage('copy.NewsFeed.45ec3425c8'),
+    sourceMessage('copy.InvestmentTotals.47dfdfd818'),
+    sourceMessage('copy.NewsFeed.832934e8a8'),
+    sourceMessage('copy.NewsFeed.690198ae20'),
+  ]),
   tone: z.enum(['good', 'neutral', 'bad']),
   weight: z.enum(['major', 'notable', 'minor']),
   title: z.string().max(2000),

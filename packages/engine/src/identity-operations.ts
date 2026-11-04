@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { KIT_ROLES, type ClubIdentity, type KitRole } from '../../contracts/src/identity';
 import { clubIdentitySchema, normaliseIdentity } from '../../contracts/src/identitySchema';
 import type { World } from '../../contracts/src/types';
@@ -10,7 +11,7 @@ import { clubOf } from './player-state';
  */
 
 /** The refusal when the named fixture is no longer our next one (WEB-88). */
-export const KIT_FIXTURE_CHANGED = '다음 경기가 변경됐어요. 유니폼을 다시 골라 주세요.';
+export const KIT_FIXTURE_CHANGED = sourceMessage('copy.identity_operations.eb5dca3afe');
 
 /**
  * KIT-9: applies a complete design to the own club — the command names no club — as a normalised
@@ -20,11 +21,11 @@ export const KIT_FIXTURE_CHANGED = '다음 경기가 변경됐어요. 유니폼�
  */
 export function applyClubIdentity(w: World, identity: ClubIdentity) {
   if (!clubIdentitySchema.safeParse(identity).success)
-    throw new Error('구단 디자인을 확인해 주세요.');
+    throw new Error(sourceMessage('copy.identity_operations.e03fca9098'));
   // An opponent without a stored design wears the legacy crest derived around the own colour, so
   // changing that colour would reassign it (KIT-11); writer activation installs every design first.
   if (w.clubs.some((club) => !club.identity))
-    throw new Error('구단 디자인 정보를 갱신한 뒤 다시 적용해 주세요.');
+    throw new Error(sourceMessage('copy.identity_operations.4239183a71'));
   const club = clubOf(w);
   club.identity = normaliseIdentity(identity);
   club.color = identity.colours[0];
@@ -37,7 +38,8 @@ export function applyClubIdentity(w: World, identity: ClubIdentity) {
  * stored: saved designs stay as they are, and a clash stays the selector's warning (KIT-7).
  */
 export function chooseMatchKit(w: World, fixtureId: string, role: KitRole | null) {
-  if (role !== null && !KIT_ROLES.includes(role)) throw new Error('유니폼을 확인해 주세요.');
+  if (role !== null && !KIT_ROLES.includes(role))
+    throw new Error(sourceMessage('copy.identity_operations.5e6f87040f'));
   const next = nextOwnFixture(w);
   if (!next || next.id !== fixtureId) throw new Error(KIT_FIXTURE_CHANGED);
   if (role) w.kitChoice = { fixtureId, role };

@@ -1,3 +1,5 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { MatchAppearance } from '../../../../packages/contracts/src/identity';
 import { previewLines, previewPose } from './identityPreview';
@@ -97,6 +99,7 @@ export function KitPitchPreview({
   /** Home side's name, then the away side's. */
   labels: [string, string];
 }) {
+  useTextLocale();
   const caption = useId();
   const canvas = useRef<HTMLCanvasElement>(null);
   const skin = usePitchSkin(canvas);
@@ -135,15 +138,24 @@ export function KitPitchPreview({
         ref={canvas}
         className={s.canvas}
         role="img"
-        aria-label="경기장 유니폼 미리보기"
+        aria-label={displayMessage('copy.KitPitchPreview.19f9a6d3cb')}
         aria-describedby={caption}
       />
       <figcaption id={caption} className={s.caption}>
-        {lines.map((line) => (
-          <p key={line} className={line.startsWith('경고:') ? s.warning : undefined}>
-            {line}
-          </p>
-        ))}
+        {localizeValue(
+          lines.map((line) => (
+            <p
+              key={line}
+              className={
+                line.startsWith(sourceMessage('copy.KitPitchPreview.25c12919c3'))
+                  ? s.warning
+                  : undefined
+              }
+            >
+              {localizeValue(line)}
+            </p>
+          )),
+        )}
       </figcaption>
     </figure>
   );

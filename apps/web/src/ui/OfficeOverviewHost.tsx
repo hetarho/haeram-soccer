@@ -1,3 +1,5 @@
+import { displayMessage, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { lazy, Suspense, useEffect } from 'react';
 import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
@@ -15,6 +17,7 @@ const ClubOverview = lazy(() =>
   import('./ClubOverview').then((module) => ({ default: module.ClubOverview })),
 );
 export function ClubOverviewHost() {
+  useTextLocale();
   const w = useGameState((state) => state.view!.world);
   const [open, setOpen] = useTaskState(w.id, 'club-summary-open', false);
   useEffect(() => {
@@ -24,8 +27,12 @@ export function ClubOverviewHost() {
   }, [setOpen]);
   if (!open) return null;
   return (
-    <Dialog label="우리 팀 오버뷰" wide onClose={() => setOpen(false)}>
-      <Suspense fallback={<p role="status">구단 현황을 여는 중…</p>}>
+    <Dialog
+      label={displayMessage('copy.ClubOverview.409e4ac1d2')}
+      wide
+      onClose={() => setOpen(false)}
+    >
+      <Suspense fallback={<p role="status">{richMessage('copy.OfficeOverviewHost.211e374207')}</p>}>
         <ClubOverview w={w} />
       </Suspense>
     </Dialog>
@@ -38,6 +45,7 @@ export function ApprovalInboxHost({
   client: GameClient;
   controller: ProgressionController;
 }) {
+  useTextLocale();
   return (
     <Suspense fallback={null}>
       <ApprovalInbox client={client} controller={controller} />
@@ -51,6 +59,7 @@ export function OfficeOverviewHost({
   client: GameClient;
   controller: ProgressionController;
 }) {
+  useTextLocale();
   const id = useGameState((state) => state.view!.world.id);
   const [open, setOpen] = useTaskState(id, 'office-overview', false);
   const [focus] = useTaskState<ResponsibilityKey | 'finance' | undefined>(
@@ -65,8 +74,12 @@ export function OfficeOverviewHost({
   }, [setOpen]);
   if (!open) return null;
   return (
-    <Dialog label="결재 설정" wide onClose={() => setOpen(false)}>
-      <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
+    <Dialog
+      label={displayMessage('copy.ApprovalButtons.df74662f55')}
+      wide
+      onClose={() => setOpen(false)}
+    >
+      <Suspense fallback={<p role="status">{richMessage('copy.OfficeOverviewHost.2f538e2105')}</p>}>
         <OwnerOffice key={id} client={client} controller={controller} focus={focus} />
       </Suspense>
     </Dialog>

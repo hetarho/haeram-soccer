@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { PixelIcon } from './PixelIcon';
 import {
   lazy,
@@ -95,18 +98,18 @@ import s from './App.module.css';
 import t from './Pitch.module.css';
 
 const stateLabels: Record<PlayerMotionState, string> = {
-  shape: '포메이션 유지',
-  support: '패스 지원',
-  run: '빈 공간 침투',
-  press: '볼 압박',
-  mark: '상대 마크',
-  recover: '수비 복귀',
-  carry: '볼 운반',
-  keeper: '골문 보호',
+  shape: sourceMessage('copy.Pitch.c8b026ca9e'),
+  support: sourceMessage('copy.Pitch.d0fdc8c1b3'),
+  run: sourceMessage('copy.Pitch.b66ab772e3'),
+  press: sourceMessage('copy.Pitch.75e147f54f'),
+  mark: sourceMessage('copy.Pitch.dd4d63cca3'),
+  recover: sourceMessage('copy.Pitch.4cdbdae8b5'),
+  carry: sourceMessage('copy.Pitch.0c24193053'),
+  keeper: sourceMessage('copy.Pitch.abcf2c81c5'),
 };
 /** Intentions the inspector names by their own label rather than their motion state's (→MATCH-32). */
 const intentionLabels: Partial<Record<NonNullable<PlayerMotion['intention']>['kind'], string>> = {
-  screen: '길목 차단',
+  screen: sourceMessage('copy.Pitch.2e1032e0a1'),
 };
 /** What the inspector says a player is doing: an intention he still holds that has a label, else his motion state. */
 const motionLabel = ({ state, intention }: PlayerMotion) =>
@@ -254,6 +257,7 @@ export function Pitch({
   /** Back navigation in the scoreboard row. */
   lead?: ReactNode;
 }) {
+  useTextLocale();
   const detailsId = useId();
   const { t: tr } = useLocale();
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -411,7 +415,11 @@ export function Pitch({
         : [
             [
               incident.player,
-              incident.kind === 'sub' ? '교체' : incident.kind === 'injury' ? '부상' : '퇴장',
+              incident.kind === 'sub'
+                ? sourceMessage('copy.LabPage.084c5a6dd7')
+                : incident.kind === 'injury'
+                  ? sourceMessage('copy.Pitch.0e9e3ce22b')
+                  : sourceMessage('copy.LabPage.68e69c7b9c'),
             ] as const,
           ],
     ),
@@ -759,7 +767,7 @@ export function Pitch({
           ctx.fillStyle = skin.idleText;
           ctx.font = `14px ${pitchFont}`;
           ctx.textAlign = 'center';
-          ctx.fillText('킥오프를 기다립니다', width / 2, height / 2);
+          ctx.fillText(displayMessage('copy.FixtureNotebook.5dc1ae4f9a'), width / 2, height / 2);
         }
       }
       raf = requestAnimationFrame(draw);
@@ -869,7 +877,7 @@ export function Pitch({
       className={heldGoal?.side === side ? t.goalScore : undefined}
       data-testid={heldGoal?.side === side ? 'goal-score' : undefined}
     >
-      {value}
+      {localizeValue(value)}
     </i>
   );
   // A sheet over the match holds it still, and lets it play on as it was once closed.
@@ -922,19 +930,21 @@ export function Pitch({
   );
   // A clip of a finished archive plays and pauses; it does not offer the restart.
   const ended = finished && !replay;
-  const playLabel = ended ? '다시 보기' : paused ? '재생' : '일시정지';
+  const playLabel = ended
+    ? sourceMessage('copy.LabPage.6bf1632192')
+    : paused
+      ? sourceMessage('copy.Pitch.d43a776c5e')
+      : sourceMessage('copy.Pitch.4f51c0c8ad');
   // One red mark per player sent off up to the presented minute (→WEB-50).
   const redMarks = (side: 0 | 1) =>
     reds[side] > 0 && (
       <i
         className={t.reds}
         role="img"
-        aria-label={`퇴장 ${reds[side]}명`}
+        aria-label={displayMessage('copy.Pitch.4d8ae68c82', { p0: reds[side] })}
         data-testid={side === 0 ? 'red-cards-home' : 'red-cards-away'}
       >
-        {Array.from({ length: reds[side] }, (_, i) => (
-          <i key={i} />
-        ))}
+        {localizeValue(Array.from({ length: reds[side] }, (_, i) => <i key={i} />))}
       </i>
     );
   return (
@@ -967,95 +977,126 @@ export function Pitch({
             : undefined
         }
       >
-        {lead}
+        {localizeValue(lead)}
         <span className={t.team} data-ui="match-team" data-side="home">
           <i className={t.teamIdentity} data-ui="match-team-identity">
-            {home && look && (
-              <CrestMark
-                crest={look.sides[0].crest}
-                size={24}
-                label={look.recorded ? undefined : `${home.name} 엠블럼 미기록`}
-              />
+            {localizeValue(
+              home && look && (
+                <CrestMark
+                  crest={look.sides[0].crest}
+                  size={24}
+                  label={localizeValue(
+                    look.recorded
+                      ? undefined
+                      : sourceMessage('copy.Pitch.468471861a', { p0: home.name }),
+                  )}
+                />
+              ),
             )}
-            <b className={t.fullName}>{home?.name || 'HOME'}</b>
+            <b className={t.fullName}>{localizeValue(home?.name || 'HOME')}</b>
             <b className={t.shortName} aria-hidden="true">
-              {home?.short || 'HOME'}
+              {localizeValue(home?.short || 'HOME')}
             </b>
-            {redMarks(0)}
+            {localizeValue(redMarks(0))}
           </i>
         </span>
-        {frame ? (
-          // The score as presented so far: a goal later in this minute is not shown before it lands.
-          <strong>
-            <i className={t.score}>
-              {scoreValue(0, presentedScore?.home ?? 0)}
-              <i className={t.scoreColon}> : </i>
-              {scoreValue(1, presentedScore?.away ?? 0)}
-            </i>
-          </strong>
-        ) : (
-          <strong>— : —</strong>
+        {localizeValue(
+          frame ? (
+            // The score as presented so far: a goal later in this minute is not shown before it lands.
+            <strong>
+              <i className={t.score}>
+                {localizeValue(scoreValue(0, presentedScore?.home ?? 0))}
+                <i className={t.scoreColon}> : </i>
+                {localizeValue(scoreValue(1, presentedScore?.away ?? 0))}
+              </i>
+            </strong>
+          ) : (
+            <strong>— : —</strong>
+          ),
         )}
         <span className={`${t.team} ${t.awayTeam}`} data-ui="match-team" data-side="away">
           <i className={t.teamIdentity} data-ui="match-team-identity">
-            {away && look && (
-              <CrestMark
-                crest={look.sides[1].crest}
-                size={24}
-                label={look.recorded ? undefined : `${away.name} 엠블럼 미기록`}
-              />
+            {localizeValue(
+              away && look && (
+                <CrestMark
+                  crest={look.sides[1].crest}
+                  size={24}
+                  label={localizeValue(
+                    look.recorded
+                      ? undefined
+                      : sourceMessage('copy.Pitch.468471861a', { p0: away.name }),
+                  )}
+                />
+              ),
             )}
-            <b className={t.fullName}>{away?.name || 'AWAY'}</b>
+            <b className={t.fullName}>{localizeValue(away?.name || 'AWAY')}</b>
             <b className={t.shortName} aria-hidden="true">
-              {away?.short || 'AWAY'}
+              {localizeValue(away?.short || 'AWAY')}
             </b>
-            {redMarks(1)}
+            {localizeValue(redMarks(1))}
           </i>
         </span>
       </div>
       <div className={`${s.pitchMeta} ${t.pitchMeta}`} data-ui="match-meta">
         <span className={`${s.live} ${t.liveText}`}>
-          {frame
-            ? `${replay ? `${tr('match.replay.state')} · ` : ''}${frame.label}′ · ${frame.action}${finished && !replay ? ' · 경기 종료' : ''}`
-            : 'MATCH DAY'}
+          {localizeValue(
+            frame
+              ? `${replay ? `${tr('match.replay.state')} · ` : ''}${frame.label}′ · ${frame.action}${finished && !replay ? sourceMessage('copy.Pitch.000578f677') : ''}`
+              : 'MATCH DAY',
+          )}
         </span>
         {/* A clip offers the ordinary speeds in archived replay too (→WEB-105). */}
-        {p && (!summary || replay) ? (
-          <div className={t.metaControls}>
-            {!summary && (
-              <span className={t.matchup} data-ui="match-tactics">
-                {tacticLabel[p.record.tactics[0]]} vs {tacticLabel[p.record.tactics[1]]}
-              </span>
-            )}
-            <div className={t.speeds} role="radiogroup" aria-label="관전 속도">
-              {WATCH_SPEEDS.map((value) => (
-                <button
-                  key={value}
-                  role="radio"
-                  aria-checked={speed === value}
-                  className={speed === value ? t.speedOn : undefined}
-                  onClick={() => {
-                    setSpeed(value);
-                    setPaused(false);
-                  }}
-                >
-                  {value}×
-                </button>
-              ))}
+        {localizeValue(
+          p && (!summary || replay) ? (
+            <div className={t.metaControls}>
+              {localizeValue(
+                !summary && (
+                  <span className={t.matchup} data-ui="match-tactics">
+                    {richMessage('copy.Pitch.de695ccbd9', {
+                      p0: localizeValue(tacticLabel[p.record.tactics[0]]),
+                      p1: localizeValue(tacticLabel[p.record.tactics[1]]),
+                    })}
+                  </span>
+                ),
+              )}
+              <div
+                className={t.speeds}
+                role="radiogroup"
+                aria-label={displayMessage('copy.Pitch.d65ad19603')}
+              >
+                {localizeValue(
+                  WATCH_SPEEDS.map((value) => (
+                    <button
+                      key={value}
+                      role="radio"
+                      aria-checked={speed === value}
+                      className={speed === value ? t.speedOn : undefined}
+                      onClick={() => {
+                        setSpeed(value);
+                        setPaused(false);
+                      }}
+                    >
+                      {localizeValue(value)}×
+                    </button>
+                  )),
+                )}
+              </div>
             </div>
-          </div>
-        ) : (
-          <span className={t.tactics}>
-            {summary
-              ? '지난 경기 · 기록된 골과 최종 통계'
-              : '다음 경기를 선택하면 관전이 시작됩니다'}
-          </span>
+          ) : (
+            <span className={t.tactics}>
+              {localizeValue(
+                summary
+                  ? sourceMessage('copy.Pitch.5f7de66d10')
+                  : sourceMessage('copy.Pitch.d450f890ba'),
+              )}
+            </span>
+          ),
         )}
       </div>
       <div className={t.stage}>
         <canvas
           ref={canvas}
-          aria-label="22명의 선수와 공으로 표현하는 경기"
+          aria-label={displayMessage('copy.Pitch.16255a93f6')}
           className={`${s.canvas} ${t.canvas} ${summary ? t.replayCanvas : ''}`}
           data-pickable={p ? true : undefined}
           onClick={(event) => {
@@ -1064,309 +1105,409 @@ export function Pitch({
         />
         {/* One polite region; its text changes once per goal, never on a rerender (→WEB-94). */}
         <div className={t.goalCueSlot} aria-live="polite">
-          {heldGoal && (
-            <div
-              key={heldGoal.id}
-              className={t.goalCue}
-              data-ui="goal-cue"
-              data-testid="goal-cue"
-              data-side={heldGoal.side}
-            >
-              <strong>{tr('match.goal.cue')}</strong>
-              <span>
-                {heldGoal.scorer
-                  ? tr('match.goal.scorer', {
-                      team: (heldGoal.side === 0 ? home : away)?.name ?? '',
-                      player: heldGoal.scorer,
-                    })
-                  : tr('match.goal.side', {
-                      team: (heldGoal.side === 0 ? home : away)?.name ?? '',
-                    })}
-              </span>
-            </div>
+          {localizeValue(
+            heldGoal && (
+              <div
+                key={heldGoal.id}
+                className={t.goalCue}
+                data-ui="goal-cue"
+                data-testid="goal-cue"
+                data-side={heldGoal.side}
+              >
+                <strong>{localizeValue(tr('match.goal.cue'))}</strong>
+                <span>
+                  {localizeValue(
+                    heldGoal.scorer
+                      ? tr('match.goal.scorer', {
+                          team: (heldGoal.side === 0 ? home : away)?.name ?? '',
+                          player: heldGoal.scorer,
+                        })
+                      : tr('match.goal.side', {
+                          team: (heldGoal.side === 0 ? home : away)?.name ?? '',
+                        }),
+                  )}
+                </span>
+              </div>
+            ),
           )}
         </div>
         {/* A still beat's cards, injuries and substitutions (→WEB-32), named once per stoppage. */}
         <div className={t.stoppageSlot} aria-live="polite">
-          {captions.length > 0 && (
-            <div
-              key={beat!.from}
-              className={t.stoppage}
-              data-ui="stoppage-caption"
-              data-testid="stoppage-caption"
-            >
-              {captions.map((caption, i) => (
-                <span key={i}>{tr(caption.key, caption.params)}</span>
-              ))}
-            </div>
+          {localizeValue(
+            captions.length > 0 && (
+              <div
+                key={beat!.from}
+                className={t.stoppage}
+                data-ui="stoppage-caption"
+                data-testid="stoppage-caption"
+              >
+                {localizeValue(
+                  captions.map((caption, i) => (
+                    <span key={i}>{localizeValue(tr(caption.key, caption.params))}</span>
+                  )),
+                )}
+              </div>
+            ),
           )}
         </div>
-        {look && !look.recorded && (
-          // Older playback: neutral stand-in kits, never today's designs presented as this match's.
-          <span className={t.unrecorded} data-testid="match-kit-unrecorded">
-            {UNRECORDED_KIT}
-          </span>
+        {localizeValue(
+          look && !look.recorded && (
+            // Older playback: neutral stand-in kits, never today's designs presented as this match's.
+            <span className={t.unrecorded} data-testid="match-kit-unrecorded">
+              {localizeValue(UNRECORDED_KIT)}
+            </span>
+          ),
         )}
-        {summary && (
-          <button
-            data-ui="icon"
-            className={`${t.playToggle} ${paused || ended ? t.playIdle : ''}`}
-            aria-label={playLabel}
-            disabled={!p}
-            onClick={toggle}
-          >
-            <PixelIcon name={ended ? 'replay' : paused ? 'play' : 'pause'} size={24} />
-          </button>
+        {localizeValue(
+          summary && (
+            <button
+              data-ui="icon"
+              className={`${t.playToggle} ${paused || ended ? t.playIdle : ''}`}
+              aria-label={localizeValue(playLabel)}
+              disabled={!p}
+              onClick={toggle}
+            >
+              <PixelIcon name={ended ? 'replay' : paused ? 'play' : 'pause'} size={24} />
+            </button>
+          ),
         )}
         {/* Goal-scene replay (→WEB-105): the shortcut, or the clip's label and return. */}
-        {replay ? (
-          <div
-            className={`${t.replayControl} ${t.replayState} ${summary ? t.besideToggle : ''}`}
-            data-ui="match-replay"
-            data-testid="goal-replay-state"
-          >
-            <b>{tr('match.replay.state')}</b>
-            <button ref={replayReturn} onClick={endReplay}>
-              {tr('match.replay.return')}
-            </button>
-          </div>
-        ) : (
-          offered.length > 0 && (
-            <button
-              ref={replayOpen}
-              className={`${t.replayControl} ${summary ? t.besideToggle : ''}`}
-              data-testid="goal-replay-open"
-              aria-haspopup="dialog"
-              aria-disabled={replayHeld || undefined}
-              onClick={() => {
-                if (!replayHeld) setPicking(true);
-              }}
+        {localizeValue(
+          replay ? (
+            <div
+              className={`${t.replayControl} ${t.replayState} ${summary ? t.besideToggle : ''}`}
+              data-ui="match-replay"
+              data-testid="goal-replay-state"
             >
-              <PixelIcon name="replay" size={16} />
-              {tr('match.replay.action')}
-            </button>
-          )
+              <b>{localizeValue(tr('match.replay.state'))}</b>
+              <button ref={replayReturn} onClick={endReplay}>
+                {localizeValue(tr('match.replay.return'))}
+              </button>
+            </div>
+          ) : (
+            offered.length > 0 && (
+              <button
+                ref={replayOpen}
+                className={`${t.replayControl} ${summary ? t.besideToggle : ''}`}
+                data-testid="goal-replay-open"
+                aria-haspopup="dialog"
+                aria-disabled={replayHeld || undefined}
+                onClick={() => {
+                  if (!replayHeld) setPicking(true);
+                }}
+              >
+                <PixelIcon name="replay" size={16} />
+                {localizeValue(tr('match.replay.action'))}
+              </button>
+            )
+          ),
         )}
       </div>
       <div className={t.latestEvent} data-testid="match-latest-event" data-ui="match-commentary">
-        <span>{call ? `${call.label}′` : frame ? `${frame.label}′` : '최근 장면'}</span>
+        <span>
+          {localizeValue(
+            call
+              ? `${call.label}′`
+              : frame
+                ? `${frame.label}′`
+                : sourceMessage('copy.Pitch.abbef09626'),
+          )}
+        </span>
         <p>
-          {call
-            ? call.text
-            : latestGoal
-              ? `${latestGoal.minute}′ ${latestGoal.player} · ${latestGoal.action}`
-              : '다음 경기를 시작하고 우리 선발의 활약을 지켜보세요.'}
+          {localizeValue(
+            call
+              ? call.text
+              : latestGoal
+                ? `${latestGoal.minute}′ ${latestGoal.player} · ${latestGoal.action}`
+                : sourceMessage('copy.Pitch.f845d001b4'),
+          )}
         </p>
-        {p && (
-          <button
-            type="button"
-            className={t.commentaryToggle}
-            aria-expanded={commentary}
-            onClick={() => setCommentary(!commentary)}
-          >
-            해설 {commentary ? '닫기 ▴' : '열기 ▾'}
-          </button>
+        {localizeValue(
+          p && (
+            <button
+              type="button"
+              className={t.commentaryToggle}
+              aria-expanded={commentary}
+              onClick={() => setCommentary(!commentary)}
+            >
+              {richMessage('copy.Pitch.9dbfc869c7', {
+                p0: commentary
+                  ? sourceMessage('copy.Pitch.6d758e7771')
+                  : sourceMessage('copy.Pitch.29518875cb'),
+              })}
+            </button>
+          ),
         )}
       </div>
-      {commentary && (
-        <ol className={t.commentaryLog} data-testid="match-commentary-log" aria-label="해설">
-          {log.length ? (
-            log.map((line) => (
-              <li key={line.key}>
-                <span>{line.label}′</span>
-                <p>{line.text}</p>
-              </li>
-            ))
-          ) : (
-            <li>
-              <p>아직 해설이 없어요.</p>
-            </li>
-          )}
-        </ol>
-      )}
-      {p && look && !summary && frame?.xg && (
-        <MatchCharts
-          playback={p}
-          shown={(sample?.frame ?? 0) + 1}
-          look={look}
-          groundColor={skin.chartGround}
-          names={[home?.short || 'HOME', away?.short || 'AWAY']}
-          details={details}
-          detailsId={detailsId}
-          onDetails={openDetails}
-        />
-      )}
-      {actions ? (
-        actions({ finished, reveal })
-      ) : (
-        <div className={t.ownActions}>
-          <button onClick={reveal} disabled={!p}>
-            결과 보기
-          </button>
-          <button aria-haspopup="dialog" disabled={!p} onClick={openDetails}>
-            경기 상세
-          </button>
-        </div>
-      )}
-      {details && (
-        <Dialog label="경기 상세" wide onClose={closeDetails}>
-          <div id={detailsId} className={t.details}>
-            {p && (summary || finished || reviewedId === p.record.id) && (
-              <MatchMoments
-                live={!summary}
-                record={p.record}
-                frames={p.frames}
-                names={names}
-                onSeek={(moment) => {
-                  seek(sampleAt(p.frames, samples, moment));
-                  setPaused(true);
-                }}
-              />
-            )}
-            {p && (summary || finished) && (
-              <Suspense fallback={null}>
-                <MatchReport record={p.record} w={world} />
-              </Suspense>
-            )}
-            {p && (
-              <label className={s.replayScrubber}>
-                경기 시간
-                <input
-                  type="range"
-                  aria-label="경기 시간"
-                  min={0}
-                  max={samples.length - 1}
-                  value={sampleIndex}
-                  onChange={(e) => {
-                    seek(Number(e.target.value));
-                    setPaused(true);
-                  }}
-                />
-                <span>
-                  {frame?.label ?? 0}′ / {lastLabel}′
-                </span>
-              </label>
-            )}
-            {frame && (!summary || finished) && (
-              <>
-                <div className={s.matchStats}>
-                  {[
-                    [
-                      '점유율',
-                      percent(frame.metrics[0][11], frame.minute),
-                      percent(frame.metrics[1][11], frame.minute),
-                    ],
-                    [
-                      '기대 득점 (xG)',
-                      frame.xg?.[0].toFixed(2) ?? '—',
-                      frame.xg?.[1].toFixed(2) ?? '—',
-                    ],
-                    ['슈팅', frame.metrics[0][4], frame.metrics[1][4]],
-                    ['유효 슈팅', frame.metrics[0][5], frame.metrics[1][5]],
-                    [
-                      '패스 성공',
-                      percent(frame.metrics[0][3], frame.metrics[0][2]),
-                      percent(frame.metrics[1][3], frame.metrics[1][2]),
-                    ],
-                    ['태클', frame.metrics[0][6], frame.metrics[1][6]],
-                    ['인터셉트', frame.metrics[0][7], frame.metrics[1][7]],
-                  ].map(([label, a, b]) => (
-                    <div key={label}>
-                      <strong>{a}</strong>
-                      <span>{label}</span>
-                      <strong>{b}</strong>
-                    </div>
-                  ))}
-                </div>
-                <ol className={s.highlights}>
-                  {p?.record.highlights
-                    .filter((h) => h.minute <= frame.minute)
-                    .map((h, i) => (
-                      <li key={i}>
-                        <b>{h.minute}′</b> {h.player} · {h.action}
-                      </li>
-                    ))}
-                </ol>
-              </>
-            )}
-          </div>
-        </Dialog>
-      )}
-      {inspect && selectedPlayer && (
-        <Dialog
-          label={`${selectedIndex + 1}. ${selectedPlayer.name} · ${(selectedSide === 0 ? home : away)?.name ?? ''}`}
-          onClose={closePlayer}
-        >
-          <div className={s.playerInspector} data-testid="player-inspector">
-            <p>
-              {selectedMotion ? (
-                <b>{motionLabel(selectedMotion)}</b>
+      {localizeValue(
+        commentary && (
+          <ol
+            className={t.commentaryLog}
+            data-testid="match-commentary-log"
+            aria-label={displayMessage('copy.Pitch.608c5fe57a')}
+          >
+            {localizeValue(
+              log.length ? (
+                log.map((line) => (
+                  <li key={line.key}>
+                    <span>{localizeValue(line.label)}′</span>
+                    <p>{localizeValue(line.text)}</p>
+                  </li>
+                ))
               ) : (
-                `지금은 경기장에 없는 선수입니다${selectedId && gone.has(selectedId) ? ` (${gone.get(selectedId)})` : ''}.`
-              )}
-            </p>
-            {traits && (
-              <>
-                <div className={s.motionTraits}>
-                  {(
-                    [
-                      ['자유도', traits.freedom],
-                      ['규율', traits.discipline],
-                      ['압박 성향', traits.pressing],
-                      ['예측력', traits.anticipation],
-                    ] as const
-                  ).map(([label, value]) => (
-                    <span key={label}>
-                      {label} {Math.round(value * 100)}
-                      <progress aria-label={label} max={1} value={value} />
-                    </span>
-                  ))}
-                </div>
-                <p className={s.muted}>
-                  자유도는 감독이 역할과 판단력을 보고 주는 재량이고, 규율·압박 성향·예측력은 능력과
-                  개인 성향에서 나옵니다.
-                </p>
-              </>
-            )}
-          </div>
-        </Dialog>
-      )}
-      {picking && p && (
-        <Dialog label={tr('match.replay.action')} picker onClose={() => setPicking(false)}>
-          <ol className={t.replayGoals} data-testid="goal-replay-list">
-            {offered.map((pick) => {
-              const { goal } = pick;
-              const team = (goal.side === 0 ? home : away)?.name ?? '';
-              return (
-                <li key={goal.id}>
-                  <button
-                    data-testid="goal-replay-option"
-                    data-goal={goal.id}
-                    data-footage={pick.footage}
-                    aria-disabled={replayHeld || undefined}
-                    onClick={() => replayGoal(pick)}
-                  >
-                    <b>
-                      {goal.id + 1}. {p.frames[pick.frame]?.label}′ · {goal.home} : {goal.away}
-                    </b>
-                    <span>
-                      {goal.scorer
-                        ? tr('match.goal.scorer', { team, player: goal.scorer })
-                        : tr('match.goal.side', { team })}
-                      {!pick.footage && ` · ${tr('match.replay.seek')}`}
-                    </span>
-                  </button>
+                <li>
+                  <p>{richMessage('copy.Pitch.8191961ec1')}</p>
                 </li>
-              );
-            })}
+              ),
+            )}
           </ol>
-          {offered.some((pick) => !pick.footage) && (
-            <p className={s.muted} data-testid="goal-replay-unavailable">
-              {tr('match.replay.unavailable')}
-            </p>
-          )}
-          <p className={s.muted}>{tr('match.replay.note')}</p>
-        </Dialog>
+        ),
+      )}
+      {localizeValue(
+        p && look && !summary && frame?.xg && (
+          <MatchCharts
+            playback={p}
+            shown={(sample?.frame ?? 0) + 1}
+            look={look}
+            groundColor={skin.chartGround}
+            names={[home?.short || 'HOME', away?.short || 'AWAY']}
+            details={details}
+            detailsId={detailsId}
+            onDetails={openDetails}
+          />
+        ),
+      )}
+      {localizeValue(
+        actions ? (
+          actions({ finished, reveal })
+        ) : (
+          <div className={t.ownActions}>
+            <button onClick={reveal} disabled={!p}>
+              {richMessage('copy.LiveSeason.1547b2a6d2')}
+            </button>
+            <button aria-haspopup="dialog" disabled={!p} onClick={openDetails}>
+              {richMessage('copy.MatchCharts.f57a1c78ca')}
+            </button>
+          </div>
+        ),
+      )}
+      {localizeValue(
+        details && (
+          <Dialog label={displayMessage('copy.MatchCharts.f57a1c78ca')} wide onClose={closeDetails}>
+            <div id={detailsId} className={t.details}>
+              {localizeValue(
+                p && (summary || finished || reviewedId === p.record.id) && (
+                  <MatchMoments
+                    live={!summary}
+                    record={p.record}
+                    frames={p.frames}
+                    names={names}
+                    onSeek={(moment) => {
+                      seek(sampleAt(p.frames, samples, moment));
+                      setPaused(true);
+                    }}
+                  />
+                ),
+              )}
+              {localizeValue(
+                p && (summary || finished) && (
+                  <Suspense fallback={null}>
+                    <MatchReport record={p.record} w={world} />
+                  </Suspense>
+                ),
+              )}
+              {localizeValue(
+                p && (
+                  <label className={s.replayScrubber}>
+                    {richMessage('copy.Pitch.6ea97b709c', {
+                      p0: (
+                        <input
+                          type="range"
+                          aria-label={displayMessage('copy.Pitch.78239af671')}
+                          min={0}
+                          max={samples.length - 1}
+                          value={sampleIndex}
+                          onChange={(e) => {
+                            seek(Number(e.target.value));
+                            setPaused(true);
+                          }}
+                        />
+                      ),
+                      p1: (
+                        <span>
+                          {localizeValue(frame?.label ?? 0)}′ / {localizeValue(lastLabel)}′
+                        </span>
+                      ),
+                    })}
+                  </label>
+                ),
+              )}
+              {localizeValue(
+                frame && (!summary || finished) && (
+                  <>
+                    <div className={s.matchStats}>
+                      {localizeValue(
+                        [
+                          [
+                            sourceMessage('copy.stories.6169842c01'),
+                            percent(frame.metrics[0][11], frame.minute),
+                            percent(frame.metrics[1][11], frame.minute),
+                          ],
+                          [
+                            sourceMessage('copy.Pitch.6402451e06'),
+                            frame.xg?.[0].toFixed(2) ?? '—',
+                            frame.xg?.[1].toFixed(2) ?? '—',
+                          ],
+                          [
+                            sourceMessage('copy.summary.da1cc31972'),
+                            frame.metrics[0][4],
+                            frame.metrics[1][4],
+                          ],
+                          [
+                            sourceMessage('copy.summary.2d9b22c49c'),
+                            frame.metrics[0][5],
+                            frame.metrics[1][5],
+                          ],
+                          [
+                            sourceMessage('copy.Pitch.d488f908a0'),
+                            percent(frame.metrics[0][3], frame.metrics[0][2]),
+                            percent(frame.metrics[1][3], frame.metrics[1][2]),
+                          ],
+                          [
+                            sourceMessage('copy.Pitch.3f6ba38a9e'),
+                            frame.metrics[0][6],
+                            frame.metrics[1][6],
+                          ],
+                          [
+                            sourceMessage('copy.Pitch.818d05f8ab'),
+                            frame.metrics[0][7],
+                            frame.metrics[1][7],
+                          ],
+                        ].map(([label, a, b]) => (
+                          <div key={label}>
+                            <strong>{localizeValue(a)}</strong>
+                            <span>{localizeValue(label)}</span>
+                            <strong>{localizeValue(b)}</strong>
+                          </div>
+                        )),
+                      )}
+                    </div>
+                    <ol className={s.highlights}>
+                      {localizeValue(
+                        p?.record.highlights
+                          .filter((h) => h.minute <= frame.minute)
+                          .map((h, i) => (
+                            <li key={i}>
+                              <b>{localizeValue(h.minute)}′</b> {localizeValue(h.player)} ·{' '}
+                              {localizeValue(h.action)}
+                            </li>
+                          )),
+                      )}
+                    </ol>
+                  </>
+                ),
+              )}
+            </div>
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        inspect && selectedPlayer && (
+          <Dialog
+            label={localizeValue(
+              `${selectedIndex + 1}. ${selectedPlayer.name} · ${(selectedSide === 0 ? home : away)?.name ?? ''}`,
+            )}
+            onClose={closePlayer}
+          >
+            <div className={s.playerInspector} data-testid="player-inspector">
+              <p>
+                {localizeValue(
+                  selectedMotion ? (
+                    <b>{localizeValue(motionLabel(selectedMotion))}</b>
+                  ) : (
+                    sourceMessage('copy.Pitch.f87c3afdbf', {
+                      p0: selectedId && gone.has(selectedId) ? ` (${gone.get(selectedId)})` : '',
+                    })
+                  ),
+                )}
+              </p>
+              {localizeValue(
+                traits && (
+                  <>
+                    <div className={s.motionTraits}>
+                      {localizeValue(
+                        (
+                          [
+                            [sourceMessage('copy.Pitch.1c2f5a7c6d'), traits.freedom],
+                            [sourceMessage('copy.Pitch.69023144c9'), traits.discipline],
+                            [sourceMessage('copy.Pitch.9c9771b63b'), traits.pressing],
+                            [sourceMessage('copy.Pitch.d3c2efa57e'), traits.anticipation],
+                          ] as const
+                        ).map(([label, value]) => (
+                          <span key={label}>
+                            {localizeValue(label)} {localizeValue(Math.round(value * 100))}
+                            <progress aria-label={localizeValue(label)} max={1} value={value} />
+                          </span>
+                        )),
+                      )}
+                    </div>
+                    <p className={s.muted}>{richMessage('copy.Pitch.c542b3ee41')}</p>
+                  </>
+                ),
+              )}
+            </div>
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        picking && p && (
+          <Dialog
+            label={localizeValue(tr('match.replay.action'))}
+            picker
+            onClose={() => setPicking(false)}
+          >
+            <ol className={t.replayGoals} data-testid="goal-replay-list">
+              {localizeValue(
+                offered.map((pick) => {
+                  const { goal } = pick;
+                  const team = (goal.side === 0 ? home : away)?.name ?? '';
+                  return (
+                    <li key={goal.id}>
+                      <button
+                        data-testid="goal-replay-option"
+                        data-goal={goal.id}
+                        data-footage={pick.footage}
+                        aria-disabled={replayHeld || undefined}
+                        onClick={() => replayGoal(pick)}
+                      >
+                        <b>
+                          {localizeValue(goal.id + 1)}. {localizeValue(p.frames[pick.frame]?.label)}
+                          ′ · {localizeValue(goal.home)} : {localizeValue(goal.away)}
+                        </b>
+                        <span>
+                          {localizeValue(
+                            goal.scorer
+                              ? tr('match.goal.scorer', { team, player: goal.scorer })
+                              : tr('match.goal.side', { team }),
+                          )}
+                          {localizeValue(!pick.footage && ` · ${tr('match.replay.seek')}`)}
+                        </span>
+                      </button>
+                    </li>
+                  );
+                }),
+              )}
+            </ol>
+            {localizeValue(
+              offered.some((pick) => !pick.footage) && (
+                <p className={s.muted} data-testid="goal-replay-unavailable">
+                  {localizeValue(tr('match.replay.unavailable'))}
+                </p>
+              ),
+            )}
+            <p className={s.muted}>{localizeValue(tr('match.replay.note'))}</p>
+          </Dialog>
+        ),
       )}
     </div>
   );

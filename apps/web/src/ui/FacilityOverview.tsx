@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import type { ReactNode } from 'react';
 import type { World } from '../../../../packages/contracts/src/types';
 import { FacilityArt } from './FacilityArt';
@@ -19,17 +20,18 @@ export function FacilityOverview({
   title: string;
   children?: ReactNode;
 }) {
+  useTextLocale();
   return (
     <figure
       data-surface="panel"
       className={s.overview}
-      aria-label={title}
+      aria-label={localizeValue(title)}
       data-testid="facility-overview"
     >
       <FacilityArt kind={kind} world={w} className={s.art} />
       <figcaption className={s.caption}>
-        <strong>{title}</strong>
-        {children != null && <span>{children}</span>}
+        <strong>{localizeValue(title)}</strong>
+        {localizeValue(children != null && <span>{localizeValue(children)}</span>)}
       </figcaption>
     </figure>
   );

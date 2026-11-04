@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { RecruitmentMediation, SigningRequest, World } from '../../contracts/src/types';
 import { careerDate, careerOrdinal, atCareerDate } from './person-careers';
 import { transferWindow, transferWindowDays } from './transfer-window';
@@ -60,9 +61,11 @@ export function detectMediations(w: World): RecruitmentMediation[] {
       if (!w.inbox?.some((item) => item.ref === ref))
         pushInbox(w, {
           kind: 'staff-report',
-          title: `${w.manager.name} 감독의 ${requestLabel(request)} 요청`,
-          detail:
-            '현재 요청에 맞는 영입 가능한 후보가 없거나 이미 협상을 진행했어요. 재정적 대립으로 판단하지 않아요.',
+          title: sourceMessage('copy.mediation.2508939fdb', {
+            p0: w.manager.name,
+            p1: requestLabel(request),
+          }),
+          detail: sourceMessage('copy.mediation.8ef75211ff'),
           attention: false,
           ref,
         });
@@ -83,8 +86,14 @@ export function detectMediations(w: World): RecruitmentMediation[] {
       candidate: { id: offer.player.id, name: offer.player.name, fee, wage: offer.player.wage },
       managerReason:
         request.pick === offer.player.id
-          ? `${requestLabel(request)} 보강을 위해 ${offer.player.name} 선수를 요청했어요.`
-          : `${requestLabel(request)} 보강을 요청했어요. 현재 적합 후보는 ${offer.player.name} 선수예요.`,
+          ? sourceMessage('copy.mediation.14ea1a66fb', {
+              p0: requestLabel(request),
+              p1: offer.player.name,
+            })
+          : sourceMessage('copy.mediation.ea371349d6', {
+              p0: requestLabel(request),
+              p1: offer.player.name,
+            }),
       directorReason: verdict.reason,
       support: directionOption(w, 'recruitmentSupport').id as RecruitmentMediation['support'],
       status: 'pending',
@@ -93,7 +102,7 @@ export function detectMediations(w: World): RecruitmentMediation[] {
     created.push(mediation);
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${w.manager.name} 감독·${director.name} 단장 영입 중재`,
+      title: sourceMessage('copy.mediation.73f275aff7', { p0: w.manager.name, p1: director.name }),
       detail: `${mediation.managerReason} ${verdict.reason}`.slice(0, 400),
       attention: !isDelegated(w, 'recruitment'),
       ref: mediation.id,
@@ -139,17 +148,17 @@ export function resolveMediation(
   actor: 'owner' | 'delegated' = 'owner',
 ) {
   const current = w.mediations?.find((m) => m.id === id);
-  if (!current) throw new Error('영입 중재를 찾을 수 없어요.');
+  if (!current) throw new Error(sourceMessage('copy.mediation.bc3ed39fb6'));
   if (current.status === 'resolved') return current;
   if (!['director', 'balanced', 'manager'].includes(support))
-    throw new Error('중재 지원 방침을 확인하세요.');
+    throw new Error(sourceMessage('copy.mediation.baa4a1f437'));
   const trial = structuredClone(w),
     mediation = trial.mediations!.find((m) => m.id === id)!;
   return atCareerDate(trial, careerDate(w), () => {
-    let result = '재정 판단을 존중해 이번 보강을 미뤘어요.',
+    let result: string = sourceMessage('copy.mediation.4eefc3915b'),
       promise: string | undefined;
     if (trial.manager.id !== mediation.manager.id)
-      result = '요청한 감독이 떠나 이번 영입 요청을 마감했어요.';
+      result = sourceMessage('copy.mediation.ca080636ac');
     else if (support !== 'director') {
       const pool = requestCandidates(trial, mediation.target),
         named = pool.find(({ offer }) => offer.player.id === mediation.target.pick);
@@ -187,7 +196,7 @@ export function resolveMediation(
                     compareIds(a.offer.player.id, b.offer.player.id),
         );
       const choices = support === 'manager' ? (named ? [named] : []) : alternatives;
-      let failure = '진행 가능한 적합 후보가 없어요.',
+      let failure: string = sourceMessage('copy.mediation.239fe9181c'),
         started = false;
       for (const { offer } of choices) {
         const blocked = pursueRequest(trial, mediation.target, offer.player.id, actor);
@@ -195,14 +204,14 @@ export function resolveMediation(
           failure = blocked;
           continue;
         }
-        result = `${offer.player.name} ${offer.freeAgent ? '자유계약 영입을 완료했어요.' : '선수에게 실제 영입 제안을 보냈어요. 협상 결과를 기다려요.'}`;
+        result = `${offer.player.name} ${offer.freeAgent ? sourceMessage('copy.mediation.dd65eaeca5') : sourceMessage('copy.mediation.c62513bb19')}`;
         started = true;
         break;
       }
       if (!started) {
         const commitment = promiseForMediation(trial, mediation);
         promise = commitment.id;
-        result = `${failure} 다음 이적시장 마감까지의 보강 약속을 기록했어요.`;
+        result = sourceMessage('copy.mediation.411b483fc6', { p0: failure });
       }
     }
     mediation.status = 'resolved';
@@ -214,7 +223,7 @@ export function resolveMediation(
     };
     pushInbox(trial, {
       kind: 'staff-report',
-      title: `${mediation.manager.name} 감독 영입 중재 결과`,
+      title: sourceMessage('copy.mediation.6be013d8db', { p0: mediation.manager.name }),
       detail: result,
       attention: false,
       ref: id,

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { World } from '../../contracts/src/types';
 import { pushInbox } from './inbox';
 import { RESPONSIBILITY_KEYS, isDelegated } from './responsibilities';
@@ -46,8 +47,12 @@ export function countApprovalWaits(w: World) {
     if (days === APPROVAL_DEADLINE_DAYS)
       pushInbox(w, {
         kind: item.kind,
-        title: `결재 지연 · ${item.title}`.slice(0, 160),
-        detail: `결재 기한 ${APPROVAL_DEADLINE_DAYS}일이 지났어요. 처리할 때까지 정산 라운드마다 분위기 −${OVERDUE_MORALE.each} (지연 결재 ${OVERDUE_MORALE.most}건까지)`,
+        title: sourceMessage('copy.approvals.e77356f86b', { p0: item.title }).slice(0, 160),
+        detail: sourceMessage('copy.approvals.265e586af7', {
+          p0: APPROVAL_DEADLINE_DAYS,
+          p1: OVERDUE_MORALE.each,
+          p2: OVERDUE_MORALE.most,
+        }),
         attention: true,
         ...(item.ref ? { ref: item.ref } : {}),
       });

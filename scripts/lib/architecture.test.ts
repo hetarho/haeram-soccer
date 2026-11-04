@@ -110,6 +110,8 @@ describe('runtime architecture boundaries', () => {
   });
   it('queries transfer windows with only the calendar, without negotiation or orchestration', () => {
     expect(closure('packages/engine/src/transfer-window.ts')).toEqual([
+      'packages/contracts/src/messages.ts',
+      'packages/contracts/src/source-messages.ts',
       'packages/engine/src/calendar.ts',
       'packages/engine/src/transfer-window.ts',
     ]);

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type {
   Ban,
   Unavailable,
@@ -66,21 +67,21 @@ function leagueYellowBan(count: number, reached: number, rounds: number) {
 }
 const SCOPE_LABEL = (scope: Ban['scope']) =>
   scope === 'domestic'
-    ? '국내 대회'
+    ? sourceMessage('copy.StrategyPanel.d9e6be2780')
     : scope === 'league'
-      ? '리그'
+      ? sourceMessage('navigation.league')
       : scope === 'europe'
-        ? '유럽 대회'
-        : '컵 대회';
+        ? sourceMessage('copy.StrategyPanel.69f2bed53a')
+        : sourceMessage('copy.ClubTrends.cf5a6ab3e0');
 const REASON_LABEL: Record<Ban['reason'], string> = {
-  yellows: '경고 누적',
-  secondYellow: '경고 누적 퇴장',
-  dogso: '득점 기회 저지 퇴장',
-  dissent: '항의·폭언 퇴장',
-  serious: '심한 반칙 퇴장',
-  violent: '폭력 행위 퇴장',
-  reckless: '퇴장',
-  tactical: '퇴장',
+  yellows: sourceMessage('copy.discipline.36a1246f20'),
+  secondYellow: sourceMessage('copy.LabPage.3561565380'),
+  dogso: sourceMessage('copy.discipline.632db56e1b'),
+  dissent: sourceMessage('copy.discipline.d83977db84'),
+  serious: sourceMessage('copy.discipline.3bb43a1aed'),
+  violent: sourceMessage('copy.discipline.4791210992'),
+  reckless: sourceMessage('copy.LabPage.68e69c7b9c'),
+  tactical: sourceMessage('copy.LabPage.68e69c7b9c'),
 };
 
 /**
@@ -129,12 +130,21 @@ function ban(w: World, next: Ban) {
   if (next.club !== w.playerClub) return;
   const p = w.players.find((player) => player.id === next.player);
   if (!p) return;
-  const text = `${p.name} 출장 정지 ${next.matches}경기 (${SCOPE_LABEL(next.scope)}) — ${REASON_LABEL[next.reason]}`;
-  addEvent(w, 'suspension', text, `${p.position} · 감독이 다른 선수로 선발을 짜요.`);
+  const text = sourceMessage('copy.discipline.acdd5e3c77', {
+    p0: p.name,
+    p1: next.matches,
+    p2: SCOPE_LABEL(next.scope),
+    p3: REASON_LABEL[next.reason],
+  });
+  addEvent(w, 'suspension', text, sourceMessage('copy.discipline.15b0bedd72', { p0: p.position }));
   pushInbox(w, {
     kind: 'staff-report',
-    title: `징계 통보: ${text}`,
-    detail: `${p.position} · 다음 ${next.matches}경기(${SCOPE_LABEL(next.scope)})에 나설 수 없어요. 감독이 다른 선수로 선발을 짜요.`,
+    title: sourceMessage('copy.discipline.fcf7c31621', { p0: text }),
+    detail: sourceMessage('copy.discipline.7c80359382', {
+      p0: p.position,
+      p1: next.matches,
+      p2: SCOPE_LABEL(next.scope),
+    }),
     attention: false,
     ref: p.id,
   });

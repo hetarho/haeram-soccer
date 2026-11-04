@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { Club, Fixture, TableRow, World } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country } from '../../../../packages/catalogs/src/index';
 import { groupKey } from '../../../../packages/engine/src/league-fixtures';
@@ -52,22 +53,22 @@ export function leagueOf(w: World, club: Club): string[] {
 
 /** Countries of the continental representatives, which play no league in the game. */
 export const ABROAD: Record<string, string> = {
-  AUT: '오스트리아',
-  SCO: '스코틀랜드',
-  SUI: '스위스',
-  TUR: '튀르키예',
-  GRE: '그리스',
-  POL: '폴란드',
-  CZE: '체코',
-  DEN: '덴마크',
-  SWE: '스웨덴',
-  NOR: '노르웨이',
-  ROU: '루마니아',
-  CRO: '크로아티아',
-  SRB: '세르비아',
-  UKR: '우크라이나',
-  FIN: '핀란드',
-  HUN: '헝가리',
+  AUT: sourceMessage('copy.league.6df8486318'),
+  SCO: sourceMessage('copy.league.ee9d0a9a1f'),
+  SUI: sourceMessage('copy.league.a21bb067ea'),
+  TUR: sourceMessage('copy.league.484b67c319'),
+  GRE: sourceMessage('copy.league.88c4d93a9c'),
+  POL: sourceMessage('copy.league.dcbd9c5557'),
+  CZE: sourceMessage('copy.league.de05b8e0e1'),
+  DEN: sourceMessage('copy.league.eceae288b7'),
+  SWE: sourceMessage('copy.league.7b69090275'),
+  NOR: sourceMessage('copy.league.1e05c42412'),
+  ROU: sourceMessage('copy.league.fe52b67b69'),
+  CRO: sourceMessage('copy.league.395ed16713'),
+  SRB: sourceMessage('copy.league.1bdaec188a'),
+  UKR: sourceMessage('copy.league.1279cbcff3'),
+  FIN: sourceMessage('copy.league.521d640470'),
+  HUN: sourceMessage('copy.league.8fa1f45c31'),
 };
 /**
  * Where a club plays as a fan would say it: "2부" at home, "독일 1부" or "이탈리아 3부 B조"
@@ -76,7 +77,7 @@ export const ABROAD: Record<string, string> = {
 export function clubDivision(w: World, club: Club) {
   const profile = COUNTRIES.find((c) => c.code === club.country);
   if (!profile || club.id.startsWith('euro:'))
-    return `해외 클럽 · ${ABROAD[club.country] ?? club.country}`;
+    return sourceMessage('copy.league.45708f77f3', { p0: ABROAD[club.country] ?? club.country });
   const division = divisionName(club.country, club.tier, club.group),
     home = w.clubs.find((c) => c.id === w.playerClub)?.country;
   return club.country === home ? division : `${profile.name} ${division}`;
@@ -316,7 +317,11 @@ export function formFor(fixtures: Fixture[], id: string): ('승' | '무' | '패'
     .map((f) => {
       const own = f.home === id ? f.score!.home : f.score!.away;
       const other = f.home === id ? f.score!.away : f.score!.home;
-      return own > other ? '승' : own < other ? '패' : '무';
+      return own > other
+        ? sourceMessage('result.win')
+        : own < other
+          ? sourceMessage('result.loss')
+          : sourceMessage('result.draw');
     });
 }
 

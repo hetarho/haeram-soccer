@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 export const previewRequest: { story?: string } = {};
 
 /** Each workbench document has its own settings/library storage, including the preview iframe. */
@@ -56,7 +57,7 @@ export async function copyPreviewText(text: string) {
   document.body.append(field);
   field.select();
   try {
-    if (!document.execCommand('copy')) throw new Error('복사하지 못했어요.');
+    if (!document.execCommand('copy')) throw new Error(sourceMessage('copy.session.bfc9c72cea'));
   } finally {
     field.remove();
     if (previous instanceof HTMLElement) previous.focus({ preventScroll: true });

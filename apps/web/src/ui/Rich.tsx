@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { DirectionAreas } from './DirectionFacts';
 import { PersonnelHub } from './PersonnelHubs';
 import { TeamDirectory, TeamReturn } from './TeamDirectory';
@@ -51,7 +54,6 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
-import { ClubOverview } from './ClubOverview';
 import { InvestmentView } from './InvestmentView';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { ApprovalQueue } from './ApprovalQueue';
@@ -109,7 +111,7 @@ import management from './ManagementView.module.css';
 import { explorePlayers, ofScope, playerStatus } from './playerAnalysis';
 import { bansOf, banText } from './discipline';
 import { yellowWarning } from '../../../../packages/engine/src/discipline';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 import { Attributes } from './Attributes';
 import { StyleCard } from './StyleCard';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
@@ -121,7 +123,7 @@ import {
   managerTermLimit,
 } from '../../../../packages/engine/src/ops-staff';
 import { roundsUntilRefresh } from '../../../../packages/engine/src/managerMarket';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { runwayText, squadAvailability } from './teamState';
 import { PlayerComparison } from './PlayerComparison';
 import { compactMoney, contractLine, number } from './format';
@@ -136,24 +138,31 @@ const RecordsRoom = lazy(() =>
   import('./RecordsRoom').then((module) => ({ default: module.RecordsRoom })),
 );
 /** The manager's youth attribute speeds every young player's growth; the academy is separate. */
-const YOUTH_HINT = '27세 미만 선수 성장';
+const YOUTH_HINT = sourceMessage('copy.Rich.0ece5306ff');
 /** "38세", or nothing for someone from an older save without an age. */
 function personAge(w: World, born?: number) {
-  return born === undefined ? '' : `${w.year - born}세`;
+  return born === undefined
+    ? ''
+    : sourceMessage('copy.ClubOverview.9c2b927c8a', { p0: w.year - born });
 }
 /** Where a manager's career is heading, for his card (→STAFF-16). */
 function growthNote(w: World, m: { ability: number; potential?: number; born?: number }) {
   if (m.potential === undefined || m.born === undefined) return '';
   const age = w.year - m.born;
-  if (m.potential > m.ability) return ` · 성장 여지 +${m.potential - m.ability}`;
-  return age >= 60 ? ' · 노쇠기' : ' · 전성기';
+  if (m.potential > m.ability)
+    return sourceMessage('copy.ClubStaff.4719fc8cca', { p0: m.potential - m.ability });
+  return age >= 60 ? sourceMessage('copy.Rich.8fd8564eff') : sourceMessage('copy.Rich.248bff31f0');
 }
 /** A manager's selection habit (→STAFF-12): its label and effect, or that he has none. */
 function TraitNote({ trait }: { trait?: ManagerTrait }) {
-  if (!trait) return <>선발 성향 없음</>;
+  useTextLocale();
+  if (!trait) return <>{richMessage('copy.Rich.866c28eff9')}</>;
   return (
     <>
-      선발 성향 <b>{MANAGER_TRAIT_INFO[trait].label}</b> · {MANAGER_TRAIT_INFO[trait].effect}
+      {richMessage('copy.Rich.5e42e2e31e', {
+        p0: <b>{localizeValue(MANAGER_TRAIT_INFO[trait].label)}</b>,
+        p1: MANAGER_TRAIT_INFO[trait].effect,
+      })}
     </>
   );
 }
@@ -173,53 +182,61 @@ function PersonnelPanel({
   controller,
   onReplace,
 }: Props & { tab: PeopleTab; controller: ProgressionController; onReplace: () => void }) {
+  useTextLocale();
   const w = state.view!.world;
   const work = tab === 'players' || tab === 'market' ? tab : 'coaches';
-  const coach = `감독 ${w.manager.name} · ${tacticLabel[w.tactic]}`;
+  const coach = sourceMessage('copy.Rich.2499d3ec89', {
+    p0: w.manager.name,
+    p1: tacticLabel[w.tactic],
+  });
   return (
     <>
-      {tab === 'players' ? (
-        <>
-          <FacilityOverview w={w} kind="locker" title="드레싱 룸">
-            {coach}
-          </FacilityOverview>
-          <Roster state={state} client={client} />
-          <DirectionAreas w={w} areas={['squad']} />
-        </>
-      ) : tab === 'market' ? (
-        <MarketHub state={state} client={client} />
-      ) : (
-        <>
-          <FacilityOverview w={w} kind="manager" title="감독실">
-            {coach}
-          </FacilityOverview>
-          <ManagerCard state={state} client={client} onReplace={onReplace} />
-          <FacilityOverview w={w} kind="staff" title="스태프 사무실">
-            스태프 {w.staff?.length ?? 0}명
-          </FacilityOverview>
-          <CoachingStaff w={w} client={client} />
-          <ManagerPost w={w} client={client} />
-          <CoachingPlan w={w} />
-        </>
+      {localizeValue(
+        tab === 'players' ? (
+          <>
+            <FacilityOverview w={w} kind="locker" title={displayMessage('copy.Rich.70a55c30bf')}>
+              {localizeValue(coach)}
+            </FacilityOverview>
+            <Roster state={state} client={client} />
+            <DirectionAreas w={w} areas={['squad']} />
+          </>
+        ) : tab === 'market' ? (
+          <MarketHub state={state} client={client} />
+        ) : (
+          <>
+            <FacilityOverview w={w} kind="manager" title={displayMessage('facility.manager')}>
+              {localizeValue(coach)}
+            </FacilityOverview>
+            <ManagerCard state={state} client={client} onReplace={onReplace} />
+            <FacilityOverview w={w} kind="staff" title={displayMessage('facility.staff')}>
+              {richMessage('copy.Rich.c92f106675', { p0: w.staff?.length ?? 0 })}
+            </FacilityOverview>
+            <CoachingStaff w={w} client={client} />
+            <ManagerPost w={w} client={client} />
+            <CoachingPlan w={w} />
+          </>
+        ),
       )}
       {/* The market's responsibility is edited in 결재 설정, not under its list. */}
-      {tab !== 'market' && (
-        <WorkResponsibility
-          w={w}
-          client={client}
-          controller={controller}
-          scope={WORK_RESPONSIBILITIES[work]}
-        />
+      {localizeValue(
+        tab !== 'market' && (
+          <WorkResponsibility
+            w={w}
+            client={client}
+            controller={controller}
+            scope={WORK_RESPONSIBILITIES[work]}
+          />
+        ),
       )}
     </>
   );
 }
 const MARKET_KINDS = [
-  ['players', '선수'],
-  ['youth', '유소년'],
-  ['coaches', '코치'],
-  ['manager', '감독'],
-  ['director', '단장'],
+  ['players', sourceMessage('team.column.player')],
+  ['youth', sourceMessage('team.view.academy')],
+  ['coaches', sourceMessage('team.view.coaches')],
+  ['manager', sourceMessage('staff.role.manager')],
+  ['director', sourceMessage('staff.role.director')],
 ] as const;
 type MarketKind = (typeof MARKET_KINDS)[number][0];
 const COACH_ROLES = STAFF_ROLES.filter((role) => role !== 'director');
@@ -229,6 +246,7 @@ const COACH_ROLES = STAFF_ROLES.filter((role) => role !== 'director');
  * staff candidates, 감독 the manager market — so none copies a command.
  */
 function MarketHub({ state, client }: Props) {
+  useTextLocale();
   const w = state.view!.world;
   const [stored, setKind] = useTaskState<MarketKind>(w.id, 'market-kind', 'players');
   const kind = MARKET_KINDS.some(([id]) => id === stored) ? stored : 'players';
@@ -239,21 +257,28 @@ function MarketHub({ state, client }: Props) {
         tabs={MARKET_KINDS}
         value={kind}
         onChange={setKind}
-        label="영입 대상"
+        label={displayMessage('copy.EventCenter.42bd764e17')}
         idPrefix="market-kind"
       />
       <TabPanel idPrefix="market-kind" value={kind}>
-        {kind === 'players' || kind === 'youth' ? (
-          <RecruitmentDesk key={kind} state={state} client={client} youth={kind === 'youth'} />
-        ) : kind === 'manager' ? (
-          <ManagerMarket state={state} client={client} onClose={() => setKind('players')} inline />
-        ) : (
-          <StaffMarket
-            key={kind}
-            w={w}
-            client={client}
-            roles={kind === 'director' ? ['director'] : COACH_ROLES}
-          />
+        {localizeValue(
+          kind === 'players' || kind === 'youth' ? (
+            <RecruitmentDesk key={kind} state={state} client={client} youth={kind === 'youth'} />
+          ) : kind === 'manager' ? (
+            <ManagerMarket
+              state={state}
+              client={client}
+              onClose={() => setKind('players')}
+              inline
+            />
+          ) : (
+            <StaffMarket
+              key={kind}
+              w={w}
+              client={client}
+              roles={kind === 'director' ? ['director'] : COACH_ROLES}
+            />
+          ),
         )}
       </TabPanel>
     </>
@@ -271,6 +296,7 @@ function PersonnelRequest({
   controller: ProgressionController;
   error?: string;
 }) {
+  useTextLocale();
   const w = state.view!.world;
   const item = request.item;
   const blocked = useGameState(gameActionsBlocked);
@@ -314,14 +340,16 @@ function PersonnelRequest({
       <>
         <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
         <ManagerPost w={w} client={client} />
-        {market && (
-          <ManagerMarket
-            state={state}
-            client={client}
-            onClose={cancel}
-            onCancel={cancel}
-            error={error}
-          />
+        {localizeValue(
+          market && (
+            <ManagerMarket
+              state={state}
+              client={client}
+              onClose={cancel}
+              onCancel={cancel}
+              error={error}
+            />
+          ),
         )}
       </>
     );
@@ -335,35 +363,53 @@ function PersonnelRequest({
  * and the way to replace him — or, with an interim in charge, to appoint one.
  */
 function ManagerCard({ state, client, onReplace }: Props & { onReplace: () => void }) {
+  useTextLocale();
   const w = state.view!.world,
     m = w.manager,
     c = w.clubs.find((c) => c.id === w.playerClub)!;
   const disabled = useGameState(gameActionsBlocked);
   return (
-    <Panel title={m.name} note={m.interim ? 'INTERIM MANAGER · 감독 공석' : 'FIRST TEAM MANAGER'}>
+    <Panel
+      title={m.name}
+      note={m.interim ? sourceMessage('copy.Rich.af10b7f0e0') : 'FIRST TEAM MANAGER'}
+    >
       <div className={s.panelBody} data-testid="manager-card">
         <div className={s.personHead}>
-          <OvrBadge value={m.ability} role="감독" potential={m.potential} large />
+          <OvrBadge
+            value={m.ability}
+            role={sourceMessage('staff.role.manager')}
+            potential={m.potential}
+            large
+          />
           <div>
             <StaffRoleBadge post="manager" />
-            <b>{personAge(w, m.born)}</b>
-            {m.person && <PersonCareerLink id={m.person} name={m.name} client={client} />}
+            <b>{localizeValue(personAge(w, m.born))}</b>
+            {localizeValue(
+              m.person && <PersonCareerLink id={m.person} name={m.name} client={client} />,
+            )}
             <small>
-              {m.since}년 부임 ·{' '}
-              {m.interim ? '새 감독을 뽑을 때까지 대행' : contractLine(m.until, w.year)}
-              {growthNote(w, m)}
+              {richMessage('copy.Rich.fb0b744a0c', {
+                p0: m.since,
+                p1: ' ',
+                p2: m.interim
+                  ? sourceMessage('copy.Rich.ba7691f8a1')
+                  : contractLine(m.until, w.year),
+                p3: growthNote(w, m),
+              })}
             </small>
           </div>
         </div>
         {/* No manager renews himself (→STAFF-14): unrenewed, he leaves at the close. */}
-        {managerRenewal(w) && (
-          <div
-            data-surface="inset"
-            className={`${s.renewal} ${s.leaving}`}
-            data-testid="manager-renewal"
-          >
-            <ManagerRenewal w={w} client={client} disabled={disabled} />
-          </div>
+        {localizeValue(
+          managerRenewal(w) && (
+            <div
+              data-surface="inset"
+              className={`${s.renewal} ${s.leaving}`}
+              data-testid="manager-renewal"
+            >
+              <ManagerRenewal w={w} client={client} disabled={disabled} />
+            </div>
+          ),
         )}
         <StyleCard style={m.interim ? undefined : m.style} />
         <p className={s.muted}>
@@ -371,18 +417,27 @@ function ManagerCard({ state, client, onReplace }: Props & { onReplace: () => vo
         </p>
         <div className={s.actions}>
           {/* Like a coach's 교체, the market opens as a list over the office (→WEB-40). */}
-          <button onClick={onReplace}>{m.interim ? '감독 선임' : '교체'}</button>
+          <button onClick={onReplace}>
+            {localizeValue(
+              m.interim
+                ? sourceMessage('copy.ClubStaff.10451c4909')
+                : sourceMessage('copy.LabPage.084c5a6dd7'),
+            )}
+          </button>
         </div>
         <details data-ui="disclosure" className={management.reference}>
-          <summary>감독 능력·성향</summary>
+          <summary>{richMessage('copy.Rich.8d0b1b1d85')}</summary>
           <Attributes
             rows={[
-              ['철학', tacticLabel[m.philosophy]],
-              ['육성', m.youth, YOUTH_HINT],
-              ['유연성', m.flexibility],
-              ['자존심', m.pride],
-              ['신뢰', m.trust],
-              ['연봉', <Money value={m.wage} code={c.country} year={w.year} />],
+              [sourceMessage('copy.Rich.2a6586f5bc'), tacticLabel[m.philosophy]],
+              [sourceMessage('copy.Rich.0bef0f2164'), m.youth, YOUTH_HINT],
+              [sourceMessage('copy.Rich.48abebf6b2'), m.flexibility],
+              [sourceMessage('copy.Rich.0c19a517db'), m.pride],
+              [sourceMessage('copy.Rich.817d68fde8'), m.trust],
+              [
+                sourceMessage('team.column.wage'),
+                <Money value={m.wage} code={c.country} year={w.year} />,
+              ],
             ]}
           />
         </details>
@@ -409,6 +464,7 @@ export function ManagerMarket({
   /** The 이적시장's 감독 view: the same lists in the page, without a sheet of their own. */
   inline?: boolean;
 }) {
+  useTextLocale();
   const v = state.view!,
     w = v.world,
     m = w.manager,
@@ -433,49 +489,71 @@ export function ManagerMarket({
   const card = (candidate: (typeof v.managers)[number]) => (
     <article data-surface="panel" className={s.card} key={candidate.id}>
       <div className={s.personHead}>
-        <OvrBadge value={candidate.ability} role="감독" potential={candidate.potential} large />
+        <OvrBadge
+          value={candidate.ability}
+          role={sourceMessage('staff.role.manager')}
+          potential={candidate.potential}
+          large
+        />
         <div>
           <h3>{candidate.name}</h3>
-          {candidate.person && (
-            <PersonCareerLink id={candidate.person} name={candidate.name} client={client} />
+          {localizeValue(
+            candidate.person && (
+              <PersonCareerLink id={candidate.person} name={candidate.name} client={client} />
+            ),
           )}
           <small>
-            {personAge(w, candidate.born)}
-            {growthNote(w, candidate)}
+            {localizeValue(personAge(w, candidate.born))}
+            {localizeValue(growthNote(w, candidate))}
           </small>
-          {candidate.club && (
-            <small className={s.candidateClub}>
-              현 소속 <ClubLink w={w} id={candidate.club} />
-            </small>
+          {localizeValue(
+            candidate.club && (
+              <small className={s.candidateClub}>
+                {richMessage('copy.Rich.dc1e71653d', {
+                  p0: <ClubLink w={w} id={candidate.club} />,
+                })}
+              </small>
+            ),
           )}
         </div>
       </div>
       <span className={s.pill}>
-        {STYLE_INFO[candidate.style].label} · {tacticLabel[candidate.philosophy]}
+        {localizeValue(STYLE_INFO[candidate.style].label)} ·{' '}
+        {localizeValue(tacticLabel[candidate.philosophy])}
       </span>
       <StyleCard style={candidate.style} compact />
       <Attributes
         rows={[
-          ['육성', candidate.youth, YOUTH_HINT],
-          ['유연성', candidate.flexibility],
-          ['자존심', candidate.pride],
-          ['연봉', format(candidate.wage)],
+          [sourceMessage('copy.Rich.0bef0f2164'), candidate.youth, YOUTH_HINT],
+          [sourceMessage('copy.Rich.48abebf6b2'), candidate.flexibility],
+          [sourceMessage('copy.Rich.0c19a517db'), candidate.pride],
+          [sourceMessage('team.column.wage'), format(candidate.wage)],
         ]}
       />
       <p>
         <TraitNote trait={candidate.trait} />
       </p>
       <p>
-        {managerTermLimit(candidate, w.year) === 1
-          ? contractLine(w.year + 1, w.year)
-          : `계약 1–${managerTermLimit(candidate, w.year)}시즌 선택`}{' '}
-        · 계약금 {format(candidate.fee)}
-        {candidate.compensation && <> · 보상금(웃돈) {format(candidate.compensation)}</>}
-        {candidate.coachingRelease && (
-          <> · 코치 계약 종료 보상 {format(candidate.coachingRelease)}</>
-        )}
-        {candidate.source === 'internal' && <> · 내부 승진</>}
-        {candidate.person && candidate.source === 'club' && <> · 타 구단 코치 재직 중</>}
+        {richMessage('copy.Rich.fdb98897ae', {
+          p0:
+            managerTermLimit(candidate, w.year) === 1
+              ? contractLine(w.year + 1, w.year)
+              : sourceMessage('copy.Rich.0265f9f074', {
+                  p0: managerTermLimit(candidate, w.year),
+                }),
+          p1: ' ',
+          p2: format(candidate.fee),
+          p3: candidate.compensation && (
+            <>{richMessage('copy.ClubStaff.3e2995c1db', { p0: format(candidate.compensation) })}</>
+          ),
+          p4: candidate.coachingRelease && (
+            <>{richMessage('copy.Rich.73439e559e', { p0: format(candidate.coachingRelease) })}</>
+          ),
+          p5: candidate.source === 'internal' && <>{richMessage('copy.Rich.17762f8ae4')}</>,
+          p6: candidate.person && candidate.source === 'club' && (
+            <>{richMessage('copy.Rich.6020fc64ba')}</>
+          ),
+        })}
       </p>
       <button
         disabled={disabled}
@@ -484,7 +562,12 @@ export function ManagerMarket({
           setTerm(defaultManagerTerm(candidate, w.year));
         }}
       >
-        {candidate.source === 'club' ? '데려오기' : '감독 선임'} ·{' '}
+        {localizeValue(
+          candidate.source === 'club'
+            ? sourceMessage('copy.Rich.fea04efbc9')
+            : sourceMessage('copy.ClubStaff.10451c4909'),
+        )}{' '}
+        ·{localizeValue(' ')}
         <Money value={outlay(candidate)} code={c.country} year={w.year} plain />
       </button>
     </article>
@@ -492,132 +575,173 @@ export function ManagerMarket({
   const lists = (
     <>
       <p className={s.muted}>
-        지금 {m.name}
-        {m.interim ? ' (임시 감독)' : ''} · OVR {m.ability}
+        {richMessage('copy.Rich.86dd0b88c3', {
+          p0: m.name,
+          p1: m.interim ? sourceMessage('copy.Rich.0c3957678c') : '',
+          p2: m.ability,
+        })}
       </p>
-      <Panel title="자유계약 감독" note="FREE AGENTS">
+      <Panel title={displayMessage('copy.Rich.ae481cf0db')} note="FREE AGENTS">
         <div className={s.panelBody}>
           <p className={s.muted}>
-            감독 시장은 {roundsUntilRefresh(w)}라운드 뒤에 다시 움직여요. 다른 구단에서 경질된
-            감독이 들어오고, 자리를 찾은 감독은 빠져요. 즉시 지출에는 지금 감독 보상(남은 시즌마다
-            연봉의 25%)이 포함돼요.
+            {richMessage('copy.Rich.d3a5a94beb', { p0: roundsUntilRefresh(w) })}
           </p>
-          {free.length ? (
-            <div className={s.cards}>{free.map(card)}</div>
-          ) : (
-            <p className={s.muted}>지금은 자유계약 감독이 없어요.</p>
+          {localizeValue(
+            free.length ? (
+              <div className={s.cards}>{localizeValue(free.map(card))}</div>
+            ) : (
+              <p className={s.muted}>{richMessage('copy.Rich.7ce4653cdc')}</p>
+            ),
           )}
         </div>
       </Panel>
-      <Panel title="다른 구단 감독 · 보상금 필요" note="POACH">
+      <Panel title={displayMessage('copy.Rich.845360ffbd')} note="POACH">
         <div className={s.panelBody}>
-          <p className={s.muted}>
-            우리 리그와 바로 위 디비전 감독 중 지도력 상위 {others.length}명이에요. 데려오려면
-            계약금에 더해 그 구단에 연봉의 1.5배를 보상금으로 내요. 감독 선임을 맡기면 기준이 허락할
-            때만 스태프가 다른 구단 감독을 데려와요.
-          </p>
-          <div className={s.cards}>{others.map(card)}</div>
+          <p className={s.muted}>{richMessage('copy.Rich.07644a687f', { p0: others.length })}</p>
+          <div className={s.cards}>{localizeValue(others.map(card))}</div>
         </div>
       </Panel>
     </>
   );
   return (
     <>
-      {inline ? (
-        <div className={s.inlineMarket} aria-label="감독 영입">
-          {lists}
-        </div>
-      ) : (
-        <Dialog label={m.interim ? '감독 선임' : '감독 교체'} wide onClose={onClose}>
-          {lists}
-        </Dialog>
-      )}
-      {chosen && (
-        <Dialog
-          label="감독 선임 확인"
-          onClose={() => {
-            setHiring(undefined);
-            onCancel?.();
-          }}
-        >
-          <h2>{chosen.name} 감독을 선임할까요?</h2>
-          <ul className={s.consequences}>
-            <li>
-              즉시 지출 <b>{format(outlay(chosen))}</b> · 계약금 {format(chosen.fee)}
-              {chosen.compensation && <> · 보상금 {format(chosen.compensation)}</>}
-              {chosen.coachingRelease && (
-                <> · 코치 계약 종료 보상 {format(chosen.coachingRelease)}</>
-              )}
-              {payoff > 0n && <> · 이전 감독 보상 {format(payoff)}</>}
-            </li>
-            {chosen.person && (
-              <li>
-                코치로 재직 중이면 해당 코치 자리와 연봉은 끝나고 같은 인물이 감독으로 부임해요.
-              </li>
-            )}
-            {chosen.club && !chosen.person && (
-              <li>
-                <ClubLink w={w} id={chosen.club} />은 새 감독을 찾아요.
-              </li>
-            )}
-            <li>
-              지도력 OVR <b>{chosen.ability}</b> · 잠재력{' '}
-              <b>{chosen.potential ?? chosen.ability}</b> · {personAge(w, chosen.born)}
-              {(chosen.potential ?? 0) > chosen.ability ? ' · 시즌마다 잠재력에 가까워져요' : ''}
-            </li>
-            <li>
-              {m.name} 감독은 오늘 팀을 떠나요
-              {!m.interim && m.style ? ' (자유계약 감독 명단에 올라요)' : ''}.
-            </li>
-            <li>
-              새 감독 성향 <b>{STYLE_INFO[chosen.style].label}</b> ·{' '}
-              {[...STYLE_INFO[chosen.style].pros, ...STYLE_INFO[chosen.style].cons].join(' · ')}
-            </li>
-            <li>
-              <TraitNote trait={chosen.trait} />
-            </li>
-            <li>
-              적용 전술 {tacticLabel[w.tactic]} → <b>{tacticLabel[chosen.philosophy]}</b> (새 감독의
-              철학)
-            </li>
-            <li>
-              연봉 {format(chosen.wage)} · {contractLine(w.year + term, w.year)}
-              {STYLE_INFO[chosen.style].term === 1 && ' · 남기려면 4월에 1시즌씩 재계약해요'}
-              <ManagerHireTerm
-                w={w}
-                candidate={chosen}
-                term={term}
-                disabled={disabled}
-                onChange={setTerm}
-              />
-            </li>
-          </ul>
-          <div className={s.actions}>
-            <button
-              onClick={() => {
-                setHiring(undefined);
-                onCancel?.();
-              }}
-            >
-              취소
-            </button>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={disabled}
-              onClick={async () => {
-                const reply = await client.command({ type: 'hire', id: chosen.id, term });
-                if (reply?.ok) {
-                  setHiring(undefined);
-                  onClose();
-                }
-              }}
-            >
-              선임 확정
-            </button>
+      {localizeValue(
+        inline ? (
+          <div className={s.inlineMarket} aria-label={displayMessage('copy.Rich.3d2202fddf')}>
+            {localizeValue(lists)}
           </div>
-          {error && <p role="alert">{error}</p>}
-        </Dialog>
+        ) : (
+          <Dialog
+            label={localizeValue(
+              m.interim
+                ? sourceMessage('copy.ClubStaff.10451c4909')
+                : sourceMessage('copy.influences.4e0080bed2'),
+            )}
+            wide
+            onClose={onClose}
+          >
+            {localizeValue(lists)}
+          </Dialog>
+        ),
+      )}
+      {localizeValue(
+        chosen && (
+          <Dialog
+            label={displayMessage('copy.Rich.fdb9dc19b7')}
+            onClose={() => {
+              setHiring(undefined);
+              onCancel?.();
+            }}
+          >
+            <h2>{richMessage('copy.Rich.4a24e4c4d9', { p0: chosen.name })}</h2>
+            <ul className={s.consequences}>
+              <li>
+                {richMessage('copy.Rich.9130b27af6', {
+                  p0: <b>{localizeValue(format(outlay(chosen)))}</b>,
+                  p1: format(chosen.fee),
+                  p2: chosen.compensation && (
+                    <>{richMessage('copy.Rich.5ef1f043f3', { p0: format(chosen.compensation) })}</>
+                  ),
+                  p3: chosen.coachingRelease && (
+                    <>
+                      {richMessage('copy.Rich.73439e559e', { p0: format(chosen.coachingRelease) })}
+                    </>
+                  ),
+                  p4: payoff > 0n && (
+                    <>{richMessage('copy.Rich.a489973b55', { p0: format(payoff) })}</>
+                  ),
+                })}
+              </li>
+              {localizeValue(chosen.person && <li>{richMessage('copy.Rich.88d000783a')}</li>)}
+              {localizeValue(
+                chosen.club && !chosen.person && (
+                  <li>
+                    {richMessage('copy.Rich.479539aad2', {
+                      p0: <ClubLink w={w} id={chosen.club} />,
+                    })}
+                  </li>
+                ),
+              )}
+              <li>
+                {richMessage('copy.Rich.027ad1b267', {
+                  p0: <b>{localizeValue(chosen.ability)}</b>,
+                  p1: ' ',
+                  p2: <b>{localizeValue(chosen.potential ?? chosen.ability)}</b>,
+                  p3: personAge(w, chosen.born),
+                  p4:
+                    (chosen.potential ?? 0) > chosen.ability
+                      ? sourceMessage('copy.Rich.7f6873b93c')
+                      : '',
+                })}
+              </li>
+              <li>
+                {richMessage('copy.Rich.65a5c3a480', {
+                  p0: m.name,
+                  p1: !m.interim && m.style ? sourceMessage('copy.Rich.7b582ac330') : '',
+                })}
+              </li>
+              <li>
+                {richMessage('copy.Rich.ee201ac20b', {
+                  p0: <b>{localizeValue(STYLE_INFO[chosen.style].label)}</b>,
+                  p1: ' ',
+                  p2: [...STYLE_INFO[chosen.style].pros, ...STYLE_INFO[chosen.style].cons].join(
+                    ' · ',
+                  ),
+                })}
+              </li>
+              <li>
+                <TraitNote trait={chosen.trait} />
+              </li>
+              <li>
+                {richMessage('copy.Rich.699ba564b7', {
+                  p0: tacticLabel[w.tactic],
+                  p1: <b>{localizeValue(tacticLabel[chosen.philosophy])}</b>,
+                })}
+              </li>
+              <li>
+                {richMessage('copy.Rich.a6d26aef12', {
+                  p0: format(chosen.wage),
+                  p1: contractLine(w.year + term, w.year),
+                  p2: STYLE_INFO[chosen.style].term === 1 && sourceMessage('copy.Rich.e6f9de0b3b'),
+                  p3: (
+                    <ManagerHireTerm
+                      w={w}
+                      candidate={chosen}
+                      term={term}
+                      disabled={disabled}
+                      onChange={setTerm}
+                    />
+                  ),
+                })}
+              </li>
+            </ul>
+            <div className={s.actions}>
+              <button
+                onClick={() => {
+                  setHiring(undefined);
+                  onCancel?.();
+                }}
+              >
+                {richMessage('common.cancel')}
+              </button>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={disabled}
+                onClick={async () => {
+                  const reply = await client.command({ type: 'hire', id: chosen.id, term });
+                  if (reply?.ok) {
+                    setHiring(undefined);
+                    onClose();
+                  }
+                }}
+              >
+                {richMessage('copy.Rich.b3d797b51d')}
+              </button>
+            </div>
+            {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+          </Dialog>
+        ),
       )}
     </>
   );
@@ -627,22 +751,25 @@ export function ManagerMarket({
  * roster card (→WEB-68); the stance badge shows the market.
  */
 function PlayerFlags({ w, player }: { w: World; player: Player }) {
+  useTextLocale();
   const out = injuryDaysLeft(w, player);
   const flags = [
-    out > 0 && player.injury ? `부상 · ${player.injury.label} · ${Math.ceil(out / 7)}주` : '',
+    out > 0 && player.injury
+      ? sourceMessage('copy.Rich.dc9b9e68bb', { p0: player.injury.label, p1: Math.ceil(out / 7) })
+      : '',
     // Bans and a warning one yellow short of a league ban sit by the injury (→WEB-68, CLUB-45).
     ...bansOf(w, player.id).map(banText),
-    yellowWarning(w, player) ? '경고 누적 주의' : '',
-    player.retiring !== undefined ? '시즌 후 은퇴' : '',
-    player.unhappy ? `언해피 · ${UNHAPPY_REASON[player.unhappy.reason]}` : '',
-    player.transferRequest ? '이적 요청' : '',
+    yellowWarning(w, player) ? sourceMessage('copy.Rich.51b23b5112') : '',
+    player.retiring !== undefined ? sourceMessage('copy.Rich.5582150704') : '',
+    player.unhappy
+      ? sourceMessage('copy.Rich.f30601cfa7', { p0: UNHAPPY_REASON[player.unhappy.reason] })
+      : '',
+    player.transferRequest ? sourceMessage('copy.EventCenter.e389075954') : '',
   ].filter(Boolean);
   if (!flags.length) return null;
   return (
     <em className={s.playerFlags}>
-      {flags.map((flag, i) => (
-        <i key={`${i}:${flag}`}>{flag}</i>
-      ))}
+      {localizeValue(flags.map((flag, i) => <i key={`${i}:${flag}`}>{localizeValue(flag)}</i>))}
     </em>
   );
 }
@@ -658,6 +785,7 @@ function StanceBadge({
   disabled: boolean;
   onOpen: () => void;
 }) {
+  useTextLocale();
   const stance = transferStance(player);
   return (
     <button
@@ -666,11 +794,14 @@ function StanceBadge({
       data-surface="tile"
       data-stance={stance}
       disabled={disabled}
-      aria-label={`${player.name} 이적 상태 · ${STANCE_INFO[stance].label} · 바꾸기`}
+      aria-label={displayMessage('copy.Rich.160a16c38f', {
+        p0: player.name,
+        p1: STANCE_INFO[stance].label,
+      })}
       onClick={onOpen}
     >
       <i aria-hidden="true" />
-      {STANCE_INFO[stance].label}
+      {localizeValue(STANCE_INFO[stance].label)}
       <PixelIcon name="chevronDown" size={16} />
     </button>
   );
@@ -684,27 +815,37 @@ function stanceConsequence(w: World, p: Player, stance: TransferStance) {
     format = (amount: string) => compactMoney(amount, c.country, w.year);
   if (stance === 'listed')
     return {
-      what: `이적시장 기간에 실제 구단이 평가 가치의 ${Math.round(LISTED_OFFER.low * 100)}–${Math.round(LISTED_OFFER.high * 100)}%로 제안해요 · 첫 제안까지 평균 약 ${expectedOfferDays(w, p)}일`,
+      what: sourceMessage('copy.Rich.fa4027c909', {
+        p0: Math.round(LISTED_OFFER.low * 100),
+        p1: Math.round(LISTED_OFFER.high * 100),
+        p2: expectedOfferDays(w, p),
+      }),
       who: staffAnswer
-        ? '들어오는 제안은 스태프가 받아들여 매각해요'
-        : '제안마다 구단주가 수락·거절해요',
+        ? sourceMessage('copy.Rich.2d87e0aa1d')
+        : sourceMessage('copy.Rich.6fa78664ca'),
     };
   if (stance === 'open')
     return {
-      what: '다른 구단이 먼저 제안해 올 때 협상해요',
+      what: sourceMessage('copy.Rich.6aa4d020ff'),
       who: staffAnswer
-        ? `스태프가 평가 가치의 ${saleBar(w, p).percent}% 이상이면 팔아요 · 대체 선수 없는 주전은 지켜요`
-        : '제안마다 구단주가 수락·거절해요',
+        ? sourceMessage('copy.Rich.d630d96fa4', { p0: saleBar(w, p).percent })
+        : sourceMessage('copy.Rich.6fa78664ca'),
     };
   const market = buildOf(w).market,
     card = cardOf(buildOf(w), 'market').label;
   return {
-    what: `평가 가치 ${UNTOUCHABLE_BAR}%(${format(ratio(value, BigInt(UNTOUCHABLE_BAR), 100n))}) 미만 제안은 바로 거절해요`,
+    what: sourceMessage('copy.Rich.c1583a64cf', {
+      p0: UNTOUCHABLE_BAR,
+      p1: format(ratio(value, BigInt(UNTOUCHABLE_BAR), 100n)),
+    }),
     who: staffAnswer
       ? market === 'hold'
-        ? `거액 제안도 지켜요 · 매각 기조 ${card} (자금 위기면 매각)`
-        : `거액 제안은 스태프가 감독과 상의해요 · 매각 기조 ${card} 기준 ${UNTOUCHABLE_PRICE[market ?? 'standard']}%, 자금 사정과 주전 여부로 조정`
-      : '그 이상 거액 제안만 구단주에게 확인받아요',
+        ? sourceMessage('copy.Rich.6c4000e91e', { p0: card })
+        : sourceMessage('copy.Rich.7ec00fbab6', {
+            p0: card,
+            p1: UNTOUCHABLE_PRICE[market ?? 'standard'],
+          })
+      : sourceMessage('copy.Rich.e25d43ab4e'),
   };
 }
 function StanceSheet({
@@ -720,42 +861,57 @@ function StanceSheet({
   onChoose: (stance: TransferStance) => void;
   onClose: () => void;
 }) {
+  useTextLocale();
   const c = w.clubs.find((club) => club.id === w.playerClub)!,
     current = transferStance(player),
     window = transferWindow(w);
   return (
-    <Dialog label="이적 상태" onClose={onClose}>
-      <h2>{player.name} 이적 상태</h2>
+    <Dialog label={displayMessage('copy.Rich.5a473ce138')} onClose={onClose}>
+      <h2>{richMessage('copy.Rich.b9546a6703', { p0: player.name })}</h2>
       <p>
-        {player.position} · {w.year - player.born}세 · 능력 {overall(player)} · 평가 가치{' '}
-        <Money value={playerValue(w, player)} code={c.country} year={w.year} />
-      </p>
-      <div className={s.stanceChoices} role="radiogroup" aria-label="이적 상태">
-        {TRANSFER_STANCES.map((stance) => {
-          const consequence = stanceConsequence(w, player, stance);
-          return (
-            <button
-              key={stance}
-              type="button"
-              role="radio"
-              data-stance={stance}
-              aria-checked={current === stance}
-              className={current === stance ? s.selected : undefined}
-              disabled={disabled}
-              onClick={() => onChoose(stance)}
-            >
-              <b>
-                {STANCE_INFO[stance].label} · {STANCE_INFO[stance].tag}
-              </b>
-              <span>{consequence.what}</span>
-              <small>{consequence.who}</small>
-            </button>
-          );
+        {richMessage('copy.Rich.56d348d298', {
+          p0: player.position,
+          p1: w.year - player.born,
+          p2: overall(player),
+          p3: ' ',
+          p4: <Money value={playerValue(w, player)} code={c.country} year={w.year} />,
         })}
+      </p>
+      <div
+        className={s.stanceChoices}
+        role="radiogroup"
+        aria-label={displayMessage('copy.Rich.5a473ce138')}
+      >
+        {localizeValue(
+          TRANSFER_STANCES.map((stance) => {
+            const consequence = stanceConsequence(w, player, stance);
+            return (
+              <button
+                key={stance}
+                type="button"
+                role="radio"
+                data-stance={stance}
+                aria-checked={current === stance}
+                className={current === stance ? s.selected : undefined}
+                disabled={disabled}
+                onClick={() => onChoose(stance)}
+              >
+                <b>
+                  {localizeValue(STANCE_INFO[stance].label)} ·{' '}
+                  {localizeValue(STANCE_INFO[stance].tag)}
+                </b>
+                <span>{localizeValue(consequence.what)}</span>
+                <small>{localizeValue(consequence.who)}</small>
+              </button>
+            );
+          }),
+        )}
       </div>
       <p className={s.muted}>
-        수락해야 이적이 성사돼요. 지금: {window.label}
-        {window.open ? '' : ' · 시장이 열리면 제안이 들어와요.'}
+        {richMessage('copy.Rich.d0aeb0ef5b', {
+          p0: window.label,
+          p1: window.open ? '' : sourceMessage('copy.Rich.2fee883401'),
+        })}
       </p>
     </Dialog>
   );
@@ -787,6 +943,7 @@ function ContractTalkSheet({
   onClose: () => void;
   error?: string;
 }) {
+  useTextLocale();
   const [picked, setTerm] = useTaskState<TalkTerm>(w.id, `player-talk-term-${player.id}`, 2);
   const c = w.clubs.find((club) => club.id === w.playerClub)!,
     money = (value: string | bigint) => <Money value={value} code={c.country} year={w.year} />,
@@ -802,16 +959,18 @@ function ContractTalkSheet({
     term: TalkTerm = terms.includes(picked) ? picked : 2;
   return (
     <Dialog
-      label="계약 협상"
+      label={displayMessage('copy.ClubStaff.5ca939d3e3')}
       onClose={onClose}
       actions={
         <div className={s.actions}>
-          {player.talk ? (
-            <button disabled={disabled} onClick={onDecline}>
-              거절
-            </button>
-          ) : (
-            <button onClick={onClose}>닫기</button>
+          {localizeValue(
+            player.talk ? (
+              <button disabled={disabled} onClick={onDecline}>
+                {richMessage('copy.EventCenter.cc6314d04d')}
+              </button>
+            ) : (
+              <button onClick={onClose}>{richMessage('copy.EventCenter.1e8c10206f')}</button>
+            ),
           )}
           <button
             data-ui="primary"
@@ -819,82 +978,126 @@ function ContractTalkSheet({
             disabled={disabled}
             onClick={() => onOffer(term)}
           >
-            하한 <Money value={talk.floor} code={c.country} year={w.year} plain /> ·{' '}
-            {termLabel(window, term)} 제시
+            {richMessage('copy.Rich.2438f7027f', {
+              p0: <Money value={talk.floor} code={c.country} year={w.year} plain />,
+              p1: ' ',
+              p2: termLabel(window, term),
+            })}
           </button>
         </div>
       }
     >
-      {error && <p role="alert">{error}</p>}
+      {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
       <h2>
-        {player.name} {player.talk ? `${label} 협상` : '언해피 · 하한 제시'}
+        {player.name}{' '}
+        {localizeValue(
+          player.talk
+            ? sourceMessage('copy.Rich.6703818631', { p0: label })
+            : sourceMessage('copy.Rich.74ceae00d5'),
+        )}
       </h2>
       <p>
-        {player.position} · {w.year - player.born}세 · 능력 {overall(player)} · 지금 연봉{' '}
-        {money(player.wage)} · {contractLine(player.until, w.year)}
+        {richMessage('copy.Rich.3e671d0a15', {
+          p0: player.position,
+          p1: w.year - player.born,
+          p2: overall(player),
+          p3: ' ',
+          p4: money(player.wage),
+          p5: contractLine(player.until, w.year),
+        })}
       </p>
-      {player.unhappy && (
-        <p className={s.muted}>
-          {UNHAPPY_REASON[player.unhappy.reason]}로 언해피예요. 하한 이상을 제시하면 풀리고
-          {player.transferRequest ? ' 이적 요청도 거둬요' : ' 이적 요청을 하지 않아요'}.
-        </p>
+      {localizeValue(
+        player.unhappy && (
+          <p className={s.muted}>
+            {richMessage('copy.Rich.54db82f7cf', {
+              p0: UNHAPPY_REASON[player.unhappy.reason],
+              p1: player.transferRequest
+                ? sourceMessage('copy.Rich.716e17c88b')
+                : sourceMessage('copy.Rich.a43d2917b3'),
+            })}
+          </p>
+        ),
       )}
-      {talk.kind === 'improve' && (
-        <p className={s.muted}>
-          시장가보다 25% 넘게 적게 받아 계약 개선을 요구해요. 합의하면 오늘부터 새 계약으로 바뀌고
-          지난 기간은 소급하지 않아요.
-        </p>
+      {localizeValue(
+        talk.kind === 'improve' && <p className={s.muted}>{richMessage('copy.Rich.94dd6887a9')}</p>,
       )}
       <p>
-        요구 {money(talk.demand)} · 하한 {money(talk.floor)} · 하한 이상이면 바로 합의해요.
+        {richMessage('copy.Rich.3293275d8c', { p0: money(talk.demand), p1: money(talk.floor) })}
       </p>
       <p>
-        에이전트 {agent}등급(1–5){premium ? ` · 요구 +${premium}%` : ''} · 새 계약 조항:{' '}
-        {clausesLabel(talk.clauses)}
+        {richMessage('copy.Rich.1c2ca8a472', {
+          p0: agent,
+          p1: premium ? sourceMessage('copy.Rich.e20447872f', { p0: premium }) : '',
+          p2: ' ',
+          p3: clausesLabel(talk.clauses),
+        })}
       </p>
-      {ballonDorPremiumLine(w, player.id) && (
-        <p data-testid="ballon-dor-premium">{ballonDorPremiumLine(w, player.id)}</p>
+      {localizeValue(
+        ballonDorPremiumLine(w, player.id) && (
+          <p data-testid="ballon-dor-premium">
+            {localizeValue(ballonDorPremiumLine(w, player.id))}
+          </p>
+        ),
       )}
       <p className={s.muted}>
-        {window === 'summer'
-          ? '여름 계약: 이번 시즌을 포함해 1–5시즌'
-          : '겨울 계약: 이번 시즌 남은 기간과 0–4시즌 더(½–4½시즌)'}
+        {localizeValue(
+          window === 'summer'
+            ? sourceMessage('copy.Rich.5fc7181c4e')
+            : sourceMessage('copy.Rich.a46c47d0a9'),
+        )}
       </p>
-      <div className={s.segments} role="radiogroup" aria-label="계약 기간">
-        {terms.map((value) => (
-          <button
-            key={value}
-            type="button"
-            role="radio"
-            aria-checked={term === value}
-            className={term === value ? s.selected : undefined}
-            onClick={() => setTerm(value)}
-          >
-            {termLabel(window, value)}
-          </button>
-        ))}
+      <div
+        className={s.segments}
+        role="radiogroup"
+        aria-label={displayMessage('copy.stories.ebf9376720')}
+      >
+        {localizeValue(
+          terms.map((value) => (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={term === value}
+              className={term === value ? s.selected : undefined}
+              onClick={() => setTerm(value)}
+            >
+              {localizeValue(termLabel(window, value))}
+            </button>
+          )),
+        )}
       </div>
       <p>
-        연 비용 {money(talk.floor)}
-        {raise > 0n ? (
-          <> (지금보다 +{money(raise)})</>
-        ) : raise < 0n ? (
-          <> (지금보다 −{money(-raise)})</>
-        ) : null}{' '}
-        · {contractLine(talkUntil(w, term), w.year)} · 합의 뒤 자금 여력 {runwayText(runway)}
+        {richMessage('copy.Rich.cb33333f24', {
+          p0: money(talk.floor),
+          p1:
+            raise > 0n ? (
+              <>{richMessage('copy.Rich.09faf2e67c', { p0: money(raise) })}</>
+            ) : raise < 0n ? (
+              <>{richMessage('copy.Rich.40ba450e63', { p0: money(-raise) })}</>
+            ) : null,
+          p2: ' ',
+          p3: contractLine(talkUntil(w, term), w.year),
+          p4: runwayText(runway),
+        })}
       </p>
-      {player.talk && (
-        <p className={s.muted}>
-          거절하면 감독이 설득해요: 성공 {chance}% · 실패하면 언해피(능력 −{UNHAPPY_PENALTY}, 선발로
-          뛴 라운드마다 분위기 −{UNHAPPY_MORALE}, 재계약 거부, {UNHAPPY_CONFIG.requestDays / 7}주 뒤
-          이적 요청)
-        </p>
+      {localizeValue(
+        player.talk && (
+          <p className={s.muted}>
+            {richMessage('copy.Rich.29de4afc10', {
+              p0: chance,
+              p1: UNHAPPY_PENALTY,
+              p2: UNHAPPY_MORALE,
+              p3: UNHAPPY_CONFIG.requestDays / 7,
+            })}
+          </p>
+        ),
       )}
     </Dialog>
   );
 }
 /** 사람's 선수: the roster with each player's stance and contract talks (→WEB-43). */
 function Roster({ state, client }: Props) {
+  useTextLocale();
   const v = state.view!,
     w = v.world,
     c = w.clubs.find((c) => c.id === w.playerClub)!,
@@ -924,34 +1127,41 @@ function Roster({ state, client }: Props) {
   return (
     <>
       <div className={s.filters}>
-        <button onClick={() => setComparing(true)}>우리 선수 비교</button>
+        <button onClick={() => setComparing(true)}>
+          {richMessage('copy.PlayerComparison.e5d818b4c3')}
+        </button>
       </div>
       <Panel
-        title="우리 클럽의 선수들"
+        title={displayMessage('copy.Rich.ebe2ebe944')}
         note={
           <>
-            <span>선수단 {registered.value}</span>
+            <span>{richMessage('copy.Rich.1573cecd98', { p0: registered.value })}</span>
             <br />
-            <small>{registered.detail}</small>
+            <small>{localizeValue(registered.detail)}</small>
           </>
         }
       >
         {/* Who can play now leads the roster (→WEB-43/44); each card names its injury or ban. */}
         <p className={s.rosterViewSummary} data-testid="roster-availability">
-          출전 가능 <b>{availability.available}</b>/{availability.total}명 · 부상{' '}
-          {availability.injured}명 · 출장 정지 {availability.suspended}명
+          {richMessage('copy.Rich.2de180bff9', {
+            p0: <b>{localizeValue(availability.available)}</b>,
+            p1: availability.total,
+            p2: ' ',
+            p3: availability.injured,
+            p4: availability.suspended,
+          })}
         </p>
         <div className={s.rosterTools}>
           <label className={s.rosterSearch}>
-            <span className={s.srOnly}>선수 찾기</span>
+            <span className={s.srOnly}>{richMessage('copy.Rich.b794634a49')}</span>
             <input
-              aria-label="선수 찾기"
+              aria-label={displayMessage('copy.Rich.b794634a49')}
               value={playerQuery}
               onChange={(event) => {
                 setPlayerQuery(event.target.value);
                 setPlayerPage(0);
               }}
-              placeholder="선수 이름으로 찾기"
+              placeholder={displayMessage('copy.Rich.d02b30199c')}
             />
           </label>
           <RosterFilters
@@ -962,204 +1172,281 @@ function Roster({ state, client }: Props) {
             }}
           />
         </div>
-        {summary.length > 0 && (
-          <p className={s.rosterViewSummary} data-testid="roster-view-summary">
-            {summary.join(' · ')}
-          </p>
+        {localizeValue(
+          summary.length > 0 && (
+            <p className={s.rosterViewSummary} data-testid="roster-view-summary">
+              {localizeValue(summary.join(' · '))}
+            </p>
+          ),
         )}
         <div className={s.rosterCards}>
-          {visiblePlayers.map((p) => (
-            <article data-surface="panel" key={p.id}>
-              <div className={s.rosterBody}>
-                <OvrBadge value={overall(p)} role={p.position} />
-                <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
-                <small>
-                  {p.status === 'active' ? (
-                    <>
-                      {w.year - p.born}세 · 잠재력 {Math.round(p.potential)} · 적응{' '}
-                      <span data-testid="roster-adaptation">{p.adaptation.toFixed(2)}</span>
-                      <br />
-                      연봉 <Money value={p.wage} code={c.country} year={w.year} plain /> / 시장{' '}
-                      <Money value={marketWage(w, p)} code={c.country} year={w.year} plain /> ·{' '}
-                      {contractLine(p.until, w.year)}
-                    </>
-                  ) : (
-                    `${playerStatus(p)} · 통산 ${ofScope(tallies[p.id]?.apps, 'career')}경기 ${p.career[0]}골`
+          {localizeValue(
+            visiblePlayers.map((p) => (
+              <article data-surface="panel" key={p.id}>
+                <div className={s.rosterBody}>
+                  <OvrBadge value={overall(p)} role={p.position} />
+                  <PlayerLink id={p.id} name={p.name} scope={scope} className={s.cardLink} />
+                  <small>
+                    {localizeValue(
+                      p.status === 'active' ? (
+                        <>
+                          {richMessage('copy.Rich.3c0aad8104', {
+                            p0: w.year - p.born,
+                            p1: Math.round(p.potential),
+                            p2: ' ',
+                            p3: (
+                              <span data-testid="roster-adaptation">
+                                {localizeValue(p.adaptation.toFixed(2))}
+                              </span>
+                            ),
+                            p4: <br />,
+                            p5: <Money value={p.wage} code={c.country} year={w.year} plain />,
+                            p6: ' ',
+                            p7: (
+                              <Money
+                                value={marketWage(w, p)}
+                                code={c.country}
+                                year={w.year}
+                                plain
+                              />
+                            ),
+                            p8: ' ',
+                            p9: contractLine(p.until, w.year),
+                          })}
+                        </>
+                      ) : (
+                        sourceMessage('copy.Rich.25ec2568bd', {
+                          p0: playerStatus(p),
+                          p1: ofScope(tallies[p.id]?.apps, 'career'),
+                          p2: p.career[0],
+                        })
+                      ),
+                    )}
+                  </small>
+                  {localizeValue(p.status === 'active' && <PlayerFlags w={w} player={p} />)}
+                </div>
+                <div className={s.rosterStats}>
+                  <b>{richMessage('copy.Rich.af39eef578', { p0: Math.round(p.fatigue) })}</b>
+                  <small>
+                    {richMessage('copy.Rich.0e67d9b4af', { p0: (p.developed || 0).toFixed(2) })}
+                  </small>
+                </div>
+                <div className={s.rosterActions}>
+                  {localizeValue(
+                    p.status === 'active' && talkFor(w, p) && (
+                      <button
+                        type="button"
+                        className={s.stanceBadge}
+                        data-surface="tile"
+                        data-stance="listed"
+                        disabled={disabled}
+                        aria-label={displayMessage('copy.Rich.c4bd22a5c6', { p0: p.name })}
+                        onClick={() => openTalk(p.id)}
+                      >
+                        {richMessage('copy.Rich.ba7bffee64')}
+                      </button>
+                    ),
                   )}
-                </small>
-                {p.status === 'active' && <PlayerFlags w={w} player={p} />}
-              </div>
-              <div className={s.rosterStats}>
-                <b>피로 {Math.round(p.fatigue)}</b>
-                <small>성장 +{(p.developed || 0).toFixed(2)}</small>
-              </div>
-              <div className={s.rosterActions}>
-                {p.status === 'active' && talkFor(w, p) && (
-                  <button
-                    type="button"
-                    className={s.stanceBadge}
-                    data-surface="tile"
-                    data-stance="listed"
-                    disabled={disabled}
-                    aria-label={`${p.name} 계약 협상 열기`}
-                    onClick={() => openTalk(p.id)}
-                  >
-                    협상
-                  </button>
-                )}
-                {canSetStance(p) && (
-                  <StanceBadge player={p} disabled={disabled} onOpen={() => setStanceId(p.id)} />
-                )}
-              </div>
-            </article>
-          ))}
+                  {localizeValue(
+                    canSetStance(p) && (
+                      <StanceBadge
+                        player={p}
+                        disabled={disabled}
+                        onOpen={() => setStanceId(p.id)}
+                      />
+                    ),
+                  )}
+                </div>
+              </article>
+            )),
+          )}
         </div>
-        {listed.length === 0 && <p className={s.panelBody}>이 조건에 맞는 선수가 없어요.</p>}
-        {lastPage > 0 && (
-          <div className={s.rosterPages}>
-            <button disabled={shownPage === 0} onClick={() => setPlayerPage(shownPage - 1)}>
-              이전 선수
-            </button>
-            <span>
-              {shownPage + 1}/{lastPage + 1} · {listed.length}명
-            </span>
-            <button disabled={shownPage === lastPage} onClick={() => setPlayerPage(shownPage + 1)}>
-              다음 선수
-            </button>
-          </div>
+        {localizeValue(
+          listed.length === 0 && (
+            <p className={s.panelBody}>{richMessage('copy.Rich.eb8b7c3ab1')}</p>
+          ),
+        )}
+        {localizeValue(
+          lastPage > 0 && (
+            <div className={s.rosterPages}>
+              <button disabled={shownPage === 0} onClick={() => setPlayerPage(shownPage - 1)}>
+                {richMessage('copy.Rich.f2b4991b96')}
+              </button>
+              <span>
+                {richMessage('copy.Rich.b133fbb9f7', {
+                  p0: shownPage + 1,
+                  p1: lastPage + 1,
+                  p2: listed.length,
+                })}
+              </span>
+              <button
+                disabled={shownPage === lastPage}
+                onClick={() => setPlayerPage(shownPage + 1)}
+              >
+                {richMessage('copy.Rich.ecb3f631a4')}
+              </button>
+            </div>
+          ),
         )}
         <details
           data-ui="disclosure"
           className={s.rosterDetails}
           onToggle={(event) => setFullTable(event.currentTarget.open)}
         >
-          <summary>전체 선수 지표 표 보기</summary>
-          {fullTable && (
-            <div className={s.tableWrap}>
-              <table>
-                <thead>
-                  <tr>
-                    <th>포지션</th>
-                    <th>선수</th>
-                    <th>OVR</th>
-                    <th>적응</th>
-                    <th>나이</th>
-                    <th>잠재력</th>
-                    <th>출전</th>
-                    <th>득점</th>
-                    <th>도움</th>
-                    <th>피로</th>
-                    <th>연봉</th>
-                    <th>계약</th>
-                    <th>선택</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visiblePlayers.map((p) => {
-                    const stats = scope === 'career' ? p.career : p.season;
-                    return (
-                      <tr key={p.id}>
-                        <td title={positionsLabel(p.positions)}>{p.position}</td>
-                        <td>
-                          <PlayerLink id={p.id} name={p.name} scope={scope} />
-                          <small>
-                            {' '}
-                            {p.status === 'retired'
-                              ? '은퇴'
-                              : p.status === 'sold'
-                                ? '이적'
-                                : p.loanUntil
-                                  ? '임대'
-                                  : ''}
-                          </small>
-                        </td>
-                        <td>{overall(p)}</td>
-                        <td>{p.status === 'active' ? p.adaptation.toFixed(2) : '—'}</td>
-                        <td>{p.status === 'active' ? w.year - p.born : `${p.born}년생`}</td>
-                        <td>{number(p.potential)}</td>
-                        <td>
-                          {ofScope(tallies[p.id]?.apps, scope)}
-                          {ofScope(tallies[p.id]?.sub, scope) > 0 &&
-                            ` (교체 ${ofScope(tallies[p.id]?.sub, scope)})`}
-                        </td>
-                        <td>{stats[0]}</td>
-                        <td>{stats[1]}</td>
-                        <td>{number(p.fatigue)}</td>
-                        <td>
-                          {p.status === 'active' ? (
-                            <Money value={p.wage} code={c.country} year={w.year} />
-                          ) : (
-                            '—'
-                          )}
-                        </td>
-                        <td>{p.until}</td>
-                        <td>
-                          {canSetStance(p) && (
-                            <StanceBadge
-                              player={p}
-                              disabled={disabled}
-                              onOpen={() => setStanceId(p.id)}
-                            />
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+          <summary>{richMessage('copy.Rich.208e0c274f')}</summary>
+          {localizeValue(
+            fullTable && (
+              <div className={s.tableWrap}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>{richMessage('copy.BallonDorView.cb34c0f691')}</th>
+                      <th>{richMessage('team.column.player')}</th>
+                      <th>{richMessage('team.column.ovr')}</th>
+                      <th>{richMessage('copy.Rich.a074c1b50b')}</th>
+                      <th>{richMessage('team.column.age')}</th>
+                      <th>{richMessage('copy.AssigneeProfile.ad725da0ea')}</th>
+                      <th>{richMessage('copy.BallonDorView.b849877c07')}</th>
+                      <th>{richMessage('copy.summary.eb4e291be3')}</th>
+                      <th>{richMessage('copy.BallonDorView.8d901cc28d')}</th>
+                      <th>{richMessage('team.column.fatigue')}</th>
+                      <th>{richMessage('team.column.wage')}</th>
+                      <th>{richMessage('team.column.contract')}</th>
+                      <th>{richMessage('copy.ControllerBackgrounds.8d1a750c93')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {localizeValue(
+                      visiblePlayers.map((p) => {
+                        const stats = scope === 'career' ? p.career : p.season;
+                        return (
+                          <tr key={p.id}>
+                            <td title={localizeValue(positionsLabel(p.positions))}>
+                              {localizeValue(p.position)}
+                            </td>
+                            <td>
+                              <PlayerLink id={p.id} name={p.name} scope={scope} />
+                              <small>
+                                {localizeValue(' ')}
+                                {localizeValue(
+                                  p.status === 'retired'
+                                    ? sourceMessage('copy.Rich.fc798874df')
+                                    : p.status === 'sold'
+                                      ? sourceMessage('copy.NewsFeed.832934e8a8')
+                                      : p.loanUntil
+                                        ? sourceMessage('team.loan')
+                                        : '',
+                                )}
+                              </small>
+                            </td>
+                            <td>{localizeValue(overall(p))}</td>
+                            <td>
+                              {localizeValue(p.status === 'active' ? p.adaptation.toFixed(2) : '—')}
+                            </td>
+                            <td>
+                              {localizeValue(
+                                p.status === 'active'
+                                  ? w.year - p.born
+                                  : sourceMessage('copy.Rich.5e81695906', { p0: p.born }),
+                              )}
+                            </td>
+                            <td>{localizeValue(number(p.potential))}</td>
+                            <td>
+                              {localizeValue(ofScope(tallies[p.id]?.apps, scope))}
+                              {localizeValue(
+                                ofScope(tallies[p.id]?.sub, scope) > 0 &&
+                                  sourceMessage('copy.Rich.f254b07d47', {
+                                    p0: ofScope(tallies[p.id]?.sub, scope),
+                                  }),
+                              )}
+                            </td>
+                            <td>{localizeValue(stats[0])}</td>
+                            <td>{localizeValue(stats[1])}</td>
+                            <td>{localizeValue(number(p.fatigue))}</td>
+                            <td>
+                              {localizeValue(
+                                p.status === 'active' ? (
+                                  <Money value={p.wage} code={c.country} year={w.year} />
+                                ) : (
+                                  '—'
+                                ),
+                              )}
+                            </td>
+                            <td>{localizeValue(p.until)}</td>
+                            <td>
+                              {localizeValue(
+                                canSetStance(p) && (
+                                  <StanceBadge
+                                    player={p}
+                                    disabled={disabled}
+                                    onOpen={() => setStanceId(p.id)}
+                                  />
+                                ),
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      }),
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            ),
           )}
         </details>
         <div className={s.panelFoot}>
-          감독이 포메이션 자리마다 실효 능력과 피로를 따져 선발을 고르고, 부상 선수는 빼요. 선수마다
-          이적 상태 뱃지(이적 명단·협상 가능·이적 불가)를 눌러 바꿀 수 있어요. 제안은 이적시장
-          기간에 실제 구단이 보내고, 수락해야 이적이 성사돼요. 최소 14명·골키퍼 1명을 유지해야 해요.
-          지금: {window.label}
+          {richMessage('copy.Rich.0ff383e96f', { p0: window.label })}
         </div>
       </Panel>
       <TalkRulePanel w={w} client={client} />
-      {comparing && (
-        <PlayerComparison
-          w={w}
-          client={client}
-          initialScope={scope}
-          onClose={() => setComparing(false)}
-        />
+      {localizeValue(
+        comparing && (
+          <PlayerComparison
+            w={w}
+            client={client}
+            initialScope={scope}
+            onClose={() => setComparing(false)}
+          />
+        ),
       )}
-      {stancePlayer && (
-        <StanceSheet
-          w={w}
-          player={stancePlayer}
-          disabled={disabled}
-          onChoose={(stance) => {
-            if (stance !== transferStance(stancePlayer))
-              void client.command({ type: 'transfer-stance', id: stancePlayer.id, stance });
-            setStanceId(undefined);
-          }}
-          onClose={() => setStanceId(undefined)}
-        />
+      {localizeValue(
+        stancePlayer && (
+          <StanceSheet
+            w={w}
+            player={stancePlayer}
+            disabled={disabled}
+            onChoose={(stance) => {
+              if (stance !== transferStance(stancePlayer))
+                void client.command({ type: 'transfer-stance', id: stancePlayer.id, stance });
+              setStanceId(undefined);
+            }}
+            onClose={() => setStanceId(undefined)}
+          />
+        ),
       )}
-      {talkPlayer && talk && (
-        <ContractTalkSheet
-          w={w}
-          player={talkPlayer}
-          talk={talk}
-          disabled={disabled}
-          onOffer={(term) => {
-            void client.command({
-              type: 'contract-offer',
-              player: talkPlayer.id,
-              wage: talk.floor,
-              term,
-            });
-            closeTalk();
-          }}
-          onDecline={() => {
-            void client.command({ type: 'contract-decline', player: talkPlayer.id });
-            closeTalk();
-          }}
-          onClose={closeTalk}
-        />
+      {localizeValue(
+        talkPlayer && talk && (
+          <ContractTalkSheet
+            w={w}
+            player={talkPlayer}
+            talk={talk}
+            disabled={disabled}
+            onOffer={(term) => {
+              void client.command({
+                type: 'contract-offer',
+                player: talkPlayer.id,
+                wage: talk.floor,
+                term,
+              });
+              closeTalk();
+            }}
+            onDecline={() => {
+              void client.command({ type: 'contract-decline', player: talkPlayer.id });
+              closeTalk();
+            }}
+            onClose={closeTalk}
+          />
+        ),
       )}
     </>
   );
@@ -1174,6 +1461,7 @@ export function ApprovalWorkbench({
   controller: ProgressionController;
   responsibility: ResponsibilityKey;
 }) {
+  useTextLocale();
   const w = state.view!.world;
   const [market, setMarket] = useState(false);
   const [mediationId, setMediationId] = useState<string>();
@@ -1184,55 +1472,72 @@ export function ApprovalWorkbench({
   const mediation = w.mediations?.find((record) => record.id === mediationId);
   return (
     <>
-      {pending
-        .filter((item) => item.kind === 'incoming-bid' || item.kind === 'bid-response')
-        .map((item) => (
-          <EventCard key={item.id} client={client} controller={controller} item={item} inDesk />
-        ))}
-      {(responsibility === 'staff' || responsibility === 'contracts') &&
-        w.players
-          .filter((player) => w.playingCoachProposals?.[player.id]?.status === 'pending')
-          .map((player) => (
-            <PlayingCoachReview key={player.id} w={w} client={client} player={player} />
-          ))}
-      {responsibility === 'recruitment' &&
-        w.mediations
-          ?.filter((record) => record.status === 'pending')
-          .map((record) => (
-            <button
-              key={record.id}
-              type="button"
-              data-ui="secondary"
-              onClick={() => setMediationId(record.id)}
-            >
-              감독·단장 영입 중재 검토
-            </button>
-          ))}
-      {mediation && (
-        <MediationReview
-          record={mediation}
-          w={w}
-          client={client}
-          onClose={() => setMediationId(undefined)}
-        />
+      {localizeValue(
+        pending
+          .filter((item) => item.kind === 'incoming-bid' || item.kind === 'bid-response')
+          .map((item) => (
+            <EventCard key={item.id} client={client} controller={controller} item={item} inDesk />
+          )),
       )}
-      {responsibility === 'manager' ? (
-        <>
-          <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
-          {market && (
-            <ManagerMarket state={state} client={client} inline onClose={() => setMarket(false)} />
-          )}
-        </>
-      ) : responsibility === 'staff' ? (
-        <CoachingStaff w={w} client={client} />
-      ) : responsibility === 'contracts' || responsibility === 'sales' ? (
-        <Roster state={state} client={client} />
-      ) : responsibility === 'recruitment' ? (
-        <RecruitmentDesk state={state} client={client} />
-      ) : responsibility === 'academy' ? (
-        <AcademyPanel w={w} client={client} />
-      ) : (
-        <BusinessWorkbench state={state} client={client} part="sponsor" />
+      {localizeValue(
+        (responsibility === 'staff' || responsibility === 'contracts') &&
+          w.players
+            .filter((player) => w.playingCoachProposals?.[player.id]?.status === 'pending')
+            .map((player) => (
+              <PlayingCoachReview key={player.id} w={w} client={client} player={player} />
+            )),
+      )}
+      {localizeValue(
+        responsibility === 'recruitment' &&
+          w.mediations
+            ?.filter((record) => record.status === 'pending')
+            .map((record) => (
+              <button
+                key={record.id}
+                type="button"
+                data-ui="secondary"
+                onClick={() => setMediationId(record.id)}
+              >
+                {richMessage('copy.Rich.9821436305')}
+              </button>
+            )),
+      )}
+      {localizeValue(
+        mediation && (
+          <MediationReview
+            record={mediation}
+            w={w}
+            client={client}
+            onClose={() => setMediationId(undefined)}
+          />
+        ),
+      )}
+      {localizeValue(
+        responsibility === 'manager' ? (
+          <>
+            <ManagerCard state={state} client={client} onReplace={() => setMarket(true)} />
+            {localizeValue(
+              market && (
+                <ManagerMarket
+                  state={state}
+                  client={client}
+                  inline
+                  onClose={() => setMarket(false)}
+                />
+              ),
+            )}
+          </>
+        ) : responsibility === 'staff' ? (
+          <CoachingStaff w={w} client={client} />
+        ) : responsibility === 'contracts' || responsibility === 'sales' ? (
+          <Roster state={state} client={client} />
+        ) : responsibility === 'recruitment' ? (
+          <RecruitmentDesk state={state} client={client} />
+        ) : responsibility === 'academy' ? (
+          <AcademyPanel w={w} client={client} />
+        ) : (
+          <BusinessWorkbench state={state} client={client} part="sponsor" />
+        ),
       )}
     </>
   );
@@ -1245,6 +1550,7 @@ export function ApprovalInbox({
   client: GameClient;
   controller: ProgressionController;
 }) {
+  useTextLocale();
   const state = useGameState((state) => state);
   const w = state.view!.world;
   const [open, setOpen] = useTaskState(w.id, APPROVAL_INBOX_OPEN, false);
@@ -1284,7 +1590,11 @@ export function ApprovalInbox({
   }
   if (!open) return null;
   return (
-    <Dialog label="결재함" wide onClose={() => setOpen(false)}>
+    <Dialog
+      label={displayMessage('copy.ApprovalButtons.216a759610')}
+      wide
+      onClose={() => setOpen(false)}
+    >
       <ApprovalQueue
         w={w}
         pending={approvalRequests(w)}
@@ -1300,6 +1610,7 @@ export function ApprovalInbox({
  * the office on it; from elsewhere the address already carries it.
  */
 function Business({ state, client, controller }: Props & { controller: ProgressionController }) {
+  useTextLocale();
   const request = useBusinessView((view) => view.request);
   const [opened, setOpened] = useState(0);
   useEffect(() => {
@@ -1338,6 +1649,7 @@ export default function Rich({
   page,
   controller,
 }: Props & { page: Page; controller: ProgressionController }) {
+  useTextLocale();
   // 팀's compact directory of our people (→WEB-112); their detailed pages follow.
   if (page === 'team')
     return <TeamDirectory key={state.view!.world.id} state={state} client={client} />;
@@ -1363,19 +1675,22 @@ export default function Rich({
   if (page === 'academy')
     return (
       <>
-        {page === 'academy' && <TeamReturn page="academy" />}
+        {localizeValue(page === 'academy' && <TeamReturn page="academy" />)}
         <TrainingView state={state} client={client} view={page} />
-        {page === 'academy' && (
-          <WorkResponsibility
-            w={state.view!.world}
-            client={client}
-            controller={controller}
-            scope={WORK_RESPONSIBILITIES.academy}
-          />
+        {localizeValue(
+          page === 'academy' && (
+            <WorkResponsibility
+              w={state.view!.world}
+              client={client}
+              controller={controller}
+              scope={WORK_RESPONSIBILITIES.academy}
+            />
+          ),
         )}
       </>
     );
-  if (page === 'training') return <ClubOverview w={state.view!.world} />;
+  // First-team training is read on its own page (→WEB-39/116); the overview is the office's modal.
+  if (page === 'training') return <TrainingView state={state} client={client} view="training" />;
   if (page === 'operations') return <InvestmentView state={state} client={client} />;
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;
@@ -1383,7 +1698,7 @@ export default function Rich({
     <Suspense
       fallback={
         <div className={s.loading} role="status">
-          클럽 기록실을 여는 중…
+          {richMessage('copy.Rich.87f98fe11c')}
         </div>
       }
     >

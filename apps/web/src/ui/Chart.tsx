@@ -1,3 +1,6 @@
+import { number as formatNumber } from './format';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import {
   useId,
   useLayoutEffect,
@@ -38,7 +41,7 @@ const HEIGHT = 175,
   RIGHT_GUTTER = 50,
   TOP = 25,
   BOTTOM = 135;
-const defaultFormat = (value: number) => Math.round(value).toLocaleString();
+const defaultFormat = formatNumber;
 
 /** One polygon per run of seasons that have the range; a lone season is a narrow bar. */
 function bandShapes(band: ChartBand, x: (i: number) => number, y: (v: number) => number) {
@@ -74,8 +77,11 @@ function bandShapes(band: ChartBand, x: (i: number) => number, y: (v: number) =>
  * them, and tapping the same season again, Escape or leaving the chart closes it.
  */
 export function Chart(props: ChartProps) {
+  useTextLocale();
   if (!props.values.length)
-    return <div className={s.empty}>첫 시즌이 쌓이면 {props.label} 그래프가 시작됩니다.</div>;
+    return (
+      <div className={s.empty}>{richMessage('copy.Chart.b4b2b2c3fa', { p0: props.label })}</div>
+    );
   return <Plot {...props} />;
 }
 
@@ -88,6 +94,7 @@ function Plot({
   detail,
   bands,
 }: ChartProps) {
+  useTextLocale();
   const areaId = useId();
   const figure = useRef<HTMLElement>(null);
   const bubble = useRef<HTMLDivElement>(null);
@@ -188,17 +195,19 @@ function Plot({
   return (
     <figure ref={figure} className={s.chart} data-ui="chart">
       <header className={s.chartHeading}>
-        <span>{label}</span>
+        <span>{localizeValue(label)}</span>
         <div>
-          <strong>{format(values[last])}</strong>
-          <small>{labels[last]}</small>
+          <strong>{localizeValue(format(values[last]))}</strong>
+          <small>{localizeValue(labels[last])}</small>
         </div>
       </header>
       <div className={s.chartPlot}>
         <svg
           viewBox={`0 0 ${width} ${HEIGHT}`}
           role="img"
-          aria-label={`${label}: ${labels.map((l, i) => `${l} ${format(values[i])}`).join(', ')}`}
+          aria-label={localizeValue(
+            `${label}: ${labels.map((l, i) => `${l} ${format(values[i])}`).join(', ')}`,
+          )}
         >
           <defs>
             <linearGradient id={areaId} x1="0" y1="0" x2="0" y2="1">
@@ -220,29 +229,35 @@ function Plot({
             strokeOpacity="0.12"
             fill="none"
           />
-          {geometry.bands.map((band) =>
-            band.shapes.map((points, i) => (
+          {localizeValue(
+            geometry.bands.map((band) =>
+              band.shapes.map((points, i) => (
+                <polygon
+                  key={`${band.label}:${i}`}
+                  points={points}
+                  className={band.tone === 'strong' ? s.chartBandStrong : s.chartBand}
+                />
+              )),
+            ),
+          )}
+          {localizeValue(
+            !inverse && values.length > 1 && (
               <polygon
-                key={`${band.label}:${i}`}
-                points={points}
-                className={band.tone === 'strong' ? s.chartBandStrong : s.chartBand}
+                points={`${LEFT},${BOTTOM} ${geometry.line} ${right},${BOTTOM}`}
+                fill={`url(#${areaId})`}
               />
-            )),
+            ),
           )}
-          {!inverse && values.length > 1 && (
-            <polygon
-              points={`${LEFT},${BOTTOM} ${geometry.line} ${right},${BOTTOM}`}
-              fill={`url(#${areaId})`}
-            />
-          )}
-          {open && (
-            <line
-              className={s.chartGuide}
-              x1={geometry.xs[current]}
-              x2={geometry.xs[current]}
-              y1={TOP - 10}
-              y2={BOTTOM + 6}
-            />
+          {localizeValue(
+            open && (
+              <line
+                className={s.chartGuide}
+                x1={geometry.xs[current]}
+                x2={geometry.xs[current]}
+                y1={TOP - 10}
+                y2={BOTTOM + 6}
+              />
+            ),
           )}
           <polyline
             points={geometry.line}
@@ -252,16 +267,18 @@ function Plot({
             strokeLinejoin="round"
             strokeLinecap="round"
           />
-          {values.length <= 20 &&
-            geometry.xs.map((x, i) => (
-              <circle
-                key={i}
-                cx={x}
-                cy={geometry.ys[i]}
-                r="2.5"
-                fill="var(--chart-primary, var(--accent))"
-              />
-            ))}
+          {localizeValue(
+            values.length <= 20 &&
+              geometry.xs.map((x, i) => (
+                <circle
+                  key={i}
+                  cx={x}
+                  cy={geometry.ys[i]}
+                  r="2.5"
+                  fill="var(--chart-primary, var(--accent))"
+                />
+              )),
+          )}
           <circle
             cx={latest.x}
             cy={latest.y}
@@ -276,39 +293,43 @@ function Plot({
             style={{ fill: 'var(--chart-primary, var(--accent))', stroke: 'var(--surface)' }}
             strokeWidth="2"
           />
-          {open && (
-            <circle
-              className={s.chartMarker}
-              cx={geometry.xs[current]}
-              cy={geometry.ys[current]}
-              r="6"
-            />
+          {localizeValue(
+            open && (
+              <circle
+                className={s.chartMarker}
+                cx={geometry.xs[current]}
+                cy={geometry.ys[current]}
+                r="6"
+              />
+            ),
           )}
           <text x={LEFT} y="165">
-            {labels[0]}
+            {localizeValue(labels[0])}
           </text>
-          {last > 0 && (
-            <text x={right} y="165" textAnchor="end">
-              {labels[last]}
-            </text>
+          {localizeValue(
+            last > 0 && (
+              <text x={right} y="165" textAnchor="end">
+                {localizeValue(labels[last])}
+              </text>
+            ),
           )}
           <text x={width - 6} y={TOP + 4} textAnchor="end">
-            {format(inverse ? geometry.min : geometry.max)}
+            {localizeValue(format(inverse ? geometry.min : geometry.max))}
           </text>
           <text x={width - 6} y={BOTTOM + 4} textAnchor="end">
-            {format(inverse ? geometry.max : geometry.min)}
+            {localizeValue(format(inverse ? geometry.max : geometry.min))}
           </text>
         </svg>
         <div
           className={s.chartScrub}
           role="slider"
           tabIndex={0}
-          aria-label={label}
+          aria-label={localizeValue(label)}
           aria-orientation="horizontal"
           aria-valuemin={0}
           aria-valuemax={last}
           aria-valuenow={current}
-          aria-valuetext={text}
+          aria-valuetext={localizeValue(text)}
           onPointerDown={(event) => {
             const index = pick(event),
               mouse = event.pointerType === 'mouse';
@@ -353,31 +374,37 @@ function Plot({
           onBlur={() => setSelection((state) => (state.open ? { ...state, open: false } : state))}
           onKeyDown={keyboard}
         />
-        {open && (
-          <div
-            ref={bubble}
-            className={s.chartBubble}
-            data-surface="inset"
-            data-testid="chart-bubble"
-            aria-hidden="true"
-          >
-            {text}
-          </div>
+        {localizeValue(
+          open && (
+            <div
+              ref={bubble}
+              className={s.chartBubble}
+              data-surface="inset"
+              data-testid="chart-bubble"
+              aria-hidden="true"
+            >
+              {localizeValue(text)}
+            </div>
+          ),
         )}
       </div>
-      {geometry.bands.length > 0 && (
-        <figcaption className={s.chartLegend}>
-          <span>
-            <i className={s.legendLine} />
-            {label}
-          </span>
-          {geometry.bands.map((band) => (
-            <span key={band.label}>
-              <i className={band.tone === 'strong' ? s.legendStrong : s.legendFaint} />
-              {band.label}
+      {localizeValue(
+        geometry.bands.length > 0 && (
+          <figcaption className={s.chartLegend}>
+            <span>
+              <i className={s.legendLine} />
+              {localizeValue(label)}
             </span>
-          ))}
-        </figcaption>
+            {localizeValue(
+              geometry.bands.map((band) => (
+                <span key={band.label}>
+                  <i className={band.tone === 'strong' ? s.legendStrong : s.legendFaint} />
+                  {localizeValue(band.label)}
+                </span>
+              )),
+            )}
+          </figcaption>
+        ),
       )}
     </figure>
   );

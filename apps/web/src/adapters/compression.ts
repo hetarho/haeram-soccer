@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { denseBytes, denseText } from './dense';
 import { bmpBytes, bmpText } from './bmp127';
 import { unbase64 } from './packing';
@@ -16,7 +17,7 @@ async function gzip(bytes: Uint8Array, compress: boolean) {
     size += value.length;
     if (size > LIMIT) {
       await reader.cancel();
-      throw new Error('저장 파일의 압축 해제 한도를 초과했습니다.');
+      throw new Error(sourceMessage('copy.compression.32374943f3'));
     }
     chunks.push(value);
   }
@@ -36,13 +37,13 @@ export async function encodePayload(
   bytes: Uint8Array,
   acceptsFast?: (candidate: EncodedPayload) => boolean,
 ): Promise<EncodedPayload> {
-  if (bytes.length > LIMIT) throw new Error('저장 파일의 압축 해제 한도를 초과했습니다.');
+  if (bytes.length > LIMIT) throw new Error(sourceMessage('copy.compression.32374943f3'));
   const fast = await gzip(bytes, true);
   const candidate: EncodedPayload = { codec: 'gzip-cjk14', payload: denseText(fast) };
   if (fast.length <= 1_200_000 || acceptsFast?.(candidate)) return candidate;
   const { compress } = await import('brotli/compress');
   const packed = await compress(bytes, { quality: 11, lgwin: 24 });
-  if (!packed) throw new Error('저장 압축에 실패했습니다.');
+  if (!packed) throw new Error(sourceMessage('copy.compression.799ea5e9b6'));
   return { codec: 'brotli-bmp127', payload: bmpText(packed) };
 }
 export function payloadBytes(codec: SaveCodec, payload: string): Uint8Array {

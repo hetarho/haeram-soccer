@@ -7,7 +7,7 @@ import { careerWorld } from '../../../../packages/engine/src/career.testkit';
 import { GameIndexStore } from '../adapters/games';
 import { summarize } from '../runtime/slots';
 import { ClubCrest, CrestMark } from './ClubCrest';
-import { ClubLink } from './ClubLink';
+import { ClubLink } from '../entities/club';
 import { seriesColours } from './MatchCharts';
 import s from './ClubCrest.module.css';
 

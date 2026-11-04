@@ -1,3 +1,4 @@
+import { message as sourceMessage } from './messages';
 import { z } from 'zod';
 import {
   CREST_EMBLEMS,
@@ -211,7 +212,7 @@ export function assertIdentityFormatVersions(value: unknown): void {
     (Array.isArray(clubs) && clubs.length > MAX_CLUBS) ||
     (Array.isArray(ownMatches) && ownMatches.length > MAX_RECORDS)
   )
-    throw new Error('저장 데이터의 크기가 허용 범위를 넘습니다.');
+    throw new Error(sourceMessage('copy.identitySchema.e49688e79a'));
   if (Array.isArray(clubs))
     for (const club of clubs) if (record(club)) assertVersion(club.identity);
   if (Array.isArray(ownMatches))

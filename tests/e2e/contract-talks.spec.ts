@@ -1,3 +1,4 @@
+import { approvalQueue } from './office';
 import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
@@ -93,7 +94,6 @@ test('declines a contract talk: the badge, then the transfer request', async ({
   // The talk waits in the owner office's tray, not among home's events (→WEB-39).
   await expect(card).toHaveCount(0);
   await reviewInOffice(page, `${name} 선수 계약에 답변해 주세요`);
-  await expect(page).toHaveURL(/\/direction\?view=players&request=/);
 
   // The sheet states the demand, the floor, the term, the cost, the runway and the risk.
   const sheet = page.getByRole('dialog', { name: '계약 협상' });
@@ -115,7 +115,7 @@ test('declines a contract talk: the badge, then the transfer request', async ({
 
   // The manager could not talk him round: the roster card on 사람's 선수 wears the badge with its
   // reason. The answered review returned to the 결재함 (→WEB-100).
-  await expect(page).toHaveURL(/\/direction$/);
+  await expect(approvalQueue(page)).toBeVisible();
   await openPersonnel(page, 'players');
   const roster = page.locator('article').filter({ hasText: name });
   // 선수 ends with who answers talks: the owner, at level 1 (→WEB-43).

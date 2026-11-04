@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import { PixelIcon } from './PixelIcon';
 import o from './OfficeBar.module.css';
 
@@ -9,16 +10,19 @@ export function OfficeBar({
   back?: { label: string; onClick: () => void };
   title: string;
 }) {
+  useTextLocale();
   return (
     <header className={o.bar} data-ui="office-bar">
-      {back && (
-        <button data-ui="link" type="button" className={o.back} onClick={back.onClick}>
-          <PixelIcon name="chevronLeft" size={16} />
-          {back.label}
-        </button>
+      {localizeValue(
+        back && (
+          <button data-ui="link" type="button" className={o.back} onClick={back.onClick}>
+            <PixelIcon name="chevronLeft" size={16} />
+            {localizeValue(back.label)}
+          </button>
+        ),
       )}
       <h2 className={o.title}>
-        <span>{title}</span>
+        <span>{localizeValue(title)}</span>
       </h2>
     </header>
   );

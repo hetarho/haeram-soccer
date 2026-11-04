@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { developmentDestination } from './personnelNavigation';
 import { useTaskState } from './taskMemory';
 import { FacilityOverview } from './FacilityOverview';
@@ -32,7 +35,7 @@ import {
 } from '../../../../packages/engine/src/player';
 import type { ClientState, GameClient } from '../runtime/client';
 import { PlaceActivities } from './PlaceActivities';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 import { openHome, openStaff, type TrainingTab } from './state';
 import { callLine, playerCallLine } from './teamState';
 import { multiplierLabel } from './PlayerProfile';
@@ -43,9 +46,9 @@ type Props = { state: ClientState; client: GameClient };
 type Outlook = ReturnType<typeof developmentOutlook>;
 
 const FOCUSES: readonly [TrainingFocus, string][] = [
-  ['balanced', '균형'],
-  ['recovery', '회복'],
-  ['hard', '하드 트레이닝'],
+  ['balanced', sourceMessage('copy.stories.634269a095')],
+  ['recovery', sourceMessage('copy.TrainingView.de755cc2f7')],
+  ['hard', sourceMessage('copy.TrainingView.80b3f4a762')],
 ];
 const focusName = (focus: TrainingFocus) => FOCUSES.find(([id]) => id === focus)![1];
 /** A multiplier as ×1.12: two decimals at most, trailing zeros dropped. */
@@ -54,15 +57,18 @@ const times = (value: number) => `×${Math.round(value * 100) / 100}`;
 function focusEffect(focus: TrainingFocus, recoveryBonus: number) {
   const info = trainingFocusInfo[focus];
   return {
-    recovery: `피로 회복 ${Math.max(0, info.recovery + recoveryBonus)}`,
+    recovery: sourceMessage('copy.TrainingView.bc9d799266', {
+      p0: Math.max(0, info.recovery + recoveryBonus),
+    }),
     growth: info.developmentMultiplier
-      ? `성장 ${times(info.developmentMultiplier)}`
-      : '라운드 성장 쉼',
+      ? sourceMessage('copy.TrainingView.2cc20f3f5b', { p0: times(info.developmentMultiplier) })
+      : sourceMessage('copy.TrainingView.10c120503d'),
   };
 }
 
 /** 훈련 or 유소년: the coaches' training read where it happens (→WEB-70). */
 export function TrainingView({ state, client, view }: Props & { view: TrainingTab }) {
+  useTextLocale();
   return view === 'training' ? (
     <FirstTeamTraining state={state} />
   ) : (
@@ -72,6 +78,7 @@ export function TrainingView({ state, client, view }: Props & { view: TrainingTa
 
 /** First-team training and academy can compose independently without copying their actions. */
 export function FirstTeamTraining({ state }: { state: ClientState }) {
+  useTextLocale();
   const w = state.view!.world;
   const outlook = developmentOutlook(w);
   return (
@@ -79,10 +86,19 @@ export function FirstTeamTraining({ state }: { state: ClientState }) {
       <FacilityOverview
         w={w}
         kind="training"
-        title={w.trainingGround ? `${w.trainingGround}단계 훈련장` : '기본 훈련장'}
+        title={localizeValue(
+          w.trainingGround
+            ? sourceMessage('copy.TrainingView.534b619186', { p0: w.trainingGround })
+            : sourceMessage('facility.training.base'),
+        )}
       >
-        {focusName(outlook.focus.focus)} · 수석코치{' '}
-        {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'}
+        {richMessage('copy.TrainingView.c6035b28b3', {
+          p0: focusName(outlook.focus.focus),
+          p1: ' ',
+          p2:
+            w.staff?.find((person) => person.role === 'assistant')?.name ??
+            sourceMessage('team.vacant'),
+        })}
       </FacilityOverview>
       <div className={`${s.stack} ${s.pair}`}>
         <TrainingFocusPanel w={w} outlook={outlook} />
@@ -93,12 +109,19 @@ export function FirstTeamTraining({ state }: { state: ClientState }) {
   );
 }
 export function AcademyTraining({ state, client }: Props) {
+  useTextLocale();
   const w = state.view!.world;
   return (
     <>
-      <FacilityOverview w={w} kind="academy" title="유소년 아카데미">
-        {w.academyFacility ? `${w.academyFacility}단계 유소년 시설` : '기본 유소년 시설'} · 유소년
-        총괄 {w.staff?.find((person) => person.role === 'youth')?.name ?? '공석'}
+      <FacilityOverview w={w} kind="academy" title={displayMessage('copy.AcademyPanel.0c8e8ca5aa')}>
+        {richMessage('copy.TrainingView.c0a5e26446', {
+          p0: w.academyFacility
+            ? sourceMessage('copy.TrainingView.db2b64b5cd', { p0: w.academyFacility })
+            : sourceMessage('facility.academy.base'),
+          p1:
+            w.staff?.find((person) => person.role === 'youth')?.name ??
+            sourceMessage('team.vacant'),
+        })}
       </FacilityOverview>
       <PlaceActivities state={state} client={client} />
     </>
@@ -106,81 +129,118 @@ export function AcademyTraining({ state, client }: Props) {
 }
 
 /** A focus's settling per round, before 적응력 and the school (→PLAYER-12). */
-const adaptationGain = (focus: TrainingFocus) => `적응 +${TRAINING_GAIN[focus].toFixed(3)}`;
-const injuryChance = `부상 ${(TRAINING_INJURY * 100).toFixed(1)}%~/라운드`;
+const adaptationGain = (focus: TrainingFocus) =>
+  sourceMessage('copy.TrainingView.2a5f529912', { p0: TRAINING_GAIN[focus].toFixed(3) });
+const injuryChance = sourceMessage('copy.TrainingView.2a03c0a7e3', {
+  p0: (TRAINING_INJURY * 100).toFixed(1),
+});
 
 /**
  * The first team's focus in force (→CLUB-13), read only: the assistant sets it by his rule each
  * settled round, and why; each focus's growth, recovery, adaptation and costs; and his rules.
  */
 function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outlook }) {
+  useTextLocale();
   const call = callLine(w, 'assistant');
   return (
-    <section data-surface="panel" className={s.card} id="training-focus" aria-label="훈련 방향">
+    <section
+      data-surface="panel"
+      className={s.card}
+      id="training-focus"
+      aria-label={displayMessage('copy.TrainingView.5c1363ff75')}
+    >
       <header className={s.head}>
-        <h3>훈련 방향</h3>
+        <h3>{richMessage('copy.TrainingView.5c1363ff75')}</h3>
         <span data-testid="training-focus">
-          지금 {focusName(focus.focus)} · {call.by}
+          {richMessage('copy.AcademyPanel.80d73fa296', { p0: focusName(focus.focus), p1: call.by })}
         </span>
       </header>
       <p data-surface="tile" className={s.advice} data-testid="training-advice">
-        {call.reason}
+        {localizeValue(call.reason)}
       </p>
       <p className={s.actor}>
-        담당 수석코치{' '}
-        <button type="button" onClick={() => openStaff('assistant')}>
-          {w.staff?.find((person) => person.role === 'assistant')?.name ?? '공석'} · 보기
-        </button>
+        {richMessage('copy.TrainingView.823df5a6d6', {
+          p0: ' ',
+          p1: (
+            <button type="button" onClick={() => openStaff('assistant')}>
+              {richMessage('copy.TrainingView.30a2d064bc', {
+                p0:
+                  w.staff?.find((person) => person.role === 'assistant')?.name ??
+                  sourceMessage('team.vacant'),
+              })}
+            </button>
+          ),
+        })}
       </p>
       <details data-ui="disclosure" className={s.reference}>
-        <summary>훈련 효과·자동 판단 기준</summary>
-        <ul className={s.focuses} aria-label="훈련 방향별 효과">
-          {FOCUSES.map(([id, label]) => {
-            const effect = focusEffect(id, focus.recoveryBonus);
-            return (
-              <li key={id} aria-current={focus.focus === id || undefined}>
-                <b>{label}</b>
-                <span>
-                  <small>{effect.recovery}</small>
-                  <small>{effect.growth}</small>
-                  <small>{adaptationGain(id)}</small>
-                  {id === 'hard' && (
-                    <small className={s.cost}>
-                      {injuryChance} · {HARD_STREAK.from}라운드 연속부터 분위기 −{HARD_STREAK.cost}
-                    </small>
-                  )}
-                </span>
-              </li>
-            );
-          })}
+        <summary>{richMessage('copy.TrainingView.19e1c7b7a4')}</summary>
+        <ul className={s.focuses} aria-label={displayMessage('copy.TrainingView.3ed4ca5943')}>
+          {localizeValue(
+            FOCUSES.map(([id, label]) => {
+              const effect = focusEffect(id, focus.recoveryBonus);
+              return (
+                <li key={id} aria-current={focus.focus === id || undefined}>
+                  <b>{localizeValue(label)}</b>
+                  <span>
+                    <small>{localizeValue(effect.recovery)}</small>
+                    <small>{localizeValue(effect.growth)}</small>
+                    <small>{localizeValue(adaptationGain(id))}</small>
+                    {localizeValue(
+                      id === 'hard' && (
+                        <small className={s.cost}>
+                          {richMessage('copy.TrainingView.0770468979', {
+                            p0: injuryChance,
+                            p1: HARD_STREAK.from,
+                            p2: HARD_STREAK.cost,
+                          })}
+                        </small>
+                      ),
+                    )}
+                  </span>
+                </li>
+              );
+            }),
+          )}
         </ul>
         <p className={s.note}>
-          라운드마다 한 번 적용돼요. 성장 배수는 27세 미만에게만 붙고, 훈련만으로는 적응도가{' '}
-          {ADAPTATION_NEUTRAL.toFixed(2)}까지만 올라요.
-          {focus.recoveryBonus !== 0 &&
-            ` 피로 회복에는 선수단 투자·훈련장·피지컬 코치의 ${focus.recoveryBonus > 0 ? '+' : ''}${focus.recoveryBonus}이 들어 있어요.`}
+          {richMessage('copy.TrainingView.1fc1c05b89', {
+            p0: ' ',
+            p1: ADAPTATION_NEUTRAL.toFixed(2),
+            p2:
+              focus.recoveryBonus !== 0 &&
+              sourceMessage('copy.TrainingView.0b68bbf8d9', {
+                p0: focus.recoveryBonus > 0 ? '+' : '',
+                p1: focus.recoveryBonus,
+              }),
+          })}
         </p>
         <div data-surface="sheet" className={s.delegate}>
-          <p>수석코치는 라운드마다 이 기준으로 골라요.</p>
+          <p>{richMessage('copy.TrainingView.a006e4ecd7')}</p>
           <ul className={s.rule}>
             <li>
-              <b>회복</b>
-              <span>선발 평균 피로 {AUTO_RECOVERY_FATIGUE} 이상</span>
-            </li>
-            <li>
-              <b>하드 트레이닝</b>
+              <b>{richMessage('copy.TrainingView.de755cc2f7')}</b>
               <span>
-                선발 평균 피로 {AUTO_HARD_FATIGUE} 미만 · 분위기 {AUTO_HARD_MORALE} 이상 · 육성형
-                수석코치, 또는 21세 이하 선발 3명 이상
+                {richMessage('copy.TrainingView.85cf0adbed', { p0: AUTO_RECOVERY_FATIGUE })}
               </span>
             </li>
             <li>
-              <b>균형</b>
-              <span>그 밖에</span>
+              <b>{richMessage('copy.TrainingView.80b3f4a762')}</b>
+              <span>
+                {richMessage('copy.TrainingView.b31386da00', {
+                  p0: AUTO_HARD_FATIGUE,
+                  p1: AUTO_HARD_MORALE,
+                })}
+              </span>
             </li>
             <li>
-              <b>개별 회복</b>
-              <span>피로 {AUTO_PLAYER_RECOVERY} 이상인 선수는 팀과 따로 회복</span>
+              <b>{richMessage('copy.stories.634269a095')}</b>
+              <span>{richMessage('copy.TrainingView.2323550a0b')}</span>
+            </li>
+            <li>
+              <b>{richMessage('copy.TrainingView.902805a1f3')}</b>
+              <span>
+                {richMessage('copy.TrainingView.5db98587e0', { p0: AUTO_PLAYER_RECOVERY })}
+              </span>
             </li>
           </ul>
         </div>
@@ -194,6 +254,7 @@ function TrainingFocusPanel({ w, outlook: { focus } }: { w: World; outlook: Outl
  * squad's focus, then every first-team player with his focus this round and his growth.
  */
 function PlayerTraining({ w }: { w: World }) {
+  useTextLocale();
   const [filter, setFilter] = useTaskState<'all' | 'attention' | 'growth'>(
     w.id,
     'development-filter',
@@ -214,68 +275,107 @@ function PlayerTraining({ w }: { w: World }) {
   );
   const own = all.filter((player) => playerCallLine(w, player, squadFocus).own).length;
   return (
-    <section data-surface="panel" className={`${s.card} ${s.wide}`} aria-label="선수별 육성">
+    <section
+      data-surface="panel"
+      className={`${s.card} ${s.wide}`}
+      aria-label={displayMessage('copy.TrainingView.faff9d54ec')}
+    >
       <header className={s.head}>
-        <h3>선수별 육성</h3>
-        <span data-testid="own-focus-count">따로 훈련 {own}명</span>
+        <h3>{richMessage('copy.TrainingView.faff9d54ec')}</h3>
+        <span data-testid="own-focus-count">
+          {richMessage('copy.TrainingView.5b0ffa8a24', { p0: own })}
+        </span>
       </header>
-      <div className={s.filters} role="group" aria-label="선수 육성 보기">
-        {(
-          [
-            ['all', '전체'],
-            ['attention', '관리 필요'],
-            ['growth', '성장 중'],
-          ] as const
-        ).map(([id, label]) => (
-          <button type="button" key={id} aria-pressed={filter === id} onClick={() => setFilter(id)}>
-            {label}
-          </button>
-        ))}
+      <div
+        className={s.filters}
+        role="group"
+        aria-label={displayMessage('copy.TrainingView.b8bc816abf')}
+      >
+        {localizeValue(
+          (
+            [
+              ['all', sourceMessage('copy.DecisionRuleFacts.a4b69faf0c')],
+              ['attention', sourceMessage('copy.TrainingView.f467de7326')],
+              ['growth', sourceMessage('copy.TrainingView.949d41b726')],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              type="button"
+              key={id}
+              aria-pressed={filter === id}
+              onClick={() => setFilter(id)}
+            >
+              {localizeValue(label)}
+            </button>
+          )),
+        )}
       </div>
       <ul className={s.players} data-testid="adaptation-list">
-        {squad.map((player) => {
-          const call = playerCallLine(w, player, squadFocus);
-          return (
-            <li key={player.id} data-own={call.own || undefined}>
-              <span className={s.playerName}>
-                <PlayerLink id={player.id} name={player.name} />
-                <small>
-                  {player.position} · {w.year - player.born}세 · 피로 {Math.round(player.fatigue)}
-                </small>
-                <small>
-                  OVR {overall(player)} · POT {Math.round(player.potential)} · 성장 +
-                  {(player.developed || 0).toFixed(2)}
-                </small>
-              </span>
-              <span className={s.playerFocus} data-testid={`player-focus-${player.id}`}>
-                <b>{focusName(focusFor(w, player, squadFocus))}</b>
-                <small>{call.by}</small>
-                <small>
-                  적응 {player.adaptation.toFixed(2)} · {multiplierLabel(ownMultiplier(player))}
-                </small>
-                <small>
-                  적응 속도 ×{Number(settleRate(w, player).toFixed(2))}
-                  {player.unsettled !== undefined && ' · 적응 실패'}
-                </small>
-              </span>
-            </li>
-          );
-        })}
+        {localizeValue(
+          squad.map((player) => {
+            const call = playerCallLine(w, player, squadFocus);
+            return (
+              <li key={player.id} data-own={call.own || undefined}>
+                <span className={s.playerName}>
+                  <PlayerLink id={player.id} name={player.name} />
+                  <small>
+                    {richMessage('copy.TrainingView.f81e309de6', {
+                      p0: player.position,
+                      p1: w.year - player.born,
+                      p2: Math.round(player.fatigue),
+                    })}
+                  </small>
+                  <small>
+                    {richMessage('copy.TrainingView.8629bfd0b4', {
+                      p0: overall(player),
+                      p1: Math.round(player.potential),
+                      p2: (player.developed || 0).toFixed(2),
+                    })}
+                  </small>
+                </span>
+                <span className={s.playerFocus} data-testid={`player-focus-${player.id}`}>
+                  <b>{localizeValue(focusName(focusFor(w, player, squadFocus)))}</b>
+                  <small>{localizeValue(call.by)}</small>
+                  <small>
+                    {richMessage('copy.TrainingView.e1c9cc5c5c', {
+                      p0: player.adaptation.toFixed(2),
+                      p1: multiplierLabel(ownMultiplier(player)),
+                    })}
+                  </small>
+                  <small>
+                    {richMessage('copy.TrainingView.242d832347', {
+                      p0: Number(settleRate(w, player).toFixed(2)),
+                      p1:
+                        player.unsettled !== undefined &&
+                        sourceMessage('copy.TrainingView.36f0fb2c5c'),
+                    })}
+                  </small>
+                </span>
+              </li>
+            );
+          }),
+        )}
       </ul>
-      {!squad.length && (
-        <p className={s.note}>
-          {filter === 'attention'
-            ? '지금은 피로·적응 문제로 따로 관리할 선수가 없어요. 코치가 현재 훈련을 맡고 있어요.'
-            : '이 조건에 맞는 선수가 없어요.'}
-        </p>
+      {localizeValue(
+        !squad.length && (
+          <p className={s.note}>
+            {localizeValue(
+              filter === 'attention'
+                ? sourceMessage('copy.TrainingView.2451607b78')
+                : sourceMessage('copy.Rich.eb8b7c3ab1'),
+            )}
+          </p>
+        ),
       )}
       <details data-ui="disclosure" className={s.reference}>
-        <summary>선수별 훈련·적응·성장 설명</summary>
+        <summary>{richMessage('copy.TrainingView.698366b615')}</summary>
         <p className={s.note}>
-          적응도 {ADAPTATION_NEUTRAL.toFixed(2)}에서 능력 그대로 뛰어요. 선발 출전은 경기당 +
-          {MATCH_GAIN.start.toFixed(3)} × 그 자리 숙련도, 훈련은 라운드마다 +
-          {TRAINING_GAIN.recovery.toFixed(3)}–{TRAINING_GAIN.hard.toFixed(3)}예요. 적응력과 감독
-          학파에 따라 달라져요. 성장 값은 이 선수가 쌓은 성장이고 최근 한 경기의 변화가 아니에요.
+          {richMessage('copy.TrainingView.63b26d8463', {
+            p0: ADAPTATION_NEUTRAL.toFixed(2),
+            p1: MATCH_GAIN.start.toFixed(3),
+            p2: TRAINING_GAIN.recovery.toFixed(3),
+            p3: TRAINING_GAIN.hard.toFixed(3),
+          })}
         </p>
       </details>
     </section>
@@ -290,11 +390,11 @@ interface DriverRow {
   terms: DevelopmentFactor[];
 }
 const homeName: Record<DevelopmentHome, string> = {
-  'training/training': '1군 훈련',
-  'business/strategy': '투자',
-  'people/manager': '감독',
-  'people/coaches': '스태프',
-  'business/facility': '시설',
+  'training/training': sourceMessage('copy.TrainingView.6e539568cb'),
+  'business/strategy': sourceMessage('copy.TrainingView.9e820c8111'),
+  'people/manager': sourceMessage('staff.role.manager'),
+  'people/coaches': sourceMessage('copy.ClubStaff.64c4586f7b'),
+  'business/facility': sourceMessage('copy.BusinessWorkbench.af2559470c'),
 };
 const toneOf = (value: number) => (value > 1 ? 'up' : value < 1 ? 'down' : 'flat');
 /** Terms that change something; a row whose terms all multiply by 1 shows its first one. */
@@ -303,7 +403,7 @@ const shownTerms = (terms: DevelopmentFactor[]) => {
   return changing.length ? changing : terms.slice(0, 1);
 };
 const termText = (term: DevelopmentFactor) =>
-  `${term.applies === 'u21' ? '21세 이하 ' : ''}${times(term.value)}`;
+  `${term.applies === 'u21' ? sourceMessage('copy.TrainingView.84430e12dd') : ''}${times(term.value)}`;
 
 /**
  * Opens where a term is set or read (→WEB-71): the focus above, on this tab; the direction's
@@ -324,6 +424,7 @@ function openDriver(home: DevelopmentHome) {
  * growth by, with its value, each opening the place it is set.
  */
 function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook }) {
+  useTextLocale();
   const rows: DriverRow[] = [];
   for (const factor of factors) {
     const row = rows.find((existing) => existing.label === factor.label);
@@ -339,53 +440,64 @@ function DevelopmentDrivers({ outlook: { factors, skills } }: { outlook: Outlook
     (skill) => `${ATTRIBUTE_LABEL[skill]} ${times(skills[skill])}`,
   );
   return (
-    <section data-surface="panel" className={s.card} aria-label="성장 배수">
+    <section
+      data-surface="panel"
+      className={s.card}
+      aria-label={displayMessage('copy.TrainingView.0695c862cf')}
+    >
       <header className={s.head}>
-        <h3>성장 배수</h3>
-        <span>라운드마다 곱해져요</span>
+        <h3>{richMessage('copy.TrainingView.0695c862cf')}</h3>
+        <span>{richMessage('copy.TrainingView.df1486974e')}</span>
       </header>
       <p className={s.total} data-testid="development-total">
-        <b>{times(total(true))}</b>
-        <small>21세 이하 · 22–26세 {times(total(false))}</small>
+        <b>{localizeValue(times(total(true)))}</b>
+        <small>{richMessage('copy.TrainingView.8c4ec87c57', { p0: times(total(false)) })}</small>
       </p>
       <details data-ui="disclosure" className={s.reference}>
-        <summary>성장 요인·투자·스태프 자세히</summary>
-        <p className={s.note}>
-          27세 미만 선수는 라운드마다 잠재력까지 남은 차이에 이 배수를 모두 곱한 만큼 자라요.
-          어릴수록 더 빨리 자라요. 아래 항목을 누르면 정하는 곳으로 가요.
-        </p>
+        <summary>{richMessage('copy.TrainingView.bfdca47ca9')}</summary>
+        <p className={s.note}>{richMessage('copy.TrainingView.8f3f3fb78d')}</p>
         <ul className={s.drivers}>
-          {rows.map((row) => {
-            const shown = shownTerms(row.terms);
-            return (
-              <li key={row.label}>
-                <button
-                  type="button"
-                  aria-label={`${row.label} ${shown.map(termText).join(' · ')} · ${homeName[row.home]}에서 보기`}
-                  onClick={() => openDriver(row.home)}
-                >
-                  <span className={s.driverText}>
-                    <b>{row.label}</b>
-                    <small>
-                      {row.detail}
-                      {row.home === 'people/coaches' &&
-                        ` · ${coaching.length ? coaching.join(' · ') : '담당 능력 성장 ×1'}`}
-                    </small>
-                  </span>
-                  <span className={s.driverValues}>
-                    {shown.map((term) => (
-                      <span key={term.key} data-tone={toneOf(term.value)}>
-                        {termText(term)}
-                      </span>
-                    ))}
-                  </span>
-                  <span className={s.chevron} aria-hidden="true">
-                    ›
-                  </span>
-                </button>
-              </li>
-            );
-          })}
+          {localizeValue(
+            rows.map((row) => {
+              const shown = shownTerms(row.terms);
+              return (
+                <li key={row.label}>
+                  <button
+                    type="button"
+                    aria-label={displayMessage('copy.TrainingView.3fe8916d0e', {
+                      p0: row.label,
+                      p1: shown.map(termText).join(' · '),
+                      p2: homeName[row.home],
+                    })}
+                    onClick={() => openDriver(row.home)}
+                  >
+                    <span className={s.driverText}>
+                      <b>{localizeValue(row.label)}</b>
+                      <small>
+                        {localizeValue(row.detail)}
+                        {localizeValue(
+                          row.home === 'people/coaches' &&
+                            ` · ${coaching.length ? coaching.join(' · ') : sourceMessage('copy.TrainingView.1f43be7794')}`,
+                        )}
+                      </small>
+                    </span>
+                    <span className={s.driverValues}>
+                      {localizeValue(
+                        shown.map((term) => (
+                          <span key={term.key} data-tone={toneOf(term.value)}>
+                            {localizeValue(termText(term))}
+                          </span>
+                        )),
+                      )}
+                    </span>
+                    <span className={s.chevron} aria-hidden="true">
+                      ›
+                    </span>
+                  </button>
+                </li>
+              );
+            }),
+          )}
         </ul>
       </details>
     </section>

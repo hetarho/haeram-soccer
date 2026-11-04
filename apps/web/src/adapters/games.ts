@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { deviceOwner, ownerOf, type Owner } from './profile';
 import { MANIFEST, type StoragePort } from './repository';
 
@@ -120,7 +121,7 @@ export function idbRequest<T>(
       for (const store of ['games', 'checkpoints'])
         if (!open.result.objectStoreNames.contains(store)) open.result.createObjectStore(store);
     };
-    open.onerror = () => reject(open.error ?? new Error('게임 보관함을 열지 못했어요.'));
+    open.onerror = () => reject(open.error ?? new Error(sourceMessage('copy.games.669286918e')));
     open.onsuccess = () => {
       const db = open.result;
       let tx: IDBTransaction, result: IDBRequest<T>;
@@ -139,7 +140,7 @@ export function idbRequest<T>(
       };
       tx.onerror = tx.onabort = () => {
         db.close();
-        reject(tx.error ?? new Error('게임 보관함 작업에 실패했어요.'));
+        reject(tx.error ?? new Error(sourceMessage('copy.games.a38061aa70')));
       };
     };
   });
@@ -157,7 +158,7 @@ export class IndexedDbParkedStore implements ParkedStore {
   /** Writes and reads back, so a switch never relies on a copy it has not seen. */
   async put(id: string, raw: string) {
     await request((store) => store.put(raw, id), 'readwrite');
-    if ((await this.get(id)) !== raw) throw new Error('보관한 게임을 다시 읽어 확인하지 못했어요.');
+    if ((await this.get(id)) !== raw) throw new Error(sourceMessage('copy.games.399fdb1db0'));
   }
   async remove(id: string) {
     await request((store) => store.delete(id), 'readwrite');

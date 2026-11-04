@@ -1,19 +1,16 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import type { ReactNode } from 'react';
 import type { PolicyKey, World } from '../../../../packages/contracts/src/types';
-import { POLICY_INFO, policyEffects, policyOf } from '../../../../packages/engine/src/policy';
+import { POLICY_INFO, policyOf } from '../../../../packages/engine/src/policy';
 import {
-  ACADEMY_FACILITY,
-  TRAINING_GROUND,
   STADIUM_STEPS,
   facilityPartUpkeep,
   stadiumCapacity,
   partTop,
 } from '../../../../packages/engine/src/facilities';
 import { STAFF_ROLES, staffMember } from '../../../../packages/engine/src/staff-info';
-import { buildEffects } from '../../../../packages/engine/src/build';
 import { KIT_ROLE_LABELS } from './identityPreview';
-import { askedFeeFactor } from '../../../../packages/engine/src/owner-traits';
-import { DIRECTION_INFO, directionOf } from '../../../../packages/engine/src/direction';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { Card } from './Card';
 import { Money } from './Money';
@@ -21,17 +18,29 @@ import { number } from './format';
 import { INVESTMENT_AREAS, type InvestmentArea } from './investmentAreas';
 import type { OfficeRead } from '../runtime/officeRead';
 import { useOfficeRead } from './useOfficeRead';
+import {
+  EFFECT_NAMES,
+  areaRows,
+  contributionText,
+  effectValueText,
+  factorValueText,
+  sourceText,
+  type AreaRow,
+} from './officeLedger';
+import { openOfficeLobby } from './state';
 import s from './InvestmentView.module.css';
 
-type Totals = { rows: [string, ReactNode][]; meta: string; note: string };
-const rounded = (value: number) => Number(value.toFixed(4));
-const signed = (value: number) => `${value >= 0 ? '+' : ''}${rounded(value)}`;
-const times = (value: number) => `×${rounded(value)}`;
+type Row = [string, ReactNode];
+/** An area's own spend and facts; what its controls do comes from the office's effects. */
+interface AreaCard {
+  meta: string;
+  costs: Row[];
+  facts: Row[];
+  note?: string;
+}
 
-/** Current effects and recurring costs, using the engine's completed facts and applied choices. */
-function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
+function cardOf(w: World, area: InvestmentArea, office: OfficeRead): AreaCard {
   const policy = policyOf(w);
-  const effects = policyEffects(policy);
   const costs = office.costs;
   const club = clubOf(w);
   const money = (value: string | bigint) => (
@@ -40,196 +49,213 @@ function totalsOf(w: World, area: InvestmentArea, office: OfficeRead): Totals {
   const policyCost = (key: PolicyKey) =>
     BigInt(costs.annual) - BigInt(office.policyCosts[key][1]!.annual);
   switch (area) {
-    case 'firstTeam': {
-      const ground = TRAINING_GROUND[w.trainingGround];
-      const build = buildEffects(w);
+    case 'firstTeam':
       return {
-        meta: `${POLICY_INFO.support.levels[policy.support - 1].name} · 훈련장 ${w.trainingGround}/${partTop('training')}단계`,
-        rows: [
+        meta: sourceMessage('copy.InvestmentTotals.7c59ec3469', {
+          p0: POLICY_INFO.support.levels[policy.support - 1].name,
+          p1: w.trainingGround,
+          p2: partTop('training'),
+        }),
+        costs: [
           [
-            '연간 운영비',
+            sourceMessage('copy.InvestmentTotals.d9eefc91be'),
             money(BigInt(costs.expenses) + BigInt(facilityPartUpkeep(w, 'training'))),
           ],
-          ['협상 호감', `${signed(effects.goodwill + ground.goodwill)}%`],
-          ['선수 성장', times(effects.developmentMultiplier * ground.growth)],
-          ['추가 피로 회복', signed(effects.recoveryBonus + ground.recoveryBonus)],
-          [
-            '21세 이하 성장',
-            times(effects.developmentMultiplier * ground.growth * build.youthGrowth),
-          ],
-          ['분위기 기준점', rounded(office.moraleBaseline)],
         ],
-        note: '지원비와 훈련장 유지비를 합산합니다. 성장에는 지원·훈련장·유망주 상시 효과를 곱하고, 분위기 기준점에는 문화·감독·시너지를 함께 반영합니다.',
+        facts: [],
       };
-    }
     case 'youth': {
-      const staff = office.staff;
-      const facility = ACADEMY_FACILITY[w.academyFacility];
       const count = (w.academy?.players ?? []).filter(
         (player) => player.status === 'active',
       ).length;
       return {
-        meta: `${POLICY_INFO.academy.levels[policy.academy - 1].name} · 유소년 시설 ${w.academyFacility}/${partTop('academy')}단계`,
-        rows: [
-          ['연간 운영비', money(BigInt(costs.academy) + BigInt(facilityPartUpkeep(w, 'academy')))],
-          ['유소년 성장', times(office.academy.growth)],
+        meta: sourceMessage('copy.InvestmentTotals.d51692b2ef', {
+          p0: POLICY_INFO.academy.levels[policy.academy - 1].name,
+          p1: w.academyFacility,
+          p2: partTop('academy'),
+        }),
+        costs: [
           [
-            '다음 입단 인원',
-            `${Math.min(office.academy.intake, Math.max(0, office.academy.limit - count))}명`,
+            sourceMessage('copy.InvestmentTotals.d9eefc91be'),
+            money(BigInt(costs.academy) + BigInt(facilityPartUpkeep(w, 'academy'))),
           ],
-          ['잠재력 보너스', signed(office.academy.potential + staff.academyQuality)],
-          ['입단 기량 보정', signed(facility.potential + Math.round(staff.academyQuality / 4))],
-          ['현재 유소년', `${count}/${office.academy.limit}명`],
         ],
-        note: '유소년 투자와 시설 유지비를 합산합니다. 성장에는 코치·시설·투자 효과가 반영되며, 입단 능력은 선수별 기본값과 상한에 따라 달라집니다.',
+        facts: [
+          [
+            sourceMessage('copy.InvestmentTotals.00de51daf9'),
+            sourceMessage('copy.CareerRecordBook.e414915261', {
+              p0: Math.min(office.academy.intake, Math.max(0, office.academy.limit - count)),
+            }),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.dd3378ebe5'),
+            sourceMessage('copy.InvestmentTotals.94bfe0de7d', {
+              p0: count,
+              p1: office.academy.limit,
+            }),
+          ],
+        ],
       };
     }
-    case 'coaches': {
-      const staff = office.staff;
-      const factors = Object.values(staff.development);
-      const count = STAFF_ROLES.filter((role) => staffMember(w, role)).length;
-      const choice = DIRECTION_INFO.coaches.options.find(
-        (option) => option.id === directionOf(w, 'coaches'),
-      )!;
+    case 'coaches':
       return {
-        meta: '현재 재직 스태프 기준',
-        rows: [
-          ['연간 스태프 급여', money(costs.staffWages)],
-          ['재직 인원', `${count}/${STAFF_ROLES.length}명`],
-          ['부문별 성장', `${times(Math.min(...factors))}–${times(Math.max(...factors))}`],
-          ['1군 유망주 성장', times(staff.youthDevelopment)],
-          ['유소년 성장', times(staff.academyGrowth)],
-          ['추가 피로 회복', signed(staff.recoveryBonus)],
+        meta: sourceMessage('copy.InvestmentTotals.bc16198267'),
+        costs: [[sourceMessage('copy.InvestmentTotals.5bbadf590b'), money(costs.staffWages)]],
+        facts: [
+          [
+            sourceMessage('copy.InvestmentTotals.f0b225e54d'),
+            sourceMessage('copy.InvestmentTotals.94bfe0de7d', {
+              p0: STAFF_ROLES.filter((role) => staffMember(w, role)).length,
+              p1: STAFF_ROLES.length,
+            }),
+          ],
         ],
-        note: `재직 중인 스태프의 실제 합산 효과입니다. 부문별 성장 배율은 담당 능력마다 다릅니다. 채용 지침(${choice.name})은 결재 설정의 스태프 인사에서 관리합니다.`,
       };
-    }
-    case 'stadium': {
-      const gate = office.gate;
+    case 'stadium':
       return {
         meta: STADIUM_STEPS[w.stadium].name,
-        rows: [
-          ['연간 유지비', money(facilityPartUpkeep(w, 'stadium'))],
-          ['현재 수용 인원', `${number(stadiumCapacity(w))}석`],
-          ['예상 홈 관중', `${number(gate.attendanceLow)}–${number(gate.attendanceHigh)}명`],
+        costs: [
           [
-            '예상 홈 수입',
-            <>
-              {money(gate.incomeLow)}–{money(gate.incomeHigh)}
-            </>,
+            sourceMessage('copy.InvestmentTotals.7993f638ba'),
+            money(facilityPartUpkeep(w, 'stadium')),
           ],
         ],
-        note: '관중과 수입은 현재 가격·시설·팬 기반에서 동급 상대와 치르는 리그 홈 경기 기준입니다. 증축 중 닫힌 좌석도 반영합니다.',
+        facts: [
+          [
+            sourceMessage('copy.InvestmentTotals.1647c3415a'),
+            sourceMessage('copy.ClubOperations.e718a2e7a8', { p0: number(stadiumCapacity(w)) }),
+          ],
+        ],
       };
-    }
-    case 'scouting': {
-      const staff = office.staff;
-      const build = buildEffects(w);
-      const synergy = office.synergy;
+    case 'scouting':
       return {
-        meta: `${POLICY_INFO.globalScouting.levels[policy.globalScouting - 1].name} · 현재 스카우팅 환경`,
-        rows: [
-          ['연간 투자', money(policyCost('globalScouting'))],
-          [
-            '영입 후보 인원',
-            `${Math.max(4, staff.scoutCandidates + build.marketCandidates + effects.scoutCandidates)}명`,
-          ],
-          ['해외 후보', `${effects.scoutCandidates}명`],
-          [
-            '잠재력 보정',
-            signed(
-              staff.scoutPotential +
-                build.marketPotential +
-                synergy.marketPotential +
-                effects.scoutPotential,
-            ),
-          ],
-          ['능력 보정', signed(build.marketAbility)],
-          [
-            '협상 비용 배율',
-            times(staff.feeMultiplier * synergy.feeMultiplier * askedFeeFactor(w)),
-          ],
+        meta: sourceMessage('copy.InvestmentTotals.20c70a9ad2', {
+          p0: POLICY_INFO.globalScouting.levels[policy.globalScouting - 1].name,
+        }),
+        costs: [
+          [sourceMessage('copy.InvestmentTotals.1ed6e49616'), money(policyCost('globalScouting'))],
         ],
-        note: '스카우트·망·방식·구단 시너지의 상시 효과를 합산합니다. 후보의 나이·유형은 결재 설정의 선수 영입 지침에서 정하며, 기조 자체는 이적료를 보정하지 않습니다.',
+        facts: [],
       };
-    }
-    case 'community': {
-      const bases = office.bases;
-      const build = buildEffects(w);
-      const synergy = office.synergy;
-      const tour = office.tour;
+    case 'community':
       return {
-        meta: '지역 투자 · 해외 마케팅 · 현재 팬 기반',
-        rows: [
-          ['연간 투자', money(policyCost('localInvest') + policyCost('globalMarketing'))],
-          ['지역 기반', rounded(w.localBase ?? 0)],
-          ['글로벌 인지도', rounded(w.globalReach ?? 0)],
-          ['홍보 수요 배율', times(office.gate.marketing)],
-          ['라운드 홍보 팬 증가', signed(office.marketingFans)],
-          ['지역 후원 가치', times(bases.localSponsor * build.sponsor * synergy.sponsor)],
-          ['글로벌 후원 가치', times(bases.globalSponsor * build.sponsor * synergy.sponsor)],
-          ['지역 서포터', `${number(office.localSupporters)}명`],
-          ['시즌 시작 투어 수입', money(tour.income)],
-          ['투어 효과', `인지도 +${tour.reach} · 피로 +${tour.fatigue}`],
+        meta: sourceMessage('copy.InvestmentTotals.191ff9a57f'),
+        costs: [
+          [
+            sourceMessage('copy.InvestmentTotals.1ed6e49616'),
+            money(policyCost('localInvest') + policyCost('globalMarketing')),
+          ],
         ],
-        note: `해외 마케팅의 팬 증가와 현재 홍보·기반 효과입니다. 기반 목표는 지역 ${effects.baseTargets.local}, 글로벌 ${effects.baseTargets.global}입니다.`,
+        facts: [
+          [sourceMessage('copy.InvestmentTotals.8efd128329'), money(office.tour.income)],
+          [
+            sourceMessage('copy.InvestmentTotals.48920f0011'),
+            sourceMessage('copy.InvestmentTotals.edd5e904bb', {
+              p0: office.tour.reach,
+              p1: office.tour.fatigue,
+            }),
+          ],
+        ],
       };
-    }
-    case 'finance': {
-      const build = buildEffects(w),
-        synergy = office.synergy;
+    case 'finance':
       return {
-        meta: '현재 자금 · 계약 · 수익 모델',
-        rows: [
-          ['구단 자금', money(w.cash)],
-          ['사업자금', w.owner ? money(w.owner.fortune) : '구단주 없음'],
-          ['연간 고정 지출', money(costs.annual)],
-          ['후원 제안 배율', times(build.sponsor * synergy.sponsor)],
-          ['신규 연봉 배율', times(build.wage)],
-          ['배당 비율', `${w.owner?.dividendShare ?? 0}%`],
+        meta: sourceMessage('copy.InvestmentTotals.3d4e4a105f'),
+        costs: [[sourceMessage('copy.BusinessWorkbench.d69ab3db74'), money(costs.annual)]],
+        facts: [
+          [sourceMessage('copy.HudCash.5008c66043'), money(w.cash)],
+          [
+            sourceMessage('copy.InvestmentTotals.aa2afbf21f'),
+            w.owner ? money(w.owner.fortune) : sourceMessage('copy.InvestmentTotals.bf8fa4f1dd'),
+          ],
+          [sourceMessage('copy.influences.9ecab69458'), `${w.owner?.dividendShare ?? 0}%`],
         ],
-        note: '현재 계약의 고정 지출과 수익 모델의 상시 효과입니다. 사업 투자·자금 투입·배당은 아래에서 관리하고, 담당자의 연봉·지출 한도는 결재 설정의 각 업무 아래에서 정합니다.',
       };
-    }
     case 'identity':
       return {
-        meta: '현재 구단 · 디자인 의뢰 · 경기복',
-        rows: [
-          ['구단', club.name],
-          ['구단 자금', money(w.cash)],
-          ['디자인 의뢰', w.designCommission ? '시안 선택 대기' : '없음'],
-          ['경기 유니폼', w.kitChoice ? KIT_ROLE_LABELS[w.kitChoice.role] : '자동 선택'],
+        meta: sourceMessage('copy.InvestmentTotals.7c877f7005'),
+        costs: [],
+        facts: [
+          [sourceMessage('copy.InvestmentTotals.47dfdfd818'), club.name],
+          [sourceMessage('copy.HudCash.5008c66043'), money(w.cash)],
+          [
+            sourceMessage('copy.InvestmentTotals.eadb246cf4'),
+            w.designCommission
+              ? sourceMessage('copy.InvestmentTotals.e50f2c9014')
+              : sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.6f94240307'),
+            w.kitChoice
+              ? KIT_ROLE_LABELS[w.kitChoice.role]
+              : sourceMessage('copy.DecisionRuleFacts.67e7ba0fc0'),
+          ],
         ],
-        note: '구단 디자인 의뢰·재의뢰·채택과 다음 경기 유니폼을 관리합니다. 의뢰 비용과 민심 변화는 선택 화면에 표시합니다.',
+        note: sourceMessage('copy.InvestmentTotals.5a68684178'),
       };
   }
 }
 
+/** One of the area's effect rows: its own share, or one factor read alone. */
+function effectRow(w: World, office: OfficeRead, row: AreaRow): Row {
+  const name = displayMessage(EFFECT_NAMES[row.effect.id]);
+  if (row.kind === 'factor')
+    return [
+      displayMessage('office.area.factor', {
+        effect: name,
+        source: sourceText(row.factor.source, w, office.effects).name,
+      }),
+      factorValueText(row.effect, row.factor),
+    ];
+  return [
+    name,
+    row.whole ? effectValueText(row.effect, row.value) : contributionText(row.effect, row.value),
+  ];
+}
+const wideRow = (row: AreaRow) =>
+  row.kind === 'factor' || row.effect.unit === 'range' || row.effect.current !== undefined;
+
+/**
+ * What an area's controls do together (→WEB-116): its spend, each value its own controls move,
+ * summed from them alone, and its facts. The office lists every value whole.
+ */
 export function InvestmentTotals({ w, area }: { w: World; area: InvestmentArea }) {
+  useTextLocale();
   const title = INVESTMENT_AREAS.find((item) => item.id === area)!.title;
   const office = useOfficeRead(w);
   if (!office) return null;
-  const { rows, meta, note } = totalsOf(w, area, office);
+  const { meta, costs, facts, note } = cardOf(w, area, office);
+  const effects = areaRows(office.effects.effects, area);
+  const rows: [Row, boolean][] = [
+    ...costs.map((row): [Row, boolean] => [row, false]),
+    ...effects.map((row): [Row, boolean] => [effectRow(w, office, row), wideRow(row)]),
+    ...facts.map((row): [Row, boolean] => [row, false]),
+  ];
   return (
     <Card
       surface="ticket"
-      title={`${title} 종합 효과`}
-      meta={`현재 적용 · ${meta}`}
+      title={displayMessage('copy.InvestmentTotals.da53a41e1e', { p0: title })}
+      meta={sourceMessage('copy.InvestmentTotals.4cc8a528aa', { p0: meta })}
       className={s.panel}
-      aria-label={`${title} 합산 현황`}
+      aria-label={displayMessage('copy.InvestmentTotals.35a1b36c14', { p0: title })}
     >
       <dl className={`${s.totalFacts} ${rows.length === 6 ? s.totalFactsSix : ''}`}>
-        {rows.map(([label, value]) => (
-          <div
-            key={label}
-            data-wide={['예상 홈 관중', '예상 홈 수입', '부문별 성장'].includes(label) || undefined}
-          >
-            <dt>{label}</dt>
-            <dd>{value}</dd>
+        {rows.map(([[label, value], wide], index) => (
+          <div key={index} data-wide={wide || undefined}>
+            <dt>{localizeValue(label)}</dt>
+            <dd>{localizeValue(value)}</dd>
           </div>
         ))}
       </dl>
-      <p className={s.note}>{note}</p>
+      {note ? (
+        <p className={s.note}>{localizeValue(note)}</p>
+      ) : (
+        <div className={s.totalsNote}>
+          <p className={s.note}>{displayMessage('office.area.note')}</p>
+          <button type="button" data-ui="secondary" onClick={openOfficeLobby}>
+            {displayMessage('office.area.all')}
+          </button>
+        </div>
+      )}
     </Card>
   );
 }

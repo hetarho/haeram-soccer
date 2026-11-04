@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * What a finished lab run reports (→LAB-5): the outcome, MATCH-23's rows over the run's matches and
  * each side's team stats a match, every value with its 95% interval.
@@ -87,57 +88,92 @@ const SIDE_ROWS: {
 }[] = [
   {
     id: 'goals',
-    label: '득점',
+    label: sourceMessage('copy.summary.eb4e291be3'),
     unit: 'count',
     read: (s, d) => s.sample.record.metrics[d]![M.goals]!,
   },
   {
     id: 'shots',
-    label: '슈팅',
+    label: sourceMessage('copy.summary.da1cc31972'),
     unit: 'count',
     read: (s, d) => s.sample.record.metrics[d]![M.shots]!,
   },
   {
     id: 'onTarget',
-    label: '유효 슈팅',
+    label: sourceMessage('copy.summary.2d9b22c49c'),
     unit: 'count',
     read: (s, d) => s.sample.record.metrics[d]![M.onTarget]!,
   },
   { id: 'xg', label: 'xG', unit: 'count', read: (s, d) => (s.sample.record.xg?.[d] ?? 0) / 100 },
   {
     id: 'possession',
-    label: '점유율',
+    label: sourceMessage('copy.stories.6169842c01'),
     unit: 'percent',
     // The record holds possession as minutes of 90.
     read: (s, d) => ratio(s.sample.record.metrics[d]![M.possession]!, 90),
   },
   {
     id: 'passes',
-    label: '패스',
+    label: sourceMessage('copy.summary.17242c9658'),
     unit: 'count',
     read: (s, d) => s.sample.record.metrics[d]![M.passes]!,
   },
   {
     id: 'passCompletion',
-    label: '패스 성공률',
+    label: sourceMessage('copy.summary.5101559c4e'),
     unit: 'percent',
     read: (s, d) =>
       ratio(s.sample.record.metrics[d]![M.completed]!, s.sample.record.metrics[d]![M.passes]!),
   },
-  { id: 'crosses', label: '크로스', unit: 'count', read: (s, d) => detail(s, d, TD.crosses) },
-  { id: 'takeOns', label: '돌파 시도', unit: 'count', read: (s, d) => detail(s, d, TD.takeOns) },
+  {
+    id: 'crosses',
+    label: sourceMessage('copy.summary.0796453f8e'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.crosses),
+  },
+  {
+    id: 'takeOns',
+    label: sourceMessage('copy.summary.ca2e0ea303'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.takeOns),
+  },
   {
     id: 'tacklesInterceptions',
-    label: '태클 + 인터셉트',
+    label: sourceMessage('copy.summary.c761023b2a'),
     unit: 'count',
     read: (s, d) =>
       s.sample.record.metrics[d]![M.tackles]! + s.sample.record.metrics[d]![M.interceptions]!,
   },
-  { id: 'corners', label: '코너킥', unit: 'count', read: (s, d) => detail(s, d, TD.corners) },
-  { id: 'fouls', label: '파울', unit: 'count', read: (s, d) => detail(s, d, TD.fouls) },
-  { id: 'offsides', label: '오프사이드', unit: 'count', read: (s, d) => detail(s, d, TD.offsides) },
-  { id: 'yellow', label: '경고', unit: 'count', read: (s, d) => detail(s, d, TD.yellowCards) },
-  { id: 'red', label: '퇴장', unit: 'count', read: (s, d) => detail(s, d, TD.redCards) },
+  {
+    id: 'corners',
+    label: sourceMessage('copy.summary.64f1e3a4bc'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.corners),
+  },
+  {
+    id: 'fouls',
+    label: sourceMessage('copy.summary.a9d93d66a9'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.fouls),
+  },
+  {
+    id: 'offsides',
+    label: sourceMessage('copy.summary.7858515c16'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.offsides),
+  },
+  {
+    id: 'yellow',
+    label: sourceMessage('copy.LabPage.6c0f751064'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.yellowCards),
+  },
+  {
+    id: 'red',
+    label: sourceMessage('copy.LabPage.68e69c7b9c'),
+    unit: 'count',
+    read: (s, d) => detail(s, d, TD.redCards),
+  },
 ];
 
 function detail(s: LabSample, side: 0 | 1, key: number) {
@@ -229,7 +265,7 @@ export function summarizeRun(samples: readonly LabSample[], context: RunContext 
     summary.match = {
       score: [goals(s, 0), goals(s, 1)],
       goals: s.sample.record.highlights
-        .filter((h) => h.action === '골')
+        .filter((h) => h.action === sourceMessage('copy.summary.68a6cf8ed8'))
         .map((h) => ({ minute: h.minute, side: lab(h.side), name: h.player })),
       cards: (s.sample.record.incidents ?? [])
         .filter((i) => i.kind === 'yellow' || i.kind === 'secondYellow' || i.kind === 'red')

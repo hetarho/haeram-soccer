@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type {
   GameSettings,
   ResponsibilityKey,
@@ -65,13 +66,13 @@ export async function applyOfficeChange(
   proposal: OfficeProposal,
 ) {
   if (modeSwitchBlocked(gameStore.getSnapshot()))
-    throw new Error('진행을 정지하고 날짜 처리가 끝난 뒤 변경해 주세요.');
+    throw new Error(sourceMessage('copy.officeChanges.c9c4ad008e'));
   controller.pause();
   await client.whenIdle();
   const state = gameStore.getSnapshot(),
     w = state.view?.world;
   if (modeSwitchBlocked(state) || !w || w.id !== proposal.id)
-    throw new Error('현재 상태에서는 변경할 수 없어요. 상태를 확인한 뒤 다시 시도해 주세요.');
+    throw new Error(sourceMessage('copy.officeChanges.f98fa999d5'));
   const current = settingsOf(w);
   for (const group of ['responsibilities', 'observations'] as const)
     for (const key of Object.keys(proposal.change[group] || {}))
@@ -79,10 +80,10 @@ export async function applyOfficeChange(
         (current[group] as Record<string, unknown>)[key] !==
         (proposal.previous[group] as Record<string, unknown>)[key]
       )
-        throw new Error('이미 설정이 변경되었어요. 닫고 현재 선택을 다시 확인해 주세요.');
+        throw new Error(sourceMessage('copy.officeChanges.957733315b'));
   if (JSON.stringify(officePreview(w, proposal.change)) !== JSON.stringify(proposal.pending))
-    throw new Error('대기 업무가 변경되었어요. 닫고 이관 내용을 다시 확인해 주세요.');
+    throw new Error(sourceMessage('copy.officeChanges.98f0960a16'));
   const reply = await applyResponsibilitySettings(client, officeSettings(w, proposal.change));
   if (!reply?.ok || gameStore.getSnapshot().view?.world.id !== proposal.id)
-    throw new Error(reply?.error || '설정을 적용하지 못했어요. 다시 시도해 주세요.');
+    throw new Error(reply?.error || sourceMessage('copy.officeChanges.367bc13069'));
 }

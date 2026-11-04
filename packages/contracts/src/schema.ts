@@ -1,3 +1,4 @@
+import { message as sourceMessage } from './messages';
 import { careerReadsSchema } from './career-reads';
 import { newsJournalSchema } from './news';
 import { z } from 'zod';
@@ -231,7 +232,7 @@ const player = z
   })
   .refine(
     (p) => p.positions[p.position] === 3 && new Set(p.traits).size === p.traits.length,
-    '선수 포지션 또는 특성 손상',
+    sourceMessage('copy.schema.1abfb8b2e0'),
   );
 const manager = z.object({
   id,
@@ -1314,7 +1315,7 @@ export interface LoadCatalog {
  */
 function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefined) {
   const sponsor = w.sponsor!;
-  if (!catalog) throw new Error('이전 규칙의 후원 계약을 옮길 카탈로그가 없습니다.');
+  if (!catalog) throw new Error(sourceMessage('copy.schema.a283d01329'));
   // Those offers ran four seasons when exclusive and two otherwise.
   const from = Math.min(w.year, sponsor.until - (sponsor.kind === 'exclusive' ? 4 : 2));
   const contract = sponsorContract.safeParse({
@@ -1328,7 +1329,7 @@ function legacySponsor(w: World, country: string, catalog: LoadCatalog | undefin
     lastPaid: sponsor.lastPaid,
     index: sponsor.index,
   });
-  if (!contract.success) throw new Error('후원 계약 손상');
+  if (!contract.success) throw new Error(sourceMessage('copy.schema.bf5c6b4960'));
   delete w.sponsor;
   w.sponsors = [...(w.sponsors || []), contract.data];
 }
@@ -1365,7 +1366,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       w.careerReads.history > w.history.length ||
       w.careerReads.year > w.year)
   )
-    throw new Error('누적 통계의 범위가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.schema.5c0f9fda74'));
   if (w.newsJournal) {
     const j = w.newsJournal;
     if (
@@ -1383,7 +1384,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           new Set(j.seasons[year].map((item) => item.id)).size !== j.seasons[year].length,
       )
     )
-      throw new Error('뉴스 기록의 범위가 올바르지 않습니다.');
+      throw new Error(sourceMessage('copy.schema.d80020f916'));
   }
   // SAVE-25: the parse strips an older save's owner lineup and tactic requests (`lineup`,
   // `requested`, the manager's `lastRequest`, `requestHistory`, `pending` and `conflicts`).
@@ -1399,7 +1400,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
   const ids = new Set(w.clubs.map((c) => c.id));
   for (const [club, results] of Object.entries(w.recentResults ?? {})) {
     const seen = new Set<string>();
-    if (!ids.has(club)) throw new Error('최근 경기 구단 참조 손상');
+    if (!ids.has(club)) throw new Error(sourceMessage('copy.schema.df9beb0eea'));
     for (const result of results) {
       if (
         !result.score ||
@@ -1410,17 +1411,18 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         (result.home !== club && result.away !== club) ||
         result.year > w.year
       )
-        throw new Error('최근 경기 기록 참조 손상');
+        throw new Error(sourceMessage('copy.schema.d86d874582'));
       seen.add(result.id);
     }
   }
   for (const [key, proposal] of Object.entries(w.playingCoachProposals || {})) {
-    if (key !== proposal.person || !w.people?.[key]) throw new Error('플레잉 코치 인물 참조 손상');
+    if (key !== proposal.person || !w.people?.[key])
+      throw new Error(sourceMessage('copy.schema.08db35d6c8'));
     if (
       BigInt(proposal.totalWage) !== BigInt(proposal.playerWage) + BigInt(proposal.coachWage) ||
       BigInt(proposal.upfront) !== BigInt(proposal.fee) + BigInt(proposal.replacement)
     )
-      throw new Error('플레잉 코치 견적 손상');
+      throw new Error(sourceMessage('copy.schema.66925a0aed'));
   }
   const occupied = new Set<string>();
   const dateNumber = (date: { year: number; day: number }) => date.year * 366 + date.day;
@@ -1441,7 +1443,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           dateNumber(mediation.resolution.at) > w.year * 366 + (w.calendar?.day ?? w.round * 7))) ||
       (mediation.status === 'resolved') !== !!mediation.resolution
     )
-      throw new Error('중재 기록 참조 또는 날짜 손상');
+      throw new Error(sourceMessage('copy.schema.fd784f2dba'));
     mediationIds.add(mediation.id);
     mediationKeys.add(mediation.key);
   }
@@ -1454,18 +1456,18 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       (promise.resolved && dateNumber(promise.resolved) < dateNumber(promise.created)) ||
       (promise.status !== 'pending') !== !!promise.resolved
     )
-      throw new Error('보강 약속 참조 또는 기간 손상');
+      throw new Error(sourceMessage('copy.schema.207d4bbc48'));
     promiseIds.add(promise.id);
   }
   for (const mediation of w.mediations ?? [])
     if (mediation.resolution?.promise && !promiseIds.has(mediation.resolution.promise))
-      throw new Error('중재 약속 참조 손상');
+      throw new Error(sourceMessage('copy.schema.ad5a8a8ef9'));
   for (const arrival of w.recruitmentArrivals ?? [])
     if (
       dateNumber(arrival.at) > w.year * 366 + (w.calendar?.day ?? w.round * 7) ||
       !arrival.positions[arrival.position]
     )
-      throw new Error('실제 영입 기록 손상');
+      throw new Error(sourceMessage('copy.schema.cf04608c1a'));
   const today = { year: w.year, day: w.calendar?.day ?? w.round * 7 };
   const beforeToday = (at: { year: number; day: number }) => dateNumber(at) <= dateNumber(today);
   const isCoach = (role: string) => !['player', 'manager', 'director', 'scout'].includes(role);
@@ -1477,7 +1479,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       w.people[arrival.player].name !== arrival.name ||
       arrivalKeys.has(key)
     )
-      throw new Error('실제 영입 인물 참조 손상');
+      throw new Error(sourceMessage('copy.schema.25021cbb1f'));
     arrivalKeys.add(key);
   }
   const outstanding = new Set<string>();
@@ -1500,10 +1502,10 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       targetKey(promise.target) !== targetKey(mediation.target) ||
       dateNumber(promise.created) < dateNumber(mediation.created)
     )
-      throw new Error('약속 대상 또는 고정 마감일 손상');
+      throw new Error(sourceMessage('copy.schema.45fe80261d'));
     const key = `${promise.manager.id}:${targetKey(promise.target)}`;
     if (promise.status === 'pending') {
-      if (outstanding.has(key)) throw new Error('중복 보강 약속');
+      if (outstanding.has(key)) throw new Error(sourceMessage('copy.schema.239cdfb4e3'));
       outstanding.add(key);
     }
     if (promise.status === 'fulfilled') {
@@ -1527,8 +1529,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
               (promise.target.line === 'FW' && ['LW', 'RW', 'ST'].includes(arrival.position))
             ))
       )
-        throw new Error('약속 이행 영입 참조 손상');
-    } else if (promise.arrival) throw new Error('미이행 약속의 영입 참조 손상');
+        throw new Error(sourceMessage('copy.schema.2f65a2ea89'));
+    } else if (promise.arrival) throw new Error(sourceMessage('copy.schema.e1188c505d'));
   }
   for (const [key, person] of Object.entries(w.people || {})) {
     if (
@@ -1538,7 +1540,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       (person.origin && !ids.has(person.origin.club)) ||
       (person.loan?.club && !ids.has(person.loan.club))
     )
-      throw new Error('인물 참조 손상');
+      throw new Error(sourceMessage('copy.schema.dc0d6c76fb'));
     const roles = new Set<string>();
     for (const job of person.employment) {
       if (
@@ -1551,7 +1553,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         (job.contractUntil && dateNumber(job.contractUntil) < dateNumber(job.from)) ||
         (job.to && job.contractUntil && dateNumber(job.to) > dateNumber(job.contractUntil))
       )
-        throw new Error('인물 재직 기간 손상');
+        throw new Error(sourceMessage('copy.schema.207069af4a'));
       if (!job.to) {
         if (
           job.club !== person.club ||
@@ -1562,7 +1564,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           (job.role === 'manager' && [...roles].some((role) => role !== 'player')) ||
           (job.role !== 'player' && job.role !== 'manager' && roles.has('manager'))
         )
-          throw new Error('인물 중복 재직');
+          throw new Error(sourceMessage('copy.schema.33e1676423'));
         roles.add(job.role);
         if (job.role !== 'player') {
           const post = `${job.club}:${job.role}`;
@@ -1572,8 +1574,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
               ? w.manager.person !== person.id
               : !w.staff?.some((member) => member.person === person.id && member.role === job.role))
           )
-            throw new Error('인물의 현재 담당 자리 참조 손상');
-          if (occupied.has(post)) throw new Error('중복 담당자');
+            throw new Error(sourceMessage('copy.schema.86e4177746'));
+          if (occupied.has(post)) throw new Error(sourceMessage('copy.schema.23bd0edad3'));
           occupied.add(post);
         }
       }
@@ -1589,14 +1591,14 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           left.club === right.club &&
           ((left.role === 'player' && isCoach(right.role)) ||
             (right.role === 'player' && isCoach(left.role)));
-        if (overlap && !playingCoach) throw new Error('인물 재직 중복 기간 손상');
+        if (overlap && !playingCoach) throw new Error(sourceMessage('copy.schema.2e81209877'));
       }
     if (
       (person.retirement?.at &&
         dateNumber(person.retirement.at) < dateNumber(person.retirement.announced)) ||
       (person.retirement && person.retirement.year < person.retirement.announced.year)
     )
-      throw new Error('인물 경력 순서 손상');
+      throw new Error(sourceMessage('copy.schema.7c19060b7e'));
     for (const at of [
       person.intention?.at,
       person.retirement?.announced,
@@ -1604,7 +1606,8 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       person.coaching?.at,
       person.management?.at,
     ])
-      if (at && (!beforeToday(at) || at.year < person.born)) throw new Error('인물 경력 날짜 손상');
+      if (at && (!beforeToday(at) || at.year < person.born))
+        throw new Error(sourceMessage('copy.schema.44a9a910d7'));
     for (const exposure of person.mentors)
       if (
         !ids.has(exposure.club) ||
@@ -1612,13 +1615,14 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         (exposure.to && !beforeToday(exposure.to)) ||
         (exposure.to && dateNumber(exposure.to) < dateNumber(exposure.from))
       )
-        throw new Error('멘토 기간 손상');
+        throw new Error(sourceMessage('copy.schema.9e9554ba46'));
   }
   for (const player of [...w.players, ...(w.academy?.players || [])]) {
     const person = w.people?.[player.id];
     if (player.joined !== undefined && (player.joined < player.born || player.joined > w.year))
-      throw new Error('1군 합류 시즌 손상');
-    if (w.people && player.qualities && !person) throw new Error('선수 인물 레지스트리 참조 손상');
+      throw new Error(sourceMessage('copy.schema.4df6c52871'));
+    if (w.people && player.qualities && !person)
+      throw new Error(sourceMessage('copy.schema.36e8f15607'));
     if (
       person &&
       player.status === 'active' &&
@@ -1626,7 +1630,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         (job) => job.role === 'player' && !job.to && job.club === w.playerClub,
       )
     )
-      throw new Error('현역 선수 재직 참조 손상');
+      throw new Error(sourceMessage('copy.schema.bd60052307'));
     if (
       person &&
       (person.name !== player.name ||
@@ -1634,7 +1638,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         person.professionalism !== player.personality.professionalism ||
         JSON.stringify(person.qualities) !== JSON.stringify(player.qualities))
     )
-      throw new Error('선수 인물 참조 손상');
+      throw new Error(sourceMessage('copy.schema.25325b6c22'));
   }
   for (const member of [w.manager, ...(w.staff || []), ...(w.managerMarket?.free || [])]) {
     if (!member.person) continue;
@@ -1645,7 +1649,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       person.name !== member.name ||
       person.born !== member.born
     )
-      throw new Error('직원 인물 참조 손상');
+      throw new Error(sourceMessage('copy.schema.c12bc1d3e6'));
   }
 
   for (const member of [w.manager, ...(w.staff ?? [])]) {
@@ -1656,16 +1660,16 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         (job) => !job.to && job.club === w.playerClub && job.role === role,
       )
     )
-      throw new Error('직원 재직 참조 손상');
+      throw new Error(sourceMessage('copy.schema.e87876585b'));
   }
   if (ids.size !== w.clubs.length || !ids.has(w.playerClub))
-    throw new Error('저장된 클럽 식별자가 올바르지 않습니다.');
+    throw new Error(sourceMessage('copy.schema.98a25ad507'));
   const seasonDays = (Date.UTC(w.year + 1, 7, 1) - Date.UTC(w.year, 7, 1)) / 86400000;
   if (
     w.calendar &&
     (w.calendar.day >= seasonDays || w.round !== Math.min(46, Math.floor(w.calendar.day / 7)))
   )
-    throw new Error('시즌 날짜와 진행 회차가 일치하지 않습니다.');
+    throw new Error(sourceMessage('copy.schema.4e233965db'));
   const snapshotKeys = new Set<string>();
   for (const s of w.rankHistory || []) {
     const key = `${s.year}:${s.round}:${s.tier}:${s.group}`;
@@ -1676,27 +1680,27 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       new Set(s.rows.map((row) => row[0])).size !== s.rows.length ||
       s.rows.some((row) => row[0] >= w.clubs.length)
     )
-      throw new Error('순위 추이 기록 참조 손상');
+      throw new Error(sourceMessage('copy.schema.5c3b1c6347'));
     snapshotKeys.add(key);
   }
   const playerIds = new Set(w.players.map((p) => p.id));
-  if (playerIds.size !== w.players.length) throw new Error('중복 선수 식별자');
+  if (playerIds.size !== w.players.length) throw new Error(sourceMessage('copy.schema.7d0218ff22'));
   for (const f of [...w.fixtures, ...w.ownMatches, ...w.europe.flatMap((t) => t.fixtures)])
     if (!ids.has(f.home) || !ids.has(f.away) || f.home === f.away)
-      throw new Error('경기 참가 클럽을 찾을 수 없습니다.');
+      throw new Error(sourceMessage('copy.schema.ec2c12eba2'));
   for (const m of w.ownMatches)
     if (
       m.appearance &&
       (m.appearance.sides[0].club !== m.home || m.appearance.sides[1].club !== m.away)
     )
-      throw new Error('경기 복장 기록 참조 손상');
+      throw new Error(sourceMessage('copy.schema.d35500e9ac'));
   // HIST-18: the facts are the own club's, and a record names a tenure they hold, never a guess.
   const tenures = new Set(w.managerHistory?.tenures.map((t) => t.id));
   if (w.managerHistory && w.managerHistory.club !== w.playerClub)
-    throw new Error('감독 이력 구단 참조 손상');
+    throw new Error(sourceMessage('copy.schema.8edd8e9130'));
   for (const m of w.ownMatches)
     if (m.managerTenure !== undefined && !tenures.has(m.managerTenure))
-      throw new Error('감독 이력 경기 참조 손상');
+      throw new Error(sourceMessage('copy.schema.8844e34077'));
   // KIT-7: a kit choice names a known unplayed own fixture of this season, not necessarily the earliest.
   if (w.kitChoice) {
     const fixtureId = w.kitChoice.fixtureId;
@@ -1711,7 +1715,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         f.year === w.year &&
         (f.home === w.playerClub || f.away === w.playerClub),
     );
-    if (!known) throw new Error('경기 복장 선택 참조 손상');
+    if (!known) throw new Error(sourceMessage('copy.schema.d8b9b356f3'));
   }
   const owner = w.clubs.find((c) => c.id === w.playerClub)!;
   if (w.scorerSeason) {
@@ -1724,7 +1728,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       new Set(season.players.map((p) => p.id)).size !== season.players.length ||
       season.players.some((p) => !ids.has(p.club))
     )
-      throw new Error('득점 순위 선수 참조 손상');
+      throw new Error(sourceMessage('copy.schema.6d344fa4eb'));
     const goals = new Map<string, number>();
     const appearances = new Map<string, number>();
     const matches = new Map<string, number>();
@@ -1747,7 +1751,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
     }
     for (const scorer of season.players) {
       if (!scorerClubsValid(scorer, (club) => ids.has(club)))
-        throw new Error('득점 순위 구단별 기여 손상');
+        throw new Error(sourceMessage('copy.schema.5c402186ba'));
       for (const part of scorer.clubs ?? [scorer]) {
         goals.set(part.club, (goals.get(part.club) || 0) - part.goals);
         appearances.set(part.club, (appearances.get(part.club) || 0) + part.appearances);
@@ -1761,7 +1765,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       return count < 11 * n || count > 16 * n;
     });
     if ([...goals.values()].some((value) => value !== 0) || outOfRange)
-      throw new Error('득점 순위와 실제 경기 지표가 일치하지 않습니다.');
+      throw new Error(sourceMessage('copy.schema.cde83eb8c6'));
     let previousRound = season.trackedSinceRound - 2;
     const previous = new Map<number, number[]>();
     for (const snapshot of season.history) {
@@ -1771,7 +1775,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         snapshot.day < snapshot.round * 7 ||
         new Set(snapshot.rows.map((row) => row[0])).size !== snapshot.rows.length
       )
-        throw new Error('득점 순위 추이 기록 참조 손상');
+        throw new Error(sourceMessage('copy.schema.7af8fbad32'));
       previousRound = snapshot.round;
       for (let i = 0; i < snapshot.rows.length; i++) {
         const [index, count, played] = snapshot.rows[i];
@@ -1785,7 +1789,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           (last && (count < last[0] || played < last[1])) ||
           (above && (above[1] < count || (above[1] === count && above[2] > played)))
         )
-          throw new Error('득점 순위 추이 선수 지표 손상');
+          throw new Error(sourceMessage('copy.schema.81c5eabe5a'));
         previous.set(index, [count, played]);
       }
     }
@@ -1799,34 +1803,36 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           count !== season.players[index].goals || played !== season.players[index].appearances,
       )
     )
-      throw new Error('최근 득점 순위 추이 지표 손상');
+      throw new Error(sourceMessage('copy.schema.a4623a2263'));
   }
   if (!['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'].includes(owner.country))
-    throw new Error('지원하지 않는 국가');
+    throw new Error(sourceMessage('copy.schema.1b2eb15238'));
   if (w.sponsor) legacySponsor(w, owner.country, catalog);
   if (w.sponsors && new Set(w.sponsors.map((s) => s.slot)).size !== w.sponsors.length)
-    throw new Error('후원 계약 손상');
+    throw new Error(sourceMessage('copy.schema.bf5c6b4960'));
   if (w.players.filter((p) => p.status === 'active').length < 14)
-    throw new Error('최소 선수단 부족');
-  if (w.players.some((p) => p.born > w.year)) throw new Error('선수 생년 손상');
+    throw new Error(sourceMessage('copy.schema.465be508ee'));
+  if (w.players.some((p) => p.born > w.year))
+    throw new Error(sourceMessage('copy.schema.5d4989e7a5'));
   if (w.players.filter((p) => p.status === 'active').length > 40)
-    throw new Error('선수단 정원 초과');
+    throw new Error(sourceMessage('copy.schema.ce46b6eff4'));
   for (const [clubId, row] of Object.entries(w.tables)) {
     if (
       !ids.has(clubId) ||
       Object.values(row).some((n) => !Number.isInteger(n) || n < 0) ||
       row.played !== row.won + row.drawn + row.lost
     )
-      throw new Error('리그 표 손상');
+      throw new Error(sourceMessage('copy.schema.2c83d17d53'));
   }
   const matchIds = new Set(w.ownMatches.map((m) => m.id));
-  if (matchIds.size !== w.ownMatches.length) throw new Error('중복 경기 기록');
+  if (matchIds.size !== w.ownMatches.length)
+    throw new Error(sourceMessage('copy.schema.b838ba8da0'));
   for (const m of w.ownMatches)
     if (
       (m.home !== w.playerClub && m.away !== w.playerClub) ||
       m.players.some((p) => !playerIds.has(p.id))
     )
-      throw new Error('소유 클럽 기록 참조 손상');
+      throw new Error(sourceMessage('copy.schema.417e0ab4fb'));
   for (const h of w.history)
     for (const row of h.standings)
       if (
@@ -1834,7 +1840,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
         row.some((n) => !Number.isInteger(n) || n < 0) ||
         row[0] >= w.clubs.length
       )
-        throw new Error('시즌 순위 참조 손상');
+        throw new Error(sourceMessage('copy.schema.4a1531878b'));
   for (const h of w.history) {
     if (
       h.scorers?.some(
@@ -1843,7 +1849,7 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
           !scorerClubsValid(scorer, (club) => club < w.clubs.length),
       )
     )
-      throw new Error('시즌 득점 기록 참조 손상');
+      throw new Error(sourceMessage('copy.schema.ce4c384ba2'));
     for (const round of (h.brackets || []).flatMap((b) => b.rounds))
       if (
         round.byes?.some((club) => club >= w.clubs.length) ||
@@ -1857,36 +1863,37 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
             (round.legs === 1 && (leg2Home !== 0 || leg2Away !== 0 || outcome >= 4)),
         )
       )
-        throw new Error('대진 기록 참조 손상');
+        throw new Error(sourceMessage('copy.schema.e474a99b6d'));
   }
   for (const t of w.europe)
     if (t.clubs.some((c) => !ids.has(c)) || (t.winner && !ids.has(t.winner)))
-      throw new Error('유럽대회 참조 손상');
+      throw new Error(sourceMessage('copy.schema.f6479767dd'));
   if (w.players.some((p) => BigInt(p.wage) < 0) || BigInt(w.manager.wage) < 0)
-    throw new Error('급여 범위 손상');
+    throw new Error(sourceMessage('copy.schema.6514e0af55'));
   if (!w.players.some((p) => p.status === 'active' && p.position === 'GK'))
-    throw new Error('골키퍼 부족');
+    throw new Error(sourceMessage('copy.schema.0725a1e367'));
   if (w.priceIndex <= 0 || BigInt(w.income) < 0 || BigInt(w.expense) < 0)
-    throw new Error('재무 지표 손상');
+    throw new Error(sourceMessage('copy.schema.96478217c2'));
   if (
     w.campaigns.some(
       (c) =>
         BigInt(c.cost) < 0 || !Number.isInteger(c.remaining) || c.remaining < 1 || c.remaining > 4,
     )
   )
-    throw new Error('캠페인 손상');
+    throw new Error(sourceMessage('copy.schema.cb30d05042'));
   for (const h of w.history) {
     for (const ch of h.champions)
-      if (!ids.has(ch.club) || !ids.has(ch.cup)) throw new Error('우승 기록 참조 손상');
+      if (!ids.has(ch.club) || !ids.has(ch.cup))
+        throw new Error(sourceMessage('copy.schema.5e781162c6'));
     for (const e of h.europe) {
-      if (!ids.has(e.winner)) throw new Error('유럽 우승 참조 손상');
+      if (!ids.has(e.winner)) throw new Error(sourceMessage('copy.schema.85af867959'));
       for (const row of [...(e.standings || []), ...(e.secondStandings || [])])
         if (
           row.length !== 6 ||
           row.some((n) => !Number.isInteger(n) || n < 0) ||
           row[0] >= w.clubs.length
         )
-          throw new Error('유럽 순위 참조 손상');
+          throw new Error(sourceMessage('copy.schema.62592cb1b7'));
     }
   }
   for (const m of w.ownMatches) {
@@ -1897,22 +1904,22 @@ export function validateWorld(input: unknown, catalog?: LoadCatalog): World {
       sideLines(m, side).reduce((n, p) => n + p.metrics[0], 0) !== m.metrics[side][0] ||
       m.metrics.some((row) => row[3] > row[2] || row[5] > row[4])
     )
-      throw new Error('경기 지표 손상');
-    if (!detailConsistent(m, side)) throw new Error('경기 고급 지표 손상');
+      throw new Error(sourceMessage('copy.schema.d37624990c'));
+    if (!detailConsistent(m, side)) throw new Error(sourceMessage('copy.schema.ae6fab4b7b'));
   }
   for (const t of w.europe) {
     if (new Set(t.clubs).size !== t.clubs.length || t.clubs.length !== t.field)
-      throw new Error('유럽 참가팀 손상');
+      throw new Error(sourceMessage('copy.schema.4b20b4e2e5'));
     for (const [id, row] of Object.entries(t.standings))
       if (
         !t.clubs.includes(id) ||
         Object.values(row).some((n) => !Number.isInteger(n) || n < 0) ||
         row.played !== row.won + row.drawn + row.lost
       )
-        throw new Error('유럽 리그 표 손상');
+        throw new Error(sourceMessage('copy.schema.b3c1d69d52'));
     for (const row of [...(t.firstStandings || []), ...(t.secondStandings || [])])
       if (row.some((n) => !Number.isInteger(n) || n < 0) || row[0] >= w.clubs.length)
-        throw new Error('유럽 단계 참조 손상');
+        throw new Error(sourceMessage('copy.schema.ff6491f817'));
   }
   return w;
 }

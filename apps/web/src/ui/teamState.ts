@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { squadRegistration } from './squadRegistration';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
 import type {
@@ -36,9 +37,9 @@ export interface TeamStateItem {
 
 /** Weeks of fixed costs as football finance pages say it: weeks when short, months otherwise. */
 export function runwayText(rounds: number) {
-  if (rounds >= 999) return '1년 이상';
-  if (rounds < 13) return `약 ${Math.max(0, rounds)}주`;
-  return `약 ${Math.round(rounds / 4.35)}개월`;
+  if (rounds >= 999) return sourceMessage('copy.teamState.5ab7975f97');
+  if (rounds < 13) return sourceMessage('copy.teamState.7248c0ff80', { p0: Math.max(0, rounds) });
+  return sourceMessage('copy.teamState.e8e5e6104e', { p0: Math.round(rounds / 4.35) });
 }
 
 /** The same prospect/readiness/registration preview as the authoritative academy workflow. */
@@ -51,7 +52,7 @@ export function placeAcademy(w: World) {
       promotionWage: marketWage(w, prospect.player),
       promotionUnavailable:
         prospect.age < summary.promotionAge
-          ? `첫 프로 계약은 ${summary.promotionAge}세부터 맺을 수 있어요.`
+          ? sourceMessage('copy.teamState.56c3e9d63b', { p0: summary.promotionAge })
           : registrationRoom(w, { ...prospect.player, graduate: true, joined: w.year }),
     })),
   };
@@ -63,7 +64,11 @@ export function placeAcademy(w: World) {
  */
 export function callLine(w: World, coach: TrainingCoach) {
   const call = trainingCall(w, coach);
-  return { focus: focusLabel(coach, call.focus), by: '코치 판단', reason: call.reason };
+  return {
+    focus: focusLabel(coach, call.focus),
+    by: sourceMessage('copy.teamState.44992f35c1'),
+    reason: call.reason,
+  };
 }
 /**
  * One first-team player's focus, read only (→CLUB-11, CLUB-13): the squad's, or his own when the
@@ -74,7 +79,9 @@ export function playerCallLine(w: World, player: Player, squad?: TrainingFocus) 
   return {
     focus: focusLabel('assistant', call.focus),
     own: call.own,
-    by: call.own ? '코치 판단' : '팀 훈련',
+    by: call.own
+      ? sourceMessage('copy.teamState.44992f35c1')
+      : sourceMessage('copy.teamState.2b780c0a93'),
     reason: call.reason,
   };
 }
@@ -82,7 +89,7 @@ export function playerCallLine(w: World, player: Player, squad?: TrainingFocus) 
 /** The youth director's own call as the academy place reads it (→WEB-102): who, focus and why. */
 export function youthCall(w: World) {
   const call = callLine(w, 'youth');
-  return `${STAFF_INFO.youth.label} ${staffMember(w, 'youth')?.name ?? '공석'} · ${call.focus} · ${call.reason}`;
+  return `${STAFF_INFO.youth.label} ${staffMember(w, 'youth')?.name ?? sourceMessage('team.vacant')} · ${call.focus} · ${call.reason}`;
 }
 
 /**
@@ -105,16 +112,19 @@ export function fixedCosts(w: World) {
   const costs = operatingCosts(w);
   const kinds = (
     [
-      ['선수 급여', costs.playerWages],
-      ['감독 급여', costs.managerWage],
-      ['스태프 급여', costs.staffWages],
-      ['시설 유지', costs.maintenance],
-      ['지역·글로벌 투자', costs.investment],
-      ['유소년 투자', costs.academy],
-      ['운영 경비', costs.expenses],
-      ['인수 부채 상환', costs.loan],
+      [sourceMessage('copy.FinancialBreakdown.4bdab1482a'), costs.playerWages],
+      [sourceMessage('copy.FinancialBreakdown.db1fa5856a'), costs.managerWage],
+      [sourceMessage('copy.FinancialBreakdown.cc06b9815f'), costs.staffWages],
+      [sourceMessage('copy.FinancialBreakdown.be5fd48c10'), costs.maintenance],
+      [sourceMessage('copy.FinancialBreakdown.614f1dbc56'), costs.investment],
+      [sourceMessage('copy.FinancialBreakdown.d4527c802c'), costs.academy],
+      [sourceMessage('copy.FinancialBreakdown.2d914c9be2'), costs.expenses],
+      [sourceMessage('copy.FinancialBreakdown.ddebd211b6'), costs.loan],
     ] as const
-  ).filter(([label, amount]) => label === '선수 급여' || BigInt(amount) !== 0n);
+  ).filter(
+    ([label, amount]) =>
+      label === sourceMessage('copy.FinancialBreakdown.4bdab1482a') || BigInt(amount) !== 0n,
+  );
   return { nextRound: costs.nextRound, annual: costs.annual, kinds };
 }
 
@@ -144,17 +154,17 @@ export function cashState(w: World): TeamStateItem {
   const deficit = BigInt(w.cash) < 0n;
   return {
     key: 'cash',
-    label: '자금 여력',
-    value: deficit ? '적자' : runwayText(runway),
+    label: sourceMessage('copy.teamState.4e19f743f8'),
+    value: deficit ? sourceMessage('copy.teamState.566c315292') : runwayText(runway),
     status: deficit
-      ? '적자'
+      ? sourceMessage('copy.teamState.566c315292')
       : runway >= 30
-        ? '안정'
+        ? sourceMessage('copy.teamState.ab2a3b2d53')
         : runway >= 12
-          ? '보통'
+          ? sourceMessage('copy.teamState.666599febd')
           : runway >= 5
-            ? '주의'
-            : '위험',
+            ? sourceMessage('copy.teamState.acc90fbf66')
+            : sourceMessage('copy.teamState.baaff05e43'),
     tone: deficit || runway < 5 ? 'bad' : runway < 12 ? 'warn' : runway < 30 ? 'ok' : 'good',
     attention: deficit || runway < 12,
   };
@@ -181,7 +191,9 @@ export function teamStates(w: World): TeamStateItem[] {
   const trust = Math.round(w.manager.trust),
     interim = w.manager.interim;
   const { total: squad, available: fit, injured, suspended, out } = squadAvailability(w);
-  const missing = out ? `부상 ${injured} · 정지 ${suspended}` : '';
+  const missing = out
+    ? sourceMessage('copy.teamState.69bfe75bb3', { p0: injured, p1: suspended })
+    : '';
   const registered = squadRegistration(w);
   const club = clubOf(w),
     strength = rating(w, club),
@@ -194,23 +206,30 @@ export function teamStates(w: World): TeamStateItem[] {
   return [
     {
       key: 'strength',
-      label: '팀 전력',
+      label: sourceMessage('copy.teamState.209c1e2619'),
       value: String(strength),
-      status: `리그 ${place.place}/${place.of}위`,
+      status: sourceMessage('copy.teamState.ceebce4632', { p0: place.place, p1: place.of }),
       // A comparison, not a condition to repair: it never needs the owner.
       tone: place.tone,
     },
     {
       key: 'fatigue',
-      label: '피로',
+      label: sourceMessage('team.column.fatigue'),
       value: String(fatigue),
-      status: fatigue < 20 ? '상쾌' : fatigue < 40 ? '양호' : fatigue < 60 ? '지침' : '탈진',
+      status:
+        fatigue < 20
+          ? sourceMessage('copy.teamState.f865f026e5')
+          : fatigue < 40
+            ? sourceMessage('copy.teamState.826801054e')
+            : fatigue < 60
+              ? sourceMessage('copy.teamState.5852750b88')
+              : sourceMessage('copy.teamState.40d82ae497'),
       tone: fatigue < 20 ? 'good' : fatigue < 40 ? 'ok' : fatigue < 60 ? 'warn' : 'bad',
       attention: fatigue >= 40,
     },
     {
       key: 'morale',
-      label: '분위기',
+      label: sourceMessage('copy.teamState.b0d7b29bb8'),
       value: String(morale),
       status: MORALE_LABEL[mood],
       tone:
@@ -225,17 +244,17 @@ export function teamStates(w: World): TeamStateItem[] {
     },
     {
       key: 'manager',
-      label: '감독 입지',
-      value: interim ? '대행' : String(trust),
+      label: sourceMessage('copy.ClubOverview.32d0fec1ea'),
+      value: interim ? sourceMessage('team.interim') : String(trust),
       status: interim
-        ? '대행 체제'
+        ? sourceMessage('copy.teamState.444f8ec4a8')
         : trust >= 75
-          ? '굳건'
+          ? sourceMessage('copy.teamState.e7056f67a8')
           : trust >= 55
-            ? '안정'
+            ? sourceMessage('copy.teamState.ab2a3b2d53')
             : trust >= 35
-              ? '흔들림'
-              : '위기',
+              ? sourceMessage('copy.teamState.32bf4be8e6')
+              : sourceMessage('copy.teamState.32baa3b7ac'),
       tone: interim
         ? 'warn'
         : trust >= 75
@@ -249,9 +268,14 @@ export function teamStates(w: World): TeamStateItem[] {
     },
     {
       key: 'squad',
-      label: '선수단',
+      label: sourceMessage('copy.areas.f33435e513'),
       value: registered.value,
-      status: squad < 20 ? '부족' : registered.full ? '가득' : missing || '여유',
+      status:
+        squad < 20
+          ? sourceMessage('copy.shortlist.da5d28ca3f')
+          : registered.full
+            ? sourceMessage('copy.teamState.260476e013')
+            : missing || sourceMessage('copy.teamState.6652674430'),
       tone: fit < 14 || squad < 16 ? 'bad' : squad < 20 || out >= 3 ? 'warn' : 'good',
       attention: squad < 20 || fit < 14 || out >= 3,
     },
@@ -268,6 +292,15 @@ export interface SituationFact {
   warning?: '주의' | '위험';
 }
 
+/** A state that needs attention, labelled plainly (→WEB-44): critical when its tone is bad. */
+export function stateWarning(item: TeamStateItem) {
+  return item.attention
+    ? item.tone === 'bad'
+      ? sourceMessage('copy.teamState.baaff05e43')
+      : sourceMessage('copy.teamState.acc90fbf66')
+    : undefined;
+}
+
 /**
  * The clubhouse's current-club summary (→WEB-44): strength with its place in our division, who
  * can play of the whole first team with the injured and the suspended, the starters' fatigue,
@@ -277,8 +310,6 @@ export function clubSituation(w: World): SituationFact[] {
   const states = teamStates(w);
   const state = (key: StateKey) => states.find((item) => item.key === key)!;
   const squad = squadAvailability(w);
-  const warning = (item: TeamStateItem) =>
-    item.attention ? (item.tone === 'bad' ? ('위험' as const) : ('주의' as const)) : undefined;
   const fact = (key: SituationFact['key'], label: string): SituationFact => {
     const item = state(key);
     return {
@@ -287,7 +318,7 @@ export function clubSituation(w: World): SituationFact[] {
       value: item.value,
       note: item.status,
       tone: item.tone,
-      warning: warning(item),
+      warning: stateWarning(item),
     };
   };
   const strength = state('strength'),
@@ -295,21 +326,21 @@ export function clubSituation(w: World): SituationFact[] {
   return [
     {
       key: 'strength',
-      label: '팀 전력',
+      label: sourceMessage('copy.teamState.209c1e2619'),
       value: strength.value,
       note: strength.status,
       tone: strength.tone,
     },
     {
       key: 'squad',
-      label: '출전 가능',
+      label: sourceMessage('copy.ClubOverview.be76cc2bb7'),
       value: `${squad.available}/${squad.total}`,
-      note: `부상 ${squad.injured} · 정지 ${squad.suspended}`,
+      note: sourceMessage('copy.teamState.69bfe75bb3', { p0: squad.injured, p1: squad.suspended }),
       tone: roster.tone,
-      warning: warning(roster),
+      warning: stateWarning(roster),
     },
-    fact('fatigue', '선발 피로'),
-    fact('morale', '분위기'),
-    fact('manager', '감독 입지'),
+    fact('fatigue', sourceMessage('copy.teamState.dece7a18fa')),
+    fact('morale', sourceMessage('copy.teamState.b0d7b29bb8')),
+    fact('manager', sourceMessage('copy.ClubOverview.32d0fec1ea')),
   ];
 }

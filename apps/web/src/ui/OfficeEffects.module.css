@@ -1,0 +1,132 @@
+/* The office's effects in force: one card per group, two columns where the page is wide. */
+.effects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+  min-width: 0;
+}
+.group {
+  --card-padding: 14px 16px;
+}
+.rows,
+.factors,
+.conditions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rows,
+.factors {
+  display: grid;
+  gap: 6px;
+}
+
+/* A value reads as a row in the theme's control frame: its name, the value and the way into its
+   factors. A factor nothing opens keeps the row's shape without the frame. */
+.row,
+.factor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  color: var(--text);
+  text-align: left;
+}
+.row > span {
+  min-width: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+.row > b,
+.share {
+  font-size: 17px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.row svg,
+.factor svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+button.row:focus-visible,
+button.factor:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: -2px;
+}
+
+/* The breakdown: the value and what it does, then its factors. */
+.summary {
+  display: grid;
+  gap: 4px;
+}
+.summary > b {
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.summary > p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.factorsTitle {
+  margin: 0 0 4px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+div.factor {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+.source {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.source > b {
+  font-size: 14px;
+}
+.source > small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+/* A control that changes nothing now stays listed, as a lever the owner has, but quieter. */
+.factors > li[data-neutral] > .factor {
+  opacity: 0.55;
+}
+.conditions {
+  display: grid;
+  gap: 2px;
+  margin: -2px 0 8px;
+  padding-left: 8px;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.conditions > li::before {
+  content: '○ ';
+}
+.conditions > li[data-met] {
+  color: var(--text);
+}
+.conditions > li[data-met]::before {
+  content: '● ';
+}
+
+@media (max-width: 760px) {
+  .effects {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .group {
+    --card-padding: 12px;
+  }
+}

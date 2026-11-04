@@ -3,12 +3,14 @@ import { seasonDate } from '../../../../packages/engine/src/calendar';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import type { ProgressionController } from '../runtime/progression';
 import { gameStore } from '../runtime/store';
+import { localizeValue, useTextLocale } from '../presentation/text';
 
 /**
  * While the tab is hidden its title tells the owner how the club is doing (→WEB-64): the game
  * date and whether the clock runs, or why it stopped. A visible tab keeps the page title.
  */
 export function useTabTitle(controller: ProgressionController | undefined) {
+  const locale = useTextLocale();
   useEffect(() => {
     if (!controller) return;
     const base = document.title;
@@ -18,7 +20,7 @@ export function useTabTitle(controller: ProgressionController | undefined) {
       let title = base;
       if (document.hidden && w) {
         const { running, reason } = controller.store.getState();
-        title = `${running ? '▶' : '⏸'} ${seasonDate(w)}${!running && reason ? ` · ${reason}` : ''} · ${clubOf(w).name}`;
+        title = `${running ? '▶' : '⏸'} ${localizeValue(seasonDate(w))}${!running && reason ? ` · ${localizeValue(reason)}` : ''} · ${clubOf(w).name}`;
       }
       if (title !== shown) document.title = shown = title;
     };
@@ -31,5 +33,5 @@ export function useTabTitle(controller: ProgressionController | undefined) {
       document.removeEventListener('visibilitychange', update);
       document.title = base;
     };
-  }, [controller]);
+  }, [controller, locale]);
 }

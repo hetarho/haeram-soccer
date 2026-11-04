@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import {
   MATCH_DUEL_CONFIG,
   bend,
@@ -838,7 +839,7 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false, decide?: DecideRul
       minute,
       side,
       player: squads[side][Math.min(shooter, squads[side].length - 1)].name,
-      action: '골',
+      action: sourceMessage('copy.summary.68a6cf8ed8'),
     });
   };
   for (let minute = 1; minute <= 90; minute++) playMinute(minute);
@@ -854,8 +855,10 @@ function summaryMatch(setup: MatchSetup, keepPlayers = false, decide?: DecideRul
       highlights.push({
         minute: 120,
         side,
-        player: '승부차기',
-        action: `승부차기 ${side === 0 ? '홈' : '원정'} 승리`,
+        player: sourceMessage('copy.headToHead.16fa957ea6'),
+        action: sourceMessage('copy.match.35ef500e6b', {
+          p0: side === 0 ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+        }),
       });
     }
   }

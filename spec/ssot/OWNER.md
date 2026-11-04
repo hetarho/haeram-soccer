@@ -1,5 +1,5 @@
 # OWNER Owner fortune, takeover start, traits and standing
-> r4 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
+> r5 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
 
 ## decisions
 - OWNER-1 [o] The owner's fortune (구단주 자금) and the club's cash (구단 자금) are separate pots; money moves between them only by an injection (→OWNER-9) or a dividend (→OWNER-11). From the takeover the fortune is kept in the club's currency and converts with it (→ECON-5/6). ← the owner's own money and the club's books are different stakes
@@ -25,7 +25,7 @@
   | 승리의 부적 | the own club's match strength +1 on the OVR scale (→OWNER-6) |
   | 협상의 달인 | player wage demands and asked transfer fees for the own club −10% |
   | 팬들의 친구 | every 팬 민심 drop ×0.7 (→OWNER-12) |
-  | 마당발 | manager and coach candidate lists hold one more candidate, each candidate's ability +5 |
+  | 마당발 | the manager and staff free-agent pools hold one more, and each new free agent comes +5 ability (→STAFF-17/49) |
   | 원석 감별사 | academy intake potential +3; scouting ranges of other clubs' players half as wide (→PLAYER-18) |
   | 마케팅 귀재 | sponsor offers ×1.15 (→ECON-8) |
   | 정치력 | operating expenses ×0.9 (→ECON-30) |
@@ -65,6 +65,7 @@
 - End: club bankruptcy | owner bankruptcy | 구단주 퇴진 → game-over page
 
 ## chg
+- r5 261104 OWNER-5✎ 마당발 candidate lists one longer, each candidate +5→free-agent pools one larger, each new free agent +5 (→STAFF-17/49)
 - r4 261104 OWNER-4✎ founding direction chosen at takeover→standard defaults without a choice
 - r3 261104 OWNER-3✎ starting fortune of the five tiers below 석유 재벌 1.3→1.6 × anchor, +the multiple's measured reason; OWNER-8✎ living costs 0.25%→0.2% a settlement, +no owner who moves no money bankrupt within 15 seasons, measured 261104
 - r2 261103 OWNER-3✎ reach by divisions→a band of the price ranking (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%), any club the fortune pays may be bought; OWNER-8✎ living costs 1%→0.25% a settlement; OWNER-12✎ dividend −1→−0.5 per 1% of turnover, star sale −8→−4 at most once a window

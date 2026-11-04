@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayLocale, displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 /**
  * The match lab (→LAB-1…10): two generated sides, the engine's tunable numbers, one match watched in
  * the game's own match view (→LAB-9), runs in the lab's workers and each run against a pinned
@@ -41,16 +44,19 @@ const catalog = catalogJson as Catalog;
 /** Each group's and value's Korean description, written from the code that reads it (→LAB-3). */
 const KO = koJson as { groups: Record<string, string>; leaves: Record<string, string> };
 const LEAVES = catalog.groups.flatMap((g) => g.leaves);
-const SIDE_NAMES = ['좌측 팀', '우측 팀'] as const;
+const SIDE_NAMES = [
+  sourceMessage('copy.LabPage.d192ee8a47'),
+  sourceMessage('copy.LabPage.bb56f4ce84'),
+] as const;
 /**
  * Groups the page's own match view reads (Pitch and its figure code import MATCH_MOTION_CONFIG):
  * an override reaches the worker's match and frames, but the view draws with the code's values.
  */
 const PAGE_READ_GROUPS: ReadonlySet<string> = new Set(['MATCH_MOTION_CONFIG']);
 const SKIP_REASON = {
-  unknown: '없는 경로',
-  'not-a-number': '숫자가 아님',
-  'load-time': '불러올 때 읽는 값',
+  unknown: sourceMessage('copy.LabPage.e4305c5605'),
+  'not-a-number': sourceMessage('copy.LabPage.793fc429ee'),
+  'load-time': sourceMessage('copy.LabPage.3ab38dcb65'),
 } as const;
 
 const cx = (...names: (string | false | undefined)[]) => names.filter(Boolean).join(' ');
@@ -60,7 +66,7 @@ function fmt(value: number | null | undefined, unit = 'count') {
   const abs = Math.abs(value);
   const text = value.toFixed(abs >= 100 ? 0 : abs >= 10 ? 1 : 2);
   if (unit === 'percent') return `${text}%`;
-  if (unit === 'minutes') return `${text}분`;
+  if (unit === 'minutes') return sourceMessage('copy.LabPage.be847e9e64', { p0: text });
   if (unit === 'metres') return `${text} m`;
   return text;
 }
@@ -80,6 +86,7 @@ function NumberField(props: {
   disabled?: boolean;
   className?: string;
 }) {
+  useTextLocale();
   const { label, value, onCommit, min, max, disabled, className } = props;
   const [draft, setDraft] = useState(String(value));
   useEffect(() => setDraft(String(value)), [value]);
@@ -93,7 +100,7 @@ function NumberField(props: {
   return (
     <input
       className={cx(styles.number, className)}
-      aria-label={label}
+      aria-label={localizeValue(label)}
       inputMode="decimal"
       value={draft}
       disabled={disabled}
@@ -115,109 +122,145 @@ function SidePanel(props: {
   onGenerate: () => void;
   onOvr: (player: number, ovr: number) => void;
 }) {
+  useTextLocale();
   const { index, settings, side, busy, onSettings, onGenerate, onOvr } = props;
   const name = SIDE_NAMES[index];
   const ovrs = side?.ovrs ?? [];
   // A pending worker reply restores its settings snapshot along with the generated squad.
   const settingsLocked = busy || !side;
   return (
-    <section className={styles.side} aria-label={name}>
-      <h3>{name}</h3>
+    <section className={styles.side} aria-label={localizeValue(name)}>
+      <h3>{localizeValue(name)}</h3>
       <div className={styles.fields}>
         <label>
-          전술
-          <select
-            aria-label={`${name} 전술`}
-            value={settings.tactic}
-            disabled={settingsLocked}
-            onChange={(e) => onSettings({ tactic: e.target.value as Tactic })}
-          >
-            {LAB_TACTICS.map((t) => (
-              <option key={t} value={t}>
-                {tacticLabel[t]}
-              </option>
-            ))}
-          </select>
+          {richMessage('copy.LabPage.cf0cfa5890', {
+            p0: (
+              <select
+                aria-label={displayMessage('copy.LabPage.442293bcd2', { p0: name })}
+                value={settings.tactic}
+                disabled={settingsLocked}
+                onChange={(e) => onSettings({ tactic: e.target.value as Tactic })}
+              >
+                {localizeValue(
+                  LAB_TACTICS.map((t) => (
+                    <option key={t} value={t}>
+                      {localizeValue(tacticLabel[t])}
+                    </option>
+                  )),
+                )}
+              </select>
+            ),
+          })}
         </label>
         <label>
-          평균 OVR
-          <NumberField
-            label={`${name} 평균 OVR`}
-            value={settings.average}
-            disabled={settingsLocked}
-            min={LAB_RANGES.average[0]}
-            max={LAB_RANGES.average[1]}
-            onCommit={(v) => onSettings({ average: Math.round(v) })}
-          />
+          {richMessage('copy.LabPage.603fcd2e31', {
+            p0: (
+              <NumberField
+                label={displayMessage('copy.LabPage.a9e6bba947', { p0: name })}
+                value={settings.average}
+                disabled={settingsLocked}
+                min={LAB_RANGES.average[0]}
+                max={LAB_RANGES.average[1]}
+                onCommit={(v) => onSettings({ average: Math.round(v) })}
+              />
+            ),
+          })}
         </label>
         <label>
-          편차
-          <NumberField
-            label={`${name} 편차`}
-            value={settings.spread}
-            disabled={settingsLocked}
-            min={LAB_RANGES.spread[0]}
-            max={LAB_RANGES.spread[1]}
-            onCommit={(v) => onSettings({ spread: Math.round(v) })}
-          />
+          {richMessage('copy.LabPage.16fc53396c', {
+            p0: (
+              <NumberField
+                label={displayMessage('copy.LabPage.a9379512de', { p0: name })}
+                value={settings.spread}
+                disabled={settingsLocked}
+                min={LAB_RANGES.spread[0]}
+                max={LAB_RANGES.spread[1]}
+                onCommit={(v) => onSettings({ spread: Math.round(v) })}
+              />
+            ),
+          })}
         </label>
         <label>
-          시드
-          <input
-            className={styles.seed}
-            aria-label={`${name} 시드`}
-            value={settings.seed}
-            disabled={settingsLocked}
-            onChange={(e) => onSettings({ seed: e.target.value })}
-          />
+          {richMessage('copy.LabPage.546bec3e09', {
+            p0: (
+              <input
+                className={styles.seed}
+                aria-label={displayMessage('copy.LabPage.f4c74d05aa', { p0: name })}
+                value={settings.seed}
+                disabled={settingsLocked}
+                onChange={(e) => onSettings({ seed: e.target.value })}
+              />
+            ),
+          })}
         </label>
         <button
           type="button"
           onClick={() => onSettings({ seed: newSeed() })}
           disabled={settingsLocked}
         >
-          새로 뽑기
+          {richMessage('copy.LabPage.85e81f0a89')}
         </button>
         <button type="button" className={styles.primary} onClick={onGenerate} disabled={busy}>
-          {busy ? '생성 중…' : '생성'}
+          {localizeValue(
+            busy
+              ? sourceMessage('copy.LabPage.6158892198')
+              : sourceMessage('copy.LabPage.167eff2736'),
+          )}
         </button>
       </div>
       <p className={styles.average}>
-        선발 평균 OVR <strong>{ovrs.length ? fmt(starterAverage(ovrs)) : '–'}</strong>
-        {side && ` · ${tacticLabel[side.tactic]} · 시드 ${side.seed}`}
+        {richMessage('copy.LabPage.ac9206466e', {
+          p0: <strong>{localizeValue(ovrs.length ? fmt(starterAverage(ovrs)) : '–')}</strong>,
+          p1:
+            side &&
+            sourceMessage('copy.LabPage.464e6cdb5b', {
+              p0: tacticLabel[side.tactic],
+              p1: side.seed,
+            }),
+        })}
       </p>
-      {side && (
-        <table className={styles.squad}>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>자리</th>
-              <th>이름</th>
-              <th>OVR</th>
-              <th>구분</th>
-            </tr>
-          </thead>
-          <tbody>
-            {side.players.map((p, i) => (
-              <tr key={p.id} className={cx(i === STARTERS && styles.benchStart)}>
-                <td>{i + 1}</td>
-                <td>{p.position}</td>
-                <td>{p.name}</td>
-                <td>
-                  <NumberField
-                    label={`${name} ${i + 1}번 OVR`}
-                    value={side.ovrs[i]!}
-                    disabled={busy}
-                    min={LAB_RANGES.ovr[0]}
-                    max={LAB_RANGES.ovr[1]}
-                    onCommit={(v) => onOvr(i, Math.round(v))}
-                  />
-                </td>
-                <td>{i < STARTERS ? '선발' : '교체'}</td>
+      {localizeValue(
+        side && (
+          <table className={styles.squad}>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{richMessage('copy.LabPage.0f4adfe312')}</th>
+                <th>{richMessage('copy.LabPage.253d1510ca')}</th>
+                <th>{richMessage('team.column.ovr')}</th>
+                <th>{richMessage('copy.LabPage.d8ba487317')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {localizeValue(
+                side.players.map((p, i) => (
+                  <tr key={p.id} className={cx(i === STARTERS && styles.benchStart)}>
+                    <td>{localizeValue(i + 1)}</td>
+                    <td>{localizeValue(p.position)}</td>
+                    <td>{p.name}</td>
+                    <td>
+                      <NumberField
+                        label={displayMessage('copy.LabPage.0c46454fc5', { p0: name, p1: i + 1 })}
+                        value={side.ovrs[i]!}
+                        disabled={busy}
+                        min={LAB_RANGES.ovr[0]}
+                        max={LAB_RANGES.ovr[1]}
+                        onCommit={(v) => onOvr(i, Math.round(v))}
+                      />
+                    </td>
+                    <td>
+                      {localizeValue(
+                        i < STARTERS
+                          ? sourceMessage('copy.LabPage.2957cbaf9c')
+                          : sourceMessage('copy.LabPage.084c5a6dd7'),
+                      )}
+                    </td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        ),
       )}
     </section>
   );
@@ -228,6 +271,7 @@ function ValuesPanel(props: {
   reads?: ReadonlySet<string>;
   onChange: (overrides: Record<string, number>) => void;
 }) {
+  useTextLocale();
   const { overrides, reads, onChange } = props;
   const [query, setQuery] = useState('');
   const [showUnread, setShowUnread] = useState(false);
@@ -252,8 +296,8 @@ function ValuesPanel(props: {
     const text = exportOverrides(overrides);
     setTransfer(text);
     void navigator.clipboard?.writeText(text).then(
-      () => setNote(`변경값 ${changed}개를 복사했습니다`),
-      () => setNote('복사하지 못했습니다. 아래 칸의 JSON을 직접 복사하세요'),
+      () => setNote(sourceMessage('copy.LabPage.d8fd3a2546', { p0: changed })),
+      () => setNote(sourceMessage('copy.LabPage.e2a7cdf159')),
     );
   };
   const paste = () => {
@@ -262,289 +306,370 @@ function ValuesPanel(props: {
     onChange({ ...overrides, ...result.overrides });
     const applied = Object.keys(result.overrides).length;
     setNote(
-      `${applied}개 적용` +
+      sourceMessage('copy.LabPage.fb8d3c511a', { p0: applied }) +
         (result.skipped.length
-          ? ` · 건너뜀: ${result.skipped.map((s) => `${s.path} (${SKIP_REASON[s.reason]})`).join(', ')}`
+          ? sourceMessage('copy.LabPage.b480760b61', {
+              p0: result.skipped.map((s) => `${s.path} (${SKIP_REASON[s.reason]})`).join(', '),
+            })
           : ''),
     );
   };
   return (
     <section className={styles.panel} aria-labelledby="lab-values">
       <div className={styles.panelHead}>
-        <h2 id="lab-values">엔진 수치</h2>
-        <span className={styles.muted}>변경 {changed}개</span>
+        <h2 id="lab-values">{richMessage('copy.LabPage.e9b1a9a478')}</h2>
+        <span className={styles.muted}>
+          {richMessage('copy.LabPage.c270bcbc4b', { p0: changed })}
+        </span>
         <button type="button" onClick={() => onChange({})} disabled={!changed}>
-          전체 초기화
+          {richMessage('copy.LabPage.91211d8faa')}
         </button>
       </div>
       <div className={styles.fields}>
         <input
           className={styles.search}
           type="search"
-          aria-label="수치 검색"
-          placeholder="경로나 설명으로 검색"
+          aria-label={displayMessage('copy.LabPage.06a4ddd013')}
+          placeholder={displayMessage('copy.LabPage.526a5ce604')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
-        {reads && unread > 0 && (
-          <label className={styles.check}>
-            <input
-              type="checkbox"
-              checked={showUnread}
-              onChange={(e) => setShowUnread(e.target.checked)}
-            />
-            이 리비전에서 안 읽는 값 보기 ({unread}개)
-          </label>
+        {localizeValue(
+          reads && unread > 0 && (
+            <label className={styles.check}>
+              {richMessage('copy.LabPage.7f66f7689c', {
+                p0: (
+                  <input
+                    type="checkbox"
+                    checked={showUnread}
+                    onChange={(e) => setShowUnread(e.target.checked)}
+                  />
+                ),
+                p1: unread,
+              })}
+            </label>
+          ),
         )}
       </div>
       <div className={styles.groups}>
-        {catalog.groups.map((group) => {
-          const leaves = group.leaves.filter(visible);
-          if (!leaves.length) return null;
-          const groupChanged = group.leaves.filter((l) => l.path in overrides);
-          const isOpen = !!q || open.has(group.name);
-          return (
-            <div key={group.name} className={styles.group}>
-              <div className={styles.groupHead}>
-                <button
-                  type="button"
-                  className={styles.groupToggle}
-                  aria-expanded={isOpen}
-                  onClick={() =>
-                    setOpen((prev) => {
-                      const next = new Set(prev);
-                      if (!next.delete(group.name)) next.add(group.name);
-                      return next;
-                    })
-                  }
-                >
-                  <code>{group.name}</code>
-                  <span className={styles.muted}>
-                    {leaves.length}개{groupChanged.length ? ` · 변경 ${groupChanged.length}` : ''}
-                  </span>
-                  {KO.groups[group.name] && (
-                    <span className={styles.groupDescription}>{KO.groups[group.name]}</span>
-                  )}
-                  {PAGE_READ_GROUPS.has(group.name) && (
-                    <span
-                      className={styles.badge}
-                      title="경기와 프레임 계산에는 쓰이지만, 관전 화면이 직접 읽는 값은 코드 값 그대로입니다."
-                    >
-                      관전 화면에는 적용 안 됨
+        {localizeValue(
+          catalog.groups.map((group) => {
+            const leaves = group.leaves.filter(visible);
+            if (!leaves.length) return null;
+            const groupChanged = group.leaves.filter((l) => l.path in overrides);
+            const isOpen = !!q || open.has(group.name);
+            return (
+              <div key={group.name} className={styles.group}>
+                <div className={styles.groupHead}>
+                  <button
+                    type="button"
+                    className={styles.groupToggle}
+                    aria-expanded={isOpen}
+                    onClick={() =>
+                      setOpen((prev) => {
+                        const next = new Set(prev);
+                        if (!next.delete(group.name)) next.add(group.name);
+                        return next;
+                      })
+                    }
+                  >
+                    <code>{group.name}</code>
+                    <span className={styles.muted}>
+                      {richMessage('copy.LabPage.f1582550cc', {
+                        p0: leaves.length,
+                        p1: groupChanged.length
+                          ? sourceMessage('copy.LabPage.42a96c32f3', { p0: groupChanged.length })
+                          : '',
+                      })}
                     </span>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => reset(groupChanged.map((l) => l.path))}
-                  disabled={!groupChanged.length}
-                >
-                  그룹 초기화
-                </button>
+                    {localizeValue(
+                      KO.groups[group.name] && (
+                        <span className={styles.groupDescription}>
+                          {localizeValue(KO.groups[group.name])}
+                        </span>
+                      ),
+                    )}
+                    {localizeValue(
+                      PAGE_READ_GROUPS.has(group.name) && (
+                        <span
+                          className={styles.badge}
+                          title={displayMessage('copy.LabPage.f93fc408de')}
+                        >
+                          {richMessage('copy.LabPage.383e742f33')}
+                        </span>
+                      ),
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => reset(groupChanged.map((l) => l.path))}
+                    disabled={!groupChanged.length}
+                  >
+                    {richMessage('copy.LabPage.4f948b8deb')}
+                  </button>
+                </div>
+                {localizeValue(
+                  isOpen && (
+                    <ul className={styles.leaves}>
+                      {localizeValue(
+                        leaves.map((leaf) => {
+                          const current = overrides[leaf.path] ?? leaf.value;
+                          const isChanged = leaf.path in overrides;
+                          return (
+                            <li
+                              key={leaf.path}
+                              className={cx(styles.leaf, isChanged && styles.changed)}
+                            >
+                              <div className={styles.leafHead}>
+                                <code>{localizeValue(leaf.path)}</code>
+                                {localizeValue(
+                                  isChanged && (
+                                    <span className={styles.badge}>
+                                      {richMessage('copy.LabPage.16f64fe47b')}
+                                    </span>
+                                  ),
+                                )}
+                              </div>
+                              {localizeValue(
+                                KO.leaves[leaf.path] && (
+                                  <p className={styles.description}>
+                                    {localizeValue(KO.leaves[leaf.path])}
+                                  </p>
+                                ),
+                              )}
+                              {localizeValue(
+                                leaf.comment && (
+                                  <p className={styles.comment} title={localizeValue(leaf.comment)}>
+                                    {localizeValue(leaf.comment)}
+                                  </p>
+                                ),
+                              )}
+                              <div className={styles.leafValues}>
+                                <span className={styles.muted}>
+                                  {richMessage('copy.LabPage.5971fd7b69', { p0: leaf.value })}
+                                </span>
+                                <NumberField
+                                  label={localizeValue(leaf.path)}
+                                  value={current}
+                                  disabled={leaf.loadTime}
+                                  onCommit={(v) => onChange(setOverride(overrides, leaf, v))}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => reset([leaf.path])}
+                                  disabled={!isChanged}
+                                >
+                                  {richMessage('copy.LabPage.893f3d9463')}
+                                </button>
+                              </div>
+                              {localizeValue(
+                                leaf.loadTime && (
+                                  <p className={styles.muted}>
+                                    {richMessage('copy.LabPage.a128480adc')}
+                                  </p>
+                                ),
+                              )}
+                            </li>
+                          );
+                        }),
+                      )}
+                    </ul>
+                  ),
+                )}
               </div>
-              {isOpen && (
-                <ul className={styles.leaves}>
-                  {leaves.map((leaf) => {
-                    const current = overrides[leaf.path] ?? leaf.value;
-                    const isChanged = leaf.path in overrides;
-                    return (
-                      <li key={leaf.path} className={cx(styles.leaf, isChanged && styles.changed)}>
-                        <div className={styles.leafHead}>
-                          <code>{leaf.path}</code>
-                          {isChanged && <span className={styles.badge}>변경</span>}
-                        </div>
-                        {KO.leaves[leaf.path] && (
-                          <p className={styles.description}>{KO.leaves[leaf.path]}</p>
-                        )}
-                        {leaf.comment && (
-                          <p className={styles.comment} title={leaf.comment}>
-                            {leaf.comment}
-                          </p>
-                        )}
-                        <div className={styles.leafValues}>
-                          <span className={styles.muted}>기본 {leaf.value}</span>
-                          <NumberField
-                            label={leaf.path}
-                            value={current}
-                            disabled={leaf.loadTime}
-                            onCommit={(v) => onChange(setOverride(overrides, leaf, v))}
-                          />
-                          <button
-                            type="button"
-                            onClick={() => reset([leaf.path])}
-                            disabled={!isChanged}
-                          >
-                            초기화
-                          </button>
-                        </div>
-                        {leaf.loadTime && (
-                          <p className={styles.muted}>
-                            엔진을 불러올 때 한 번 읽는 값이라 실험실에서 바꿀 수 없습니다.
-                          </p>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          );
-        })}
+            );
+          }),
+        )}
       </div>
       <div className={styles.transfer}>
         <div className={styles.fields}>
           <button type="button" onClick={copy} disabled={!changed}>
-            변경값 복사
+            {richMessage('copy.LabPage.a5b6a65722')}
           </button>
           <button type="button" onClick={paste} disabled={!transfer.trim()}>
-            붙여넣기
+            {richMessage('copy.LabPage.8e45bfbb76')}
           </button>
         </div>
         <textarea
-          aria-label="변경값 JSON"
-          placeholder='{"SHOT_CONFIG.saveShare": 0.4}'
+          aria-label={displayMessage('copy.LabPage.9db159f659')}
+          placeholder={JSON.stringify({ 'SHOT_CONFIG.saveShare': 0.4 })}
           value={transfer}
           onChange={(e) => setTransfer(e.target.value)}
           rows={4}
         />
-        {note && <p role="status">{note}</p>}
+        {localizeValue(note && <p role="status">{localizeValue(note)}</p>)}
       </div>
     </section>
   );
 }
 
 function Measured(props: { estimate?: Estimate; unit?: string }) {
+  useTextLocale();
   const { estimate, unit } = props;
   if (!estimate) return <>–</>;
   const h = half(estimate);
   return (
     <>
-      {fmt(estimate.value, unit)}
-      {Number.isFinite(h) && h > 0 && <small> ± {fmt(h, unit)}</small>}
+      {localizeValue(fmt(estimate.value, unit))}
+      {localizeValue(
+        Number.isFinite(h) && h > 0 && <small> ± {localizeValue(fmt(h, unit))}</small>,
+      )}
     </>
   );
 }
 
 function Difference(props: { cmp?: Comparison; unit?: string }) {
+  useTextLocale();
   const { cmp, unit } = props;
   if (!cmp) return <>–</>;
   return (
     <span
       className={cx(cmp.marked && styles.marked)}
-      title={cmp.marked ? '두 실행의 95% 구간이 겹치지 않습니다' : undefined}
+      title={localizeValue(cmp.marked ? sourceMessage('copy.LabPage.63f935e897') : undefined)}
     >
-      {signed(cmp.difference, unit)}
-      {cmp.marked && ' ●'}
+      {localizeValue(signed(cmp.difference, unit))}
+      {localizeValue(cmp.marked && ' ●')}
     </span>
   );
 }
 
 function TargetTable(props: { rows: TargetRow[]; baseline?: TargetRow[] }) {
+  useTextLocale();
   const { rows, baseline } = props;
   return (
     <table className={styles.table}>
-      <caption>MATCH-23 목표 (팀·경기당, 양 팀 평균)</caption>
+      <caption>{richMessage('copy.LabPage.e33f0cd11f')}</caption>
       <thead>
         <tr>
-          <th>항목</th>
-          <th>실제 범위</th>
-          <th>값 (95% 구간)</th>
-          <th>판정</th>
-          {baseline && (
-            <>
-              <th>기준</th>
-              <th>차이</th>
-            </>
+          <th>{richMessage('copy.LabPage.962f286b14')}</th>
+          <th>{richMessage('copy.LabPage.8cc431931d')}</th>
+          <th>{richMessage('copy.LabPage.237e0f995d')}</th>
+          <th>{richMessage('copy.LabPage.fb77d92a3c')}</th>
+          {localizeValue(
+            baseline && (
+              <>
+                <th>{richMessage('copy.LabPage.eaea55bff6')}</th>
+                <th>{richMessage('copy.LabPage.b9b47d9dee')}</th>
+              </>
+            ),
           )}
         </tr>
       </thead>
       <tbody>
-        {rows.map((row) => {
-          const base = baseline?.find((b) => b.id === row.id);
-          const cmp = compare(row.estimate, base?.estimate);
-          return (
-            <tr key={row.id}>
-              <th scope="row">
-                {row.label}
-                <small className={styles.muted}> {row.id}</small>
-              </th>
-              <td>
-                {fmt(row.real[0], row.unit)}–{fmt(row.real[1], row.unit)}
-                <small className={styles.muted}>
-                  {' '}
-                  (허용 {fmt(row.band[0], row.unit)}–{fmt(row.band[1], row.unit)})
-                </small>
-              </td>
-              <td>
-                <Measured estimate={row.estimate} unit={row.unit} />
-              </td>
-              <td className={cx(row.pass === false && styles.fail)}>
-                {row.pass === undefined ? '측정 없음' : row.pass ? '통과' : '벗어남'}
-              </td>
-              {baseline && (
-                <>
-                  <td>
-                    <Measured estimate={base?.estimate} unit={row.unit} />
-                  </td>
-                  <td>
-                    <Difference cmp={cmp} unit={row.unit} />
-                  </td>
-                </>
-              )}
-            </tr>
-          );
-        })}
+        {localizeValue(
+          rows.map((row) => {
+            const base = baseline?.find((b) => b.id === row.id);
+            const cmp = compare(row.estimate, base?.estimate);
+            return (
+              <tr key={row.id}>
+                <th scope="row">
+                  {localizeValue(row.label)}
+                  <small className={styles.muted}> {localizeValue(row.id)}</small>
+                </th>
+                <td>
+                  {localizeValue(fmt(row.real[0], row.unit))}–
+                  {localizeValue(fmt(row.real[1], row.unit))}
+                  <small className={styles.muted}>
+                    {richMessage('copy.LabPage.4c0614ae12', {
+                      p0: ' ',
+                      p1: fmt(row.band[0], row.unit),
+                      p2: fmt(row.band[1], row.unit),
+                    })}
+                  </small>
+                </td>
+                <td>
+                  <Measured estimate={row.estimate} unit={row.unit} />
+                </td>
+                <td className={cx(row.pass === false && styles.fail)}>
+                  {localizeValue(
+                    row.pass === undefined
+                      ? sourceMessage('copy.LabPage.a572fea8f1')
+                      : row.pass
+                        ? sourceMessage('copy.LabPage.07b9cb2b98')
+                        : sourceMessage('copy.LabPage.175a0f8f2b'),
+                  )}
+                </td>
+                {localizeValue(
+                  baseline && (
+                    <>
+                      <td>
+                        <Measured estimate={base?.estimate} unit={row.unit} />
+                      </td>
+                      <td>
+                        <Difference cmp={cmp} unit={row.unit} />
+                      </td>
+                    </>
+                  ),
+                )}
+              </tr>
+            );
+          }),
+        )}
       </tbody>
     </table>
   );
 }
 
 function SideCell(props: { row: SideRow; side: 'left' | 'right'; baseline?: SideRow }) {
+  useTextLocale();
   const { row, side, baseline } = props;
   const cmp = compare(row[side], baseline?.[side]);
   return (
     <td>
       <Measured estimate={row[side]} unit={row.unit} />
-      {baseline && (
-        <div className={styles.muted}>
-          기준 {fmt(baseline[side].value, row.unit)} · <Difference cmp={cmp} unit={row.unit} />
-        </div>
+      {localizeValue(
+        baseline && (
+          <div className={styles.muted}>
+            {richMessage('copy.LabPage.f5867ebe57', {
+              p0: fmt(baseline[side].value, row.unit),
+              p1: <Difference cmp={cmp} unit={row.unit} />,
+            })}
+          </div>
+        ),
       )}
     </td>
   );
 }
 
 function SideTable(props: { rows: SideRow[]; baseline?: SideRow[] }) {
+  useTextLocale();
   const { rows, baseline } = props;
   return (
     <table className={styles.table}>
-      <caption>팀별 기록 (경기당)</caption>
+      <caption>{richMessage('copy.LabPage.eba42dd591')}</caption>
       <thead>
         <tr>
-          <th>항목</th>
-          <th>좌측 팀</th>
-          <th>우측 팀</th>
+          <th>{richMessage('copy.LabPage.962f286b14')}</th>
+          <th>{richMessage('copy.LabPage.d192ee8a47')}</th>
+          <th>{richMessage('copy.LabPage.bb56f4ce84')}</th>
         </tr>
       </thead>
       <tbody>
-        {rows.map((row) => {
-          const base = baseline?.find((b) => b.id === row.id);
-          return (
-            <tr key={row.id}>
-              <th scope="row">{row.label}</th>
-              <SideCell row={row} side="left" baseline={base} />
-              <SideCell row={row} side="right" baseline={base} />
-            </tr>
-          );
-        })}
+        {localizeValue(
+          rows.map((row) => {
+            const base = baseline?.find((b) => b.id === row.id);
+            return (
+              <tr key={row.id}>
+                <th scope="row">{localizeValue(row.label)}</th>
+                <SideCell row={row} side="left" baseline={base} />
+                <SideCell row={row} side="right" baseline={base} />
+              </tr>
+            );
+          }),
+        )}
       </tbody>
     </table>
   );
 }
 
-const CARD = { yellow: '경고', secondYellow: '경고 누적 퇴장', red: '퇴장' } as const;
+const CARD = {
+  yellow: sourceMessage('copy.LabPage.6c0f751064'),
+  secondYellow: sourceMessage('copy.LabPage.3561565380'),
+  red: sourceMessage('copy.LabPage.68e69c7b9c'),
+} as const;
 
 function Results(props: { run: KeptRun; baseline?: KeptRun }) {
+  useTextLocale();
   const { run, baseline } = props;
   const s: RunSummary = run.summary;
   const b = baseline?.summary;
@@ -552,40 +677,64 @@ function Results(props: { run: KeptRun; baseline?: KeptRun }) {
   return (
     <section className={styles.panel} aria-labelledby="lab-results">
       <div className={styles.panelHead}>
-        <h2 id="lab-results">결과</h2>
+        <h2 id="lab-results">{richMessage('copy.LabPage.109383e344')}</h2>
         <span className={styles.muted}>
-          {s.matches}경기 · 실행 시드 {run.runSeed}
-          {baseline && ` · 기준: ${new Date(baseline.at).toLocaleTimeString('ko-KR')} 실행`}
+          {richMessage('copy.LabPage.334a81526e', {
+            p0: s.matches,
+            p1: run.runSeed,
+            p2:
+              baseline &&
+              sourceMessage('copy.LabPage.4737ef5605', {
+                p0: new Date(baseline.at).toLocaleTimeString(displayLocale()),
+              }),
+          })}
         </span>
       </div>
       <p className={styles.outcome}>
-        좌측 {outcome.leftWins}승 · 무 {outcome.draws} · 우측 {outcome.rightWins}승 · 경기당 득점
-        좌측 <Measured estimate={outcome.leftGoals} /> / 우측{' '}
-        <Measured estimate={outcome.rightGoals} />
+        {richMessage('copy.LabPage.e6a43dde32', {
+          p0: outcome.leftWins,
+          p1: outcome.draws,
+          p2: outcome.rightWins,
+          p3: <Measured estimate={outcome.leftGoals} />,
+          p4: ' ',
+          p5: <Measured estimate={outcome.rightGoals} />,
+        })}
       </p>
-      {s.match && (
-        <div className={styles.match}>
-          <p className={styles.score}>
-            좌측 팀 {s.match.score[0]} : {s.match.score[1]} 우측 팀
-          </p>
-          <ul>
-            {s.match.goals.map((g, i) => (
-              <li key={`g${i}`}>
-                {g.minute}′ 골 · {SIDE_NAMES[g.side]} · {g.name}
-              </li>
-            ))}
-            {s.match.cards.map((c, i) => (
-              <li key={`c${i}`}>
-                {c.minute}′ {CARD[c.kind]} · {SIDE_NAMES[c.side]} · {c.player}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {localizeValue(
+        s.match && (
+          <div className={styles.match}>
+            <p className={styles.score}>
+              {richMessage('copy.LabPage.92d77e82ed', {
+                p0: s.match.score[0],
+                p1: s.match.score[1],
+              })}
+            </p>
+            <ul>
+              {localizeValue(
+                s.match.goals.map((g, i) => (
+                  <li key={`g${i}`}>
+                    {richMessage('copy.LabPage.a228bd6ea3', {
+                      p0: g.minute,
+                      p1: SIDE_NAMES[g.side],
+                      p2: g.name,
+                    })}
+                  </li>
+                )),
+              )}
+              {localizeValue(
+                s.match.cards.map((c, i) => (
+                  <li key={`c${i}`}>
+                    {localizeValue(c.minute)}′ {localizeValue(CARD[c.kind])} ·{' '}
+                    {localizeValue(SIDE_NAMES[c.side])} · {localizeValue(c.player)}
+                  </li>
+                )),
+              )}
+            </ul>
+          </div>
+        ),
       )}
-      {s.unequalSides && (
-        <p className={styles.note}>
-          두 팀의 평균 OVR이 달라 목표 범위(같은 수준의 1부 팀 기준)를 그대로 적용하기 어렵습니다.
-        </p>
+      {localizeValue(
+        s.unequalSides && <p className={styles.note}>{richMessage('copy.LabPage.b3260ea1a1')}</p>,
       )}
       <div className={styles.tables}>
         <TargetTable rows={s.targets} baseline={b?.targets} />
@@ -609,65 +758,84 @@ function KeptRuns(props: {
   onDelete: (id: string) => void;
   onClear: () => void;
 }) {
+  useTextLocale();
   const { kept, shown, baseline, onShow, onPin, onLoad, onDelete, onClear } = props;
   return (
     <section className={styles.panel} aria-labelledby="lab-kept">
       <div className={styles.panelHead}>
-        <h2 id="lab-kept">지난 실행</h2>
-        <span className={styles.muted}>최근 {kept.length}개</span>
+        <h2 id="lab-kept">{richMessage('copy.LabPage.b81302e48a')}</h2>
+        <span className={styles.muted}>
+          {richMessage('copy.LabPage.6e77514482', { p0: kept.length })}
+        </span>
         <button type="button" onClick={onClear} disabled={!kept.length}>
-          모두 지우기
+          {richMessage('copy.LabPage.645b60b46a')}
         </button>
       </div>
-      {kept.length ? (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>시각</th>
-              <th>경기</th>
-              <th>좌측 팀</th>
-              <th>우측 팀</th>
-              <th>변경값</th>
-              <th>동작</th>
-            </tr>
-          </thead>
-          <tbody>
-            {kept.map((k) => (
-              <tr key={k.id} className={cx(k.id === shown && styles.shown)}>
-                <td>
-                  {new Date(k.at).toLocaleTimeString('ko-KR')}
-                  {k.id === baseline && <span className={styles.badge}>기준</span>}
-                </td>
-                <td>{k.count}</td>
-                <td>{sideLine(k.sides[0])}</td>
-                <td>{sideLine(k.sides[1])}</td>
-                <td>{Object.keys(k.overrides).length}개</td>
-                <td className={styles.actions}>
-                  <button type="button" onClick={() => onShow(k.id)} disabled={k.id === shown}>
-                    보기
-                  </button>
-                  {k.id === baseline ? (
-                    <button type="button" onClick={() => onPin(undefined)}>
-                      기준 해제
-                    </button>
-                  ) : (
-                    <button type="button" onClick={() => onPin(k.id)}>
-                      기준으로 고정
-                    </button>
-                  )}
-                  <button type="button" onClick={() => onLoad(k)}>
-                    설정 불러오기
-                  </button>
-                  <button type="button" onClick={() => onDelete(k.id)}>
-                    삭제
-                  </button>
-                </td>
+      {localizeValue(
+        kept.length ? (
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th>{richMessage('copy.LabPage.faea4ccff0')}</th>
+                <th>{richMessage('copy.LabPage.e56314e9a1')}</th>
+                <th>{richMessage('copy.LabPage.d192ee8a47')}</th>
+                <th>{richMessage('copy.LabPage.bb56f4ce84')}</th>
+                <th>{richMessage('copy.LabPage.cb353f0c69')}</th>
+                <th>{richMessage('copy.LabPage.e0d6a8db23')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className={styles.muted}>끝난 실행이 여기에 남습니다.</p>
+            </thead>
+            <tbody>
+              {localizeValue(
+                kept.map((k) => (
+                  <tr key={k.id} className={cx(k.id === shown && styles.shown)}>
+                    <td>
+                      {localizeValue(new Date(k.at).toLocaleTimeString(displayLocale()))}
+                      {localizeValue(
+                        k.id === baseline && (
+                          <span className={styles.badge}>
+                            {richMessage('copy.LabPage.eaea55bff6')}
+                          </span>
+                        ),
+                      )}
+                    </td>
+                    <td>{localizeValue(k.count)}</td>
+                    <td>{localizeValue(sideLine(k.sides[0]))}</td>
+                    <td>{localizeValue(sideLine(k.sides[1]))}</td>
+                    <td>
+                      {richMessage('copy.ConstantsPage.f62174360f', {
+                        p0: Object.keys(k.overrides).length,
+                      })}
+                    </td>
+                    <td className={styles.actions}>
+                      <button type="button" onClick={() => onShow(k.id)} disabled={k.id === shown}>
+                        {richMessage('copy.LabPage.ac5b575fff')}
+                      </button>
+                      {localizeValue(
+                        k.id === baseline ? (
+                          <button type="button" onClick={() => onPin(undefined)}>
+                            {richMessage('copy.LabPage.d4c648b0e0')}
+                          </button>
+                        ) : (
+                          <button type="button" onClick={() => onPin(k.id)}>
+                            {richMessage('copy.LabPage.7fe5caa742')}
+                          </button>
+                        ),
+                      )}
+                      <button type="button" onClick={() => onLoad(k)}>
+                        {richMessage('copy.LabPage.a4ecad8495')}
+                      </button>
+                      <button type="button" onClick={() => onDelete(k.id)}>
+                        {richMessage('slots.delete')}
+                      </button>
+                    </td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        ) : (
+          <p className={styles.muted}>{richMessage('copy.LabPage.78340ab663')}</p>
+        ),
       )}
     </section>
   );
@@ -682,6 +850,7 @@ const keptSide = (side: LabSide): KeptRun['sides'][number] => ({
 });
 
 export function LabPage() {
+  useTextLocale();
   const [state, setState] = useState<LabState>(() => loadLabState());
   const [sides, setSides] = useState<[LabSide | undefined, LabSide | undefined]>([
     undefined,
@@ -753,7 +922,9 @@ export function LabPage() {
       (error: Error) => {
         track(index, -1);
         if (pool.current !== p) return;
-        setMessage(`${SIDE_NAMES[index]}을 만들지 못했습니다: ${error.message}`);
+        setMessage(
+          sourceMessage('copy.LabPage.e9654a4bd0', { p0: SIDE_NAMES[index], p1: error.message }),
+        );
       },
     );
   };
@@ -786,7 +957,7 @@ export function LabPage() {
     const s = state.sides[index];
     if (
       s.edited &&
-      !window.confirm(`${SIDE_NAMES[index]}의 선수별 OVR 설정이 새로 생성한 값으로 바뀝니다.`)
+      !window.confirm(displayMessage('copy.LabPage.9c82b8b02b', { p0: SIDE_NAMES[index] }))
     )
       return;
     generate(index, { ...s, edited: false });
@@ -825,9 +996,12 @@ export function LabPage() {
         setShown(kept.id);
       } else if (outcome.status === 'rejected')
         setMessage(
-          `적용할 수 없는 수치가 있습니다: ${outcome.rejected.map((r) => `${r.path} (${SKIP_REASON[r.reason]})`).join(', ')}`,
+          sourceMessage('copy.LabPage.1b78f82acc', {
+            p0: outcome.rejected.map((r) => `${r.path} (${SKIP_REASON[r.reason]})`).join(', '),
+          }),
         );
-      else if (outcome.status === 'failed') setMessage(`실행에 실패했습니다: ${outcome.message}`);
+      else if (outcome.status === 'failed')
+        setMessage(sourceMessage('copy.LabPage.512408b5ba', { p0: outcome.message }));
     });
   };
 
@@ -857,12 +1031,15 @@ export function LabPage() {
           setWatched({ key, seed, playback: outcome.playback, world });
         } else if (outcome.status === 'rejected')
           failed(
-            `적용할 수 없는 수치가 있습니다: ${outcome.rejected.map((r) => `${r.path} (${SKIP_REASON[r.reason]})`).join(', ')}`,
+            sourceMessage('copy.LabPage.1b78f82acc', {
+              p0: outcome.rejected.map((r) => `${r.path} (${SKIP_REASON[r.reason]})`).join(', '),
+            }),
           );
-        else failed(`관전 경기를 치르지 못했습니다: ${outcome.message}`);
+        else failed(sourceMessage('copy.LabPage.83894ffb47', { p0: outcome.message }));
       },
       (error: Error) =>
-        pool.current === p && failed(`관전 경기를 치르지 못했습니다: ${error.message}`),
+        pool.current === p &&
+        failed(sourceMessage('copy.LabPage.83894ffb47', { p0: error.message })),
     );
   };
 
@@ -881,7 +1058,7 @@ export function LabPage() {
   };
 
   const resetAll = () => {
-    if (!window.confirm('이 브라우저에 남긴 팀, 수치, 지난 실행을 모두 지웁니다.')) return;
+    if (!window.confirm(displayMessage('copy.LabPage.53956ce6eb'))) return;
     running?.run.cancel();
     const fresh = defaultLabState();
     setState(fresh);
@@ -901,16 +1078,16 @@ export function LabPage() {
     runBar = (
       <>
         <progress
-          aria-label="진행"
+          aria-label={displayMessage('copy.LabPage.52e94db6f6')}
           max={running.total}
           value={running.done}
           className={styles.progress}
         />
         <span>
-          {running.done} / {running.total}경기
+          {richMessage('copy.LabPage.49b7facf92', { p0: running.done, p1: running.total })}
         </span>
         <button type="button" onClick={() => running.run.cancel()}>
-          취소
+          {richMessage('common.cancel')}
         </button>
       </>
     );
@@ -918,21 +1095,21 @@ export function LabPage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <h1>경기 실험실</h1>
-        <a href="/constants">게임플레이 영향 요소 ↗</a>
-        <p className={styles.muted}>
-          게임 저장과 상관없는 실험 공간입니다. 여기서 바꾼 수치는 이 페이지의 실험에만 쓰입니다.
-        </p>
+        <h1>{richMessage('copy.LabPage.1ba62d7fd5')}</h1>
+        <a href="/constants">{richMessage('copy.LabPage.d8e88345c3')}</a>
+        <p className={styles.muted}>{richMessage('copy.LabPage.ef624e9171')}</p>
         <button type="button" onClick={resetAll}>
-          모두 초기화
+          {richMessage('copy.LabPage.3125395484')}
         </button>
       </header>
-      {message && (
-        <p role="alert" className={styles.alert}>
-          {message}
-        </p>
+      {localizeValue(
+        message && (
+          <p role="alert" className={styles.alert}>
+            {localizeValue(message)}
+          </p>
+        ),
       )}
-      <section className={styles.watch} aria-label="관전">
+      <section className={styles.watch} aria-label={displayMessage('copy.LabPage.abde4e363d')}>
         <div className={cx(styles.panel, styles.runBar)}>
           <button
             type="button"
@@ -940,65 +1117,77 @@ export function LabPage() {
             onClick={() => watch(state.watch.seed)}
             disabled={!ready}
           >
-            관전
+            {richMessage('copy.LabPage.abde4e363d')}
           </button>
           <label>
-            관전 시드
-            <input
-              className={styles.seed}
-              aria-label="관전 시드"
-              value={state.watch.seed}
-              onChange={(e) => setState((s) => ({ ...s, watch: { seed: e.target.value } }))}
-            />
+            {richMessage('copy.LabPage.59fc7f1b65', {
+              p0: (
+                <input
+                  className={styles.seed}
+                  aria-label={displayMessage('copy.LabPage.165c6c4dcd')}
+                  value={state.watch.seed}
+                  onChange={(e) => setState((s) => ({ ...s, watch: { seed: e.target.value } }))}
+                />
+              ),
+            })}
           </label>
-          {watching !== undefined && (
-            <>
-              <progress aria-label="관전 경기 준비" className={styles.progress} />
-              <span role="status">{watching} 경기를 치르는 중…</span>
-            </>
+          {localizeValue(
+            watching !== undefined && (
+              <>
+                <progress
+                  aria-label={displayMessage('copy.LabPage.243fe41d3a')}
+                  className={styles.progress}
+                />
+                <span role="status">
+                  {richMessage('copy.LabPage.d5281a40ec', { p0: watching })}
+                </span>
+              </>
+            ),
           )}
-          <span className={styles.muted}>
-            지금의 두 팀과 수치로 한 경기를 치러 게임의 경기 화면 그대로 보여 줍니다.
-          </span>
+          <span className={styles.muted}>{richMessage('copy.LabPage.915243021e')}</span>
         </div>
-        {watched && (
-          <div className={styles.watchView} ref={watchView}>
-            <Pitch
-              key={watched.key}
-              playback={watched.playback}
-              world={watched.world}
-              actions={() => (
-                <div className={styles.actions}>
-                  <button type="button" onClick={() => watch(watched.seed)} disabled={!ready}>
-                    다시 보기
-                  </button>
-                  <button type="button" onClick={() => watch(newSeed())} disabled={!ready}>
-                    새 경기
-                  </button>
-                </div>
-              )}
-            />
-          </div>
+        {localizeValue(
+          watched && (
+            <div className={styles.watchView} ref={watchView}>
+              <Pitch
+                key={watched.key}
+                playback={watched.playback}
+                world={watched.world}
+                actions={() => (
+                  <div className={styles.actions}>
+                    <button type="button" onClick={() => watch(watched.seed)} disabled={!ready}>
+                      {richMessage('copy.LabPage.6bf1632192')}
+                    </button>
+                    <button type="button" onClick={() => watch(newSeed())} disabled={!ready}>
+                      {richMessage('copy.LabPage.1e49b0211f')}
+                    </button>
+                  </div>
+                )}
+              />
+            </div>
+          ),
         )}
       </section>
       <div className={styles.columns}>
         <section className={styles.panel} aria-labelledby="lab-sides">
           <div className={styles.panelHead}>
-            <h2 id="lab-sides">팀</h2>
+            <h2 id="lab-sides">{richMessage('navigation.team')}</h2>
           </div>
           <div className={styles.sides}>
-            {([0, 1] as const).map((i) => (
-              <SidePanel
-                key={i}
-                index={i}
-                settings={state.sides[i]}
-                side={sides[i]}
-                busy={busy[i] > 0}
-                onSettings={(change) => updateSide(i, change)}
-                onGenerate={() => regenerate(i)}
-                onOvr={(player, ovr) => setOvr(i, player, ovr)}
-              />
-            ))}
+            {localizeValue(
+              ([0, 1] as const).map((i) => (
+                <SidePanel
+                  key={i}
+                  index={i}
+                  settings={state.sides[i]}
+                  side={sides[i]}
+                  busy={busy[i] > 0}
+                  onSettings={(change) => updateSide(i, change)}
+                  onGenerate={() => regenerate(i)}
+                  onOvr={(player, ovr) => setOvr(i, player, ovr)}
+                />
+              )),
+            )}
           </div>
         </section>
         <ValuesPanel
@@ -1007,39 +1196,50 @@ export function LabPage() {
           onChange={(overrides) => setState((s) => ({ ...s, overrides }))}
         />
       </div>
-      <section className={cx(styles.panel, styles.runBar)} aria-label="실행">
+      <section
+        className={cx(styles.panel, styles.runBar)}
+        aria-label={displayMessage('copy.LabPage.ac2a58826d')}
+      >
         <label>
-          경기 수
-          <select
-            aria-label="경기 수"
-            value={state.run.count}
-            onChange={(e) =>
-              setState((s) => ({ ...s, run: { ...s.run, count: Number(e.target.value) } }))
-            }
-          >
-            {RUN_COUNTS.map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
+          {richMessage('copy.LabPage.acf8fc8e3c', {
+            p0: (
+              <select
+                aria-label={displayMessage('copy.LabPage.f07dd0f9ea')}
+                value={state.run.count}
+                onChange={(e) =>
+                  setState((s) => ({ ...s, run: { ...s.run, count: Number(e.target.value) } }))
+                }
+              >
+                {localizeValue(
+                  RUN_COUNTS.map((n) => (
+                    <option key={n} value={n}>
+                      {localizeValue(n)}
+                    </option>
+                  )),
+                )}
+              </select>
+            ),
+          })}
         </label>
         <label>
-          실행 시드
-          <input
-            className={styles.seed}
-            aria-label="실행 시드"
-            value={state.run.runSeed}
-            onChange={(e) =>
-              setState((s) => ({ ...s, run: { ...s.run, runSeed: e.target.value } }))
-            }
-          />
+          {richMessage('copy.LabPage.b45d3b9498', {
+            p0: (
+              <input
+                className={styles.seed}
+                aria-label={displayMessage('copy.LabPage.0c6ad2d587')}
+                value={state.run.runSeed}
+                onChange={(e) =>
+                  setState((s) => ({ ...s, run: { ...s.run, runSeed: e.target.value } }))
+                }
+              />
+            ),
+          })}
         </label>
         <button
           type="button"
           onClick={() => setState((s) => ({ ...s, run: { ...s.run, runSeed: newSeed() } }))}
         >
-          새로 뽑기
+          {richMessage('copy.LabPage.85e81f0a89')}
         </button>
         <button
           type="button"
@@ -1047,12 +1247,14 @@ export function LabPage() {
           onClick={start}
           disabled={!ready || !!running}
         >
-          시뮬레이션
+          {richMessage('copy.LabPage.e86faa0dd5')}
         </button>
-        <span className={styles.muted}>변경값 {changed}개</span>
-        {runBar}
+        <span className={styles.muted}>
+          {richMessage('copy.LabPage.281431971f', { p0: changed })}
+        </span>
+        {localizeValue(runBar)}
       </section>
-      {current && <Results run={current} baseline={baseline} />}
+      {localizeValue(current && <Results run={current} baseline={baseline} />)}
       <KeptRuns
         kept={state.kept}
         shown={current?.id}

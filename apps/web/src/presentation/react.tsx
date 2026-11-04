@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from './text';
+import { richMessage } from './LocalizedMessage';
 import {
   createContext,
   useContext,
@@ -26,6 +29,7 @@ export function PresentationProvider({
   controller: PresentationController;
   children: ReactNode;
 }) {
+  useTextLocale();
   const [picker, setPicker] = useState<{ field?: PresentationField }>();
   return (
     <PresentationContext value={controller}>
@@ -37,7 +41,7 @@ export function PresentationProvider({
           close: () => setPicker(undefined),
         }}
       >
-        {children}
+        {localizeValue(children)}
       </SettingsContext>
     </PresentationContext>
   );
@@ -89,6 +93,7 @@ export function usePresentationSettings() {
 
 /** After first success, resource changes never unmount the game or its drafts/playback. */
 export function PresentationBoundary({ children }: { children: ReactNode }) {
+  useTextLocale();
   const snapshot = usePresentation();
   const controller = usePresentationController();
   if (snapshot.locale && snapshot.theme) return children;
@@ -98,14 +103,18 @@ export function PresentationBoundary({ children }: { children: ReactNode }) {
         role={snapshot.error ? 'alert' : 'status'}
         data-testid={snapshot.error ? 'presentation-initial-error' : 'presentation-pending'}
       >
-        {snapshot.error
-          ? '화면 설정을 불러오지 못했어요. 다시 시도해 주세요.'
-          : '화면 설정을 불러오는 중…'}
+        {localizeValue(
+          snapshot.error
+            ? sourceMessage('copy.react.16f89a11ed')
+            : sourceMessage('copy.react.415b7dd8e6'),
+        )}
       </p>
-      {!!snapshot.error && (
-        <button data-testid="presentation-retry" onClick={() => void controller.retry()}>
-          다시 시도
-        </button>
+      {localizeValue(
+        !!snapshot.error && (
+          <button data-testid="presentation-retry" onClick={() => void controller.retry()}>
+            {richMessage('presentation.retry')}
+          </button>
+        ),
       )}
     </main>
   );

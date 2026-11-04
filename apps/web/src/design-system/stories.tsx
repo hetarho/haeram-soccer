@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Story } from './catalog';
 import type { Sample, previewRuntime } from './client';
@@ -20,9 +23,10 @@ import { ResultBadge } from '../ui/ResultBadge';
 import { Money } from '../ui/Money';
 import { AnimatedMoney } from '../ui/AnimatedMoney';
 import { BetaMark } from '../ui/BetaMark';
-import { ClubLink } from '../ui/ClubLink';
-import { PlayerLink, PlayerSheetHost } from '../ui/PlayerSheet';
-import { TeamSheetHost } from '../ui/TeamSheet';
+import { ClubLink } from '../entities/club';
+import { openPlayer, PlayerLink } from '../entities/player';
+import { ClubDetailHost } from '../widgets/club-detail';
+import { PlayerDetailHost } from '../widgets/player-detail';
 import { PersonCareerLink } from '../ui/PersonCareer';
 import { Term } from '../ui/Term';
 import { Chart } from '../ui/Chart';
@@ -58,7 +62,6 @@ import { StrategyPanel } from '../ui/StrategyPanel';
 import { PlayerProfile } from '../ui/PlayerProfile';
 import { PlayerPerformance } from '../ui/PlayerPerformance';
 import { PlayerAdvancedStats } from '../ui/PlayerAdvancedStats';
-import { PlayerSheet } from '../ui/PlayerSheetDialog';
 import { PlayerComparison } from '../ui/PlayerComparison';
 import Rich from '../ui/Rich';
 import { RecruitmentDesk } from '../ui/RecruitmentDesk';
@@ -80,7 +83,7 @@ import { CareerRecordBook, TrophyCabinet, ClubLeaders } from '../ui/CareerRecord
 import { ClubTrends, SeasonTable } from '../ui/ClubTrends';
 import { SeasonReview } from '../ui/SeasonReview';
 import { StartFlow } from '../ui/StartFlow';
-import { canAfford, takeoverYear, type ClubSheetFacts } from '../ui/startChoices';
+import { canAfford, takeoverYear, type ClubProfile } from '../ui/startChoices';
 import type {
   ClubListing,
   StartChoice,
@@ -119,162 +122,190 @@ const LabPage = lazy(() =>
 );
 
 type Runtime = Sample & ReturnType<typeof previewRuntime>;
-const Section = ({ title, children }: { title: string; children: ReactNode }) => (
-  <section className="ds-example">
-    <h2>{title}</h2>
-    <div className="ds-example-body">{children}</div>
-  </section>
-);
+const Section = ({ title, children }: { title: string; children: ReactNode }) => {
+  useTextLocale();
+  return (
+    <section className="ds-example">
+      <h2>{localizeValue(title)}</h2>
+      <div className="ds-example-body">{localizeValue(children)}</div>
+    </section>
+  );
+};
 const noop = () => {};
 
 function Controls() {
+  useTextLocale();
   const [selected, setSelected] = useState('balanced');
   const [term, setTerm] = useState<1 | 2 | 3 | 4 | 5>(3);
   return (
     <>
-      <Section title="버튼 · Primary / Secondary / Tertiary">
+      <Section title={displayMessage('copy.stories.8da3c6e3b2')}>
         <div className="ds-button-variants">
           <div>
-            <span>Primary · 주요 동작</span>
+            <span>{richMessage('copy.stories.edcd00e464')}</span>
             <button data-ui="primary" className={app.primary}>
-              경기 시작
+              {richMessage('copy.stories.106c5fab1b')}
             </button>
             <button data-ui="primary" disabled>
-              경기 시작
+              {richMessage('copy.stories.106c5fab1b')}
             </button>
           </div>
           <div>
-            <span>Secondary · 보조 동작</span>
-            <button data-ui="secondary">선택 적용</button>
+            <span>{richMessage('copy.stories.e0674f2b5c')}</span>
+            <button data-ui="secondary">{richMessage('copy.stories.379f00798f')}</button>
             <button data-ui="secondary" disabled>
-              선택 적용
+              {richMessage('copy.stories.379f00798f')}
             </button>
           </div>
           <div>
-            <span>Tertiary · 추가 동작</span>
-            <button data-ui="tertiary">기록 보기</button>
+            <span>{richMessage('copy.stories.c7ac39dcb7')}</span>
+            <button data-ui="tertiary">{richMessage('copy.stories.d2276a8437')}</button>
             <button data-ui="tertiary" disabled>
-              기록 보기
+              {richMessage('copy.stories.d2276a8437')}
             </button>
           </div>
         </div>
         <div className="ds-row">
-          <button>기본 버튼</button>
-          <button disabled>비활성 버튼</button>
-          <button aria-label="설정">
+          <button>{richMessage('copy.stories.d0d029381c')}</button>
+          <button disabled>{richMessage('copy.stories.14d967638b')}</button>
+          <button aria-label={displayMessage('shell.menu')}>
             <PixelIcon name="menu" />
           </button>
         </div>
       </Section>
-      <Section title="입력 필드">
+      <Section title={displayMessage('copy.stories.3aab4cbf9a')}>
         <div className="ds-row ds-fields">
           <label>
-            클럽 이름
-            <input defaultValue="Haeram Athletic" />
+            {richMessage('copy.stories.3e354a77d5', {
+              p0: <input defaultValue="Haeram Athletic" />,
+            })}
           </label>
           <label>
-            숫자
-            <input type="number" defaultValue={1950} />
+            {richMessage('copy.stories.9813fd8d43', {
+              p0: <input type="number" defaultValue={1950} />,
+            })}
           </label>
           <label>
-            빈 값
-            <input placeholder="클럽 이름을 입력하세요" />
+            {richMessage('copy.stories.cb541a4058', {
+              p0: <input placeholder={displayMessage('copy.stories.c4b779ece3')} />,
+            })}
           </label>
           <label>
-            비활성
-            <input disabled value="편집할 수 없는 값" readOnly />
+            {richMessage('copy.stories.72f445a329', {
+              p0: <input disabled value={sourceMessage('copy.stories.0891edaa9e')} readOnly />,
+            })}
           </label>
         </div>
         <label className="ds-block-label">
-          메모
-          <textarea defaultValue="긴 한국어 문장과 여러 줄 텍스트의 여백을 확인합니다." rows={3} />
+          {richMessage('copy.stories.ec6a040be9', {
+            p0: <textarea defaultValue={sourceMessage('copy.stories.cf396e6271')} rows={3} />,
+          })}
         </label>
       </Section>
-      <Section title="체크박스">
+      <Section title={displayMessage('copy.stories.e28a0b7467')}>
         <div className="ds-row">
           <label>
-            <input type="checkbox" defaultChecked /> 선택한 옵션
+            {richMessage('copy.stories.3b25a7c19c', {
+              p0: <input type="checkbox" defaultChecked />,
+            })}
+          </label>
+          <label>{richMessage('copy.stories.1fa5f89a4e', { p0: <input type="checkbox" /> })}</label>
+          <label>
+            {richMessage('copy.stories.466631fd57', { p0: <input type="checkbox" disabled /> })}
           </label>
           <label>
-            <input type="checkbox" /> 기본 옵션
-          </label>
-          <label>
-            <input type="checkbox" disabled /> 비활성 옵션
-          </label>
-          <label>
-            <input type="checkbox" defaultChecked disabled /> 비활성 선택
+            {richMessage('copy.stories.1f8a258228', {
+              p0: <input type="checkbox" defaultChecked disabled />,
+            })}
           </label>
         </div>
       </Section>
-      <Section title="Select · Segments">
+      <Section title={displayMessage('copy.stories.d24bfbd377')}>
         <div className="ds-row ds-selects">
-          <Select aria-label="전술 선택" value={selected} onValueChange={setSelected}>
-            <option value="balanced">균형 잡힌 플레이</option>
-            <option value="possession" data-hint="점유율을 높이는 전술">
-              점유율
+          <Select
+            aria-label={displayMessage('copy.stories.04991a4957')}
+            value={selected}
+            onValueChange={setSelected}
+          >
+            <option value="balanced">{richMessage('copy.stories.a7e151c7eb')}</option>
+            <option value="possession" data-hint={sourceMessage('copy.stories.65bf056942')}>
+              {richMessage('copy.stories.6169842c01')}
             </option>
-            <option value="counter">역습</option>
+            <option value="counter">{richMessage('copy.stories.6b52f66491')}</option>
             <option value="press" disabled>
-              압박 · 선택 불가
+              {richMessage('copy.stories.9be767b50d')}
             </option>
           </Select>
-          <Select aria-label="비활성 선택" value="off" onValueChange={noop} disabled>
-            <option value="off">선택할 수 없어요</option>
+          <Select
+            aria-label={displayMessage('copy.stories.79aaee6e4e')}
+            value="off"
+            onValueChange={noop}
+            disabled
+          >
+            <option value="off">{richMessage('copy.stories.8bb10df879')}</option>
           </Select>
         </div>
         <Segments
-          label="전술 세그먼트"
+          label={displayMessage('copy.stories.68eb080998')}
           options={[
-            ['balanced', '균형'],
-            ['possession', '점유율'],
-            ['counter', '역습'],
+            ['balanced', sourceMessage('copy.stories.634269a095')],
+            ['possession', sourceMessage('copy.stories.6169842c01')],
+            ['counter', sourceMessage('copy.stories.6b52f66491')],
           ]}
           value={selected}
           onChange={setSelected}
         />
       </Section>
-      <Section title="TermDial">
-        <TermDial label="계약 기간" value={term} onChange={setTerm} />
+      <Section title={displayMessage('copy.stories.e115500fcc')}>
+        <TermDial
+          label={displayMessage('copy.stories.ebf9376720')}
+          value={term}
+          onChange={setTerm}
+        />
       </Section>
     </>
   );
 }
 function Cards({ runtime }: { runtime: Runtime }) {
+  useTextLocale();
   return (
     <>
-      <Section title="Card · 3단계 배경 면">
+      <Section title={displayMessage('copy.stories.13522992e9')}>
         <Card
           as="section"
           surface="sheet"
-          title="내용지 · 2단계"
-          meta="바탕 · 1단계는 이 예제 뒤의 캔버스"
+          title={displayMessage('copy.stories.48d0a6dcab')}
+          meta={sourceMessage('copy.stories.1b29e127ae')}
         >
           <div className="ds-grid">
-            <Card title="기록 카드 · 3단계" meta="프리미어리그 · 홈 경기">
-              <b>HAERAM 2–1 ATHLETIC</b>
-              <p>제목과 기록은 가장 밝은 종이 면에서 읽습니다.</p>
+            <Card
+              title={displayMessage('copy.stories.ba5e91d811')}
+              meta={sourceMessage('copy.stories.21b3bdf60f')}
+            >
+              <b>{richMessage('copy.stories.cdf73c5e68')}</b>
+              <p>{richMessage('copy.stories.0c754ae114')}</p>
             </Card>
             <Card
-              title="액션이 있는 카드"
-              meta="보조 정보 · 경기 결과"
+              title={displayMessage('copy.stories.5d34747c15')}
+              meta={sourceMessage('copy.stories.7fbb0aa9c3')}
               actions={
                 <>
-                  <button data-ui="primary">분석 보기</button>
-                  <button>경기 자료</button>
+                  <button data-ui="primary">{richMessage('copy.stories.bde16b30e5')}</button>
+                  <button>{richMessage('copy.stories.a3b55318c6')}</button>
                 </>
               }
             >
-              <p>긴 한국어 제목과 본문, 여러 버튼도 내용에 맞게 줄바꿈합니다.</p>
+              <p>{richMessage('copy.stories.cdbca72b5d')}</p>
             </Card>
           </div>
         </Card>
       </Section>
-      <Section title="본문만 있는 Card">
-        <Card aria-label="짧은 기록">
-          <span>다음 경기는 토요일에 열립니다.</span>
+      <Section title={displayMessage('copy.stories.af5fa1460a')}>
+        <Card aria-label={displayMessage('copy.stories.d426abebb7')}>
+          <span>{richMessage('copy.stories.e6740b3682')}</span>
         </Card>
       </Section>
-      <Section title="실제 사용 · 경기 수첩">
+      <Section title={displayMessage('copy.stories.5cf258e1e3')}>
         <FixtureNotebook w={runtime.view.world} client={runtime.client} />
       </Section>
     </>
@@ -282,160 +313,177 @@ function Cards({ runtime }: { runtime: Runtime }) {
 }
 
 function Tabs({ runtime }: { runtime: Runtime }) {
+  useTextLocale();
   const [tab, setTab] = useState('overview');
   const w = runtime.view.world;
   return (
     <>
-      <Section title="TabList · TabPanel">
+      <Section title={displayMessage('copy.stories.3b4a1a5795')}>
         <TabList
           tabs={[
-            ['overview', '개요'],
-            ['players', '선수 기록'],
-            ['details', '상세 분석'],
+            ['overview', sourceMessage('copy.stories.dc015df639')],
+            ['players', sourceMessage('copy.stories.c50c28f608')],
+            ['details', sourceMessage('copy.stories.ba044580a1')],
           ]}
           value={tab}
           onChange={setTab}
-          label="예제 탭"
+          label={displayMessage('copy.stories.82bbea1a8e')}
           idPrefix="example"
         />
         <TabPanel value={tab} idPrefix="example">
           <div className={app.panelBody}>
-            {tab === 'overview'
-              ? '구단의 현재 상태를 확인합니다.'
-              : tab === 'players'
-                ? '선수별 기록을 확인합니다.'
-                : '경기별 분석을 확인합니다.'}
+            {localizeValue(
+              tab === 'overview'
+                ? sourceMessage('copy.stories.e229f6fce6')
+                : tab === 'players'
+                  ? sourceMessage('copy.stories.d384ae3203')
+                  : sourceMessage('copy.stories.d9c1fd7839'),
+            )}
           </div>
         </TabPanel>
       </Section>
-      <Section title="Panel · Attributes">
+      <Section title={displayMessage('copy.stories.0f07336fde')}>
         <Panel
-          title="구단 현황"
-          note="시즌 요약"
-          action={<button data-ui="link">상세 보기 →</button>}
-          footer="등록 선수와 현재 전력은 선수단 변경에 따라 갱신됩니다."
+          title={displayMessage('copy.stories.62618f9b9e')}
+          note={sourceMessage('copy.stories.9361c6a879')}
+          action={<button data-ui="link">{richMessage('copy.stories.5e604f3f8c')}</button>}
+          footer={sourceMessage('copy.stories.a699ad1a3c')}
         >
           <div className={app.panelBody}>
             <Attributes
               rows={[
-                ['소속 리그', '잉글랜드'],
-                ['선수', 24, '등록한 선수 수'],
-                ['현재 전력', <OvrBadge key="ovr" value={72} />],
-                ['상태', '좋음'],
+                [
+                  sourceMessage('copy.stories.66fe016209'),
+                  sourceMessage('copy.stories.4b8e088602'),
+                ],
+                [sourceMessage('team.column.player'), 24, sourceMessage('copy.stories.1ad794cb8f')],
+                [sourceMessage('copy.stories.745afb3b4a'), <OvrBadge key="ovr" value={72} />],
+                [
+                  sourceMessage('copy.stories.e10195a123'),
+                  sourceMessage('copy.stories.4b15b49bbe'),
+                ],
               ]}
             />
           </div>
         </Panel>
       </Section>
-      <Section title="Table">
+      <Section title={displayMessage('copy.stories.16d1c9050a')}>
         <Table w={w} ids={ownLeagueIds(w)} limit={8} />
       </Section>
-      <Section title="OfficeBar">
-        <OfficeBar title="선수 계약" />
+      <Section title={displayMessage('copy.stories.ef2f1fee9e')}>
+        <OfficeBar title={displayMessage('copy.stories.cb2c18aee9')} />
       </Section>
     </>
   );
 }
 function Icons() {
+  useTextLocale();
   const theme = useTheme();
   const icons = Object.keys(theme.pack.icons).filter((key) => !key.startsWith('trophy.'));
   return (
     <>
-      <Section title="테마의 전체 의미 아이콘">
+      <Section title={displayMessage('copy.stories.729ac61e59')}>
         <div className="ds-icon-grid">
-          {icons.map((name) => (
-            <div key={name}>
-              <PixelIcon name={name as Parameters<typeof PixelIcon>[0]['name']} size={28} />
-              <code>{name}</code>
-            </div>
-          ))}
+          {localizeValue(
+            icons.map((name) => (
+              <div key={name}>
+                <PixelIcon name={name as Parameters<typeof PixelIcon>[0]['name']} size={28} />
+                <code>{localizeValue(name)}</code>
+              </div>
+            )),
+          )}
         </div>
       </Section>
-      <Section title="TrophyIcon · 획득 / 미획득">
+      <Section title={displayMessage('copy.stories.30364f4f94')}>
         <div className="ds-icon-grid">
-          {(
-            [
-              'league',
-              'cup',
-              'continental',
-              'final',
-              'promotion',
-              'relegation',
-              'best',
-            ] as TrophyKind[]
-          ).map((kind) => (
-            <div key={kind}>
-              <TrophyIcon kind={kind} />
-              <TrophyIcon kind={kind} earned={false} />
-              <code>{kind}</code>
-            </div>
-          ))}
+          {localizeValue(
+            (
+              [
+                'league',
+                'cup',
+                'continental',
+                'final',
+                'promotion',
+                'relegation',
+                'best',
+              ] as TrophyKind[]
+            ).map((kind) => (
+              <div key={kind}>
+                <TrophyIcon kind={kind} />
+                <TrophyIcon kind={kind} earned={false} />
+                <code>{localizeValue(kind)}</code>
+              </div>
+            )),
+          )}
         </div>
       </Section>
     </>
   );
 }
 function Badges({ runtime }: { runtime: Runtime }) {
+  useTextLocale();
   const w = runtime.view.world,
     player = w.players[0];
   return (
     <>
-      <Section title="ResultBadge · 승 · 무 · 패">
+      <Section title={displayMessage('copy.stories.79cb83e15f')}>
         <div className="ds-row">
-          <ResultBadge result="승" />
-          <ResultBadge result="무" />
-          <ResultBadge result="패" />
+          <ResultBadge result={sourceMessage('result.win')} />
+          <ResultBadge result={sourceMessage('result.draw')} />
+          <ResultBadge result={sourceMessage('result.loss')} />
         </div>
       </Section>
-      <Section title="ResultBadge · 최근 경기 점수">
+      <Section title={displayMessage('copy.stories.9374611636')}>
         <div className="ds-row">
-          <ResultBadge result="승" score={[2, 1]} />
-          <ResultBadge result="무" score={[0, 0]} />
-          <ResultBadge result="패" score={[1, 3]} />
-          <ResultBadge result="승" score={[10, 2]} />
+          <ResultBadge result={sourceMessage('result.win')} score={[2, 1]} />
+          <ResultBadge result={sourceMessage('result.draw')} score={[0, 0]} />
+          <ResultBadge result={sourceMessage('result.loss')} score={[1, 3]} />
+          <ResultBadge result={sourceMessage('result.win')} score={[10, 2]} />
         </div>
       </Section>
-      <Section title="HomeAwayBadge · 홈과 원정">
+      <Section title={displayMessage('copy.stories.3a7a2de9a0')}>
         <div className="ds-row">
           <HomeAwayBadge side="home" />
           <HomeAwayBadge side="away" />
         </div>
       </Section>
-      <Section title="PositionBadge · 골키퍼 · 수비 · 미드필드 · 공격">
+      <Section title={displayMessage('copy.stories.98dfaa1092')}>
         <div className="ds-row">
-          {POSITIONS.map((position) => (
-            <PositionBadge key={position} position={position} />
-          ))}
+          {localizeValue(
+            POSITIONS.map((position) => <PositionBadge key={position} position={position} />),
+          )}
         </div>
       </Section>
-      <Section title="StaffRoleBadge · 감독 · 단장 · 코치진">
+      <Section title={displayMessage('copy.stories.0339e2b979')}>
         <div className="ds-row">
-          {(['manager', ...STAFF_ROLES] as const).map((post) => (
-            <StaffRoleBadge key={post} post={post} />
-          ))}
+          {localizeValue(
+            (['manager', ...STAFF_ROLES] as const).map((post) => (
+              <StaffRoleBadge key={post} post={post} />
+            )),
+          )}
         </div>
       </Section>
-      <Section title="OvrBadge · 등급과 잠재력">
+      <Section title={displayMessage('copy.stories.1cf17632da')}>
         <div className="ds-row">
-          {[42, 58, 70, 80, 90].map((value) => (
-            <OvrBadge key={value} value={value} role="ST" />
-          ))}
+          {localizeValue(
+            [42, 58, 70, 80, 90].map((value) => <OvrBadge key={value} value={value} role="ST" />),
+          )}
           <OvrBadge value={72} role="CM" potential={86} />
           <OvrBadge value={91} role="GK" large />
         </div>
       </Section>
-      <Section title="행 안의 오버롤 · 5단계">
+      <Section title={displayMessage('copy.stories.84ab5c090b')}>
         <Attributes
           rows={[
-            ['브론즈 · 50 미만', <OvrBadge key="bronze" value={42} />],
-            ['실버 · 50–64', <OvrBadge key="silver" value={58} />],
-            ['골드 · 65–74', <OvrBadge key="gold" value={70} />],
-            ['플래티넘 · 75–84', <OvrBadge key="platinum" value={80} />],
-            ['루비 · 85+', <OvrBadge key="ruby" value={90} />],
+            [sourceMessage('copy.stories.b2f5bb4485'), <OvrBadge key="bronze" value={42} />],
+            [sourceMessage('copy.stories.ea61e88c69'), <OvrBadge key="silver" value={58} />],
+            [sourceMessage('copy.stories.28ab0d9c9e'), <OvrBadge key="gold" value={70} />],
+            [sourceMessage('copy.stories.7d7ecf0bd4'), <OvrBadge key="platinum" value={80} />],
+            [sourceMessage('copy.stories.e87fbf653b'), <OvrBadge key="ruby" value={90} />],
           ]}
         />
       </Section>
-      <Section title="금액 · BETA">
+      <Section title={displayMessage('copy.stories.74426b646c')}>
         <div className="ds-row">
           <Money value="1250000" code="ENG" year={w.year} />
           <Money value="-850000" code="ENG" year={w.year} />
@@ -444,7 +492,7 @@ function Badges({ runtime }: { runtime: Runtime }) {
           <BetaMark version />
         </div>
       </Section>
-      <Section title="상세 정보 링크">
+      <Section title={displayMessage('copy.stories.57e41b8a97')}>
         <div className="ds-row">
           <ClubLink w={w} id={w.playerClub} />
           <PlayerLink id={player.id} name={player.name} />
@@ -456,19 +504,26 @@ function Badges({ runtime }: { runtime: Runtime }) {
   );
 }
 function Charts() {
+  useTextLocale();
   return (
     <>
-      <Section title="Chart">
+      <Section title={displayMessage('copy.stories.3e5b90ae05')}>
         <Chart
-          label="시즌별 전력"
+          label={displayMessage('copy.stories.0c2041254e')}
           values={[42, 46, 44, 56, 62, 58, 72]}
           labels={['1950', '1951', '1952', '1953', '1954', '1955', '1956']}
         />
       </Section>
-      <Section title="MaterialPitch · HeatPitch">
+      <Section title={displayMessage('copy.stories.a05d8e00e4')}>
         <div className="ds-grid">
-          <MaterialPitch label="공격 방향 분석">
-            <circle cx="55" cy="40" r="5" fill="var(--accent)" data-label="예시 공격 위치" />
+          <MaterialPitch label={displayMessage('copy.stories.6e427f1cbb')}>
+            <circle
+              cx="55"
+              cy="40"
+              r="5"
+              fill="var(--accent)"
+              data-label={sourceMessage('copy.stories.8ed79e92e2')}
+            />
           </MaterialPitch>
           <HeatPitch
             map={{
@@ -477,21 +532,23 @@ function Charts() {
               ),
               touches: 225,
             }}
-            label="선수 터치 히트맵"
+            label={displayMessage('copy.stories.7eab29dbe3')}
           />
         </div>
       </Section>
-      <Section title="FormationPitch">
+      <Section title={displayMessage('copy.stories.9c5e998784')}>
         <div className="ds-grid">
-          {(['balanced', 'possession', 'counter', 'press'] as const).map((tactic) => (
-            <FormationPitch
-              key={tactic}
-              tactic={tactic}
-              label={tactic}
-              compact
-              slot={(index) => <b>{index + 1}</b>}
-            />
-          ))}
+          {localizeValue(
+            (['balanced', 'possession', 'counter', 'press'] as const).map((tactic) => (
+              <FormationPitch
+                key={tactic}
+                tactic={tactic}
+                label={localizeValue(tactic)}
+                compact
+                slot={(index) => <b>{localizeValue(index + 1)}</b>}
+              />
+            )),
+          )}
         </div>
       </Section>
     </>
@@ -500,105 +557,131 @@ function Charts() {
 
 /** The sample club's applied identity, as generated (→KIT-2/11), in each identity component. */
 function Identity({ runtime }: { runtime: Runtime }) {
+  useTextLocale();
   const w = runtime.view.world;
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
   const identity = identityOf(w, club.id);
   const preview = editorPreviewAppearance(identity, 'home', 'light');
   return (
     <>
-      <Section title="ClubCrest">
+      <Section title={displayMessage('copy.stories.4e33739903')}>
         <div className="ds-row">
-          {[24, 44, 72].map((size) => (
-            <ClubCrest key={size} w={w} id={club.id} size={size} label={`${club.name} 엠블럼`} />
-          ))}
+          {localizeValue(
+            [24, 44, 72].map((size) => (
+              <ClubCrest
+                key={size}
+                w={w}
+                id={club.id}
+                size={size}
+                label={displayMessage('copy.stories.271c77b3ac', { p0: club.name })}
+              />
+            )),
+          )}
         </div>
       </Section>
-      <Section title="KitSwatch">
+      <Section title={displayMessage('copy.stories.b5f801ed2c')}>
         <div className="ds-row">
-          {KIT_ROLES.map((role) => (
-            <KitSwatch
-              key={role}
-              shirt={identity.kits[role]}
-              label={`${KIT_ROLE_LABELS[role]} 유니폼`}
-              size={64}
-              number={10}
-            />
-          ))}
+          {localizeValue(
+            KIT_ROLES.map((role) => (
+              <KitSwatch
+                key={role}
+                shirt={identity.kits[role]}
+                label={displayMessage('copy.stories.d4f4589c92', { p0: KIT_ROLE_LABELS[role] })}
+                size={64}
+                number={10}
+              />
+            )),
+          )}
         </div>
       </Section>
-      <Section title="KitPitchPreview">
+      <Section title={displayMessage('copy.stories.746814a1c6')}>
         <KitPitchPreview appearance={preview.appearance} labels={preview.labels} />
       </Section>
     </>
   );
 }
 function Dialogs() {
+  useTextLocale();
   const [opened, setOpened] = useState('');
   const [feedback, setFeedback] = useState(false);
   return (
     <>
-      <Section title="Dialog · 실제 대화상자">
+      <Section title={displayMessage('copy.stories.df68ee56ca')}>
         <div className="ds-row">
-          {[
-            ['normal', '기본 시트'],
-            ['wide', '넓은 시트'],
-            ['picker', '작은 선택 창'],
-            ['long', '긴 내용 스크롤'],
-          ].map(([id, label]) => (
-            <button key={id} onClick={() => setOpened(id)}>
-              {label} 열기
-            </button>
-          ))}
+          {localizeValue(
+            [
+              ['normal', sourceMessage('copy.stories.b0070110b9')],
+              ['wide', sourceMessage('copy.stories.f769227258')],
+              ['picker', sourceMessage('copy.stories.b69a9c6669')],
+              ['long', sourceMessage('copy.stories.d9eed2b4a4')],
+            ].map(([id, label]) => (
+              <button key={id} onClick={() => setOpened(id)}>
+                {richMessage('copy.stories.a779e41652', { p0: label })}
+              </button>
+            )),
+          )}
         </div>
       </Section>
-      <Section title="상태 메시지">
-        <p role="status">변경 내용을 저장했어요.</p>
+      <Section title={displayMessage('copy.stories.fd9de4e542')}>
+        <p role="status">{richMessage('copy.stories.b466f3e847')}</p>
         <p role="alert" className="ds-error">
-          진행할 수 없어요. 입력한 값을 확인해 주세요.
+          {richMessage('copy.stories.da355ffe7f')}
         </p>
-        <button onClick={() => setFeedback(!feedback)}>떠 있는 알림 표시</button>
+        <button onClick={() => setFeedback(!feedback)}>
+          {richMessage('copy.stories.dc42cf3025')}
+        </button>
       </Section>
-      {opened && (
-        <Dialog
-          label="대화상자 미리보기"
-          onClose={() => setOpened('')}
-          wide={opened === 'wide'}
-          picker={opened === 'picker'}
-          actions={
-            <>
-              <button onClick={() => setOpened('')}>취소</button>
-              <button data-ui="primary" onClick={() => setOpened('')}>
-                확인
-              </button>
-            </>
-          }
-        >
-          <div className={app.panelBody}>
-            {Array.from({ length: opened === 'long' ? 30 : 1 }, (_, index) => (
-              <p key={index}>
-                테마의 헤더, 본문, 닫기 버튼과 하단 동작을 확인합니다. 모바일에서는 시트의 배치와
-                스크롤을 확인할 수 있어요.
-              </p>
-            ))}
-            <Select aria-label="대화상자 안의 선택" value="a" onValueChange={noop}>
-              <option value="a">기본 옵션</option>
-              <option value="b">다른 옵션</option>
-            </Select>
-          </div>
-        </Dialog>
+      {localizeValue(
+        opened && (
+          <Dialog
+            label={displayMessage('copy.stories.7867ac5c7c')}
+            onClose={() => setOpened('')}
+            wide={opened === 'wide'}
+            picker={opened === 'picker'}
+            actions={
+              <>
+                <button onClick={() => setOpened('')}>{richMessage('common.cancel')}</button>
+                <button data-ui="primary" onClick={() => setOpened('')}>
+                  {richMessage('copy.stories.1aacb54c49')}
+                </button>
+              </>
+            }
+          >
+            <div className={app.panelBody}>
+              {localizeValue(
+                Array.from({ length: opened === 'long' ? 30 : 1 }, (_, index) => (
+                  <p key={index}>{richMessage('copy.stories.ac59ab2f38')}</p>
+                )),
+              )}
+              <Select
+                aria-label={displayMessage('copy.stories.44f3a54c33')}
+                value="a"
+                onValueChange={noop}
+              >
+                <option value="a">{richMessage('copy.stories.4bfcfb9ef7')}</option>
+                <option value="b">{richMessage('copy.stories.0099b05e57')}</option>
+              </Select>
+            </div>
+          </Dialog>
+        ),
       )}
-      {feedback && (
-        <FeedbackOverlay>
-          <div data-surface="panel">
-            <p>새로운 경기 결과가 도착했어요.</p>
-            <button onClick={() => setFeedback(false)}>확인</button>
-          </div>
-        </FeedbackOverlay>
+      {localizeValue(
+        feedback && (
+          <FeedbackOverlay>
+            <div data-surface="panel">
+              <p>{richMessage('copy.stories.cd0ca7ad44')}</p>
+              <button onClick={() => setFeedback(false)}>
+                {richMessage('copy.stories.1aacb54c49')}
+              </button>
+            </div>
+          </FeedbackOverlay>
+        ),
       )}
     </>
   );
 }
 function Slots({ runtime }: { runtime: Runtime }) {
+  useTextLocale();
   const [slots] = useState(
     () =>
       new GameSlots(runtime.client, new GameIndexStore(memoryStorage()), {
@@ -668,7 +751,7 @@ function previewStart(w: World, tier: WealthTier, year: number) {
   });
   return { listings, fortune };
 }
-function previewSheet(w: World, clubId: string, year: number): ClubSheetFacts | undefined {
+function previewSheet(w: World, clubId: string, year: number): ClubProfile | undefined {
   const club = w.clubs.find((item) => item.id === clubId);
   if (!club) return undefined;
   const strength = Math.round(club.strength);
@@ -681,7 +764,15 @@ function previewSheet(w: World, clubId: string, year: number): ClubSheetFacts | 
       age: w.year - player.born,
       ovr: Math.max(30, strength + 6 - index),
     })),
-    manager: { name: w.manager.name, age: 51, rating: strength, note: '실리 축구 · 4-4-2' },
+    staff: [
+      {
+        post: 'manager',
+        name: w.manager.name,
+        age: 51,
+        rating: strength,
+        note: sourceMessage('copy.stories.e9cf30d9cb'),
+      },
+    ],
     stadium: { name: `${club.name} Park`, seats: 12_000 + strength * 300 },
     history: {
       league: club.tier === 0 ? 2 : 0,
@@ -744,6 +835,7 @@ function StartFlowStory({
   runtime: Runtime;
   notify: (message: string) => void;
 }) {
+  useTextLocale();
   const w = runtime.view.world;
   const [mode, setMode] = useState<'choice' | 'progress' | 'list'>('choice');
   const [run, setRun] = useState<{ choice: StartChoice; season: number }>();
@@ -764,9 +856,10 @@ function StartFlowStory({
     }, 90);
     return () => clearTimeout(timer);
   }, [run, listed, w]);
-  const takeOver = (clubId: string) => notify(`${clubId} 인수 (미리보기)`);
+  const takeOver = (clubId: string) =>
+    notify(sourceMessage('copy.stories.07eda20028', { p0: clubId }));
   const loadClub = (clubId: string) =>
-    new Promise<ClubSheetFacts | undefined>((resolve) =>
+    new Promise<ClubProfile | undefined>((resolve) =>
       setTimeout(
         () => resolve(previewSheet(w, clubId, takeoverYear(run?.choice.decade ?? 1950))),
         300,
@@ -775,11 +868,11 @@ function StartFlowStory({
   return (
     <>
       <Segments
-        label="미리보기 상태"
+        label={displayMessage('copy.stories.b49f4cf2d5')}
         options={[
-          ['choice', '처음부터'],
-          ['progress', '생성 중'],
-          ['list', '구단 목록'],
+          ['choice', sourceMessage('copy.stories.0eef71c2ed')],
+          ['progress', sourceMessage('copy.stories.ecd1faae81')],
+          ['list', sourceMessage('copy.stories.77244f1ba7')],
         ]}
         value={mode}
         onChange={(next) => {
@@ -788,39 +881,45 @@ function StartFlowStory({
           setListed(undefined);
         }}
       />
-      {mode === 'choice' && (
-        <StartFlow
-          key="choice"
-          slot={1}
-          onBack={noop}
-          onGenerate={(choice) => setRun({ choice, season: 1930 })}
-          progress={run && !listed ? { season: run.season } : undefined}
-          digest={digest}
-          listings={listed?.listings}
-          fortune={listed?.fortune}
-          loadClub={loadClub}
-          onTakeOver={takeOver}
-        />
+      {localizeValue(
+        mode === 'choice' && (
+          <StartFlow
+            key="choice"
+            slot={1}
+            onBack={noop}
+            onGenerate={(choice) => setRun({ choice, season: 1930 })}
+            progress={run && !listed ? { season: run.season } : undefined}
+            digest={digest}
+            listings={listed?.listings}
+            fortune={listed?.fortune}
+            loadClub={loadClub}
+            onTakeOver={takeOver}
+          />
+        ),
       )}
-      {mode === 'progress' && (
-        <StartFlow
-          key="progress"
-          initial={{ tier: 'oil', traits: ['talisman', 'marketer'], decade: 1970 }}
-          progress={{ season: 1965 }}
-          digest={sample}
-          onGenerate={noop}
-          onTakeOver={takeOver}
-        />
+      {localizeValue(
+        mode === 'progress' && (
+          <StartFlow
+            key="progress"
+            initial={{ tier: 'oil', traits: ['talisman', 'marketer'], decade: 1970 }}
+            progress={{ season: 1965 }}
+            digest={sample}
+            onGenerate={noop}
+            onTakeOver={takeOver}
+          />
+        ),
       )}
-      {mode === 'list' && (
-        <StartFlow
-          key="list"
-          initial={{ tier: 'midsize', decade: 1950 }}
-          {...previewStart(w, 'midsize', 1950)}
-          loadClub={loadClub}
-          onGenerate={noop}
-          onTakeOver={takeOver}
-        />
+      {localizeValue(
+        mode === 'list' && (
+          <StartFlow
+            key="list"
+            initial={{ tier: 'midsize', decade: 1950 }}
+            {...previewStart(w, 'midsize', 1950)}
+            loadClub={loadClub}
+            onGenerate={noop}
+            onTakeOver={takeOver}
+          />
+        ),
       )}
     </>
   );
@@ -864,6 +963,7 @@ function previewOwner<T extends Pick<World, 'clubs' | 'playerClub' | 'year' | 'c
 }
 /** The 구단주 sheet and its statuses on the sample club (→WEB-114, OWNER-14/15). */
 function OwnerStory({ runtime, notify }: { runtime: Runtime; notify: (message: string) => void }) {
+  useTextLocale();
   const { view } = runtime;
   const [state, setState] = useState<'calm' | 'crisis'>('calm');
   const w = state === 'calm' ? previewOwner(view.world) : previewOwner(view.world, 18, '-350000');
@@ -877,30 +977,30 @@ function OwnerStory({ runtime, notify }: { runtime: Runtime; notify: (message: s
   return (
     <>
       <Segments
-        label="미리보기 상태"
+        label={displayMessage('copy.stories.b49f4cf2d5')}
         options={[
-          ['calm', '평상시'],
-          ['crisis', '파산 위기 · 퇴진 압박'],
+          ['calm', sourceMessage('copy.stories.9e157962ab')],
+          ['crisis', sourceMessage('copy.stories.ca02d1ff61')],
         ]}
         value={state}
         onChange={setState}
       />
-      <Section title="HudCash · 현금과 구단주 자금">
+      <Section title={displayMessage('copy.stories.d422aebbbb')}>
         <div className="ds-row">
           <HudCash />
         </div>
       </Section>
-      <Section title="CashAlarm · 구단주 위기 상태">
+      <Section title={displayMessage('copy.stories.025b193e8d')}>
         <CashAlarm />
       </Section>
-      <Section title="OwnerSheetBody · 구단주 시트">
+      <Section title={displayMessage('copy.stories.947e7c6b60')}>
         <OwnerSheetBody
           key={state}
           w={w as World}
           sending={false}
           message=""
           onCommand={async (command) => {
-            notify(`${command.type} (미리보기)`);
+            notify(sourceMessage('copy.stories.bf910f8b7b', { p0: command.type }));
             return true;
           }}
         />
@@ -916,6 +1016,7 @@ function GameOverStory({
   runtime: Runtime;
   notify: (message: string) => void;
 }) {
+  useTextLocale();
   const w = runtime.view.world;
   const [cause, setCause] = useState<'club' | 'owner' | 'fans'>('club');
   const ended = (
@@ -926,32 +1027,33 @@ function GameOverStory({
   return (
     <>
       <Segments
-        label="끝난 이유"
+        label={displayMessage('copy.stories.b53e586382')}
         options={[
-          ['club', '구단 파산'],
-          ['owner', '구단주 파산'],
-          ['fans', '구단주 퇴진'],
+          ['club', sourceMessage('copy.influences.c09ed2b08e')],
+          ['owner', sourceMessage('copy.stories.ca78f66cf8')],
+          ['fans', sourceMessage('copy.stories.4e6b8dec47')],
         ]}
         value={cause}
         onChange={setCause}
       />
       <GameOver
         w={ended}
-        onExport={() => notify('기록 내보내기 (미리보기)')}
-        onNew={() => notify('새 게임 (미리보기)')}
-        onSlots={() => notify('게임 슬롯 (미리보기)')}
+        onExport={() => notify(sourceMessage('copy.stories.16a25eb029'))}
+        onNew={() => notify(sourceMessage('copy.stories.74e2d5c9b6'))}
+        onSlots={() => notify(sourceMessage('copy.stories.e18e18be47'))}
       />
     </>
   );
 }
 
 function Alerts({ runtime }: { runtime: Runtime }) {
+  useTextLocale();
   const { view, controller } = runtime;
   const w = view.world;
   const [serial, setSerial] = useState(0);
   return (
     <>
-      <Section title="CashAlarm · 실제 자금 위기 경고">
+      <Section title={displayMessage('copy.stories.804db2a169')}>
         <div className="ds-row">
           <button
             onClick={() =>
@@ -960,13 +1062,15 @@ function Alerts({ runtime }: { runtime: Runtime }) {
               })
             }
           >
-            현금 부족 상태
+            {richMessage('copy.stories.7d1d57ce0c')}
           </button>
-          <button onClick={() => gameStore.setState({ view })}>정상 상태로</button>
+          <button onClick={() => gameStore.setState({ view })}>
+            {richMessage('copy.stories.1aa710f300')}
+          </button>
         </div>
         <CashAlarm />
       </Section>
-      <Section title="CelebrationHost · 업적 축하">
+      <Section title={displayMessage('copy.stories.89601fbd3f')}>
         <button
           onClick={() => {
             setSerial(serial + 1);
@@ -979,11 +1083,11 @@ function Alerts({ runtime }: { runtime: Runtime }) {
                     year: w.year,
                     round: w.round,
                     order: serial,
-                    tag: '기록',
+                    tag: sourceMessage('navigation.history'),
                     tone: 'good',
                     weight: 'major',
-                    title: '샘플 클럽이 리그 우승을 차지했어요',
-                    detail: '업적 알림의 테마와 애니메이션을 확인합니다.',
+                    title: sourceMessage('copy.stories.3aace02427'),
+                    detail: sourceMessage('copy.stories.ca4f616845'),
                     celebrate: true,
                   },
                   ...view.news,
@@ -992,17 +1096,17 @@ function Alerts({ runtime }: { runtime: Runtime }) {
             });
           }}
         >
-          축하 배너 표시
+          {richMessage('copy.stories.4429adccab')}
         </button>
       </Section>
-      <Section title="AwaySummary · 복귀 보고">
+      <Section title={displayMessage('copy.stories.f39dd6f6a5')}>
         <button
           onClick={() => {
             const from = clockMark(w, view.totalMatches - 3);
             controller.store.setState({ away: { ...from, day: from.day - 14 } });
           }}
         >
-          자리를 비운 동안 보고서 열기
+          {richMessage('copy.stories.310901d72b')}
         </button>
       </Section>
       <CelebrationHost />
@@ -1020,6 +1124,7 @@ export default function StoryRenderer({
   runtime: Runtime;
   notify: (message: string) => void;
 }) {
+  useTextLocale();
   const { state, client, controller, playback } = runtime;
   const w = runtime.view.world;
   const player = w.players[0];
@@ -1034,7 +1139,7 @@ export default function StoryRenderer({
       case 'async-states':
         content = (
           <>
-            <Section title="로딩">
+            <Section title={displayMessage('copy.stories.0bd8cf2b14')}>
               <ManagerHistory
                 loading
                 onInspect={noop}
@@ -1043,7 +1148,7 @@ export default function StoryRenderer({
                 onRetry={noop}
               />
             </Section>
-            <Section title="빈 화면">
+            <Section title={displayMessage('copy.stories.40ae8b7656')}>
               <ManagerHistory
                 onInspect={noop}
                 onOpenSeason={noop}
@@ -1051,13 +1156,13 @@ export default function StoryRenderer({
                 onRetry={noop}
               />
             </Section>
-            <Section title="오류 · 재시도">
+            <Section title={displayMessage('copy.stories.d487479ca5')}>
               <ManagerHistory
-                error="기록을 불러오지 못했어요."
+                error={sourceMessage('copy.stories.8a87ccd3ba')}
                 onInspect={noop}
                 onOpenSeason={noop}
                 onLoadMore={noop}
-                onRetry={() => notify('재시도 버튼 미리보기입니다.')}
+                onRetry={() => notify(sourceMessage('copy.stories.d3b7256831'))}
               />
             </Section>
           </>
@@ -1095,7 +1200,7 @@ export default function StoryRenderer({
         break;
       case 'settings':
         content = (
-          <Section title="PresentationSettings">
+          <Section title={displayMessage('copy.stories.0dd5958fe4')}>
             <PresentationSettingsControls />
             <PresentationSettingsTrigger />
             <PresentationSettings />
@@ -1121,25 +1226,31 @@ export default function StoryRenderer({
       case 'controller':
         content = (
           <>
-            <Section title="HUD / ProgressControls">
+            <Section title={displayMessage('copy.stories.46b104203b')}>
               <div className="ds-row">
                 <HudCash />
                 <ProgressModeSwitch client={client} controller={controller} />
-                <button onClick={() => setMenu(true)}>게임 메뉴 열기</button>
+                <button onClick={() => setMenu(true)}>
+                  {richMessage('copy.stories.4ba74ef6aa')}
+                </button>
               </div>
               <ProgressControls client={client} controller={controller} />
               <ProgressOverview />
             </Section>
-            {menu && (
-              <AppMenu
-                onClose={() => setMenu(false)}
-                onNews={noop}
-                onGuide={noop}
-                onGlossary={noop}
-                saveTools={
-                  <button onClick={() => notify('저장 도구 미리보기입니다.')}>저장 도구</button>
-                }
-              />
+            {localizeValue(
+              menu && (
+                <AppMenu
+                  onClose={() => setMenu(false)}
+                  onNews={noop}
+                  onGuide={noop}
+                  onGlossary={noop}
+                  saveTools={
+                    <button onClick={() => notify(sourceMessage('copy.stories.1c2def8100'))}>
+                      {richMessage('copy.stories.aae2e4fbf4')}
+                    </button>
+                  }
+                />
+              ),
             )}
           </>
         );
@@ -1173,7 +1284,7 @@ export default function StoryRenderer({
             <MatchReport record={playback.record} w={w} />
             <MatchMaterial record={playback.record} w={w} />
             <MatchReportCard w={w} fixture={w.fixtures[0]}>
-              <button>관전하기</button>
+              <button>{richMessage('copy.stories.11886b7242')}</button>
             </MatchReportCard>
           </>
         );
@@ -1181,8 +1292,16 @@ export default function StoryRenderer({
       case 'preparation':
         content = (
           <>
-            {!open && <button onClick={() => setOpen(true)}>상세 리포트 열기</button>}
-            {open && <StrategyPanel w={w} client={client} onClose={() => setOpen(false)} />}
+            {localizeValue(
+              !open && (
+                <button onClick={() => setOpen(true)}>
+                  {richMessage('copy.stories.bbd3890ad5')}
+                </button>
+              ),
+            )}
+            {localizeValue(
+              open && <StrategyPanel w={w} client={client} onClose={() => setOpen(false)} />,
+            )}
           </>
         );
         break;
@@ -1197,31 +1316,24 @@ export default function StoryRenderer({
         break;
       case 'player-sheet':
         content = (
-          <>
-            <button onClick={() => setOpen(true)}>선수 상세 열기</button>
-            {open && (
-              <PlayerSheet
-                w={w}
-                player={player}
-                scope="season"
-                client={client}
-                onClose={() => setOpen(false)}
-              />
-            )}
-          </>
+          <button onClick={() => openPlayer({ id: player.id, scope: 'season' })}>
+            {richMessage('copy.stories.7518e4e467')}
+          </button>
         );
         break;
       case 'comparison':
         content = (
           <>
-            <button onClick={() => setOpen(true)}>선수 비교 열기</button>
-            {open && (
-              <PlayerComparison
-                w={w}
-                client={client}
-                initialScope="season"
-                onClose={() => setOpen(false)}
-              />
+            <button onClick={() => setOpen(true)}>{richMessage('copy.stories.406a6309e0')}</button>
+            {localizeValue(
+              open && (
+                <PlayerComparison
+                  w={w}
+                  client={client}
+                  initialScope="season"
+                  onClose={() => setOpen(false)}
+                />
+              ),
             )}
           </>
         );
@@ -1233,9 +1345,11 @@ export default function StoryRenderer({
         content = (
           <div className="ds-grid">
             <StyleCard />
-            {(Object.keys(STYLE_INFO) as (keyof typeof STYLE_INFO)[]).map((style) => (
-              <StyleCard key={style} style={style} />
-            ))}
+            {localizeValue(
+              (Object.keys(STYLE_INFO) as (keyof typeof STYLE_INFO)[]).map((style) => (
+                <StyleCard key={style} style={style} />
+              )),
+            )}
           </div>
         );
         break;
@@ -1257,11 +1371,13 @@ export default function StoryRenderer({
         content = (
           <>
             <div className="ds-grid">
-              {(['stadium', 'locker', 'manager', 'staff', 'training', 'academy'] as const).map(
-                (kind) => (
-                  <FacilityOverview key={kind} w={w} kind={kind} title={kind}>
-                    현재 연도 {w.year} · 완료된 시설 단계의 일러스트
-                  </FacilityOverview>
+              {localizeValue(
+                (['stadium', 'locker', 'manager', 'staff', 'training', 'academy'] as const).map(
+                  (kind) => (
+                    <FacilityOverview key={kind} w={w} kind={kind} title={localizeValue(kind)}>
+                      {richMessage('copy.stories.9b96a71a77', { p0: w.year })}
+                    </FacilityOverview>
+                  ),
                 ),
               )}
             </div>
@@ -1310,7 +1426,7 @@ export default function StoryRenderer({
         content = (
           <>
             <button onClick={() => useNewsSheet.getState().show('notifications')}>
-              알림함 열기
+              {richMessage('copy.stories.ac10b14be9')}
             </button>
             <NewsList w={w} />
             <CommunicationsCenter client={client} />
@@ -1323,23 +1439,29 @@ export default function StoryRenderer({
       case 'glossary':
         content = (
           <>
-            <button onClick={() => setOpen(true)}>가이드 열기</button>
-            <button onClick={() => useGlossary.getState().show('xg')}>용어 사전 열기</button>
-            {open && (
-              <PlayGuide goals={runtime.view.milestones.goals} onClose={() => setOpen(false)} />
+            <button onClick={() => setOpen(true)}>{richMessage('copy.stories.16453c4409')}</button>
+            <button onClick={() => useGlossary.getState().show('xg')}>
+              {richMessage('copy.stories.46370bec2e')}
+            </button>
+            {localizeValue(
+              open && (
+                <PlayGuide goals={runtime.view.milestones.goals} onClose={() => setOpen(false)} />
+              ),
             )}
           </>
         );
         break;
       default:
-        content = <p>등록되지 않은 예제입니다.</p>;
+        content = <p>{richMessage('copy.stories.654e217221')}</p>;
     }
   return (
     <>
-      <main className="ds-preview-content">{content}</main>
-      {preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />}
-      <PlayerSheetHost client={client} />
-      <TeamSheetHost client={client} />
+      <main className="ds-preview-content">{localizeValue(content)}</main>
+      {localizeValue(
+        preparing && <StrategyPanel w={w} client={client} onClose={() => setPreparing(false)} />,
+      )}
+      <PlayerDetailHost client={client} />
+      <ClubDetailHost client={client} />
       <GlossaryHost />
     </>
   );

@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import type { IconResource, THEME_ICON_ROLES } from '../presentation/contracts';
 import { useOptionalTheme, useThemeNeed } from '../presentation/react';
 
@@ -19,6 +20,7 @@ export function SemanticIcon({
   semanticRole: string;
   variant?: string;
 }) {
+  useTextLocale();
   useThemeNeed({ type: 'icon', role: semanticRole, variant });
   if (resource?.type === 'image')
     return (
@@ -44,9 +46,7 @@ export function SemanticIcon({
       shapeRendering={resource?.shapeRendering}
       style={{ fill: 'currentColor', stroke: 'none' }}
     >
-      {resource?.layers.map((layer, index) => (
-        <path key={index} {...layer} />
-      ))}
+      {localizeValue(resource?.layers.map((layer, index) => <path key={index} {...layer} />))}
     </svg>
   );
 }
@@ -60,6 +60,7 @@ export function PixelIcon({
   size?: number;
   className?: string;
 }) {
+  useTextLocale();
   const theme = useOptionalTheme();
   return (
     <SemanticIcon

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
  * The aggregate path's legal participation (→MATCH-19, MATCH-20, MATCH-21, MATCH-27, CLUB-23): one
  * timeline of starters, injuries, cards, dismissals and the manager's substitutions under the
@@ -351,7 +352,10 @@ export function assertParticipation(
   era?: EraRules,
 ): void {
   const issues = participationTimelineIssues(input, participation, era);
-  if (issues.length) throw new Error(`집계 출전 계획 불일치: ${issues.slice(0, 5).join('; ')}`);
+  if (issues.length)
+    throw new Error(
+      sourceMessage('copy.participation.830f33bf6d', { p0: issues.slice(0, 5).join('; ') }),
+    );
 }
 
 const PERIODS: readonly { period: AggregatePeriod; intervals: readonly number[] }[] = [

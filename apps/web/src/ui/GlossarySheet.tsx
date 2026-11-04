@@ -1,48 +1,58 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { Dialog } from './Dialog';
 import { GLOSSARY, glossaryEntry } from './glossaryEntries';
 import { useGlossary } from './metricGlossary';
 import s from './Glossary.module.css';
 
 function Entry({ id }: { id: string }) {
+  useTextLocale();
   const entry = glossaryEntry(id)!;
   return (
     <article data-surface="panel" className={s.entry} data-testid={`glossary-${id}`}>
       <h3>
-        {entry.term}
-        {entry.abbr && <small>{entry.abbr}</small>}
+        {localizeValue(entry.term)}
+        {localizeValue(entry.abbr && <small>{localizeValue(entry.abbr)}</small>)}
       </h3>
       <dl>
-        <dt>축구계 정의</dt>
-        <dd>{entry.standard}</dd>
-        <dt>이 게임에서는</dt>
-        <dd>{entry.here}</dd>
-        <dt>읽는 법</dt>
-        <dd>{entry.read}</dd>
+        <dt>{richMessage('copy.GlossarySheet.1896eeaf52')}</dt>
+        <dd>{localizeValue(entry.standard)}</dd>
+        <dt>{richMessage('copy.GlossarySheet.72ff58c7c6')}</dt>
+        <dd>{localizeValue(entry.here)}</dd>
+        <dt>{richMessage('copy.GlossarySheet.63b8ead1c4')}</dt>
+        <dd>{localizeValue(entry.read)}</dd>
       </dl>
-      {entry.table && (
-        <div className={s.table}>
-          <table>
-            <caption>{entry.table.caption}</caption>
-            <thead>
-              <tr>
-                {entry.table.head.map((head) => (
-                  <th key={head} scope="col">
-                    {head}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {entry.table.rows.map((row, index) => (
-                <tr key={index}>
-                  {row.map((cell, column) => (
-                    <td key={column}>{cell}</td>
-                  ))}
+      {localizeValue(
+        entry.table && (
+          <div className={s.table}>
+            <table>
+              <caption>{localizeValue(entry.table.caption)}</caption>
+              <thead>
+                <tr>
+                  {localizeValue(
+                    entry.table.head.map((head) => (
+                      <th key={head} scope="col">
+                        {localizeValue(head)}
+                      </th>
+                    )),
+                  )}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {localizeValue(
+                  entry.table.rows.map((row, index) => (
+                    <tr key={index}>
+                      {localizeValue(
+                        row.map((cell, column) => <td key={column}>{localizeValue(cell)}</td>),
+                      )}
+                    </tr>
+                  )),
+                )}
+              </tbody>
+            </table>
+          </div>
+        ),
       )}
     </article>
   );
@@ -50,32 +60,40 @@ function Entry({ id }: { id: string }) {
 
 /** The glossary sheet: a single term from a metric label, or every term from the menu (→WEB-53). */
 export function GlossarySheet({ open }: { open: string }) {
+  useTextLocale();
   const hide = useGlossary((state) => state.hide);
   const show = useGlossary((state) => state.show);
   const single = open !== 'all' && glossaryEntry(open);
   return (
     <Dialog
-      label={single ? `${single.abbr ?? single.term} 지표 설명` : '지표 사전'}
+      label={localizeValue(
+        single
+          ? sourceMessage('copy.GlossarySheet.b03b190a00', { p0: single.abbr ?? single.term })
+          : sourceMessage('shell.glossary'),
+      )}
       onClose={hide}
       actions={
         <div className={s.actions}>
-          {single && <button onClick={() => show('all')}>모든 지표 보기</button>}
-          <button onClick={hide}>닫기</button>
+          {localizeValue(
+            single && (
+              <button onClick={() => show('all')}>
+                {richMessage('copy.GlossarySheet.38e5fc7535')}
+              </button>
+            ),
+          )}
+          <button onClick={hide}>{richMessage('copy.EventCenter.1e8c10206f')}</button>
         </div>
       }
     >
-      {single ? (
-        <Entry id={single.id} />
-      ) : (
-        <div className={s.all}>
-          <p className={s.intro}>
-            축구 데이터 매체(Opta·FBref 등)가 쓰는 정의와, 이 게임이 실제로 세는 방식을 함께
-            적었어요.
-          </p>
-          {GLOSSARY.map((entry) => (
-            <Entry key={entry.id} id={entry.id} />
-          ))}
-        </div>
+      {localizeValue(
+        single ? (
+          <Entry id={single.id} />
+        ) : (
+          <div className={s.all}>
+            <p className={s.intro}>{richMessage('copy.GlossarySheet.2360b8a292')}</p>
+            {localizeValue(GLOSSARY.map((entry) => <Entry key={entry.id} id={entry.id} />))}
+          </div>
+        ),
       )}
     </Dialog>
   );

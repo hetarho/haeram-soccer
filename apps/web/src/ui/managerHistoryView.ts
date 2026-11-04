@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * Display labels and actions for the records room's 감독 이력 (→WEB-92, HIST-18/19). Every
  * count, rate, run, credit and coverage value comes already computed from the manager-history
@@ -98,38 +99,37 @@ export type ManagerHistoryListState =
   | { kind: 'ready'; rows: ManagerRowView[]; footer: ManagerHistoryFooter };
 
 export const MANAGER_HISTORY_COPY = {
-  title: '감독 이력',
-  scope: '모든 공식전 · 정규 90분 결과',
-  loading: '감독 기록을 펼치는 중…',
-  error: '감독 기록을 읽지 못했어요.',
-  retry: '다시 시도',
-  empty: '아직 남은 감독 기록이 없어요.',
-  more: '더 보기',
-  loadingMore: '감독 기록을 더 불러오는 중…',
-  moreError: '다음 감독 기록을 읽지 못했어요.',
-  inspect: '자세히',
-  close: '접기',
+  title: sourceMessage('copy.RecordsRoom.2c80205cf2'),
+  scope: sourceMessage('copy.managerHistoryView.f3e5f7149a'),
+  loading: sourceMessage('copy.RecordsRoom.0ea24f2ba2'),
+  error: sourceMessage('copy.managerHistoryView.137c851f13'),
+  retry: sourceMessage('presentation.retry'),
+  empty: sourceMessage('copy.managerHistoryView.0b4191402b'),
+  more: sourceMessage('copy.managerHistoryView.5e8959d183'),
+  loadingMore: sourceMessage('copy.managerHistoryView.32c1420299'),
+  moreError: sourceMessage('copy.managerHistoryView.7161a65afb'),
+  inspect: sourceMessage('copy.managerHistoryView.a072ebb77d'),
+  close: sourceMessage('copy.Bracket.aba0885359'),
 } as const;
 
 const DEPARTURE: Record<ManagerDeparture, string> = {
-  replaced: '교체',
-  resigned: '사임',
-  retired: '은퇴',
-  expired: '계약 만료',
+  replaced: sourceMessage('copy.LabPage.084c5a6dd7'),
+  resigned: sourceMessage('copy.managerHistoryView.7ad5c80348'),
+  retired: sourceMessage('copy.Rich.fc798874df'),
+  expired: sourceMessage('copy.managerHistoryView.c279102d18'),
 };
 const HONOUR_KIND: Record<ManagerHonour['kind'], string> = {
-  'league-title': '리그 우승',
-  'cup-title': '컵 우승',
-  promotion: '승격',
+  'league-title': sourceMessage('start.history.champions'),
+  'cup-title': sourceMessage('copy.managerHistoryView.5b012994d1'),
+  promotion: sourceMessage('copy.AcademyPanel.8e70a8dda1'),
 };
 const COVERAGE: Record<Exclude<ManagerHistoryCoverage, 'complete'>, string> = {
-  partial: '일부 기간만 기록됐어요. 수치는 기록된 기간에 한정되고 통산 전체가 아니에요.',
-  unavailable: '이 재임의 성과 기록은 남아 있지 않아요. 기록이 없다고 성과가 없던 것은 아니에요.',
+  partial: sourceMessage('copy.managerHistoryView.db2390ff3e'),
+  unavailable: sourceMessage('copy.managerHistoryView.205935d8e7'),
 };
 /** A shared season, or one whose full-season charge is not recorded (→HIST-19). */
-const SHARED_FINISH =
-  '시즌 전체를 맡았다고 확인되지 않은 시즌 · 재임 중 확정된 최종 순위이며 이 감독의 시즌 전체 승무패가 아니에요.';
-const SHARED_HONOUR = '시즌 전체를 맡았다고 확인되지 않은 시즌 · 재임 중 확정된 결과예요.';
+const SHARED_FINISH = sourceMessage('copy.managerHistoryView.820f5e21bc');
+const SHARED_HONOUR = sourceMessage('copy.managerHistoryView.6da342daea');
 
 /** The calendar day of a career date; seasons start on August 1 (→CareerDate). */
 export const managerDate = (at: CareerDate) =>
@@ -142,11 +142,18 @@ function sourceAction(
   key: string,
   current = false,
 ): ManagerSourceAction {
-  const label = `${seasonName(season.year)} 시즌 기록${current ? ' (진행 중)' : ''}`;
+  const label = sourceMessage('copy.managerHistoryView.a7b41fb195', {
+    p0: seasonName(season.year),
+    p1: current ? sourceMessage('copy.managerHistoryView.d319753198') : '',
+  });
   return {
     key,
     label,
-    accessibleLabel: `${name} · ${what} · ${label} 열기`,
+    accessibleLabel: sourceMessage('copy.managerHistoryView.82abe879aa', {
+      p0: name,
+      p1: what,
+      p2: label,
+    }),
     season: { ...season },
   };
 }
@@ -155,9 +162,12 @@ export function managerHonourLabel(honour: ManagerHonour): string {
   switch (honour.kind) {
     case 'league-title':
     case 'cup-title':
-      return `${honour.name} 우승`;
+      return sourceMessage('copy.CareerRecordBook.2bfc53c804', { p0: honour.name });
     case 'promotion':
-      return `승격 · ${honour.fromName} → ${honour.toName}`;
+      return sourceMessage('copy.SeasonReview.3128e63b63', {
+        p0: honour.fromName,
+        p1: honour.toName,
+      });
   }
 }
 
@@ -181,7 +191,10 @@ function honoursLine(summary: ManagerTenureSummary | null): {
   note?: string;
 } {
   if (!summary || summary.honoursCoverage === 'unavailable')
-    return { line: '성과 기록 없음', note: '이 기간의 우승·승격 기록은 확인할 수 없어요.' };
+    return {
+      line: sourceMessage('copy.managerHistoryView.48db0e96b7'),
+      note: sourceMessage('copy.managerHistoryView.a4d410e744'),
+    };
   const kinds = (Object.keys(HONOUR_KIND) as ManagerHonour['kind'][])
     .map((kind) => [kind, summary.honours.filter((honour) => honour.kind === kind).length] as const)
     .filter(([, count]) => count > 0)
@@ -190,25 +203,30 @@ function honoursLine(summary: ManagerTenureSummary | null): {
   if (!kinds.length)
     return partial
       ? {
-          line: '기록된 기간에는 우승·승격 없음',
-          note: '기록 이전의 성과는 확인할 수 없어요.',
+          line: sourceMessage('copy.managerHistoryView.8d30ba963d'),
+          note: sourceMessage('copy.managerHistoryView.a3b7e810ae'),
         }
-      : { line: '우승·승격 없음' };
+      : { line: sourceMessage('copy.managerHistoryView.77b43f9cdf') };
   return {
     line: kinds.join(' · '),
-    ...(partial ? { note: '기록된 기간의 성과만 담았어요.' } : {}),
+    ...(partial ? { note: sourceMessage('copy.managerHistoryView.c4e7c2da1f') } : {}),
   };
 }
 
 function finishesView(name: string, summary: ManagerTenureSummary): ManagerAccomplishmentView[] {
   return summary.bestFinishes.flatMap((best) =>
     best.finishes.map((finish) => {
-      const label = `${best.name} 최종 ${best.rank}위`;
+      const label = sourceMessage('copy.managerHistoryView.bb4f7b0d9e', {
+        p0: best.name,
+        p1: best.rank,
+      });
       const key = `finish:${finish.season.year}:${best.division.country}:${best.division.tier}:${best.division.group}`;
       return {
         key,
         label,
-        season: `${seasonName(finish.season.year)} · 최고 최종 순위`,
+        season: sourceMessage('copy.managerHistoryView.ab894df26e', {
+          p0: seasonName(finish.season.year),
+        }),
         ...(finish.sharedSeason ? { note: SHARED_FINISH } : {}),
         action: sourceAction(name, label, finish.season, key),
       };
@@ -217,38 +235,55 @@ function finishesView(name: string, summary: ManagerTenureSummary): ManagerAccom
 }
 
 function finishesLine(summary: ManagerTenureSummary | null): string {
-  if (!summary || summary.honoursCoverage === 'unavailable') return '최종 순위 기록 없음';
+  if (!summary || summary.honoursCoverage === 'unavailable')
+    return sourceMessage('copy.managerHistoryView.94316e6d94');
   if (!summary.bestFinishes.length)
     return summary.honoursCoverage === 'partial'
-      ? '기록된 기간에 확정된 최종 순위 없음'
-      : '확정된 리그 최종 순위 없음';
-  return summary.bestFinishes.map((best) => `${best.name} 최고 ${best.rank}위`).join(' · ');
+      ? sourceMessage('copy.managerHistoryView.ff1759b4a2')
+      : sourceMessage('copy.managerHistoryView.501ac67124');
+  return summary.bestFinishes
+    .map((best) =>
+      sourceMessage('copy.managerHistoryView.322f317dd2', { p0: best.name, p1: best.rank }),
+    )
+    .join(' · ');
 }
 
 export function managerRecordView(record: ManagerMatchSummary | undefined): ManagerRecordView {
   const scope = MANAGER_HISTORY_COPY.scope;
   if (!record || record.coverage === 'unavailable')
     return {
-      line: '경기 기록 없음',
+      line: sourceMessage('copy.managerHistoryView.55df1312b1'),
       scope,
-      note: '기록이 남아 있지 않아 승무패를 알 수 없어요.',
+      note: sourceMessage('copy.managerHistoryView.a3d00ed21b'),
       known: false,
     };
-  const note = record.coverage === 'partial' ? '기록된 기간의 경기만 · 통산 전체 아님' : undefined;
+  const note =
+    record.coverage === 'partial' ? sourceMessage('copy.managerHistoryView.1ab45b051b') : undefined;
   if (!record.played)
     return {
-      line: record.coverage === 'complete' ? '지휘한 공식전 없음' : '기록된 공식전 없음',
-      rate: '승률 —',
+      line:
+        record.coverage === 'complete'
+          ? sourceMessage('copy.managerHistoryView.4f1f61e4e3')
+          : sourceMessage('copy.managerHistoryView.c7a834b206'),
+      rate: sourceMessage('copy.managerHistoryView.3fb2a269dd'),
       scope,
       ...(note ? { note } : {}),
       known: true,
     };
   return {
-    line: `${record.played}경기 ${record.won}승 ${record.drawn}무 ${record.lost}패`,
+    line: sourceMessage('copy.managerHistoryView.0463009cf8', {
+      p0: record.played,
+      p1: record.won,
+      p2: record.drawn,
+      p3: record.lost,
+    }),
     rate:
       record.winRate === null
-        ? '승률 —'
-        : `승률 ${Math.round(record.winRate * 100)}% · ${record.sampleSize}경기 기준`,
+        ? sourceMessage('copy.managerHistoryView.3fb2a269dd')
+        : sourceMessage('copy.managerHistoryView.72bbd790b4', {
+            p0: Math.round(record.winRate * 100),
+            p1: record.sampleSize,
+          }),
     scope,
     ...(note ? { note } : {}),
     known: true,
@@ -256,11 +291,20 @@ export function managerRecordView(record: ManagerMatchSummary | undefined): Mana
 }
 
 function runView(label: string, run: ManagerRun | null, record: ManagerRecordView, played = 0) {
-  if (!record.known) return { label, value: '기록 없음', ongoing: false };
-  if (!run) return { label, value: played ? '없음' : '—', ongoing: false };
+  if (!record.known)
+    return { label, value: sourceMessage('copy.SeasonReview.852bf68e8e'), ongoing: false };
+  if (!run)
+    return {
+      label,
+      value: played ? sourceMessage('copy.BusinessWorkbench.72ea3d64ac') : '—',
+      ongoing: false,
+    };
   return {
     label,
-    value: `${run.count}경기${run.ongoing ? ' · 진행 중' : ''}`,
+    value: sourceMessage('copy.managerHistoryView.8afd61210f', {
+      p0: run.count,
+      p1: run.ongoing ? sourceMessage('copy.LeagueInsights.b2801e8117') : '',
+    }),
     range: `${managerDate(run.start.at)} – ${managerDate(run.end.at)}`,
     ongoing: run.ongoing,
   };
@@ -273,26 +317,37 @@ function periodView(
   if (!tenure)
     return {
       service:
-        row.manager.since === undefined ? '선임 시기 미상' : `${row.manager.since}년부터 재임`,
-      tracking: '성과 기록 시작 전',
-      ...(row.current ? { end: '현재 재임 중' } : {}),
+        row.manager.since === undefined
+          ? sourceMessage('copy.managerHistoryView.ea985b0d37')
+          : sourceMessage('copy.managerHistoryView.08bc5a9ce4', { p0: row.manager.since }),
+      tracking: sourceMessage('copy.managerHistoryView.0fae119e75'),
+      ...(row.current ? { end: sourceMessage('copy.managerHistoryView.140671325d') } : {}),
     };
   const appointed = tenure.appointed;
   const service = appointed
-    ? `선임 ${managerDate(appointed)}`
+    ? sourceMessage('copy.managerHistoryView.f0df19b7de', { p0: managerDate(appointed) })
     : tenure.knownSince !== undefined
-      ? `${tenure.knownSince}년부터 재임 (기록 이전)`
-      : '선임일 미상';
+      ? sourceMessage('copy.managerHistoryView.8dd0e611a3', { p0: tenure.knownSince })
+      : sourceMessage('copy.managerHistoryView.b2275b499f');
   const tracked =
     !appointed || managerHistoryDateKey(appointed) !== managerHistoryDateKey(tenure.trackedFrom);
   const end = tenure.ended
-    ? `떠남 ${managerDate(tenure.ended)}${tenure.departure ? ` · ${DEPARTURE[tenure.departure]}` : ''}`
+    ? sourceMessage('copy.managerHistoryView.712143e9f5', {
+        p0: managerDate(tenure.ended),
+        p1: tenure.departure ? ` · ${DEPARTURE[tenure.departure]}` : '',
+      })
     : row.current
-      ? '현재 재임 중'
+      ? sourceMessage('copy.managerHistoryView.140671325d')
       : undefined;
   return {
     service,
-    ...(tracked ? { tracking: `성과 기록 ${managerDate(tenure.trackedFrom)}부터` } : {}),
+    ...(tracked
+      ? {
+          tracking: sourceMessage('copy.managerHistoryView.fbb3613d44', {
+            p0: managerDate(tenure.trackedFrom),
+          }),
+        }
+      : {}),
     ...(end ? { end } : {}),
   };
 }
@@ -307,7 +362,10 @@ export function managerTenureView(row: ManagerTenureRow): ManagerTenureView {
     kind: 'tenure',
     id: row.id,
     name,
-    badges: [...(row.current ? ['현재 감독'] : []), ...(row.manager.interim ? ['감독대행'] : [])],
+    badges: [
+      ...(row.current ? [sourceMessage('copy.managerHistoryView.3b1d85d190')] : []),
+      ...(row.manager.interim ? [sourceMessage('copy.managerHistoryView.32899e09ed')] : []),
+    ],
     ...periodView(row),
     ...(row.coverage === 'complete' ? {} : { coverage: COVERAGE[row.coverage] }),
     honoursLine: honours.line,
@@ -315,22 +373,39 @@ export function managerTenureView(row: ManagerTenureRow): ManagerTenureView {
     honours: summary ? honoursView(name, summary) : [],
     finishesLine: finishesLine(summary),
     finishes: summary ? finishesView(name, summary) : [],
-    provisional: (summary?.provisionalFinishes ?? []).map(
-      (finish) =>
-        `${seasonName(finish.season.year)} ${finish.name} 현재 ${finish.rank}위 · 진행 중이라 확정 전`,
+    provisional: (summary?.provisionalFinishes ?? []).map((finish) =>
+      sourceMessage('copy.managerHistoryView.38476b5fa2', {
+        p0: seasonName(finish.season.year),
+        p1: finish.name,
+        p2: finish.rank,
+      }),
     ),
     ...(summary?.unresolvedOutcomes.length
-      ? { unresolved: `결과 세부를 읽지 못한 성과 ${summary.unresolvedOutcomes.length}건` }
+      ? {
+          unresolved: sourceMessage('copy.managerHistoryView.ce924f2396', {
+            p0: summary.unresolvedOutcomes.length,
+          }),
+        }
       : {}),
     record,
     runs: [
-      runView('최다 연승', summary?.winningRun ?? null, record, summary?.record.played),
-      runView('최장 무패', summary?.unbeatenRun ?? null, record, summary?.record.played),
+      runView(
+        sourceMessage('copy.RecordsRoom.a23530b619'),
+        summary?.winningRun ?? null,
+        record,
+        summary?.record.played,
+      ),
+      runView(
+        sourceMessage('copy.RecordsRoom.1dcca0d380'),
+        summary?.unbeatenRun ?? null,
+        record,
+        summary?.record.played,
+      ),
     ],
     sources: (summary?.sourceSeasons ?? []).map((season) =>
       sourceAction(
         name,
-        '재임 시즌',
+        sourceMessage('copy.managerHistoryView.18c2a5f459'),
         season,
         `season:${season.year}`,
         provisionalYears.has(season.year),
@@ -348,7 +423,7 @@ export function managerLegacyView(row: ManagerLegacyEventRow): ManagerLegacyView
     when: managerDate(at ?? { year: event.year, day: event.round * ROUND_INTERVAL_DAYS }),
     title: event.title,
     detail: event.detail,
-    note: '옛 기록 · 감독별 성과와 연결되지 않아요',
+    note: sourceMessage('copy.managerHistoryView.2d0a0bc5a8'),
   };
 }
 
@@ -381,7 +456,10 @@ export function managerHistoryListState(input: {
           retry: MANAGER_HISTORY_COPY.retry,
         }
       : { kind: 'empty', message: MANAGER_HISTORY_COPY.empty };
-  const shown = `${page.rows.length} / ${page.total}건`;
+  const shown = sourceMessage('copy.managerHistoryView.a81206c9d6', {
+    p0: page.rows.length,
+    p1: page.total,
+  });
   const footer: ManagerHistoryFooter = !page.nextCursor
     ? { kind: 'end', shown }
     : loading

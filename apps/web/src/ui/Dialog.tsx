@@ -1,5 +1,16 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
 import { PixelIcon } from './PixelIcon';
-import { Children, isValidElement, useLayoutEffect, useId, useRef, type ReactNode } from 'react';
+import {
+  Children,
+  createContext,
+  isValidElement,
+  useContext,
+  useLayoutEffect,
+  useId,
+  useRef,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 import s from './App.module.css';
 import { detachedCopy, exit, play, reducedMotion } from './motion';
@@ -30,6 +41,13 @@ if (typeof document !== 'undefined') {
 
 // One background lock survives modal handoffs and nested sheets.
 const layers: HTMLElement[] = [];
+/**
+ * How many dialogs a dialog opens inside. React attaches a nested dialog's layer and runs its
+ * effects before its parent's, so the stack orders layers by depth, never by mount order: a sheet
+ * opened inside a review stays above it and keeps the focus.
+ */
+const DialogDepth = createContext(0);
+const depths = new WeakMap<HTMLElement, number>();
 const inertBefore = new Map<HTMLElement, boolean>();
 let unlockBody: (() => void) | undefined;
 function syncBackground() {
@@ -41,7 +59,7 @@ function syncBackground() {
   }
 }
 /** Makes everything outside `layer` inert and locks body scroll until the returned release. */
-export function lockLayer(layer: HTMLElement) {
+export function lockLayer(layer: HTMLElement, depth = 0) {
   if (!layers.length) {
     const scroll = { x: scrollX, y: scrollY };
     const style = document.body.style;
@@ -71,7 +89,10 @@ export function lockLayer(layer: HTMLElement) {
       window.scrollTo(scroll.x, scroll.y);
     };
   }
-  layers.push(layer);
+  depths.set(layer, depth);
+  const above = layers.findIndex((other) => (depths.get(other) ?? 0) > depth);
+  if (above < 0) layers.push(layer);
+  else layers.splice(above, 0, layer);
   syncBackground();
   return () => {
     const index = layers.indexOf(layer);
@@ -91,6 +112,7 @@ export function Dialog({
   children,
   onClose,
   wide = false,
+  fixed = false,
   picker = false,
   summary,
   actions: footerActions,
@@ -99,12 +121,19 @@ export function Dialog({
   children: ReactNode;
   onClose: () => void;
   wide?: boolean;
+  /**
+   * One height whatever it shows, its body scrolling inside: for content that changes in place
+   * (tabs, a read arriving), so the dialog never jumps.
+   */
+  fixed?: boolean;
   /** A small centered panel over a light dim that keeps the page behind it visible. */
   picker?: boolean;
   /** Persistent context below the title, above the scrolling body. */
   summary?: ReactNode;
   actions?: ReactNode;
 }) {
+  useTextLocale();
+  const depth = useContext(DialogDepth);
   const element = useRef<HTMLElement>(null);
   const backdrop = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
@@ -126,7 +155,7 @@ export function Dialog({
     const previous =
       active instanceof HTMLElement && active !== document.body ? active : pointerTrigger?.deref();
     const layer = backdrop.current!;
-    const unlock = lockLayer(layer);
+    const unlock = lockLayer(layer, depth);
     // Every dialog but a picker rises as a bottom sheet on phones.
     const mobile = !picker && sheet();
     play(layer, [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
@@ -219,42 +248,47 @@ export function Dialog({
     <div
       ref={backdrop}
       className={`${s.modalBackdrop} ${picker ? s.picker : ''}`}
+      style={depth ? ({ '--dialog-depth': depth } as CSSProperties) : undefined}
       onClick={(e) => {
         if (e.target === e.currentTarget) requestClose();
       }}
     >
-      <section
-        ref={element}
-        className={s.modal}
-        style={wide ? { maxWidth: 900 } : undefined}
-        role="dialog"
-        data-ui="dialog"
-        aria-modal="true"
-        aria-labelledby={labelId}
-        tabIndex={-1}
-      >
-        <header className={s.modalHead} data-ui="dialog-header">
-          <span className={s.sheetHandle} aria-hidden="true" />
-          <h2 id={labelId}>{label}</h2>
-          <button
-            data-ui="icon"
-            className={s.modalClose}
-            aria-label="창 닫기"
-            onClick={requestClose}
-          >
-            <PixelIcon name="close" size={20} />
-          </button>
-        </header>
-        {summary && <div className={s.modalSummary}>{summary}</div>}
-        <div className={s.modalBody} data-ui="dialog-body">
-          {content}
-        </div>
-        {actions && (
-          <footer className={s.modalActions} data-ui="dialog-actions">
-            {actions}
-          </footer>
-        )}
-      </section>
+      <DialogDepth.Provider value={depth + 1}>
+        <section
+          ref={element}
+          className={`${s.modal} ${fixed ? s.fixed : ''}`}
+          style={wide ? { maxWidth: 900 } : undefined}
+          role="dialog"
+          data-ui="dialog"
+          aria-modal="true"
+          aria-labelledby={labelId}
+          tabIndex={-1}
+        >
+          <header className={s.modalHead} data-ui="dialog-header">
+            <span className={s.sheetHandle} aria-hidden="true" />
+            <h2 id={labelId}>{localizeValue(label)}</h2>
+            <button
+              data-ui="icon"
+              className={s.modalClose}
+              aria-label={displayMessage('copy.Dialog.f7041ae411')}
+              onClick={requestClose}
+            >
+              <PixelIcon name="close" size={20} />
+            </button>
+          </header>
+          {localizeValue(summary && <div className={s.modalSummary}>{localizeValue(summary)}</div>)}
+          <div className={s.modalBody} data-ui="dialog-body">
+            {localizeValue(content)}
+          </div>
+          {localizeValue(
+            actions && (
+              <footer className={s.modalActions} data-ui="dialog-actions">
+                {localizeValue(actions)}
+              </footer>
+            ),
+          )}
+        </section>
+      </DialogDepth.Provider>
     </div>,
     document.body,
   );

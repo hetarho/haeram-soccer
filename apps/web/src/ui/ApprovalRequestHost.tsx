@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useMemo, useState, type ReactNode } from 'react';
 import type { ClientState, GameClient } from '../runtime/client';
 import { approvalRequests, approvalStanding } from '../runtime/progression';
@@ -24,6 +26,7 @@ export function ApprovalRequestHost({
   client: GameClient;
   children: (client: GameClient, error: string) => ReactNode;
 }) {
+  useTextLocale();
   const [error, setError] = useState('');
   const pendingSubmission = useGameState(submitting);
   const leave = () => {
@@ -55,17 +58,19 @@ export function ApprovalRequestHost({
       className={`${s.card} ${s.inlineCard}`}
       data-testid="approval-request"
       data-request-id={request.item.id}
-      aria-label="결재 요청"
+      aria-label={displayMessage('copy.ApprovalRequestHost.2058f4ceba')}
     >
       <header>
-        <h2>{title}</h2>
-        {standing && (
-          <span className={standing.overdue ? s.overdue : s.due} data-testid="approval-deadline">
-            {standing.label}
-          </span>
+        <h2>{localizeValue(title)}</h2>
+        {localizeValue(
+          standing && (
+            <span className={standing.overdue ? s.overdue : s.due} data-testid="approval-deadline">
+              {localizeValue(standing.label)}
+            </span>
+          ),
         )}
       </header>
-      {detail && detail !== title && <p>{detail}</p>}
+      {localizeValue(detail && detail !== title && <p>{localizeValue(detail)}</p>)}
       {/* The one way back: the 결재함 with its context, the request still waiting (→WEB-100). */}
       <button
         type="button"
@@ -74,15 +79,15 @@ export function ApprovalRequestHost({
         disabled={pendingSubmission}
         onClick={leave}
       >
-        결재함으로
+        {richMessage('copy.ApprovalRequestHost.0bcb104073')}
       </button>
-      {error && <p role="alert">{error}</p>}
-      {pending ? (
-        children(scoped, error)
-      ) : (
-        <p role="status">
-          이미 처리되었거나 조건이 바뀐 요청이에요. 결재함에서 남은 요청을 확인해 주세요.
-        </p>
+      {localizeValue(error && <p role="alert">{localizeValue(error)}</p>)}
+      {localizeValue(
+        pending ? (
+          children(scoped, error)
+        ) : (
+          <p role="status">{richMessage('copy.ApprovalRequestHost.46413142a5')}</p>
+        ),
       )}
     </section>
   );

@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { Component, Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { usePresentation, usePresentationController } from '../presentation/react';
 import { STORIES } from './catalog';
@@ -14,9 +16,11 @@ class PreviewBoundary extends Component<{ children: ReactNode }, { error?: Error
   render() {
     return this.state.error ? (
       <main className="ds-frame-error" role="alert">
-        <h2>미리보기를 표시하지 못했어요.</h2>
-        <pre>{this.state.error.message}</pre>
-        <button onClick={() => location.reload()}>다시 불러오기</button>
+        <h2>{richMessage('copy.StoryFrame.0e82e93395')}</h2>
+        <pre>{localizeValue(this.state.error.message)}</pre>
+        <button onClick={() => location.reload()}>
+          {richMessage('copy.ConstantsPage.9cee01b433')}
+        </button>
       </main>
     ) : (
       this.props.children
@@ -25,6 +29,7 @@ class PreviewBoundary extends Component<{ children: ReactNode }, { error?: Error
 }
 
 export default function StoryFrame() {
+  useTextLocale();
   const params = new URLSearchParams(location.search);
   const id = previewRequest.story ?? params.get('__design_system') ?? params.get('preview');
   const story = STORIES.find((item) => item.id === id);
@@ -95,45 +100,63 @@ export default function StoryFrame() {
       history.replaceState = original.replaceState;
     };
   }, [id, presentation.theme]);
-  if (!story) return <p className="ds-frame-error">등록되지 않은 미리보기입니다.</p>;
+  if (!story) return <p className="ds-frame-error">{richMessage('copy.StoryFrame.159e81365d')}</p>;
   if (error)
     return (
       <p role="alert" className="ds-frame-error">
-        {error}
-        <button onClick={() => location.reload()}>다시 시도</button>
+        {localizeValue(error)}
+        <button onClick={() => location.reload()}>{richMessage('presentation.retry')}</button>
       </p>
     );
   return (
     <div className="ds-story-document" data-surface="canvas" data-story={story.id}>
-      {runtime ? (
-        <PreviewBoundary>
-          <Suspense fallback={<p className="ds-loading">컴포넌트를 불러오는 중…</p>}>
-            <StoryRenderer story={story} runtime={runtime} notify={setMessage} />
-          </Suspense>
-        </PreviewBoundary>
-      ) : (
-        <p role="status" className="ds-loading">
-          샘플 게임을 준비하는 중…
-        </p>
+      {localizeValue(
+        runtime ? (
+          <PreviewBoundary>
+            <Suspense
+              fallback={<p className="ds-loading">{richMessage('copy.StoryFrame.cdac3f3fa0')}</p>}
+            >
+              <StoryRenderer story={story} runtime={runtime} notify={setMessage} />
+            </Suspense>
+          </PreviewBoundary>
+        ) : (
+          <p role="status" className="ds-loading">
+            {richMessage('copy.StoryFrame.a375c080dc')}
+          </p>
+        ),
       )}
-      {presentation.pending && (
-        <p role="status" className="ds-toast">
-          테마를 불러오는 중…
-        </p>
+      {localizeValue(
+        presentation.pending && (
+          <p role="status" className="ds-toast">
+            {richMessage('copy.StoryFrame.58404dc290')}
+          </p>
+        ),
       )}
-      {!!presentation.error && (
-        <p role="alert" className="ds-toast">
-          테마를 불러오지 못했습니다.
-          <button onClick={() => void controller.retry()}>다시 시도</button>
-        </p>
+      {localizeValue(
+        !!presentation.error && (
+          <p role="alert" className="ds-toast">
+            {richMessage('copy.StoryFrame.8f5a0d77d9', {
+              p0: (
+                <button onClick={() => void controller.retry()}>
+                  {richMessage('presentation.retry')}
+                </button>
+              ),
+            })}
+          </p>
+        ),
       )}
-      {message && (
-        <p role="status" className="ds-toast">
-          {message}
-          <button aria-label="알림 닫기" onClick={() => setMessage('')}>
-            ×
-          </button>
-        </p>
+      {localizeValue(
+        message && (
+          <p role="status" className="ds-toast">
+            {localizeValue(message)}
+            <button
+              aria-label={displayMessage('copy.StoryFrame.f4c4e17ed0')}
+              onClick={() => setMessage('')}
+            >
+              ×
+            </button>
+          </p>
+        ),
       )}
     </div>
   );

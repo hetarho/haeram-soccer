@@ -1,8 +1,15 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { MatchFrame, MatchRecord } from '../../../../packages/contracts/src/types';
 import { goalFrame, incidentFrame, recordedGoals, recordedIncidents, type Moment } from './moments';
 import s from './Analysis.module.css';
 
-const incidentText = { sub: '교체', secondYellow: '경고 누적 퇴장', red: '퇴장' } as const;
+const incidentText = {
+  sub: sourceMessage('copy.LabPage.084c5a6dd7'),
+  secondYellow: sourceMessage('copy.LabPage.3561565380'),
+  red: sourceMessage('copy.LabPage.68e69c7b9c'),
+} as const;
 
 export function MatchMoments({
   record,
@@ -19,7 +26,8 @@ export function MatchMoments({
   onSeek: (moment: Moment) => void;
   live?: boolean;
 }) {
-  const name = (id?: string) => (id && names?.get(id)) || id || '선수';
+  useTextLocale();
+  const name = (id?: string) => (id && names?.get(id)) || id || sourceMessage('team.column.player');
   const goals = recordedGoals(record);
   // Goals, red cards and substitutions in match order, each labelled as its frame reads.
   // A moment seeks to the frame it lands on; without one, to its recorded minute.
@@ -37,54 +45,83 @@ export function MatchMoments({
   ].sort((a, b) => a.at - b.at);
   return (
     <details data-ui="disclosure" className={s.disclosure}>
-      <summary>주요 장면 탐색</summary>
-      <section className={s.content} aria-label="주요 장면 탐색">
+      <summary>{richMessage('copy.MatchMoments.00d5ac8ed5')}</summary>
+      <section className={s.content} aria-label={displayMessage('copy.MatchMoments.00d5ac8ed5')}>
         <div className={s.controls}>
-          <button onClick={() => onSeek('kickoff')}>킥오프 · 1분</button>
-          <button onClick={() => onSeek('halfTime')}>전반 종료 · 45분</button>
-          <button onClick={() => onSeek('fullTime')}>경기 종료 · 90분</button>
+          <button onClick={() => onSeek('kickoff')}>
+            {richMessage('copy.MatchMoments.97fe972721')}
+          </button>
+          <button onClick={() => onSeek('halfTime')}>
+            {richMessage('copy.MatchMoments.3956ba3c7a')}
+          </button>
+          <button onClick={() => onSeek('fullTime')}>
+            {richMessage('copy.MatchMoments.b29ac15161')}
+          </button>
         </div>
         <ol className={s.momentList}>
-          {moments.map(({ goal, incident, label, seek }, i) => (
-            <li key={i}>
-              {goal ? (
-                <button data-testid="recorded-goal" onClick={() => onSeek(seek)}>
-                  <b>
-                    {label}′ · {goal.player}
-                  </b>
-                  <span>
-                    {goal.side === 0 ? '홈' : '원정'} 득점 · {goal.home}–{goal.away}
-                  </span>
-                </button>
-              ) : (
-                incident && (
-                  <button data-testid="recorded-incident" onClick={() => onSeek(seek)}>
-                    <b>
-                      {label}′ ·{' '}
-                      {incident.kind === 'sub'
-                        ? `${name(incident.player)} ↔ ${name(incident.other)}`
-                        : name(incident.player)}
-                    </b>
-                    <span>
-                      {incident.side === 0 ? '홈' : '원정'} {incidentText[incident.kind]}
-                    </span>
-                  </button>
-                )
-              )}
-            </li>
-          ))}
+          {localizeValue(
+            moments.map(({ goal, incident, label, seek }, i) => (
+              <li key={i}>
+                {localizeValue(
+                  goal ? (
+                    <button data-testid="recorded-goal" onClick={() => onSeek(seek)}>
+                      <b>
+                        {localizeValue(label)}′ · {localizeValue(goal.player)}
+                      </b>
+                      <span>
+                        {richMessage('copy.MatchMoments.e354fc1bd6', {
+                          p0:
+                            goal.side === 0
+                              ? sourceMessage('fixture.home')
+                              : sourceMessage('fixture.away'),
+                          p1: goal.home,
+                          p2: goal.away,
+                        })}
+                      </span>
+                    </button>
+                  ) : (
+                    incident && (
+                      <button data-testid="recorded-incident" onClick={() => onSeek(seek)}>
+                        <b>
+                          {localizeValue(label)}′ ·{localizeValue(' ')}
+                          {localizeValue(
+                            incident.kind === 'sub'
+                              ? `${name(incident.player)} ↔ ${name(incident.other)}`
+                              : name(incident.player),
+                          )}
+                        </b>
+                        <span>
+                          {localizeValue(
+                            incident.side === 0
+                              ? sourceMessage('fixture.home')
+                              : sourceMessage('fixture.away'),
+                          )}{' '}
+                          {localizeValue(incidentText[incident.kind])}
+                        </span>
+                      </button>
+                    )
+                  ),
+                )}
+              </li>
+            )),
+          )}
         </ol>
-        {!goals.length && <p className={s.note}>득점 장면이 없는 경기예요.</p>}
-        {record.highlights
-          .filter((h) => h.action !== '골')
-          .map((h, i) => (
-            <p className={s.note} key={i}>
-              {h.minute}′ · {h.action}
-            </p>
-          ))}
+        {localizeValue(
+          !goals.length && <p className={s.note}>{richMessage('copy.MatchMoments.55c625eb90')}</p>,
+        )}
+        {localizeValue(
+          record.highlights
+            .filter((h) => h.action !== sourceMessage('copy.summary.68a6cf8ed8'))
+            .map((h, i) => (
+              <p className={s.note} key={i}>
+                {localizeValue(h.minute)}′ · {localizeValue(h.action)}
+              </p>
+            )),
+        )}
         <p className={s.note}>
-          장면 선택은 재생만 이동하고 일시정지해요. {live && '배속을 선택하면 이어서 관전해요. '}
-          경기 결과와 날짜는 그대로예요.
+          {richMessage('copy.MatchMoments.53b20710d3', {
+            p0: live && sourceMessage('copy.MatchMoments.001b522f40'),
+          })}
         </p>
       </section>
     </details>

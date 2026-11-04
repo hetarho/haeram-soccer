@@ -1,3 +1,4 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
 import s from './FacilityArt.module.css';
 import { facilityScene, type FacilityScene } from './facilityScene';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -18,6 +19,7 @@ export function FacilityArt({
   eager?: boolean;
   view?: 'exterior';
 }) {
+  useTextLocale();
   const locale = useLocale();
   const theme = useTheme();
   const themeLabel = usePresentation().themeEntry!.label;
@@ -65,7 +67,7 @@ export function FacilityArt({
             : undefined
         }
         sizes={width ? `${width}px` : '100vw'}
-        alt={scene.alt}
+        alt={localizeValue(scene.alt)}
         width="240"
         height="80"
         loading={eager || kind === 'stadium' ? 'eager' : 'lazy'}

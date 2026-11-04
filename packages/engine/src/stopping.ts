@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { InboxItem, ResponsibilityKey, World } from '../../contracts/src/types';
 import { currentDay, daysUntilNextMatch, nextOwnFixture } from './calendar';
 import { activePlayers } from './player-state';
@@ -52,7 +53,10 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
         'recruitment',
         mediation.id,
         'staff-report',
-        `${mediation.manager.name} 감독·${mediation.director.name} 단장 영입 중재`,
+        sourceMessage('copy.mediation.73f275aff7', {
+          p0: mediation.manager.name,
+          p1: mediation.director.name,
+        }),
       );
   const combined = Object.values(w.playingCoachProposals || {}).filter(
     (p) => p.status === 'pending',
@@ -72,8 +76,10 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
       day,
       kind: 'staff-renewal',
       ref: proposal.person,
-      title: `${name ?? '선수'} 플레잉 코치 계약 검토`,
-      detail: '선수와 코치 계약을 함께 승인해 주세요.',
+      title: sourceMessage('copy.staff.904f237b75', {
+        p0: name ?? sourceMessage('team.column.player'),
+      }),
+      detail: sourceMessage('copy.stopping.4c06545fed'),
       attention: true,
       responsibility: key,
       responsibilities: keys,
@@ -81,10 +87,15 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
   }
   for (const p of activePlayers(w))
     if (p.talk && !combined.some((proposal) => proposal.person === p.id))
-      add('contracts', p.id, 'contract-talk', `${p.name} 선수 계약에 답변해 주세요`);
+      add(
+        'contracts',
+        p.id,
+        'contract-talk',
+        sourceMessage('copy.stopping.da83783ea0', { p0: p.name }),
+      );
   for (const bid of w.bids || []) {
     if (bid.direction === 'out' && bid.status === 'countered')
-      add('recruitment', bid.id, 'bid-response', '선수 영입 역제안에 답변해 주세요');
+      add('recruitment', bid.id, 'bid-response', sourceMessage('copy.stopping.74e09e697b'));
     if (
       bid.direction === 'in' &&
       bid.status === 'pending' &&
@@ -93,7 +104,7 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
       activePlayers(w).some((p) => p.id === bid.playerId)
     ) {
       const coach = w.staff?.find((member) => member.person === bid.playerId);
-      if (!coach) add('sales', bid.id, 'incoming-bid', '선수 매각 제안에 답변해 주세요');
+      if (!coach) add('sales', bid.id, 'incoming-bid', sourceMessage('copy.stopping.05e7dc9963'));
       else {
         const keys: ResponsibilityKey[] = ['sales', 'staff'],
           direct = keys.find((key) => !isDelegated(w, key));
@@ -104,9 +115,8 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
             day,
             kind: 'incoming-bid',
             ref: bid.id,
-            title: `${coach.name} 선수·코치 계약 종료 검토`,
-            detail:
-              '매각하면 선수와 코치 계약이 함께 끝나요. 기존 코치 계약 종료 비용을 확인하세요.',
+            title: sourceMessage('copy.stopping.8b601a30d9', { p0: coach.name }),
+            detail: sourceMessage('copy.stopping.759a033a1c'),
             attention: true,
             responsibility: direct ?? 'sales',
             responsibilities: keys,
@@ -119,18 +129,18 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
       'manager',
       w.manager.id,
       'staff-renewal',
-      '새 감독을 선임해 주세요',
+      sourceMessage('copy.stopping.8d0c9c2908'),
       `${year}`,
-      '임시 감독 유지',
+      sourceMessage('copy.stopping.9a8d58c6df'),
     );
   else if (day >= renewalDay(year) && managerRenewal(w))
     add(
       'manager',
       w.manager.id,
       'staff-renewal',
-      `${w.manager.name} 감독 재계약`,
+      sourceMessage('copy.stopping.ce7db6a93a', { p0: w.manager.name }),
       `${w.manager.until}`,
-      '재계약하지 않기',
+      sourceMessage('copy.stopping.b21cb63550'),
     );
   if (w.staff)
     for (const role of STAFF_ROLES) {
@@ -152,18 +162,18 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
           'staff',
           role,
           'staff-renewal',
-          `${STAFF_INFO[role].label} 공석`,
+          sourceMessage('copy.stopping.19bd768311', { p0: STAFF_INFO[role].label }),
           `${year}`,
-          '공석 유지',
+          sourceMessage('copy.stopping.f90850b2fd'),
         );
       else if (day >= renewalDay(year) && isExpiring(w, member))
         add(
           'staff',
           member.id,
           'staff-renewal',
-          `${member.name} 코치 재계약`,
+          sourceMessage('copy.stopping.312c49770e', { p0: member.name }),
           `${member.until}`,
-          '재계약하지 않기',
+          sourceMessage('copy.stopping.b21cb63550'),
         );
     }
   for (const review of w.academyReviews || [])
@@ -172,9 +182,11 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
         'academy',
         review.id,
         'staff-report',
-        review.kind === 'promote' ? '유소년 승격 검토' : '유소년 방출 검토',
+        review.kind === 'promote'
+          ? sourceMessage('copy.stopping.8a91808257')
+          : sourceMessage('copy.stopping.8bacb3c01e'),
         `${review.year}`,
-        '아카데미에 남기기',
+        sourceMessage('copy.stopping.2c00cfed22'),
       );
   if (includeDelegated || !isDelegated(w, 'sponsors'))
     for (const slot of sponsorSlots(w))
@@ -183,9 +195,9 @@ export function pendingDecisions(w: World, includeDelegated = false): StopReason
           'sponsors',
           slot.slot,
           'sponsor-ending',
-          `${slot.label} 계약 검토`,
+          sourceMessage('copy.stopping.a86a89ae16', { p0: slot.label }),
           `${year}`,
-          '이번 시즌 계약 보류',
+          sourceMessage('copy.stopping.cddc2ef401'),
         );
   return reasons;
 }
@@ -200,8 +212,8 @@ export function stoppingReasons(w: World): StopReason[] {
       year: w.year,
       day: currentDay(w),
       kind: 'match',
-      title: '내일 경기',
-      detail: '경기 준비·관람·결과 진행을 선택하세요.',
+      title: sourceMessage('copy.stopping.6ad77c4be0'),
+      detail: sourceMessage('copy.stopping.ba85da71e2'),
       attention: true,
       ref: fixture.id,
     });

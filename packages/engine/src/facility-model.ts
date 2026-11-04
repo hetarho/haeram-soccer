@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { FacilityPart, World } from '../../contracts/src/types';
 
 /**
@@ -11,15 +12,60 @@ import type { FacilityPart, World } from '../../contracts/src/types';
  * live in facilities.ts, so artwork and domain reads never reach construction or the world.
  */
 export const STADIUM_STEPS = [
-  { name: '동네 구장', capacity: 2500, work: undefined, cost: 0 },
-  { name: '관중석 증축', capacity: 5000, work: 'expansion', cost: 600 },
-  { name: '새 구장', capacity: 10000, work: 'rebuild', cost: 1500 },
-  { name: '스탠드 증축', capacity: 15000, work: 'expansion', cost: 3750 },
-  { name: '현대식 구장', capacity: 30000, work: 'rebuild', cost: 9400 },
-  { name: '2층 스탠드', capacity: 40000, work: 'expansion', cost: 23400 },
-  { name: '대형 경기장', capacity: 60000, work: 'rebuild', cost: 58600 },
-  { name: '코너 증축', capacity: 75000, work: 'expansion', cost: 146500 },
-  { name: '명문 구장', capacity: 90000, work: 'expansion', cost: 366000 },
+  {
+    name: sourceMessage('copy.facility_model.6058509e5d'),
+    capacity: 2500,
+    work: undefined,
+    cost: 0,
+  },
+  {
+    name: sourceMessage('copy.facility_model.03cd45f663'),
+    capacity: 5000,
+    work: 'expansion',
+    cost: 600,
+  },
+  {
+    name: sourceMessage('copy.facility_model.65da267f57'),
+    capacity: 10000,
+    work: 'rebuild',
+    cost: 1500,
+  },
+  {
+    name: sourceMessage('copy.facility_model.1432ade076'),
+    capacity: 15000,
+    work: 'expansion',
+    cost: 3750,
+  },
+  {
+    name: sourceMessage('copy.facility_model.5bccbf6dd1'),
+    capacity: 30000,
+    work: 'rebuild',
+    cost: 9400,
+  },
+  {
+    name: sourceMessage('copy.facility_model.cdc6efde38'),
+    capacity: 40000,
+    work: 'expansion',
+    cost: 23400,
+  },
+  {
+    name: sourceMessage('copy.facility_model.4ccce8b5ed'),
+    capacity: 60000,
+    work: 'rebuild',
+    cost: 58600,
+  },
+  {
+    name: sourceMessage('copy.facility_model.0e3316fb01'),
+    capacity: 75000,
+    work: 'expansion',
+    cost: 146500,
+  },
+  {
+    name: sourceMessage('copy.facility_model.23ef72e0aa'),
+    capacity: 90000,
+    work: 'expansion',
+    cost: 366000,
+  },
 ] as const;
 export type StadiumWork = 'expansion' | 'rebuild';
 /** An expansion closes part of the ground while its stand is built; a rebuild happens elsewhere. */

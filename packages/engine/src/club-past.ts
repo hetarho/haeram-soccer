@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The bought club's past before its owner (→HIST-21, HIST-2): pure reads of the world's season
  * archive, which keeps every club's league row, each country's champions and cup finals and the
@@ -56,22 +57,22 @@ function archivedRuns(season: SeasonArchive, id: string, index: number, code: st
     runs.push({
       key: 'cup',
       name: domesticCupName(code),
-      reached: '결승',
+      reached: sourceMessage('copy.CupHistory.d7f030913a'),
       ...(champion.cup === id ? { champion: true } : {}),
     });
   for (const entry of season.europe) {
     const inTable = (rows?: number[][]) => !!rows?.some((row) => row[0] === index);
     const reached =
       entry.winner === id || entry.final?.runnerUp === id
-        ? '결승'
+        ? sourceMessage('copy.CupHistory.d7f030913a')
         : (bracketReached(
             season.brackets?.find((bracket) => bracket.key === entry.kind),
             index,
           ) ??
           (inTable(entry.secondStandings)
-            ? '2차 조별 리그'
+            ? sourceMessage('copy.cupRoute.be35e01438')
             : inTable(entry.standings)
-              ? '조별 리그'
+              ? sourceMessage('copy.competitionLabels.6fcd805067')
               : undefined));
     if (reached)
       runs.push({

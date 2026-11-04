@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The takeover (→ECON-38, CLUB-1, OWNER-4, WORLD-5): the owner buys a club of the world nobody
  * owns as it stands, and the career starts there. The club keeps its squad, manager, identity and
@@ -137,13 +138,14 @@ export function takeoverExpenses(w: World, club: Club, turnover?: string) {
 
 /** Why a start's choices cannot stand: the tier, or the traits (→OWNER-2, OWNER-5). */
 function checkChoice(choice: Pick<StartChoice, 'tier' | 'traits'>) {
-  if (!WEALTH_TIER_IDS.includes(choice.tier)) throw new Error('구단주 자산 등급을 확인하세요.');
+  if (!WEALTH_TIER_IDS.includes(choice.tier))
+    throw new Error(sourceMessage('copy.takeover.49aba94987'));
   if (
     choice.traits.length > OWNER_TRAIT_LIMIT ||
     new Set(choice.traits).size !== choice.traits.length ||
     choice.traits.some((trait) => !OWNER_TRAIT_IDS.includes(trait))
   )
-    throw new Error('구단주 특성을 확인하세요.');
+    throw new Error(sourceMessage('copy.takeover.b9a9035cad'));
 }
 
 /**
@@ -160,19 +162,20 @@ export function takeOver(
   preset?: string,
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ): World {
-  if (hasOwner(w)) throw new Error('이미 주인이 있는 세계입니다.');
+  if (hasOwner(w)) throw new Error(sourceMessage('copy.takeover.681e15ae2f'));
   if (w.round !== 0 || currentDay(w) !== 0)
-    throw new Error('구단 인수는 시즌 첫날에만 할 수 있어요.');
+    throw new Error(sourceMessage('copy.takeover.d5938c0c2f'));
   checkChoice(choice);
-  if (preset !== undefined && !presetById(preset)) throw new Error('구단 방향을 확인하세요.');
+  if (preset !== undefined && !presetById(preset))
+    throw new Error(sourceMessage('copy.presets.c7db97e536'));
   const priced = pricedClubs(w),
     bought = priced.find((entry) => entry.club.id === clubId);
-  if (!bought) throw new Error('인수할 수 없는 구단입니다.');
+  if (!bought) throw new Error(sourceMessage('copy.host.fd5ef98e05'));
   const club = bought.club,
     code = club.country,
     year = w.year;
   const fortunePounds = tierFortune(w, choice.tier, priced);
-  if (!pays(w, bought, fortunePounds)) throw new Error('구단주 자금으로는 이 구단을 살 수 없어요.');
+  if (!pays(w, bought, fortunePounds)) throw new Error(sourceMessage('copy.takeover.ff34635620'));
   const fortune = fromPounds(code, year, fortunePounds),
     price = bought.price;
   // What the club stands at while nobody owns it, read before it becomes the owner's.
@@ -271,8 +274,12 @@ export function takeOver(
   addEvent(
     w,
     'takeover',
-    '구단 인수',
-    `${club.name} 인수 · ${country(code).name} ${divisionLabel(club.tier)}`,
+    sourceMessage('copy.takeover.12c307b7f9'),
+    sourceMessage('copy.takeover.aa7fe12572', {
+      p0: club.name,
+      p1: country(code).name,
+      p2: divisionLabel(club.tier),
+    }),
     price,
   );
 

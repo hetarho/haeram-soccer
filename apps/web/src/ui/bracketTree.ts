@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type {
   BracketArchive,
   Fixture,
@@ -31,7 +32,9 @@ export const roundField = (round: KnockoutRound) =>
  */
 export function treeStart(rounds: readonly KnockoutRound[]) {
   return rounds.findIndex(
-    (round) => !round.label.startsWith('예선') && roundField(round) <= TREE_FIELD,
+    (round) =>
+      !round.label.startsWith(sourceMessage('copy.bracketTree.dbad85ccbc')) &&
+      roundField(round) <= TREE_FIELD,
   );
 }
 

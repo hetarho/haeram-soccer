@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
  * A match lab fixture (→LAB-4): two lab sides played by the detailed engine's latest release
  * revision, the left side at home in even matches, each match seeded from the run seed and its index.
@@ -19,8 +20,8 @@ export interface LabWorld {
 
 /** How the scoreboard names the hosts (→LAB-9); their ids and kits stay the clubs' own. */
 export const LAB_HOST_NAMES = [
-  { name: '좌측 팀', short: '좌측' },
-  { name: '우측 팀', short: '우측' },
+  { name: sourceMessage('copy.LabPage.d192ee8a47'), short: sourceMessage('copy.match.9a1ee11a2c') },
+  { name: sourceMessage('copy.LabPage.bb56f4ce84'), short: sourceMessage('copy.match.dbe322fd5d') },
 ] as const;
 
 /**

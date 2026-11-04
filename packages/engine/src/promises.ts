@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ReinforcementPromise, World } from '../../contracts/src/types';
 import { careerDate, careerOrdinal } from './person-careers';
 import { lineOf } from './player';
@@ -18,10 +19,10 @@ function finish(
   if (arrival) promise.arrival = { player: arrival.player, at: { ...arrival.at } };
   promise.reaction =
     status === 'fulfilled'
-      ? `${promise.manager.name} 감독: 약속한 보강 선수가 도착한 것을 확인했어요.`
+      ? sourceMessage('copy.promises.ad9da72818', { p0: promise.manager.name })
       : status === 'unfulfilled'
-        ? `${promise.manager.name} 감독: 기한까지 보강 약속이 지켜지지 않은 것을 확인했어요.`
-        : `${promise.manager.name} 감독의 퇴임으로 보강 약속을 취소했어요. 후임의 성과로 판단하지 않아요.`;
+        ? sourceMessage('copy.promises.06ed47b9e4', { p0: promise.manager.name })
+        : sourceMessage('copy.promises.3767b80bda', { p0: promise.manager.name });
   pushInbox(w, {
     kind: 'staff-report',
     title: promise.reaction,
@@ -43,7 +44,7 @@ export function judgePromises(w: World) {
   for (const promise of w.promises ?? []) {
     if (promise.status !== 'pending') continue;
     if (promise.manager.id !== w.manager.id) {
-      finish(w, promise, 'cancelled', '요청한 감독이 떠나 약속을 취소했어요.');
+      finish(w, promise, 'cancelled', sourceMessage('copy.promises.c186ff5725'));
       continue;
     }
     const deadline = careerOrdinal(promise.deadline);
@@ -65,7 +66,7 @@ export function judgePromises(w: World) {
         w,
         promise,
         'fulfilled',
-        `${arrival.name} 선수가 약속 기간에 실제로 외부에서 합류했어요.`,
+        sourceMessage('copy.promises.f4600dd0fb', { p0: arrival.name }),
         arrival,
       );
     else {
@@ -74,7 +75,11 @@ export function judgePromises(w: World) {
         w,
         promise,
         'unfulfilled',
-        `마감일까지 대상에 맞는 실제 외부 영입이 기록되지 않았어요.${mediation ? ` 약속 당시 중재 사유: ${mediation.directorReason}` : ''}`,
+        sourceMessage('copy.promises.a321414e54', {
+          p0: mediation
+            ? sourceMessage('copy.promises.f5c0154009', { p0: mediation.directorReason })
+            : '',
+        }),
       );
     }
   }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /** Owner-selected materials, applied to the active packs on 2026-10-31. */
 export const SELECTED_CONTROLLER_BACKGROUNDS = {
   'matchday-print': 'P3',
@@ -11,8 +12,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'P1',
     theme: 'matchday-print',
-    title: '버터 페이퍼',
-    description: '따뜻한 크림색 종이 · 가장 담백한 인쇄 재질',
+    title: sourceMessage('copy.controllerBackgroundOptions.4b28fe58b8'),
+    description: sourceMessage('copy.controllerBackgroundOptions.385d0a3c63'),
     fill: '#eadbb8',
     ink: '#2d3027',
     muted: '#555342',
@@ -20,8 +21,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'P2',
     theme: 'matchday-print',
-    title: '세이지 프레스',
-    description: '바랜 세이지색 종이 · 차분한 빈티지 인쇄물',
+    title: sourceMessage('copy.controllerBackgroundOptions.764b62bf7a'),
+    description: sourceMessage('copy.controllerBackgroundOptions.c7b79892a8'),
     fill: '#bfcbb4',
     ink: '#20352d',
     muted: '#3c5145',
@@ -29,8 +30,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'P3',
     theme: 'matchday-print',
-    title: '버건디 커버',
-    description: '짙은 와인색 제본지 · 밝은 글자가 올라가는 표지',
+    title: sourceMessage('copy.controllerBackgroundOptions.d115c77e4c'),
+    description: sourceMessage('copy.controllerBackgroundOptions.d76433d064'),
     fill: '#612f37',
     ink: '#fff4dc',
     muted: '#e9d5bd',
@@ -38,8 +39,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'G1',
     theme: 'standard',
-    title: '포레스트 벤치',
-    description: '딥그린 매트 재질 · 묵직한 경기장 분위기',
+    title: sourceMessage('copy.controllerBackgroundOptions.2434c27920'),
+    description: sourceMessage('copy.controllerBackgroundOptions.aa7c6486fa'),
     fill: '#183e30',
     ink: '#f0f7e7',
     muted: '#d1e1c9',
@@ -47,8 +48,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'G2',
     theme: 'standard',
-    title: '세이지 터프',
-    description: '밝은 세이지 잔디 · 테마의 축구장 감각을 살린 안',
+    title: sourceMessage('copy.controllerBackgroundOptions.258122ffbd'),
+    description: sourceMessage('copy.controllerBackgroundOptions.0b1c0c45a6'),
     fill: '#b7c9a6',
     ink: '#183529',
     muted: '#3e533c',
@@ -56,8 +57,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'G3',
     theme: 'standard',
-    title: '클럽하우스 에나멜',
-    description: '민트빛 아이보리 코팅 · 밝고 정돈된 클럽하우스',
+    title: sourceMessage('copy.controllerBackgroundOptions.22b0afe953'),
+    description: sourceMessage('copy.controllerBackgroundOptions.3807fc5b31'),
     fill: '#e1e9da',
     ink: '#193b2b',
     muted: '#486047',
@@ -65,8 +66,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'S1',
     theme: 'sticker-club',
-    title: '버터 클레이',
-    description: '부드러운 버터 노랑 · 기존 테마의 밝은 에너지',
+    title: sourceMessage('copy.controllerBackgroundOptions.f9f0f91030'),
+    description: sourceMessage('copy.controllerBackgroundOptions.1239298723'),
     fill: '#f0cd67',
     ink: '#2b402e',
     muted: '#4e5c36',
@@ -74,8 +75,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'S2',
     theme: 'sticker-club',
-    title: '피스타치오 클레이',
-    description: '파스텔 민트색 점토 · 산뜻하고 부드러운 분위기',
+    title: sourceMessage('copy.controllerBackgroundOptions.d2be753dbc'),
+    description: sourceMessage('copy.controllerBackgroundOptions.38ea957e65'),
     fill: '#b6d2b5',
     ink: '#24402f',
     muted: '#496247',
@@ -83,8 +84,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'S3',
     theme: 'sticker-club',
-    title: '살구 클레이',
-    description: '따뜻한 살구 코랄 점토 · 편안한 스티커 장난감 감각',
+    title: sourceMessage('copy.controllerBackgroundOptions.c0df0b5f9e'),
+    description: sourceMessage('copy.controllerBackgroundOptions.43d2bf3096'),
     fill: '#e7a78c',
     ink: '#473129',
     muted: '#674b3d',
@@ -92,8 +93,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'X1',
     theme: 'pixel',
-    title: '레트로 올리브',
-    description: '올리브색 액정 · 손에 익은 휴대용 게임기 감각',
+    title: sourceMessage('copy.controllerBackgroundOptions.2134d03d17'),
+    description: sourceMessage('copy.controllerBackgroundOptions.62fbe7c8bf'),
     fill: '#b8c89b',
     ink: '#233125',
     muted: '#415038',
@@ -101,8 +102,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'X2',
     theme: 'pixel',
-    title: '미드나이트 보드',
-    description: '남색 전광판 · 밤 경기의 차가운 방송 감각',
+    title: sourceMessage('copy.controllerBackgroundOptions.4126406b52'),
+    description: sourceMessage('copy.controllerBackgroundOptions.228d0141ca'),
     fill: '#202e48',
     ink: '#e4f2ef',
     muted: '#adcaca',
@@ -110,8 +111,8 @@ export const CONTROLLER_BACKGROUNDS = [
   {
     id: 'X3',
     theme: 'pixel',
-    title: '제이드 아케이드',
-    description: '청록색 픽셀 매트 · 선명한 레트로 축구 게임',
+    title: sourceMessage('copy.controllerBackgroundOptions.07f84c20ab'),
+    description: sourceMessage('copy.controllerBackgroundOptions.b24c624977'),
     fill: '#326452',
     ink: '#edf2cf',
     muted: '#c6dbc0',

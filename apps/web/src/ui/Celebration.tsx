@@ -1,3 +1,5 @@
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useGameState } from '../runtime/store';
 import type { NewsItem } from '../../../../packages/engine/src/news';
@@ -17,6 +19,7 @@ const SHOW_MS = 5200;
 const FILE_MS = 420;
 
 function Celebrating() {
+  useTextLocale();
   const news = useClubNews();
   // With "뉴스 표시 안 함" achievements only collect behind the news button.
   const quiet = useNewsQuiet((state) => state.quiet);
@@ -47,20 +50,22 @@ function Celebrating() {
   return (
     <div className={s.layer} data-testid="celebration">
       <div className={s.confetti} aria-hidden="true">
-        {CONFETTI.map((piece, i) => (
-          <i
-            key={i}
-            className={s[`tone${piece.tone}`]}
-            style={
-              {
-                left: `${piece.left}%`,
-                animationDelay: `${piece.delay}ms`,
-                animationDuration: `${piece.duration}ms`,
-                '--drift': `${piece.drift}px`,
-              } as CSSProperties
-            }
-          />
-        ))}
+        {localizeValue(
+          CONFETTI.map((piece, i) => (
+            <i
+              key={i}
+              className={s[`tone${piece.tone}`]}
+              style={
+                {
+                  left: `${piece.left}%`,
+                  animationDelay: `${piece.delay}ms`,
+                  animationDuration: `${piece.duration}ms`,
+                  '--drift': `${piece.drift}px`,
+                } as CSSProperties
+              }
+            />
+          )),
+        )}
       </div>
       <section
         data-surface="panel"
@@ -69,13 +74,13 @@ function Celebrating() {
         style={{ '--file-at': `${SHOW_MS - FILE_MS}ms` } as CSSProperties}
         role="status"
         aria-live="polite"
-        title="눌러서 닫기"
+        title={displayMessage('copy.Celebration.23058c112d')}
         // A tap dismisses it; the headline stays behind the news button.
         onClick={() => setQueue((items) => items.slice(1))}
       >
-        <small>축하합니다</small>
-        <strong>{current.title}</strong>
-        {current.detail && <span>{current.detail}</span>}
+        <small>{richMessage('copy.Celebration.055f6cd644')}</small>
+        <strong>{localizeValue(current.title)}</strong>
+        {localizeValue(current.detail && <span>{localizeValue(current.detail)}</span>)}
       </section>
     </div>
   );
@@ -86,6 +91,7 @@ function Celebrating() {
  * (→WEB-52): a tap dismisses it, it stays clear of the HUD and clock (one line above phone navigation), and keeps its headline in notifications/news.
  */
 export function CelebrationHost() {
+  useTextLocale();
   const id = useGameState((state) => state.view?.world.id);
   if (!id) return null;
   return <Celebrating key={id} />;

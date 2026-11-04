@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayLocale, displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { eventDesk } from './eventRouting';
 import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { PixelIcon } from './PixelIcon';
@@ -81,70 +84,116 @@ function BidFacts({
   market: readonly { player: Player }[];
   format: (value: string) => ReactNode;
 }) {
+  useTextLocale();
   const found = bidPlayer(w, bid, market);
   const player = found?.player;
   const terms = bidTerms(bid, found);
   const club = bid.club && w.clubs.find((c) => c.id === bid.club)?.name;
   const coach = w.staff?.find((member) => member.person === bid.playerId);
-  const kind = bid.loan ? '임대료' : '이적료';
+  const kind = bid.loan
+    ? sourceMessage('copy.EventCenter.0339ce3889')
+    : sourceMessage('copy.EventCenter.e2d73c6cf3');
   return (
     <dl className={s.bid} data-testid="bid-facts">
       <div>
-        <dt>{bid.direction === 'in' ? '우리 선수' : bid.loan ? '임대 대상' : '영입 대상'}</dt>
-        <dd>{player?.name ?? '선수 정보 없음'}</dd>
+        <dt>
+          {localizeValue(
+            bid.direction === 'in'
+              ? sourceMessage('copy.EventCenter.45d9ddc729')
+              : bid.loan
+                ? sourceMessage('copy.EventCenter.98b93050a6')
+                : sourceMessage('copy.EventCenter.42bd764e17'),
+          )}
+        </dt>
+        <dd>{localizeValue(player?.name ?? sourceMessage('copy.EventCenter.5a281e7e95'))}</dd>
       </div>
-      {player && (
-        <>
-          <div>
-            <dt>포지션·나이</dt>
-            <dd>
-              {player.position} · {POSITION_LABEL[player.position]} · {w.year - player.born}세
-            </dd>
-          </div>
-          <div>
-            <dt>능력</dt>
-            <dd>
-              OVR {overall(player)} · 잠재력 {Math.round(player.potential)}
-            </dd>
-          </div>
-        </>
+      {localizeValue(
+        player && (
+          <>
+            <div>
+              <dt>{richMessage('copy.EventCenter.6a43be732f')}</dt>
+              <dd>
+                {richMessage('copy.EventCenter.3c3009e927', {
+                  p0: player.position,
+                  p1: POSITION_LABEL[player.position],
+                  p2: w.year - player.born,
+                })}
+              </dd>
+            </div>
+            <div>
+              <dt>{richMessage('team.column.ability')}</dt>
+              <dd>
+                {richMessage('copy.EventCenter.7c888e21c3', {
+                  p0: overall(player),
+                  p1: Math.round(player.potential),
+                })}
+              </dd>
+            </div>
+          </>
+        ),
       )}
-      {club && (
-        <div>
-          <dt>{bid.direction === 'in' ? '제안 구단' : '상대 구단'}</dt>
-          <dd>{club}</dd>
-        </div>
+      {localizeValue(
+        club && (
+          <div>
+            <dt>
+              {localizeValue(
+                bid.direction === 'in'
+                  ? sourceMessage('copy.EventCenter.d1629d82d8')
+                  : sourceMessage('copy.EventCenter.9f6c4f2aa5'),
+              )}
+            </dt>
+            <dd>{localizeValue(club)}</dd>
+          </div>
+        ),
       )}
       <div>
-        <dt>{bid.direction === 'in' ? `제안 ${kind}` : `우리 제안 ${kind}`}</dt>
-        <dd>{format(bid.fee)}</dd>
+        <dt>
+          {localizeValue(
+            bid.direction === 'in'
+              ? sourceMessage('copy.EventCenter.73b1291c8c', { p0: kind })
+              : sourceMessage('copy.EventCenter.de2833c583', { p0: kind }),
+          )}
+        </dt>
+        <dd>{localizeValue(format(bid.fee))}</dd>
       </div>
-      {bid.status === 'countered' && bid.counterFee && (
-        <div>
-          <dt>역제안 {kind}</dt>
-          <dd>{format(bid.counterFee)}</dd>
-        </div>
+      {localizeValue(
+        bid.status === 'countered' && bid.counterFee && (
+          <div>
+            <dt>{richMessage('copy.EventCenter.14e1931a6f', { p0: kind })}</dt>
+            <dd>{localizeValue(format(bid.counterFee))}</dd>
+          </div>
+        ),
       )}
-      {terms && (
-        <div>
-          <dt>
-            {bid.direction === 'in'
-              ? '현재 연봉·계약'
-              : bid.loan
-                ? '임대 중 연봉'
-                : '영입 후 연봉·계약'}
-          </dt>
-          <dd>
-            {format(terms.wage)}
-            {terms.until !== undefined && ` · ${contractLine(terms.until, w.year)}`}
-          </dd>
-        </div>
+      {localizeValue(
+        terms && (
+          <div>
+            <dt>
+              {localizeValue(
+                bid.direction === 'in'
+                  ? sourceMessage('copy.EventCenter.eaaf99213b')
+                  : bid.loan
+                    ? sourceMessage('copy.EventCenter.4e9a821c8e')
+                    : sourceMessage('copy.EventCenter.3ef0119d85'),
+              )}
+            </dt>
+            <dd>
+              {localizeValue(format(terms.wage))}
+              {localizeValue(
+                terms.until !== undefined && ` · ${contractLine(terms.until, w.year)}`,
+              )}
+            </dd>
+          </div>
+        ),
       )}
-      {coach && (
-        <div>
-          <dt>코치 계약도 함께 종료</dt>
-          <dd>기존 계약 종료 비용 {format(releaseCost(w, coach))}</dd>
-        </div>
+      {localizeValue(
+        coach && (
+          <div>
+            <dt>{richMessage('copy.EventCenter.0589f4351f')}</dt>
+            <dd>
+              {richMessage('copy.EventCenter.04ed038fad', { p0: format(releaseCost(w, coach)) })}
+            </dd>
+          </div>
+        ),
       )}
     </dl>
   );
@@ -165,6 +214,7 @@ export const EventCenter = memo(function EventCenter({
   controller: ProgressionController;
   compact?: boolean;
 }) {
+  useTextLocale();
   const w = useGameState((state) => state.view?.world);
   // An owner's stop lands once every day it computed ahead has been shown, and management stays
   // locked until then (→WEB-18/97). Until it has, the shown date is not the one it stops on, so no
@@ -205,7 +255,11 @@ export const EventCenter = memo(function EventCenter({
   }, [reportOn, key]);
   if (!w || page === 'business' || running || (!events.length && !resumeOpen)) return null;
   const inDialog = compact || eve || resumeOpen;
-  const label = resumeOpen ? '관전 이어보기' : eve ? 'NEXT MATCH' : `${date} 이벤트`;
+  const label = resumeOpen
+    ? sourceMessage('copy.EventCenter.a2816ca124')
+    : eve
+      ? 'NEXT MATCH'
+      : sourceMessage('copy.EventCenter.bdc87bfe71', { p0: date });
   if (inDialog && opened !== key && !resumeOpen) {
     const manualMatch = eve && settingsOf(w).mode === 'manual';
     const entries = manualMatch ? events.filter((item) => item.kind !== 'match') : events;
@@ -215,15 +269,21 @@ export const EventCenter = memo(function EventCenter({
         className={s.pill}
         data-testid="event-pill"
         data-event-access
-        aria-label={
+        aria-label={localizeValue(
           eve && !manualMatch
-            ? `경기 준비 보고 · ${date} · 열기`
-            : `이벤트 ${entries.length}개 · ${date} · 열기`
-        }
+            ? sourceMessage('copy.EventCenter.a13f62fd9b', { p0: date })
+            : sourceMessage('copy.EventCenter.86a0fba99b', { p0: entries.length, p1: date }),
+        )}
         onClick={() => setOpened(key)}
       >
-        <i aria-hidden="true">{entries.length}</i>
-        <span>{eve && !manualMatch ? 'NEXT MATCH · 보고 확인' : `${date} 이벤트`}</span>
+        <i aria-hidden="true">{localizeValue(entries.length)}</i>
+        <span>
+          {localizeValue(
+            eve && !manualMatch
+              ? sourceMessage('copy.EventCenter.9d0e268540')
+              : sourceMessage('copy.EventCenter.bdc87bfe71', { p0: date }),
+          )}
+        </span>
       </button>
     );
   }
@@ -231,43 +291,67 @@ export const EventCenter = memo(function EventCenter({
     <div className={s.group} data-testid="event-group">
       <div className={s.groupHead}>
         <h2>
-          {date} ·{' '}
-          {resumeOpen ? '관전 중인 경기' : eve ? '경기 준비 보고' : `이벤트 ${events.length}개`}
+          {localizeValue(date)} ·{localizeValue(' ')}
+          {localizeValue(
+            resumeOpen
+              ? sourceMessage('copy.EventCenter.81de44b7c6')
+              : eve
+                ? sourceMessage('copy.EventCenter.79ef403fdd')
+                : sourceMessage('copy.EventCenter.32ee84213b', { p0: events.length }),
+          )}
         </h2>
         {/* The match eve card names its responsibility entry itself. */}
-        {!eve && !resumeOpen && (
-          <button data-ui="link" type="button" className={s.groupOffice} onClick={openOwnerOffice}>
-            결재라인 모아보기
-          </button>
+        {localizeValue(
+          !eve && !resumeOpen && (
+            <button
+              data-ui="link"
+              type="button"
+              className={s.groupOffice}
+              onClick={openOwnerOffice}
+            >
+              {richMessage('copy.EventCenter.f9197ab2f6')}
+            </button>
+          ),
         )}
       </div>
-      {resumeOpen && resume && (
-        <MatchReportCard w={w} fixture={resume.record} continuing>
-          <div className={s.actions}>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              aria-label="관전 이어보기"
-              disabled={acting || !!w.critical || careerEnded(w)}
-              onClick={() => setPage('match')}
-            >
-              관전 이어보기 <PixelIcon name="play" size={16} />
-            </button>
-          </div>
-        </MatchReportCard>
+      {localizeValue(
+        resumeOpen && resume && (
+          <MatchReportCard w={w} fixture={resume.record} continuing>
+            <div className={s.actions}>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                aria-label={displayMessage('copy.EventCenter.a2816ca124')}
+                disabled={acting || !!w.critical || careerEnded(w)}
+                onClick={() => setPage('match')}
+              >
+                {richMessage('copy.EventCenter.3a6ad769cf', {
+                  p0: <PixelIcon name="play" size={16} />,
+                })}
+              </button>
+            </div>
+          </MatchReportCard>
+        ),
       )}
-      {events.map((item) => (
-        <EventCard key={item.id} client={client} controller={controller} item={item} />
-      ))}
+      {localizeValue(
+        events.map((item) => (
+          <EventCard key={item.id} client={client} controller={controller} item={item} />
+        )),
+      )}
     </div>
   );
   return inDialog ? (
-    <Dialog label={label} onClose={() => setOpened(undefined)}>
-      {content}
+    <Dialog label={localizeValue(label)} onClose={() => setOpened(undefined)}>
+      {localizeValue(content)}
     </Dialog>
   ) : (
-    <section className={s.eventGroup} aria-label={eve ? 'NEXT MATCH' : `${date} 이벤트`}>
-      {content}
+    <section
+      className={s.eventGroup}
+      aria-label={localizeValue(
+        eve ? 'NEXT MATCH' : sourceMessage('copy.EventCenter.bdc87bfe71', { p0: date }),
+      )}
+    >
+      {localizeValue(content)}
     </section>
   );
 });
@@ -283,6 +367,7 @@ export const EventCard = memo(function EventCard({
   item: InboxItem;
   inDesk?: boolean;
 }) {
+  useTextLocale();
   const w = useGameState((state) => state.view!.world);
   const market = useGameState((state) => state.view?.transfers) || [];
   const read = (item: InboxItem) => client.command({ type: 'read-inbox', id: item.id });
@@ -303,22 +388,22 @@ export const EventCard = memo(function EventCard({
       <aside
         data-surface="panel"
         className={s.card}
-        aria-label="이벤트"
+        aria-label={displayMessage('copy.EventCenter.46b289bb0a')}
         data-testid="event-card"
         data-request-id={item.id}
       >
         <header>
-          <span className={s.kind}>{KIND_LABEL[item.kind]}</span>
+          <span className={s.kind}>{localizeValue(KIND_LABEL[item.kind])}</span>
         </header>
-        <h3>{item.title}</h3>
-        <p>{subject && `${subject} · `}결재 대기</p>
+        <h3>{localizeValue(item.title)}</h3>
+        <p>{richMessage('copy.EventCenter.8636d18c67', { p0: subject && `${subject} · ` })}</p>
         <button
           data-ui="primary"
           onClick={() => {
             if (gameStore.getSnapshot().view?.world.id === w.id) openApprovalRequest(w.id, item);
           }}
         >
-          검토하기
+          {richMessage('copy.EventCenter.26985bcf98')}
         </button>
       </aside>
     );
@@ -334,7 +419,7 @@ export const EventCard = memo(function EventCard({
     return (
       <MatchReportCard w={w} fixture={eve} ref={cardExit}>
         <button data-ui="link" type="button" className={s.stops} onClick={openOwnerOffice}>
-          결재라인 모아보기
+          {richMessage('copy.EventCenter.f9197ab2f6')}
         </button>
         <div className={s.actions}>
           <button
@@ -343,10 +428,10 @@ export const EventCard = memo(function EventCard({
             disabled={acting}
             onClick={() => void watch()}
           >
-            관전하기 ▶
+            {richMessage('copy.EventCenter.b451a320e0')}
           </button>
           <button disabled={acting} onClick={() => controller.playThrough()}>
-            결과만 보고 계속
+            {richMessage('copy.EventCenter.a19c26d18e')}
           </button>
         </div>
       </MatchReportCard>
@@ -367,101 +452,110 @@ export const EventCard = memo(function EventCard({
       key={item.id}
       ref={cardExit}
       className={`${s.card} ${inDesk ? s.inlineCard : ''}`}
-      aria-label="이벤트"
+      aria-label={displayMessage('copy.EventCenter.46b289bb0a')}
       data-testid="event-card"
     >
       <header>
-        <span className={s.kind}>{KIND_LABEL[item.kind]}</span>
+        <span className={s.kind}>{localizeValue(KIND_LABEL[item.kind])}</span>
       </header>
       {/* In a review the request host already carries its heading and any distinct detail. */}
-      {!inDesk && (
-        <>
-          <h3>{item.title}</h3>
-          <p>{item.detail}</p>
-        </>
+      {localizeValue(
+        !inDesk && (
+          <>
+            <h3>{localizeValue(item.title)}</h3>
+            <p>{localizeValue(item.detail)}</p>
+          </>
+        ),
       )}
-      {bid && <BidFacts w={w} bid={bid} market={market} format={format} />}
+      {localizeValue(bid && <BidFacts w={w} bid={bid} market={market} format={format} />)}
       <div className={s.actions}>
-        {bid?.direction === 'in' && bid.status === 'pending' ? (
-          <>
+        {localizeValue(
+          bid?.direction === 'in' && bid.status === 'pending' ? (
+            <>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={() => void answer(true)}
+              >
+                {richMessage('copy.EventCenter.c62a0bc221')}
+              </button>
+              <button disabled={acting} onClick={() => void answer(false)}>
+                {richMessage('copy.EventCenter.cc6314d04d')}
+              </button>
+            </>
+          ) : bid?.direction === 'out' && bid.status === 'countered' ? (
+            <>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={() => void answer(true)}
+              >
+                {richMessage('copy.EventCenter.30507fedcc')}
+              </button>
+              <button disabled={acting} onClick={() => void answer(false)}>
+                {richMessage('copy.EventCenter.cc6314d04d')}
+              </button>
+            </>
+          ) : item.kind === 'window-open' ? (
+            <>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={showMarket}
+              >
+                {richMessage('copy.EventCenter.bff84e4f71')}
+              </button>
+              <button disabled={acting} onClick={() => void decide(item)}>
+                {richMessage('copy.stories.1aacb54c49')}
+              </button>
+            </>
+          ) : item.kind === 'cup' ? (
+            <>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={() => {
+                  void read(item);
+                  setPage('europe');
+                }}
+              >
+                {richMessage('copy.EventCenter.a43e9d9aaa')}
+              </button>
+              <button disabled={acting} onClick={() => void decide(item)}>
+                {richMessage('copy.stories.1aacb54c49')}
+              </button>
+            </>
+          ) : item.kind === 'youth-intake' ? (
+            <>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={acting}
+                onClick={() => {
+                  void read(item);
+                  openTraining('academy');
+                }}
+              >
+                {richMessage('copy.EventCenter.ba42b0a358')}
+              </button>
+              <button disabled={acting} onClick={() => void decide(item)}>
+                {richMessage('copy.stories.1aacb54c49')}
+              </button>
+            </>
+          ) : (
             <button
               data-ui="primary"
               className={s.primary}
               disabled={acting}
-              onClick={() => void answer(true)}
+              onClick={() => void decide(item)}
             >
-              수락하고 매각
+              {richMessage('copy.stories.1aacb54c49')}
             </button>
-            <button disabled={acting} onClick={() => void answer(false)}>
-              거절
-            </button>
-          </>
-        ) : bid?.direction === 'out' && bid.status === 'countered' ? (
-          <>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={acting}
-              onClick={() => void answer(true)}
-            >
-              역제안 수락
-            </button>
-            <button disabled={acting} onClick={() => void answer(false)}>
-              거절
-            </button>
-          </>
-        ) : item.kind === 'window-open' ? (
-          <>
-            <button data-ui="primary" className={s.primary} disabled={acting} onClick={showMarket}>
-              이적시장 보기
-            </button>
-            <button disabled={acting} onClick={() => void decide(item)}>
-              확인
-            </button>
-          </>
-        ) : item.kind === 'cup' ? (
-          <>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                setPage('europe');
-              }}
-            >
-              대진표 보기
-            </button>
-            <button disabled={acting} onClick={() => void decide(item)}>
-              확인
-            </button>
-          </>
-        ) : item.kind === 'youth-intake' ? (
-          <>
-            <button
-              data-ui="primary"
-              className={s.primary}
-              disabled={acting}
-              onClick={() => {
-                void read(item);
-                openTraining('academy');
-              }}
-            >
-              유소년 보기
-            </button>
-            <button disabled={acting} onClick={() => void decide(item)}>
-              확인
-            </button>
-          </>
-        ) : (
-          <button
-            data-ui="primary"
-            className={s.primary}
-            disabled={acting}
-            onClick={() => void decide(item)}
-          >
-            확인
-          </button>
+          ),
         )}
       </div>
     </aside>
@@ -469,25 +563,25 @@ export const EventCard = memo(function EventCard({
 });
 
 export const KIND_LABEL: Record<InboxItem['kind'], string> = {
-  match: '경기',
-  'window-open': '이적시장 개장',
-  'window-close': '이적시장 마감',
-  'bid-response': '이적 협상',
-  'incoming-bid': '영입 제안 받음',
-  'youth-intake': '유소년 입단',
-  'staff-report': '스태프 보고',
-  'staff-renewal': '스태프 재계약',
-  cup: '컵 대진',
-  finance: '자금·후원',
-  'contract-talk': '계약 협상',
-  unhappy: '언해피',
-  'transfer-request': '이적 요청',
-  'sponsor-ending': '후원 계약 만료',
+  match: sourceMessage('copy.LabPage.e56314e9a1'),
+  'window-open': sourceMessage('copy.EventCenter.30b1854ab5'),
+  'window-close': sourceMessage('copy.EventCenter.bbe12e5dd9'),
+  'bid-response': sourceMessage('copy.EventCenter.89993bb226'),
+  'incoming-bid': sourceMessage('copy.EventCenter.fe04ea4908'),
+  'youth-intake': sourceMessage('copy.EventCenter.392f318064'),
+  'staff-report': sourceMessage('copy.EventCenter.befaa70d33'),
+  'staff-renewal': sourceMessage('copy.EventCenter.01c7790b2b'),
+  cup: sourceMessage('copy.EventCenter.3f616cbe2c'),
+  finance: sourceMessage('copy.EventCenter.d97cf74912'),
+  'contract-talk': sourceMessage('copy.ClubStaff.5ca939d3e3'),
+  unhappy: sourceMessage('team.unhappy'),
+  'transfer-request': sourceMessage('copy.EventCenter.e389075954'),
+  'sponsor-ending': sourceMessage('copy.EventCenter.6e8a7a9f3e'),
 };
 
 /** When a system notification arrived, in this browser's time. */
 const arrived = (at: number) =>
-  new Date(at).toLocaleString('ko-KR', {
+  new Date(at).toLocaleString(displayLocale(), {
     month: 'numeric',
     day: 'numeric',
     hour: 'numeric',
@@ -499,6 +593,7 @@ const unreadItems = (items: readonly { read?: boolean }[]) =>
 
 /** The clock entry shares the global dialog and its notification/news counts. */
 export function CommunicationsButton({ className = '' }: { className?: string }) {
+  useTextLocale();
   const w = useGameState((state) => state.view?.world);
   const notices = useNotifications((items) => items);
   const fresh = useUnreadNewsCount();
@@ -511,17 +606,21 @@ export function CommunicationsButton({ className = '' }: { className?: string })
       className={`${newsStyle.launcher} ${className}`}
       data-testid="communications-button"
       aria-haspopup="dialog"
-      aria-label={`알림·뉴스${total ? ` · 새 소식 ${total}개` : ''}`}
+      aria-label={displayMessage('copy.EventCenter.24e54ae153', {
+        p0: total ? sourceMessage('copy.EventCenter.5d21127dfe', { p0: total }) : '',
+      })}
       onClick={(event) => {
         event.currentTarget.focus();
         show('notifications');
       }}
     >
       <PixelIcon name="bell" size={20} />
-      {total > 0 && (
-        <b data-ui="count" aria-hidden="true">
-          {total > 99 ? '99+' : total}
-        </b>
+      {localizeValue(
+        total > 0 && (
+          <b data-ui="count" aria-hidden="true">
+            {localizeValue(total > 99 ? '99+' : total)}
+          </b>
+        ),
       )}
     </button>
   );
@@ -529,6 +628,7 @@ export function CommunicationsButton({ className = '' }: { className?: string })
 
 /** One dialog host for club decisions, system notifications and full-career news. */
 export function CommunicationsCenter({ client }: { client: GameClient }) {
+  useTextLocale();
   const w = useGameState((state) => state.view?.world);
   const inbox = w?.inbox;
   const { open, tab, show, hide } = useNewsSheet();
@@ -556,85 +656,104 @@ export function CommunicationsCenter({ client }: { client: GameClient }) {
     show(next);
   };
   const tabs = [
-    ['notifications', '알림·결정', unread],
-    ['news', '뉴스', fresh],
+    ['notifications', sourceMessage('copy.EventCenter.9335730d68'), unread],
+    ['news', sourceMessage('copy.EventCenter.5ac661dbed'), fresh],
   ] as const;
   const systemRow = (item: SystemNotification) => (
     <li key={item.id} className={item.read ? undefined : s.unread}>
-      <small>시스템 · {arrived(item.at)}</small>
-      <b>{item.text}</b>
+      <small>{richMessage('copy.EventCenter.c69b0b01fd', { p0: arrived(item.at) })}</small>
+      <b>{localizeValue(item.text)}</b>
     </li>
   );
   return (
     <>
-      {open && (
-        <Dialog
-          label="알림·뉴스"
-          wide
-          onClose={close}
-          actions={
-            <div className={s.inboxActions}>
-              {tab === 'notifications' && (
-                <button
-                  disabled={!unread}
-                  onClick={() => {
-                    notificationStore.read();
-                    if (worldUnread) void client.command({ type: 'read-inbox' });
-                  }}
-                >
-                  모두 읽음
-                </button>
-              )}
-              <button onClick={close}>닫기</button>
-            </div>
-          }
-        >
-          <TabList
-            tabs={tabs.map(
-              ([value, label, count]) =>
-                [
-                  value,
-                  <>
-                    {label}
-                    {count > 0 && (
-                      <span className={newsStyle.tabCount}>{count > 99 ? '99+' : count}</span>
-                    )}
-                  </>,
-                ] as const,
-            )}
-            value={tab}
-            onChange={selectTab}
-            label="알림·뉴스 분류"
-            idPrefix={id}
-          />
-          <TabPanel idPrefix={id} value={tab}>
-            {tab === 'news' ? (
-              <NewsList key={w.id} w={w} client={client} />
-            ) : (
-              <>
-                <NewsQuietToggle />
-                {items.length || system.length ? (
-                  <ul className={s.inbox}>
-                    {system.filter((item) => !item.read).map(systemRow)}
-                    {items.map((item) => (
-                      <li key={item.id} className={item.read ? undefined : s.unread}>
-                        <small>
-                          {KIND_LABEL[item.kind]} · {item.year}/{String(item.year + 1).slice(2)} ·{' '}
-                          {item.day}일차
-                        </small>
-                        <b>{item.title}</b>
-                        <span>{item.detail}</span>
-                      </li>
-                    ))}
-                    {system.filter((item) => item.read).map(systemRow)}
-                  </ul>
-                ) : (
-                  <p className={s.empty}>아직 소식이 없어요.</p>
+      {localizeValue(
+        open && (
+          <Dialog
+            label={displayMessage('shell.news')}
+            wide
+            onClose={close}
+            actions={
+              <div className={s.inboxActions}>
+                {localizeValue(
+                  tab === 'notifications' && (
+                    <button
+                      disabled={!unread}
+                      onClick={() => {
+                        notificationStore.read();
+                        if (worldUnread) void client.command({ type: 'read-inbox' });
+                      }}
+                    >
+                      {richMessage('copy.EventCenter.6577bbbb8c')}
+                    </button>
+                  ),
                 )}
-              </>
-            )}
-          </TabPanel>
-        </Dialog>
+                <button onClick={close}>{richMessage('copy.EventCenter.1e8c10206f')}</button>
+              </div>
+            }
+          >
+            <TabList
+              tabs={tabs.map(
+                ([value, label, count]) =>
+                  [
+                    value,
+                    <>
+                      {localizeValue(label)}
+                      {localizeValue(
+                        count > 0 && (
+                          <span className={newsStyle.tabCount}>
+                            {localizeValue(count > 99 ? '99+' : count)}
+                          </span>
+                        ),
+                      )}
+                    </>,
+                  ] as const,
+              )}
+              value={tab}
+              onChange={selectTab}
+              label={displayMessage('copy.EventCenter.9535d265f2')}
+              idPrefix={id}
+            />
+            <TabPanel idPrefix={id} value={tab}>
+              {localizeValue(
+                tab === 'news' ? (
+                  <NewsList key={w.id} w={w} client={client} />
+                ) : (
+                  <>
+                    <NewsQuietToggle />
+                    {localizeValue(
+                      items.length || system.length ? (
+                        <ul className={s.inbox}>
+                          {localizeValue(system.filter((item) => !item.read).map(systemRow))}
+                          {localizeValue(
+                            items.map((item) => (
+                              <li key={item.id} className={item.read ? undefined : s.unread}>
+                                <small>
+                                  {richMessage('copy.EventCenter.9f4253bd50', {
+                                    p0: KIND_LABEL[item.kind],
+                                    p1: item.year,
+                                    p2: String(item.year + 1).slice(2),
+                                    p3: ' ',
+                                    p4: item.day,
+                                  })}
+                                </small>
+                                <b>{localizeValue(item.title)}</b>
+                                <span>{localizeValue(item.detail)}</span>
+                              </li>
+                            )),
+                          )}
+                          {localizeValue(system.filter((item) => item.read).map(systemRow))}
+                        </ul>
+                      ) : (
+                        <p className={s.empty}>{richMessage('copy.EventCenter.421e08988c')}</p>
+                      ),
+                    )}
+                  </>
+                ),
+              )}
+            </TabPanel>
+          </Dialog>
+        ),
       )}
     </>
   );

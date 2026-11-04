@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { World } from '../../contracts/src/types';
 import { ratio } from './primitives';
 import { clubOf } from './player-state';
@@ -36,14 +37,14 @@ export interface FinanceProjection {
   seasonLines: ProjectionLine[];
 }
 const LABELS: Record<ProjectionKey, string> = {
-  operating: '급여·시설 유지',
-  expenses: '운영 경비',
-  gate: '홈 경기 수입(개최비 제외)',
-  share: '리그 분배금',
-  parachute: '강등 보전금',
-  sponsor: '후원 계약',
-  performance: '후원 성과 보너스',
-  merit: '리그 순위 배분금',
+  operating: sourceMessage('copy.finance.9df2ce4df3'),
+  expenses: sourceMessage('copy.FinancialBreakdown.2d914c9be2'),
+  gate: sourceMessage('copy.projection.d6fc2ee1b5'),
+  share: sourceMessage('copy.finance.2d1ae295d1'),
+  parachute: sourceMessage('copy.finance.28f00ca15d'),
+  sponsor: sourceMessage('copy.projection.7961f9ba05'),
+  performance: sourceMessage('copy.projection.4712310389'),
+  merit: sourceMessage('copy.finance.8873d9546b'),
 };
 
 /** Our current league position, among the same members the season close ranks. */

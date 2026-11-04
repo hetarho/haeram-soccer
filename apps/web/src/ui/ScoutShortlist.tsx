@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { openStaff } from './state';
 import type { Line } from '../../../../packages/contracts/src/types';
 import type { World } from '../../../../packages/contracts/src/types';
@@ -28,6 +31,7 @@ export function ScoutShortlist({
   disabled: boolean;
   onOpen: (index: number) => void;
 }) {
+  useTextLocale();
   const rows = shortlistRows(w, offers),
     club = clubOf(w),
     scout = staffMember(w, 'scout'),
@@ -35,60 +39,114 @@ export function ScoutShortlist({
     nextYear = next.year === w.year;
   const cash = (value: string) => <Money value={value} code={club.country} year={w.year} plain />;
   return (
-    <section data-surface="sheet" className={s.shortlist} aria-label="스카우트 명단">
+    <section
+      data-surface="sheet"
+      className={s.shortlist}
+      aria-label={displayMessage('copy.ScoutShortlist.bf10a7311b')}
+    >
       <header>
-        <h3>스카우트 명단</h3>
+        <h3>{richMessage('copy.ScoutShortlist.bf10a7311b')}</h3>
         <small>
-          {scout ? `수석 스카우트 ${scout.name}` : '수석 스카우트 공석'}
-          {w.shortlist && w.shortlist.year === w.year
-            ? ` · ${seasonDayLabel(w.shortlist.year, w.shortlist.day)} 작성`
-            : ''}
-          {' · 다음 '}
-          {nextYear ? seasonDayLabel(next.year, next.day) : '다음 시즌 개막일'}
+          {localizeValue(
+            scout
+              ? sourceMessage('copy.ScoutShortlist.18add3466e', { p0: scout.name })
+              : sourceMessage('copy.ScoutShortlist.2f4b1316d3'),
+          )}
+          {localizeValue(
+            w.shortlist && w.shortlist.year === w.year
+              ? sourceMessage('copy.ScoutShortlist.39a6db778e', {
+                  p0: seasonDayLabel(w.shortlist.year, w.shortlist.day),
+                })
+              : '',
+          )}
+          {displayMessage('copy.ScoutShortlist.a3a602aa53')}
+          {localizeValue(
+            nextYear
+              ? seasonDayLabel(next.year, next.day)
+              : sourceMessage('copy.ScoutShortlist.caa454450d'),
+          )}
         </small>
       </header>
-      {rows.some((row) => row.entries.length) ? (
-        rows.map(
-          (row) =>
-            row.entries.length > 0 && (
-              <div key={row.line} className={s.role} role="group" aria-label={LINE_NAMES[row.line]}>
-                <h4>
-                  {LINE_NAMES[row.line]}
-                  {row.request && <em>감독 요청 · {REQUEST_WHY[row.request.kind]}</em>}
-                </h4>
-                {row.entries.map(({ index, offer, pick }) => (
-                  <button
-                    key={offer.player.id}
-                    data-ui="navigation"
-                    data-surface="detail"
-                    type="button"
-                    className={pick ? s.picked : undefined}
-                    disabled={disabled}
-                    data-testid={`shortlist-${offer.player.id}`}
-                    onClick={() => onOpen(index)}
-                  >
-                    <OvrBadge value={overall(offer.player)} role={offer.player.position} />
-                    <span className={s.who}>
-                      <b>
-                        {offer.player.name}
-                        {pick && <i className={s.pickTag}>감독 지목</i>}
-                      </b>
-                      <small>
-                        {offer.player.position} · {LINE_NAMES[row.line]} · POT{' '}
-                        {Math.round(offer.player.potential)} · {w.year - offer.player.born}세
-                      </small>
-                    </span>
-                    <span className={s.money}>
-                      <b>{offer.freeAgent ? '자유계약' : cash(offer.fee)}</b>
-                      <small>연봉 {cash(offer.player.wage)}</small>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            ),
-        )
-      ) : (
-        <p className={s.empty}>명단에 남은 후보가 없어요. 다음 작성 때 다시 채워요.</p>
+      {localizeValue(
+        rows.some((row) => row.entries.length) ? (
+          rows.map(
+            (row) =>
+              row.entries.length > 0 && (
+                <div
+                  key={row.line}
+                  className={s.role}
+                  role="group"
+                  aria-label={localizeValue(LINE_NAMES[row.line])}
+                >
+                  <h4>
+                    {localizeValue(LINE_NAMES[row.line])}
+                    {localizeValue(
+                      row.request && (
+                        <em>
+                          {richMessage('copy.ScoutShortlist.7961c88918', {
+                            p0: REQUEST_WHY[row.request.kind],
+                          })}
+                        </em>
+                      ),
+                    )}
+                  </h4>
+                  {localizeValue(
+                    row.entries.map(({ index, offer, pick }) => (
+                      <button
+                        key={offer.player.id}
+                        data-ui="navigation"
+                        data-surface="detail"
+                        type="button"
+                        className={pick ? s.picked : undefined}
+                        disabled={disabled}
+                        data-testid={`shortlist-${offer.player.id}`}
+                        onClick={() => onOpen(index)}
+                      >
+                        <OvrBadge value={overall(offer.player)} role={offer.player.position} />
+                        <span className={s.who}>
+                          <b>
+                            {offer.player.name}
+                            {localizeValue(
+                              pick && (
+                                <i className={s.pickTag}>
+                                  {richMessage('copy.ScoutShortlist.5e6082ac28')}
+                                </i>
+                              ),
+                            )}
+                          </b>
+                          <small>
+                            {richMessage('copy.ScoutShortlist.1489be8297', {
+                              p0: offer.player.position,
+                              p1: LINE_NAMES[row.line],
+                              p2: ' ',
+                              p3: Math.round(offer.player.potential),
+                              p4: w.year - offer.player.born,
+                            })}
+                          </small>
+                        </span>
+                        <span className={s.money}>
+                          <b>
+                            {localizeValue(
+                              offer.freeAgent
+                                ? sourceMessage('copy.PlayerCompare.f201ec1d4f')
+                                : cash(offer.fee),
+                            )}
+                          </b>
+                          <small>
+                            {richMessage('copy.ScoutShortlist.572ddadbfc', {
+                              p0: cash(offer.player.wage),
+                            })}
+                          </small>
+                        </span>
+                      </button>
+                    )),
+                  )}
+                </div>
+              ),
+          )
+        ) : (
+          <p className={s.empty}>{richMessage('copy.ScoutShortlist.eac5ec9bcd')}</p>
+        ),
       )}
     </section>
   );
@@ -103,46 +161,82 @@ export function RecruitmentNeeds({
   offers: readonly TransferOffer[];
   onRole: (line: Line) => void;
 }) {
+  useTextLocale();
   const rows = shortlistRows(w, offers),
     requests = rows.flatMap((row) => (row.request ? [{ ...row, request: row.request }] : [])),
     stakes = requestStakes(w),
     scout = staffMember(w, 'scout'),
     pickName = (id?: string) => offers.find((offer) => offer.player.id === id)?.player.name;
   return (
-    <section data-surface="sheet" className={s.shortlist} aria-label="감독 영입 요청">
+    <section
+      data-surface="sheet"
+      className={s.shortlist}
+      aria-label={displayMessage('copy.ScoutShortlist.b6a1733ed8')}
+    >
       <header>
-        <h3>지금 필요한 영입</h3>
+        <h3>{richMessage('copy.ScoutShortlist.052d96e3c0')}</h3>
         <button data-ui="tertiary" type="button" onClick={() => openStaff('scout')}>
-          수석 스카우트 {scout?.name ?? '공석'} · 보기
+          {richMessage('copy.ScoutShortlist.ae9b819a3b', {
+            p0: scout?.name ?? sourceMessage('team.vacant'),
+          })}
         </button>
       </header>
-      <div data-surface="sheet" className={s.requests} aria-label="감독 요청" role="group">
-        <b>감독 요청</b>
-        {requests.length ? (
-          <ul>
-            {requests.map(({ line, request }) => (
-              <li key={line} data-kind={request.kind}>
-                <button data-ui="tertiary" type="button" onClick={() => onRole(line)}>
-                  {REQUEST_WHY[request.kind]} 후보 보기
-                </button>
-                <span>
-                  {request.position ? `${requestName(request)} 자리` : LINE_NAMES[line]}
-                  {request.pick && <small> · 감독 지목 {pickName(request.pick)}</small>}
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <small>
-            {w.manager.interim
-              ? '임시 감독은 영입을 요청하지 않아요.'
-              : '지금은 감독이 요청한 자리가 없어요.'}
-          </small>
+      <div
+        data-surface="sheet"
+        className={s.requests}
+        aria-label={displayMessage('copy.MediationReview.22d1aca95a')}
+        role="group"
+      >
+        <b>{richMessage('copy.MediationReview.22d1aca95a')}</b>
+        {localizeValue(
+          requests.length ? (
+            <ul>
+              {localizeValue(
+                requests.map(({ line, request }) => (
+                  <li key={line} data-kind={request.kind}>
+                    <button data-ui="tertiary" type="button" onClick={() => onRole(line)}>
+                      {richMessage('copy.ScoutShortlist.3a23db62b1', {
+                        p0: REQUEST_WHY[request.kind],
+                      })}
+                    </button>
+                    <span>
+                      {localizeValue(
+                        request.position
+                          ? sourceMessage('copy.ScoutShortlist.28670cb5ca', {
+                              p0: requestName(request),
+                            })
+                          : LINE_NAMES[line],
+                      )}
+                      {localizeValue(
+                        request.pick && (
+                          <small>
+                            {richMessage('copy.ScoutShortlist.b4fae5344f', {
+                              p0: pickName(request.pick),
+                            })}
+                          </small>
+                        ),
+                      )}
+                    </span>
+                  </li>
+                )),
+              )}
+            </ul>
+          ) : (
+            <small>
+              {localizeValue(
+                w.manager.interim
+                  ? sourceMessage('copy.ScoutShortlist.24ef651b35')
+                  : sourceMessage('copy.ScoutShortlist.ab35cca4b5'),
+              )}
+            </small>
+          ),
         )}
-        {stakes && (
-          <p className={s.stakes} data-testid="request-stakes">
-            {stakes}
-          </p>
+        {localizeValue(
+          stakes && (
+            <p className={s.stakes} data-testid="request-stakes">
+              {localizeValue(stakes)}
+            </p>
+          ),
         )}
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { DirectionKey, PolicyKey, World } from '../../../../packages/contracts/src/types';
 import type { BuildSlot } from '../../../../packages/contracts/src/build';
 import { BUILD_SLOT_INFO, buildOf, cardOf } from '../../../../packages/engine/src/build';
@@ -30,22 +31,46 @@ export interface DirectionArea {
  * no row: the coaches set it (→CLUB-13).
  */
 export const DIRECTION_AREAS: readonly DirectionArea[] = [
-  { key: 'squad', label: '선수단', card: 'culture', rows: [] },
-  { key: 'scouting', label: '영입', card: 'scouting', rows: ['recruitment', 'recruitmentSupport'] },
-  { key: 'market', label: '매각', card: 'market', rows: [] },
-  { key: 'youth', label: '유소년', card: 'youth', rows: ['youthGoal', 'debut', 'academy'] },
-  { key: 'staff', label: '스태프', rows: ['school', 'manager', 'coaches'] },
-  { key: 'finance', label: '재정', card: 'revenue', rows: ['support', 'renewal'] },
+  { key: 'squad', label: sourceMessage('copy.areas.f33435e513'), card: 'culture', rows: [] },
+  {
+    key: 'scouting',
+    label: sourceMessage('copy.areas.60be4d7b53'),
+    card: 'scouting',
+    rows: ['recruitment', 'recruitmentSupport'],
+  },
+  {
+    key: 'market',
+    label: sourceMessage('copy.RecruitmentDesk.45b54f8961'),
+    card: 'market',
+    rows: [],
+  },
+  {
+    key: 'youth',
+    label: sourceMessage('team.view.academy'),
+    card: 'youth',
+    rows: ['youthGoal', 'debut', 'academy'],
+  },
+  {
+    key: 'staff',
+    label: sourceMessage('copy.ClubStaff.64c4586f7b'),
+    rows: ['school', 'manager', 'coaches'],
+  },
+  {
+    key: 'finance',
+    label: sourceMessage('copy.ApprovalQueue.e999efbc68'),
+    card: 'revenue',
+    rows: ['support', 'renewal'],
+  },
   {
     key: 'local',
-    label: '지역',
+    label: sourceMessage('copy.areas.770eb9e292'),
     card: 'fans',
     rows: ['localInvest', 'ticket'],
     base: 'local',
   },
   {
     key: 'global',
-    label: '글로벌',
+    label: sourceMessage('copy.areas.e0587f75ed'),
     rows: ['globalMarketing', 'globalScouting', 'tour'],
     base: 'global',
   },
@@ -64,8 +89,10 @@ export function rowInForce(w: World, key: RowKey): { label: string; value: strin
     return { label: BUILD_SLOT_INFO[key].label, value: cardOf(buildOf(w), key).label };
   if (key === 'ticket')
     return {
-      label: '티켓 가격',
-      value: TICKET_LEVELS.find((level) => level.price === w.ticket)?.name ?? '사용자 지정',
+      label: sourceMessage('copy.ClubSettingControl.9cf728a837'),
+      value:
+        TICKET_LEVELS.find((level) => level.price === w.ticket)?.name ??
+        sourceMessage('copy.ClubSettingControl.e1f51d6620'),
     };
   if (isDial(key))
     return {
@@ -77,7 +104,9 @@ export function rowInForce(w: World, key: RowKey): { label: string; value: strin
 
 /** The base an area's rows build, as it reads beside the area (→ECON-34): 지역 기반 12. */
 export function areaBase(w: World, area: DirectionArea) {
-  if (area.base === 'local') return `지역 기반 ${Math.round(w.localBase ?? 0)}`;
-  if (area.base === 'global') return `글로벌 인지도 ${Math.round(w.globalReach ?? 0)}`;
+  if (area.base === 'local')
+    return sourceMessage('copy.areas.41c09a1384', { p0: Math.round(w.localBase ?? 0) });
+  if (area.base === 'global')
+    return sourceMessage('copy.areas.1807b87a92', { p0: Math.round(w.globalReach ?? 0) });
   return undefined;
 }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { MatchRecord } from '../../../../packages/contracts/src/types';
 import { fixtureDay } from '../../../../packages/engine/src/calendar';
 import { resultFor } from './scouting';
@@ -25,8 +26,8 @@ export function matchSplit(
   for (const m of matches) {
     const result = resultFor(m, club)!,
       metrics = m.metrics[m.home === club ? 0 : 1];
-    if (result.result === '승') won++;
-    else if (result.result === '무') drawn++;
+    if (result.result === sourceMessage('result.win')) won++;
+    else if (result.result === sourceMessage('result.draw')) drawn++;
     else lost++;
     gf += result.own;
     ga += result.other;

@@ -35,6 +35,8 @@ import {
 import { buildEffects } from '../../../../packages/engine/src/build';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { TICKET_LEVELS } from '../../../../packages/engine/src/tickets';
+import { effectLedger } from '../../../../packages/engine/src/effect-ledger';
+import { activeTrainingFocus, trainingFocusInfo } from '../../../../packages/engine/src/training';
 
 /** Quoted costs and current effects are computed on the worker, then sent as ordinary view data. */
 export function officeRead(w: World) {
@@ -70,6 +72,8 @@ export function officeRead(w: World) {
   return {
     costs,
     policyCosts,
+    /** Every effect in force with its factors (→WEB-116), and the focus name no UI leaf holds. */
+    effects: { ...effectLedger(w), focus: trainingFocusInfo[activeTrainingFocus(w)].label },
     facilities: Object.fromEntries(
       (['training', 'academy', 'stadium'] as const).map((part) => [
         part,

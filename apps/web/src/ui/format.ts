@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { currency } from '../../../../packages/catalogs/src/index';
 import type { LocaleFormatters } from '../presentation/locale';
 
@@ -63,6 +64,13 @@ export const signed = (value: number, digits = 0) => {
     : number(Math.abs(value));
   return value > 0 ? `+${text}` : value < 0 ? `−${text}` : text;
 };
+/** A number at exactly `digits` decimal places, without grouping: "1.45". */
+export const decimal = (value: number, digits: number) =>
+  localeFormatters?.decimal(Number(value.toFixed(digits)), {
+    useGrouping: false,
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits,
+  }) ?? value.toFixed(digits);
 export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2)}`;
 /**
  * When a contract that runs `until` that year ends, in seasons rather than a bare year:
@@ -70,8 +78,8 @@ export const seasonName = (year: number) => `${year}/${String(year + 1).slice(-2
  */
 export function contractLine(until: number, year: number) {
   return until === year + 1
-    ? `계약 이번 시즌(${seasonName(year)}) 끝까지`
-    : `계약 ${seasonName(until - 1)} 시즌 끝까지`;
+    ? sourceMessage('copy.format.a23c02d1a3', { p0: seasonName(year) })
+    : sourceMessage('copy.format.87aef223c3', { p0: seasonName(until - 1) });
 }
 export const percent = (a: number, b: number) => {
   if (!b) return '—';

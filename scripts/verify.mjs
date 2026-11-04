@@ -36,6 +36,7 @@ const stages = [
   'test:contract',
   'validate:catalogs',
   'validate:presentation',
+  'validate:i18n',
   'build',
   'test:e2e',
 ];

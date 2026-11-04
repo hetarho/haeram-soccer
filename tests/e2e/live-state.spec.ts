@@ -14,7 +14,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { configureResponsibilities, matchReport } from './events';
 import { continueSlot } from './slots';
 import { chooseOption } from './select';
-import { enterOffice } from './office';
+import { openClubOverview } from './office';
 import { startCareer } from './start';
 
 async function found(page: import('@playwright/test').Page) {
@@ -278,19 +278,20 @@ async function seed(page: Page, w: World) {
   await seedRawCheckpoint(page, raw);
 }
 
-test('the office summary flags tired starters and offers no remedy (→WEB-44)', async ({ page }) => {
+test('the club overview flags tired starters and offers no remedy (→WEB-44)', async ({ page }) => {
   const w = careerWorld({ country: 'ENG', seed: 'fatigue-remedy' });
   for (const player of w.players) player.fatigue = 55;
   await seed(page, w);
   await page.goto('/');
   await continueSlot(page);
-  // Home reads no team state; the office's summary reads the tired starters (→WEB-11/44).
+  // Home reads no team state; the office's 오버뷰 reads the tired starters (→WEB-11/44).
   const hub = page.getByTestId('club-hub');
   await expect(hub).toBeVisible();
-  await expect(hub.getByTestId('situation-warning-fatigue')).toHaveCount(0);
-  await enterOffice(page);
-  await expect(page.getByTestId('situation-warning-fatigue')).toBeVisible();
-  // The summary only reads: no quick action, remedy sheet or control answers it.
-  await expect(page.getByTestId('club-situation').getByRole('button')).toHaveCount(0);
-  await expect(page.getByTestId('quick-actions')).toHaveCount(0);
+  await expect(hub.getByText('선발 평균 피로')).toHaveCount(0);
+  const overview = await openClubOverview(page);
+  const fatigue = overview.locator('dt', { hasText: '선발 평균 피로' }).locator('xpath=..');
+  await expect(fatigue.locator('[data-tone]')).toHaveAttribute('data-tone', /^(warn|bad)$/);
+  // The overview only reads: no quick action, remedy sheet or control answers it.
+  await expect(overview.getByTestId('quick-actions')).toHaveCount(0);
+  await expect(overview.getByRole('button', { name: /회복|휴식|로테이션/ })).toHaveCount(0);
 });

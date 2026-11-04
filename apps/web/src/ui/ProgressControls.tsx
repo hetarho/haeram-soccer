@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { careerEnded } from '../../../../packages/contracts/src/owner';
 import { Select } from './Select';
@@ -21,10 +24,10 @@ const MatchReport = lazy(() =>
 );
 
 const PACES: [Pace, string, string][] = [
-  ['x1', '1×', '1초에 하루'],
-  ['x2', '2×', '0.5초에 하루'],
-  ['x5', '5×', '0.2초에 하루'],
-  ['x10', '10×', '0.1초에 하루'],
+  ['x1', '1×', sourceMessage('copy.ProgressControls.631e071e41')],
+  ['x2', '2×', sourceMessage('copy.ProgressControls.ed4b871fd5')],
+  ['x5', '5×', sourceMessage('copy.ProgressControls.ac638f71f3')],
+  ['x10', '10×', sourceMessage('copy.ProgressControls.cc7550306a')],
 ];
 
 /**
@@ -36,6 +39,7 @@ export const ProgressOverview = memo(function ProgressOverview({
 }: {
   compact?: boolean;
 }) {
+  useTextLocale();
   const w = useGameState((state) => state.view!.world);
   const { t } = useLocale();
   const club = w.clubs.find((club) => club.id === w.playerClub)!;
@@ -44,23 +48,28 @@ export const ProgressOverview = memo(function ProgressOverview({
     <section
       className={p.overview}
       data-ui="season-overview"
-      aria-label="시즌 정보"
+      aria-label={displayMessage('copy.ProgressControls.f7cd8bd5b1')}
       data-testid={compact ? 'mini-clock' : undefined}
     >
       <header className={p.calendarSummary} data-ui="calendar-header">
-        <small>{t('shell.division', { division: club.tier + 1 })}</small>
+        <small>{localizeValue(t('shell.division', { division: club.tier + 1 }))}</small>
       </header>
-      {round && (
-        <div
-          className={p.round}
-          aria-label={`우리 리그 ${round.total}라운드 중 ${round.played}라운드`}
-        >
-          <small>ROUND</small>
-          <strong data-testid="game-round">{round.played}</strong>
-          <small className={p.roundTotal} data-testid="game-round-total">
-            / {round.total}
-          </small>
-        </div>
+      {localizeValue(
+        round && (
+          <div
+            className={p.round}
+            aria-label={displayMessage('copy.ClubHub.9a0f4b3241', {
+              p0: round.total,
+              p1: round.played,
+            })}
+          >
+            <small>{richMessage('copy.ProgressControls.7c8da9c1c5')}</small>
+            <strong data-testid="game-round">{localizeValue(round.played)}</strong>
+            <small className={p.roundTotal} data-testid="game-round-total">
+              / {localizeValue(round.total)}
+            </small>
+          </div>
+        ),
       )}
     </section>
   );
@@ -84,6 +93,7 @@ export const ProgressControls = memo(function ProgressControls({
   client: GameClient;
   controller: ProgressionController;
 }) {
+  useTextLocale();
   const state = useGameState((state) => state);
   const { running, pace, resultNotice } = useProgression(controller, (state) => state);
   const [report, setReport] = useState<string>();
@@ -104,7 +114,11 @@ export const ProgressControls = memo(function ProgressControls({
   const manual = mode === 'manual';
   const blocked = !!(state.readonly || state.error || w.critical || careerEnded(w));
   const buttons = manual ? (
-    <div className={p.buttons} role="group" aria-label="수동 진행">
+    <div
+      className={p.buttons}
+      role="group"
+      aria-label={displayMessage('copy.ProgressControls.ada5a7be8d')}
+    >
       <button
         data-ui="link"
         className={p.nextEvent}
@@ -115,16 +129,25 @@ export const ProgressControls = memo(function ProgressControls({
           void controller.nextEvent();
         }}
       >
-        다음 이벤트
-        <PixelIcon name="chevronRight" size={16} />
+        {richMessage('copy.ProgressControls.dde292aa5d', {
+          p0: <PixelIcon name="chevronRight" size={16} />,
+        })}
       </button>
     </div>
   ) : (
-    <div className={p.buttons} role="group" aria-label="자동 진행 속도">
+    <div
+      className={p.buttons}
+      role="group"
+      aria-label={displayMessage('copy.ProgressControls.2e9caf5c97')}
+    >
       <button
         data-ui="icon"
         className={`${p.toggle} ${running ? p.pause : ''}`}
-        aria-label={running ? '자동 진행 정지' : '자동 진행 시작'}
+        aria-label={localizeValue(
+          running
+            ? sourceMessage('copy.ProgressControls.c174b33064')
+            : sourceMessage('copy.ProgressControls.53fa045696'),
+        )}
         disabled={!running && (blocked || gameActionsBlocked(state))}
         onClick={() => {
           if (running) {
@@ -138,16 +161,18 @@ export const ProgressControls = memo(function ProgressControls({
       <Select
         className={p.pace}
         hintLayout="inline"
-        aria-label="자동 진행 배속"
+        aria-label={displayMessage('copy.ProgressControls.3aa0bc205e')}
         value={pace}
         disabled={blocked || (!running && state.processing)}
         onValueChange={(value) => controller.setPace(value as Pace)}
       >
-        {PACES.map(([value, label, description]) => (
-          <option key={value} value={value} data-hint={description}>
-            {label}
-          </option>
-        ))}
+        {localizeValue(
+          PACES.map(([value, label, description]) => (
+            <option key={value} value={value} data-hint={description}>
+              {localizeValue(label)}
+            </option>
+          )),
+        )}
       </Select>
     </div>
   );
@@ -157,40 +182,55 @@ export const ProgressControls = memo(function ProgressControls({
   const opened = report !== undefined ? w.ownMatches.find((m) => m.id === report) : undefined;
   const name = (id: string) => w.clubs.find((club) => club.id === id)?.name ?? id;
   return (
-    <section className={p.controls} data-ui="season-transport" aria-label="시즌 진행">
+    <section
+      className={p.controls}
+      data-ui="season-transport"
+      aria-label={displayMessage('copy.ProgressControls.c5bc079806')}
+    >
       <div className={p.modeGroup}>
         <ProgressModeSwitch client={client} controller={controller} />
         <ApprovalButtons />
       </div>
-      {noticed && (
-        <button
-          className={p.resultNotice}
-          data-testid="result-notice"
-          onClick={() => {
-            setReport(noticed.id);
-            controller.clearResultNotice();
-          }}
-        >
-          {name(noticed.home)} {noticed.score.home}–{noticed.score.away} {name(noticed.away)}
-        </button>
+      {localizeValue(
+        noticed && (
+          <button
+            className={p.resultNotice}
+            data-testid="result-notice"
+            onClick={() => {
+              setReport(noticed.id);
+              controller.clearResultNotice();
+            }}
+          >
+            {localizeValue(name(noticed.home))} {localizeValue(noticed.score.home)}–
+            {localizeValue(noticed.score.away)} {localizeValue(name(noticed.away))}
+          </button>
+        ),
       )}
-      {opened && (
-        <Dialog label="경기 분석" onClose={() => setReport(undefined)} wide>
-          <Suspense fallback={<p role="status">경기 기록을 펼치는 중…</p>}>
-            <MatchReport record={opened} w={w} />
-          </Suspense>
-        </Dialog>
+      {localizeValue(
+        opened && (
+          <Dialog
+            label={displayMessage('copy.ProgressControls.58e1400d59')}
+            onClose={() => setReport(undefined)}
+            wide
+          >
+            <Suspense
+              fallback={<p role="status">{richMessage('copy.FixtureNotebook.0998cc7d18')}</p>}
+            >
+              <MatchReport record={opened} w={w} />
+            </Suspense>
+          </Dialog>
+        ),
       )}
       <i
         className={p.progress}
         role="progressbar"
-        aria-label="시즌 경과 일수"
+        aria-label={displayMessage('copy.ProgressControls.f9c5c5dc03')}
         aria-valuenow={currentDay(w)}
         aria-valuemin={0}
         aria-valuemax={seasonLength(w)}
         style={{ width: `${progress}%` }}
       />
-      {buttons}
+      {localizeValue(buttons)}
     </section>
   );
 });

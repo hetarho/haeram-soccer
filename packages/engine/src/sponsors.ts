@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { baseEffects } from './bases';
 import type { SponsorContract, SponsorKind, SponsorSlot, World } from '../../contracts/src/types';
 import { SPONSOR_SLOTS, sponsorSlotOpens, type Observation } from '../../catalogs/src/index';
@@ -67,10 +68,10 @@ export const SPONSOR_KINDS: readonly SponsorKind[] = [
   'indexed',
 ];
 export const SPONSOR_KIND_LABELS: Record<SponsorKind, string> = {
-  stable: '안정형',
-  performance: '성과형',
-  exclusive: '독점형',
-  indexed: '물가 연동형',
+  stable: sourceMessage('copy.sponsors.5d1dcbbdbf'),
+  performance: sourceMessage('copy.sponsors.533b745d4c'),
+  exclusive: sourceMessage('copy.sponsors.c8cd282a33'),
+  indexed: sourceMessage('copy.sponsors.5e515c2a83'),
 };
 /** Partner trades by slot, one per kind in SPONSOR_KINDS order. */
 const PARTNERS: Record<SponsorSlot, readonly string[]> = {
@@ -237,18 +238,24 @@ function sign(w: World, offer: SponsorOffer) {
   addEvent(
     w,
     'sponsor-sign',
-    `${SPONSOR_SLOT_LABELS[offer.slot]} 계약`,
-    `${offer.name} · ${SPONSOR_KIND_LABELS[offer.kind]} · 연간 ${moneyLabel(w, offer.annual)} · ${seasonLabel(offer.until - 1)} 시즌까지`,
+    sourceMessage('copy.BusinessWorkbench.5709f4c478', { p0: SPONSOR_SLOT_LABELS[offer.slot] }),
+    sourceMessage('copy.sponsors.3a1ebc5e90', {
+      p0: offer.name,
+      p1: SPONSOR_KIND_LABELS[offer.kind],
+      p2: moneyLabel(w, offer.annual),
+      p3: seasonLabel(offer.until - 1),
+    }),
   );
   return contract;
 }
 /** The owner signs one offer of an open, empty slot (→ECON-8); a running contract is never replaced. */
 export function signSponsor(w: World, slot: SponsorSlot, index: number) {
-  if (!SPONSOR_SLOTS.includes(slot)) throw new Error('없는 후원 자리입니다.');
-  if (!sponsorSlotOpen(w, slot)) throw new Error('아직 열리지 않은 후원 자리입니다.');
-  if (contractOf(w, slot)) throw new Error('이 자리의 후원 계약이 아직 남아 있습니다.');
+  if (!SPONSOR_SLOTS.includes(slot)) throw new Error(sourceMessage('copy.sponsors.44b8898d48'));
+  if (!sponsorSlotOpen(w, slot)) throw new Error(sourceMessage('copy.sponsors.5b68ce6f8f'));
+  if (contractOf(w, slot)) throw new Error(sourceMessage('copy.sponsors.7ba0c74b60'));
   const offer = sponsorOffers(w, slot)[index];
-  if (!Number.isInteger(index) || !offer) throw new Error('없는 후원 제안입니다.');
+  if (!Number.isInteger(index) || !offer)
+    throw new Error(sourceMessage('copy.sponsors.b5ca9b7cd3'));
   sign(w, offer);
 }
 /**
@@ -272,14 +279,23 @@ export function delegatedSponsors(w: World) {
     kind: 'finance',
     title:
       signed.length === 1
-        ? `운영팀이 ${signed[0].name}와 ${SPONSOR_SLOT_LABELS[signed[0].slot]} 계약을 맺었어요`
-        : `운영팀이 후원 계약 ${signed.length}건을 맺었어요`,
-    detail: `${signed
-      .map(
-        (contract) =>
-          `${SPONSOR_SLOT_LABELS[contract.slot]} ${contract.name} 연간 ${moneyLabel(w, contract.annual)} · ${seasonLabel(contract.until - 1)} 시즌까지`,
-      )
-      .join(' / ')} · 안정형 · 리그 경기마다 나눠 들어오고, 끝나면 운영팀이 다시 계약해요.`,
+        ? sourceMessage('copy.sponsors.7ca0db7e9b', {
+            p0: signed[0].name,
+            p1: SPONSOR_SLOT_LABELS[signed[0].slot],
+          })
+        : sourceMessage('copy.sponsors.a78b99c077', { p0: signed.length }),
+    detail: sourceMessage('copy.sponsors.32ba1ea60f', {
+      p0: signed
+        .map((contract) =>
+          sourceMessage('copy.sponsors.fc8d178c45', {
+            p0: SPONSOR_SLOT_LABELS[contract.slot],
+            p1: contract.name,
+            p2: moneyLabel(w, contract.annual),
+            p3: seasonLabel(contract.until - 1),
+          }),
+        )
+        .join(' / '),
+    }),
     attention: false,
   });
 }
@@ -290,8 +306,10 @@ export function sponsorReminder(w: World) {
   if (!empty.length) return;
   pushInbox(w, {
     kind: 'finance',
-    title: '후원 계약이 비어 있어요',
-    detail: `${empty.map((slot) => SPONSOR_SLOT_LABELS[slot]).join(', ')} 자리가 비어 있어요. 방향의 후원 탭에서 제안을 고르면 리그 경기마다 후원금이 들어와요. 후원을 스태프에게 맡기면 안정형 후원을 대신 맺어요.`,
+    title: sourceMessage('copy.sponsors.c793e474ef'),
+    detail: sourceMessage('copy.sponsors.6dccb367d0', {
+      p0: empty.map((slot) => SPONSOR_SLOT_LABELS[slot]).join(', '),
+    }),
     attention: true,
   });
 }
@@ -306,8 +324,13 @@ export function sponsorEnding(w: World) {
     if (contract.until !== w.year + 1 || w.inbox?.some((item) => item.ref === ref)) continue;
     pushInbox(w, {
       kind: 'sponsor-ending',
-      title: `${SPONSOR_SLOT_LABELS[contract.slot]} ${contract.name} 계약이 이번 시즌으로 끝나요`,
-      detail: `연간 ${moneyLabel(w, sponsorAnnual(w, contract))} · 시즌이 끝나면 자리가 비어요. 다음 시즌 첫날 후원 탭에서 새 제안을 고르거나 운영을 스태프에게 맡기세요.`,
+      title: sourceMessage('copy.sponsors.f0be0ea919', {
+        p0: SPONSOR_SLOT_LABELS[contract.slot],
+        p1: contract.name,
+      }),
+      detail: sourceMessage('copy.sponsors.86a82d3a9e', {
+        p0: moneyLabel(w, sponsorAnnual(w, contract)),
+      }),
       attention: true,
       ref,
     });
@@ -331,8 +354,16 @@ export function yearlySponsor(w: World) {
       addEvent(
         w,
         `sponsor:${contract.slot}`,
-        `${SPONSOR_SLOT_LABELS[contract.slot]} ${promoted ? '승격' : '우승'} 보너스`,
-        `${contract.name} · ${seasonLabel(last.year)} 시즌`,
+        sourceMessage('copy.sponsors.c3e582047a', {
+          p0: SPONSOR_SLOT_LABELS[contract.slot],
+          p1: promoted
+            ? sourceMessage('copy.AcademyPanel.8e70a8dda1')
+            : sourceMessage('copy.CupHistory.31e52393f3'),
+        }),
+        sourceMessage('copy.sponsors.9a9b684211', {
+          p0: contract.name,
+          p1: seasonLabel(last.year),
+        }),
         contract.bonus,
       );
     }
@@ -345,8 +376,12 @@ export function yearlySponsor(w: World) {
         addEvent(
           w,
           'sponsor-cut',
-          `강등으로 ${SPONSOR_SLOT_LABELS[contract.slot]} 계약 단축`,
-          `${contract.name} · 남은 ${remaining}시즌 → ${keeps}시즌`,
+          sourceMessage('copy.sponsors.d9349a1324', { p0: SPONSOR_SLOT_LABELS[contract.slot] }),
+          sourceMessage('copy.sponsors.e2d858673f', {
+            p0: contract.name,
+            p1: remaining,
+            p2: keeps,
+          }),
         );
       }
   }
@@ -355,8 +390,12 @@ export function yearlySponsor(w: World) {
     addEvent(
       w,
       'sponsor-end',
-      `${SPONSOR_SLOT_LABELS[contract.slot]} 계약 만료`,
-      `${contract.name} · ${seasonLabel(contract.from)}–${seasonLabel(contract.until - 1)} 시즌`,
+      sourceMessage('copy.contracts.41d78072fe', { p0: SPONSOR_SLOT_LABELS[contract.slot] }),
+      sourceMessage('copy.sponsors.c60c3ee696', {
+        p0: contract.name,
+        p1: seasonLabel(contract.from),
+        p2: seasonLabel(contract.until - 1),
+      }),
     );
   w.sponsors = w.sponsors?.filter((contract) => !ending.includes(contract));
   if (!w.sponsors?.length) delete w.sponsors;

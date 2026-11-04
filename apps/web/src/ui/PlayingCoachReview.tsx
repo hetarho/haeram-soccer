@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
 import { gameActionsBlocked, useGameState } from '../runtime/store';
@@ -19,6 +22,7 @@ export function PlayingCoachReview({
   player: Player;
   client: GameClient;
 }) {
+  useTextLocale();
   const disabled = useGameState(gameActionsBlocked);
   const readonly = useGameState((state) => state.readonly);
   const proposal = w.playingCoachProposals?.[player.id];
@@ -30,54 +34,68 @@ export function PlayingCoachReview({
   const answer = (accept: boolean) =>
     void client.command({ type: 'answer-playing-coach', player: player.id, accept });
   return (
-    <section data-surface="sheet" className={s.career} aria-label="선수·코치 통합 계약 검토">
-      <h3>선수·코치 계약을 함께 검토</h3>
-      {disabled && (
-        <p role="status">
-          {readonly
-            ? '읽기 전용 경력에서는 계약을 변경할 수 없어요.'
-            : '다른 처리를 마친 뒤 결정할 수 있어요.'}
-        </p>
+    <section
+      data-surface="sheet"
+      className={s.career}
+      aria-label={displayMessage('copy.PlayingCoachReview.3260ab02e8')}
+    >
+      <h3>{richMessage('copy.PlayingCoachReview.00abd151ca')}</h3>
+      {localizeValue(
+        disabled && (
+          <p role="status">
+            {localizeValue(
+              readonly
+                ? sourceMessage('copy.PlayingCoachReview.671bbc4d59')
+                : sourceMessage('copy.MediationReview.dde347e328'),
+            )}
+          </p>
+        ),
       )}
       <DecisionOwner
         w={w}
         decision="contracts"
-        auto="선수 계약을 위임 중이에요."
-        owner="선수 계약은 직접 결정해요."
+        auto={sourceMessage('copy.PlayingCoachReview.2078ac9f75')}
+        owner={sourceMessage('copy.PlayingCoachReview.4644705b60')}
       />
       <DecisionOwner
         w={w}
         decision="staff"
-        auto="코치 계약을 위임 중이에요."
-        owner="코치 계약은 직접 결정해요."
+        auto={sourceMessage('copy.PlayingCoachReview.e45634a4e3')}
+        owner={sourceMessage('copy.PlayingCoachReview.0fc73dbc42')}
       />
       <p>
-        {STAFF_INFO[proposal.role].label} · 선수 연장 {proposal.years}년 · 코치 계약 {proposal.term}
-        시즌
+        {richMessage('copy.PlayingCoachReview.506820d06f', {
+          p0: STAFF_INFO[proposal.role].label,
+          p1: proposal.years,
+          p2: proposal.term,
+        })}
       </p>
       <dl>
-        <dt>선수 연봉</dt>
-        <dd>{money(proposal.playerWage)}</dd>
-        <dt>코치 연봉</dt>
-        <dd>{money(proposal.coachWage)}</dd>
-        <dt>합산 연봉</dt>
-        <dd>{money(proposal.totalWage)}</dd>
-        <dt>즉시 지출</dt>
+        <dt>{richMessage('copy.MediationReview.b9d465b29e')}</dt>
+        <dd>{localizeValue(money(proposal.playerWage))}</dd>
+        <dt>{richMessage('copy.PlayingCoachReview.29ef287e6c')}</dt>
+        <dd>{localizeValue(money(proposal.coachWage))}</dd>
+        <dt>{richMessage('copy.PlayingCoachReview.8c257bf0f3')}</dt>
+        <dd>{localizeValue(money(proposal.totalWage))}</dd>
+        <dt>{richMessage('copy.MediationReview.d881c8d4c4')}</dt>
         <dd>
-          {money(proposal.upfront)} · 계약금 {money(proposal.fee)} · 기존 코치 보상{' '}
-          {money(proposal.replacement)}
+          {richMessage('copy.PlayingCoachReview.a01062ab8b', {
+            p0: money(proposal.upfront),
+            p1: money(proposal.fee),
+            p2: ' ',
+            p3: money(proposal.replacement),
+          })}
         </dd>
       </dl>
-      <p>
-        한 번 승인하면 선수 계약과 코치 자리가 함께 적용돼요. 그사이 조건이 바뀌었다면 승인할 수
-        없으니 거절해 주세요.
-      </p>
-      {short && <p role="alert">즉시 지출을 감당할 자금이 부족해요.</p>}
+      <p>{richMessage('copy.PlayingCoachReview.77a86536c2')}</p>
+      {localizeValue(
+        short && <p role="alert">{richMessage('copy.PlayingCoachReview.aebaa02cee')}</p>,
+      )}
       <button disabled={disabled || short} onClick={() => answer(true)}>
-        선수·코치 계약 함께 승인
+        {richMessage('copy.PlayingCoachReview.8b40555ce9')}
       </button>
       <button disabled={disabled} onClick={() => answer(false)}>
-        통합 계약 거절
+        {richMessage('copy.PlayingCoachReview.61bf83bc44')}
       </button>
     </section>
   );

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { PixelIcon } from './PixelIcon';
 import type { ResponsibilityKey, World } from '../../../../packages/contracts/src/types';
 import { decisionOwner } from './intervention';
@@ -28,6 +31,7 @@ export function DecisionOwner({
   /** Inside a panel that already frames the decision: no frame of its own. */
   plain?: boolean;
 }) {
+  useTextLocale();
   const { name, auto: on } = decisionOwner(w, decision);
   return (
     <div
@@ -38,20 +42,32 @@ export function DecisionOwner({
       data-testid={`decision-owner-${decision}`}
     >
       <div className={s.row}>
-        <span className={s.mode}>{on ? '자동' : '직접'}</span>
+        <span className={s.mode}>
+          {localizeValue(
+            on
+              ? sourceMessage('copy.ControllerBackgrounds.ca7eb2ef0a')
+              : sourceMessage('copy.ApprovalQueue.20c483bdda'),
+          )}
+        </span>
         <button
           type="button"
           className={s.level}
-          aria-label={`${name} · ${on ? '자동' : '직접'} · 결재라인 모아보기`}
+          aria-label={displayMessage('copy.DecisionOwner.2cd5994d1d', {
+            p0: name,
+            p1: on
+              ? sourceMessage('copy.ControllerBackgrounds.ca7eb2ef0a')
+              : sourceMessage('copy.ApprovalQueue.20c483bdda'),
+          })}
           onClick={openOwnerOffice}
         >
-          결재라인 모아보기
-          <PixelIcon name="chevronRight" size={14} />
+          {richMessage('copy.DecisionOwner.a08f541833', {
+            p0: <PixelIcon name="chevronRight" size={14} />,
+          })}
         </button>
       </div>
       <p>
-        {on ? auto : owner}
-        {!on && criteria && ' 아래 방침은 이 업무를 위임할 때 사용해요.'}
+        {localizeValue(on ? auto : owner)}
+        {localizeValue(!on && criteria && sourceMessage('copy.DecisionOwner.6cc64c34e3'))}
       </p>
     </div>
   );

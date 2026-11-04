@@ -1,3 +1,4 @@
+import { approvalQueue, approvalRequest } from './office';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { test, expect } from '@playwright/test';
 import { importSecondCareer } from './career-fixtures';
@@ -335,19 +336,14 @@ test('a disclosed player departure ends both jobs and charges coach compensation
   const owed = playingCoachDepartureCost(w, player.id);
   await importResponsibilityCareer(page, w);
   await reviewInOffice(page, '선수·코치 계약 종료 검토');
-  await expect(page.getByTestId('approval-request')).toContainText('코치 계약도 함께 종료');
-  await expect(page.getByTestId('approval-request')).toContainText('기존 계약 종료 비용');
-  await page
-    .getByTestId('approval-request')
-    .getByRole('button', { name: '수락하고 매각', exact: true })
-    .click();
+  await expect(approvalRequest(page)).toContainText('코치 계약도 함께 종료');
+  await expect(approvalRequest(page)).toContainText('기존 계약 종료 비용');
+  await approvalRequest(page).getByRole('button', { name: '수락하고 매각', exact: true }).click();
   // The answered review returns to the 결재함, and exporting comes back to it (→WEB-100).
-  await expect(page).toHaveURL(/\/direction$/);
-  await expect(page.getByTestId('approval-queue')).toBeVisible();
-  await expect(page.getByTestId('approval-request')).toHaveCount(0);
+  await expect(approvalQueue(page)).toBeVisible();
+  await expect(approvalRequest(page)).toHaveCount(0);
   const after = await exportedCareer(page);
-  await expect(page).toHaveURL(/\/direction$/);
-  await expect(page.getByTestId('approval-queue')).toBeVisible();
+  await expect(approvalQueue(page)).toBeVisible();
   expect(BigInt(after.cash)).toBe(BigInt(w.cash) + BigInt(bid.fee) - BigInt(owed));
   expect(after.people![player.id].club).toBe(club);
   expect(after.staff!.some((s) => s.person === player.id)).toBe(false);

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
  * The aggregate ledger's checks and derivations (→MATCH-13, MATCH-26, MATCH-27): every team
  * counter is read off the same grouped flows, shots and fouls under the detailed engine's
@@ -363,7 +364,8 @@ function sideCounters(ledger: AggregateLedger, side: AggregateSide): AggregateSi
 /** Throws the ledger's issues instead of deriving counters from facts that do not hold together. */
 export function assertLedger(ledger: AggregateLedger): void {
   const issues = ledgerIssues(ledger);
-  if (issues.length) throw new Error(`집계 원장 불일치: ${issues.slice(0, 5).join('; ')}`);
+  if (issues.length)
+    throw new Error(sourceMessage('copy.ledger.59439895da', { p0: issues.slice(0, 5).join('; ') }));
 }
 
 /** Both sides' team facts, the score and the regulation score, from one checked ledger. */

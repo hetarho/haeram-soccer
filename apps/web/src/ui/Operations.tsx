@@ -1,3 +1,5 @@
+import { localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useTaskMemory } from './taskMemory';
 import { ApprovalRequestHost } from './ApprovalRequestHost';
@@ -40,6 +42,7 @@ export function OperationsView({
     error?: string,
   ) => ReactNode;
 }) {
+  useTextLocale();
   const w = state.view!.world;
   const requests = useTaskMemory((memory) => memory.approvalRequests);
   const requestId =
@@ -76,35 +79,37 @@ export function OperationsView({
   const [id, label] = area;
   return (
     <Dialog
-      label={label}
+      label={localizeValue(label)}
       wide
       onClose={() => {
         if (!state.busy && !state.pendingActions) returnApprovalHome(request);
       }}
     >
       <DeskBody data-office-view={id}>
-        {request && request.world === w.id && request.desk === id ? (
-          <ApprovalRequestHost key={`${w.id}:${requestId}`} request={request} client={client}>
-            {(scoped, error) =>
-              id === 'players' || id === 'staff' ? (
-                personnel(id, scoped, request, error)
-              ) : (
-                <BusinessWorkbench
-                  state={state}
-                  client={scoped}
-                  part={id === 'investment' ? 'finance' : 'sponsor'}
-                  selectedSlot={request.item.ref}
-                />
-              )
-            }
-          </ApprovalRequestHost>
-        ) : (
-          <section data-testid="approval-request">
-            <p role="status">이미 처리되었거나 조건이 바뀐 요청이에요.</p>
-            <button type="button" data-ui="link" onClick={() => returnApprovalHome()}>
-              결재함으로
-            </button>
-          </section>
+        {localizeValue(
+          request && request.world === w.id && request.desk === id ? (
+            <ApprovalRequestHost key={`${w.id}:${requestId}`} request={request} client={client}>
+              {localizeValue((scoped, error) =>
+                id === 'players' || id === 'staff' ? (
+                  personnel(id, scoped, request, error)
+                ) : (
+                  <BusinessWorkbench
+                    state={state}
+                    client={scoped}
+                    part={id === 'investment' ? 'finance' : 'sponsor'}
+                    selectedSlot={request.item.ref}
+                  />
+                ),
+              )}
+            </ApprovalRequestHost>
+          ) : (
+            <section data-testid="approval-request">
+              <p role="status">{richMessage('copy.Operations.1e671dd38f')}</p>
+              <button type="button" data-ui="link" onClick={() => returnApprovalHome()}>
+                {richMessage('copy.ApprovalRequestHost.0bcb104073')}
+              </button>
+            </section>
+          ),
         )}
       </DeskBody>
     </Dialog>

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 export { aptitudeLabel } from '../../../../packages/engine/src/career-assessment';
 import type { Fixture, World } from '../../../../packages/contracts/src/types';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
@@ -9,7 +10,12 @@ export function resultFor(f: Fixture, club: string) {
   if (!f.score || (f.home !== club && f.away !== club)) return undefined;
   const own = f.home === club ? f.score.home : f.score.away;
   const other = f.home === club ? f.score.away : f.score.home;
-  const result: '승' | '무' | '패' = own > other ? '승' : own === other ? '무' : '패';
+  const result: '승' | '무' | '패' =
+    own > other
+      ? sourceMessage('result.win')
+      : own === other
+        ? sourceMessage('result.draw')
+        : sourceMessage('result.loss');
   return { own, other, result };
 }
 

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The current season's complete aggregates (→HIST-3, HIST-17, MATCH-26/27): the one reducer that
  * every fixture-settling path feeds — league, cups, playoffs and Europe, the own club's matches on
@@ -39,7 +40,7 @@ export function trackingBoundary(w: World): TrackingBoundary {
  */
 export function openNpcSeason(w: World, trackedFrom = trackingBoundary(w)): NpcSeasonStats {
   const model = activeMatchModel(w);
-  if (model === undefined) throw new Error('경기 모델이 활성화되지 않은 세계입니다.');
+  if (model === undefined) throw new Error(sourceMessage('copy.npc_stats.667d3b3e63'));
   return (w.npcSeason = { year: w.year, model, trackedFrom, competitions: [] });
 }
 
@@ -162,7 +163,7 @@ export function settleNpcSeason(w: World, playback: MatchPlayback, resultsOnly =
       if (!(line.metrics[M.minutes]! > 0)) continue;
       const person = resultsOnly ? playback.squads[side][at - start] : people.get(line.id);
       if (person?.id !== line.id)
-        throw new Error(`경기 기록의 선수가 경기 명단에 없습니다: ${line.id}`);
+        throw new Error(sourceMessage('copy.npc_stats.f907fae468', { p0: line.id }));
       played.push({ side, line, person });
     }
   let competition = npcCompetition(stats, r);

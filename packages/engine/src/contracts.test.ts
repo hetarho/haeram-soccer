@@ -220,10 +220,10 @@ describe('market values (→CLUB-25)', () => {
     expect(divisionFor(code, 99)).toBe(0);
     // Ability below the last division's level is priced one step deeper, never further.
     expect(divisionFor(code, 10)).toBe(country(code).groups.length);
+    // The recruitment dial chooses whom the list holds, never what their clubs ask (→ECON-16).
     holdRows(w, { policy: { recruitment: 5 } });
     for (const { player, fee } of transferOffers(w).slice(1)) {
       const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
-      // Recruitment changes the shortlist; the retired stance fee factor does not price it.
       expect(fee).toBe(value);
     }
   });

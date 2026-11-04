@@ -1,10 +1,11 @@
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { Root } from 'react-dom/client';
 
 /** Game presentation styles and resources belong only to preview documents. */
 export async function startDesignSystem(root: Root, preview: boolean) {
   root.render(
     <main className="ds-entry" role="status">
-      디자인 시스템을 불러오는 중…
+      {richMessage('copy.start.51a5ee2b62')}
     </main>,
   );
   try {
@@ -25,8 +26,8 @@ export async function startDesignSystem(root: Root, preview: boolean) {
   } catch {
     root.render(
       <main className="ds-entry">
-        <p role="alert">디자인 시스템을 불러오지 못했어요. 다시 시도해 주세요.</p>
-        <button onClick={() => location.reload()}>다시 시도</button>
+        <p role="alert">{richMessage('copy.start.6ca1e824a3')}</p>
+        <button onClick={() => location.reload()}>{richMessage('presentation.retry')}</button>
       </main>,
     );
   }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { ManagerStyle, SigningRequest, Tactic } from '../../contracts/src/types';
 import {
   ATTRIBUTES,
@@ -21,54 +22,60 @@ import {
 export type Rng = () => number;
 
 export const ATTRIBUTE_LABEL: Record<Attribute, string> = {
-  finishing: '슈팅',
-  dribbling: '드리블',
-  crossing: '크로스',
-  passing: '패스',
-  vision: '시야',
-  tackling: '태클',
-  positioning: '위치선정',
-  heading: '공중볼',
-  pace: '속도',
-  stamina: '체력',
-  strength: '몸싸움',
-  reflexes: '선방',
-  handling: '공중볼 처리',
-  distribution: '발밑',
-  decisions: '판단력',
-  composure: '침착성',
+  finishing: sourceMessage('copy.summary.da1cc31972'),
+  dribbling: sourceMessage('copy.materialView.1658226456'),
+  crossing: sourceMessage('copy.summary.0796453f8e'),
+  passing: sourceMessage('copy.summary.17242c9658'),
+  vision: sourceMessage('copy.player.c30f56ae00'),
+  tackling: sourceMessage('copy.Pitch.3f6ba38a9e'),
+  positioning: sourceMessage('copy.player.3d0ff83ddb'),
+  heading: sourceMessage('copy.materialView.fbdef67817'),
+  pace: sourceMessage('copy.player.c03f7e871a'),
+  stamina: sourceMessage('copy.player.57de68e569'),
+  strength: sourceMessage('copy.player.8d4a33c55a'),
+  reflexes: sourceMessage('copy.RecordsRoom.2a022bd612'),
+  handling: sourceMessage('copy.player.f2cbbedfd4'),
+  distribution: sourceMessage('copy.player.d6c50f6b3b'),
+  decisions: sourceMessage('copy.player.c5b6345907'),
+  composure: sourceMessage('copy.player.3151b149e3'),
 };
 export const ATTRIBUTE_GROUPS: readonly { label: string; attributes: readonly Attribute[] }[] = [
-  { label: '공격', attributes: ['finishing', 'dribbling', 'crossing'] },
-  { label: '패스', attributes: ['passing', 'vision'] },
-  { label: '수비', attributes: ['tackling', 'positioning', 'heading'] },
-  { label: '신체', attributes: ['pace', 'stamina', 'strength'] },
-  { label: '정신', attributes: ['decisions', 'composure'] },
+  {
+    label: sourceMessage('position.family.FW'),
+    attributes: ['finishing', 'dribbling', 'crossing'],
+  },
+  { label: sourceMessage('copy.summary.17242c9658'), attributes: ['passing', 'vision'] },
+  {
+    label: sourceMessage('position.family.DF'),
+    attributes: ['tackling', 'positioning', 'heading'],
+  },
+  { label: sourceMessage('copy.player.f47a30d1c6'), attributes: ['pace', 'stamina', 'strength'] },
+  { label: sourceMessage('copy.player.2c3d6b050d'), attributes: ['decisions', 'composure'] },
   { label: 'GK', attributes: ['reflexes', 'handling', 'distribution'] },
 ];
 const GK_ATTRIBUTES: readonly Attribute[] = ['reflexes', 'handling', 'distribution'];
 
 export const POSITION_LABEL: Record<Position, string> = {
-  GK: '골키퍼',
-  CB: '센터백',
-  LB: '왼쪽 풀백',
-  RB: '오른쪽 풀백',
-  LWB: '왼쪽 윙백',
-  RWB: '오른쪽 윙백',
-  DM: '수비형 미드필더',
-  CM: '중앙 미드필더',
-  LM: '왼쪽 미드필더',
-  RM: '오른쪽 미드필더',
-  AM: '공격형 미드필더',
-  LW: '왼쪽 윙어',
-  RW: '오른쪽 윙어',
-  ST: '스트라이커',
+  GK: sourceMessage('position.family.GK'),
+  CB: sourceMessage('copy.player.e9008c0572'),
+  LB: sourceMessage('copy.player.4849d4aa6b'),
+  RB: sourceMessage('copy.player.5aef7cfedf'),
+  LWB: sourceMessage('copy.player.f4e0096993'),
+  RWB: sourceMessage('copy.player.ec604b81de'),
+  DM: sourceMessage('copy.player.5893129f48'),
+  CM: sourceMessage('copy.player.58a7cbb49b'),
+  LM: sourceMessage('copy.player.62c1e57c96'),
+  RM: sourceMessage('copy.player.ec62cc17ed'),
+  AM: sourceMessage('copy.player.94170c7223'),
+  LW: sourceMessage('copy.player.8c6d5f010d'),
+  RW: sourceMessage('copy.player.4070546eea'),
+  ST: sourceMessage('copy.player.988df2eb48'),
 };
 export const LINE_LABEL: Record<Line, string> = {
-  GK: '골키퍼',
-  DF: '수비',
-  MF: '미드필드',
-  FW: '공격',
+  GK: sourceMessage('position.family.GK'),
+  DF: sourceMessage('position.family.DF'),
+  MF: sourceMessage('position.family.MF'),
+  FW: sourceMessage('position.family.FW'),
 };
 const LINE_OF: Record<Position, Line> = {
   GK: 'GK',
@@ -173,62 +180,134 @@ export const ROLES: Record<
   RoleId,
   { label: string; positions: readonly Position[]; promotes: readonly Attribute[] }
 > = {
-  sweeperKeeper: { label: '스위퍼 키퍼', positions: ['GK'], promotes: ['distribution', 'pace'] },
-  shotStopper: { label: '슈팅 스토퍼', positions: ['GK'], promotes: [] },
-  stopper: { label: '스토퍼', positions: ['CB'], promotes: ['strength'] },
-  coverDefender: { label: '커버형 센터백', positions: ['CB'], promotes: ['pace'] },
+  sweeperKeeper: {
+    label: sourceMessage('copy.player.61296b8400'),
+    positions: ['GK'],
+    promotes: ['distribution', 'pace'],
+  },
+  shotStopper: { label: sourceMessage('copy.player.d8ff583c52'), positions: ['GK'], promotes: [] },
+  stopper: {
+    label: sourceMessage('copy.player.bc053f037e'),
+    positions: ['CB'],
+    promotes: ['strength'],
+  },
+  coverDefender: {
+    label: sourceMessage('copy.player.3971ee0f37'),
+    positions: ['CB'],
+    promotes: ['pace'],
+  },
   ballPlayingDefender: {
-    label: '볼 플레잉 디펜더',
+    label: sourceMessage('copy.player.6ca9bd69a9'),
     positions: ['CB'],
     promotes: ['passing', 'vision'],
   },
-  defensiveFullBack: { label: '수비형 풀백', positions: ['LB', 'RB'], promotes: ['positioning'] },
+  defensiveFullBack: {
+    label: sourceMessage('copy.player.4626b6f087'),
+    positions: ['LB', 'RB'],
+    promotes: ['positioning'],
+  },
   overlappingFullBack: {
-    label: '오버래핑 풀백',
+    label: sourceMessage('copy.player.731720f1a4'),
     positions: ['LB', 'RB'],
     promotes: ['crossing', 'stamina'],
   },
   invertedFullBack: {
-    label: '인버티드 풀백',
+    label: sourceMessage('copy.player.25a75e74ac'),
     positions: ['LB', 'RB'],
     promotes: ['passing', 'vision'],
   },
   defensiveWingBack: {
-    label: '수비형 윙백',
+    label: sourceMessage('copy.player.795a2fb047'),
     positions: ['LWB', 'RWB'],
     promotes: ['tackling', 'positioning'],
   },
-  attackingWingBack: { label: '공격형 윙백', positions: ['LWB', 'RWB'], promotes: ['dribbling'] },
-  anchor: { label: '앵커', positions: ['DM'], promotes: ['decisions'] },
-  ballWinner: { label: '볼 위닝 미드필더', positions: ['DM'], promotes: ['stamina', 'strength'] },
-  regista: { label: '레지스타', positions: ['DM'], promotes: ['passing', 'vision'] },
-  boxToBox: { label: '박스투박스', positions: ['CM'], promotes: ['tackling', 'finishing'] },
-  mezzala: { label: '메짤라', positions: ['CM'], promotes: ['dribbling', 'finishing'] },
+  attackingWingBack: {
+    label: sourceMessage('copy.player.224cef748c'),
+    positions: ['LWB', 'RWB'],
+    promotes: ['dribbling'],
+  },
+  anchor: {
+    label: sourceMessage('copy.player.02b8bf7d16'),
+    positions: ['DM'],
+    promotes: ['decisions'],
+  },
+  ballWinner: {
+    label: sourceMessage('copy.player.ce6039f1ef'),
+    positions: ['DM'],
+    promotes: ['stamina', 'strength'],
+  },
+  regista: {
+    label: sourceMessage('copy.player.f240df2616'),
+    positions: ['DM'],
+    promotes: ['passing', 'vision'],
+  },
+  boxToBox: {
+    label: sourceMessage('copy.player.7359d90117'),
+    positions: ['CM'],
+    promotes: ['tackling', 'finishing'],
+  },
+  mezzala: {
+    label: sourceMessage('copy.player.ce186b7043'),
+    positions: ['CM'],
+    promotes: ['dribbling', 'finishing'],
+  },
   deepLyingPlaymaker: {
-    label: '딥라잉 플레이메이커',
+    label: sourceMessage('copy.player.2b581d11c3'),
     positions: ['CM'],
     promotes: ['vision', 'decisions'],
   },
-  wideMidfielder: { label: '와이드 미드필더', positions: ['LM', 'RM'], promotes: ['tackling'] },
+  wideMidfielder: {
+    label: sourceMessage('copy.player.d3febcdd7c'),
+    positions: ['LM', 'RM'],
+    promotes: ['tackling'],
+  },
   widePlaymaker: {
-    label: '와이드 플레이메이커',
+    label: sourceMessage('copy.player.e35316ae48'),
     positions: ['LM', 'RM'],
     promotes: ['passing', 'vision'],
   },
-  attackingMidfielder: { label: '공격형 미드필더', positions: ['AM'], promotes: ['finishing'] },
+  attackingMidfielder: {
+    label: sourceMessage('copy.player.94170c7223'),
+    positions: ['AM'],
+    promotes: ['finishing'],
+  },
   shadowStriker: {
-    label: '섀도 스트라이커',
+    label: sourceMessage('copy.player.a531a2a33b'),
     positions: ['AM'],
     promotes: ['finishing', 'positioning'],
   },
-  trequartista: { label: '트레콰르티스타', positions: ['AM'], promotes: ['dribbling'] },
-  traditionalWinger: { label: '전통형 윙어', positions: ['LW', 'RW'], promotes: ['crossing'] },
-  invertedWinger: { label: '인버티드 윙어', positions: ['LW', 'RW'], promotes: ['finishing'] },
-  targetMan: { label: '타겟맨', positions: ['ST'], promotes: ['heading', 'strength'] },
-  poacher: { label: '포처', positions: ['ST'], promotes: ['positioning', 'composure'] },
-  falseNine: { label: '펄스 나인', positions: ['ST'], promotes: ['passing', 'vision'] },
+  trequartista: {
+    label: sourceMessage('copy.player.7ec33c0d31'),
+    positions: ['AM'],
+    promotes: ['dribbling'],
+  },
+  traditionalWinger: {
+    label: sourceMessage('copy.player.6d77992b94'),
+    positions: ['LW', 'RW'],
+    promotes: ['crossing'],
+  },
+  invertedWinger: {
+    label: sourceMessage('copy.player.e4e43b6b3d'),
+    positions: ['LW', 'RW'],
+    promotes: ['finishing'],
+  },
+  targetMan: {
+    label: sourceMessage('copy.player.78af7331ea'),
+    positions: ['ST'],
+    promotes: ['heading', 'strength'],
+  },
+  poacher: {
+    label: sourceMessage('copy.player.cbab395aed'),
+    positions: ['ST'],
+    promotes: ['positioning', 'composure'],
+  },
+  falseNine: {
+    label: sourceMessage('copy.player.23c2de0c15'),
+    positions: ['ST'],
+    promotes: ['passing', 'vision'],
+  },
   completeForward: {
-    label: '컴플리트 포워드',
+    label: sourceMessage('copy.player.e3b620a1b7'),
     positions: ['ST'],
     promotes: ['dribbling', 'heading'],
   },
@@ -334,30 +413,30 @@ export const PROFESSIONALISM_RATE = [0.7, 0.85, 1, 1.15, 1.3] as const;
 export const ADAPTABILITY_RATE = [0.6, 0.8, 1, 1.2, 1.4] as const;
 export const AMBITION_UNHAPPY = [0, 0, 0, 0.25, 0.5] as const;
 export const GRADE_LABEL: Record<Grade, string> = {
-  1: '매우 낮음',
-  2: '낮음',
-  3: '보통',
-  4: '높음',
-  5: '매우 높음',
+  1: sourceMessage('copy.player.76fc73c3b5'),
+  2: sourceMessage('copy.player.9f07b9bc5f'),
+  3: sourceMessage('copy.teamState.666599febd'),
+  4: sourceMessage('copy.player.5327dee9ab'),
+  5: sourceMessage('copy.player.1f18248b8f'),
 };
 export const PERSONALITY_LABEL: Record<keyof Personality, string> = {
-  professionalism: '프로의식',
-  adaptability: '적응력',
-  ambition: '야망',
+  professionalism: sourceMessage('copy.influences.f22434c1d6'),
+  adaptability: sourceMessage('copy.influences.af26f66619'),
+  ambition: sourceMessage('copy.influences.7589bac4d7'),
 };
 export const TRAIT_LABEL: Record<PlayTrait, string> = {
-  workrate: '활동량',
-  technician: '테크니션',
-  playmaker: '플레이메이커',
-  speedster: '스피드스터',
-  linebreaker: '라인 브레이커',
-  targetman: '타겟맨',
-  longshot: '중거리 슈터',
-  crosser: '크로스 전문가',
-  aerial: '공중 장악',
-  tackler: '태클러',
-  buildup: '빌드업',
-  leader: '리더',
+  workrate: sourceMessage('copy.player.008abc9b64'),
+  technician: sourceMessage('copy.player.09253268dd'),
+  playmaker: sourceMessage('copy.player.7711ccb546'),
+  speedster: sourceMessage('copy.player.6dfcd273b3'),
+  linebreaker: sourceMessage('copy.player.576efe94f9'),
+  targetman: sourceMessage('copy.player.78af7331ea'),
+  longshot: sourceMessage('copy.player.5d7924f9cb'),
+  crosser: sourceMessage('copy.player.1385169412'),
+  aerial: sourceMessage('copy.player.ca2b54b3c8'),
+  tackler: sourceMessage('copy.player.230465be05'),
+  buildup: sourceMessage('copy.player.70e49291a5'),
+  leader: sourceMessage('copy.player.2ac8ab1ae3'),
 };
 
 export type Joined = 'founding' | 'academy' | 'domestic' | 'abroad';
@@ -771,11 +850,13 @@ export function generateProfile(
 }
 /** A player of each line as a noun (수비수), beside LINE_LABEL's line name (수비). */
 export const LINE_NAME: Readonly<Record<Line, string>> = {
-  GK: '골키퍼',
-  DF: '수비수',
-  MF: '미드필더',
-  FW: '공격수',
+  GK: sourceMessage('position.family.GK'),
+  DF: sourceMessage('copy.RecruitmentDesk.48e2d845b6'),
+  MF: sourceMessage('copy.RecruitmentDesk.7d50bd87b5'),
+  FW: sourceMessage('copy.RecruitmentDesk.736f1ff574'),
 };
 /** A request in words: the line it asks for, or the formation slot's position. */
 export const requestLabel = (request: Pick<SigningRequest, 'line' | 'position'>) =>
-  request.position ? `${POSITION_LABEL[request.position]} 자리` : LINE_NAME[request.line];
+  request.position
+    ? sourceMessage('copy.ScoutShortlist.28670cb5ca', { p0: POSITION_LABEL[request.position] })
+    : LINE_NAME[request.line];

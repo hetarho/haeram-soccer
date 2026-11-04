@@ -1,5 +1,4 @@
 import { openPersonnel } from './personnel-navigation';
-import { openDirectionInForce } from './office';
 import { closeMarketPanel } from './market';
 import { openOffice } from './events';
 import { test, expect, type Page } from '@playwright/test';
@@ -8,11 +7,11 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
-import { leaveOffice } from './office';
-/** 구단 운영 › 재정·투자's direction in force, entered through the club sections (→WEB-110). */
+import { leaveOffice, openArea } from './office';
+/** The office's 재정 · 사업, entered from its card on the clubhouse (→WEB-11/14). */
 async function operations(page: Page) {
-  await openDirectionInForce(page);
-  await expect(page.getByTestId('direction-areas').getByRole('radio')).toHaveCount(0);
+  await openArea(page, '재정 · 사업');
+  await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
 }
 
 test('rules three retains a joint career and promise through handover and portable reload', async ({
@@ -33,11 +32,9 @@ test('rules three retains a joint career and promise through handover and portab
   expect(detectMediations(w)).toHaveLength(1);
   await page.setViewportSize({ width: 390, height: 844 });
   await importResponsibilityCareer(page, w);
-  // The direction reads as saved; nothing in the career edits it (→ECON-25).
+  // The direction reads as saved: 재정 · 사업's revenue model in force (→ECON-25, WEB-14).
   await operations(page);
-  await expect(
-    page.getByTestId('direction-areas').locator('[data-row="finance"]').first(),
-  ).toContainText('표준');
+  await expect(page.locator('[data-control="build:revenue"]')).toContainText('현재 · 표준');
   await leaveOffice(page);
   const office = await openOffice(page);
   await office

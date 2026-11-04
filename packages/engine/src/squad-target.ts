@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 export { SQUAD_TARGET } from './squad-size';
 import type { Line, Position, World } from '../../contracts/src/types';
 import { academyPlayers, promoteYouth, promotionAge } from './academy';
@@ -13,9 +14,9 @@ import { registrationRoom } from './registration';
 import { pushInbox } from './inbox';
 export type CallUpSource = 'close' | 'replacement' | 'short';
 const REASON: Record<CallUpSource, string> = {
-  close: '시즌 마감 보충',
-  replacement: '대체 영입 실패',
-  short: '선수단 20명 미만',
+  close: sourceMessage('copy.squad_target.e7e01fcd8c'),
+  replacement: sourceMessage('copy.squad_target.8346c83338'),
+  short: sourceMessage('copy.squad_target.86a4a02dca'),
 };
 /** Exceptional top-up ignores ordinary readiness and cash floor, but never registration. */
 export function callUpFor(w: World, line: Line, source: CallUpSource) {
@@ -61,8 +62,11 @@ export function callUpFor(w: World, line: Line, source: CallUpSource) {
   }
   pushInbox(w, {
     kind: 'staff-report',
-    title: `유스 디렉터 콜업 · ${player.name} · ${POSITION_LABEL[player.position]}`,
-    detail: `${REASON[source]} · 실제 1군 계약과 등록을 완료했어요.`,
+    title: sourceMessage('copy.squad_target.69961cdd2a', {
+      p0: player.name,
+      p1: POSITION_LABEL[player.position],
+    }),
+    detail: sourceMessage('copy.squad_target.1bfd29a798', { p0: REASON[source] }),
     attention: false,
     ref: player.id,
   });

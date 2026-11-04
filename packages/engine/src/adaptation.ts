@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Club, Manager, Player, Tactic, World } from '../../contracts/src/types';
 import type { Position, PositionLevel } from '../../contracts/src/player';
 import {
@@ -118,10 +119,13 @@ export function settleClubRounds(w: World) {
     addEvent(
       w,
       'unsettled',
-      `${p.name} 적응 실패`,
-      `${p.position} · ${p.clubRounds}라운드째 적응도 ${p.adaptation.toFixed(2)} · 기량의 ${Math.round(
-        100 * adaptationMultiplier(p.adaptation),
-      )}%로 뛰고 있어요`,
+      sourceMessage('copy.adaptation.ea06f649fc', { p0: p.name }),
+      sourceMessage('copy.adaptation.e86cbc2995', {
+        p0: p.position,
+        p1: p.clubRounds,
+        p2: p.adaptation.toFixed(2),
+        p3: Math.round(100 * adaptationMultiplier(p.adaptation)),
+      }),
     );
   }
 }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { endPlayingCoachForDeparture } from './playing-coach';
 import { movePerson } from './npc-continuity';
 import type {
@@ -168,11 +169,13 @@ export function signingClauses(w: World, p: Player) {
 /** Clauses as the owner reads them: 승격 시 +25% · 강등 시 −40% · 발롱도르 보너스, or 없음. */
 export function clausesLabel(clauses: ContractClauses | undefined) {
   const parts = [
-    clauses?.promotion ? `승격 시 연봉 +${clauses.promotion}%` : '',
-    clauses?.relegation ? `강등 시 연봉 −${-clauses.relegation}%` : '',
-    clauses?.ballonDor ? `발롱도르 수상 시 연봉의 ${clauses.ballonDor}% 보너스` : '',
+    clauses?.promotion ? sourceMessage('copy.contracts.e8d612c8ec', { p0: clauses.promotion }) : '',
+    clauses?.relegation
+      ? sourceMessage('copy.contracts.dcaddf0479', { p0: -clauses.relegation })
+      : '',
+    clauses?.ballonDor ? sourceMessage('copy.contracts.c224b0d6b9', { p0: clauses.ballonDor }) : '',
   ].filter(Boolean);
-  return parts.length ? parts.join(' · ') : '승격·강등 조항 없음';
+  return parts.length ? parts.join(' · ') : sourceMessage('copy.contracts.0e0f44bc7f');
 }
 /**
  * The close after the club went up or down (→CLUB-29): every running contract's promotion rise or
@@ -192,14 +195,29 @@ export function applyClauses(w: World, move: 'promotion' | 'relegation') {
     }
     after += BigInt(p.wage);
   }
-  const label = move === 'promotion' ? '승격' : '강등',
+  const label =
+      move === 'promotion'
+        ? sourceMessage('copy.AcademyPanel.8e70a8dda1')
+        : sourceMessage('copy.CareerRecordBook.7e6e321ef0'),
     delta = after - before;
   pushInbox(w, {
     kind: 'finance',
-    title: `${label} 조항: 선수단 연봉 ${delta < 0n ? '−' : '+'}${moneyLabel(w, (delta < 0n ? -delta : delta).toString())}`,
+    title: sourceMessage('copy.contracts.b239631068', {
+      p0: label,
+      p1: delta < 0n ? '−' : '+',
+      p2: moneyLabel(w, (delta < 0n ? -delta : delta).toString()),
+    }),
     detail: changed
-      ? `${label} 조항이 있는 선수 ${changed}명의 연봉이 이번 시즌 첫 라운드부터 바뀌어요 · 선수단 연봉 ${moneyLabel(w, before.toString())} → ${moneyLabel(w, after.toString())}.`
-      : `${label} 조항이 있는 계약이 없어 선수단 연봉 ${moneyLabel(w, before.toString())}은 그대로예요.`,
+      ? sourceMessage('copy.contracts.51e8adebd6', {
+          p0: label,
+          p1: changed,
+          p2: moneyLabel(w, before.toString()),
+          p3: moneyLabel(w, after.toString()),
+        })
+      : sourceMessage('copy.contracts.e3cabd42ec', {
+          p0: label,
+          p1: moneyLabel(w, before.toString()),
+        }),
     attention: false,
   });
 }
@@ -237,7 +255,9 @@ export const TALK_TERMS: Record<TalkWindow, readonly TalkTerm[]> = {
 };
 /** A term as the owner reads it: 2시즌 in the summer, 2½시즌 (the rest of this one and 2) in winter. */
 export function termLabel(window: TalkWindow, term: TalkTerm) {
-  return window === 'summer' ? `${term}시즌` : `${term || ''}½시즌`;
+  return window === 'summer'
+    ? sourceMessage('copy.BallonDorView.3585c2642b', { p0: term })
+    : sourceMessage('copy.contracts.e1326c3255', { p0: term || '' });
 }
 const termRange = (window: TalkWindow) => {
   const terms = TALK_TERMS[window];
@@ -263,16 +283,26 @@ export interface GoodwillPart {
 export function talkGoodwill(w: World, p: Player) {
   const build = w.build ?? {},
     parts: GoodwillPart[] = [
-      { label: '선수단 투자', percent: policyEffects(policyOf(w)).goodwill },
+      {
+        label: sourceMessage('copy.contracts.31d8ccedbf'),
+        percent: policyEffects(policyOf(w)).goodwill,
+      },
     ];
   const facilityGoodwill = trainingGroundTerms(w).goodwill;
-  if (facilityGoodwill) parts.push({ label: '훈련장', percent: facilityGoodwill });
-  if (build.culture === 'family') parts.push({ label: '가족 같은 클럽', percent: 5 });
+  if (facilityGoodwill)
+    parts.push({ label: sourceMessage('copy.outcome.e9dbbe23f3'), percent: facilityGoodwill });
+  if (build.culture === 'family')
+    parts.push({ label: sourceMessage('copy.build.df2852e45c'), percent: 5 });
   if (build.culture === 'stars' && overall(p) >= 70)
-    parts.push({ label: '스타 대우', percent: 10 });
-  if (build.culture === 'meritocracy') parts.push({ label: '철저한 경쟁', percent: -5 });
-  if (build.revenue === 'frugal') parts.push({ label: '긴축 재정', percent: -5 });
-  parts.push({ label: '선수단 분위기', percent: (moraleOf(w) - 60) / 4 });
+    parts.push({ label: sourceMessage('copy.build.e42fda7924'), percent: 10 });
+  if (build.culture === 'meritocracy')
+    parts.push({ label: sourceMessage('copy.build.b4b429047e'), percent: -5 });
+  if (build.revenue === 'frugal')
+    parts.push({ label: sourceMessage('copy.build.d4e31ebbfc'), percent: -5 });
+  parts.push({
+    label: sourceMessage('copy.contracts.3cba525c7f'),
+    percent: (moraleOf(w) - 60) / 4,
+  });
   const [low, high] = TALK_CONFIG.goodwill;
   return {
     parts,
@@ -328,12 +358,18 @@ function underpaid(w: World, p: Player) {
 }
 /** A renewal or an improved contract (계약 개선), as the talk is named. */
 export const TALK_LABEL: Record<ContractTalk['kind'], string> = {
-  renew: '재계약',
-  improve: '계약 개선',
+  renew: sourceMessage('copy.ClubStaff.a199caa699'),
+  improve: sourceMessage('copy.contracts.43f2d219d8'),
 };
 const talkLabel = (talk: ContractTalk) => TALK_LABEL[talk.kind];
 function playerLine(w: World, p: Player) {
-  return `${p.position} · ${w.year - p.born}세 · 능력 ${overall(p)} · 연봉 ${moneyLabel(w, p.wage)} · 계약 ${contractSeason(p.until)} 시즌 끝까지`;
+  return sourceMessage('copy.contracts.192eb09ab7', {
+    p0: p.position,
+    p1: w.year - p.born,
+    p2: overall(p),
+    p3: moneyLabel(w, p.wage),
+    p4: contractSeason(p.until),
+  });
 }
 const TALK_KINDS: readonly InboxKind[] = ['contract-talk'];
 /** Every item about a player's contract: talks, his unhappiness and his transfer request. */
@@ -362,8 +398,17 @@ function openTalk(w: World, p: Player, kind: ContractTalk['kind']) {
   const goodwill = Math.round(terms.goodwill.percent * 10) / 10;
   pushInbox(w, {
     kind: 'contract-talk',
-    title: `${p.name}, ${talkLabel(p.talk)} 협상 요청`,
-    detail: `${playerLine(w, p)} · 에이전트 ${agentOf(w, p)}등급 · 요구 ${moneyLabel(w, terms.demand)} · 하한 ${moneyLabel(w, terms.floor)}(호감 ${goodwill > 0 ? '+' : ''}${goodwill}%) · ${clausesLabel(p.talk.clauses)} · 하한 이상으로 ${termRange(talkWindow(w))}을 제시하거나 거절하세요.`,
+    title: sourceMessage('copy.contracts.95aa70fed1', { p0: p.name, p1: talkLabel(p.talk) }),
+    detail: sourceMessage('copy.contracts.143cb28b64', {
+      p0: playerLine(w, p),
+      p1: agentOf(w, p),
+      p2: moneyLabel(w, terms.demand),
+      p3: moneyLabel(w, terms.floor),
+      p4: goodwill > 0 ? '+' : '',
+      p5: goodwill,
+      p6: clausesLabel(p.talk.clauses),
+      p7: termRange(talkWindow(w)),
+    }),
     attention: true,
     ref: p.id,
   });
@@ -379,9 +424,9 @@ export const UNHAPPY_CONFIG = {
   requestDays: 42,
 };
 export const UNHAPPY_REASON: Record<UnhappyReason, string> = {
-  'renewal-declined': '재계약 거절',
-  'improve-declined': '계약 개선 거절',
-  ambition: '빅클럽 이적 무산',
+  'renewal-declined': sourceMessage('copy.contracts.a0fcc170fb'),
+  'improve-declined': sourceMessage('copy.contracts.f2c66d077d'),
+  ambition: sourceMessage('copy.contracts.6c5f9649dd'),
 };
 /** The manager's chance of talking a player round after his demand is declined (→CLUB-27). */
 export function talkRoundChance(w: World) {
@@ -431,7 +476,9 @@ function endUnhappiness(w: World, p: Player) {
   delete p.transferRequest;
   if (requested && p.stance === 'listed') delete p.stance;
   settleTalkItems(w, p.id, PLAYER_KINDS);
-  return requested ? '언해피 해소 · 이적 요청 철회' : '언해피 해소';
+  return requested
+    ? sourceMessage('copy.contracts.37ec60d79f')
+    : sourceMessage('copy.contracts.83cfa1684f');
 }
 /**
  * A bigger club's offer of at least his value was declined (→CLUB-27, PLAYER-8): a player of 야망
@@ -447,13 +494,17 @@ export function ambitionAfterDecline(w: World, p: Player, bidId: string, club: s
   const talk = talkRoundChance(w),
     kept = r() < talk;
   const outcome = kept
-    ? `감독이 설득해 마음을 돌렸어요(설득 확률 ${percentLabel(talk)})`
-    : `감독의 설득이 실패해 언해피가 됐어요(설득 확률 ${percentLabel(talk)})`;
+    ? sourceMessage('copy.contracts.d6eb99292f', { p0: percentLabel(talk) })
+    : sourceMessage('copy.contracts.63c58c0824', { p0: percentLabel(talk) });
   if (kept) {
     pushInbox(w, {
       kind: 'staff-report',
-      title: `${p.name}, ${club} 이적 무산에 실망`,
-      detail: `${playerLine(w, p)} · 야망 ${GRADE_LABEL[p.personality.ambition]} · ${outcome}.`,
+      title: sourceMessage('copy.contracts.8fc68af08c', { p0: p.name, p1: club }),
+      detail: sourceMessage('copy.contracts.c8813e7362', {
+        p0: playerLine(w, p),
+        p1: GRADE_LABEL[p.personality.ambition],
+        p2: outcome,
+      }),
       attention: false,
       ref: p.id,
     });
@@ -463,8 +514,16 @@ export function ambitionAfterDecline(w: World, p: Player, bidId: string, club: s
   const weeks = UNHAPPY_CONFIG.requestDays / 7;
   pushInbox(w, {
     kind: 'unhappy',
-    title: `${p.name} 언해피 · ${UNHAPPY_REASON.ambition}`,
-    detail: `${playerLine(w, p)} · 야망 ${GRADE_LABEL[p.personality.ambition]} · ${club}의 제안이 거절됐어요 · ${outcome}. 능력보다 ${UNHAPPY_PENALTY} 낮게 뛰고, 선발로 뛴 라운드마다 선수단 분위기 −${UNHAPPY_MORALE}, 재계약을 거부하며 ${weeks}주 뒤 이적을 요청해요. 매각하거나 시즌이 끝나면 풀려요.`,
+    title: sourceMessage('copy.contracts.c2b1b0f474', { p0: p.name, p1: UNHAPPY_REASON.ambition }),
+    detail: sourceMessage('copy.contracts.d4b3f37a9e', {
+      p0: playerLine(w, p),
+      p1: GRADE_LABEL[p.personality.ambition],
+      p2: club,
+      p3: outcome,
+      p4: UNHAPPY_PENALTY,
+      p5: UNHAPPY_MORALE,
+      p6: weeks,
+    }),
     attention: true,
     ref: p.id,
   });
@@ -477,8 +536,8 @@ export function endAmbition(w: World) {
     addEvent(
       w,
       'contract',
-      `${p.name} 언해피 해소`,
-      `시즌이 끝나 빅클럽 이적 무산의 실망이 풀렸어요 · ${ended}`,
+      sourceMessage('copy.contracts.7efd65275a', { p0: p.name }),
+      sourceMessage('copy.contracts.b8d11d8e1d', { p0: ended }),
     );
   }
 }
@@ -508,12 +567,19 @@ function signTalk(
   delete p.talk;
   settleTalkItems(w, p.id);
   const ended = endUnhappiness(w, p);
-  const detail = `연봉 ${moneyLabel(w, before)} → ${moneyLabel(w, wage)} · ${termLabel(talkWindow(w), term)} · 계약 ${contractSeason(p.until)} 시즌 끝까지 · ${clausesLabel(p.clauses)}${ended ? ` · ${ended}` : ''}`;
+  const detail = sourceMessage('copy.contracts.8acd504eee', {
+    p0: moneyLabel(w, before),
+    p1: moneyLabel(w, wage),
+    p2: termLabel(talkWindow(w), term),
+    p3: contractSeason(p.until),
+    p4: clausesLabel(p.clauses),
+    p5: ended ? ` · ${ended}` : '',
+  });
   addEvent(
     w,
     'contract',
-    `${p.name} ${talkLabel(talk)} 합의`,
-    staff ? `단장 합의 · ${detail}` : detail,
+    sourceMessage('copy.contracts.387189c7f5', { p0: p.name, p1: talkLabel(talk) }),
+    staff ? sourceMessage('copy.contracts.9d9467661e', { p0: detail }) : detail,
   );
   return detail;
 }
@@ -529,12 +595,12 @@ function declineTalk(w: World, p: Player, reason: string) {
   delete p.talk;
   settleTalkItems(w, p.id);
   const outcome = kept
-    ? `감독이 설득해 마음을 돌렸어요(설득 확률 ${percentLabel(chance)})`
-    : `감독의 설득이 실패해 언해피가 됐어요(설득 확률 ${percentLabel(chance)})`;
+    ? sourceMessage('copy.contracts.d6eb99292f', { p0: percentLabel(chance) })
+    : sourceMessage('copy.contracts.63c58c0824', { p0: percentLabel(chance) });
   addEvent(
     w,
     'contract-decline',
-    `${p.name} ${talkLabel(talk)} 요구 거절`,
+    sourceMessage('copy.contracts.44e2a1605d', { p0: p.name, p1: talkLabel(talk) }),
     `${reason} · ${outcome}`,
   );
   if (!kept) {
@@ -546,8 +612,18 @@ function declineTalk(w: World, p: Player, reason: string) {
     const weeks = UNHAPPY_CONFIG.requestDays / 7;
     pushInbox(w, {
       kind: 'unhappy',
-      title: `${p.name} 언해피 · ${UNHAPPY_REASON[p.unhappy.reason]}`,
-      detail: `${playerLine(w, p)} · ${outcome}. 능력보다 ${UNHAPPY_PENALTY} 낮게 뛰고, 선발로 뛴 라운드마다 선수단 분위기 −${UNHAPPY_MORALE}, 재계약을 거부하며 ${weeks}주 뒤 이적을 요청해요. 하한 ${moneyLabel(w, talkTerms(w, p).floor)} 이상을 제시하거나 매각하면 풀려요.`,
+      title: sourceMessage('copy.contracts.c2b1b0f474', {
+        p0: p.name,
+        p1: UNHAPPY_REASON[p.unhappy.reason],
+      }),
+      detail: sourceMessage('copy.contracts.74f04f01a3', {
+        p0: playerLine(w, p),
+        p1: outcome,
+        p2: UNHAPPY_PENALTY,
+        p3: UNHAPPY_MORALE,
+        p4: weeks,
+        p5: moneyLabel(w, talkTerms(w, p).floor),
+      }),
       attention: true,
       ref: p.id,
     });
@@ -591,32 +667,48 @@ export function staffTalkVerdict(w: World, p: Player) {
   if (!wageWithinLimit(w, 'contracts', talk.floor))
     return {
       accept: false as const,
-      reason: `요구 연봉 ${moneyLabel(w, talk.floor)}이 선수 계약의 1인당 연봉 한도 ${moneyLabel(w, annualWageLimit(w, 'contracts')!)}을 넘어 거절했어요.`,
+      reason: sourceMessage('copy.contracts.7733fb4416', {
+        p0: moneyLabel(w, talk.floor),
+        p1: moneyLabel(w, annualWageLimit(w, 'contracts')!),
+      }),
     };
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,
-      reason: `하한 ${moneyLabel(w, talk.floor)}이 연봉 상한(시장가${ballonDorPremium(w.history, w.year, p.id).factor > 1 ? '·발롱도르 프리미엄' : ''}의 ${Math.round(rule.maxPay * 100)}%, ${moneyLabel(w, ceiling)})을 넘어 거절했어요(재계약 기조 ${renewal}).`,
+      reason: sourceMessage('copy.contracts.cc518e6d62', {
+        p0: moneyLabel(w, talk.floor),
+        p1:
+          ballonDorPremium(w.history, w.year, p.id).factor > 1
+            ? sourceMessage('copy.contracts.26a2cffc36')
+            : '',
+        p2: Math.round(rule.maxPay * 100),
+        p3: moneyLabel(w, ceiling),
+        p4: renewal,
+      }),
     };
   if (rule.startersOnly && !ownStarters(w).some((starter) => starter.id === p.id))
     return {
       accept: false as const,
-      reason: `주전이 아니라 거절했어요(재계약 기조 ${renewal}: 주전만 붙잡기).`,
+      reason: sourceMessage('copy.contracts.462b606715', { p0: renewal }),
     };
   if (overall(p) < rule.minOvr)
     return {
       accept: false as const,
-      reason: `OVR ${overall(p)}로 최소 OVR ${rule.minOvr}에 못 미쳐 거절했어요(재계약 기조 ${renewal}).`,
+      reason: sourceMessage('copy.contracts.5fb12c2f99', {
+        p0: overall(p),
+        p1: rule.minOvr,
+        p2: renewal,
+      }),
     };
   if (rule.maxAge !== undefined && age >= rule.maxAge)
     return {
       accept: false as const,
-      reason: `${age}세라 거절했어요(재계약 기조 ${renewal}: ${rule.maxAge}세 미만만 붙잡기).`,
+      reason: sourceMessage('copy.contracts.129ed2f743', { p0: age, p1: renewal, p2: rule.maxAge }),
     };
   if (BigInt(w.cash) < runway)
     return {
       accept: false as const,
-      reason: `인상하면 운영자금이 ${stance.runway}라운드 운영비에 못 미쳐 거절했어요(재정 기조 ${finance}).`,
+      reason: sourceMessage('copy.contracts.41859e5c0d', { p0: stance.runway, p1: finance }),
     };
   const bill = BigInt(wageBill(w)) + raise,
     revenue = recentRevenue(w),
@@ -624,13 +716,23 @@ export function staffTalkVerdict(w: World, p: Player) {
   if (bill * 100n > BigInt(revenue) * BigInt(share))
     return {
       accept: false as const,
-      reason: `인상하면 연간 인건비 ${moneyLabel(w, bill.toString())}가 최근 12개월 수입 ${moneyLabel(w, revenue)}의 ${share}%를 넘어 거절했어요(재정 기조 ${finance}).`,
+      reason: sourceMessage('copy.contracts.b1d7fee324', {
+        p0: moneyLabel(w, bill.toString()),
+        p1: moneyLabel(w, revenue),
+        p2: share,
+        p3: finance,
+      }),
     };
   const seasonEnd = seasonEndWithWage(w, p, talk.floor);
   if (BigInt(seasonEnd) < runway)
     return {
       accept: false as const,
-      reason: `인상한 연봉으로 시즌 말 자금 전망(낮게 잡아 ${moneyLabel(w, seasonEnd)})이 ${stance.runway}라운드 운영비(${moneyLabel(w, runway.toString())})에 못 미쳐 거절했어요(재정 기조 ${finance}).`,
+      reason: sourceMessage('copy.contracts.d9793e3ead', {
+        p0: moneyLabel(w, seasonEnd),
+        p1: stance.runway,
+        p2: moneyLabel(w, runway.toString()),
+        p3: finance,
+      }),
     };
   return { accept: true as const, term };
 }
@@ -639,14 +741,26 @@ function staffAnswer(w: World, p: Player) {
     verdict = staffTalkVerdict(w, p);
   let detail: string;
   if (verdict.accept)
-    detail = `${signTalk(w, p, talk, talk.floor, verdict.term, true)} · 하한으로 합의했어요.`;
+    detail = sourceMessage('copy.contracts.341cbc23e8', {
+      p0: signTalk(w, p, talk, talk.floor, verdict.term, true),
+    });
   else {
-    const { outcome } = declineTalk(w, p, `단장 · ${verdict.reason}`);
+    const { outcome } = declineTalk(
+      w,
+      p,
+      sourceMessage('copy.contracts.83748a9d02', { p0: verdict.reason }),
+    );
     detail = `${playerLine(w, p)} · ${verdict.reason} ${outcome}.`;
   }
   pushInbox(w, {
     kind: 'contract-talk',
-    title: `단장이 ${p.name}의 ${talkLabel(talk)} 요구를 ${verdict.accept ? '받아들였어요' : '거절했어요'}`,
+    title: sourceMessage('copy.contracts.39744c8470', {
+      p0: p.name,
+      p1: talkLabel(talk),
+      p2: verdict.accept
+        ? sourceMessage('copy.contracts.5fe6ff27f1')
+        : sourceMessage('copy.contracts.7cf83f2735'),
+    }),
     detail,
     attention: false,
     ref: p.id,
@@ -696,12 +810,24 @@ export function transferRequests(w: World) {
     if (dayCountedFrom(w, p.unhappy.year) - p.unhappy.day < UNHAPPY_CONFIG.requestDays) continue;
     p.transferRequest = { year: w.year, day: currentDay(w) };
     p.stance = 'listed';
-    const why = `${UNHAPPY_REASON[p.unhappy.reason]} 뒤 ${UNHAPPY_CONFIG.requestDays / 7}주`;
-    addEvent(w, 'transfer-request', `${p.name} 이적 요청`, `${why} · 이적 명단 등록`);
+    const why = sourceMessage('copy.contracts.c3df0a8d04', {
+      p0: UNHAPPY_REASON[p.unhappy.reason],
+      p1: UNHAPPY_CONFIG.requestDays / 7,
+    });
+    addEvent(
+      w,
+      'transfer-request',
+      sourceMessage('copy.contracts.3da3aa6d88', { p0: p.name }),
+      sourceMessage('copy.contracts.46fd5caf6a', { p0: why }),
+    );
     pushInbox(w, {
       kind: 'transfer-request',
-      title: `${p.name}, 이적 요청서 제출`,
-      detail: `${playerLine(w, p)} · ${why}. 이적 명단에 올랐고 이적 불가로 바꿀 수 없어요. 이적시장에서 실제 구단의 제안을 받아요. 하한 ${moneyLabel(w, talkTerms(w, p).floor)} 이상을 제시하면 요청을 거둬요.`,
+      title: sourceMessage('copy.contracts.8a2f3e4291', { p0: p.name }),
+      detail: sourceMessage('copy.contracts.e8c1a83f4a', {
+        p0: playerLine(w, p),
+        p1: why,
+        p2: moneyLabel(w, talkTerms(w, p).floor),
+      }),
       attention: true,
       ref: p.id,
     });
@@ -721,7 +847,9 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
   for (const p of activePlayers(w)) {
     if (p.loanUntil || p.until > w.year) continue;
     const club = suitorFor(w, p, random(`${w.seed}:expiry:${p.id}:${w.year}`)),
-      where = club ? `${club.name} 입단` : '새 팀을 찾아 떠남';
+      where = club
+        ? sourceMessage('copy.contracts.09184ea14a', { p0: club.name })
+        : sourceMessage('copy.contracts.9a612830cc');
     endPlayingCoachForDeparture(w, p.id, true);
     p.status = 'sold';
     delete p.stance;
@@ -731,8 +859,8 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
       addEvent(
         w,
         'contract-expiry',
-        `${p.name} 계약 만료`,
-        `${where} · ${w.year >= BOSMAN_YEAR ? '자유계약 이적, 보상금 없음' : '보상금을 낼 구단이 없음'}`,
+        sourceMessage('copy.contracts.41d78072fe', { p0: p.name }),
+        `${where} · ${w.year >= BOSMAN_YEAR ? sourceMessage('copy.contracts.185bbfe3e3') : sourceMessage('copy.contracts.cd546d58a6')}`,
       );
       continue;
     }
@@ -742,8 +870,12 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     addEvent(
       w,
       'free-transfer-compensation',
-      `${p.name} 계약 만료 보상금`,
-      `${where} · 보스만 판례 이전 · 평가 가치 ${moneyLabel(w, value)}의 ${EXPIRY_COMPENSATION}%`,
+      sourceMessage('copy.contracts.721315c6c2', { p0: p.name }),
+      sourceMessage('copy.contracts.d063824c2b', {
+        p0: where,
+        p1: moneyLabel(w, value),
+        p2: EXPIRY_COMPENSATION,
+      }),
       amount,
     );
   }
@@ -759,26 +891,31 @@ function activePlayer(w: World, id: string) {
 export function offerContract(w: World, id: string, wage: string, term: TalkTerm) {
   const p = activePlayer(w, id),
     talk = p && talkFor(w, p);
-  if (!p || !talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
-  if (!/^\d+$/.test(wage)) throw new Error('제시 연봉을 확인하세요.');
+  if (!p || !talk) throw new Error(sourceMessage('copy.contracts.c8b7510d18'));
+  if (!/^\d+$/.test(wage)) throw new Error(sourceMessage('copy.contracts.9a51987eee'));
   const window = talkWindow(w);
   if (!TALK_TERMS[window].includes(term))
-    throw new Error(`계약 기간은 ${termRange(window)}이어야 합니다.`);
+    throw new Error(sourceMessage('copy.contracts.2997a870a1', { p0: termRange(window) }));
   if (BigInt(wage) < BigInt(talk.floor))
-    throw new Error(`${p.name}은(는) ${moneyLabel(w, talk.floor)} 이상이어야 합의해요.`);
+    throw new Error(
+      sourceMessage('copy.contracts.aa91ac6b14', { p0: p.name, p1: moneyLabel(w, talk.floor) }),
+    );
   signTalk(w, p, talk, wage, term, false);
 }
 /** The owner declines; the manager then tries to talk him round (→CLUB-27). */
 export function declineContract(w: World, id: string) {
   const p = activePlayer(w, id);
-  if (!p?.talk) throw new Error('계약 협상 중인 선수가 아닙니다.');
-  const reason = `구단주 결정 · 요구 ${moneyLabel(w, p.talk.demand)} · 하한 ${moneyLabel(w, p.talk.floor)}`;
+  if (!p?.talk) throw new Error(sourceMessage('copy.contracts.c8b7510d18'));
+  const reason = sourceMessage('copy.contracts.a113f53de1', {
+    p0: moneyLabel(w, p.talk.demand),
+    p1: moneyLabel(w, p.talk.floor),
+  });
   const { kept, outcome } = declineTalk(w, p, reason);
   if (kept)
     pushInbox(w, {
       kind: 'contract-talk',
-      title: `감독이 ${p.name}의 마음을 돌렸어요`,
-      detail: `${playerLine(w, p)} · ${outcome}. 언해피 없이 지금 계약대로 뛰어요.`,
+      title: sourceMessage('copy.contracts.a5b0b026b0', { p0: p.name }),
+      detail: sourceMessage('copy.contracts.4c75531809', { p0: playerLine(w, p), p1: outcome }),
       attention: false,
       ref: p.id,
     });

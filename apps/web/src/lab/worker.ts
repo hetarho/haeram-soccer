@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 /**
  * A match lab worker (→LAB-4): plays its slice of a run in its own lab world, and generates sides,
  * probes reads, summarizes runs and plays watched matches (→LAB-9) for the page. Overrides live only here, for one slice at a time.
@@ -33,7 +34,7 @@ self.onmessage = (event: MessageEvent<LabRequest>) => {
           post({
             type: 'failed',
             runId: m.runId,
-            message: '적용할 수 없는 수치가 있습니다',
+            message: sourceMessage('copy.worker.ae85852a20'),
             rejected: outcome.rejected,
           });
         return;
@@ -69,7 +70,7 @@ self.onmessage = (event: MessageEvent<LabRequest>) => {
             type: 'failed',
             runId: -1,
             requestId: m.requestId,
-            message: '적용할 수 없는 수치가 있습니다',
+            message: sourceMessage('copy.worker.ae85852a20'),
             rejected: outcome.rejected,
           });
         return;

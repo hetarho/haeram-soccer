@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { worldMarketOffer } from './world-market';
 import { registrationRoom } from './registration';
 import type { Position } from '../../contracts/src/types';
@@ -158,7 +159,7 @@ export function squadCommand(w: World, cmd: SquadCommand) {
     case 'bid': {
       const target = cmd.target ?? cmd.candidate;
       if (target === undefined || (cmd.target && cmd.candidate !== undefined))
-        throw new Error('영입 대상을 확인하세요.');
+        throw new Error(sourceMessage('copy.ops_squad.ca6b698a89'));
       placeBid(w, target, cmd.fee, cmd.loan);
       break;
     }
@@ -167,9 +168,9 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       break;
     case 'recruit': {
       if ((cmd.candidate === undefined) === (cmd.target === undefined))
-        throw new Error('영입 대상을 확인하세요.');
+        throw new Error(sourceMessage('copy.ops_squad.ca6b698a89'));
       const o = cmd.target ? worldMarketOffer(w, cmd.target) : transferOffers(w)[cmd.candidate!];
-      if (!o?.available) throw new Error('이미 계약했거나 없는 선수입니다.');
+      if (!o?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
       if (cmd.target && (!o.freeAgent || cmd.loan)) {
         placeBid(w, cmd.target, cmd.loan ? o.loanFee : o.fee, cmd.loan);
         break;
@@ -199,8 +200,13 @@ export function squadCommand(w: World, cmd: SquadCommand) {
       addEvent(
         w,
         'transfer-in',
-        `${o.player.name} ${cmd.loan ? '임대' : '영입'}`,
-        `${o.player.position} · ${w.year - o.player.born}세 · 연봉 ${moneyLabel(w, o.player.wage)} · 계약 ${o.player.until}년`,
+        `${o.player.name} ${cmd.loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53')}`,
+        sourceMessage('copy.ops_squad.b8067d662a', {
+          p0: o.player.position,
+          p1: w.year - o.player.born,
+          p2: moneyLabel(w, o.player.wage),
+          p3: o.player.until,
+        }),
         cost,
       );
       break;

@@ -288,7 +288,7 @@ describe('preview pitch drawing', () => {
       const imports = [...source.matchAll(/from '([^']+)'/g)].map(([, path]) => path);
       for (const path of imports)
         expect(path).toMatch(
-          /^(react|\.\.\/presentation\/react|\.\/(identityPreview|figurePose|figurePainting|matchAppearance|numberTags|kitPainting|pitchPainting|usePitchSkin|KitPitchPreview\.module\.css)|(\.\.\/){4}packages\/(contracts\/src\/identity|engine\/src\/kit-selection))$/,
+          /^(react|\.\.\/presentation\/(react|text|LocalizedMessage)|\.\/(identityPreview|figurePose|figurePainting|matchAppearance|numberTags|kitPainting|pitchPainting|usePitchSkin|KitPitchPreview\.module\.css)|(\.\.\/){4}packages\/(contracts\/src\/(identity|messages)|engine\/src\/kit-selection))$/,
         );
       expect(source).not.toMatch(
         /takeOver|generateHistory|simulateMatch|GameClient|command\(|localStorage|indexedDB|requestAnimationFrame|setInterval/,

@@ -61,7 +61,9 @@ test("reads the manager's XI on the mobile report, plays it and shows earned fin
   await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
   await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '돈이 들어오고 나간 이유' })).toBeVisible();
-  await expect(page.getByText('다음 라운드 고정 지출')).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: '수입과 지출 장부' }).getByText('다음 라운드 고정 지출'),
+  ).toBeVisible();
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 });
 

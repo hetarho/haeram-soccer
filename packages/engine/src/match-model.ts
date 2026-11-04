@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 /**
  * The full match model's release switch and the exact record check both result paths share
  * (→MATCH-13, MATCH-27, SAVE-23; spec/ssot/MATCH.md).
@@ -139,7 +140,10 @@ export function validateFullMatchRecord(r: MatchRecord): string[] {
 /** Throws before settlement when `validateFullMatchRecord` finds anything (→MATCH-27). */
 export function assertFullMatchRecord(r: MatchRecord): asserts r is FullMatchRecord {
   const issues = validateFullMatchRecord(r);
-  if (issues.length) throw new Error(`경기 기록 불일치 ${r.id}: ${issues.slice(0, 5).join('; ')}`);
+  if (issues.length)
+    throw new Error(
+      sourceMessage('copy.match_model.04c48f5e27', { p0: r.id, p1: issues.slice(0, 5).join('; ') }),
+    );
 }
 
 const linesOf = (r: FullMatchRecord, side: 0 | 1) =>

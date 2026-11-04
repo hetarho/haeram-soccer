@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { useMemo, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import { colourDistance, contrast, type Crest } from './crests';
@@ -9,9 +12,9 @@ import t from './Pitch.module.css';
 
 type Chart = 'possession' | 'xg' | 'shots';
 const CHARTS: [Chart, string][] = [
-  ['possession', '점유율'],
+  ['possession', sourceMessage('copy.stories.6169842c01')],
   ['xg', 'xG'],
-  ['shots', '슈팅'],
+  ['shots', sourceMessage('copy.summary.da1cc31972')],
 ];
 /** Minutes in the rolling possession window. */
 const WINDOW = 10;
@@ -84,8 +87,11 @@ export function chartLines(look: MatchLook, surface = SURFACE) {
 /** The legend's name for a side's swatch: the worn role, or that the shirt was not recorded. */
 export function swatchLabel(look: MatchLook, side: SideLook, name: string) {
   return look.recorded && side.role
-    ? `${name} ${KIT_ROLE_LABELS[side.role]} 유니폼`
-    : `${name} 기본 표시 (${UNRECORDED_KIT})`;
+    ? sourceMessage('copy.FixtureKitSelector.1ec292bad8', {
+        p0: name,
+        p1: KIT_ROLE_LABELS[side.role],
+      })
+    : sourceMessage('copy.MatchCharts.1ba621cb8b', { p0: name, p1: UNRECORDED_KIT });
 }
 
 /** Per-minute series for both sides, over the first `shown` frames (the presented ones) only. */
@@ -123,6 +129,7 @@ export function MatchCharts({
   detailsId: string;
   onDetails: () => void;
 }) {
+  useTextLocale();
   const [chart, setChart] = useState<Chart>('possession');
   const [focus, setFocus] = useState<number>();
   const series = useMemo(
@@ -174,64 +181,78 @@ export function MatchCharts({
   };
   const title = CHARTS.find(([id]) => id === chart)![1];
   return (
-    <section className={t.charts} data-ui="match-chart" aria-label="경기 흐름 그래프">
+    <section
+      className={t.charts}
+      data-ui="match-chart"
+      aria-label={displayMessage('copy.MatchCharts.67de507b33')}
+    >
       <header>
-        <div role="tablist" aria-label="그래프 종류">
-          {CHARTS.map(([id, text]) => (
-            <button
-              key={id}
-              role="tab"
-              aria-selected={chart === id}
-              className={chart === id ? t.chartOn : undefined}
-              onClick={() => {
-                setChart(id);
-                setFocus(undefined);
-              }}
-            >
-              {text}
-            </button>
-          ))}
+        <div role="tablist" aria-label={displayMessage('copy.MatchCharts.b2ac8cb4bd')}>
+          {localizeValue(
+            CHARTS.map(([id, text]) => (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={chart === id}
+                className={chart === id ? t.chartOn : undefined}
+                onClick={() => {
+                  setChart(id);
+                  setFocus(undefined);
+                }}
+              >
+                {localizeValue(text)}
+              </button>
+            )),
+          )}
         </div>
         <button
           className={t.detailToggle}
           aria-haspopup="dialog"
           aria-expanded={details}
           aria-controls={details ? detailsId : undefined}
-          aria-label="경기 상세"
+          aria-label={displayMessage('copy.MatchCharts.f57a1c78ca')}
           onClick={onDetails}
         >
-          상세
+          {richMessage('copy.MatchCharts.d211d97f6b')}
         </button>
       </header>
       <ul className={t.legend}>
-        {([0, 1] as const).map((side) => (
-          <li key={side}>
-            <svg className={t.legendLine} width="14" height="6" aria-hidden="true">
-              <line
-                x1="1"
-                x2="13"
-                y1="3"
-                y2="3"
-                stroke={colours[side]}
-                strokeWidth="2"
-                strokeDasharray={lines[side].dash}
+        {localizeValue(
+          ([0, 1] as const).map((side) => (
+            <li key={side}>
+              <svg className={t.legendLine} width="14" height="6" aria-hidden="true">
+                <line
+                  x1="1"
+                  x2="13"
+                  y1="3"
+                  y2="3"
+                  stroke={colours[side]}
+                  strokeWidth="2"
+                  strokeDasharray={lines[side].dash}
+                />
+              </svg>
+              <KitSwatch
+                shirt={look.sides[side].shirt}
+                label={localizeValue(swatchLabel(look, look.sides[side], names[side]))}
+                size={16}
               />
-            </svg>
-            <KitSwatch
-              shirt={look.sides[side].shirt}
-              label={swatchLabel(look, look.sides[side], names[side])}
-              size={16}
-            />
-            <span>{names[side]}</span>
-            <b>{label(active !== undefined ? series[side][active - 1] : latest[side])}</b>
-          </li>
-        ))}
+              <span>{localizeValue(names[side])}</span>
+              <b>
+                {localizeValue(
+                  label(active !== undefined ? series[side][active - 1] : latest[side]),
+                )}
+              </b>
+            </li>
+          )),
+        )}
         <li className={t.legendMinute}>
-          {active !== undefined
-            ? `${labelAt(active)}′`
-            : chart === 'possession'
-              ? `최근 ${WINDOW}분`
-              : `${labelAt(shown)}′까지`}
+          {localizeValue(
+            active !== undefined
+              ? `${labelAt(active)}′`
+              : chart === 'possession'
+                ? sourceMessage('copy.MatchCharts.99b1f223e5', { p0: WINDOW })
+                : sourceMessage('copy.MatchCharts.19bc6d3f55', { p0: labelAt(shown) }),
+          )}
         </li>
       </ul>
       <div className={t.plot}>
@@ -239,7 +260,14 @@ export function MatchCharts({
           viewBox={`0 0 ${W} ${H}`}
           role="img"
           tabIndex={0}
-          aria-label={`${title}: ${names[0]} ${label(latest[0])} (실선), ${names[1]} ${label(latest[1])} (점선) · ${labelAt(shown)}분까지`}
+          aria-label={displayMessage('copy.MatchCharts.56d6eb6b14', {
+            p0: title,
+            p1: names[0],
+            p2: label(latest[0]),
+            p3: names[1],
+            p4: label(latest[1]),
+            p5: labelAt(shown),
+          })}
           onPointerMove={(event: PointerEvent<SVGSVGElement>) =>
             pick(event.clientX, event.currentTarget.getBoundingClientRect())
           }
@@ -250,84 +278,105 @@ export function MatchCharts({
           onBlur={() => setFocus(undefined)}
           onKeyDown={keyboard}
         >
-          {ticks.map((tick) => (
-            <g key={tick}>
-              <line
-                x1={LEFT}
-                x2={W - RIGHT}
-                y1={y(tick)}
-                y2={y(tick)}
-                className={chart === 'possession' && tick === 50 ? t.gridMid : t.grid}
-              />
-              <text x={LEFT - 4} y={y(tick) + 3} textAnchor="end" className={t.tick}>
-                {tickLabel(tick)}
-              </text>
-            </g>
-          ))}
-          {(
-            [
-              // The second half starts after the first half's added minutes; the 90′ tick marks
-              // the last regulation frame, its added minutes included.
-              ['45', frames.findIndex((f) => f.period >= 2) + 1],
-              ['90', frames.findLastIndex((f) => f.period <= 2) + 1],
-            ] as const
-          ).map(
-            ([label, m]) =>
-              m > 0 && (
-                <text key={label} x={x(m)} y={H - 3} textAnchor="middle" className={t.tick}>
-                  {label}′
+          {localizeValue(
+            ticks.map((tick) => (
+              <g key={tick}>
+                <line
+                  x1={LEFT}
+                  x2={W - RIGHT}
+                  y1={y(tick)}
+                  y2={y(tick)}
+                  className={chart === 'possession' && tick === 50 ? t.gridMid : t.grid}
+                />
+                <text x={LEFT - 4} y={y(tick) + 3} textAnchor="end" className={t.tick}>
+                  {localizeValue(tickLabel(tick))}
                 </text>
-              ),
-          )}
-          {shown > 0 &&
-            [1, 0].map((side) => (
-              <g key={side}>
-                {chart !== 'possession' && (
-                  <path
-                    d={`M${x(1)},${y(0)} ${series[side]
-                      .map((v, i) => `L${x(i + 1)},${y(v)}`)
-                      .join(' ')} L${x(shown)},${y(0)}Z`}
-                    fill={colours[side]}
-                    opacity={0.1}
-                  />
-                )}
-                <polyline
-                  points={series[side].map((v, i) => `${x(i + 1)},${y(v)}`).join(' ')}
-                  fill="none"
-                  stroke={colours[side]}
-                  strokeDasharray={lines[side].dash}
-                  strokeWidth="2"
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                />
-                <circle
-                  cx={x(shown)}
-                  cy={y(series[side][shown - 1])}
-                  r="4"
-                  fill={colours[side]}
-                  stroke={SURFACE}
-                  strokeWidth="2"
-                />
               </g>
-            ))}
-          {chart === 'xg' &&
-            goals.map((goal, i) => (
-              <circle
-                key={i}
-                cx={x(goal.at)}
-                cy={y(series[goal.side][goal.at - 1] ?? 0)}
-                r="5"
-                fill="#ffffff"
-                stroke={colours[goal.side]}
-                strokeWidth="2.5"
-              >
-                <title>
-                  {labelAt(goal.at)}′ {goal.player} 골
-                </title>
-              </circle>
-            ))}
-          {active !== undefined && (
-            <line x1={x(active)} x2={x(active)} y1={TOP} y2={H - BOTTOM} className={t.crosshair} />
+            )),
+          )}
+          {localizeValue(
+            (
+              [
+                // The second half starts after the first half's added minutes; the 90′ tick marks
+                // the last regulation frame, its added minutes included.
+                ['45', frames.findIndex((f) => f.period >= 2) + 1],
+                ['90', frames.findLastIndex((f) => f.period <= 2) + 1],
+              ] as const
+            ).map(
+              ([label, m]) =>
+                m > 0 && (
+                  <text key={label} x={x(m)} y={H - 3} textAnchor="middle" className={t.tick}>
+                    {localizeValue(label)}′
+                  </text>
+                ),
+            ),
+          )}
+          {localizeValue(
+            shown > 0 &&
+              [1, 0].map((side) => (
+                <g key={side}>
+                  {localizeValue(
+                    chart !== 'possession' && (
+                      <path
+                        d={`M${x(1)},${y(0)} ${series[side]
+                          .map((v, i) => `L${x(i + 1)},${y(v)}`)
+                          .join(' ')} L${x(shown)},${y(0)}Z`}
+                        fill={colours[side]}
+                        opacity={0.1}
+                      />
+                    ),
+                  )}
+                  <polyline
+                    points={series[side].map((v, i) => `${x(i + 1)},${y(v)}`).join(' ')}
+                    fill="none"
+                    stroke={colours[side]}
+                    strokeDasharray={lines[side].dash}
+                    strokeWidth="2"
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                  />
+                  <circle
+                    cx={x(shown)}
+                    cy={y(series[side][shown - 1])}
+                    r="4"
+                    fill={colours[side]}
+                    stroke={SURFACE}
+                    strokeWidth="2"
+                  />
+                </g>
+              )),
+          )}
+          {localizeValue(
+            chart === 'xg' &&
+              goals.map((goal, i) => (
+                <circle
+                  key={i}
+                  cx={x(goal.at)}
+                  cy={y(series[goal.side][goal.at - 1] ?? 0)}
+                  r="5"
+                  fill="#ffffff"
+                  stroke={colours[goal.side]}
+                  strokeWidth="2.5"
+                >
+                  <title>
+                    {richMessage('copy.MatchCharts.47d655339a', {
+                      p0: labelAt(goal.at),
+                      p1: goal.player,
+                    })}
+                  </title>
+                </circle>
+              )),
+          )}
+          {localizeValue(
+            active !== undefined && (
+              <line
+                x1={x(active)}
+                x2={x(active)}
+                y1={TOP}
+                y2={H - BOTTOM}
+                className={t.crosshair}
+              />
+            ),
           )}
         </svg>
       </div>

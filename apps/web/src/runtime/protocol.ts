@@ -36,7 +36,7 @@ import {
   TAKEOVER_DECADES,
   WEALTH_TIER_IDS,
   type ClubListing,
-  type ClubSheetFacts,
+  type ClubProfile,
   type PreOwnerSeason,
 } from '../../../../packages/contracts/src/owner';
 import {
@@ -274,8 +274,21 @@ export const requestSchema = z.object({
       replace: z.boolean().optional(),
       clubId: ref,
     }),
-    // A club's sheet in the generated world before the takeover (→WEB-15).
-    z.strictObject({ type: z.literal('club-sheet'), clubId: ref }),
+    // Any club's profile (→WEB-15, WEB-58): of the career `world` in play, or of the generated
+    // world before the takeover when `world` is absent.
+    z.strictObject({
+      type: z.literal('club-profile'),
+      clubId: ref,
+      world: z.string().min(1).max(300).optional(),
+    }),
+    // A first-team player of any club in the career `world`, for his detail (→WEB-59); `clubId`
+    // is where he was named, looked at first.
+    z.strictObject({
+      type: z.literal('player-profile'),
+      clubId: ref.optional(),
+      playerId: ref,
+      world: z.string().min(1).max(300),
+    }),
     z.object({ type: z.literal('command'), command }),
     z.object({ type: z.literal('export') }),
     z.object({ type: z.literal('save') }),
@@ -534,7 +547,8 @@ export interface Reply {
   digest?: GenerationDigest;
   /** The generated world's clubs on sale and the chosen tier's fortune in pounds (→ECON-37). */
   start?: { listings: ClubListing[]; fortune: string };
-  clubSheet?: ClubSheetFacts;
+  clubProfile?: ClubProfile;
+  playerProfile?: { player: Player; club: string };
   cancelled?: boolean;
   /** A save request handed this world revision to the codec worker; its checkpoint follows there. */
   saving?: { worldId: string; revision: number };

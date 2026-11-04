@@ -1,8 +1,9 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 export type CsvCell = string | number;
 export function encodeCsv(headers: string[], rows: CsvCell[][]) {
   const cell = (value: CsvCell) => {
     if (typeof value === 'number' && !Number.isFinite(value))
-      throw new Error('CSV에는 유한한 숫자가 필요합니다.');
+      throw new Error(sourceMessage('copy.csv.d355613952'));
     const raw = String(value);
     const text =
       typeof value === 'string' &&

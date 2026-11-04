@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { createStore } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import type { Command, World } from '../../../../packages/contracts/src/types';
@@ -33,10 +34,10 @@ export const RUN_AHEAD_DAYS: Record<Pace, number> = { x1: 3, x2: 3, x5: 5, x10: 
 /** Why the clock stopped for good (→OWNER-16, ECON-24): the club's or the owner's end. */
 function endedReason(w: Pick<World, 'bankrupt' | 'ended'>) {
   return w.ended === 'owner'
-    ? '구단주가 파산했어요.'
+    ? sourceMessage('copy.progression.a15eda2b52')
     : w.ended === 'fans'
-      ? '구단주가 퇴진했어요.'
-      : '구단이 파산했어요.';
+      ? sourceMessage('copy.progression.39653c135b')
+      : sourceMessage('copy.progression.6330ef3bc3');
 }
 /** How long the 경기 결과 알림 notice stays once our fixture's day is shown (→WEB-18). */
 export const RESULT_NOTICE_MS = 4000;
@@ -50,9 +51,9 @@ export interface BackgroundSettings {
   resultNotice: boolean;
 }
 export const AWAY_LIMITS: Record<AwayLimit, string> = {
-  off: '끄기',
-  month: '최대 30일',
-  season: '최대 한 시즌',
+  off: sourceMessage('copy.progression.dd8b273b7c'),
+  month: sourceMessage('copy.progression.5ade800bed'),
+  season: sourceMessage('copy.progression.73a93f693d'),
 };
 /**
  * A tick this late after the last step means the page slept (frozen, discarded or closed), not
@@ -105,8 +106,8 @@ export interface ProgressionState {
   /** The own match record a shown fixture day announces while 경기 결과 알림 is on. */
   resultNotice?: { matchId: string };
 }
-const WATCH_REASON = '관전 중에는 자동 진행을 잠시 멈춰요.';
-const STOP_REASON = '자동 진행을 멈췄습니다.';
+const WATCH_REASON = sourceMessage('copy.progression.98ae0905a7');
+const STOP_REASON = sourceMessage('copy.progression.3dd176ecc2');
 /** Per-browser stops kept before the level decided them; removed once on start. */
 const STOP_KEY = 'haeram-soccor:stop-on';
 const BACKGROUND_KEY = 'haeram-soccor:background';
@@ -151,7 +152,7 @@ export function approvalStanding(w: World, id: string) {
   const left = approvalDeadline(w, id);
   return left > 0
     ? { overdue: false, label: `D-${left}` }
-    : { overdue: true, label: `지연 ${1 - left}일` };
+    : { overdue: true, label: sourceMessage('copy.progression.f2ff49929c', { p0: 1 - left }) };
 }
 /** How many of `items` are past their 결재 기한, and the squad morale they cost a settled round. */
 export function overdueSummary(w: World, items: readonly { id: string }[] = approvalRequests(w)) {
@@ -319,8 +320,8 @@ export class ProgressionController {
           state.view && careerEnded(state.view.world)
             ? endedReason(state.view.world)
             : state.view?.world.critical
-              ? '클럽 소식을 확인하면 계속할 수 있습니다.'
-              : '진행을 멈췄습니다.',
+              ? sourceMessage('copy.progression.d9ed160716')
+              : sourceMessage('copy.progression.f3b3931977'),
         );
       }
     });
@@ -693,7 +694,7 @@ export class ProgressionController {
    * Stops the clock for an event or a blocker: the days computed ahead are shown at once, so the
    * world stops on the date shown (→WEB-18).
    */
-  stop(reason = STOP_REASON) {
+  stop(reason: string = STOP_REASON) {
     const was = this.store.getState().running || this.draining;
     this.resumeAfterEvents = false;
     this.clearResultNotice();
@@ -720,7 +721,7 @@ export class ProgressionController {
     if (progress.watching) return false;
     const next = pendingMatchReport(w);
     if (!next || next.id === this.passedMatch) return false;
-    this.stop('내일 경기가 있어요');
+    this.stop(sourceMessage('copy.progression.2576329641'));
     this.store.setState({ matchEve: next.id });
     return true;
   }

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import { packCareers, unpackCareers, type PackedCareers } from './careerPacking';
 import { packAppearances, readAppearances, type PackedAppearances } from './identityPacking';
 import { packMatchModel, unpackMatchModel, type PackedMatchModel } from './matchModelPacking';
@@ -28,7 +29,7 @@ export function base64(bytes: Uint8Array) {
   return btoa(s);
 }
 export function unbase64(s: string) {
-  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(s)) throw new Error('잘못된 Base64');
+  if (!/^[A-Za-z0-9+/]*={0,2}$/.test(s)) throw new Error(sourceMessage('copy.packing.0e84000039'));
   return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 }
 /** A season archive without its heat map, which has its own stream. */
@@ -45,7 +46,8 @@ function integers(values: number[], width: number) {
   );
   const out: number[] = [];
   for (let n of values) {
-    if (!Number.isSafeInteger(n) || n < 0) throw new Error('압축할 수 없는 통계');
+    if (!Number.isSafeInteger(n) || n < 0)
+      throw new Error(sourceMessage('copy.packing.2ca992465a'));
     do {
       const b = n % 128;
       n = Math.floor(n / 128);
@@ -63,15 +65,16 @@ function reader(s: string, width: number) {
       scale = 1,
       b: number;
     do {
-      if (i >= a.length || scale > 2 ** 49) throw new Error('통계 스트림 손상');
+      if (i >= a.length || scale > 2 ** 49)
+        throw new Error(sourceMessage('copy.packing.7b93217a0a'));
       b = a[i++];
       n += (b % 128) * scale;
       scale *= 128;
     } while (b >= 128);
-    if (!Number.isSafeInteger(n)) throw new Error('통계 범위 초과');
+    if (!Number.isSafeInteger(n)) throw new Error(sourceMessage('copy.packing.cbfdbb8ee5'));
     columns.push(n);
   }
-  if (columns.length % width) throw new Error('통계 열 손상');
+  if (columns.length % width) throw new Error(sourceMessage('copy.packing.ff69a7bc0c'));
   const count = columns.length / width;
   const values = Array.from(
     { length: columns.length },
@@ -82,13 +85,13 @@ function reader(s: string, width: number) {
     /** Rows in the stream, for streams whose row counts are declared elsewhere. */
     rows: count,
     take(n: number) {
-      if (offset + n > values.length) throw new Error('통계 누락');
+      if (offset + n > values.length) throw new Error(sourceMessage('copy.packing.0d1fed513f'));
       const result = values.slice(offset, offset + n);
       offset += n;
       return result;
     },
     done() {
-      if (offset !== values.length) throw new Error('통계 잔여 데이터');
+      if (offset !== values.length) throw new Error(sourceMessage('copy.packing.a78da0c20b'));
     },
   };
 }
@@ -110,7 +113,8 @@ function readDeltaColumns(source: ReturnType<typeof reader>, width: number) {
         const column = offset++ % width;
         const delta = encoded % 2 === 0 ? encoded / 2 : -(encoded + 1) / 2;
         const value = (previous[column] || 0) + delta;
-        if (!Number.isSafeInteger(value) || value < 0) throw new Error('시즌 통계 차분 손상');
+        if (!Number.isSafeInteger(value) || value < 0)
+          throw new Error(sourceMessage('copy.packing.9221152b88'));
         previous[column] = value;
         return value;
       });
@@ -255,19 +259,20 @@ export function pack(w: World): Packed {
     ];
   });
   if (stats.some((value) => !Number.isSafeInteger(value) || value < 0))
-    throw new Error('압축할 통계가 0 이상의 안전한 정수가 아닙니다.');
+    throw new Error(sourceMessage('copy.packing.d195079619'));
   const detailFlags: number[] = [],
     teamDetails: number[] = [],
     playerDetails: number[] = [];
   for (const m of w.ownMatches) {
     detailFlags.push(m.detail ? 1 : 0);
     if (!m.detail) {
-      if (m.players.some((p) => p.detail)) throw new Error('경기 고급 지표 차원 손상');
+      if (m.players.some((p) => p.detail))
+        throw new Error(sourceMessage('copy.packing.051bbbf3fe'));
       continue;
     }
     teamDetails.push(...m.detail[0], ...m.detail[1]);
     for (const p of m.players) {
-      if (!p.detail) throw new Error('경기 고급 지표 차원 손상');
+      if (!p.detail) throw new Error(sourceMessage('copy.packing.051bbbf3fe'));
       playerDetails.push(...p.detail);
     }
   }
@@ -356,7 +361,8 @@ export function pack(w: World): Packed {
   });
   const bracketRounds = w.history.map((h) => (h.brackets || []).flatMap((b) => b.rounds));
   const bracketRows = bracketRounds.flat().flatMap((round) => round.ties);
-  if (bracketRows.some((row) => row.length !== 7)) throw new Error('대진 기록 압축 차원 손상');
+  if (bracketRows.some((row) => row.length !== 7))
+    throw new Error(sourceMessage('copy.packing.bc0d26e32b'));
   const extras: number[] = [];
   const incidentCounts: number[] = [];
   const incidentRows: number[] = [];
@@ -379,7 +385,8 @@ export function pack(w: World): Packed {
       row[2] = m.lineCounts[1];
     }
     if (m.added) {
-      if (m.added.length !== 2 && m.added.length !== 4) throw new Error('추가 시간 압축 차원 손상');
+      if (m.added.length !== 2 && m.added.length !== 4)
+        throw new Error(sourceMessage('copy.packing.a50a9845ca'));
       flags |= m.added.length === 4 ? 2 | 4 : 2;
       m.added.forEach((n, i) => (row[3 + i] = n));
     }
@@ -403,7 +410,7 @@ export function pack(w: World): Packed {
       const kind = INCIDENT_KINDS.indexOf(incident.kind);
       const reason = incident.reason === undefined ? -1 : INCIDENT_REASONS.indexOf(incident.reason);
       if (kind < 0 || (incident.reason !== undefined && reason < 0))
-        throw new Error('경기 사건 압축 형식 손상');
+        throw new Error(sourceMessage('copy.packing.a218e0f45e'));
       incidentRows.push(
         incident.minute,
         incident.added === undefined ? 0 : incident.added + 1,
@@ -431,7 +438,8 @@ export function pack(w: World): Packed {
     const players = Object.keys(h.heat);
     heatCounts.push(players.length + 1);
     for (const player of players) {
-      if (h.heat[player].length !== HEAT_CELLS) throw new Error('시즌 열지도 압축 차원 손상');
+      if (h.heat[player].length !== HEAT_CELLS)
+        throw new Error(sourceMessage('copy.packing.34834da140'));
       heatRows.push(id(player), ...h.heat[player]);
     }
   }
@@ -620,7 +628,7 @@ function unpackBrackets(p: Packed) {
   const seasons = p.world.history;
   if (!seasons.some((h) => h.brackets !== undefined)) {
     if (p.bracketTies !== undefined || p.bracketCounts !== undefined)
-      throw new Error('대진 기록 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.48d6e265e9'));
     return undefined;
   }
   const counts = p.bracketCounts;
@@ -629,7 +637,7 @@ function unpackBrackets(p: Packed) {
     !Array.isArray(counts) ||
     counts.length !== seasons.length
   )
-    throw new Error('대진 기록 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.48d6e265e9'));
   let total = 0;
   seasons.forEach((h, i) => {
     const brackets = h.brackets || [];
@@ -640,11 +648,11 @@ function unpackBrackets(p: Packed) {
       counts[i].length !== brackets.reduce((sum, b) => sum + b.rounds.length, 0) ||
       counts[i].some((n) => !Number.isInteger(n) || n < 0 || n > 16)
     )
-      throw new Error('대진 기록 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.48d6e265e9'));
     for (const n of counts[i]) total += n;
   });
   const ties = reader(p.bracketTies, 7);
-  if (ties.rows !== total) throw new Error('대진 기록 압축 데이터 손상');
+  if (ties.rows !== total) throw new Error(sourceMessage('copy.packing.48d6e265e9'));
   const result = seasons.map((h, i) => {
     let at = 0;
     return h.brackets?.map((b) => ({
@@ -669,13 +677,13 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     p.fixtures.length > 20000 ||
     (p.events !== undefined && (!Array.isArray(p.events) || p.events.length > 100000))
   )
-    throw new Error('알 수 없는 저장 형식');
+    throw new Error(sourceMessage('copy.packing.5ccd8ed532'));
   const str = (n: number) => {
-    if (typeof p.dict[n] !== 'string') throw new Error('사전 참조 손상');
+    if (typeof p.dict[n] !== 'string') throw new Error(sourceMessage('copy.packing.b5faf97bec'));
     return p.dict[n];
   };
   if (p.careers !== undefined && p.world.people !== undefined)
-    throw new Error('중복 인물 압축 원본');
+    throw new Error(sourceMessage('copy.packing.57c43b7950'));
   const people =
     p.careers === undefined
       ? undefined
@@ -725,7 +733,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
           ),
       ))
   )
-    throw new Error('최근 경기 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.13f8d3a8ed'));
   const recentResults =
     p.recentResults &&
     Object.fromEntries(
@@ -742,7 +750,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     );
   let packedMatches = p.matches;
   if (p.matchActorColumns !== undefined && p.matchFields === undefined)
-    throw new Error('경기 참여자 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.2d2f66dd00'));
   if (p.matchFields !== undefined) {
     if (
       typeof p.matchFields !== 'string' ||
@@ -751,7 +759,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       p.matchCount! < 0 ||
       p.matchCount! > 100000
     )
-      throw new Error('경기 기록 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.ef40ef5afc'));
     const fields = reader(p.matchFields, 10);
     const columns = p.matchActorColumns;
     if (
@@ -763,7 +771,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
         typeof columns.highlights !== 'string' ||
         typeof columns.tactics !== 'string')
     )
-      throw new Error('경기 참여자 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.2d2f66dd00'));
     const actors = columns ? undefined : reader(p.matchActors, 1);
     const dimensions = columns && reader(columns.dimensions, 2);
     const playerStream = columns && reader(columns.players, columns.playerWidth);
@@ -773,12 +781,12 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       const row = fields.take(10);
       const sizes = dimensions?.take(2);
       const playerCount = sizes ? sizes[0] : actors!.take(1)[0];
-      if (playerCount > 60) throw new Error('경기 선수 압축 차원 손상');
+      if (playerCount > 60) throw new Error(sourceMessage('copy.packing.f8def649d9'));
       if (columns?.playerWidth === 11 && playerCount !== 11)
-        throw new Error('경기 선수 압축 차원 손상');
+        throw new Error(sourceMessage('copy.packing.f8def649d9'));
       const players = (playerStream || actors)!.take(playerCount);
       const highlightCount = sizes ? sizes[1] : actors!.take(1)[0];
-      if (highlightCount > 100) throw new Error('경기 하이라이트 압축 차원 손상');
+      if (highlightCount > 100) throw new Error(sourceMessage('copy.packing.202653c5e6'));
       const highlights = Array.from({ length: highlightCount }, () =>
         (highlightStream || actors)!.take(4),
       );
@@ -795,35 +803,36 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       stream?.done();
   }
   if (p.statWidth !== undefined && ![12, 156].includes(p.statWidth))
-    throw new Error('통계 차원 손상');
+    throw new Error(sourceMessage('copy.packing.fd68708ecf'));
   if (p.statResiduals !== undefined && p.statResiduals !== true)
-    throw new Error('경기 통계 차분 형식 손상');
+    throw new Error(sourceMessage('copy.packing.eefdfc8fe7'));
   if (p.statInterceptionDeltas !== undefined && p.statInterceptionDeltas !== true)
-    throw new Error('인터셉트 통계 차분 형식 손상');
+    throw new Error(sourceMessage('copy.packing.11b02f5599'));
   const expectedValues = packedMatches.reduce((count, tuple) => {
     const players = tuple[9];
-    if (!Array.isArray(players) || players.length > 60) throw new Error('경기 선수 통계 차원 손상');
+    if (!Array.isArray(players) || players.length > 60)
+      throw new Error(sourceMessage('copy.packing.d2c473a229'));
     return count + 24 + players.length * 12;
   }, 0);
   if (p.statBits && p.statBits.count * (p.statWidth || 12) !== expectedValues)
-    throw new Error('경기 통계 압축 차원 손상');
+    throw new Error(sourceMessage('copy.packing.7e3a9ec704'));
   const stats =
       p.statBits === undefined
         ? reader(p.stats, p.statWidth || 12)
         : readBitColumns(p.statBits, p.statWidth || 12),
     rawStandings = reader(p.standings, 6);
   if (p.standingsDeltas !== undefined && p.standingsDeltas !== true)
-    throw new Error('시즌 통계 차분 형식 손상');
+    throw new Error(sourceMessage('copy.packing.e07efebbc5'));
   const standings = p.standingsDeltas ? readDeltaColumns(rawStandings, 6) : rawStandings;
   if (p.matchXg !== undefined && typeof p.matchXg !== 'string')
-    throw new Error('경기 기대 득점 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.f4392cf97c'));
   const xgStream = p.matchXg === undefined ? undefined : reader(p.matchXg, 3);
   const detail = p.matchDetail;
   if (
     detail !== undefined &&
     (!detail || typeof detail !== 'object' || typeof detail.flags !== 'string')
   )
-    throw new Error('경기 고급 지표 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.2cf02caa8f'));
   const detailFlags = detail && reader(detail.flags, 1),
     teamDetails = detail && readBitColumns(detail.teams, TEAM_DETAIL_SIZE),
     playerDetails = detail && readBitColumns(detail.players, PLAYER_DETAIL_SIZE);
@@ -832,26 +841,26 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     (facts !== undefined && typeof facts !== 'string') ||
     (facts === undefined && (p.matchIncidents !== undefined || p.matchMaterial !== undefined))
   )
-    throw new Error('경기 부가 기록 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.35ae47b0f3'));
   const extraStream = facts === undefined ? undefined : reader(facts, EXTRAS_WIDTH);
   if (extraStream && extraStream.rows !== packedMatches.length)
-    throw new Error('경기 부가 기록 압축 차원 손상');
+    throw new Error(sourceMessage('copy.packing.428aada5d8'));
   const incidentData = p.matchIncidents;
   if (
     incidentData !== undefined &&
     (!incidentData || typeof incidentData !== 'object' || typeof incidentData.counts !== 'string')
   )
-    throw new Error('경기 사건 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.491f4cadfe'));
   const incidentCounts = incidentData && reader(incidentData.counts, 1);
   if (incidentCounts && incidentCounts.rows !== packedMatches.length)
-    throw new Error('경기 사건 압축 차원 손상');
+    throw new Error(sourceMessage('copy.packing.6b582544fa'));
   const incidentStream = incidentData && readBitColumns(incidentData.rows, 7);
   const materialData = p.matchMaterial;
   if (
     materialData !== undefined &&
     (!materialData || typeof materialData !== 'object' || typeof materialData.lengths !== 'string')
   )
-    throw new Error('경기 자료 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.92b2c6502b'));
   const materialLengths = materialData && reader(materialData.lengths, MATERIAL_KEYS.length);
   const materialStreams =
     materialData && MATERIAL_KEYS.map((key) => readBitColumns(materialData[key], 1));
@@ -874,14 +883,14 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
           (!(flags & 8) && (extraRow[7] || extraRow[8])) ||
           (!(flags & 16) && (extraRow[9] || extraRow[10]))))
     )
-      throw new Error('경기 부가 기록 표시 손상');
+      throw new Error(sourceMessage('copy.packing.8ef2fa45c4'));
     const incidents = !(flags & 32)
       ? undefined
       : Array.from({ length: incidentCount }, (): Incident => {
           const r = incidentStream!.take(7);
           const kind = INCIDENT_KINDS[r[3]];
           if (!kind || r[2] > 1 || r[6] > INCIDENT_REASONS.length)
-            throw new Error('경기 사건 압축 형식 손상');
+            throw new Error(sourceMessage('copy.packing.a218e0f45e'));
           return {
             minute: r[0],
             ...(r[1] ? { added: r[1] - 1 } : {}),
@@ -895,14 +904,15 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     let materialValue: MatchMaterial | undefined;
     if (flags & 64) {
       const lengths = materialLengths!.take(MATERIAL_KEYS.length);
-      if (lengths.some((n) => n > 1_000_000)) throw new Error('경기 자료 압축 차원 손상');
+      if (lengths.some((n) => n > 1_000_000))
+        throw new Error(sourceMessage('copy.packing.d491cfc5b8'));
       materialValue = {} as MatchMaterial;
       MATERIAL_KEYS.forEach(
         (key, i) => (materialValue![key] = materialStreams![i].take(lengths[i])),
       );
     }
     const detailed = detailFlags?.take(1)[0] ?? 0;
-    if (detailed !== 0 && detailed !== 1) throw new Error('경기 고급 지표 표시 손상');
+    if (detailed !== 0 && detailed !== 1) throw new Error(sourceMessage('copy.packing.f4e5f0044f'));
     const takeMetrics = () => {
       const row = stats.take(12);
       if (p.statResiduals) {
@@ -913,7 +923,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
         const delta = row[7] % 2 === 0 ? row[7] / 2 : -(row[7] + 1) / 2;
         row[7] = row[6] + delta;
         if (!Number.isSafeInteger(row[7]) || row[7] < 0)
-          throw new Error('인터셉트 통계 차분 범위 손상');
+          throw new Error(sourceMessage('copy.packing.9d5a875631'));
       }
       return row;
     };
@@ -959,13 +969,13 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   // Snapshots attach to the rebuilt rows, whose home/away IDs they must name.
   readAppearances(p.appearances, matches);
   if (p.world.matchModel !== undefined || p.world.npcSeason !== undefined)
-    throw new Error('경기 모델 데이터는 압축 스트림에만 있어야 합니다.');
+    throw new Error(sourceMessage('copy.packing.54609d2d80'));
   const model = p.model === undefined ? undefined : unpackMatchModel(p.model, str, matches.length);
   model?.records.forEach((revision, i) => {
     if (revision !== undefined) matches[i].model = revision;
   });
   if (p.world.managerHistory !== undefined)
-    throw new Error('감독 이력 데이터는 압축 스트림에만 있어야 합니다.');
+    throw new Error(sourceMessage('copy.packing.470e35698c'));
   const managers =
     p.managerHistory === undefined
       ? undefined
@@ -975,7 +985,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   });
   let events: Event[] | undefined = p.events?.map((tuple) => {
     if (!Array.isArray(tuple) || tuple.length !== 7)
-      throw new Error('정산 이벤트 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.32f0e814cc'));
     return {
       year: tuple[0] as number,
       round: tuple[1] as number,
@@ -994,16 +1004,16 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       p.eventCount! < 0 ||
       p.eventCount! > 100000
     )
-      throw new Error('정산 이벤트 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.32f0e814cc'));
     const fields = reader(p.eventStats, 6);
     const details = reader(p.eventDetails, 1);
     let templates: string[][] | undefined;
     if (p.eventTemplates !== undefined) {
       if (!Array.isArray(p.eventTemplates) || p.eventTemplates.length > 100000)
-        throw new Error('정산 이벤트 설명 서식 손상');
+        throw new Error(sourceMessage('copy.packing.ad0c01c8a8'));
       templates = p.eventTemplates.map((template) => {
         if (!Array.isArray(template) || template.length < 1 || template.length > 1001)
-          throw new Error('정산 이벤트 설명 서식 손상');
+          throw new Error(sourceMessage('copy.packing.ad0c01c8a8'));
         return template.map(str);
       });
     }
@@ -1014,7 +1024,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       const reference = details.take(1)[0];
       if (templates) {
         const template = templates[reference];
-        if (!template) throw new Error('정산 이벤트 설명 서식 참조 손상');
+        if (!template) throw new Error(sourceMessage('copy.packing.95bcdfeb12'));
         const values = (previous[reference] ||= []);
         const deltas = details.take(template.length - 1);
         detail = template[0];
@@ -1024,7 +1034,8 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
           detail += str(values[index]) + template[index + 1];
         }
       } else {
-        if (reference < 1 || reference > 1001) throw new Error('정산 이벤트 설명 손상');
+        if (reference < 1 || reference > 1001)
+          throw new Error(sourceMessage('copy.packing.40bc6fae66'));
         detail = details.take(reference).map(str).join('');
       }
       return {
@@ -1046,16 +1057,17 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
     heatData !== undefined &&
     (!heatData || typeof heatData !== 'object' || typeof heatData.counts !== 'string')
   )
-    throw new Error('시즌 열지도 압축 데이터 손상');
+    throw new Error(sourceMessage('copy.packing.c9fea9d7a1'));
   const heatCounts = heatData && reader(heatData.counts, 1);
   if (heatCounts && heatCounts.rows !== p.world.history.length)
-    throw new Error('시즌 열지도 압축 차원 손상');
+    throw new Error(sourceMessage('copy.packing.34834da140'));
   const heatRows = heatData && readBitColumns(heatData.rows, HEAT_CELLS + 1);
   const history = p.world.history.map((h, i) => {
     const count = p.counts[i];
-    if (!Number.isInteger(count) || count < 0 || count > 1000) throw new Error('시즌 통계 손상');
+    if (!Number.isInteger(count) || count < 0 || count > 1000)
+      throw new Error(sourceMessage('copy.packing.8a77f88b29'));
     const heatPlayers = heatCounts?.take(1)[0] ?? 0;
-    if (heatPlayers > 1001) throw new Error('시즌 열지도 압축 차원 손상');
+    if (heatPlayers > 1001) throw new Error(sourceMessage('copy.packing.34834da140'));
     let heat: Record<string, number[]> | undefined;
     if (heatPlayers) {
       heat = {};
@@ -1072,7 +1084,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       europe: h.europe.map((e, j) => {
         const sizes = p.euroCounts?.[i]?.[j] || [0, 0];
         if (sizes.some((n) => !Number.isInteger(n) || n < 0 || n > 100))
-          throw new Error('유럽 통계 손상');
+          throw new Error(sourceMessage('copy.packing.5c459bcfc6'));
         return {
           ...e,
           ...(e.standings
@@ -1097,12 +1109,12 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       p.rankCounts.length !== p.world.rankHistory.length ||
       p.rankCounts.length > 470
     )
-      throw new Error('순위 추이 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.2a5f2bafa8'));
     const ranks = reader(p.ranks, 4);
     rankHistory = p.world.rankHistory.map((s, i) => {
       const count = p.rankCounts![i];
       if (!Number.isInteger(count) || count < 0 || count > 100)
-        throw new Error('순위 추이 통계 손상');
+        throw new Error(sourceMessage('copy.packing.52f5ca8420'));
       return {
         ...s,
         rows: Array.from(
@@ -1121,14 +1133,14 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
       p.scorerCounts.length !== p.world.scorerSeason.history.length ||
       p.scorerCounts.length > 47
     )
-      throw new Error('득점 순위 추이 압축 데이터 손상');
+      throw new Error(sourceMessage('copy.packing.1f3d8d6a88'));
     const scorers = reader(p.scorerRows, 3);
     scorerSeason = {
       ...p.world.scorerSeason,
       history: p.world.scorerSeason.history.map((snapshot, index) => {
         const count = p.scorerCounts![index];
         if (!Number.isInteger(count) || count < 0 || count > 1000)
-          throw new Error('득점 순위 추이 통계 손상');
+          throw new Error(sourceMessage('copy.packing.c63b08188b'));
         return {
           ...snapshot,
           rows: Array.from({ length: count }, () => scorers.take(3) as [number, number, number]),
@@ -1141,7 +1153,7 @@ export function unpack(p: Packed, validateExpandedWorld = false): World {
   const fixtures = buildSeasonFixtures(p.world);
   for (const row of p.fixtures) {
     const fixture = fixtures[row[0] as number];
-    if (!fixture || fixture.score) throw new Error('일정 참조 손상');
+    if (!fixture || fixture.score) throw new Error(sourceMessage('copy.packing.e25717358f'));
     fixture.score = { home: row[1] as number, away: row[2] as number };
   }
   return {

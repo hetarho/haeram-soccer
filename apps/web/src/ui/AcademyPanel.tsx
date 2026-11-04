@@ -1,9 +1,12 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import { Money } from './Money';
 import { callLine, placeAcademy, playerCallLine } from './teamState';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { registrationRoom } from '../../../../packages/engine/src/registration';
 import { useTaskState } from './taskMemory';
-import { PlayerLink } from './PlayerSheet';
+import { PlayerLink } from '../entities/player';
 import type { World } from '../../../../packages/contracts/src/types';
 import {
   academySummary,
@@ -28,6 +31,7 @@ function useActing() {
 }
 
 function Meter({ value }: { value: number }) {
+  useTextLocale();
   return (
     <span className={s.meter} aria-hidden="true">
       <i style={{ width: `${Math.max(4, Math.min(100, value))}%` }} />
@@ -53,6 +57,7 @@ export function AcademyPanel({
   selected?: string;
   onReview?: (id: string) => void;
 }) {
+  useTextLocale();
   const acting = useActing();
   const [promoted, setPromoted] = useTaskState<string | undefined>(
     w.id,
@@ -80,212 +85,292 @@ export function AcademyPanel({
   const investment = rowInForce(w, 'academy').value;
   return (
     <div className={s.stack}>
-      {!selected && arrived && arrivedCall && (
-        <section data-surface="panel" className={s.card} aria-label="승격한 선수 관리">
-          <h3>1군에 합류했어요</h3>
-          <PlayerLink id={arrived.id} name={arrived.name} />
-          <p className={s.timing} data-testid="arrived-training">
-            1군 훈련 {arrivedCall.focus} · {arrivedCall.by}
-          </p>
-          <p className={s.timing}>감독이 능력과 피로를 보고 선발해요.</p>
-        </section>
+      {localizeValue(
+        !selected && arrived && arrivedCall && (
+          <section
+            data-surface="panel"
+            className={s.card}
+            aria-label={displayMessage('copy.AcademyPanel.292371b92c')}
+          >
+            <h3>{richMessage('copy.AcademyPanel.7d85e3b927')}</h3>
+            <PlayerLink id={arrived.id} name={arrived.name} />
+            <p className={s.timing} data-testid="arrived-training">
+              {richMessage('copy.AcademyPanel.110b08796f', {
+                p0: arrivedCall.focus,
+                p1: arrivedCall.by,
+              })}
+            </p>
+            <p className={s.timing}>{richMessage('copy.AcademyPanel.3f985ab2ee')}</p>
+          </section>
+        ),
       )}
-      <section data-surface="panel" className={s.card} aria-label="유소년 아카데미">
+      <section
+        data-surface="panel"
+        className={s.card}
+        aria-label={displayMessage('copy.AcademyPanel.0c8e8ca5aa')}
+      >
         <header className={s.head}>
-          <h3>유소년 아카데미</h3>
+          <h3>{richMessage('copy.AcademyPanel.0c8e8ca5aa')}</h3>
           <span>
-            {summary.players.length}/{summary.capacity}명 · 1군 자리 {summary.room.total}
+            {richMessage('copy.AcademyPanel.3cbfe3f406', {
+              p0: summary.players.length,
+              p1: summary.capacity,
+              p2: summary.room.total,
+            })}
           </span>
         </header>
         <p className={s.intake} data-testid="academy-intake">
-          다음 입단 <b>{nextIntake}</b> · 예상 {summary.nextIntakeSize}명
+          {richMessage('copy.AcademyPanel.f1f4914162', {
+            p0: <b>{localizeValue(nextIntake)}</b>,
+            p1: summary.nextIntakeSize,
+          })}
         </p>
-        {summary.players.length ? (
-          groups.map((group) => (
-            <section
-              key={group.key}
-              className={s.ageGroup}
-              aria-label={`${group.label} ${group.ages}`}
-              data-testid={`age-group-${group.key}`}
-            >
-              <header>
-                <b>{group.label}</b>
-                <small>
-                  {group.ages} · {group.players.length}명 · 성장 ×{group.factor}
-                </small>
-              </header>
-              {group.players.length > 0 && (
-                <ul className={s.prospects}>
-                  {group.players.map(({ player: p, overall, potential, age, readiness, label }) => (
-                    <li key={p.id}>
-                      <OvrBadge value={overall} role={p.position} potential={potential} />
-                      <div className={s.prospectText}>
-                        <b>{p.name}</b>
-                        <small>
-                          {age}세 · {POSITION_LABEL[p.position]} · {LINE_LABEL[lineOf(p.position)]}
-                        </small>
-                        <Meter value={(overall / Math.max(1, potential)) * 100} />
-                        <small className={readiness === 'ready' ? s.ready : undefined}>
-                          {label}
-                        </small>
-                      </div>
-                      <div className={s.prospectActions}>
-                        <small>
-                          승격 후 연봉{' '}
-                          <Money
-                            value={
-                              summary.players.find((one) => one.player.id === p.id)!.promotionWage
-                            }
-                            code={club.country}
-                            year={w.year}
-                          />
-                          {' · '}계약 종료 {w.year + 3}년
-                        </small>
-                        {onReview ? (
-                          <button type="button" onClick={() => onReview(p.id)}>
-                            {p.name} 승격·방출 검토
-                          </button>
-                        ) : (
-                          <>
-                            <button
-                              data-ui="primary"
-                              type="button"
-                              className={readiness === 'ready' ? s.primary : undefined}
-                              aria-label={`${p.name} 1군 승격`}
-                              disabled={
-                                acting ||
-                                !!registrationRoom(w, { ...p, graduate: true, joined: w.year }) ||
-                                age < summary.promotionAge
-                              }
-                              title={
-                                age < summary.promotionAge
-                                  ? `첫 프로 계약은 ${summary.promotionAge}세부터`
-                                  : undefined
-                              }
-                              onClick={() => {
-                                void client
-                                  .command({ type: 'promote-youth', id: p.id })
-                                  .then((reply) => {
-                                    if (reply?.ok) setPromoted(p.id);
-                                  });
-                              }}
-                            >
-                              1군 승격
-                            </button>
-                            <button
-                              type="button"
-                              aria-label={`${p.name} 방출`}
-                              disabled={acting}
-                              onClick={() =>
-                                void client.command({ type: 'release-youth', id: p.id })
-                              }
-                            >
-                              방출
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))
-        ) : (
-          <p className={s.note}>아직 아카데미 선수가 없어요. 매년 3월 15일에 유소년이 입단해요.</p>
+        {localizeValue(
+          summary.players.length ? (
+            groups.map((group) => (
+              <section
+                key={group.key}
+                className={s.ageGroup}
+                aria-label={localizeValue(`${group.label} ${group.ages}`)}
+                data-testid={`age-group-${group.key}`}
+              >
+                <header>
+                  <b>{localizeValue(group.label)}</b>
+                  <small>
+                    {richMessage('copy.AcademyPanel.beff8da50c', {
+                      p0: group.ages,
+                      p1: group.players.length,
+                      p2: group.factor,
+                    })}
+                  </small>
+                </header>
+                {localizeValue(
+                  group.players.length > 0 && (
+                    <ul className={s.prospects}>
+                      {localizeValue(
+                        group.players.map(
+                          ({ player: p, overall, potential, age, readiness, label }) => (
+                            <li key={p.id}>
+                              <OvrBadge value={overall} role={p.position} potential={potential} />
+                              <div className={s.prospectText}>
+                                <b>{p.name}</b>
+                                <small>
+                                  {richMessage('copy.AcademyPanel.07863c723a', {
+                                    p0: age,
+                                    p1: POSITION_LABEL[p.position],
+                                    p2: LINE_LABEL[lineOf(p.position)],
+                                  })}
+                                </small>
+                                <Meter value={(overall / Math.max(1, potential)) * 100} />
+                                <small className={readiness === 'ready' ? s.ready : undefined}>
+                                  {localizeValue(label)}
+                                </small>
+                              </div>
+                              <div className={s.prospectActions}>
+                                <small>
+                                  {richMessage('copy.AcademyPanel.70c993e407', {
+                                    p0: ' ',
+                                    p1: (
+                                      <Money
+                                        value={
+                                          summary.players.find((one) => one.player.id === p.id)!
+                                            .promotionWage
+                                        }
+                                        code={club.country}
+                                        year={w.year}
+                                      />
+                                    ),
+                                    p2: ' · ',
+                                    p3: w.year + 3,
+                                  })}
+                                </small>
+                                {localizeValue(
+                                  onReview ? (
+                                    <button type="button" onClick={() => onReview(p.id)}>
+                                      {richMessage('copy.AcademyPanel.8dd36007dd', { p0: p.name })}
+                                    </button>
+                                  ) : (
+                                    <>
+                                      <button
+                                        data-ui="primary"
+                                        type="button"
+                                        className={readiness === 'ready' ? s.primary : undefined}
+                                        aria-label={displayMessage('copy.AcademyPanel.d1f97ef984', {
+                                          p0: p.name,
+                                        })}
+                                        disabled={
+                                          acting ||
+                                          !!registrationRoom(w, {
+                                            ...p,
+                                            graduate: true,
+                                            joined: w.year,
+                                          }) ||
+                                          age < summary.promotionAge
+                                        }
+                                        title={localizeValue(
+                                          age < summary.promotionAge
+                                            ? sourceMessage('copy.AcademyPanel.0d10b06a9b', {
+                                                p0: summary.promotionAge,
+                                              })
+                                            : undefined,
+                                        )}
+                                        onClick={() => {
+                                          void client
+                                            .command({ type: 'promote-youth', id: p.id })
+                                            .then((reply) => {
+                                              if (reply?.ok) setPromoted(p.id);
+                                            });
+                                        }}
+                                      >
+                                        {richMessage('copy.AcademyPanel.9933433ed5')}
+                                      </button>
+                                      <button
+                                        type="button"
+                                        aria-label={displayMessage('copy.AcademyPanel.695a221875', {
+                                          p0: p.name,
+                                        })}
+                                        disabled={acting}
+                                        onClick={() =>
+                                          void client.command({ type: 'release-youth', id: p.id })
+                                        }
+                                      >
+                                        {richMessage('copy.AcademyPanel.4a1cb5e3ba')}
+                                      </button>
+                                    </>
+                                  ),
+                                )}
+                              </div>
+                            </li>
+                          ),
+                        ),
+                      )}
+                    </ul>
+                  ),
+                )}
+              </section>
+            ))
+          ) : (
+            <p className={s.note}>{richMessage('copy.AcademyPanel.db717c4b13')}</p>
+          ),
         )}
-        {summary.room.total === 0 && (
-          <p className={s.note}>선수단의 전체 등록 한도가 가득 차 승격할 수 없어요.</p>
+        {localizeValue(
+          summary.room.total === 0 && (
+            <p className={s.note}>{richMessage('copy.AcademyPanel.c247e088fa')}</p>
+          ),
         )}
       </section>
-      {!selected && (
-        <>
-          <p className={s.note}>
-            승격하면 시장 급여의 첫 프로 계약을 맺고 1군의 출전 경쟁에 참여해요. 방출하면 이 선수의
-            잠재력과 남은 육성 기회를 잃어요.
-          </p>
-          <YouthTraining w={w} />
-          <section data-surface="panel" className={s.card} aria-label="유소년 운영">
-            <header className={s.head}>
-              <h3>아카데미 운영</h3>
-            </header>
-            <div className={s.homeLine} data-testid="academy-direction">
-              <span>
-                <b>유소년 투자 · 유입 방식</b>
-                <small>
-                  {investment} · {cardOf(buildOf(w), 'youth').label} · 구단 운영 기준 · 반복
-                  운영비와 다음 입단에 반영
-                </small>
-              </span>
-            </div>
-            <button
-              data-ui="link"
-              type="button"
-              className={s.homeLine}
-              onClick={() => openStaff('youth')}
+      {localizeValue(
+        !selected && (
+          <>
+            <p className={s.note}>{richMessage('copy.AcademyPanel.46438ba7e4')}</p>
+            <YouthTraining w={w} />
+            <section
+              data-surface="panel"
+              className={s.card}
+              aria-label={displayMessage('copy.AcademyPanel.7db44b44e6')}
             >
-              <span>
-                <b>유스 디렉터 {director?.name ?? '공석'}</b>
-                <small>담당자의 효과와 계약 · 선임·교체</small>
-              </span>
-              <span aria-hidden="true">›</span>
-            </button>
-            <button
-              data-ui="link"
-              type="button"
-              className={s.homeLine}
-              onClick={() => openFacility('academy')}
+              <header className={s.head}>
+                <h3>{richMessage('copy.AcademyPanel.8521c8e360')}</h3>
+              </header>
+              <div className={s.homeLine} data-testid="academy-direction">
+                <span>
+                  <b>{richMessage('copy.AcademyPanel.e6f8b5162a')}</b>
+                  <small>
+                    {richMessage('copy.AcademyPanel.fca2573b00', {
+                      p0: investment,
+                      p1: cardOf(buildOf(w), 'youth').label,
+                    })}
+                  </small>
+                </span>
+              </div>
+              <button
+                data-ui="link"
+                type="button"
+                className={s.homeLine}
+                onClick={() => openStaff('youth')}
+              >
+                <span>
+                  <b>
+                    {richMessage('copy.AcademyPanel.c113831f09', {
+                      p0: director?.name ?? sourceMessage('team.vacant'),
+                    })}
+                  </b>
+                  <small>{richMessage('copy.AcademyPanel.3d7cc9563f')}</small>
+                </span>
+                <span aria-hidden="true">›</span>
+              </button>
+              <button
+                data-ui="link"
+                type="button"
+                className={s.homeLine}
+                onClick={() => openFacility('academy')}
+              >
+                <span>
+                  <b>{richMessage('copy.AcademyPanel.7ea7f413a3', { p0: w.academyFacility })}</b>
+                  <small>{richMessage('copy.AcademyPanel.e28496212d')}</small>
+                </span>
+                <span aria-hidden="true">›</span>
+              </button>
+            </section>
+            <section
+              data-surface="panel"
+              className={s.card}
+              aria-label={displayMessage('copy.AcademyPanel.7d65178ece')}
             >
-              <span>
-                <b>유소년 시설 {w.academyFacility}단계 · 시설 보기</b>
-                <small>단계마다 입단 인원·잠재력·성장 효과가 달라요</small>
-              </span>
-              <span aria-hidden="true">›</span>
-            </button>
-          </section>
-          <section data-surface="panel" className={s.card} aria-label="유소년 위임">
-            <header className={s.head}>
-              <h3>유스 디렉터</h3>
-              <span>
-                {director ? `${director.name} · 능력 ${Math.round(director.ability)}` : '공석'}
-              </span>
-            </header>
-            <div data-surface="sheet" className={s.delegate}>
-              <DecisionOwner
-                w={w}
-                decision="academy"
-                plain
-                auto="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격과 방출을 정하고 알림·결정에 보고해요."
-                owner="시즌이 끝날 때 유스 디렉터가 이 기준으로 승격 추천과 방출 검토를 보고하고, 결정은 직접 해요."
-              />
-              <DirectionFacts
-                w={w}
-                rows={['youthGoal', 'debut', 'finance']}
-                responsibility="academy"
-              />
-              <ul className={s.rule}>
-                <li>
-                  <b>승격</b>
-                  <span>
-                    {summary.promotionAge}세(첫 프로 계약 나이) 이상이고 데뷔 시점이 정한 기준에
-                    이르면, 1군과 그 포지션에 자리가 있을 때 · {directionOption(w, 'debut').summary}
-                  </span>
-                </li>
-                <li>
-                  <b>방출</b>
-                  <span>
-                    {directionOption(w, 'youthGoal').summary} · 나머지는 {ACADEMY_LEAVE_AGE}세가
-                    되면 아카데미를 떠나요
-                  </span>
-                </li>
-                <li>
-                  <b>보류</b>
-                  <span>운영자금이 재정 기조가 정한 운영비보다 적으면 승격을 미루고 보고</span>
-                </li>
-              </ul>
-            </div>
-          </section>
-        </>
+              <header className={s.head}>
+                <h3>{richMessage('staff.role.youth')}</h3>
+                <span>
+                  {localizeValue(
+                    director
+                      ? sourceMessage('copy.AcademyPanel.95ca4ba319', {
+                          p0: director.name,
+                          p1: Math.round(director.ability),
+                        })
+                      : sourceMessage('team.vacant'),
+                  )}
+                </span>
+              </header>
+              <div data-surface="sheet" className={s.delegate}>
+                <DecisionOwner
+                  w={w}
+                  decision="academy"
+                  plain
+                  auto={sourceMessage('copy.AcademyPanel.f391535bf3')}
+                  owner={sourceMessage('copy.AcademyPanel.7aec0b3ee8')}
+                />
+                <DirectionFacts
+                  w={w}
+                  rows={['youthGoal', 'debut', 'finance']}
+                  responsibility="academy"
+                />
+                <ul className={s.rule}>
+                  <li>
+                    <b>{richMessage('copy.AcademyPanel.8e70a8dda1')}</b>
+                    <span>
+                      {richMessage('copy.AcademyPanel.4c7e6478e9', {
+                        p0: summary.promotionAge,
+                        p1: directionOption(w, 'debut').summary,
+                      })}
+                    </span>
+                  </li>
+                  <li>
+                    <b>{richMessage('copy.AcademyPanel.4a1cb5e3ba')}</b>
+                    <span>
+                      {richMessage('copy.AcademyPanel.98141655a9', {
+                        p0: directionOption(w, 'youthGoal').summary,
+                        p1: ACADEMY_LEAVE_AGE,
+                      })}
+                    </span>
+                  </li>
+                  <li>
+                    <b>{richMessage('copy.AcademyPanel.a98f51efdf')}</b>
+                    <span>{richMessage('copy.AcademyPanel.61c476a1cf')}</span>
+                  </li>
+                </ul>
+              </div>
+            </section>
+          </>
+        ),
       )}
     </div>
   );
@@ -296,46 +381,59 @@ export function AcademyPanel({
  * the 데뷔 시점 and 육성 목표 he works to, and each focus's effect by age group.
  */
 function YouthTraining({ w }: { w: World }) {
+  useTextLocale();
   const call = callLine(w, 'youth'),
     focus = academySummary(w).focus;
   return (
-    <section data-surface="panel" className={s.card} aria-label="유소년 훈련 방향">
+    <section
+      data-surface="panel"
+      className={s.card}
+      aria-label={displayMessage('copy.AcademyPanel.a57db77cfd')}
+    >
       <header className={s.head}>
-        <h3>유소년 훈련 방향</h3>
+        <h3>{richMessage('copy.AcademyPanel.a57db77cfd')}</h3>
         <span data-testid="youth-focus">
-          지금 {call.focus} · {call.by}
+          {richMessage('copy.AcademyPanel.80d73fa296', { p0: call.focus, p1: call.by })}
         </span>
       </header>
       <p data-surface="inset" className={s.advice}>
-        {call.reason}
+        {localizeValue(call.reason)}
       </p>
       <p className={s.timing}>
-        라운드 정산마다 유스 디렉터가 데뷔 시점 {directionOption(w, 'debut').name} · 육성 목표{' '}
-        {directionOption(w, 'youthGoal').name}에 맞춰 다시 정해요. 입단 예정일과 유입 방침은
-        아카데미 운영에서 확인하세요.
+        {richMessage('copy.AcademyPanel.43fe6a99c5', {
+          p0: directionOption(w, 'debut').name,
+          p1: ' ',
+          p2: directionOption(w, 'youthGoal').name,
+        })}
       </p>
       <details data-ui="disclosure" className={s.reference}>
-        <summary>유소년 훈련 효과·판단 기준</summary>
-        <ul className={s.focuses} aria-label="유소년 훈련 방향별 효과">
-          {(Object.keys(YOUTH_FOCUS_INFO) as (keyof typeof YOUTH_FOCUS_INFO)[]).map((id) => {
-            const info = YOUTH_FOCUS_INFO[id];
-            return (
-              <li key={id} aria-current={focus === id || undefined}>
-                <b>{info.label}</b>
-                <span>
-                  <small>
-                    U-17 ×{info.growth.u17} · U-19 ×{info.growth.u19}
-                  </small>
-                  <small>U-21 ×{info.growth.u21}</small>
-                </span>
-              </li>
-            );
-          })}
+        <summary>{richMessage('copy.AcademyPanel.4c8d733cdd')}</summary>
+        <ul className={s.focuses} aria-label={displayMessage('copy.AcademyPanel.03b3485dad')}>
+          {localizeValue(
+            (Object.keys(YOUTH_FOCUS_INFO) as (keyof typeof YOUTH_FOCUS_INFO)[]).map((id) => {
+              const info = YOUTH_FOCUS_INFO[id];
+              return (
+                <li key={id} aria-current={focus === id || undefined}>
+                  <b>{localizeValue(info.label)}</b>
+                  <span>
+                    <small>
+                      {richMessage('copy.AcademyPanel.85fb60ff15', {
+                        p0: localizeValue(info.growth.u17),
+                        p1: localizeValue(info.growth.u19),
+                      })}
+                    </small>
+                    <small>
+                      {richMessage('copy.AcademyPanel.f3be4c374c', {
+                        p0: localizeValue(info.growth.u21),
+                      })}
+                    </small>
+                  </span>
+                </li>
+              );
+            }),
+          )}
         </ul>
-        <p className={s.note}>
-          유스 디렉터는 U-19·U-21 유망주가 1군 수준까지 OVR 5 안쪽이면 1군 준비, U-17이 위
-          연령대보다 많으면 기본기 집중, 그 밖에는 균형으로 훈련해요.
-        </p>
+        <p className={s.note}>{richMessage('copy.AcademyPanel.35db442e93')}</p>
       </details>
     </section>
   );

@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
 import type { TransferBid } from '../../../../packages/contracts/src/types';
 import type { bidBoard } from '../../../../packages/engine/src/transfers';
 
@@ -33,7 +34,10 @@ export const freeSigning = (bid: Pick<TransferBid, 'direction' | 'fee'>) =>
  * own bid, or one the 단장 placed at level 4, which he answers himself, or his free signing.
  */
 export function bidKind(bid: Pick<TransferBid, 'direction' | 'staff' | 'fee'>) {
-  if (bid.direction === 'in') return '받은 제안';
-  if (freeSigning(bid)) return bid.staff ? '단장 영입' : '영입';
-  return bid.staff ? '단장 제안' : '보낸 제안';
+  if (bid.direction === 'in') return sourceMessage('copy.bids.adbacc8d64');
+  if (freeSigning(bid))
+    return bid.staff
+      ? sourceMessage('copy.bids.817df8e5db')
+      : sourceMessage('copy.areas.60be4d7b53');
+  return bid.staff ? sourceMessage('copy.bids.76829a03cf') : sourceMessage('copy.bids.7ad0c27acc');
 }

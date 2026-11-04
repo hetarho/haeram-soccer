@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import type { SeasonArchive, World } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
@@ -90,13 +91,21 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
   const config = EUROPE_ACCESS_CONFIG;
   const entries = new Map<string, EuropeanEntry>();
   const last = preceding(w);
-  const season = last ? `${last.year}/${String(last.year + 1).slice(-2)}시즌` : '첫 시즌';
+  const season = last
+    ? sourceMessage('copy.europe_access.62a074737b', {
+        p0: last.year,
+        p1: String(last.year + 1).slice(-2),
+      })
+    : sourceMessage('copy.SeasonReview.73092db344');
   const tables = new Map(COUNTRIES.map((c) => [c.code as string, leagueOrder(w, c.code)]));
   const countryOf = new Map(w.clubs.map((c) => [c.id, c.country]));
   const leagueReason = (id: string) =>
     last
-      ? `${season} 리그 ${tables.get(countryOf.get(id)!)!.indexOf(id) + 1}위`
-      : '첫 시즌 전력 기준 초청';
+      ? sourceMessage('copy.europe_access.16f8eddfe5', {
+          p0: season,
+          p1: tables.get(countryOf.get(id)!)!.indexOf(id) + 1,
+        })
+      : sourceMessage('copy.europe_access.03f5fe09d1');
   const give = (id: string | undefined, competition: string, reason: string) => {
     if (!id || !countryOf.has(id)) return;
     const old = entries.get(id);
@@ -116,18 +125,35 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
     if (w.year < config.modernFrom) {
       const ucl = w.year >= 1997 ? 2 : 1;
       if (w.year >= 1955)
-        table.slice(0, ucl).forEach((id) => give(id, 'ucl', `${leagueReason(id)} · 당시 배분`));
+        table
+          .slice(0, ucl)
+          .forEach((id) =>
+            give(
+              id,
+              'ucl',
+              sourceMessage('copy.europe_access.843a7c8705', { p0: leagueReason(id) }),
+            ),
+          );
       if (w.year >= 1960 && w.year <= 1998)
         give(
           cup || table[1],
           'cwc',
-          cup ? `${season} 국내 컵 우승` : `${leagueReason(table[1])} · 당시 배분`,
+          cup
+            ? sourceMessage('copy.europe_access.684ca30007', { p0: season })
+            : sourceMessage('copy.europe_access.843a7c8705', { p0: leagueReason(table[1]) }),
         );
       if (w.year >= 1971) {
-        if (w.year >= 1999) give(cup, 'uel', `${season} 국내 컵 우승`);
+        if (w.year >= 1999)
+          give(cup, 'uel', sourceMessage('copy.europe_access.684ca30007', { p0: season }));
         table
           .slice(ucl, ucl + 2)
-          .forEach((id) => give(id, 'uel', `${leagueReason(id)} · 당시 배분`));
+          .forEach((id) =>
+            give(
+              id,
+              'uel',
+              sourceMessage('copy.europe_access.843a7c8705', { p0: leagueReason(id) }),
+            ),
+          );
       }
       continue;
     }
@@ -141,9 +167,10 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
           : rank <= 6
             ? q.sixth
             : q.remaining;
-    const allocatedReason = (id: string) => `${leagueReason(id)} · 국가 순위 ${rank}위 배분`;
+    const allocatedReason = (id: string) =>
+      sourceMessage('copy.europe_access.7db147fe53', { p0: leagueReason(id), p1: rank });
     table.slice(0, quota[0]).forEach((id) => give(id, 'ucl', allocatedReason(id)));
-    give(cup, 'uel', `${season} 국내 컵 우승`);
+    give(cup, 'uel', sourceMessage('copy.europe_access.684ca30007', { p0: season }));
     for (const competition of ['uel', 'uecl'] as const) {
       const target = quota[competition === 'uel' ? 1 : 2];
       const count = () =>
@@ -156,7 +183,7 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
           give(
             id,
             competition,
-            `${allocatedReason(id)}${cup ? ' · 국내 컵 배분 반영' : ''}${c.code === 'ENG' && competition === 'uecl' ? ' · 리그컵 미실시 배분' : ''}`,
+            `${allocatedReason(id)}${cup ? sourceMessage('copy.europe_access.a1de99dc46') : ''}${c.code === 'ENG' && competition === 'uecl' ? sourceMessage('copy.europe_access.d75177b316') : ''}`,
           );
       }
     }
@@ -174,25 +201,35 @@ export function europeanAccess(w: AccessWorld): Map<string, EuropeanEntry> {
             : t.kind === 'cwc' && w.year <= 1998
               ? 'cwc'
               : undefined;
-    if (target) give(t.winner, target, `${season} ${t.name} 우승`);
+    if (target)
+      give(
+        t.winner,
+        target,
+        sourceMessage('copy.europe_access.a81de8e0de', { p0: season, p1: t.name }),
+      );
   }
   for (const country of performanceAssociations(w)) {
     const table = tables.get(country)!;
     const id = table.find((club) => entries.get(club)?.competition !== 'ucl');
     if (!id) continue;
     const vacated = entries.get(id)?.competition;
-    give(id, 'ucl', `${leagueReason(id)} · 국가 계수 상위 2개국 추가 출전권(EPS)`);
+    give(id, 'ucl', sourceMessage('copy.europe_access.aac6cebc22', { p0: leagueReason(id) }));
     if (vacated !== 'uel' && vacated !== 'uecl') continue;
     const lower =
       vacated === 'uel'
         ? table.find((club) => entries.get(club)?.competition === 'uecl')
         : undefined;
-    if (lower) give(lower, 'uel', `${leagueReason(lower)} · EPS에 따른 유로파 승계`);
+    if (lower)
+      give(
+        lower,
+        'uel',
+        sourceMessage('copy.europe_access.07900fd5b7', { p0: leagueReason(lower) }),
+      );
     const next = table.find((club) => !entries.has(club));
     give(
       next,
       lower ? 'uecl' : vacated,
-      next ? `${leagueReason(next)} · EPS에 따른 출전권 승계` : '',
+      next ? sourceMessage('copy.europe_access.5b977bad64', { p0: leagueReason(next) }) : '',
     );
   }
   return entries;

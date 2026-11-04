@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { Player, World } from '../../../../packages/contracts/src/types';
 import { PD, per90, playerAdvanced, share, type PlayerAdvanced } from './advanced';
 import { Term } from './Term';
@@ -11,40 +14,51 @@ import s from './Analysis.module.css';
 export function PlayerAdvancedStats(
   props: { w: World; player: Player; scope: 'season' | 'career' } | { advanced: PlayerAdvanced },
 ) {
+  useTextLocale();
   const { matches, minutes, totals, spatialMatches, spatialMinutes } =
     'advanced' in props ? props.advanced : playerAdvanced(props.w, props.player.id, props.scope);
   if (!matches)
     return (
       <p className={s.note} data-testid="player-advanced">
-        고급 지표(xG·xA·키패스 등)가 기록된 경기가 아직 없어요.
+        {richMessage('copy.PlayerAdvancedStats.9dab98a206')}
       </p>
     );
   const rows: [string, string, string, string][] = [
     ['xg', 'xG', (totals[PD.xg] / 100).toFixed(2), per90(totals[PD.xg] / 100, minutes)],
     ['xa', 'xA', (totals[PD.xa] / 100).toFixed(2), per90(totals[PD.xa] / 100, minutes)],
-    ['key-pass', '키패스', String(totals[PD.keyPasses]), per90(totals[PD.keyPasses], minutes)],
+    [
+      'key-pass',
+      sourceMessage('copy.MatchReport.532ac6f371'),
+      String(totals[PD.keyPasses]),
+      per90(totals[PD.keyPasses], minutes),
+    ],
     [
       'big-chance',
-      '빅찬스 창출',
+      sourceMessage('copy.PlayerAdvancedStats.49edc138c5'),
       String(totals[PD.bigChancesCreated]),
       per90(totals[PD.bigChancesCreated], minutes),
     ],
     [
       'final-third',
-      '파이널 서드 패스',
+      sourceMessage('copy.PlayerAdvancedStats.c4f75aa388'),
       `${share(totals[PD.finalThirdCompleted], totals[PD.finalThirdPasses])} · ${totals[PD.finalThirdCompleted]}/${totals[PD.finalThirdPasses]}`,
       per90(totals[PD.finalThirdCompleted], minutes, 1),
     ],
     [
       'progressive',
-      '전진 패스',
+      sourceMessage('copy.PlayerAdvancedStats.af1b560101'),
       String(totals[PD.progressivePasses]),
       per90(totals[PD.progressivePasses], minutes, 1),
     ],
-    ['take-on', '드리블 시도', String(totals[PD.takeOns]), per90(totals[PD.takeOns], minutes, 1)],
+    [
+      'take-on',
+      sourceMessage('copy.PlayerAdvancedStats.a1acacac81'),
+      String(totals[PD.takeOns]),
+      per90(totals[PD.takeOns], minutes, 1),
+    ],
     [
       'high-turnover',
-      '하이 턴오버',
+      sourceMessage('copy.PlayerAdvancedStats.11212f27d2'),
       String(totals[PD.highTurnovers]),
       per90(totals[PD.highTurnovers], minutes),
     ],
@@ -62,47 +76,68 @@ export function PlayerAdvancedStats(
       per90(totals[index], spatialMinutes, 1),
     ];
     rows.push(
-      count('box-entry', '박스 진입', PD.boxEntries),
-      count('line-breaking', '라인 브레이킹 패스', PD.lineBreakingPasses),
+      count('box-entry', sourceMessage('copy.MatchReport.649752aebf'), PD.boxEntries),
+      count(
+        'line-breaking',
+        sourceMessage('copy.PlayerAdvancedStats.0ad2f4840a'),
+        PD.lineBreakingPasses,
+      ),
       [
         'xt',
-        '위협도 기여(xT)',
+        sourceMessage('copy.PlayerAdvancedStats.af1292ae9d'),
         (totals[PD.xtAdded] / 1000).toFixed(2),
         per90(totals[PD.xtAdded] / 1000, spatialMinutes),
       ],
-      count('cut-back', '컷백', PD.cutBacks),
-      count('progressive-carry', '전진 운반', PD.progressiveCarries),
+      count('cut-back', sourceMessage('copy.PlayerAdvancedStats.cf8188e2fc'), PD.cutBacks),
+      count(
+        'progressive-carry',
+        sourceMessage('copy.PlayerAdvancedStats.0801bcf3fb'),
+        PD.progressiveCarries,
+      ),
     );
   }
   return (
-    <section className={s.advanced} aria-label="고급 지표" data-testid="player-advanced">
-      <h4>고급 지표</h4>
+    <section
+      className={s.advanced}
+      aria-label={displayMessage('copy.PlayerAdvancedStats.d3572f7d72')}
+      data-testid="player-advanced"
+    >
+      <h4>{richMessage('copy.PlayerAdvancedStats.d3572f7d72')}</h4>
       <table>
         <thead>
           <tr>
-            <th scope="col">지표</th>
-            <th scope="col">합계</th>
-            <th scope="col">90분당</th>
+            <th scope="col">{richMessage('copy.PlayerAdvancedStats.e5bb8a61ad')}</th>
+            <th scope="col">{richMessage('copy.PlayerAdvancedStats.149df7a8bd')}</th>
+            <th scope="col">{richMessage('copy.CareerRecordBook.77d4f682b4')}</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(([term, label, total, rate]) => (
-            <tr key={term}>
-              <th scope="row">
-                <Term id={term}>{label}</Term>
-              </th>
-              <td>{total}</td>
-              <td>{rate}</td>
-            </tr>
-          ))}
+          {localizeValue(
+            rows.map(([term, label, total, rate]) => (
+              <tr key={term}>
+                <th scope="row">
+                  <Term id={term}>{localizeValue(label)}</Term>
+                </th>
+                <td>{localizeValue(total)}</td>
+                <td>{localizeValue(rate)}</td>
+              </tr>
+            )),
+          )}
         </tbody>
       </table>
       <p className={s.note}>
-        고급 지표가 기록된 {matches}경기 · {minutes}분 기준
-        {spatialMatches && spatialMatches < matches
-          ? ` · 박스 진입부터 전진 운반까지는 ${spatialMatches}경기 · ${spatialMinutes}분 기준`
-          : ''}
-        {minutes < 180 ? ' · 표본이 적어 비율이 크게 흔들릴 수 있어요' : ''}
+        {richMessage('copy.PlayerAdvancedStats.355a81fcda', {
+          p0: matches,
+          p1: minutes,
+          p2:
+            spatialMatches && spatialMatches < matches
+              ? sourceMessage('copy.PlayerAdvancedStats.542aafd70f', {
+                  p0: spatialMatches,
+                  p1: spatialMinutes,
+                })
+              : '',
+          p3: minutes < 180 ? sourceMessage('copy.PlayerAdvancedStats.1998dc989b') : '',
+        })}
       </p>
     </section>
   );

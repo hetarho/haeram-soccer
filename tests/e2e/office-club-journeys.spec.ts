@@ -19,9 +19,13 @@ import { dismissFeedback } from './feedback';
 import { horizontalOverflow, settle } from './layout';
 import {
   approvalOrder,
+  approvalRequest,
   approvalRows,
-  clubSections,
+  leaveOffice,
+  officeDialog,
   officeEntrance,
+  officeMenu,
+  officePage,
   officeTitle,
   reviewButton,
   TEAM_WORK,
@@ -59,13 +63,29 @@ function sceneResources(entry: (typeof themeRegistry.entries)[number], kind: Fac
   const url = resolvePackUrl(entry, resolveRegistryUrl('theme'));
   const pack = validateThemePack(JSON.parse(readFileSync(`${root}${url.slice(1)}`, 'utf8')));
   const resolver = createThemeResolver(pack, { url });
+  // The stadium's area card shows its exterior (→WEB-11).
+  const views = kind === 'stadium' ? [undefined, 'exterior' as const] : [undefined];
   return FACILITY_ERAS.flatMap((era) =>
-    Array.from({ length: facilityStageTop(kind) + 1 }, (_, stage) => {
-      const scene = resolver.facility({ era, kind, stage });
-      return [scene.src, ...scene.variants.map((variant) => variant.src)];
-    }).flat(),
+    Array.from({ length: facilityStageTop(kind) + 1 }, (_, stage) =>
+      views.flatMap((view) => {
+        const scene = resolver.facility({ era, kind, stage, view });
+        return [scene.src, ...scene.variants.map((variant) => variant.src)];
+      }),
+    ).flat(),
   ).map((src) => new URL(src, 'https://pack.invalid').pathname);
 }
+/** Home's scenes: the office entrance's room, then each investment area's card (→WEB-11). */
+const HOME_SCENES: readonly FacilityKind[] = [
+  'manager',
+  'training',
+  'academy',
+  'staff',
+  'stadium',
+  'manager',
+  'stadium',
+  'manager',
+  'locker',
+];
 
 /**
  * The visible scenes of the current place, in order, each loaded from this theme's resources in a
@@ -116,12 +136,13 @@ async function expectTarget(target: Locator) {
 }
 
 /**
- * One office section through the shared section bar (→WEB-10), or our people's detailed page
- * through the primary 팀 entry, its list's tab and its named management link (→WEB-112).
+ * Our people's detailed page through the primary 팀 entry, its list's tab and its named
+ * management link (→WEB-112).
  */
 async function openSection(page: Page, name: string) {
   const people = TEAM_WORK[name];
-  if (people) {
+  if (!people) throw new Error(`팀 has no ${name} page`);
+  {
     const entry = teamEntry(page);
     await expectTarget(entry);
     await entry.click();
@@ -133,14 +154,9 @@ async function openSection(page: Page, name: string) {
     await expectTarget(manage);
     await manage.click();
     await expect(teamReturn(page)).toBeVisible();
-    await expect(clubSections(page)).toHaveCount(0);
+    await expect(officeMenu(page)).toHaveCount(0);
     await expect(entry).toHaveAttribute('aria-current', 'page');
-    return;
   }
-  const tab = clubSections(page).getByRole('tab', { name, exact: true });
-  await expectTarget(tab);
-  await tab.click();
-  await expect(tab).toHaveAttribute('aria-selected', 'true');
 }
 
 // Every registered theme, from the registry rather than a list of our own (→ARCH-32, →WEB-91).
@@ -179,32 +195,20 @@ for (const theme of themeRegistry.entries) {
     expect(await rows.evaluateAll((items) => items.map((item) => item.dataset.requestId))).toEqual(
       ids,
     );
-    // The office carries the one section bar with 사무실 selected; the queue leads with no room
-    // scene over it, the club summary follows the queue once, and its first request is reachable
-    // above the bottom controls on the phone's first view (→WEB-10/39/44).
-    await expect(clubSections(page)).toHaveCount(1);
-    await expect(
-      clubSections(page).getByRole('tab', { name: '사무실', exact: true }),
-    ).toHaveAttribute('aria-selected', 'true');
-    const queueBox = (await page.getByTestId('approval-queue').boundingBox())!;
-    await expect(page.getByTestId('club-situation')).toHaveCount(1);
-    expect((await page.getByTestId('club-situation').boundingBox())!.y).toBeGreaterThanOrEqual(
-      queueBox.y + queueBox.height,
-    );
-    // The office offers no immediate owner action (→WEB-39).
-    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
+    // The queue opens as a modal over the page it was asked from, with no room scene and no
+    // immediate owner action in it; its first request is a full touch target on the phone's
+    // first view (→WEB-39).
+    const queue = officeDialog(page);
+    await expect(queue.locator('[data-facility-art]')).toHaveCount(0);
+    await expect(queue.getByTestId('quick-actions')).toHaveCount(0);
     const first = reviewButton(page, ids[0]!);
     await expectTarget(first);
-    const firstBox = (await first.boundingBox())!;
-    const transportBox = (await transport.boundingBox())!;
-    expect(firstBox.y + firstBox.height).toBeLessThanOrEqual(transportBox.y);
+    await expect(first).toBeInViewport();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-    await expect(page.getByTestId('facility-overview')).toHaveCount(0);
-    await expectScenes(page, theme, []);
 
     // Review → decline → the refreshed queue, focused on the request now in its place (→WEB-100).
     await first.click();
-    const request = page.getByTestId('approval-request');
+    const request = approvalRequest(page);
     await expect(request).toHaveAttribute('data-request-id', ids[0]!);
     // One heading with its 결재 기한, the actual target and one named return, within the phone's
     // width in this theme (→WEB-39/63/100).
@@ -218,7 +222,7 @@ for (const theme of themeRegistry.entries) {
     await expectTarget(request.getByRole('button', { name: '결재함으로', exact: true }));
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     await request.getByRole('button', { name: '거절', exact: true }).click();
-    await expect(page).toHaveURL(/\/direction$/);
+    await expect(officeTitle(page)).toHaveText('결재함');
     await expect(rows).toHaveCount(ids.length - 1);
     const next = reviewButton(page, ids[1]!);
     await expect(next).toBeFocused();
@@ -230,21 +234,22 @@ for (const theme of themeRegistry.entries) {
     await expect(next).toBeFocused();
     await expect(inbox).toHaveAccessibleName(new RegExp(`^결재함 · 대기 ${ids.length - 1}건`));
 
-    // The clubhouse's illustrated entrance reads what is left; home keeps no section bar, club
-    // summary or quick actions (→WEB-11).
+    // The clubhouse's illustrated entrance reads what is left above the office's area cards; home
+    // keeps no office menu, club summary or quick actions (→WEB-11).
     await dismissFeedback(page);
+    await leaveOffice(page);
     await clubhouseTab(page).click();
     const hub = page.getByTestId('club-hub');
     await expect(page.getByTestId('office-waiting')).toContainText(`결재 대기 ${ids.length - 1}건`);
-    await expect(clubSections(page)).toHaveCount(0);
+    await expect(officeMenu(page)).toHaveCount(0);
     await expect(page.getByTestId('club-situation')).toHaveCount(0);
-    await expectScenes(page, theme, ['manager']);
+    await expectScenes(page, theme, HOME_SCENES);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     const phoneEntrance = officeEntrance(page);
     await expectTarget(phoneEntrance);
     await phoneEntrance.click();
     await expect(hub).toBeHidden();
-    await expect(rows).toHaveCount(ids.length - 1);
+    await expect(officePage(page).getByTestId('office-effects')).toBeVisible();
 
     // 1군, through 팀, is the actual roster under its locker room, found by a fixture player's
     // name (→WEB-43/112).
@@ -278,17 +283,21 @@ for (const theme of themeRegistry.entries) {
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
     await expectScenes(page, theme, ['manager', 'staff']);
     await clubhouseTab(page).click();
-    await expect(clubSections(page)).toHaveCount(0);
-    await expectScenes(page, theme, ['manager']);
+    await expect(officeMenu(page)).toHaveCount(0);
+    await expectScenes(page, theme, HOME_SCENES);
     const entrance = officeEntrance(page);
     await expectTarget(entrance);
     await entrance.click();
+    // The office opens on its effects in force under its menu, with no room scene (→WEB-39/116);
+    // the menu's 결재함 holds the same queue.
+    await expect(officePage(page).getByTestId('office-effects')).toBeVisible();
+    await expect(officeMenu(page)).toHaveCount(1);
+    await expectScenes(page, theme, []);
+    await officeMenu(page).getByTestId('approval-inbox').click();
     await expect(rows).toHaveCount(ids.length - 1);
     await expect(reviewButton(page, ids[1]!)).toBeInViewport();
-    await expect(clubSections(page)).toHaveCount(1);
-    await expect(page.getByTestId('club-situation')).toHaveCount(1);
-    await expectScenes(page, theme, []);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+    await leaveOffice(page);
     // Back in 1군 through 팀, the roster under its room keeps its search (→WEB-74).
     await openSection(page, '1군');
     await expectScenes(page, theme, ['locker']);

@@ -1,3 +1,6 @@
+import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../presentation/text';
+import { richMessage } from '../presentation/LocalizedMessage';
 import type { Fixture, Player, World } from '../../../../packages/contracts/src/types';
 import { clubOf } from '../../../../packages/engine/src/player-state';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
@@ -8,7 +11,7 @@ import { competitionLabel, kindLabel, seasonName } from './format';
 import { matchBriefing, resultFor } from './scouting';
 import { clubOvr } from './OvrBadge';
 import { Card } from './Card';
-import { ClubCrest } from './ClubCrest';
+import { ClubLink } from '../entities/club';
 import { FormationPitch } from './FormationPitch';
 import { ResultBadge } from './ResultBadge';
 import type { ProjectedWorld } from '../runtime/protocol';
@@ -16,22 +19,28 @@ import s from './MatchBriefing.module.css';
 
 /** Results from one side's view, oldest first: 승 2–1 chips with the opponent in the title. */
 function Results({ w, club, fixtures }: { w: World; club: string; fixtures: Fixture[] }) {
-  if (!fixtures.length) return <p className={s.note}>확인할 수 있는 경기 결과가 없어요.</p>;
+  useTextLocale();
+  if (!fixtures.length)
+    return <p className={s.note}>{richMessage('copy.MatchBriefing.b7da730e4c')}</p>;
   return (
     <ol className={s.results}>
-      {fixtures.map((f) => {
-        const result = resultFor(f, club)!,
-          other = w.clubs.find((c) => c.id === (f.home === club ? f.away : f.home));
-        return (
-          <li
-            key={f.id}
-            data-result={result.result}
-            title={`${seasonName(f.year)} · ${kindLabel[f.kind]} · vs ${other?.name ?? '상대'}`}
-          >
-            <ResultBadge result={result.result} score={[result.own, result.other]} />
-          </li>
-        );
-      })}
+      {localizeValue(
+        fixtures.map((f) => {
+          const result = resultFor(f, club)!,
+            other = w.clubs.find((c) => c.id === (f.home === club ? f.away : f.home));
+          return (
+            <li
+              key={f.id}
+              data-result={result.result}
+              title={localizeValue(
+                `${seasonName(f.year)} · ${kindLabel[f.kind]} · vs ${other?.name ?? sourceMessage('copy.MatchBriefing.6a3b6fa71b')}`,
+              )}
+            >
+              <ResultBadge result={result.result} score={[result.own, result.other]} />
+            </li>
+          );
+        }),
+      )}
     </ol>
   );
 }
@@ -48,8 +57,9 @@ export function MatchBriefing({
   /** The manager's XI for the next fixture, chosen by the sheet that hosts the report. */
   xi: readonly Player[];
 }) {
+  useTextLocale();
   const brief = matchBriefing(w);
-  if (!brief) return <p className={s.note}>다음 상대는 새 시즌 일정이 나오면 확인할 수 있어요.</p>;
+  if (!brief) return <p className={s.note}>{richMessage('copy.MatchBriefing.a552eb32f2')}</p>;
   const { next, opponent } = brief;
   const own = clubOf(w),
     ourOvr = clubOvr(w, own),
@@ -65,24 +75,28 @@ export function MatchBriefing({
   const sides = [
     {
       key: 'own',
-      label: '우리 팀',
+      label: sourceMessage('copy.BallonDorView.8434ac1486'),
       club: own,
       ovr: ourOvr,
       tactic: w.tactic,
       coach: w.manager.name,
-      school: w.manager.style ? STYLE_INFO[w.manager.style].label : '균형 · 학파 없음',
+      school: w.manager.style
+        ? STYLE_INFO[w.manager.style].label
+        : sourceMessage('copy.MatchBriefing.3583ac9c15'),
       recent: brief.ownRecent,
       slot: (index: number) => xi[index]?.name.split(' ').at(-1) ?? '—',
       slotTitle: (index: number) => xi[index]?.name ?? '—',
     },
     {
       key: 'opponent',
-      label: '상대 팀',
+      label: sourceMessage('copy.MatchBriefing.1a46398092'),
       club: opponent,
       ovr: theirOvr,
       tactic: brief.tactic,
       coach: manager?.name ?? '—',
-      school: manager?.style ? STYLE_INFO[manager.style].label : '균형',
+      school: manager?.style
+        ? STYLE_INFO[manager.style].label
+        : sourceMessage('copy.stories.634269a095'),
       recent: brief.theirRecent,
       slot: (index: number) => theirXi[index]?.name.split(' ').at(-1) ?? '—',
       slotTitle: (index: number) => theirXi[index]?.name ?? '—',
@@ -94,82 +108,112 @@ export function MatchBriefing({
         as="section"
         surface="ticket"
         className={s.memo}
-        aria-label="감독 보고"
-        meta={`감독 보고 · ${w.manager.name} → 구단주 · ${fixtureDate(w, next)}`}
+        aria-label={displayMessage('copy.MatchBriefing.de0882dfb2')}
+        meta={sourceMessage('copy.MatchBriefing.cef348ce3f', {
+          p0: w.manager.name,
+          p1: fixtureDate(w, next),
+        })}
       >
         <p>
-          {opponent.name}전({brief.home ? '홈' : '원정'} · {competitionLabel(w, next)})은{' '}
-          {FORMATIONS[w.tactic].name} {tacticLabel[w.tactic]}로 나가겠습니다. 선발은 능력과 피로를
-          보고 제가 고르겠습니다. 상대는 {tacticLabel[brief.tactic]} 성향이고,{' '}
-          {gap >= 3
-            ? `전력은 우리가 ${gap} 앞섭니다.`
-            : gap <= -3
-              ? `전력은 상대가 ${-gap} 앞서 조심해야 합니다.`
-              : '전력은 비슷합니다.'}
+          {richMessage('copy.MatchBriefing.3b08b28578', {
+            p0: opponent.name,
+            p1: brief.home ? sourceMessage('fixture.home') : sourceMessage('fixture.away'),
+            p2: competitionLabel(w, next),
+            p3: ' ',
+            p4: FORMATIONS[w.tactic].name,
+            p5: tacticLabel[w.tactic],
+            p6: tacticLabel[brief.tactic],
+            p7: ' ',
+            p8:
+              gap >= 3
+                ? sourceMessage('copy.MatchBriefing.19dd631ef2', { p0: gap })
+                : gap <= -3
+                  ? sourceMessage('copy.MatchBriefing.58e0f49a2d', { p0: -gap })
+                  : sourceMessage('copy.MatchBriefing.f70831afc4'),
+          })}
         </p>
       </Card>
       <div className={s.sides}>
-        {sides.map((side) => (
-          <section key={side.key} className={s.side} aria-label={side.label} data-side={side.key}>
-            <h3>
-              <ClubCrest w={w} id={side.club.id} size={20} />
-              <span>{side.club.name}</span>
-            </h3>
-            <dl className={s.facts}>
-              <div>
-                <dt>전력</dt>
-                <dd>{side.ovr}</dd>
-              </div>
-              <div>
-                <dt>포메이션</dt>
-                <dd>
-                  {FORMATIONS[side.tactic].name} · {tacticLabel[side.tactic]}
-                </dd>
-              </div>
-              <div>
-                <dt>학파</dt>
-                <dd>
-                  {side.school} · {side.coach}
-                </dd>
-              </div>
-            </dl>
-            <FormationPitch
-              compact
-              tactic={side.tactic}
-              label={`${side.label} ${FORMATIONS[side.tactic].name} 스쿼드`}
-              slot={side.slot}
-              slotLabel={side.slot}
-              slotTitle={side.slotTitle}
-            />
-            <h4>최근 {side.recent.length}경기</h4>
-            <Results w={w} club={side.club.id} fixtures={side.recent} />
-          </section>
-        ))}
+        {localizeValue(
+          sides.map((side) => (
+            <section
+              key={side.key}
+              className={s.side}
+              aria-label={localizeValue(side.label)}
+              data-side={side.key}
+            >
+              <h3>
+                <ClubLink w={w} id={side.club.id} crest={20} />
+              </h3>
+              <dl className={s.facts}>
+                <div>
+                  <dt>{richMessage('copy.ClubListing.6403c770c8')}</dt>
+                  <dd>{localizeValue(side.ovr)}</dd>
+                </div>
+                <div>
+                  <dt>{richMessage('copy.MatchBriefing.ff6f5ecded')}</dt>
+                  <dd>
+                    {FORMATIONS[side.tactic].name} · {localizeValue(tacticLabel[side.tactic])}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{richMessage('copy.MatchBriefing.becb12551a')}</dt>
+                  <dd>
+                    {localizeValue(side.school)} · {localizeValue(side.coach)}
+                  </dd>
+                </div>
+              </dl>
+              <FormationPitch
+                compact
+                tactic={side.tactic}
+                label={displayMessage('copy.MatchBriefing.d3f5883baa', {
+                  p0: side.label,
+                  p1: FORMATIONS[side.tactic].name,
+                })}
+                slot={side.slot}
+                slotLabel={side.slot}
+                slotTitle={side.slotTitle}
+              />
+              <h4>{richMessage('copy.MatchBriefing.615c369aad', { p0: side.recent.length })}</h4>
+              <Results w={w} club={side.club.id} fixtures={side.recent} />
+            </section>
+          )),
+        )}
       </div>
       <Card
         as="section"
         surface="dark"
         className={s.meetings}
-        aria-label="최근 맞대결"
-        title={`최근 맞대결 · ${brief.meetings.length}경기`}
+        aria-label={displayMessage('copy.MatchBriefing.2a75099923')}
+        title={displayMessage('copy.MatchBriefing.c885b79195', { p0: brief.meetings.length })}
       >
-        {brief.meetings.length ? (
-          <ol>
-            {brief.meetings.map((f) => {
-              const result = resultFor(f, w.playerClub)!;
-              return (
-                <li key={f.id} data-result={result.result}>
-                  <ResultBadge result={result.result} /> {result.own}–{result.other}
-                  <small>
-                    {seasonName(f.year)} · {kindLabel[f.kind]} ·{' '}
-                    {f.home === w.playerClub ? '홈' : '원정'}
-                  </small>
-                </li>
-              );
-            })}
-          </ol>
-        ) : (
-          <p className={s.note}>아직 맞대결 기록이 없어요.</p>
+        {localizeValue(
+          brief.meetings.length ? (
+            <ol>
+              {localizeValue(
+                brief.meetings.map((f) => {
+                  const result = resultFor(f, w.playerClub)!;
+                  return (
+                    <li key={f.id} data-result={result.result}>
+                      <ResultBadge result={result.result} /> {localizeValue(result.own)}–
+                      {localizeValue(result.other)}
+                      <small>
+                        {localizeValue(seasonName(f.year))} · {localizeValue(kindLabel[f.kind])} ·
+                        {localizeValue(' ')}
+                        {localizeValue(
+                          f.home === w.playerClub
+                            ? sourceMessage('fixture.home')
+                            : sourceMessage('fixture.away'),
+                        )}
+                      </small>
+                    </li>
+                  );
+                }),
+              )}
+            </ol>
+          ) : (
+            <p className={s.note}>{richMessage('copy.MatchBriefing.71abf91927')}</p>
+          ),
         )}
       </Card>
     </div>
