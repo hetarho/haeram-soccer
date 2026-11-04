@@ -515,12 +515,17 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
 test('disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs', async ({
   page,
 }) => {
-  // A 1930 takeover opens on its books' cash (→ECON-36), which pays every fee of its market; a
-  // self-made owner's career on two years of fixed costs pays a loan's fee but not the dearest fee.
+  // A 1930 takeover opens on its books' cash (→ECON-36), which pays every fee of its market. The
+  // scout now brings existing players whose fees the books cover (→CLUB-51), so the club keeps
+  // just less than the dearest club player's fee: it pays his loan's fee but not that fee.
   await page.setViewportSize({ width: 390, height: 844 });
   const world = careerWorld({ country: 'ENG', seed: 'recruitment-poor-ui', tier: 'selfmade' });
   world.settings!.mode = 'manual';
   world.settings!.observations = { matchEve: false, windowOpen: false };
+  const dearest = transferOffers(world)
+    .filter((candidate) => candidate.available && !candidate.freeAgent)
+    .reduce((max, candidate) => (BigInt(candidate.fee) > max ? BigInt(candidate.fee) : max), 0n);
+  world.cash = (dearest - 1n).toString();
   await importResponsibilityCareer(page, world);
   await openMarket(page);
   const before = await exportWorld(page);

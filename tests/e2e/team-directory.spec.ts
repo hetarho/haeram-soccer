@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { lineOf } from '../../packages/engine/src/player';
+import { closeEmployment } from '../../packages/engine/src/person-careers';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { horizontalOverflow, settle } from './layout';
@@ -52,7 +53,10 @@ for (const theme of themeRegistry.entries) {
     const w = preparedWorld('manager-journey');
     w.settings!.mode = 'manual';
     w.settings!.observations = { matchEve: false, windowOpen: false };
-    // One vacant post, as a resignation leaves it (→STAFF-11).
+    // One vacant post, as a resignation leaves it (→STAFF-11): his job at the club closes with it,
+    // or his career would still name a post nobody holds (→STAFF-50).
+    for (const member of w.staff ?? [])
+      if (member.role === 'attack' && member.person) closeEmployment(w, member.person, 'attack');
     w.staff = (w.staff ?? []).filter((member) => member.role !== 'attack');
     const active = w.players.filter((player) => player.status === 'active');
     const prospects = (w.academy?.players ?? []).filter((player) => player.status === 'active');

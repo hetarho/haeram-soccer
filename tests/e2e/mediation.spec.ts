@@ -339,7 +339,9 @@ for (const arrival of ['none', 'loan', 'free'] as const)
       )!;
       expect(free).toBeDefined();
       // Full names rarely repeat (→WORLD-12), so the search is a piece of his name that more than
-      // a page of other players share: the intended free agent is behind a full page of them.
+      // a page of other players share: the intended free agent is behind a full page of them. He
+      // is a real free agent now (→CLUB-49), able enough to rank high under the default OVR
+      // order, so the search is the narrowest such piece rather than one of at most three pages.
       const name = free.player.name;
       const pieces = new Set(
         Array.from(name, (_, i) => [2, 3, 4].map((n) => name.slice(i, i + n))).flat(),
@@ -350,12 +352,12 @@ for (const arrival of ['none', 'loan', 'free'] as const)
           piece,
           matches: worldMarketPage(w, { world: w.id, ...DEFAULT_MARKET_QUERY, name: piece }),
         }))
-        .find(
+        .filter(
           ({ matches }) =>
             matches.total > matches.pageSize &&
-            matches.total <= 3 * matches.pageSize &&
             !matches.items.some((offer) => offer.player.id === free!.player.id),
-        );
+        )
+        .sort((a, b) => a.matches.total - b.matches.total)[0];
       expect(search, `a piece of ${name} shared by more than a page`).toBeDefined();
       const { piece } = search!;
       await expect(marketCandidate(page, `${free.player.id}:absent`, piece)).rejects.toThrow(
