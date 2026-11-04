@@ -653,6 +653,9 @@
 - 261103 decided OWNER-11 OWNER-17 T653: where the close hooks sit in `closeSeason` → `ownerClose` once the season's money is in (after league merit and the Ballon d'Or bonus) and before the archive, so the archived cash is after the dividend; `fanMoodClose` after promotion and relegation are known, last, so the OWNER-17 record sees the whole close (alt: both after the archive). ot03
 - 261103 decided OWNER-8 ECON-6 T653: what the takeover keeps and what converts → the takeover facts keep the tier's starting fortune (the living-cost base) and the currency, historical and unconverted like the season records; the fortune, the FFP window's injections and the loan convert in `advanceEconomy` (alt: recompute the starting fortune at each settlement, which the world's later prices would move). ot03
 - 261103 decided WORLD-13 T653: what `hasOwner(w)` means → any club is the player's (`w.playerClub` non-empty), so founded careers keep every own-club branch and only the ownerless world before the takeover skips them; owner-state rules test `w.owner` (alt: `w.owner` present, which would skip own-club branches in founded careers until T664). ot03
+- 261104 decided CLUB-48 T694 ARCH-30: what this pass runs next after CLUB r53 → T694 (the W80 correction and pinned activation, about an hour with its book re-read), then the release-gate fix of released main's typecheck/format/unit failures, then the second-mechanism slice on T694's re-read books, then the growth slice; the coordinator's review orders CLUB-48's correction before any main publication of the mechanism, and the second mechanism should be fitted on the corrected formula (alt: the gate fix first, which leaves the inverted formula in the tree any gate would publish | the second mechanism first, fitted on a formula about to change). ba04
+- 261104 decided CLUB-48 T693 T694: how CLUB-48's text and the tree's activation agree while T693's candidate is not in force → CLUB-48 states the table in force, s = 1 in every country and season, and the gate any table must pass (T693's exit condition: the calibration band plus no held-out club without a project above its revenue); England's maximum-wage anchor stays the primary record a passing table carries, never activated alone; the mechanism stays in the tree at s = 1 with its tests and `--spread` override for the follow-up, T694 pins the activation with a test (alt: archive the mechanism and its scripts as evidence, which the second-mechanism slice would rebuild | activate England's own anchor alone now, unmeasured, cheapening only England's stars while every other league pays the full modern spread). ba04
+- 261104 decided CLUB-48 CLUB-25 T694: the coordinator's review found the CLUB-48 formula paying an 18-year-old of potential 99 less at OVR 81 than at 80 under any s < 1 (W80 priced with his potential lowered alike); which W80 → his own age and potential at OVR 80 (CLUB r53), the spread a relative approximation of the era's market, not a legal amount: a read-only grid (ages 15–36, abilities and potentials 60–99, five divisions, spreads 0–0.99) finds 12,475 inversions on the lowered W80 and none on this one, as OVR rises at a fixed potential, at a fixed promise gap or as potential rises; adult (24+) stars are unchanged, young stars' compressed wages rise up to 8% at s = 0.23, so T694 re-reads T693's candidate books on it; production at s = 1 is unchanged (alt: keep the lowered potential and floor each wage at the one a point below, a patch without a rule | price promise outside the spread, W80 without promise, which moves the ordinary young player's anchor and CLUB-25's promise rule). ba04
 
 ## ideation
 | id | st |
@@ -681,7 +684,7 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
-| CLUB | 52 | 52 | - | 0 |
+| CLUB | 53 | 53 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 14 | 14 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
@@ -708,6 +711,7 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 | T693 | calibrate the era's star pay spread on the giants' books | CLUB ECON LEAGUE | - | todo |
+| T694 | price CLUB-48's W80 at the player's own potential and pin its activation | CLUB ECON | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -735,6 +739,10 @@
 - Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers and wage change, one mechanism, and implement it.
 - Continue one issue at a time: transfers/retention, owner reach/dividend risk, then existing T689 and a fresh read of the old calibration memo. New balance tasks are authorized for this pass; preserve published contracts/history and every measurement/release gate.
 - Work only in /home/deep/haeram/haeram-soccor-balance on codex/football-balance; the loop host owns final verification and publication to configured main. Preserve other checkouts.
+- implement-task T694
+- ba04: T694 corrects CLUB-48's W80 (r53: his own age and potential), pins production at s = 1 and re-reads T693's candidate books on the corrected formula, before any main publication of the mechanism.
+- Then the release-gate fix of released main's pre-existing typecheck errors, format drift and unit failures (inbox suggest ARCH-30), a task if it exceeds a lightweight fix's three files, so the host's final gate can pass.
+- Then one planning slice from T693/T694 (inbox suggest CLUB-48 LEAGUE-10): CLUB-48's band is unmet by the spread alone in 2000–2010 and in POR NED BEL; plan the second mechanism (a club nobody owns keeps only the stars its books pay) with the spread's calibrated pre-1990 anchors re-read on T694's books, then its task; a table enters production only through CLUB-48's gate, England's anchor with it.
 
 ## log
 - 261104 update-ssot CLUB r52 + create-task T693: an era star pay spread prices every wage term above an ordinary OVR-80 player's (England's maximum wage to 1960/61), calibrated on the strongest clubs' books with held-out seeds, countries and years; the growth slice follows on T693's baseline. ba04
@@ -755,5 +763,5 @@
 - 261104 T678 done: the start plays the world's history while a later decade is generated — engine `seasonDigest` (Elo top 10, champions, European winners, 발롱도르, greatest feat) on every progress reply, a self-closing one-at-a-time feat card schedule and 22 messages in all 12 packs; 129 affected unit files (1153 tests), validate:presentation, typecheck, lint, format and build pass; host.generation integration test and the 1950 start journeys left to the host batch. nv04
 - 261104 T686 done: books read the following a club's reputation commands (ECON-36: 30 of 41 first owned seasons within ±25%, was 6 of 23); tier multiples 1.3 → 1.6 and living 0.25% → 0.2% (no passive owner bankrupt before season 17); 석유 재벌's giants still bankrupt (wages 1.8–3.3× income) and lower tiers reach the top flight in every career — update-ssot proposed; golden and prepared worlds regenerated, 994 affected unit tests and fast checks pass. nv04
 - 261104 fix release gate (4651893a, 2 of 344 Chromium failed): match-core 360x740 — the finished 홈으로 hint wrapped to two lines and pushed 상세 리포트 5 px under the bottom menu, now "다음 일정과 구단을 확인해요" with the 결과 보기 hint's glyph count; recruitment poor-ui — 1930 takeovers open on bounded books' cash that pays every fee, so the journey imports a 1950 self-made careerWorld (two years of fixed costs) whose dearest fee is too dear and its loan is not. All assertions kept; fast checks pass; both journeys left to the host gate. nv04
-- 261104 T685 done: price-rank reach, 0.25% living costs, halved fan-mood drops, bounded NPC books, 10-season takeover loan (code in cv03 checkpoint 3d9bdffd); golden and prepared worlds regenerated, 1125 affected unit tests and fast checks pass; contract/integration/e2e left to the host gate. nv04
+- 261104 update-ssot CLUB r53 + create-task T694: CLUB-48's W80 at the player's own age and potential (the lowered potential paid an 18-year-old less at OVR 81 than at 80 under s < 1), the table in force stated as s = 1 everywhere with the gate a table must pass and England's anchor only with it; T694 fixes, pins and re-reads T693's candidate books. ba04
 - 261103 cv03 takeover: resume the stopped ot03 handoff on work/cv03-continuation; merge current main, preserving takeover, hr05 performance and bl03 awards/wages.
