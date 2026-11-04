@@ -150,11 +150,14 @@ const facts = (w: World) => ({
  * before. T670's start (`founded` takes the fourth tier's first club over in a world made fresh in
  * 2024, where it founded an amateur club and moved it to 2024) changed the candidate rounds only:
  * another own club, squad and league play them; the aggregate records, of fixtures without the own
- * club, did not move; 09f27c83b64a3831 before.
+ * club, did not move; 09f27c83b64a3831 before. T701's free agents (every club nobody owns lets
+ * go of its two least able aged 21 or older from the world's first day, someone else filling the
+ * generated place while he is free) changed both through the squads that play them;
+ * 4eb52d8d3132ffc5 and 725b7e23284728b6 before.
  */
 const BEFORE = {
-  aggregateRecords: '4eb52d8d3132ffc5',
-  candidateRounds: '725b7e23284728b6',
+  aggregateRecords: 'c08fdd8bfa8a7687',
+  candidateRounds: 'e4d4268c6d018c7b',
 };
 
 describe('complete-result throughput (T285)', () => {

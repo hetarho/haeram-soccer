@@ -331,13 +331,14 @@ export const requestSchema = z.object({
 export type Request = z.infer<typeof requestSchema>;
 export type Body = Request['body'];
 /**
- * Daily projection excludes the lifetime person registry and bounds resolved recruitment history.
- * The season's complete statistics come with a `full-stats` read when a view asks (→WEB-89), and
- * the manager-history facts with a `manager-history` read (→HIST-18).
+ * Daily projection excludes the lifetime person registry and the free-agent pool, and bounds
+ * resolved recruitment history. The season's complete statistics come with a `full-stats` read
+ * when a view asks (→WEB-89), and the manager-history facts with a `manager-history` read
+ * (→HIST-18).
  */
 export type ProjectedWorld = Omit<
   World,
-  'people' | 'npcSeason' | 'managerHistory' | 'newsJournal' | 'careerReads'
+  'people' | 'npcSeason' | 'managerHistory' | 'newsJournal' | 'careerReads' | 'freeAgents'
 > & {
   people?: never;
   /**

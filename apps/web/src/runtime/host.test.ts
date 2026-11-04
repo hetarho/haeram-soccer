@@ -596,6 +596,9 @@ describe('career view projection', () => {
   it('omits lifetime registry in views, preserves canonical export and leaves revision and draws unchanged', async () => {
     const { host: h, reply: started } = await startedHost();
     expect(started.view!.world.people).toBeUndefined();
+    // The free-agent pool stays on the worker too (→CLUB-49), and in the save.
+    expect(h.world!.freeAgents!.length).toBeGreaterThan(0);
+    expect(started.view!.world).not.toHaveProperty('freeAgents');
     const before = canonical(h.world!),
       revision = h.world!.revision;
     const exported = await h.handle(req('career-export', revision, { type: 'export' }));
@@ -604,6 +607,7 @@ describe('career view projection', () => {
     const saved = await decode(exported.raw!);
     expect(Object.keys(saved.world.people!).sort()).toEqual(Object.keys(h.world!.people!).sort());
     expect(canonical(saved.world.people)).toBe(canonical(h.world!.people));
+    expect(canonical(saved.world.freeAgents)).toBe(canonical(h.world!.freeAgents));
     expect(h.world!.revision).toBe(revision);
   });
 });

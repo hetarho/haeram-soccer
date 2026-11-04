@@ -9,6 +9,7 @@ export const FIXTURE_READ_KEYS = [
   'calendar',
   'clubs',
   'discipline',
+  'freeAgents',
   'managerMarket',
   'matchModel',
   'people',
@@ -30,13 +31,17 @@ export const FIXTURE_PERSON_READ_KEYS = [
   'club',
 ] as const satisfies readonly (keyof PersonCareer)[];
 export type FixtureReadPerson = Pick<PersonCareer, 'id' | 'playing'> & Partial<PersonCareer>;
-export type FixtureReadCopy = Omit<Pick<World, FixtureReadKey>, 'people'> & {
+export type FixtureReadCopy = Omit<Pick<World, FixtureReadKey>, 'people' | 'freeAgents'> & {
   people?: Record<string, FixtureReadPerson>;
+  /** Only who the free agents are: their old clubs' generated places stay empty (→CLUB-49). */
+  freeAgents?: { id: string }[];
 };
 
 export function readCopy(w: World): FixtureReadCopy {
   const copy: Partial<Record<FixtureReadKey, unknown>> = {};
-  for (const key of FIXTURE_READ_KEYS) if (key in w && key !== 'people') copy[key] = w[key];
+  for (const key of FIXTURE_READ_KEYS)
+    if (key in w && key !== 'people' && key !== 'freeAgents') copy[key] = w[key];
+  if (w.freeAgents) copy.freeAgents = w.freeAgents.map(({ id }) => ({ id }));
   if (w.people)
     copy.people = Object.fromEntries(
       Object.entries(w.people).map(([id, person]) => {
@@ -63,5 +68,6 @@ export function fixtureRosterKey(copy: FixtureReadCopy): string {
     Object.values(copy.people ?? {}).map((p) =>
       p.playing === 'active' ? FIXTURE_PERSON_READ_KEYS.map((key) => p[key]) : [p.id, p.playing],
     ),
+    (copy.freeAgents ?? []).map((p) => p.id),
   ]);
 }

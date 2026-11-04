@@ -1,6 +1,6 @@
 import { refreshReadModels } from './read-models';
 import { openNeed } from './replacements';
-import { callUpFor } from './squad-target';
+import { callUpFor, callUpProspects } from './squad-target';
 import { SQUAD_TARGET } from './squad-size';
 import { isDelegated } from './responsibilities';
 import { countApprovalWaits } from './approvals';
@@ -91,6 +91,7 @@ import { activeMatchModel } from '../../contracts/src/match-model';
 import { recordRecentResult, retainRecentResults } from './recent-results';
 import { careerEnded, hasOwner, ownerClose, ownerDay } from './owner';
 import { crossWar, seasonAfter } from './wartime';
+import { closeFreeAgents, lettingGo, refreshFreeAgents, signFreeAgentAtClose } from './free-agents';
 import { booksClose } from './books';
 import { fanMoodAfterLeagueMatch, fanMoodClose, fanMoodRound } from './fan-mood';
 import {
@@ -634,6 +635,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   const startersBeforeDepartures = [...ownStarters(w)];
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
+  // Whom the clubs nobody owns let go, read from the squads the season was played with.
+  const released = lettingGo(w, w.year, seasonAfter(w.year));
   // The promotion playoff belongs to the season just played: its squads retire after it.
   promote(w);
   // Seed any untracked clubs in an older save before this season's fixture lists are discarded.
@@ -644,6 +647,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
   reduceSeasonMaterial(w, w.history[w.history.length - 1]!);
   // The final table and any promotion are credited before the close's departures (→HIST-19).
   captureSeasonClose(w, { tier: oldTier, group: oldGroup });
+  // The clubs nobody owns let go of the season's least able (→CLUB-49).
+  closeFreeAgents(w, w.year, released);
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
@@ -681,9 +686,8 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
     yearlyStaff(w);
     seasonStaff(w);
     seasonAcademy(w);
-    // Youth come in five below the division the club will play in, on its market wage: rated
-    // against an XI that had outgrown its division they arrived on star wages (→CLUB-3).
-    const youthLevel = Math.max(20, Math.round(divisionStrength(w)) - 5);
+    // The top-up's level is the division the club will play in, read before anyone leaves.
+    const freeLevel = Math.round(divisionStrength(w));
     // Unrenewed contracts end: those players leave, before 1996 for a compensation (→CLUB-28).
     expireContracts(w, oldTier);
     // The running contracts' promotion or relegation clauses apply from the first round (→CLUB-29).
@@ -698,36 +702,7 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
       p.fatigue = 0;
       p.season = zeroMetrics();
     }
-    let i = 0;
-    while (
-      activePlayers(w).length < SQUAD_TARGET ||
-      !activePlayers(w).some((p) => p.position === 'GK')
-    ) {
-      const position = !activePlayers(w).some((p) => p.position === 'GK')
-        ? 'GK'
-        : refillPosition(w);
-      if (isDelegated(w, 'academy')) {
-        if (!callUpFor(w, lineOf(position), 'close')) break;
-        continue;
-      }
-      const youth = makePlayer(
-        own.country,
-        w.seed,
-        `${own.id}:youth:${w.year}:${i++}`,
-        w.year,
-        youthLevel,
-        position,
-        18,
-        own.tier,
-      );
-      // A refill signs at the close with his contract's clauses (→CLUB-29).
-      youth.clauses = signingClauses(w, youth);
-      youth.graduate = true;
-      if (registrationRoom(w, { ...youth, joined: w.year })) break;
-      joinClub(youth, 'domestic', w.year);
-      w.players.push(youth);
-      movePerson(w, youth, w.playerClub, true);
-    }
+    topUpAtClose(w, freeLevel);
     for (const player of startersBeforeDepartures)
       if (player.status === 'retired' || (player.status === 'sold' && !player.loanUntil))
         openNeed(w, player, currentDay(w));
@@ -755,10 +730,61 @@ export function closeSeason(w: World, finishEurope?: (w: World) => void) {
         .map((club) => club.id),
     ),
   );
+  refreshFreeAgents(w);
   // The new season's first day of club business opens the summer window.
   clubDay(w);
   sponsorReminder(w);
   refreshReadModels(w);
+}
+/**
+ * The close's top-up (→CLUB-3, CLUB-40): the squad is filled to SQUAD_TARGET with a goalkeeper,
+ * each time for the line the formation lacks most. A delegated youth director's call-ups come
+ * first, then the ablest free agent of the line rated at most `level`, the average strength of the
+ * division the club will play in, and only then a generated 18-year-old five below it, each on
+ * that division's market wage: rated against an XI that had outgrown its division they arrived
+ * on star wages. Never past the registration limit (→CLUB-44).
+ */
+export function topUpAtClose(w: World, level: number) {
+  const own = clubOf(w),
+    youthLevel = Math.max(20, level - 5);
+  let i = 0;
+  while (
+    activePlayers(w).length < SQUAD_TARGET ||
+    !activePlayers(w).some((p) => p.position === 'GK')
+  ) {
+    const position = !activePlayers(w).some((p) => p.position === 'GK') ? 'GK' : refillPosition(w);
+    // A delegated youth director's call-ups first, then a free agent of the line, and only then
+    // a generated youngster (→CLUB-3, CLUB-43).
+    const delegated = isDelegated(w, 'academy');
+    if (delegated && callUpProspects(w).length) {
+      if (!callUpFor(w, lineOf(position), 'close')) break;
+      continue;
+    }
+    const signed = signFreeAgentAtClose(w, lineOf(position), level);
+    if (signed === 'full') break;
+    if (signed) continue;
+    if (delegated) {
+      if (!callUpFor(w, lineOf(position), 'close')) break;
+      continue;
+    }
+    const youth = makePlayer(
+      own.country,
+      w.seed,
+      `${own.id}:youth:${w.year}:${i++}`,
+      w.year,
+      youthLevel,
+      position,
+      18,
+      own.tier,
+    );
+    // A refill signs at the close with his contract's clauses (→CLUB-29).
+    youth.clauses = signingClauses(w, youth);
+    youth.graduate = true;
+    if (registrationRoom(w, { ...youth, joined: w.year })) break;
+    joinClub(youth, 'domestic', w.year);
+    w.players.push(youth);
+    movePerson(w, youth, w.playerClub, true);
+  }
 }
 /**
  * The close of a season before anyone owns a club (→WORLD-13): the cups, Europe, the archive of
@@ -806,8 +832,10 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
   booksClose(w);
   const tiers = new Map(w.clubs.map((c) => [c.id, c.tier]));
   const finishes = leagueFinishes(w);
+  const released = lettingGo(w, w.year, seasonAfter(w.year));
   promote(w);
   retainRecentResults(w);
+  closeFreeAgents(w, w.year, released);
   retireAtClose(w);
   evolveClubs(w, tiers);
   settleReputation(w, finishes);
@@ -828,6 +856,7 @@ function closeWorldSeason(w: World, finishEurope?: (w: World) => void) {
     w,
     new Set(w.clubs.filter((c) => (tiers.get(c.id) ?? c.tier) < c.tier).map((c) => c.id)),
   );
+  refreshFreeAgents(w);
   clubDay(w);
 }
 /**
@@ -944,6 +973,7 @@ function playRound(
   snapshotScorers(w);
   if (w.round % MARKET_REFRESH_ROUNDS === 0) {
     refreshManagerMarket(w);
+    refreshFreeAgents(w);
     refreshCoachingMarket(w);
     qualifyManagers(w);
     // The chief scout redraws his shortlist with the managers' market (→CLUB-33).

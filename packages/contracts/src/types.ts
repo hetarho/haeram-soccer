@@ -402,6 +402,12 @@ export interface Player {
   clauses?: ContractClauses;
 }
 /**
+ * A player the world holds without a club (→CLUB-49): his identity, attributes, positions,
+ * personality and agent as he left, his season and career figures zero and no contract terms.
+ * `freeSince` is his first season without a club; one unsigned through it retires at its close.
+ */
+export type FreeAgent = Player & { freeSince: number };
+/**
  * A player's contract talk (→CLUB-26), opened when a transfer window opens: a renewal in his
  * contract's final season or an improved contract with at most three seasons left; his demand,
  * the floor he accepts at or above (demand × (1 − goodwill)) and the season day he asked.
@@ -1238,6 +1244,11 @@ export interface World {
   managerMarket?: ManagerMarket;
   /** The chief scout's shortlist and the manager's requests (→CLUB-33); absent until first drawn. */
   shortlist?: Shortlist;
+  /**
+   * The free agents (→CLUB-49), at most FREE_AGENT_CAP: replaced whole on every change, never
+   * edited in place (`free-agents.ts` owns it); absent in a world made before the pool.
+   */
+  freeAgents?: FreeAgent[];
   manager: Manager;
   tactic: Tactic;
   fixtures: Fixture[];

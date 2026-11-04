@@ -8,6 +8,9 @@ import {
 import { squad } from './world';
 import { careerWorld } from './career.testkit';
 const world = () => careerWorld({ seed: 'npc-retirement' });
+/** A retained player still at his club: one let go into the free agents (→CLUB-49) is not. */
+const retained = (w: ReturnType<typeof world>) =>
+  Object.values(w.people!).find((p) => p.origin && p.playing === 'active')!;
 describe('actual retained NPC retirement', () => {
   it('distinguishes missing minutes, known low minutes, regular starters and goalkeeper age', () => {
     expect(retirementChanceWithContext(1950, 1918, 'CM')).toBe(0.08);
@@ -20,7 +23,7 @@ describe('actual retained NPC retirement', () => {
   });
   it('records announcement and actual retirement separately once and excludes retired players', () => {
     const w = world(),
-      person = Object.values(w.people!).find((p) => p.origin)!;
+      person = retained(w);
     person.born = w.year - 40;
     const club = w.clubs.find((c) => c.id === person.club)!;
     w.calendar = { day: retirementAnnounceDay(w.year) };
@@ -47,8 +50,10 @@ describe('actual retained NPC retirement', () => {
   it('is independent of roster inspection and forces actual age 41 even for a keeper', () => {
     const a = world(),
       b = world();
+    const ids = [a, b].map((w) => retained(w).id);
+    expect(ids[0]).toBe(ids[1]);
     for (const w of [a, b]) {
-      const person = Object.values(w.people!).find((p) => p.origin)!;
+      const person = w.people![ids[0]!]!;
       person.born = w.year - 40;
       person.position = 'GK';
       w.calendar = { day: retirementAnnounceDay(w.year) };
@@ -60,6 +65,6 @@ describe('actual retained NPC retirement', () => {
     retireAtClose(a);
     retireAtClose(b);
     expect(a.people).toEqual(b.people);
-    expect(Object.values(a.people!).find((p) => p.origin)!.playing).toBe('retired');
+    expect(a.people![ids[0]!]!.playing).toBe('retired');
   });
 });

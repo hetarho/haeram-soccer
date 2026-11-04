@@ -82,4 +82,25 @@ describe('fixture roster read copy', () => {
     delete w.people;
     expect(readCopy(w)).not.toHaveProperty('people');
   });
+
+  it("ships only the free agents' IDs, which keep their old places empty (→CLUB-49)", () => {
+    const raw = npcSquad('read-copy', 2000, club),
+      w = {
+        seed: 'read-copy',
+        year: 2000,
+        playerClub: 'own',
+        clubs: [club],
+        freeAgents: [{ ...raw[3], freeSince: 2000 }],
+      } as unknown as World,
+      expected = continuousSquad(w, club),
+      copy = readCopy(w),
+      remote = JSON.parse(JSON.stringify(copy)) as World;
+    expect(copy.freeAgents).toEqual([{ id: raw[3].id }]);
+    expect(expected.some((p) => p.id === raw[3].id)).toBe(false);
+    expect(expected[3].id).toBe(`${club.id}:vacancy:3:2000`);
+    expect(continuousSquad(remote, club)).toEqual(expected);
+    const key = fixtureRosterKey(copy);
+    w.freeAgents = [];
+    expect(fixtureRosterKey(readCopy(w))).not.toBe(key);
+  });
 });

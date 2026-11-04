@@ -47,6 +47,7 @@ import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './transactions';
 import { suitorFor } from './transfers';
+import { joinAtClose } from './free-agents';
 import { transferWindowDays } from './transfer-window';
 import { financeProjection } from './projection';
 import { isDelegated } from './responsibilities';
@@ -714,8 +715,9 @@ export const EXPIRY_COMPENSATION = 50;
 /**
  * Season close, once the new season's books are open (→CLUB-28): every player whose contract has
  * run out leaves. From 1996 he leaves on a free; before, the club he joins pays 50% of his value,
- * at `division`, the one he played in, and one no club signs brings nothing. Loan players go back
- * when the loan ends, and announced retirements have already retired.
+ * at `division`, the one he played in, and one no club signs brings nothing and joins the free
+ * agents (→CLUB-49). Loan players go back when the loan ends, and announced retirements have
+ * already retired.
  */
 export function expireContracts(w: World, division = clubOf(w).tier) {
   for (const p of activePlayers(w)) {
@@ -727,6 +729,8 @@ export function expireContracts(w: World, division = clubOf(w).tier) {
     delete p.stance;
     leaveContract(w, p);
     movePerson(w, p, club?.id, true);
+    // One no club signs is a free agent (→CLUB-49).
+    if (!club) joinAtClose(w, p);
     if (w.year >= BOSMAN_YEAR || !club) {
       addEvent(
         w,

@@ -18,7 +18,7 @@ export function canonical(value: unknown): string {
 }
 export * from './types';
 export * from './recent-results';
-export { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS, ROLE_IDS } from './player';
+export { ATTRIBUTES, FREE_AGENT_CAP, LINES, PLAY_TRAITS, POSITIONS, ROLE_IDS } from './player';
 export {
   careerEnded,
   DIVIDEND_SHARES,

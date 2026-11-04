@@ -16,6 +16,7 @@ import { activateMatchModel, MATCH_MODEL_RELEASE, type MatchModelRelease } from 
 import { seasonFrom } from './wartime';
 import { DEFAULT_TICKET } from './presets';
 import { booksOpen } from './books';
+import { seedFreeAgents } from './free-agents';
 
 /** Every world is made in 1930, the first takeover decade (→WORLD-13). */
 export const HISTORY_START = TAKEOVER_DECADES[0];
@@ -84,6 +85,8 @@ export function historyWorld(
     serial: 0,
   };
   installMissingIdentities(w);
+  // The players its clubs let go of their first squads are free agents from its first day (→CLUB-49).
+  seedFreeAgents(w);
   // Fixtures are results-only while nobody owns a club (→MATCH-22); the released model keeps the
   // season's aggregates the Ballon d'Or reads (→SAVE-23, PLAYER-27) and is the takeover's model.
   activateMatchModel(w, release);
