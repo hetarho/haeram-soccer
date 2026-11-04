@@ -329,7 +329,8 @@ export const DECISION_CONFIG = {
      * Neutral at 1 and 1; T397 keeps the prior and halves the pull (taking it away entirely sent
      * long shots out of MATCH-23 and handed press's high line a free hand).
      */
-    past: { prior: 1, through: 0.5 },
+    // `flag` (cv04-chc, default 0, →MATCH-16 r51): such a pass's prior × (1 − `flag` × the carrier's 판단력/99), a ball the flag may stop.
+    past: { prior: 1, through: 0.5, flag: 0 },
     /**
      * The share of a cut-back zone's crosses played back as cut-backs, in place of `cutBackShare`
      * (T397: 0.1 → 0.5; cut-backs 0.17 → 0.23 a team, still short of MATCH-30's 0.35–0.60).
@@ -1126,6 +1127,8 @@ export function passOptions(
     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
     if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
     if (beyondLine) prior *= past.prior;
+    if (beyondLine && past.flag > 0)
+      prior *= Math.max(0, 1 - past.flag * Math.min(1, skill(s, side, idx, 'decisions') / 99));
     // Settled play in the final third (candidate model, T408).
     if (candidate) {
       const F = DECISION_CONFIG.candidate.finalThird;

@@ -1,0 +1,80 @@
+[
+ {
+  "name": "origins-r3c15f3-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/r3c15f3.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-r3c15f3-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-r3c15f5-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/r3c15f5.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-r3c15f5-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-r3c1f4a115-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/r3c1f4a115.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-r3c1f4a115-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-f4-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/f4.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-f4-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Er3c15-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c15.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-Er3c15-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Er3c15f4-0-300",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-chc/candidates/Er3c15f4.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-chc/origins/origins-Er3c15f4-0-300.json"
+  ]
+ }
+]

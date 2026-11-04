@@ -302,7 +302,8 @@ export const SHOT_CONFIG = {
    * middle, between them); `set` m against one with at least `crowd` defenders between.
    */
   // `ahead` (cv04-rec, default 0): a defender counts as between only `ahead` m or more nearer the goal along the line than the shooter.
-  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6, crowd: 1, ahead: 0 } },
+  // `ref` (cv04-chc, default 0, →MATCH-11/35 r51): the reference keeper stands `ref` m off his line toward the shot, on the line from his goal's middle, in place of one on his line's middle; with `ref` set the factor is at most `cap`; `floor` (0 off) the least it falls to (a keeper out to a carrier still beaten by a chip or a finish past him).
+  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6, crowd: 1, ahead: 0, ref: 0, cap: 10, floor: 0 } },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -918,8 +919,16 @@ export function keeperNarrowing(
     const covered = Math.max(0, Math.min(hi, at + half) - Math.max(lo, at - half));
     return 1 - covered / (hi - lo);
   };
-  const line = open([PITCH.length, PITCH.width / 2]);
-  return line > 0 ? open(attackFrame(side, keeper.pos)) / line : 1;
+  let ref: Point = [PITCH.length, PITCH.width / 2];
+  if (N.ref > 0) {
+    const gd = hypot(PITCH.length - from[0], PITCH.width / 2 - from[1]);
+    const k = gd > 0 ? Math.min(N.ref, gd / 2) / gd : 0;
+    ref = [PITCH.length - (PITCH.length - from[0]) * k, PITCH.width / 2 - (PITCH.width / 2 - from[1]) * k];
+  }
+  const line = open(ref);
+  if (line <= 0) return 1;
+  const f = Math.min(N.ref > 0 ? N.cap : Infinity, open(attackFrame(side, keeper.pos)) / line);
+  return N.floor > 0 ? Math.max(N.floor, f) : f;
 }
 
 /**
