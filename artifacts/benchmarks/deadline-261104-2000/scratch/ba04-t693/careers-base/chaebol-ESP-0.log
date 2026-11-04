@@ -1,0 +1,50 @@
+chaebol ESP none none seed 0: ESP:0:0:12, 20 seasons in 941 s
+# Owner balance — 1 careers from a 1950 takeover to 1969/70, every responsibility delegated, 기본 방향 (OWNER_TIERS 10/1.6/1.6/1.6/1.6/1.6, living 0.2% a settlement, reference purse apart)
+
+### LEAGUE-13 — reference careers by wealth tier
+
+| tier | traits | policy | careers | first top-flight title | first title: median / fastest season | titles after the first | top flight reached | top-flight seasons (avg) | club bankrupt | owner bankrupt | 퇴진 | seasons played (avg) | band |
+|---|---|---|---:|---:|---|---:|---:|---:|---:|---:|---:|---:|---|
+| chaebol | none | none | 1 | 0 (0.0%) | - | - | 1 (100.0%) | 16.0 | 0 | 0 | 0 | 20.0 of 20 | about half win; 30% or less after; none bankrupt |
+
+### Growth — top-flight reach and operating result by tier
+
+| tier | traits | policy | careers | division bought (median) | started in the top flight | reached it from below | first top-flight season (median / range, of those from below) | operating result / revenue | wage bill / revenue | player sales / revenue |
+|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|
+| chaebol | none | none | 1 | 1 | 1 | 0 of 0 | - | 9.4% | 53.6% | 11.0% |
+
+### Owner bankruptcy by living-cost rate a settlement (reference careers, read from the fortune left; 0.2% is OWNER-8's; played at 0.2%)
+
+| tier | traits | careers | 0.2% | 0.25% | 0.15% | 0.1% | 0.05% |
+|---|---|---:|---|---|---|---|---|
+| chaebol | none | 1 | none | none | none | none | none |
+
+### The start — 1950 price units of the bought club's country (anchor in English units), medians
+
+| tier | clubs bought | division bought (1 = top) | clubs in the country's reach | anchor | starting fortune | price | fortune left | price / books' last income | first-season turnover / books' last income | debt taken over | cash taken over | living costs a season at the start | seasons of living costs the fortune left pays (no growth) |
+|---|---:|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| chaebol | 1 | 1부 ×1 | 8 | 220,422 | 352,675 | 220,211 | 132,463 | 4.12 | 0.9 (1) | 0 | 51,773 | 2,821 | 46.9 |
+
+### 팬 민심 (OWNER-12/13) by tier, traits and policy
+
+| tier | traits | policy | seasons | mood at the close: median (p10–p90) | lowest after a round (median career) | rounds below the floor a season | owner fortune at the last close (median, units) | living costs paid a season (median) |
+|---|---|---|---:|---|---:|---:|---:|---:|
+| chaebol | none | none | 20 | 59.2 (35.1–73.5) | 32.3 | 0.00 | 52,341 | 0 |
+
+### ECON-36 — first owned season against the books (income in units of each season; ratios owned / book)
+
+| tier | country | seed | band | division | books' last income | first-season income | ratio | ±25% | league distribution | league gate | commercial | cups (share of income) | book at the takeover → close: gate, commercial | wages / books' last wages |
+|---|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|---:|---|---:|
+| chaebol | ESP | 0 | chaebol | 1 | 53,391 | 48,093 | 0.9 | ok | 1 | 0.9 | 1 | 3.4% | 1, 1 | 0.67 |
+
+| tier | careers | ratio median (min–max) | within ±25% |
+|---|---:|---|---:|
+| chaebol | 1 | 0.9 (0.9–0.9) | 1 |
+
+### Careers
+
+| tier | traits | policy | country | seed | club | seasons | divisions (seasons) | titles | end |
+|---|---|---|---|---|---|---:|---|---:|---|
+| chaebol | none | none | ESP | owner-balance-0 | ESP:0:0:12 | 20 | 1부 16, 2부 4 | 0 | - |
+
+_942 s_

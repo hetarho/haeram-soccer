@@ -1,0 +1,62 @@
+[
+ {
+  "name": "midsize-FRA-0",
+  "code": 0,
+  "minutes": 14.428966666666666
+ },
+ {
+  "name": "midsize-GER-0",
+  "code": 0,
+  "minutes": 14.74265
+ },
+ {
+  "name": "midsize-ENG-1",
+  "code": 0,
+  "minutes": 15.304766666666668
+ },
+ {
+  "name": "midsize-ESP-1",
+  "code": 0,
+  "minutes": 15.393583333333334
+ },
+ {
+  "name": "midsize-ESP-0",
+  "code": 0,
+  "minutes": 15.491683333333333
+ },
+ {
+  "name": "midsize-ENG-0",
+  "code": 0,
+  "minutes": 15.7093
+ },
+ {
+  "name": "midsize-FRA-1",
+  "code": 0,
+  "minutes": 13.935866666666668
+ },
+ {
+  "name": "midsize-GER-1",
+  "code": 0,
+  "minutes": 14.071566666666667
+ },
+ {
+  "name": "industrial-GER-0",
+  "code": 0,
+  "minutes": 14.03975
+ },
+ {
+  "name": "industrial-FRA-0",
+  "code": 0,
+  "minutes": 14.26875
+ },
+ {
+  "name": "industrial-ESP-0",
+  "code": 0,
+  "minutes": 14.766583333333333
+ },
+ {
+  "name": "industrial-ENG-0",
+  "code": 0,
+  "minutes": 15.144883333333333
+ }
+]
