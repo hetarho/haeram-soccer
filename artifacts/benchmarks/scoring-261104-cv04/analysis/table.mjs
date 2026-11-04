@@ -18,8 +18,11 @@ console.log('|---|---:|---:|---:|---|---:|---:|---:|---|---:|---|---|---:|---|--
 for (const spec0 of names) {
   const [spec, part = 'calibration'] = spec0.split(':');
   const [name, size = '400'] = spec.split('@');
-  const log = `${logs}/bands-${name}-${size}.log`;
-  const t = existsSync(log) ? readFileSync(log, 'utf8') : '';
+  // The run's logs are `.log`; the evidence keeps them as `.txt` (`*.log` is gitignored).
+  const log = [`${logs}/bands-${name}-${size}.log`, `${logs}/bands-${name}-${size}.txt`].find(
+    existsSync,
+  );
+  const t = log ? readFileSync(log, 'utf8') : '';
   const un = t.match(/unopposed chances ([0-9.]+) a team \(([0-9.]+)% of shots\), scored ([0-9.]+)%/);
   let file = `${art}/conc-${name}-${part}.json`;
   if (!existsSync(file) && name === 'ctl')

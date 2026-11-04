@@ -9,7 +9,7 @@ mkdirSync(dst + 'analysis/jobs', { recursive: true });
 let n = 0;
 for (const f of readdirSync(src + 'logs')) {
   if (!f.startsWith('bands-') || f.startsWith('smoke')) continue;
-  copyFileSync(src + 'logs/' + f, dst + 'bands/' + f);
+  copyFileSync(src + 'logs/' + f, dst + 'bands/' + f.replace(/\.log$/, '.txt'));
   n++;
 }
 for (const f of readdirSync(src)) {

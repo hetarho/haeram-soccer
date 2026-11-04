@@ -48,7 +48,9 @@ for (const spec0 of names) {
   } else console.log('conc: none');
   const log = existsSync(logs)
     ? readdirSync(logs).find((f) =>
-        size ? f === `bands-${name}-${size}.log` : f.startsWith(`bands-${name}-`) && f.endsWith('.log'),
+        size
+          ? f === `bands-${name}-${size}.log` || f === `bands-${name}-${size}.txt`
+          : f.startsWith(`bands-${name}-`) && /\.(log|txt)$/.test(f),
       )
     : undefined;
   if (!log) continue;

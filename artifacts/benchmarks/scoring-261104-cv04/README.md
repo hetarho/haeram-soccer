@@ -12,7 +12,7 @@ Base: nx04's best candidate arrHoldEZ60 (earlyZones volume base + `hold` 14 + `a
 - `shape.candidate.keeperOff` — a presser of the keeper on the ball stands off at least that far goal-side of him instead of closing him.
 - `alone 0` (an existing setting) switches the clause off: a diagnostic, since MATCH-16 states it.
 
-Measurement commands (the runner `analysis/run.mjs` sets `T689_PATCH_FILE` per job): `scripts/grid-bands.ts --candidate --matches N` (the MATCH-23 band check on the grid-bands pairs, calibration seeds; logs `bands/`), `scripts/scoring-concentration.ts --matches 1200|2400`, `scripts/scoring-striker-stress.ts`, `scripts/grid-bands.ts --report --scale 0.25 --only core,tactics --jobs 4` and the new `scripts/scoring-regain-shots.ts` (observed matches 600–719 of the shot-origin design).
+Measurement commands (the runner `analysis/run.mjs` sets `T689_PATCH_FILE` per job): `scripts/grid-bands.ts --candidate --matches N` (the MATCH-23 band check on the grid-bands pairs, calibration seeds; its output in `bands/*.txt`, as `*.log` is gitignored; `analysis/table.mjs` rebuilds §2's table from them), `scripts/scoring-concentration.ts --matches 1200|2400`, `scripts/scoring-striker-stress.ts`, `scripts/grid-bands.ts --report --scale 0.25 --only core,tactics --jobs 4` and the new `scripts/scoring-regain-shots.ts` (observed matches 600–719 of the shot-origin design).
 
 ## 1. Where the striker's regains come from (`scripts/scoring-regain-shots.ts`, ctl, 120 observed matches)
 

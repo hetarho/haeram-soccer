@@ -1,0 +1,44 @@
+T689 candidate patch applied from artifacts/benchmarks/scoring-261104-cv04/candidates/view5.json: {"decide":{"candidate":{"revision4":{"gain":0.08,"shotScale":0.1,"shotQuality":{"ref":0.12,"power":0.35}},"through":{"score":0.6},"revision9":{"clear":{"view":0.5}}}},"shape":{"candidate":{"boxRun":{"odds":4,"from":4,"extra":["invertedWinger","boxToBox","mezzala"]},"revision9":{"markRadius":24},"revision10":{"goalSide":{"near":60,"zone":45,"pick":30,"blend":1,"room":0}},"hold":{"out":14},"arrive":{"from":60,"out":14,"narrow":0.3}}},"box":{"reach":55}}
+grid bands: 400 matches, year 2024, seeds grid-bands-1..4, model continuous-aggregate-10
+measure                         band            value    ok
+passes attempted (team)         356–594          403.39  pass
+pass completion %               60–100            83.98  pass
+pass forward %                  26.3–43.8         38.25  pass
+pass lateral %                  37.5–62.5         42.61  pass
+pass back %                     11.3–18.8         19.14  FAIL
+possessions (team)              71.3–119          76.63  pass
+median passes per possession    2–4                4.00  pass
+possessions ending in a shot %  9.38–15.6         20.21  FAIL
+shots (team)                    9.38–15.6         17.08  FAIL
+on target %                     25.1–41.9         26.24  pass
+xG per shot                     0.0788–0.131       0.08  FAIL
+shots from goal area %          5.63–9.38         15.24  FAIL
+shots from rest of box %        39.8–66.3         74.51  FAIL
+shots from outside %            27.8–46.3         10.25  FAIL
+mean shot distance m            12.4–20.6         10.88  FAIL
+shots from 30 m+ %              0–12.5             0.32  pass
+shots from own half %           0–0.625            0.00  pass
+crosses (team)                  12.4–20.6         15.64  pass
+cross completion %              18.8–31.3         18.01  FAIL
+take-ons (team)                 12.8–21.3         13.48  pass
+take-on success %               37.5–62.5         54.08  pass
+tackles + interceptions (team)  19.5–32.5         24.88  pass
+throw-ins (team)                15–25              9.01  FAIL
+corners (team)                  3.75–6.25          4.62  pass
+goal kicks (team)               6–10               8.71  pass
+fouls (team)                    8.63–14.4          9.42  pass
+offsides (team)                 1.35–2.25          0.90  FAIL
+yellow cards (match)            2.85–4.75          3.18  pass
+red cards (match)               0.08–0.15          0.09  pass
+goals (match)                   2.06–3.44          2.94  pass
+set-piece goals (no pens) %     18–30             20.87  pass
+penalty goals %                 5.63–9.38         10.82  FAIL
+headed goals %                  12.8–21.3         17.80  pass
+goals by FW %                   41.3–68.8         68.65  pass
+goals by MF %                   24–40             20.78  FAIL
+goals by DF %                   8–15              10.56  pass
+ball in play (min)              42–70             63.77  pass
+added time per match 10.95 min
+unopposed chances 8.37 a team (49.0% of shots), scored 9.4%
+passed 24/37
+179.3 ms a match
