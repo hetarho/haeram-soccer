@@ -3,7 +3,9 @@
  * distribution, gate, commercial income), wage bill and operating expenses, summed over the season
  * from the scales the owner's club uses, settle into its cash; cash below zero is debt. A club
  * nobody owns never goes bankrupt, and a takeover or project of LEAGUE-10 clears its debt. The
- * current and the last closed season are kept (→SAVE-27).
+ * current and the last closed season are kept (→SAVE-27). Its cup and continental money is read
+ * at every close (`bookCompetitionMoney`) and counts in its income only while `BOOK_COMPETITIONS`
+ * is in force.
  */
 import type { Club, ClubBooks, ClubSeasonBook, Fixture, World } from '../../contracts/src/types';
 import { COUNTRIES, currency, SPONSOR_SLOTS } from '../../catalogs/src/index';

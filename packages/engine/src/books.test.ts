@@ -35,12 +35,7 @@ import {
   resultBonus,
 } from './finance';
 import { CUP_PRIZE_CONFIG, cupTiePrize, cupTitlePrize } from './cups';
-import {
-  EUROPE_PRIZE_CONFIG,
-  europeMatchPrize,
-  europeTiePrize,
-  europeTitlePrize,
-} from './europe';
+import { EUROPE_PRIZE_CONFIG, europeMatchPrize, europeTiePrize, europeTitlePrize } from './europe';
 import { broadcastQuote } from './quotes';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
@@ -318,9 +313,7 @@ describe('competition money in the books (→ECON-36, LEAGUE-5, EURO-7)', () => 
     expect(cupTitlePrize('ENG', y)).toBe(broadcastQuote('ENG', y, CUP_PRIZE_CONFIG.honor));
     const pay = EUROPE_PRIZE_CONFIG;
     expect(europeMatchPrize('ENG', y, 'win')).toBe(broadcastQuote('ENG', y, pay.match + pay.win));
-    expect(europeMatchPrize('ENG', y, 'draw')).toBe(
-      broadcastQuote('ENG', y, pay.match + pay.draw),
-    );
+    expect(europeMatchPrize('ENG', y, 'draw')).toBe(broadcastQuote('ENG', y, pay.match + pay.draw));
     expect(europeMatchPrize('ENG', y, 'loss')).toBe(broadcastQuote('ENG', y, pay.match));
     expect(europeTiePrize('ENG', y)).toBe(broadcastQuote('ENG', y, pay.knockout));
     expect(europeTitlePrize('ENG', y)).toBe(broadcastQuote('ENG', y, pay.honor));
