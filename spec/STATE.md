@@ -20,6 +20,8 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261104 decided ARCH-30 T695 ECON-16 ECON-32 ECON-33 WEB-39: the release-gate fix STATE next ordered → superseded: the owner's main fb868d3d (18:55 KST, after dfe1ffc9's decision wage caps) rewrote the 20 failing unit cases and reports typecheck/lint/format, 2,098 unit and 46 contract tests passing, with "SSOT alignment for the approved owner controls" pending; this slice aligns ECON r46, CLUB r54 and WEB r208 with the released controls and T695 merges main into this branch (only spec/STATE.md conflicts) and verifies it, before the economy slices measure (alt: a gate-fix task on the old failure list, which the owner already fixed | leave the merge to the host's final gate, so this pass's measurements would run on a mechanism players no longer have). ba04
+- 261104 decided ECON-16 ECON-17 ECON-22 ECON-25 ECON-32 ECON-33 ECON-34 CLUB-16 CLUB-26 WEB-10 WEB-14 WEB-39 WEB-44 WEB-79: how SSOT records owner controls released without SSOT changes (79b29d28–fb868d3d) that reverse r41's no-owner-action rules → the rules as released: the owner sets dials, ticket preset, build cards and direction rows and starts facility works at their quote; per-decision 재정 기조 and per-person annual wage caps for automatic decisions, never signed contracts; grassroots retired (a saved key has no effect); the recruitment dial no longer moves fees; the training ground multiplies growth with round recovery and talk goodwill; the office opens on its investment directory with 오버뷰/결재함/결재 설정 as menu modals; owner-released code is the approved product decision (alt: keep r41's text and treat the controls as defects, against the owner's explicit "preserve the existing investment controls" | record only the UI and leave the economy rules stale, which the economy slices would then measure against wrong text). ba04
 - 261104 decided CLUB-48 T694: how T694 reads W80 and splits a star's wage on it → production exports `ordinaryWageUnits` (W80) and `marketPoints`, both re-exported by `contracts.ts` (outside the declared touches, since the read-leaf test requires every pricing export there); the script's points term is `marketPoints(OVR) − marketPoints(80)` at his promise and each star keeps T693's W80 and his age, so both readings come from the same freshly lived books (alt: a script-side copy of the promise term, which the acceptance forbids for W80 | re-read T693's archived rows, which lack each star's age and potential). ba04
 - 261104 decided CLUB-48 T694 ARCH-30: what this pass runs next after CLUB r53 → T694 (the W80 correction and pinned activation, about an hour with its book re-read), then the release-gate fix of released main's typecheck/format/unit failures, then the second-mechanism slice on T694's re-read books, then the growth slice; the coordinator's review orders CLUB-48's correction before any main publication of the mechanism, and the second mechanism should be fitted on the corrected formula (alt: the gate fix first, which leaves the inverted formula in the tree any gate would publish | the second mechanism first, fitted on a formula about to change). ba04
 - 261104 decided CLUB-48 T693 T694: how CLUB-48's text and the tree's activation agree while T693's candidate is not in force → CLUB-48 states the table in force, s = 1 in every country and season, and the gate any table must pass (T693's exit condition: the calibration band plus no held-out club without a project above its revenue); England's maximum-wage anchor stays the primary record a passing table carries, never activated alone; the mechanism stays in the tree at s = 1 with its tests and `--spread` override for the follow-up, T694 pins the activation with a test (alt: archive the mechanism and its scripts as evidence, which the second-mechanism slice would rebuild | activate England's own anchor alone now, unmeasured, cheapening only England's stars while every other league pays the full modern spread). ba04
@@ -684,15 +686,15 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 30 | 30 | - | 2 |
-| WEB | 207 | 207 | - | 0 |
+| WEB | 208 | 208 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
-| CLUB | 53 | 53 | - | 0 |
+| CLUB | 54 | 54 | - | 0 |
 | MATCH | 48 | 48 | - | 0 |
 | LEAGUE | 14 | 14 | - | 0 |
 | STAFF | 39 | 39 | - | 0 |
-| ECON | 45 | 45 | - | 0 |
+| ECON | 46 | 46 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 22 | 22 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
@@ -714,6 +716,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
+| T695 | bring released main's owner controls into the balance branch and verify them against ECON r46, CLUB r54 and WEB r208 | ECON CLUB WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -737,13 +740,15 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- ba04: the release-gate fix of released main's pre-existing typecheck errors, format drift and unit failures (inbox suggest ARCH-30), a task if it exceeds a lightweight fix's three files, so the host's final gate can pass; T694 (CLUB-48's W80 at the player's own potential, production pinned at s = 1) is done.
+- implement-task T695
+- ba04: T695 merges released main's owner controls (fb868d3d, which already fixed the old typecheck/format/unit failures) into this branch and verifies ECON r46, CLUB r54 and WEB r208 on the merged tree; T694 (CLUB-48's W80 at the player's own potential, production pinned at s = 1) is done.
 - Then one planning slice from T693/T694 (inbox suggest CLUB-48 LEAGUE-10): CLUB-48's band is unmet by the spread alone in 2000–2010 and in POR NED BEL; plan the second mechanism (a club nobody owns keeps only the stars its books pay) with the spread's pre-1990 anchors re-read on T694's books (artifacts/benchmarks/T694: least compression 1950/1970 0.22, 1990 0.57; T693's candidate 29/32 calibration, FRA 1970 seed 1 at 70.5%), then its task; a table enters production only through CLUB-48's gate, England's anchor with it.
-- Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers (artifacts/benchmarks/T693/careers-baseline.md: every 중견/지역 유지/자수성가 reference reaches the top flight, median seasons 2/4/5.5, operating result +15–20% of revenue), one mechanism, and implement it; do not start T689 before both.
+- Then plan organic lower-club growth (ECON-29/ECON-30/LEAGUE-13) on T693's baseline careers (artifacts/benchmarks/T693/careers-baseline.md: every 중견/지역 유지/자수성가 reference reaches the top flight, median seasons 2/4/5.5, operating result +15–20% of revenue) re-read first on T695's merged code (ECON r46 changes the owned club's training ground, academy intake and fees), one mechanism, and implement it; do not start T689 before both.
 - Continue one issue at a time: transfers/retention, owner reach/dividend risk, then existing T689 and a fresh read of the old calibration memo. New balance tasks are authorized for this pass; preserve published contracts/history and every measurement/release gate.
 - Work only in /home/deep/haeram/haeram-soccor-balance on codex/football-balance; the loop host owns final verification and publication to configured main. Preserve other checkouts.
 
 ## log
+- 261104 update-ssot ECON r46 CLUB r54 WEB r208 + create-task T695: SSOT aligned with the owner controls released on main without SSOT changes (owner-set dials, ticket preset, cards, rows and facility works; per-decision 재정 기조 and wage caps; grassroots and recruitment fee factors retired; training ground growth/recovery/goodwill; office on its investment directory with menu modals); T695 merges main fb868d3d here and verifies it, superseding the release-gate fix the owner already made. ba04
 - 261104 T694 done: CLUB-48's W80 at the player's own age and potential (`ordinaryWageUnits`), monotonic tests that fail on the lowered W80, production pinned at s = 1 everywhere with no own anchor; T693's candidate re-read on freshly lived worlds equal to T693's: calibration 29/32 (FRA 1970 seed 1 to 70.5%), held out 31/48 unchanged, least compression 1950/1970 0.22; evidence artifacts/benchmarks/T694. ba04
 - 261104 update-ssot CLUB r53 + create-task T694: CLUB-48's W80 at the player's own age and potential (the lowered potential paid an 18-year-old less at OVR 81 than at 80 under s < 1), the table in force stated as s = 1 everywhere with the gate a table must pass and England's anchor only with it; T694 fixes, pins and re-reads T693's candidate books. ba04
 - 261104 T693 done at its exit, candidate not committed: CLUB-48's spread mechanism, tests and `--spread` override in the tree at the released curve (s = 1); the candidate meets the band 30/32 calibration and 31/48 held-out cases (released 8 and 6), misses 2010 at the fixed s = 1, 2000 and POR NED BEL; on it 석유 재벌 references 0 of 8 bankrupt (released 6 of 8), 7 of 8 win; baseline careers recorded for the growth slice; evidence artifacts/benchmarks/T693. ba04
@@ -763,4 +768,3 @@
 - 261104 update-ssot OWNER r3 LEAGUE r14 ECON r44 ARCH r30: T686's 1.6× tier multiple and 0.2% living costs with the passive-owner bound, T686's measured lines in LEAGUE-13 and ECON-29, T679's measured note in ARCH-28; the code already holds every value, so no task (tasked = rev). T689 cites none of them. nv04
 - 261104 T679 done: with the history view on, the preview generates 2000 in 129.8 s at process-wide 4x (2.06 s a season, budget 5 s; 1970 1.85 s) on an M1 Max; the view adds about 0.1% in the worker (Node A/B +0.6%, inside the spread) and a 3.2–3.5 s list hold behind its last card (at most 5.6%); `generation-budget.ts` records load, per-season time, digests and cards, `generation-digest-cost.ts` is the A/B; fast checks pass. nv04
 - 261104 T678 done: the start plays the world's history while a later decade is generated — engine `seasonDigest` (Elo top 10, champions, European winners, 발롱도르, greatest feat) on every progress reply, a self-closing one-at-a-time feat card schedule and 22 messages in all 12 packs; 129 affected unit files (1153 tests), validate:presentation, typecheck, lint, format and build pass; host.generation integration test and the 1950 start journeys left to the host batch. nv04
-- 261104 T686 done: books read the following a club's reputation commands (ECON-36: 30 of 41 first owned seasons within ±25%, was 6 of 23); tier multiples 1.3 → 1.6 and living 0.25% → 0.2% (no passive owner bankrupt before season 17); 석유 재벌's giants still bankrupt (wages 1.8–3.3× income) and lower tiers reach the top flight in every career — update-ssot proposed; golden and prepared worlds regenerated, 994 affected unit tests and fast checks pass. nv04
