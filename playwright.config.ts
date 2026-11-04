@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
-const port = Number(process.env.BROWSER_TEST_PORT || 4173);
+import { browserTestPort } from './tests/config/browser-port';
+// The run's own free port unless BROWSER_TEST_PORT names one (dev reuse needs a named port).
+const port = browserTestPort();
 const baseURL = `http://127.0.0.1:${port}`;
 /**
  * Shared CI runners play the journeys several times slower than a workstation (CI 40282838897 and
