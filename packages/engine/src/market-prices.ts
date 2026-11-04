@@ -68,6 +68,41 @@ export const MARKET_CONFIG = {
   loan: 0.1,
 };
 
+/**
+ * The era's star pay spread s (스타 임금 격차, →CLUB-48), from 0 to 1: a wage above an ordinary
+ * OVR-80 player's is W80 × (W / W80)^s, so at 0 every star earns an 80's wage and at 1 the star
+ * terms count in full (CLUB-25, CLUB-26's Ballon d'Or premium); wages at 80 or below never move.
+ * The table holds the released curve (s = 1 in every season, no own anchor): T693's calibrated
+ * candidate (artifacts/benchmarks/T693) missed CLUB-48's band in 2000 and 2010, so its anchors wait
+ * for CLUB-48's revision; scripts read candidates through `--spread`.
+ */
+export const STAR_SPREAD_CONFIG = {
+  /**
+   * [season year, s] anchors shared by every country, linear between them and flat outside, never
+   * falling with time and 1 from 2008 at the latest, so the modern star ratios stand.
+   */
+  shared: [[2008, 1]] as [number, number][],
+  /**
+   * A country's own spread replaces the shared table through the season `through` only where a
+   * primary record sets a pay cap.
+   */
+  own: {} as Record<string, { through: number; spread: number }>,
+};
+
+/** The star pay spread of `code`'s players' market in the season `year` (→CLUB-48). */
+export function starPaySpread(code: string, year: number) {
+  const own = STAR_SPREAD_CONFIG.own[code];
+  if (own && year <= own.through) return own.spread;
+  const anchors = STAR_SPREAD_CONFIG.shared;
+  if (year <= anchors[0][0]) return anchors[0][1];
+  for (let i = 1; i < anchors.length; i++) {
+    const [from, low] = anchors[i - 1],
+      [to, high] = anchors[i];
+    if (year <= to) return low + ((high - low) * (year - from)) / (to - from);
+  }
+  return anchors[anchors.length - 1][1];
+}
+
 /** A division's pay as a share of the top flight's; fractional divisions lie between two tiers. */
 export function divisionShare(division: number) {
   const shares = MARKET_CONFIG.divisions,
@@ -105,8 +140,26 @@ export function transferPremium(year: number) {
   return anchors[anchors.length - 1][1];
 }
 
-/** Yearly market wage in 1901 units at football index 1. */
-export function marketWageUnits(division: number, ability: number, age: number, potential: number) {
+/**
+ * Yearly market wage in 1901 units at football index 1, at the era's star pay `spread`
+ * (→CLUB-48; 1, the star terms in full, unless given): above OVR 80 it is W80 × (W / W80)^spread,
+ * W80 the same player's wage at 80 with his potential lowered alike.
+ */
+export function marketWageUnits(
+  division: number,
+  ability: number,
+  age: number,
+  potential: number,
+  spread = 1,
+) {
+  const full = starredWageUnits(division, ability, age, potential),
+    from = MARKET_CONFIG.star.from;
+  if (spread === 1 || ability <= from) return full;
+  const ordinary = starredWageUnits(division, from, age, potential - (ability - from));
+  return ordinary * (full / ordinary) ** spread;
+}
+/** CLUB-25's wage with every star term counted in full. */
+function starredWageUnits(division: number, ability: number, age: number, potential: number) {
   const star = MARKET_CONFIG.star;
   const global = clamp((ability - star.globalFrom) / (star.globalFull - star.globalFrom), 0, 1);
   return (
@@ -149,7 +202,11 @@ export function marketWageAt(
   p: Player,
   ovr = overall(p),
 ) {
-  return footballQuote(code, year, marketWageUnits(division, ovr, year - p.born, p.potential));
+  return footballQuote(
+    code,
+    year,
+    marketWageUnits(division, ovr, year - p.born, p.potential, starPaySpread(code, year)),
+  );
 }
 /** A player's transfer value in `code` and `year` money. */
 export function marketValueAt(code: string, year: number, division: number, p: Player) {

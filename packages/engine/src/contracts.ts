@@ -14,9 +14,11 @@ import { country } from '../../catalogs/src/index';
 import { clamp, random, ratio, scaleBy } from './primitives';
 import { activePlayers, clubOf, overall, UNHAPPY_PENALTY } from './player-state';
 import { addEvent } from './events';
-import { marketValue, marketWage } from './market-prices';
+import { marketValue, marketWage, starPaySpread } from './market-prices';
 export {
   MARKET_CONFIG,
+  STAR_SPREAD_CONFIG,
+  starPaySpread,
   divisionShare,
   marketWageUnits,
   starWagePremium,
@@ -278,12 +280,15 @@ export function talkGoodwill(w: World, p: Player) {
   };
 }
 /**
- * What a player is worth to a contract (→CLUB-26): his market wage times his Ballon d'Or premium,
- * the measure of his demand, of an improved contract and of 재계약 기조's caps.
+ * What a player is worth to a contract (→CLUB-26): his market wage times his Ballon d'Or premium
+ * raised to the era's star pay spread (→CLUB-48), the measure of his demand, of an improved
+ * contract and of 재계약 기조's caps.
  */
 export function playerWorth(w: World, p: Player) {
   const { factor } = ballonDorPremium(w.history, w.year, p.id);
-  return factor === 1 ? marketWage(w, p) : scaleBy(marketWage(w, p), factor, 1000n);
+  if (factor === 1) return marketWage(w, p);
+  const spread = starPaySpread(clubOf(w).country, w.year);
+  return scaleBy(marketWage(w, p), spread === 1 ? factor : factor ** spread, 1000n);
 }
 /**
  * What a player asks now: his worth times the build's player-wage effects (→ECON-22), his agent's
