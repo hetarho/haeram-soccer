@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| nw04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T00:56Z | 2026-11-04T00:56Z | - |
 
 ## inbox
 - 261104 parked MATCH-23 MATCH-16 T689: the realism gate stays unmet after bl03, nv04 and cf04 (artifacts/benchmarks/scoring-261104-cf04/README.md): no single config or source lever moves the striker slot's share of the scoring positions (55% of open-play goal-area shots, 61–65% of the shots straight after a won interception), and fewer shots for all does not spread the goals; finishing T689 needs the owner's go-ahead for a structural change of attacking positions and regains measured over several sessions (beyond its 2 h explore and the instruction to add no balance task), or the owner's decision to close it on its exit with no scoring release. nw04
