@@ -39,12 +39,16 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   min-width: 0;
-  padding: 16px 0;
+  padding: 12px 0;
 }
 .row + .row {
   border-top: 1px solid var(--popover-edge);
+}
+.responsibilityRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 .row > span {
   flex: 1;
@@ -58,6 +62,28 @@
 .row small {
   display: block;
   margin-top: 4px;
+}
+.rowControls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+.assignee {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--text);
+  font-size: 12px;
+}
+.assignee button {
+  padding-inline: 0;
+  font-size: inherit;
+  white-space: nowrap;
 }
 .choices {
   composes: choices from './ChoiceGroup.module.css';
@@ -130,8 +156,28 @@
   .row > b {
     flex-basis: 100%;
   }
-  .choices {
+  .rowControls {
     width: 100%;
+    justify-content: space-between;
+  }
+  .assignee {
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+  .choices {
+    margin-left: auto;
+  }
+  .responsibilityRow {
+    gap: 8px;
+  }
+  .responsibilityRow > span {
+    flex-basis: 0;
+  }
+  .responsibilityRow .rowControls {
+    width: auto;
+    max-width: none;
+    justify-content: flex-end;
+    gap: 8px;
   }
 }
 

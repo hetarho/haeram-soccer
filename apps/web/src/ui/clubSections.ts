@@ -1,19 +1,17 @@
 import type { Page } from './state';
 
 /**
- * The office's sections (→WEB-10): 사무실, 훈련 and 운영 share this bar, 사무실 first, opening the
- * office's queue. Our people belong to the primary 팀 entry (→WEB-112), so neither its directory
- * nor its detailed pages show this bar; nor do the home briefing, the competitions or the market.
+ * The owner's workspace tabs. The former office, operations and training bar is retired.
  */
 export const CLUB_SECTIONS = [
-  ['business', 'club.section.office'],
-  ['training', 'club.section.training'],
-  ['operations', 'club.section.operations'],
+  ['business', '오버뷰'],
+  ['operations', '투자'],
 ] as const satisfies readonly (readonly [Page, string])[];
 export type ClubSection = (typeof CLUB_SECTIONS)[number][0];
 
 /** The section a page shows, or none. */
 export function clubSection(page: Page): ClubSection | undefined {
+  if (page === 'training') return 'business';
   return CLUB_SECTIONS.find(([id]) => id === page)?.[0];
 }
 

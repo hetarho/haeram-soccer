@@ -10,33 +10,28 @@ import {
   BUSINESS_TABS,
   officeAddress,
   officeView,
-  approvalId,
   approvalWorld,
   leaveDesk,
   openOwnerOffice,
   returnApprovalHome,
   type OfficeView,
 } from './state';
-import { OfficeBar } from './OfficeBar';
-import { ApprovalQueue } from './ApprovalQueue';
-import { DeskBody, OfficeOverview } from './OfficeDesk';
-import { OfficeTeam } from './ClubHub';
+import { Dialog } from './Dialog';
+import { DeskBody } from './OfficeDesk';
 
 /**
- * The owner office (→WEB-39): the live 결재함 leads the moment it opens, then the read-only club
- * summary (→WEB-44); a selected request's review composes the authoritative
- * form of its work. Proactive work lives in the club's sections (→WEB-110), so a desk opened
- * without a request leaves for them.
+ * A selected approval opens its authoritative work form in a dialog. The workspace below stays empty.
  */
 export function OperationsView({
   state,
   client,
-  controller,
   personnel,
+  selectedRequest,
 }: {
   state: ClientState;
   client: GameClient;
   controller: ProgressionController;
+  selectedRequest?: ApprovalRequest;
   personnel: (
     desk: 'players' | 'staff',
     client: GameClient,
@@ -46,50 +41,47 @@ export function OperationsView({
 }) {
   const w = state.view!.world;
   const requests = useTaskMemory((memory) => memory.approvalRequests);
-  const requestId = approvalId();
+  const requestId =
+    selectedRequest?.item.id ??
+    new URLSearchParams(location.search).get('request') ??
+    undefined;
   const liveRequest = requestId
     ? approvalRequests(w).find((item) => item.id === requestId)
     : undefined;
   const [request] = useState(() =>
-    requestId && approvalWorld() === w.id
+    selectedRequest ??
+    (requestId && approvalWorld() === w.id
       ? (requests[requestId] ??
         (liveRequest && eventDesk(liveRequest)
           ? { world: w.id, desk: eventDesk(liveRequest)!, item: liveRequest }
           : undefined))
-      : undefined,
+      : undefined),
   );
   const [view, setView] = useState<OfficeView>(() =>
     officeView(new URLSearchParams(location.search).get('view')),
   );
-  const area = BUSINESS_TABS.find(([id]) => id === view);
-  // The overview is a modal over the queue; an address that names it lands there with it open.
+  const area = BUSINESS_TABS.find(([id]) => id === (selectedRequest?.desk ?? view));
+  // Older settings addresses still open the settings dialog over the blank workspace.
   useEffect(() => {
-    if (view !== 'office') return;
+    if (selectedRequest || view !== 'office') return;
     history.replaceState(history.state, '', officeAddress('lobby'));
     setView('lobby');
     openOwnerOffice();
-  }, [view]);
+  }, [view, selectedRequest]);
   useEffect(() => {
     if (area && !requestId) leaveDesk();
   }, [area, requestId]);
-  if (!area)
-    return (
-      <OfficeOverview>
-        <ApprovalQueue
-          w={w}
-          pending={approvalRequests(w)}
-          client={client}
-          controller={controller}
-        />
-        <OfficeTeam w={w} />
-      </OfficeOverview>
-    );
+  if (!area) return <section aria-label="오버뷰" style={{ minHeight: '50vh' }} />;
   if (!requestId) return null;
   const [id, label] = area;
   return (
-    <>
-      <OfficeBar title={label} />
-      {/* The bar names the request's work; the review carries its return and its own form. */}
+    <Dialog
+      label={label}
+      wide
+      onClose={() => {
+        if (!state.busy && !state.pendingActions) returnApprovalHome(request);
+      }}
+    >
       <DeskBody data-office-view={id}>
         {request && request.world === w.id && request.desk === id ? (
           <ApprovalRequestHost key={`${w.id}:${requestId}`} request={request} client={client}>
@@ -115,6 +107,6 @@ export function OperationsView({
           </section>
         )}
       </DeskBody>
-    </>
+    </Dialog>
   );
 }

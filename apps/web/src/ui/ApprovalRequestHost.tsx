@@ -3,7 +3,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { approvalRequests, approvalStanding } from '../runtime/progression';
 import { approvalClient } from './approvalClient';
 import type { ApprovalRequest } from './eventRouting';
-import { approvalId, approvalWorld, returnApprovalHome, useNavigation } from './state';
+import { approvalId, approvalWorld, returnApprovalHome } from './state';
 import { useTaskMemory } from './taskMemory';
 import s from './EventCenter.module.css';
 import { useGameState } from '../runtime/store';
@@ -37,8 +37,7 @@ export function ApprovalRequestHost({
         () =>
           useTaskMemory.getState().world === request.world &&
           approvalWorld() === request.world &&
-          approvalId() === request.item.id &&
-          useNavigation.getState().page === 'business',
+          approvalId() === request.item.id,
         // Answering an approval neither starts nor stops the clock (→WEB-42).
         () => returnApprovalHome(request),
         setError,

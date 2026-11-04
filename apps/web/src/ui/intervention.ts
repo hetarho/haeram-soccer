@@ -4,6 +4,7 @@ import type {
   World,
 } from '../../../../packages/contracts/src/types';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
+import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../runtime/client';
 
 export const RESPONSIBILITY_LABELS: Readonly<Record<ResponsibilityKey, string>> = {
@@ -26,8 +27,9 @@ export const RESPONSIBILITY_DETAILS: Readonly<Record<ResponsibilityKey, string>>
   sponsors: '자리별 스폰서 계약',
 };
 /** Who takes each responsibility once the owner delegates it. */
+export type ResponsibilityPost = 'director' | 'manager' | 'youth';
 export const RESPONSIBILITY_DELEGATES: Readonly<
-  Record<ResponsibilityKey, readonly ('director' | 'manager' | 'youth')[]>
+  Record<ResponsibilityKey, readonly ResponsibilityPost[]>
 > = {
   manager: ['director'],
   staff: ['director'],
@@ -37,6 +39,18 @@ export const RESPONSIBILITY_DELEGATES: Readonly<
   academy: ['youth'],
   sponsors: ['director'],
 };
+/** Current holders and their person records for a delegated responsibility. */
+export function responsibilityAssignee(w: World, post: ResponsibilityPost) {
+  const labels = { director: '단장', manager: '감독', youth: STAFF_INFO.youth.label };
+  const member = post === 'manager' ? w.manager : staffMember(w, post);
+  return { post, label: labels[post], name: member?.name ?? '공석', person: member?.person, member };
+}
+export function responsibilityAssignees(w: World, key: ResponsibilityKey) {
+  return RESPONSIBILITY_DELEGATES[key].map((post) => responsibilityAssignee(w, post));
+}
+export function responsibilityDelegates(w: World, key: ResponsibilityKey) {
+  return responsibilityAssignees(w, key).map(({ label, name }) => `${label} ${name}`);
+}
 export function applyResponsibilitySettings(client: GameClient, settings: GameSettings) {
   return client.command({ type: 'settings', settings }, { background: true });
 }

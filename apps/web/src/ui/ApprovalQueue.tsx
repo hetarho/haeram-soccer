@@ -6,7 +6,6 @@ import {
   RESPONSIBILITY_KEYS,
   settingsOf,
 } from '../../../../packages/engine/src/responsibilities';
-import { STAFF_INFO, staffMember } from '../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../runtime/client';
 import {
   approvalStanding,
@@ -26,7 +25,7 @@ import {
 import { Dialog } from './Dialog';
 import { eventDesk } from './eventRouting';
 import {
-  RESPONSIBILITY_DELEGATES,
+  responsibilityDelegates,
   RESPONSIBILITY_DETAILS,
   RESPONSIBILITY_LABELS,
 } from './intervention';
@@ -116,15 +115,6 @@ const TITLE_LABELS: Record<Exclude<ApprovalTitle, ResponsibilityKey>, string> = 
   finance: '재정·투자',
   other: '기타 결재',
 };
-const DELEGATE_LABELS = { director: '단장', manager: '감독', youth: STAFF_INFO.youth.label };
-/** The people a responsibility goes to once delegated: each post with its holder, or 공석. */
-function delegates(w: World, key: ResponsibilityKey) {
-  return RESPONSIBILITY_DELEGATES[key].map((post) => {
-    const name = post === 'manager' ? w.manager.name : staffMember(w, post)?.name;
-    return `${DELEGATE_LABELS[post]} ${name ?? '공석'}`;
-  });
-}
-
 /** One title's 직접/위임: a pressed pair that proposes the other choice. */
 function DelegationSwitch({
   title,
@@ -187,7 +177,7 @@ function DelegationConfirm({
     (key) => proposal.change.responsibilities?.[key] !== undefined,
   );
   const next = proposal.change.responsibilities?.[changed[0]] === 'delegated';
-  const one = changed.length === 1 ? delegates(w, changed[0]).join(' · ') : undefined;
+  const one = changed.length === 1 ? responsibilityDelegates(w, changed[0]).join(' · ') : undefined;
   const close = () => {
     if (!applying) onDone();
   };
@@ -257,11 +247,13 @@ export function ApprovalQueue({
   pending,
   client,
   controller,
+  requestsOnly = false,
 }: {
   w: World;
   pending: readonly StopReason[];
   client: GameClient;
   controller: ProgressionController;
+  requestsOnly?: boolean;
 }) {
   const blocked = useGameState(modeSwitchBlocked);
   const [proposal, setProposal] = useState<OfficeProposal>();
@@ -275,7 +267,7 @@ export function ApprovalQueue({
     if (changed.length)
       propose({ responsibilities: Object.fromEntries(changed.map((key) => [key, value])) });
   };
-  const groups = approvalGroups(w, pending);
+  const groups = approvalGroups(w, pending).filter((group) => !requestsOnly || group.items.length > 0);
   const late = overdueSummary(w, pending);
   const empty = useRef<HTMLParagraphElement>(null);
   const shown = useRef(groups.flatMap((group) => group.items));
@@ -311,8 +303,8 @@ export function ApprovalQueue({
   };
   return (
     <section className={s.queue} aria-label="결재함" data-testid="approval-queue">
-      <TaskReturn />
-      <OfficeBar title="결재함" />
+      {!requestsOnly && <TaskReturn />}
+      {!requestsOnly && <OfficeBar title="결재함" />}
       <div className={s.summary}>
         <p data-testid="approval-counts" ref={empty} tabIndex={-1}>
           {pending.length ? (
@@ -328,7 +320,7 @@ export function ApprovalQueue({
             '지금 결재할 업무가 없어요'
           )}
         </p>
-        <div className={s.bulk} role="group" aria-label="전체 결재 방식" data-ui="choices">
+        {!requestsOnly && <div className={s.bulk} role="group" aria-label="전체 결재 방식" data-ui="choices">
           {(['direct', 'delegated'] as const).map((value) => {
             const all =
               value === 'delegated'
@@ -347,7 +339,7 @@ export function ApprovalQueue({
               </button>
             );
           })}
-        </div>
+        </div>}
       </div>
       <ol className={s.titles} aria-label="결재 항목">
         {groups.map(({ title, items }) => {
@@ -371,7 +363,7 @@ export function ApprovalQueue({
                     </span>
                   )}
                 </h3>
-                {responsibility && (
+                {!requestsOnly && responsibility && (
                   <DelegationSwitch
                     title={responsibility}
                     delegated={!!delegated}
@@ -380,18 +372,18 @@ export function ApprovalQueue({
                   />
                 )}
               </header>
-              <p className={s.delegate}>
+              {!requestsOnly && <p className={s.delegate}>
                 {responsibility ? (
                   <>
                     <span className={s.delegateMark}>{delegated ? '위임 중' : '위임 대상'}</span>
-                    {delegates(w, responsibility).join(' · ')}
+                    {responsibilityDelegates(w, responsibility).join(' · ')}
                   </>
                 ) : (
                   <>
                     <span className={s.delegateMark}>결재</span>구단주 직접
                   </>
                 )}
-              </p>
+              </p>}
               {items.length ? (
                 <ApprovalRows w={w} items={items} onReview={review} tagged={false} />
               ) : (

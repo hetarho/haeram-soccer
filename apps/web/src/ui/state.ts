@@ -203,9 +203,32 @@ export const usePeopleView = oneShot<'candidates'>();
 if (arrival?.market) usePeopleView.getState().open('candidates');
 /** An office view asked for while the office is showing; from elsewhere the address carries it. */
 export const useBusinessView = oneShot<OfficeView>();
-/** The entry to the owner office's 결재함 (→WEB-10/39): the clubhouse entrance and the controller. */
+/** The office entrance opens the workspace overview; the inbox has its own modal action. */
 export function openOfficeLobby() {
-  openBusiness('lobby');
+  useTaskMemory.setState((memory) => ({
+    values: {
+      ...memory.values,
+      [APPROVAL_INBOX_OPEN]: false,
+      [APPROVAL_DIALOG_REQUEST]: undefined,
+      'office-overview': false,
+    },
+  }));
+  visit(officeAddress('lobby'));
+  useBusinessView.getState().open('lobby');
+}
+export const APPROVAL_INBOX_OPEN = 'approval-inbox-open';
+export const APPROVAL_DIALOG_REQUEST = 'approval-dialog-request';
+export function modalApproval() {
+  return useTaskMemory.getState().values[APPROVAL_DIALOG_REQUEST] as ApprovalRequest | undefined;
+}
+export function openApprovalInbox() {
+  useTaskMemory.setState((memory) => ({
+    values: {
+      ...memory.values,
+      [APPROVAL_INBOX_OPEN]: true,
+      [APPROVAL_DIALOG_REQUEST]: undefined,
+    },
+  }));
 }
 /** Overview overlays the current task, including an existing department sheet. */
 export function openOwnerOffice() {
@@ -279,11 +302,15 @@ export function openBusiness(
 }
 /** A request has its own address and world-scoped snapshot, separate from desk browsing. */
 export function approvalId() {
+  const request = modalApproval();
+  if (request) return request.item.id;
   return typeof location === 'undefined'
     ? undefined
     : (new URLSearchParams(location.search).get('request') ?? undefined);
 }
 export function approvalWorld() {
+  const request = modalApproval();
+  if (request) return request.world;
   return typeof location === 'undefined'
     ? undefined
     : (new URLSearchParams(location.search).get('requestWorld') ?? undefined);
@@ -311,22 +338,35 @@ export function openApprovalRequest(world: string, item: StopReason) {
   const desk = eventDesk(item);
   if (!desk) return;
   useTaskMemory.getState().activate(world);
-  // A request reviewed from another task keeps that task's named return beside the 결재함.
-  if (useNavigation.getState().page === 'business') rememberTask('business');
-  else beginTaskDetour('business');
   const request: ApprovalRequest = { world, desk, item: { ...item } };
   useTaskMemory.setState((memory) => ({
     approvalRequests: { ...memory.approvalRequests, [item.id]: request },
+    values: {
+      ...memory.values,
+      [APPROVAL_DIALOG_REQUEST]: request,
+      [APPROVAL_INBOX_OPEN]: false,
+    },
   }));
-  history.pushState(
-    null,
-    '',
-    `${officeAddress(desk)}&request=${encodeURIComponent(item.id)}&requestWorld=${encodeURIComponent(world)}`,
-  );
-  if (useNavigation.getState().page === 'business') useBusinessView.getState().open(desk);
-  useNavigation.setState({ page: 'business' });
 }
 export function returnApprovalHome(request?: ApprovalRequest) {
+  const selected = modalApproval();
+  if (selected) {
+    const memory = useTaskMemory.getState();
+    if (
+      request &&
+      (memory.world !== request.world || selected.world !== request.world || selected.item.id !== request.item.id)
+    ) return;
+    const from = memory.values[QUEUE_RETURN] as QueueReturn | undefined;
+    useTaskMemory.setState({
+      values: {
+        ...memory.values,
+        [APPROVAL_DIALOG_REQUEST]: undefined,
+        [APPROVAL_INBOX_OPEN]: true,
+        [QUEUE_RETURN]: { id: selected.item.id, index: from?.index ?? 0, back: true },
+      },
+    });
+    return;
+  }
   if (
     request &&
     (useTaskMemory.getState().world !== request.world ||
@@ -344,6 +384,7 @@ export function returnApprovalHome(request?: ApprovalRequest) {
     addresses: { ...memory.addresses, business: officeAddress('lobby') },
     values: {
       ...memory.values,
+      [APPROVAL_INBOX_OPEN]: true,
       [QUEUE_RETURN]: { id, index: from?.id === id ? from.index : 0, back: true },
     },
   });

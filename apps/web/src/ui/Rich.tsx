@@ -3,7 +3,7 @@ import { PersonnelHub } from './PersonnelHubs';
 import { TeamDirectory, TeamReturn } from './TeamDirectory';
 import { StaffRoleBadge } from './StaffRoleBadge';
 import { FacilityOverview } from './FacilityOverview';
-import type { ProgressionController } from '../runtime/progression';
+import { approvalRequests, type ProgressionController } from '../runtime/progression';
 import { squadRegistration } from './squadRegistration';
 import { PersonCareerLink } from './PersonCareer';
 import { useTaskState } from './taskMemory';
@@ -18,7 +18,6 @@ import type {
   TransferStance,
   World,
 } from '../../../../packages/contracts/src/types';
-import { priceIndex } from '../../../../packages/catalogs/src/index';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import {
   injuryDaysLeft,
@@ -51,6 +50,7 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
+import { ApprovalQueue } from './ApprovalQueue';
 import { EventCard } from './EventCenter';
 import { MediationReview } from './MediationReview';
 import { PlayingCoachReview } from './PlayingCoachReview';
@@ -80,6 +80,8 @@ import {
 } from './RosterFilters';
 import {
   useBusinessView,
+  APPROVAL_INBOX_OPEN,
+  APPROVAL_DIALOG_REQUEST,
   useContractTalk,
   returnApprovalHome,
   type Page,
@@ -128,10 +130,6 @@ type Props = { state: ClientState; client: GameClient };
  */
 const RecordsRoom = lazy(() =>
   import('./RecordsRoom').then((module) => ({ default: module.RecordsRoom })),
-);
-/** 구단 운영 loads as its own chunk on its first visit (→ARCH-28, →WEB-110). */
-const ClubOperations = lazy(() =>
-  import('./ClubOperations').then((module) => ({ default: module.ClubOperations })),
 );
 /** The manager's youth attribute speeds every young player's growth; the academy is separate. */
 const YOUTH_HINT = '27세 미만 선수 성장';
@@ -1153,30 +1151,62 @@ function Roster({ state, client }: Props) {
     </>
   );
 }
-function EconomicContext({ state }: { state: ClientState }) {
-  const w = state.view!.world,
-    c = w.clubs.find((club) => club.id === w.playerClub)!,
-    cp = priceIndex(c.country, w.year);
+/** The inbox and each review overlay the current page, without changing its address. */
+export function ApprovalInbox({
+  client,
+  controller,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+}) {
+  const state = useGameState((state) => state);
+  const w = state.view!.world;
+  const [open, setOpen] = useTaskState(w.id, APPROVAL_INBOX_OPEN, false);
+  const [selected, setSelected] = useTaskState<ApprovalRequest | undefined>(
+    w.id,
+    APPROVAL_DIALOG_REQUEST,
+    undefined,
+  );
+  useEffect(() => {
+    const close = () => {
+      setOpen(false);
+      setSelected(undefined);
+    };
+    window.addEventListener('popstate', close);
+    return () => window.removeEventListener('popstate', close);
+  }, [setOpen, setSelected]);
+  if (selected && selected.world === w.id) {
+    return (
+      <OperationsView
+        key={`${w.id}:${selected.item.id}`}
+        state={state}
+        client={client}
+        controller={controller}
+        selectedRequest={selected}
+        personnel={(_desk, scoped, request, error) => (
+          <PersonnelRequest
+            key={`${request.world}:${request.item.id}`}
+            request={request}
+            state={state}
+            client={scoped}
+            controller={controller}
+            error={error}
+          />
+        )}
+      />
+    );
+  }
+  if (!open) return null;
   return (
-    <Panel title="돈의 시대, 기록의 기준" note={cp.status.toUpperCase()}>
-      <div className={s.panelBody}>
-        <p>
-          현재 화폐 {w.currency} · 물가지수 {cp.value.toFixed(2)}
-        </p>
-        <p className={s.muted}>
-          {cp.source} ·{' '}
-          {cp.status === 'observed'
-            ? '실제 관측 자료'
-            : cp.status === 'estimated'
-              ? '영국 역사 지수에 연결한 추정치'
-              : '최근 관측 이후 연 2% 가정'}
-        </p>
-        <p className={s.muted}>
-          현금과 고정 계약은 물가에 맞춰 자동으로 불어나지 않습니다. 과거 장부에는 거래 당시의
-          화폐와 금액을 보존합니다.
-        </p>
-      </div>
-    </Panel>
+    <Dialog label="결재함" wide onClose={() => setOpen(false)}>
+      <ApprovalQueue
+        w={w}
+        pending={approvalRequests(w)}
+        client={client}
+        controller={controller}
+        requestsOnly
+      />
+    </Dialog>
   );
 }
 /**
@@ -1243,9 +1273,8 @@ export default function Rich({
         market={(close) => <ManagerMarket state={state} client={client} onClose={close} />}
       />
     );
-  // The office's section bar names 훈련; 유소년 is 팀's, whose list it returns to (→WEB-10/112).
-  // 유소년 also edits its promotion/release responsibility in place.
-  if (page === 'training' || page === 'academy')
+  // Youth management stays in Team while the owner's workspace is being redesigned.
+  if (page === 'academy')
     return (
       <>
         {page === 'academy' && <TeamReturn page="academy" />}
@@ -1260,23 +1289,12 @@ export default function Rich({
         )}
       </>
     );
-  if (page === 'operations')
+  if (page === 'operations' || page === 'training')
     return (
-      <Suspense
-        fallback={
-          <div className={s.loading} role="status">
-            구단 운영을 여는 중…
-          </div>
-        }
-      >
-        <ClubOperations
-          key={state.view!.world.id}
-          state={state}
-          client={client}
-          controller={controller}
-          legacy={<EconomicContext state={state} />}
-        />
-      </Suspense>
+      <section
+        aria-label={page === 'operations' ? '투자' : '오버뷰'}
+        style={{ minHeight: '50vh' }}
+      />
     );
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;

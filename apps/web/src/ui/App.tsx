@@ -1,6 +1,6 @@
 import { PORTABLE_FILE_LIMIT } from '../adapters/repository';
 import { ClubNavigation } from './ClubNavigation';
-import { OfficeOverviewHost } from './OfficeOverviewHost';
+import { ApprovalInboxHost, OfficeOverviewHost } from './OfficeOverviewHost';
 import { CashAlarm } from './CashAlarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
 import { activateTaskWorld, openPeople, openPrimary, useNavigation, type Page } from './state';
@@ -1119,7 +1119,10 @@ export function App() {
       {client && playing && <TeamSheetHost client={client} />}
       {playing && client && <PlayerSheetHost client={client} />}
       {playing && client && controller && (
-        <OfficeOverviewHost client={client} controller={controller} />
+        <>
+          <OfficeOverviewHost client={client} controller={controller} />
+          <ApprovalInboxHost client={client} controller={controller} />
+        </>
       )}
       {playing && <CelebrationHost />}
       {playing && controller && <AwayHost controller={controller} />}

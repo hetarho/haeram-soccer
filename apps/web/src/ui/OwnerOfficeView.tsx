@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, type ReactNode } from 'react';
 import type { ResponsibilityKey } from '../../../../packages/contracts/src/types';
 import { RESPONSIBILITY_KEYS, settingsOf } from '../../../../packages/engine/src/responsibilities';
 import type { GameClient } from '../runtime/client';
@@ -12,8 +12,14 @@ import {
 import { Dialog } from './Dialog';
 import { Select } from './Select';
 import { FacilityArt } from './FacilityArt';
+import { AssigneeProfile } from './AssigneeProfile';
 import { modeSwitchBlocked } from './progressMode';
-import { RESPONSIBILITY_DETAILS as DETAILS, RESPONSIBILITY_LABELS } from './intervention';
+import {
+  RESPONSIBILITY_DETAILS as DETAILS,
+  RESPONSIBILITY_LABELS,
+  responsibilityAssignees,
+  type ResponsibilityPost,
+} from './intervention';
 import {
   applyOfficeChange,
   officeBulkChange,
@@ -34,6 +40,7 @@ export function OfficeRow({
   blocked,
   onSelect,
   observation = false,
+  assignee,
 }: {
   label: string;
   detail: string;
@@ -41,27 +48,33 @@ export function OfficeRow({
   blocked: boolean;
   onSelect: (delegated: boolean) => void;
   observation?: boolean;
+  assignee?: ReactNode;
 }) {
   return (
-    <div className={s.row}>
+    <div className={`${s.row} ${s.responsibilityRow}`}>
       <span>
         <b>{label}</b>
         <small>{detail}</small>
       </span>
-      <div className={s.choices} role="group" aria-label={label} data-ui="choices">
-        {([false, true] as const).map((value) => (
-          <button
-            key={String(value)}
-            data-ui={delegated === value ? 'secondary' : undefined}
-            aria-pressed={delegated === value}
-            disabled={blocked}
-            onClick={() => {
-              if (delegated !== value) onSelect(value);
-            }}
-          >
-            {observation ? (value ? '위임' : '보고받기') : value ? '자동' : '직접'}
-          </button>
-        ))}
+      <div className={s.rowControls}>
+        {assignee && (
+          <div className={s.assignee} aria-label="위임 대상">{assignee}</div>
+        )}
+        <div className={s.choices} role="group" aria-label={label} data-ui="choices">
+          {([false, true] as const).map((value) => (
+            <button
+              key={String(value)}
+              data-ui={delegated === value ? 'secondary' : undefined}
+              aria-pressed={delegated === value}
+              disabled={blocked}
+              onClick={() => {
+                if (delegated !== value) onSelect(value);
+              }}
+            >
+              {observation ? (value ? '위임' : '보고받기') : value ? '자동' : '직접'}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -105,6 +118,7 @@ export function OwnerOffice({
   const [proposal, setProposal] = useState<OfficeProposal>();
   const [applying, setApplying] = useState(false);
   const [message, setMessage] = useState('');
+  const [assigneePost, setAssigneePost] = useState<ResponsibilityPost>();
   const inFlight = useRef(false);
   const blocked = modeSwitchBlocked(state) || applying;
   const propose = (change: OfficeChange) => {
@@ -213,6 +227,21 @@ export function OwnerOffice({
               key={key}
               label={RESPONSIBILITY_LABELS[key]}
               detail={DETAILS[key]}
+              assignee={responsibilityAssignees(w, key).map(({ post, label }) => (
+                <button
+                  key={post}
+                  type="button"
+                  data-ui="link"
+                  aria-haspopup="dialog"
+                  aria-label={`현재 ${label} 정보 보기`}
+                  onClick={(event) => {
+                    event.currentTarget.focus();
+                    setAssigneePost(post);
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
               delegated={settings.responsibilities[key] === 'delegated'}
               blocked={blocked}
               onSelect={(delegated) =>
@@ -267,6 +296,14 @@ export function OwnerOffice({
             </Select>
           </label>
         </section>
+      )}
+      {assigneePost && (
+        <AssigneeProfile
+          w={w}
+          post={assigneePost}
+          client={client}
+          onClose={() => setAssigneePost(undefined)}
+        />
       )}
       {proposal && (
         <Dialog

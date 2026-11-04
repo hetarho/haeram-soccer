@@ -7,6 +7,22 @@ import { Dialog } from './Dialog';
 const OwnerOffice = lazy(() =>
   import('./OwnerOfficeView').then((m) => ({ default: m.OwnerOffice })),
 );
+const ApprovalInbox = lazy(() =>
+  import('./Rich').then((module) => ({ default: module.ApprovalInbox })),
+);
+export function ApprovalInboxHost({
+  client,
+  controller,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+}) {
+  return (
+    <Suspense fallback={null}>
+      <ApprovalInbox client={client} controller={controller} />
+    </Suspense>
+  );
+}
 export function OfficeOverviewHost({
   client,
   controller,
@@ -23,7 +39,7 @@ export function OfficeOverviewHost({
   }, [setOpen]);
   if (!open) return null;
   return (
-    <Dialog label="결재라인 모아보기" wide onClose={() => setOpen(false)}>
+    <Dialog label="결재 설정" wide onClose={() => setOpen(false)}>
       <Suspense fallback={<p role="status">결재라인을 여는 중…</p>}>
         <OwnerOffice key={id} client={client} controller={controller} />
       </Suspense>
