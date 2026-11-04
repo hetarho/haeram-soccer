@@ -17,7 +17,6 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
-| cv04 | ihaelam-ui-MacBookPro | autopilot | 2026-11-04T11:36Z | 2026-11-04T11:36Z | - |
 
 ## inbox
 - 261104 parked T689: another exploration window needs the owner's authorization (the cv04 decision allows one a run). cv04's next levers for it: the keeper's open-play release timing, an engine action-loop change in which a keeper holding the ball waits until the attackers near him turn away and reads lanes at the kick; an update-ssot of MATCH-16's "nobody within 5 m" clear chance (about half of all shots, 9% conversion) with a companion that gives midfielders the chances it takes away; how often the ball stays in front of the box for shots from distance (T411). Evidence: artifacts/benchmarks/scoring-261104-cv04/README.md. cv04
