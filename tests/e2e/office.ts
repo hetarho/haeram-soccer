@@ -184,8 +184,13 @@ export const decisionSettings = (page: Page) =>
 export async function closeDecisionSettings(page: Page) {
   const settings = decisionSettings(page);
   // A sheet it opened (a decision's workbench, a confirmation) sits above it: the top closes first.
-  for (let step = 0; step < 4 && (await settings.isVisible()); step++)
-    await closeOf(page.getByRole('dialog').last()).click();
+  // The clock still showing the days it computed ahead can reach a match eve meanwhile, whose
+  // report opens above it, so a close the newer dialog covers gives way and the top is found
+  // again (→WEB-18).
+  for (let step = 0; step < 6 && (await settings.isVisible()); step++)
+    await closeOf(page.getByRole('dialog').last())
+      .click({ timeout: 5000 })
+      .catch(() => undefined);
   await expect(settings).toHaveCount(0);
 }
 

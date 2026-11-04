@@ -70,9 +70,12 @@ for (const width of [390, 1280]) {
 
     // The review names the actual target its bid pinned, before any answer (→WEB-39/43).
     const reviewed = pendingDecisions(w).find((candidate) => candidate.id === ids[0])!;
-    const target = w.bids!.find((bid) => bid.id === reviewed.ref)!.offer!.player;
+    const bid = w.bids!.find((candidate) => candidate.id === reviewed.ref)!;
+    const target = bid.offer!.player;
+    // A bid on another club's player names that club after him; a free agent's has none (→CLUB-50).
+    const seller = w.clubs.find((club) => club.id === bid.club)?.name;
     await expect(review(page, ids[0]!)).toHaveAccessibleName(
-      `${reviewed.title} · ${target.name} · 검토하기`,
+      [reviewed.title, target.name, seller, '검토하기'].filter(Boolean).join(' · '),
     );
     const left = approvalDeadline(w, reviewed.id);
     // The review reads its one heading, its 결재 기한 and its terms.
