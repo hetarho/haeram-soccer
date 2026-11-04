@@ -26,7 +26,7 @@ import {
   clubSections,
   enterOffice,
   LOBBY,
-  officeMenu,
+  officeBar,
   officeTitle,
   openDirectionInForce,
   openOfficeArea,
@@ -106,7 +106,7 @@ test('older operations addresses open their 구단 운영 section', async ({ pag
       clubSections(page).getByRole('tab', { name: '운영', exact: true }),
     ).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(now);
-    await expect(officeMenu(page)).toHaveCount(0);
+    await expect(officeBar(page)).toHaveCount(0);
   }
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   // Campaigns are no more (→ECON-7): 자금 shows none to start.

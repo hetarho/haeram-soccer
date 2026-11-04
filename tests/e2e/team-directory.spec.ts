@@ -4,7 +4,7 @@ import { preparedWorld } from '../fixtures/prepared-world';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { horizontalOverflow, settle } from './layout';
 import { marketRows } from './market';
-import { clubSections, officeMenu, teamDirectory, teamEntry, teamReturn, teamTabs } from './office';
+import { clubSections, officeBar, teamDirectory, teamEntry, teamReturn, teamTabs } from './office';
 import { openPersonnel } from './personnel-navigation';
 import { continueSlot, seedSlot } from './slots';
 
@@ -72,7 +72,7 @@ for (const theme of themeRegistry.entries) {
       1,
     );
     await expect(clubSections(page)).toHaveCount(0);
-    await expect(officeMenu(page)).toHaveCount(0);
+    await expect(officeBar(page)).toHaveCount(0);
     await expect(teamTabs(page).getByRole('tab')).toHaveText(['1군', '유소년', '코치']);
     for (const name of ['1군', '유소년', '코치']) await expectTarget(tab(page, name));
 

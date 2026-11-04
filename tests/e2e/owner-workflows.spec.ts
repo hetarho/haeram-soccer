@@ -12,7 +12,7 @@ import { continueSlot, seedSlot } from './slots';
 import { startCareer } from './start';
 import {
   clubSections,
-  officeMenu,
+  officeBar,
   operationsTabs,
   TEAM_WORK,
   teamEntry,
@@ -35,7 +35,7 @@ async function expectSection(page: Page, section: string) {
     await expect(teamReturn(page)).toBeVisible();
     await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
     await expect(clubSections(page)).toHaveCount(0);
-    await expect(officeMenu(page)).toHaveCount(0);
+    await expect(officeBar(page)).toHaveCount(0);
     return;
   }
   await expect(clubSections(page).getByRole('tab', { name: section, exact: true })).toHaveAttribute(
@@ -43,7 +43,7 @@ async function expectSection(page: Page, section: string) {
     'true',
   );
   await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
-  await expect(officeMenu(page)).toHaveCount(0);
+  await expect(officeBar(page)).toHaveCount(0);
 }
 /** 구단 운영 › 재정·투자's direction in force, entered through the club sections (→WEB-110). */
 async function openOperations(page: Page) {

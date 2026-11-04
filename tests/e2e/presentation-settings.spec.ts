@@ -63,7 +63,7 @@ for (const entry of baseline.localeRegistry.entries.filter(
       await expect(page.getByRole('dialog')).toHaveAccessibleName(
         pack.messages['presentation.title'],
       );
-      await closeSettings(page, pack.messages['copy.Dialog.f7041ae411']);
+      await closeSettings(page);
       await expect(tier).toHaveAttribute('aria-pressed', 'true');
       await expect(page.getByTestId('presentation-settings-trigger')).toHaveText(
         pack.messages['presentation.open'],
@@ -99,13 +99,12 @@ async function openSettings(page: Page, field: Field = 'theme') {
   await expect(content).toBeVisible();
   return page.getByRole('dialog').filter({ has: content });
 }
-/** Closes the settings by its dialog's close, named in the language on show (→ARCH-32). */
-async function closeSettings(page: Page, close = '창 닫기') {
+async function closeSettings(page: Page) {
   const content = page.getByTestId('presentation-settings');
   await page
     .getByRole('dialog')
     .filter({ has: content })
-    .getByRole('button', { name: close, exact: true })
+    .getByRole('button', { name: '창 닫기', exact: true })
     .click();
   await expect(content).toHaveCount(0);
 }
@@ -700,9 +699,9 @@ test('unseen routed locale and theme change actual resources while game facts, t
   // The owner's office scene heads the 결재라인 overview, opened from the bottom controls.
   await page
     .locator('[data-ui="season-transport"]')
-    .getByRole('button', { name: '결재 설정', exact: true })
+    .getByRole('button', { name: '결재라인 모아보기', exact: true })
     .click();
-  const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
+  const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
   const image = overview.locator('[data-facility-art="manager"] img');
   await expect(image).toHaveAttribute(
     'src',

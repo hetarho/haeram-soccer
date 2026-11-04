@@ -11,7 +11,7 @@ import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { approvalTray, configureResponsibilities, matchReport, reviewInOffice } from './events';
-import { leaveOffice, officeMenu } from './office';
+import { leaveOffice, officeBar } from './office';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -110,7 +110,7 @@ for (const width of [1280, 390]) {
     // The office draws no observation: the report reopens at the clubhouse, on the same date and
     // without answering the approval still waiting (→WEB-39/83).
     await expect(group).toContainText('내일 경기');
-    await expect(officeMenu(page)).toHaveCount(0);
+    await expect(officeBar(page)).toHaveCount(0);
     await expect(page.getByTestId('game-date')).toHaveText(before);
     await expect(page.getByTestId('approval-inbox')).toHaveAccessibleName(
       new RegExp(`^결재함 · 대기 ${waiting - 1}건`),
@@ -145,7 +145,7 @@ for (const width of [1280, 390]) {
     // One action from the office settles the days to the eve and shows its report at the
     // clubhouse (→WEB-39/83); no approval is answered on the way.
     await expect(matchReport(page).getByTestId('event-group')).toContainText('내일 경기');
-    await expect(officeMenu(page)).toHaveCount(0);
+    await expect(officeBar(page)).toHaveCount(0);
     await expect(page.getByTestId('club-hub')).toBeVisible();
     await expect(date).toHaveText(todayStamp(expected));
     await expect(page.getByTestId('approval-inbox')).toHaveAccessibleName(

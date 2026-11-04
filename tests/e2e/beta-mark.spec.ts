@@ -5,7 +5,7 @@ import { readPresentationBaselines } from '../fixtures/presentation';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { textContrast } from './contrast';
 import { gameHud, horizontalOverflow } from './layout';
-import { enterOffice, officeEffects, officeMenu } from './office';
+import { enterOffice, LOBBY, officeBar, officeTitle } from './office';
 import { continueSlot, seedSlot } from './slots';
 
 test.use({ reducedMotion: 'reduce' });
@@ -86,10 +86,10 @@ async function slotsThenPlay(page: Page, theme?: string) {
   expect((await page.getByTestId('hud-cash').boundingBox())!.width).toBeGreaterThanOrEqual(44);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
 
-  // The office keeps the shared HUD and does not duplicate BETA or cash in its menu (→WEB-10/39).
+  // The office keeps the shared HUD and does not duplicate BETA or cash in local navigation.
   await enterOffice(page);
-  const bar = officeMenu(page);
-  await expect(officeEffects(page)).toBeVisible();
+  const bar = officeBar(page);
+  await expect(officeTitle(page)).toHaveText(LOBBY);
   await expectMark(hudClub(page, hud), hud.getByTestId('beta-mark'), 'BETA');
   await expect(bar.getByTestId('beta-mark')).toHaveCount(0);
   await expect(bar.getByTestId('hud-cash')).toHaveCount(0);

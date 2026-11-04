@@ -2,16 +2,19 @@ import type { GameSettings, ResponsibilityKey } from '../../packages/contracts/s
 import { expect, type Locator, type Page } from '@playwright/test';
 import {
   approvalRows,
-  approvalSettings,
-  closeOfficeModals,
-  closeOfficeOverview,
   enterOffice,
-  officeDialog,
+  inOffice,
+  LOBBY,
+  officeBar,
   officeLobby,
-  openApprovalSettings,
+  officeTitle,
+  openClubSection,
+  openOfficeArea,
+  openOperations,
+  operationsTabs,
   outsideOffice,
-  SETTINGS,
 } from './office';
+import { clubhouseTab } from './competition-navigation';
 
 const LABELS: Record<ResponsibilityKey, string> = {
   manager: '감독 인사',
@@ -45,11 +48,10 @@ export async function dismissMatchReport(page: Page) {
   if (await eve.isVisible())
     await eve.getByRole('button', { name: '창 닫기', exact: true }).click();
 }
-/** Opens 결재라인 모아보기 by 결재 설정 (→WEB-79) and returns its responsibility rows. */
 export async function openOffice(page: Page) {
   await dismissMatchReport(page);
-  await openApprovalSettings(page, { timeout: 5000 });
-  await expect(approvalSettings(page)).toBeVisible();
+  await openOfficeArea(page, '결재라인 모아보기', { timeout: 5000 });
+  await expect(page.getByRole('dialog', { name: '결재라인 모아보기', exact: true })).toBeVisible();
   return page.getByTestId('owner-office');
 }
 async function confirmAuthority(page: Page, label: string, value: 'direct' | 'delegated') {
@@ -71,11 +73,7 @@ async function confirmAuthority(page: Page, label: string, value: 'direct' | 'de
     .click();
   await expect(choice).toHaveAttribute('aria-pressed', 'true');
 }
-/**
- * Change only requested office choices in 결재라인 모아보기, which 결재 설정 opens over the task on
- * show (→WEB-39/79), then close it there. The 결재함, closed while it is open, opens again; a page
- * without the shared controller (a match) is left for the office and returned to by its entry.
- */
+/** Change only requested office choices, then return to the originating public task. */
 export async function configureResponsibilities(
   page: Page,
   options: {
@@ -88,14 +86,28 @@ export async function configureResponsibilities(
     .getByRole('navigation')
     .getByRole('button')
     .and(page.locator('[aria-current="page"]'));
-  const queue = await officeDialog(page).isVisible();
-  const controller = page
-    .locator('[data-ui="season-transport"]')
-    .getByRole('button', { name: SETTINGS, exact: true });
+  // Inside the office there is no menu: return to the office area that was open instead.
+  const wasInOffice = await inOffice(page);
   const returnLabel =
-    !(await controller.isVisible()) && (await nav.count())
+    !wasInOffice && (await nav.count())
       ? (await nav.first().getAttribute('aria-label')) || (await nav.first().innerText()).trim()
       : undefined;
+  const officeArea = wasInOffice ? (await officeTitle(page).innerText()).trim() : undefined;
+  // A room shows its name in its bar and is reached again by its lobby door (→WEB-39).
+  const room =
+    !wasInOffice && (await officeBar(page).count())
+      ? (await officeTitle(page).innerText()).trim()
+      : undefined;
+  // 구단 운영 is a club section outside the office, reached again by its own section tab.
+  const operations =
+    !wasInOffice && !room && (await operationsTabs(page).count())
+      ? (await operationsTabs(page).getByRole('tab', { selected: true }).innerText()).trim()
+      : undefined;
+  const home =
+    !wasInOffice &&
+    !room &&
+    !operations &&
+    (await nav.locator('[data-pixel-icon="home"]').count()) > 0;
   // The running progression can open its match report over the controls at any moment, even
   // between closing one and pressing pause; close it and press again.
   const pause = page.getByRole('button', { name: '자동 진행 정지', exact: true });
@@ -144,9 +156,9 @@ export async function configureResponsibilities(
     for (const [key, value] of entries)
       await confirmAuthority(page, LABELS[key as ResponsibilityKey], value);
   }
-  // The mode switch lives in the bottom controls, which the modal covers (→WEB-39/96).
+  // The mode switch lives in the bottom controls, which the office hides (→WEB-39/96).
+  if (options.mode) await outsideOffice(page);
   if (options.mode) {
-    await closeOfficeOverview(page);
     const mode = page.getByTestId('progression-mode');
     const expected = options.mode === 'manual' ? 'MANUAL' : 'AUTO';
     if ((await mode.innerText()) !== expected) {
@@ -189,15 +201,28 @@ export async function configureResponsibilities(
       await expect(choice).toHaveAttribute('aria-pressed', 'true');
     }
   }
-  await closeOfficeOverview(page);
-  await expect(approvalSettings(page)).toHaveCount(0);
-  if (queue) await officeLobby(page);
-  else if (returnLabel) {
+  if (officeArea === LOBBY) await officeLobby(page);
+  else if (officeArea) await openOfficeArea(page, officeArea);
+  else {
     await outsideOffice(page);
-    await page
-      .getByRole('navigation')
-      .getByRole('button', { name: returnLabel, exact: true })
-      .click();
+    if (operations) await openOperations(page, operations);
+    else if (room) {
+      // A room is a club section now, which resumes the work it left (→WEB-10/74).
+      const section =
+        room === '코칭스태프실'
+          ? '코치진'
+          : room === '훈련장'
+            ? '훈련'
+            : room === '유소년 훈련장'
+              ? '유소년'
+              : '1군';
+      await openClubSection(page, section);
+    } else if (home) await clubhouseTab(page).click();
+    else if (returnLabel)
+      await page
+        .getByRole('navigation')
+        .getByRole('button', { name: returnLabel, exact: true })
+        .click();
   }
 }
 export async function chooseLevel(page: Page, level: 1 | 2 | 3 | 4) {
@@ -293,11 +318,7 @@ export async function acknowledgeEvents(page: Page) {
     const reviewing = card.getByRole('button', { name: '검토하기', exact: true });
     const inDesk = (await reviewing.count()) > 0;
     await answer(page, inDesk ? await reviewEvent(page, card) : card);
-    if (inDesk) {
-      // The answered review returns to the 결재함 (→WEB-100), which covers the next card.
-      await expect(page.getByTestId('approval-request')).toHaveCount(0);
-      await closeOfficeModals(page);
-    }
+    if (inDesk) await expect(page.getByTestId('approval-request')).toHaveCount(0);
     await expect
       .poll(async () => [await eventCard(page).count(), await title()], { timeout: 10000 })
       .not.toEqual([count, current]);

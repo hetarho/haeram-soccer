@@ -87,10 +87,10 @@ async function expectArt(
 
 /** The manager's office scene heads the 결재라인 overview, opened from the bottom controls. */
 async function expectOverviewArt(page: Page, era: FacilityEra) {
-  const sheet = page.getByRole('dialog', { name: '결재 설정', exact: true });
+  const sheet = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
   await page
     .locator('[data-ui="season-transport"]')
-    .getByRole('button', { name: '결재 설정', exact: true })
+    .getByRole('button', { name: '결재라인 모아보기', exact: true })
     .click();
   await expect(sheet).toBeVisible();
   // Home's office entrance shows the same room behind the sheet.

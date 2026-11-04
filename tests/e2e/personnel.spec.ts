@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { continueSlot, seedSlot } from './slots';
-import { clubSections, leaveOffice, officeMenu, openOfficeArea, teamReturn } from './office';
+import { clubSections, leaveOffice, officeBar, openOfficeArea, teamReturn } from './office';
 import { exportedCareer } from './career-fixtures';
 import { horizontalOverflow } from './layout';
 
@@ -33,7 +33,7 @@ for (const width of [360, 1280]) {
       await expect(page).toHaveURL(now);
       await expect(teamReturn(page)).toHaveText(`← 팀 · ${list}`);
       await expect(clubSections(page)).toHaveCount(0);
-      await expect(officeMenu(page)).toHaveCount(0);
+      await expect(officeBar(page)).toHaveCount(0);
     }
     await page.goto('/direction?view=players&work=sales');
     await expect(page.getByRole('textbox', { name: '선수 찾기', exact: true })).toBeVisible();
@@ -45,7 +45,7 @@ for (const width of [360, 1280]) {
     await expect(clubSections(page)).toHaveCount(0);
     // The player responsibilities stay in the shared overview; cancelling commits nothing (→WEB-79).
     await openOfficeArea(page, '결재라인 모아보기');
-    const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
+    const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
     for (const responsibility of ['선수 계약', '선수 영입', '선수 매각', '유소년 승격·방출']) {
       const choices = overview.getByRole('group', { name: responsibility, exact: true });
       const applied = await choices.locator('button[aria-pressed="true"]').innerText();
