@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r43 | Define the browser-demo rules for historical club economy.
+> r45 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -90,10 +90,10 @@
 - ECON-20 [o] When cash after a round's costs is non-negative but covers fewer than 13 rounds of fixed costs, a cash warning inbox item (→WEB-42) appears once per season with its weeks left. It is a status, never a stop: the HUD cash and a red band show it (→WEB-56).
 - ECON-21 [o] Sponsors with business delegated (→STAFF-13): whenever an open sponsor slot (→ECON-8) is empty the commercial staff sign its best guaranteed offer at once and report it. Without delegation a slot left empty at a season's start, or a contract in its final season on 1 April, posts a sponsor reminder (→WEB-42).
 
-- ECON-22 [o] The club build — shown to the owner as the club's direction (방향) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 지역 관계 방식, 라커룸 문화 — each holding one card: the standard card or one of four others. The build is set at founding (→WEB-15) and no owner action or staff rule changes it afterwards; every rule that reads a card uses the build in force.
+- ECON-22 [o] The club build — shown to the owner as the club's direction (방향) — is six slots — 유입 방식, 스카우팅, 매각 기조, 수익 모델, 지역 관계 방식, 라커룸 문화 — each holding one card: the standard card or one of four others. New takeovers start with all standard cards (→WEB-15); existing saved builds remain in force, and no owner action or staff rule changes them; every rule that reads a card uses the build in force.
   - Every card has at least one gain and one cost, except that 구단주 투자 keeps only its cost while the owner has no capital action (→ECON-11); additions add and multipliers multiply across slots.
   - the direction in force carries its name: the founding preset's or 기본 방향; a build event recorded earlier keeps its name (맞춤 방향, a saved direction's), and one recorded as 기본 전략 or 맞춤 전략 reads 기본 방향 or 맞춤 방향.
-  - a founding preset fills every row (→ECON-25), the cards and the other rows alike; a row it does not name stays at its default; each has one identity and lights or aims at a synergy:
+  - legacy founding presets fill every row (→ECON-25), the cards and the other rows alike; new takeovers choose none; a row it does not name stays at its default; each has one identity and lights or aims at a synergy:
     | preset | cards (others standard) | other rows (others at their default) | aim |
     |---|---|---|---|
     | 유스 순혈주의 | 성골 유스, 지역 인재 우선, 핵심 지키기, 회원제 운영, 지역 밀착, 가족 같은 클럽 | 주변 투자 지역 상권 투자, 풀뿌리 유망주 투자 지역 리그 후원, 티켓 가격 저렴, 재계약 기조 모두 붙잡기, 육성 목표 1군 공급, 재정 기조 신중 | lights 우리 동네 아이들 |
@@ -103,7 +103,7 @@
     | 세계로 | 해외 유스 스카우트, 광역 네트워크, 쇼케이스 | 해외 스카우트망 지역 스카우트, 해외 마케팅 해외 홍보, 해외 투어 짧은 투어, 영입 기조 젊은 선수 위주 | 글로벌 스카우팅 with a spotter or 65+ chief scout |
     | 승격 올인 | 즉시 전력, 핵심 지키기, 구단주 투자, 홈 요새, 베테랑 리더십 | 선수단 투자 후한 지원, 영입 기조 즉시 전력, 재계약 기조 핵심만 붙잡기, 감독 기조 검증된 승부사, 육성 목표 최소 운영, 재정 기조 공격적 | home strength now, youth growth given up |
     | 알뜰 생존 | 유소년 클럽 제휴, 지역 인재 우선, 강경 협상, 긴축 재정, 가족 관중, 베테랑 리더십 | 선수단 투자 절약, 재계약 기조 짠물, 감독 기조 저비용, 코치 기조 저비용, 재정 기조 안정적 | player wages ×0.91 with morale held level, for small starts |
-  - a new club starts with the direction chosen at founding (→WEB-15): 기본 방향 (every row at its default) or a preset.
+  - a new takeover starts with 기본 방향 (every row at its default), without a preset choice (→WEB-15).
   | slot | card | effects |
   |---|---|---|
   | 유입 방식 | 성골 유스 | intake +1, intake potential +3; market candidates −1 |
@@ -141,7 +141,7 @@
   - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
   - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page (→WEB-56)
   - the owner's bankruptcy (→OWNER-14) and 구단주 퇴진 (→OWNER-13) end a career too; all three share the end of →OWNER-16 and the game-over page (→WEB-56).
-- ECON-25 [o] Direction areas group the club's direction rows by the decisions they steer (→ECON-22, →ECON-16, →ECON-17, →ECON-33): every row is a choice of named options of one kind, set at founding and changed by no owner action or staff rule afterwards; the delegated staff decide by them:
+- ECON-25 [o] Direction areas group the club's direction rows by the decisions they steer (→ECON-22, →ECON-16, →ECON-17, →ECON-33): every row is a choice of named options of one kind, defaulted at a new takeover, preserved from existing saves and changed by no owner action or staff rule afterwards; the delegated staff decide by them:
   | area | card row | other rows | the delegated staff decide by them |
   |---|---|---|---|
   | 선수단 | 라커룸 문화 | - | squad culture in 감독 사무실 |
@@ -174,6 +174,7 @@
   | every facility part to its top (1,530,450 units), in seasons of a top-flight club's average net result before construction | 25 or more | 40.4 on ECON-32's fixed-multiple costs (16 careers below); 98.4 on the earlier 4,045,150 units |
   | reference careers that go bankrupt | none | 3 of 160, outside the band (none of the 40 at 보통): ESP founding careers that never left the amateur league (21, 39 and 47 seasons) |
   - ECON-32's fixed-multiple facility costs, measured 261015 on 16 careers (ENG ESP FRA GER × 보통·최상 seed 0 and 쉬움·어려움 seed 1): operating result +6.0%, wage bill 41.8%, 2000s mix 46.3/28.7/25.0%, 1950s matchday 87.5%, ladder 40.4 seasons, bankrupt 1 of 16 — the ESP 최상 amateur career above, which builds nothing on either cost table; facility parts built by the 2000s 14.4 on average (11.4 on the earlier costs, the same 8 보통·최상 careers: 0.8 against 1.5 in the 1950s).
+  - measured 261104 on takeover careers (the 중견 사업가 reference, 8 careers: ENG ESP FRA GER × 2 seeds, 1950–1969, so the 2000s mix is unread): with the facility rule wage bill 44.8% and operating result −5.6% (+16.5% before construction), both just below their bands, player sales 13.3%, net result with sales 7.6%, 1950s matchday 74.1%, ladder 92.5 seasons, none bankrupt; as played, building nothing (→ECON-32), 45.6%, +18.9% (above the band), sales 13.7%, net 32.6%, matchday 73.7%, ladder 88.1, none bankrupt.
 - ECON-30 [o] Beyond wages, hosting costs and facility upkeep (→ECON-32), every club pays operating expenses (운영 경비) — matchday operations, travel, administration, medical care, kit and its staff's yearly pay — each league round: the larger of an amount per country and division on the football index (→ECON-26) and a share of its turnover over its last completed season (income without player sales or owner capital), spread over this season's league rounds.
   - Share and division amounts are sized so that ECON-29's reference club ends its career near break-even; the last professional division's amount is the lowest. ← other costs must grow with the club's own football money, from a newly promoted club to the dominant one it becomes (measured 261013: net result 47% of income with costs on prices; one amount per division bankrupted 5–7 of 8 reference careers)
   - it is a fixed cost: fixed costs and runway (→ECON-12), the cash projection (→ECON-18), the cash warning (→ECON-20) and the bankruptcy threshold (→ECON-24) count it, and the season ledger names it (→ECON-10).
@@ -215,6 +216,8 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r45 261104 ECON-22/25✎ direction chosen at takeover→standard cards and default rows at new takeovers; saved builds and presets preserved
+- r44 261104 ECON-29✎ measured 261015 on founding careers only→also measured 261104 on the 중견 사업가 takeover reference (8 careers, 1950–1969), with the facility rule and as played
 - r43 261103 ECON-36✎ unbounded books→a club nobody owns opens 1930 with half a season of income in cash, spends cash above one season of income, has debt beyond 1.5 seasons written off, and its books match the owned club's first season within ±25%; ECON-38✎ takeover loan 5→10 seasons
 - r42 261103 ECON-10✎ ledger lines +owner injections, dividends and debt repayments; ECON-11✎ the owner has no action that adds cash→only an injection from his fortune; ECON-19✎ amateur-league gates and ×1.53→removed; ECON-24✎ +owner bankruptcy and 구단주 퇴진 end a career too; ECON-27✎ the owner adds no capital→owner money only as an injection outside turnover; ECON-29✎ reference club founded→a 1950 takeover at 중견 사업가's reach with no owner money moved, measured column marked founding careers; ECON-30✎ the amateur level's amount lowest→the last professional division's; ECON-36+ season books for clubs nobody owns; ECON-37+ club value and price; ECON-38+ takeover as it stands, debt as a loan; ECON-29 measured row marked founding careers
 - r41 261102 ECON-10✎ ledger names owner requests and win bonuses→no such lines (earlier ones fall to the catch-all); ECON-11✎ optional local-support recovery→the owner has no action that adds cash; ECON-12✎ facility decisions compared and reviewed before work→removed with the owner's facility action; ECON-13- marketing ranges and ticket drafts removed; ECON-16✎ dials changed at any time (policy event from the next settlement)→each keeps its level, changed by no owner action or staff rule; ECON-17✎ ticket price chosen from five presets→the founding direction's preset kept, no owner change; ECON-18✎ policy previews→removed; ECON-19✎ ticket previews share the factor→removed; ECON-20✎ warning with weeks left and remedies→weeks left only; ECON-22✎ owner drafts and applies cards and presets at any time, saved strategies→build set at founding and changed by nobody, presets fill rows at founding only, 구단주 투자 owner capital +2→only its wage cost, 회원제 운영 owner capital −1→removed, 승격 올인 aim owner money→removed, saved-direction load line→removed; ECON-25✎ rows drafted on the 방향 board and composer, changed at any time→set at founding and changed by nobody, training focus ref WEB-70→CLUB-13; ECON-26✎ facility costs ref ECON-12→ECON-32; ECON-27✎ owner capital a bounded action→the owner adds no capital; ECON-32✎ +no facility work starts in a career, a work under way finishes, the reference club still builds; ECON-34✎ bases shown on the 방향 board→read-only in 구단 운영

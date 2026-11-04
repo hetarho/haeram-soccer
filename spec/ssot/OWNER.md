@@ -1,5 +1,5 @@
 # OWNER Owner fortune, takeover start, traits and standing
-> r2 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
+> r4 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
 
 ## decisions
 - OWNER-1 [o] The owner's fortune (구단주 자금) and the club's cash (구단 자금) are separate pots; money moves between them only by an injection (→OWNER-9) or a dividend (→OWNER-11). From the takeover the fortune is kept in the club's currency and converts with it (→ECON-5/6). ← the owner's own money and the club's books are different stakes
@@ -8,15 +8,16 @@
   | tier | reach: price rank among all clubs of the playable countries (OWNER_TIERS.band) | typical club | starting fortune (OWNER_TIERS) |
   |---|---|---|---|
   | 석유 재벌 | the dearest 8% | a top-flight upper-table club, spending almost without limit | 10 × anchor |
-  | 재벌 총수 | 8–20% | a top-flight mid-table club | 1.3 × anchor |
-  | 산업 자본가 | 20–35% | a top-flight lower-table or second-tier top club | 1.3 × anchor |
-  | 중견 사업가 | 35–55% | a second- or third-tier club | 1.3 × anchor |
-  | 지역 유지 | 55–80% | a club in the lower professional tiers | 1.3 × anchor |
-  | 자수성가 축구팬 | the cheapest 20% | a club in the lowest professional tier | 1.3 × anchor |
+  | 재벌 총수 | 8–20% | a top-flight mid-table club | 1.6 × anchor |
+  | 산업 자본가 | 20–35% | a top-flight lower-table or second-tier top club | 1.6 × anchor |
+  | 중견 사업가 | 35–55% | a second- or third-tier club | 1.6 × anchor |
+  | 지역 유지 | 55–80% | a club in the lower professional tiers | 1.6 × anchor |
+  | 자수성가 축구팬 | the cheapest 20% | a club in the lowest professional tier | 1.6 × anchor |
   - the reach is a band of the price ranking, not of divisions, so every playable country holds clubs of most tiers whatever its number of professional divisions.
   - a tier's anchor is the median price (→ECON-37), in the takeover season, of the clubs in its reach across the playable countries, valued in pounds and converted into the bought club's currency at the takeover (→ECON-35).
   - the tier is fixed for the career; it never changes the rules, only the start.
-- OWNER-4 [o] Wherever another rule speaks of founding, the founding moment is the takeover: the founding squad is the squad taken over, the founding direction is the direction chosen at the takeover (→WEB-15), and history starts there (→HIST-21). The club's manager at the takeover keeps his own school, style and level; the neutral founding manager of →STAFF-14/45 applies to no one. Each player taken over starts at an adaptation equal to the club's 조직력 at the takeover (→LEAGUE-12, →PLAYER-10). ← one meaning for every rule written for a founded club
+  - the 1.6 multiple leaves the buyer of his country's median-priced club in the reach a fortune to live on (→OWNER-8): a country's band median costs up to 1.28× the anchor (measured 261104 on LEAGUE-13's reference careers), so at 1.3× its buyer kept 2–3% of his fortune.
+- OWNER-4 [o] Wherever another rule speaks of founding, the founding moment is the takeover: the founding squad is the squad taken over, the founding direction uses standard defaults without a choice at the takeover (→WEB-15), and history starts there (→HIST-21). The club's manager at the takeover keeps his own school, style and level; the neutral founding manager of →STAFF-14/45 applies to no one. Each player taken over starts at an adaptation equal to the club's 조직력 at the takeover (→LEAGUE-12, →PLAYER-10). ← one meaning for every rule written for a founded club
 - OWNER-5 [o] The owner picks 0 to 5 of eight traits at the start, fixed for the career:
   | trait | effect (OWNER_TRAITS) |
   |---|---|
@@ -33,7 +34,9 @@
   - settlements: 1 November, 1 February, 1 May and the season's close day (→LEAGUE-9); each succeeds with 50% (60% with 성공한 사업가) and adds the stake's share of the fortune, or fails and takes it away; the draw comes from the world's stream, so a seed replays it.
   - a fortune at zero or below is not staked.
   - the slider states the success chance, the amount won or lost at the current fortune and the next settlement's date. ← even odds make the business a gamble without the trait (one win and one loss leave 1 − r²), so dividends are the steady way to grow the fortune
-- OWNER-8 [o] At each settlement the owner pays living costs of OWNER_LIVING.rate (0.25%) of his tier's starting fortune, grown with prices (→ECON-2); they are paid even below zero, deepening the debt. ← without outgoings a failed bet only reaches zero at 100% and owner bankruptcy would be self-chosen
+- OWNER-8 [o] At each settlement the owner pays living costs of OWNER_LIVING.rate (0.2%) of his tier's starting fortune, grown with prices (→ECON-2); they are paid even below zero, deepening the debt. ← without outgoings a failed bet only reaches zero at 100% and owner bankruptcy would be self-chosen
+  - an owner who moves no money (stake 0%, no injection, dividend 0%) is never bankrupt within 15 seasons, yet uses much of his fortune within a generation, so dividends stay the way to keep it.
+  - measured 261104 (LEAGUE-13's reference careers, no traits, 2 seeds × ENG ESP FRA GER, 1950–1969): none bankrupt before his 17th season; the others had used 41–87% of their fortune by 1969. At 1.3× and 0.25%, 14 of 38 were bankrupt within 15 seasons, the earliest in his 3rd.
 - OWNER-9 [o] The owner may put any amount of his fortune into the club's cash at any time (자금 투입), never more than his fortune above zero and within →OWNER-10. An injection is owner capital in the ledger, outside turnover (→ECON-10, →ECON-30), and raises 팬 민심 (→OWNER-12).
 - OWNER-10 [o] From the 2011/12 season, while the club plays in its country's top flight, UEFA financial fair play caps injections: owner money put in over the current season and the two before may not exceed €45m until 2014/15 and €30m from 2015/16, in nominal euros converted at →ECON-35's rates. The injection control shows what remains and refuses beyond it; no later squad-cost rule replaces it. ← Málaga's European ban (2013) and the Manchester City and PSG settlements (2014) were the limit of their time
 - OWNER-11 [o] The dividend is a dial of 0/25/50/75/100% (default 0%), set at any time and taken at the season close: that share of the season's net result when positive, never more than the club's cash above zero, moves from the club's cash into the fortune; a season with no profit pays nothing. What is taken lowers 팬 민심 (→OWNER-12). ← real dividends are yearly and come from profit
@@ -62,5 +65,7 @@
 - End: club bankruptcy | owner bankruptcy | 구단주 퇴진 → game-over page
 
 ## chg
+- r4 261104 OWNER-4✎ founding direction chosen at takeover→standard defaults without a choice
+- r3 261104 OWNER-3✎ starting fortune of the five tiers below 석유 재벌 1.3→1.6 × anchor, +the multiple's measured reason; OWNER-8✎ living costs 0.25%→0.2% a settlement, +no owner who moves no money bankrupt within 15 seasons, measured 261104
 - r2 261103 OWNER-3✎ reach by divisions→a band of the price ranking (dearest 8%, 8–20, 20–35, 35–55, 55–80, cheapest 20%), any club the fortune pays may be bought; OWNER-8✎ living costs 1%→0.25% a settlement; OWNER-12✎ dividend −1→−0.5 per 1% of turnover, star sale −8→−4 at most once a window
 - r1 261103 initial: owner fortune apart from club cash, six wealth tiers, eight traits taken 0–5, the takeover as founding, quarterly business bet and living costs, injections within FFP from 2011/12, season-close dividend dial, 팬 민심 with 퇴진 압박, 구단주 파산 위기, three game-over causes, season records

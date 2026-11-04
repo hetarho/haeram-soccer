@@ -1,5 +1,5 @@
 # LAB Match lab
-> r5 | Let the owner watch generated sides play in the game's own match view, change the detailed engine's numbers and see by eye — and by the numbers — what each change does to the football.
+> r7 | Let the owner watch generated sides play in the game's own match view, change the detailed engine's numbers and see by eye — and by the numbers — what each change does to the football.
 
 ## decisions
 - LAB-1 [o] The match lab is an owner's tool outside the game. ← tuning needs quick what-if runs without a career, a save or a script
@@ -44,15 +44,25 @@
   - the scoreboard names the sides 좌측 팀 and 우측 팀; kits are two plainly different defaults.
 - LAB-10 [o] The N-match 시뮬레이션 (LAB-4–6) stays as the lab's second use, for checking a change against →MATCH-23 after it looks right.
 
+- LAB-11 [o] `/constants` is a Korean, read-only map of gameplay influences, organised as observable outcome → influencing factors → nested causes and directional effects. Cover contracts and transfers, matches, players and development, staff and delegation, finances, owners, competitions and the generated world.
+  - Describe what an action or state changes and how that propagates to other outcomes. Distinguish random chances, deterministic thresholds, calculations and automatic rules; never invent a probability or a connection absent from the implementation.
+  - Identify currently available actions, start-only choices, automatic changes and retained settings that the owner can no longer edit. State verified missing connections where they would otherwise be easy to assume.
+  - Search and category filters keep the hierarchy on one page. An action index links actions to their consequences. Implementation references stay behind expandable evidence; a readable Markdown download preserves the hierarchy.
+  - Curate causal explanations from actual engine control flow; resolve source references at development/build time without executing the engine. Raw code constants are not the primary content. The page changes no rules or balance, accesses no save and loads independently of the game entry. The match lab links to it.
+
 ## flow
 - watch: /lab → 좌측·우측 팀 생성(평균 OVR·편차·전술) → 관전 → 어색한 장면 발견 → 수치 검색·수정 → 다시 보기(같은 경기) → 비교 → 다음 수치 | 새 경기
 - tune: /lab → 수치 수정 → 시뮬레이션(N경기) → 결과표(기준 실행 대비 차이) → 변경값 JSON 복사
+
+- inspect: /constants → outcome/category search → nested factors → downstream outcome; action index → consequences; optional implementation evidence.
 
 ## constraints
 - The lab never adds to the game's initial download (→ARCH-28): it loads as its own entry, and the engine runs in a lab-only worker.
 - Value overrides exist only inside the lab's worker for the duration of its runs; the game's worker and module state never see them.
 
 ## chg
+- r7 261104 LAB-11✎ raw source-constant inventory→outcome/factor/causal-effect hierarchy with action links, current/automatic/legacy distinctions and verified missing connections
+- r6 261104 LAB-11+ read-only gameplay constant inventory of source constants, inline numeric rules and catalog data with search, categories and source locations
 - r1 261029 initial
 - r2 261029 LAB-2✎ a player's own OVR 1–99 → 20–92
 - r3 261029 LAB-2✎ fresh sides with no fatigue → a pressing side carries a club nobody owns' press load

@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r206 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r207 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -45,7 +45,7 @@
   - The club list holds every club of the playable countries with country and division filters, each with its price (→ECON-37), cash, debts, last season's income and wage bill (→ECON-36), squad strength and division, and whether the owner can afford it; a club's sheet opens its squad, manager, stadium and history before buying.
   - The reproducible seed remains an explicit advanced setting. Expanded settings and the design editor scroll inside their content region so every control stays reachable (→WEB-63).
   - The screen names the slot it fills and, when another slot holds a game, returns to the slot screen. Existing save hydration shows loading instead of the start flow; invalid existing saves retain recovery/export paths.
-  - a 구단 방향 row offers 기본 방향, selected at first, and the presets (→ECON-22), each option stating its idea and the rows it fills; the picker sits in the takeover confirmation; the club keeps the one chosen; no in-career workflow changes it. ← the owner sets where the club is going from the first day, a preset counting as a choice
+  - The takeover confirmation has no club-direction selector; a new career uses standard cards and default operating rows (→!ECON-22/25). Existing saved directions remain effective.
 
 - WEB-115 [o] While the world is generated (→!WORLD-13), the start plays its history at the speed the seasons are made; generation never waits for it. ← a later decade's wait becomes the past the owner buys into
   - background, refreshed at each season reached: the season, the Club Elo world top 10 (→HIST-12), the league champion of each playable association (→WORLD-1), the winners of the European competitions played that season (→EURO-1/2) and the 발롱도르 winner from 1955/56 (→PLAYER-27).
@@ -592,6 +592,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r207 261104 WEB-15✎ takeover direction picker and presets→no picker, standard defaults for new careers; existing saved directions kept
 - r206 261103 WEB-15✎ generation progress with the season reached→the world's history while it is generated; WEB-115+ history at generation speed: season, Club Elo top 10, champions, European winners, 발롱도르, self-closing cards for great feats only
 - r205 261103 WEB-62✎ legacy release reset→no automatic cleanup under SAVE-29; ordinary confirmation unchanged
 - r204 261103 WEB-2✎ founded club in 1950's amateur league→takeover after wealth tier, traits and a decade 1930–2000 with its line; WEB-3- four difficulty levels withdrawn (→OWNER-2/3); WEB-15✎ founding screen with name, country, level and design summary→start flow of tier, traits, decade, generation progress and the club list, direction picked at the takeover confirmation; WEB-56✎ bankruptcy only→three crises as statuses and a game-over page naming its cause; WEB-86✎ editor before founding→no editor before the takeover, adopting a draft lowers 팬 민심; WEB-114+ owner fortune in the HUD and the 구단주 sheet; table and Identity flow✎ founding uses the editor→nothing before the takeover; WEB-18✎ the amateur league counts its own rounds→removed; WEB-40✎ 아마 short name for the amateur level→removed

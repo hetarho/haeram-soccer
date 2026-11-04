@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r13 | Define the browser-demo rules for domestic seasons and relegation.
+> r14 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -49,6 +49,16 @@
   | 자수성가 축구팬 | the top flight in 1 in 4 careers or fewer | - | 1 in 5 or fewer |
   - careers with five traits are measured beside each tier; the bands hold for no traits.
   - bankrupt counts the club's bankruptcy (→ECON-24); the owner's fortune is measured beside it on a 50% dividend, since the reference moves no owner money.
+  - measured 261104 (no traits, 2 seeds × ENG ESP FRA GER, 1950–1969: a third of the bands' span, so later titles are unread; 자수성가 축구팬 can pay for no Spanish club in any band):
+    | tier | careers | first top-flight title | reached the top flight (mean seasons there of 20) | club bankrupt |
+    |---|---|---|---|---|
+    | 석유 재벌 | 8 | none | 3 (4.6) | 6, in 1950–51 (ESP FRA GER): the strongest clubs pay 1.8–3.3× their income in wages |
+    | 재벌 총수 | 8 | none | 8 (12.9) | none |
+    | 산업 자본가 | 8 | 1, in its 2nd season, none in the 18 after | 8 (13.4) | none |
+    | 중견 사업가 | 8 | 1, in its 14th season | 8 (9.4) | none |
+    | 지역 유지 | 8 | none | 8 (8.5) | none |
+    | 자수성가 축구팬 | 6 | none | 6 (7.8) | none |
+    - on a 50% dividend (seed 0) no owner is bankrupt and 5 of 23 face 구단주 퇴진 in seasons 13–19 (→OWNER-13); on 25%, 1 of 19 in his 20th season.
 
 - LEAGUE-14 [o] Every club's reputation (0–100) follows its standing, the owner's club and clubs nobody owns alike: at each season close it closes 20% of the gap to the level of the division it will play in next, plus its league finish; honours add at once. ← standing is relative: decades in a lower division never make a giant, and a fallen giant's name fades over seasons, not at once
   - division level: top flight 75, then 15 less per tier (second 60, third 45, fourth 30), at least 8.
@@ -65,6 +75,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r14 261104 LEAGUE-13✎ no measured line→measured 261104 on takeover careers (2 seeds × 4 countries, 1950–1969): titles, top-flight reach and club bankruptcies per tier, and 구단주 퇴진 on 50%/25% dividends
 - r13 261103 LEAGUE-13✎ reference club at the tier's reach→the median-priced club of the tier's price band in each country, nearest band when none; bankrupt column→the club's bankruptcy (→ECON-24), the owner's purse measured beside it on a 50% dividend
 - r12 261103 LEAGUE-5✎ entrants professional and amateur→professional only; LEAGUE-6- amateur exchange removed; LEAGUE-10✎ +a takeover or project clears the club's debt; LEAGUE-13✎ reference careers by difficulty level from the amateur league with level bands→per wealth tier from a 1950 takeover with tier bands; LEAGUE-14✎ a new club 12 and the amateur league's level 8→removed; LEAGUE-16+ the last professional division relegates nobody
 - r11 261102 LEAGUE-13✎ reference careers named by the historical intervention level 4→all business responsibilities delegated only (the intervention level is removed)
