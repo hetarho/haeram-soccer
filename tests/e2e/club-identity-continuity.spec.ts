@@ -71,7 +71,7 @@ import {
 } from './club-identity-helpers';
 import { ALL_DELEGATED, configureResponsibilities } from './events';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { leaveOffice, operationsTabs } from './office';
+import { areaPage, leaveOffice } from './office';
 import { fundClub, startFlow } from './start';
 import { closeMatchDetails, openMatchDetails } from './watch';
 
@@ -299,11 +299,9 @@ test('a shirt chosen for the next fixture and a waiting commission survive reloa
   };
 
   await page.reload();
-  // A reload restores the view it left: 구단 운영's design section, not home (→WEB-74).
-  await expect(
-    operationsTabs(page).getByRole('tab', { name: '구단 디자인', exact: true }),
-  ).toHaveAttribute('aria-selected', 'true');
-  await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
+  // A reload restores the view it left: the office's 구단 디자인 area, not home (→WEB-74).
+  await expect(areaPage(page, '구단 디자인')).toBeVisible();
+  await expect(page).toHaveURL(/\/club-operations\?view=investment&area=identity$/);
   expect((await savedWorld(page)).kitChoice).toEqual(choice);
   expect((await savedWorld(page)).designCommission).toEqual(waiting);
   await expectChoice();
@@ -494,11 +492,9 @@ test('a refused adoption and a failed checkpoint keep the committed save, the dr
   await retrySave(page);
   await expect.poll(async () => ownClub(await savedWorld(page)).identity).toEqual(adopted);
   await page.reload();
-  // A reload restores the view it left: 구단 운영's design section, not home.
-  await expect(
-    operationsTabs(page).getByRole('tab', { name: '구단 디자인', exact: true }),
-  ).toHaveAttribute('aria-selected', 'true');
-  await expect(page).toHaveURL(/\/club-operations\?view=identity$/);
+  // A reload restores the view it left: the office's 구단 디자인 area, not home.
+  await expect(areaPage(page, '구단 디자인')).toBeVisible();
+  await expect(page).toHaveURL(/\/club-operations\?view=investment&area=identity$/);
   const reloaded = await savedWorld(page);
   expect(ownClub(reloaded).identity).toEqual(adopted);
   expect('designCommission' in reloaded).toBe(false);

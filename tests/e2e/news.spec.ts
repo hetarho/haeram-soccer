@@ -74,14 +74,17 @@ test('keeps the crest, today and compact cash readable in a 360 px HUD', async (
   await expect(gameHud(page).locator('[data-ui="hud-club"] > svg')).toBeVisible();
   await expect(gameHud(page).getByText(name, { exact: true })).toHaveCSS('position', 'absolute');
   await expect(gameHud(page).getByTestId('game-date')).toBeVisible();
-  // The money notation on every viewport (→WEB-67); label and title keep the exact amount.
-  expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^£[\d,]+$/);
+  // The money notation on every viewport (→WEB-67): the club's cash over the owner's business
+  // funds (→WEB-114); label and title keep the exact amounts.
+  expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^£[\d,]+\n£[\d.,]+[KM]?$/);
   await expect(page.getByTestId('hud-cash')).toHaveAttribute('aria-label', /\d+s \d+d/);
   await expect(page.getByTestId('hud-cash')).toHaveAttribute('title', /\d+s \d+d/);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   // The desktop HUD reads the same way: no second, fully written amount beside it.
   await page.setViewportSize({ width: 1280, height: 800 });
-  expect(await page.getByTestId('hud-cash').innerText()).toMatch(/^운영 자금\s*£[\d,]+$/);
+  expect(await page.getByTestId('hud-cash').innerText()).toMatch(
+    /^구단 자금\s*£[\d,]+\s*£[\d.,]+[KM]?$/,
+  );
 });
 
 test('celebrates in one lower line, with headlines collected in the clock news button', async ({

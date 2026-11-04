@@ -54,7 +54,6 @@ import type { ClientState, GameClient } from '../runtime/client';
 import { Panel } from './App';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
-import { ClubOverview } from './ClubOverview';
 import { InvestmentView } from './InvestmentView';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { ApprovalQueue } from './ApprovalQueue';
@@ -1690,7 +1689,8 @@ export default function Rich({
         )}
       </>
     );
-  if (page === 'training') return <ClubOverview w={state.view!.world} />;
+  // First-team training is read on its own page (→WEB-39/116); the overview is the office's modal.
+  if (page === 'training') return <TrainingView state={state} client={client} view="training" />;
   if (page === 'operations') return <InvestmentView state={state} client={client} />;
   if (page === 'business')
     return <Business state={state} client={client} controller={controller} />;

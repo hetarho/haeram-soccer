@@ -9,15 +9,17 @@ import { eventCard } from './events';
 import {
   approvalOrder,
   approvalQueue,
+  approvalRequest,
   approvalRows,
   enterOffice,
+  officeDialog,
   officeLobby,
   officeTitle,
   reviewButton as review,
 } from './office';
 import { exportedCareer } from './career-fixtures';
 
-/** The office opens on its 결재함 (→WEB-39); home leaves office work out of its events. */
+/** The 결재함 opens over the page (→WEB-39); home leaves office work out of its events. */
 async function queue(page: Page) {
   await enterOffice(page);
   await officeLobby(page);
@@ -30,7 +32,7 @@ async function reviewFirst(page: Page) {
     .first()
     .getByRole('button', { name: /· 검토하기$/ })
     .click();
-  const request = page.getByTestId('approval-request');
+  const request = approvalRequest(page);
   await expect(request).toBeVisible();
   return request;
 }
@@ -58,14 +60,10 @@ for (const width of [390, 1280]) {
     );
     for (const gone of ['클럽 소식·시즌 브리핑', '선수 계약', '재정·투자', '감독 사무실', '훈련장'])
       await expect(approvalQueue(page).getByRole('button', { name: gone })).toHaveCount(0);
-    // The club's summary is the office's, once and below its queue, with no quick actions beside
-    // it; the home briefing keeps no copy (→WEB-11/39/44).
-    const queueBox = (await approvalQueue(page).boundingBox())!;
-    const part = page.getByTestId('club-situation');
-    await expect(part).toHaveCount(1);
+    // The queue opens as a modal with no quick actions in it; the home briefing keeps no club
+    // summary (→WEB-11/39).
+    await expect(officeDialog(page).getByTestId('quick-actions')).toHaveCount(0);
     await expect(page.getByTestId('club-hub').getByTestId('club-situation')).toHaveCount(0);
-    expect((await part.boundingBox())!.y).toBeGreaterThanOrEqual(queueBox.y + queueBox.height);
-    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
     const first = await review(page, ids[0]!).boundingBox();
     expect(first!.y + first!.height).toBeLessThanOrEqual(844);
     await expect(rows.getByRole('button', { name: '거절', exact: true })).toHaveCount(0);
@@ -77,10 +75,8 @@ for (const width of [390, 1280]) {
       `${reviewed.title} · ${target.name} · 검토하기`,
     );
     const left = approvalDeadline(w, reviewed.id);
-    await reviewFirst(page);
-    // A direct reload keeps the selected request, its one heading, its 결재 기한 and its terms.
-    await page.reload();
-    const opened = page.getByTestId('approval-request');
+    // The review reads its one heading, its 결재 기한 and its terms.
+    const opened = await reviewFirst(page);
     await expect(opened).toHaveAttribute('data-request-id', ids[0]!);
     await expect(opened.getByRole('heading')).toHaveText([reviewed.title]);
     await expect(opened.getByText(reviewed.title, { exact: true })).toHaveCount(1);
@@ -102,7 +98,6 @@ for (const width of [390, 1280]) {
     await expect(opened.getByRole('button', { name: '취소', exact: true })).toHaveCount(0);
     await opened.getByRole('button', { name: '결재함으로', exact: true }).click();
     await expect(approvalQueue(page)).toBeVisible();
-    await expect(page).toHaveURL(/\/direction$/);
     await expect(review(page, ids[0]!)).toBeFocused();
 
     // The requests wait under their title, 선수 영입, with its count; there are no filters, and the
@@ -111,20 +106,23 @@ for (const width of [390, 1280]) {
     await expect(recruitment.getByRole('heading')).toHaveText(`선수 영입${ids.length}`);
     await expect(approvalQueue(page).getByRole('group', { name: '결재함 보기' })).toHaveCount(0);
 
-    // Both ways out — the named return and browser back — reach the same unresolved queue.
-    for (const exit of ['queue', 'browser'] as const) {
+    // Both ways out — the named return and the dialog's close — reach the same unresolved queue.
+    for (const exit of ['queue', 'close'] as const) {
       const request = await reviewFirst(page);
       await expect(officeTitle(page)).toHaveText('선수 계약');
       await expect(request).toHaveAttribute('data-request-id', ids[0]!);
       await expect(request.getByRole('button', { name: '역제안 수락', exact: true })).toBeVisible();
-      if (exit === 'browser') await page.goBack();
+      if (exit === 'close')
+        await officeDialog(page)
+          .locator('[data-ui="dialog-header"]')
+          .getByRole('button', { name: '창 닫기', exact: true })
+          .click();
       else await request.getByRole('button', { name: '결재함으로', exact: true }).click();
       await expect(approvalQueue(page)).toBeVisible();
-      await expect(page).toHaveURL(/\/direction$/);
       await expect(approvalRows(page)).toHaveCount(ids.length);
       await expect(recruitment.getByRole('listitem')).toHaveCount(ids.length);
-      // A named return puts focus back on the request that still waits there.
-      if (exit !== 'browser') await expect(review(page, ids[0]!)).toBeFocused();
+      // The way back puts focus on the request that still waits there.
+      await expect(review(page, ids[0]!)).toBeFocused();
       expect(
         pendingDecisions(await exportedCareer(page))
           .map((item) => item.id)
@@ -135,21 +133,13 @@ for (const width of [390, 1280]) {
     // A completed review returns to the refreshed queue with focus on the request now in its place.
     let request = await reviewFirst(page);
     await request.getByRole('button', { name: '거절', exact: true }).click();
-    await expect(page).toHaveURL(/\/direction$/);
     await expect(approvalRows(page)).toHaveCount(ids.length - 1);
     await expect(approvalRows(page).first()).toHaveAttribute('data-request-id', ids[1]!);
     await expect(review(page, ids[1]!)).toBeFocused();
-    // Browser back reads the resolved request, with no second submission control.
-    await page.goBack();
-    await expect(request).toContainText('이미 처리되었거나 조건이 바뀐 요청');
-    await expect(request.getByRole('button', { name: '거절', exact: true })).toHaveCount(0);
-    await page.goForward();
-    await expect(approvalQueue(page)).toBeVisible();
-    await expect(approvalRows(page)).toHaveCount(ids.length - 1);
     request = await reviewFirst(page);
     await expect(request).toHaveAttribute('data-request-id', ids[1]!);
     await request.getByRole('button', { name: '거절', exact: true }).click();
-    await expect(page).toHaveURL(/\/direction$/);
+    await expect(approvalQueue(page)).toBeVisible();
     if (ids.length === 2) {
       // Nothing waits now: the count line says so and takes focus, over the quiet titles.
       const counts = approvalQueue(page).getByTestId('approval-counts');

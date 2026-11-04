@@ -4,8 +4,8 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
 import type { World } from '../../packages/contracts/src/types';
-import { openDirectionInForce } from './office';
 import { settle, viewGeometry } from './layout';
+import { openPersonnel } from './personnel-navigation';
 import {
   filterListing,
   fundClub,
@@ -92,10 +92,12 @@ for (const viewport of [
     await expect(listing).toBeVisible({ timeout: 30000 });
     await expect(listing).toContainText('구단주 자금');
     await expectStepFits(page, listing.getByRole('list').first());
+    // A club's sheet reads it before buying: its squad, its manager with the staff and its history.
     const { name, sheet } = await openClub(listing);
-    await expect(sheet).toContainText('선수단');
-    await expect(sheet).toContainText('감독');
-    await expect(sheet).toContainText('경기장');
+    const tabs = sheet.getByRole('tablist');
+    await expect(tabs.getByRole('tab')).toHaveText(['개요', '선수단', '코치진', '역사']);
+    await tabs.getByRole('tab', { name: '코치진', exact: true }).click();
+    await expect(sheet.getByRole('tabpanel')).toContainText('감독');
     await settle(page);
     await takeOverClub(page, name);
 
@@ -114,8 +116,8 @@ for (const viewport of [
     expect(actual.loan).toEqual(reference.loan);
     expect(actual.build).toEqual(reference.build);
     expect(actual.matchModel?.coverage).toBe('founding');
-    // The HUD carries the owner's fortune beside the cash (→WEB-114).
-    await expect(page.getByTestId('hud-fortune')).toBeVisible();
+    // The HUD carries the owner's fortune with the cash (→WEB-114).
+    await expect(page.getByTestId('hud-cash')).toHaveAccessibleName(/ · 사업자금 /);
 
     // A reload continues the career; the start flow never shows again.
     await page.reload();
@@ -173,7 +175,8 @@ test('takes over without a direction choice and starts with standard defaults', 
   expect(w.build).toBeUndefined();
   expect(w.policy).toBeUndefined();
   expect(w.direction).toBeUndefined();
-  await openDirectionInForce(page);
+  // 1군 reads the direction its squad area runs on (→WEB-14): the standard one, with no picker.
+  await openPersonnel(page, 'players');
   const areas = page.getByTestId('direction-areas');
   await expect(areas.getByRole('heading', { level: 3 })).toHaveText('구단 방향 · 기본 방향');
   await expect(areas.getByRole('button')).toHaveCount(0);

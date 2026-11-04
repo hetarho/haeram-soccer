@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseTab, openClubRecords, openCups, openLeague } from './competition-navigation';
-import { enterOffice, openDirectionInForce } from './office';
+import { enterOffice, leaveOffice, openArea } from './office';
 import { marketRows, marketFilters, marketInfo, closeMarketPanel } from './market';
 import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
@@ -10,14 +10,7 @@ import { simulateSeason } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { continueSlot, seedSlot } from './slots';
 import { startCareer } from './start';
-import {
-  clubSections,
-  officeBar,
-  operationsTabs,
-  TEAM_WORK,
-  teamEntry,
-  teamReturn,
-} from './office';
+import { officeDialog, officeMenu, TEAM_WORK, teamEntry, teamReturn } from './office';
 
 /** Takes the seed's first listed club over; returns its name. */
 async function takeClubOver(page: Page) {
@@ -26,29 +19,21 @@ async function takeClubOver(page: Page) {
   return startCareer(page, { seed: 'owner-workflow-regression' });
 }
 /**
- * An office section is selected in the section bar while the clubhouse entry stays current; our
- * people's pages keep 팀 current, with its way back and no office bar. No room bar names either
- * (→WEB-10/43/112).
+ * Our people's pages keep 팀 current, with their way back and no office menu; first-team training
+ * keeps the clubhouse current (→WEB-10/43/112).
  */
 async function expectSection(page: Page, section: string) {
   if (Object.hasOwn(TEAM_WORK, section)) {
     await expect(teamReturn(page)).toBeVisible();
     await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
-    await expect(clubSections(page)).toHaveCount(0);
-    await expect(officeBar(page)).toHaveCount(0);
+    await expect(officeMenu(page)).toHaveCount(0);
+    await expect(officeDialog(page)).toHaveCount(0);
     return;
   }
-  await expect(clubSections(page).getByRole('tab', { name: section, exact: true })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
+  if (section !== '훈련') throw new Error(`No ${section} page`);
+  await expect(page).toHaveURL(/\/training$/);
   await expect(clubhouseTab(page)).toHaveAttribute('aria-current', 'page');
-  await expect(officeBar(page)).toHaveCount(0);
-}
-/** 구단 운영 › 재정·투자's direction in force, entered through the club sections (→WEB-110). */
-async function openOperations(page: Page) {
-  await openDirectionInForce(page);
-  await expect(page.getByTestId('view-scroller').getByTestId('direction-areas')).toBeVisible();
+  await expect(officeDialog(page)).toHaveCount(0);
 }
 
 test('market info reads the 영입 direction and restores the candidate work', async ({ page }) => {
@@ -93,7 +78,9 @@ test('market info reads the 영입 direction and restores the candidate work', a
   await closeMarketPanel(page, '영입 필터');
 });
 
-test('the academy reads its investment and 유입 방식 as 재정·투자 does', async ({ page }) => {
+test('the academy reads its investment and 유입 방식 as its office area sets them', async ({
+  page,
+}) => {
   await takeClubOver(page);
   await openPersonnel(page, 'training');
   await openPersonnel(page, 'academy');
@@ -102,13 +89,12 @@ test('the academy reads its investment and 유입 방식 as 재정·투자 does'
   await expect(line).toContainText('기본 운영 · 표준');
   await expect(page.getByRole('button', { name: /^유소년 투자 · 유입 방식/ })).toHaveCount(0);
   await expect(page.getByRole('dialog', { name: '유소년 업무 기준', exact: true })).toHaveCount(0);
-  await openOperations(page);
-  const youth = page
-    .getByTestId('direction-areas')
-    .getByRole('region', { name: '유소년', exact: true });
-  await expect(youth.locator('[data-row="academy"]')).toContainText('기본 운영');
-  await expect(youth.locator('[data-row="youth"]')).toContainText('표준');
-  await expect(youth.getByRole('radio')).toHaveCount(0);
+  // The office's 유소년 sets both: the dial and the card in force (→WEB-14/117).
+  const youth = await openArea(page, '유소년');
+  await expect(youth.locator('[data-control="policy:academy"]')).toContainText(
+    '현재 적용 · 기본 운영',
+  );
+  await expect(youth.locator('[data-control="build:youth"]')).toContainText('현재 · 표준');
 });
 
 for (const viewport of [
@@ -180,12 +166,9 @@ test('recruitment needs open on demand and academy operations open their exact w
   await openPersonnel(page, 'training');
   await openPersonnel(page, 'academy');
   await page.getByRole('button', { name: /유소년 시설 .*시설 보기/ }).click();
-  await expect(page.getByTestId('facility-academy')).toBeVisible();
-  // 구단 운영 opens on 재정·투자, where each facility's stage reads (→WEB-14, WEB-110).
-  await expect(page).toHaveURL(/\/club-operations\?view=investment$/);
-  await expect(
-    operationsTabs(page).getByRole('tab', { name: '재정·투자', exact: true }),
-  ).toHaveAttribute('aria-selected', 'true');
+  // The office's 유소년 opens on its facility, where its stage reads (→WEB-14).
+  await expect(page).toHaveURL(/\/club-operations\?view=investment&area=youth$/);
+  await expect(page.locator('#investment-facility-academy')).toBeVisible();
   // The detour names its way back to the academy (→WEB-74).
   await page.getByRole('button', { name: '← 돌아가기 · 유소년', exact: true }).click();
   await expect(page).toHaveURL(/\/academy$/);
@@ -286,6 +269,7 @@ test('keeps the home briefing informational alongside the public clock and opens
   // The office holds its 결재함 and repeats no season journal (→WEB-39).
   await enterOffice(page);
   await expect(page.getByRole('button', { name: /클럽 소식/ })).toHaveCount(0);
+  await leaveOffice(page);
   // The season in progress opens from the records room's season list (→WEB-54).
   await openClubRecords(page);
   const row = page.getByRole('button', { name: '1930/31 구단 시즌 기록 보기', exact: true });

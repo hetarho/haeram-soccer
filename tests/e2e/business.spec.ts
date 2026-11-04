@@ -23,15 +23,14 @@ import { startCareer, startFlow } from './start';
 import { clubhouseTab } from './competition-navigation';
 import {
   aroundOffice,
-  clubSections,
-  enterOffice,
-  LOBBY,
-  officeBar,
-  officeTitle,
-  openDirectionInForce,
+  OFFICE,
+  officeDialog,
+  officePage,
+  openArea,
   openOfficeArea,
-  operationsTabs,
+  openOfficePage,
   outsideOffice,
+  type Area,
 } from './office';
 
 /** The export lives in the settings menu, outside the office: step out and back (→WEB-39). */
@@ -54,9 +53,8 @@ async function found(page: Page, seed: string, preset?: string) {
   await startCareer(page, { seed });
 }
 
-/** The owner office's area `area`, the direction in force unless named (→WEB-39, WEB-110). */
-const openBusiness = (page: Page, area?: string) =>
-  area ? openOfficeArea(page, area) : openDirectionInForce(page);
+/** Where the owner office's work `area` lives (→WEB-39, WEB-110): an investment area or 후원. */
+const openBusiness = (page: Page, area: Area | '투자' | '후원') => openOfficeArea(page, area);
 
 async function playNext(page: Page) {
   await outsideOffice(page);
@@ -70,47 +68,37 @@ async function playNext(page: Page) {
   await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
 }
 
-test('older operations addresses open their 구단 운영 section', async ({ page }) => {
-  // Takes a club over, then reloads the app cold for each of eight addresses; slow CI browsers need longer.
+test('older office and operations addresses open where their work lives now', async ({ page }) => {
+  // Takes a club over, then reloads the app cold for each of ten addresses; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
   await found(page, 'direction-addresses');
-  await enterOffice(page);
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
-  // The office opens on its lobby and keeps no ?view= there (→WEB-39), as its section bar's
-  // 사무실 (→WEB-10); there is no 캠페인 area.
-  const office = clubSections(page).getByRole('tab', { name: '사무실', exact: true });
-  await expect(officeTitle(page)).toHaveText(LOBBY);
-  await expect(page).toHaveURL(/\/direction$/);
-  await expect(office).toHaveAttribute('aria-selected', 'true');
-  await page.goto('/business');
-  await expect(officeTitle(page)).toHaveText(LOBBY);
-  await expect(page).toHaveURL(/\/direction$/);
-  await expect(office).toHaveAttribute('aria-selected', 'true');
-  // Every older unselected money or sponsor address opens its 구단 운영 section (→WEB-110).
-  for (const [asked, area, now] of [
-    ['/business?view=facility', '재정·투자', /\/club-operations\?view=investment$/],
-    ['/business?view=marketing', '재정·투자', /\/club-operations\?view=investment$/],
-    ['/business?view=strategy', '재정·투자', /\/club-operations\?view=investment$/],
-    ['/business?view=build', '재정·투자', /\/club-operations\?view=investment$/],
-    ['/business?view=finance', '재정·투자', /\/club-operations\?view=investment$/],
+  // The office opens on its effects in force and keeps no area in its address (→WEB-39/116);
+  // the 결재함 opens over it only when asked (→WEB-10). Older desk addresses open where their
+  // work lives now (→WEB-39/110); there is no 캠페인 area.
+  for (const [asked, region, now] of [
+    ['/direction', OFFICE, /\/club-operations\?view=investment$/],
+    ['/business', OFFICE, /\/club-operations\?view=investment$/],
+    ['/business?view=facility', OFFICE, /\/club-operations\?view=investment$/],
+    ['/business?view=marketing', OFFICE, /\/club-operations\?view=investment$/],
+    ['/business?view=strategy', OFFICE, /\/club-operations\?view=investment$/],
+    ['/business?view=build', OFFICE, /\/club-operations\?view=investment$/],
+    ['/business?view=finance', OFFICE, /\/club-operations\?view=investment$/],
     ['/business?view=sponsor', '후원', /\/club-operations\?view=sponsor$/],
-    ['/direction?view=build', '재정·투자', /\/club-operations\?view=investment$/],
+    ['/direction?view=build', OFFICE, /\/club-operations\?view=investment$/],
     ['/direction?view=identity', '구단 디자인', /\/club-operations\?view=identity$/],
   ] as const) {
     await page.goto(asked);
-    await expect(
-      operationsTabs(page).getByRole('tab', { name: area, exact: true }),
-    ).toHaveAttribute('aria-selected', 'true');
-    await expect(
-      clubSections(page).getByRole('tab', { name: '운영', exact: true }),
-    ).toHaveAttribute('aria-selected', 'true');
     await expect(page).toHaveURL(now);
-    await expect(officeBar(page)).toHaveCount(0);
+    await expect(page.getByRole('region', { name: region, exact: true })).toBeVisible();
+    await expect(officeDialog(page)).toHaveCount(0);
   }
+  await page.goto('/direction');
+  await expect(officePage(page).getByTestId('office-effects')).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
-  // Campaigns are no more (→ECON-7): 자금 shows none to start.
-  await openBusiness(page, '투자');
+  // Campaigns are no more (→ECON-7): 재정 · 사업 shows none to start.
+  await openArea(page, '재정 · 사업');
   await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
@@ -147,21 +135,21 @@ for (const viewport of [
     fixture.academyFacility = 0;
     startWork(fixture, 'stadium');
     await importCareer(page, fixture, 'facility-under-way.json');
-    await openBusiness(page, '투자');
-    // Three parts read separately with their art (→WEB-14): the stadium's ladder, the training
-    // ground and the academy facilities.
-    await expect(page.getByTestId('facility-stadium')).toContainText('동네 구장');
-    await expect(page.getByTestId('stadium-step-0')).toHaveAttribute('data-state', 'current');
-    await expect(page.getByTestId('stadium-step-1')).toHaveAttribute('data-state', 'building');
-    await expect(page.getByTestId('facility-work-stadium')).toContainText('완공까지 180일');
-    await expect(page.getByTestId('facility-training')).toContainText('0/5단계');
-    await expect(page.getByTestId('facility-academy')).toContainText('0/5단계');
-    for (const part of ['stadium', 'training', 'academy'])
-      await expect(page.getByTestId(`facility-${part}`).locator('[data-facility-art]')).toHaveCount(
-        1,
-      );
-    // Nothing here builds: no review, no start (→WEB-14).
-    await expect(page.getByRole('button', { name: /공사 (검토|시작)/ })).toHaveCount(0);
+    // Each part reads on its own area with its art (→WEB-14): the stadium's work under way, the
+    // training ground and the academy from nothing.
+    const stadium = (await openArea(page, '경기장')).locator('#investment-facility-stadium');
+    await expect(stadium).toContainText('완공까지 180일');
+    await expect(stadium.locator('[data-facility-art]')).toHaveCount(1);
+    for (const [area, part] of [
+      ['1군', 'training'],
+      ['유소년', 'academy'],
+    ] as const) {
+      const facility = (await openArea(page, area)).locator(`#investment-facility-${part}`);
+      await expect(facility).toContainText('0/5단계');
+      await expect(facility.locator('[data-facility-art]')).toHaveCount(1);
+    }
+    // The books carry the work (→WEB-14).
+    await openArea(page, '재정 · 사업');
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
@@ -178,13 +166,12 @@ test('pays sponsor installments only for league games after the actual contract'
   // A 1930 club in England has only the local slot open (→ECON-8).
   const offer = sponsorOffers(before, 'local').find((candidate) => candidate.kind === 'stable')!;
   await openBusiness(page, '후원');
-  await expect(page.locator('[data-operations-view="sponsor"]')).toContainText(
-    '계약 이후 경기만 지급하며',
-  );
+  const sponsors = page.getByRole('region', { name: '후원', exact: true });
+  await expect(sponsors).toContainText('계약 이후 경기만 지급하며');
   await expect(page.getByTestId('sponsor-slot-shirt')).toContainText('1979/80 시즌부터');
-  // The section mounts whole: its 결재 담당 never arrives later above the offers and moves them
+  // The section mounts whole: its 후원 위임 never arrives later above the offers and moves them
   // away from the tap (Firefox CI 41250503124 signed nothing that way).
-  expect(await page.getByTestId('desk-responsibilities').count()).toBe(1);
+  expect(await sponsors.getByRole('region', { name: '후원 위임', exact: true }).count()).toBe(1);
   await page
     .getByTestId('sponsor-local-stable')
     .getByRole('button', { name: '지역 후원 계약', exact: true })
@@ -240,6 +227,7 @@ test("at level 4 the commercial staff sign an empty slot's best offer", async ({
     .reduce((top, offer) => (BigInt(offer.annual) > BigInt(top.annual) ? offer : top));
   // Applying sponsor delegation hands over the already pending empty slot immediately.
   await chooseLevel(page, 4);
+  await openBusiness(page, '후원');
   await expect(owner).toContainText('자동');
   await expect(owner).toContainText('안정형 제안 중 보장 금액이 가장 큰');
   const signed = await exportWorld(page);
@@ -263,16 +251,15 @@ test('builds 지역 기반 over real rounds from the 지역 investment taken ove
   // Takes a club over and plays real rounds through the owner's event cards; slow CI browsers need longer.
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  // 유스 순혈주의 sets 주변 투자 at 지역 상권 투자 (→ECON-22); no control changes it later.
+  // 유스 순혈주의 sets 주변 투자 at 지역 상권 투자 (→ECON-22): 팬 · 마케팅 reads it in force
+  // (→WEB-14), and the office reads the 지역 기반 it builds, none at the takeover (→ECON-34, WEB-116).
   await found(page, 'local-base-ui', 'local-pride');
-  await openBusiness(page);
-  // 주변 투자 is a row of the 지역 area, read beside the 지역 기반 it builds (→ECON-34, WEB-14).
-  const local = page
-    .getByTestId('direction-areas')
-    .getByRole('region', { name: '지역', exact: true });
-  await expect(local).toContainText('지역 기반 0');
-  await expect(local.locator('[data-row="localInvest"]')).toContainText('지역 상권 투자');
-  await expect(local.getByRole('radio')).toHaveCount(0);
+  const community = await openArea(page, '팬 · 마케팅');
+  await expect(community.locator('[data-control="policy:localInvest"]')).toContainText(
+    '현재 적용 · 지역 상권 투자',
+  );
+  const local = (await openOfficePage(page)).locator('[data-effect="localBase"]');
+  await expect(local).toContainText('현재 0');
   const founded = await exportWorld(page);
   expect(founded.policy?.localInvest).toBe(3);
   expect(BigInt(operatingCosts(founded).investment)).toBeGreaterThan(0n);
@@ -285,24 +272,23 @@ test('builds 지역 기반 over real rounds from the 지역 investment taken ove
   expect(grown.localBase).toBeGreaterThan(0);
   expect(grown.localBase).toBeLessThan(40);
   expect(grown.policy).toEqual(founded.policy);
-  await openBusiness(page);
-  await expect(local).toContainText(`지역 기반 ${Math.round(grown.localBase!)}`);
+  await openOfficePage(page);
+  await expect(local).toContainText(`현재 ${Number(grown.localBase!.toFixed(1))}`);
 });
 
 test('reads the ticket price taken over with and charges it at an actual home gate', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  // 상업 제국 sets the ticket at 비싸게 (→ECON-17); no control changes it later (→WEB-14).
+  // 상업 제국 sets the ticket at 비싸게 (→ECON-17), which 경기장 marks among its presets (→WEB-14).
   // The seed's club opens its league at home.
   await found(page, 'ticket-draft-ui', 'commercial');
   const before = await exportWorld(page);
   expect(before.ticket).toBe(0.08);
-  await openBusiness(page);
-  const ticket = page.getByTestId('direction-areas').locator('[data-row="ticket"]');
-  await expect(ticket).toContainText('티켓 가격');
-  await expect(ticket).toContainText('비싸게');
-  await expect(page.getByRole('radiogroup', { name: '티켓 가격' })).toHaveCount(0);
+  const stadium = await openArea(page, '경기장');
+  await expect(stadium.getByRole('region', { name: '티켓 가격', exact: true })).toContainText(
+    '현재 · 비싸게',
+  );
   await playNext(page);
   const settled = await exportWorld(page);
   expect(settled.ticket).toBe(0.08);

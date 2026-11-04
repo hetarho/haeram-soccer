@@ -21,7 +21,16 @@ import {
 import { horizontalOverflow } from './layout';
 import { chooseOption } from './select';
 import { clubhouseTab } from './competition-navigation';
-import { clubSections, enterOffice, openTeamTab, teamEntry, teamReturn, teamTabs } from './office';
+import {
+  approvalQueue,
+  approvalRequest,
+  leaveOffice,
+  officeMenu,
+  openTeamTab,
+  teamEntry,
+  teamReturn,
+  teamTabs,
+} from './office';
 import { fundClub, startCareer } from './start';
 
 /** The default seed's first season offers a firefighter among the four free candidates. */
@@ -30,9 +39,6 @@ async function found(page: Page, seed = 'short-contract') {
   await startCareer(page, { seed });
 }
 
-/** A tab of the office's section bar (→WEB-10): 사무실, 훈련 and 운영. */
-const section = (page: Page, name: string) =>
-  clubSections(page).getByRole('tab', { name, exact: true });
 /** A list of 팀 (→WEB-112): 1군, 유소년 and 코치. */
 const teamTab = (page: Page, name: string) =>
   teamTabs(page).getByRole('tab', { name, exact: true });
@@ -106,7 +112,7 @@ test.describe('사람 at 360x740', () => {
     await expect(page.getByRole('tablist', { name: '감독 사무실' })).toHaveCount(0);
     await expect(teamReturn(page)).toHaveText('← 팀 · 1군');
     await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
-    await expect(clubSections(page)).toHaveCount(0);
+    await expect(officeMenu(page)).toHaveCount(0);
     await expect(page).toHaveURL(/\/first-team\?view=players$/);
     await openTeamTab(page, '1군');
     await settle(page);
@@ -145,28 +151,6 @@ test.describe('사람 at 360x740', () => {
       await expect(page).toHaveURL(address);
     }
     await expect(page.getByTestId('team-coaches')).toBeVisible();
-    // The office's own bar moves the same way, each tab opening its section; Home reaches the
-    // first tab, the office's own queue, never the home briefing (→WEB-10).
-    await enterOffice(page);
-    await section(page, '사무실').focus();
-    const keys: [string, string, RegExp][] = [
-      ['ArrowRight', '훈련', /\/training$/],
-      ['ArrowRight', '운영', /\/club-operations\?view=investment$/],
-      ['ArrowRight', '사무실', /\/direction$/],
-      ['End', '운영', /\/club-operations\?view=investment$/],
-      ['ArrowLeft', '훈련', /\/training$/],
-      ['Home', '사무실', /\/direction$/],
-    ];
-    for (const [key, name, address] of keys) {
-      await page.keyboard.press(key);
-      await expect(section(page, name)).toBeFocused();
-      await expect(section(page, name)).toHaveAttribute('aria-selected', 'true');
-      await expect(page).toHaveURL(address);
-      if (name === '사무실') {
-        await expect(page.getByTestId('approval-queue')).toBeVisible();
-        await expect(page.getByTestId('club-hub')).toBeHidden();
-      }
-    }
     await openPersonnel(page, 'coaches');
     await expect(page.getByRole('region', { name: '스태프', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBe(0);
@@ -348,14 +332,15 @@ test('the 1 April card renews the firefighter in one tap', async ({ page }) => {
     .filter({ hasText: renewal })
     .getByRole('button', { name: /· 검토하기$/ })
     .click();
-  await expect(page).toHaveURL(/view=staff&request=/);
+  await expect(approvalRequest(page)).toBeVisible();
   await page
     .getByTestId('manager-renewal')
     .getByRole('button', { name: /^재계약/ })
     .click();
   // An answered review returns to the 결재함 (→WEB-100).
-  await expect(page).toHaveURL(/\/direction$/);
+  await expect(approvalQueue(page)).toBeVisible();
   await expect((await approvalTray(page)).filter({ hasText: renewal })).toHaveCount(0);
+  await leaveOffice(page);
   await openPeople(page);
   await openPersonnel(page, 'manager');
   await expect(page.getByText(/1930년 부임 · 계약 1931\/32 시즌 끝까지/)).toBeVisible();

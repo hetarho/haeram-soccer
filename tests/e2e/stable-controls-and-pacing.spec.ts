@@ -76,7 +76,7 @@ test('surveys every management destination during uninterrupted calendar play', 
   // The owner office shares the running-calendar lock and keeps stop available (→WEB-39/97).
   await openClubhouse(page);
   await continues();
-  await openOfficeArea(page, '결재라인 모아보기');
+  await openOfficeArea(page, '결재 설정');
   const office = page.getByTestId('owner-office');
   await expect(office.getByRole('button', { name: '전체 직접', exact: true })).toBeDisabled();
   await page.keyboard.press('Escape');

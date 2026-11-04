@@ -5,7 +5,7 @@ import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { activePlayers } from '../../packages/engine/src/world';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { chooseOption } from './select';
-import { enterOffice } from './office';
+import { openClubOverview } from './office';
 import { clubhouseTab } from './competition-navigation';
 import { startCareer } from './start';
 
@@ -45,20 +45,18 @@ for (const viewport of [
     const hub = page.getByTestId('club-hub');
     await expect(hub).toBeVisible();
     await expect(hub.getByTestId('club-situation')).toHaveCount(0);
-    // The office reads the thin squad in its summary and offers no quick action (→WEB-39/44).
-    await enterOffice(page);
-    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
+    // The office's 오버뷰 reads the thin squad, warned plainly, with no quick action (→WEB-39/44).
+    const overview = await openClubOverview(page);
+    await expect(overview.getByTestId('quick-actions')).toHaveCount(0);
     await expect(alert).toHaveCount(0);
     await expectHomeBounds(page);
-    // The current-club summary reads the thin squad in plain words; it has nothing to press.
-    const situation = page.getByTestId('club-situation');
-    const squad = situation.locator('[data-fact="squad"]');
-    await expect(squad).toContainText('19/19');
-    await expect(squad.getByTestId('situation-warning-squad')).toHaveText('· 주의');
-    await expect(situation.getByRole('button')).toHaveCount(0);
+    await expect(overview.getByTestId('situation-warning-squad')).toHaveText('· 주의');
     await expect(alert).toHaveCount(0);
-    await expect(situation).not.toContainText('선수 19명');
-    // The progress timeline lives on Home; the office summary above stays in the office.
+    await overview
+      .locator('[data-ui="dialog-header"]')
+      .getByRole('button', { name: '창 닫기', exact: true })
+      .click();
+    // The progress timeline lives on Home; the overview stays in the office.
     await clubhouseTab(page).click();
     await expect(hub).toBeVisible();
     await chooseOption(page.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
@@ -99,7 +97,7 @@ for (const viewport of [
       await expectTouchSize(target);
       expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(viewport.height);
     }
-    await expect(page.getByTestId('hud-cash')).toContainText('운영 자금');
+    await expect(page.getByTestId('hud-cash')).toContainText('구단 자금');
     await expect(page.getByTestId('hud-cash')).toBeVisible();
     const season = hub.getByRole('region', { name: '이번 시즌', exact: true });
     for (const figure of ['라운드', '리그 순위', '승점 0'])
@@ -133,20 +131,24 @@ for (const viewport of [
     expect((await viewGeometry(page)).scroll).toBe(opened);
     expect(await page.evaluate(() => scrollY)).toBe(0);
 
-    // The office reads the club's situation below its 결재함, with no quick actions (→WEB-39/44).
-    await enterOffice(page);
-    await expect(page.getByTestId('quick-actions')).toHaveCount(0);
-    const situation = page.getByRole('region', { name: '클럽 현황', exact: true });
-    // Strength changes with the lineup, fatigue and morale, so it leads the summary (→WEB-44).
-    await expect(situation.locator('dt')).toHaveText([
-      '팀 전력',
-      '출전 가능',
-      '선발 피로',
-      '분위기',
+    // The office's 오버뷰 reads the club as it stands, with no quick actions (→WEB-39/44): its
+    // condition reads the starters' fatigue, 분위기, injuries and suspensions, the unhappy and the
+    // manager's standing.
+    const overview = await openClubOverview(page);
+    await expect(overview.getByTestId('quick-actions')).toHaveCount(0);
+    const condition = overview.locator('dl').filter({ hasText: '선발 평균 피로' });
+    await expect(condition.locator('dt')).toHaveText([
+      '선발 평균 피로',
+      '팀 분위기',
+      '부상 / 출장 정지',
+      '불만 선수',
       '감독 입지',
     ]);
-    await expect(situation.getByRole('button')).toHaveCount(0);
     await expectHomeBounds(page);
+    await overview
+      .locator('[data-ui="dialog-header"]')
+      .getByRole('button', { name: '창 닫기', exact: true })
+      .click();
     await clubhouseTab(page).click();
     await expect(hub).toBeVisible();
 

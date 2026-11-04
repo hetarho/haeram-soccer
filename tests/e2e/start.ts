@@ -128,19 +128,15 @@ export async function takeOverClub(page: Page, name: string) {
 }
 
 /**
- * Puts the first 자금 투입 step — a quarter of what the fortune can put in — into the club's cash
- * through the HUD's 구단주 sheet (→OWNER-9, WEB-114), and dismisses its outcome card. A 1930
- * club is taken over with no cash, so a journey that spends money or plays on past eight rounds
- * in the red funds the club first (→ECON-24). The clock must be stopped.
+ * Puts a quarter of what the fortune can put in (자금 투입's slider at 25%) into the club's cash
+ * through the HUD's money button and its 자금 관리 dialog (→OWNER-9, WEB-114), and dismisses its
+ * outcome card. A 1930 club is taken over with no cash, so a journey that spends money or plays on
+ * past eight rounds in the red funds the club first (→ECON-24). The clock must be stopped.
  */
 export async function fundClub(page: Page) {
-  await page.getByTestId('hud-fortune').click();
-  const sheet = page.getByRole('dialog', { name: '구단주', exact: true });
-  await sheet
-    .getByRole('group', { name: '투입 금액', exact: true })
-    .getByRole('button')
-    .first()
-    .click();
+  await page.getByTestId('hud-cash').click();
+  const sheet = page.getByRole('dialog', { name: '자금 관리', exact: true });
+  await sheet.getByRole('slider', { name: '자금 투입 금액', exact: true }).fill('25');
   await sheet.getByRole('button', { name: /넣기$/ }).click();
   await expect(sheet.getByTestId('owner-message')).toContainText('투입했어요');
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();

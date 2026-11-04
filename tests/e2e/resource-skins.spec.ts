@@ -5,7 +5,7 @@ import { expect, test, type Locator } from '@playwright/test';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { seedSlot, continueSlot } from './slots';
-import { openOfficeArea, leaveOffice } from './office';
+import { leaveOffice, openArea } from './office';
 import { openManagerHistory } from './record-navigation';
 
 test.use({ reducedMotion: 'reduce' });
@@ -141,28 +141,19 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-staff.png` });
     await navigate('클럽하우스');
     await page
-      .getByRole('button', { name: '결재라인 모아보기', exact: true })
+      .getByRole('button', { name: '결재 설정', exact: true })
       .filter({ visible: true })
       .first()
       .click();
-    await openOfficeArea(page, '투자');
-    const steps = page.locator('[data-ui="facility-steps"]');
-    await steps.scrollIntoViewIfNeeded();
-    await imageSkin(steps.locator('li').first());
-    const readable = await steps
-      .locator('li b')
-      .evaluateAll((nodes) => nodes.every((node) => node.scrollWidth <= node.clientWidth));
-    expect(readable).toBe(true);
-    await expect(page.getByTestId('facility-stadium')).toBeVisible();
-    const facility = page.getByTestId('facility-stadium');
+    // 경기장 reads the stadium's stage with its art beside its next work (→WEB-14, ECON-32).
+    const facility = (await openArea(page, '경기장')).locator('#investment-facility-stadium');
+    await facility.scrollIntoViewIfNeeded();
     const inset = await facility.evaluate((node) => {
       const css = getComputedStyle(node);
       return [css.paddingTop, css.paddingRight, css.paddingBottom, css.paddingLeft].map(parseFloat);
     });
     expect(inset.every((value) => value >= 12)).toBe(true);
-    // Each part reads its stage with its art; nothing here builds (→WEB-14, ECON-32).
     await expect(facility.locator('[data-facility-art]')).toHaveCount(1);
-    await expect(facility.getByRole('button')).toHaveCount(0);
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-facilities.png` });
     await leaveOffice(page);
     await openCups(page);

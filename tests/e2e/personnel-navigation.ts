@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 import { primaryEntry } from './competition-navigation';
 import { dismissMatchReport } from './events';
 import { settle } from './layout';
-import { openClubSection } from './office';
+import { openTeamWork, openTraining } from './office';
 
 /** Follow the final gameplay hierarchy through the visible navigation. */
 export async function openPersonnel(
@@ -16,19 +16,15 @@ export async function openPersonnel(
     await settle(page);
     return;
   }
-  // 팀's lists lead to each people page by a named management link, and the office's section
-  // bar to 훈련 (→WEB-10/43/112): 1군 is the roster, and the manager stands with his staff in
-  // 코치진. Neither has local tabs.
-  await openClubSection(
-    page,
-    view === 'academy'
-      ? '유소년'
-      : view === 'training'
-        ? '훈련'
-        : view === 'coaches' || view === 'manager'
-          ? '코치진'
-          : '1군',
-  );
+  // 팀's lists lead to each people page by a named management link (→WEB-112): 1군 is the roster,
+  // and the manager stands with his staff in 코치진. First-team training is read from the card of
+  // the coach who sets it (→WEB-39/43).
+  if (view === 'training') await openTraining(page);
+  else
+    await openTeamWork(
+      page,
+      view === 'academy' ? '유소년' : view === 'coaches' || view === 'manager' ? '코치진' : '1군',
+    );
   // Wait for the incoming view to stop moving; Firefox otherwise scrolls it under a click.
   await settle(page);
 }

@@ -328,13 +328,17 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   );
   // The open queue follows the running clock: its rows count their waiting days down, or leave
   // when their own course closes them, without the office stopping play (→WEB-97/100).
+  // The queue is a modal over the controller, so play starts before it opens again.
   const read = () =>
     approvalRows(page).evaluateAll((rows) => rows.map((row) => row.textContent).join('|'));
   const before = await read();
+  await leaveOffice(page);
   await play.click();
   await expect(stop).toBeVisible();
+  await inbox.click();
   await expect.poll(read, { timeout: 30000 }).not.toBe(before);
   await expect(approvalQueue(page)).toBeVisible();
+  await leaveOffice(page);
   await stop.click();
   await expect(play).toBeVisible();
 });
@@ -536,9 +540,7 @@ for (const width of [390, 1280]) {
     const w = pendingAcquisitionCareer();
     await importResponsibilityCareer(page, w);
     const office = await openOffice(page);
-    await expect(
-      page.getByRole('dialog', { name: '결재라인 모아보기', exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole('dialog', { name: '결재 설정', exact: true })).toBeVisible();
     const choice = office.getByRole('group', { name: '선수 영입', exact: true });
     await choice.getByRole('button', { name: '자동', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: '자동으로 처리하겠습니다.', exact: true });

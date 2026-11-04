@@ -61,6 +61,7 @@ export function createSyntheticPresentation(baseline: {
       ...structuredClone(baseline.locale.messages),
       'navigation.dashboard': 'Resource-only club home',
       'shell.cash': 'Budget de test',
+      'copy.HudCash.5008c66043': 'Budget de test',
       'shell.cashDetails': 'Budget {amount} · {status} · Details',
       'facility.era.heritage': 'Ère de test',
       'facility.stadium': 'Tribune {stage}',

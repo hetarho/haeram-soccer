@@ -14,7 +14,14 @@ import { clubDivision, orderIds, ownLeagueIds } from './league';
 import { number, seasonName } from './format';
 import { fanMovers, mood, moodChange } from './ownerFigures';
 import { squadRegistration } from './squadRegistration';
-import { cashState, seasonBooks, squadAvailability, teamStates, type StateKey } from './teamState';
+import {
+  cashState,
+  seasonBooks,
+  squadAvailability,
+  stateWarning,
+  teamStates,
+  type StateKey,
+} from './teamState';
 import { useOfficeRead } from './useOfficeRead';
 import s from './ClubOverview.module.css';
 
@@ -127,6 +134,9 @@ export function ClubOverview({ w }: { w: World }) {
   const fatigue = state('fatigue');
   const morale = state('morale');
   const manager = state('manager');
+  // Squad size warns under 20 and is critical under 16, or with too few available (→WEB-44).
+  const roster = state('squad'),
+    rosterWarning = stateWarning(roster);
   const finance = cashState(w);
   const costs = office.costs;
   const books = seasonBooks(w);
@@ -200,11 +210,19 @@ export function ClubOverview({ w }: { w: World }) {
             {localizeValue(availability.available)}
             <small>{richMessage('copy.ClubOverview.842e978b50', { p0: availability.total })}</small>
           </strong>
-          <p className={s.note}>
+          <p className={s.note} data-tone={roster.tone}>
             {richMessage('copy.ClubOverview.94cc5ea39c', {
               p0: availability.injured,
               p1: availability.suspended,
             })}
+            {localizeValue(
+              rosterWarning && (
+                <b data-testid="situation-warning-squad">
+                  {localizeValue(' · ')}
+                  {localizeValue(rosterWarning)}
+                </b>
+              ),
+            )}
           </p>
         </Card>
         <Card title={displayMessage('copy.ClubOverview.be5a47dfcb')} className={s.metric}>

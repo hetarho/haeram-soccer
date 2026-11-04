@@ -8,7 +8,7 @@ import { currentDay, DESIGNERS, designFee, redrawFee } from '../../packages/engi
 import { delegatedCareer } from '../fixtures/club-identity';
 import { continueSlot } from './slots';
 import { openSaveMenu } from './save-menu';
-import { leaveOffice, openDirectionInForce, openOfficeArea } from './office';
+import { leaveOffice, openArea, openOfficeArea } from './office';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { fundClub } from './start';
 import {
@@ -227,8 +227,8 @@ test('navigation detours and passing days keep the drafts beside the policy draf
   view = await openDesign(page);
   await expectDrafts(view);
   expect((await savedWorld(page)).designCommission?.drafts).toEqual(drafts);
-  // A detour through 재정·투자, which only reads the direction, leaves the drafts as delivered.
-  await openDirectionInForce(page);
+  // A detour through 재정 · 사업, which only reads the books, leaves the drafts as delivered.
+  await openArea(page, '재정 · 사업');
   view = await openDesign(page);
   await expectDrafts(view);
   await adoptDraft(view, 0);
