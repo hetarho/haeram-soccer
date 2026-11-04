@@ -44,7 +44,10 @@ export async function settle(page: Page) {
 export async function viewGeometry(page: Page) {
   await settle(page);
   return page.evaluate(() => {
-    const scroller = document.querySelector<HTMLElement>('[data-testid="view-scroller"]')!;
+    // A standalone page (the constants map) has no game shell: the document is its scroller.
+    const scroller =
+      document.querySelector<HTMLElement>('[data-testid="view-scroller"]') ??
+      (document.scrollingElement as HTMLElement);
     const vertical = [scroller, ...scroller.querySelectorAll<HTMLElement>('*')].filter(
       (element) =>
         element.getClientRects().length &&

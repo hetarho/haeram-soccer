@@ -18,7 +18,7 @@ import { continueSlot, seedSlot } from './slots';
 import { committedRaw, savedWorld } from './club-identity-helpers';
 import { expectHomeBounds, settle } from './layout';
 import { textContrast } from './contrast';
-import { enterOffice, leaveOffice, openDirectionInForce } from './office';
+import { leaveOffice, openArea, openOfficePage } from './office';
 import { openSaveMenu } from './save-menu';
 import { startCareer, startFlow } from './start';
 
@@ -99,12 +99,14 @@ async function openSettings(page: Page, field: Field = 'theme') {
   await expect(content).toBeVisible();
   return page.getByRole('dialog').filter({ has: content });
 }
+/** Closes the picker by its header's close, whose name follows the chosen language. */
 async function closeSettings(page: Page) {
   const content = page.getByTestId('presentation-settings');
   await page
     .getByRole('dialog')
     .filter({ has: content })
-    .getByRole('button', { name: '창 닫기', exact: true })
+    .locator('[data-ui="dialog-header"]')
+    .getByRole('button')
     .click();
   await expect(content).toHaveCount(0);
 }
@@ -258,13 +260,12 @@ for (const width of [390, 1380])
       const stats = page.getByRole('region', { name: '이번 시즌', exact: true });
       await expect(stats).toBeVisible();
       await expect(stats.locator('[data-pixel-icon="play"]')).toHaveCount(0);
-      // The office only reads (→WEB-39); entering it neither stops nor sends play.
-      await enterOffice(page);
-      await expect(page.getByTestId('club-situation')).toBeVisible();
+      // The office opens on what is in force (→WEB-39/116); entering it neither stops nor sends play.
+      await openOfficePage(page);
       await expect(page.getByTestId('quick-actions')).toHaveCount(0);
-      // The HUD cash sheet explains cash in the theme's dialog, with no remedy rows (→WEB-44).
+      // The HUD money opens 자금 관리 in the theme's dialog, with no remedy rows (→WEB-44/114).
       await page.getByTestId('hud-cash').click();
-      const cash = page.getByRole('dialog', { name: '운영 자금', exact: true });
+      const cash = page.getByRole('dialog', { name: '자금 관리', exact: true });
       await expect(cash).toBeVisible();
       await settle(page);
       await expect(cash.locator('li[data-surface="tile"]')).toHaveCount(0);
@@ -412,7 +413,8 @@ for (const width of [390, 1380])
       const date = await page.getByTestId('calendar').innerText();
       // 훈련 keeps its training ground (→WEB-70/72); its era/stage scene changes with the pack.
       await openPersonnel(page, 'training');
-      const art = page.locator('[data-facility-art="training"] img');
+      // Home stays mounted while hidden, its training card included: the visible scene is 훈련's.
+      const art = page.locator('[data-facility-art="training"] img').filter({ visible: true });
       await expect(art).toBeVisible();
       const artwork = await art.getAttribute('src');
       const pack = await (await page.request.get(`/presentation/themes/${entry.resource}`)).json();
@@ -489,8 +491,9 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
               const result = update();
               // The new root must capture the selected art in this callback, before returning.
               document.documentElement.dataset.themeSnapshotArt =
-                document.querySelector('[data-facility-art="training"] img')?.getAttribute('src') ??
-                '';
+                [...document.querySelectorAll('[data-facility-art="training"] img')]
+                  .find((image) => (image as HTMLElement).offsetParent !== null)
+                  ?.getAttribute('src') ?? '';
               return result;
             }
           : update,
@@ -514,7 +517,9 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
   );
   // 훈련's training-ground scene stays mounted behind the picker (→WEB-70/93).
   await openPersonnel(page, 'training');
-  await expect(page.locator('[data-facility-art="training"] img')).toBeVisible();
+  await expect(
+    page.locator('[data-facility-art="training"] img').filter({ visible: true }),
+  ).toBeVisible();
   const dialog = await openSettings(page);
   const closePaths = () =>
     dialog
@@ -526,7 +531,10 @@ test('theme reveal keeps controls in the composited dialog and backdrop', async 
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'pixel');
   await expect(page.locator('html')).toHaveAttribute(
     'data-theme-snapshot-art',
-    (await page.locator('[data-facility-art="training"] img').getAttribute('src'))!,
+    (await page
+      .locator('[data-facility-art="training"] img')
+      .filter({ visible: true })
+      .getAttribute('src'))!,
   );
   await expect.poll(closePaths).not.toBe(standardClose);
   await expect(dialog).toBeVisible();
@@ -666,13 +674,12 @@ test('unseen routed locale and theme change actual resources while game facts, t
   const world = (await decode(raw)).world;
   const date = await page.getByTestId('calendar').innerText();
   const sent = await commands(page);
-  await openDirectionInForce(page);
-  const finance = page
-    .getByTestId('direction-areas')
-    .getByRole('region', { name: '재정', exact: true });
-  await expect(finance.locator('[data-row="finance"]')).toContainText('재정 기조');
+  const marketing = (await openArea(page, '팬 · 마케팅')).locator(
+    '[data-control="policy:globalMarketing"]',
+  );
+  await expect(marketing).toContainText('현재 적용');
   const address = page.url();
-  // The section and its Korean direction remain across a settings detour (→WEB-39).
+  // The area and its Korean dials remain across a settings detour (→WEB-39).
   await leaveOffice(page);
   await openSettings(page, 'locale');
   await chooseOption(page.getByTestId('presentation-locale'), fixture.locale.id);
@@ -684,9 +691,9 @@ test('unseen routed locale and theme change actual resources while game facts, t
   await closeSettings(page);
   await expect(page.getByTestId('calendar')).toHaveText(date, { useInnerText: true });
   await expect(page.getByTestId('hud-cash')).toContainText('Budget de test');
-  await openDirectionInForce(page);
+  await openArea(page, '팬 · 마케팅');
   expect(page.url()).toBe(address);
-  await expect(finance.locator('[data-row="finance"]')).toContainText('재정 기조');
+  await expect(marketing).toContainText('현재 적용');
   expect(await commands(page)).toBe(sent);
   expect(await committedRaw(page)).toBe(raw);
   await leaveOffice(page);
@@ -699,9 +706,9 @@ test('unseen routed locale and theme change actual resources while game facts, t
   // The owner's office scene heads the 결재라인 overview, opened from the bottom controls.
   await page
     .locator('[data-ui="season-transport"]')
-    .getByRole('button', { name: '결재라인 모아보기', exact: true })
+    .getByRole('button', { name: '결재 설정', exact: true })
     .click();
-  const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
+  const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
   const image = overview.locator('[data-facility-art="manager"] img');
   await expect(image).toHaveAttribute(
     'src',

@@ -1000,7 +1000,8 @@
   display: none;
 }
 .modalBackdrop {
-  z-index: 1000;
+  /* A dialog opened inside another stacks above it (Dialog's depth). */
+  z-index: calc(1000 + var(--dialog-depth, 0));
   padding: 24px;
   overscroll-behavior: none;
 }

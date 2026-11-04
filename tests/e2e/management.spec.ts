@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { openClubhouse, openClubRecords, openLeague } from './competition-navigation';
-import { openDirectionInForce } from './office';
+import { openArea } from './office';
 import { marketCandidate, marketInfo, closeMarketPanel } from './market';
 import { finishSeason, advanceOneRound } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview } from './record-navigation';
@@ -34,14 +34,12 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   await localSponsor.getByRole('button', { name: '지역 후원 계약', exact: true }).first().click();
   await expect(localSponsor.getByTestId('sponsor-contract-local')).toBeVisible();
   await expect(page.getByRole('button', { name: '지역 후원 계약', exact: true })).toHaveCount(0);
-  // Campaigns are no more: the club spends on the town or abroad by the rows its direction set,
-  // read in 재정·투자 (→ECON-16, WEB-14).
-  await openDirectionInForce(page);
-  const global = page
-    .getByTestId('direction-areas')
-    .getByRole('region', { name: '글로벌', exact: true });
-  await expect(global.locator('[data-row="globalMarketing"]')).toContainText('입소문');
-  await expect(global.getByRole('radio')).toHaveCount(0);
+  // Campaigns are no more: the club spends on the town or abroad by the dials of 팬 · 마케팅,
+  // each showing the level in force (→ECON-16, WEB-14).
+  const community = await openArea(page, '팬 · 마케팅');
+  await expect(community.locator('[data-control="policy:globalMarketing"]')).toContainText(
+    '입소문',
+  );
   // The market is a primary entry, a view of the first team (→WEB-10).
   await leaveOffice(page);
   await openPersonnel(page, 'market');

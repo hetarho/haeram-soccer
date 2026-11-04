@@ -6,7 +6,7 @@ import { delegateSales } from './events';
 import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow, settle } from './layout';
-import { clubSections } from './office';
+import { officeMenu } from './office';
 import { startCareer, startFlow } from './start';
 test('serves a real static application entry', async ({ page }) => {
   await page.goto('/');
@@ -95,7 +95,7 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     'aria-current',
     'page',
   );
-  await expect(clubSections(page)).toHaveCount(0);
+  await expect(officeMenu(page)).toHaveCount(0);
   await expect(page.getByRole('tablist', { name: '감독 사무실', exact: true })).toHaveCount(0);
   // A delegated premium sale can change the squad before kickoff; the heading must match
   // the actual cards rather than the founding count.

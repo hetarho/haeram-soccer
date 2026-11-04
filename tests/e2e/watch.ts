@@ -28,6 +28,8 @@ export async function openWatchAction(page: Page) {
     }
   }
   await configureResponsibilities(page, { observations: { matchEve: true } });
+  // Asking for match-eve reports on an eve opens its report at once, over the controls.
+  if (await watch.isVisible()) return watch;
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
   if (await pace.isVisible()) await chooseOption(pace, 'x10');
   for (let step = 0; step < 80; step++) {

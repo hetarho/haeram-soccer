@@ -34,18 +34,19 @@ import c from './CupsView.module.css';
  * History is the heaviest and least visited tab, so its code loads on first opening instead of
  * with the app (ARCH-28 entry budget). A failed load says so instead of breaking the page.
  */
-const CupHistory = lazy(() => {
-  useTextLocale();
-  return import('./CupHistory')
+const CupHistory = lazy(() =>
+  import('./CupHistory')
     .then((module) => ({ default: module.CupHistory }))
-    .catch(() => ({
-      default: () => (
-        <p className={s.muted} role="alert">
-          {richMessage('copy.CupsView.44970e2b8c')}
-        </p>
-      ),
-    }));
-});
+    .catch(() => ({ default: CupHistoryUnavailable })),
+);
+function CupHistoryUnavailable() {
+  useTextLocale();
+  return (
+    <p className={s.muted} role="alert">
+      {richMessage('copy.CupsView.44970e2b8c')}
+    </p>
+  );
+}
 
 const nameOf = (w: World, id?: string) => w.clubs.find((club) => club.id === id)?.name ?? '—';
 

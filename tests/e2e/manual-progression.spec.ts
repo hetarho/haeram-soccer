@@ -11,7 +11,13 @@ import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { approvalTray, configureResponsibilities, matchReport, reviewInOffice } from './events';
-import { leaveOffice, officeBar } from './office';
+import {
+  approvalQueue,
+  leaveOffice,
+  officeDialog,
+  openOfficePage,
+  seasonTransport,
+} from './office';
 
 for (const width of [1280, 390]) {
   test(`exclusive-controls ${width}`, async ({ page }) => {
@@ -103,14 +109,15 @@ for (const width of [1280, 390]) {
     const waiting = pendingDecisions(w).length;
     const request = await reviewInOffice(page);
     await request.getByRole('button', { name: '거절', exact: true }).click();
-    // The answered review returns to the 결재함, whose controller still offers 다음 이벤트.
-    await expect(page).toHaveURL(/\/direction$/);
+    // The answered review returns to the 결재함; closed, it leaves the controller's 다음 이벤트.
+    await expect(approvalQueue(page)).toBeVisible();
+    await leaveOffice(page);
     const before = await page.getByTestId('game-date').innerText();
     await next.click();
     // The office draws no observation: the report reopens at the clubhouse, on the same date and
     // without answering the approval still waiting (→WEB-39/83).
     await expect(group).toContainText('내일 경기');
-    await expect(officeBar(page)).toHaveCount(0);
+    await expect(officeDialog(page)).toHaveCount(0);
     await expect(page.getByTestId('game-date')).toHaveText(before);
     await expect(page.getByTestId('approval-inbox')).toHaveAccessibleName(
       new RegExp(`^결재함 · 대기 ${waiting - 1}건`),
@@ -138,17 +145,17 @@ for (const width of [1280, 390]) {
     // Ordinary entry keeps the office to its approvals, with no observation opened there.
     await expect(await approvalTray(page)).toHaveCount(pendingDecisions(w).length);
     await expect(page.getByTestId('event-group')).toHaveCount(0);
+    await openOfficePage(page);
     const date = page.getByTestId('game-date');
     await expect(date).toHaveText(todayStamp(w));
     const next = page.getByRole('button', { name: '다음 이벤트', exact: true });
     await next.click();
-    // One action from the office settles the days to the eve and shows its report at the
-    // clubhouse (→WEB-39/83); no approval is answered on the way.
+    // One action from the office settles the days to the eve and shows its report over the page
+    // (→WEB-39/83); no approval is answered on the way.
     await expect(matchReport(page).getByTestId('event-group')).toContainText('내일 경기');
-    await expect(officeBar(page)).toHaveCount(0);
-    await expect(page.getByTestId('club-hub')).toBeVisible();
+    await expect(officeDialog(page)).toHaveCount(0);
     await expect(date).toHaveText(todayStamp(expected));
-    await expect(page.getByTestId('approval-inbox')).toHaveAccessibleName(
+    await expect(seasonTransport(page).getByTestId('approval-inbox')).toHaveAccessibleName(
       new RegExp(`^결재함 · 대기 ${waiting}건`),
     );
     // Manual stays stopped there until another explicit action (→WEB-5).

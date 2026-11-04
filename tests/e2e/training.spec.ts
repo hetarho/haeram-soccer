@@ -1,5 +1,6 @@
 import { seedRawCheckpoint } from './checkpoint-storage';
 import { openPersonnel } from './personnel-navigation';
+import { teamEntry } from './office';
 import { watchNext } from './watch';
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
@@ -111,14 +112,17 @@ for (const { seed: worldSeed, ...viewport } of [
     await expect(date).toHaveText('1930.08.01');
     await page.getByRole('button', { name: '자동 진행 시작', exact: true }).click();
     await expect(date).toHaveText('1930.08.02');
-    await openTraining();
+    await teamEntry(page).click();
+    await expect(page).toHaveURL((url) => url.pathname === '/team');
     const mini = page.getByRole('region', { name: '시즌 진행', exact: true });
-    // Still running in 훈련. Stopped now, the days computed ahead (three at x1) are shown at the
-    // pace first, short of the first match eve; the date rests once play is offered again.
+    // Still running in 팀. Stopped now, the days computed ahead (three at x1) are shown at the
+    // pace first, short of the first match eve; the date rests once play is offered again. 훈련,
+    // further away through 코치진 (→WEB-39/43), opens on the rested date.
     await expect(mini.getByRole('button', { name: '자동 진행 정지', exact: true })).toBeVisible();
     await mini.getByRole('button', { name: '자동 진행 정지', exact: true }).click();
     await expect(mini.getByRole('button', { name: '자동 진행 시작', exact: true })).toBeEnabled();
     const paused = await date.innerText();
+    await openTraining();
     // 훈련 shows the focus in force and changes nothing itself (→WEB-70): each focus states its
     // round's recovery and growth, the assistant's pick is marked, and why.
     await expect(page.getByRole('radiogroup', { name: '훈련 방향' })).toHaveCount(0);
@@ -126,7 +130,10 @@ for (const { seed: worldSeed, ...viewport } of [
     const effects = page.getByRole('list', { name: '훈련 방향별 효과' }).getByRole('listitem');
     await expect(effects).toHaveCount(3);
     for (const [index, id] of (['balanced', 'recovery', 'hard'] as const).entries())
-      await expect(effects.nth(index)).toContainText(`피로 회복 ${trainingFocusInfo[id].recovery}`);
+      await expect(effects.nth(index)).toContainText(
+        // A focus's round recovery with the club's standing bonuses (→CLUB-11).
+        `피로 회복 ${Math.max(0, trainingFocusInfo[id].recovery + developmentOutlook(before).focus.recoveryBonus)}`,
+      );
     await expect(effects.nth(1)).toContainText(
       `성장 ×${trainingFocusInfo.recovery.developmentMultiplier}`,
     );

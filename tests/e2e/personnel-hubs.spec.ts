@@ -4,7 +4,7 @@ import { seedSlot, continueSlot } from './slots';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { openLeague, openClubRecords } from './competition-navigation';
 import { horizontalOverflow, settle } from './layout';
-import { clubSections, teamEntry, teamReturn } from './office';
+import { officeMenu, officePage, teamEntry, teamReturn } from './office';
 
 for (const viewport of [
   { width: 360, height: 740 },
@@ -76,9 +76,9 @@ for (const viewport of [
     const date = await page.getByTestId('game-date').innerText();
     const trigger = page
       .getByRole('region', { name: '시즌 진행', exact: true })
-      .getByRole('button', { name: '결재라인 모아보기', exact: true });
+      .getByRole('button', { name: '결재 설정', exact: true });
     await trigger.click();
-    const overview = page.getByRole('dialog', { name: '결재라인 모아보기', exact: true });
+    const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
     const contracts = overview.getByRole('group', { name: '선수 계약', exact: true });
     const applied = contracts.locator('button[aria-pressed="true"]');
     const appliedLabel = await applied.innerText();
@@ -101,17 +101,14 @@ for (const viewport of [
     await openPersonnel(page, 'training');
     await expect(page).toHaveURL(/training$/);
     await expect(page.getByTestId('training-focus')).toBeVisible();
-    // 훈련 opens on its own read: the assistant's focus, no office-return bar and no owner action.
+    // 훈련 opens on its own read: the assistant's focus and no owner action.
     await expect(page.locator('[data-ui="office-bar"]')).toHaveCount(0);
     await expect(page.getByTestId('training-advice')).toBeVisible();
     await expect(page.getByRole('button', { name: /훈련 제안·강행/ })).toHaveCount(0);
-    // From the market a section opens through the office, entered by the clubhouse's illustrated
-    // entrance, so browser back returns to the office's queue; it has no room doors (→WEB-10/39).
+    // 훈련 opens from the office's growth factors, so browser back returns to the office
+    // (→WEB-39/116).
     await page.goBack();
-    await expect(page.getByTestId('approval-queue')).toBeVisible();
-    await expect(
-      clubSections(page).getByRole('tab', { name: '사무실', exact: true }),
-    ).toHaveAttribute('aria-selected', 'true');
+    await expect(officePage(page).getByTestId('office-effects')).toBeVisible();
     await page.goForward();
     await expect(page.getByTestId('training-focus')).toBeVisible();
     await openPersonnel(page, 'academy');
@@ -147,7 +144,7 @@ for (const viewport of [
     // A reloaded 코치진 stays 팀's, its way back naming the 코치 list (→WEB-112).
     await expect(teamReturn(page)).toHaveText('← 팀 · 코치');
     await expect(teamEntry(page)).toHaveAttribute('aria-current', 'page');
-    await expect(clubSections(page)).toHaveCount(0);
+    await expect(officeMenu(page)).toHaveCount(0);
     await expect(managerCard(page)).toBeVisible();
     await settle(page);
     expect(await horizontalOverflow(page)).toBe(0);

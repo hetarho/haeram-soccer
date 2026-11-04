@@ -38,6 +38,7 @@ import { openDecisionSettings, useControlRequest, useFacilityRequest } from './s
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { InvestmentTotals } from './InvestmentTotals';
 import { OfficeEffects } from './OfficeEffects';
+import { TaskReturn } from './TaskReturn';
 import {
   BuildSetting,
   InvestmentSlider,
@@ -772,9 +773,11 @@ export function InvestmentView({ state, client }: { state: ClientState; client: 
     });
     return () => cancelAnimationFrame(frame);
   }, [control, selected]);
+  // A detour from another task (a facility opened from its people page) names its way back (→WEB-74).
   if (view !== 'investment')
     return (
       <div className={s.page}>
+        <TaskReturn />
         <BusinessWorkbench state={state} client={client} part={view} />
       </div>
     );
@@ -787,6 +790,7 @@ export function InvestmentView({ state, client }: { state: ClientState; client: 
           : sourceMessage('copy.catalog.9a8019d09c'),
       )}
     >
+      <TaskReturn />
       {localizeValue(
         selected ? (
           <>

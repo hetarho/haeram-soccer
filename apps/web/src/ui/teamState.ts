@@ -292,6 +292,15 @@ export interface SituationFact {
   warning?: '주의' | '위험';
 }
 
+/** A state that needs attention, labelled plainly (→WEB-44): critical when its tone is bad. */
+export function stateWarning(item: TeamStateItem) {
+  return item.attention
+    ? item.tone === 'bad'
+      ? sourceMessage('copy.teamState.baaff05e43')
+      : sourceMessage('copy.teamState.acc90fbf66')
+    : undefined;
+}
+
 /**
  * The clubhouse's current-club summary (→WEB-44): strength with its place in our division, who
  * can play of the whole first team with the injured and the suspended, the starters' fatigue,
@@ -301,12 +310,6 @@ export function clubSituation(w: World): SituationFact[] {
   const states = teamStates(w);
   const state = (key: StateKey) => states.find((item) => item.key === key)!;
   const squad = squadAvailability(w);
-  const warning = (item: TeamStateItem) =>
-    item.attention
-      ? item.tone === 'bad'
-        ? sourceMessage('copy.teamState.baaff05e43')
-        : sourceMessage('copy.teamState.acc90fbf66')
-      : undefined;
   const fact = (key: SituationFact['key'], label: string): SituationFact => {
     const item = state(key);
     return {
@@ -315,7 +318,7 @@ export function clubSituation(w: World): SituationFact[] {
       value: item.value,
       note: item.status,
       tone: item.tone,
-      warning: warning(item),
+      warning: stateWarning(item),
     };
   };
   const strength = state('strength'),
@@ -334,7 +337,7 @@ export function clubSituation(w: World): SituationFact[] {
       value: `${squad.available}/${squad.total}`,
       note: sourceMessage('copy.teamState.69bfe75bb3', { p0: squad.injured, p1: squad.suspended }),
       tone: roster.tone,
-      warning: warning(roster),
+      warning: stateWarning(roster),
     },
     fact('fatigue', sourceMessage('copy.teamState.dece7a18fa')),
     fact('morale', sourceMessage('copy.teamState.b0d7b29bb8')),
