@@ -16,6 +16,7 @@ import {
 import { OWNER_TIERS, OWNER_TRAITS } from '../../../../packages/engine/src/owner-config';
 import { useLocale } from '../presentation/react';
 import { ClubListing } from './ClubListing';
+import { atDeadline } from './deadline';
 import { seasonName } from './format';
 import {
   cardCloses,
@@ -395,11 +396,7 @@ function useGenerationCards(digest: GenerationDigest | undefined) {
   const closes = cardCloses(schedule);
   useEffect(() => {
     if (closes === undefined) return;
-    const timer = window.setTimeout(
-      () => setSchedule((current) => closeDue(current, performance.now())),
-      Math.max(0, closes - performance.now()),
-    );
-    return () => window.clearTimeout(timer);
+    return atDeadline(closes, () => setSchedule((current) => closeDue(current, performance.now())));
   }, [closes]);
   return schedule;
 }

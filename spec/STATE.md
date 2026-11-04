@@ -17,6 +17,7 @@
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
+| nx04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T03:25Z | 2026-11-04T03:25Z | - |
 
 ## inbox
 - 261104 decided MATCH-17 MATCH-23 MATCH-33 T689: which structural correction the rest of the window (01:36–02:42Z) tests, and what to keep at its end → where the side on the ball waits: `hold` (a forward with no run waits off the offside line, MATCH-33's timed arrival) and `arrive` (AM, wingers and box-run roles wait in the scoring positions once the ball is in front of the box, MATCH-17/33), on the released source and on earlySupport with the released delivery zones (`earlyZones`, so cross finishes stay alive); `hold` alone moves nothing, `arrive` + `hold` (arrHoldEZ60) is the first lever to move the striker slot and on held-out seeds takes the club top-scorer share 42.9% → 36.2% [34.5, 37.9] with goals 2.77 and hat-tricks 0.049 inside, but the share stays above the 31.25% window, shots are 16.8 a team, the stress case does not move and the goal-area share and post-regain shots stay — gate unmet, so both default-off switches stay uncommitted in `.tmp/nx04/nx04-source.patch`, the engine source is restored, only evidence is committed and T689 stays todo with its next lever (alt: recovery after a loss, which the regain shots call for but no ball-side change could test in the window | commit `arrive` as revision 11, against the unmet gate). nx04
@@ -726,11 +727,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 
 ## next
-- implement-task T689 in the isolated codex/nv04 worktree; investigate actual attacking positions and recovery after the cf04 measurements, without new balance tasks or transfer-policy changes.
-- Exploration stops at 2026-11-04T02:42Z (11:42 Asia/Seoul), including all earlier cf04 work; no scoring-source commit before the existing realism gate passes.
-- Keep the primary checkout on main; collect work locally and run the final combined gate once after the exploration outcome.
+- Final coordinator gate and main publication of retained nv04 research tools/evidence and the generation-card deadline fix, from the isolated codex/nv04 worktree only.
+- T689 remains todo: the scoring realism gate is unmet; the original exploration window has ended and no scoring-engine candidate is applied. No additional balance tasks.
+- Preserve the primary checkout on main and its unrelated work. A future explicit T689 continuation can use the retained evidence and remaining failure diagnostics.
 
 ## log
+- 261104 fix start: re-arm a generation-card timer that wakes before its fractional deadline, avoiding a permanently held club list; two regression tests and six existing schedule tests pass, with typecheck/lint/format. nx04
+- 261104 T689 partial: preserve all cf04/nx04 evidence and restore engine source after the unmet realism gate; exit recorded without marking the task done. Research timing and limited two-seed/position diagnostics clarified. nx04
 - 261104 T689 continue: nw04 research commit 8b6c840d retained; supersede its unnecessary owner-approval parking and use the remaining original exploration window for a structural candidate. No new task or source publication. nx04
 - 261104 T689 partial, stays todo: `occupy` (earlySupport plus MATCH-33 box-occupation knobs) on validation 10,200 and calibration 10,200 matches: goals 2.67 / 2.88 inside, 23/38 rows, shots 16.1, FW goals 74.6%, hat-tricks 0.073 outside, club top-scorer share 38.9% / 39.9%, ST shot share 46 → 40% with the top scorer's goal share 43.6%; invariants clean, gate unmet, no scoring source changed. nv04
 - 261104 T689 partial, stays todo: the released source re-measured (MATCH-28 core+tactics, calibration 2,550 / validation 10,200 matches): core goals 3.83, shots 20.7 a team, box shots 16.9, FW goals 79%, hat-tricks 0.158, club top-scorer share 42.5%, 22/38 rows inside, invariants clean; `scripts/scoring-concentration.ts` shows the ST slot takes 46% of shots and the top scorer a third of his side's (76/77 clubs), press pairings 4.3–6.3 goals; gate unmet, no scoring source changed; evidence artifacts/benchmarks/scoring-261104. nv04
@@ -749,5 +752,3 @@
 - 261103 create-task T687: the 20 Chromium journeys failing on dfa39857 (324 passed), before the push; T685 dep T684→T687; ot03
 - 261103 fix e2e: one browser run at a time per clone — a Playwright globalSetup (tests/e2e/global-lock.ts) takes a lock in the git common directory, so sessions' journeys, from the batch or by hand, take turns instead of overloading the shared host; CI and E2E_LOCK=off skip it; smoke-tested (a second run waited for the first, a dead run's lock reclaimed); ot03
 - 261103 update-ssot OWNER r2 ECON r43 LEAGUE r13 (balance: price-band reach with every cheaper club buyable, living costs 0.25%, fan mood drops halved, bounded books, a 10-season takeover loan); create-task T683 T684 (integration fixes), T685 T686 (balance); T678 dep T668→T686; ot03
-- 261103 hr05 closed at user request: T681/T682 published main 8d0f92b9, local E2E/bench runners ended, orphan preview group of 4 stopped and CI watcher stopped; GitHub CI 41603646066 left running, follow-up delegated to another session.
-- 261103 T682 done: real Host profile + paired/A/A CPU, 16 browser runs/8,200 days/50 saves with full fact/reload parity; retained x10 3.41–3.50→5.34–5.36/s. All declared scopes and 349 browser cases covered, timing attempts disclosed; final synced gate f48a4447 passes. hr05
