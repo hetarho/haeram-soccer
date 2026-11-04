@@ -74,30 +74,30 @@ export const MARKET_CONFIG = {
  * potential, so at 0 every star earns an ordinary 80's wage of his age and promise and at 1 the star
  * terms count in full (CLUB-25, CLUB-26's Ballon d'Or premium); wages at 80 or below never move.
  *
- * In force (CLUB-48): s = 1 in every country and season, no shared or own anchor below 1, so every
- * star term counts in full. A table enters only together with LEAGUE-10's means level
- * (`MEANS_LEVEL`, dynamics.ts) and only through CLUB-48's gate: its shared anchors are the least
- * compression at which, on worlds without the means level, the median of each country's three
- * strongest top-flight clubs pays at most 70% of its revenue in wages (fit); on worlds lived with both
- * every calibration case meets that median and no club without a project pays more than its revenue,
- * held-out worlds included (books); each country's champions stay within LEAGUE-10's spread or no
- * further out than released (champions). England's maximum wage (s = 0 through 1960/61) enters with
- * the first table that passes, never alone. T693's candidate failed the books (artifacts/benchmarks/
- * T693); T696's table with the means level passed fit and books but failed champions (GER, POR;
- * artifacts/benchmarks/T696). Scripts read candidates through `--spread` (and `--means`),
- * measurement overrides, never game settings.
+ * In force (CLUB-48), together with LEAGUE-10's means level (`MEANS_LEVEL`, dynamics.ts) and the
+ * books' competition money (`BOOK_COMPETITIONS`, books.ts), never one alone: the shared s 0.28
+ * through 1970, 0.61 at 1990 and 1 from 2008 (estimated), England's own 0 through 1960/61 (its
+ * maximum wage, EFL's timeline). The table passed every part of CLUB-48 r58's gate on books
+ * counting competition money: fit and books (artifacts/benchmarks/T697), champions on the real
+ * leagues' spread with history's noise (T698), the 석유 재벌 and 중견 사업가 careers with no
+ * bankruptcy (T699). Scripts still read other tables through `--spread`, measurement overrides,
+ * never game settings.
  */
 export const STAR_SPREAD_CONFIG = {
   /**
    * [season year, s] anchors shared by every country, linear between them and flat outside, never
    * falling with time and 1 from 2008 at the latest, so the modern star ratios stand.
    */
-  shared: [[2008, 1]] as [number, number][],
+  shared: [
+    [1970, 0.28],
+    [1990, 0.61],
+    [2008, 1],
+  ] as [number, number][],
   /**
    * A country's own spread replaces the shared table through the season `through` only where a
    * primary record sets a pay cap.
    */
-  own: {} as Record<string, { through: number; spread: number }>,
+  own: { ENG: { through: 1960, spread: 0 } } as Record<string, { through: number; spread: number }>,
 };
 
 /** The star pay spread of `code`'s players' market in the season `year` (→CLUB-48). */

@@ -42,16 +42,16 @@ import { CLUB_BOOKS } from './owner-config';
 
 /**
  * ECON-36's competition money: a book counts its club's domestic cup and continental matches as
- * the owner's club is paid for them (`bookCompetitionMoney`). In force only together with
- * CLUB-48's table (`STAR_SPREAD_CONFIG`) and LEAGUE-10's means level (`MEANS_LEVEL`), set with
- * them through CLUB-48's gate, never alone; until then a book's income is its league distribution,
- * league gate and commercial income. `observe` is a measurement hook, never a setting: at each
- * close it is given every book's competition money and its income without it.
+ * the owner's club is paid for them (`bookCompetitionMoney`). In force together with CLUB-48's
+ * table (`STAR_SPREAD_CONFIG`) and LEAGUE-10's means level (`MEANS_LEVEL`), never alone: the three
+ * passed CLUB-48 r58's gate (artifacts/benchmarks/T697, T698, T699); books count it from the next
+ * close. `observe` is a measurement hook, never a setting: at each close it is given every book's
+ * competition money and its income without it.
  */
 export const BOOK_COMPETITIONS: {
   inForce: boolean;
   observe?: (club: Club, money: CompetitionMoney, released: bigint) => void;
-} = { inForce: false };
+} = { inForce: true };
 
 /** A book's competition money in the season's money: prizes, result bonuses and home gates. */
 export interface CompetitionMoney {

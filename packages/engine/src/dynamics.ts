@@ -41,13 +41,14 @@ export const EVOLUTION = {
  * squad's market wage bill, priced in the division and season the book was earned, at most the
  * book's income less its operating expenses — and a club above it after its summer change sells
  * down to it at once. A club with a project, or in the summer of its takeover, is not held; a club
- * without books has none. In force only together with CLUB-48's table (`STAR_SPREAD_CONFIG`), set
- * with it through CLUB-48's gate, never alone; `observe` is a measurement hook, never a setting.
+ * without books has none. In force together with CLUB-48's table (`STAR_SPREAD_CONFIG`) and the
+ * books' competition money (`BOOK_COMPETITIONS`), never alone: the three passed CLUB-48 r58's gate
+ * (artifacts/benchmarks/T697, T698, T699); `observe` is a measurement hook, never a setting.
  */
 export const MEANS_LEVEL: {
   inForce: boolean;
   observe?: (club: Club, from: number, to: number) => void;
-} = { inForce: false };
+} = { inForce: true };
 
 /** What a club's last closed book leaves for its squad's wages: its income less its operating expenses. */
 export function meansOf(c: Club) {

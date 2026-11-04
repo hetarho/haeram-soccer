@@ -117,12 +117,22 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
           f('최근 발롱도르 수상·입상·반복 수상', '최근 이력이 선수의 계약 가치를 올립니다.'),
           f(
+            '시대의 스타 임금 격차',
+            '옛 시대에는 OVR 80을 넘는 스타도 보통 선수에 가까운 연봉을 받습니다. 잉글랜드는 1960/61 시즌까지 최고 임금제로 같은 연봉이고, 격차는 1970년대부터 벌어져 2008년에 오늘의 수준이 됩니다. 이미 맺은 계약의 연봉은 바뀌지 않습니다.',
+          ),
+          f(
             '에이전트·협상 특성·팀 분위기',
             '강한 에이전트는 요구액을 높이고 협상의 달인과 좋은 분위기는 부담을 줄입니다.',
           ),
         ],
         [
-          ...src('market-prices', 'marketPoints', 'marketWageUnits', 'starWagePremium'),
+          ...src(
+            'market-prices',
+            'marketPoints',
+            'marketWageUnits',
+            'starWagePremium',
+            'starPaySpread',
+          ),
           ...src('contracts', 'playerWorth', 'talkGoodwill', 'talkTerms'),
         ],
         [
@@ -1896,11 +1906,19 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             '구단의 조직력·감독·승강 등 변화',
             '선수 구성의 수준 외에도 경기에서 발휘하는 기량을 바꿉니다.',
           ),
+          f(
+            '장부가 감당하는 선수단',
+            '주인 없는 구단은 지난 시즌 장부의 수입에서 운영비를 뺀 돈으로 연봉을 줄 수 있는 전력까지만 유지하고, 넘치면 그만큼 선수를 팝니다. 프로젝트 중이거나 막 인수된 구단은 예외입니다.',
+          ),
+          f(
+            '컵·대륙 대회 수입',
+            '장부의 수입에는 리그 배분금·관중·상업 수입과 함께 국내 컵과 대륙 대회의 상금, 경기 결과 보너스, 홈 경기 관중 수입이 들어갑니다.',
+          ),
         ],
         [
-          ...src('dynamics', 'evolveClubs', 'successBonus'),
+          ...src('dynamics', 'evolveClubs', 'successBonus', 'meansLevel'),
           ...src('adaptation', 'settleCohesion'),
-          ...src('books', 'settleNpcBooks'),
+          ...src('books', 'settleNpcBooks', 'bookCompetitionMoney'),
         ],
         [
           link('match-strength', '상대 전력과 경기 난도 변화'),
