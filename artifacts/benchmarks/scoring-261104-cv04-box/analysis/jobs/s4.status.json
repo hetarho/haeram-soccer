@@ -1,0 +1,35 @@
+{
+ "seconds": 106,
+ "status": [
+  {
+   "name": "entries-ao17-200-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-ho17ao17-200-200",
+   "code": 0,
+   "seconds": 57
+  },
+  {
+   "name": "entries-ao17-0-200",
+   "code": 0,
+   "seconds": 58
+  },
+  {
+   "name": "entries-ho17ao17-0-200",
+   "code": 0,
+   "seconds": 59
+  },
+  {
+   "name": "entries-ho20ao20-0-200",
+   "code": 0,
+   "seconds": 48
+  },
+  {
+   "name": "entries-ho20ao20-200-200",
+   "code": 0,
+   "seconds": 48
+  }
+ ]
+}

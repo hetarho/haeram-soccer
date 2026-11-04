@@ -1,0 +1,158 @@
+[
+ {
+  "name": "entries-Bid-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/Bid.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-Bid-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd4-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd4-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd4-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd4-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd4x-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd4x.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd4x-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd4x-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd4x.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd4x-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-bk35e16sd4-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/bk35e16sd4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-bk35e16sd4-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-bk35e16sd4-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/bk35e16sd4.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-bk35e16sd4-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-bk35e16sd4x-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/bk35e16sd4x.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-bk35e16sd4x-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-bk35e16sd4x-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/bk35e16sd4x.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-bk35e16sd4x-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd5-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd5.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd5-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd5-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd5.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd5-200-200.json"
+  ]
+ },
+ {
+  "name": "entries-sd6-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/sd6.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-sd6-0-200.json"
+  ]
+ }
+]

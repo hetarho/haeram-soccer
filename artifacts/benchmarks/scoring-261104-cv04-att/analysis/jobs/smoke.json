@@ -1,0 +1,28 @@
+[
+ {
+  "name": "entries-Bid-0-4",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/Bid.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-Bid-0-4.json"
+  ]
+ },
+ {
+  "name": "entries-e4p2r3-0-4",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-att/candidates/e4p2r3.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-att/entries/entries-e4p2r3-0-4.json"
+  ]
+ }
+]

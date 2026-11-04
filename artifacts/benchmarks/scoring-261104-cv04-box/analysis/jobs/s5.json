@@ -1,0 +1,28 @@
+[
+ {
+  "name": "entries-gs10-0-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/gs10.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-gs10-0-200.json"
+  ]
+ },
+ {
+  "name": "entries-gs10-200-200",
+  "patch": "artifacts/benchmarks/scoring-261104-cv04-box/candidates/gs10.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "200",
+   "--matches",
+   "200",
+   "--out",
+   "artifacts/benchmarks/scoring-261104-cv04-box/entries/entries-gs10-200-200.json"
+  ]
+ }
+]
