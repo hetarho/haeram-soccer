@@ -1,5 +1,5 @@
 # LEAGUE Domestic seasons and relegation
-> r17 | Define the browser-demo rules for domestic seasons and relegation.
+> r18 | Define the browser-demo rules for domestic seasons and relegation.
 
 ## decisions
 - LEAGUE-1 [o] Every group uses a home/away round robin with odd-team byes. Rank by points (3/1/0), goal difference, goals, then stable ID.
@@ -20,7 +20,7 @@
 - LEAGUE-10 [o] Between seasons every club nobody owns rises or falls. ← fixed strengths let one well-run club pull away forever; real leagues see clubs rise and fall, while a few stay on top
   - it closes 20% of the gap to its level: its division's midpoint + its stature + last season's success; promotion closes 35% more of the gap at once and relegation 15%.
   - its means level (→!ECON-36): a club nobody owns that keeps books plays at most at the highest strength whose squad its last closed season's book pays: that squad's market wage bill (→CLUB-25, →CLUB-48), priced in the division and season the book was earned, at most the book's income less its operating expenses (→ECON-30). Its level is never above its means level, and a club above it after its summer change sells down to it at once. A club with a project, or in the summer of its takeover, is not held to it; a club without books has none. ← a club pays its stars from its own income, as small-league giants sell what their league's money cannot keep: a country's strongest club earns only 1.2–1.7× its top flight's median club (measured 261104)
-  - the means level is in force only with CLUB-48's table and the books' competition money (→ECON-36), through CLUB-48's gate, never alone. ← at the modern spread it would sell the stars the 1950s market kept near a regular's pay, and on books without their cup and European nights it held the clubs those nights pay
+  - the means level is in force together with CLUB-48's table and the books' competition money (→ECON-36), which passed CLUB-48's gate with it (measured 261104), never alone. ← at the modern spread it would sell the stars the 1950s market kept near a regular's pay, and on books without their cup and European nights it held the clubs those nights pay
   - stature is stable per club: each country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from its upper divisions; of the rest 45% are ordinary (−1 to +1) and the others small (−3 to −5).
   - success: last season's top-flight champion +3, the rest of the top four +1.5, a continental winner +2.
   - a rare project (a new owner, a golden generation; 0.4% a club a summer, from its own stream) adds 8–18 to its level, fading 15% a summer; a project in the owner's country within one division is reported. ← any club can become as strong as the owner's, by chance
@@ -62,7 +62,7 @@
   | 자수성가 축구팬 | the top flight in 1 in 4 careers or fewer | - | 1 in 5 or fewer |
   - careers with five traits are measured beside each tier; the bands hold for no traits.
   - bankrupt counts the club's bankruptcy (→ECON-24); the owner's fortune is measured beside it on a 50% dividend, since the reference moves no owner money.
-  - measured 261104 (no traits, 2 seeds × ENG ESP FRA GER, 1950–1969: a third of the bands' span, so later titles are unread; 자수성가 축구팬 can pay for no Spanish club in any band):
+  - measured 261104 before CLUB-48's table (s = 1, no means level, books without competition money; no traits, 2 seeds × ENG ESP FRA GER, 1950–1969: a third of the bands' span, so later titles are unread; 자수성가 축구팬 can pay for no Spanish club in any band):
     | tier | careers | first top-flight title | reached the top flight (mean seasons there of 20) | club bankrupt |
     |---|---|---|---|---|
     | 석유 재벌 | 8 | none | 3 (4.6) | 6, in 1950–51 (ESP FRA GER): the strongest clubs pay 1.8–3.3× their income in wages |
@@ -72,6 +72,12 @@
     | 지역 유지 | 8 | none | 8 (8.5) | none |
     | 자수성가 축구팬 | 6 | none | 6 (7.8) | none |
     - on a 50% dividend (seed 0) no owner is bankrupt and 5 of 23 face 구단주 퇴진 in seasons 13–19 (→OWNER-13); on 25%, 1 of 19 in his 20th season.
+  - measured 261104 on the rules in force (CLUB-48's table, LEAGUE-10's means level and competition money in the books; the same grid; the other four tiers not yet read on these rules):
+    | tier | careers | first top-flight title | reached the top flight (mean seasons there of 20) | club bankrupt |
+    |---|---|---|---|---|
+    | 석유 재벌 | 8 | 8, median in the 2nd season; 19.1% of the seasons after the first | 8 (19.5) | none |
+    | 중견 사업가 | 8 | 1, in its 8th season | 8 from the second tier, median 2.5 seasons (14.4) | none |
+    - no owner is bankrupt at OWNER-8's living costs, nor at any rate from 0.05% to 0.25% a settlement.
 
 - LEAGUE-14 [o] Every club's reputation (0–100) follows its standing, the owner's club and clubs nobody owns alike: at each season close it closes 20% of the gap to the level of the division it will play in next, plus its league finish; honours add at once. ← standing is relative: decades in a lower division never make a giant, and a fallen giant's name fades over seasons, not at once
   - division level: top flight 75, then 15 less per tier (second 60, third 45, fourth 30), at least 8.
@@ -88,6 +94,7 @@
 - LEAGUE-16 [o] The last professional division relegates nobody; its promotion places go up as before, and the division above relegates into it. Finishing last there costs 팬 민심 (→OWNER-12). ← with no amateur level there is nowhere to go down to
 
 ## chg
+- r18 261104 LEAGUE-10✎ means level in force only through CLUB-48's gate→in force with CLUB-48's table and competition money, the gate passed (measured 261104); LEAGUE-13✎ +measured 261104 on the rules in force (석유 재벌 8 of 8 win, none bankrupt; 중견 사업가 1 of 8 wins, 8 reach the top flight), the earlier 261104 table marked before CLUB-48's table
 - r17 261104 LEAGUE-10✎ champions spread: the model's 261011 measurement only→also the real leagues 1980/81–2009/10 (4–9 different champions, the most titles 7–17, per country)
 - r16 261104 LEAGUE-10✎ means level in force only with CLUB-48's table→with CLUB-48's table and the books' competition money (→ECON-36)
 - r15 261104 LEAGUE-10✎ strength bounded by 15–99 only→also by a means level (the strength whose squad its last closed book pays at income − operating expenses; level never above it, sold down at once; projects and a takeover's summer exempt), in force only with CLUB-48's table
