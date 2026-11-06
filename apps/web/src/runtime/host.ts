@@ -444,13 +444,14 @@ export class Host {
     const opponent = w.clubs.find((club) => club.id === opponentId);
     const briefingClubs = new Set(next ? [next.home, next.away] : [w.playerClub]);
     // The season's complete statistics are read on request (`full-stats`), not sent every day, and
-    // so are the manager-history facts.
+    // so are the manager-history facts; the free-agent pool stays on the worker (→CLUB-49).
     const {
       people: _people,
       npcSeason: _season,
       managerHistory: _history,
       newsJournal: _news,
       careerReads: _reads,
+      freeAgents: _free,
       ...projected
     } = w;
     void _people;
@@ -458,6 +459,7 @@ export class Host {
     void _history;
     void _news;
     void _reads;
+    void _free;
     return {
       coaches: staffMarket(w),
       world: {

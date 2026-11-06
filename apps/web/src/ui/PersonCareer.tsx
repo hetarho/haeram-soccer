@@ -4,14 +4,26 @@ import { richMessage } from '../presentation/LocalizedMessage';
 import { useEffect, useState } from 'react';
 import type { CareerDate } from '../../../../packages/contracts/src/types';
 import type { GameClient } from '../runtime/client';
-import type { PersonCareerDetail } from '../runtime/personCareer';
+import type { PersonCareerDetail, TenureSeason } from '../runtime/personCareer';
 import { STAFF_INFO } from '../../../../packages/engine/src/staff-info';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
 import { Dialog } from './Dialog';
 import { ClubLink } from '../entities/club';
 import { useGameState } from '../runtime/store';
+import { seasonName } from './format';
+import { divisionName } from '../presentation/competitionLabels';
 const date = (at: CareerDate) =>
   new Date(Date.UTC(at.year, 7, 1) + at.day * 86400000).toISOString().slice(0, 10);
+/** A tenure season's league finish (→STAFF-50): its division and place, or why none is shown. */
+const tenureFinish = (code: string, { finish, current }: TenureSeason) =>
+  finish
+    ? displayMessage('copy.CareerRecordBook.2df6533b51', {
+        p0: divisionName(code, finish.tier, finish.group),
+        p1: finish.place,
+      })
+    : current
+      ? displayMessage('copy.PersonCareer.7f964b5663')
+      : displayMessage('copy.PersonCareer.2f8b103f2c');
 export function PersonCareerLink({
   id,
   name,
@@ -134,23 +146,36 @@ export function PersonCareer({
             <h3>{richMessage('copy.PersonCareer.1e133e1a03')}</h3>
             <ol>
               {localizeValue(
-                d.person.employment.map((job, index) => (
-                  <li key={index}>
-                    {localizeValue(
-                      job.role === 'player'
-                        ? sourceMessage('team.column.player')
-                        : job.role === 'manager'
-                          ? sourceMessage('staff.role.manager')
-                          : STAFF_INFO[job.role].label,
-                    )}
-                    {localizeValue(' ')}·{' '}
-                    {localizeValue(w ? <ClubLink w={w} id={job.club} /> : job.club)} ·{' '}
-                    {localizeValue(date(job.from))}–
-                    {localizeValue(
-                      job.to ? date(job.to) : sourceMessage('copy.PersonCareer.3550bf8b47'),
-                    )}
-                  </li>
-                )),
+                d.person.employment.map((job, index) => {
+                  const seasons = d.tenures.find((tenure) => tenure.job === index)?.seasons ?? [],
+                    code = w?.clubs.find((club) => club.id === job.club)?.country ?? '';
+                  return (
+                    <li key={index}>
+                      {localizeValue(
+                        job.role === 'player'
+                          ? sourceMessage('team.column.player')
+                          : job.role === 'manager'
+                            ? sourceMessage('staff.role.manager')
+                            : STAFF_INFO[job.role].label,
+                      )}
+                      {localizeValue(' ')}·{' '}
+                      {localizeValue(w ? <ClubLink w={w} id={job.club} /> : job.club)} ·{' '}
+                      {localizeValue(date(job.from))}–
+                      {localizeValue(
+                        job.to ? date(job.to) : sourceMessage('copy.PersonCareer.3550bf8b47'),
+                      )}
+                      {seasons.length > 0 && (
+                        <ol aria-label={displayMessage('copy.PersonCareer.a06a415615')}>
+                          {seasons.map((season) => (
+                            <li key={season.year}>
+                              {seasonName(season.year)} · {tenureFinish(code, season)}
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </li>
+                  );
+                }),
               )}
             </ol>
             <h3>{richMessage('copy.PersonCareer.98beea919f')}</h3>

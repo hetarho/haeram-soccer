@@ -14,7 +14,6 @@ import type {
   TransferBid,
   World,
   WorldMarketTarget,
-  WorldMarketOffer,
 } from '../../../../packages/contracts/src/types';
 import { LINES, POSITIONS } from '../../../../packages/contracts/src/player';
 import {
@@ -41,7 +40,8 @@ import { Money } from './Money';
 import { OvrBadge } from './OvrBadge';
 import { PositionBadge } from './PositionBadge';
 import { OfferAnswers } from './ClubStaff';
-import { RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
+import { CandidateSource, RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
+import { candidateOrigin } from './shortlist';
 import { DirectionFacts } from './DirectionFacts';
 import { clubDivision } from './league';
 import {
@@ -49,6 +49,7 @@ import {
   changeMarketQuery,
   marketLeagueKey,
   marketLeagues,
+  signedFreeAgentTarget,
   toggleMarketComparison,
   useMarketDetail,
   useMarketPage,
@@ -85,14 +86,6 @@ export function candidateSide(
       <button onClick={onOpen}>{richMessage('copy.RecruitmentDesk.b786dd4b77')}</button>
     ),
   };
-}
-function sourceLabel(w: World, offer: WorldMarketOffer) {
-  if (!offer.source)
-    return offer.freeAgent
-      ? sourceMessage('copy.RecruitmentDesk.c3d578838c')
-      : sourceMessage('copy.RecruitmentDesk.ba264afbbe');
-  const source = w.clubs.find((club) => club.id === offer.source!.club);
-  return `${offer.source.name} · ${source ? clubDivision(w, source) : offer.source.country}`;
 }
 const lineNames: Record<Line, string> = {
   GK: sourceMessage('position.family.GK'),
@@ -271,8 +264,9 @@ function CandidateCard({
           <small className={s.positions} data-testid="candidate-positions">
             {localizeValue(positionsLabel(player.positions))}
           </small>
-          <small className={s.origin}>
-            {localizeValue(sourceLabel(w, offer))} · {localizeValue(origin)}
+          <small className={s.origin} data-testid="candidate-source">
+            <CandidateSource w={w} origin={candidateOrigin(offer)} division fee={!offer.own} /> ·{' '}
+            {localizeValue(origin)}
           </small>
         </div>
       </header>
@@ -706,6 +700,14 @@ export function RecruitmentDesk({
       { background: true },
     );
     if (!currentWorld()) return;
+    if (reply?.ok && candidate.offer.freeAgent) {
+      // He has left the pool for our squad: open cards read him with us, signed (→CLUB-49).
+      const signed = candidate.offer.target;
+      setViewing((current) => signedFreeAgentTarget(current, signed, w.playerClub));
+      setComparison((current) =>
+        current.map((target) => signedFreeAgentTarget(target, signed, w.playerClub)),
+      );
+    }
     setMessage({
       world: w.id,
       text: reply?.ok
@@ -950,7 +952,6 @@ export function RecruitmentDesk({
             page?.items.map((offer) => {
               const player = offer.player;
               const pending = pendingFor(player.id);
-              const source = sourceLabel(w, offer);
               return (
                 <tr
                   key={player.id}
@@ -979,7 +980,7 @@ export function RecruitmentDesk({
                         <PositionBadge position={player.position} />
                         <span className={s.playerText}>
                           <b>{player.name}</b>
-                          <small title={localizeValue(source)}>
+                          <small>
                             {richMessage('copy.RecruitmentDesk.f802b6ce0c', {
                               p0: w.year - player.born,
                               p1: offer.own
@@ -992,13 +993,15 @@ export function RecruitmentDesk({
                               p2: offer.recommended
                                 ? sourceMessage('copy.RecruitmentDesk.73d246427f')
                                 : '',
-                              p3: ' · ',
-                              p4: source,
                             })}
                           </small>
                         </span>
                       </span>
                     </button>
+                    {/* Where he is (→CLUB-50), outside the button so his club is a link. */}
+                    <small className={s.rowSource} data-testid="market-source">
+                      <CandidateSource w={w} origin={candidateOrigin(offer)} division fee={false} />
+                    </small>
                   </td>
                   <td>
                     <OvrBadge value={overall(player)} />
@@ -1480,7 +1483,16 @@ export function RecruitmentDesk({
                 const offer = state.view!.transfers[index];
                 if (!offer) return;
                 setPanel(undefined);
-                setViewing({ world: w.id, kind: 'offer', playerId: offer.player.id });
+                setViewing(
+                  offer.source.kind === 'club'
+                    ? {
+                        world: w.id,
+                        kind: 'club',
+                        clubId: offer.source.club,
+                        playerId: offer.player.id,
+                      }
+                    : { world: w.id, kind: 'offer', playerId: offer.player.id },
+                );
               }}
             />
             <OfferAnswers w={w} />

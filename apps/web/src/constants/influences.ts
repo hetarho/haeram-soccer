@@ -406,7 +406,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         ],
         [
           ...src('market-prices', 'marketValueUnits', 'transferPremium'),
-          ...src('ops-squad', 'transferOffers'),
+          ...src('scout-search', 'transferOffers'),
         ],
         [
           link('bid-acceptance', sourceMessage('copy.influences.aa5a978010')),
@@ -469,7 +469,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.a080988296'),
           ),
         ],
-        src('ops-squad', 'squadCommand', 'transferOffers'),
+        [...src('ops-squad', 'squadCommand'), ...src('scout-search', 'transferOffers')],
         [
           link('operating-cost', sourceMessage('copy.influences.8dbd11097e')),
           link('team-selection', sourceMessage('copy.influences.5d8c0a9d0b')),
@@ -563,13 +563,13 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
       ),
       o(
         'scouting',
-        sourceMessage('copy.influences.37eea77299'),
+        sourceMessage('copy.influences.dd4ccc4a2b'),
         sourceMessage('copy.influences.596bfc741f'),
         sourceMessage('copy.influences.c6140c7da5'),
         [
           f(
             sourceMessage('copy.influences.718aad0a5f'),
-            sourceMessage('copy.influences.22b346dc53'),
+            sourceMessage('copy.influences.090ce351cd'),
           ),
           f(
             sourceMessage('copy.influences.f52de760da'),
@@ -577,7 +577,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
           direct(
             sourceMessage('copy.influences.1a079c1edf'),
-            sourceMessage('copy.influences.f41029aa5e'),
+            sourceMessage('copy.influences.e096b976a4'),
           ),
           f(
             sourceMessage('copy.influences.9f92b08340'),
@@ -585,7 +585,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('staff', 'applyDepartment'),
+          ...src('scout-search', 'scoutReach', 'transferOffers'),
           ...src('player', 'personalityRange'),
           ...src('recruitment', 'recruitmentFit'),
         ],
@@ -1407,7 +1407,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('staff', 'drawCandidates', 'coachFits', 'fillDelegatedPost'),
+          ...src('club-staff', 'refreshStaffMarket', 'poachStaff'),
+          ...src('staff', 'coachFits', 'fillDelegatedPost'),
           ...src('ops-staff', 'appointDelegatedManager'),
         ],
         [

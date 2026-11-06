@@ -38,6 +38,8 @@ export function advanceEconomy(w: World, previousYear: number) {
       }
     // Free agents' asking wages are prices on offer; managers at other clubs are derived each read.
     for (const m of w.managerMarket?.free ?? []) m.wage = convert(m.wage);
+    for (const pool of Object.values(w.staffMarket?.free ?? {}))
+      for (const member of pool ?? []) member.wage = convert(member.wage);
     // Open negotiations carry on in the new money; settled bids keep the units they closed in.
     for (const bid of w.bids ?? []) {
       if (bid.status !== 'pending' && bid.status !== 'countered') continue;

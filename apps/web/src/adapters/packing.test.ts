@@ -157,9 +157,15 @@ describe('lossless career stream compaction', () => {
     const w = career();
     // Asking fees follow the market (→CLUB-25); the round trip is what is tested, not the price.
     w.cash = '999999999999';
-    placeBid(w, 2, transferOffers(w)[2].fee);
+    // Another club's player the scout found: the bid names his club (→CLUB-14).
+    const index = transferOffers(w).findIndex((offer) => !offer.freeAgent);
+    placeBid(w, index, transferOffers(w)[index]!.fee);
     const bid = w.bids!.find((b) => b.direction === 'out')!;
-    expect(bid).toMatchObject({ status: 'pending', offer: { player: { id: bid.playerId } } });
+    expect(bid).toMatchObject({
+      status: 'pending',
+      club: expect.any(String),
+      offer: { player: { id: bid.playerId } },
+    });
     const restored = validateWorld(unpack(JSON.parse(JSON.stringify(pack(w)))));
     expect(restored.bids?.find((b) => b.id === bid.id)?.offer).toEqual(bid.offer);
     expect(canonical(restored)).toBe(canonical(w));

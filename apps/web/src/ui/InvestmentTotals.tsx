@@ -127,6 +127,7 @@ function cardOf(w: World, area: InvestmentArea, office: OfficeRead): AreaCard {
           ],
         ],
       };
+    // Where and how the chief scout searches (→CLUB-51); his counts are the office's effects.
     case 'scouting':
       return {
         meta: sourceMessage('copy.InvestmentTotals.20c70a9ad2', {
@@ -135,7 +136,30 @@ function cardOf(w: World, area: InvestmentArea, office: OfficeRead): AreaCard {
         costs: [
           [sourceMessage('copy.InvestmentTotals.1ed6e49616'), money(policyCost('globalScouting'))],
         ],
-        facts: [],
+        facts: [
+          [sourceMessage('copy.InvestmentTotals.0b4115576a'), office.scout.homeLabel],
+          [
+            sourceMessage('copy.InvestmentTotals.675ac21040'),
+            sourceMessage('copy.CareerRecordBook.e414915261', { p0: office.scout.abroadPlaces }),
+          ],
+          [
+            sourceMessage('copy.InvestmentTotals.eea6c23023'),
+            sourceMessage('copy.InvestmentTotals.8e3862bb0b', {
+              p0: office.scout.age[0],
+              p1: office.scout.age[1],
+              p2: office.scout.ability[0],
+              p3: office.scout.ability[1],
+            }),
+          ],
+          [
+            sourceMessage('team.sort'),
+            office.scout.potentialFirst === 'all'
+              ? sourceMessage('copy.InvestmentTotals.270b3e1770')
+              : office.scout.potentialFirst === 'young'
+                ? sourceMessage('copy.InvestmentTotals.71b2e62b86', { p0: office.scout.youngAge })
+                : sourceMessage('copy.InvestmentTotals.976ef07387'),
+          ],
+        ],
       };
     case 'community':
       return {

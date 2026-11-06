@@ -11,7 +11,7 @@ import { appointDelegatedManager } from './ops-staff';
 import { dailyStaff, seasonStaff } from './staff';
 import { staffTalkVerdict } from './contracts';
 import { signingVerdict } from './signings';
-import { transferOffers } from './ops-squad';
+import { transferOffers } from './scout-search';
 import { facilityInvestmentPreview } from './investment';
 import { progressFacilityWorks, trainingGroundTerms } from './facilities';
 

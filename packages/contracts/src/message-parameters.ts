@@ -256,6 +256,10 @@ export const verbatimParameters: Readonly<Record<string, readonly string[]>> = {
   'copy.transfers.9cee38f04c': ['p1', 'p2'],
   'copy.transfers.8f75758d7e': ['p0', 'p1'],
   'copy.commentary.071263512d': ['p1'],
+  'copy.staff.054dd38a4d': ['p0'],
+  'copy.free_agents.b9563581fa': ['p0'],
   'office.source.member': ['name'],
   'office.area.factor': ['effect', 'source'],
+  'market.source.club': ['club'],
+  'staff.source.club': ['club'],
 };

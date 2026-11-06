@@ -231,15 +231,22 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
   it('settles an exhausted cup tie at 120 minutes on the earliest of tied plans', () => {
     // A cup tie level after 90 minutes whose 120-minute stretch has two searched plans that each
     // leave one red-card answer against the score. With two searches and no retry the fallback
-    // settles the earlier of the tied plans. The fixture was found by searching replays of this
-    // world under the kernel's settings (T284: index 1209 of 3,000; T323's retune: 296; T369's box
-    // flows: 1408, the first of three in 12,000 with 2370 and 3292; T400's score state and levels:
-    // 2431, with 2450 and 2596; revision 3's named-manager context: 231); retuning moves the draws,
-    // and the tie check below
-    // then fails until a tied fixture is found again.
-    const { w, fixtures } = others(232, 2024);
-    const f: Fixture = { ...fixtures[231]!, kind: 'cup' };
+    // settles the earlier of the tied plans. The fixture is the first replay of this world under
+    // the kernel's settings whose tie goes to 120 minutes and leaves one answer so: a rare one
+    // (T284: index 1209 of 3,000; T323's retune: 296; T369's box flows: 1408, the first of three in
+    // 12,000 with 2370 and 3292; T400's score state and levels: 2431, with 2450 and 2596; revision
+    // 3's named-manager context: 231; the free agents' refilled squads: 711, the only one in
+    // 6,000), searched for here since retuning or the squads move the draws.
+    const { w, fixtures } = others(12_000, 2024);
     const tight = { rebalanceSearches: 2, rebalanceRetries: 0 };
+    const exhausted = (f: Fixture) => {
+      const prepared = prepareMatch(w, f);
+      const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+      const match = playAggregate(w, f, prepared, rosters, CUP, tight);
+      return match.facts.length === 120 && match.unreconciled?.length === 1;
+    };
+    const f = fixtures.map((x): Fixture => ({ ...x, kind: 'cup' })).find(exhausted)!;
+    expect(f).toBeDefined();
     const prepared = prepareMatch(w, f);
     const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
     const match = playAggregate(w, f, prepared, rosters, CUP, tight);

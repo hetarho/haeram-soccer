@@ -6,6 +6,7 @@ import { initializeCoaching } from './coaching-entry';
 import { coachWage } from './staff';
 import { currency } from '../../catalogs/src/index';
 import { ratio } from './primitives';
+import { clubStaffMember } from './club-staff';
 import type { PersonCareer } from '../../contracts/src/types';
 import { careerWorld } from './career.testkit';
 function world() {
@@ -65,6 +66,8 @@ describe('retained NPC coaching market', () => {
       const available = role === 'assistant' ? others.slice(1) : others;
       pool.forEach((person, i) => {
         expect(person.employment.find((job) => !job.to)?.club).toBe(available[i]?.id);
+        // He holds the post in place of the club's derived holder (→STAFF-49).
+        if (available[i]) expect(clubStaffMember(w, available[i], role).person).toBe(person.id);
       });
     }
     closeEmployment(w, blocker.id, 'assistant');
@@ -111,7 +114,7 @@ describe('retained NPC coaching market', () => {
     });
     expect(staffCandidates(w, 'assistant').some((c) => c.id === person.id)).toBe(false);
   });
-  it('never fills a post twice and a successful draw without a vacancy hires nobody', () => {
+  it('never fills a post twice and a successful draw with every post taken hires nobody', () => {
     const { w, other } = world(),
       a = candidate(w, 0),
       b = candidate(w, 1);
@@ -166,6 +169,9 @@ describe('retained NPC coaching market', () => {
     refreshCoachingMarket(w, () => 0);
     const job = person.employment.find((job) => !job.to)!;
     const oldWage = job.wage!;
+    // A staff free agent's asking wage is a price on offer, carried into the new money too.
+    const freeAgent = w.staffMarket!.free.attack![0]!,
+      asked = freeAgent.wage;
     const historical = { ...job, to: { year: 1970, day: 0 } };
     person.employment.push(historical);
     w.year = 1971;
@@ -180,6 +186,13 @@ describe('retained NPC coaching market', () => {
     );
     expect(historical.currency).toBe(before.code);
     expect(historical.wage).toBe(oldWage);
+    expect(freeAgent.wage).toBe(
+      ratio(
+        asked,
+        after.num * before.den * BigInt(after.units),
+        after.den * before.num * BigInt(before.units),
+      ),
+    );
     expect(BigInt(coachWage(w, 20))).toBeGreaterThanOrEqual(0n);
   });
 });

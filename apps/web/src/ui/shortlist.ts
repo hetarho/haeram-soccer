@@ -1,8 +1,13 @@
 import { message as sourceMessage } from '../../../../packages/contracts/src/messages';
-import type { Line, SigningRequest, World } from '../../../../packages/contracts/src/types';
+import type {
+  Line,
+  ScoutOffer,
+  SigningRequest,
+  World,
+  WorldMarketOffer,
+} from '../../../../packages/contracts/src/types';
 import { LINES } from '../../../../packages/contracts/src/player';
 import { lineOf, POSITION_LABEL } from '../../../../packages/engine/src/player';
-import type { TransferOffer } from '../../../../packages/engine/src/recruitment';
 import { isDelegated } from '../../../../packages/engine/src/responsibilities';
 import { transferWindow } from '../../../../packages/engine/src/transfer-window';
 
@@ -16,12 +21,42 @@ export const LINE_NAMES: Readonly<Record<Line, string>> = {
 /** What a request asks for: its line, or the formation slot's position (→CLUB-33). */
 export const requestName = (request: Pick<SigningRequest, 'line' | 'position'>) =>
   request.position ? POSITION_LABEL[request.position] : LINE_NAMES[request.line];
+/**
+ * Where a market candidate is (→CLUB-50), read from his offer's own source: a free agent, who
+ * costs no fee, or another club's player at its asking fee; `abroad` when he is found outside our
+ * country (→CLUB-51).
+ */
+export type CandidateOrigin =
+  { kind: 'free'; abroad: boolean } | { kind: 'club'; club: string; fee: string; abroad: boolean };
+
+/** A scout's find names his source; a world-market row names his club, a free agent none. */
+export function candidateOrigin(
+  offer:
+    | Pick<ScoutOffer, 'source' | 'fee' | 'foreign'>
+    | Pick<WorldMarketOffer, 'source' | 'fee' | 'foreign'>,
+): CandidateOrigin {
+  const source = offer.source;
+  const club = !source
+    ? undefined
+    : 'kind' in source
+      ? source.kind === 'club'
+        ? source.club
+        : undefined
+      : source.club;
+  return club
+    ? { kind: 'club', club, fee: offer.fee, abroad: offer.foreign }
+    : { kind: 'free', abroad: offer.foreign };
+}
+
 /** One line of the chief scout's shortlist (→CLUB-33), with the manager's request for it. */
 export interface ShortlistRow {
   line: Line;
   request?: SigningRequest;
-  /** Still on the market list and free to join, best first; `index` in the market list. */
-  entries: { index: number; offer: TransferOffer; pick: boolean }[];
+  /**
+   * Still on the market list and free to join, best first; `index` in the market list, `origin`
+   * where he is (→CLUB-50).
+   */
+  entries: { index: number; offer: ScoutOffer; origin: CandidateOrigin; pick: boolean }[];
 }
 
 /**
@@ -29,7 +64,7 @@ export interface ShortlistRow {
  * list by player id, those no longer available dropped, grouped by role, each role with the
  * manager's request and his pick while that player is still listed. Empty before the first draw.
  */
-export function shortlistRows(w: World, offers: readonly TransferOffer[]): ShortlistRow[] {
+export function shortlistRows(w: World, offers: readonly ScoutOffer[]): ShortlistRow[] {
   const s = w.shortlist;
   if (!s || s.year !== w.year) return [];
   const listed = s.entries.flatMap((entry) => {
@@ -48,7 +83,11 @@ export function shortlistRows(w: World, offers: readonly TransferOffer[]): Short
       ...(request ? { request } : {}),
       entries: listed
         .filter(({ offer }) => lineOf(offer.player.position) === line)
-        .map((entry) => ({ ...entry, pick: entry.offer.player.id === request?.pick })),
+        .map((entry) => ({
+          ...entry,
+          origin: candidateOrigin(entry.offer),
+          pick: entry.offer.player.id === request?.pick,
+        })),
     };
   });
 }

@@ -7,6 +7,7 @@ import type {
   ManagerStyle,
   Player,
   PolicyLevel,
+  ScoutOffer,
   UnhappyReason,
   World,
 } from '../../contracts/src/types';
@@ -22,6 +23,7 @@ import {
   buildEffects,
   CLAUSE_CONFIG,
   closeSeason,
+  clubById,
   clubOf,
   contractTalks,
   currentDay,
@@ -66,7 +68,9 @@ import {
   transferWindowDays,
   wageBill,
 } from './index';
-import { handTo, holdRows, staffAuthority } from './testing';
+import { buyOffer, handTo, holdRows, staffAuthority } from './testing';
+import { askingMultiplier } from './world-market';
+import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
@@ -205,27 +209,54 @@ describe('market values (→CLUB-25)', () => {
     expect(star(2025)).toBeGreaterThan(2 * star(1950));
   });
 
-  it('asks the value of the division a candidate’s ability suits, times the fee settings', () => {
+  it('asks the value of the selling club’s division, times the fee settings', () => {
     const w = world();
     const code = clubOf(w).country;
-    const offers = transferOffers(w);
-    expect(offers[0]).toMatchObject({ fee: '0', loanFee: '0', freeAgent: true });
-    for (const { player, fee, loanFee } of offers.slice(1)) {
-      const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
-      expect(fee).toBe(value);
+    /**
+     * The scout's list as fees are asked (→CLUB-50): a free agent asks none and is never loaned;
+     * only another club's player, listed with his club, has a fee to check.
+     */
+    const asked = (offers: readonly ScoutOffer[]) => {
+      for (const offer of offers)
+        if (offer.source.kind === 'free')
+          expect(offer).toMatchObject({ fee: '0', loanFee: '0', freeAgent: true });
+      return offers.flatMap((offer) =>
+        offer.source.kind === 'club' ? [{ ...offer, club: clubById(w, offer.source.club)! }] : [],
+      );
+    };
+    const asking = askingMultiplier(w);
+    const listed = asked(transferOffers(w));
+    expect(listed.length).toBeGreaterThan(0);
+    // The list reaches past our division, so the selling club's division, not ours, sets a fee.
+    expect(listed.some(({ club }) => club.tier !== clubOf(w).tier)).toBe(true);
+    // His club asks his value at its own division, in our currency, times the asking settings
+    // (→CLUB-25, CLUB-21); the loan fee is that value's loan share.
+    for (const { player, fee, loanFee, club } of listed) {
+      const value = marketValueAt(code, w.year, club.tier, player);
+      expect(fee).toBe(scaleBy(value, asking, 1000n));
       expect(amount(loanFee)).toBeCloseTo(amount(value) * MARKET_CONFIG.loan, -1);
     }
-    // A stronger player suits a higher division, so his club asks more than ours would value him.
+    // The same player is worth more to a higher division's club.
+    const { player } = listed[0];
+    expect(amount(marketValueAt(code, w.year, 0, player))).toBeGreaterThan(
+      amount(marketValueAt(code, w.year, 2, player)),
+    );
+    // A free agent's terms read the division his ability suits (→CLUB-49): a stronger player
+    // suits a higher one, and ability below the last division's level one step deeper, no further.
     expect(divisionFor(code, 80)).toBeLessThan(divisionFor(code, 50));
     expect(divisionFor(code, 99)).toBe(0);
-    // Ability below the last division's level is priced one step deeper, never further.
     expect(divisionFor(code, 10)).toBe(country(code).groups.length);
-    // The recruitment dial chooses whom the list holds, never what their clubs ask (→ECON-16).
+    // The recruitment dial chooses whom the list holds, never what their clubs ask (→ECON-16):
+    // the list changes, while every club still asks the same of each player listed before.
+    const ids = (offers: readonly ScoutOffer[]) => offers.map((offer) => offer.player.id);
+    const before = ids(transferOffers(w));
     holdRows(w, { policy: { recruitment: 5 } });
-    for (const { player, fee } of transferOffers(w).slice(1)) {
-      const value = marketValueAt(code, w.year, divisionFor(code, overall(player)), player);
-      expect(fee).toBe(value);
-    }
+    expect(ids(transferOffers(w))).not.toEqual(before);
+    expect(askingMultiplier(w)).toBe(asking);
+    for (const { player, fee, club } of listed)
+      expect(locateOffer(w, player.id, club.id)?.fee).toBe(fee);
+    for (const { player, fee, club } of asked(transferOffers(w)))
+      expect(fee).toBe(scaleBy(marketValueAt(code, w.year, club.tier, player), asking, 1000n));
   });
 });
 
@@ -1059,12 +1090,22 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     const w = world();
     w.cash = '999999999999';
     w.calendar = { day: 10 };
-    const offers = transferOffers(w);
-    operate(w, { type: 'recruit', candidate: 0 });
-    operate(w, { type: 'recruit', candidate: 1, loan: true });
-    const free = w.players.find((p) => p.id === offers[0].player.id)!,
-      loaned = w.players.find((p) => p.id === offers[1].player.id)!;
-    expect(free.clauses).toEqual(settleClauses(w.seed, free, free.agent!, w.year, currentDay(w)));
+    const offers = transferOffers(w),
+      agent = offers.find((o) => o.freeAgent)!,
+      club = offers.find((o) => !o.freeAgent)!;
+    // A free agent signs at once; another club's player joins on loan through an accepted bid.
+    operate(w, { type: 'recruit', candidate: offers.indexOf(agent) });
+    buyOffer(
+      w,
+      transferOffers(w).findIndex((o) => o.player.id === club.player.id),
+      true,
+    );
+    const free = w.players.find((p) => p.id === agent.player.id)!,
+      loaned = w.players.find((p) => p.id === club.player.id)!;
+    // An able free agent is a Ballon d'Or star whose contract may carry its bonus (→CLUB-29).
+    expect(free.clauses).toEqual(
+      settleClauses(w.seed, free, free.agent!, w.year, currentDay(w), ballonDorStar(w, free)),
+    );
     expect(loaned.clauses).toBeUndefined();
     const prospect = makePlayer('ENG', w.seed, 'academy:clauses', w.year, 45, 'CM', 17);
     w.academy = { players: [prospect] };

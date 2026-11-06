@@ -31,6 +31,7 @@ import {
   renewalTerms,
   seasonStaff,
   STAFF_INFO,
+  STAFF_MARKET_CONFIG,
   STAFF_ROLES,
   STYLE_INFO,
   staffCandidates,
@@ -520,7 +521,7 @@ describe('delegated manager appointment (STAFF-7, STAFF-18)', () => {
 });
 
 describe('the 단장 (STAFF-20)', () => {
-  it('is hired, released and renewed like any department, from three candidates a season', () => {
+  it('is hired, released and renewed like any department, from the 단장 market', () => {
     const w = world('director-post');
     expect(STAFF_ROLES[0]).toBe('director');
     expect(STAFF_INFO.director).toEqual({
@@ -530,7 +531,11 @@ describe('the 단장 (STAFF-20)', () => {
     });
     expect(STAFF_INFO.scout.traits).toEqual(['spotter']);
     const offers = staffCandidates(w, 'director');
-    expect(offers).toHaveLength(3);
+    // Free agents first, then other clubs' 단장s (→STAFF-49).
+    expect(offers.map((offer) => offer.source)).toEqual([
+      ...Array<'free'>(STAFF_MARKET_CONFIG.poolMin).fill('free'),
+      ...Array<'club'>(STAFF_MARKET_CONFIG.poachList).fill('club'),
+    ]);
     expect(
       offers.every(
         (offer) => !offer.trait || offer.trait === 'negotiator' || offer.trait === 'closer',
@@ -554,6 +559,10 @@ describe('the 단장 (STAFF-20)', () => {
     operate(w, { type: 'release-staff', role: 'director' });
     expect(w.staff!.some((member) => member.role === 'director')).toBe(false);
     expect(staffEffects(w).bidAcceptance).toBe(-0.05);
+    // The man released joins the 단장 free agents.
+    expect(
+      staffCandidates(w, 'director').some((o) => o.id === hired.id && o.source === 'free'),
+    ).toBe(true);
   });
 
   it('the staff fill his post by 코치 기조 once staff are delegated, the coaching departments with him', () => {
@@ -570,10 +579,11 @@ describe('the 단장 (STAFF-20)', () => {
   });
 
   it('carries the transfer negotiation the chief scout carried', () => {
-    // The chance of a bid at a candidate's asking fee, whichever list the settings draw.
+    // The chance of a bid at a club player's asking fee, whomever the scout finds.
+    const club = (w: World) => transferOffers(w).findIndex((offer) => !offer.freeAgent);
     const base = world('director-talks'),
-      asking = transferOffers(base)[2].fee,
-      chance = (w: World) => bidOutlook(w, 2, transferOffers(w)[2].fee).chance;
+      asking = transferOffers(base)[club(base)]!.fee,
+      chance = (w: World) => bidOutlook(w, club(w), transferOffers(w)[club(w)]!.fee).chance;
     const set = (w: World, role: StaffRole, ability: number, trait?: StaffTrait) => {
       w.staff = w.staff!.map((member) =>
         member.role === role ? { ...member, ability, ...(trait ? { trait } : {}) } : member,
@@ -582,7 +592,7 @@ describe('the 단장 (STAFF-20)', () => {
     };
     // His ability alone keeps the list as it is and moves the chance by (ability − 50)/250.
     const able = set(world('director-talks'), 'director', 75);
-    expect(transferOffers(able)[2].fee).toBe(asking);
+    expect(transferOffers(able)[club(able)]!.fee).toBe(asking);
     expect(chance(able)).toBeCloseTo(chance(base) + 0.1, 10);
     // A chief scout of any ability or trait no longer negotiates.
     const scout = set(world('director-talks'), 'scout', 90, 'negotiator');
@@ -591,9 +601,7 @@ describe('the 단장 (STAFF-20)', () => {
     // A negotiator asks less of every selling club: the list's fees fall by a tenth.
     const negotiator = set(world('director-talks'), 'director', 50, 'negotiator');
     const fees = (w: World) =>
-      transferOffers(w)
-        .slice(1)
-        .reduce((sum, offer) => sum + BigInt(offer.fee), 0n);
+      transferOffers(w).reduce((sum, offer) => sum + BigInt(offer.fee), 0n);
     expect(staffEffects(negotiator)).toMatchObject({ feeMultiplier: 0.9, bidAcceptance: 0.1 });
     expect(Number((fees(negotiator) * 1000n) / fees(base)) / 1000).toBeLessThan(1);
     // A vacant post costs 5 points.

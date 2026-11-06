@@ -1063,9 +1063,18 @@ export function buildFrames(result: GridResult, setup: GridSetup, seed: string):
       // Who has the ball through the minute (→WEB-95): each change at its seconds into the minute.
       const holders: [number, string][] = [];
       const change = (time: number, who: string) => {
-        const t = tenth(clamp(drawnAt(time) - start, 0, 60));
-        // A later change at the same tenth replaces the earlier one.
-        if (holders.at(-1)?.[0] === t) holders.pop();
+        let t = tenth(clamp(drawnAt(time) - start, 0, 60));
+        const last = holders.at(-1);
+        if (last && t <= last[0]) {
+          // A touch shorter than a tenth (a one-touch pass) still holds it for that tenth, as the
+          // samples drawn at his touch record him: what follows changes at the next tenth.
+          if (last[1] && last[0] < 60) t = tenth(last[0] + 0.1);
+          else {
+            // A later change at the same tenth replaces the earlier one.
+            holders.pop();
+            t = last[0];
+          }
+        }
         if (holders.at(-1)?.[1] !== who) holders.push([t, who]);
       };
       change(start, '');

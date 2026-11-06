@@ -1,8 +1,9 @@
-import type { Player, World } from '../../../../packages/contracts/src/types';
+import type { Club, Player, Staff, World } from '../../../../packages/contracts/src/types';
 import type { ClubPost, ClubProfile } from '../../../../packages/contracts/src/owner';
 import { squad } from '../../../../packages/engine/src/world';
 import { overall } from '../../../../packages/engine/src/player-state';
 import { clubManager } from '../../../../packages/engine/src/managerMarket';
+import { clubStaffMember } from '../../../../packages/engine/src/club-staff';
 import { facilityStage } from '../../../../packages/engine/src/club-value';
 import { stadiumCapacity } from '../../../../packages/engine/src/facility-model';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
@@ -12,20 +13,44 @@ import { CLUB_POSTS } from '../../../../packages/engine/src/staff-info';
 /** Last finishes a profile lists, newest first. */
 const PROFILE_SEASONS = 5;
 
+/** A post as the 코치진 tab lists its holder: name, rating, age and career record. */
+function postOf(
+  w: World,
+  post: ClubPost['post'],
+  holder: Pick<Staff, 'name' | 'ability' | 'born' | 'person'>,
+): ClubPost {
+  return {
+    post,
+    name: holder.name,
+    rating: Math.round(holder.ability),
+    ...(holder.born !== undefined ? { age: w.year - holder.born } : {}),
+    ...(holder.person ? { person: holder.person } : {}),
+  };
+}
+
 /** Our 코치진: the manager and every post, a vacant one without a holder. */
 function ownPosts(w: World): ClubPost[] {
   const staff = new Map((w.staff ?? []).map((member) => [member.role, member]));
   return CLUB_POSTS.map((post) => {
     const holder = post === 'manager' ? w.manager : staff.get(post);
-    if (!holder) return { post };
-    return {
-      post,
-      name: holder.name,
-      rating: Math.round(holder.ability),
-      ...(holder.born !== undefined ? { age: w.year - holder.born } : {}),
-      ...(holder.person ? { person: holder.person } : {}),
-    };
+    return holder ? postOf(w, post, holder) : { post };
   });
+}
+
+/**
+ * The 코치진 of a club nobody owns (→STAFF-17, STAFF-49): its manager with his school, then its
+ * named holder of every other post, none vacant.
+ */
+function clubPosts(w: World, club: Club): ClubPost[] {
+  const manager = clubManager(w, club);
+  return CLUB_POSTS.map((post) =>
+    post === 'manager'
+      ? {
+          ...postOf(w, post, manager),
+          ...(manager.style ? { note: STYLE_INFO[manager.style].label } : {}),
+        }
+      : postOf(w, post, clubStaffMember(w, club, post)),
+  );
 }
 
 /**
@@ -37,20 +62,7 @@ export function clubProfile(w: World, clubId: string): ClubProfile | undefined {
   const index = w.clubs.findIndex((club) => club.id === clubId);
   const club = w.clubs[index];
   if (!club) return undefined;
-  let staff: ClubPost[];
-  if (clubId === w.playerClub) staff = ownPosts(w);
-  else {
-    const manager = clubManager(w, club);
-    staff = [
-      {
-        post: 'manager',
-        name: manager.name,
-        rating: manager.ability,
-        ...(manager.born !== undefined ? { age: w.year - manager.born } : {}),
-        ...(manager.style ? { note: STYLE_INFO[manager.style].label } : {}),
-      },
-    ];
-  }
+  const staff = clubId === w.playerClub ? ownPosts(w) : clubPosts(w, club);
   let league = 0,
     cup = 0,
     europe = 0;

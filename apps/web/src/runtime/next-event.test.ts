@@ -7,7 +7,7 @@ import {
   daysUntilNextMatch,
   nextOwnFixture,
 } from '../../../../packages/engine/src/calendar';
-import { transferOffers } from '../../../../packages/engine/src/ops-squad';
+import { transferOffers } from '../../../../packages/engine/src/scout-search';
 import { ratio, random } from '../../../../packages/engine/src/primitives';
 import { pendingDecisions, stoppingReasons } from '../../../../packages/engine/src/stopping';
 import { req, startedHost } from './host.testkit';

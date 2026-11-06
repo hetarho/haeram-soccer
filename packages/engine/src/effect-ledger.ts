@@ -26,6 +26,7 @@ import {
   type BuildEffects,
 } from './build';
 import { TALK_CONFIG } from './contracts';
+import { associationAccessOrder } from './europe-access';
 import {
   FACILITY_PARTS,
   academyFacilityTerms,
@@ -53,6 +54,7 @@ import {
 import { clubOf } from './player-state';
 import { POLICY_DEFAULTS, marketingFanGain, policyEffects, policyOf } from './policy';
 import { clamp } from './primitives';
+import { SCOUT_CONFIG, reachBand, scoutReach } from './scout-search';
 import { EXCLUSIVE_MARKETING, exclusiveSponsor } from './sponsors';
 import { DEPARTMENT_ATTRIBUTES, YOUTH_DEVELOPER, departmentEffects, staffEffects } from './staff';
 import { staffMember } from './staff-info';
@@ -75,9 +77,9 @@ export type EffectId =
   | 'intake'
   | 'intakeAbility'
   | 'intakePotential'
-  | 'candidates'
-  | 'candidatePotential'
-  | 'candidateAbility'
+  | 'scoutPerLine'
+  | 'scoutAbroad'
+  | 'scoutAbility'
   | 'transferFee'
   | 'bidAcceptance'
   | 'wage'
@@ -442,49 +444,52 @@ export function effectLedger(w: World): EffectLedger {
     ],
   });
 
-  // 이적시장: the season's candidate list (as `transferOffers`), bids and wages.
-  const scout = department('scout'),
-    neutralScout = departmentEffects({ ...w, staff: undefined }, 'scout').scoutCandidates;
+  // 이적시장: the chief scout's search (as `scoutReach`, →CLUB-51), bids and wages.
+  const reach = scoutReach(w),
+    standardBand = reachBand(undefined),
+    scoutBand = reachBand(staffMember(w, 'scout')?.ability),
+    abroadLevel = SCOUT_CONFIG.abroadCountries[levels.globalScouting - 1]!,
+    scoutingCard = cardOf(buildOf(w), 'scouting').effects;
   add({
-    id: 'candidates',
+    id: 'scoutPerLine',
     group: 'market',
     unit: 'count',
     op: 'plus',
-    value: Math.max(4, staff.scoutCandidates + build.marketCandidates + terms.scoutCandidates),
-    min: 4,
+    value: reach.perLine,
+    min: SCOUT_CONFIG.minPerLine,
     factors: [
-      { source: fact('standard'), value: neutralScout },
-      { source: { kind: 'staff', role: 'scout' }, value: scout.scoutCandidates - neutralScout },
-      ...buildFactors(w, 'marketCandidates', 'plus'),
-      { source: policy('globalScouting'), value: terms.scoutCandidates },
+      { source: fact('standard'), value: standardBand.perLine },
+      {
+        source: { kind: 'staff', role: 'scout' },
+        value: scoutBand.perLine - standardBand.perLine,
+      },
+      ...buildFactors(w, 'scoutPerLine', 'plus'),
+    ],
+  });
+  // 지역 인재 우선 searches nowhere abroad, so its share takes away every country the net adds.
+  add({
+    id: 'scoutAbroad',
+    group: 'market',
+    unit: 'count',
+    op: 'plus',
+    value: reach.abroad.length,
+    min: 0,
+    max: associationAccessOrder(w).filter((code) => code !== club.country).length,
+    factors: [
+      { source: policy('globalScouting'), value: abroadLevel },
+      {
+        source: { kind: 'build', slot: 'scouting' },
+        value: scoutingCard.scoutNoAbroad ? -abroadLevel : (scoutingCard.scoutAbroadExtra ?? 0),
+      },
     ],
   });
   add({
-    id: 'candidatePotential',
+    id: 'scoutAbility',
     group: 'market',
     unit: 'plus',
     op: 'plus',
-    value:
-      terms.offer.potentialBonus +
-      staff.scoutPotential +
-      build.marketPotential +
-      synergy.marketPotential +
-      terms.scoutPotential,
-    factors: [
-      { source: policy('recruitment'), value: terms.offer.potentialBonus },
-      { source: { kind: 'staff', role: 'scout' }, value: scout.scoutPotential },
-      ...buildFactors(w, 'marketPotential', 'plus'),
-      ...synergyFactors(synergies, 'marketPotential', 'plus'),
-      { source: policy('globalScouting'), value: terms.scoutPotential },
-    ],
-  });
-  add({
-    id: 'candidateAbility',
-    group: 'market',
-    unit: 'plus',
-    op: 'plus',
-    value: build.marketAbility,
-    factors: buildFactors(w, 'marketAbility', 'plus'),
+    value: build.scoutAbilityShift,
+    factors: buildFactors(w, 'scoutAbilityShift', 'plus'),
   });
   add({
     id: 'transferFee',

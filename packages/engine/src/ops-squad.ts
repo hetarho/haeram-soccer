@@ -1,34 +1,19 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import { worldMarketOffer } from './world-market';
 import { registrationRoom } from './registration';
-import type { Position } from '../../contracts/src/types';
-import type { Command, World } from '../../contracts/src/types';
+import type { Command, Player, World } from '../../contracts/src/types';
 import { addEvent } from './events';
 import { recordTransfer } from './transfer-records';
 import { fanMoodTransfer } from './fan-mood';
-import { clubOf, overall } from './player-state';
-import { makePlayer } from './world';
-import { hash, integer, random, scaleBy } from './primitives';
-import {
-  declineContract,
-  divisionFor,
-  MARKET_CONFIG,
-  marketValueAt,
-  marketWageAt,
-  offerContract,
-  signingClauses,
-} from './contracts';
+import { declineContract, offerContract, signingClauses } from './contracts';
 import { moneyLabel } from './finance';
-import { staffEffects } from './staff';
 import { promoteYouth, releaseYouth } from './academy';
 import { placeBid, respondBid, setTransferStance } from './transfers';
 import { assertTransferWindow } from './transfer-window';
-import { policyEffects, policyOf } from './policy';
-import { buildEffects } from './build';
-import { synergyEffects } from './synergy';
-import { askedFeeFactor } from './owner-traits';
-import { debit } from './transactions';
 import { noteSigning } from './signings';
+import { debit } from './transactions';
+import { takeFreeAgent } from './free-agents';
+import { transferOffers } from './scout-search';
 
 /** Bids, offers, stances, the academy and contract talks. */
 export type SquadCommand = Extract<
@@ -47,100 +32,23 @@ export type SquadCommand = Extract<
 >;
 
 /**
- * The season market. Each combination of the settings that shape the list draws its own
- * candidates under its own IDs (→CLUB-14, →ECON-16), so switching a setting away and back shows
- * the same list again. `year` and `legacy` reproduce a list under the `market:<year>:<i>` IDs of
- * rules before 1.15.0 for the bids pending from then.
+ * A free agent signs at once (→CLUB-4, →CLUB-49): he leaves the pool and joins on the offer's
+ * terms with his signing's clauses (→CLUB-29); a former player of ours returns to his own row
+ * with his career. The caller has checked registration and the window.
  */
-/**
- * The positions market candidates cycle through (→CLUB-14): the lines in turn, as the four roles
- * were, and within each line its positions in turn.
- */
-const MARKET_LINES: readonly (readonly Position[])[] = [
-  ['GK'],
-  ['CB', 'LB', 'RB', 'LWB', 'RWB'],
-  ['CM', 'DM', 'AM', 'LM', 'RM'],
-  ['ST', 'LW', 'RW'],
-];
-const marketPosition = (i: number) => {
-  const line = MARKET_LINES[i % MARKET_LINES.length]!;
-  return line[Math.floor(i / MARKET_LINES.length) % line.length]!;
-};
-/** Marks a candidate from abroad in his id, so his origin stays with him after he signs. */
-const FOREIGN_MARK = 'f';
-export const isForeignCandidate = (id: string) => /^market:\d+:[^:]+:f\d+$/.test(id);
-export function transferOffers(w: World, year = w.year, legacy = false) {
-  const policy = policyEffects(policyOf(w)),
-    profile = policy.offer,
-    scouting = staffEffects(w),
-    build = buildEffects(w),
-    synergy = synergyEffects(w);
-  // 해외 스카우트망 widens the list and lifts its ceilings (→ECON-16).
-  const count = Math.max(
-    4,
-    scouting.scoutCandidates + build.marketCandidates + policy.scoutCandidates,
-  );
-  const sig = hash(
-    [
-      ...profile.ability,
-      ...profile.age,
-      profile.potentialBonus,
-      1, // Keep the standard shortlist's historical signature after retiring the stance fee factor.
-      scouting.scoutCandidates,
-      scouting.scoutPotential,
-      scouting.feeMultiplier,
-      build.marketCandidates,
-      build.marketAbility,
-      build.marketPotential,
-      synergy.marketPotential,
-      synergy.feeMultiplier,
-      ...(policy.scoutCandidates ? [policy.scoutCandidates, policy.scoutPotential] : []),
-    ].join(','),
-  )
-    .toString(36)
-    .padStart(7, '0');
-  // 협상의 달인 lowers what every selling club asks (→OWNER-5); his list stays the same players.
-  const own = clubOf(w),
-    feeMultiplier = scouting.feeMultiplier * synergy.feeMultiplier * askedFeeFactor(w);
-  return Array.from({ length: count }, (_, i) => {
-    // The candidates 해외 스카우트망 adds come from abroad (→PLAYER-11).
-    const foreign = i >= count - policy.scoutCandidates;
-    const id = legacy
-      ? `market:${year}:${i}`
-      : `market:${year}:${sig}:${foreign ? FOREIGN_MARK : ''}${i}`;
-    const r = random(`${w.seed}:${id}`);
-    const p = makePlayer(
-      own.country,
-      w.seed,
-      id,
-      year,
-      Math.min(95, integer(r, profile.ability[0], profile.ability[1]) + build.marketAbility),
-      marketPosition(i),
-      integer(r, profile.age[0], profile.age[1]),
-      own.tier,
-    );
-    const potentialBonus =
-      profile.potentialBonus +
-      scouting.scoutPotential +
-      build.marketPotential +
-      synergy.marketPotential +
-      policy.scoutPotential;
-    // A ceiling is never below what the player already shows.
-    p.potential = Math.max(overall(p), Math.min(99, p.potential + potentialBonus));
-    // He would join on our division's market wage; his club sells at the market of the division
-    // his ability suits (→CLUB-25). A free agent has no club to ask a fee.
-    p.wage = marketWageAt(own.country, year, own.tier, p);
-    const value = marketValueAt(own.country, year, divisionFor(own.country, overall(p)), p);
-    const share = (multiplier: number) => (i === 0 ? '0' : scaleBy(value, multiplier, 1000n));
-    return {
-      player: p,
-      fee: share(feeMultiplier),
-      loanFee: share(MARKET_CONFIG.loan),
-      /** A player without a club signs outside transfer windows. */
-      freeAgent: i === 0,
-      available: !w.players.some((owned) => owned.id === p.id),
-    };
-  });
+export function signFreeAgent(w: World, offer: { player: Player }): Player {
+  if (!takeFreeAgent(w, offer.player.id))
+    throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
+  const p = structuredClone(offer.player);
+  p.clauses = signingClauses(w, p);
+  const prior = w.players.findIndex((row) => row.id === p.id);
+  if (prior >= 0) {
+    p.career = [...w.players[prior]!.career];
+    if (w.players[prior]!.graduate) p.graduate = true;
+    w.players[prior] = p;
+  } else w.players.push(p);
+  noteSigning(w, p);
+  return p;
 }
 export function squadCommand(w: World, cmd: SquadCommand) {
   switch (cmd.type) {
@@ -171,43 +79,32 @@ export function squadCommand(w: World, cmd: SquadCommand) {
         throw new Error(sourceMessage('copy.ops_squad.ca6b698a89'));
       const o = cmd.target ? worldMarketOffer(w, cmd.target) : transferOffers(w)[cmd.candidate!];
       if (!o?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
-      if (cmd.target && (!o.freeAgent || cmd.loan)) {
-        placeBid(w, cmd.target, cmd.loan ? o.loanFee : o.fee, cmd.loan);
+      // Another club's player joins only through a negotiated bid, at his asking fee (→CLUB-4).
+      if (!o.freeAgent) {
+        placeBid(w, cmd.target ?? cmd.candidate!, cmd.loan ? o.loanFee : o.fee, cmd.loan);
         break;
       }
-      const room = registrationRoom(w, {
-        ...o.player,
-        joined: w.year,
-        ...(cmd.loan ? { loanUntil: w.year + 1 } : {}),
-      });
+      if (cmd.loan) throw new Error(sourceMessage('copy.ops_squad.a2b1b34469'));
+      const room = registrationRoom(w, { ...o.player, joined: w.year });
       if (room) throw new Error(room);
-      assertTransferWindow(w, o.freeAgent && !cmd.loan);
-      const cost = cmd.loan ? o.loanFee : o.fee;
-      debit(w, cost);
-      // A loan keeps his club's contract; a signing has its own clauses (→CLUB-29).
-      if (cmd.loan) o.player.loanUntil = w.year + 1;
-      else o.player.clauses = signingClauses(w, o.player);
-      w.players.push(o.player);
-      noteSigning(w, o.player);
+      assertTransferWindow(w, true);
+      // No fee, yet a club already in debt signs nobody, as the preview says.
+      debit(w, o.fee);
+      const p = signFreeAgent(w, o);
       // A free agent costs nothing and keeps no fee fact (→HIST-20).
-      const fact = recordTransfer(w, {
-        direction: 'in',
-        loan: !!cmd.loan,
-        player: o.player,
-        fee: cost,
-      });
+      const fact = recordTransfer(w, { direction: 'in', loan: false, player: p, fee: '0' });
       if (fact) fanMoodTransfer(w, fact);
       addEvent(
         w,
         'transfer-in',
-        `${o.player.name} ${cmd.loan ? sourceMessage('team.loan') : sourceMessage('copy.areas.60be4d7b53')}`,
-        sourceMessage('copy.ops_squad.b8067d662a', {
-          p0: o.player.position,
-          p1: w.year - o.player.born,
-          p2: moneyLabel(w, o.player.wage),
-          p3: o.player.until,
+        sourceMessage('copy.ClubStaff.2d43ec39f3', { p0: p.name }),
+        sourceMessage('copy.ops_squad.378259bb11', {
+          p0: p.position,
+          p1: w.year - p.born,
+          p2: moneyLabel(w, p.wage),
+          p3: p.until,
         }),
-        cost,
+        '0',
       );
       break;
     }

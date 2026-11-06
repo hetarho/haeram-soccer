@@ -303,6 +303,10 @@ export function squad(w: World, c: Club): Player[] {
 export function invalidateNpcSquads(w: World) {
   npcCaches.delete(w);
 }
+/** One club's derived roster, when only its generated places changed (a free agent, →CLUB-49). */
+export function invalidateNpcSquad(w: World, club: string) {
+  npcCaches.get(w)?.clubs.delete(club);
+}
 /**
  * Weekly load a pressing club carries. Unowned squads do not track fatigue match by match, so a
  * pressing style pays its usual cost up front instead of pressing for free.
@@ -521,13 +525,17 @@ export function startingSquad(w: World, c: Club, f?: Pick<Fixture, 'kind' | 'gro
   });
 }
 const clubMaps = new WeakMap<Club[], Map<string, Club>>();
-export function findClub(w: World, id: string) {
+/** The club with `id`, or undefined when the world has none. */
+export function clubById(w: Pick<World, 'clubs'>, id: string): Club | undefined {
   let map = clubMaps.get(w.clubs);
   if (!map || map.size !== w.clubs.length) {
     map = new Map(w.clubs.map((c) => [c.id, c]));
     clubMaps.set(w.clubs, map);
   }
-  const c = map.get(id);
+  return map.get(id);
+}
+export function findClub(w: World, id: string) {
+  const c = clubById(w, id);
   if (!c) throw new Error(sourceMessage('copy.world.c93911c504'));
   return c;
 }

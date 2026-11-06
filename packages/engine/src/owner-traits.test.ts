@@ -18,7 +18,7 @@ import { effectiveGap } from './match-rules';
 import { buildGridSetup } from './grid/setup';
 import { findClub, ratingOf, squad } from './world';
 import { talkTerms } from './contracts';
-import { transferOffers } from './ops-squad';
+import { transferOffers } from './scout-search';
 import { worldMarketOffer } from './world-market';
 import { managerCandidates, refreshManagerMarket } from './managerMarket';
 import { staffCandidates } from './staff';
@@ -235,19 +235,23 @@ describe('마당발', () => {
     expect(shared).toBeGreaterThan(0);
   });
 
-  it('lists one more coach in a department, each drawn abler at the same price (→STAFF-15)', () => {
+  it('opens each staff pool with one more free agent, each abler at the same price (→STAFF-49)', () => {
     const plain = world(),
-      wide = owned('networker');
-    const before = staffCandidates(plain, 'attack'),
-      after = staffCandidates(wide, 'attack');
+      wide = networked();
+    const free = (w: World) => staffCandidates(w, 'attack').filter((c) => c.source === 'free');
+    const before = free(plain),
+      after = free(wide);
     expect(after).toHaveLength(before.length + candidates);
     for (const [i, c] of before.entries()) {
       expect(after[i]!.id).toBe(c.id);
       expect(after[i]!.ability).toBe(boosted(c.ability));
       expect([after[i]!.wage, after[i]!.fee]).toEqual([c.wage, c.fee]);
     }
-    // The plain list is drawn again, not served from the networked one.
-    expect(staffCandidates(plain, 'attack')).toEqual(before);
+    // Other clubs' holders keep their level.
+    const club = (w: World) => staffCandidates(w, 'attack').filter((c) => c.source === 'club');
+    expect(club(wide)).toEqual(club(plain));
+    // The plain list is read again, not served from the networked one.
+    expect(free(plain)).toEqual(before);
   });
 });
 

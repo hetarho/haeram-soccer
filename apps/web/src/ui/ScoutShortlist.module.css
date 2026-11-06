@@ -90,7 +90,13 @@
   color: var(--gold);
   font-family: var(--display);
 }
-.role button {
+/* One candidate: the button that opens him, and under it where he is, whose club is a link. */
+.entry {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.open {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -103,9 +109,33 @@
 .picked {
   box-shadow: none;
 }
-.role > button:is(:hover, :focus-visible) {
+.open:is(:hover, :focus-visible) {
   background-color: var(--image-selected-row, var(--surface-2));
   background-blend-mode: soft-light;
+}
+.entrySource {
+  padding: 0 10px 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--display);
+}
+/* Where a candidate is (→CLUB-50): free, or his club with its fee; 해외 when found abroad. */
+.source {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.abroad {
+  padding: 0 5px;
+  border-radius: var(--badge-radius);
+  border: 1px solid var(--line);
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
 }
 .who,
 .money {

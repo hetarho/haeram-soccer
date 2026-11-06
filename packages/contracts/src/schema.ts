@@ -6,7 +6,8 @@ z.config({ jitless: true });
 import type { GenerationDigest, GenerationFeatKind, SponsorSlot, World } from './types';
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from './detail';
 import { BUILD_OPTIONS, STRATEGY_NAME_LIMIT } from './build';
-import { ATTRIBUTES, LINES, PLAY_TRAITS, POSITIONS } from './player';
+import { ATTRIBUTES, FREE_AGENT_CAP, LINES, PLAY_TRAITS, POSITIONS } from './player';
+import type { Position, Positions } from './player';
 import {
   assertIdentityFormatVersions,
   clubIdentitySchema,
@@ -170,70 +171,70 @@ const clauses = z.strictObject({
   relegation: z.number().int().min(-99).max(-1).optional(),
   ballonDor: z.number().int().min(1).max(100).optional(),
 });
-const player = z
-  .object({
-    id,
-    name: text,
-    position,
-    positions,
-    born: z.number().int(),
-    joined: season.optional(),
-    graduate: z.literal(true).optional(),
-    attrs: attributes,
-    personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
-    qualities: z
-      .strictObject({ understanding: grade, teaching: grade, judgement: grade })
-      .optional(),
-    traits: z.array(z.enum(PLAY_TRAITS)).max(3),
-    adaptation: z.number().finite().min(0.3).max(1),
-    clubRounds: z.number().int().nonnegative().optional(),
-    unsettled: season.optional(),
-    positionStarts: z.partialRecord(position, z.number().int().nonnegative()).optional(),
-    potential: rating,
-    reputation: rating,
-    wage: money,
-    until: z.number().int(),
-    status: z.enum(['active', 'sold', 'retired']),
-    fatigue: rating,
-    developed: z.number().finite().min(0).max(500).optional(),
-    career: metrics,
-    season: metrics,
-    loanUntil: z.number().int().optional(),
-    injury: z
-      .strictObject({
-        year: z.number().int(),
-        day: z.number().int().min(0).max(800),
-        label: text,
-      })
-      .optional(),
-    stance: z.enum(['listed', 'untouchable']).optional(),
-    retiring: z.number().int().optional(),
-    talk: z
-      .strictObject({
-        kind: z.enum(['renew', 'improve']),
-        demand: amount,
-        floor: amount,
-        year: season,
-        day: seasonDay,
-        clauses: clauses.optional(),
-      })
-      .optional(),
-    improveAsked: season.optional(),
-    unhappy: z
-      .strictObject({
-        reason: z.enum(['renewal-declined', 'improve-declined', 'ambition']),
-        year: season,
-        day: seasonDay,
-      })
-      .optional(),
-    transferRequest: z.strictObject({ year: season, day: seasonDay }).optional(),
-    agent: z.literal([1, 2, 3, 4, 5]).optional(),
-    clauses: clauses.optional(),
-  })
-  .refine(
-    (p) => p.positions[p.position] === 3 && new Set(p.traits).size === p.traits.length,
-    sourceMessage('copy.schema.1abfb8b2e0'),
-  );
+const playerShape = {
+  id,
+  name: text,
+  position,
+  positions,
+  born: z.number().int(),
+  joined: season.optional(),
+  graduate: z.literal(true).optional(),
+  attrs: attributes,
+  personality: z.strictObject({ professionalism: grade, adaptability: grade, ambition: grade }),
+  qualities: z.strictObject({ understanding: grade, teaching: grade, judgement: grade }).optional(),
+  traits: z.array(z.enum(PLAY_TRAITS)).max(3),
+  adaptation: z.number().finite().min(0.3).max(1),
+  clubRounds: z.number().int().nonnegative().optional(),
+  unsettled: season.optional(),
+  positionStarts: z.partialRecord(position, z.number().int().nonnegative()).optional(),
+  potential: rating,
+  reputation: rating,
+  wage: money,
+  until: z.number().int(),
+  status: z.enum(['active', 'sold', 'retired']),
+  fatigue: rating,
+  developed: z.number().finite().min(0).max(500).optional(),
+  career: metrics,
+  season: metrics,
+  loanUntil: z.number().int().optional(),
+  injury: z
+    .strictObject({
+      year: z.number().int(),
+      day: z.number().int().min(0).max(800),
+      label: text,
+    })
+    .optional(),
+  stance: z.enum(['listed', 'untouchable']).optional(),
+  retiring: z.number().int().optional(),
+  talk: z
+    .strictObject({
+      kind: z.enum(['renew', 'improve']),
+      demand: amount,
+      floor: amount,
+      year: season,
+      day: seasonDay,
+      clauses: clauses.optional(),
+    })
+    .optional(),
+  improveAsked: season.optional(),
+  unhappy: z
+    .strictObject({
+      reason: z.enum(['renewal-declined', 'improve-declined', 'ambition']),
+      year: season,
+      day: seasonDay,
+    })
+    .optional(),
+  transferRequest: z.strictObject({ year: season, day: seasonDay }).optional(),
+  agent: z.literal([1, 2, 3, 4, 5]).optional(),
+  clauses: clauses.optional(),
+};
+const intactPlayer = (p: { position: Position; positions: Positions; traits: readonly string[] }) =>
+  p.positions[p.position] === 3 && new Set(p.traits).size === p.traits.length;
+const player = z.object(playerShape).refine(intactPlayer, sourceMessage('copy.schema.1abfb8b2e0'));
+/** A player without a club (→CLUB-49) and his first free season. */
+const freeAgent = z
+  .object({ ...playerShape, freeSince: season })
+  .refine(intactPlayer, sourceMessage('copy.schema.1abfb8b2e0'));
 const manager = z.object({
   id,
   person: id.optional(),
@@ -726,7 +727,8 @@ const request = z.strictObject({
 const shortlist = z.strictObject({
   year: season,
   day: z.number().int().min(0).max(400),
-  entries: z.array(z.strictObject({ playerId: id, line })).max(12),
+  // At most five per line: an 80+ chief scout's four and a scouting card's one more (→CLUB-51).
+  entries: z.array(z.strictObject({ playerId: id, line })).max(20),
   requests: z.array(request).max(3),
   window: z
     .strictObject({
@@ -1138,6 +1140,14 @@ const worldSchema: z.ZodType<World> = z.object({
     .optional(),
   bids: z.array(bid).max(200).optional(),
   shortlist: shortlist.optional(),
+  freeAgents: z
+    .array(freeAgent)
+    .max(FREE_AGENT_CAP)
+    .refine(
+      (pool) => new Set(pool.map((p) => p.id)).size === pool.length,
+      sourceMessage('copy.schema.c2f02333c7'),
+    )
+    .optional(),
   morale: z.number().finite().min(0).max(100).optional(),
   build: clubBuildSchema.optional(),
   // Written only by rules 1.13–1.15; writer activation drops it (→SAVE-10).
@@ -1154,6 +1164,27 @@ const worldSchema: z.ZodType<World> = z.object({
       free: z.array(manager).max(8),
       clubs: z.record(id, z.tuple([z.number().int().min(0).max(10000), z.number().int()])),
       serial: z.number().int().min(0),
+    })
+    .optional(),
+  // Each post's free agents hold at most 6, 마당발's 7 (→STAFF-49, OWNER-5).
+  staffMarket: z
+    .strictObject({
+      year: z.number().int().min(1901).max(4000),
+      round: z.number().int().min(0).max(46),
+      free: z.partialRecord(
+        staffRole,
+        z
+          .array(staff)
+          .max(7)
+          .refine(
+            (pool) => new Set(pool.map((m) => m.id)).size === pool.length,
+            sourceMessage('copy.schema.c3ba820ef6'),
+          ),
+      ),
+      clubs: z.record(
+        id,
+        z.partialRecord(staffRole, z.tuple([z.number().int().min(0).max(10000), z.number().int()])),
+      ),
     })
     .optional(),
   inbox: z.array(inboxItem).max(200).optional(),

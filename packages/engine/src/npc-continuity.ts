@@ -10,7 +10,8 @@ import {
   playingFor,
   retainPerson,
 } from './person-careers';
-import { invalidateNpcSquads, makePlayer, npcSquad } from './world';
+import { invalidateNpcSquads, makePlayer, npcSquad, squadPlaces } from './world';
+import { clubStyle } from './tactics';
 import { lineOf } from './player';
 import { hasOwner } from './owner';
 
@@ -31,6 +32,22 @@ function generatedSquad(w: World, c: Club): Player[] {
   return entry[1].map((p) => ({ ...p }));
 }
 
+/** Each pool's ID set, read once: the pool is replaced whole on every change (→CLUB-49). */
+const freeAgentIds = new WeakMap<readonly { id: string }[], Set<string>>();
+/**
+ * Whether `id` is a free agent's (→CLUB-49): the club that let him go keeps his generated place
+ * empty while he is one, as it does for a registered player who moved, so nobody is in two places.
+ */
+export function isFreeAgent(w: { freeAgents?: readonly { id: string }[] }, id: string) {
+  const pool = w.freeAgents;
+  if (!pool?.length) return false;
+  let ids = freeAgentIds.get(pool);
+  if (!ids) freeAgentIds.set(pool, (ids = new Set(pool.map((p) => p.id))));
+  return ids.has(id);
+}
+/** Whether a generated identity is accounted for elsewhere: registered, or a free agent. */
+const departed = (w: World, id: string) => !!w.people?.[id] || isFreeAgent(w, id);
+
 /** Registry enrollment occurs in simulation lifecycle, never from a read-only roster query. */
 export function materializePeople(w: World) {
   for (const p of [...w.players, ...(w.academy?.players || [])])
@@ -49,6 +66,8 @@ export function materializePeople(w: World) {
     for (let slot = 0; slot < raw.length; slot++) {
       if (occupiedOrigins.has(`${c.id}:${slot}`)) continue;
       let p = raw[slot];
+      // A free agent's place is filled for the season he is one by someone nobody records.
+      if (isFreeAgent(w, p.id)) continue;
       // The old generated identity can have moved or retired. Its vacant place gets a new person.
       if (w.people?.[p.id]) p = replacement(w, c, p, slot);
       if ((coachingGrade(p) ?? 0) < 4) continue;
@@ -59,11 +78,16 @@ export function materializePeople(w: World) {
   }
   invalidateNpcSquads(w);
 }
+/**
+ * A new person for generated place `slot`, whose identity `p` is accounted for elsewhere: drawn as
+ * the place is (`npcSquad`), at its position and age, in its formation role and carrying the
+ * club's press load, so a refilled squad plays as its generated one does.
+ */
 function replacement(w: World, c: Club, p: Player, slot: number) {
   let serial = 0;
   let id = `${c.id}:vacancy:${slot}:${w.year}`;
-  while (w.people?.[id]) id = `${c.id}:vacancy:${slot}:${w.year}:${++serial}`;
-  return makePlayer(
+  while (departed(w, id)) id = `${c.id}:vacancy:${slot}:${w.year}:${++serial}`;
+  const player = makePlayer(
     COUNTRIES.some((country) => country.code === c.country) ? c.country : 'ENG',
     w.seed,
     id,
@@ -72,7 +96,10 @@ function replacement(w: World, c: Club, p: Player, slot: number) {
     p.position,
     18 + ((w.year + slot) % 18),
     c.tier,
+    squadPlaces(clubStyle(c))[slot]?.role,
   );
+  player.fatigue = p.fatigue;
+  return player;
 }
 
 function identity(p: Player, person: PersonCareer): Player {
@@ -88,8 +115,8 @@ function identity(p: Player, person: PersonCareer): Player {
 /** Playing attributes remain the ordinary current club-strength draw; identity grants no bonus. */
 export function continuousSquad(w: World, c: Club): Player[] {
   const raw = generatedSquad(w, c);
-  if (!w.people) return raw;
-  const people = playingFor(w, c.id);
+  if (!w.people && !w.freeAgents?.length) return raw;
+  const people = w.people ? playingFor(w, c.id) : [];
   const used = new Set<string>();
   const players = raw.map((p, slot) => {
     const native = people.find(
@@ -99,7 +126,7 @@ export function continuousSquad(w: World, c: Club): Player[] {
       used.add(native.id);
       return identity(p, native);
     }
-    if (w.people?.[p.id]) return replacement(w, c, p, slot);
+    if (departed(w, p.id)) return replacement(w, c, p, slot);
     return p;
   });
   // Actual arrivals use unretained playing places first. A retained native must remain

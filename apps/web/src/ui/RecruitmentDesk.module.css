@@ -665,6 +665,35 @@
   line-height: 16px;
   font-weight: 500;
 }
+/* Where the row's player is (→CLUB-50), under his name and outside its button: his club links. */
+.rowSource {
+  display: block;
+  margin-top: -6px;
+  padding: 0 8px 4px;
+  color: var(--text-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  line-height: 16px;
+}
+/*
+ * One text line, so four rows still open a 360x740 phone before its optional panels (→WEB-43):
+ * the club link keeps the line's height instead of a name's 32 px box, and what does not fit
+ * (division, 해외) ends in an ellipsis; the candidate's detail reads it in full.
+ */
+.rowSource > [data-source] {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.candidateTable .rowSource button[data-ui='link'] {
+  min-height: 0;
+}
+.rowSource button[data-ui='link'] > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .potentialValue {
   display: inline-grid;
   justify-items: center;
@@ -780,8 +809,12 @@
     font-size: 12px;
     line-height: 18px;
   }
-  .playerName small {
+  .playerName small,
+  .rowSource {
     font-size: 11px;
+  }
+  .rowSource {
+    padding: 0 3px 4px;
   }
   .wageColumn {
     display: none;

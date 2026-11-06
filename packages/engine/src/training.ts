@@ -239,13 +239,27 @@ export function developAnnually(w: World, player: Player) {
     only: growing,
     share: 1,
   });
-  for (const a of ATTRIBUTES) {
-    if (young && growing(a)) continue;
-    const decline = age >= AGEING[a].declineFrom ? AGEING[a].perSeason : 0;
-    player.attrs[a] = hundredths(clamp(player.attrs[a] + variation() - 0.5 - decline, 5, TOP));
-  }
+  ageAttributes(player, age, variation, (a) => young && growing(a));
   recordDevelopment(player, hundredths(mainOvr(player) - before));
   revisePotential(w, player);
+}
+
+/**
+ * A season's ageing (→PLAYER-17) of every attribute `skip` leaves: one past its decline age falls by
+ * its group's amount, any other holds, each with noise of ±0.5 drawn from `noise` in attribute
+ * order. Growth is not part of it, so a player nobody trains (→CLUB-49) ages by it alone.
+ */
+export function ageAttributes(
+  player: Player,
+  age: number,
+  noise: () => number,
+  skip: (a: Attribute) => boolean = () => false,
+) {
+  for (const a of ATTRIBUTES) {
+    if (skip(a)) continue;
+    const decline = age >= AGEING[a].declineFrom ? AGEING[a].perSeason : 0;
+    player.attrs[a] = hundredths(clamp(player.attrs[a] + noise() - 0.5 - decline, 5, TOP));
+  }
 }
 
 /**

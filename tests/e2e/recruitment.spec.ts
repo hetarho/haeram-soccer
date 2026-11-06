@@ -62,19 +62,28 @@ async function openMarket(page: Page) {
 }
 
 /** Select a reproducible successful bid, using real commands on an isolated preparation copy.
- * No displayed row or array index is used as the submitted identity. */
+ * No displayed row or array index is used as the submitted identity. The world's free agents,
+ * who sign without a fee and are never loaned (→CLUB-4/49), fill the cheapest pages, so the
+ * fifty cheapest other clubs' players are read past them. */
 function acceptedLoan(w: World): WorldMarketOffer {
-  const offers = worldMarketPage(w, { world: w.id, sort: 'fee', direction: 'asc' }).items;
-  for (const offer of offers.filter(
-    (one) =>
-      one.available &&
-      !one.freeAgent &&
-      !w.bids?.some(
-        (bid) =>
-          bid.playerId === one.player.id &&
-          (bid.status === 'pending' || bid.status === 'countered'),
+  const offers: WorldMarketOffer[] = [];
+  for (let page = 0; offers.length < 50; page++) {
+    const read = worldMarketPage(w, { world: w.id, sort: 'fee', direction: 'asc', page });
+    offers.push(
+      ...read.items.filter(
+        (one) =>
+          one.available &&
+          !one.freeAgent &&
+          !w.bids?.some(
+            (bid) =>
+              bid.playerId === one.player.id &&
+              (bid.status === 'pending' || bid.status === 'countered'),
+          ),
       ),
-  )) {
+    );
+    if ((read.page + 1) * read.pageSize >= read.total) break;
+  }
+  for (const offer of offers.slice(0, 50)) {
     const copy = structuredClone(w);
     operate(copy, { type: 'recruit', target: offer.target, loan: true });
     for (let day = 0; day < 4; day++) advanceDays(copy, 1, undefined, false);
@@ -515,12 +524,17 @@ test('reaches the forty-player ceiling with eight loans and prevents any further
 test('disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs', async ({
   page,
 }) => {
-  // A 1930 takeover opens on its books' cash (→ECON-36), which pays every fee of its market; a
-  // self-made owner's career on two years of fixed costs pays a loan's fee but not the dearest fee.
+  // A 1930 takeover opens on its books' cash (→ECON-36), which pays every fee of its market. The
+  // scout now brings existing players whose fees the books cover (→CLUB-51), so the club keeps
+  // just less than the dearest club player's fee: it pays his loan's fee but not that fee.
   await page.setViewportSize({ width: 390, height: 844 });
   const world = careerWorld({ country: 'ENG', seed: 'recruitment-poor-ui', tier: 'selfmade' });
   world.settings!.mode = 'manual';
   world.settings!.observations = { matchEve: false, windowOpen: false };
+  const dearest = transferOffers(world)
+    .filter((candidate) => candidate.available && !candidate.freeAgent)
+    .reduce((max, candidate) => (BigInt(candidate.fee) > max ? BigInt(candidate.fee) : max), 0n);
+  world.cash = (dearest - 1n).toString();
   await importResponsibilityCareer(page, world);
   await openMarket(page);
   const before = await exportWorld(page);

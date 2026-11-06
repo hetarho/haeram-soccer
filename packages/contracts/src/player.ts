@@ -20,6 +20,9 @@ export type Position = (typeof POSITIONS)[number];
 export type Line = 'GK' | 'DF' | 'MF' | 'FW';
 export const LINES = ['GK', 'DF', 'MF', 'FW'] as const;
 
+/** The most free agents the world holds; above it the least able retire at the close (→CLUB-49). */
+export const FREE_AGENT_CAP = 200;
+
 /** The 16 attributes every player has (→PLAYER-2). */
 export const ATTRIBUTES = [
   'finishing',

@@ -555,9 +555,12 @@ const EFFECT_LABELS: Record<keyof BuildEffects, string> = {
   academyIntake: sourceMessage('copy.ClubSettingControl.5f570520eb'),
   academyPotential: sourceMessage('copy.ClubSettingControl.8b55b3cb94'),
   youthGrowth: sourceMessage('office.effect.youthGrowth'),
-  marketCandidates: sourceMessage('copy.ClubSettingControl.2051d3609a'),
-  marketPotential: sourceMessage('copy.ClubSettingControl.527760f774'),
-  marketAbility: sourceMessage('copy.ClubSettingControl.7d315fdd9a'),
+  scoutPerLine: sourceMessage('office.effect.scoutPerLine'),
+  scoutAbilityShift: sourceMessage('office.effect.scoutAbility'),
+  scoutAbroadExtra: sourceMessage('office.effect.scoutAbroad'),
+  scoutPotentialFirst: sourceMessage('copy.ClubSettingControl.952388e36d'),
+  scoutNeverPotentialFirst: sourceMessage('copy.ClubSettingControl.a13267f2f1'),
+  scoutNoAbroad: sourceMessage('copy.ClubSettingControl.7ae6a08a93'),
   incomingBids: sourceMessage('copy.ClubSettingControl.9584df4fe3'),
   saleFee: sourceMessage('copy.ClubSettingControl.6463471d45'),
   sponsor: sourceMessage('copy.ClubSettingControl.1fff7e705f'),
@@ -581,18 +584,25 @@ const MULTIPLIERS = new Set<keyof BuildEffects>([
   'winFans',
   'wage',
 ]);
+/** Effects that switch a rule on rather than add an amount: named without a number. */
+const FLAGS = new Set<keyof BuildEffects>([
+  'scoutPotentialFirst',
+  'scoutNeverPotentialFirst',
+  'scoutNoAbroad',
+]);
 function effectsSummary(effects: Partial<BuildEffects>) {
   return (
     (Object.entries(effects) as [keyof BuildEffects, number][])
-      .map(
-        ([key, value]) =>
-          `${EFFECT_LABELS[key]} ${
-            MULTIPLIERS.has(key)
-              ? `×${value}`
-              : key === 'gateDemand'
-                ? `${value >= 0 ? '+' : ''}${Number((value * 100).toFixed(2))}%`
-                : `${value >= 0 ? '+' : ''}${value}`
-          }`,
+      .map(([key, value]) =>
+        FLAGS.has(key)
+          ? EFFECT_LABELS[key]
+          : `${EFFECT_LABELS[key]} ${
+              MULTIPLIERS.has(key)
+                ? `×${value}`
+                : key === 'gateDemand'
+                  ? `${value >= 0 ? '+' : ''}${Number((value * 100).toFixed(2))}%`
+                  : `${value >= 0 ? '+' : ''}${value}`
+            }`,
       )
       .join(' · ') || sourceMessage('copy.ClubSettingControl.cbae18adeb')
   );

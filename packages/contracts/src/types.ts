@@ -263,7 +263,10 @@ export interface Shortlist {
   /** The season and season day of the draw. */
   year: number;
   day: number;
-  /** Up to three market candidates per line, best first; one no longer available drops on reading. */
+  /**
+   * The players the chief scout found, his reach's count per line (→CLUB-51), best first; one no
+   * longer on his list drops on reading.
+   */
   entries: { playerId: string; line: Line }[];
   /** At most three: every short line, then the upgrade a candidate makes most (→CLUB-33). */
   requests: SigningRequest[];
@@ -402,6 +405,12 @@ export interface Player {
   clauses?: ContractClauses;
 }
 /**
+ * A player the world holds without a club (→CLUB-49): his identity, attributes, positions,
+ * personality and agent as he left, his season and career figures zero and no contract terms.
+ * `freeSince` is his first season without a club; one unsigned through it retires at its close.
+ */
+export type FreeAgent = Player & { freeSince: number };
+/**
  * A player's contract talk (→CLUB-26), opened when a transfer window opens: a renewal in his
  * contract's final season or an improved contract with at most three seasons left; his demand,
  * the floor he accepts at or above (demand × (1 − goodwill)) and the season day he asked.
@@ -468,13 +477,39 @@ export interface Staff {
   /** Seasons the owner chose at his last hiring or renewal (→STAFF-15); absent before rules 1.16. */
   term?: ContractTerm;
 }
+/**
+ * A staff hire candidate (→STAFF-49, CLUB-50): a free agent, or another club's holder of the post,
+ * who also costs his club compensation (웃돈).
+ */
+export type StaffCandidate = Staff & {
+  /** Signing fee paid to him. */
+  fee: string;
+  source: 'free' | 'club';
+  /** For another club's holder: his club and the compensation it receives. */
+  club?: string;
+  compensation?: string;
+};
+/**
+ * The staff markets (→STAFF-49): each post's free agents, and per club and post that changed
+ * holder how many it has had since its first and when he started; every other holder is derived.
+ */
+export interface StaffMarket {
+  /** Season and league round of the last refresh. */
+  year: number;
+  round: number;
+  free: Partial<Record<StaffRole, Staff[]>>;
+  clubs: Record<string, Partial<Record<StaffRole, [count: number, since: number]>>>;
+}
 export interface Academy {
   /** Academy prospects are not first-team players until promoted. */
   players: Player[];
   /** Last season year whose intake was settled. */
   intakeYear?: number;
 }
-/** A recruitment target is never a page offset or a scout-list index. */
+/**
+ * A recruitment target is never a page offset or a scout-list index: another club's player, or
+ * (`offer`) a free agent of the world's pool (→CLUB-49).
+ */
 export type WorldMarketTarget = { world: string } & (
   { kind: 'club'; playerId: string; clubId: string } | { kind: 'offer'; playerId: string }
 );
@@ -511,6 +546,22 @@ export interface WorldMarketOffer {
   /** Same-country or cross-country recruitment adaptation, retained on approach. */
   foreign: boolean;
 }
+/** Where a recruitment candidate is (→CLUB-50): another club's player, or a free agent. */
+export type CandidateSource = { kind: 'club'; club: string } | { kind: 'free' };
+/** A player the chief scout found within his reach (→CLUB-51), with the terms we would face. */
+export interface ScoutOffer {
+  /** On our division's market wage and the term he would sign (→CLUB-25). */
+  player: Player;
+  /** His club's asking transfer and loan fee; '0' for a free agent. */
+  fee: string;
+  loanFee: string;
+  /** A free agent signs at once, outside windows too, for no fee, and is never loaned. */
+  freeAgent: boolean;
+  available: boolean;
+  source: CandidateSource;
+  /** His club's country, or a free agent's nationality, is not ours (→PLAYER-11). */
+  foreign: boolean;
+}
 export interface WorldMarketPage {
   world: string;
   revision: number;
@@ -531,8 +582,8 @@ export interface TransferBid {
   fee: string;
   loan?: boolean;
   /**
-   * The market player and asking terms an `out` bid was made for (rules 1.15.0); a bid pending
-   * from before has none and finds him in its season's list.
+   * The player and asking terms an `out` bid was made for (rules 1.15.0); a bid pending from
+   * before has none and takes his current terms. Either way he is found by his id in the world.
    */
   offer?: { player: Player; fee: string; loanFee: string };
   year: number;
@@ -1236,8 +1287,15 @@ export interface World {
   buildNext?: { build: ClubBuild; name?: string };
   /** The manager market (→STAFF-17); absent until it first moves, when the season's four seed it. */
   managerMarket?: ManagerMarket;
+  /** The staff markets (→STAFF-49); absent until they first change, when the season seeds them. */
+  staffMarket?: StaffMarket;
   /** The chief scout's shortlist and the manager's requests (→CLUB-33); absent until first drawn. */
   shortlist?: Shortlist;
+  /**
+   * The free agents (→CLUB-49), at most FREE_AGENT_CAP: replaced whole on every change, never
+   * edited in place (`free-agents.ts` owns it); absent in a world made before the pool.
+   */
+  freeAgents?: FreeAgent[];
   manager: Manager;
   tactic: Tactic;
   fixtures: Fixture[];

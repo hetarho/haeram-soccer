@@ -7,6 +7,7 @@ import type {
   CareerRole,
   PersonCareer,
   Player,
+  Staff,
   World,
 } from '../../contracts/src/types';
 import { currentDay } from './calendar';
@@ -127,17 +128,64 @@ export function retainPerson(
   enrolled(w.people, person);
   return person;
 }
+/** The playing identity a staff record holds for what nobody observed: a middling midfielder. */
+const UNOBSERVED_PLAYER = { position: 'CM', grade: 3 } as const;
+/**
+ * A coach's, chief scout's or 단장's person record (→STAFF-50, HIST-14), made the first time he
+ * moves and kept under his staff ID, so his `person` names the same man. No record the world keeps
+ * shows him playing: he enters retired from playing, which keeps him out of the playing,
+ * retirement and coaching-entry walks, with middling grades for qualities nobody observed. With
+ * `held`, a club's derived holder (→STAFF-49) brings his time at that club, open from the season
+ * his holder count started (`since`) with no mentor, as nobody watched it; his move then closes
+ * it. Idempotent: an existing record is returned as it stands.
+ */
+export function retainStaffPerson(
+  w: World,
+  member: Pick<Staff, 'id' | 'name' | 'role' | 'since'> & { born: number },
+  held?: string,
+): PersonCareer {
+  const existing = resolvePerson(w, member.id);
+  if (existing) {
+    if (existing.name !== member.name || existing.born !== member.born)
+      throw new Error(sourceMessage('copy.person_careers.6fe742309a'));
+    return existing;
+  }
+  const person: PersonCareer = {
+    id: member.id,
+    name: member.name,
+    born: member.born,
+    position: UNOBSERVED_PLAYER.position,
+    professionalism: UNOBSERVED_PLAYER.grade,
+    qualities: {
+      understanding: UNOBSERVED_PLAYER.grade,
+      teaching: UNOBSERVED_PLAYER.grade,
+      judgement: UNOBSERVED_PLAYER.grade,
+    },
+    playing: 'retired',
+    employment: [],
+    mentors: [],
+  };
+  (w.people ??= {})[person.id] = person;
+  enrolled(w.people, person);
+  if (held) openEmployment(w, person.id, member.role, held, { year: member.since, day: 0 }, false);
+  return person;
+}
 function personOf(w: World, id: string) {
   const person = resolvePerson(w, id);
   if (!person) throw new Error(sourceMessage('copy.person_careers.8e330cf8cd'));
   return person;
 }
+/**
+ * Opens his job of `role` at `club` from `from`. One `observed` false began before anyone watched
+ * (`retainStaffPerson`): no manager is recorded beside him from then, as none was seen.
+ */
 export function openEmployment(
   w: World,
   id: string,
   role: CareerRole,
   club: string,
   from = careerDate(w),
+  observed = true,
 ): CareerEmployment {
   const person = personOf(w, id);
   if (!w.clubs.some((c) => c.id === club))
@@ -174,7 +222,7 @@ export function openEmployment(
   person.employment.push(job);
   if (isCoachingRole(role) && !coached) coachingIndexesEver.delete(w);
   employmentChanged(w, person, job, true);
-  syncMentorExposure(w, person, from);
+  if (observed) syncMentorExposure(w, person, from);
   person.club = club;
   if (role === 'player') {
     person.playing = 'active';

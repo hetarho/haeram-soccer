@@ -66,27 +66,27 @@ export const POLICY_INFO: Record<
       {
         level: 1,
         name: sourceMessage('copy.policy.98593ea624'),
-        summary: sourceMessage('copy.policy.4892c2a434'),
+        summary: sourceMessage('copy.policy.fb20092ed9'),
       },
       {
         level: 2,
         name: sourceMessage('copy.policy.931bb98a41'),
-        summary: sourceMessage('copy.policy.09ddc63a2f'),
+        summary: sourceMessage('copy.policy.b4e6d76212'),
       },
       {
         level: 3,
         name: sourceMessage('copy.stories.634269a095'),
-        summary: sourceMessage('copy.policy.9927636c77'),
+        summary: sourceMessage('copy.policy.556322e8cc'),
       },
       {
         level: 4,
         name: sourceMessage('copy.policy.8d07b643d0'),
-        summary: sourceMessage('copy.policy.2d821f1599'),
+        summary: sourceMessage('copy.policy.d1b6a5a03d'),
       },
       {
         level: 5,
         name: sourceMessage('copy.build.9fa10575b1'),
-        summary: sourceMessage('copy.policy.b46e1a3d87'),
+        summary: sourceMessage('copy.policy.14e387d3d7'),
       },
     ],
   },
@@ -186,27 +186,27 @@ export const POLICY_INFO: Record<
       {
         level: 1,
         name: sourceMessage('copy.BusinessWorkbench.72ea3d64ac'),
-        summary: sourceMessage('copy.policy.db80c19eec'),
+        summary: sourceMessage('copy.policy.0cb8edf028'),
       },
       {
         level: 2,
         name: sourceMessage('copy.policy.8c3b718161'),
-        summary: sourceMessage('copy.policy.02d608340d'),
+        summary: sourceMessage('copy.policy.1df7ee8b1b'),
       },
       {
         level: 3,
         name: sourceMessage('copy.policy.8445ec445f'),
-        summary: sourceMessage('copy.policy.76a3fc348d'),
+        summary: sourceMessage('copy.policy.3274c89593'),
       },
       {
         level: 4,
         name: sourceMessage('copy.policy.f153e0ac35'),
-        summary: sourceMessage('copy.policy.d6703e8548'),
+        summary: sourceMessage('copy.policy.63a1291ac9'),
       },
       {
         level: 5,
         name: sourceMessage('copy.policy.da0ee66875'),
-        summary: sourceMessage('copy.policy.697e18818d'),
+        summary: sourceMessage('copy.policy.d0c15ba607'),
       },
     ],
   },
@@ -245,9 +245,6 @@ export interface PolicyEffects {
   /** 해외 마케팅's fan growth per settled round and 주변 투자's gate demand. */
   fanGrowth: number;
   gateBoost: number;
-  /** 해외 스카우트망's extra candidates and potential. */
-  scoutCandidates: number;
-  scoutPotential: number;
   /** The targets the rows set for 지역 기반 and 글로벌 인지도 (→ECON-34), each at most 100. */
   baseTargets: { local: number; global: number };
   /** 해외 투어: 0 none, 1 short, 2 long. */
@@ -257,10 +254,11 @@ export interface PolicyEffects {
   academyIntake: number;
   academyPotential: number;
   academyGrowth: number;
+  /** The scout's search (→CLUB-51): the ages and abilities he looks at, and potential first. */
   offer: {
     ability: [number, number];
     age: [number, number];
-    potentialBonus: number;
+    potentialFirst: boolean;
   };
 }
 
@@ -273,8 +271,6 @@ export const SUPPORT_EXPENSES = [0.9, 0.95, 1, 1.1, 1.2];
 const INVEST_UNITS = [0, 1, 2.5, 4.5, 7];
 const GLOBAL_FANS = [0, 0.004, 0.008, 0.013, 0.02];
 const LOCAL_GATE = [0, 0.02, 0.04, 0.06, 0.08];
-const SCOUT_CANDIDATES = [0, 1, 2, 3, 4];
-const SCOUT_POTENTIAL = [0, 0, 1, 1, 2];
 /** The base a main row aims at, and what its second row adds (→ECON-34). */
 const MAIN_TARGET = [0, 20, 40, 65, 100];
 const SIDE_TARGET = [0, 10, 20, 30, 45];
@@ -283,13 +279,13 @@ const ACADEMY_UNITS = [0, 1, 2.5, 4.5, 7];
 const ACADEMY_INTAKE = [0, 0, 1, 1, 2];
 const ACADEMY_POTENTIAL = [0, 3, 5, 8, 11];
 const ACADEMY_GROWTH = [1, 1.1, 1.2, 1.3, 1.45];
-/** Level 3 is exactly the pre-policy transfer market. */
+/** 영입 기조's search by level (→ECON-16); transfer fees are the same at every level. */
 const OFFERS: PolicyEffects['offer'][] = [
-  { ability: [35, 65], age: [17, 21], potentialBonus: 12 },
-  { ability: [38, 75], age: [18, 25], potentialBonus: 6 },
-  { ability: [40, 85], age: [18, 30], potentialBonus: 0 },
-  { ability: [50, 88], age: [23, 31], potentialBonus: 0 },
-  { ability: [60, 92], age: [26, 33], potentialBonus: 0 },
+  { ability: [35, 65], age: [17, 21], potentialFirst: true },
+  { ability: [38, 75], age: [18, 25], potentialFirst: true },
+  { ability: [40, 85], age: [18, 30], potentialFirst: false },
+  { ability: [50, 88], age: [23, 31], potentialFirst: false },
+  { ability: [60, 92], age: [26, 33], potentialFirst: false },
 ];
 
 export function policyOf(w: World): ClubPolicy {
@@ -318,8 +314,6 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     investUnits: INVEST_UNITS[local] + INVEST_UNITS[global] + INVEST_UNITS[scout],
     fanGrowth: GLOBAL_FANS[global],
     gateBoost: LOCAL_GATE[local],
-    scoutCandidates: SCOUT_CANDIDATES[scout],
-    scoutPotential: SCOUT_POTENTIAL[scout],
     baseTargets: {
       local: MAIN_TARGET[local],
       global: Math.min(100, MAIN_TARGET[global] + SIDE_TARGET[scout]),
@@ -332,7 +326,7 @@ export function policyEffects(policy: ClubPolicy): PolicyEffects {
     offer: {
       ability: [offer.ability[0], offer.ability[1]],
       age: [offer.age[0], offer.age[1]],
-      potentialBonus: offer.potentialBonus,
+      potentialFirst: offer.potentialFirst,
     },
   };
 }

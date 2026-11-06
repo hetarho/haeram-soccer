@@ -9,6 +9,7 @@ import { movePerson } from './npc-continuity';
 import type {
   Club,
   Player,
+  ScoutOffer,
   TransferBid,
   TransferStance,
   World,
@@ -46,7 +47,7 @@ import { fanMoodTransfer } from './fan-mood';
 import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
-import { transferOffers } from './ops-squad';
+import { locateOffer, transferOffers } from './scout-search';
 import { financeStance } from './direction';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
@@ -112,32 +113,29 @@ function acceptanceChance(w: World, fee: string, asking: string) {
     0.95,
   );
 }
-type MarketOffer = ReturnType<typeof transferOffers>[number];
+type MarketOffer = ScoutOffer;
 /**
- * The player and terms a bid was made for, whatever the list shows meanwhile (→CLUB-14); a bid
- * pending from before 1.15.0 has no `offer` and finds him in its season's list as it did then.
+ * The player and terms a bid was made for, whatever the list shows meanwhile (→CLUB-14), found by
+ * his id in the world: at the club the bid names, else wherever he is, else in the free-agent pool
+ * (→CLUB-50). A bid without pinned terms (before 1.15.0) takes his current ones. Gone — a generated
+ * candidate of an older save among them — the pinned record stays, no longer available.
  */
 function marketOffer(w: World, bid: TransferBid): MarketOffer | undefined {
-  if (!bid.offer)
-    return transferOffers(w, bid.year, true).find((o) => o.player.id === bid.playerId);
+  const current = locateOffer(w, bid.playerId, bid.club);
+  if (!bid.offer) return current;
   const { player, fee, loanFee } = bid.offer;
-  const current = bid.club
-    ? worldMarketOffer(w, { world: w.id, kind: 'club', clubId: bid.club, playerId: player.id })
-    : undefined;
   return {
     // Older pinned offers may lack the returning player's own academy qualification.
     player: current?.player.graduate ? { ...player, graduate: true } : player,
     fee,
     loanFee,
     freeAgent: false,
-    available:
-      !w.players.some(
-        (owned) => owned.id === player.id && (!bid.club || owned.status === 'active'),
-      ) &&
-      (!bid.club || !!current?.available),
+    available: !!current?.available,
+    source: bid.club ? { kind: 'club', club: bid.club } : (current?.source ?? { kind: 'free' }),
+    foreign: current?.foreign ?? false,
   };
 }
-function askingFee(offer: MarketOffer, loan?: boolean) {
+function askingFee(offer: Pick<MarketOffer, 'fee' | 'loanFee'>, loan?: boolean) {
   return loan ? offer.loanFee : offer.fee;
 }
 function signingBlocker(w: World, offer: MarketOffer | undefined, fee: string, loan = false) {
@@ -170,9 +168,12 @@ function completeSigning(w: World, bid: TransferBid, offer: MarketOffer, fee: st
     if (w.players[prior].graduate) p.graduate = true;
   }
   debit(w, fee);
-  // A loan keeps his club's contract; a transfer signs one with its own clauses (→CLUB-29).
-  if (bid.loan) p.loanUntil = w.year + 1;
-  else p.clauses = signingClauses(w, p);
+  // A loan keeps his club's contract, its clauses his club's; a transfer signs one with its own
+  // clauses (→CLUB-29).
+  if (bid.loan) {
+    p.loanUntil = w.year + 1;
+    delete p.clauses;
+  } else p.clauses = signingClauses(w, p);
   if (prior >= 0) w.players[prior] = p;
   else w.players.push(p);
   noteSigning(w, p, bid.club);
@@ -257,10 +258,19 @@ export function placeBid(
   loan = false,
   staff?: TransferBid['staff'],
 ): void {
-  const offer =
-    typeof candidate === 'number' ? transferOffers(w)[candidate] : worldMarketOffer(w, candidate);
+  const scouted = typeof candidate === 'number' ? transferOffers(w)[candidate] : undefined;
+  const offer = typeof candidate === 'number' ? scouted : worldMarketOffer(w, candidate);
   if (!offer?.available) throw new Error(sourceMessage('copy.ops_squad.c94b14b4dc'));
   if (offer.freeAgent) throw new Error(sourceMessage('copy.transfers.79ea9f1dde'));
+  // The selling club, whichever list named him: a bid concerns him there (→CLUB-14).
+  const club =
+    typeof candidate === 'number'
+      ? scouted?.source.kind === 'club'
+        ? scouted.source.club
+        : undefined
+      : candidate.kind === 'club'
+        ? candidate.clubId
+        : undefined;
   if (
     (w.bids || []).some((b) => b.direction === 'out' && b.playerId === offer.player.id && isOpen(b))
   )
@@ -290,9 +300,7 @@ export function placeBid(
     fee,
     ...(loan ? { loan: true } : {}),
     offer: { player: structuredClone(offer.player), fee: offer.fee, loanFee: offer.loanFee },
-    ...(typeof candidate !== 'number' && candidate.kind === 'club'
-      ? { club: candidate.clubId }
-      : {}),
+    ...(club ? { club } : {}),
     year: w.year,
     day,
     due: Math.min(day + wait, window.until ?? day + wait),
@@ -396,19 +404,9 @@ export interface BidDetails {
 /** Read model for showing bids: newest first, open negotiations before closed ones. */
 export function bidBoard(w: World): BidDetails[] {
   const open = transferWindow(w).open;
-  const offers = new Map<number, MarketOffer[]>();
-  const offersOf = (year: number) => {
-    if (!offers.has(year)) offers.set(year, transferOffers(w, year, true));
-    return offers.get(year)!;
-  };
   return (w.bids || [])
     .map((bid, index) => {
-      const offer =
-        bid.direction !== 'out'
-          ? undefined
-          : bid.offer
-            ? marketOffer(w, bid)
-            : offersOf(bid.year).find((o) => o.player.id === bid.playerId);
+      const offer = bid.direction !== 'out' ? undefined : marketOffer(w, bid);
       const player =
         bid.direction === 'in' ? w.players.find((p) => p.id === bid.playerId) : offer?.player;
       return {
@@ -635,6 +633,14 @@ function settleBids(w: World, open: boolean) {
     } else if (bid.direction === 'out') {
       const signed = activePlayers(w).find((x) => x.id === bid.playerId);
       if (signed) expire(w, bid, signed.name, sourceMessage('copy.transfers.0a5b5b015e'));
+      // A bid for a player the world no longer holds there lapses, nothing paid (→CLUB-50).
+      else if (!locateOffer(w, bid.playerId, bid.club))
+        expire(
+          w,
+          bid,
+          bid.offer?.player.name || sourceMessage('copy.EventCenter.42bd764e17'),
+          sourceMessage('copy.transfers.0c573da036'),
+        );
       else if (!open)
         expire(
           w,

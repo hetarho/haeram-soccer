@@ -85,13 +85,16 @@ describe('grid playback', () => {
   });
 
   it('puts the receiver on the ball where a pre-feature pass lands (MATCH-12)', () => {
-    const at = new Map(frames.flatMap((f) => f.motion!.map((m) => [m.elapsedSeconds, m])));
+    // By period too: a half's last pass lands at the second at which the next half kicks off.
+    const at = new Map(
+      frames.flatMap((f) => f.motion!.map((m) => [`${f.period}:${m.elapsedSeconds}`, m])),
+    );
     let landed = 0,
       passes = 0;
     for (const e of result.trace!) {
       if (e.action !== 'pass' || e.outcome !== 'complete' || e.receiver === undefined) continue;
       passes++;
-      const sample = at.get(e.elapsed);
+      const sample = at.get(`${e.period}:${e.elapsed}`);
       if (!sample) continue;
       const receiver = sample.players[e.side].find(
         (p) => p.id === setup.rosters[e.side][e.receiver!]!.id,
@@ -213,7 +216,13 @@ describe('grid playback', () => {
   });
 
   it('averages pace to 1 and slows minutes with shots and set pieces', () => {
+    // A match with a quiet minute too (every touch from the side's own half, no set piece), which
+    // most matches lack: the first replay whose minutes take all three paces.
+    let frames = watch('pace-1').frames;
+    for (let n = 2; n <= 40 && new Set(frames.map((f) => f.pace)).size < 3; n++)
+      frames = watch(`pace-${n}`).frames;
     const paces = frames.map((f) => f.pace);
+    expect(new Set(paces).size).toBe(3);
     expect(paces.reduce((a, b) => a + b, 0) / paces.length).toBeCloseTo(1, 9);
     const busy = frames.filter((f) =>
       f.events!.some((e) => e.outcome || e.restart === 'corner' || e.restart === 'penalty'),
@@ -396,16 +405,19 @@ describe('candidate playback on the match clock (→MATCH-12, WEB-32)', () => {
 
   it("ends each period's last action inside its final minute, so it is drawn", () => {
     let periods = 0;
-    // Revision 10 (T596, T599, T600): this fixture is level after 90 minutes, so the timing
-    // assertions below cover both extra-time periods too (candidate-et-10 on revision 9 with T580's
-    // pass side, candidate-et-5 before it and on 8, candidate-et-1 on revision 7, candidate-et-4 on 6).
-    const extraTimeId = 'candidate-et-7';
-    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', extraTimeId]) {
-      const extraTime = id === extraTimeId;
+    // A tie level after 90 minutes, so the timing assertions below cover both extra-time periods
+    // too: the first `candidate-et-<n>` that goes to extra time (the fixture moves with the model
+    // and the squads: candidate-et-7 on revision 10 before free agents, candidate-et-10 on 9).
+    let tie: { id: string; played: ReturnType<typeof watch> } | undefined;
+    for (let n = 1; n <= 30 && !tie; n++) {
+      const played = watch(`candidate-et-${n}`, true, { awayGoals: false });
+      if (played.result.record.regulation) tie = { id: `candidate-et-${n}`, played };
+    }
+    expect(tie).toBeDefined();
+    for (const id of ['candidate-1', 'candidate-end-2', 'candidate-end-3', tie!.id]) {
+      const extraTime = id === tie!.id;
       const { result, frames } =
-        id === 'candidate-1'
-          ? watched
-          : watch(id, true, extraTime ? { awayGoals: false } : undefined);
+        id === 'candidate-1' ? watched : extraTime ? tie!.played : watch(id, true);
       expect(!!result.record.regulation).toBe(extraTime);
       // The clock holds whole minutes: (90 or 120 + added) × 60 exactly.
       const minutes = (extraTime ? 120 : 90) + result.record.added!.reduce((a, b) => a + b, 0);

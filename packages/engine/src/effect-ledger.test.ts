@@ -9,9 +9,9 @@ import { talkGoodwill } from './contracts';
 import { effectLedger, type EffectId, type LedgerEffect } from './effect-ledger';
 import { gateProjection, operatingCosts } from './finance';
 import { moraleBaseline } from './morale';
-import { transferOffers } from './ops-squad';
 import { overall } from './player-state';
-import { policyOf } from './policy';
+import { policyEffects, policyOf } from './policy';
+import { scoutReach } from './scout-search';
 import { staffEffects } from './staff';
 import { developmentOutlook } from './training';
 
@@ -131,7 +131,12 @@ describe('effectLedger', () => {
       expect(effect('intakePotential').value).toBe(
         staffEffects(w).academyQuality + academyPotentialBonus(w),
       );
-      expect(effect('candidates').value).toBe(transferOffers(w).length);
+      const reach = scoutReach(w);
+      expect(effect('scoutPerLine').value).toBe(reach.perLine);
+      expect(effect('scoutAbroad').value).toBe(reach.abroad.length);
+      expect(effect('scoutAbility').value).toBe(
+        reach.ability[0] - policyEffects(policyOf(w)).offer.ability[0],
+      );
       expect(effect('attendance').value).toBe(gateProjection(w).attendanceHigh);
       expect(effect('annualCosts').amount).toBe(operatingCosts(w).annual);
       const ordinary = w.players.find((player) => overall(player) < 70)!;

@@ -59,6 +59,7 @@ export * from './ops-squad';
 export * from './ops-staff';
 export * from './settlement';
 export * from './managerMarket';
+export * from './club-staff';
 
 export * from './economy';
 export * from './europe';

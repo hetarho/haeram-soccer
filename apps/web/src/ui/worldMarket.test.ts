@@ -7,6 +7,7 @@ import {
   marketLeagueKey,
   marketLeagues,
   readMarket,
+  signedFreeAgentTarget,
   toggleMarketComparison,
 } from './worldMarket';
 
@@ -68,6 +69,21 @@ describe('market query and stable selection transformations', () => {
     expect(toggleMarketComparison(selected, target('c'))).toEqual([target('b'), target('c')]);
     expect(toggleMarketComparison(selected, target('a'))).toEqual([target('b')]);
     expect(toggleMarketComparison(selected, target('a', 'two'))).toEqual([target('a', 'two')]);
+  });
+  it('reads a signed free agent with our club and keeps every other target', () => {
+    const free = (playerId: string, world = 'one'): WorldMarketTarget => ({
+      world,
+      kind: 'offer',
+      playerId,
+    });
+    expect(signedFreeAgentTarget(free('a'), free('a'), 'ours')).toEqual({
+      world: 'one',
+      kind: 'club',
+      clubId: 'ours',
+      playerId: 'a',
+    });
+    for (const kept of [free('b'), free('a', 'two'), target('a'), undefined])
+      expect(signedFreeAgentTarget(kept, free('a'), 'ours')).toBe(kept);
   });
   it('derives unique represented league identities without reading any roster', () => {
     const clubs = [

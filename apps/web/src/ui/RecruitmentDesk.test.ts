@@ -154,6 +154,9 @@ const submit = () =>
   )!;
 const ids = (markup: string) =>
   [...markup.matchAll(/data-candidate-id="([^"]+)"/g)].map((match) => match[1]);
+/** Each row's source line (→CLUB-50), in row order. */
+const sources = (markup: string) =>
+  [...markup.matchAll(/data-testid="market-source">(.*?)<\/small>/g)].map((match) => match[1]);
 
 beforeEach(() => {
   for (const key of Object.keys(choices)) delete choices[key];
@@ -188,8 +191,12 @@ describe('paged whole-world recruitment desk', () => {
     expect(ids(markup)).toEqual(['external']);
     expect(markup).toContain('총 101명');
     expect(markup).toContain('1 / 3 페이지');
-    expect(markup).toContain('Foreign Club');
-    expect(markup).toContain('스페인 1부');
+    // Where he is (→CLUB-50): the world's club as a link, its division, and 해외 for abroad.
+    const [source] = sources(markup);
+    expect(source).toContain('data-source="club"');
+    expect(source).toContain('aria-label="foreign 팀 정보"');
+    expect(source).toContain('<span>foreign</span></button> · 스페인 1부');
+    expect(source).toContain('해외');
     expect(markup).toContain('aria-label="External Player 상세 보기"');
     expect(markup).toContain('aria-label="영입 필터"');
     expect(markup).toContain('aria-label="이적 협상 · 0건 진행 중"');
@@ -215,6 +222,8 @@ describe('paged whole-world recruitment desk', () => {
       target: { ...offer.target, playerId: `external-${index}` },
       own: index === 1,
       recommended: index === 2,
+      // The last a free agent of the world's pool: no club, no fee (→CLUB-49).
+      ...(index === 3 ? { freeAgent: true, source: undefined, fee: '0', loanFee: '0' } : {}),
     }));
     reads.page = { ...reads.page!, items: offers };
     w.bids = [
@@ -226,6 +235,12 @@ describe('paged whole-world recruitment desk', () => {
     expect(markup).toContain('우리 선수');
     expect(markup).toContain('스카우트 추천');
     expect(markup).toContain('협상 중');
+    const lines = sources(markup);
+    expect(lines).toHaveLength(4);
+    for (const line of lines.slice(0, 3)) expect(line).toContain('<span>foreign</span></button>');
+    expect(lines[3]).toContain('data-source="free"');
+    expect(lines[3]).toContain('자유계약 · 이적료 없음');
+    expect(lines[3]).not.toContain('<button');
     for (const [index, candidate] of offers.entries()) {
       const [position, line, family] = families[index];
       expect(markup).toContain(`data-candidate-id="${candidate.player.id}" data-line="${line}"`);
@@ -240,12 +255,12 @@ describe('paged whole-world recruitment desk', () => {
       expect(name).toContain(`">${family} </span>${position}</span>`);
       expect(name).not.toMatch(/aria-hidden|tabindex|<a |<button[^>]*>.*<button/);
       const metadata = elements(inspector).find((node) => node.type === 'small')!;
-      expect(metadata.props.title).toBe('Foreign Club · 스페인 1부');
-      // The badge carries the code, so the metadata line starts with the age.
+      // The badge carries the code, so the metadata line starts with the age; the source sits
+      // outside the button, where his club can be a link.
       expect(renderToStaticMarkup(metadata)).toMatch(
         new RegExp(`^<small[^>]*>${w.year - candidate.player.born}세`),
       );
-      expect(renderToStaticMarkup(metadata)).toContain('Foreign Club');
+      expect(renderToStaticMarkup(metadata)).not.toContain('foreign');
       (inspector.props.onClick as () => void)();
       expect(choices['world-market-viewing']).toEqual(candidate.target);
       expect(control(`${candidate.player.name} 비교`)).toBeDefined();
@@ -414,6 +429,10 @@ describe('paged whole-world recruitment desk', () => {
     const markup = render();
     // The bid sheet repeats only the head and the verdict above its own fee steps (→WEB-109).
     expect(markup).toContain('직접 발굴');
+    // The head names the selling club as a link, its division and its fee (→CLUB-50).
+    const head = markup.match(/data-testid="candidate-source">(.*?)<\/small>/)![1];
+    expect(head).toContain('aria-label="foreign 팀 정보"');
+    expect(head).toMatch(/· 스페인 1부 · 이적료 <span[^>]*>/);
     expect(markup).toContain('aria-label="스카우트 판정"');
     expect(markup).not.toContain('<dt>연봉</dt>');
     expect(markup).not.toContain('<span>우리 팀에서</span>');
@@ -505,7 +524,9 @@ describe('paged whole-world recruitment desk', () => {
       source: undefined,
       target: { world: w.id, kind: 'offer', playerId: offer.player.id },
     };
-    render();
+    const head = render().match(/data-testid="candidate-source">(.*?)<\/small>/)![1];
+    expect(head).toContain('자유계약 · 이적료 없음');
+    expect(head).not.toContain('<button');
     const card = elements(tree).find((node) => node.props.candidate)!;
     (card.props.onRecruit as (loan: boolean) => void)(false);
     expect(client.command).toHaveBeenCalledWith(

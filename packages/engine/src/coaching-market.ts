@@ -14,6 +14,7 @@ import { coachWage, moneyCountry } from './staff';
 import { coachSeason } from './coaching';
 import { hasOwner } from './owner';
 import { currency } from '../../catalogs/src/index';
+import { nameNextHolder } from './club-staff';
 
 /** Exact contract endings are processed on days and after skipped summer, without inventing wages paid. */
 export function settleNpcCoaching(w: World, grow = false) {
@@ -59,7 +60,11 @@ function firstContractEnd(
   return first;
 }
 export const coachingMarketPass = (draw: number) => draw < 0.25;
-/** One person/date draw, then one suitable vacancy; no per-club attempts and no automatic renewal. */
+/**
+ * One person/date draw, then his department's post at one club nobody owns (→STAFF-43): he
+ * replaces its holder, who is derived (→STAFF-49), so every post can take him except one already
+ * held by a placed former player; no per-club attempts and no automatic renewal.
+ */
 export function refreshCoachingMarket(
   w: World,
   draw: (person: PersonCareer, at: CareerDate) => number = (person, at) =>
@@ -72,24 +77,26 @@ export function refreshCoachingMarket(
   const clubs = w.clubs
     .filter((club) => club.id !== w.playerClub)
     .sort((a, b) => compareIds(a.id, b.id));
-  const occupied = new Set(activeCoachingEmployment(w).map(({ job }) => `${job.club}:${job.role}`));
-  const vacancies = new Map<string, { clubs: typeof clubs; next: number }>();
+  const placed = new Set(activeCoachingEmployment(w).map(({ job }) => `${job.club}:${job.role}`));
+  const posts = new Map<string, { clubs: typeof clubs; next: number }>();
   // Only someone with a coaching profile can be placed (T450).
   for (const person of profiledCoaches(w)
     .filter((person) => coachingEntryReady(person) && person.coaching)
     .sort((a, b) => compareIds(a.id, b.id))) {
     if (!coachingMarketPass(draw(person, at))) continue;
     const coaching = person.coaching!;
-    let available = vacancies.get(coaching.role);
+    let available = posts.get(coaching.role);
     if (!available) {
       available = {
-        clubs: clubs.filter((club) => !occupied.has(`${club.id}:${coaching.role}`)),
+        clubs: clubs.filter((club) => !placed.has(`${club.id}:${coaching.role}`)),
         next: 0,
       };
-      vacancies.set(coaching.role, available);
+      posts.set(coaching.role, available);
     }
     const club = available.clubs[available.next];
     if (!club) continue;
+    // The holder he replaces leaves the post; the club names its next for when he goes.
+    nameNextHolder(w, club.id, coaching.role);
     const job = openEmployment(w, person.id, coaching.role, club.id, at);
     job.contractUntil = addCareerYears(at, 2);
     // Before the takeover a coach is paid in his club's money (→WORLD-13).
@@ -97,7 +104,7 @@ export function refreshCoachingMarket(
     job.wage = code ? coachWage(w, coaching.ability, code) : coachWage(w, coaching.ability);
     job.currency = code ? currency(code, w.year).code : w.currency;
     job.grownThrough = w.year;
-    occupied.add(`${club.id}:${coaching.role}`);
+    placed.add(`${club.id}:${coaching.role}`);
     available.next++;
   }
 }

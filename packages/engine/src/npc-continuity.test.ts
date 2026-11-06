@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { operate } from './index';
+import { operate, transferOffers } from './index';
 import { npcSquad, squad } from './world';
 import { materializePeople, movePerson, returnLoan } from './npc-continuity';
 import { coachingGrade } from './aptitude';
@@ -71,7 +71,8 @@ describe('selected NPC continuity', () => {
   it('records external recruitment without inventing an old club or historical appearances', () => {
     const w = world();
     w.cash = '9999999999';
-    operate(w, { type: 'recruit', candidate: 0 });
+    // A free agent of the pool: no club to record as his seller.
+    operate(w, { type: 'recruit', candidate: transferOffers(w).findIndex((o) => o.freeAgent) });
     const player = w.players.at(-1)!;
     expect(w.people![player.id]).toMatchObject({
       club: w.playerClub,

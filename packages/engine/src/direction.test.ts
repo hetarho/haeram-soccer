@@ -21,6 +21,7 @@ import {
   overall,
   ownStarters,
   promotionFloor,
+  releaseStaff,
   renewalDay,
   saleAllowed,
   saleBar,
@@ -171,7 +172,7 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     handTo(w, 3);
     operate(w, { type: 'release-staff', role: 'attack' });
     expect(w.settings).toEqual(staffAuthority(3));
-    w.staff = w.staff!.filter((member) => member.role !== 'scout');
+    releaseStaff(w, 'scout');
     dailyStaff(w);
     expect(w.staff!.some((member) => member.role === 'scout')).toBe(true);
     expect(w.staff!.some((member) => member.role === 'attack')).toBe(true);

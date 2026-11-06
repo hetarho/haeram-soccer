@@ -188,8 +188,11 @@ function freeAgent(w: World, serial: number): MarketManager {
 }
 const signingFee = (w: World, m: Manager) => staffQuote(w, 40 + m.ability);
 
-/** The clubs whose managers we may hire away: our league and the division above. */
-function poachable(w: World) {
+/**
+ * The clubs whose managers we may hire away: our league and the division above. The staff
+ * markets hire from the same clubs (→STAFF-49).
+ */
+export function poachable(w: World) {
   const own = clubOf(w);
   const league = ownLeagueClubs(w).filter((club) => club.id !== own.id);
   const above =

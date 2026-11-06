@@ -30,6 +30,24 @@ export function toggleMarketComparison(current: WorldMarketTarget[], target: Wor
     : [...retained.slice(-1), target];
 }
 
+/**
+ * A free agent signed leaves the pool (→CLUB-49) and is our club's player from then on, so a
+ * target still naming him as a free agent reads him with us, where his card reports the signing
+ * as complete; every other target is kept.
+ */
+export function signedFreeAgentTarget<T extends WorldMarketTarget | undefined>(
+  target: T,
+  signed: WorldMarketTarget,
+  club: string,
+): T | WorldMarketTarget {
+  return target?.kind === 'offer' &&
+    signed.kind === 'offer' &&
+    target.world === signed.world &&
+    target.playerId === signed.playerId
+    ? { world: target.world, kind: 'club', clubId: club, playerId: target.playerId }
+    : target;
+}
+
 export const marketLeagueKey = (league: NonNullable<MarketQuery['league']>) =>
   `${league.country}.${league.tier}.${league.group}`;
 export function marketLeagues(clubs: readonly NonNullable<MarketQuery['league']>[]) {

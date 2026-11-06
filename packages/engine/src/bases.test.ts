@@ -21,6 +21,9 @@ import {
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
+import { LINES } from '../../contracts/src/player';
+import { lineOfPlayer } from './player-state';
+import { scoutReach } from './scout-search';
 
 /** The club on the pre-feature path: its bases, not the match model, are the subject. */
 function world(policy?: Partial<ClubPolicy>) {
@@ -128,10 +131,21 @@ describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
     expect(baseEffects(global)).toMatchObject({ intakePotential: 3, intake: 0 });
   });
 
-  it('widens and lifts the transfer list through 해외 스카우트망', () => {
-    const plain = transferOffers(world()),
-      scouted = transferOffers(world({ globalScouting: 5 }));
-    expect(scouted).toHaveLength(plain.length + 4);
+  it('reaches abroad through 해외 스카우트망 and keeps places there, the count the scout’s', () => {
+    const home = world(),
+      wide = world({ globalScouting: 5 });
+    const plain = transferOffers(home),
+      scouted = transferOffers(wide);
+    // The network searches the other seven top flights (→CLUB-51); how many he lists is his.
+    expect(scoutReach(home).abroad).toEqual([]);
+    expect(scoutReach(wide).abroad).toHaveLength(7);
+    expect(scouted).toHaveLength(plain.length);
+    expect(plain.some((offer) => offer.foreign)).toBe(false);
+    const places = Math.min(2, scoutReach(wide).perLine);
+    for (const line of LINES)
+      expect(
+        scouted.filter((offer) => offer.foreign && lineOfPlayer(offer.player) === line).length,
+      ).toBeGreaterThanOrEqual(places);
     expect(canonical(transferOffers(world({ globalScouting: 1 })))).toBe(canonical(plain));
   });
 

@@ -55,9 +55,9 @@ export const EFFECT_NAMES: Record<EffectId, SourceMessageId> = {
   intake: 'office.effect.intake',
   intakeAbility: 'office.effect.intakeAbility',
   intakePotential: 'office.effect.intakePotential',
-  candidates: 'office.effect.candidates',
-  candidatePotential: 'office.effect.candidatePotential',
-  candidateAbility: 'office.effect.candidateAbility',
+  scoutPerLine: 'office.effect.scoutPerLine',
+  scoutAbroad: 'office.effect.scoutAbroad',
+  scoutAbility: 'office.effect.scoutAbility',
   transferFee: 'office.effect.transferFee',
   bidAcceptance: 'office.effect.bidAcceptance',
   wage: 'office.effect.wage',
@@ -86,9 +86,9 @@ export const EFFECT_NOTES: Record<EffectId, SourceMessageId> = {
   intake: 'office.effect.intake.note',
   intakeAbility: 'office.effect.intakeAbility.note',
   intakePotential: 'office.effect.intakePotential.note',
-  candidates: 'office.effect.candidates.note',
-  candidatePotential: 'office.effect.candidatePotential.note',
-  candidateAbility: 'office.effect.candidateAbility.note',
+  scoutPerLine: 'office.effect.scoutPerLine.note',
+  scoutAbroad: 'office.effect.scoutAbroad.note',
+  scoutAbility: 'office.effect.scoutAbility.note',
   transferFee: 'office.effect.transferFee.note',
   bidAcceptance: 'office.effect.bidAcceptance.note',
   wage: 'office.effect.wage.note',
@@ -123,6 +123,9 @@ const times = (value: number) => `×${decimal(value, 2)}`;
 const plain = (value: number) => decimal(value, Number.isInteger(value) ? 0 : 1);
 const plus = (value: number) => signed(value, Number.isInteger(value) ? 0 : 1);
 const people = (count: string) => displayMessage('office.value.people', { count });
+/** A count as its effect counts: countries for the scout's reach abroad, people otherwise. */
+const counted = (effect: LedgerEffect, count: string) =>
+  effect.id === 'scoutAbroad' ? displayMessage('office.value.countries', { count }) : people(count);
 
 /** A value as the office lists it; money effects render their `amount` instead. */
 export function effectValueText(effect: LedgerEffect, value = effect.value): string {
@@ -140,7 +143,7 @@ export function effectValueText(effect: LedgerEffect, value = effect.value): str
     case 'count':
       return effect.id === 'marketingFans'
         ? displayMessage('office.value.perRound', { count: number(value) })
-        : people(number(value));
+        : counted(effect, number(value));
     case 'score':
       return effect.current === undefined
         ? plain(value)
@@ -168,7 +171,7 @@ export function factorValueText(effect: LedgerEffect, factor: EffectFactor): str
           })
         : `${plus(Number(factor.value.toFixed(2)))}%`;
     case 'count':
-      return standard || factor.unit ? people(number(factor.value)) : people(signed(factor.value));
+      return counted(effect, standard || factor.unit ? number(factor.value) : signed(factor.value));
     default:
       return standard ? plain(factor.value) : plus(Number(factor.value.toFixed(2)));
   }
@@ -182,7 +185,7 @@ export function contributionText(effect: LedgerEffect, value: number): string {
     case 'percent':
       return effectValueText(effect, value);
     case 'count':
-      return people(signed(value));
+      return counted(effect, signed(value));
     default:
       return plus(Number(value.toFixed(2)));
   }
@@ -446,9 +449,9 @@ export function openEffectDestination(destination: EffectDestination) {
 const AREA_EFFECTS: Record<InvestmentArea, readonly EffectId[]> = {
   firstTeam: ['growth', 'recovery', 'goodwill', 'morale'],
   youth: ['academyGrowth', 'intake', 'intakePotential', 'intakeAbility'],
-  coaches: ['skills', 'youthGrowth', 'recovery', 'academyGrowth', 'candidates', 'transferFee'],
+  coaches: ['skills', 'youthGrowth', 'recovery', 'academyGrowth', 'scoutPerLine', 'transferFee'],
   stadium: [],
-  scouting: ['candidates', 'candidatePotential'],
+  scouting: ['scoutPerLine', 'scoutAbroad'],
   community: ['localBase', 'globalReach'],
   finance: ['localSponsor', 'wage'],
   identity: [],

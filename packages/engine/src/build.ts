@@ -15,10 +15,17 @@ export interface BuildEffects {
   academyPotential: number;
   /** Round growth of first-team players aged 21 or younger. */
   youthGrowth: number;
-  /** Transfer market candidates, potential and ability. */
-  marketCandidates: number;
-  marketPotential: number;
-  marketAbility: number;
+  /**
+   * The chief scout's search (→CLUB-51): players listed per line, the shift of the ability band
+   * at both ends, the countries abroad he adds; flags (above 0 = on) for ranking potential before
+   * ability, never doing so, and searching nobody abroad.
+   */
+  scoutPerLine: number;
+  scoutAbilityShift: number;
+  scoutAbroadExtra: number;
+  scoutPotentialFirst: number;
+  scoutNeverPotentialFirst: number;
+  scoutNoAbroad: number;
   /** Daily chance multiplier of another club's offer, and the fee every sale earns. */
   incomingBids: number;
   saleFee: number;
@@ -43,9 +50,12 @@ export const NEUTRAL_BUILD: Readonly<BuildEffects> = Object.freeze({
   academyIntake: 0,
   academyPotential: 0,
   youthGrowth: 1,
-  marketCandidates: 0,
-  marketPotential: 0,
-  marketAbility: 0,
+  scoutPerLine: 0,
+  scoutAbilityShift: 0,
+  scoutAbroadExtra: 0,
+  scoutPotentialFirst: 0,
+  scoutNeverPotentialFirst: 0,
+  scoutNoAbroad: 0,
   incomingBids: 1,
   saleFee: 1,
   sponsor: 1,
@@ -92,7 +102,7 @@ export const BUILD_CARDS: {
   youth: {
     homegrown: {
       label: sourceMessage('copy.build.7632514195'),
-      effects: { academyIntake: 1, academyPotential: 3, marketCandidates: -1 },
+      effects: { academyIntake: 1, academyPotential: 3, scoutPerLine: -1 },
     },
     partnership: {
       label: sourceMessage('copy.build.ec297d9d41'),
@@ -110,19 +120,19 @@ export const BUILD_CARDS: {
   scouting: {
     data: {
       label: sourceMessage('copy.build.8ac1576fda'),
-      effects: { marketPotential: 3, marketCandidates: 1, marketAbility: -2 },
+      effects: { scoutPotentialFirst: 1, scoutPerLine: 1, scoutAbilityShift: -2 },
     },
     proven: {
       label: sourceMessage('copy.build.9fa10575b1'),
-      effects: { marketAbility: 4, wage: 1.05 },
+      effects: { scoutAbilityShift: 4, wage: 1.05 },
     },
     network: {
       label: sourceMessage('copy.build.fce3f37294'),
-      effects: { marketCandidates: 3, marketPotential: -1 },
+      effects: { scoutPerLine: 1, scoutAbroadExtra: 1, scoutNeverPotentialFirst: 1 },
     },
     local: {
       label: sourceMessage('copy.build.935088b315'),
-      effects: { gateDemand: 0.02, wage: 0.97, marketCandidates: -1 },
+      effects: { gateDemand: 0.02, wage: 0.97, scoutPerLine: -1, scoutNoAbroad: 1 },
     },
   },
   market: {
@@ -154,7 +164,7 @@ export const BUILD_CARDS: {
     },
     frugal: {
       label: sourceMessage('copy.build.d4e31ebbfc'),
-      effects: { wage: 0.94, moraleBaseline: -2, marketAbility: -2 },
+      effects: { wage: 0.94, moraleBaseline: -2, scoutAbilityShift: -2 },
     },
     members: {
       label: sourceMessage('copy.build.4f2c1a4618'),
@@ -190,7 +200,7 @@ export const BUILD_CARDS: {
     },
     stars: {
       label: sourceMessage('copy.build.e42fda7924'),
-      effects: { marketAbility: 2, moraleBaseline: 1, wage: 1.1 },
+      effects: { scoutAbilityShift: 2, moraleBaseline: 1, wage: 1.1 },
     },
     veterans: {
       label: sourceMessage('copy.build.79a7398867'),

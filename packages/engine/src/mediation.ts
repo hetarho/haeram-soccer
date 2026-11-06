@@ -17,7 +17,7 @@ import { pushInbox } from './inbox';
 import { lineOf } from './player';
 import { compareIds, ratio } from './primitives';
 import { overall } from './player-state';
-import { transferOffers } from './ops-squad';
+import { transferOffers } from './scout-search';
 export const requestTargetKey = (request: SigningRequest) =>
   request.kind === 'short' ? `line:${request.line}` : `slot:${request.slot}:${request.position}`;
 export function requestMet(w: World, request: SigningRequest, from: { year: number; day: number }) {

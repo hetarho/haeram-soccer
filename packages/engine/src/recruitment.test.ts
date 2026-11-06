@@ -22,6 +22,7 @@ import {
   transferOffers,
 } from './index';
 import { careerWorld } from './career.testkit';
+import { buyOffer } from './testing';
 
 function world(strong = false) {
   const w = careerWorld({ seed: 'recruitment-preview' });
@@ -33,18 +34,25 @@ function world(strong = false) {
   }
   return w;
 }
+/** The first of another club's players on the scout's list, and the first free agent. */
+const clubIndex = (w: ReturnType<typeof world>) =>
+  transferOffers(w).findIndex((offer) => !offer.freeAgent);
+const freeIndex = (w: ReturnType<typeof world>) =>
+  transferOffers(w).findIndex((offer) => offer.freeAgent);
 
 describe('recruitment build and budget previews', () => {
   it('matches real automatic starters, match actors and the exact post-recruitment ledger', () => {
     const w = world(),
-      offer = transferOffers(w)[2],
+      index = clubIndex(w),
+      offer = transferOffers(w)[index]!,
       before = canonical(w),
       preview = recruitmentPreview(w, offer);
     expect(canonical(w)).toBe(before);
     expect(preview.willStart).toBe(true);
     expect(preview.strengthDelta).toBeGreaterThan(0);
     expect(preview.fitDelta).toBeGreaterThan(0);
-    operate(w, { type: 'recruit', candidate: 2 });
+    // His club accepts our bid at the asking fee the preview priced (→CLUB-4).
+    buyOffer(w, index);
     const starters = startingSquad(w, clubOf(w)),
       fixture = nextOwnFixture(w)!,
       opponent = w.clubs.find(
@@ -66,7 +74,8 @@ describe('recruitment build and budget previews', () => {
 
   it('discloses wages for a free bench transfer even with zero cash', () => {
     const w = world(true),
-      offer = transferOffers(w)[0],
+      index = freeIndex(w),
+      offer = transferOffers(w)[index]!,
       annual = operatingCost(w);
     w.cash = '0';
     const preview = recruitmentPreview(w, offer);
@@ -78,7 +87,7 @@ describe('recruitment build and budget previews', () => {
     expect(preview.cashAfter).toBe('0');
     expect(preview.runwayRounds).toBe(0);
     expect(BigInt(preview.annualAfter)).toBeGreaterThan(BigInt(annual));
-    operate(w, { type: 'recruit', candidate: 0 });
+    operate(w, { type: 'recruit', candidate: index });
     expect(w.cash).toBe('0');
     expect(operatingCost(w)).toBe(preview.annualAfter);
     expect(w.players.find((player) => player.id === offer.player.id)?.wage).toBe(offer.player.wage);
@@ -86,41 +95,43 @@ describe('recruitment build and budget previews', () => {
 
   it('uses actual loan cost and full wages and retains the signed identity after reload', async () => {
     const w = world(),
-      offer = transferOffers(w)[3],
+      index = clubIndex(w),
+      offer = transferOffers(w)[index]!,
       preview = recruitmentPreview(w, offer, true);
     expect(preview.fee).toBe(offer.loanFee);
     expect(preview.wage).toBe(offer.player.wage);
-    operate(w, { type: 'recruit', candidate: 3, loan: true });
+    buyOffer(w, index, true);
     expect(w.cash).toBe(preview.cashAfter);
     expect(operatingCost(w)).toBe(preview.annualAfter);
     expect(w.players.find((player) => player.id === offer.player.id)?.loanUntil).toBe(w.year + 1);
     const restored = (await decode(await encode(w, 1, 0))).world;
-    const owned = transferOffers(restored)[3];
-    expect(owned.player.id).toBe(offer.player.id);
-    expect(owned.available).toBe(false);
-    expect(recruitmentPreview(restored, owned, true).eligible).toBe(false);
-    expect(recruitmentPreview(restored, owned, true)).toEqual(
-      recruitmentPreview(w, transferOffers(w)[3], true),
-    );
+    // Ours now, he is never listed again, and his old terms preview as signed in both worlds.
+    expect(transferOffers(restored).some((o) => o.player.id === offer.player.id)).toBe(false);
+    expect(restored.players.find((p) => p.id === offer.player.id)?.loanUntil).toBe(w.year + 1);
+    expect(recruitmentPreview(restored, offer, true).eligible).toBe(false);
+    expect(recruitmentPreview(restored, offer, true)).toEqual(recruitmentPreview(w, offer, true));
   });
 
   it('treats negative cash as unaffordable even for free players and rejects paid shortages', () => {
     const w = world(),
-      offers = transferOffers(w);
+      offers = transferOffers(w),
+      free = freeIndex(w),
+      club = clubIndex(w);
     w.cash = '-1';
-    expect(recruitmentPreview(w, offers[0]).affordable).toBe(false);
-    expect(recruitmentPreview(w, offers[0]).runwayRounds).toBe(0);
+    expect(recruitmentPreview(w, offers[free]!).affordable).toBe(false);
+    expect(recruitmentPreview(w, offers[free]!).runwayRounds).toBe(0);
     const before = canonical(w);
-    expect(() => operate(w, { type: 'recruit', candidate: 0 })).toThrow('부족');
+    expect(() => operate(w, { type: 'recruit', candidate: free })).toThrow('부족');
     expect(canonical(w)).toBe(before);
     w.cash = '0';
-    expect(recruitmentPreview(w, offers[2]).affordable).toBe(false);
-    expect(recruitmentPreview(w, offers[2]).reason).toContain('부족');
+    expect(recruitmentPreview(w, offers[club]!).affordable).toBe(false);
+    expect(recruitmentPreview(w, offers[club]!).reason).toContain('부족');
   });
 
   it('disables full or already signed squads without changing the world', () => {
     const w = world(),
-      offer = transferOffers(w)[2];
+      index = clubIndex(w),
+      offer = transferOffers(w)[index]!;
     for (let index = 0; index < 20; index++)
       w.players.push(makePlayer('ENG', w.seed, `full-roster:${index}`, w.year, 40, 'CB'));
     expect(activePlayers(w)).toHaveLength(40);
@@ -128,10 +139,11 @@ describe('recruitment build and budget previews', () => {
       full = recruitmentPreview(w, offer);
     expect(full.eligible).toBe(false);
     expect(full.reason).toContain('40');
-    expect(() => operate(w, { type: 'recruit', candidate: 2 })).toThrow('40');
+    const listed = transferOffers(w).findIndex((o) => o.player.id === offer.player.id);
+    expect(() => operate(w, { type: 'recruit', candidate: listed })).toThrow('40');
     expect(canonical(w)).toBe(before);
     const signed = world();
-    operate(signed, { type: 'recruit', candidate: 2 });
+    buyOffer(signed, index);
     const stale = recruitmentPreview(signed, offer);
     expect(stale.eligible).toBe(false);
     expect(stale.reason).toContain('계약');
@@ -140,7 +152,8 @@ describe('recruitment build and budget previews', () => {
 
   it('bounds exact fixed-cost runway without projecting any future income', () => {
     const w = world(),
-      offer = transferOffers(w)[2],
+      index = clubIndex(w),
+      offer = transferOffers(w)[index]!,
       annual = BigInt(recruitmentPreview(w, offer).annualAfter);
     w.cash = (BigInt(offer.fee) + annual * 3n).toString();
     expect(recruitmentPreview(w, offer).runwayRounds).toBe(138);
@@ -149,7 +162,7 @@ describe('recruitment build and budget previews', () => {
     w.cash = '10000000000000000000000000000000000000';
     const preview = recruitmentPreview(w, offer);
     expect(preview.runwayRounds).toBe(999);
-    operate(w, { type: 'recruit', candidate: 2 });
+    buyOffer(w, index);
     expect(w.cash).toBe(preview.cashAfter);
   });
 

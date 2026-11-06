@@ -21,7 +21,6 @@ export interface SynergyEffects {
   fatigueRelief: number;
   academyGrowth: number;
   academyPotential: number;
-  marketPotential: number;
   feeMultiplier: number;
   sponsor: number;
   moraleBaseline: number;
@@ -35,7 +34,6 @@ export const NEUTRAL_SYNERGY: Readonly<SynergyEffects> = Object.freeze({
   fatigueRelief: 0,
   academyGrowth: 1,
   academyPotential: 0,
-  marketPotential: 0,
   feeMultiplier: 1,
   sponsor: 1,
   moraleBaseline: 0,
@@ -169,8 +167,8 @@ const RULES: readonly SynergyRule[] = [
     id: 'moneyball',
     label: sourceMessage('copy.synergy.26a7e06a1e'),
     idea: sourceMessage('copy.synergy.601cc6097f'),
-    bonus: sourceMessage('copy.synergy.1cc62a8b3a'),
-    effects: { marketPotential: 3, feeMultiplier: 0.92 },
+    bonus: sourceMessage('copy.synergy.daf41f4c0e'),
+    effects: { feeMultiplier: 0.92 },
     conditions: (w) => [
       { label: sourceMessage('copy.synergy.6a64c2301a'), met: buildOf(w).scouting === 'data' },
       {
@@ -230,8 +228,8 @@ const RULES: readonly SynergyRule[] = [
     id: 'trading-machine',
     label: sourceMessage('copy.preset_data.741a79d7f9'),
     idea: sourceMessage('copy.synergy.8b29234f83'),
-    bonus: sourceMessage('copy.synergy.d470fcffed'),
-    effects: { marketPotential: 2, academyGrowth: 1.1 },
+    bonus: sourceMessage('copy.synergy.8c6ecb809d'),
+    effects: { academyGrowth: 1.1 },
     conditions: (w) => {
       const build = buildOf(w);
       return [
@@ -248,8 +246,8 @@ const RULES: readonly SynergyRule[] = [
     id: 'global-scouting',
     label: sourceMessage('copy.synergy.a68d512d42'),
     idea: sourceMessage('copy.synergy.f8e476631e'),
-    bonus: sourceMessage('copy.synergy.8fe0d65565'),
-    effects: { academyPotential: 2, marketPotential: 2 },
+    bonus: sourceMessage('copy.synergy.7e97d9ad3b'),
+    effects: { academyPotential: 2 },
     conditions: (w) => [
       { label: sourceMessage('copy.synergy.7a8b77e495'), met: buildOf(w).youth === 'worldwide' },
       { label: sourceMessage('copy.synergy.ca8e37bf2e'), met: policyOf(w).globalScouting >= 3 },

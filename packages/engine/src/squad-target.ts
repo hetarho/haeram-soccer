@@ -18,11 +18,15 @@ const REASON: Record<CallUpSource, string> = {
   replacement: sourceMessage('copy.squad_target.8346c83338'),
   short: sourceMessage('copy.squad_target.86a4a02dca'),
 };
-/** Exceptional top-up ignores ordinary readiness and cash floor, but never registration. */
-export function callUpFor(w: World, line: Line, source: CallUpSource) {
-  const pool = academyPlayers(w)
+/** The academy prospects a call-up chooses from (→CLUB-43), the ablest first. */
+export function callUpProspects(w: World) {
+  return academyPlayers(w)
     .filter((p) => w.year - p.born >= promotionAge(w))
     .sort((a, b) => overall(b) - overall(a) || b.potential - a.potential || compareIds(a.id, b.id));
+}
+/** Exceptional top-up ignores ordinary readiness and cash floor, but never registration. */
+export function callUpFor(w: World, line: Line, source: CallUpSource) {
+  const pool = callUpProspects(w);
   let player = pool.find((p) => lineOf(p.position) === line) ?? pool[0];
   if (player) {
     if (registrationRoom(w, { ...player, graduate: true, joined: w.year })) return undefined;
