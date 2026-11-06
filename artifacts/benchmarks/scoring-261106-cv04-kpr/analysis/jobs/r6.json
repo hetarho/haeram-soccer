@@ -1,0 +1,38 @@
+[
+ {
+  "name": "conc-t15s3fpc120-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/conc-t15s3fpc120-validation2400.json"
+  ]
+ },
+ {
+  "name": "bands-t15s3fpc120-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "origins-t15s3fpc120-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/origins/origins-t15s3fpc120-0-300.json"
+  ]
+ }
+]

@@ -1,0 +1,35 @@
+{
+ "seconds": 71,
+ "status": [
+  {
+   "name": "bands-t15s3fpc-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-t15s3fpc110-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "origins-t15s3fpc-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-t15s3fpc110-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-t15s3fpc110-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-t15s3fpc-0-300",
+   "code": 0,
+   "seconds": 71
+  }
+ ]
+}

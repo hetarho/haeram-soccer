@@ -1,0 +1,20 @@
+{
+ "seconds": 350,
+ "status": [
+  {
+   "name": "bands-t15s3fpc120-400",
+   "code": 0,
+   "seconds": 62
+  },
+  {
+   "name": "origins-t15s3fpc120-0-300",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "conc-t15s3fpc120-validation2400",
+   "code": 0,
+   "seconds": 350
+  }
+ ]
+}

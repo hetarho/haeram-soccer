@@ -88,9 +88,10 @@ export const SHAPE_CONFIG = {
       /**
        * `set`, `corridor`: T689 experiment, default off at `set` 0 (see `keeperOut`). `flight`: T689
        * cv04-kpr experiment, default off at 0 (→MATCH-35 r55): while a pass is on its way to its
-       * receiver the keeper holds his set place (`keeperSetTarget`), coming out only once he has it.
+       * receiver the keeper holds his set place (`keeperSetTarget`), coming out only once he has it;
+       * 1 for every ball played to a receiver, 2 for an open-play pass only (no cross, cut-back or restart).
        */
-      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6, crowd: 1, ahead: 0, flight: 0 },
+      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6, crowd: 1, ahead: 0, flight: 0 as number },
       markRadius: 14,
     },
     /**

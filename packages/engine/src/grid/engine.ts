@@ -499,6 +499,9 @@ export function playGrid(setup: GridSetup): GridResult {
    * (T596, →MATCH-12 r44) a shot is struck at once and flies at its own speed; the ball it leaves
    * loose waits where it stops for its winner (`actionTiming`).
    */
+  /** T689 cv04-kpr experiment: the action `motionOf` moves is an open-play pass (`flight` 2). */
+  let flightPass = false;
+
   function motionOf(
     actor: Ref,
     from: readonly [number, number],
@@ -565,8 +568,9 @@ export function playGrid(setup: GridSetup): GridResult {
       plan.push({ gp: s.players[other(actor[0])][o.by]!, holdUntil: dt });
     // T689 cv04-kpr experiment (default off, →MATCH-35 r55): while the ball travels to its receiver
     // the keeper holds his set place, coming out to him only once he has it.
+    const F = SHAPE_CONFIG.candidate.revision9.keeperOut.flight;
     if (
-      SHAPE_CONFIG.candidate.revision9.keeperOut.flight > 0 &&
+      (F === 1 || (F === 2 && flightPass)) &&
       !own &&
       !shot &&
       flight > 0 &&
@@ -708,7 +712,9 @@ export function playGrid(setup: GridSetup): GridResult {
         reads.set(gp, {
           // T689 cv04-kpr experiment (default off): the keeper does not read the pass out to its receiver.
           to:
-            SHAPE_CONFIG.candidate.revision9.keeperOut.flight > 0 && gp.slot === 0
+            gp.slot === 0 &&
+            (SHAPE_CONFIG.candidate.revision9.keeperOut.flight === 1 ||
+              (SHAPE_CONFIG.candidate.revision9.keeperOut.flight === 2 && d.action === 'pass'))
               ? keeperSetTarget(s, gp.side, gp.idx, cache)
               : targetOf(s, gp.side, gp.idx, cache),
           at: readAt(s, gp, side, seconds),
@@ -1044,6 +1050,7 @@ export function playGrid(setup: GridSetup): GridResult {
         // taker no carrier while it is in the air (T373).
         const delivery = rs.kind === 'corner' || res.kind === 'cross';
         if (candidate) updateIntentions(s, delivery && s.owner === kicked);
+        flightPass = false;
         const motion = candidate
           ? motionOf(
               actor,
@@ -1171,6 +1178,7 @@ export function playGrid(setup: GridSetup): GridResult {
         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
         if (candidate) updateIntentions(s);
+        flightPass = d.action === 'pass';
         const motion = candidate
           ? motionOf(
               owner,

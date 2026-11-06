@@ -23,6 +23,7 @@ const t15s3 = load('t15s3');
 const fa = { shape: { candidate: { revision9: { keeperOut: { flight: 1 } } } } };
 const bb = (body, grow) => ({ shot: { revision9: { narrow: { body, grow } } } });
 const sc = { stride: { candidate: { chased: 1 } } };
+const fp = { shape: { candidate: { revision9: { keeperOut: { flight: 2 } } } } };
 const C = {
   Bid: B,
   ctl: load('ctl'),
@@ -53,6 +54,20 @@ const C = {
   c9t15s3fac: merge(merge(merge(c9, t15s3), fa), sc),
   // Round 3: `c9t15s3fac` (goals 3.14) with the shot model's `a` lowered (`B` −1).
   c9t15s3fac110: merge(merge(merge(merge(c9, t15s3), fa), sc), { shot: { a: -1.1 } }),
+  // Round 4, after `t15s3fac`'s full read (goals 2.96–3.31 on the full reads): goals lowered by the
+  // shot model's `a` or the box's shot weight (`decide.candidate.shotBox`, `B` 0.4).
+  t15s3fac110: merge(merge(merge(t15s3, fa), sc), { shot: { a: -1.1 } }),
+  t15s3fac120: merge(merge(merge(t15s3, fa), sc), { shot: { a: -1.2 } }),
+  t15s3facsb30: merge(merge(merge(t15s3, fa), sc), { decide: { candidate: { shotBox: 0.3 } } }),
+  c9t15s3fac120: merge(merge(merge(merge(c9, t15s3), fa), sc), { shot: { a: -1.2 } }),
+  c9t15s3facsb30: merge(merge(merge(merge(c9, t15s3), fa), sc), { decide: { candidate: { shotBox: 0.3 } } }),
+  // Round 5, after `t15s3fac110`'s informational full read (cross completion 20.5 → 18.1%, a new
+  // miss): (a) for an open-play pass only (`flight` 2), the keeper still coming out to a cross's or a
+  // restart's receiver as `B` has him.
+  t15s3fpc: merge(merge(t15s3, fp), sc),
+  t15s3fpc110: merge(merge(merge(t15s3, fp), sc), { shot: { a: -1.1 } }),
+  // Round 6: `t15s3fpc110` (held-out goals 2.95, hat-tricks 0.057) with `a` −1.2.
+  t15s3fpc120: merge(merge(merge(t15s3, fp), sc), { shot: { a: -1.2 } }),
 };
 for (const [n, c] of Object.entries(C)) writeFileSync(out + n + '.json', JSON.stringify(c) + '\n');
 console.log(Object.keys(C).join(' '));

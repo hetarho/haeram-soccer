@@ -1,0 +1,332 @@
+[
+ {
+  "name": "pc-t15s3fpc120-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/pc-t15s3fpc120-calibration-2.json"
+  ]
+ },
+ {
+  "name": "core-t15s3fpc120-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "1",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/core-t15s3fpc120-validation-1.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-1-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-1-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-1-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-1-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-1-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-1-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-2-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-2-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-2-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-2-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-2-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-2-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-3-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-3-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-3-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-3-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-3-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-3-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-4-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-4-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-4-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-4-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-4-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-4-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-esp1-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-esp1-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-esp1-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-esp1-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fpc120-esp1-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fpc120-esp1-14.json"
+  ]
+ },
+ {
+  "name": "stress-t15s3fpc120-val-1",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-t15s3fpc120-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-t15s3fpc120-val-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-t15s3fpc120-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-t15s3fpc120-val-3",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fpc120.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-t15s3fpc120-val-3.json"
+  ]
+ }
+]

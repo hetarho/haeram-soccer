@@ -1,0 +1,205 @@
+{
+ "seconds": 839,
+ "status": [
+  {
+   "name": "core-Bid-validation-1",
+   "code": 0,
+   "seconds": 101
+  },
+  {
+   "name": "core-t15s3fac-validation-1",
+   "code": 0,
+   "seconds": 101
+  },
+  {
+   "name": "season-t15s3fac-1-7",
+   "code": 0,
+   "seconds": 127
+  },
+  {
+   "name": "season-t15s3fac-1-0",
+   "code": 0,
+   "seconds": 129
+  },
+  {
+   "name": "season-t15s3fac-1-14",
+   "code": 0,
+   "seconds": 107
+  },
+  {
+   "name": "season-t15s3fac-2-0",
+   "code": 0,
+   "seconds": 129
+  },
+  {
+   "name": "season-t15s3fac-2-14",
+   "code": 0,
+   "seconds": 108
+  },
+  {
+   "name": "season-t15s3fac-2-7",
+   "code": 0,
+   "seconds": 127
+  },
+  {
+   "name": "season-t15s3fac-3-0",
+   "code": 0,
+   "seconds": 125
+  },
+  {
+   "name": "season-t15s3fac-3-14",
+   "code": 0,
+   "seconds": 110
+  },
+  {
+   "name": "season-t15s3fac-3-7",
+   "code": 0,
+   "seconds": 129
+  },
+  {
+   "name": "season-t15s3fac-4-0",
+   "code": 0,
+   "seconds": 124
+  },
+  {
+   "name": "conc-Bid-validation2400",
+   "code": 0,
+   "seconds": 381
+  },
+  {
+   "name": "conc-t15s3fac-validation2400",
+   "code": 0,
+   "seconds": 386
+  },
+  {
+   "name": "season-t15s3fac-4-14",
+   "code": 0,
+   "seconds": 110
+  },
+  {
+   "name": "season-t15s3fac-4-7",
+   "code": 0,
+   "seconds": 133
+  },
+  {
+   "name": "season-Bid-1-0",
+   "code": 0,
+   "seconds": 126
+  },
+  {
+   "name": "season-Bid-1-14",
+   "code": 0,
+   "seconds": 106
+  },
+  {
+   "name": "season-Bid-1-7",
+   "code": 0,
+   "seconds": 129
+  },
+  {
+   "name": "season-Bid-2-0",
+   "code": 0,
+   "seconds": 129
+  },
+  {
+   "name": "season-Bid-2-14",
+   "code": 0,
+   "seconds": 111
+  },
+  {
+   "name": "season-Bid-2-7",
+   "code": 0,
+   "seconds": 126
+  },
+  {
+   "name": "season-Bid-3-0",
+   "code": 0,
+   "seconds": 125
+  },
+  {
+   "name": "season-Bid-3-14",
+   "code": 0,
+   "seconds": 111
+  },
+  {
+   "name": "season-Bid-3-7",
+   "code": 0,
+   "seconds": 132
+  },
+  {
+   "name": "season-Bid-4-0",
+   "code": 0,
+   "seconds": 126
+  },
+  {
+   "name": "season-Bid-4-14",
+   "code": 0,
+   "seconds": 109
+  },
+  {
+   "name": "season-Bid-4-7",
+   "code": 0,
+   "seconds": 133
+  },
+  {
+   "name": "season-t15s3fac-esp1-14",
+   "code": 0,
+   "seconds": 106
+  },
+  {
+   "name": "season-t15s3fac-esp1-0",
+   "code": 0,
+   "seconds": 130
+  },
+  {
+   "name": "season-t15s3fac-esp1-7",
+   "code": 0,
+   "seconds": 129
+  },
+  {
+   "name": "season-Bid-esp1-0",
+   "code": 0,
+   "seconds": 133
+  },
+  {
+   "name": "stress-t15s3fac-val-1",
+   "code": 0,
+   "seconds": 51
+  },
+  {
+   "name": "stress-t15s3fac-val-2",
+   "code": 0,
+   "seconds": 52
+  },
+  {
+   "name": "stress-t15s3fac-val-3",
+   "code": 0,
+   "seconds": 51
+  },
+  {
+   "name": "season-Bid-esp1-14",
+   "code": 0,
+   "seconds": 107
+  },
+  {
+   "name": "season-Bid-esp1-7",
+   "code": 0,
+   "seconds": 125
+  },
+  {
+   "name": "stress-Bid-val-1",
+   "code": 0,
+   "seconds": 49
+  },
+  {
+   "name": "stress-Bid-val-2",
+   "code": 0,
+   "seconds": 49
+  },
+  {
+   "name": "stress-Bid-val-3",
+   "code": 0,
+   "seconds": 47
+  }
+ ]
+}
