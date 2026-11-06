@@ -1,0 +1,60 @@
+{
+ "seconds": 143,
+ "status": [
+  {
+   "name": "origins-t2-0-300",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "origins-Bid0-0-300",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "origins-c6-0-300",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "origins-c9e9-0-300",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "origins-c9-0-300",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "origins-c9t2-0-300",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "bands-c6-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "bands-c9-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "bands-t2-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-c9t2-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "bands-c9e9-400",
+   "code": 0,
+   "seconds": 68
+  }
+ ]
+}

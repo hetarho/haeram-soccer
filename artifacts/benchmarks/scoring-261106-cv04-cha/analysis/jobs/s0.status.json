@@ -1,0 +1,25 @@
+{
+ "seconds": 64,
+ "status": [
+  {
+   "name": "bands-ctl-400",
+   "code": 0,
+   "seconds": 62
+  },
+  {
+   "name": "bands-Bid-400",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "origins-ctl-0-300",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "origins-Bid-0-300",
+   "code": 0,
+   "seconds": 64
+  }
+ ]
+}

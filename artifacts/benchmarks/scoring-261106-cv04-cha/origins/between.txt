@@ -1,0 +1,427 @@
+Bid: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.23        0.883  0.198    0.205
+  goalArea   alone          2.08        0.867  0.208    0.215
+  goalArea   between        0.15        0.017  0.055    0.076
+  box        all            7.70        0.447  0.029    0.028
+  box        alone          4.82        0.180  0.019    0.016
+  box        between        2.88        0.267  0.046    0.049
+  outside    all            1.12        0.057  0.025    0.028
+  outside    alone          0.42        0.043  0.052    0.042
+  outside    between        0.70        0.013  0.009    0.020
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             2.35    0.053  0.011    0.006
+  box/alone/keeperOut/free               0.15    0.000  0.000    0.018
+  box/alone/keeperSet/chased             2.21    0.120  0.027    0.025
+  box/alone/keeperSet/free               0.10    0.007  0.032    0.042
+  box/between/keeperOut/chased           1.06    0.043  0.020    0.034
+  box/between/keeperOut/free             0.05    0.000  0.000    0.055
+  box/between/keeperSet/chased           1.73    0.220  0.064    0.058
+  box/between/keeperSet/free             0.04    0.003  0.043    0.043
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.060
+  goalArea/alone/keeperSet/chased        2.01    0.803  0.200    0.207
+  goalArea/alone/keeperSet/free          0.06    0.063  0.528    0.500
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.042
+  goalArea/between/keeperSet/chased      0.15    0.017  0.056    0.076
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.030
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.026
+  outside/alone/keeperSet/chased         0.39    0.043  0.055    0.042
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.070
+  outside/between/keeperOut/chased       0.02    0.000  0.000    0.027
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.017
+  outside/between/keeperSet/chased       0.65    0.010  0.008    0.019
+  outside/between/keeperSet/free         0.04    0.003  0.043    0.028
+ctl: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.40        1.177  0.245    0.227
+  goalArea   alone          2.31        1.150  0.249    0.233
+  goalArea   between        0.10        0.027  0.138    0.089
+  box        all           10.88        0.690  0.032    0.025
+  box        alone          6.70        0.490  0.037    0.027
+  box        between        4.18        0.200  0.024    0.021
+  outside    all            1.43        0.083  0.029    0.033
+  outside    alone          0.54        0.053  0.050    0.048
+  outside    between        0.90        0.030  0.017    0.024
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             3.02    0.130  0.022    0.012
+  box/alone/keeperOut/free               0.26    0.010  0.019    0.033
+  box/alone/keeperSet/chased             3.31    0.327  0.049    0.038
+  box/alone/keeperSet/free               0.11    0.023  0.106    0.111
+  box/between/keeperOut/chased           1.98    0.057  0.014    0.009
+  box/between/keeperOut/free             0.16    0.000  0.000    0.026
+  box/between/keeperSet/chased           2.00    0.140  0.035    0.033
+  box/between/keeperSet/free             0.03    0.003  0.050    0.042
+  goalArea/alone/keeperOut/chased        0.02    0.000  0.000    0.091
+  goalArea/alone/keeperSet/chased        2.20    1.080  0.245    0.227
+  goalArea/alone/keeperSet/free          0.08    0.070  0.429    0.420
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.009
+  goalArea/between/keeperSet/chased      0.09    0.027  0.143    0.091
+  goalArea/between/keeperSet/free        0.00    0.000  0.000    0.082
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.028
+  outside/alone/keeperOut/free           0.01    0.000  0.000    0.036
+  outside/alone/keeperSet/chased         0.51    0.053  0.053    0.049
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.055
+  outside/between/keeperOut/chased       0.02    0.000  0.000    0.031
+  outside/between/keeperOut/free         0.01    0.000  0.000    0.029
+  outside/between/keeperSet/chased       0.83    0.030  0.018    0.023
+  outside/between/keeperSet/free         0.03    0.000  0.000    0.041
+c6: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.72        1.183  0.217    0.209
+  goalArea   alone          2.57        1.170  0.227    0.217
+  goalArea   between        0.15        0.013  0.044    0.083
+  box        all            6.37        0.473  0.037    0.030
+  box        alone          3.90        0.220  0.028    0.016
+  box        between        2.47        0.253  0.051    0.053
+  outside    all            1.17        0.090  0.038    0.029
+  outside    alone          0.42        0.037  0.043    0.043
+  outside    between        0.75        0.053  0.036    0.021
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.44    0.047  0.016    0.005
+  box/alone/keeperOut/free               0.12    0.003  0.013    0.012
+  box/alone/keeperSet/chased             2.27    0.160  0.035    0.023
+  box/alone/keeperSet/free               0.07    0.010  0.077    0.039
+  box/between/keeperOut/chased           0.65    0.033  0.026    0.035
+  box/between/keeperOut/free             0.05    0.000  0.000    0.036
+  box/between/keeperSet/chased           1.71    0.217  0.063    0.060
+  box/between/keeperSet/free             0.06    0.003  0.030    0.062
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.000
+  goalArea/alone/keeperSet/chased        2.49    1.103  0.221    0.210
+  goalArea/alone/keeperSet/free          0.07    0.067  0.455    0.475
+  goalArea/between/keeperSet/chased      0.15    0.013  0.044    0.082
+  goalArea/between/keeperSet/free        0.00    0.000  0.000    0.224
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.031
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.009
+  outside/alone/keeperSet/chased         0.41    0.033  0.041    0.043
+  outside/alone/keeperSet/free           0.01    0.003  0.250    0.053
+  outside/between/keeperOut/chased       0.02    0.000  0.000    0.024
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.024
+  outside/between/keeperSet/chased       0.70    0.047  0.033    0.020
+  outside/between/keeperSet/free         0.03    0.007  0.118    0.035
+c9: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.84        1.200  0.212    0.210
+  goalArea   alone          2.70        1.183  0.219    0.217
+  goalArea   between        0.14        0.017  0.060    0.084
+  box        all            6.03        0.453  0.038    0.031
+  box        alone          3.63        0.197  0.027    0.017
+  box        between        2.40        0.257  0.053    0.052
+  outside    all            1.16        0.100  0.043    0.028
+  outside    alone          0.42        0.043  0.052    0.043
+  outside    between        0.74        0.057  0.038    0.020
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.18    0.013  0.006    0.004
+  box/alone/keeperOut/free               0.10    0.000  0.000    0.011
+  box/alone/keeperSet/chased             2.27    0.173  0.038    0.023
+  box/alone/keeperSet/free               0.08    0.010  0.061    0.037
+  box/between/keeperOut/chased           0.54    0.027  0.025    0.037
+  box/between/keeperOut/free             0.06    0.000  0.000    0.037
+  box/between/keeperSet/chased           1.75    0.227  0.065    0.057
+  box/between/keeperSet/free             0.04    0.003  0.037    0.060
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.000
+  goalArea/alone/keeperSet/chased        2.61    1.110  0.213    0.211
+  goalArea/alone/keeperSet/free          0.08    0.073  0.478    0.447
+  goalArea/between/keeperSet/chased      0.14    0.017  0.060    0.082
+  goalArea/between/keeperSet/free        0.00    0.000  0.000    0.224
+  outside/alone/keeperOut/chased         0.01    0.003  0.250    0.058
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.043
+  outside/alone/keeperSet/chased         0.40    0.040  0.050    0.042
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.049
+  outside/between/keeperOut/chased       0.02    0.000  0.000    0.027
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.026
+  outside/between/keeperSet/chased       0.70    0.053  0.038    0.020
+  outside/between/keeperSet/free         0.03    0.003  0.062    0.025
+c9e9: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.99        1.253  0.209    0.208
+  goalArea   alone          2.85        1.227  0.215    0.214
+  goalArea   between        0.14        0.027  0.092    0.086
+  box        all            6.05        0.480  0.040    0.032
+  box        alone          3.67        0.220  0.030    0.019
+  box        between        2.38        0.260  0.055    0.053
+  outside    all            1.17        0.060  0.026    0.028
+  outside    alone          0.44        0.033  0.038    0.042
+  outside    between        0.73        0.027  0.018    0.020
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.20    0.027  0.011    0.005
+  box/alone/keeperOut/free               0.11    0.000  0.000    0.010
+  box/alone/keeperSet/chased             2.26    0.183  0.041    0.026
+  box/alone/keeperSet/free               0.10    0.010  0.051    0.062
+  box/between/keeperOut/chased           0.57    0.033  0.029    0.039
+  box/between/keeperOut/free             0.06    0.000  0.000    0.036
+  box/between/keeperSet/chased           1.70    0.217  0.064    0.057
+  box/between/keeperSet/free             0.05    0.010  0.097    0.054
+  goalArea/alone/keeperOut/chased        0.00    0.000  0.000    0.000
+  goalArea/alone/keeperSet/chased        2.76    1.150  0.208    0.206
+  goalArea/alone/keeperSet/free          0.09    0.077  0.451    0.475
+  goalArea/between/keeperSet/chased      0.14    0.027  0.093    0.084
+  goalArea/between/keeperSet/free        0.00    0.000  0.000    0.224
+  outside/alone/keeperOut/chased         0.01    0.003  0.143    0.045
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.043
+  outside/alone/keeperSet/chased         0.41    0.030  0.036    0.041
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.063
+  outside/between/keeperOut/chased       0.02    0.000  0.000    0.022
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.014
+  outside/between/keeperSet/chased       0.69    0.023  0.017    0.020
+  outside/between/keeperSet/free         0.03    0.003  0.067    0.028
+t2: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.25        1.070  0.238    0.241
+  goalArea   alone          2.10        1.053  0.251    0.252
+  goalArea   between        0.14        0.017  0.058    0.080
+  box        all            7.72        0.440  0.028    0.030
+  box        alone          4.82        0.200  0.021    0.017
+  box        between        2.90        0.240  0.041    0.050
+  outside    all            1.10        0.067  0.030    0.030
+  outside    alone          0.41        0.037  0.045    0.044
+  outside    between        0.69        0.030  0.022    0.021
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             2.38    0.057  0.012    0.008
+  box/alone/keeperOut/free               0.15    0.000  0.000    0.019
+  box/alone/keeperSet/chased             2.19    0.137  0.031    0.026
+  box/alone/keeperSet/free               0.10    0.007  0.033    0.048
+  box/between/keeperOut/chased           1.05    0.033  0.016    0.036
+  box/between/keeperOut/free             0.05    0.000  0.000    0.054
+  box/between/keeperSet/chased           1.76    0.203  0.058    0.059
+  box/between/keeperSet/free             0.04    0.003  0.048    0.041
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.045
+  goalArea/alone/keeperSet/chased        2.03    0.977  0.241    0.243
+  goalArea/alone/keeperSet/free          0.06    0.077  0.622    0.581
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.042
+  goalArea/between/keeperSet/chased      0.14    0.017  0.059    0.080
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.034
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.009
+  outside/alone/keeperSet/chased         0.39    0.037  0.047    0.044
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.074
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.031
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.015
+  outside/between/keeperSet/chased       0.64    0.030  0.023    0.021
+  outside/between/keeperSet/free         0.04    0.000  0.000    0.022
+c9t2: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.77        1.280  0.231    0.244
+  goalArea   alone          2.62        1.257  0.240    0.253
+  goalArea   between        0.14        0.023  0.081    0.084
+  box        all            6.03        0.470  0.039    0.033
+  box        alone          3.63        0.217  0.030    0.019
+  box        between        2.40        0.253  0.053    0.054
+  outside    all            1.18        0.097  0.041    0.029
+  outside    alone          0.42        0.043  0.051    0.045
+  outside    between        0.76        0.053  0.035    0.021
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.18    0.017  0.007    0.005
+  box/alone/keeperOut/free               0.10    0.000  0.000    0.011
+  box/alone/keeperSet/chased             2.28    0.197  0.043    0.026
+  box/alone/keeperSet/free               0.07    0.003  0.023    0.027
+  box/between/keeperOut/chased           0.51    0.033  0.032    0.038
+  box/between/keeperOut/free             0.07    0.000  0.000    0.038
+  box/between/keeperSet/chased           1.77    0.217  0.061    0.059
+  box/between/keeperSet/free             0.05    0.003  0.034    0.055
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.000
+  goalArea/alone/keeperSet/chased        2.54    1.180  0.233    0.245
+  goalArea/alone/keeperSet/free          0.08    0.077  0.489    0.509
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.000
+  goalArea/between/keeperSet/chased      0.14    0.023  0.082    0.085
+  outside/alone/keeperOut/chased         0.01    0.003  0.200    0.055
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.043
+  outside/alone/keeperSet/chased         0.40    0.040  0.050    0.044
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.051
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.022
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.011
+  outside/between/keeperSet/chased       0.71    0.053  0.038    0.021
+  outside/between/keeperSet/free         0.03    0.000  0.000    0.024
+t3: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.30        1.867  0.405    0.452
+  goalArea   alone          2.17        1.803  0.416    0.466
+  goalArea   between        0.14        0.063  0.235    0.230
+  box        all            7.72        0.507  0.033    0.034
+  box        alone          4.90        0.227  0.023    0.023
+  box        between        2.83        0.280  0.050    0.053
+  outside    all            1.19        0.070  0.029    0.033
+  outside    alone          0.48        0.043  0.045    0.049
+  outside    between        0.70        0.027  0.019    0.023
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             2.40    0.073  0.015    0.012
+  box/alone/keeperOut/free               0.14    0.000  0.000    0.017
+  box/alone/keeperSet/chased             2.26    0.150  0.033    0.034
+  box/alone/keeperSet/free               0.10    0.003  0.017    0.057
+  box/between/keeperOut/chased           1.03    0.057  0.028    0.036
+  box/between/keeperOut/free             0.05    0.000  0.000    0.049
+  box/between/keeperSet/chased           1.70    0.217  0.064    0.064
+  box/between/keeperSet/free             0.05    0.007  0.067    0.046
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.052
+  goalArea/alone/keeperSet/chased        2.10    1.740  0.414    0.464
+  goalArea/alone/keeperSet/free          0.06    0.063  0.528    0.574
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.042
+  goalArea/between/keeperSet/chased      0.13    0.063  0.237    0.233
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.036
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.009
+  outside/alone/keeperSet/chased         0.45    0.043  0.048    0.049
+  outside/alone/keeperSet/free           0.02    0.000  0.000    0.067
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.022
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.017
+  outside/between/keeperSet/chased       0.66    0.027  0.020    0.022
+  outside/between/keeperSet/free         0.03    0.000  0.000    0.033
+c9t3: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.81        2.250  0.400    0.439
+  goalArea   alone          2.67        2.203  0.413    0.451
+  goalArea   between        0.14        0.047  0.161    0.217
+  box        all            6.06        0.530  0.044    0.039
+  box        alone          3.70        0.253  0.034    0.026
+  box        between        2.35        0.277  0.059    0.059
+  outside    all            1.25        0.073  0.029    0.033
+  outside    alone          0.47        0.030  0.032    0.048
+  outside    between        0.78        0.043  0.028    0.023
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.20    0.043  0.018    0.010
+  box/alone/keeperOut/free               0.12    0.000  0.000    0.010
+  box/alone/keeperSet/chased             2.28    0.200  0.044    0.034
+  box/alone/keeperSet/free               0.10    0.010  0.048    0.053
+  box/between/keeperOut/chased           0.54    0.027  0.025    0.039
+  box/between/keeperOut/free             0.06    0.003  0.030    0.047
+  box/between/keeperSet/chased           1.72    0.237  0.069    0.066
+  box/between/keeperSet/free             0.04    0.010  0.115    0.063
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.127
+  goalArea/alone/keeperSet/chased        2.59    2.123  0.409    0.449
+  goalArea/alone/keeperSet/free          0.07    0.080  0.585    0.567
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.000
+  goalArea/between/keeperSet/chased      0.14    0.047  0.163    0.219
+  outside/alone/keeperOut/chased         0.02    0.003  0.091    0.037
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.043
+  outside/alone/keeperSet/chased         0.43    0.027  0.031    0.048
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.054
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.030
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.017
+  outside/between/keeperSet/chased       0.73    0.043  0.030    0.023
+  outside/between/keeperSet/free         0.04    0.000  0.000    0.035
+c10t3: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.83        2.277  0.402    0.439
+  goalArea   alone          2.69        2.227  0.413    0.451
+  goalArea   between        0.14        0.050  0.179    0.211
+  box        all            6.01        0.537  0.045    0.038
+  box        alone          3.69        0.253  0.034    0.026
+  box        between        2.32        0.283  0.061    0.058
+  outside    all            1.26        0.077  0.030    0.033
+  outside    alone          0.48        0.033  0.035    0.049
+  outside    between        0.78        0.043  0.028    0.023
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.16    0.047  0.020    0.007
+  box/alone/keeperOut/free               0.12    0.000  0.000    0.011
+  box/alone/keeperSet/chased             2.31    0.197  0.042    0.034
+  box/alone/keeperSet/free               0.11    0.010  0.047    0.058
+  box/between/keeperOut/chased           0.54    0.030  0.028    0.038
+  box/between/keeperOut/free             0.06    0.003  0.029    0.046
+  box/between/keeperSet/chased           1.69    0.240  0.071    0.065
+  box/between/keeperSet/free             0.04    0.010  0.125    0.058
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.127
+  goalArea/alone/keeperSet/chased        2.61    2.143  0.410    0.449
+  goalArea/alone/keeperSet/free          0.07    0.083  0.581    0.555
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.000
+  goalArea/between/keeperSet/chased      0.14    0.050  0.181    0.214
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.031
+  outside/alone/keeperOut/free           0.01    0.000  0.000    0.062
+  outside/alone/keeperSet/chased         0.45    0.033  0.037    0.049
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.060
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.027
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.017
+  outside/between/keeperSet/chased       0.73    0.043  0.030    0.023
+  outside/between/keeperSet/free         0.04    0.000  0.000    0.036
+c9t3a12: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.78        2.240  0.403    0.440
+  goalArea   alone          2.63        2.183  0.415    0.454
+  goalArea   between        0.15        0.057  0.193    0.198
+  box        all            6.01        0.497  0.041    0.034
+  box        alone          3.74        0.273  0.037    0.024
+  box        between        2.27        0.223  0.049    0.051
+  outside    all            1.26        0.057  0.022    0.027
+  outside    alone          0.50        0.027  0.027    0.039
+  outside    between        0.77        0.030  0.020    0.019
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.21    0.037  0.015    0.007
+  box/alone/keeperOut/free               0.12    0.000  0.000    0.011
+  box/alone/keeperSet/chased             2.29    0.223  0.049    0.033
+  box/alone/keeperSet/free               0.11    0.013  0.059    0.056
+  box/between/keeperOut/chased           0.54    0.037  0.034    0.035
+  box/between/keeperOut/free             0.04    0.000  0.000    0.040
+  box/between/keeperSet/chased           1.64    0.187  0.057    0.057
+  box/between/keeperSet/free             0.05    0.000  0.000    0.046
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.157
+  goalArea/alone/keeperSet/chased        2.55    2.100  0.411    0.452
+  goalArea/alone/keeperSet/free          0.07    0.083  0.581    0.532
+  goalArea/between/keeperOut/chased      0.00    0.000  0.000    0.000
+  goalArea/between/keeperSet/chased      0.14    0.057  0.195    0.200
+  outside/alone/keeperOut/chased         0.01    0.003  0.111    0.030
+  outside/alone/keeperSet/chased         0.46    0.023  0.025    0.039
+  outside/alone/keeperSet/free           0.02    0.000  0.000    0.044
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.020
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.014
+  outside/between/keeperSet/chased       0.71    0.030  0.021    0.019
+  outside/between/keeperSet/free         0.04    0.000  0.000    0.025
+c9r3c15: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.95        1.470  0.249    0.246
+  goalArea   alone          2.78        1.433  0.258    0.254
+  goalArea   between        0.17        0.037  0.108    0.104
+  box        all            5.95        0.573  0.048    0.040
+  box        alone          3.64        0.280  0.038    0.028
+  box        between        2.31        0.293  0.063    0.060
+  outside    all            1.21        0.103  0.043    0.034
+  outside    alone          0.44        0.050  0.057    0.056
+  outside    between        0.77        0.053  0.035    0.022
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.17    0.063  0.027    0.021
+  box/alone/keeperOut/free               0.13    0.000  0.000    0.019
+  box/alone/keeperSet/chased             2.24    0.207  0.046    0.030
+  box/alone/keeperSet/free               0.10    0.010  0.051    0.065
+  box/between/keeperOut/chased           0.57    0.037  0.032    0.048
+  box/between/keeperOut/free             0.04    0.000  0.000    0.068
+  box/between/keeperSet/chased           1.65    0.257  0.078    0.064
+  box/between/keeperSet/free             0.05    0.000  0.000    0.066
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.062
+  goalArea/alone/keeperSet/chased        2.70    1.353  0.251    0.246
+  goalArea/alone/keeperSet/free          0.08    0.080  0.522    0.553
+  goalArea/between/keeperSet/chased      0.17    0.037  0.108    0.104
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.025
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.070
+  outside/alone/keeperSet/chased         0.41    0.050  0.062    0.056
+  outside/alone/keeperSet/free           0.02    0.000  0.000    0.063
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.026
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.017
+  outside/between/keeperSet/chased       0.73    0.050  0.034    0.021
+  outside/between/keeperSet/free         0.03    0.003  0.059    0.031
+c9r3c15a11: 300 matches, open play
+  place      split    shots/team  goals/match  conv   xG/shot
+  goalArea   all            2.90        1.490  0.257    0.244
+  goalArea   alone          2.74        1.460  0.266    0.253
+  goalArea   between        0.16        0.030  0.094    0.101
+  box        all            5.92        0.550  0.046    0.039
+  box        alone          3.63        0.283  0.039    0.027
+  box        between        2.30        0.267  0.058    0.057
+  outside    all            1.21        0.103  0.043    0.032
+  outside    alone          0.45        0.053  0.060    0.052
+  outside    between        0.77        0.050  0.033    0.020
+  by keeper (out = more than 3 m off his line) and chaser (an outfielder within 4.6 m):
+  box/alone/keeperOut/chased             1.18    0.063  0.027    0.022
+  box/alone/keeperOut/free               0.12    0.000  0.000    0.010
+  box/alone/keeperSet/chased             2.25    0.203  0.045    0.029
+  box/alone/keeperSet/free               0.08    0.017  0.102    0.078
+  box/between/keeperOut/chased           0.58    0.037  0.031    0.045
+  box/between/keeperOut/free             0.04    0.000  0.000    0.063
+  box/between/keeperSet/chased           1.62    0.230  0.071    0.060
+  box/between/keeperSet/free             0.05    0.000  0.000    0.066
+  goalArea/alone/keeperOut/chased        0.01    0.000  0.000    0.061
+  goalArea/alone/keeperSet/chased        2.66    1.370  0.257    0.245
+  goalArea/alone/keeperSet/free          0.07    0.090  0.614    0.553
+  goalArea/between/keeperSet/chased      0.16    0.030  0.094    0.101
+  outside/alone/keeperOut/chased         0.01    0.000  0.000    0.024
+  outside/alone/keeperOut/free           0.00    0.000  0.000    0.078
+  outside/alone/keeperSet/chased         0.42    0.053  0.063    0.053
+  outside/alone/keeperSet/free           0.01    0.000  0.000    0.068
+  outside/between/keeperOut/chased       0.01    0.000  0.000    0.024
+  outside/between/keeperOut/free         0.00    0.000  0.000    0.026
+  outside/between/keeperSet/chased       0.72    0.050  0.035    0.020
+  outside/between/keeperSet/free         0.03    0.000  0.000    0.026

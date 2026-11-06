@@ -1,0 +1,38 @@
+[
+ {
+  "name": "pc-Bid-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/Bid.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/pc-Bid-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-c9-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c9.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/pc-c9-calibration-2.json"
+  ]
+ }
+]

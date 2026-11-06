@@ -1,0 +1,15 @@
+{
+ "seconds": 367,
+ "status": [
+  {
+   "name": "pc-c9-calibration-2",
+   "code": 0,
+   "seconds": 363
+  },
+  {
+   "name": "pc-Bid-calibration-2",
+   "code": 0,
+   "seconds": 367
+  }
+ ]
+}

@@ -1,0 +1,107 @@
+[
+ {
+  "name": "origins-Bid1-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/Bid1.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/origins/origins-Bid1-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-t3-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/t3.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/origins/origins-t3-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-c9t3-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c9t3.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/origins/origins-c9t3-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-c10t3-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c10t3.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/origins/origins-c10t3-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-c9t3a12-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c9t3a12.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-cha/origins/origins-c9t3a12-0-300.json"
+  ]
+ },
+ {
+  "name": "bands-t3-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/t3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-c9t3-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c9t3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-c10t3-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c10t3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-c9t3a12-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-cha/candidates/c9t3a12.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ }
+]
