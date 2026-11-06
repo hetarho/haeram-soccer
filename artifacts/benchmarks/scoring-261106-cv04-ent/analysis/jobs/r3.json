@@ -1,0 +1,85 @@
+[
+ {
+  "name": "conc-Perf-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/conc-Perf-calibration1200.json"
+  ]
+ },
+ {
+  "name": "bands-Perf10-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf10.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Perf10a105-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf10a105.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "origins-Perf10-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf10.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/origins/origins-Perf10-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Perf10a105-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf10a105.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/origins/origins-Perf10a105-0-300.json"
+  ]
+ },
+ {
+  "name": "entries-Perf10-0-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf10.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/entries/entries-Perf10-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Perf10a105-0-400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf10a105.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/entries/entries-Perf10a105-0-400.json"
+  ]
+ }
+]

@@ -1,0 +1,59 @@
+[
+ {
+  "name": "pc-Perf8-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf8.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/pc-Perf8-calibration-2.json"
+  ]
+ },
+ {
+  "name": "origins-P-300-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/P.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/origins/origins-P-300-300.json"
+  ]
+ },
+ {
+  "name": "origins-Perf-300-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/origins/origins-Perf-300-300.json"
+  ]
+ },
+ {
+  "name": "origins-Perf8-300-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-ent/candidates/Perf8.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-ent/origins/origins-Perf8-300-300.json"
+  ]
+ }
+]
