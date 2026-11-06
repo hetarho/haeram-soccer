@@ -18,7 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| cv07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-06T16:50Z | 2026-11-06T16:50Z | - |
+| cv07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-06T16:50Z | 2026-11-06T17:37Z | T689 |
 | pv07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-06T17:01Z | 2026-11-06T17:01Z | - |
 
 ## inbox
@@ -783,7 +783,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
+| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | doing@261106.cv07 |
 | T693 | calibrate the era's star pay spread on the giants' books | CLUB ECON LEAGUE | - | todo |
 | T694 | price CLUB-48's W80 at the player's own potential and pin its activation | CLUB ECON | - | todo |
 | T695 | bring released main's owner controls into the balance branch and verify them against ECON r46, CLUB r54 and WEB r208 | ECON CLUB WEB ARCH | - | todo |
