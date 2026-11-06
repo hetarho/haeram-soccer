@@ -1,0 +1,87 @@
+[
+ {
+  "name": "pc-t15-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/t15.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/pc-t15-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-c9t15-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/c9t15.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/pc-c9t15-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-t15s3-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/t15s3.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/pc-t15s3-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-c9f-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/c9f.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/pc-c9f-calibration-2.json"
+  ]
+ },
+ {
+  "name": "origins-Bid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/Bid.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/origins/origins-Bid-0-300.json"
+  ]
+ }
+]

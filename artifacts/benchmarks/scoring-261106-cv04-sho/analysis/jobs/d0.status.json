@@ -1,0 +1,20 @@
+{
+ "seconds": 64,
+ "status": [
+  {
+   "name": "chased-ctl-0-300",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "chased-Bid-0-300",
+   "code": 0,
+   "seconds": 63
+  },
+  {
+   "name": "chased-c9-0-300",
+   "code": 0,
+   "seconds": 64
+  }
+ ]
+}

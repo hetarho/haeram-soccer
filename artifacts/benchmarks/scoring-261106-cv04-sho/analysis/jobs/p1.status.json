@@ -1,0 +1,30 @@
+{
+ "seconds": 417,
+ "status": [
+  {
+   "name": "pc-c9t15-calibration-2",
+   "code": 0,
+   "seconds": 176
+  },
+  {
+   "name": "pc-t15-calibration-2",
+   "code": 0,
+   "seconds": 181
+  },
+  {
+   "name": "pc-t15s3-calibration-2",
+   "code": 0,
+   "seconds": 180
+  },
+  {
+   "name": "pc-c9f-calibration-2",
+   "code": 0,
+   "seconds": 186
+  },
+  {
+   "name": "origins-Bid-0-300",
+   "code": 0,
+   "seconds": 61
+  }
+ ]
+}
