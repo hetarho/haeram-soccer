@@ -1,0 +1,16 @@
+[
+ {
+  "name": "chased-Bid-0-4",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/Bid.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--debug",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/chased/chased-Bid-0-4.json"
+  ]
+ }
+]

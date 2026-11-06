@@ -1,0 +1,130 @@
+{
+ "seconds": 334,
+ "status": [
+  {
+   "name": "chased-s3-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-t15-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-Bid-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-t10-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-c9t15-0-300",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "chased-c9t15s3-0-300",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "bands-t15-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-s3-400",
+   "code": 0,
+   "seconds": 65
+  },
+  {
+   "name": "bands-t15s3-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-c9t15-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-c9s3-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "chased-c9f-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "bands-t10-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "bands-c9t15s3-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-c9f-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-c9t10-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "origins-t15-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "origins-c9t15-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "origins-s3-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-t15s3-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "origins-c9s3-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-c9t15s3-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-c9f-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-t10-0-300",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "origins-c9t10-0-300",
+   "code": 0,
+   "seconds": 62
+  }
+ ]
+}

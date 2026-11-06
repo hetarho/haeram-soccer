@@ -1,0 +1,41 @@
+[
+ {
+  "name": "chased-Bid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/Bid.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/chased/chased-Bid-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-c9-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/c9.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/chased/chased-c9-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-ctl-0-300",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-sho/candidates/ctl.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/chased/chased-ctl-0-300.json"
+  ]
+ }
+]
