@@ -19,6 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | cv07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-06T16:50Z | 2026-11-06T16:50Z | - |
+| pv07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-06T17:01Z | 2026-11-06T17:01Z | - |
 
 ## inbox
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
