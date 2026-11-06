@@ -1,0 +1,15 @@
+[
+ {
+  "name": "chased-released-0-20",
+  "patch": "",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "20",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-sho/chased/chased-released-0-20.json"
+  ]
+ }
+]

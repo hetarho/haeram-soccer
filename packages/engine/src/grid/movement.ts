@@ -91,6 +91,13 @@ export const IN_STRIDE_CONFIG = {
    * seconds (a stride or two), the rest of the action's time running after the kick.
    */
   revision9: { near: 5, windUp: 0.4 },
+  /**
+   * T689 cv04-kpr experiment, default off at `chased` 0 (→MATCH-16 r53): a carrier through on goal —
+   * no outfield opponent within `corridor` m of the line to the goal's middle and at least `ahead` m
+   * nearer it — strikes in the same stride or two (`revision9.windUp`) with a man chasing him as
+   * with nobody close, before the keeper is out to him.
+   */
+  candidate: { chased: 0, corridor: 6, ahead: 3 },
 } as const;
 
 /** The middle of the 1–99 attribute scale: the pace `IN_STRIDE_CONFIG.speed` is a stride of. */
@@ -352,6 +359,8 @@ export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined 
 export function shotWindUp(s: GridState, gp: GridPlayer, seconds: number): number {
   if (!modelAtLeast(s.setup, 9)) return seconds;
   const { near, windUp } = IN_STRIDE_CONFIG.revision9;
+  const C = IN_STRIDE_CONFIG.candidate;
+  if (C.chased > 0 && throughOnGoal(s, gp, C.corridor, C.ahead)) return Math.min(seconds, windUp);
   for (const o of s.players[gp.side === 0 ? 1 : 0])
     if (
       onPitch(o) &&
@@ -360,6 +369,30 @@ export function shotWindUp(s: GridState, gp: GridPlayer, seconds: number): numbe
     )
       return seconds;
   return Math.min(seconds, windUp);
+}
+
+/**
+ * T689 cv04-kpr experiment: no outfield opponent of `gp` within `corridor` m of the line from him to
+ * the goal's middle he attacks and at least `ahead` m nearer it (the narrowing's `nobodyBetween`).
+ */
+function throughOnGoal(s: GridState, gp: GridPlayer, corridor: number, ahead: number): boolean {
+  const from = attackFrame(gp.side, gp.pos);
+  const gx = PITCH.length,
+    gy = PITCH.width / 2;
+  const dd = s.math.hypot(gx - from[0], gy - from[1]);
+  if (dd <= 0) return true;
+  for (const o of s.players[gp.side === 0 ? 1 : 0]) {
+    if (!onPitch(o) || o.slot === 0) continue;
+    const p = attackFrame(gp.side, o.pos);
+    const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
+    if (t <= 0 || t >= 1 || t * dd < ahead) continue;
+    if (
+      Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd <
+      corridor
+    )
+      return false;
+  }
+  return true;
 }
 
 /**

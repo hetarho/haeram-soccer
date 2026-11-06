@@ -85,8 +85,12 @@ export const SHAPE_CONFIG = {
      * 4.12 / –, `markRadius` 18 3.36 / 3.95.
      */
     revision9: {
-      /** `set`, `corridor`: T689 experiment, default off at `set` 0 (see `keeperOut`). */
-      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6, crowd: 1, ahead: 0 },
+      /**
+       * `set`, `corridor`: T689 experiment, default off at `set` 0 (see `keeperOut`). `flight`: T689
+       * cv04-kpr experiment, default off at 0 (→MATCH-35 r55): while a pass is on its way to its
+       * receiver the keeper holds his set place (`keeperSetTarget`), coming out only once he has it.
+       */
+      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6, crowd: 1, ahead: 0, flight: 0 },
       markRadius: 14,
     },
     /**
@@ -1013,7 +1017,7 @@ export function speedOf(s: GridState, gp: GridPlayer): number {
  * `bx`, `by`: the ball in his side's attack frame (his goal at x 0).
  */
 function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | undefined {
-  if (!modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
+  if (holdSet || !modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
   const K = SHAPE_CONFIG.candidate.keeperOut;
   if (!inBox(attackFrame(other(side), s.ball))) return undefined;
   const d = s.math.hypot(bx, by - CENTRE);
@@ -1038,6 +1042,28 @@ function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | u
     ? Math.max(0, Math.min(K.most, d * share, d - R9.gap))
     : Math.min(K.most, d * K.share);
   return [(bx / d) * reach, CENTRE + ((by - CENTRE) / d) * reach];
+}
+
+/** T689 cv04-kpr experiment: set while `keeperSetTarget` reads a keeper's target. */
+let holdSet = false;
+
+/**
+ * T689 cv04-kpr experiment (`revision9.keeperOut.flight`, →MATCH-35 r55): the target of the keeper
+ * `(side, idx)` as it is with nobody on the ball in his box — his set place, not out to a receiver
+ * the ball is still travelling to.
+ */
+export function keeperSetTarget(
+  s: GridState,
+  side: 0 | 1,
+  idx: number,
+  cache: ShapeCache = newShapeCache(),
+): [number, number] {
+  holdSet = true;
+  try {
+    return targetOf(s, side, idx, cache);
+  } finally {
+    holdSet = false;
+  }
 }
 
 /** Every on-pitch player but the carrier takes a step toward his target. */

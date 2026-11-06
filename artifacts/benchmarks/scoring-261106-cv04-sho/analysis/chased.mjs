@@ -2,12 +2,25 @@
 // the goal area's open-play shots with nobody between (a carrier's own `shot` entries), by chased/free and
 // keeper set/out; each recorded-xG factor's mean, SB16's goal per shot in their cells, block rates; the
 // chaser's place along the shot's line; each closing blocker class's chance and blocks.
-import { readFileSync } from 'node:fs';
+// `--out SUMMARY` writes the tables there as well.
+import { readFileSync, writeFileSync } from 'node:fs';
 
+const argv = process.argv.slice(2);
+const at = argv.indexOf('--out');
+const outFile = at >= 0 ? argv.splice(at, 2)[1] : undefined;
+const lines = [];
+const print = console.log;
+console.log = (...xs) => {
+  lines.push(xs.join(' '));
+  print(...xs);
+};
 const f2 = (x) => (Number.isFinite(x) ? x.toFixed(2) : '-');
 const f3 = (x) => (Number.isFinite(x) ? x.toFixed(3) : '-');
 const pc = (x) => (Number.isFinite(x) ? (100 * x).toFixed(1) + '%' : '-');
-for (const file of process.argv.slice(2)) {
+process.on('exit', () => {
+  if (outFile) writeFileSync(outFile, '# T689 cv04-sho: chased-shot diagnostic (analysis/chased.mjs)\n' + lines.join('\n') + '\n');
+});
+for (const file of argv) {
   const r = JSON.parse(readFileSync(file, 'utf8'));
   const teams = r.matches * 2;
   const row = (k) => r.rows.find((x) => x.key === k);
@@ -58,6 +71,17 @@ for (const file of process.argv.slice(2)) {
       console.log(
         `| ${a.key.split('|').slice(1, 3).join('|')} | ${a.key.split('|')[3]} | ${f2(a.n / teams)} | ${pc(a.goals / a.n)} | ${f3(a.xg / a.n)} |`,
       );
+  }
+  // Where the chances came from (the shot-origin script's names; `self-…-after-through` his own touch after a through ball).
+  const origins = r.rows.filter((x) => x.key.startsWith('origin|'));
+  if (origins.length) {
+    console.log('\n| group | origin | shots a team | conv. | xG a shot | dist m | keeper off m |');
+    console.log('|---|---|---:|---:|---:|---:|---:|');
+    for (const a of origins.sort((x, y) => (x.key.split('|')[1] + x.key.split('|')[2] < y.key.split('|')[1] + y.key.split('|')[2] ? -1 : x.key.split('|')[1] + x.key.split('|')[2] > y.key.split('|')[1] + y.key.split('|')[2] ? 1 : y.n - x.n)))
+      if (a.n / teams >= 0.05)
+        console.log(
+          `| ${a.key.split('|').slice(1, 3).join('|')} | ${a.key.split('|')[3]} | ${f2(a.n / teams)} | ${pc(a.goals / a.n)} | ${f3(a.xg / a.n)} | ${f2(a.dist / a.n)} | ${f2(a.keeperOff / a.n)} |`,
+        );
   }
   // Cells of the chased shots against a set keeper.
   const cells = r.rows.filter((x) => x.key.startsWith('cell|chased|keeperSet|')).sort((a, b) => b.n - a.n);

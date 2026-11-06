@@ -1,0 +1,30 @@
+{
+ "seconds": 187,
+ "status": [
+  {
+   "name": "bands-c9t15s3fac110-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "origins-c9t15s3fac110-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "chased-c9t15s3fac110-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "pc-t15s3fac-calibration-2",
+   "code": 0,
+   "seconds": 184
+  },
+  {
+   "name": "conc-t15s3fac-calibration1200",
+   "code": 0,
+   "seconds": 187
+  }
+ ]
+}

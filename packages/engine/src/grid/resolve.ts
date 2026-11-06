@@ -313,7 +313,27 @@ export const SHOT_CONFIG = {
   // `ahead` (cv04-rec, default 0): a defender counts as between only `ahead` m or more nearer the goal along the line than the shooter.
   // `ref` (cv04-chc, default 0, →MATCH-11/35 r51): the reference keeper stands `ref` m off his line toward the shot, on the line from his goal's middle, in place of one on his line's middle; with `ref` set the factor is at most `cap`; `floor` (0 off) the least it falls to (a keeper out to a carrier still beaten by a chip or a finish past him).
   // `only` (cv04-sho, default 0 off, →MATCH-35 r51/r54): `ref`, `cap` and `floor` apply only to a keeper within `only` m of his line (still set); a keeper further out keeps the released narrowing.
-  revision9: { narrow: { reach: 1.5, set: 0, corridor: 6, crowd: 1, ahead: 0, ref: 0, cap: 10, floor: 0, only: 0 } },
+  revision9: {
+    /**
+     * `body`, `grow`, `speed`: T689 cv04-kpr experiment, default off at `body` 0 (→MATCH-35 r55):
+     * the keeper's reach is `body` m against a shot struck close to him, growing to `reach` as the
+     * ball takes `grow` s to reach him at the shot's `speed` m/s; the reference keeper by the same rule.
+     */
+    narrow: {
+      reach: 1.5,
+      set: 0,
+      corridor: 6,
+      crowd: 1,
+      ahead: 0,
+      ref: 0,
+      cap: 10,
+      floor: 0,
+      only: 0,
+      body: 0,
+      grow: 0.45,
+      speed: 30,
+    },
+  },
 } as const;
 
 const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
@@ -340,9 +360,7 @@ export function chanceXg(
   const z = C.a + C.b * goalDistance(p, math) + C.c * goalAngle(p, math);
   return (
     sigmoid(z, math) *
-    (opts.header
-      ? (opts.headerQuality ?? (opts.candidate ? C.candidate.header : C.header))
-      : 1) *
+    (opts.header ? (opts.headerQuality ?? (opts.candidate ? C.candidate.header : C.header)) : 1) *
     (opts.cutBack ? C.cutBack : 1) *
     (opts.freeKick ? C.freeKickWall : 1) *
     Math.max(C.pressureFloor, 1 - C.pressure * (opts.pressure ?? 0))
@@ -923,7 +941,10 @@ export function keeperNarrowing(
       const p = attackFrame(side, gp.pos);
       const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
       if (t <= 0 || t >= 1 || t * dd < N.ahead) continue;
-      if (Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd < N.corridor)
+      if (
+        Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd <
+        N.corridor
+      )
         between++;
     }
     if (between >= N.crowd) reach = N.set;
@@ -935,9 +956,14 @@ export function keeperNarrowing(
     const dx = k[0] - from[0],
       dy = k[1] - from[1];
     const d = hypot(dx, dy);
-    if (d <= reach) return 0;
+    // cv04-kpr (default off): what he reaches before the ball passes him, his body from close.
+    const r =
+      N.body > 0 && reach > N.body
+        ? N.body + (reach - N.body) * Math.min(1, d / N.speed / N.grow)
+        : reach;
+    if (d <= r) return 0;
     const at = atan2(dy, dx),
-      half = atan2(reach, d);
+      half = atan2(r, d);
     const covered = Math.max(0, Math.min(hi, at + half) - Math.max(lo, at - half));
     return 1 - covered / (hi - lo);
   };
@@ -948,7 +974,10 @@ export function keeperNarrowing(
   if (setRef) {
     const gd = hypot(PITCH.length - from[0], PITCH.width / 2 - from[1]);
     const k = gd > 0 ? Math.min(N.ref, gd / 2) / gd : 0;
-    ref = [PITCH.length - (PITCH.length - from[0]) * k, PITCH.width / 2 - (PITCH.width / 2 - from[1]) * k];
+    ref = [
+      PITCH.length - (PITCH.length - from[0]) * k,
+      PITCH.width / 2 - (PITCH.width / 2 - from[1]) * k,
+    ];
   }
   const line = open(ref);
   if (line <= 0) return 1;
@@ -971,7 +1000,10 @@ function nobodyBetween(s: GridState, side: 0 | 1, from: Point): boolean {
     const p = attackFrame(side, gp.pos);
     const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
     if (t <= 0 || t >= 1 || t * dd < N.ahead) continue;
-    if (Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd < N.corridor)
+    if (
+      Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd <
+      N.corridor
+    )
       return false;
   }
   return true;
@@ -1217,7 +1249,8 @@ export function resolveCross(
   if (won.kind !== 'header') return won;
   // T689 cv04-sym experiment (default off at 0): a set piece's header's own chance quality.
   const SP = SHOT_CONFIG.candidate.setPieceHeader;
-  const quality = SP > 0 && onCandidate(s) && tags.phase === 'setPiece' ? { headerQuality: SP } : {};
+  const quality =
+    SP > 0 && onCandidate(s) && tags.phase === 'setPiece' ? { headerQuality: SP } : {};
   return {
     ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, {
       header: true,
@@ -1494,14 +1527,14 @@ export function resolveTakeOn(
         clamp(k[1] + (c[1] >= k[1] ? 2.5 : -2.5), 0.5, PITCH.width - 0.5),
       ]
     : [
-    Math.min(
-      PITCH.length - 0.5,
-      beyond + T.past[0] + (T.past[1] - T.past[0]) / 2,
-      // The candidate's depth, though always a metre past the man he beat.
-      onCandidate(s) ? Math.max(DUEL_CONFIG.candidate.takeOnDepth, beyond + 1) : Infinity,
-    ),
-    c[1],
-  ];
+        Math.min(
+          PITCH.length - 0.5,
+          beyond + T.past[0] + (T.past[1] - T.past[0]) / 2,
+          // The candidate's depth, though always a metre past the man he beat.
+          onCandidate(s) ? Math.max(DUEL_CONFIG.candidate.takeOnDepth, beyond + 1) : Infinity,
+        ),
+        c[1],
+      ];
   if (!foe) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
   const edge =
     0.7 * skill(s, side, idx, 'dribbling') +

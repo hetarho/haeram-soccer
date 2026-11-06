@@ -105,8 +105,7 @@ function place(
   for (const side of [0, 1] as const)
     for (const gp of s.players[side]) {
       let k = -1;
-      for (let slot = 0; slot < 11; slot++)
-        if (layout.slots[side * 11 + slot] === gp.idx) k = slot;
+      for (let slot = 0; slot < 11; slot++) if (layout.slots[side * 11 + slot] === gp.idx) k = slot;
       gp.sentOff = false;
       if (k < 0 || Number.isNaN(layout.positions[(side * 11 + k) * 2]!)) {
         gp.onPitch = false;
@@ -115,10 +114,7 @@ function place(
       if (gp.slot !== k) enterSlot(s, gp, k);
       gp.onPitch = true;
       gp.onAt = onAt.get(`${side}:${gp.idx}`) ?? 0;
-      gp.pos = [
-        layout.positions[(side * 11 + k) * 2]!,
-        layout.positions[(side * 11 + k) * 2 + 1]!,
-      ];
+      gp.pos = [layout.positions[(side * 11 + k) * 2]!, layout.positions[(side * 11 + k) * 2 + 1]!];
     }
 }
 
@@ -155,6 +151,22 @@ for (let i = start; i < start + matches; i++) {
       if (idx >= 0 && !onAt.has(key)) onAt.set(key, k === 0 ? 0 : e.elapsed);
     }
     if (e.action === 'corner' || e.action === 'freeKick') setPieceUntil = k + 3;
+    // Open-play passes the opposing keeper won (→MATCH-31, MATCH-35 r55's race for a ball in
+    // behind), beside the through balls and how many of them were completed into the box.
+    if (e.action === 'pass') {
+      const foeSide = (1 - e.side) as 0 | 1;
+      const gk = e.slots[foeSide * 11];
+      const keeperWon = e.by !== undefined && e.by[0] === foeSide && e.by[1] === gk ? 1 : 0;
+      const end = attackFrame(e.side, e.to ?? e.ball);
+      const complete = e.outcome === 'complete' ? 1 : 0;
+      const intoBox = complete && end[0] >= 88.5 && end[1] >= 13.84 && end[1] <= 54.16 ? 1 : 0;
+      add(`keeper|${e.kind === 'through' ? 'through' : 'other'}`, {
+        passes: 1,
+        complete,
+        intoBox,
+        keeperWon,
+      });
+    }
     if (e.action !== 'shot' || e.result === undefined || e.header || !e.from) return;
     if (k <= setPieceUntil || e.kind === 'penalty' || RESTARTS.has(e.action)) return;
     const prev = trace[k - 1];
@@ -203,7 +215,10 @@ for (let i = start; i < start + matches; i++) {
     const closers = closingBlockers(s, e.side, from, path);
     const uClose = unblocked(closers);
     const uPath = unblocked(path);
-    const rec = Math.min(SHOT_CONFIG.maxXg, placeXg * pf * narrow * uClose * uPath * ctx.levelFactor);
+    const rec = Math.min(
+      SHOT_CONFIG.maxXg,
+      placeXg * pf * narrow * uClose * uPath * ctx.levelFactor,
+    );
     rebuilt++;
     const ok = Math.abs(rec - (e.xg ?? 0)) <= 0.01 * Math.max(rec, e.xg ?? 0) + 1e-6;
     if (ok) matched++;
@@ -259,6 +274,25 @@ for (let i = start; i < start + matches; i++) {
     const entryKeeper = attackFrame(e.side, [e.positions[foe * 22]!, e.positions[foe * 22 + 1]!]);
     const entryState = 105 - entryKeeper[0] > KEEPER_OUT ? 'keeperOut' : 'keeperSet';
     add(`entry|${group}|${entryState}`, { goals: goal, xg: e.xg ?? 0 });
+    // Where the chance came from, as `scoring-shot-origins.ts` names a shot's origin.
+    const before = k >= 2 ? trace[k - 2] : undefined;
+    let origin: string;
+    if (prev.side === e.side && prev.result !== undefined) origin = 'rebound';
+    else if (prev.side === e.side && prev.receiver === e.idx)
+      origin = prev.kind === 'through' ? 'through' : `pass-${prev.action}`;
+    else if (prev.side === e.side && prev.idx === e.idx)
+      origin =
+        before && before.side === e.side && before.receiver === e.idx && before.kind === 'through'
+          ? `self-${prev.action}-after-through`
+          : `self-${prev.action}`;
+    else if (prev.side !== e.side) origin = `opp-${prev.action}`;
+    else origin = 'other';
+    add(`origin|${group}|${origin}`, {
+      goals: goal,
+      xg: e.xg ?? 0,
+      dist: len,
+      keeperOff: 105 - kp[0],
+    });
     add(`all|${group}`, values);
     add(`all|any`, values);
     add(`cell|${group}|${cellKey(cell)}`, { goals: goal, xg: e.xg ?? 0, sb16: sb, dist: len });
@@ -296,4 +330,6 @@ const report = {
   })),
 };
 if (out) writeFileSync(out, JSON.stringify(report) + '\n');
-console.log(`done ${played} matches, ${rebuilt} shots rebuilt, ${matched} within 1% of recorded xG`);
+console.log(
+  `done ${played} matches, ${rebuilt} shots rebuilt, ${matched} within 1% of recorded xG`,
+);

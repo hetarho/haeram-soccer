@@ -45,7 +45,15 @@ import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
 import { isLevel, modelAtLeast } from './rules';
 import type { GridSetup } from './setup';
 import { playShootout } from './shootout';
-import { moveAll, newShapeCache, speedOf, startRuns, targetOf } from './shape';
+import {
+  keeperSetTarget,
+  moveAll,
+  newShapeCache,
+  SHAPE_CONFIG,
+  speedOf,
+  startRuns,
+  targetOf,
+} from './shape';
 import {
   attackZones,
   carryTo,
@@ -555,6 +563,24 @@ export function playGrid(setup: GridSetup): GridResult {
     // read him, until it is won; he plays no part in it (→MATCH-12).
     if (shot && o.via && o.by !== undefined)
       plan.push({ gp: s.players[other(actor[0])][o.by]!, holdUntil: dt });
+    // T689 cv04-kpr experiment (default off, →MATCH-35 r55): while the ball travels to its receiver
+    // the keeper holds his set place, coming out to him only once he has it.
+    if (
+      SHAPE_CONFIG.candidate.revision9.keeperOut.flight > 0 &&
+      !own &&
+      !shot &&
+      flight > 0 &&
+      owner &&
+      owner.side === actor[0]
+    ) {
+      const keeper = s.players[other(actor[0])].find((p) => onPitch(p) && p.slot === 0);
+      if (keeper) {
+        const to = keeperSetTarget(s, keeper.side, keeper.idx);
+        const at = plan.findIndex((m) => m.gp === keeper);
+        if (at >= 0) plan[at] = { ...plan[at]!, to };
+        else plan.push({ gp: keeper, to });
+      }
+    }
     const knots: MotionKnot[] = [];
     if (carry)
       knots.push(
@@ -680,7 +706,11 @@ export function playGrid(setup: GridSetup): GridResult {
     for (const gp of s.players[other(side)])
       if (onPitch(gp))
         reads.set(gp, {
-          to: targetOf(s, gp.side, gp.idx, cache),
+          // T689 cv04-kpr experiment (default off): the keeper does not read the pass out to its receiver.
+          to:
+            SHAPE_CONFIG.candidate.revision9.keeperOut.flight > 0 && gp.slot === 0
+              ? keeperSetTarget(s, gp.side, gp.idx, cache)
+              : targetOf(s, gp.side, gp.idx, cache),
           at: readAt(s, gp, side, seconds),
         });
     everyone.forEach((gp, k) => {

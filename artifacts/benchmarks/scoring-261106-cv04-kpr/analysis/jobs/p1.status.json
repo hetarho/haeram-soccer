@@ -1,0 +1,20 @@
+{
+ "seconds": 194,
+ "status": [
+  {
+   "name": "pc-b75g45-calibration-2",
+   "code": 0,
+   "seconds": 193
+  },
+  {
+   "name": "pc-fab-calibration-2",
+   "code": 0,
+   "seconds": 193
+  },
+  {
+   "name": "pc-t15s3fa-calibration-2",
+   "code": 0,
+   "seconds": 194
+  }
+ ]
+}
