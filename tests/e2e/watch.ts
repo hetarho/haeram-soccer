@@ -31,7 +31,17 @@ export async function openWatchAction(page: Page) {
   // Asking for match-eve reports on an eve opens its report at once, over the controls.
   if (await watch.isVisible()) return watch;
   const pace = page.getByRole('combobox', { name: '자동 진행 배속', exact: true });
-  if (await pace.isVisible()) await chooseOption(pace, 'x10');
+  if (await pace.isVisible()) {
+    try {
+      await chooseOption(pace, 'x10', { timeout: 2000 });
+    } catch (error) {
+      // The resumed clock can open the next eve between the visibility check and the click;
+      // its modal covers the pace control, and the watch action is already the destination.
+      if (await watch.isVisible()) return watch;
+      if (await resume.isVisible()) return resume;
+      throw error;
+    }
+  }
   for (let step = 0; step < 80; step++) {
     if (await resume.isVisible()) return resume;
     const pill = page.getByTestId('event-pill');
