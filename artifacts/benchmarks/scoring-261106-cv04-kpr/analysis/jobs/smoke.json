@@ -1,0 +1,38 @@
+[
+ {
+  "name": "chased-fab-0-4",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/fab.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/chased/chased-fab-0-4.json"
+  ]
+ },
+ {
+  "name": "origins-fab-0-4",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/fab.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/origins/origins-fab-0-4.json"
+  ]
+ },
+ {
+  "name": "bands-fab-8",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/fab.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "8"
+  ]
+ }
+]

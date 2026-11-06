@@ -1,0 +1,180 @@
+{
+ "seconds": 430,
+ "status": [
+  {
+   "name": "bands-fa-400",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "origins-Bid-0-300",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "origins-fa-0-300",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "chased-Bid-0-300",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "chased-fa-0-300",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "chased-fab-0-300",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "bands-fab-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "origins-fab-0-300",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "bands-b75g45-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "origins-b75g45-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-b75g45-0-300",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "chased-b6g6-0-300",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "bands-b6g6-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "origins-b6g6-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "bands-b9g3-400",
+   "code": 0,
+   "seconds": 66
+  },
+  {
+   "name": "chased-b9g3-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-b9g3-0-300",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "chased-fab6g6-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "bands-fab6g6-400",
+   "code": 0,
+   "seconds": 69
+  },
+  {
+   "name": "origins-fab6g6-0-300",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "bands-c9fa-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "origins-c9fa-0-300",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "chased-c9fa-0-300",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "chased-c9b-0-300",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "bands-c9b-400",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "origins-c9b-0-300",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "bands-c9fab-400",
+   "code": 0,
+   "seconds": 72
+  },
+  {
+   "name": "chased-c9fab-0-300",
+   "code": 0,
+   "seconds": 77
+  },
+  {
+   "name": "origins-c9fab-0-300",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "chased-t15s3fa-0-300",
+   "code": 0,
+   "seconds": 76
+  },
+  {
+   "name": "bands-t15s3fa-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "origins-t15s3fa-0-300",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "bands-t15s3fab-400",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "chased-t15s3fab-0-300",
+   "code": 0,
+   "seconds": 75
+  },
+  {
+   "name": "origins-t15s3fab-0-300",
+   "code": 0,
+   "seconds": 73
+  }
+ ]
+}

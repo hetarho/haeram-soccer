@@ -1,0 +1,56 @@
+[
+ {
+  "name": "pc-fab-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/fab.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/pc-fab-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-t15s3fa-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fa.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/pc-t15s3fa-calibration-2.json"
+  ]
+ },
+ {
+  "name": "pc-b75g45-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/b75g45.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "2",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/pc-b75g45-calibration-2.json"
+  ]
+ }
+]

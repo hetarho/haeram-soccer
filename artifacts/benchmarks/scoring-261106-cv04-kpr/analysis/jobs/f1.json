@@ -1,0 +1,652 @@
+[
+ {
+  "name": "conc-t15s3fac-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/conc-t15s3fac-validation2400.json"
+  ]
+ },
+ {
+  "name": "conc-Bid-validation2400",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "2400",
+   "--seeds",
+   "t689-val-1,t689-val-2,t689-val-3,t689-val-4",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/conc-Bid-validation2400.json"
+  ]
+ },
+ {
+  "name": "core-t15s3fac-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "1",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/core-t15s3fac-validation-1.json"
+  ]
+ },
+ {
+  "name": "core-Bid-validation-1",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "validation",
+   "--scale",
+   "1",
+   "--only",
+   "core",
+   "--jobs",
+   "1",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/core-Bid-validation-1.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-1-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-1-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-1-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-1-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-1-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-1-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-2-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-2-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-2-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-2-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-2-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-2-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-3-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-3-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-3-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-3-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-3-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-3-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-4-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-4-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-4-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-4-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-4-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-4-14.json"
+  ]
+ },
+ {
+  "name": "season-Bid-1-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-1-0.json"
+  ]
+ },
+ {
+  "name": "season-Bid-1-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-1-7.json"
+  ]
+ },
+ {
+  "name": "season-Bid-1-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-1-14.json"
+  ]
+ },
+ {
+  "name": "season-Bid-2-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-2-0.json"
+  ]
+ },
+ {
+  "name": "season-Bid-2-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-2-7.json"
+  ]
+ },
+ {
+  "name": "season-Bid-2-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-2",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-2-14.json"
+  ]
+ },
+ {
+  "name": "season-Bid-3-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-3-0.json"
+  ]
+ },
+ {
+  "name": "season-Bid-3-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-3-7.json"
+  ]
+ },
+ {
+  "name": "season-Bid-3-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-3",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-3-14.json"
+  ]
+ },
+ {
+  "name": "season-Bid-4-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-4-0.json"
+  ]
+ },
+ {
+  "name": "season-Bid-4-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-4-7.json"
+  ]
+ },
+ {
+  "name": "season-Bid-4-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ENG",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-4",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-4-14.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-esp1-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-esp1-0.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-esp1-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-esp1-7.json"
+  ]
+ },
+ {
+  "name": "season-t15s3fac-esp1-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-t15s3fac-esp1-14.json"
+  ]
+ },
+ {
+  "name": "season-Bid-esp1-0",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "0,1,2,3,4,5,6",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-esp1-0.json"
+  ]
+ },
+ {
+  "name": "season-Bid-esp1-7",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "7,8,9,10,11,12,13",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-esp1-7.json"
+  ]
+ },
+ {
+  "name": "season-Bid-esp1-14",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-season-share.ts",
+  "args": [
+   "--country",
+   "ESP",
+   "--clubs",
+   "14,15,16,17,18,19",
+   "--seeds",
+   "t689-season-1",
+   "--year",
+   "2024",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/season/season-Bid-esp1-14.json"
+  ]
+ },
+ {
+  "name": "stress-t15s3fac-val-1",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-t15s3fac-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-t15s3fac-val-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-t15s3fac-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-t15s3fac-val-3",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/t15s3fac.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-t15s3fac-val-3.json"
+  ]
+ },
+ {
+  "name": "stress-Bid-val-1",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-1",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-Bid-val-1.json"
+  ]
+ },
+ {
+  "name": "stress-Bid-val-2",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-2",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-Bid-val-2.json"
+  ]
+ },
+ {
+  "name": "stress-Bid-val-3",
+  "patch": "artifacts/benchmarks/scoring-261106-cv04-kpr/candidates/Bid.json",
+  "script": "scripts/scoring-striker-stress.ts",
+  "args": [
+   "--seeds",
+   "cf04-stress-val-3",
+   "--games",
+   "38",
+   "--out",
+   "artifacts/benchmarks/scoring-261106-cv04-kpr/stress-Bid-val-3.json"
+  ]
+ }
+]

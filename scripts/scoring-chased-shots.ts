@@ -151,6 +151,22 @@ for (let i = start; i < start + matches; i++) {
       if (idx >= 0 && !onAt.has(key)) onAt.set(key, k === 0 ? 0 : e.elapsed);
     }
     if (e.action === 'corner' || e.action === 'freeKick') setPieceUntil = k + 3;
+    // Open-play passes the opposing keeper won (→MATCH-31, MATCH-35 r55's race for a ball in
+    // behind), beside the through balls and how many of them were completed into the box.
+    if (e.action === 'pass') {
+      const foeSide = (1 - e.side) as 0 | 1;
+      const gk = e.slots[foeSide * 11];
+      const keeperWon = e.by !== undefined && e.by[0] === foeSide && e.by[1] === gk ? 1 : 0;
+      const end = attackFrame(e.side, e.to ?? e.ball);
+      const complete = e.outcome === 'complete' ? 1 : 0;
+      const intoBox = complete && end[0] >= 88.5 && end[1] >= 13.84 && end[1] <= 54.16 ? 1 : 0;
+      add(`keeper|${e.kind === 'through' ? 'through' : 'other'}`, {
+        passes: 1,
+        complete,
+        intoBox,
+        keeperWon,
+      });
+    }
     if (e.action !== 'shot' || e.result === undefined || e.header || !e.from) return;
     if (k <= setPieceUntil || e.kind === 'penalty' || RESTARTS.has(e.action)) return;
     const prev = trace[k - 1];

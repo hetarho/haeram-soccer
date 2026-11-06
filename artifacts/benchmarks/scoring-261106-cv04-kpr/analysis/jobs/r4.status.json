@@ -1,0 +1,55 @@
+{
+ "seconds": 134,
+ "status": [
+  {
+   "name": "bands-t15s3fac120-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-t15s3fac110-400",
+   "code": 0,
+   "seconds": 67
+  },
+  {
+   "name": "bands-t15s3facsb30-400",
+   "code": 0,
+   "seconds": 68
+  },
+  {
+   "name": "origins-t15s3fac110-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-t15s3fac120-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "origins-t15s3facsb30-0-300",
+   "code": 0,
+   "seconds": 70
+  },
+  {
+   "name": "bands-c9t15s3fac120-400",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "bands-c9t15s3facsb30-400",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "origins-c9t15s3fac120-0-300",
+   "code": 0,
+   "seconds": 64
+  },
+  {
+   "name": "origins-c9t15s3facsb30-0-300",
+   "code": 0,
+   "seconds": 64
+  }
+ ]
+}
