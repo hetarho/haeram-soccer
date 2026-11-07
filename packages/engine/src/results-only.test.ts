@@ -111,17 +111,17 @@ describe('the results-only path before the takeover (→MATCH-22)', () => {
 });
 
 describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
-  /** The first fixtures' scores and goal lines before the override existed (seed `results-only`). */
+  /** Released main ff685c33's first scores and goal lines, before adding the override. */
   const RELEASED = {
     scores: ['5-0', '3-1', '1-1', '1-3', '3-2', '0-3', '3-0', '1-1'],
     goals: [
-      '0000000031100000000000',
+      '0000000022100000000000',
       '0100001010000000000001',
       '0000000010000000001000',
       '0100000000000000020010',
       '0000001100100000010100',
       '0000000000000100001100',
-      '0000000012000000000000',
+      '0000000102000000000000',
       '0000001000000000010000',
     ],
   };
