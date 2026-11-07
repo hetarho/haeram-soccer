@@ -13,8 +13,9 @@ import { applyClubIdentity } from '../../../../packages/engine/src/identity-oper
 import { historyWorld, liveHistory } from '../../../../packages/engine/src/history';
 import { pricedClubs, tierFortune } from '../../../../packages/engine/src/club-value';
 import { pays } from '../../../../packages/engine/src/listing';
-import { takeOver } from '../../../../packages/engine/src/takeover';
-import { TAKEOVER_DEBT } from '../../../../packages/engine/src/owner-config';
+import { takeOver, takeoverLoan } from '../../../../packages/engine/src/takeover';
+import { CLUB_BOOKS, TAKEOVER_DEBT } from '../../../../packages/engine/src/owner-config';
+import { scaleBy } from '../../../../packages/engine/src/primitives';
 import { currentDay, fixtureDay, nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { legacyCrestMap } from '../../../../packages/engine/src/identity-legacy';
 import { appearanceForFixture } from '../../../../packages/engine/src/match-appearance';
@@ -1227,13 +1228,28 @@ describe('a taken-over career (→SAVE-27)', () => {
     );
     const w = structuredClone(generated);
     const fortune = tierFortune(w, 'oil');
+    // Under LEAGUE-10's means level with ECON-36's competition money no club nobody owns owes
+    // anything after 1930/31, so the case turns an affordable club's cash into a debt of the same
+    // amount: a balance the close can leave, its cash kept to `cashSeasons` of income, within the
+    // `debtSeasons` write-off. A debt lowers the price (→ECON-37), so the club stays affordable.
     const indebted = pricedClubs(w).find(
-      (priced) => BigInt(priced.club.books?.debt ?? '0') > 0n && pays(w, priced, fortune),
+      (priced) => BigInt(priced.club.books?.cash ?? '0') > 0n && pays(w, priced, fortune),
     )!;
     expect(indebted).toBeDefined();
+    const prepared = indebted.club.books!,
+      debt = prepared.cash,
+      income = prepared.seasons[0]!.income;
+    expect(BigInt(debt)).toBeLessThanOrEqual(
+      BigInt(scaleBy(income, CLUB_BOOKS.cashSeasons, 1000n)),
+    );
+    expect(BigInt(debt)).toBeLessThanOrEqual(
+      BigInt(scaleBy(income, CLUB_BOOKS.debtSeasons, 1000n)),
+    );
+    indebted.club.books = { ...prepared, cash: '0', debt };
     takeOver(w, indebted.club.id, { tier: 'oil', traits: ['politician', 'marketer'] });
     expect(w.owner?.takeover).toMatchObject({ year: 1931, clubId: indebted.club.id });
     expect(w.owner?.takeover.lastIncome).toBeDefined();
+    expect(w.loan).toEqual(takeoverLoan(debt));
     expect(w.loan?.seasonsLeft).toBe(TAKEOVER_DEBT.seasons);
     w.owner!.starSaleWindow = { year: w.year, kind: 'summer' };
     expect(w.history.map((season) => season.year)).toEqual([1930]);

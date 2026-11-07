@@ -53,6 +53,7 @@ import {
   seasonEndWithWage,
   settleClauses,
   settleMorale,
+  STAR_SPREAD_CONFIG,
   staffTerm,
   suitorFor,
   TALK_CONFIG,
@@ -289,6 +290,22 @@ function talksOn(w: World, day: number) {
 }
 const talkItems = (w: World, id: string) =>
   (w.inbox || []).filter((item) => item.kind === 'contract-talk' && item.ref === id);
+/**
+ * Runs `run` with CLUB-48's star pay spread table replaced by `table`'s parts, restoring the table
+ * in force whatever happens. Build every world before it: one built under another table could enter
+ * the shared test-world cache under the released key.
+ */
+function withSpread<T>(table: Partial<typeof STAR_SPREAD_CONFIG>, run: () => T) {
+  const kept = { ...STAR_SPREAD_CONFIG };
+  Object.assign(STAR_SPREAD_CONFIG, table);
+  try {
+    return run();
+  } finally {
+    Object.assign(STAR_SPREAD_CONFIG, kept);
+  }
+}
+/** The modern spread: s = 1 in every country and year, every star term in full (→CLUB-48). */
+const MODERN_SPREAD: typeof STAR_SPREAD_CONFIG = { shared: [[2008, 1]], own: {} };
 
 describe('contract talks (→CLUB-26)', () => {
   it('sets the floor at demand × (1 − goodwill) for each source of goodwill', () => {
@@ -953,75 +970,100 @@ describe('agents and contract clauses (→CLUB-29, CLUB-30)', () => {
     expect(demand(5)).toBe(ratio(market.toString(), 1040n, 1000n));
   });
 
+  // Two seasons back by default: within the premium's three, and never the last season whose books
+  // the staff's revenue check reads.
+  const podium = (w: World, id: string, place: 0 | 1, year = w.year - 2) => {
+    const entry = (who: string): BallonDorPlace => ({
+      id: who,
+      name: who,
+      club: clubOf(w).id,
+      position: 'ST',
+      goals: 20,
+      assists: 5,
+      appearances: 30,
+      points: 95,
+      honours: [],
+    });
+    const places = [entry('first'), entry('second')];
+    places[place] = entry(id);
+    // The podium joins that season's archive, or a bare one placed in order before the rest.
+    let season = w.history.find((h) => h.year === year);
+    if (!season) {
+      season = {
+        year,
+        currency: w.currency,
+        income: '0',
+        expense: '0',
+        champions: [],
+        europe: [],
+      } as unknown as World['history'][number];
+      w.history.push(season);
+      w.history.sort((a, b) => a.year - b.year);
+    }
+    season.ballonDor = places;
+  };
+
   it('prices a recent Ballon d’Or podium into his worth, demand and the staff’s cap (→CLUB-26)', () => {
-    // Two seasons back by default: within the premium's three, and never the last season whose
-    // books the staff's revenue check reads.
-    const podium = (w: World, id: string, place: 0 | 1, year = w.year - 2) => {
-      const entry = (who: string): BallonDorPlace => ({
-        id: who,
-        name: who,
-        club: clubOf(w).id,
-        position: 'ST',
-        goals: 20,
-        assists: 5,
-        appearances: 30,
-        points: 95,
-        honours: [],
-      });
-      const places = [entry('first'), entry('second')];
-      places[place] = entry(id);
-      // The podium joins that season's archive, or a bare one placed in order before the rest.
-      let season = w.history.find((h) => h.year === year);
-      if (!season) {
-        season = {
-          year,
-          currency: w.currency,
-          income: '0',
-          expense: '0',
-          champions: [],
-          europe: [],
-        } as unknown as World['history'][number];
-        w.history.push(season);
-        w.history.sort((a, b) => a.year - b.year);
-      }
-      season.ballonDor = places;
-    };
-    const winner = talking(80);
-    const market = marketWage(winner.w, winner.p),
-      plain = talkTerms(winner.w, winner.p);
-    expect(playerWorth(winner.w, winner.p)).toBe(market);
-    podium(winner.w, winner.p.id, 0);
-    expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 2000n, 1000n));
-    const priced = talkTerms(winner.w, winner.p);
-    expect(priced.demand).toBe(
-      scaleBy(
-        playerWorth(winner.w, winner.p),
-        buildEffects(winner.w).wage * agentPremium(agentOf(winner.w, winner.p)),
-        1000n,
-      ),
-    );
-    expect(Number(priced.demand) / Number(plain.demand)).toBeCloseTo(2, 4);
-    expect(BigInt(priced.floor)).toBeGreaterThan(BigInt(plain.floor));
-    // A second place three seasons back still counts ×1.4; four back no longer does.
-    const second = talking(80);
-    podium(second.w, second.p.id, 1, second.w.year - 3);
-    expect(playerWorth(second.w, second.p)).toBe(
-      ratio(marketWage(second.w, second.p), 1400n, 1000n),
-    );
-    const faded = talking(80);
-    podium(faded.w, faded.p.id, 0, faded.w.year - 4);
-    expect(playerWorth(faded.w, faded.p)).toBe(marketWage(faded.w, faded.p));
-    // 표준 keeps a recent winner: its 110% cap is measured on his worth, not his market wage.
-    const kept = talking(80);
-    kept.p.agent = 5;
-    kept.w.morale = 50;
-    podium(kept.w, kept.p.id, 0);
-    holdRows(kept.w, { direction: { renewal: 'standard' } });
-    expect(BigInt(talkTerms(kept.w, kept.p).floor)).toBeGreaterThan(
-      (BigInt(marketWage(kept.w, kept.p)) * 11n) / 10n,
-    );
-    newYear(kept.w);
-    expect(talkItems(kept.w, kept.p.id)[0]!.title).toContain('받아들였어요');
+    // The worlds come first; the premium is read at the modern spread, where it counts in full
+    // (→CLUB-48), on a 1950 world whose own table would price none of it.
+    const winner = talking(80),
+      second = talking(80),
+      faded = talking(80),
+      kept = talking(80);
+    withSpread(MODERN_SPREAD, () => {
+      const market = marketWage(winner.w, winner.p),
+        plain = talkTerms(winner.w, winner.p);
+      expect(playerWorth(winner.w, winner.p)).toBe(market);
+      podium(winner.w, winner.p.id, 0);
+      expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 2000n, 1000n));
+      const priced = talkTerms(winner.w, winner.p);
+      expect(priced.demand).toBe(
+        scaleBy(
+          playerWorth(winner.w, winner.p),
+          buildEffects(winner.w).wage * agentPremium(agentOf(winner.w, winner.p)),
+          1000n,
+        ),
+      );
+      expect(Number(priced.demand) / Number(plain.demand)).toBeCloseTo(2, 4);
+      expect(BigInt(priced.floor)).toBeGreaterThan(BigInt(plain.floor));
+      // A second place three seasons back still counts ×1.4; four back no longer does.
+      podium(second.w, second.p.id, 1, second.w.year - 3);
+      expect(playerWorth(second.w, second.p)).toBe(
+        ratio(marketWage(second.w, second.p), 1400n, 1000n),
+      );
+      podium(faded.w, faded.p.id, 0, faded.w.year - 4);
+      expect(playerWorth(faded.w, faded.p)).toBe(marketWage(faded.w, faded.p));
+      // 표준 keeps a recent winner: its 110% cap is measured on his worth, not his market wage.
+      kept.p.agent = 5;
+      kept.w.morale = 50;
+      podium(kept.w, kept.p.id, 0);
+      holdRows(kept.w, { direction: { renewal: 'standard' } });
+      expect(BigInt(talkTerms(kept.w, kept.p).floor)).toBeGreaterThan(
+        (BigInt(marketWage(kept.w, kept.p)) * 11n) / 10n,
+      );
+      newYear(kept.w);
+      expect(talkItems(kept.w, kept.p.id)[0]!.title).toContain('받아들였어요');
+    });
+  });
+
+  it('raises the Ballon d’Or premium to the star pay spread in force (→CLUB-48)', () => {
+    const { w, p } = talking(80);
+    expect(clubOf(w).country).toBe('ENG');
+    expect(w.year).toBe(1950);
+    const market = marketWage(w, p);
+    podium(w, p.id, 0);
+    // England's maximum wage holds its spread at 0 through 1960/61: a winner is worth his market wage.
+    expect(playerWorth(w, p)).toBe(market);
+    // On the shared table alone, its 1950 spread lies between 0 and 1: part of the ×2, not all of it.
+    // A wage at OVR 80 never moves with the spread, so his market wage reads the same on it.
+    const shared = withSpread({ own: {} }, () => {
+      expect(marketWage(w, p)).toBe(market);
+      return BigInt(playerWorth(w, p));
+    });
+    expect(shared).toBeGreaterThan(BigInt(market));
+    expect(shared).toBeLessThan(BigInt(market) * 2n);
+    // The table in force is back once the block ends.
+    expect(playerWorth(w, p)).toBe(market);
   });
 
   it('keeps clause shares and sizes in their ranges, leaning with the agent', () => {

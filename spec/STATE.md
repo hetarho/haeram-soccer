@@ -800,7 +800,6 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 T711 | todo |
-| T711 | two integration cases on the rules in force: the Ballon d'Or premium read at a stated star pay spread, and the takeover loan from a prepared debt | CLUB ECON SAVE LEAGUE ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -825,11 +824,11 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 
 ## next
-- implement-task T711: the two integration cases the parallel gate failed on 54b634a4 — the Ballon d'Or case's assertions at a stated modern spread plus the table in force read on the 1950 England world, and the takeover round trip from a prepared debt; test files only, both cases left to the coordinator's final gate.
-- Then T700 on current recruitment; its verdict planning/implementation slice precedes T689. Preserve all measurement criteria and timeboxes.
+- implement-task T700 on current recruitment (T711 done; its two integration cases run in the coordinator's final gate); its verdict planning/implementation slice precedes T689. Preserve all measurement criteria and timeboxes.
 - av07 continues through the host loop for up to eight hours; only the coordinator publishes after the complete final gate.
 
 ## log
+- 261108 T711 done: the Ballon d'Or case's assertions run at a stated modern spread with a new case reading the table in force on the 1950 England world, and the takeover round trip buys a club whose cash the case turns into an equal debt, `w.loan` = `takeoverLoan(debt)`; test files only, both cases left to the coordinator's final gate (av07)
 - 261108 create-task T711: the gate's two integration cases on the rules in force before T700 (T700 dep +T711); no SSOT delta (av07)
 - 261107 T710 done: golden and both prepared worlds regenerated on the recovered economy at clean 84a128d2; one golden fact moved (a 1950 England star signing paid at W80, CLUB-48), books/wages/debt of clubs nobody owns as ECON-36/CLUB-48/LEAGUE-10 set; contract and full gate left to the coordinator (av07)
 - 261107 create-task T710: recovered economy fixtures before T700; parallel T708/T709 integrated (av07)
@@ -848,5 +847,3 @@
 - 261105 fix e2e port: Playwright starts webServer before the e2e lock's globalSetup, so the batch gate on 2d984ba2 failed at once while something else held 127.0.0.1:4173 (still held); without BROWSER_TEST_PORT each run now takes a free port and publishes it to its workers (tests/config/browser-port.ts). cv04
 - 261105 fix merge: origin/main 596d5570 into codex/cv04 for the supervisor's push — contracts.test.ts takes main's identical fee assertion without the stale comment (managerMarket.test.ts already equal); STATE inbox and log unioned (log trimmed to 20), ssot rows by ID (CLUB r60 MATCH r53 LEAGUE r18 STAFF r40 ECON r49), next keeps both sides; T689 untouched and todo. cv04
 - 261105 fix e2e for the released owner office: tests/e2e follow the 결재함/결재 설정 modals, home's area cards, the office page, the merged HUD money and the funding slider instead of the retired section tabs, office bar and fortune button (helpers and ~30 specs); app fixes the suite caught: nested dialogs stack by depth so 계약 협상/영입 중재 answer from the 결재함, the first-team training page is back, office pages name a detour's way back (WEB-74), the overview warns a thin squad (WEB-44), cup history no longer calls a hook in its lazy loader; chromium full suite 345/345
-- 261105 fix integration tests: contracts.test.ts expects the recruitment dial to leave asking fees unchanged (ECON-16 as released) and managerMarket.test.ts the renewal notice with 연봉 한도, both stale since the released owner controls. oe05
-- 261105 fix office effects: the ledger's floors and ceilings are finite min/max, since the view's canonical changes reject Infinity (host and client integration tests on d708cd17); a ledger test now canonicalizes it. oe05
