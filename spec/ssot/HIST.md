@@ -94,7 +94,7 @@
 ## chg
 - r22 261103 HIST-11✎ regenerate on read and never store→record source-linked news once and retain across seasons with bounded publication; HIST-13✎ appearance counts derived on read→incremental retained-participation totals; HIST-22+ incremental season/career read summaries with reconstruction and duplicate protection
 - r21 261103 HIST-5✎ founding the first entry→the takeover the first entry of the owner's era; HIST-21+ pre-takeover seasons shown as the club's history before the owner, the owner's era from the takeover with the owner's season record
-- r20 261102 HIST-5✎ tactics application/refusal removed from appended facts, facts already recorded stay; HIST-11✎ owner requests removed from club events; HIST-14✎ once-per-player coaching encouragement and response removed
+- r20 261102 HIST-5✎ tactics application/refusal appended as new facts→not appended, facts already recorded stay; HIST-11✎ owner requests in club events→removed; HIST-14✎ once-per-player coaching encouragement and response→removed
 - r19 261102 HIST-11✎ closed season's honours→+its Ballon d'Or podium, our player's win celebrated; HIST-13✎ +the season keeps the Ballon d'Or podium (identity, name, club, position, goals, assists, appearances, points) and a player's wins/podiums derived on read
 - r18 261027 HIST-18✎ every tenure in summaries→interim tenures without a credited match or outcome left out; HIST-20+ own-club transfer facts (fee signings, sales, loans) with rankings in today's money and ledger fallback for older careers
 - r17 261021 HIST-18/19+ stable own-manager tenures, settlement-time accomplishment attribution, factual summaries and explicit tracking coverage
