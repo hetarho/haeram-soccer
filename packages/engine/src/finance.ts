@@ -454,15 +454,14 @@ export function matchBonus(w: World, match: MatchRecord) {
       : own === other
         ? sourceMessage('result.draw.label')
         : sourceMessage('result.loss.label');
-  const prestige = 1 + Math.max(0, 3 - clubOf(w).tier) * 0.35;
   const games = ownLeagueGames(w);
   const amount = isLeagueMatch(match.kind)
     ? '0'
-    : broadcastQuote(
+    : resultBonus(
         clubOf(w).country,
         w.year,
-        (own > other ? FINANCE_CONFIG.winBonus : own === other ? FINANCE_CONFIG.drawBonus : 0) *
-          prestige,
+        clubOf(w).tier,
+        own > other ? 'win' : own === other ? 'draw' : 'loss',
       );
   const main = w.sponsors?.find((contract) => contract.slot === 'shirt');
   const sponsored =
@@ -470,6 +469,26 @@ export function matchBonus(w: World, match: MatchRecord) {
       ? ratio(main.bonus, own > other ? 3n : own === other ? 1n : 0n, BigInt(games * 3))
       : '0';
   return { result, amount, sponsored };
+}
+/** A match's result as the result money reads it. */
+export type MatchResult = 'win' | 'draw' | 'loss';
+/**
+ * A cup or continental match's result bonus (→ECON-19, ECON-31): a win or a draw at the club's
+ * division's prestige (the top flight ×2.05, then ×1.7, ×1.35, ×1 from the fourth), on the
+ * broadcasting index of its country and season. The owner's club and a club nobody owns' book
+ * (→ECON-36) are paid by this one rule.
+ */
+export function resultBonus(code: string, year: number, tier: number, result: MatchResult) {
+  const prestige = 1 + Math.max(0, 3 - tier) * 0.35;
+  return broadcastQuote(
+    code,
+    year,
+    (result === 'win'
+      ? FINANCE_CONFIG.winBonus
+      : result === 'draw'
+        ? FINANCE_CONFIG.drawBonus
+        : 0) * prestige,
+  );
 }
 
 const incomeKinds: Record<string, string> = {

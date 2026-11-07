@@ -22,7 +22,7 @@
  *            --purse-apart   --world-dir DIR (keep each seed's 1950 world)   --prepare (only that)
  *            --out careers.json (keep the careers)   --in a.json,dir (report kept careers only;
  *            --measured-rate R and --note TEXT say what they were played on)   --reach   --moods
- *            --log (one line a season on stderr)
+ *            --log (one line a season on stderr)   --spread FILE (CLUB-48's table, a measurement override)
  *
  * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
  * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
@@ -51,7 +51,7 @@ import {
   tierFortune,
 } from '../packages/engine/src/club-value';
 import { pays } from '../packages/engine/src/listing';
-import { bookIncomeLines } from '../packages/engine/src/books';
+import { BOOK_COMPETITIONS, bookIncomeLines } from '../packages/engine/src/books';
 import { readGateDetail } from '../packages/engine/src/settlement';
 import { ffpRoom, livingCost, ownerCommand } from '../packages/engine/src/owner';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
@@ -76,6 +76,8 @@ import {
   OWNER_LIVING,
   OWNER_TIERS,
 } from '../packages/engine/src/owner-config';
+import { STAR_SPREAD_CONFIG } from '../packages/engine/src/market-prices';
+import { MEANS_LEVEL } from '../packages/engine/src/dynamics';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string) => {
@@ -110,6 +112,34 @@ const SSOT_LIVING = OWNER_LIVING.rate;
 const MEASURED_LIVING = Number(option('measured-rate', String(SSOT_LIVING)));
 /** Sets the living-cost rate the engine reads (a measurement override, never a game setting). */
 const setLiving = (rate: number) => ((OWNER_LIVING as { rate: number }).rate = rate);
+/**
+ * --spread FILE: the era's star pay spread table the careers and their worlds price with
+ * (→CLUB-48; { shared: [[year, s], ...], own: { CODE: { through, spread } } }), a measurement
+ * override of `STAR_SPREAD_CONFIG`, never a game setting; keep its worlds in their own --world-dir.
+ */
+const SPREAD = option('spread', '');
+if (SPREAD) {
+  const table = JSON.parse(readFileSync(SPREAD, 'utf8')) as typeof STAR_SPREAD_CONFIG;
+  STAR_SPREAD_CONFIG.shared = table.shared;
+  STAR_SPREAD_CONFIG.own = table.own;
+}
+/**
+ * --means: LEAGUE-10's means level on in the careers and their worlds (→T696), a measurement
+ * override of `MEANS_LEVEL`, never a game setting; it enters only with a `--spread` table, as
+ * CLUB-48 admits it, so its worlds too belong in their own --world-dir.
+ */
+const MEANS = args.includes('--means');
+if (MEANS) {
+  if (!SPREAD) throw new Error('--means enters only with CLUB-48 table: give it with --spread');
+  MEANS_LEVEL.inForce = true;
+}
+/**
+ * --cups: the books count their clubs' cup and continental money (→ECON-36, T697), a measurement
+ * override of `BOOK_COMPETITIONS`, never a game setting; its worlds belong in their own
+ * --world-dir.
+ */
+const CUPS = args.includes('--cups');
+if (CUPS) BOOK_COMPETITIONS.inForce = true;
 const TAKEOVER_YEAR = 1950;
 /** ECON-29's career averages: the first fifty seasons. */
 const CAREER = 50;
@@ -596,6 +626,32 @@ function balanceReport(careers: Career[]) {
 }
 
 /**
+ * How the clubs grow (ECON-29, ECON-30, LEAGUE-13): per tier, the division bought, the careers that
+ * reach the top flight, the season they first play there (1 = the takeover season), and the
+ * operating result before player trading and the wage bill against revenue over the seasons played.
+ */
+function growthReport(careers: Career[]) {
+  console.log('\n### Growth — top-flight reach and operating result by tier\n');
+  console.log(
+    '| tier | traits | policy | careers | division bought (median) | started in the top flight | reached it from below | first top-flight season (median / range, of those from below) | operating result / revenue | wage bill / revenue | player sales / revenue |',
+  );
+  console.log('|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|');
+  for (const [key, group] of groupsOf(careers)) {
+    const [tier, traits, policy] = key.split('|');
+    const started = group.filter((c) => c.start.division === 0).length;
+    const firsts = group
+      .filter((c) => c.start.division > 0)
+      .map((c) => c.seasons.findIndex((s) => s.tier === 0))
+      .filter((i) => i >= 0)
+      .map((i) => i + 1);
+    const seasons = group.flatMap((c) => c.seasons);
+    console.log(
+      `| ${tier} | ${traits} | ${policy} | ${group.length} | ${median(group.map((c) => c.start.division + 1))} | ${started} | ${firsts.length} of ${group.length - started} | ${firsts.length ? `${median(firsts)} / ${Math.min(...firsts)}–${Math.max(...firsts)}` : '-'} | ${pct(share(seasons, operating, turnover))} | ${pct(share(seasons, (s) => s.wages, turnover))} | ${pct(share(seasons, (s) => s.sources.sales, turnover))} |`,
+    );
+  }
+}
+
+/**
  * The owner's bankruptcy at each living-cost rate (→OWNER-8/14), read on the reference careers
  * played with the purse apart: the first close at which the summed living costs pass the fortune
  * left after the price; a career that ended before it is counted as it ended.
@@ -893,11 +949,12 @@ console.log(
     .map((t) => t.multiple)
     .join(
       '/',
-    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''})`,
+    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''})`,
 );
 /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
 if (option('note', '')) console.log(`\n${option('note', '')}`);
 balanceReport(careers);
+growthReport(careers);
 livingReport(careers);
 startReport(careers);
 moodReport(careers);

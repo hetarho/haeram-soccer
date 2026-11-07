@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import type { MatchPlayback } from '../../contracts/src/types';
 import { historyWorld } from './history';
-import { resultsOnlyMatch } from './results-only';
+import { RESULTS_LUCK, resultsOnlyMatch } from './results-only';
 import { equalSides } from './results-only.testkit';
 import { M } from './grid/record';
 import { lineOf } from './player';
@@ -107,5 +107,63 @@ describe('the results-only path before the takeover (→MATCH-22)', () => {
     const w = historyWorld('results-only', ENABLED_RELEASE);
     const f = w.fixtures[0]!;
     expect(resultsOnlyMatch(w, f)).toEqual(resultsOnlyMatch(w, f));
+  });
+});
+
+describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
+  /** The first fixtures' scores and goal lines before the override existed (seed `results-only`). */
+  const RELEASED = {
+    scores: ['5-0', '3-1', '1-1', '1-3', '3-2', '0-3', '3-0', '1-1'],
+    goals: [
+      '0000000031100000000000',
+      '0100001010000000000001',
+      '0000000010000000001000',
+      '0100000000000000020010',
+      '0000001100100000010100',
+      '0000000000000100001100',
+      '0000000012000000000000',
+      '0000001000000000010000',
+    ],
+  };
+  const read = (w: ReturnType<typeof historyWorld>) =>
+    w.fixtures.slice(0, RELEASED.scores.length).map((f) => resultsOnlyMatch(w, f));
+  const scores = (list: MatchPlayback[]) =>
+    list.map((p) => `${p.record.score.home}-${p.record.score.away}`);
+  const withLuck = <T>(salt: string, season: number, run: () => T): T => {
+    RESULTS_LUCK.salt = salt;
+    RESULTS_LUCK.season = season;
+    try {
+      return run();
+    } finally {
+      RESULTS_LUCK.salt = '';
+      RESULTS_LUCK.season = 1930;
+    }
+  };
+  afterEach(() => {
+    expect(RESULTS_LUCK).toEqual({ salt: '', season: 1930 });
+  });
+
+  it('leaves the released draw exactly as it was by default', () => {
+    expect(RESULTS_LUCK).toEqual({ salt: '', season: 1930 });
+    const w = historyWorld('results-only', ENABLED_RELEASE);
+    expect(w.year).toBe(1930);
+    const list = read(w);
+    expect(scores(list)).toEqual(RELEASED.scores);
+    expect(list.map((p) => p.record.players.map((l) => l.metrics[M.goals]).join(''))).toEqual(
+      RELEASED.goals,
+    );
+  });
+
+  it("leaves a fixture of another season unchanged and redraws the salted season's", () => {
+    const w = historyWorld('results-only', ENABLED_RELEASE);
+    const released = read(w);
+    expect(withLuck('placebo-1', 1931, () => read(w))).toEqual(released);
+    const one = withLuck('placebo-1', 1930, () => read(w)),
+      two = withLuck('placebo-2', 1930, () => read(w));
+    expect(scores(one)).not.toEqual(scores(released));
+    expect(scores(two)).not.toEqual(scores(one));
+    // Same fixture, same salt: the same result.
+    expect(withLuck('placebo-1', 1930, () => read(w))).toEqual(one);
+    expect(read(w)).toEqual(released);
   });
 });

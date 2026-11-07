@@ -126,7 +126,13 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('market-prices', 'marketPoints', 'marketWageUnits', 'starWagePremium'),
+          ...src(
+            'market-prices',
+            'marketPoints',
+            'marketWageUnits',
+            'starWagePremium',
+            'starPaySpread',
+          ),
           ...src('contracts', 'playerWorth', 'talkGoodwill', 'talkTerms'),
         ],
         [
@@ -2281,11 +2287,19 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.2310663dbf'),
             sourceMessage('copy.influences.600de29d69'),
           ),
+          f(
+            '장부가 감당하는 선수단',
+            '주인 없는 구단은 지난 시즌 장부의 수입에서 운영비를 뺀 돈으로 연봉을 줄 수 있는 전력까지만 유지하고, 넘치면 그만큼 선수를 팝니다. 프로젝트 중이거나 막 인수된 구단은 예외입니다.',
+          ),
+          f(
+            '컵·대륙 대회 수입',
+            '장부의 수입에는 리그 배분금·관중·상업 수입과 함께 국내 컵과 대륙 대회의 상금, 경기 결과 보너스, 홈 경기 관중 수입이 들어갑니다.',
+          ),
         ],
         [
-          ...src('dynamics', 'evolveClubs', 'successBonus'),
+          ...src('dynamics', 'evolveClubs', 'successBonus', 'meansLevel'),
           ...src('adaptation', 'settleCohesion'),
-          ...src('books', 'settleNpcBooks'),
+          ...src('books', 'settleNpcBooks', 'bookCompetitionMoney'),
         ],
         [
           link('match-strength', sourceMessage('copy.influences.7fa3cab168')),

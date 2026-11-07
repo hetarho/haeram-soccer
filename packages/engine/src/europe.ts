@@ -7,6 +7,7 @@ import { europeanAccess } from './europe-access';
 import { europeanTableOrder } from './europe-coefficients';
 import { addEvent } from './events';
 import { broadcastQuote } from './quotes';
+import type { MatchResult } from './finance';
 import { clubOf } from './player-state';
 import { initialElo } from './world';
 import { emptyTable } from './season';
@@ -36,6 +37,29 @@ import {
  * match pays `match`, plus `draw` or `win`; each knockout tie `knockout`; the title `honor`.
  */
 export const EUROPE_PRIZE_CONFIG = { match: 6.4, draw: 1.8, win: 4.5, knockout: 11, honor: 90 };
+/**
+ * A league- or group-phase match's prize with its draw or win (→EURO-7), on the broadcasting index
+ * of country `code` in `year` (→ECON-31). The owner's club and a club nobody owns' book (→ECON-36)
+ * are paid by this one rule, as by the two below.
+ */
+export function europeMatchPrize(code: string, year: number, result: MatchResult) {
+  const pay = EUROPE_PRIZE_CONFIG;
+  return broadcastQuote(
+    code,
+    year,
+    pay.match + (result === 'draw' ? pay.draw : result === 'win' ? pay.win : 0),
+  );
+}
+/** A continental knockout tie's prize (qualifiers and the Super Cup's tie included, →EURO-7). */
+export function europeTiePrize(code: string, year: number) {
+  return broadcastQuote(code, year, EUROPE_PRIZE_CONFIG.knockout);
+}
+/** A continental title's prize (→EURO-7); the Super Cup pays none (`paysTitle`). */
+export function europeTitlePrize(code: string, year: number) {
+  return broadcastQuote(code, year, EUROPE_PRIZE_CONFIG.honor);
+}
+/** Whether a competition's title pays its prize: every one but the Super Cup. */
+export const paysTitle = (t: EuropeTournament) => t.key !== 'super';
 export interface Era {
   key: string;
   name: string;
@@ -300,7 +324,8 @@ function schedulePhase(
   );
 }
 /** Knockout legs are `…:k<round>:<tie>`; every other continental fixture counts in the table. */
-const isKnockout = (id: string) => /:k\d+:\d+(:2)?$/.test(id);
+/** Whether a continental fixture is a knockout tie's leg, not a league- or group-phase match. */
+export const isKnockout = (id: string) => /:k\d+:\d+(:2)?$/.test(id);
 /** Groups recovered from who plays whom: every group is a round robin of its own. */
 export function phaseGroups(t: EuropeTournament, marker: 'phase' | 'second' = 'phase') {
   const parent = new Map<string, string>();
@@ -357,12 +382,11 @@ function play(w: World, t: EuropeTournament, f: Fixture, settlement?: Settlement
     const ownWin =
       f.home === w.playerClub ? f.score.home > f.score.away : f.score.away > f.score.home;
     // Continental prizes keep their rule and grow with the broadcasting index (→EURO-7, →ECON-31).
-    const pay = EUROPE_PRIZE_CONFIG,
-      prize = broadcastQuote(
-        clubOf(w).country,
-        w.year,
-        pay.match + (f.score.home === f.score.away ? pay.draw : ownWin ? pay.win : 0),
-      );
+    const prize = europeMatchPrize(
+      clubOf(w).country,
+      w.year,
+      f.score.home === f.score.away ? 'draw' : ownWin ? 'win' : 'loss',
+    );
     credit(w, prize);
     addEvent(
       w,
@@ -466,7 +490,7 @@ function progressEurope(w: World, t: EuropeTournament) {
       if (!decideTie(tie, legsOf(w, t.fixtures, t.key, index, i), w.year < 2021)) return;
       changed = true;
       if (tie.home !== w.playerClub && tie.away !== w.playerClub) return;
-      const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.knockout);
+      const prize = europeTiePrize(clubOf(w).country, w.year);
       credit(w, prize);
       addEvent(
         w,
@@ -565,8 +589,8 @@ function crown(w: World, t: EuropeTournament, winner: string) {
   if (t.key !== 'super') awardReputation(w, winner, REPUTATION_CONFIG.continentalTitle);
   // Every continental title, the Super Cup's included whatever its prize and news (→HIST-19).
   if (winner === w.playerClub) captureCupTitle(w, t.key);
-  if (winner === w.playerClub && t.key !== 'super') {
-    const prize = broadcastQuote(clubOf(w).country, w.year, EUROPE_PRIZE_CONFIG.honor);
+  if (winner === w.playerClub && paysTitle(t)) {
+    const prize = europeTitlePrize(clubOf(w).country, w.year);
     credit(w, prize);
     addEvent(
       w,
