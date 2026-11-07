@@ -743,6 +743,7 @@
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
 - 261108 decided CLUB-26 CLUB-48 ECON-36 ECON-38 SAVE-27 ARCH-21 ARCH-30 T711 T700: how the two stale integration cases keep what they protect on the rules in force → T711 (test files only, before T700): the Ballon d'Or case runs its ×2/×1.4/faded/표준-cap assertions unchanged at s = 1 set through `STAR_SPREAD_CONFIG` for the case and restored, with worlds built before the override so the shared test-world cache never holds one, and reads the table in force beside it (England 1950: worth = market wage; shared table alone: strictly between ×1 and ×2); the takeover round trip turns an affordable club's cash into an equal debt before buying it and adds `w.loan` = `takeoverLoan(debt)`; T700 depends on T711 by the gate's order, not by touches (alt: expected worth through `factor ** starPaySpread`, restating the code | move the world to 2008 | live the ownerless world longer until a club owes, tying the case to the economy | drop the loan assertions). av07
+- 261108 decided CLUB-25 CLUB-48 ECON-36 LEAGUE-10 LEAGUE-13 T712 T689: how T700's go enters CLUB-25 and what decides it → CLUB r61: a player is paid on his club's division or the division his ability suits when higher (`divisionFor`, fractional between the tiers' typical strengths, the top flight from OVR 77), every club alike, books and means level included as ECON-36's same scales require; the 35–50% second-tier target restated per player (a second-tier club pays a player who suits the second tier 40% of a top-flight club's wage, `MARKET_CONFIG.divisions`), transfer values kept on the selling club's division; it enters production only on CLUB-25's gate — LEAGUE-13's 중견 사업가/지역 유지/자수성가 축구팬 reach and bankruptcy bands on calibration careers (ENG ESP FRA GER × seeds 0/1, 1950–1969) and, judged apart, held-out careers (seeds 2/3 and ITA POR NED BEL on seed 0), "about half" read as 35–65%, the upper tiers with no club bankrupt, and CLUB-48's books and champions parts on worlds lived with it (T698's allowance 6 reused) — as T712 (explore 180m, a default-off `ABILITY_FIT` read inside `marketWageAt`, no partial-fit knob, held-out reads only after calibration passes); T689 depends on T712 and runs whatever its verdict (alt: the owner's club only, against ECON-36's same scales | a partial-fit share tuned in the window, a rule CLUB-25 does not state | the scout's reach above the club's division first, the supply rule T700 printed beside | fees on the ability-fit division too, which the screen did not read). av07
 
 ## ideation
 | id | st |
@@ -771,7 +772,7 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
-| CLUB | 60 | 60 | - | 0 |
+| CLUB | 61 | 61 | - | 0 |
 | MATCH | 56 | 56 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
@@ -796,11 +797,11 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
+| T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 T711 | todo |
 | T710 | refresh portable and prepared fixtures on recovered economy | ARCH CLUB LEAGUE ECON | T708 T709 | todo |
 | T711 | two integration cases on the rules in force: the Ballon d'Or premium read at a stated star pay spread, and the takeover loan from a prepared debt | CLUB ECON SAVE LEAGUE ARCH | - | todo |
-
+| T712 | the ability-fit wage on LEAGUE-13's lower tiers, in force only on a pass | CLUB LEAGUE ECON | T700 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -829,9 +830,11 @@
 - Then T700 on current recruitment; its verdict planning/implementation slice precedes T689. Preserve all measurement criteria and timeboxes.
 - av07 continues through the host loop for up to eight hours; only the coordinator publishes after the complete final gate.
 - implement-task T711: the two integration cases the parallel gate failed on 54b634a4 — the Ballon d'Or case's assertions at a stated modern spread plus the table in force read on the 1950 England world, and the takeover round trip from a prepared debt; test files only, both cases left to the coordinator's final gate.
+- implement-task T712 (explore 180m): CLUB r61's ability-fit wage behind `ABILITY_FIT` in `marketWageAt`, calibration careers first (all six tiers, ENG ESP FRA GER × seeds 0/1, 1950–1969), held-out careers and CLUB-48's books/champions worlds only if calibration passes, in force only on every part; then T689 whatever T712's verdict. T711's two integration cases still run in the coordinator's final gate. Preserve all measurement criteria and timeboxes.
 
 ## log
 - 261108 create-task T711: the gate's two integration cases on the rules in force before T700 (T700 dep +T711); no SSOT delta (av07)
+- 261108 update-ssot CLUB r61 + create-task T712: a player is paid on his club's division or the division his ability suits when higher, every club alike, in force only once LEAGUE-13's lower tiers and CLUB-48's books and champions parts hold with it (CLUB-25✎); T689 dep +T712 (av07)
 - 261107 create-task T710: recovered economy fixtures before T700; parallel T708/T709 integrated (av07)
 - 261107 T708 integrated
 - 261107 T709 integrated
@@ -846,7 +849,6 @@
 - 261107 update-ssot MATCH r54 + refresh T689: a man closes a shot from where he can reach the ball's path as it is struck, a chaser behind the ball only from touching distance, his take otherwise the pressure (MATCH-35✎); T689's cv04-sho window measures it, the diagnostic first, to 20:30Z. cv07
 - 261107 fix watch helper: when the resumed clock opens the next match-eve modal over the pace picker, continue through its public watch action; preserve every assertion and overall timeout. Resume cv07 to 07:00 KST on latest main. cv07
 - 261105 fix e2e port: Playwright starts webServer before the e2e lock's globalSetup, so the batch gate on 2d984ba2 failed at once while something else held 127.0.0.1:4173 (still held); without BROWSER_TEST_PORT each run now takes a free port and publishes it to its workers (tests/config/browser-port.ts). cv04
-- 261105 fix merge: origin/main 596d5570 into codex/cv04 for the supervisor's push — contracts.test.ts takes main's identical fee assertion without the stale comment (managerMarket.test.ts already equal); STATE inbox and log unioned (log trimmed to 20), ssot rows by ID (CLUB r60 MATCH r53 LEAGUE r18 STAFF r40 ECON r49), next keeps both sides; T689 untouched and todo. cv04
 - 261105 fix e2e for the released owner office: tests/e2e follow the 결재함/결재 설정 modals, home's area cards, the office page, the merged HUD money and the funding slider instead of the retired section tabs, office bar and fortune button (helpers and ~30 specs); app fixes the suite caught: nested dialogs stack by depth so 계약 협상/영입 중재 answer from the 결재함, the first-team training page is back, office pages name a detour's way back (WEB-74), the overview warns a thin squad (WEB-44), cup history no longer calls a hook in its lazy loader; chromium full suite 345/345
 - 261105 fix integration tests: contracts.test.ts expects the recruitment dial to leave asking fees unchanged (ECON-16 as released) and managerMarket.test.ts the renewal notice with 연봉 한도, both stale since the released owner controls. oe05
 - 261105 fix office effects: the ledger's floors and ceilings are finite min/max, since the view's canonical changes reject Infinity (host and client integration tests on d708cd17); a ledger test now canonicalizes it. oe05
