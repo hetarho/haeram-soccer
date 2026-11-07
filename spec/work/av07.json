@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-07T14:37:29.322Z",
-  "sourceCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+  "snapshotAt": "2026-11-07T14:47:34.621Z",
+  "sourceCommit": "54b634a42eddb6c6401c15b869cb9d04f195f398",
   "group": {
     "id": "av07",
     "branch": "codex/av07",
@@ -13,7 +13,7 @@
       "maxPending": 4
     },
     "review": "risky",
-    "runner": {
+    "lastRun": {
       "id": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
       "adapter": "builtin",
       "providers": {
@@ -36,49 +36,16 @@
         }
       ],
       "startedAt": "2026-11-07T14:29:51.187Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "f709cad6-3428-424d-bd49-b1cd428c6210",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.167.0"
-        },
-        "reviewer": {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.167.0"
-        }
-      },
-      "workers": [
-        {
-          "provider": "codex",
-          "model": null,
-          "version": "codex-cli 0.167.0"
-        }
-      ],
-      "startedAt": "2026-11-07T14:19:05.322Z",
-      "stoppedAt": "2026-11-07T14:28:00.627Z",
-      "dispatched": 4,
+      "stoppedAt": "2026-11-07T14:47:32.373Z",
+      "dispatched": 3,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
-          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
-          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
-          "attempt": "245816d9-f719-46be-b8c0-93f9de6d2089",
-          "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
-          "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+          "role": "finish",
+          "error": "검증 실패: pnpm run verify:batch",
+          "details": [
+            "(node:86352) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:86979) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:87623) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:87827) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:87841) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:87865) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:88015) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |integration| packages/engine/src/contracts.test.ts > agents and contract clauses (→CLUB-29, CLUB-30) > prices a recent Ballon d’Or podium into his worth, demand and the staff’s cap (→CLUB-26)\nAssertionError: expected '98731' to be '197462' // Object.is equality\n\nExpected: \"197462\"\nReceived: \"98731\"\n\n ❯ packages/engine/src/contracts.test.ts:994:45\n    992|     expect(playerWorth(winner.w, winner.p)).toBe(market);\n    993|     podium(winner.w, winner.p.id, 0);\n    994|     expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 2000n, …\n       |                                             ^\n    995|     const priced = talkTerms(winner.w, winner.p);\n    996|     expect(priced.demand).toBe(\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |integration| apps/web/src/adapters/persistence.test.ts > a taken-over career (→SAVE-27) > round-trips the owner, the takeover loan, every club’s books and the seasons before the owner\nAssertionError: expected undefined to be defined\n ❯ apps/web/src/adapters/persistence.test.ts:1233:22\n    1231|       (priced) => BigInt(priced.club.books?.debt ?? '0') > 0n && pays(…\n    1232|     )!;\n    1233|     expect(indebted).toBeDefined();\n       |                      ^\n    1234|     takeOver(w, indebted.club.id, { tier: 'oil', traits: ['politician'…\n    1235|     expect(w.owner?.takeover).toMatchObject({ year: 1931, clubId: inde…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
+          ]
         }
       ],
       "autopilot": true,
@@ -136,6 +103,8 @@
       "submittedBase": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
       "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
       "submittedAt": "2026-11-07T14:35:55.626Z",
+      "integratedCommit": "54b634a42eddb6c6401c15b869cb9d04f195f398",
+      "integratedAt": "2026-11-07T14:38:26.915Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -248,6 +217,33 @@
           "command": "pnpm run format:check",
           "startedAt": "2026-11-07T14:35:37.152Z",
           "finishedAt": "2026-11-07T14:35:55.052Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-11-07T14:37:29.589Z",
+          "finishedAt": "2026-11-07T14:37:31.643Z"
+        },
+        {
+          "command": "pnpm run typecheck",
+          "startedAt": "2026-11-07T14:37:31.791Z",
+          "finishedAt": "2026-11-07T14:37:57.538Z"
+        },
+        {
+          "command": "pnpm run lint",
+          "startedAt": "2026-11-07T14:37:57.719Z",
+          "finishedAt": "2026-11-07T14:38:06.847Z"
+        },
+        {
+          "command": "pnpm run validate:i18n",
+          "startedAt": "2026-11-07T14:38:06.992Z",
+          "finishedAt": "2026-11-07T14:38:09.731Z"
+        },
+        {
+          "command": "pnpm run format:check",
+          "startedAt": "2026-11-07T14:38:09.872Z",
+          "finishedAt": "2026-11-07T14:38:26.458Z"
         }
       ]
     },
@@ -1923,6 +1919,109 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2008,
+      "at": "2026-11-07T14:38:26.775Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-11-07T14:37:29.589Z",
+            "finishedAt": "2026-11-07T14:37:31.643Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:37:31.791Z",
+            "finishedAt": "2026-11-07T14:37:57.538Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:37:57.719Z",
+            "finishedAt": "2026-11-07T14:38:06.847Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:38:06.992Z",
+            "finishedAt": "2026-11-07T14:38:09.731Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:38:09.872Z",
+            "finishedAt": "2026-11-07T14:38:26.458Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2009,
+      "at": "2026-11-07T14:38:26.915Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "54b634a42eddb6c6401c15b869cb9d04f195f398",
+        "integratedAt": "2026-11-07T14:38:26.915Z"
+      }
+    },
+    {
+      "sequence": 2010,
+      "at": "2026-11-07T14:47:32.374Z",
+      "type": "group",
+      "group": "av07",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          ],
+          "startedAt": "2026-11-07T14:29:51.187Z",
+          "stoppedAt": "2026-11-07T14:47:32.373Z",
+          "dispatched": 3,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "role": "finish",
+              "error": "검증 실패: pnpm run verify:batch",
+              "details": [
+                "(node:86352) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:86979) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\n(node:87623) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:87827) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:87841) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:87865) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:88015) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |integration| packages/engine/src/contracts.test.ts > agents and contract clauses (→CLUB-29, CLUB-30) > prices a recent Ballon d’Or podium into his worth, demand and the staff’s cap (→CLUB-26)\nAssertionError: expected '98731' to be '197462' // Object.is equality\n\nExpected: \"197462\"\nReceived: \"98731\"\n\n ❯ packages/engine/src/contracts.test.ts:994:45\n    992|     expect(playerWorth(winner.w, winner.p)).toBe(market);\n    993|     podium(winner.w, winner.p.id, 0);\n    994|     expect(playerWorth(winner.w, winner.p)).toBe(ratio(market, 2000n, …\n       |                                             ^\n    995|     const priced = talkTerms(winner.w, winner.p);\n    996|     expect(priced.demand).toBe(\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯\n\n FAIL  |integration| apps/web/src/adapters/persistence.test.ts > a taken-over career (→SAVE-27) > round-trips the owner, the takeover loan, every club’s books and the seasons before the owner\nAssertionError: expected undefined to be defined\n ❯ apps/web/src/adapters/persistence.test.ts:1233:22\n    1231|       (priced) => BigInt(priced.club.books?.debt ?? '0') > 0n && pays(…\n    1232|     )!;\n    1233|     expect(indebted).toBeDefined();\n       |                      ^\n    1234|     takeOver(w, indebted.club.id, { tier: 'oil', traits: ['politician'…\n    1235|     expect(w.owner?.takeover).toMatchObject({ year: 1931, clubId: inde…\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯\n\n"
+              ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
