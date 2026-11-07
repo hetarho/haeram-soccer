@@ -795,9 +795,9 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | - | todo |
-
 | T708 | localize recovered balance influence explanations | ARCH WEB CLUB LEAGUE ECON | - | todo |
 | T709 | report first differing portable contract path and values | ARCH | - | todo |
+
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
