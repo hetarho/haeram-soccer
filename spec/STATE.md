@@ -21,6 +21,8 @@
 | av07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-07T14:14Z | 2026-11-07T14:47Z | - |
 
 ## inbox
+- 261107 decided ARCH-21 ARCH-30 CLUB-48 LEAGUE-10 ECON-36 T710 T700: what the parallel gate's two integration failures on 54b634a4 are (contracts.test.ts's Ballon d'Or worth 98731 against 197462; persistence.test.ts finds no indebted club after 1930/31) → test assumptions the rules in force changed, not fixture freshness or an engine regression: playerWorth raises the premium to England's s = 0 through 1960/61 (CLUB-48), and the refreshed 1951 worlds hold no indebted club nobody owns (13/12 → 0) under LEAGUE-10's means level with ECON-36's competition money; queued as a create-task fix before T700 that keeps what each case protects (alt: edit both tests inside T710, outside its touches | lower or skip the cases). av07
+- 261107 decided ARCH-21 T710: the pinned Node 24.22.1 is not reachable from this unit (installed 24.12.0, 24.18.0, 25.2.1, 26.8.1) → generate on the default 26.8.1 and regenerate the golden on 24.18.0 through pnpm's use-node-version, byte-identical; Linux parity stays unproven (alt: download 24.22.1, outside the unit's permissions | skip the cross-check). av07
 - 261107 decided ARCH-21 ARCH-30 CLUB-48 LEAGUE-10 ECON-36 T710 T700: when to refresh fixtures after the recovered economy meets current recruitment/localization → T710 before T700, using existing generators and explicit provenance, after the parallel group gate ends; retain its failure evidence and separate the historical Linux divergence from legitimate economy changes (alt: keep stale prepared payloads | hand-edit expected facts | run heavy measurements beside the existing final gate). av07
 - 261107 decided CLUB-49 CLUB-50 CLUB-51 ECON-16 ECON-22 OWNER-5 T700 T689: do the old generated-shortlist premise and expired scoring cutoffs still apply → refresh unclaimed T700 for actual world-player recruitment at CLUB r60/ECON r49/OWNER r5, keep its ability-fit screen and 100m exit, depend on both compatibility tasks; T689 follows T700 and its verdict slice in a fresh 2h window under the new automatic request, retaining every gate (alt: measure removed supply | stop on expired deadlines | start scoring before the lower-club prerequisite). av07
 - 261107 decided ARCH-32 ARCH-21 ARCH-30 T708 T709: what can safely run in parallel while the remaining balance tasks are explore-only → two independent compatibility units, recovered influence-map messages in every locale and exact portable-contract difference diagnostics; keep exploration timeboxes and reserve the full gate for the coordinator (alt: force explore tasks into work run | duplicate the seven completed balance experiments). av07
@@ -798,8 +800,6 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 | todo |
 
-| T710 | refresh portable and prepared fixtures on recovered economy | ARCH CLUB LEAGUE ECON | T708 T709 | doing |
-
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
@@ -823,11 +823,12 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 
 ## next
-- implement-task T710
+- create-task (fix, before T700): repair the two integration cases the parallel gate failed on 54b634a4, both assumptions the rules in force changed — packages/engine/src/contracts.test.ts's ×2 Ballon d'Or worth in a 1950 England career (CLUB-48: premium^s, s = 0 there) and apps/web/src/adapters/persistence.test.ts's indebted club nobody owns after 1930/31 (none remain under LEAGUE-10/ECON-36); each case keeps protecting what it protects, no check lowered; make T700 depend on it.
 - Then T700 on current recruitment; its verdict planning/implementation slice precedes T689. Preserve all measurement criteria and timeboxes.
 - av07 continues through the host loop for up to eight hours; only the coordinator publishes after the complete final gate.
 
 ## log
+- 261107 T710 done: golden and both prepared worlds regenerated on the recovered economy at clean 84a128d2; one golden fact moved (a 1950 England star signing paid at W80, CLUB-48), books/wages/debt of clubs nobody owns as ECON-36/CLUB-48/LEAGUE-10 set; contract and full gate left to the coordinator (av07)
 - 261107 create-task T710: recovered economy fixtures before T700; parallel T708/T709 integrated (av07)
 - 261107 T708 integrated
 - 261107 T709 integrated
@@ -847,4 +848,3 @@
 - 261105 fix integration tests: contracts.test.ts expects the recruitment dial to leave asking fees unchanged (ECON-16 as released) and managerMarket.test.ts the renewal notice with 연봉 한도, both stale since the released owner controls. oe05
 - 261105 fix office effects: the ledger's floors and ceilings are finite min/max, since the view's canonical changes reject Infinity (host and client integration tests on d708cd17); a ledger test now canonicalizes it. oe05
 - 261105 T706 done: 구단주 사무실 opens on the effects in force with factors leading to their controls, areas' totals from their own controls, the areas on home; published on main with the design session d7m3 and T707; integration, contract, build and browser runs left to CI. oe05
-- 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
