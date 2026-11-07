@@ -18,7 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| av07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-07T14:14Z | 2026-11-07T14:14Z | - |
+| av07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-07T14:14Z | 2026-11-07T14:47Z | - |
 
 ## inbox
 - 261107 decided ARCH-21 ARCH-30 CLUB-48 LEAGUE-10 ECON-36 T710 T700: when to refresh fixtures after the recovered economy meets current recruitment/localization → T710 before T700, using existing generators and explicit provenance, after the parallel group gate ends; retain its failure evidence and separate the historical Linux divergence from legitimate economy changes (alt: keep stale prepared payloads | hand-edit expected facts | run heavy measurements beside the existing final gate). av07
@@ -798,7 +798,7 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 | todo |
 
-| T710 | refresh portable and prepared fixtures on recovered economy | ARCH CLUB LEAGUE ECON | T708 T709 | todo |
+| T710 | refresh portable and prepared fixtures on recovered economy | ARCH CLUB LEAGUE ECON | T708 T709 | doing |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
