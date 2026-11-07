@@ -169,7 +169,8 @@ for (const [label, viewport] of [
         page.getByRole('button', { name: '이 시즌 컵 대회 기록', exact: true }),
       ];
       const buttonBounds = await Promise.all(links.map((button) => button.boundingBox()));
-      expect(buttonBounds.every((box) => box && box.height >= 44)).toBe(true);
+      // Firefox reads a 44 px button at a fractional position as 43.999999 px (CI 41917704988).
+      expect(buttonBounds.every((box) => box && box.height >= 44 - 1 / 64)).toBe(true);
       expect(buttonBounds.every((box) => box!.y === buttonBounds[0]!.y)).toBe(true);
       for (const button of links) {
         expect(await button.evaluate((element) => getComputedStyle(element).borderTopWidth)).toBe(

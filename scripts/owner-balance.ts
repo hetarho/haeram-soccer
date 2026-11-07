@@ -25,7 +25,7 @@
  *            --log (one line a season on stderr)   --spread FILE (CLUB-48's table, a measurement override)
  *            --growth (T700: the sources of the rise below the top flight, read-only, kept per season)
  *            --sources (with --in: only the growth sources report)
- *            --compare FILE (with --in: the season rows that differ from FILE's careers)
+ *            --compare a.json,dir (with --in: the season rows that differ from those careers)
  *
  * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
  * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
@@ -1415,9 +1415,21 @@ function sourcesReport(careers: Career[]) {
   );
 }
 
+/** Kept careers (`--out`) from comma-separated JSON files and directories of them. */
+function keptCareers(paths: string): Career[] {
+  return paths.split(',').flatMap((path) =>
+    (statSync(path).isDirectory()
+      ? readdirSync(path)
+          .filter((name) => name.endsWith('.json'))
+          .sort()
+          .map((name) => `${path}/${name}`)
+      : [path]
+    ).flatMap((file) => JSON.parse(readFileSync(file, 'utf8')) as Career[]),
+  );
+}
 /** --compare FILE: every season row field (the growth record aside) differing from FILE's careers. */
 function compareReport(careers: Career[], file: string) {
-  const reference = JSON.parse(readFileSync(file, 'utf8')) as Career[];
+  const reference = keptCareers(file);
   const key = (c: Career) => `${c.tier}|${c.code}|${c.seed}|${c.traits}|${c.policy}`;
   const refs = new Map(reference.map((c) => [key(c), c]));
   const show = (v: unknown) =>
@@ -1486,15 +1498,7 @@ if (args.includes('--prepare')) {
   process.exit(0);
 }
 const saved = option('in', '');
-if (saved)
-  for (const path of saved.split(','))
-    for (const file of statSync(path).isDirectory()
-      ? readdirSync(path)
-          .filter((name) => name.endsWith('.json'))
-          .sort()
-          .map((name) => `${path}/${name}`)
-      : [path])
-      careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));
+if (saved) careers.push(...keptCareers(saved));
 else if (SOURCES || COMPARE)
   throw new Error('--sources and --compare report kept careers: give --in');
 else

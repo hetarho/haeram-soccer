@@ -51,8 +51,9 @@ async function expectMark(name: Locator, mark: Locator, text: string) {
 async function expectTargets(controls: Locator[]) {
   for (const control of controls) {
     const box = await control.boundingBox();
-    expect(box!.width).toBeGreaterThanOrEqual(44);
-    expect(box!.height).toBeGreaterThanOrEqual(44);
+    // Firefox reads a 44 px target at a fractional position as 43.999999 px (CI 41917704988).
+    expect(box!.width).toBeGreaterThanOrEqual(44 - 1 / 64);
+    expect(box!.height).toBeGreaterThanOrEqual(44 - 1 / 64);
   }
 }
 

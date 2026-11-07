@@ -165,8 +165,9 @@ for (const width of [390, 1280]) {
       .getByRole('region', { name: '시즌 진행', exact: true })
       .boundingBox())!;
     expect(triggerBox.y + triggerBox.height).toBeLessThanOrEqual(clockBox.y);
-    expect(triggerBox.width).toBeGreaterThanOrEqual(44);
-    expect(triggerBox.height).toBeGreaterThanOrEqual(44);
+    // Firefox reads the 44 px trigger at a fractional position as 43.999999 px (CI 41917704988).
+    expect(triggerBox.width).toBeGreaterThanOrEqual(44 - 1 / 64);
+    expect(triggerBox.height).toBeGreaterThanOrEqual(44 - 1 / 64);
     await expect(trigger).toBeInViewport();
     await expect(page.getByRole('button', { name: /^알림·결정/ })).toHaveCount(0);
     const address = page.url();
