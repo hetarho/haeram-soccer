@@ -121,6 +121,10 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.240640c48a'),
           ),
           f(
+            sourceMessage('influences.starPaySpread.name'),
+            sourceMessage('influences.starPaySpread.effect'),
+          ),
+          f(
             sourceMessage('copy.influences.9d51a1abbe'),
             sourceMessage('copy.influences.805720fa68'),
           ),
@@ -2286,6 +2290,14 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           f(
             sourceMessage('copy.influences.2310663dbf'),
             sourceMessage('copy.influences.600de29d69'),
+          ),
+          f(
+            sourceMessage('influences.affordableSquad.name'),
+            sourceMessage('influences.affordableSquad.effect'),
+          ),
+          f(
+            sourceMessage('influences.competitionIncome.name'),
+            sourceMessage('influences.competitionIncome.effect'),
           ),
         ],
         [
