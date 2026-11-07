@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-07T14:31:13.563Z",
-  "sourceCommit": "f8d9ecfdd4002dd6e1ac1564a74b67d97d079cd4",
+  "snapshotAt": "2026-11-07T14:37:29.322Z",
+  "sourceCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
   "group": {
     "id": "av07",
     "branch": "codex/av07",
@@ -87,9 +87,9 @@
   },
   "summary": {
     "total": 4,
-    "completed": 1,
-    "remaining": 3,
-    "running": 1,
+    "completed": 2,
+    "remaining": 2,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 2
@@ -112,12 +112,6 @@
         "T709"
       ],
       "status": "todo"
-    },
-    {
-      "id": "T708",
-      "title": "Localize the recovered balance mechanisms in the influence map",
-      "dep": [],
-      "status": "doing"
     }
   ],
   "attempts": [
@@ -129,17 +123,19 @@
         "T708"
       ],
       "lane": null,
-      "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1",
+      "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1",
       "contributors": [
-        "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1"
+        "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1",
+        "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-07T14:19:05.678Z",
       "startCommit": "34e59ff212ddeaad399e209688d90570feef74e2",
-      "submittedBase": "9541888d15d83035e487e62d64b233f4bd4146ca",
-      "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
-      "submittedAt": "2026-11-07T14:26:28.338Z",
+      "verifiedCommit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+      "submittedBase": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+      "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+      "submittedAt": "2026-11-07T14:35:55.626Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -151,17 +147,30 @@
         "files": 14
       },
       "dispatch": {
-        "id": "7d188971-f1ca-4d01-bba4-7c2daa6aee26",
-        "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+        "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+        "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
         "role": "reviewer",
         "slot": 1,
         "provider": "codex",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-11-07T14:26:34.556Z",
-        "finishedAt": "2026-11-07T14:27:56.936Z",
+        "startedAt": "2026-11-07T14:35:58.914Z",
+        "finishedAt": "2026-11-07T14:37:27.006Z",
         "error": null,
-        "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 요인의 설명과 12개 언어팩, 기존 설명·소스 참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 증거를 확인했으며, 최종 통합 검증은 조정자에게 남깁니다."
+        "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다."
+      },
+      "review": {
+        "id": "1fa4f714-4b3b-489b-8b21-54759f61f81e",
+        "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+        "findings": [],
+        "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+        "baseCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+        "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+        "createdAt": "2026-11-07T14:35:56.475Z",
+        "finishedAt": "2026-11-07T14:37:26.976Z"
       },
       "reviewHistory": [
         {
@@ -183,52 +192,62 @@
       "steps": [
         {
           "taskId": "T708",
-          "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
-          "at": "2026-11-07T14:26:28.242Z",
+          "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+          "at": "2026-11-07T14:35:55.528Z",
           "verification": [
             {
+              "command": "pnpm install --frozen-lockfile --prefer-offline",
+              "startedAt": "2026-11-07T14:34:52.889Z",
+              "finishedAt": "2026-11-07T14:34:55.432Z"
+            },
+            {
               "command": "pnpm run typecheck",
-              "startedAt": "2026-11-07T14:25:31.794Z",
-              "finishedAt": "2026-11-07T14:26:01.190Z"
+              "startedAt": "2026-11-07T14:34:55.537Z",
+              "finishedAt": "2026-11-07T14:35:24.763Z"
             },
             {
               "command": "pnpm run lint",
-              "startedAt": "2026-11-07T14:26:01.277Z",
-              "finishedAt": "2026-11-07T14:26:09.949Z"
+              "startedAt": "2026-11-07T14:35:24.855Z",
+              "finishedAt": "2026-11-07T14:35:34.499Z"
             },
             {
               "command": "pnpm run validate:i18n",
-              "startedAt": "2026-11-07T14:26:10.031Z",
-              "finishedAt": "2026-11-07T14:26:11.741Z"
+              "startedAt": "2026-11-07T14:35:34.596Z",
+              "finishedAt": "2026-11-07T14:35:37.064Z"
             },
             {
               "command": "pnpm run format:check",
-              "startedAt": "2026-11-07T14:26:11.820Z",
-              "finishedAt": "2026-11-07T14:26:27.805Z"
+              "startedAt": "2026-11-07T14:35:37.152Z",
+              "finishedAt": "2026-11-07T14:35:55.052Z"
             }
           ]
         }
       ],
       "verification": [
         {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-11-07T14:34:52.889Z",
+          "finishedAt": "2026-11-07T14:34:55.432Z"
+        },
+        {
           "command": "pnpm run typecheck",
-          "startedAt": "2026-11-07T14:25:31.794Z",
-          "finishedAt": "2026-11-07T14:26:01.190Z"
+          "startedAt": "2026-11-07T14:34:55.537Z",
+          "finishedAt": "2026-11-07T14:35:24.763Z"
         },
         {
           "command": "pnpm run lint",
-          "startedAt": "2026-11-07T14:26:01.277Z",
-          "finishedAt": "2026-11-07T14:26:09.949Z"
+          "startedAt": "2026-11-07T14:35:24.855Z",
+          "finishedAt": "2026-11-07T14:35:34.499Z"
         },
         {
           "command": "pnpm run validate:i18n",
-          "startedAt": "2026-11-07T14:26:10.031Z",
-          "finishedAt": "2026-11-07T14:26:11.741Z"
+          "startedAt": "2026-11-07T14:35:34.596Z",
+          "finishedAt": "2026-11-07T14:35:37.064Z"
         },
         {
           "command": "pnpm run format:check",
-          "startedAt": "2026-11-07T14:26:11.820Z",
-          "finishedAt": "2026-11-07T14:26:27.805Z"
+          "startedAt": "2026-11-07T14:35:37.152Z",
+          "finishedAt": "2026-11-07T14:35:55.052Z"
         }
       ]
     },
@@ -252,6 +271,8 @@
       "submittedBase": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
       "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
       "submittedAt": "2026-11-07T14:24:51.373Z",
+      "integratedCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+      "integratedAt": "2026-11-07T14:32:13.455Z",
       "risk": {
         "risky": true,
         "reasons": [
@@ -352,6 +373,33 @@
           "command": "pnpm run format:check",
           "startedAt": "2026-11-07T14:24:33.762Z",
           "finishedAt": "2026-11-07T14:24:50.965Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-11-07T14:31:13.904Z",
+          "finishedAt": "2026-11-07T14:31:16.357Z"
+        },
+        {
+          "command": "pnpm run typecheck",
+          "startedAt": "2026-11-07T14:31:16.530Z",
+          "finishedAt": "2026-11-07T14:31:43.385Z"
+        },
+        {
+          "command": "pnpm run lint",
+          "startedAt": "2026-11-07T14:31:43.561Z",
+          "finishedAt": "2026-11-07T14:31:52.754Z"
+        },
+        {
+          "command": "pnpm run validate:i18n",
+          "startedAt": "2026-11-07T14:31:52.931Z",
+          "finishedAt": "2026-11-07T14:31:56.074Z"
+        },
+        {
+          "command": "pnpm run format:check",
+          "startedAt": "2026-11-07T14:31:56.246Z",
+          "finishedAt": "2026-11-07T14:32:13.091Z"
         }
       ]
     }
@@ -1484,6 +1532,393 @@
       "group": "av07",
       "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
       "taskId": "T709",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1992,
+      "at": "2026-11-07T14:32:13.374Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-11-07T14:31:13.904Z",
+            "finishedAt": "2026-11-07T14:31:16.357Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:31:16.530Z",
+            "finishedAt": "2026-11-07T14:31:43.385Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:31:43.561Z",
+            "finishedAt": "2026-11-07T14:31:52.754Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:31:52.931Z",
+            "finishedAt": "2026-11-07T14:31:56.074Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:31:56.246Z",
+            "finishedAt": "2026-11-07T14:32:13.091Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1993,
+      "at": "2026-11-07T14:32:13.455Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+        "integratedAt": "2026-11-07T14:32:13.455Z"
+      }
+    },
+    {
+      "sequence": 1994,
+      "at": "2026-11-07T14:32:13.498Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1",
+        "contributors": [
+          "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1",
+          "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1995,
+      "at": "2026-11-07T14:32:13.749Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9a14d12b-3611-4077-9f9b-fc72b64cb456",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:32:13.749Z"
+        }
+      }
+    },
+    {
+      "sequence": 1996,
+      "at": "2026-11-07T14:32:13.997Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9a14d12b-3611-4077-9f9b-fc72b64cb456",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:32:13.749Z"
+        }
+      }
+    },
+    {
+      "sequence": 1997,
+      "at": "2026-11-07T14:34:51.471Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1998,
+      "at": "2026-11-07T14:34:52.387Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1999,
+      "at": "2026-11-07T14:34:52.455Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2000,
+      "at": "2026-11-07T14:35:55.626Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+        "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+        "submittedAt": "2026-11-07T14:35:55.626Z",
+        "steps": [
+          {
+            "taskId": "T708",
+            "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+            "at": "2026-11-07T14:35:55.528Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-11-07T14:34:52.889Z",
+                "finishedAt": "2026-11-07T14:34:55.432Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-11-07T14:34:55.537Z",
+                "finishedAt": "2026-11-07T14:35:24.763Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-11-07T14:35:24.855Z",
+                "finishedAt": "2026-11-07T14:35:34.499Z"
+              },
+              {
+                "command": "pnpm run validate:i18n",
+                "startedAt": "2026-11-07T14:35:34.596Z",
+                "finishedAt": "2026-11-07T14:35:37.064Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-11-07T14:35:37.152Z",
+                "finishedAt": "2026-11-07T14:35:55.052Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-11-07T14:34:52.889Z",
+            "finishedAt": "2026-11-07T14:34:55.432Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:34:55.537Z",
+            "finishedAt": "2026-11-07T14:35:24.763Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:35:24.855Z",
+            "finishedAt": "2026-11-07T14:35:34.499Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:35:34.596Z",
+            "finishedAt": "2026-11-07T14:35:37.064Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:35:37.152Z",
+            "finishedAt": "2026-11-07T14:35:55.052Z"
+          }
+        ],
+        "verifiedCommit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44"
+      }
+    },
+    {
+      "sequence": 2001,
+      "at": "2026-11-07T14:35:55.667Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "9a14d12b-3611-4077-9f9b-fc72b64cb456",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:32:13.749Z",
+          "finishedAt": "2026-11-07T14:35:55.667Z",
+          "error": null,
+          "summary": "호스트가 그룹 브랜치를 병합한 19c84ce0에서 기존 번역을 보존하고 재검증했습니다. 관련 단위 테스트 46개, 타입·lint·형식 검사와 i18n 본체 검증이 통과했습니다. 설치 DNS·tsx IPC 제약을 T708 result에 기록했습니다. 추가 코드 수정, 커밋·제출, 통합·e2e 실행은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 2002,
+      "at": "2026-11-07T14:35:56.475Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1fa4f714-4b3b-489b-8b21-54759f61f81e",
+          "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+          "status": "reviewing",
+          "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+          "baseCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+          "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+          "createdAt": "2026-11-07T14:35:56.475Z"
+        }
+      }
+    },
+    {
+      "sequence": 2003,
+      "at": "2026-11-07T14:35:58.914Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:35:58.914Z"
+        }
+      }
+    },
+    {
+      "sequence": 2004,
+      "at": "2026-11-07T14:35:58.951Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:35:58.914Z"
+        }
+      }
+    },
+    {
+      "sequence": 2005,
+      "at": "2026-11-07T14:37:26.976Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "1fa4f714-4b3b-489b-8b21-54759f61f81e",
+          "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+          "findings": [],
+          "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+          "baseCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+          "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+          "createdAt": "2026-11-07T14:35:56.475Z",
+          "finishedAt": "2026-11-07T14:37:26.976Z"
+        }
+      }
+    },
+    {
+      "sequence": 2006,
+      "at": "2026-11-07T14:37:27.006Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:35:58.914Z",
+          "finishedAt": "2026-11-07T14:37:27.006Z",
+          "error": null,
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 2007,
+      "at": "2026-11-07T14:37:27.080Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
