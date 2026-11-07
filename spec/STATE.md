@@ -826,6 +826,7 @@
 - Then refresh T700 on current recruitment and complete the lower-club growth read before resuming T689; keep every measurement gate.
 
 ## log
+- 261107 doc-review WEB MATCH HIST tidied: required cross-references retained without canonical cycles, explicit old→new chg wording (rev unchanged). av07
 - 261107 fix results-only: align imported placebo-test goal lines with independently replayed released main ff685c33; no simulation change (av07)
 - 261107 create-task T700 refreshed for current recruitment; T689 renewed after T700 (av07)
 - 261107 create-task ARCH WEB CLUB LEAGUE ECON compatibility recovery → T708 T709 (av07)
@@ -845,4 +846,3 @@
 - 261105 design club and player detail: end d7m3; club/player links and detail dialogs become feature-sliced entities and widgets with one host each, worker reads through shared useRead and runtime clubProfile, ESLint layer rules; committed with the localization (T707) and T706, whose combined tree passed typecheck, lint, format and the unit suite; integration, contract, build and browser runs left to CI.
 - 261105 T707 done locally: 12 complete locale packs / 6,499 messages / 8,285 validated references; source prose and saved facts preserved, AGENTS + ESLint + CI enforce resource-only copy. 1,260 affected unit tests, type/lint/format/resource checks and build pass; translation editorial review and release browser/integration gates remain. i804
 - 261105 rs01 release: T701–T705 merged with main 596d5570 and published; browser fixes this branch needed — a vacant post closes the coach's career job, the poor-owner fee case cuts cash under the dearest club fee, the free agent's name search and paid loans page past real free agents, the 결재함 row names a club player's seller, the settings close re-finds the top dialog; app: the market's source line stays one compact line at 360 px and a free signing's open card reads 계약 완료. Batch on 127d11fd: typecheck, lint, format, unit 2169, integration 1178 (4 skipped), contract 46, validations, build, Chromium 348 pass. rs01
-- 261105 fix integration tests after T701–T705: the owned club's strength clamped to 0–100 (a settled XI of grown stars rated 101); a free agent's refilled place drawn in its formation role and press load as `npcSquad` draws it; one-touch holders kept in playback frames; scenario tests re-select by predicate (a quiet-minute replay, the first extra-time tie, the first exhausted cup tie) and look samples up by period; T517's premise test on revisions 9 and 10; portable golden, prepared worlds and throughput digests re-recorded. rs01
