@@ -18,7 +18,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| av07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-07T14:14Z | 2026-11-07T14:47Z | - |
 
 ## inbox
 - 261108 decided CLUB-25 CLUB-51 CLUB-33 LEAGUE-13 ECON-29 T700: which mechanism the next lower-club growth slice changes, on T700's screen → the ability-fit wage price, **go**: pooled over 지역 유지 and 자수성가 축구팬's 50 seasons below the top flight, discounted signings carry 90.1% of the XI's rating points above the league's NPC median (fee 56.3%, the 단장's free signings 33.8%; half needed); read beside, the scout's list at a second/third-tier club offers OVR 83–84 against its division's 66, every one suiting a higher division (CLUB-51's home reach takes in the divisions above, ranked by ability), and they are paid 0.40 of their ability-fit wage; priced at it the wage bill goes 28–34% → 50–76% of revenue while 재정 기조 표준 would refuse only 7 of 166 at the signing; every lower tier reaches and wins the top flight, outside LEAGUE-13's bands (alt: the scout's reach above the club's division, a supply rule the slice weighs beside the price | the takeover squad's growth, 9.1% | the academy, 0.8% | the means level, 0%: it holds no lower-league club). av07
