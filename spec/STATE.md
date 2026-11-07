@@ -799,7 +799,6 @@
 | T708 | localize recovered balance influence explanations | ARCH WEB CLUB LEAGUE ECON | - | todo |
 | T709 | report first differing portable contract path and values | ARCH | - | todo |
 
-
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
 |---|---|---|---|---|---|---|---|---|---|
