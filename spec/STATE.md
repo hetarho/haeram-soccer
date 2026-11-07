@@ -797,7 +797,6 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
 | T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 | todo |
 | T708 | localize recovered balance influence explanations | ARCH WEB CLUB LEAGUE ECON | - | todo |
-| T709 | report first differing portable contract path and values | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -819,12 +818,13 @@
 | club-places-ui | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:28.891Z | [history](work/club-places-ui.json) |
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
+| av07 | 3 | 4 | 1 | 3 | 1 | 0 | 0 | 2026-11-07T14:31:13.563Z | [history](work/av07.json) |
 
 ## next
-- Finish the av07 integration compatibility tasks and final gate before publishing the recovered T693–T699 implementation.
-- Then refresh T700 on current recruitment and complete the lower-club growth read before resuming T689; keep every measurement gate.
+- inspect work board for remaining tasks
 
 ## log
+- 261107 T709 integrated
 - 261107 doc-review WEB MATCH HIST tidied: required cross-references retained without canonical cycles, explicit old→new chg wording (rev unchanged). av07
 - 261107 fix results-only: align imported placebo-test goal lines with independently replayed released main ff685c33; no simulation change (av07)
 - 261107 create-task T700 refreshed for current recruitment; T689 renewed after T700 (av07)
@@ -844,4 +844,3 @@
 - 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
 - 261105 design club and player detail: end d7m3; club/player links and detail dialogs become feature-sliced entities and widgets with one host each, worker reads through shared useRead and runtime clubProfile, ESLint layer rules; committed with the localization (T707) and T706, whose combined tree passed typecheck, lint, format and the unit suite; integration, contract, build and browser runs left to CI.
 - 261105 T707 done locally: 12 complete locale packs / 6,499 messages / 8,285 validated references; source prose and saved facts preserved, AGENTS + ESLint + CI enforce resource-only copy. 1,260 affected unit tests, type/lint/format/resource checks and build pass; translation editorial review and release browser/integration gates remain. i804
-- 261105 rs01 release: T701–T705 merged with main 596d5570 and published; browser fixes this branch needed — a vacant post closes the coach's career job, the poor-owner fee case cuts cash under the dearest club fee, the free agent's name search and paid loans page past real free agents, the 결재함 row names a club player's seller, the settings close re-finds the top dialog; app: the market's source line stays one compact line at 360 px and a free signing's open card reads 계약 완료. Batch on 127d11fd: typecheck, lint, format, unit 2169, integration 1178 (4 skipped), contract 46, validations, build, Chromium 348 pass. rs01
