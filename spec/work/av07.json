@@ -1,0 +1,1929 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-11-07T14:37:29.322Z",
+  "sourceCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+  "group": {
+    "id": "av07",
+    "branch": "codex/av07",
+    "status": "active",
+    "createdAt": "2026-11-07T14:15:25.212Z",
+    "limits": {
+      "workers": 3,
+      "reviewers": 1,
+      "maxPending": 4
+    },
+    "review": "risky",
+    "runner": {
+      "id": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        }
+      ],
+      "startedAt": "2026-11-07T14:29:51.187Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
+    "lastRun": {
+      "id": "f709cad6-3428-424d-bd49-b1cd428c6210",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        },
+        "reviewer": {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        }
+      },
+      "workers": [
+        {
+          "provider": "codex",
+          "model": null,
+          "version": "codex-cli 0.167.0"
+        }
+      ],
+      "startedAt": "2026-11-07T14:19:05.322Z",
+      "stoppedAt": "2026-11-07T14:28:00.627Z",
+      "dispatched": 4,
+      "outcome": "needs-attention",
+      "failures": [
+        {
+          "attempt": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        },
+        {
+          "attempt": "245816d9-f719-46be-b8c0-93f9de6d2089",
+          "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+          "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+          "role": "integration",
+          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+        }
+      ],
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    }
+  },
+  "summary": {
+    "total": 4,
+    "completed": 2,
+    "remaining": 2,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 2
+  },
+  "tasks": [
+    {
+      "id": "T689",
+      "title": "Measure and calibrate scoring volume and concentration",
+      "dep": [
+        "T688",
+        "T700"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T700",
+      "title": "Organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened",
+      "dep": [
+        "T708",
+        "T709"
+      ],
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "group": "av07",
+      "taskId": "T708",
+      "tasks": [
+        "T708"
+      ],
+      "lane": null,
+      "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1",
+      "contributors": [
+        "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1",
+        "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-07T14:19:05.678Z",
+      "startCommit": "34e59ff212ddeaad399e209688d90570feef74e2",
+      "verifiedCommit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+      "submittedBase": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+      "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+      "submittedAt": "2026-11-07T14:35:55.626Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "review paths: packages/contracts/src/source-messages.ts",
+          "no test file changed",
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 93,
+        "files": 14
+      },
+      "dispatch": {
+        "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+        "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-11-07T14:35:58.914Z",
+        "finishedAt": "2026-11-07T14:37:27.006Z",
+        "error": null,
+        "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다."
+      },
+      "review": {
+        "id": "1fa4f714-4b3b-489b-8b21-54759f61f81e",
+        "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+        "findings": [],
+        "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+        "baseCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+        "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+        "createdAt": "2026-11-07T14:35:56.475Z",
+        "finishedAt": "2026-11-07T14:37:26.976Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "88736841-6977-43d1-9576-f133a545bb10",
+          "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 요인의 설명과 12개 언어팩, 기존 설명·소스 참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 증거를 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+          "findings": [],
+          "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+          "baseCommit": "9541888d15d83035e487e62d64b233f4bd4146ca",
+          "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+          "createdAt": "2026-11-07T14:26:32.575Z",
+          "finishedAt": "2026-11-07T14:27:56.909Z",
+          "invalidatedAt": "2026-11-07T14:29:52.387Z",
+          "invalidationReason": "review snapshot changed"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T708",
+          "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+          "at": "2026-11-07T14:35:55.528Z",
+          "verification": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline",
+              "startedAt": "2026-11-07T14:34:52.889Z",
+              "finishedAt": "2026-11-07T14:34:55.432Z"
+            },
+            {
+              "command": "pnpm run typecheck",
+              "startedAt": "2026-11-07T14:34:55.537Z",
+              "finishedAt": "2026-11-07T14:35:24.763Z"
+            },
+            {
+              "command": "pnpm run lint",
+              "startedAt": "2026-11-07T14:35:24.855Z",
+              "finishedAt": "2026-11-07T14:35:34.499Z"
+            },
+            {
+              "command": "pnpm run validate:i18n",
+              "startedAt": "2026-11-07T14:35:34.596Z",
+              "finishedAt": "2026-11-07T14:35:37.064Z"
+            },
+            {
+              "command": "pnpm run format:check",
+              "startedAt": "2026-11-07T14:35:37.152Z",
+              "finishedAt": "2026-11-07T14:35:55.052Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-11-07T14:34:52.889Z",
+          "finishedAt": "2026-11-07T14:34:55.432Z"
+        },
+        {
+          "command": "pnpm run typecheck",
+          "startedAt": "2026-11-07T14:34:55.537Z",
+          "finishedAt": "2026-11-07T14:35:24.763Z"
+        },
+        {
+          "command": "pnpm run lint",
+          "startedAt": "2026-11-07T14:35:24.855Z",
+          "finishedAt": "2026-11-07T14:35:34.499Z"
+        },
+        {
+          "command": "pnpm run validate:i18n",
+          "startedAt": "2026-11-07T14:35:34.596Z",
+          "finishedAt": "2026-11-07T14:35:37.064Z"
+        },
+        {
+          "command": "pnpm run format:check",
+          "startedAt": "2026-11-07T14:35:37.152Z",
+          "finishedAt": "2026-11-07T14:35:55.052Z"
+        }
+      ]
+    },
+    {
+      "id": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "group": "av07",
+      "taskId": "T709",
+      "tasks": [
+        "T709"
+      ],
+      "lane": null,
+      "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/worker-2",
+      "contributors": [
+        "f709cad6-3428-424d-bd49-b1cd428c6210/worker-2"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-07T14:19:08.605Z",
+      "startCommit": "34e59ff212ddeaad399e209688d90570feef74e2",
+      "verifiedCommit": "e93e1995b9e3509b982b686feda5cace43543263",
+      "submittedBase": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
+      "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+      "submittedAt": "2026-11-07T14:24:51.373Z",
+      "integratedCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+      "integratedAt": "2026-11-07T14:32:13.455Z",
+      "risk": {
+        "risky": true,
+        "reasons": [
+          "autopilot decisions awaiting the owner"
+        ],
+        "lines": 160,
+        "files": 3
+      },
+      "dispatch": {
+        "id": "9c25c3a9-432f-4466-96c7-953959bc9e57",
+        "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "codex",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-11-07T14:29:56.616Z",
+        "finishedAt": "2026-11-07T14:31:11.284Z",
+        "error": null,
+        "summary": "T709는 새 baseCommit의 acceptance와 SSOT에 부합합니다. 정확한 canonical 비교 보존, 제한된 차이 진단과 경계값 처리를 확인했습니다. 워커의 단위 테스트 24건과 필수 검사 기록을 확인했으며, 기존 Linux 불일치 해결과 최종 통합 검증은 조정자에게 남습니다."
+      },
+      "review": {
+        "id": "c7ad44b6-d03b-4ee6-a34f-7c7eb18b01e0",
+        "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T709는 새 baseCommit의 acceptance와 SSOT에 부합합니다. 정확한 canonical 비교 보존, 제한된 차이 진단과 경계값 처리를 확인했습니다. 워커의 단위 테스트 24건과 필수 검사 기록을 확인했으며, 기존 Linux 불일치 해결과 최종 통합 검증은 조정자에게 남습니다.",
+        "findings": [],
+        "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+        "baseCommit": "f8d9ecfdd4002dd6e1ac1564a74b67d97d079cd4",
+        "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+        "createdAt": "2026-11-07T14:29:53.849Z",
+        "finishedAt": "2026-11-07T14:31:11.251Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "407ba651-5ea4-4712-a455-4e25a95ea42a",
+          "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T709는 acceptance와 SSOT를 충족합니다. 정확한 canonical 비교를 유지하며 제한된 길이의 차이 진단을 추가했습니다. 워커의 단위 테스트 24건과 필수 검사 증거를 확인했습니다. 기존 Linux 불일치 해결과 최종 검증은 조정자에게 남습니다.",
+          "findings": [],
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "baseCommit": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
+          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+          "createdAt": "2026-11-07T14:24:51.927Z",
+          "finishedAt": "2026-11-07T14:26:29.082Z",
+          "invalidatedAt": "2026-11-07T14:29:39.122Z",
+          "invalidationReason": "integration base changed"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T709",
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "at": "2026-11-07T14:24:51.323Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck",
+              "startedAt": "2026-11-07T14:23:56.932Z",
+              "finishedAt": "2026-11-07T14:24:23.480Z"
+            },
+            {
+              "command": "pnpm run lint",
+              "startedAt": "2026-11-07T14:24:23.572Z",
+              "finishedAt": "2026-11-07T14:24:31.888Z"
+            },
+            {
+              "command": "pnpm run validate:i18n",
+              "startedAt": "2026-11-07T14:24:31.975Z",
+              "finishedAt": "2026-11-07T14:24:33.682Z"
+            },
+            {
+              "command": "pnpm run format:check",
+              "startedAt": "2026-11-07T14:24:33.762Z",
+              "finishedAt": "2026-11-07T14:24:50.965Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck",
+          "startedAt": "2026-11-07T14:23:56.932Z",
+          "finishedAt": "2026-11-07T14:24:23.480Z"
+        },
+        {
+          "command": "pnpm run lint",
+          "startedAt": "2026-11-07T14:24:23.572Z",
+          "finishedAt": "2026-11-07T14:24:31.888Z"
+        },
+        {
+          "command": "pnpm run validate:i18n",
+          "startedAt": "2026-11-07T14:24:31.975Z",
+          "finishedAt": "2026-11-07T14:24:33.682Z"
+        },
+        {
+          "command": "pnpm run format:check",
+          "startedAt": "2026-11-07T14:24:33.762Z",
+          "finishedAt": "2026-11-07T14:24:50.965Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline",
+          "startedAt": "2026-11-07T14:31:13.904Z",
+          "finishedAt": "2026-11-07T14:31:16.357Z"
+        },
+        {
+          "command": "pnpm run typecheck",
+          "startedAt": "2026-11-07T14:31:16.530Z",
+          "finishedAt": "2026-11-07T14:31:43.385Z"
+        },
+        {
+          "command": "pnpm run lint",
+          "startedAt": "2026-11-07T14:31:43.561Z",
+          "finishedAt": "2026-11-07T14:31:52.754Z"
+        },
+        {
+          "command": "pnpm run validate:i18n",
+          "startedAt": "2026-11-07T14:31:52.931Z",
+          "finishedAt": "2026-11-07T14:31:56.074Z"
+        },
+        {
+          "command": "pnpm run format:check",
+          "startedAt": "2026-11-07T14:31:56.246Z",
+          "finishedAt": "2026-11-07T14:32:13.091Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1944,
+      "at": "2026-11-07T14:15:25.241Z",
+      "type": "group",
+      "group": "av07",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "av07",
+        "branch": "codex/av07",
+        "status": "preparing",
+        "createdAt": "2026-11-07T14:15:25.212Z",
+        "limits": {
+          "workers": 3,
+          "reviewers": 1,
+          "maxPending": 4
+        },
+        "review": "risky"
+      }
+    },
+    {
+      "sequence": 1945,
+      "at": "2026-11-07T14:15:25.309Z",
+      "type": "group",
+      "group": "av07",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 1946,
+      "at": "2026-11-07T14:19:05.342Z",
+      "type": "group",
+      "group": "av07",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          ],
+          "startedAt": "2026-11-07T14:19:05.322Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1947,
+      "at": "2026-11-07T14:19:05.678Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "245816d9-f719-46be-b8c0-93f9de6d2089",
+        "group": "av07",
+        "taskId": "T708",
+        "tasks": [
+          "T708"
+        ],
+        "lane": null,
+        "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1",
+        "contributors": [
+          "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-07T14:19:05.678Z",
+        "startCommit": "34e59ff212ddeaad399e209688d90570feef74e2"
+      }
+    },
+    {
+      "sequence": 1948,
+      "at": "2026-11-07T14:19:07.727Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1949,
+      "at": "2026-11-07T14:19:08.120Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e86c17a0-eee4-4abd-95dd-42a5842e324d",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:19:08.120Z"
+        }
+      }
+    },
+    {
+      "sequence": 1950,
+      "at": "2026-11-07T14:19:08.353Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e86c17a0-eee4-4abd-95dd-42a5842e324d",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:19:08.120Z"
+        }
+      }
+    },
+    {
+      "sequence": 1951,
+      "at": "2026-11-07T14:19:08.605Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+        "group": "av07",
+        "taskId": "T709",
+        "tasks": [
+          "T709"
+        ],
+        "lane": null,
+        "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/worker-2",
+        "contributors": [
+          "f709cad6-3428-424d-bd49-b1cd428c6210/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-07T14:19:08.605Z",
+        "startCommit": "34e59ff212ddeaad399e209688d90570feef74e2"
+      }
+    },
+    {
+      "sequence": 1952,
+      "at": "2026-11-07T14:19:10.140Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1953,
+      "at": "2026-11-07T14:19:10.286Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5e67e851-cc5c-4269-a363-7aa6b0ce036b",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:19:10.286Z"
+        }
+      }
+    },
+    {
+      "sequence": 1954,
+      "at": "2026-11-07T14:19:10.518Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5e67e851-cc5c-4269-a363-7aa6b0ce036b",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:19:10.286Z"
+        }
+      }
+    },
+    {
+      "sequence": 1955,
+      "at": "2026-11-07T14:23:55.834Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1956,
+      "at": "2026-11-07T14:23:56.574Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1957,
+      "at": "2026-11-07T14:23:56.631Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1958,
+      "at": "2026-11-07T14:24:51.373Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "e93e1995b9e3509b982b686feda5cace43543263",
+        "submittedBase": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
+        "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+        "submittedAt": "2026-11-07T14:24:51.373Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 160,
+          "files": 3
+        },
+        "steps": [
+          {
+            "taskId": "T709",
+            "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+            "at": "2026-11-07T14:24:51.323Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-11-07T14:23:56.932Z",
+                "finishedAt": "2026-11-07T14:24:23.480Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-11-07T14:24:23.572Z",
+                "finishedAt": "2026-11-07T14:24:31.888Z"
+              },
+              {
+                "command": "pnpm run validate:i18n",
+                "startedAt": "2026-11-07T14:24:31.975Z",
+                "finishedAt": "2026-11-07T14:24:33.682Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-11-07T14:24:33.762Z",
+                "finishedAt": "2026-11-07T14:24:50.965Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:23:56.932Z",
+            "finishedAt": "2026-11-07T14:24:23.480Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:24:23.572Z",
+            "finishedAt": "2026-11-07T14:24:31.888Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:24:31.975Z",
+            "finishedAt": "2026-11-07T14:24:33.682Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:24:33.762Z",
+            "finishedAt": "2026-11-07T14:24:50.965Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1959,
+      "at": "2026-11-07T14:24:51.406Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "5e67e851-cc5c-4269-a363-7aa6b0ce036b",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "worker",
+          "slot": 2,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:19:10.286Z",
+          "finishedAt": "2026-11-07T14:24:51.406Z",
+          "error": null,
+          "summary": "T709 진단 개선을 완료했습니다. 정확한 canonical 문자열 비교를 유지하며 첫 차이 경로와 양쪽 값을 길이 제한 내에서 표시합니다. 단위 테스트 24개와 타입·린트·포맷 검사가 통과했고, i18n은 Node 로더 대체 실행으로 통과했습니다. Linux 현금 차이 자체는 미해결이며, 계약 검증 명령과 한계를 태스크 결과에 기록했습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1960,
+      "at": "2026-11-07T14:24:51.927Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "407ba651-5ea4-4712-a455-4e25a95ea42a",
+          "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+          "status": "reviewing",
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "baseCommit": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
+          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+          "createdAt": "2026-11-07T14:24:51.927Z"
+        }
+      }
+    },
+    {
+      "sequence": 1961,
+      "at": "2026-11-07T14:24:53.835Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ba7a2cf6-0494-4163-a08f-f088b47bf78a",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:24:53.835Z"
+        }
+      }
+    },
+    {
+      "sequence": 1962,
+      "at": "2026-11-07T14:24:53.866Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "ba7a2cf6-0494-4163-a08f-f088b47bf78a",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:24:53.835Z"
+        }
+      }
+    },
+    {
+      "sequence": 1963,
+      "at": "2026-11-07T14:25:29.824Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1964,
+      "at": "2026-11-07T14:25:31.337Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 1965,
+      "at": "2026-11-07T14:25:31.393Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 1966,
+      "at": "2026-11-07T14:26:28.338Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+        "submittedBase": "9541888d15d83035e487e62d64b233f4bd4146ca",
+        "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+        "submittedAt": "2026-11-07T14:26:28.338Z",
+        "risk": {
+          "risky": true,
+          "reasons": [
+            "review paths: packages/contracts/src/source-messages.ts",
+            "no test file changed",
+            "autopilot decisions awaiting the owner"
+          ],
+          "lines": 93,
+          "files": 14
+        },
+        "steps": [
+          {
+            "taskId": "T708",
+            "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+            "at": "2026-11-07T14:26:28.242Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-11-07T14:25:31.794Z",
+                "finishedAt": "2026-11-07T14:26:01.190Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-11-07T14:26:01.277Z",
+                "finishedAt": "2026-11-07T14:26:09.949Z"
+              },
+              {
+                "command": "pnpm run validate:i18n",
+                "startedAt": "2026-11-07T14:26:10.031Z",
+                "finishedAt": "2026-11-07T14:26:11.741Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-11-07T14:26:11.820Z",
+                "finishedAt": "2026-11-07T14:26:27.805Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:25:31.794Z",
+            "finishedAt": "2026-11-07T14:26:01.190Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:26:01.277Z",
+            "finishedAt": "2026-11-07T14:26:09.949Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:26:10.031Z",
+            "finishedAt": "2026-11-07T14:26:11.741Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:26:11.820Z",
+            "finishedAt": "2026-11-07T14:26:27.805Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1967,
+      "at": "2026-11-07T14:26:28.373Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "e86c17a0-eee4-4abd-95dd-42a5842e324d",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:19:08.120Z",
+          "finishedAt": "2026-11-07T14:26:28.373Z",
+          "error": null,
+          "summary": "T708 구현 및 acceptance/result 갱신 완료. 영향 요인 3개와 메시지 6개를 12개 로케일에 복구했습니다. 관련 단위 테스트 46개, 타입·lint·형식 검사 통과. i18n은 tsx IPC 오류를 문서화된 실행 방식으로 우회해 통과했습니다. 래퍼 제한과 통합·e2e 미실행을 기록했으며, 커밋·제출은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1968,
+      "at": "2026-11-07T14:26:29.082Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "407ba651-5ea4-4712-a455-4e25a95ea42a",
+          "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T709는 acceptance와 SSOT를 충족합니다. 정확한 canonical 비교를 유지하며 제한된 길이의 차이 진단을 추가했습니다. 워커의 단위 테스트 24건과 필수 검사 증거를 확인했습니다. 기존 Linux 불일치 해결과 최종 검증은 조정자에게 남습니다.",
+          "findings": [],
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "baseCommit": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
+          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+          "createdAt": "2026-11-07T14:24:51.927Z",
+          "finishedAt": "2026-11-07T14:26:29.082Z"
+        }
+      }
+    },
+    {
+      "sequence": 1969,
+      "at": "2026-11-07T14:26:29.112Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "ba7a2cf6-0494-4163-a08f-f088b47bf78a",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:24:53.835Z",
+          "finishedAt": "2026-11-07T14:26:29.112Z",
+          "error": null,
+          "summary": "T709는 acceptance와 SSOT를 충족합니다. 정확한 canonical 비교를 유지하며 제한된 길이의 차이 진단을 추가했습니다. 워커의 단위 테스트 24건과 필수 검사 증거를 확인했습니다. 기존 Linux 불일치 해결과 최종 검증은 조정자에게 남습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1970,
+      "at": "2026-11-07T14:26:29.184Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1971,
+      "at": "2026-11-07T14:26:31.809Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 1972,
+      "at": "2026-11-07T14:26:32.575Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "88736841-6977-43d1-9576-f133a545bb10",
+          "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+          "status": "reviewing",
+          "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+          "baseCommit": "9541888d15d83035e487e62d64b233f4bd4146ca",
+          "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+          "createdAt": "2026-11-07T14:26:32.575Z"
+        }
+      }
+    },
+    {
+      "sequence": 1973,
+      "at": "2026-11-07T14:26:34.556Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7d188971-f1ca-4d01-bba4-7c2daa6aee26",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:26:34.556Z"
+        }
+      }
+    },
+    {
+      "sequence": 1974,
+      "at": "2026-11-07T14:26:34.589Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "7d188971-f1ca-4d01-bba4-7c2daa6aee26",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:26:34.556Z"
+        }
+      }
+    },
+    {
+      "sequence": 1975,
+      "at": "2026-11-07T14:27:56.909Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "88736841-6977-43d1-9576-f133a545bb10",
+          "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 요인의 설명과 12개 언어팩, 기존 설명·소스 참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 증거를 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+          "findings": [],
+          "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+          "baseCommit": "9541888d15d83035e487e62d64b233f4bd4146ca",
+          "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+          "createdAt": "2026-11-07T14:26:32.575Z",
+          "finishedAt": "2026-11-07T14:27:56.909Z"
+        }
+      }
+    },
+    {
+      "sequence": 1976,
+      "at": "2026-11-07T14:27:56.936Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "7d188971-f1ca-4d01-bba4-7c2daa6aee26",
+          "runner": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:26:34.556Z",
+          "finishedAt": "2026-11-07T14:27:56.936Z",
+          "error": null,
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 요인의 설명과 12개 언어팩, 기존 설명·소스 참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 증거를 확인했으며, 최종 통합 검증은 조정자에게 남깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 1977,
+      "at": "2026-11-07T14:27:57.006Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1978,
+      "at": "2026-11-07T14:27:59.698Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 1979,
+      "at": "2026-11-07T14:28:00.627Z",
+      "type": "group",
+      "group": "av07",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "f709cad6-3428-424d-bd49-b1cd428c6210",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          ],
+          "startedAt": "2026-11-07T14:19:05.322Z",
+          "stoppedAt": "2026-11-07T14:28:00.627Z",
+          "dispatched": 4,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+              "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+              "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            },
+            {
+              "attempt": "245816d9-f719-46be-b8c0-93f9de6d2089",
+              "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+              "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+              "role": "integration",
+              "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1980,
+      "at": "2026-11-07T14:29:38.724Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1981,
+      "at": "2026-11-07T14:29:39.122Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "integrating",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": "review-base-changed",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "407ba651-5ea4-4712-a455-4e25a95ea42a",
+            "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T709는 acceptance와 SSOT를 충족합니다. 정확한 canonical 비교를 유지하며 제한된 길이의 차이 진단을 추가했습니다. 워커의 단위 테스트 24건과 필수 검사 증거를 확인했습니다. 기존 Linux 불일치 해결과 최종 검증은 조정자에게 남습니다.",
+            "findings": [],
+            "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+            "baseCommit": "fdfde81bb6352872a1ef85b5f7832d3c37f1c47d",
+            "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+            "createdAt": "2026-11-07T14:24:51.927Z",
+            "finishedAt": "2026-11-07T14:26:29.082Z",
+            "invalidatedAt": "2026-11-07T14:29:39.122Z",
+            "invalidationReason": "integration base changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1982,
+      "at": "2026-11-07T14:29:51.223Z",
+      "type": "group",
+      "group": "av07",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            },
+            "reviewer": {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          },
+          "workers": [
+            {
+              "provider": "codex",
+              "model": null,
+              "version": "codex-cli 0.167.0"
+            }
+          ],
+          "startedAt": "2026-11-07T14:29:51.187Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 1983,
+      "at": "2026-11-07T14:29:51.389Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1984,
+      "at": "2026-11-07T14:29:52.387Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "integrating",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": "WEB: 상위 브랜치의 SSOT가 달라졌습니다. 동기화 후 다시 검증하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "88736841-6977-43d1-9576-f133a545bb10",
+            "owner": "f709cad6-3428-424d-bd49-b1cd428c6210/reviewer-1",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 요인의 설명과 12개 언어팩, 기존 설명·소스 참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 증거를 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+            "findings": [],
+            "commit": "cd908d8b4131addf4d4a8632fd5bf3df6fadaf1b",
+            "baseCommit": "9541888d15d83035e487e62d64b233f4bd4146ca",
+            "submissionId": "7600b077-3c9f-45bc-8664-b086acaa6340",
+            "createdAt": "2026-11-07T14:26:32.575Z",
+            "finishedAt": "2026-11-07T14:27:56.909Z",
+            "invalidatedAt": "2026-11-07T14:29:52.387Z",
+            "invalidationReason": "review snapshot changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1985,
+      "at": "2026-11-07T14:29:53.849Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c7ad44b6-d03b-4ee6-a34f-7c7eb18b01e0",
+          "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+          "status": "reviewing",
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "baseCommit": "f8d9ecfdd4002dd6e1ac1564a74b67d97d079cd4",
+          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+          "createdAt": "2026-11-07T14:29:53.849Z"
+        }
+      }
+    },
+    {
+      "sequence": 1986,
+      "at": "2026-11-07T14:29:56.616Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9c25c3a9-432f-4466-96c7-953959bc9e57",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:29:56.616Z"
+        }
+      }
+    },
+    {
+      "sequence": 1987,
+      "at": "2026-11-07T14:29:56.654Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9c25c3a9-432f-4466-96c7-953959bc9e57",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:29:56.616Z"
+        }
+      }
+    },
+    {
+      "sequence": 1988,
+      "at": "2026-11-07T14:30:24.725Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 1989,
+      "at": "2026-11-07T14:31:11.251Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": null,
+        "review": {
+          "id": "c7ad44b6-d03b-4ee6-a34f-7c7eb18b01e0",
+          "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T709는 새 baseCommit의 acceptance와 SSOT에 부합합니다. 정확한 canonical 비교 보존, 제한된 차이 진단과 경계값 처리를 확인했습니다. 워커의 단위 테스트 24건과 필수 검사 기록을 확인했으며, 기존 Linux 불일치 해결과 최종 통합 검증은 조정자에게 남습니다.",
+          "findings": [],
+          "commit": "e93e1995b9e3509b982b686feda5cace43543263",
+          "baseCommit": "f8d9ecfdd4002dd6e1ac1564a74b67d97d079cd4",
+          "submissionId": "3430aef5-50ab-4573-949d-d86ffc274d31",
+          "createdAt": "2026-11-07T14:29:53.849Z",
+          "finishedAt": "2026-11-07T14:31:11.251Z"
+        }
+      }
+    },
+    {
+      "sequence": 1990,
+      "at": "2026-11-07T14:31:11.284Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "9c25c3a9-432f-4466-96c7-953959bc9e57",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:29:56.616Z",
+          "finishedAt": "2026-11-07T14:31:11.284Z",
+          "error": null,
+          "summary": "T709는 새 baseCommit의 acceptance와 SSOT에 부합합니다. 정확한 canonical 비교 보존, 제한된 차이 진단과 경계값 처리를 확인했습니다. 워커의 단위 테스트 24건과 필수 검사 기록을 확인했으며, 기존 Linux 불일치 해결과 최종 통합 검증은 조정자에게 남습니다."
+        }
+      }
+    },
+    {
+      "sequence": 1991,
+      "at": "2026-11-07T14:31:11.410Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 1992,
+      "at": "2026-11-07T14:32:13.374Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-11-07T14:31:13.904Z",
+            "finishedAt": "2026-11-07T14:31:16.357Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:31:16.530Z",
+            "finishedAt": "2026-11-07T14:31:43.385Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:31:43.561Z",
+            "finishedAt": "2026-11-07T14:31:52.754Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:31:52.931Z",
+            "finishedAt": "2026-11-07T14:31:56.074Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:31:56.246Z",
+            "finishedAt": "2026-11-07T14:32:13.091Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 1993,
+      "at": "2026-11-07T14:32:13.455Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "7d04745c-b1ea-4c25-a715-7827dd8dc732",
+      "taskId": "T709",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+        "integratedAt": "2026-11-07T14:32:13.455Z"
+      }
+    },
+    {
+      "sequence": 1994,
+      "at": "2026-11-07T14:32:13.498Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1",
+        "contributors": [
+          "f709cad6-3428-424d-bd49-b1cd428c6210/worker-1",
+          "4fa59f9b-a3ba-454c-90f6-74338d8d383d/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 1995,
+      "at": "2026-11-07T14:32:13.749Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9a14d12b-3611-4077-9f9b-fc72b64cb456",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:32:13.749Z"
+        }
+      }
+    },
+    {
+      "sequence": 1996,
+      "at": "2026-11-07T14:32:13.997Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "9a14d12b-3611-4077-9f9b-fc72b64cb456",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:32:13.749Z"
+        }
+      }
+    },
+    {
+      "sequence": 1997,
+      "at": "2026-11-07T14:34:51.471Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 1998,
+      "at": "2026-11-07T14:34:52.387Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 1999,
+      "at": "2026-11-07T14:34:52.455Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2000,
+      "at": "2026-11-07T14:35:55.626Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+        "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+        "submittedAt": "2026-11-07T14:35:55.626Z",
+        "steps": [
+          {
+            "taskId": "T708",
+            "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+            "at": "2026-11-07T14:35:55.528Z",
+            "verification": [
+              {
+                "command": "pnpm install --frozen-lockfile --prefer-offline",
+                "startedAt": "2026-11-07T14:34:52.889Z",
+                "finishedAt": "2026-11-07T14:34:55.432Z"
+              },
+              {
+                "command": "pnpm run typecheck",
+                "startedAt": "2026-11-07T14:34:55.537Z",
+                "finishedAt": "2026-11-07T14:35:24.763Z"
+              },
+              {
+                "command": "pnpm run lint",
+                "startedAt": "2026-11-07T14:35:24.855Z",
+                "finishedAt": "2026-11-07T14:35:34.499Z"
+              },
+              {
+                "command": "pnpm run validate:i18n",
+                "startedAt": "2026-11-07T14:35:34.596Z",
+                "finishedAt": "2026-11-07T14:35:37.064Z"
+              },
+              {
+                "command": "pnpm run format:check",
+                "startedAt": "2026-11-07T14:35:37.152Z",
+                "finishedAt": "2026-11-07T14:35:55.052Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline",
+            "startedAt": "2026-11-07T14:34:52.889Z",
+            "finishedAt": "2026-11-07T14:34:55.432Z"
+          },
+          {
+            "command": "pnpm run typecheck",
+            "startedAt": "2026-11-07T14:34:55.537Z",
+            "finishedAt": "2026-11-07T14:35:24.763Z"
+          },
+          {
+            "command": "pnpm run lint",
+            "startedAt": "2026-11-07T14:35:24.855Z",
+            "finishedAt": "2026-11-07T14:35:34.499Z"
+          },
+          {
+            "command": "pnpm run validate:i18n",
+            "startedAt": "2026-11-07T14:35:34.596Z",
+            "finishedAt": "2026-11-07T14:35:37.064Z"
+          },
+          {
+            "command": "pnpm run format:check",
+            "startedAt": "2026-11-07T14:35:37.152Z",
+            "finishedAt": "2026-11-07T14:35:55.052Z"
+          }
+        ],
+        "verifiedCommit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44"
+      }
+    },
+    {
+      "sequence": 2001,
+      "at": "2026-11-07T14:35:55.667Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "9a14d12b-3611-4077-9f9b-fc72b64cb456",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "worker",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:32:13.749Z",
+          "finishedAt": "2026-11-07T14:35:55.667Z",
+          "error": null,
+          "summary": "호스트가 그룹 브랜치를 병합한 19c84ce0에서 기존 번역을 보존하고 재검증했습니다. 관련 단위 테스트 46개, 타입·lint·형식 검사와 i18n 본체 검증이 통과했습니다. 설치 DNS·tsx IPC 제약을 T708 result에 기록했습니다. 추가 코드 수정, 커밋·제출, 통합·e2e 실행은 하지 않았습니다."
+        }
+      }
+    },
+    {
+      "sequence": 2002,
+      "at": "2026-11-07T14:35:56.475Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1fa4f714-4b3b-489b-8b21-54759f61f81e",
+          "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+          "status": "reviewing",
+          "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+          "baseCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+          "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+          "createdAt": "2026-11-07T14:35:56.475Z"
+        }
+      }
+    },
+    {
+      "sequence": 2003,
+      "at": "2026-11-07T14:35:58.914Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-07T14:35:58.914Z"
+        }
+      }
+    },
+    {
+      "sequence": 2004,
+      "at": "2026-11-07T14:35:58.951Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-07T14:35:58.914Z"
+        }
+      }
+    },
+    {
+      "sequence": 2005,
+      "at": "2026-11-07T14:37:26.976Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "1fa4f714-4b3b-489b-8b21-54759f61f81e",
+          "owner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다.",
+          "findings": [],
+          "commit": "962f00ba99e4d75ed09f864874d441e4fa6a9e44",
+          "baseCommit": "0afe8437f5b0dc84e93f844d48073207d9ac91e0",
+          "submissionId": "57fd5bc8-86b9-4dd6-90d9-696aac86280c",
+          "createdAt": "2026-11-07T14:35:56.475Z",
+          "finishedAt": "2026-11-07T14:37:26.976Z"
+        }
+      }
+    },
+    {
+      "sequence": 2006,
+      "at": "2026-11-07T14:37:27.006Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "05c6367b-a7c2-46ad-8ed0-e89589d4852c",
+          "runner": "4fa59f9b-a3ba-454c-90f6-74338d8d383d",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "codex",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-07T14:35:58.914Z",
+          "finishedAt": "2026-11-07T14:37:27.006Z",
+          "error": null,
+          "summary": "T708은 acceptance와 SSOT에 부합합니다. 세 설명의 엔진 규칙 일치, 12개 언어 번역, 기존 설명·참조 보존을 확인했습니다. 워커의 단위 테스트 46건과 필수 검사 통과 기록을 확인했으며, 최종 통합 검증은 조정자에게 남깁니다."
+        }
+      }
+    },
+    {
+      "sequence": 2007,
+      "at": "2026-11-07T14:37:27.080Z",
+      "type": "attempt",
+      "group": "av07",
+      "attemptId": "245816d9-f719-46be-b8c0-93f9de6d2089",
+      "taskId": "T708",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

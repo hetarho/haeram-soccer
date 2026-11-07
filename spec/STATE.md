@@ -21,6 +21,7 @@
 | av07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-07T14:14Z | 2026-11-07T14:14Z | - |
 
 ## inbox
+- 261107 decided ARCH-21 ARCH-30 CLUB-48 LEAGUE-10 ECON-36 T710 T700: when to refresh fixtures after the recovered economy meets current recruitment/localization → T710 before T700, using existing generators and explicit provenance, after the parallel group gate ends; retain its failure evidence and separate the historical Linux divergence from legitimate economy changes (alt: keep stale prepared payloads | hand-edit expected facts | run heavy measurements beside the existing final gate). av07
 - 261107 decided CLUB-49 CLUB-50 CLUB-51 ECON-16 ECON-22 OWNER-5 T700 T689: do the old generated-shortlist premise and expired scoring cutoffs still apply → refresh unclaimed T700 for actual world-player recruitment at CLUB r60/ECON r49/OWNER r5, keep its ability-fit screen and 100m exit, depend on both compatibility tasks; T689 follows T700 and its verdict slice in a fresh 2h window under the new automatic request, retaining every gate (alt: measure removed supply | stop on expired deadlines | start scoring before the lower-club prerequisite). av07
 - 261107 decided ARCH-32 ARCH-21 ARCH-30 T708 T709: what can safely run in parallel while the remaining balance tasks are explore-only → two independent compatibility units, recovered influence-map messages in every locale and exact portable-contract difference diagnostics; keep exploration timeboxes and reserve the full gate for the coordinator (alt: force explore tasks into work run | duplicate the seven completed balance experiments). av07
 - 261107 decided ARCH-30 CLUB-48 LEAGUE-10 ECON-36 T693 T694 T695 T696 T697 T698 T699: where the seven completed balance tasks live → integrate origin/wip/ba04 ecf905a6 with original results and measurements, retaining main recruitment and localization; verify the combined source before any publication (alt: repeat completed experiments | treat spec-only planning as released code). av07
@@ -795,9 +796,9 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
-| T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 | todo |
-| T708 | localize recovered balance influence explanations | ARCH WEB CLUB LEAGUE ECON | - | todo |
-| T709 | report first differing portable contract path and values | ARCH | - | todo |
+| T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 | todo |
+
+| T710 | refresh portable and prepared fixtures on recovered economy | ARCH CLUB LEAGUE ECON | T708 T709 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -819,12 +820,19 @@
 | club-places-ui | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:28.891Z | [history](work/club-places-ui.json) |
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
+| av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 
 ## next
-- Finish the av07 integration compatibility tasks and final gate before publishing the recovered T693–T699 implementation.
-- Then refresh T700 on current recruitment and complete the lower-club growth read before resuming T689; keep every measurement gate.
+- implement-task T710
+- Then T700 on current recruitment; its verdict planning/implementation slice precedes T689. Preserve all measurement criteria and timeboxes.
+- av07 continues through the host loop for up to eight hours; only the coordinator publishes after the complete final gate.
 
 ## log
+- 261107 create-task T710: recovered economy fixtures before T700; parallel T708/T709 integrated (av07)
+- 261107 T708 integrated
+- 261107 T709 integrated
+- 261107 doc-review WEB MATCH HIST tidied: required cross-references retained without canonical cycles, explicit old→new chg wording (rev unchanged). av07
+- 261107 fix results-only: align imported placebo-test goal lines with independently replayed released main ff685c33; no simulation change (av07)
 - 261107 create-task T700 refreshed for current recruitment; T689 renewed after T700 (av07)
 - 261107 create-task ARCH WEB CLUB LEAGUE ECON compatibility recovery → T708 T709 (av07)
 - 261107 T693–T699 recovered from origin/wip/ba04; original evidence retained, combined source awaiting verification (av07)
@@ -833,7 +841,6 @@
 - 261107 update-ssot MATCH r55 + refresh T689: the keeper goes for a ball on its way to a receiver with nobody between only if he reaches it first, else holds set until the receiver has it, and shuts only the angle he can reach before the ball passes him (MATCH-35✎); T689's cv04-kpr window measures it to 20:30Z. cv07
 - 261107 update-ssot MATCH r54 + refresh T689: a man closes a shot from where he can reach the ball's path as it is struck, a chaser behind the ball only from touching distance, his take otherwise the pressure (MATCH-35✎); T689's cv04-sho window measures it, the diagnostic first, to 20:30Z. cv07
 - 261107 fix watch helper: when the resumed clock opens the next match-eve modal over the pace picker, continue through its public watch action; preserve every assertion and overall timeout. Resume cv07 to 07:00 KST on latest main. cv07
-- 261107 doc-review WEB MATCH HIST tidied: required cross-references retained without canonical cycles, explicit old→new chg wording (rev unchanged). av07
 - 261105 fix e2e port: Playwright starts webServer before the e2e lock's globalSetup, so the batch gate on 2d984ba2 failed at once while something else held 127.0.0.1:4173 (still held); without BROWSER_TEST_PORT each run now takes a free port and publishes it to its workers (tests/config/browser-port.ts). cv04
 - 261105 fix merge: origin/main 596d5570 into codex/cv04 for the supervisor's push — contracts.test.ts takes main's identical fee assertion without the stale comment (managerMarket.test.ts already equal); STATE inbox and log unioned (log trimmed to 20), ssot rows by ID (CLUB r60 MATCH r53 LEAGUE r18 STAFF r40 ECON r49), next keeps both sides; T689 untouched and todo. cv04
 - 261105 fix e2e for the released owner office: tests/e2e follow the 결재함/결재 설정 modals, home's area cards, the office page, the merged HUD money and the funding slider instead of the retired section tabs, office bar and fortune button (helpers and ~30 specs); app fixes the suite caught: nested dialogs stack by depth so 계약 협상/영입 중재 answer from the 결재함, the first-team training page is back, office pages name a detour's way back (WEB-74), the overview warns a thin squad (WEB-44), cup history no longer calls a hook in its lazy loader; chromium full suite 345/345
@@ -841,7 +848,3 @@
 - 261105 fix office effects: the ledger's floors and ceilings are finite min/max, since the view's canonical changes reject Infinity (host and client integration tests on d708cd17); a ledger test now canonicalizes it. oe05
 - 261105 T706 done: 구단주 사무실 opens on the effects in force with factors leading to their controls, areas' totals from their own controls, the areas on home; published on main with the design session d7m3 and T707; integration, contract, build and browser runs left to CI. oe05
 - 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
-- 261105 design club and player detail: end d7m3; club/player links and detail dialogs become feature-sliced entities and widgets with one host each, worker reads through shared useRead and runtime clubProfile, ESLint layer rules; committed with the localization (T707) and T706, whose combined tree passed typecheck, lint, format and the unit suite; integration, contract, build and browser runs left to CI.
-- 261105 T707 done locally: 12 complete locale packs / 6,499 messages / 8,285 validated references; source prose and saved facts preserved, AGENTS + ESLint + CI enforce resource-only copy. 1,260 affected unit tests, type/lint/format/resource checks and build pass; translation editorial review and release browser/integration gates remain. i804
-- 261105 rs01 release: T701–T705 merged with main 596d5570 and published; browser fixes this branch needed — a vacant post closes the coach's career job, the poor-owner fee case cuts cash under the dearest club fee, the free agent's name search and paid loans page past real free agents, the 결재함 row names a club player's seller, the settings close re-finds the top dialog; app: the market's source line stays one compact line at 360 px and a free signing's open card reads 계약 완료. Batch on 127d11fd: typecheck, lint, format, unit 2169, integration 1178 (4 skipped), contract 46, validations, build, Chromium 348 pass. rs01
-- 261105 fix integration test: contracts.test.ts's market-value case checks fees on the scout list's club players only (free agents asking none), each at his club's division times the asking settings, and the recruitment dial against the same players' asking fees, since T702's list holds real free agents and club players instead of generated candidates. rs01
