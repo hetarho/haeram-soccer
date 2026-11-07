@@ -23,6 +23,9 @@
  *            --out careers.json (keep the careers)   --in a.json,dir (report kept careers only;
  *            --measured-rate R and --note TEXT say what they were played on)   --reach   --moods
  *            --log (one line a season on stderr)   --spread FILE (CLUB-48's table, a measurement override)
+ *            --growth (T700: the sources of the rise below the top flight, read-only, kept per season)
+ *            --sources (with --in: only the growth sources report)
+ *            --compare FILE (with --in: the season rows that differ from FILE's careers)
  *
  * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
  * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
@@ -37,7 +40,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
-import type { CountryCode, World } from '../packages/contracts/src/types';
+import type { CountryCode, Player, World } from '../packages/contracts/src/types';
 import type { DividendShare, OwnerTrait, WealthTier } from '../packages/contracts/src/owner';
 import { careerEnded } from '../packages/contracts/src/owner';
 import { country, footballIndex } from '../packages/catalogs/src/index';
@@ -76,8 +79,21 @@ import {
   OWNER_LIVING,
   OWNER_TIERS,
 } from '../packages/engine/src/owner-config';
-import { STAR_SPREAD_CONFIG } from '../packages/engine/src/market-prices';
-import { MEANS_LEVEL } from '../packages/engine/src/dynamics';
+import { marketWageAt, STAR_SPREAD_CONFIG } from '../packages/engine/src/market-prices';
+import { levelOf, MEANS_LEVEL, meansLevel } from '../packages/engine/src/dynamics';
+import { divisionFor } from '../packages/engine/src/contracts';
+import { ownStarters, rating, tierLevel } from '../packages/engine/src/world';
+import {
+  fatigueLoad,
+  formationOf,
+  overall,
+  ownMultiplier,
+  slotOvr,
+} from '../packages/engine/src/player-state';
+import { transferOffers } from '../packages/engine/src/scout-search';
+import { financeStance, wageWithinLimit } from '../packages/engine/src/direction';
+import { recentRevenue, wageBill } from '../packages/engine/src/finance';
+import { SEASON_ROUNDS } from '../packages/engine/src/calendar';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string) => {
@@ -140,6 +156,19 @@ if (MEANS) {
  */
 const CUPS = args.includes('--cups');
 if (CUPS) BOOK_COMPETITIONS.inForce = true;
+/**
+ * --growth (T700): where a delegated club's rise below the top flight comes from, read at each
+ * close of a season it played below the top flight, without a random draw or a world change: its
+ * rating against its league's clubs nobody owns, its XI by origin and price (`divisionFor`), each
+ * XI player's wage beside his ability-fit market wage, the squad's bills, the 단장's discounted
+ * signings replayed on 재정 기조's checks at the ability-fit wage, the abilities the scout's list
+ * offered, and the means level's hold on the league at the summer change (`MEANS_LEVEL.observe`).
+ */
+const GROWTH = args.includes('--growth');
+/** --sources: with --in, print only the growth sources report (T700's growth.md). */
+const SOURCES = args.includes('--sources');
+/** --compare FILE: with --in, list every season row field that differs from FILE's careers. */
+const COMPARE = option('compare', '');
 const TAKEOVER_YEAR = 1950;
 /** ECON-29's career averages: the first fifty seasons. */
 const CAREER = 50;
@@ -229,6 +258,61 @@ interface Season {
    * left after the price (both in the season's money); summed, the owner is bankrupt past 1.
    */
   lifeShare?: number;
+  /** --growth: the season's sources of the rise, when it was played below the top flight. */
+  growth?: Growth;
+}
+/**
+ * Where an XI player came from, read as he arrived: in the squad at the takeover; an academy
+ * graduate (promoted, called up or a generated youngster at the close: `graduate`); signed for a
+ * fee (an `in` transfer fact); signed free by the 단장 (no fact, since a free move keeps none
+ * (→HIST-20), but a completed staff bid at fee 0); a free agent arriving at the close (`pool`, the
+ * top-up from the free agents, →CLUB-3); on loan (counted apart); else `other`.
+ */
+type Origin = 'takeover' | 'academy' | 'free' | 'pool' | 'fee' | 'loan' | 'other';
+const ORIGINS: Origin[] = ['takeover', 'academy', 'free', 'pool', 'fee', 'loan', 'other'];
+interface GrowthPlayer {
+  origin: Origin;
+  ovr: number;
+  /** `divisionFor(code, ovr)`: the division his ability suits, fractional (0 = the top flight). */
+  suits: number;
+  /** His slot value in the XI as `rating` reads it (multiplier and fatigue load counted). */
+  contribution: number;
+  /** His wage paid and his ability-fit market wage, units a year. */
+  paid: number;
+  fit: number;
+}
+interface GrowthSigning {
+  day: number;
+  fee: number;
+  ovr: number;
+  suits: number;
+  paid: number;
+  fit: number;
+  /** 재정 기조's checks replayed at the ability-fit wage, and at his paid wage beside. */
+  refusedFit: string | false;
+  refusedPaid: string | false;
+}
+interface Growth {
+  rating: number;
+  npcMedian: number;
+  npcBest: number;
+  npcClubs: number;
+  /** `tierLevel(tier)`: the division's typical strength. */
+  level: number;
+  xi: GrowthPlayer[];
+  squad: number;
+  /** The squad's annual wages at the close, paid and ability-fit, and the season's paid player wages. */
+  squadPaid: number;
+  squadFit: number;
+  playerWagesPaid: number;
+  signings: GrowthSigning[];
+  /** The scout's list as drawn this season, each player once: [OVR, free agent]. */
+  offered: [number, 0 | 1][];
+  /**
+   * The summer change before this season, on the league it plays: clubs nobody owns, those whose
+   * means level is below their level, those cut to it, and the league's median strength lost.
+   */
+  hold?: { clubs: number; limited: number; cut: number; shift: number };
 }
 interface BookLines {
   distribution: number;
@@ -365,6 +449,118 @@ function buyFacilities(w: World) {
   }
 }
 
+// ---- Growth sources (--growth, T700): read-only ------------------------------------------------
+const ownClub = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!;
+/**
+ * Each arrival's origin, noted when he is first seen in the squad (after a round or a close): the
+ * facts recorded since the last look, then the completed staff bids (pruned later, so read now).
+ */
+function arrivalTracker(w: World) {
+  const present = new Set(w.players.filter((p) => p.status === 'active').map((p) => p.id)),
+    takeover = new Set(present),
+    joined = new Map<string, Origin>();
+  let factsSeen = w.transfers?.facts.length ?? 0;
+  return {
+    look(close: boolean) {
+      const facts = (w.transfers?.facts ?? []).slice(factsSeen),
+        now = w.players.filter((p) => p.status === 'active'),
+        arrived: { p: Player; origin: Origin; fee: bigint }[] = [];
+      for (const p of now) {
+        if (present.has(p.id)) continue;
+        const fact = [...facts].reverse().find((f) => f.direction === 'in' && f.player === p.id);
+        const free = (w.bids ?? []).some(
+          (b) =>
+            b.direction === 'out' &&
+            b.playerId === p.id &&
+            b.status === 'completed' &&
+            b.fee === '0',
+        );
+        joined.set(
+          p.id,
+          fact
+            ? fact.loan
+              ? 'loan'
+              : 'fee'
+            : p.loanUntil !== undefined
+              ? 'loan'
+              : free
+                ? 'free'
+                : p.graduate
+                  ? 'academy'
+                  : close
+                    ? 'pool'
+                    : 'other',
+        );
+        arrived.push({ p, origin: joined.get(p.id)!, fee: BigInt(fact?.fee ?? '0') });
+      }
+      present.clear();
+      for (const p of now) present.add(p.id);
+      factsSeen = w.transfers?.facts.length ?? 0;
+      return arrived;
+    },
+    origin(p: Player): Origin {
+      if (p.loanUntil !== undefined) return 'loan';
+      return joined.get(p.id) ?? (takeover.has(p.id) ? 'takeover' : 'other');
+    },
+  };
+}
+/** His ability-fit market wage: priced in the division his ability suits, never a cheaper one. */
+function fitWage(w: World, p: Player, tier: number) {
+  const ovr = overall(p),
+    suits = divisionFor(ownClub(w).country, ovr);
+  return {
+    ovr,
+    suits,
+    wage: BigInt(marketWageAt(ownClub(w).country, w.year, Math.min(tier, suits), p, ovr)),
+  };
+}
+/**
+ * 재정 기조's checks on a signing (→ECON-33, `signingVerdict`'s arithmetic) replayed at the first
+ * round boundary after it, with his fee added back to the cash and `wage` in place of his paid one;
+ * the season's cash projection is not replayed. The reason refused, or false.
+ */
+function replaySigning(w: World, p: Player, fee: bigint, wage: bigint): string | false {
+  const stance = financeStance(w, 'recruitment'),
+    paid = BigInt(p.wage);
+  if (!wageWithinLimit(w, 'recruitment', wage.toString())) return 'wage cap';
+  const perRound = (BigInt(operatingCosts(w).annual) - paid + wage) / BigInt(SEASON_ROUNDS),
+    runway = perRound * BigInt(stance.runway),
+    spare = BigInt(w.cash) + fee - runway;
+  if (spare < fee) return 'runway';
+  const cap =
+    spare > 0n ? (spare * BigInt(Math.round(stance.signing.feeShare * 1000))) / 1000n : 0n;
+  if (fee > cap) return 'fee share';
+  const bill = BigInt(wageBill(w)) - paid + wage,
+    revenue = BigInt(recentRevenue(w));
+  if (bill * 100n > revenue * BigInt(Math.round(stance.wageShare * 100))) return 'wage bill';
+  return false;
+}
+/** The owner's league's clubs nobody owns (its division and group). */
+const leagueRivals = (w: World) => {
+  const own = ownClub(w);
+  return w.clubs.filter(
+    (c) =>
+      c.id !== own.id && c.country === own.country && c.tier === own.tier && c.group === own.group,
+  );
+};
+/** The means level's hold at the summer change just played, on the league the club plays next. */
+function holdOf(w: World, cuts: ReadonlyMap<string, number>) {
+  const rivals = leagueRivals(w);
+  const limited = rivals.filter((c) => {
+    if (c.project !== undefined) return false;
+    const held = meansLevel(w, c, c.tier);
+    return held !== undefined && held < levelOf(w, c);
+  }).length;
+  const after = rivals.map((c) => c.strength),
+    before = rivals.map((c) => c.strength + (cuts.get(c.id) ?? 0));
+  return {
+    clubs: rivals.length,
+    limited,
+    cut: rivals.filter((c) => cuts.has(c.id)).length,
+    shift: median(before) - median(after),
+  };
+}
+
 function playCareer(
   code: CountryCode,
   tier: WealthTier,
@@ -421,6 +617,10 @@ function playCareer(
     seasons: [],
   };
   const depth = country(code).groups.length;
+  const arrivals = arrivalTracker(w);
+  let hold: Growth['hold'];
+  const cuts = new Map<string, number>();
+  if (GROWTH) MEANS_LEVEL.observe = (c, from, to) => cuts.set(c.id, from - to);
   while (w.year <= UNTIL && !careerEnded(w)) {
     const year = w.year,
       unit = unitOf(code, year),
@@ -433,13 +633,47 @@ function playCareer(
       if (amount > 0n) ownerCommand(w, { type: 'owner-inject', amount: amount.toString() });
     }
     let wages = 0,
+      playerWages = 0,
       moodLow = owner.fanMood,
       belowFloor = 0;
+    const signings: GrowthSigning[] = [],
+      offered = new Map<string, [number, 0 | 1]>(),
+      draws = new Set<string>();
     while (w.round < 46 && !careerEnded(w)) {
       if (BUILD) buyFacilities(w);
       const cost = operatingCosts(w, w.round + 1).payments;
       wages += Number(cost.playerWages) + Number(cost.managerWage) + Number(cost.staffWages ?? '0');
+      playerWages += Number(cost.playerWages);
       advanceRound(w, undefined, false);
+      const arrived = GROWTH ? arrivals.look(false) : [];
+      if (GROWTH && ownClub(w).tier > 0) {
+        for (const { p, origin, fee } of arrived) {
+          if (origin !== 'free' && origin !== 'fee') continue;
+          const tier = ownClub(w).tier,
+            fit = fitWage(w, p, tier);
+          if (fit.suits >= tier) continue;
+          signings.push({
+            day: w.calendar?.day ?? 0,
+            fee: Number(fee) / unit,
+            ovr: fit.ovr,
+            suits: fit.suits,
+            paid: Number(p.wage) / unit,
+            fit: Number(fit.wage) / unit,
+            refusedFit: replaySigning(w, p, fee, fit.wage),
+            refusedPaid: replaySigning(w, p, fee, BigInt(p.wage)),
+          });
+        }
+        const list = w.shortlist;
+        if (list && !draws.has(`${list.year}:${list.day}`)) {
+          draws.add(`${list.year}:${list.day}`);
+          const offers = new Map(transferOffers(w).map((o) => [o.player.id, o]));
+          for (const entry of list.entries) {
+            const o = offers.get(entry.playerId);
+            if (o && !offered.has(entry.playerId))
+              offered.set(entry.playerId, [overall(o.player), o.freeAgent ? 1 : 0]);
+          }
+        }
+      }
       moodLow = Math.min(moodLow, w.owner!.fanMood);
       if (w.owner!.fanMood < FAN_MOOD.floor) belowFloor++;
       if (MOODS)
@@ -472,7 +706,44 @@ function playCareer(
           year,
         )
       : undefined;
+    let growth: Growth | undefined;
+    if (GROWTH && ownClub(w).tier > 0) {
+      const own = ownClub(w),
+        tier = own.tier,
+        slots = formationOf(w.tactic);
+      const xi = ownStarters(w).map((p, i): GrowthPlayer => {
+        const fit = fitWage(w, p, tier);
+        return {
+          origin: arrivals.origin(p),
+          ovr: fit.ovr,
+          suits: fit.suits,
+          contribution: slotOvr(p, slots[i]!, ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
+          paid: Number(p.wage) / unit,
+          fit: Number(fit.wage) / unit,
+        };
+      });
+      const squadNow = w.players.filter((p) => p.status === 'active');
+      const rivals = leagueRivals(w).map((c) => rating(w, c));
+      growth = {
+        rating: rating(w, own),
+        npcMedian: median(rivals),
+        npcBest: Math.max(...rivals),
+        npcClubs: rivals.length,
+        level: tierLevel(tier),
+        xi,
+        squad: squadNow.length,
+        squadPaid: squadNow.reduce((s, p) => s + Number(p.wage), 0) / unit,
+        squadFit: squadNow.reduce((s, p) => s + Number(fitWage(w, p, tier).wage), 0) / unit,
+        playerWagesPaid: playerWages / unit,
+        signings,
+        offered: [...offered.values()],
+        ...(hold ? { hold } : {}),
+      };
+    }
+    cuts.clear();
     closeSeason(w);
+    if (GROWTH) arrivals.look(true);
+    hold = GROWTH && ownClub(w).tier > 0 ? holdOf(w, cuts) : undefined;
     w.revision++;
     const archive = w.history.at(-1)!,
       record = w.owner!.seasonRecords.find((r) => r.year === year);
@@ -528,6 +799,7 @@ function playCareer(
       moodLow,
       belowFloor,
       ...(lifeShare !== undefined ? { lifeShare } : {}),
+      ...(growth ? { growth } : {}),
     };
     career.seasons.push(season);
     if (LOG)
@@ -902,6 +1174,306 @@ function reachReport(seed: string) {
   }
 }
 
+// ---- Growth sources report (--in … --sources, T700) -------------------------------------------
+const careerKey = (c: Career) => `${c.tier} ${c.code} ${c.seed.slice(-1)}`;
+const quantile = (values: number[], q: number) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  return sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * q))]! : NaN;
+};
+const discounted = (p: { suits: number }, tier: number) => p.suits < tier;
+/** The XI's rating points above the league's NPC median, attributed by origin and price (`key`). */
+function attribute(s: Season, key: (p: GrowthPlayer) => string) {
+  const g = s.growth!,
+    excess = g.rating - g.npcMedian,
+    shares = new Map<string, number>();
+  if (excess <= 0) return { excess: 0, shares };
+  const above = g.xi.map((p) => Math.max(0, p.contribution - g.level)),
+    whole = above.reduce((a, b) => a + b, 0);
+  if (!whole) return { excess, shares };
+  g.xi.forEach((p, i) =>
+    shares.set(key(p), (shares.get(key(p)) ?? 0) + (excess * above[i]!) / whole),
+  );
+  return { excess, shares };
+}
+const priceClass = (s: Season) => (p: GrowthPlayer) =>
+  p.origin === 'free' || p.origin === 'fee' || p.origin === 'pool'
+    ? `${p.origin}|${discounted(p, s.tier) ? 'discounted' : 'priced'}`
+    : p.origin;
+const CLASSES: [string, string][] = [
+  ['takeover', 'in the squad at the takeover'],
+  ['academy', 'academy (graduate mark)'],
+  ['free|discounted', 'signed free by the 단장, discounted'],
+  ['fee|discounted', 'signed for a fee, discounted'],
+  ['pool|discounted', 'a free agent at the close, discounted'],
+  ['free|priced', "signed free by the 단장, at his ability's price"],
+  ['fee|priced', "signed for a fee, at his ability's price"],
+  ['pool|priced', "a free agent at the close, at his ability's price"],
+  ['other', 'other'],
+  ['loan', 'on loan (apart)'],
+];
+const DISCOUNTED_SIGNINGS = ['free|discounted', 'fee|discounted', 'pool|discounted'];
+const PRICED_SIGNINGS = ['free|priced', 'fee|priced', 'pool|priced'];
+function pooledShares(seasons: Season[]) {
+  let excess = 0;
+  const points = new Map<string, number>();
+  for (const s of seasons) {
+    const a = attribute(s, priceClass(s));
+    excess += a.excess;
+    for (const [k, v] of a.shares) points.set(k, (points.get(k) ?? 0) + v);
+  }
+  const share = (k: string) => (excess ? (points.get(k) ?? 0) / excess : NaN);
+  return {
+    excess,
+    points,
+    share,
+    total: (keys: string[]) => keys.reduce((a, k) => a + share(k), 0),
+  };
+}
+/** The means level's hold measured as the league median it took, capped at the XI's excess. */
+function holdShare(seasons: Season[]) {
+  let excess = 0,
+    held = 0;
+  for (const s of seasons) {
+    const g = s.growth!,
+      e = g.rating - g.npcMedian;
+    if (e <= 0 || !g.hold) continue;
+    excess += e;
+    held += Math.min(e, Math.max(0, g.hold.shift));
+  }
+  return excess ? held / excess : NaN;
+}
+function sourcesReport(careers: Career[]) {
+  const grown = careers.filter((c) => c.seasons.some((s) => s.growth));
+  const tiers = (Object.keys(TIER_BANDS) as WealthTier[]).filter((t) =>
+    grown.some((c) => c.tier === t),
+  );
+  const below = (t: WealthTier) =>
+    grown.filter((c) => c.tier === t).flatMap((c) => c.seasons.filter((s) => s.growth));
+  console.log(
+    `# T700 — where a delegated club's rise below the top flight comes from (${grown.length} careers)\n`,
+  );
+  console.log(
+    "Read at each close of a season the owner's club played below the top flight (`--growth`, read-only). " +
+      "Rating: `rating` (world.ts) of the club and of its league's clubs nobody owns (its division and group). " +
+      "Points above the median: the XI's rating less the league's NPC median, attributed to each XI player " +
+      'pro rata to his slot value (as `rating` reads it: level × adaptation, less the fatigue load) above ' +
+      "the division's typical strength (`tierLevel`), players below it carrying none. Discounted: " +
+      "`divisionFor(code, OVR)` above the club's division (a lower index). Ability-fit wage: `marketWageAt` " +
+      "at min(club division, `divisionFor`), the era's spread as in force. Origin: the latest `in` transfer " +
+      'fact after the takeover (fee 0 = free; a loan apart), else in the squad at the takeover, else the ' +
+      "graduate mark (academy promotions, call-ups and the close's generated youngsters), else other.\n",
+  );
+  console.log('## Rating against the league\n');
+  console.log(
+    '| tier | careers | seasons below the top flight | XI rating − NPC median: median (p10–p90) | − NPC best: median | seasons above the median |',
+  );
+  console.log('|---|---:|---:|---|---:|---:|');
+  for (const t of tiers) {
+    const seasons = below(t),
+      gaps = seasons.map((s) => s.growth!.rating - s.growth!.npcMedian);
+    console.log(
+      `| ${t} | ${grown.filter((c) => c.tier === t).length} | ${seasons.length} | ${num(median(gaps), 1)} (${num(quantile(gaps, 0.1), 1)}–${num(quantile(gaps, 0.9), 1)}) | ${num(median(seasons.map((s) => s.growth!.rating - s.growth!.npcBest)), 1)} | ${gaps.filter((g) => g > 0).length} |`,
+    );
+  }
+  console.log(
+    "\n## Who carries the XI's points above the league's NPC median (pooled over the seasons below the top flight)\n",
+  );
+  console.log(
+    `| tier | points above the median (seasons) | ${CLASSES.map(([, label]) => label).join(' | ')} | discounted signings together |`,
+  );
+  console.log(`|---|---:|${CLASSES.map(() => '---:|').join('')}---:|`);
+  const row = (label: string, seasons: Season[]) => {
+    const pool = pooledShares(seasons);
+    console.log(
+      `| ${label} | ${num(pool.excess, 1)} (${seasons.filter((s) => s.growth!.rating > s.growth!.npcMedian).length}) | ${CLASSES.map(([k]) => pct(pool.share(k))).join(' | ')} | ${pct(pool.total(DISCOUNTED_SIGNINGS))} |`,
+    );
+  };
+  for (const t of tiers) row(t, below(t));
+  const screened = [...below('local'), ...below('selfmade')];
+  row('지역 유지 + 자수성가 (the screen)', screened);
+  console.log('\n## The XI by origin and price (median season)\n');
+  console.log(
+    `| tier | discounted share of the XI | ${ORIGINS.map((o) => o).join(' | ')} | discounted XI players: paid / ability-fit wage (median) |`,
+  );
+  console.log(`|---|---:|${ORIGINS.map(() => '---:|').join('')}---:|`);
+  for (const t of tiers) {
+    const seasons = below(t);
+    const xiShare = (f: (p: GrowthPlayer, s: Season) => boolean) =>
+      median(seasons.map((s) => s.growth!.xi.filter((p) => f(p, s)).length / s.growth!.xi.length));
+    const ratios = seasons.flatMap((s) =>
+      s.growth!.xi.filter((p) => discounted(p, s.tier) && p.fit > 0).map((p) => p.paid / p.fit),
+    );
+    console.log(
+      `| ${t} | ${pct(xiShare((p, s) => discounted(p, s.tier)))} | ${ORIGINS.map((o) => pct(xiShare((p) => p.origin === o))).join(' | ')} | ${num(median(ratios), 2)} (${ratios.length}) |`,
+    );
+  }
+  console.log('\n## Wage bill over revenue (seasons below the top flight)\n');
+  console.log(
+    "| tier | paid: median / p90 | ability-fit priced: median / p90 | squad's annual wages at the close / the season's paid player wages: median (min–max) |",
+  );
+  console.log('|---|---|---|---|');
+  for (const t of tiers) {
+    const seasons = below(t).filter((s) => turnover(s) > 0);
+    const paid = seasons.map((s) => s.growth!.squadPaid / turnover(s)),
+      fit = seasons.map((s) => s.growth!.squadFit / turnover(s)),
+      close = below(t).map((s) => s.growth!.squadPaid / s.growth!.playerWagesPaid);
+    console.log(
+      `| ${t} | ${pct(median(paid))} / ${pct(quantile(paid, 0.9))} | ${pct(median(fit))} / ${pct(quantile(fit, 0.9))} | ${num(median(close), 2)} (${num(Math.min(...close), 2)}–${num(Math.max(...close), 2)}) |`,
+    );
+  }
+  console.log(
+    "\n## The 단장's discounted signings on 재정 기조 표준's checks at the ability-fit wage\n\n" +
+      'Replayed at the first round boundary after each signing (the state after that round, his fee added ' +
+      "back to the cash and the ability-fit wage in place of his paid one; the season's cash projection not " +
+      "replayed); the same replay at his paid wage is printed beside as the replay's own error.\n",
+  );
+  console.log(
+    '| tier | discounted signings (free / fee) | OVR (median) / division his ability suits (median) | paid / ability-fit wage (median) | refused at the ability-fit wage | by reason | refused at his paid wage (replay error) |',
+  );
+  console.log('|---|---:|---|---:|---:|---|---:|');
+  for (const t of tiers) {
+    const signed = below(t).flatMap((s) => s.growth!.signings);
+    const reasons = new Map<string, number>();
+    for (const x of signed)
+      if (x.refusedFit) reasons.set(x.refusedFit, (reasons.get(x.refusedFit) ?? 0) + 1);
+    console.log(
+      `| ${t} | ${signed.length} (${signed.filter((x) => !x.fee).length} / ${signed.filter((x) => x.fee).length}) | ${num(median(signed.map((x) => x.ovr)))} / ${num(median(signed.map((x) => x.suits)), 2)} | ${num(median(signed.filter((x) => x.fit > 0).map((x) => x.paid / x.fit)), 2)} | ${signed.filter((x) => x.refusedFit).length} | ${[...reasons].map(([r, n]) => `${r} ${n}`).join(', ') || '-'} | ${signed.filter((x) => x.refusedPaid).length} |`,
+    );
+  }
+  console.log(
+    "\n## Who the scout's list offered (each player once a season, as drawn; `divisionFor` against the club's division)\n",
+  );
+  console.log(
+    "| tier | players offered a season (median) | OVR: median (p10–p90) | division's typical strength (median) | above it | suiting a higher division | free agents |",
+  );
+  console.log('|---|---:|---|---:|---:|---:|---:|');
+  for (const t of grown.length ? tiers : []) {
+    const seasons = below(t);
+    const all = seasons.flatMap((s) =>
+      s.growth!.offered.map(([ovr, free]) => ({
+        ovr,
+        free,
+        level: s.growth!.level,
+        suits: divisionFor(grown.find((c) => c.seasons.includes(s))!.code, ovr),
+        tier: s.tier,
+      })),
+    );
+    const ovrs = all.map((x) => x.ovr);
+    console.log(
+      `| ${t} | ${num(median(seasons.map((s) => s.growth!.offered.length)))} | ${num(median(ovrs))} (${num(quantile(ovrs, 0.1))}–${num(quantile(ovrs, 0.9))}) | ${num(median(seasons.map((s) => s.growth!.level)), 1)} | ${pct(all.filter((x) => x.ovr > x.level).length / all.length)} | ${pct(all.filter((x) => x.suits < x.tier).length / all.length)} | ${pct(all.filter((x) => x.free).length / all.length)} |`,
+    );
+  }
+  console.log(
+    "\n## The means level's hold on the league at the summer change (clubs nobody owns of the league the club plays next)\n",
+  );
+  console.log(
+    "| tier | summers read | means level below its level (share of the league's clubs) | cut to it that summer | league median strength taken: median (max) | the hold against the XI's excess (pooled, capped) |",
+  );
+  console.log('|---|---:|---:|---:|---|---:|');
+  for (const t of tiers) {
+    const holds = below(t).flatMap((s) => (s.growth!.hold ? [s.growth!.hold] : []));
+    const clubs = holds.reduce((a, h) => a + h.clubs, 0);
+    const limited = holds.reduce((a, h) => a + h.limited, 0),
+      cut = holds.reduce((a, h) => a + h.cut, 0);
+    console.log(
+      `| ${t} | ${holds.length} | ${pct(limited / clubs)} | ${pct(cut / clubs)} | ${num(median(holds.map((h) => h.shift)), 1)} (${num(Math.max(...holds.map((h) => h.shift)), 1)}) | ${pct(holdShare(below(t)))} |`,
+    );
+  }
+  console.log("\n## Top-flight reach against LEAGUE-13's band\n");
+  console.log(
+    '| tier | careers | reached the top flight | first top-flight season (median) | band |',
+  );
+  console.log('|---|---:|---:|---:|---|');
+  for (const t of tiers) {
+    const group = careers.filter((c) => c.tier === t),
+      firsts = group
+        .map((c) => c.seasons.findIndex((s) => s.tier === 0))
+        .filter((i) => i >= 0)
+        .map((i) => i + 1);
+    console.log(
+      `| ${t} | ${group.length} | ${firsts.length} (${pct(firsts.length / group.length)}) | ${num(median(firsts))} | ${TIER_BANDS[t]} |`,
+    );
+  }
+  // The screen (T700): pooled over 지역 유지 and 자수성가 축구팬's seasons below the top flight.
+  const pool = pooledShares(screened),
+    disc = pool.total(DISCOUNTED_SIGNINGS),
+    sources: [string, number][] = [
+      ["the takeover squad's growth", pool.share('takeover')],
+      ['academy', pool.share('academy')],
+      ["signings at their ability's price", pool.total(PRICED_SIGNINGS)],
+      ['the league held below its level by the means level', holdShare(screened)],
+    ];
+  const most = [...sources].sort((a, b) => b[1] - a[1])[0]!;
+  console.log('\n## Screen verdict\n');
+  console.log(
+    disc >= 0.5
+      ? `**go** for the ability-fit wage price: discounted signings carry ${pct(disc)} of the XI's points above the league's NPC median (pooled over 지역 유지 and 자수성가 축구팬's ${screened.length} seasons below the top flight; at least half needed).`
+      : `**no go** for the ability-fit wage price: discounted signings carry ${pct(disc)} of the XI's points above the league's NPC median (pooled over 지역 유지 and 자수성가 축구팬's ${screened.length} seasons below the top flight; half needed). The source carrying the most: **${most[0]}** (${pct(most[1])}); beside it ${sources
+          .filter((s) => s !== most)
+          .map(([n, v]) => `${n} ${pct(v)}`)
+          .join(', ')}.`,
+  );
+}
+
+/** --compare FILE: every season row field (the growth record aside) differing from FILE's careers. */
+function compareReport(careers: Career[], file: string) {
+  const reference = JSON.parse(readFileSync(file, 'utf8')) as Career[];
+  const key = (c: Career) => `${c.tier}|${c.code}|${c.seed}|${c.traits}|${c.policy}`;
+  const refs = new Map(reference.map((c) => [key(c), c]));
+  const show = (v: unknown) =>
+    typeof v === 'number' ? num(v, 2) : (JSON.stringify(v)?.slice(0, 80) ?? '-');
+  const details: string[] = [];
+  console.log(`# Season rows against ${file}\n`);
+  console.log(
+    '| career | club (reference → this) | takeover facts differing | seasons compared | rows differing | first differing season | fields differing |',
+  );
+  console.log('|---|---|---|---:|---:|---|---|');
+  for (const c of careers) {
+    const r = refs.get(key(c));
+    if (!r) continue;
+    let compared = 0,
+      differing = 0,
+      first = '';
+    const fields = new Set<string>();
+    for (let i = 0; i < Math.max(r.seasons.length, c.seasons.length); i++) {
+      const a = r.seasons[i] as unknown as Record<string, unknown> | undefined,
+        b = c.seasons[i] as unknown as Record<string, unknown> | undefined;
+      if (!a || !b) {
+        fields.add('season missing');
+        continue;
+      }
+      compared++;
+      let differs = false;
+      for (const f of new Set([...Object.keys(a), ...Object.keys(b)])) {
+        if (f === 'growth' || JSON.stringify(a[f]) === JSON.stringify(b[f])) continue;
+        differs = true;
+        fields.add(f);
+        details.push(
+          `| ${careerKey(c)} | ${String(b.year)} | ${f} | ${show(a[f])} | ${show(b[f])} |`,
+        );
+      }
+      if (differs) {
+        differing++;
+        first ||= String(b.year);
+      }
+    }
+    console.log(
+      `| ${careerKey(c)} | ${r.club === c.club ? c.club : `${r.club} → ${c.club}`} | ${
+        (Object.keys(c.start) as (keyof Career['start'])[])
+          .filter((f) => JSON.stringify(r.start[f]) !== JSON.stringify(c.start[f]))
+          .map((f) => `${f} ${show(r.start[f])} → ${show(c.start[f])}`)
+          .join(', ') || '-'
+      } | ${compared} | ${differing} | ${first || '-'} | ${[...fields].join(', ') || '-'} |`,
+    );
+  }
+  console.log(
+    `\n${details.length} differing fields${details.length > 300 ? ', the first 300' : ''}:\n`,
+  );
+  console.log('| career | season | field | reference | this |');
+  console.log('|---|---|---|---|---|');
+  for (const line of details.slice(0, 300)) console.log(line);
+}
+
 const started = performance.now();
 const careers: Career[] = [];
 if (args.includes('--reach')) {
@@ -923,6 +1495,8 @@ if (saved)
           .map((name) => `${path}/${name}`)
       : [path])
       careers.push(...(JSON.parse(readFileSync(file, 'utf8')) as Career[]));
+else if (SOURCES || COMPARE)
+  throw new Error('--sources and --compare report kept careers: give --in');
 else
   for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++)
     for (const tier of TIERS)
@@ -942,6 +1516,14 @@ else
             const out = option('out', '');
             if (out) writeFileSync(out, JSON.stringify(careers));
           }
+if (COMPARE) {
+  compareReport(careers, COMPARE);
+  process.exit(0);
+}
+if (SOURCES) {
+  sourcesReport(careers);
+  process.exit(0);
+}
 console.log(
   `# Owner balance — ${careers.length} careers from a ${TAKEOVER_YEAR} takeover to ${UNTIL}/${(UNTIL + 1) % 100}, every responsibility delegated, 기본 방향 (OWNER_TIERS ${Object.values(
     OWNER_TIERS,
