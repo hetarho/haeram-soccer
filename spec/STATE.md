@@ -742,6 +742,7 @@
 - 261105 decided STAFF-50 LEAGUE-1 T704: which seasons a tenure lists → every job off the pitch, the manager's and chief scout's included, with each season it overlaps by at least a day (the war's seasons skipped); a season the archive holds no row of his club for shows 순위 기록 없음 and the one being played 진행 중, read at request time (alt: coaching and 단장 jobs only | count a season only after a set share of it). rs01
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
+- 261108 decided CLUB-26 CLUB-48 ECON-36 ECON-38 SAVE-27 ARCH-21 ARCH-30 T711 T700: how the two stale integration cases keep what they protect on the rules in force → T711 (test files only, before T700): the Ballon d'Or case runs its ×2/×1.4/faded/표준-cap assertions unchanged at s = 1 set through `STAR_SPREAD_CONFIG` for the case and restored, with worlds built before the override so the shared test-world cache never holds one, and reads the table in force beside it (England 1950: worth = market wage; shared table alone: strictly between ×1 and ×2); the takeover round trip turns an affordable club's cash into an equal debt before buying it and adds `w.loan` = `takeoverLoan(debt)`; T700 depends on T711 by the gate's order, not by touches (alt: expected worth through `factor ** starPaySpread`, restating the code | move the world to 2008 | live the ownerless world longer until a club owes, tying the case to the economy | drop the loan assertions). av07
 
 ## ideation
 | id | st |
@@ -796,9 +797,10 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 | todo |
-| T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 | todo |
-
+| T700 | organic lower-club growth: the lower tiers on the rules in force, where a delegated club's rise comes from, and the ability-fit wage screened | LEAGUE ECON CLUB OWNER | T708 T709 T710 T711 | todo |
 | T710 | refresh portable and prepared fixtures on recovered economy | ARCH CLUB LEAGUE ECON | T708 T709 | todo |
+| T711 | two integration cases on the rules in force: the Ballon d'Or premium read at a stated star pay spread, and the takeover loan from a prepared debt | CLUB ECON SAVE LEAGUE ARCH | - | todo |
+
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -826,8 +828,10 @@
 - implement-task T710
 - Then T700 on current recruitment; its verdict planning/implementation slice precedes T689. Preserve all measurement criteria and timeboxes.
 - av07 continues through the host loop for up to eight hours; only the coordinator publishes after the complete final gate.
+- implement-task T711: the two integration cases the parallel gate failed on 54b634a4 — the Ballon d'Or case's assertions at a stated modern spread plus the table in force read on the 1950 England world, and the takeover round trip from a prepared debt; test files only, both cases left to the coordinator's final gate.
 
 ## log
+- 261108 create-task T711: the gate's two integration cases on the rules in force before T700 (T700 dep +T711); no SSOT delta (av07)
 - 261107 create-task T710: recovered economy fixtures before T700; parallel T708/T709 integrated (av07)
 - 261107 T708 integrated
 - 261107 T709 integrated
@@ -846,5 +850,4 @@
 - 261105 fix e2e for the released owner office: tests/e2e follow the 결재함/결재 설정 modals, home's area cards, the office page, the merged HUD money and the funding slider instead of the retired section tabs, office bar and fortune button (helpers and ~30 specs); app fixes the suite caught: nested dialogs stack by depth so 계약 협상/영입 중재 answer from the 결재함, the first-team training page is back, office pages name a detour's way back (WEB-74), the overview warns a thin squad (WEB-44), cup history no longer calls a hook in its lazy loader; chromium full suite 345/345
 - 261105 fix integration tests: contracts.test.ts expects the recruitment dial to leave asking fees unchanged (ECON-16 as released) and managerMarket.test.ts the renewal notice with 연봉 한도, both stale since the released owner controls. oe05
 - 261105 fix office effects: the ledger's floors and ceilings are finite min/max, since the view's canonical changes reject Infinity (host and client integration tests on d708cd17); a ledger test now canonicalizes it. oe05
-- 261105 T706 done: 구단주 사무실 opens on the effects in force with factors leading to their controls, areas' totals from their own controls, the areas on home; published on main with the design session d7m3 and T707; integration, contract, build and browser runs left to CI. oe05
 - 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
