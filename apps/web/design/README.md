@@ -3,13 +3,13 @@
 Shared components, locale copy, theme mappings, editable artwork and deployed resources have
 different owners. Read [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) and [RESOURCE-SKINS.md](RESOURCE-SKINS.md).
 
-| Layer              | Location                                    | Responsibility                                                    |
-| ------------------ | ------------------------------------------- | ----------------------------------------------------------------- |
-| Shared UI          | `src/ui/` and `src/design-system/`          | Semantic state, live content, layout and component previews       |
-| Locale packs       | `public/presentation/locales/<locale>.json` | User-visible messages, independent of artwork and theme           |
-| Theme packs        | `public/presentation/themes/<theme>.json`   | Semantic role aliases, local ink, image paths and native metadata |
-| Theme source art   | `design/<theme-id>/<resource-group>/`       | Editable originals, exact prompts, generation recipes and notes   |
-| Deployed theme art | `public/art/<theme-id>/<resource-group>/`   | Compact production assets and generation manifests                |
+| Layer              | Location                                                       | Responsibility                                                    |
+| ------------------ | -------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Shared UI          | FSD layers `src/app/` … `src/shared/` and `src/design-system/` | Semantic state, live content, layout and component previews       |
+| Locale packs       | `public/presentation/locales/<locale>.json`                    | User-visible messages, independent of artwork and theme           |
+| Theme packs        | `public/presentation/themes/<theme>.json`                      | Semantic role aliases, local ink, image paths and native metadata |
+| Theme source art   | `design/<theme-id>/<resource-group>/`                          | Editable originals, exact prompts, generation recipes and notes   |
+| Deployed theme art | `public/art/<theme-id>/<resource-group>/`                      | Compact production assets and generation manifests                |
 
 The paths above are relative to `apps/web/`. `HomeAwayBadge` is a shared component: it selects
 `fixture.home` or `fixture.away` from the current locale and its theme supplies the visual skin.

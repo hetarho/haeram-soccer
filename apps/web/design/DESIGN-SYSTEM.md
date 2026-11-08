@@ -241,7 +241,7 @@ navigation, badges or other meaningful emphasis. Do not turn every inner row int
 frame. The current three resources, measurements and regeneration recipe are in
 [surfaces-print](surfaces-print/README.md).
 
-Use the shared [Card](../src/ui/Card.tsx) for a compact record/summary: optional live metadata,
+Use the shared [Card](../src/shared/ui/Card.tsx) for a compact record/summary: optional live metadata,
 a title, body and actions on `sheet` or `detail`. The component owns spacing and theme roles own
 appearance. A card does not become a button merely by containing actions. Compare body-only,
 long-title and multi-action variants in the `cards` workbench story, then review a real consumer
@@ -252,18 +252,18 @@ next-match report leads with one `ticket` (the memo) and keeps `dark` for a sing
 the remaining records use `detail`. Waiting requests are listed only by the 결재함's rows below,
 never as a second tray inside another work.
 
-The owner office ([OfficeOverview](../src/ui/OfficeDesk.tsx) in
-[Operations](../src/ui/Operations.tsx), →WEB-39/100) is one column as wide as its queue: the
+The owner office ([OfficeOverview](../src/entities/office/ui/OfficeDesk.tsx) in
+[Operations](../src/pages/club/ui/Operations.tsx), →WEB-39/100) is one column as wide as its queue: the
 manager-room `FacilityOverview` as an illustrated header, then the work queue
-([ApprovalQueue](../src/ui/ApprovalQueue.tsx)) — the office bar's quiet 결재함 heading, one counts
+([ApprovalQueue](../src/pages/club/ui/ApprovalQueue.tsx)) — the office bar's quiet 결재함 heading, one counts
 line with the secondary overview link, `Segments` filters and the request rows — then the team
 content. The header's art slot is shorter on phones (112px, near the art's 3:1) so the first
 request still sits above the bottom controls in the first phone viewport; desk cards and doors
 stay retired. A row keeps its kind `label`, title, subject and 결재 기한 beside a 44px review
 action; on phones the action spans the row's two text lines. The work figures (`stat-tile`, one
-row of four on every width, [OfficeDesk](../src/ui/OfficeDesk.tsx)) stay with 구단 운영's sections.
+row of four on every width, [OfficeDesk](../src/entities/office/ui/OfficeDesk.tsx)) stay with 구단 운영's sections.
 
-The office's team content ([OfficeTeam](../src/ui/ClubHub.tsx)) follows the queue as supporting
+The office's team content ([OfficeTeam](../src/pages/clubhouse/ui/ClubHub.tsx)) follows the queue as supporting
 work, never in its place. Its current-club summary (`ClubSituation`, →WEB-44) reuses the same
 `stat-tile` role as read-only facts: a `dl` of five tiles (strength with its division place,
 출전 가능 of the whole team with the injured and suspended, 선발 피로, 분위기, 감독 입지), one row
@@ -313,10 +313,10 @@ in `--cool` blue (`+3`, `-3`). Closing and comparing controls stay plain buttons
 colour marks the one main action. A detail that already fills its dialog needs no plate of its
 own: drop the outer card and keep its grouped facts on light `detail` cards. Labels such as
 이적료 or 성향 리포트 stay small but bold; the values they name are larger and heavier.
-[PlayerCompare](../src/ui/PlayerCompare.tsx) sets two players side by side on every width, the
+[PlayerCompare](../src/pages/club/ui/PlayerCompare.tsx) sets two players side by side on every width, the
 better value marked by weight.
 
-On phones every [Dialog](../src/ui/Dialog.tsx) opens as a bottom sheet with a grab handle and the
+On phones every [Dialog](../src/shared/ui/Dialog.tsx) opens as a bottom sheet with a grab handle and the
 dimmed page visible above it; `picker` is the only centered exception, kept for the small theme
 and language pickers (→WEB-106).
 

@@ -58,10 +58,12 @@ module it renders.
   names another only through that entity's `@x/<consumer>.ts` file.
 - Outside a slice, import its `index.ts` only. Each index opens with what the slice is for and
   what it exports, so read the index before the files; it exports exactly what is used outside.
-- A lazy `import()` names the module file, not the index, so the screen keeps its own chunk. The
-  build treats feature-sliced modules as free of import side effects, so an index brings into a
-  chunk only the modules that chunk uses; keep work that must run on import out of these layers.
-- To move modules, write a `{ "from", "to" }` manifest and run
+- Layer modules are built free of import side effects (ARCH-4 r34): an index brings into a chunk
+  only the modules that chunk uses. Inside `app`, `pages`, `widgets`, `features`, `entities` and
+  `shared`, never rely on a side-effect-only import (`import './x'`) or on work a module does just
+  by being imported. A dynamic `import()` names the module file, not the index, so the lazy
+  screen keeps its own chunk.
+- Move modules with `scripts/move-modules.ts`: write a `{ "from", "to" }` manifest and run
   `pnpm exec tsx scripts/move-modules.ts <manifest.json>`; it moves the files and rewrites every
   reference, so no import is edited by hand.
 - To show any club or player, use `ClubLink` / `PlayerLink` (or `openClub` / `openPlayer`). One

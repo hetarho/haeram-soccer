@@ -39,7 +39,7 @@ muted and semantic foreground tokens were adjusted alongside the materials.
 
 ## Shared Card
 
-[Card.tsx](../../src/ui/Card.tsx) is an app component, used by the fixture notebook and shown in
+[Card.tsx](../../src/shared/ui/Card.tsx) is an app component, used by the fixture notebook and shown in
 the `cards` workbench story. It defaults to an `article` on the detail plane. `as` can be
 `article`, `section` or `div`; `surface` can be `sheet` or `detail`. `meta`, `title`, children
 and `actions` are optional live React content. Standard HTML attributes are forwarded.
