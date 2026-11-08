@@ -36,8 +36,10 @@ handoff metadata when changing a control. Use the existing ARCH verification sco
 
 # Source layers (feature-sliced)
 
-`src/` follows Feature-Sliced Design (→ARCH-3/4), highest layer first. ESLint
-(`eslint.config.mjs`) enforces the direction; the UI engine-import guard covers every layer.
+`src/` follows Feature-Sliced Design (→ARCH-3/4), highest layer first. ESLint enforces the
+direction with `scripts/lib/layer-rules.mjs`, which resolves every import (static, type-only,
+re-export, `import()`) from the importing file's own path; the UI engine-import guard covers every
+layer.
 
 | Layer       | Holds                                                     | Slices or segments                                                                                                                                                           |
 | ----------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -59,10 +61,12 @@ module it renders.
 - Outside a slice, import its `index.ts` only. Each index opens with what the slice is for and
   what it exports, so read the index before the files; it exports exactly what is used outside.
 - Layer modules are built free of import side effects (ARCH-4 r34): an index brings into a chunk
-  only the modules that chunk uses. Inside `app`, `pages`, `widgets`, `features`, `entities` and
-  `shared`, never rely on a side-effect-only import (`import './x'`) or on work a module does just
-  by being imported. A dynamic `import()` names the module file, not the index, so the lazy
-  screen keeps its own chunk.
+  only the modules that chunk uses. Top-level work in a layer module (a store subscription, a
+  document listener) therefore runs only in a chunk that uses one of that module's exports, as
+  `shared/routing/state.ts` and `shared/ui/Dialog.tsx` do; never rely on work a module does just
+  by being imported. ESLint rejects a side-effect-only import (`import './x'`) inside `app`,
+  `pages`, `widgets`, `features`, `entities` and `shared`, since the build would drop it. A
+  dynamic `import()` names the module file, not the index, so the lazy screen keeps its own chunk.
 - Move modules with `scripts/move-modules.ts`: write a `{ "from", "to" }` manifest and run
   `pnpm exec tsx scripts/move-modules.ts <manifest.json>`; it moves the files and rewrites every
   reference, so no import is edited by hand.
