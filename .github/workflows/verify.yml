@@ -13,12 +13,15 @@ concurrency:
   # main keeps a started run so every code push to main gets a result while parallel sessions push;
   # GitHub still replaces older pending runs with the newest one.
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
-# The checks, fast units, integration shards and each browser's journeys run as parallel jobs: the run takes
-# as long as its slowest job instead of the sum of every step. The benchmarks run on demand in
+# The checks, fast units, three integration shards and two shards per browser (Chromium, Firefox, WebKit)
+# run as parallel jobs: the run takes as long as its slowest job instead of the sum of every step. Every
+# job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min), so a hung run
+# fails instead of holding main's run queue for the platform's six hours. The benchmarks run on demand in
 # benchmark.yml.
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -38,6 +41,7 @@ jobs:
 
   unit:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -57,6 +61,7 @@ jobs:
   integration:
     name: integration (${{ matrix.shard }})
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -91,13 +96,17 @@ jobs:
   e2e:
     name: e2e (${{ matrix.browser }} ${{ matrix.shard }})
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { browser: chromium, shard: 1/1, slug: chromium }
-          - { browser: firefox, shard: 1/1, slug: firefox }
-          # Software-rendered WebKit is two to three times slower; two shards keep it in step.
+          # Two shards per browser: Playwright splits the journeys by file, so each shard runs about
+          # half of them with the same retries.
+          - { browser: chromium, shard: 1/2, slug: chromium-1 }
+          - { browser: chromium, shard: 2/2, slug: chromium-2 }
+          - { browser: firefox, shard: 1/2, slug: firefox-1 }
+          - { browser: firefox, shard: 2/2, slug: firefox-2 }
           - { browser: webkit, shard: 1/2, slug: webkit-1 }
           - { browser: webkit, shard: 2/2, slug: webkit-2 }
     steps:
