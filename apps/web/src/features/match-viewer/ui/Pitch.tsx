@@ -50,7 +50,7 @@ import {
 import { gaitDistances, poseAt, type FigurePose } from '../../../entities/match';
 import { reducedMotion } from '../../../shared/ui/motion';
 import { drawNumberTag, numberTagStyle, placeNumberTags } from '../../../entities/match';
-import { figureInputs } from '../lib/pitchFigures';
+import { figureInputs } from '../../../entities/match';
 import {
   ballRadius,
   createGroundPainter,
@@ -61,8 +61,8 @@ import {
 } from '../../../entities/match';
 import { usePitchSkin } from '../../../entities/match';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from '../../../entities/match';
-import { scoreboardHalves } from '../lib/scoreboardHalves';
-import { incidentFrame, sampleAt, sentOff } from '../lib/moments';
+import { scoreboardHalves } from '../../../entities/match';
+import { incidentFrame, sampleAt, sentOff } from '../../../entities/match';
 import {
   advanceGoalFeedback,
   GOAL_FEEDBACK_CONFIG,
@@ -70,7 +70,7 @@ import {
   goalsShown,
   seekGoalFeedback,
   type GoalFeedbackState,
-} from '../lib/goalFeedback';
+} from '../../../entities/match';
 import {
   GOAL_REPLAY_CONFIG,
   goalsSeen,
@@ -83,10 +83,10 @@ import {
   startGoalReplay,
   type GoalReplay,
   type ReplayGoal,
-} from '../lib/goalReplay';
+} from '../../../entities/match';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { useLocale } from '../../../presentation/react';
-import { possessionKey, resolvePossessionCue, type PossessionCue } from '../lib/possessionCue';
+import { possessionKey, resolvePossessionCue, type PossessionCue } from '../../../entities/match';
 import {
   beatAt,
   beatCaptions,

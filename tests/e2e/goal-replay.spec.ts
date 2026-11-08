@@ -8,13 +8,13 @@ import { committedRaw, openRecordedMatch } from './club-identity-helpers';
 import {
   GOAL_FEEDBACK_CONFIG,
   goalInstants,
-} from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
+} from '../../apps/web/src/entities/match/lib/goalFeedback';
 import {
   GOAL_REPLAY_CONFIG,
   replayGoals,
   startGoalReplay,
   type ReplayGoal,
-} from '../../apps/web/src/features/match-viewer/lib/goalReplay';
+} from '../../apps/web/src/entities/match/lib/goalReplay';
 import {
   presentationSamples,
   WATCH_DEFAULT_SPEED,

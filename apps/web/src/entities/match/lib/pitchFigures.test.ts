@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { PlayerMotion } from '../../../../../../packages/contracts/src/types';
-import { PITCH_METRES } from '../../../entities/match';
-import { FIGURE_POSE_CONFIG, gaitDistances, poseAt } from '../../../entities/match';
+import { PITCH_METRES } from './figureActions';
+import { FIGURE_POSE_CONFIG, gaitDistances, poseAt } from './figurePose';
 import { FIXED_SHAPE, figureInputs, type FigureFrame } from './pitchFigures';
-import type { PresentationSample } from '../../../entities/match';
+import type { PresentationSample } from './presentationClock';
 
 const motion = (
   id: string,

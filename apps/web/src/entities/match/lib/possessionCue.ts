@@ -1,5 +1,5 @@
 import type { MatchEvent, MatchFrame } from '../../../../../../packages/contracts/src/types';
-import type { PresentationSample } from '../../../entities/match';
+import type { PresentationSample } from './presentationClock';
 
 /**
  * Who has the ball at the presented instant (→WEB-95):

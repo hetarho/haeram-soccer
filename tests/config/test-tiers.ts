@@ -34,7 +34,7 @@ export const INTEGRATION_FILES = [
   'apps/web/src/entities/league/lib/league.test.ts',
   'apps/web/src/entities/match/lib/matchAppearance.test.ts',
   'apps/web/src/features/match-viewer/ui/matchCharts.test.ts',
-  'apps/web/src/features/match-viewer/lib/moments.test.ts',
+  'apps/web/src/entities/match/lib/moments.test.ts',
   'apps/web/src/pages/journal/lib/scorers.test.ts',
   'apps/web/src/entities/league/lib/scouting.test.ts',
   'apps/web/src/entities/league/lib/seasonArchive.test.ts',

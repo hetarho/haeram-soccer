@@ -2,7 +2,7 @@ import type { MatchPlayback, PlayerMotion, World } from '../../packages/contract
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { advanceRound, fullStatsRead, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
 import {
   deadBallBeats,
   presentationAdvance,
