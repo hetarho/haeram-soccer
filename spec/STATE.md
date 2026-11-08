@@ -21,6 +21,8 @@
 | fs09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T16:07Z | 2026-11-08T16:07Z | - |
 
 ## inbox
+- 261109 decided T726 review/self-improve-local-261109: the final gate on 16994234 could not load any Playwright spec — T726's moved `goalFeedback` imports `presentationClock` through the `entities/match` index, which drags CSS modules into Playwright's Node loader → revert T726 alone (61d6d6a2), keep T727/T728, block T726 on F13 (alt: a CSS-free public entry now, an ARCH-4 change without review time | stub CSS in Playwright's loader) fs09
+- 261109 parked review/self-improve-local-261109 ARCH-4: F13 — how code outside Vite (Playwright specs, fixtures, scripts) reaches a slice's pure logic when its index re-exports CSS-importing components; recommended a CSS-free `model`/`lib` public entry per slice beside `index.ts`, enforced by the layer rule, then resume T726 fs09
 - 261109 suggest WEB-93 T729: the club hub's entrance animation (`.hub > *` `rise`, ClubHub.module.css) still plays when the browser asks for reduced motion (resource-skins runs with `reducedMotion: 'reduce'` and saw it); honouring `prefers-reduced-motion` there would be a small accessibility fix of its own fs09
 - 261109 decided T729 ARCH-23: CI 42507777267 on d0180ee1 fails only `e2e (webkit 2/2)` — resource-skins pixel and matchday-print read contrast 1 because the hub's fixture card is still fading in (opacity 0) on software WebKit, the same test failed for matchday-print in 42487386669 before this run → fix the spec to wait for the hub's animations, verified on local WebKit before the next push (alt: disable the hub animation under test | raise the WebKit retries); the six browser shards cut the run from 47 to about 33 min fs09
 - 261109 decided T727 T726 ARCH-4: where the moved engine reads go when a new leaf file reshapes the web chunks (a new `europe-calendar.ts` made the build 82 JS chunks, every `aptitudeLabel` placement changed the count) → the calendar blocks go verbatim into the existing `competition-keys.ts` leaf (71/30 chunks kept, exception keys 28→24) and `aptitudeLabel` stays, keeping the scouting key; T726's entity index is 70 names because the moved modules and tests import through it (alt: accept 82 chunks with a separate calendar leaf | a one-function `aptitude-label.ts` leaf) fs09
@@ -823,6 +825,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -851,6 +854,7 @@
 - the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
 
 ## log
+- 261109 T726 reverted (61d6d6a2) and blocked: its lib moves made every Playwright spec fail to load through a CSS-carrying entity index; T727/T728 stay fs09
 - 261109 T726–T728 done (lane fsd-phase-b, worker fs09-w4, reviewer fs09-r2: T726/T727 approved, T728 approved after its absolute-path fix): the match viewer owns its six playback modules (entity index 88→70 names, `@x` 7→6); cup calendars and knockout counts read from the `competition-keys` leaf (UI→orchestration exception keys 28→24, chunks 71/30 kept); a path-resolving layer rule replaces the pattern blocks and rejects sibling re-exports, deep/climbing paths, wrong `@x` consumers, dynamic `import()` of higher layers or indexes and side-effect-only imports (51/51 probes; the old patterns 29/47) fs09
 - 261109 fs09 gate on 9329121a (T725, T729) failed only `persistence.long-career.test.ts` by its 600 s timeout: T725's engine change re-keyed the cached ten-season world, re-simulated at load 38 beside the phase-B review; rerun as part of the final gate on a quiet machine fs09
 - 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
