@@ -56,18 +56,18 @@ export const featureSlicedImports = {
     const file = `/${context.filename.split('\\').join('/')}`;
     const at = file.lastIndexOf(ROOT);
     if (at < 0) return {};
-    const path = file.slice(at + ROOT.length);
-    const me = place(path);
+    const me = place(file.slice(at + ROOT.length));
     const layered = LAYERS.includes(me.layer);
 
     /** `kind`: 'static' (import, export … from), 'dynamic' (import()) or 'type' (typeof import()). */
     const check = (node, specifier, kind) => {
       if (typeof specifier !== 'string' || !specifier.startsWith('.')) return;
-      const target = posix.normalize(
-        posix.join(posix.dirname(path), specifier.replace(/[?#].*$/, '')),
-      );
-      if (target.startsWith('../') || target === '..') return;
-      const to = place(target);
+      // Resolve against the importer's full path, so a specifier that climbs above src and comes
+      // back ('../../../../src/entities/…') is classified by where it lands.
+      const target = posix.join(posix.dirname(file), specifier.replace(/[?#].*$/, ''));
+      const inside = target.lastIndexOf(ROOT);
+      if (inside < 0) return;
+      const to = place(target.slice(inside + ROOT.length));
       if (!LAYERS.includes(to.layer)) return;
       const report = (messageId, data) => context.report({ node, messageId, data });
       if (INFRASTRUCTURE.has(me.layer)) return report('infrastructure');
@@ -99,7 +99,10 @@ export const featureSlicedImports = {
         check(node.source, node.source.value, 'static');
       },
       ExportNamedDeclaration(node) {
-        if (node.source) check(node.source, node.source.value, 'static');
+        if (!node.source) return;
+        if (layered && node.specifiers.length === 0 && node.exportKind !== 'type')
+          context.report({ node, messageId: 'sideEffect' });
+        check(node.source, node.source.value, 'static');
       },
       ExportAllDeclaration(node) {
         check(node.source, node.source.value, 'static');
@@ -108,9 +111,9 @@ export const featureSlicedImports = {
         check(node.source, literal(node.source), 'dynamic');
       },
       TSImportType(node) {
-        const argument =
-          node.argument?.type === 'TSLiteralType' ? node.argument.literal : node.argument;
-        check(node, literal(argument), 'type');
+        // typescript-eslint 8 names the specifier `source`; `argument` (a TSLiteralType) is deprecated.
+        const source = node.source ?? node.argument;
+        check(node, literal(source?.type === 'TSLiteralType' ? source.literal : source), 'type');
       },
     };
   },

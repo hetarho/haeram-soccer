@@ -46,6 +46,19 @@ describe('feature-sliced import guard', () => {
     ['features/approvals/ui/X.ts', "import '../../../shared/x';", 'sideEffect'],
     ['entities/club/ui/X.ts', "import '../../../shared/x';", 'sideEffect'],
     ['shared/ui/X.ts', "import './x.css';", 'sideEffect'],
+    ['pages/club/index.ts', "export {} from './ui/Rich';", 'sideEffect'],
+    // a specifier that climbs above src and comes back is classified by where it lands
+    [
+      'pages/club/ui/X.tsx',
+      "import { A } from '../../../../src/entities/player/ui/PlayerLink';",
+      'publicApi',
+    ],
+    [
+      'pages/club/ui/X.tsx',
+      "import { A } from '../../../../../web/src/pages/journal/ui/LiveSeason';",
+      'sibling',
+    ],
+    ['shared/ui/X.tsx', "import { A } from '../../../src/app/ui/App';", 'higher'],
     // the shapes the previous patterns already caught
     [
       'features/match-viewer/ui/X.tsx',
@@ -107,6 +120,8 @@ describe('feature-sliced import guard', () => {
       "import { A } from '../lib/y';\nimport { B } from '../../presentation/format';\nimport { C } from '../../../../../packages/engine/src/player';\nimport { useState } from 'react';",
     ],
     ['app/ui/X.ts', "import type {} from '../../shared/lib/x';"],
+    ['pages/club/index.ts', "export type {} from './ui/Rich';"],
+    ['pages/club/ui/X.tsx', "import { A } from '../../../../src/pages/club/ui/Y';"],
     // side-effect imports outside the layers
     ['presentation/X.ts', "import './theme.css';\nimport '../adapters/themeTransition.css';"],
   ])('allows %s: %s', (file, code) => {
