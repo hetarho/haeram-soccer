@@ -2,26 +2,26 @@ import { describe, expect, it } from 'vitest';
 import { rewriteSource, type Tree } from './move-modules';
 
 const FILES = new Set([
-  'apps/web/src/ui/App.tsx',
-  'apps/web/src/ui/App.module.css',
-  'apps/web/src/ui/format.ts',
-  'apps/web/src/ui/Pitch.tsx',
-  'apps/web/src/ui/Pitch.module.css',
-  'apps/web/src/ui/OwnerSheet.tsx',
-  'apps/web/src/entities/club/index.ts',
-  'apps/web/src/runtime/store.ts',
-  'apps/web/public/presentation/locales/ko-KR.json',
+  'demo/src/ui/App.tsx',
+  'demo/src/ui/App.module.css',
+  'demo/src/ui/format.ts',
+  'demo/src/ui/Pitch.tsx',
+  'demo/src/ui/Pitch.module.css',
+  'demo/src/ui/OwnerSheet.tsx',
+  'demo/src/entities/club/index.ts',
+  'demo/src/runtime/store.ts',
+  'demo/public/presentation/locales/ko-KR.json',
 ]);
 const tree: Tree = {
   isFile: (path) => FILES.has(path),
   isDirectory: (path) => [...FILES].some((file) => file.startsWith(`${path.replace(/\/$/, '')}/`)),
 };
 const moved = new Map([
-  ['apps/web/src/ui/App.module.css', 'apps/web/src/shared/ui/styles/App.module.css'],
-  ['apps/web/src/ui/format.ts', 'apps/web/src/shared/lib/format.ts'],
-  ['apps/web/src/ui/Pitch.tsx', 'apps/web/src/features/match-viewer/ui/Pitch.tsx'],
-  ['apps/web/src/ui/Pitch.module.css', 'apps/web/src/features/match-viewer/ui/Pitch.module.css'],
-  ['apps/web/src/ui/OwnerSheet.tsx', 'apps/web/src/entities/office/ui/OwnerSheet.tsx'],
+  ['demo/src/ui/App.module.css', 'demo/src/shared/ui/styles/App.module.css'],
+  ['demo/src/ui/format.ts', 'demo/src/shared/lib/format.ts'],
+  ['demo/src/ui/Pitch.tsx', 'demo/src/features/match-viewer/ui/Pitch.tsx'],
+  ['demo/src/ui/Pitch.module.css', 'demo/src/features/match-viewer/ui/Pitch.module.css'],
+  ['demo/src/ui/OwnerSheet.tsx', 'demo/src/entities/office/ui/OwnerSheet.tsx'],
 ]);
 
 describe('move-modules specifier rewriting', () => {
@@ -35,9 +35,7 @@ describe('move-modules specifier rewriting', () => {
       "const Pitch = lazy(() => import('./Pitch'));",
       "vi.mock('./format', async () => vi.importActual('./format'));",
     ].join('\n');
-    expect(
-      rewriteSource(app, 'apps/web/src/ui/App.tsx', 'apps/web/src/ui/App.tsx', moved, tree),
-    ).toBe(
+    expect(rewriteSource(app, 'demo/src/ui/App.tsx', 'demo/src/ui/App.tsx', moved, tree)).toBe(
       [
         "import s from '../shared/ui/styles/App.module.css';",
         "import { number, type Format } from '../shared/lib/format';",
@@ -62,8 +60,8 @@ describe('move-modules specifier rewriting', () => {
     expect(
       rewriteSource(
         pitch,
-        'apps/web/src/ui/Pitch.tsx',
-        'apps/web/src/features/match-viewer/ui/Pitch.tsx',
+        'demo/src/ui/Pitch.tsx',
+        'demo/src/features/match-viewer/ui/Pitch.tsx',
         moved,
         tree,
       ),
@@ -84,15 +82,15 @@ describe('move-modules specifier rewriting', () => {
     expect(
       rewriteSource(
         css,
-        'apps/web/src/ui/Pitch.module.css',
-        'apps/web/src/features/match-viewer/ui/Pitch.module.css',
+        'demo/src/ui/Pitch.module.css',
+        'demo/src/features/match-viewer/ui/Pitch.module.css',
         moved,
         tree,
       ),
     ).toBe(".panel { composes: card from '../../../shared/ui/styles/App.module.css'; }");
-    const tiers = "export const FILES = ['apps/web/src/ui/format.ts', './missing'];";
+    const tiers = "export const FILES = ['demo/src/ui/format.ts', './missing'];";
     expect(
       rewriteSource(tiers, 'tests/config/tiers.ts', 'tests/config/tiers.ts', moved, tree),
-    ).toBe("export const FILES = ['apps/web/src/shared/lib/format.ts', './missing'];");
+    ).toBe("export const FILES = ['demo/src/shared/lib/format.ts', './missing'];");
   });
 });

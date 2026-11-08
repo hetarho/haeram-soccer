@@ -5,9 +5,9 @@ import type { ReactNode } from 'react';
 import type { ClubProfile } from '../../../../../../packages/contracts/src/owner';
 import { STAFF_INFO } from '../../../../../../packages/engine/src/staff-info';
 import type { Read } from '../../../shared/lib';
-import { number, seasonName } from '../../../ui/format';
-import { PositionBadge } from '../../../ui/PositionBadge';
-import { divisionLabel } from '../../../ui/startChoices';
+import { number, seasonName } from '../../../presentation/format';
+import { PositionBadge } from '../../../entities/player/ui/PositionBadge';
+import { divisionLabel } from '../../../entities/league/lib/startChoices';
 import link from '../../../shared/ui/TextLink.module.css';
 import s from './ClubDetail.module.css';
 

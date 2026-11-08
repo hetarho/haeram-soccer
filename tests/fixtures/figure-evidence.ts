@@ -4,8 +4,8 @@ import {
   figureShirtColourAt,
   insideFigureTorso,
 } from '../../packages/engine/src/kit-patterns';
-import { torsoWidth } from '../../apps/web/src/ui/figurePainting';
-import { markerRadius } from '../../apps/web/src/ui/pitchPainting';
+import { torsoWidth } from '../../apps/web/src/entities/match/lib/figurePainting';
+import { markerRadius } from '../../apps/web/src/entities/match/lib/pitchPainting';
 
 /**
  * MATCH-36, KIT-3/8/12, WEB-49/50: evidence that a pitch Canvas dresses its player figures in a

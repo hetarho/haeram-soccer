@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import type { PlayerMotion, World } from '../../packages/contracts/src/types';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { presentationSamples } from '../../apps/web/src/ui/presentationClock';
+import { presentationSamples } from '../../apps/web/src/entities/match/lib/presentationClock';
 import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
 import { expectCompressedPreparation, stoppages } from './preparation';

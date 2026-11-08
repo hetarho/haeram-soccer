@@ -1,6 +1,6 @@
 import { clubhouseTab } from './competition-navigation';
 import { expect, test, type Locator, type Page } from '@playwright/test';
-import { versionLabel } from '../../apps/web/src/ui/versionLabel';
+import { versionLabel } from '../../apps/web/src/shared/ui/versionLabel';
 import { readPresentationBaselines } from '../fixtures/presentation';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { textContrast } from './contrast';

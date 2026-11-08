@@ -5,7 +5,7 @@ import { usePresentation, usePresentationController } from '../presentation/reac
 import { STORIES } from './catalog';
 import { previewRequest } from './session';
 import { loadSample, previewRuntime } from './client';
-import { useNavigation } from '../ui/state';
+import { useNavigation } from '../shared/routing/state';
 
 const StoryRenderer = lazy(() => import('./stories'));
 class PreviewBoundary extends Component<{ children: ReactNode }, { error?: Error }> {

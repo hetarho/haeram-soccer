@@ -1,8 +1,8 @@
 import { openClubhouse, openClubRecords } from './competition-navigation';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { expect, test, type Page } from '@playwright/test';
-import { describeShirt } from '../../apps/web/src/ui/kitPainting';
-import { UNRECORDED_LOOK } from '../../apps/web/src/ui/matchAppearance';
+import { describeShirt } from '../../apps/web/src/entities/match/lib/kitPainting';
+import { UNRECORDED_LOOK } from '../../apps/web/src/entities/match/lib/matchAppearance';
 import type { ShirtDesign } from '../../packages/contracts/src/identity';
 import { applyClubIdentity } from '../../packages/engine/src/identity-operations';
 import { identityOf, nextOwnFixture, operate } from '../../packages/engine/src/index';

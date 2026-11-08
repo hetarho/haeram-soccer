@@ -1,0 +1,117 @@
+import { localizeValue, useTextLocale } from '../../../presentation/text';
+import { richMessage } from '../../../presentation/LocalizedMessage';
+import { useEffect, useState, type ReactNode } from 'react';
+import { useTaskMemory } from '../../../shared/routing/taskMemory';
+import { ApprovalRequestHost } from './ApprovalRequestHost';
+import { approvalRequests } from '../../../runtime/progression';
+import { eventDesk, type ApprovalRequest } from '../../../shared/routing/eventRouting';
+import type { ClientState, GameClient } from '../../../runtime/client';
+import type { ProgressionController } from '../../../runtime/progression';
+import { BusinessWorkbench } from './BusinessWorkbench';
+import {
+  BUSINESS_TABS,
+  officeAddress,
+  officeView,
+  approvalWorld,
+  leaveDesk,
+  openOwnerOffice,
+  returnApprovalHome,
+  type OfficeView,
+} from '../../../shared/routing/state';
+import { Dialog } from '../../../shared/ui/Dialog';
+import { DeskBody } from '../../../entities/office/ui/OfficeDesk';
+import { ClubOverview } from '../../../widgets/club-overview/ui/ClubOverview';
+
+/**
+ * The workspace overview or a selected approval's authoritative work form in a dialog.
+ */
+export function OperationsView({
+  state,
+  client,
+  personnel,
+  selectedRequest,
+}: {
+  state: ClientState;
+  client: GameClient;
+  controller: ProgressionController;
+  selectedRequest?: ApprovalRequest;
+  personnel: (
+    desk: 'players' | 'staff',
+    client: GameClient,
+    request: ApprovalRequest,
+    error?: string,
+  ) => ReactNode;
+}) {
+  useTextLocale();
+  const w = state.view!.world;
+  const requests = useTaskMemory((memory) => memory.approvalRequests);
+  const requestId =
+    selectedRequest?.item.id ?? new URLSearchParams(location.search).get('request') ?? undefined;
+  const liveRequest = requestId
+    ? approvalRequests(w).find((item) => item.id === requestId)
+    : undefined;
+  const [request] = useState(
+    () =>
+      selectedRequest ??
+      (requestId && approvalWorld() === w.id
+        ? (requests[requestId] ??
+          (liveRequest && eventDesk(liveRequest)
+            ? { world: w.id, desk: eventDesk(liveRequest)!, item: liveRequest }
+            : undefined))
+        : undefined),
+  );
+  const [view, setView] = useState<OfficeView>(() =>
+    officeView(new URLSearchParams(location.search).get('view')),
+  );
+  const area = BUSINESS_TABS.find(([id]) => id === (selectedRequest?.desk ?? view));
+  // Older settings addresses still open the settings dialog over the workspace.
+  useEffect(() => {
+    if (selectedRequest || view !== 'office') return;
+    history.replaceState(history.state, '', officeAddress('lobby'));
+    setView('lobby');
+    openOwnerOffice();
+  }, [view, selectedRequest]);
+  useEffect(() => {
+    if (area && !requestId) leaveDesk();
+  }, [area, requestId]);
+  if (!area) return <ClubOverview w={w} />;
+  if (!requestId) return null;
+  const [id, label] = area;
+  return (
+    <Dialog
+      label={localizeValue(label)}
+      wide
+      onClose={() => {
+        if (!state.busy && !state.pendingActions) returnApprovalHome(request);
+      }}
+    >
+      <DeskBody data-office-view={id}>
+        {localizeValue(
+          request && request.world === w.id && request.desk === id ? (
+            <ApprovalRequestHost key={`${w.id}:${requestId}`} request={request} client={client}>
+              {localizeValue((scoped, error) =>
+                id === 'players' || id === 'staff' ? (
+                  personnel(id, scoped, request, error)
+                ) : (
+                  <BusinessWorkbench
+                    state={state}
+                    client={scoped}
+                    part={id === 'investment' ? 'finance' : 'sponsor'}
+                    selectedSlot={request.item.ref}
+                  />
+                ),
+              )}
+            </ApprovalRequestHost>
+          ) : (
+            <section data-testid="approval-request">
+              <p role="status">{richMessage('copy.Operations.1e671dd38f')}</p>
+              <button type="button" data-ui="link" onClick={() => returnApprovalHome()}>
+                {richMessage('copy.ApprovalRequestHost.0bcb104073')}
+              </button>
+            </section>
+          ),
+        )}
+      </DeskBody>
+    </Dialog>
+  );
+}

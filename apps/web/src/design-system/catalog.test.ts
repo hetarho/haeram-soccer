@@ -34,7 +34,9 @@ describe('design-system catalog', () => {
     const teamUrl = new URL(previewAddress(team, 'standard'), 'http://localhost');
     expect(teamUrl.pathname).toBe('/team');
     expect(teamUrl.searchParams.get('view')).toBe('players');
-    expect(team.components).toEqual(expect.arrayContaining(['TeamDirectory', 'PositionBadge']));
+    expect(team.components).toEqual(
+      expect.arrayContaining(['pages/club/ui/TeamDirectory', 'entities/player/ui/PositionBadge']),
+    );
     expect(matchingStories('TEAMDIRECTORY').map((story) => story.id)).toContain('team');
   });
 });

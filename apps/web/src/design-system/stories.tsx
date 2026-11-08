@@ -4,86 +4,99 @@ import { richMessage } from '../presentation/LocalizedMessage';
 import { lazy, useEffect, useMemo, useState, type ReactNode } from 'react';
 import type { Story } from './catalog';
 import type { Sample, previewRuntime } from './client';
-import { Panel, Table } from '../ui/App';
-import { Select } from '../ui/Select';
-import { Segments } from '../ui/Segments';
-import { TabList, TabPanel } from '../ui/PageTabs';
-import { Attributes } from '../ui/Attributes';
-import { OfficeBar } from '../ui/OfficeBar';
-import { TermDial } from '../ui/ClubStaff';
-import { PixelIcon } from '../ui/PixelIcon';
-import { TrophyIcon, type TrophyKind } from '../ui/TrophyIcon';
-import { OvrBadge } from '../ui/OvrBadge';
-import { HomeAwayBadge } from '../ui/HomeAwayBadge';
-import { PositionBadge } from '../ui/PositionBadge';
-import { StaffRoleBadge } from '../ui/StaffRoleBadge';
+import { Panel, Table } from '../app/ui/App';
+import { Select } from '../shared/ui/Select';
+import { Segments } from '../shared/ui/Segments';
+import { TabList, TabPanel } from '../shared/ui/PageTabs';
+import { Attributes } from '../entities/player/ui/Attributes';
+import { OfficeBar } from '../pages/club/ui/OfficeBar';
+import { TermDial } from '../pages/club/ui/ClubStaff';
+import { PixelIcon } from '../shared/ui/PixelIcon';
+import { TrophyIcon, type TrophyKind } from '../pages/club/ui/TrophyIcon';
+import { OvrBadge } from '../entities/player/ui/OvrBadge';
+import { HomeAwayBadge } from '../shared/ui/HomeAwayBadge';
+import { PositionBadge } from '../entities/player/ui/PositionBadge';
+import { StaffRoleBadge } from '../pages/club/ui/StaffRoleBadge';
 import { STAFF_ROLES } from '../../../../packages/engine/src/staff-info';
 import { POSITIONS } from '../../../../packages/contracts/src/player';
-import { ResultBadge } from '../ui/ResultBadge';
-import { Money } from '../ui/Money';
-import { AnimatedMoney } from '../ui/AnimatedMoney';
-import { BetaMark } from '../ui/BetaMark';
+import { ResultBadge } from '../shared/ui/ResultBadge';
+import { Money } from '../shared/ui/Money';
+import { AnimatedMoney } from '../app/ui/AnimatedMoney';
+import { BetaMark } from '../shared/ui/BetaMark';
 import { ClubLink } from '../entities/club';
 import { openPlayer, PlayerLink } from '../entities/player';
 import { ClubDetailHost } from '../widgets/club-detail';
 import { PlayerDetailHost } from '../widgets/player-detail';
-import { PersonCareerLink } from '../ui/PersonCareer';
-import { Term } from '../ui/Term';
-import { Chart } from '../ui/Chart';
-import { HeatPitch, MaterialPitch } from '../ui/HeatPitch';
-import { FormationPitch } from '../ui/FormationPitch';
+import { PersonCareerLink } from '../features/person-career/ui/PersonCareer';
+import { Term } from '../shared/ui/Term';
+import { Chart } from '../pages/club/ui/Chart';
+import { HeatPitch, MaterialPitch } from '../entities/match/ui/HeatPitch';
+import { FormationPitch } from '../entities/player/ui/FormationPitch';
 import {
   PresentationSettings,
   PresentationSettingsControls,
   PresentationSettingsTrigger,
-} from '../ui/PresentationSettings';
-import { ClubHub, NextMatchCard, OfficeEntrance, SeasonCard, CupBriefing } from '../ui/ClubHub';
-import { NewsList, useNewsSheet } from '../ui/NewsFeed';
-import { ProgressControls, ProgressOverview } from '../ui/ProgressControls';
+} from '../widgets/presentation-settings/ui/PresentationSettings';
+import {
+  ClubHub,
+  NextMatchCard,
+  OfficeEntrance,
+  SeasonCard,
+  CupBriefing,
+} from '../pages/clubhouse/ui/ClubHub';
+import { NewsList, useNewsSheet } from '../features/news-feed/ui/NewsFeed';
+import {
+  ProgressControls,
+  ProgressOverview,
+} from '../widgets/progress-controls/ui/ProgressControls';
 import { ControllerBackgrounds } from './ControllerBackgrounds';
-import { ProgressModeSwitch } from '../ui/ProgressModeSwitch';
-import { HudCash } from '../ui/HudCash';
-import { OwnerSheetBody } from '../ui/OwnerSheet.tsx';
-import { GameOver } from '../ui/GameOver';
+import { ProgressModeSwitch } from '../widgets/progress-controls/ui/ProgressModeSwitch';
+import { HudCash } from '../app/ui/HudCash';
+import { OwnerSheetBody } from '../entities/office/ui/OwnerSheet.tsx';
+import { GameOver } from '../pages/game-over/ui/GameOver';
 import { FAN_MOOD } from '../../../../packages/engine/src/owner-config';
-import { AppMenu } from '../ui/AppMenu';
-import { LeagueOverview, Standings, RoundResults } from '../ui/LeagueInsights';
-import { ScorerStandings } from '../ui/ScorerPanels';
-import { LeaguePicker } from '../ui/LeaguePicker';
-import { LiveSeason } from '../ui/LiveSeason';
-import { CupsView } from '../ui/CupsView';
-import { FixtureNotebook } from '../ui/FixtureNotebook';
-import { Card } from '../ui/Card';
-import { Pitch } from '../ui/Pitch';
-import { MatchReport } from '../ui/MatchReport';
-import { MatchMaterial } from '../ui/MatchMaterial';
-import { MatchReportCard } from '../ui/MatchReportCard';
-import { StrategyPanel } from '../ui/StrategyPanel';
-import { PlayerProfile } from '../ui/PlayerProfile';
-import { PlayerPerformance } from '../ui/PlayerPerformance';
-import { PlayerAdvancedStats } from '../ui/PlayerAdvancedStats';
-import { PlayerComparison } from '../ui/PlayerComparison';
-import Rich from '../ui/Rich';
-import { RecruitmentDesk } from '../ui/RecruitmentDesk';
-import { StyleCard } from '../ui/StyleCard';
+import { AppMenu } from '../app/ui/AppMenu';
+import {
+  LeagueOverview,
+  Standings,
+  RoundResults,
+} from '../widgets/league-insights/ui/LeagueInsights';
+import { ScorerStandings } from '../pages/journal/ui/ScorerPanels';
+import { LeaguePicker } from '../entities/league/ui/LeaguePicker';
+import { LiveSeason } from '../pages/journal/ui/LiveSeason';
+import { CupsView } from '../pages/cups/ui/CupsView';
+import { FixtureNotebook } from '../pages/journal/ui/FixtureNotebook';
+import { Card } from '../shared/ui/Card';
+import { Pitch } from '../features/match-viewer/ui/Pitch';
+import { MatchReport } from '../features/match-viewer/ui/MatchReport';
+import { MatchMaterial } from '../features/match-viewer/ui/MatchMaterial';
+import { MatchReportCard } from '../widgets/event-center/ui/MatchReportCard';
+import { StrategyPanel } from '../features/match-prep/ui/StrategyPanel';
+import { PlayerProfile } from '../entities/player/ui/PlayerProfile';
+import { PlayerPerformance } from '../entities/player/ui/PlayerPerformance';
+import { PlayerAdvancedStats } from '../entities/player/ui/PlayerAdvancedStats';
+import { PlayerComparison } from '../pages/club/ui/PlayerComparison';
+import Rich from '../pages/club/ui/Rich';
+import { RecruitmentDesk } from '../pages/club/ui/RecruitmentDesk';
+import { StyleCard } from '../shared/ui/StyleCard';
 import { STYLE_INFO } from '../../../../packages/engine/src/styles';
-import { ClubDesignView } from '../ui/ClubDesignView';
+import { ClubDesignView } from '../pages/club/ui/ClubDesignView';
 import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
-import { ClubCrest } from '../ui/ClubCrest';
-import { KitSwatch } from '../ui/KitSwatch';
-import { KitPitchPreview } from '../ui/KitPitchPreview';
-import { editorPreviewAppearance, KIT_ROLE_LABELS } from '../ui/identityPreview';
-import { DirectionAreas } from '../ui/DirectionFacts';
-import { FacilityOverview } from '../ui/FacilityOverview';
-import { FacilityParts } from '../ui/FacilityParts';
-import { FinancialBreakdown } from '../ui/FinancialBreakdown';
-import { FinanceOutlook } from '../ui/FinanceOutlook';
-import { CareerRecordBook, TrophyCabinet, ClubLeaders } from '../ui/CareerRecordBook';
-import { ClubTrends, SeasonTable } from '../ui/ClubTrends';
-import { SeasonReview } from '../ui/SeasonReview';
-import { StartFlow } from '../ui/StartFlow';
-import { canAfford, takeoverYear, type ClubProfile } from '../ui/startChoices';
+import { ClubCrest } from '../entities/club/ui/ClubCrest';
+import { KitSwatch } from '../entities/match/ui/KitSwatch';
+import { KitPitchPreview } from '../features/match-prep/ui/KitPitchPreview';
+import { editorPreviewAppearance, KIT_ROLE_LABELS } from '../entities/match/lib/identityPreview';
+import { DirectionAreas } from '../pages/club/ui/DirectionFacts';
+import { FacilityOverview } from '../pages/club/ui/FacilityOverview';
+import { FacilityParts } from '../pages/club/ui/FacilityParts';
+import { FinancialBreakdown } from '../pages/club/ui/FinancialBreakdown';
+import { FinanceOutlook } from '../app/office/FinanceOutlook';
+import { CareerRecordBook, TrophyCabinet, ClubLeaders } from '../pages/club/ui/CareerRecordBook';
+import { ClubTrends, SeasonTable } from '../pages/club/ui/ClubTrends';
+import { SeasonReview } from '../pages/club/ui/SeasonReview';
+import { StartFlow } from '../pages/start/ui/StartFlow';
+import { canAfford, takeoverYear, type ClubProfile } from '../entities/league/lib/startChoices';
 import type {
   ClubListing,
   StartChoice,
@@ -96,25 +109,25 @@ import type {
 } from '../../../../packages/contracts/src/types';
 import { COUNTRIES, country, currency } from '../../../../packages/catalogs/src/index';
 import { eloOf } from '../../../../packages/engine/src/elo';
-import { GameSlotScreen } from '../ui/GameSlotScreen';
+import { GameSlotScreen } from '../pages/slots/ui/GameSlotScreen';
 import { GameSlots } from '../runtime/slots';
 import { GameIndexStore } from '../adapters/games';
 import { memoryStorage } from './session';
-import { Dialog } from '../ui/Dialog';
-import { FeedbackOverlay } from '../ui/FeedbackOverlay';
-import { CommunicationsCenter } from '../ui/EventCenter';
-import { OwnerOffice } from '../ui/OwnerOfficeView';
-import { GlossaryHost } from '../ui/Glossary';
-import { useGlossary } from '../ui/metricGlossary';
-import { PlayGuide } from '../ui/PlayGuide';
-import { ownLeagueIds } from '../ui/league';
+import { Dialog } from '../shared/ui/Dialog';
+import { FeedbackOverlay } from '../app/ui/FeedbackOverlay';
+import { CommunicationsCenter } from '../widgets/event-center/ui/EventCenter';
+import { OwnerOffice } from '../app/office/OwnerOfficeView';
+import { GlossaryHost } from '../app/ui/Glossary';
+import { useGlossary } from '../shared/ui/metricGlossary';
+import { PlayGuide } from '../widgets/play-guide/ui/PlayGuide';
+import { ownLeagueIds } from '../entities/league/lib/league';
 import { useTheme } from '../presentation/react';
-import app from '../ui/App.module.css';
+import app from '../shared/ui/styles/App.module.css';
 
-import { CashAlarm } from '../ui/CashAlarm';
-import { AwaySummary } from '../ui/AwaySummary';
-import { CelebrationHost } from '../ui/Celebration';
-import { ManagerHistory } from '../ui/ManagerHistory';
+import { CashAlarm } from '../widgets/cash-alarm/ui/CashAlarm';
+import { AwaySummary } from '../widgets/away-summary/ui/AwaySummary';
+import { CelebrationHost } from '../app/ui/Celebration';
+import { ManagerHistory } from '../pages/club/ui/ManagerHistory';
 import { clockMark } from '../runtime/progression';
 import { gameStore } from '../runtime/store';
 const LabPage = lazy(() =>

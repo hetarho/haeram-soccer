@@ -5,10 +5,10 @@ import type { Player, World } from '../../../../../../packages/contracts/src/typ
 import { ClubLink } from '../../../entities/club';
 import type { GameClient } from '../../../runtime/client';
 import type { Read } from '../../../shared/lib';
-import { Dialog } from '../../../ui/Dialog';
-import { PersonCareerLink } from '../../../ui/PersonCareer';
-import { PlayerProfile } from '../../../ui/PlayerProfile';
-import a from '../../../ui/Analysis.module.css';
+import { Dialog } from '../../../shared/ui/Dialog';
+import { PersonCareerLink } from '../../../features/person-career/ui/PersonCareer';
+import { PlayerProfile } from '../../../entities/player/ui/PlayerProfile';
+import a from '../../../shared/ui/styles/Analysis.module.css';
 
 /**
  * Another club's player (→WEB-59, PLAYER-18): his club and age, then the profile as our chief

@@ -6,14 +6,14 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { expectBallSideScoreboard, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
 import {
   deadBallBeats,
   presentationMs,
   runningLength,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
-} from '../../apps/web/src/ui/presentationClock';
+} from '../../apps/web/src/entities/match/lib/presentationClock';
 import { textContrast } from './contrast';
 
 const defaultThemeId = readPresentationBaselines().themeEntry.id;

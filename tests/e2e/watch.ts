@@ -2,7 +2,7 @@ import { clubhouseTab } from './competition-navigation';
 import { expect, type Locator, type Page } from '@playwright/test';
 import { acknowledgeEvents, configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
-import { PITCH_PAD } from '../../apps/web/src/ui/pitchPainting';
+import { PITCH_PAD } from '../../apps/web/src/entities/match/lib/pitchPainting';
 
 /** Resume a live match, or progress through real public events to the match-eve dialog. */
 export async function openWatchAction(page: Page) {

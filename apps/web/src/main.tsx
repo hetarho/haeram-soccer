@@ -1,7 +1,7 @@
 import { richMessage } from './presentation/LocalizedMessage';
 import { createRoot } from 'react-dom/client';
-import { App } from './ui/App';
-import { PresentationSettings } from './ui/PresentationSettings';
+import { App } from './app/ui/App';
+import { PresentationSettings } from './widgets/presentation-settings/ui/PresentationSettings';
 import { presentationFailed, startPresentation } from './presentation/startPresentation';
 
 const root = createRoot(document.getElementById('root')!);

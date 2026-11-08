@@ -13,16 +13,17 @@ export const ORCHESTRATION = [
   'packages/engine/src/match.ts',
   'packages/engine/src/grid/engine.ts',
 ];
-/** The legacy screens, presentation, and the feature-sliced layers they migrate into (→ARCH-3). */
-export const UI_DIRECTORIES = [
-  'apps/web/src/ui',
-  'apps/web/src/presentation',
-  'apps/web/src/shared',
-  'apps/web/src/entities',
-  'apps/web/src/features',
-  'apps/web/src/widgets',
+/** The feature-sliced web layers, highest first (→ARCH-3/4). */
+export const UI_LAYERS = [
+  'apps/web/src/app',
   'apps/web/src/pages',
+  'apps/web/src/widgets',
+  'apps/web/src/features',
+  'apps/web/src/entities',
+  'apps/web/src/shared',
 ];
+/** Presentation and the feature-sliced layers (→ARCH-3). */
+export const UI_DIRECTORIES = ['apps/web/src/presentation', ...UI_LAYERS];
 
 /** Each UI source file mapped to the engine modules it imports whose closure reaches orchestration. */
 export function uiOrchestrationImports(root: string): Record<string, string[]> {
@@ -60,52 +61,52 @@ export function uiOrchestrationImports(root: string): Record<string, string[]> {
 }
 
 export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
-  'apps/web/src/ui/AcademyPanel.tsx': ['packages/engine/src/academy.ts'],
-  'apps/web/src/ui/AwaySummary.tsx': ['packages/engine/src/projection.ts'],
-  'apps/web/src/ui/Bracket.tsx': ['packages/engine/src/knockout.ts'],
-  'apps/web/src/ui/BusinessWorkbench.tsx': [
+  'apps/web/src/pages/club/ui/AcademyPanel.tsx': ['packages/engine/src/academy.ts'],
+  'apps/web/src/widgets/away-summary/ui/AwaySummary.tsx': ['packages/engine/src/projection.ts'],
+  'apps/web/src/pages/cups/ui/Bracket.tsx': ['packages/engine/src/knockout.ts'],
+  'apps/web/src/pages/club/ui/BusinessWorkbench.tsx': [
     'packages/engine/src/finance.ts',
     'packages/engine/src/investment.ts',
     'packages/engine/src/ops-commercial.ts',
     'packages/engine/src/sponsors.ts',
   ],
-  'apps/web/src/ui/CashAlarm.tsx': [
+  'apps/web/src/widgets/cash-alarm/ui/CashAlarm.tsx': [
     'packages/engine/src/finance.ts',
     'packages/engine/src/investment.ts',
     'packages/engine/src/settlement.ts',
   ],
-  'apps/web/src/ui/ClubStaff.tsx': [
+  'apps/web/src/pages/club/ui/ClubStaff.tsx': [
     'packages/engine/src/hiring.ts',
     'packages/engine/src/managerMarket.ts',
     'packages/engine/src/ops-staff.ts',
     'packages/engine/src/staff.ts',
     'packages/engine/src/transfers.ts',
   ],
-  'apps/web/src/ui/CupsView.tsx': [
+  'apps/web/src/pages/cups/ui/CupsView.tsx': [
     'packages/engine/src/europe.ts',
     'packages/engine/src/knockout.ts',
   ],
-  'apps/web/src/ui/FacilityParts.tsx': ['packages/engine/src/finance.ts'],
-  'apps/web/src/ui/FinanceOutlook.tsx': ['packages/engine/src/projection.ts'],
-  'apps/web/src/ui/FinancialBreakdown.tsx': ['packages/engine/src/finance.ts'],
-  'apps/web/src/ui/LiveSeason.tsx': [
+  'apps/web/src/pages/club/ui/FacilityParts.tsx': ['packages/engine/src/finance.ts'],
+  'apps/web/src/app/office/FinanceOutlook.tsx': ['packages/engine/src/projection.ts'],
+  'apps/web/src/pages/club/ui/FinancialBreakdown.tsx': ['packages/engine/src/finance.ts'],
+  'apps/web/src/pages/journal/ui/LiveSeason.tsx': [
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/OvrBadge.tsx': ['packages/engine/src/world.ts'],
-  'apps/web/src/ui/Pitch.tsx': [
+  'apps/web/src/entities/player/ui/OvrBadge.tsx': ['packages/engine/src/world.ts'],
+  'apps/web/src/features/match-viewer/ui/Pitch.tsx': [
     'packages/engine/src/managerMarket.ts',
     'packages/engine/src/match.ts',
   ],
-  'apps/web/src/ui/PlayerProfile.tsx': [
+  'apps/web/src/entities/player/ui/PlayerProfile.tsx': [
     'packages/engine/src/career-assessment.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/RecruitmentDesk.tsx': [
+  'apps/web/src/pages/club/ui/RecruitmentDesk.tsx': [
     'packages/engine/src/recruitment.ts',
     'packages/engine/src/transfers.ts',
   ],
-  'apps/web/src/ui/Rich.tsx': [
+  'apps/web/src/pages/club/ui/Rich.tsx': [
     'packages/engine/src/contracts.ts',
     'packages/engine/src/discipline.ts',
     'packages/engine/src/finance.ts',
@@ -115,26 +116,28 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/ops-staff.ts',
     'packages/engine/src/transfers.ts',
   ],
-  'apps/web/src/ui/ScoutShortlist.tsx': ['packages/engine/src/signings.ts'],
-  'apps/web/src/ui/StrategyPanel.tsx': [
+  'apps/web/src/pages/club/ui/ScoutShortlist.tsx': ['packages/engine/src/signings.ts'],
+  'apps/web/src/features/match-prep/ui/StrategyPanel.tsx': [
     'packages/engine/src/discipline.ts',
     'packages/engine/src/grid/setup.ts',
     'packages/engine/src/strategy.ts',
     'packages/engine/src/world.ts',
   ],
-  'apps/web/src/ui/TrainingView.tsx': [
+  'apps/web/src/pages/club/ui/TrainingView.tsx': [
     'packages/engine/src/careers.ts',
     'packages/engine/src/morale.ts',
     'packages/engine/src/training.ts',
   ],
-  'apps/web/src/ui/bracketTree.ts': ['packages/engine/src/europe.ts'],
-  'apps/web/src/ui/cupCompetitions.ts': ['packages/engine/src/europe.ts'],
-  'apps/web/src/ui/cupRoute.ts': ['packages/engine/src/stages.ts'],
-  'apps/web/src/ui/discipline.ts': ['packages/engine/src/world.ts'],
-  'apps/web/src/ui/officeChanges.ts': ['packages/engine/src/pending-work-preview.ts'],
-  'apps/web/src/ui/outcome.ts': ['packages/engine/src/training.ts'],
-  'apps/web/src/ui/scouting.ts': ['packages/engine/src/career-assessment.ts'],
-  'apps/web/src/ui/teamState.ts': [
+  'apps/web/src/pages/cups/lib/bracketTree.ts': ['packages/engine/src/europe.ts'],
+  'apps/web/src/pages/cups/lib/cupCompetitions.ts': ['packages/engine/src/europe.ts'],
+  'apps/web/src/pages/cups/lib/cupRoute.ts': ['packages/engine/src/stages.ts'],
+  'apps/web/src/entities/player/lib/discipline.ts': ['packages/engine/src/world.ts'],
+  'apps/web/src/entities/office/lib/officeChanges.ts': [
+    'packages/engine/src/pending-work-preview.ts',
+  ],
+  'apps/web/src/app/model/outcome.ts': ['packages/engine/src/training.ts'],
+  'apps/web/src/entities/league/lib/scouting.ts': ['packages/engine/src/career-assessment.ts'],
+  'apps/web/src/entities/player/lib/teamState.ts': [
     'packages/engine/src/academy.ts',
     'packages/engine/src/coach-training.ts',
     'packages/engine/src/finance.ts',

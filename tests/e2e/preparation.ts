@@ -7,7 +7,7 @@ import {
   presentationMs,
   presentationSamples,
   type Preparation,
-} from '../../apps/web/src/ui/presentationClock';
+} from '../../apps/web/src/entities/match/lib/presentationClock';
 
 /** One stoppage's dead-ball beat (→WEB-32): its rush and still beat, from the ball going dead to the kick. */
 export interface Stoppage {

@@ -6,7 +6,7 @@ import type { GameClient } from '../runtime/client';
 import type { ProgressionController } from '../runtime/progression';
 import { gameStore, useGameState } from '../runtime/store';
 import { useTheme } from '../presentation/react';
-import { ProgressControls } from '../ui/ProgressControls';
+import { ProgressControls } from '../widgets/progress-controls/ui/ProgressControls';
 import {
   CONTROLLER_BACKGROUNDS,
   SELECTED_CONTROLLER_BACKGROUNDS,

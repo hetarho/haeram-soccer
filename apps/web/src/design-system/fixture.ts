@@ -3,7 +3,7 @@ import { message as sourceMessage } from '../../../../packages/contracts/src/mes
 import { preparedWorld } from '../../../../tests/fixtures/prepared-world';
 import { Host } from '../runtime/host';
 import { requestSchema, type Request } from '../runtime/protocol';
-import { archivePlayback } from '../ui/replay';
+import { archivePlayback } from '../pages/club/lib/replay';
 
 const READS = new Set([
   'archive',

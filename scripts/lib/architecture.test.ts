@@ -5,13 +5,14 @@ import ts from 'typescript';
 import { dependencies, runtimeImports, sourceGraph } from './source-graph';
 import {
   ORCHESTRATION,
+  UI_LAYERS,
   UI_ORCHESTRATION_IMPORTS,
   uiOrchestrationImports,
 } from './ui-engine-exceptions';
 
 const closure = (entry: string) =>
   dependencies(sourceGraph(process.cwd()), [entry]).map((file) => relative(process.cwd(), file));
-const UI = 'apps/web/src/ui/';
+const isUi = (name: string) => UI_LAYERS.some((layer) => name.startsWith(`${layer}/`));
 /** Every local module a file names, type-only imports included: a type still ties it to its owner. */
 const named = (file: string) =>
   ts
@@ -36,9 +37,9 @@ describe('runtime architecture boundaries', () => {
     'runtime %s names no UI module and reaches none, nor React or Zustand',
     (entry) => {
       const file = `apps/web/src/runtime/${entry}.ts`;
-      expect(named(file).filter((name) => name.startsWith(UI))).toEqual([]);
+      expect(named(file).filter(isUi)).toEqual([]);
       const files = closure(file);
-      expect(files.filter((name) => name.startsWith(UI))).toEqual([]);
+      expect(files.filter(isUi)).toEqual([]);
       expect(packages(files).filter((name) => FRAMEWORK.test(name))).toEqual([]);
     },
   );

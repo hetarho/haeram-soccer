@@ -1,0 +1,355 @@
+import { message as sourceMessage } from '../../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../../presentation/text';
+import { PixelIcon } from './PixelIcon';
+import {
+  Children,
+  isValidElement,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type ButtonHTMLAttributes,
+  type KeyboardEvent,
+  type ReactNode,
+} from 'react';
+import s from './Select.module.css';
+import { play } from './motion';
+
+type Declaration = {
+  value?: string | number;
+  children?: ReactNode;
+  disabled?: boolean;
+  label?: string;
+  /** A second line shown under the option in the list only, never in the trigger. */
+  'data-hint'?: string;
+  /** A shorter name the trigger shows in place of the option's label; the list keeps the label. */
+  'data-short'?: string;
+};
+type Choice = {
+  value: string;
+  label: ReactNode;
+  text: string;
+  disabled?: boolean;
+  group?: string;
+  hint?: string;
+  short?: string;
+};
+function textOf(children: ReactNode): string {
+  return Children.toArray(children)
+    .map((child) =>
+      isValidElement<Declaration>(child) ? textOf(child.props.children) : String(child),
+    )
+    .join('');
+}
+function choicesOf(children: ReactNode, group?: string): Choice[] {
+  return Children.toArray(children).flatMap((child) => {
+    if (!isValidElement<Declaration>(child)) return [];
+    if (child.type === 'option')
+      return [
+        {
+          value: String(child.props.value ?? textOf(child.props.children)),
+          label: child.props.children,
+          text: textOf(child.props.children),
+          disabled: child.props.disabled,
+          group,
+          hint: child.props['data-hint'],
+          short: child.props['data-short'],
+        },
+      ];
+    return choicesOf(child.props.children, child.type === 'optgroup' ? child.props.label : group);
+  });
+}
+type Props = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'value' | 'onChange' | 'children'> & {
+  value: string | number;
+  onValueChange: (value: string) => void;
+  children: ReactNode;
+  hintLayout?: 'stacked' | 'inline';
+};
+
+export function Select({
+  value,
+  onValueChange,
+  children,
+  disabled,
+  className,
+  name,
+  hintLayout = 'stacked',
+  ...props
+}: Props) {
+  useTextLocale();
+  const trigger = useRef<HTMLButtonElement>(null);
+  const list = useRef<HTMLDivElement>(null);
+  const lookup = useRef({ text: '', at: 0 });
+  const id = useId();
+  const [open, setOpen] = useState(false);
+  const [highlight, setHighlight] = useState('');
+  const choices = choicesOf(children);
+  const current = choices.find((choice) => choice.value === String(value));
+  const available = choices.filter((choice) => choice.value !== '');
+  const enabled = available.filter((choice) => !choice.disabled);
+  const blocked = disabled || !enabled.length;
+  const close = (focus = false) => {
+    // Close the native layer before Tab's default focus move (Firefox otherwise restores it later).
+    if (list.current?.matches(':popover-open')) list.current.hidePopover();
+    setOpen(false);
+    if (focus) trigger.current?.focus({ preventScroll: true });
+  };
+  const show = (initial?: string) => {
+    if (blocked) return;
+    lookup.current = { text: '', at: 0 };
+    setHighlight(
+      initial ||
+        enabled.find((choice) => choice.value === String(value))?.value ||
+        enabled[0]?.value ||
+        '',
+    );
+    trigger.current?.focus({ preventScroll: true });
+    setOpen(true);
+  };
+  const choose = (choice: Choice) => {
+    if (blocked || choice.disabled) return;
+    close(true);
+    if (choice.value !== String(value)) onValueChange(choice.value);
+  };
+  useEffect(() => {
+    if (blocked) setOpen(false);
+  }, [blocked]);
+  useLayoutEffect(() => {
+    if (!open || blocked || !list.current || !trigger.current) return;
+    const popup = list.current;
+    let placed = { top: 0, left: 0 };
+    const position = () => {
+      const anchor = trigger.current!.getBoundingClientRect();
+      placed = { top: anchor.top, left: anchor.left };
+      const viewport = window.visualViewport;
+      const left = viewport?.offsetLeft || 0,
+        width = viewport?.width || innerWidth;
+      // Stay inside the page's large scroll areas around the trigger as well as the viewport, so the
+      // list never sits under fixed bars and browsers never scroll those areas to reveal it.
+      let top = viewport?.offsetTop || 0,
+        bottom = top + (viewport?.height || innerHeight);
+      const page = bottom - top;
+      for (let node = trigger.current!.parentElement; node; node = node.parentElement) {
+        if (!/(auto|scroll)/.test(getComputedStyle(node).overflowY)) continue;
+        const area = node.getBoundingClientRect();
+        if (area.height < page / 2) continue;
+        top = Math.max(top, area.top);
+        bottom = Math.min(bottom, area.bottom);
+      }
+      const style = getComputedStyle(popup);
+      const minimumWidth = parseFloat(style.getPropertyValue('--select-popup-min-width')) || 192;
+      const heightLimit = parseFloat(style.getPropertyValue('--select-popup-max-height')) || 280;
+      const popupWidth = Math.min(Math.max(anchor.width, minimumWidth), width - 24);
+      const below = Math.max(0, bottom - anchor.bottom - 12);
+      const above = Math.max(0, anchor.top - top - 12);
+      const upwards = below < Math.min(180, popup.scrollHeight) && above > below;
+      const maxHeight = Math.min(heightLimit, upwards ? above : below);
+      popup.style.width = `${popupWidth}px`;
+      popup.style.maxHeight = `${maxHeight}px`;
+      popup.style.left = `${Math.max(left + 12, Math.min(anchor.left, left + width - popupWidth - 12))}px`;
+      popup.style.top = `${upwards ? anchor.top - Math.min(popup.scrollHeight, maxHeight) - 6 : anchor.bottom + 6}px`;
+    };
+    popup.showPopover();
+    position();
+    const outside = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (!popup.contains(target) && !trigger.current?.contains(target)) setOpen(false);
+    };
+    const scroll = (event: Event) => {
+      if (popup.contains(event.target as Node)) return;
+      // WebKit's scroll anchoring nudges the page by a rounded pixel whenever the list moves;
+      // following that nudge moves the list again and never settles, so ignore sub-2px shifts.
+      const anchor = trigger.current!.getBoundingClientRect();
+      if (Math.abs(anchor.top - placed.top) < 2 && Math.abs(anchor.left - placed.left) < 2) return;
+      position();
+    };
+    const blur = (event: FocusEvent) => {
+      const target = event.target as Node;
+      if (!popup.contains(target) && !trigger.current?.contains(target)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', outside, true);
+    document.addEventListener('focusin', blur);
+    document.addEventListener('scroll', scroll, true);
+    window.addEventListener('resize', position);
+    window.visualViewport?.addEventListener('resize', position);
+    window.visualViewport?.addEventListener('scroll', position);
+    return () => {
+      document.removeEventListener('pointerdown', outside, true);
+      document.removeEventListener('focusin', blur);
+      document.removeEventListener('scroll', scroll, true);
+      window.removeEventListener('resize', position);
+      window.visualViewport?.removeEventListener('resize', position);
+      window.visualViewport?.removeEventListener('scroll', position);
+      if (popup.matches(':popover-open')) popup.hidePopover();
+    };
+  }, [open, blocked]);
+  // Animate only a real opening; repositioning re-shows the popover and must not replay it.
+  useEffect(() => {
+    if (open)
+      play(
+        list.current,
+        [
+          { opacity: 0, transform: 'translateY(-6px) scale(0.98)' },
+          { opacity: 1, transform: 'none' },
+        ],
+        { duration: 160 },
+      );
+  }, [open]);
+  // Scroll only the list itself: scrollIntoView would also scroll the page areas around it.
+  useEffect(() => {
+    const option = open ? document.getElementById(`${id}-${highlight}`) : null;
+    const box = list.current;
+    if (!option || !box) return;
+    const start = option.offsetTop,
+      end = start + option.offsetHeight;
+    if (start < box.scrollTop) box.scrollTop = start;
+    else if (end > box.scrollTop + box.clientHeight) box.scrollTop = end - box.clientHeight;
+  }, [open, highlight, id]);
+  const key = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (blocked) return;
+    if (event.key === 'Escape' && open) {
+      event.preventDefault();
+      event.stopPropagation();
+      close(true);
+      return;
+    }
+    if (event.key === 'Tab') {
+      close();
+      return;
+    }
+    if (['Enter', ' '].includes(event.key)) {
+      event.preventDefault();
+      const active = enabled.find((choice) => choice.value === highlight);
+      if (open && active) choose(active);
+      else show();
+      return;
+    }
+    if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+      event.preventDefault();
+      const index = enabled.findIndex((choice) => choice.value === highlight);
+      const next =
+        event.key === 'Home'
+          ? enabled[0]
+          : event.key === 'End'
+            ? enabled.at(-1)
+            : enabled[
+                (Math.max(0, index) + (event.key === 'ArrowUp' ? -1 : 1) + enabled.length) %
+                  enabled.length
+              ];
+      if (!open) show(event.key === 'Home' || event.key === 'End' ? next?.value : undefined);
+      else if (next) setHighlight(next.value);
+      lookup.current.text = '';
+      return;
+    }
+    if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+      event.preventDefault();
+      const at = performance.now();
+      const previous = at - lookup.current.at < 700 ? lookup.current.text : '';
+      const text = previous + event.key.toLocaleLowerCase();
+      const search = [...text].every((letter) => letter === text[0]) ? text[0] : text;
+      const index = enabled.findIndex((choice) => choice.value === highlight);
+      const ordered = [...enabled.slice(index + 1), ...enabled.slice(0, index + 1)];
+      const match = ordered.find(
+        (choice) =>
+          choice.text.toLocaleLowerCase().startsWith(search) ||
+          choice.value.toLocaleLowerCase().startsWith(search),
+      );
+      if (!open) show(match?.value);
+      else if (match) setHighlight(match.value);
+      lookup.current = { text, at };
+    }
+  };
+  return (
+    <>
+      {localizeValue(name && <input type="hidden" name={name} value={value} disabled={blocked} />)}
+      <button
+        {...props}
+        ref={trigger}
+        type="button"
+        className={`${s.trigger} ${className || ''}`}
+        disabled={blocked}
+        role="combobox"
+        aria-haspopup="listbox"
+        aria-expanded={open && !blocked}
+        aria-controls={open && !blocked ? id : undefined}
+        aria-activedescendant={open && !blocked ? `${id}-${highlight}` : undefined}
+        data-select-trigger=""
+        data-state={open && !blocked ? 'open' : 'closed'}
+        data-value={String(value)}
+        onClick={() => (open ? close() : show())}
+        onKeyDown={key}
+      >
+        <span className={s.value}>
+          {localizeValue(
+            current?.short || current?.label || sourceMessage('copy.Select.33ae896788'),
+          )}
+        </span>
+        <PixelIcon name="chevronDown" size={12} className={s.chevron} />
+      </button>
+      {localizeValue(
+        open && !blocked && (
+          <div
+            ref={list}
+            id={id}
+            role="listbox"
+            aria-label={localizeValue(props['aria-label'])}
+            aria-labelledby={props['aria-labelledby']}
+            popover="auto"
+            data-select-content=""
+            data-hint-layout={hintLayout}
+            className={s.content}
+            onToggle={(event) => {
+              if (event.newState === 'closed') setOpen(false);
+            }}
+          >
+            {localizeValue(
+              available.map((choice, index) => (
+                <div key={choice.value}>
+                  {localizeValue(
+                    choice.group && choice.group !== available[index - 1]?.group && (
+                      <div className={s.group}>{localizeValue(choice.group)}</div>
+                    ),
+                  )}
+                  <div
+                    id={`${id}-${choice.value}`}
+                    role="option"
+                    data-select-option=""
+                    aria-selected={choice.value === String(value)}
+                    aria-disabled={choice.disabled || undefined}
+                    className={s.item}
+                    data-value={choice.value}
+                    data-highlighted={choice.value === highlight || undefined}
+                    data-disabled={choice.disabled || undefined}
+                    data-state={choice.value === String(value) ? 'checked' : 'unchecked'}
+                    onPointerMove={(event) => {
+                      if (event.pointerType === 'mouse' && !choice.disabled)
+                        setHighlight(choice.value);
+                    }}
+                    onPointerDown={(event) => event.preventDefault()}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      choose(choice);
+                    }}
+                  >
+                    <span className={choice.hint ? s.hinted : undefined}>
+                      <span className={s.optionLabel}>{localizeValue(choice.label)}</span>
+                      {localizeValue(choice.hint && <small>{localizeValue(choice.hint)}</small>)}
+                    </span>
+                    {localizeValue(
+                      choice.value === String(value) && (
+                        <span className={s.check}>
+                          <PixelIcon name="check" size={14} />
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </div>
+              )),
+            )}
+          </div>
+        ),
+      )}
+    </>
+  );
+}

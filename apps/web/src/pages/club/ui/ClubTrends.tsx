@@ -1,0 +1,572 @@
+import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
+import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
+import { richMessage } from '../../../presentation/LocalizedMessage';
+import { useTaskState } from '../../../shared/routing/taskMemory';
+import { useMemo } from 'react';
+import type { World } from '../../../../../../packages/contracts/src/types';
+import { country, currency } from '../../../../../../packages/catalogs/src/index';
+import { clubOf, ownSeasons } from '../../../../../../packages/engine/src/player-state';
+import { inTodayMoney } from '../../../../../../packages/engine/src/transfer-records';
+import { Panel } from '../../../app/ui/App';
+import { Chart, type ChartBand } from './Chart';
+import { ClubLink } from '../../../entities/club';
+import { divisionName } from '../../../entities/player/lib/careerRecords';
+import { compactMoney, number, seasonName } from '../../../presentation/format';
+import { Money } from '../../../shared/ui/Money';
+import { runsText } from '../lib/recordEras';
+import {
+  eloDetail,
+  eloStanding,
+  leaguePositionDetail,
+  pyramidPosition,
+  type RatedClub,
+} from '../lib/recordTrends';
+import { Segments } from '../../../shared/ui/Segments';
+import s from '../../../shared/ui/styles/App.module.css';
+import t from './ClubTrends.module.css';
+
+/** A chart plots major units, so a point carries its amount divided down. */
+const plotted = (w: World, amount: string) =>
+  Number(amount) / currency(clubOf(w).country, w.year).units;
+
+/** A chart axis writes money in the app's notation (→WEB-67), back from the plotted major units. */
+const axisMoney = (w: World, plot: number) => {
+  const code = clubOf(w).country;
+  return compactMoney(
+    BigInt(Math.round(plot * currency(code, w.year).units)).toString(),
+    code,
+    w.year,
+  );
+};
+
+/**
+ * Every records chart's series with the line each season shows in its bubble, computed once per
+ * closed season (or a change of division) so moving over a chart never recomputes them. The club's
+ * growth starts at the takeover: the seasons before it kept no own-club figures (→HIST-21).
+ */
+function trendSeries(w: World) {
+  const club = clubOf(w),
+    code = club.country,
+    amount = (value: string) => compactMoney(value, code, w.year),
+    seasons = ownSeasons(w),
+    rated = seasons.filter((h) => h.elo !== undefined),
+    valued = seasons.filter((h) => h.squadValue && h.clubValue);
+  const series = (list: typeof seasons, values: number[], detail: (index: number) => string) => ({
+    values,
+    labels: list.map((h) => seasonName(h.year)),
+    details: list.map((_, i) => detail(i)),
+  });
+  const squad = valued.map((h) => inTodayMoney(w, h.squadValue!, h.year)),
+    clubValue = valued.map((h) => inTodayMoney(w, h.clubValue!, h.year)),
+    cash = seasons.map((h) => inTodayMoney(w, h.cash, h.year));
+  const bands: ChartBand[] = [
+    {
+      label: sourceMessage('copy.ClubTrends.6b66f78089'),
+      tone: 'faint',
+      lo: rated.map((h) => h.eloRange?.[0]),
+      hi: rated.map((h) => h.eloRange?.[1]),
+    },
+    {
+      label: sourceMessage('copy.ClubTrends.d8c6ce5a6e'),
+      tone: 'strong',
+      lo: rated.map((h) => h.eloRange?.[2]),
+      hi: rated.map((h) => h.eloRange?.[3]),
+    },
+  ];
+  return {
+    axis: (value: number) => axisMoney(w, value),
+    league: series(
+      seasons,
+      seasons.map((h) => pyramidPosition(code, h)),
+      (i) => leaguePositionDetail(code, seasons, i, club.tier),
+    ),
+    elo: {
+      ...series(
+        rated,
+        rated.map((h) => h.elo!),
+        (i) => eloDetail(rated[i]),
+      ),
+      bands,
+      unrated: seasons.length - rated.length,
+      unranged: rated.filter((h) => !h.eloRange).length,
+    },
+    unvalued: seasons.length - valued.length,
+    squad: series(
+      valued,
+      squad.map((value) => plotted(w, value)),
+      (i) => `${seasonName(valued[i].year)} · ${amount(squad[i])}`,
+    ),
+    club: series(
+      valued,
+      clubValue.map((value) => plotted(w, value)),
+      (i) => `${seasonName(valued[i].year)} · ${amount(clubValue[i])}`,
+    ),
+    fans: series(
+      seasons,
+      seasons.map((h) => h.fans),
+      (i) =>
+        sourceMessage('copy.ClubTrends.d4c90a70d9', {
+          p0: seasonName(seasons[i].year),
+          p1: number(seasons[i].fans),
+        }),
+    ),
+    cash: series(
+      seasons,
+      cash.map((value) => plotted(w, value)),
+      (i) => `${seasonName(seasons[i].year)} · ${amount(cash[i])}`,
+    ),
+  };
+}
+
+/** Our live Club Elo standing; it moves with every result, so only the clubs' ratings key it. */
+export function useEloStanding(w: World) {
+  return useMemo(() => eloStanding(w), [w.clubs, w.playerClub]);
+}
+
+/**
+ * Where our Club Elo stands today (→HIST-12): the number alone says nothing, so it comes with the
+ * world rank, the world's and our league's highest and lowest clubs and the gap to our league's
+ * best, on a scale from the world's lowest to its highest.
+ */
+export function EloStanding({
+  w,
+  standing,
+}: {
+  w: World;
+  standing: ReturnType<typeof eloStanding>;
+}) {
+  useTextLocale();
+  const { elo, rank, total, world, league, gap } = standing;
+  const span = Math.max(1, world.high.elo - world.low.elo),
+    at = (value: number) => Math.min(100, Math.max(0, ((value - world.low.elo) / span) * 100));
+  const clubs: [string, RatedClub][] = [
+    [sourceMessage('copy.ClubTrends.75c9c24acc'), world.high],
+    [sourceMessage('copy.ClubTrends.c963437ebb'), world.low],
+    [sourceMessage('copy.ClubTrends.bd93348744'), league.high],
+    [sourceMessage('copy.ClubTrends.6e2c4996c8'), league.low],
+  ];
+  return (
+    <section className={s.eloStanding} aria-label={displayMessage('copy.ClubTrends.1c0d302530')}>
+      <div className={s.eloFigures}>
+        <div>
+          <small>{richMessage('copy.ClubTrends.21685aad29')}</small>
+          <strong>{localizeValue(elo)}</strong>
+        </div>
+        <div>
+          <small>{richMessage('copy.ClubTrends.cd843762fc')}</small>
+          <strong>{richMessage('copy.BallonDorView.5094d45cea', { p0: rank })}</strong>
+          <small>{richMessage('copy.ClubTrends.6d32b95c7b', { p0: number(total) })}</small>
+        </div>
+        <div>
+          <small>
+            {localizeValue(
+              gap
+                ? sourceMessage('copy.ClubTrends.397eab83dc')
+                : sourceMessage('copy.ClubTrends.af534b6786'),
+            )}
+          </small>
+          <strong>
+            {localizeValue(gap ? `−${-gap}` : sourceMessage('copy.ClubTrends.dbbcff36fe'))}
+          </strong>
+        </div>
+      </div>
+      <div className={s.eloScale} aria-hidden="true">
+        <i
+          style={{
+            left: `${at(league.low.elo)}%`,
+            width: `${Math.max(1, at(league.high.elo) - at(league.low.elo))}%`,
+          }}
+        />
+        <b style={{ left: `${at(elo)}%` }} />
+      </div>
+      <div className={s.eloScaleEnds} aria-hidden="true">
+        <span>{richMessage('copy.ClubTrends.b16d70e99d', { p0: world.low.elo })}</span>
+        <span>
+          {richMessage('copy.ClubTrends.1cc3e92f5b', {
+            p0: `${league.low.elo}–${league.high.elo}`,
+          })}
+        </span>
+        <span>{localizeValue(world.high.elo)}</span>
+      </div>
+      <dl className={s.eloClubs}>
+        {localizeValue(
+          clubs.map(([label, rated]) => (
+            <div key={label}>
+              <dt>{localizeValue(label)}</dt>
+              <dd>
+                <ClubLink w={w} id={rated.club.id} crest={14} />
+                <b>{localizeValue(rated.elo)}</b>
+              </dd>
+            </div>
+          )),
+        )}
+      </dl>
+    </section>
+  );
+}
+
+const TREND_METRICS = [
+  ['league', sourceMessage('copy.ClubTrends.8d547a12d3')],
+  ['elo', 'Elo'],
+  ['squad', sourceMessage('copy.ClubTrends.837d4e5ad5')],
+  ['club', sourceMessage('copy.ClubTrends.9aea64c2b7')],
+  ['fans', sourceMessage('copy.ClubTrends.2070613ba9')],
+  ['cash', sourceMessage('copy.AwaySummary.e397620205')],
+] as const;
+type TrendMetric = (typeof TREND_METRICS)[number][0];
+
+/**
+ * The records charts (→WEB-54), one at a time: league position in the pyramid, Club Elo against
+ * the world's and our league's spread, squad and club value, supporters and season-end cash in
+ * today's money.
+ */
+export function ClubTrends({ w }: { w: World }) {
+  useTextLocale();
+  const club = clubOf(w),
+    code = club.country;
+  const series = useMemo(() => trendSeries(w), [w.history, w.year, club.tier]);
+  const standing = useEloStanding(w);
+  const [metric, setMetric] = useTaskState<TrendMetric>(w.id, 'growth-metric', () =>
+    new URLSearchParams(location.search).get('part') === 'elo' ? 'elo' : 'league',
+  );
+  return (
+    <>
+      <div className={s.recordControls}>
+        <Segments
+          label={displayMessage('copy.ClubTrends.370413228d')}
+          options={TREND_METRICS}
+          value={metric}
+          onChange={setMetric}
+          wrap
+        />
+      </div>
+      {localizeValue(
+        metric === 'league' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.8d547a12d3')}
+            note={sourceMessage('copy.ClubStaff.ceb2ec9df3', {
+              p0: divisionName(code, club.tier, club.group),
+            })}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.98cc96f48e')}
+                inverse
+                values={series.league.values}
+                labels={series.league.labels}
+                format={(value) =>
+                  sourceMessage('copy.BallonDorView.5094d45cea', { p0: Math.round(value) })
+                }
+                detail={(i) => series.league.details[i]}
+              />
+              <p className={s.muted}>
+                {richMessage('copy.ClubTrends.916a3ece1a', { p0: country(code).name })}
+              </p>
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'elo' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.14e4f1a04e')}
+            note={sourceMessage('copy.ClubTrends.84c355f838', {
+              p0: standing.elo,
+              p1: standing.rank,
+            })}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.1b416348cd')}
+                values={series.elo.values}
+                labels={series.elo.labels}
+                bands={series.elo.bands}
+                format={(value) => String(Math.round(value))}
+                detail={(i) => series.elo.details[i]}
+              />
+              {localizeValue(
+                series.elo.unrated > 0 && (
+                  <p className={s.muted}>
+                    {richMessage('copy.ClubTrends.7ceef984e5', { p0: series.elo.unrated })}
+                  </p>
+                ),
+              )}
+              {localizeValue(
+                series.elo.unranged > 0 && (
+                  <p className={s.muted}>
+                    {richMessage('copy.ClubTrends.1bd7bed943', { p0: series.elo.unranged })}
+                  </p>
+                ),
+              )}
+              <EloStanding w={w} standing={standing} />
+              <p className={s.muted}>{richMessage('copy.ClubTrends.472acb8bec')}</p>
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'squad' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.837d4e5ad5')}
+            note={sourceMessage('copy.ClubTrends.2670bb8d4c')}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.878b88665f')}
+                values={series.squad.values}
+                labels={series.squad.labels}
+                format={series.axis}
+                detail={(i) => series.squad.details[i]}
+              />
+              <p className={s.muted}>
+                {richMessage('copy.ClubTrends.aefa2a2106', {
+                  p0:
+                    series.unvalued > 0 &&
+                    sourceMessage('copy.ClubTrends.d8516d8f3b', { p0: series.unvalued }),
+                })}
+              </p>
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'club' && (
+          <Panel
+            title={displayMessage('copy.ClubTrends.9aea64c2b7')}
+            note={sourceMessage('copy.ClubTrends.2670bb8d4c')}
+          >
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.91dd8e4981')}
+                values={series.club.values}
+                labels={series.club.labels}
+                format={series.axis}
+                detail={(i) => series.club.details[i]}
+              />
+              <p className={s.muted}>
+                {richMessage('copy.ClubTrends.df4b3478fb', {
+                  p0:
+                    series.unvalued > 0 &&
+                    sourceMessage('copy.ClubTrends.d8516d8f3b', { p0: series.unvalued }),
+                })}
+              </p>
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'fans' && (
+          <Panel title={displayMessage('copy.ClubTrends.b5648588cc')}>
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.2070613ba9')}
+                values={series.fans.values}
+                labels={series.fans.labels}
+                detail={(i) => series.fans.details[i]}
+              />
+            </div>
+          </Panel>
+        ),
+      )}
+      {localizeValue(
+        metric === 'cash' && (
+          <Panel title={displayMessage('copy.ClubTrends.31a8d6cbae')}>
+            <div className={s.panelBody}>
+              <Chart
+                label={displayMessage('copy.ClubTrends.ac4ecd5b04')}
+                values={series.cash.values}
+                labels={series.cash.labels}
+                format={series.axis}
+                detail={(i) => series.cash.details[i]}
+              />
+              <p className={s.muted}>{richMessage('copy.ClubTrends.13f9a892bd')}</p>
+            </div>
+          </Panel>
+        ),
+      )}
+    </>
+  );
+}
+
+/**
+ * One row per closed season of the club's own, newest first; with `onSeason` a row opens that
+ * season (→WEB-54). The seasons before the takeover are listed apart (→HIST-21).
+ */
+export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
+  useTextLocale();
+  const code = clubOf(w).country,
+    seasons = ownSeasons(w);
+  const [limit, setLimit] = useTaskState(w.id, 'record-season-limit', 49);
+  return (
+    <Panel
+      title={displayMessage('copy.ClubTrends.f402b0218e')}
+      note={sourceMessage('copy.BallonDorView.3585c2642b', { p0: seasons.length })}
+    >
+      <div className={s.tableWrap}>
+        <table
+          className={t.seasonHistory}
+          role="table"
+          aria-label={displayMessage('copy.ClubTrends.f402b0218e')}
+        >
+          <thead>
+            <tr>
+              <th scope="col">{richMessage('copy.ClubTrends.a3142392a3')}</th>
+              <th scope="col">{richMessage('navigation.league')}</th>
+              <th scope="col">{richMessage('copy.ClubTrends.e8fd75919a')}</th>
+              <th scope="col">{richMessage('copy.ClubTrends.cf5a6ab3e0')}</th>
+              <th scope="col">{richMessage('copy.ClubTrends.fbd742149e')}</th>
+              <th scope="col">
+                {richMessage('copy.ClubTrends.04da029e77', {
+                  p0: (
+                    <span className={t.valueScope}>
+                      {richMessage('copy.ClubTrends.c111372590')}
+                    </span>
+                  ),
+                  p1: (
+                    <span className={t.valueBasis}>
+                      {richMessage('copy.ClubTrends.7a70ccf2b0')}
+                    </span>
+                  ),
+                })}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              className={`${t.currentSeason} ${onSeason ? s.seasonRow : ''}`}
+              aria-current="true"
+              onClick={onSeason && (() => onSeason(w.year))}
+            >
+              <td>
+                <button
+                  data-ui="link"
+                  type="button"
+                  className={s.seasonRowLink}
+                  aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
+                    p0: seasonName(w.year),
+                  })}
+                  aria-description={displayMessage('copy.ClubTrends.8e03ed8a86')}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onSeason?.(w.year);
+                  }}
+                >
+                  <span className={t.cellText}>{localizeValue(seasonName(w.year))}</span>
+                </button>
+              </td>
+              <td data-label={sourceMessage('navigation.league')}>
+                <span
+                  className={t.cellText}
+                  title={localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
+                >
+                  {localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
+                </span>
+              </td>
+              <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
+                {localizeValue(w.tables[w.playerClub]?.points ?? 0)}
+              </td>
+              <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>—</td>
+              <td data-label="Elo">{localizeValue(clubOf(w).elo?.toFixed(0) ?? '—')}</td>
+              <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>—</td>
+            </tr>
+            {localizeValue(
+              [...seasons]
+                .reverse()
+                .slice(0, limit)
+                .map((h) => (
+                  <tr
+                    key={h.year}
+                    className={onSeason ? s.seasonRow : undefined}
+                    onClick={onSeason && (() => onSeason(h.year))}
+                  >
+                    <td>
+                      {localizeValue(
+                        onSeason ? (
+                          <button
+                            data-ui="link"
+                            type="button"
+                            className={s.seasonRowLink}
+                            aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
+                              p0: seasonName(h.year),
+                            })}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              onSeason(h.year);
+                            }}
+                          >
+                            <span className={t.cellText}>{localizeValue(seasonName(h.year))}</span>
+                          </button>
+                        ) : (
+                          seasonName(h.year)
+                        ),
+                      )}
+                    </td>
+                    <td data-label={sourceMessage('navigation.league')}>
+                      <span
+                        className={t.cellText}
+                        title={displayMessage('copy.CareerRecordBook.2df6533b51', {
+                          p0: divisionName(code, h.tier, h.group),
+                          p1: h.rank,
+                        })}
+                      >
+                        {richMessage('copy.CareerRecordBook.58e3ce05f8', {
+                          p0: divisionName(code, h.tier, h.group),
+                          p1: h.rank,
+                        })}
+                      </span>
+                    </td>
+                    <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
+                      <span
+                        className={t.cellText}
+                        title={localizeValue(`${h.points} (${h.won}-${h.drawn}-${h.lost})`)}
+                      >
+                        {localizeValue(h.points)} ({localizeValue(h.won)}-{localizeValue(h.drawn)}-
+                        {localizeValue(h.lost)})
+                      </span>
+                    </td>
+                    <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>
+                      <span className={t.cellText}>{localizeValue(runsText(h.runs))}</span>
+                    </td>
+                    <td data-label="Elo">
+                      <span className={t.cellText}>
+                        {localizeValue(
+                          h.elo !== undefined
+                            ? `${Math.round(h.elo)}${h.eloRank ? sourceMessage('copy.ClubTrends.631b514ecd', { p0: h.eloRank }) : ''}`
+                            : '—',
+                        )}
+                      </span>
+                    </td>
+                    <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>
+                      {localizeValue(
+                        h.squadValue ? (
+                          <Money
+                            value={inTodayMoney(w, h.squadValue, h.year)}
+                            code={code}
+                            year={w.year}
+                          />
+                        ) : (
+                          '—'
+                        ),
+                      )}
+                    </td>
+                  </tr>
+                )),
+            )}
+          </tbody>
+        </table>
+        {localizeValue(
+          seasons.length > limit && (
+            <button type="button" onClick={() => setLimit(limit + 50)}>
+              {richMessage('copy.ClubTrends.fbea915f3f', { p0: seasons.length - limit })}
+            </button>
+          ),
+        )}
+        {localizeValue(
+          !seasons.length && (
+            <div className={s.empty}>{richMessage('copy.ClubTrends.82338e0d4b')}</div>
+          ),
+        )}
+      </div>
+    </Panel>
+  );
+}

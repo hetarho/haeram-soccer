@@ -1,7 +1,7 @@
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import type { ReactNode } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
-import { ClubCrest } from '../../../ui/ClubCrest';
+import { ClubCrest } from './ClubCrest';
 import { openClub } from '../model/detail';
 import s from '../../../shared/ui/TextLink.module.css';
 

@@ -8,7 +8,7 @@ import type { ReactNode } from 'react';
 import type { Root } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import { PresentationBoundary, PresentationProvider } from './react';
-import { setLocaleFormatters } from '../ui/format';
+import { setLocaleFormatters } from './format';
 import { displayMessage, localizeValue, setTextLocale } from './text';
 import { createBrowserThemeTransition } from '../adapters/themeTransition';
 import '../adapters/themeTransition.css';

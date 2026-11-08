@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
-import { competitionLabel } from '../../apps/web/src/ui/format';
+import { competitionLabel } from '../../apps/web/src/presentation/format';
 import { canonical } from '../../packages/contracts/src/index';
 import { KIT_ROLES, type KitRole } from '../../packages/contracts/src/identity';
 import type { Fixture, World } from '../../packages/contracts/src/types';

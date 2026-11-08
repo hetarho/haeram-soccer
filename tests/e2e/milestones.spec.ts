@@ -7,7 +7,7 @@ import { decode } from '../../apps/web/src/adapters/persistence';
 import { clubMilestones } from '../../packages/engine/src/goals';
 import type { World } from '../../packages/contracts/src/types';
 import { expectHomeBounds, settle } from './layout';
-import { ownLeagueProgress } from '../../apps/web/src/ui/league';
+import { ownLeagueProgress } from '../../apps/web/src/entities/league/lib/league';
 import { startCareer } from './start';
 
 async function exportWorld(page: Page): Promise<World> {

@@ -1,0 +1,261 @@
+import { createElement, type ReactElement, type ReactNode } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createStore } from 'zustand/vanilla';
+import { clubMilestones, transferOffers } from '../../../../../packages/engine/src/index';
+import { careerWorld } from '../../../../../packages/engine/src/career.testkit';
+import { sponsorSlots } from '../../../../../packages/engine/src/operations';
+import { identityOf } from '../../../../../packages/engine/src/club-identity';
+import type { ClientState, GameClient } from '../../runtime/client';
+import type { ProgressionController } from '../../runtime/progression';
+import type { View } from '../../runtime/protocol';
+import { gameStore, initialClientState } from '../../runtime/store';
+import korean from '../../../public/presentation/locales/ko-KR.json';
+import { AcademyPanel } from '../../pages/club/ui/AcademyPanel';
+import { BusinessWorkbench } from '../../pages/club/ui/BusinessWorkbench';
+import { ClubDesignView } from '../../pages/club/ui/ClubDesignView';
+import { CoachingStaff } from '../../pages/club/ui/ClubStaff';
+import { ProgressControls } from '../../widgets/progress-controls/ui/ProgressControls';
+import { ProgressModeSwitch } from '../../widgets/progress-controls/ui/ProgressModeSwitch';
+import { RecruitmentDesk } from '../../pages/club/ui/RecruitmentDesk';
+import Rich from '../../pages/club/ui/Rich';
+import { OwnerOffice } from './OwnerOfficeView';
+import { officeRead } from '../../runtime/officeRead';
+
+vi.mock('../../presentation/react', async (original) => ({
+  ...(await original<typeof import('../../presentation/react')>()),
+  useLocale: () => ({
+    t: (id: string) => korean.messages[id as keyof typeof korean.messages] ?? id,
+  }),
+}));
+
+const { drafts } = vi.hoisted(() => ({ drafts: {} as Record<string, unknown> }));
+vi.mock('../../runtime/store', async (original) => ({
+  ...(await original<typeof import('../../runtime/store')>()),
+  useGameState: (selector: (state: ClientState) => unknown) => selector(gameStore.getState()),
+}));
+vi.mock('../../shared/routing/taskMemory', async (original) => ({
+  ...(await original<typeof import('../../shared/routing/taskMemory')>()),
+  useTaskState: (_world: string, key: string, initial: unknown) => [
+    drafts[key] ?? (typeof initial === 'function' ? initial() : initial),
+    vi.fn(),
+  ],
+}));
+// Exercise dialog contents without a DOM or a portal implementation.
+vi.mock('../../shared/ui/Dialog', () => ({
+  Dialog: ({ children, actions }: { children: ReactNode; actions?: ReactNode }) =>
+    createElement('section', { role: 'dialog' }, children, actions),
+}));
+vi.mock('../../entities/office/ui/FacilityArt', () => ({
+  FacilityArt: () => createElement('img', { alt: 'Club room' }),
+}));
+// Recruitment rows now arrive asynchronously. Isolate the calendar lock from the worker read
+// with one prepared current-page row, retaining the candidate-inspection assertion below.
+vi.mock('../../pages/club/lib/worldMarket', async (original) => ({
+  ...(await original<typeof import('../../pages/club/lib/worldMarket')>()),
+  useMarketPage: () => ({
+    value: {
+      world: world.id,
+      revision: world.revision,
+      page: 0,
+      pageSize: 50,
+      total: 1,
+      items: [
+        {
+          player: world.players[0],
+          target: {
+            world: world.id,
+            kind: 'club',
+            clubId: world.playerClub,
+            playerId: world.players[0].id,
+          },
+          own: true,
+          available: false,
+          recommended: false,
+          foreign: false,
+          fee: '0',
+          loanFee: '0',
+          freeAgent: false,
+        },
+      ],
+    },
+    retry: vi.fn(),
+  }),
+}));
+
+const world = careerWorld({ country: 'ENG', seed: 'calendar-lock' });
+world.cash = '999999999999';
+const controller = {
+  store: createStore(() => ({
+    running: true,
+    pace: 'x1',
+    reason: '',
+    background: { hidden: true, away: 'season', resultNotice: false },
+  })),
+} as unknown as ProgressionController;
+const client = {} as GameClient;
+function state(): ClientState {
+  return {
+    ...initialClientState,
+    busy: false,
+    processing: false,
+    readonly: false,
+    clockRunning: true,
+    view: {
+      world,
+      office: officeRead(world),
+      coaches: {},
+      totalMatches: 0,
+      milestones: clubMilestones(world),
+      managers: [],
+      transfers: transferOffers(world),
+      sponsors: sponsorSlots(world),
+      annualCost: '0',
+      coefficient: 0,
+      news: [],
+      tallies: { players: {}, leagueReds: {} },
+    } as View,
+  };
+}
+const buttons = (markup: string) =>
+  [...markup.matchAll(/<button([^>]*)>(.*?)<\/button>/g)].map(([, attributes, body]) => ({
+    label: /aria-label="([^"]*)"/.exec(attributes)?.[1] ?? body.replace(/<[^>]*>/g, ''),
+    disabled: attributes.includes('disabled=""'),
+  }));
+const render = (element: ReactElement) => buttons(renderToStaticMarkup(element));
+function expectLocked(element: () => ReactElement, label: RegExp) {
+  for (const processing of [false, true, false]) {
+    gameStore.setState({ processing });
+    const actions = render(element()).filter((button) => label.test(button.label));
+    expect(actions.length).toBeGreaterThan(0);
+    expect(actions.every((button) => button.disabled)).toBe(true);
+  }
+  gameStore.setState({ clockRunning: false, processing: true });
+  expect(
+    render(element())
+      .filter((button) => label.test(button.label))
+      .every((button) => button.disabled),
+  ).toBe(true);
+  gameStore.setState({ processing: false });
+  expect(render(element()).some((button) => label.test(button.label) && !button.disabled)).toBe(
+    true,
+  );
+  gameStore.setState({ clockRunning: true });
+}
+beforeEach(() => {
+  gameStore.setState(state(), true);
+  vi.stubGlobal('location', {
+    origin: 'https://game.test',
+    pathname: '/first-team',
+    search: '?view=players',
+  });
+  for (const key of Object.keys(drafts)) delete drafts[key];
+});
+afterEach(() => {
+  gameStore.setState(initialClientState, true);
+  vi.unstubAllGlobals();
+});
+
+describe('management screen calendar locks', () => {
+  it('locks squad transfer-state changes while roster inspection remains available', () => {
+    expectLocked(
+      () =>
+        createElement(Rich, {
+          state: gameStore.getState(),
+          client,
+          page: 'firstTeam',
+          controller,
+        }),
+      /이적 상태/,
+    );
+  });
+  it('locks staff appointment and renewal entries over automatic ticks', () => {
+    expectLocked(() => createElement(CoachingStaff, { w: world, client }), /^(선임|교체|재계약)$/);
+  });
+  it('keeps recruitment filters and candidate inspection available while the calendar runs', () => {
+    const entries = render(createElement(RecruitmentDesk, { state: gameStore.getState(), client }));
+    expect(entries.find((button) => button.label === '영입 필터')?.disabled).toBe(false);
+    const details = entries.filter((button) => button.label.endsWith('상세 보기'));
+    expect(details.length).toBeGreaterThan(0);
+    expect(details.every((button) => !button.disabled)).toBe(true);
+  });
+  it('locks sponsor signing over automatic ticks', () => {
+    expectLocked(
+      () =>
+        createElement(BusinessWorkbench, { state: gameStore.getState(), client, part: 'sponsor' }),
+      / 계약$/,
+    );
+  });
+  it.each(['finance', 'build'] as const)('reads %s with no owner action to lock', (part) => {
+    // The owner adds no capital and starts no facility work (→ECON-11, ECON-32).
+    const labels = render(
+      createElement(BusinessWorkbench, { state: gameStore.getState(), client, part }),
+    ).map((button) => button.label);
+    expect(labels.filter((label) => /출자|공사/.test(label))).toEqual([]);
+  });
+  it('locks youth release decisions while prospect inspection stays available', () => {
+    const w = {
+      ...world,
+      academy: { players: [{ ...world.players[0]!, id: 'prospect', born: world.year - 16 }] },
+    };
+    expectLocked(() => createElement(AcademyPanel, { w, client }), / 방출$/);
+  });
+  it('keeps the manager replacement market open to inspect while the clock runs', () => {
+    // The manager heads 코치진; his replacement market stays open to inspect.
+    vi.stubGlobal('location', {
+      origin: 'https://game.test',
+      pathname: '/staff',
+      search: '?view=coaches',
+    });
+    const entries = render(
+      createElement(Rich, {
+        state: gameStore.getState(),
+        client,
+        page: 'staff',
+        controller,
+      }),
+    );
+    expect(entries.find((button) => button.label === '교체')?.disabled).toBe(false);
+  });
+  it("locks the 결재함's 직접/위임 over automatic ticks, keeping its titles open, with no quick actions", () => {
+    // The office offers no immediate owner action (→WEB-39); its titles stay readable while the
+    // clock runs, and their delegation switches lock like every management change (→WEB-97).
+    vi.stubGlobal('location', { origin: 'https://game.test', pathname: '/business', search: '' });
+    const office = () => createElement(OwnerOffice, { client, controller });
+    for (const processing of [false, true]) {
+      gameStore.setState({ processing });
+      const markup = renderToStaticMarkup(office());
+      expect(markup).toContain('aria-label="보고·위임 설정"');
+      const entries = buttons(markup);
+      expect(entries.filter((button) => button.label.includes('바로 할 수 있는 일'))).toEqual([]);
+      expect(entries.some((button) => button.label === '결재라인 모아보기')).toBe(false);
+    }
+    expectLocked(office, /^(직접|자동|전체 직접|전체 자동)$/);
+  });
+  it("locks adopting or discarding the designer's drafts while the calendar runs", () => {
+    const entry = identityOf(world, world.playerClub);
+    world.designCommission = {
+      studio: 'studio',
+      colours: [...entry.colours],
+      drafts: [structuredClone(entry), structuredClone(entry)],
+    };
+    try {
+      expectLocked(
+        () => createElement(ClubDesignView, { state: gameStore.getState(), client }),
+        /^(이 시안으로 결정|전부 버리기)$/,
+      );
+    } finally {
+      delete world.designCommission;
+    }
+  });
+  it('locks mode changes and retains stop and pace during worker calculation', () => {
+    gameStore.setState({ processing: true });
+    const switcher = render(createElement(ProgressModeSwitch, { client, controller }));
+    expect(switcher.find((button) => button.label.startsWith('진행 방식 변경'))?.disabled).toBe(
+      true,
+    );
+    const transport = render(createElement(ProgressControls, { client, controller }));
+    expect(transport.find((button) => button.label === '자동 진행 정지')?.disabled).toBe(false);
+    expect(transport.find((button) => button.label === '자동 진행 배속')?.disabled).toBe(false);
+  });
+});

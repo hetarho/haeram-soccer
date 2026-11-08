@@ -13,7 +13,7 @@ import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
 import {
   deadBallBeats,
   presentationAdvance,
@@ -22,7 +22,7 @@ import {
   runningLength,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
-} from '../../apps/web/src/ui/presentationClock';
+} from '../../apps/web/src/entities/match/lib/presentationClock';
 import { expectCompressedPreparation, longPreparation } from './preparation';
 import { leaveOffice, openOfficeArea } from './office';
 import { startCareer } from './start';

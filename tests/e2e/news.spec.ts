@@ -6,7 +6,11 @@ import { tierFortune } from '../../packages/engine/src/club-value';
 import { generateHistory } from '../../packages/engine/src/history';
 import { clubListings } from '../../packages/engine/src/listing';
 import { takeOver } from '../../packages/engine/src/takeover';
-import { canAfford, defaultFilter, filterListings } from '../../apps/web/src/ui/startChoices';
+import {
+  canAfford,
+  defaultFilter,
+  filterListings,
+} from '../../apps/web/src/entities/league/lib/startChoices';
 import { chooseLevel, configureResponsibilities } from './events';
 import { horizontalOverflow, settle } from './layout';
 import { DEFAULT_START, startCareer } from './start';

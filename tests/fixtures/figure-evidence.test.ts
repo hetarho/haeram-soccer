@@ -5,8 +5,8 @@ import {
   figureShirtColourAt,
   insideFigureTorso,
 } from '../../packages/engine/src/kit-patterns';
-import { FIGURE_SCALE } from '../../apps/web/src/ui/figurePainting';
-import { markerRadius } from '../../apps/web/src/ui/pitchPainting';
+import { FIGURE_SCALE } from '../../apps/web/src/entities/match/lib/figurePainting';
+import { markerRadius } from '../../apps/web/src/entities/match/lib/pitchPainting';
 import {
   colourArea,
   liveTorso,

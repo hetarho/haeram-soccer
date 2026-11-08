@@ -11,7 +11,7 @@ import {
   managerRowView,
   type ManagerLegacyView,
   type ManagerTenureView,
-} from '../../apps/web/src/ui/managerHistoryView';
+} from '../../apps/web/src/pages/club/lib/managerHistoryView';
 /*
  * Browser-journey careers (T308; →WEB-92/74, HIST-18/19, SAVE-24): real careers settled by the
  * engine's own commands, imported into the build. Their marked synthetic shortcuts are named where

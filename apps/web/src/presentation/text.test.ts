@@ -10,7 +10,7 @@ import { LocalizedMessage } from './LocalizedMessage';
 import { displayMessage, localizeText, localizeValue, setTextLocale } from './text';
 import type { LocalePack } from './contracts';
 import { validateRegistry } from './registry';
-import { TierStep, TraitStep } from '../ui/StartFlow';
+import { TierStep, TraitStep } from '../pages/start/ui/StartFlow';
 
 const korean: LocalePack = JSON.parse(
   readFileSync(new URL('../../public/presentation/locales/ko-KR.json', import.meta.url), 'utf8'),

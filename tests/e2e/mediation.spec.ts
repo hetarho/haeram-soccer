@@ -14,7 +14,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
 import { judgePromises } from '../../packages/engine/src/promises';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
-import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/ui/worldMarket';
+import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/pages/club/lib/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow, settle } from './layout';

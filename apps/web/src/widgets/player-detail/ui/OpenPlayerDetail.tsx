@@ -3,7 +3,7 @@ import { usePlayerDetail } from '../../../entities/player';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { useRead } from '../../../shared/lib';
-import { worldSelector } from '../../../ui/liveState';
+import { worldSelector } from '../../../shared/lib/liveState';
 import { OtherPlayerSheet } from './OtherPlayerSheet';
 import { OwnPlayerSheet } from './OwnPlayerSheet';
 

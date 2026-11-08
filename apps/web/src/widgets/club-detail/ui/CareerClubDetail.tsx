@@ -11,12 +11,12 @@ import type { GameClient } from '../../../runtime/client';
 import type { HeadToHead, Meeting } from '../../../runtime/headToHead';
 import { useGameState } from '../../../runtime/store';
 import { useRead } from '../../../shared/lib';
-import { ClubCrest } from '../../../ui/ClubCrest';
-import { competitionLabel, kindLabel, number, seasonName } from '../../../ui/format';
-import { clubDivision, leagueOf, orderIds } from '../../../ui/league';
-import { worldSelector } from '../../../ui/liveState';
-import { clubOvr, cohesionLine, OvrBadge } from '../../../ui/OvrBadge';
-import { PersonCareer } from '../../../ui/PersonCareer';
+import { ClubCrest } from '../../../entities/club/ui/ClubCrest';
+import { competitionLabel, kindLabel, number, seasonName } from '../../../presentation/format';
+import { clubDivision, leagueOf, orderIds } from '../../../entities/league/lib/league';
+import { worldSelector } from '../../../shared/lib/liveState';
+import { clubOvr, cohesionLine, OvrBadge } from '../../../entities/player/ui/OvrBadge';
+import { PersonCareer } from '../../../features/person-career/ui/PersonCareer';
 import { ClubDetail } from './ClubDetail';
 import s from './ClubDetail.module.css';
 

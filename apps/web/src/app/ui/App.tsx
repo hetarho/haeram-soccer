@@ -1,0 +1,1284 @@
+import { message as sourceMessage } from '../../../../../packages/contracts/src/messages';
+import { localizeValue, useTextLocale } from '../../presentation/text';
+import { richMessage } from '../../presentation/LocalizedMessage';
+import { PORTABLE_FILE_LIMIT } from '../../adapters/repository';
+import { ClubNavigation } from './ClubNavigation';
+import {
+  ApprovalInboxHost,
+  ClubOverviewHost,
+  OfficeOverviewHost,
+} from '../office/OfficeOverviewHost';
+import { CashAlarm } from '../../widgets/cash-alarm/ui/CashAlarm';
+import { FeedbackOverlay } from './FeedbackOverlay';
+import {
+  activateTaskWorld,
+  openPeople,
+  openPrimary,
+  useNavigation,
+  type Page,
+} from '../../shared/routing/state';
+import { PixelIcon, type PixelIconName } from '../../shared/ui/PixelIcon';
+import { useLocale } from '../../presentation/react';
+import type { Translator } from '../../presentation/locale';
+import { PresentationSettingsTrigger } from '../../widgets/presentation-settings/ui/PresentationSettings';
+import { AppMenu } from './AppMenu';
+import { BetaMark } from '../../shared/ui/BetaMark';
+import {
+  lazy,
+  memo,
+  Suspense,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
+import type { World } from '../../../../../packages/contracts/src/types';
+import { priceIndex } from '../../../../../packages/catalogs/src/index';
+import { GameClient, type ClientState } from '../../runtime/client';
+import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from '../model/navigationTabs';
+import { personnelRoute } from '../../shared/routing/personnelNavigation';
+import { HudCash } from './HudCash';
+import { taskAddress, useTaskMemory } from '../../shared/routing/taskMemory';
+import { ClubCrest } from '../../entities/club/ui/ClubCrest';
+import { GameOver } from '../../pages/game-over/ui/GameOver';
+import { ProgressControls } from '../../widgets/progress-controls/ui/ProgressControls';
+import { LiveSeason } from '../../pages/journal/ui/LiveSeason';
+// The clubhouse loads when a game is ready, outside the start/slot entry.
+const ClubHub = lazy(() =>
+  import('../../pages/clubhouse/ui/ClubHub').then((module) => ({ default: module.ClubHub })),
+);
+import { StartFlow } from '../../pages/start/ui/StartFlow.tsx';
+import { WORLD_START } from '../../entities/league/lib/startChoices';
+import { careerOver } from '../../entities/office/lib/ownerFigures';
+const PlayGuide = lazy(() =>
+  import('../../widgets/play-guide/ui/PlayGuide').then((module) => ({ default: module.PlayGuide })),
+);
+import { gameActionsBlocked, gameStore, useGameState } from '../../runtime/store';
+import { ProgressionController, approvalRequests, useProgression } from '../../runtime/progression';
+import { worldSelector } from '../../shared/lib/liveState';
+import { Standings } from '../../widgets/league-insights/ui/LeagueInsights';
+import { todayStamp } from '../../../../../packages/engine/src/calendar';
+import s from '../../shared/ui/styles/App.module.css';
+import { Dialog } from '../../shared/ui/Dialog';
+import { ActionOutcome } from './ActionOutcome';
+import { play } from '../../shared/ui/motion';
+import {
+  EventCenter,
+  CommunicationsCenter,
+  CommunicationsButton,
+} from '../../widgets/event-center/ui/EventCenter';
+import { GlossaryHost } from './Glossary';
+import { useGlossary } from '../../shared/ui/metricGlossary';
+import { useNewsSheet } from '../../features/news-feed/ui/NewsFeed';
+import { CelebrationHost } from './Celebration';
+const CupsView = lazy(() =>
+  import('../../pages/cups/ui/CupsView').then((module) => ({ default: module.CupsView })),
+);
+import { ClubDetailHost } from '../../widgets/club-detail';
+import { PlayerDetailHost } from '../../widgets/player-detail';
+import { MANAGER_GONE } from '../../../../../packages/engine/src/staff-info';
+import { GameSlots } from '../../runtime/slots';
+import { GameIndexStore } from '../../adapters/games';
+import { useTabTitle } from '../model/tabTitle';
+
+/** The away card loads only when a run waits to be summarized (→WEB-64, →ARCH-28). */
+const AwaySummary = lazy(() =>
+  import('../../widgets/away-summary/ui/AwaySummary').then((module) => ({
+    default: module.AwaySummary,
+  })),
+);
+function AwayHost({ controller }: { controller: ProgressionController }) {
+  useTextLocale();
+  const away = useProgression(controller, (state) => !!state.away);
+  return away ? (
+    <Suspense fallback={null}>
+      <AwaySummary controller={controller} />
+    </Suspense>
+  ) : null;
+}
+/**
+ * The Team directory, squad, staff, operations and records pages load as their own chunk, outside the first-play
+ * entry (→ARCH-28). It is fetched once a game is in play, so a first visit seldom waits for it.
+ */
+const loadRich = () => import('../../pages/club/ui/Rich');
+const Rich = lazy(loadRich);
+/** The slot screen loads on its own, outside the first-play entry (→ARCH-28). */
+const GameSlotScreen = lazy(() =>
+  import('../../pages/slots/ui/GameSlotScreen').then((module) => ({
+    default: module.GameSlotScreen,
+  })),
+);
+
+/** Set while this tab is in a game, so a reload continues it instead of showing the slots. */
+const IN_GAME = 'haeram-soccor:in-game';
+/** Set by deleting the game in play: the page reloads onto the slot screen, even all empty. */
+const BACK_TO_SLOTS = 'haeram-soccor:back-to-slots';
+/** Read once per page load: a state initializer may run twice. */
+const backToSlots = (() => {
+  try {
+    const set = sessionStorage.getItem(BACK_TO_SLOTS) === '1';
+    sessionStorage.removeItem(BACK_TO_SLOTS);
+    return set;
+  } catch {
+    return false;
+  }
+})();
+/** Reloads the page away from a deleted game in play, back onto the slot screen (→WEB-62). */
+function reloadToSlots() {
+  try {
+    sessionStorage.setItem(BACK_TO_SLOTS, '1');
+  } catch {
+    /* without session storage the reload opens as the start address would */
+  }
+  location.reload();
+}
+/**
+ * The start address opens on the slot screen whenever a slot holds a game (→WEB-62); an in-game
+ * address or a reload of a tab already in a game continues the game in play.
+ */
+function initialScreen(): 'slots' | 'game' {
+  try {
+    if (backToSlots) return 'slots';
+    if (location.pathname !== '/' || sessionStorage.getItem(IN_GAME) === '1') return 'game';
+    return new GameIndexStore(localStorage).hasGames() ? 'slots' : 'game';
+  } catch {
+    return 'game';
+  }
+}
+function rememberInGame(inGame: boolean) {
+  try {
+    if (inGame) sessionStorage.setItem(IN_GAME, '1');
+    else sessionStorage.removeItem(IN_GAME);
+  } catch {
+    /* Without session storage a reload shows the slots again. */
+  }
+}
+/** Whether the first team shows its transfer market, which makes the market's entry current. */
+function useMarketOpen() {
+  const page = useNavigation((state) => state.page);
+  const [market, setMarket] = useState(false);
+  useEffect(() => {
+    const read = () =>
+      setMarket(personnelRoute(location.pathname, location.search)?.view === 'market');
+    read();
+    window.addEventListener('popstate', read);
+    window.addEventListener('tasknavigate', read);
+    return () => {
+      window.removeEventListener('popstate', read);
+      window.removeEventListener('tasknavigate', read);
+    };
+  }, [page]);
+  return page === 'firstTeam' && market;
+}
+function NavIcon({ page }: { page: NavEntry }) {
+  useTextLocale();
+  const names: Record<NavEntry, PixelIconName> = {
+    market: 'switch',
+    dashboard: 'home',
+    match: 'ball',
+    league: 'table',
+    europe: 'cup',
+    team: 'people',
+    leagueHistory: 'history',
+    cupHistory: 'history',
+    firstTeam: 'people',
+    academy: 'training',
+    training: 'training',
+    staff: 'people',
+    operations: 'trend',
+    business: 'trend',
+    history: 'history',
+  };
+  return <PixelIcon name={names[page]} size={20} className={s.navIcon} />;
+}
+export function Crest({ color = '#b4c399' }: { color?: string }) {
+  useTextLocale();
+  return <span className={s.crest} style={{ backgroundColor: color }} aria-hidden="true" />;
+}
+export function Panel({
+  title,
+  note,
+  action,
+  children,
+  footer,
+}: {
+  title: string;
+  note?: ReactNode;
+  /** A control at the header's end, such as a view-settings button. */
+  action?: ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
+}) {
+  useTextLocale();
+  return (
+    <section data-surface="panel" data-ui="content-panel" className={s.panel}>
+      <div data-ui="panel-header" className={s.panelHead}>
+        <div className={s.panelHeading}>
+          <h3>{localizeValue(title)}</h3>
+          {localizeValue(note && <span>{localizeValue(note)}</span>)}
+        </div>
+        {localizeValue(action)}
+      </div>
+      {localizeValue(children)}
+      {localizeValue(
+        footer && (
+          <div data-ui="panel-footer" className={s.panelFoot}>
+            {localizeValue(footer)}
+          </div>
+        ),
+      )}
+    </section>
+  );
+}
+export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
+  useTextLocale();
+  return <Standings w={w} ids={ids} limit={limit} />;
+}
+const selectContentWorld = worldSelector([
+  'year',
+  'round',
+  'playerClub',
+  // Each club's applied identity rides on its club, so an applied design reaches every crest at
+  // once (→WEB-49).
+  'clubs',
+  'tables',
+  'fixtures',
+  'rankHistory',
+  'scorerSeason',
+  'players',
+  'manager',
+  'tactic',
+  'ownMatches',
+  'history',
+  'events',
+  'cash',
+  'income',
+  'expense',
+  'currency',
+  'stadium',
+  'trainingGround',
+  'academyFacility',
+  'facilityWorks',
+  'campaigns',
+  'sponsors',
+  'europe',
+  'critical',
+  // Staff, settings and bid decisions can change only these keys; the direction's cards, dials,
+  // ticket price and rows stay as founded (→ECON-16/17/22/25).
+  'staff',
+  'academy',
+  'settings',
+  'decisionChoices',
+  'academyReviews',
+  'bids',
+  'morale',
+  'inbox',
+  'managerMarket',
+  'staffMarket',
+  // Discarding the designer's drafts changes only the commission (→WEB-108).
+  'designCommission',
+]);
+function useContentState(): ClientState {
+  useLocale(); // Locale changes refresh memoized view boundaries without resetting them.
+  const world = useGameState(selectContentWorld);
+  const busy = useGameState((state) => state.busy);
+  const readonly = useGameState((state) => state.readonly);
+  const totalMatches = useGameState((state) => state.view?.totalMatches);
+  const annualCost = useGameState((state) => state.view?.annualCost);
+  const milestones = useGameState((state) => state.view?.milestones);
+  const managers = useGameState((state) => state.view?.managers);
+  const transfers = useGameState((state) => state.view?.transfers);
+  const sponsors = useGameState((state) => state.view?.sponsors);
+  const state = gameStore.getSnapshot();
+  return {
+    ...state,
+    busy,
+    readonly,
+    view:
+      world && state.view
+        ? {
+            ...state.view,
+            world,
+            totalMatches: totalMatches!,
+            annualCost: annualCost!,
+            milestones: milestones!,
+            managers: managers!,
+            transfers: transfers!,
+            sponsors: sponsors!,
+          }
+        : undefined,
+  };
+}
+/**
+ * The new game (→WEB-2, WEB-15): the start's choices, the world's generation and the takeover
+ * list, wired to the worker's `generate`, `club-sheet` and `take-over`.
+ */
+const ConnectedStart = memo(function ConnectedStart({
+  client,
+  replace,
+  slot,
+  onBack,
+  onDone,
+}: {
+  client: GameClient;
+  replace: boolean;
+  slot: number;
+  onBack?: () => void;
+  onDone: () => void;
+}) {
+  useTextLocale();
+  const busy = useGameState((state) => state.busy);
+  const readonly = useGameState((state) => state.readonly);
+  const failed = useGameState((state) => !!state.error);
+  const loading = useGameState((state) => state.busy && !state.view && !state.start);
+  const start = useGameState((state) => state.start);
+  if (loading)
+    return (
+      <div className={s.loading} role="status">
+        {richMessage('copy.App.da5941981e')}
+      </div>
+    );
+  return (
+    <StartFlow
+      slot={slot}
+      onBack={onBack}
+      busy={busy}
+      // A game that failed to load is replaced only explicitly, as at the slot screen (→WEB-62).
+      readonly={readonly || (!replace && failed && !start)}
+      initial={start?.choice}
+      progress={start && !start.listings ? { season: start.season ?? WORLD_START } : undefined}
+      digest={start?.digest}
+      listings={start?.listings}
+      fortune={start?.fortune}
+      error={start?.error}
+      onGenerate={(choice) => void client.generate(choice, replace)}
+      loadClub={(clubId) => client.startClubProfile(clubId)}
+      onTakeOver={(clubId) =>
+        void client.takeOver(clubId).then((reply) => {
+          if (reply?.ok) onDone();
+        })
+      }
+    />
+  );
+});
+const ConnectedDashboard = memo(function ConnectedDashboard({ client }: { client: GameClient }) {
+  useTextLocale();
+  const state = useContentState();
+  const w = state.view!.world;
+  const { t } = useLocale();
+  return (
+    <Suspense
+      fallback={
+        <div className={s.loading} role="status">
+          {localizeValue(t('shell.loadingView'))}
+        </div>
+      }
+    >
+      <ClubHub w={w} client={client} />
+    </Suspense>
+  );
+});
+const ConnectedEurope = memo(function ConnectedEurope({ client }: { client: GameClient }) {
+  useTextLocale();
+  const state = useContentState();
+  const page = useNavigation((state) => state.page);
+  const visited = useRef(false);
+  if (page === 'europe' || page === 'cupHistory') visited.current = true;
+  if (!visited.current) return null;
+  return (
+    <Suspense fallback={<p role="status">{richMessage('copy.App.3517432bfc')}</p>}>
+      <CupsView w={state.view!.world} coefficient={state.view!.coefficient} client={client} />
+    </Suspense>
+  );
+});
+/** Kept apart from the shell's renders: a page change re-renders only the page shown next. */
+const ConnectedRich = memo(function ConnectedRich({
+  client,
+  controller,
+  page,
+}: {
+  client: GameClient;
+  controller: ProgressionController;
+  page: Page;
+}) {
+  useTextLocale();
+  const { t } = useLocale();
+  const state = useContentState();
+  return (
+    <Suspense
+      fallback={
+        <div className={s.loading} role="status">
+          {localizeValue(t('shell.loadingView'))}
+        </div>
+      }
+    >
+      <Rich client={client} controller={controller} state={state} page={page} />
+    </Suspense>
+  );
+});
+const GameHud = memo(function GameHud({
+  client,
+  onMenu,
+  playing,
+}: {
+  /** Sends the 구단주 sheet's stake, injection and dividend (→WEB-114). */
+  client?: GameClient;
+  onMenu: () => void;
+  /** A new game, even beside a parked one, shows the start HUD: no club, menu, inbox or cash. */
+  playing: boolean;
+}) {
+  useTextLocale();
+  const { t } = useLocale();
+  const own = useGameState((state) =>
+    playing
+      ? state.view?.world.clubs.find((club) => club.id === state.view?.world.playerClub)
+      : undefined,
+  );
+  const crestWorld = useGameState((state) => state.view?.world.clubs && state.view.world);
+  const today = useGameState((state) =>
+    playing && state.view ? todayStamp(state.view.world) : undefined,
+  );
+  const season = useGameState((state) => state.view?.world.year);
+  // The match theatre reads its own date; the HUD carries today's test ids everywhere else.
+  const dated = useNavigation((state) => state.page !== 'match');
+  return (
+    <header className={s.hud}>
+      {localizeValue(
+        playing && (
+          <button
+            data-ui="icon"
+            className={s.hudMenu}
+            aria-label={localizeValue(t('shell.menu'))}
+            onClick={(event) => {
+              event.currentTarget.focus();
+              onMenu();
+            }}
+          >
+            <PixelIcon name="menu" size={20} />
+          </button>
+        ),
+      )}
+      <div className={s.hudClub} data-ui="hud-club">
+        {localizeValue(
+          own && crestWorld ? (
+            <ClubCrest w={crestWorld} id={own.id} size={26} className={s.hudCrest} />
+          ) : (
+            <Crest color={own?.color} />
+          ),
+        )}
+        <div>
+          <b className={own ? s.hudClubName : undefined}>
+            {localizeValue(own?.name || 'Haeram Football')}
+          </b>
+          {/* Beside the club name in play; beside the game's name with its version elsewhere. */}
+          <BetaMark version={!own} />
+          {localizeValue(
+            !own && (
+              <small data-testid="calendar">
+                {richMessage('copy.App.a34829c99d', { p0: localizeValue(WORLD_START) })}
+              </small>
+            ),
+          )}
+        </div>
+      </div>
+      {localizeValue(
+        today && (
+          <span
+            className={s.hudDate}
+            data-ui="hud-date"
+            data-testid={dated ? 'calendar' : undefined}
+            data-season={season}
+          >
+            <span data-testid={dated ? 'game-date' : undefined}>{localizeValue(today)}</span>
+          </span>
+        ),
+      )}
+      <ReadonlyBadge />
+      {localizeValue(!playing && <PresentationSettingsTrigger />)}
+      {localizeValue(playing && <HudCash client={client} />)}
+      {localizeValue(playing && <CommunicationsButton className={s.hudNotifications} />)}
+    </header>
+  );
+});
+/** Read-only ownership is a small HUD badge that explains itself on tap (→WEB-10). */
+function ReadonlyBadge() {
+  useTextLocale();
+  const { t } = useLocale();
+  const readonly = useGameState((state) => state.readonly && !!state.view);
+  const notice = useGameState((state) => state.notice);
+  const [open, setOpen] = useState(false);
+  if (!readonly) return null;
+  const text = notice || t('shell.readonlyNotice');
+  return (
+    <span className={s.readonlyBadge} role="status">
+      <button aria-expanded={open} title={localizeValue(text)} onClick={() => setOpen(!open)}>
+        <PixelIcon name="eye" size={14} />
+        {localizeValue(t('shell.readonly'))}
+      </button>
+      <span className={open ? s.readonlyDetail : s.srOnly}>{localizeValue(text)}</span>
+    </span>
+  );
+}
+const RuntimeFeedback = memo(function RuntimeFeedback({
+  client,
+  localError,
+  playing,
+  onDownload,
+}: {
+  client: GameClient;
+  localError: string;
+  /** The club's bands belong to the game in play, never to founding beside a parked one. */
+  playing: boolean;
+  onDownload: () => Promise<void>;
+}) {
+  useTextLocale();
+  const { t } = useLocale();
+  const state = useGameState((state) => state);
+  const critical = playing ? state.view?.world.critical : undefined;
+  const blocked = state.busy || state.readonly;
+  const error = state.error || localError;
+  return (
+    <>
+      {localizeValue(
+        (error || critical) && (
+          <FeedbackOverlay urgent>
+            {localizeValue(
+              error && (
+                <div data-surface="inset" className={s.error} role="alert">
+                  {localizeValue(error)}
+                  <button onClick={() => location.reload()}>
+                    {localizeValue(t('save.reload'))}
+                  </button>
+                  {localizeValue(
+                    state.error && !playing && (
+                      <button disabled={state.busy} onClick={() => void onDownload()}>
+                        {localizeValue(t('save.exportRecovery'))}
+                      </button>
+                    ),
+                  )}
+                </div>
+              ),
+            )}
+            {localizeValue(
+              critical === MANAGER_GONE ? (
+                <div data-surface="inset" className={s.critical} role="status">
+                  {richMessage('copy.App.7252955d92', {
+                    p0: (
+                      <div className={s.criticalActions}>
+                        <button
+                          data-ui="primary"
+                          className={s.primary}
+                          disabled={blocked}
+                          onClick={() => {
+                            void client.acknowledge();
+                            openPeople('candidates');
+                          }}
+                        >
+                          {richMessage('copy.App.e9e9c5997e')}
+                        </button>
+                        <button disabled={blocked} onClick={() => void client.acknowledge()}>
+                          {richMessage('copy.App.b78e7fcc88')}
+                        </button>
+                      </div>
+                    ),
+                  })}
+                </div>
+              ) : (
+                critical && (
+                  <div data-surface="inset" className={s.critical} role="status">
+                    {localizeValue(critical)}
+                    <button disabled={blocked} onClick={() => void client.acknowledge()}>
+                      {richMessage('copy.App.d5321ec391')}
+                    </button>
+                  </div>
+                )
+              ),
+            )}
+          </FeedbackOverlay>
+        ),
+      )}
+      {/* Routine notices remain in the inbox; debt retains its status band on every view. */}
+      {localizeValue(playing && <CashAlarm />)}
+    </>
+  );
+});
+function savedAgo(savedAt: number, now: number, t: Translator) {
+  const seconds = Math.max(0, Math.floor((now - savedAt) / 1000));
+  if (seconds < 5) return t('save.justNow');
+  if (seconds < 60) return t('save.secondsAgo', { count: seconds });
+  const minutes = Math.floor(seconds / 60);
+  return minutes < 60
+    ? t('save.minutesAgo', { count: minutes })
+    : t('save.hoursAgo', { count: Math.floor(minutes / 60) });
+}
+/**
+ * 저장 완료 while every revision is on disk; otherwise when this tab last saved, so a running clock
+ * between its background saves reads steadily instead of flipping on every step (→SAVE-8). Start
+ * screens say nothing of a game kept beside them.
+ */
+function useSaveText(playing = true, detail: 'full' | 'brief' = 'full') {
+  const { t } = useLocale();
+  const w = useGameState((state) => (playing ? state.view?.world : undefined));
+  const savedRevision = useGameState((state) => state.savedRevision);
+  const savedAt = useGameState((state) => state.savedAt);
+  const waiting = !!w && savedRevision !== w.revision && savedAt !== undefined;
+  const [now, setNow] = useState(Date.now);
+  useEffect(() => {
+    if (!waiting) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [waiting]);
+  if (!w) return t('save.start');
+  const own = w.clubs.find((club) => club.id === w.playerClub)!;
+  const status = priceIndex(own.country, w.year).status;
+  const saved =
+    savedRevision === w.revision
+      ? t('save.complete')
+      : savedAt !== undefined
+        ? savedAgo(savedAt, now, t)
+        : t('save.waiting');
+  return detail === 'brief'
+    ? saved
+    : t('save.status', { saved, revision: w.revision, status: t(`save.price.${status}`) });
+}
+const AccessibleSaveStatus = memo(function AccessibleSaveStatus() {
+  useTextLocale();
+  const text = useSaveText();
+  return (
+    <span className={s.srOnly} data-testid="save-status">
+      {localizeValue(text)}
+    </span>
+  );
+});
+function SaveStatus() {
+  useTextLocale();
+  return <p className={s.menuSave}>{localizeValue(useSaveText(true, 'brief'))}</p>;
+}
+function SaveActions({
+  client,
+  compact = false,
+  onDownload,
+  onImport,
+  onSlots,
+}: {
+  client: GameClient;
+  compact?: boolean;
+  onDownload: () => Promise<void>;
+  onImport: (file?: File) => Promise<void>;
+  onSlots?: () => void;
+}) {
+  useTextLocale();
+  const { t } = useLocale();
+  const state = useGameState((state) => state);
+  const w = state.view?.world;
+  return (
+    <div className={compact ? s.sideFoot : s.actions}>
+      {localizeValue(
+        compact && (
+          <>
+            {localizeValue(t('save.localNotice'))}
+            <br />
+            {localizeValue(t('save.fileNotice'))}
+          </>
+        ),
+      )}
+      <button
+        data-ui={compact ? undefined : 'navigation'}
+        disabled={(!w && !state.error) || state.busy}
+        onClick={() => void onDownload()}
+      >
+        {localizeValue(t(compact ? 'save.exportCompact' : 'save.export'))}
+      </button>
+      {localizeValue(
+        !compact && w && onSlots && (
+          <button data-ui="navigation" onClick={onSlots}>
+            {localizeValue(t('slots.title'))}
+          </button>
+        ),
+      )}
+      {localizeValue(
+        !compact && w && state.saveFailed && state.savedRevision !== w.revision && (
+          <button
+            data-ui="navigation"
+            disabled={state.busy || state.readonly}
+            onClick={() => void client.retrySave()}
+          >
+            {localizeValue(t('save.retry'))}
+          </button>
+        ),
+      )}
+      <label className={s.fileButton}>
+        {localizeValue(t('save.import'))}
+        <input
+          className={s.fileInput}
+          type="file"
+          accept="application/json,.json"
+          disabled={gameActionsBlocked(state, { recovery: true })}
+          onChange={(event) => {
+            void onImport(event.target.files?.[0]);
+            event.target.value = '';
+          }}
+        />
+      </label>
+    </div>
+  );
+}
+function StartTools({ onImport }: { onImport: (file?: File) => Promise<void> }) {
+  useTextLocale();
+  const { t } = useLocale();
+  const state = useGameState((state) => state);
+  return (
+    <div className={s.startTools}>
+      <label className={s.fileButton}>
+        {localizeValue(t('save.importFile'))}
+        <input
+          className={s.fileInput}
+          type="file"
+          accept="application/json,.json"
+          disabled={state.busy || state.readonly}
+          onChange={(event) => {
+            void onImport(event.target.files?.[0]);
+            event.target.value = '';
+          }}
+        />
+      </label>
+    </div>
+  );
+}
+export function App() {
+  useTextLocale();
+  const { t } = useLocale();
+  const importBlocked = useGameState((state) => gameActionsBlocked(state, { recovery: true }));
+  const progressionBlocked = useGameState(gameActionsBlocked);
+  const worldId = useGameState((state) => state.view?.world.id);
+  const state = gameStore.getSnapshot();
+  const [client, setClient] = useState<GameClient>(),
+    [controller, setController] = useState<ProgressionController>(),
+    [localError, setLocalError] = useState(''),
+    [replacing, setReplacing] = useState(false),
+    [screen, setScreen] = useState(initialScreen),
+    [slots, setSlots] = useState<GameSlots>(),
+    [targetSlot, setTargetSlot] = useState<number>(),
+    [pendingImport, setPendingImport] = useState<string>(),
+    [moreOpen, setMoreOpen] = useState(false),
+    [guideOpen, setGuideOpen] = useState(false);
+  const { page, replacePage } = useNavigation();
+  const mobileNavigation = useRef<HTMLElement>(null);
+  useEffect(() => {
+    mobileNavigation.current
+      ?.querySelector('[aria-current="page"]')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [page, screen]);
+  // One responsibility dialog for the clock, local task links and the main menu.
+  const showNews = useNewsSheet((state) => state.show);
+  const showGlossary = useGlossary((state) => state.show);
+  const contentPage = useDeferredValue(page);
+  // Club records stand alone; league and cups keep their this-season and past-records tabs.
+  const changingView = contentPage !== page;
+  const openMenu = useCallback(() => setMoreOpen(true), []);
+  useEffect(() => {
+    try {
+      if (!isSecureContext || !crypto.subtle || !crypto.randomUUID)
+        throw new Error(sourceMessage('copy.App.dcae7e4e35'));
+      const c = new GameClient((state) => gameStore.publish(state, { viewShared: true }));
+      const progression = new ProgressionController(c);
+      const library = new GameSlots(c);
+      // A hidden tab plays on at its wall-clock pace unless the owner chose to pause it
+      // (→WEB-64). Leaving also refreshes the slot card, so the slot screen shows where this
+      // game stood, and stores the clock so a later visit can play the time away. Hiding and
+      // closing save automatic progress at once, a close as far as the browser lets it (→SAVE-8).
+      const visibility = () => {
+        progression.setHidden(document.hidden);
+        if (!document.hidden) return;
+        library.sync(gameStore.getSnapshot().view?.world, true);
+        c.saveSoon();
+      };
+      const leave = () => {
+        progression.writeClock(true);
+        library.sync(gameStore.getSnapshot().view?.world, true);
+        c.saveSoon();
+      };
+      document.addEventListener('visibilitychange', visibility);
+      window.addEventListener('pagehide', leave);
+      visibility();
+      setClient(c);
+      setController(progression);
+      setSlots(library);
+      void c.start();
+      return () => {
+        document.removeEventListener('visibilitychange', visibility);
+        window.removeEventListener('pagehide', leave);
+        progression.dispose();
+        c.dispose();
+      };
+    } catch (error) {
+      setLocalError(String(error));
+    }
+  }, []);
+  const w = state?.view?.world;
+  const playing = screen === 'game' && !!w && !replacing;
+  const officePending = playing ? approvalRequests(w).length : 0;
+  const marketOpen = useMarketOpen();
+  const current = (id: NavEntry) =>
+    id === 'market'
+      ? marketOpen
+      : !marketOpen && !!TABS.find(([tab]) => tab === id)?.[3].includes(page);
+  const officeBadge = (id: NavEntry) =>
+    id === 'dashboard' && officePending > 0 ? (
+      <>
+        <b data-ui="count" className={s.navCount} aria-hidden="true">
+          {localizeValue(officePending > 99 ? '99+' : officePending)}
+        </b>
+        <span className={s.srOnly}>
+          {richMessage('copy.App.eb5ef51fb1', { p0: officePending })}
+        </span>
+      </>
+    ) : null;
+  // Every world that comes into play joins the slot index (→SAVE-14).
+  useEffect(() => {
+    if (worldId) slots?.sync(gameStore.getSnapshot().view?.world);
+  }, [slots, worldId]);
+  // Once a game is on screen, a reload of this tab continues it (→WEB-62), and a clock it left
+  // running when the page slept or closed plays the time away (→WEB-64).
+  useEffect(() => {
+    if (playing) rememberInGame(true);
+  }, [playing]);
+  useEffect(() => {
+    // A failed fetch is retried when a page needs the chunk.
+    if (playing) loadRich().catch(() => undefined);
+  }, [playing]);
+  useEffect(() => {
+    if (playing && worldId && !progressionBlocked) controller?.resumeAway();
+  }, [playing, worldId, controller, progressionBlocked]);
+  useTabTitle(controller);
+  // A game in play that fails to load opens its recovery and export path, not the slots (→WEB-8).
+  const loadFailed = useGameState((state) => !state.busy && !!state.error && !state.view);
+  const launched = useRef(false);
+  const settled = useGameState((state) => !state.busy);
+  useEffect(() => {
+    if (!client || launched.current || !settled) return;
+    launched.current = true;
+    // An earlier-rules career stays on the slot screen, which offers its export and delete
+    // (→SAVE-16); any other failure opens the recovery path.
+    if (loadFailed) setScreen(client.earlierRules() && slots ? 'slots' : 'game');
+  }, [client, settled, loadFailed, slots]);
+  const openSlots = () => {
+    // Leaving play shows the days computed ahead at once, so the slot card has the saved date.
+    controller?.pause(true);
+    slots?.sync(gameStore.getSnapshot().view?.world, true);
+    slots?.cancel();
+    // A new game not taken over yet is left with its world (→WORLD-13).
+    client?.leaveStart();
+    rememberInGame(false);
+    setMoreOpen(false);
+    setReplacing(false);
+    setTargetSlot(undefined);
+    // Home is set on the way out, so the game entered next opens there without mounting the tab
+    // it was left on (a deferred page would let that tab write its ?view= into home's address).
+    replacePage('dashboard');
+    setScreen('slots');
+  };
+  /** A game entered from the slot screen or game over, continued or new, opens on home. */
+  const enterGame = () => {
+    rememberInGame(true);
+    replacePage('dashboard');
+    setScreen('game');
+  };
+  /** Readies a slot (parking the game in play) and opens the new game for it. */
+  const startNew = async (slot: number) => {
+    await slots!.prepare(slot);
+    setTargetSlot(slot);
+    setReplacing(!!gameStore.getSnapshot().view?.world);
+    enterGame();
+  };
+  const foundingSlot = () => {
+    if (targetSlot !== undefined) return targetSlot;
+    const index = slots?.read();
+    const free = index?.slots.findIndex((entry) => !entry) ?? 0;
+    return index?.active ?? (free < 0 ? 0 : free);
+  };
+  // The match view exists only for a live playback; its address alone leads home (→WEB-40).
+  const hasPlayback = useGameState((state) => !!state.playback);
+  useEffect(() => {
+    if (page === 'match' && client && w && !hasPlayback) replacePage('dashboard');
+  }, [page, client, w, hasPlayback, replacePage]);
+  // Local personnel tabs create meaningful history entries too, while keeping the same page.
+  const [taskLocation, setTaskLocation] = useState(taskAddress);
+  const lastTaskAddress = useRef(taskLocation);
+  useEffect(() => {
+    const restore = (event: Event) => {
+      const address = taskAddress();
+      if (event.type === 'popstate' && lastTaskAddress.current !== address) {
+        const previous = lastTaskAddress.current;
+        useTaskMemory.setState((memory) => ({
+          scrolls: { ...memory.scrolls, [previous]: scroller.current?.scrollTop ?? 0 },
+        }));
+      }
+      lastTaskAddress.current = address;
+      setTaskLocation(address);
+    };
+    window.addEventListener('popstate', restore);
+    window.addEventListener('tasknavigate', restore);
+    return () => {
+      window.removeEventListener('popstate', restore);
+      window.removeEventListener('tasknavigate', restore);
+    };
+  }, []);
+  // The document never scrolls; each view scrolls inside the content region below the HUD.
+  const scroller = useRef<HTMLDivElement>(null);
+  // Screens slide in from the side of the tab that was chosen, so navigation reads spatially.
+  const previousPage = useRef(page);
+  useEffect(() => {
+    const order = TABS.map(([id]) => id),
+      before = order.indexOf(previousPage.current),
+      after = order.indexOf(contentPage);
+    previousPage.current = contentPage;
+    const direction = before < 0 || after < 0 || before === after ? 0 : after > before ? 1 : -1;
+    play(
+      scroller.current,
+      [
+        {
+          opacity: 0,
+          transform: `translateX(${direction * 28}px) translateY(${direction ? 0 : 10}px)`,
+        },
+        { opacity: 1, transform: 'none' },
+      ],
+      { duration: 280 },
+    );
+  }, [contentPage]);
+  useEffect(() => {
+    if (worldId) activateTaskWorld(worldId);
+  }, [worldId]);
+  useEffect(() => {
+    const root = scroller.current;
+    if (!root) return;
+    const desired = useTaskMemory.getState().scrolls[taskAddress()] ?? 0;
+    // The options form: WebKit ignores scrollTo(0, 0) from a 2 px offset, so home kept the
+    // office's scroll (CI 39952590526).
+    root.scrollTo({ top: desired });
+    // Lazy screens may not have their final height at the navigation boundary.
+    const resize = new ResizeObserver(() => root.scrollTo({ top: desired }));
+    const body = root.firstElementChild;
+    if (desired && body) resize.observe(body);
+    const timer = window.setTimeout(() => resize.disconnect(), 500);
+    return () => {
+      resize.disconnect();
+      window.clearTimeout(timer);
+    };
+  }, [page, contentPage, worldId, replacing, screen, taskLocation]);
+  const saveFile = (raw: string, name: string) => {
+    const url = URL.createObjectURL(new Blob([raw], { type: 'application/json' })),
+      a = document.createElement('a');
+    a.href = url;
+    a.download = `haeram-${name}.haeram-save.json`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const download = async () => {
+    const raw = await client?.exportFile();
+    if (raw) saveFile(raw, String(gameStore.getSnapshot().view?.world.year || 'backup'));
+  };
+  const importFile = async (file?: File) => {
+    if (!file || gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
+    if (file.size > PORTABLE_FILE_LIMIT) {
+      setLocalError(t('save.fileTooLarge'));
+      return;
+    }
+    setLocalError('');
+    const raw = await file.text();
+    if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
+    // The stored game in play counts its IndexedDB active copy (→SAVE-3).
+    if (w || client?.hasStoredGame()) {
+      setMoreOpen(false);
+      setPendingImport(raw);
+    } else await client?.importFile(raw);
+  };
+  const menuDisabled = !playing;
+  return (
+    <div
+      data-ui="game-shell"
+      data-playing={playing}
+      data-page={page}
+      className={`${s.layout} ${playing ? s.playLayout : ''} ${playing && (page === 'dashboard' || page === 'match') ? s.coreLayout : ''} ${!playing ? s.startLayout : ''} ${playing && page !== 'match' ? s.newsLayout : ''}`}
+    >
+      <aside className={s.sidebar} data-ui="sidebar">
+        <div className={s.brand}>
+          <i className={s.brandSignal} aria-hidden="true" />
+          <h1>{richMessage('copy.App.5d8aae0c5c')}</h1>
+          <span>{richMessage('copy.App.f7f99c9d5d')}</span>
+          <small>{richMessage('copy.App.367aa4e689')}</small>
+        </div>
+        <nav className={s.nav} aria-label={localizeValue(t('shell.navigation'))}>
+          {localizeValue(
+            NAV.map(([id, label]) => (
+              <button
+                data-ui="navigation"
+                key={id}
+                disabled={menuDisabled}
+                aria-current={current(id) ? 'page' : undefined}
+                className={current(id) ? s.active : undefined}
+                onClick={() => openPrimary(id)}
+              >
+                <NavIcon page={id} />
+                {localizeValue(t(label))}
+                {localizeValue(officeBadge(id))}
+              </button>
+            )),
+          )}
+        </nav>
+        {localizeValue(
+          client && !playing && (
+            <SaveActions client={client} compact onDownload={download} onImport={importFile} />
+          ),
+        )}
+      </aside>
+      <main className={s.main}>
+        {localizeValue(
+          screen === 'game' && <GameHud client={client} onMenu={openMenu} playing={playing} />,
+        )}
+        {localizeValue(
+          !client && localError && (
+            <FeedbackOverlay>
+              <div data-surface="inset" className={s.error} role="alert">
+                {localizeValue(localError)}
+              </div>
+            </FeedbackOverlay>
+          ),
+        )}
+        {localizeValue(
+          client && screen === 'game' && (
+            <RuntimeFeedback
+              client={client}
+              localError={localError}
+              playing={playing}
+              onDownload={download}
+            />
+          ),
+        )}
+        <div ref={scroller} className={s.scroller} data-testid="view-scroller">
+          {localizeValue(
+            client && controller && playing && !careerOver(w) && page !== 'match' && (
+              <EventCenter client={client} controller={controller} compact={page !== 'dashboard'} />
+            ),
+          )}
+          {localizeValue(
+            client && controller ? (
+              screen === 'slots' && slots ? (
+                <Suspense
+                  fallback={
+                    <div className={s.loading} role="status">
+                      {localizeValue(t('shell.loadingSlots'))}
+                    </div>
+                  }
+                >
+                  <GameSlotScreen
+                    slots={slots}
+                    onEnter={enterGame}
+                    onNew={startNew}
+                    onExport={saveFile}
+                    onRemovedInPlay={reloadToSlots}
+                  />
+                </Suspense>
+              ) : !w || replacing ? (
+                // One start session per slot: another slot never inherits its choices.
+                <ConnectedStart
+                  key={foundingSlot()}
+                  client={client}
+                  replace={replacing}
+                  slot={foundingSlot()}
+                  onBack={slots?.read().slots.some(Boolean) ? openSlots : undefined}
+                  onDone={() => {
+                    setReplacing(false);
+                    setTargetSlot(undefined);
+                    // A new career always opens on home, whatever address the start was reached at.
+                    replacePage('dashboard');
+                  }}
+                />
+              ) : careerOver(w) ? (
+                <GameOver
+                  w={w}
+                  onExport={() => void download()}
+                  onNew={() => void startNew(slots?.read().active ?? 0)}
+                  onSlots={openSlots}
+                />
+              ) : (
+                <>
+                  {localizeValue(
+                    changingView && (
+                      <div data-surface="inset" className={s.viewPending} role="status">
+                        {localizeValue(t('shell.loadingView'))}
+                      </div>
+                    ),
+                  )}
+                  <div className={s.views} aria-busy={changingView}>
+                    <ClubNavigation page={page} />
+                    <div
+                      className={s.coreContent}
+                      hidden={contentPage !== 'dashboard'}
+                      inert={changingView}
+                    >
+                      <ConnectedDashboard client={client} />
+                    </div>
+                    <div id="competition-hub-panel" className={s.views} inert={changingView}>
+                      <LiveSeason
+                        key={worldId}
+                        page={contentPage}
+                        client={client}
+                        controller={controller}
+                      />
+                      <div hidden={contentPage !== 'europe' && contentPage !== 'cupHistory'}>
+                        <ConnectedEurope client={client} />
+                      </div>
+                      {localizeValue(
+                        (
+                          [
+                            'team',
+                            'firstTeam',
+                            'academy',
+                            'staff',
+                            'training',
+                            'operations',
+                            'business',
+                            'history',
+                          ] as Page[]
+                        ).includes(contentPage) && (
+                          <ConnectedRich
+                            page={contentPage}
+                            client={client}
+                            controller={controller}
+                          />
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </>
+              )
+            ) : (
+              <div className={s.loading}>{localizeValue(t('shell.loadingOffice'))}</div>
+            ),
+          )}
+          {localizeValue(
+            client && screen === 'game' && (!w || replacing) && (
+              <StartTools onImport={importFile} />
+            ),
+          )}
+        </div>
+        {localizeValue(
+          client && controller && playing && !careerOver(w) && page !== 'match' && (
+            <ProgressControls client={client} controller={controller} />
+          ),
+        )}
+      </main>
+      {localizeValue(playing && <AccessibleSaveStatus />)}
+      <nav
+        ref={mobileNavigation}
+        className={s.mobileNav}
+        aria-label={localizeValue(t('shell.mobileNavigation'))}
+      >
+        {localizeValue(
+          BOTTOM_ORDER.map((id) => {
+            const [, label, full] = TABS.find(([tab]) => tab === id)!;
+            return (
+              <button
+                data-ui="navigation"
+                key={id}
+                aria-label={localizeValue(t(full))}
+                aria-current={current(id) ? 'page' : undefined}
+                className={id === 'dashboard' ? s.homeTab : undefined}
+                disabled={menuDisabled}
+                onClick={() => openPrimary(id)}
+              >
+                <NavIcon page={id} />
+                <span>{localizeValue(t(label))}</span>
+                {localizeValue(officeBadge(id))}
+              </button>
+            );
+          }),
+        )}
+      </nav>
+      {localizeValue(client && playing && <ActionOutcome />)}
+      {/* The match theatre keeps its own controls clear; news waits until the owner returns. */}
+      {localizeValue(client && playing && <CommunicationsCenter key={w.id} client={client} />)}
+      {localizeValue(
+        moreOpen && (
+          <AppMenu
+            onClose={() => setMoreOpen(false)}
+            onNews={() => showNews('notifications')}
+            onGuide={() => setGuideOpen(true)}
+            onGlossary={showGlossary}
+            saveTools={
+              <>
+                <SaveStatus />
+                {localizeValue(
+                  client && (
+                    <SaveActions
+                      client={client}
+                      onDownload={download}
+                      onImport={importFile}
+                      onSlots={openSlots}
+                    />
+                  ),
+                )}
+              </>
+            }
+          />
+        ),
+      )}
+      {localizeValue(
+        guideOpen && w && (
+          <Suspense fallback={null}>
+            <PlayGuide goals={state.view!.milestones.goals} onClose={() => setGuideOpen(false)} />
+          </Suspense>
+        ),
+      )}
+      <GlossaryHost />
+      {localizeValue(client && playing && <ClubDetailHost client={client} />)}
+      {localizeValue(playing && client && <PlayerDetailHost client={client} />)}
+      {localizeValue(
+        playing && client && controller && (
+          <>
+            <ClubOverviewHost />
+            <OfficeOverviewHost client={client} controller={controller} />
+            <ApprovalInboxHost client={client} controller={controller} />
+          </>
+        ),
+      )}
+      {localizeValue(playing && <CelebrationHost />)}
+      {localizeValue(playing && controller && <AwayHost controller={controller} />)}
+      {localizeValue(
+        pendingImport && (
+          <Dialog
+            label={localizeValue(t('save.confirmImport'))}
+            onClose={() => setPendingImport(undefined)}
+          >
+            <h2>{localizeValue(t('save.importQuestion'))}</h2>
+            <p>{localizeValue(t('save.importNotice'))}</p>
+            <div className={s.actions}>
+              <button onClick={() => void download()}>
+                {localizeValue(t('save.exportCurrent'))}
+              </button>
+              <button onClick={() => setPendingImport(undefined)}>
+                {localizeValue(t('common.cancel'))}
+              </button>
+              <button
+                data-ui="primary"
+                className={s.primary}
+                disabled={importBlocked}
+                onClick={() => {
+                  if (gameActionsBlocked(gameStore.getSnapshot(), { recovery: true })) return;
+                  const raw = pendingImport;
+                  setPendingImport(undefined);
+                  void client?.importFile(raw);
+                }}
+              >
+                {localizeValue(t('save.replaceAndImport'))}
+              </button>
+            </div>
+          </Dialog>
+        ),
+      )}
+    </div>
+  );
+}

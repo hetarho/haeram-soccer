@@ -19,15 +19,18 @@ import {
   startingSquad,
   tacticLabel,
 } from '../../packages/engine/src/index';
-import { injectionSteps } from '../../apps/web/src/ui/ownerFigures';
+import { injectionSteps } from '../../apps/web/src/entities/office/lib/ownerFigures';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { appearanceForFixture } from '../../packages/engine/src/match-appearance';
 import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
 import type { World } from '../../packages/contracts/src/types';
 import { expectViewFits, horizontalOverflow, settle } from './layout';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/ui/goalFeedback';
-import { WATCH_DEFAULT_SPEED, WATCH_MINUTE_MS } from '../../apps/web/src/ui/presentationClock';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
+import {
+  WATCH_DEFAULT_SPEED,
+  WATCH_MINUTE_MS,
+} from '../../apps/web/src/entities/match/lib/presentationClock';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { DEFAULT_START, fundClub, startCareer } from './start';

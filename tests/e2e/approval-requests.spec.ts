@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { contractLine } from '../../apps/web/src/ui/format';
+import { contractLine } from '../../apps/web/src/presentation/format';
 import { approvalDeadline } from '../../packages/engine/src/approvals';
 import { POSITION_LABEL } from '../../packages/engine/src/player';
 import { overall } from '../../packages/engine/src/player-state';

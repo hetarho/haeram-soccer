@@ -5,7 +5,10 @@ import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { movePerson } from '../../packages/engine/src/npc-continuity';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
-import { DEFAULT_MARKET_QUERY, marketLeagueKey } from '../../apps/web/src/ui/worldMarket';
+import {
+  DEFAULT_MARKET_QUERY,
+  marketLeagueKey,
+} from '../../apps/web/src/pages/club/lib/worldMarket';
 import { configureResponsibilities, acknowledgeEvents } from './events';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { finishSeason } from './season-progression';
@@ -18,7 +21,7 @@ import { transferOffers, operatingCost } from '../../packages/engine/src/operati
 import { clubOf, startingSquad } from '../../packages/engine/src/world';
 import { currentDay, daysUntilNextMatch } from '../../packages/engine/src/calendar';
 import { lineupSummary } from '../../packages/engine/src/strategy';
-import { compactMoney, money } from '../../apps/web/src/ui/format';
+import { compactMoney, money } from '../../apps/web/src/presentation/format';
 import type { World, WorldMarketOffer } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { chooseLevel, closeOutcome, setResponsibility } from './events';

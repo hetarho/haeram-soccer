@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { canonical } from '../../packages/contracts/src/index';
 import { MANAGER_HISTORY_CHECKPOINT_SCHEMA } from '../../packages/contracts/src/versions';
-import { seasonName } from '../../apps/web/src/ui/format';
+import { seasonName } from '../../apps/web/src/presentation/format';
 import {
   managerActivationCareer,
   managerJourneyCareer,

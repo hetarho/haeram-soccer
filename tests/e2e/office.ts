@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
-import { requestTitle } from '../../apps/web/src/ui/approvalOrder';
+import { requestTitle } from '../../apps/web/src/shared/routing/approvalOrder';
 import { clubhouseTab } from './competition-navigation';
 import { dismissFeedback } from './feedback';
 import { settle } from './layout';

@@ -3,8 +3,8 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { useId, useRef, useState, type ReactNode } from 'react';
 import type { ClubProfile } from '../../../../../../packages/contracts/src/owner';
 import type { Read } from '../../../shared/lib';
-import { Dialog } from '../../../ui/Dialog';
-import { TabList, TabPanel } from '../../../ui/PageTabs';
+import { Dialog } from '../../../shared/ui/Dialog';
+import { TabList, TabPanel } from '../../../shared/ui/PageTabs';
 import { HistoryPanel, SquadPanel, StaffPanel } from './ProfilePanels';
 import s from './ClubDetail.module.css';
 

@@ -5,18 +5,21 @@ import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { horizontalOverflow } from './layout';
 import { committedRaw, openRecordedMatch } from './club-identity-helpers';
-import { GOAL_FEEDBACK_CONFIG, goalInstants } from '../../apps/web/src/ui/goalFeedback';
+import {
+  GOAL_FEEDBACK_CONFIG,
+  goalInstants,
+} from '../../apps/web/src/entities/match/lib/goalFeedback';
 import {
   GOAL_REPLAY_CONFIG,
   replayGoals,
   startGoalReplay,
   type ReplayGoal,
-} from '../../apps/web/src/ui/goalReplay';
+} from '../../apps/web/src/entities/match/lib/goalReplay';
 import {
   presentationSamples,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
-} from '../../apps/web/src/ui/presentationClock';
+} from '../../apps/web/src/entities/match/lib/presentationClock';
 
 /** The mobile presentation journey's fixture: an early home goal, then more on the current model. */
 function goalWorld() {
