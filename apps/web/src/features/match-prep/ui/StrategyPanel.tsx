@@ -24,7 +24,7 @@ import {
   type EraRules,
 } from '../../../../../../packages/engine/src/grid/setup';
 import { FORMATIONS, ROLE_LABEL } from '../../../../../../packages/engine/src/player';
-import { FormationPitch, LEVEL_LABEL } from '../../../entities/player/ui/FormationPitch';
+import { FormationPitch, LEVEL_LABEL } from '../../../entities/player';
 import type { GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { Card } from '../../../shared/ui/Card';

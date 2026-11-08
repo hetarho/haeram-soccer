@@ -13,7 +13,7 @@ import {
   recordCounters,
   share,
   sideLines,
-} from '../../../entities/match/lib/advanced';
+} from '../../../entities/match';
 import { Term } from '../../../shared/ui/Term';
 import s from '../../../shared/ui/styles/Analysis.module.css';
 

@@ -38,23 +38,19 @@ const MatchReport = lazy(() =>
 );
 import { MatchMoments } from './MatchMoments';
 import { MatchCharts } from './MatchCharts';
-import { CrestMark } from '../../../entities/club/ui/ClubCrest';
-import { inkOn } from '../../../entities/club/lib/crests';
-import { figureActionWindows } from '../../../entities/match/lib/figureActions';
+import { CrestMark } from '../../../entities/club';
+import { inkOn } from '../../../entities/club';
+import { figureActionWindows } from '../../../entities/match';
 import {
   createFigurePainter,
   figurePoint,
   playerLook,
   type PlayerLook,
-} from '../../../entities/match/lib/figurePainting';
-import { gaitDistances, poseAt, type FigurePose } from '../../../entities/match/lib/figurePose';
+} from '../../../entities/match';
+import { gaitDistances, poseAt, type FigurePose } from '../../../entities/match';
 import { reducedMotion } from '../../../shared/ui/motion';
-import {
-  drawNumberTag,
-  numberTagStyle,
-  placeNumberTags,
-} from '../../../entities/match/lib/numberTags';
-import { figureInputs } from '../../../entities/match/lib/pitchFigures';
+import { drawNumberTag, numberTagStyle, placeNumberTags } from '../../../entities/match';
+import { figureInputs } from '../../../entities/match';
 import {
   ballRadius,
   createGroundPainter,
@@ -62,15 +58,11 @@ import {
   paintPitchBall,
   PITCH_PAD,
   type PitchSkin,
-} from '../../../entities/match/lib/pitchPainting';
-import { usePitchSkin } from '../../../entities/match/model/usePitchSkin';
-import {
-  keepersBySample,
-  matchLook,
-  UNRECORDED_KIT,
-} from '../../../entities/match/lib/matchAppearance';
-import { scoreboardHalves } from '../../../entities/match/lib/scoreboardHalves';
-import { incidentFrame, sampleAt, sentOff } from '../../../entities/match/lib/moments';
+} from '../../../entities/match';
+import { usePitchSkin } from '../../../entities/match';
+import { keepersBySample, matchLook, UNRECORDED_KIT } from '../../../entities/match';
+import { scoreboardHalves } from '../../../entities/match';
+import { incidentFrame, sampleAt, sentOff } from '../../../entities/match';
 import {
   advanceGoalFeedback,
   GOAL_FEEDBACK_CONFIG,
@@ -78,7 +70,7 @@ import {
   goalsShown,
   seekGoalFeedback,
   type GoalFeedbackState,
-} from '../../../entities/match/lib/goalFeedback';
+} from '../../../entities/match';
 import {
   GOAL_REPLAY_CONFIG,
   goalsSeen,
@@ -91,14 +83,10 @@ import {
   startGoalReplay,
   type GoalReplay,
   type ReplayGoal,
-} from '../../../entities/match/lib/goalReplay';
+} from '../../../entities/match';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { useLocale } from '../../../presentation/react';
-import {
-  possessionKey,
-  resolvePossessionCue,
-  type PossessionCue,
-} from '../../../entities/match/lib/possessionCue';
+import { possessionKey, resolvePossessionCue, type PossessionCue } from '../../../entities/match';
 import {
   beatAt,
   beatCaptions,
@@ -110,7 +98,7 @@ import {
   type Preparation,
   WATCH_DEFAULT_SPEED,
   WATCH_SPEEDS,
-} from '../../../entities/match/lib/presentationClock';
+} from '../../../entities/match';
 import s from '../../../shared/ui/styles/App.module.css';
 import t from './Pitch.module.css';
 

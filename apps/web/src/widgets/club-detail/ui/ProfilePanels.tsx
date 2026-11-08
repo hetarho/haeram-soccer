@@ -6,8 +6,8 @@ import type { ClubProfile } from '../../../../../../packages/contracts/src/owner
 import { STAFF_INFO } from '../../../../../../packages/engine/src/staff-info';
 import type { Read } from '../../../shared/lib';
 import { number, seasonName } from '../../../presentation/format';
-import { PositionBadge } from '../../../entities/player/ui/PositionBadge';
-import { divisionLabel } from '../../../entities/league/lib/startChoices';
+import { PositionBadge } from '../../../entities/player';
+import { divisionLabel } from '../../../entities/league';
 import link from '../../../shared/ui/TextLink.module.css';
 import s from './ClubDetail.module.css';
 

@@ -31,7 +31,7 @@ import {
   DECISION_POLICIES,
   PASSIVE_BUILDS,
   PASSIVE_POLICIES,
-} from '../../../entities/office/lib/clubControls';
+} from '../../../entities/office';
 import { decimal, number, signed } from '../../../presentation/format';
 import type { InvestmentArea } from '../../../shared/routing/investmentAreas';
 import {

@@ -1,6 +1,6 @@
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../../../packages/contracts/src/detail';
-import { sideLines } from '../../../entities/match/lib/advanced';
+import { sideLines } from '../../../entities/match';
 
 function poisson(lambda: number, goals: number) {
   let p = Math.exp(-lambda);

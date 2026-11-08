@@ -25,7 +25,7 @@ import {
 } from '../../../../../../packages/engine/src/coach-training';
 import { marketWage } from '../../../../../../packages/engine/src/market-prices';
 import { staffMember, STAFF_INFO } from '../../../../../../packages/engine/src/staff-info';
-import { ownLeagueIds } from '../../league/lib/league';
+import { ownLeagueIds } from '../../league/@x/player';
 
 export type Tone = 'good' | 'ok' | 'warn' | 'bad';
 export type StateKey = 'strength' | 'fatigue' | 'morale' | 'manager' | 'squad' | 'cash';

@@ -10,16 +10,12 @@ import type { ClientState, GameClient } from '../../runtime/client';
 import type { ProgressionController } from '../../runtime/progression';
 import type { View } from '../../runtime/protocol';
 import { gameStore, initialClientState } from '../../runtime/store';
-import { ApprovalRequestHost } from '../../pages/club/ui/ApprovalRequestHost';
+import { ApprovalRequestHost } from '../../pages/club';
 import type { ApprovalRequest } from '../../shared/routing/eventRouting';
 import { OfficeRow, OwnerOffice } from './OwnerOfficeView';
-import { PendingHandover } from '../../features/approvals/ui/PendingHandover';
+import { PendingHandover } from '../../features/approvals';
 import { DESK_RESPONSIBILITIES } from '../../shared/routing/officeDesks';
-import {
-  officeBulkChange,
-  officeProposal,
-  officeSettings,
-} from '../../entities/office/lib/officeChanges';
+import { officeBulkChange, officeProposal, officeSettings } from '../../entities/office';
 vi.mock('../../runtime/store', async (original) => ({
   ...(await original<typeof import('../../runtime/store')>()),
   useGameState: (selector: (state: ClientState) => unknown) => selector(gameStore.getState()),

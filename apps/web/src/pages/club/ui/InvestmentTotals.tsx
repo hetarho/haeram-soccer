@@ -10,7 +10,7 @@ import {
   partTop,
 } from '../../../../../../packages/engine/src/facilities';
 import { STAFF_ROLES, staffMember } from '../../../../../../packages/engine/src/staff-info';
-import { KIT_ROLE_LABELS } from '../../../entities/match/lib/identityPreview';
+import { KIT_ROLE_LABELS } from '../../../entities/match';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import { Card } from '../../../shared/ui/Card';
 import { Money } from '../../../shared/ui/Money';

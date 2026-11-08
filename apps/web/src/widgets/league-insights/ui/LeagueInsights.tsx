@@ -23,9 +23,9 @@ import {
   RESULT_POINTS,
   sameMembers,
   type Zone,
-} from '../../../entities/league/lib/league';
+} from '../../../entities/league';
 import { ClubLink } from '../../../entities/club';
-import { clubOvr, cohesionLine, ovrTier } from '../../../entities/player/ui/OvrBadge';
+import { clubOvr, cohesionLine, ovrTier } from '../../../entities/player';
 import s from '../../../shared/ui/styles/LeagueInsights.module.css';
 
 function Movement({ change }: { change?: number }) {

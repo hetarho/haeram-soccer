@@ -15,7 +15,7 @@ import {
   WORK_INFO,
 } from '../../../../../../packages/engine/src/facilities';
 import { gateProjection } from '../../../../../../packages/engine/src/finance';
-import { FacilityArt } from '../../../entities/office/ui/FacilityArt';
+import { FacilityArt } from '../../../entities/office';
 import { number } from '../../../presentation/format';
 import s from './BusinessWorkbench.module.css';
 import f from './FacilityParts.module.css';

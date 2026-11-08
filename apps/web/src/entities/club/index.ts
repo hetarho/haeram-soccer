@@ -4,3 +4,5 @@
  */
 export { ClubLink } from './ui/ClubLink';
 export { openClub, useClubDetail } from './model/detail';
+export { colourDistance, contrast, type Crest, inkOn } from './lib/crests';
+export { ClubCrest, CrestMark } from './ui/ClubCrest';

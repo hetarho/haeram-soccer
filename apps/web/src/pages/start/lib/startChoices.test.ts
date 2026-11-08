@@ -51,7 +51,7 @@ import {
   TRAIT_EFFECTS,
   toggleTrait,
   traitDifficulty,
-} from '../../../entities/league/lib/startChoices';
+} from '../../../entities/league';
 
 const snapshot: PresentationSnapshot = {
   locale: createLoadedLocale(

@@ -10,10 +10,10 @@ import type { Metrics, Position, World } from '../../../../../../packages/contra
 import { seasonDayLabel } from '../../../../../../packages/engine/src/calendar';
 import { playerTotals } from '../../../../../../packages/engine/src/npc-stats';
 import type { GameClient } from '../../../runtime/client';
-import { per90 as per90Text, type PlayerAdvanced } from '../../match/lib/advanced';
+import { per90 as per90Text, type PlayerAdvanced } from '../../match/@x/league';
 import { seasonName } from '../../../presentation/format';
 import { ownLeague, type LeagueChoice } from './league';
-import { appearanceText, performanceRows, type PlayerTally } from '../../player/lib/playerAnalysis';
+import { appearanceText, performanceRows, type PlayerTally } from '../../player/@x/league';
 
 /**
  * Shared presentation of the season's complete statistics (→WEB-89, HIST-6, HIST-17): coverage,

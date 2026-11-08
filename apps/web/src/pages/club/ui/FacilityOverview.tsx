@@ -1,7 +1,7 @@
 import { localizeValue, useTextLocale } from '../../../presentation/text';
 import type { ReactNode } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
-import { FacilityArt } from '../../../entities/office/ui/FacilityArt';
+import { FacilityArt } from '../../../entities/office';
 import type { FacilityScene } from '../../../shared/routing/facilityScene';
 import s from './FacilityOverview.module.css';
 

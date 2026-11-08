@@ -7,8 +7,8 @@ import { TeamDirectory, TeamReturn } from './TeamDirectory';
 import { StaffRoleBadge } from './StaffRoleBadge';
 import { FacilityOverview } from './FacilityOverview';
 import { approvalRequests, type ProgressionController } from '../../../runtime/progression';
-import { squadRegistration } from '../../../entities/player/lib/squadRegistration';
-import { PersonCareerLink } from '../../../features/person-career/ui/PersonCareer';
+import { squadRegistration } from '../../../entities/player';
+import { PersonCareerLink } from '../../../features/person-career';
 import { useTaskState } from '../../../shared/routing/taskMemory';
 import { PixelIcon } from '../../../shared/ui/PixelIcon';
 import { lazy, Suspense, useEffect, useState } from 'react';
@@ -44,7 +44,7 @@ import {
   UNHAPPY_CONFIG,
   UNHAPPY_REASON,
 } from '../../../../../../packages/engine/src/contracts';
-import { ballonDorPremiumLine } from '../../../entities/player/lib/ballonDorText';
+import { ballonDorPremiumLine } from '../../../entities/player';
 import { operatingCosts } from '../../../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../../../packages/engine/src/investment';
 import { UNHAPPY_MORALE } from '../../../../../../packages/engine/src/morale';
@@ -57,7 +57,7 @@ import { OperationsView } from './Operations';
 import { InvestmentView } from './InvestmentView';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { ApprovalQueue } from './ApprovalQueue';
-import { EventCard } from '../../../widgets/event-center/ui/EventCenter';
+import { EventCard } from '../../../widgets/event-center';
 import { MediationReview } from './MediationReview';
 import { PlayingCoachReview } from './PlayingCoachReview';
 import type { ApprovalRequest } from '../../../shared/routing/eventRouting';
@@ -76,8 +76,8 @@ import {
 import { transferWindow } from '../../../../../../packages/engine/src/transfer-window';
 import { buildOf, cardOf } from '../../../../../../packages/engine/src/build';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { OvrBadge } from '../../../entities/player/ui/OvrBadge';
-import { positionsLabel } from '../../../entities/player/ui/FormationPitch';
+import { OvrBadge } from '../../../entities/player';
+import { positionsLabel } from '../../../entities/player';
 import {
   DEFAULT_ROSTER_VIEW,
   RosterFilters,
@@ -108,11 +108,11 @@ import { TrainingView } from './TrainingView';
 import { WorkResponsibility } from './WorkResponsibility';
 import { WORK_RESPONSIBILITIES } from '../../../shared/routing/personnelNavigation';
 import management from './ManagementView.module.css';
-import { explorePlayers, ofScope, playerStatus } from '../../../entities/player/lib/playerAnalysis';
-import { bansOf, banText } from '../../../entities/player/lib/discipline';
+import { explorePlayers, ofScope, playerStatus } from '../../../entities/player';
+import { bansOf, banText } from '../../../entities/player';
 import { yellowWarning } from '../../../../../../packages/engine/src/discipline';
 import { PlayerLink } from '../../../entities/player';
-import { Attributes } from '../../../entities/player/ui/Attributes';
+import { Attributes } from '../../../entities/player';
 import { StyleCard } from '../../../shared/ui/StyleCard';
 import { STYLE_INFO } from '../../../../../../packages/engine/src/styles';
 import { MANAGER_TRAIT_INFO } from '../../../../../../packages/engine/src/staff-info';
@@ -124,7 +124,7 @@ import {
 } from '../../../../../../packages/engine/src/ops-staff';
 import { roundsUntilRefresh } from '../../../../../../packages/engine/src/managerMarket';
 import { ClubLink } from '../../../entities/club';
-import { runwayText, squadAvailability } from '../../../entities/player/lib/teamState';
+import { runwayText, squadAvailability } from '../../../entities/player';
 import { PlayerComparison } from './PlayerComparison';
 import { compactMoney, contractLine, number } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';

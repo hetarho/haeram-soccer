@@ -3,7 +3,7 @@ import type { MatchRecord } from '../../../../../../packages/contracts/src/types
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import { squad } from '../../../../../../packages/engine/src/world';
 import { banText, cardCounts, leagueDiscipline, leagueReds } from './discipline';
-import { ownLeagueIds } from '../../league/lib/league';
+import { ownLeagueIds } from '../../league/@x/player';
 
 it("lists the league's cards and bans", () => {
   const w = careerWorld({ country: 'ENG', seed: 'cards' });

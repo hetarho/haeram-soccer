@@ -15,22 +15,17 @@ import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { ClubLink } from '../../../entities/club';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { MatchReport } from '../../../features/match-viewer/ui/MatchReport';
+import { MatchReport } from '../../../features/match-viewer';
 import { TabList } from '../../../shared/ui/PageTabs';
 import {
   RankChart,
   RankHistoryGraph,
   rankAxis,
   ZoneLegend,
-} from '../../../widgets/league-insights/ui/LeagueInsights';
+} from '../../../widgets/league-insights';
 import { seasonName, signed } from '../../../presentation/format';
-import {
-  divisionName,
-  finalZones,
-  sameLeague,
-  type LeagueChoice,
-} from '../../../entities/league/lib/league';
-import { LeaguePicker } from '../../../entities/league/ui/LeaguePicker';
+import { divisionName, finalZones, sameLeague, type LeagueChoice } from '../../../entities/league';
+import { LeaguePicker } from '../../../entities/league';
 import { CompetitionHeader } from '../../../shared/ui/CompetitionTabs';
 import { selectReviewWorld } from '../../../shared/lib/liveState';
 import {
@@ -41,7 +36,7 @@ import {
   useSeasonFiles,
   type FinalRow,
   type SeasonRecord,
-} from '../../../entities/league/lib/seasonArchive';
+} from '../../../entities/league';
 import s from '../../../shared/ui/styles/App.module.css';
 import t from '../../../shared/ui/styles/LiveSeason.module.css';
 import l from '../../../shared/ui/styles/LeagueInsights.module.css';

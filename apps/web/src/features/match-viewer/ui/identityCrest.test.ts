@@ -6,7 +6,7 @@ import type { World } from '../../../../../../packages/contracts/src/types';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import { GameIndexStore } from '../../../adapters/games';
 import { summarize } from '../../../runtime/slots';
-import { ClubCrest, CrestMark } from '../../../entities/club/ui/ClubCrest';
+import { ClubCrest, CrestMark } from '../../../entities/club';
 import { ClubLink } from '../../../entities/club';
 import { seriesColours } from './MatchCharts';
 import s from '../../../shared/ui/styles/ClubCrest.module.css';

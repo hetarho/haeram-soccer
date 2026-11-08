@@ -7,13 +7,9 @@ import type { MatchPlayback } from '../../../../../../packages/contracts/src/typ
 import { simulateMatch } from '../../../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import { chartLines, chartSeries, MatchCharts, seriesColour } from './MatchCharts';
-import { colourDistance, contrast } from '../../../entities/club/lib/crests';
-import { describeShirt } from '../../../entities/match/lib/kitPainting';
-import {
-  matchLook,
-  UNRECORDED_LOOK,
-  type MatchLook,
-} from '../../../entities/match/lib/matchAppearance';
+import { colourDistance, contrast } from '../../../entities/club';
+import { describeShirt } from '../../../entities/match';
+import { matchLook, UNRECORDED_LOOK, type MatchLook } from '../../../entities/match';
 
 const w = careerWorld({ country: 'ENG', seed: 'charts' });
 const playback = simulateMatch(

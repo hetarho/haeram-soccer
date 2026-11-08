@@ -10,7 +10,7 @@ import { worldMarketFixture } from '../../../../../../packages/engine/src/world-
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { initialClientState } from '../../../runtime/store';
 import korean from '../../../../public/presentation/locales/ko-KR.json';
-import { PositionBadge } from '../../../entities/player/ui/PositionBadge';
+import { PositionBadge } from '../../../entities/player';
 import { candidateSide, RecruitmentDesk } from './RecruitmentDesk';
 import {
   DEFAULT_MARKET_QUERY,

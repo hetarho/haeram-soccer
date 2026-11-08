@@ -7,7 +7,7 @@ import type { MatchRecord, World } from '../../../../../../packages/contracts/sr
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { encodeCsv, downloadCsv } from '../../../adapters/csv';
 import { analysisDataset, type AnalysisDataset } from '../lib/analysisDataset';
-import type { PlayerScope } from '../../../entities/player/lib/playerAnalysis';
+import type { PlayerScope } from '../../../entities/player';
 import { seasonName } from '../../../presentation/format';
 import s from '../../../shared/ui/styles/Analysis.module.css';
 export function AnalysisExport({

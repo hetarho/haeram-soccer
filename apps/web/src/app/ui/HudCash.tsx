@@ -8,10 +8,10 @@ import type { GameClient } from '../../runtime/client';
 import { useGameState } from '../../runtime/store';
 import { AnimatedMoney } from './AnimatedMoney';
 import { Dialog } from '../../shared/ui/Dialog';
-import { ClubCashSummary } from '../../entities/office/ui/ClubCashSummary';
-import { OwnerSheet } from '../../entities/office/ui/OwnerSheet';
+import { ClubCashSummary } from '../../entities/office';
+import { OwnerSheet } from '../../entities/office';
 import { compactMoney, money } from '../../presentation/format';
-import { cashState } from '../../entities/player/lib/teamState';
+import { cashState } from '../../entities/player';
 import s from '../../shared/ui/styles/App.module.css';
 import o from '../../shared/ui/styles/OwnerSheet.module.css';
 

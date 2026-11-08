@@ -8,7 +8,7 @@ import type { GameClient } from '../../../runtime/client';
 import type { ProgressionController } from '../../../runtime/progression';
 import { useGameState } from '../../../runtime/store';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { modeSwitchBlocked, switchProgressMode } from '../../../entities/office/lib/progressMode';
+import { modeSwitchBlocked, switchProgressMode } from '../../../entities/office';
 import s from '../../../shared/ui/styles/ProgressControls.module.css';
 
 export function ProgressModeSwitch({

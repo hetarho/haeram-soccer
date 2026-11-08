@@ -17,22 +17,22 @@ import {
 } from '../../runtime/progression';
 import { Dialog } from '../../shared/ui/Dialog';
 import { Select } from '../../shared/ui/Select';
-import { FacilityArt } from '../../entities/office/ui/FacilityArt';
+import { FacilityArt } from '../../entities/office';
 import { AssigneeProfile } from './AssigneeProfile';
-import { modeSwitchBlocked } from '../../entities/office/lib/progressMode';
+import { modeSwitchBlocked } from '../../entities/office';
 import {
   RESPONSIBILITY_DETAILS as DETAILS,
   RESPONSIBILITY_LABELS,
   responsibilityAssignees,
   type ResponsibilityPost,
-} from '../../entities/office/lib/intervention';
+} from '../../entities/office';
 import {
   applyOfficeChange,
   officeBulkChange,
   officeProposal,
   type OfficeChange,
   type OfficeProposal,
-} from '../../entities/office/lib/officeChanges';
+} from '../../entities/office';
 import { delegationCounts } from './officeSummary';
 import {
   BuildSetting,
@@ -40,14 +40,10 @@ import {
   DirectionSetting,
   RecruitmentGuideline,
   WageBudgetSetting,
-} from '../../entities/office/ui/ClubSettingControl';
-import {
-  DECISION_BUILDS,
-  DECISION_DIRECTIONS,
-  DECISION_POLICIES,
-} from '../../entities/office/lib/clubControls';
+} from '../../entities/office';
+import { DECISION_BUILDS, DECISION_DIRECTIONS, DECISION_POLICIES } from '../../entities/office';
 import { DecisionRuleFacts } from './DecisionRuleFacts';
-import { PendingHandover } from '../../features/approvals/ui/PendingHandover';
+import { PendingHandover } from '../../features/approvals';
 import s from '../../shared/ui/styles/OwnerOffice.module.css';
 const ApprovalWorkbench = lazy(() =>
   import('../../pages/club/ui/Rich').then((module) => ({ default: module.ApprovalWorkbench })),

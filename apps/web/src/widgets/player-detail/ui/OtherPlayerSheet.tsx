@@ -6,8 +6,8 @@ import { ClubLink } from '../../../entities/club';
 import type { GameClient } from '../../../runtime/client';
 import type { Read } from '../../../shared/lib';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { PersonCareerLink } from '../../../features/person-career/ui/PersonCareer';
-import { PlayerProfile } from '../../../entities/player/ui/PlayerProfile';
+import { PersonCareerLink } from '../../../features/person-career';
+import { PlayerProfile } from '../../../entities/player';
 import a from '../../../shared/ui/styles/Analysis.module.css';
 
 /**

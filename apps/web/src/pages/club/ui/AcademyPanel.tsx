@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { Money } from '../../../shared/ui/Money';
-import { callLine, placeAcademy, playerCallLine } from '../../../entities/player/lib/teamState';
+import { callLine, placeAcademy, playerCallLine } from '../../../entities/player';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import { registrationRoom } from '../../../../../../packages/engine/src/registration';
 import { useTaskState } from '../../../shared/routing/taskMemory';
@@ -26,7 +26,7 @@ import { DecisionOwner } from './DecisionOwner';
 import { DirectionFacts } from './DirectionFacts';
 import { rowInForce } from '../../../shared/routing/areas';
 import { directionOption } from '../../../../../../packages/engine/src/direction';
-import { OvrBadge } from '../../../entities/player/ui/OvrBadge';
+import { OvrBadge } from '../../../entities/player';
 import { openStaff, openFacility } from '../../../shared/routing/state';
 import s from './TrainingView.module.css';
 

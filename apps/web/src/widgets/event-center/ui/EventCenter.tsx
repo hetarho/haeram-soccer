@@ -61,7 +61,7 @@ import {
   useUnreadNewsCount,
   markNewsSeen,
   type NewsTab,
-} from '../../../features/news-feed/ui/NewsFeed';
+} from '../../../features/news-feed';
 import newsStyle from '../../../shared/ui/styles/NewsFeed.module.css';
 
 const cardExit = fadeOutOnRemove([

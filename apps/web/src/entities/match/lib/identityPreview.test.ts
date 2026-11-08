@@ -21,11 +21,7 @@ import {
 import { createFigurePainter, type FigureDrawOptions } from './figurePainting';
 import { FIGURE_POSE_CONFIG, type FigurePose } from './figurePose';
 import { wornKit } from '../../../../../../packages/engine/src/kit-wear';
-import {
-  markerRadius,
-  paintKitPreview,
-  PREVIEW_FORMATION,
-} from '../ui/KitPitchPreview';
+import { markerRadius, paintKitPreview, PREVIEW_FORMATION } from '../ui/KitPitchPreview';
 
 function deepFreeze<T>(value: T): T {
   if (value && typeof value === 'object') {
@@ -284,15 +280,15 @@ describe('preview pitch drawing', () => {
   it('uses no world, match simulation, command, storage or animation clock', () => {
     for (const file of [
       './identityPreview.ts',
-      './KitPitchPreview.tsx',
+      '../ui/KitPitchPreview.tsx',
       './pitchPainting.ts',
-      './usePitchSkin.ts',
+      '../model/usePitchSkin.ts',
     ]) {
       const source = readFileSync(new URL(file, import.meta.url), 'utf8');
       const imports = [...source.matchAll(/from '([^']+)'/g)].map(([, path]) => path);
       for (const path of imports)
         expect(path).toMatch(
-          /^(react|\.\.\/presentation\/(react|text|LocalizedMessage)|\.\/(identityPreview|figurePose|figurePainting|matchAppearance|numberTags|kitPainting|pitchPainting|usePitchSkin|KitPitchPreview\.module\.css)|(\.\.\/){4}packages\/(contracts\/src\/(identity|messages)|engine\/src\/kit-selection))$/,
+          /^(react|(\.\.\/){3}presentation\/(react|text|LocalizedMessage)|(\.\/|\.\.\/(lib|model)\/)(identityPreview|figurePose|figurePainting|matchAppearance|numberTags|kitPainting|pitchPainting|usePitchSkin)|\.\/KitPitchPreview\.module\.css|(\.\.\/){6}packages\/(contracts\/src\/(identity|messages)|engine\/src\/kit-selection))$/,
         );
       expect(source).not.toMatch(
         /takeOver|generateHistory|simulateMatch|GameClient|command\(|localStorage|indexedDB|requestAnimationFrame|setInterval/,

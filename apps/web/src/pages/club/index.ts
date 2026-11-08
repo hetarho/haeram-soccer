@@ -1,0 +1,22 @@
+/** Club page: team, people, training, operations, business and records screens; exports the routed page (Rich) and the views the office overlay and the design system render. */
+export { AcademyPanel } from './ui/AcademyPanel';
+export { ApprovalRequestHost } from './ui/ApprovalRequestHost';
+export { BusinessWorkbench } from './ui/BusinessWorkbench';
+export { CareerRecordBook, ClubLeaders, TrophyCabinet } from './ui/CareerRecordBook';
+export { Chart } from './ui/Chart';
+export { ClubDesignView } from './ui/ClubDesignView';
+export { CoachingStaff, TermDial } from './ui/ClubStaff';
+export { ClubTrends, SeasonTable } from './ui/ClubTrends';
+export { DirectionAreas } from './ui/DirectionFacts';
+export { FacilityOverview } from './ui/FacilityOverview';
+export { FacilityParts } from './ui/FacilityParts';
+export { FinancialBreakdown } from './ui/FinancialBreakdown';
+export { ManagerHistory } from './ui/ManagerHistory';
+export { OfficeBar } from './ui/OfficeBar';
+export { PlayerComparison } from './ui/PlayerComparison';
+export { RecruitmentDesk } from './ui/RecruitmentDesk';
+export { default as Rich } from './ui/Rich';
+export { SeasonReview } from './ui/SeasonReview';
+export { StaffRoleBadge } from './ui/StaffRoleBadge';
+export { TaskReturn } from './ui/TaskReturn';
+export { TrophyIcon, type TrophyKind } from './ui/TrophyIcon';

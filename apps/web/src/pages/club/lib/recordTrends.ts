@@ -2,9 +2,9 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import type { Club, SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
 import { country } from '../../../../../../packages/catalogs/src/index';
 import { eloOf, eloRank } from '../../../../../../packages/engine/src/elo';
-import { divisionName } from '../../../entities/player/lib/careerRecords';
+import { divisionName } from '../../../entities/player';
 import { seasonName } from '../../../presentation/format';
-import { ownLeagueIds } from '../../../entities/league/lib/league';
+import { ownLeagueIds } from '../../../entities/league';
 
 /** Overall place in the country's pyramid: every club in the divisions above, then the rank (→HIST-12). */
 export function pyramidPosition(code: string, h: Pick<SeasonArchive, 'tier' | 'rank'>) {

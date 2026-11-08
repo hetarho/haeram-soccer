@@ -3,7 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 import type { BallonDorPlace, World } from '../../../../../../packages/contracts/src/types';
 import { ballonDorBoards, BallonDorView } from './BallonDorView';
-import { ballonDorLine, ballonDorPremiumLine } from '../../../entities/player/lib/ballonDorText';
+import { ballonDorLine, ballonDorPremiumLine } from '../../../entities/player';
 
 vi.mock('../../../shared/ui/Panel', () => ({
   Panel: ({ title, children }: { title: string; children: unknown }) =>

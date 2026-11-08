@@ -1,8 +1,8 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import type { MatchRecord } from '../../../../../../packages/contracts/src/types';
 import { fixtureDay } from '../../../../../../packages/engine/src/calendar';
-import { resultFor } from '../../../entities/league/lib/scouting';
-import { observedRate } from '../../../entities/player/lib/matchAnalysis';
+import { resultFor } from '../../../entities/league';
+import { observedRate } from '../../../entities/player';
 
 export function matchSplit(
   records: MatchRecord[],

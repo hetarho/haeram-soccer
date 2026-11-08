@@ -5,7 +5,7 @@ import { useState } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import type { TransferLedgerEntry } from '../../../../../../packages/engine/src/transfer-records';
 import { Panel } from '../../../shared/ui/Panel';
-import { LEADER_PAGE } from '../../../entities/player/lib/careerRecords';
+import { LEADER_PAGE } from '../../../entities/player';
 import { ClubLink } from '../../../entities/club';
 import { seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';

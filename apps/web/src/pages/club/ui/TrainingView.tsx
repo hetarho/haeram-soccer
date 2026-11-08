@@ -37,8 +37,8 @@ import type { ClientState, GameClient } from '../../../runtime/client';
 import { PlaceActivities } from './PlaceActivities';
 import { PlayerLink } from '../../../entities/player';
 import { openHome, openStaff, type TrainingTab } from '../../../shared/routing/state';
-import { callLine, playerCallLine } from '../../../entities/player/lib/teamState';
-import { multiplierLabel } from '../../../entities/player/ui/PlayerProfile';
+import { callLine, playerCallLine } from '../../../entities/player';
+import { multiplierLabel } from '../../../entities/player';
 import { ATTRIBUTES } from '../../../../../../packages/contracts/src/player';
 import s from './TrainingView.module.css';
 

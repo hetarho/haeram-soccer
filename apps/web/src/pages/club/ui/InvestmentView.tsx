@@ -30,9 +30,9 @@ import {
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { Card } from '../../../shared/ui/Card';
-import { FacilityArt } from '../../../entities/office/ui/FacilityArt';
+import { FacilityArt } from '../../../entities/office';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { DeskStats } from '../../../entities/office/ui/OfficeDesk';
+import { DeskStats } from '../../../entities/office';
 import { Money } from '../../../shared/ui/Money';
 import { number } from '../../../presentation/format';
 import { useAddressTab } from '../../../shared/ui/PageTabs';
@@ -56,10 +56,10 @@ import {
   InvestmentSlider,
   TicketSetting,
   useClubSettingAction as useInvestmentAction,
-} from '../../../entities/office/ui/ClubSettingControl';
-import { PASSIVE_BUILDS, PASSIVE_POLICIES } from '../../../entities/office/lib/clubControls';
-import { OwnerFunds } from '../../../entities/office/ui/OwnerSheet';
-import { FixtureKitSelector } from '../../../features/match-prep/ui/FixtureKitSelector';
+} from '../../../entities/office';
+import { PASSIVE_BUILDS, PASSIVE_POLICIES } from '../../../entities/office';
+import { OwnerFunds } from '../../../entities/office';
+import { FixtureKitSelector } from '../../../features/match-prep';
 import s from '../../../shared/ui/styles/InvestmentView.module.css';
 
 function Amount({

@@ -5,7 +5,7 @@ import type { ResponsibilityKey, World } from '../../../../../../packages/contra
 import type { GameClient } from '../../../runtime/client';
 import type { ProgressionController } from '../../../runtime/progression';
 import { openDecisionSettings } from '../../../shared/routing/state';
-import { RESPONSIBILITY_LABELS } from '../../../entities/office/lib/intervention';
+import { RESPONSIBILITY_LABELS } from '../../../entities/office';
 import { isDelegated } from '../../../../../../packages/engine/src/responsibilities';
 
 /**

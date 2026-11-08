@@ -3,7 +3,7 @@ import type {
   AppearanceSide,
   CrestDesign,
 } from '../../../../../../packages/contracts/src/identity';
-import { contrast } from '../../club/lib/crests';
+import { contrast } from '../../club/@x/match';
 import { matchLook, UNRECORDED_LOOK } from './matchAppearance';
 import { scoreboardHalves } from './scoreboardHalves';
 

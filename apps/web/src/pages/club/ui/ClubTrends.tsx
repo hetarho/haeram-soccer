@@ -10,7 +10,7 @@ import { inTodayMoney } from '../../../../../../packages/engine/src/transfer-rec
 import { Panel } from '../../../shared/ui/Panel';
 import { Chart, type ChartBand } from './Chart';
 import { ClubLink } from '../../../entities/club';
-import { divisionName } from '../../../entities/player/lib/careerRecords';
+import { divisionName } from '../../../entities/player';
 import { compactMoney, number, seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
 import { runsText } from '../lib/recordEras';

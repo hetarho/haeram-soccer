@@ -3,7 +3,7 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { PixelIcon } from '../../../shared/ui/PixelIcon';
 import type { ResponsibilityKey, World } from '../../../../../../packages/contracts/src/types';
-import { decisionOwner } from '../../../entities/office/lib/intervention';
+import { decisionOwner } from '../../../entities/office';
 import { openOwnerOffice } from '../../../shared/routing/state';
 import s from './DecisionOwner.module.css';
 

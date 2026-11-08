@@ -9,20 +9,20 @@ import {
   ownLeague,
   ownLeagueIds,
   ownLeagueProgress,
-} from '../../../entities/league/lib/league';
-import { leagueName } from '../../../entities/league/ui/LeaguePicker';
+} from '../../../entities/league';
+import { leagueName } from '../../../entities/league';
 import { competitionLabel } from '../../../presentation/format';
-import { clubSituation } from '../../../entities/player/lib/teamState';
+import { clubSituation } from '../../../entities/player';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { openCupSeason, openPrimary, useNavigation } from '../../../shared/routing/state';
 import { approvalRequests, overdueSummary } from '../../../runtime/progression';
 import { currentCupBriefings } from '../../../shared/routing/competitionNavigation';
 import { ClubLink } from '../../../entities/club';
-import { StrategyPanel } from '../../../features/match-prep/ui/LazyStrategyPanel';
+import { StrategyPanel } from '../../../features/match-prep';
 import { Dialog } from '../../../shared/ui/Dialog';
 import s from './ClubHub.module.css';
-import { FacilityArt } from '../../../entities/office/ui/FacilityArt';
+import { FacilityArt } from '../../../entities/office';
 import { InvestmentGallery } from './InvestmentGallery';
 import { Card } from '../../../shared/ui/Card';
 import { PixelIcon } from '../../../shared/ui/PixelIcon';

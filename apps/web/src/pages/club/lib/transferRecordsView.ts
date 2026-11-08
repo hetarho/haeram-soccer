@@ -4,7 +4,7 @@ import {
   transferRanking,
   type TransferLedgerEntry,
 } from '../../../../../../packages/engine/src/transfer-records';
-import { LEADER_LIMIT, nextLeaderCount } from '../../../entities/player/lib/careerRecords';
+import { LEADER_LIMIT, nextLeaderCount } from '../../../entities/player';
 
 /** 이적 기록's two boards (→WEB-54). */
 export const TRANSFER_BOARDS = [

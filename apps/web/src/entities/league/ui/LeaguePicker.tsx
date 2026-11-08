@@ -8,7 +8,7 @@ import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { selectLeagueWorld } from '../../../shared/lib/liveState';
 import { leagueParam, ownLeague, sameLeague, type LeagueChoice } from '../lib/league';
-import { ClubCrest } from '../../club/ui/ClubCrest';
+import { ClubCrest } from '../../club/@x/league';
 import { Select } from '../../../shared/ui/Select';
 import { SeasonStepper } from '../../../shared/ui/SeasonStepper';
 import s from '../../../shared/ui/styles/App.module.css';

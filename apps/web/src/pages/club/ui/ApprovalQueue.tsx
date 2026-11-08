@@ -31,16 +31,16 @@ import {
   responsibilityDelegates,
   RESPONSIBILITY_DETAILS,
   RESPONSIBILITY_LABELS,
-} from '../../../entities/office/lib/intervention';
+} from '../../../entities/office';
 import { OfficeBar } from './OfficeBar';
 import {
   applyOfficeChange,
   officeProposal,
   type OfficeChange,
   type OfficeProposal,
-} from '../../../entities/office/lib/officeChanges';
-import { PendingHandover } from '../../../features/approvals/ui/PendingHandover';
-import { modeSwitchBlocked } from '../../../entities/office/lib/progressMode';
+} from '../../../entities/office';
+import { PendingHandover } from '../../../features/approvals';
+import { modeSwitchBlocked } from '../../../entities/office';
 import { openApprovalRequest } from '../../../shared/routing/state';
 import { TaskReturn } from './TaskReturn';
 import { useTaskMemory } from '../../../shared/routing/taskMemory';

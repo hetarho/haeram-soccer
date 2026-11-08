@@ -11,7 +11,7 @@ import { seasonDate } from '../../../../../packages/engine/src/calendar';
 import { activePlayers, clubOf } from '../../../../../packages/engine/src/player-state';
 import { tacticLabel } from '../../../../../packages/engine/src/tactics';
 import { compactMoney, number } from '../../presentation/format';
-import { orderIds, ownLeagueIds } from '../../entities/league/lib/league';
+import { orderIds, ownLeagueIds } from '../../entities/league';
 import { STADIUM_STEPS } from '../../../../../packages/engine/src/facilities';
 
 export interface OutcomeChange {

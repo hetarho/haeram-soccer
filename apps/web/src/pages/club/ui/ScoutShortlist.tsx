@@ -8,9 +8,9 @@ import { seasonDayLabel } from '../../../../../../packages/engine/src/calendar';
 import { staffMember } from '../../../../../../packages/engine/src/staff-info';
 import { clubOf, overall } from '../../../../../../packages/engine/src/player-state';
 import { ClubLink } from '../../../entities/club';
-import { clubDivision } from '../../../entities/league/lib/league';
+import { clubDivision } from '../../../entities/league';
 import { Money } from '../../../shared/ui/Money';
-import { OvrBadge } from '../../../entities/player/ui/OvrBadge';
+import { OvrBadge } from '../../../entities/player';
 import {
   type CandidateOrigin,
   REQUEST_WHY,

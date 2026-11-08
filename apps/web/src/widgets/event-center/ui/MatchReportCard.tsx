@@ -3,7 +3,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import type { ReactNode, Ref } from 'react';
 import type { Fixture, World } from '../../../../../../packages/contracts/src/types';
-import { ClubCrest } from '../../../entities/club/ui/ClubCrest';
+import { ClubCrest } from '../../../entities/club';
 import { competitionLabel } from '../../../presentation/format';
 import s from '../../../shared/ui/styles/EventCenter.module.css';
 

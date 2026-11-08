@@ -4,7 +4,7 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useId, useMemo, useState } from 'react';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { BAND_EDGES, LANE_EDGES, PITCH } from '../../../../../../packages/engine/src/grid/pitch';
-import { FIELD, HeatPitch, MaterialPitch } from '../../../entities/match/ui/HeatPitch';
+import { FIELD, HeatPitch, MaterialPitch } from '../../../entities/match';
 import {
   heatChoices,
   heatOf,
@@ -16,7 +16,7 @@ import {
   shotTotals,
   sideReport,
   topToucher,
-} from '../../../entities/match/lib/materialView';
+} from '../../../entities/match';
 import { TabList } from '../../../shared/ui/PageTabs';
 import { openPlayer } from '../../../entities/player';
 import { Segments } from '../../../shared/ui/Segments';

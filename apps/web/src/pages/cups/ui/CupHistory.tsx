@@ -18,7 +18,7 @@ import { archivedKnockout } from '../lib/bracketTree';
 import { cupHonours, type CupHonours, type Feat } from '../lib/cupHonours';
 import { cupRoute, runLine, runResult, type RouteArchive, type RouteRow } from '../lib/cupRoute';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { MatchReport } from '../../../features/match-viewer/ui/MatchReport';
+import { MatchReport } from '../../../features/match-viewer';
 import { reducedMotion } from '../../../shared/ui/motion';
 import { seasonName } from '../../../presentation/format';
 import s from '../../../shared/ui/styles/App.module.css';

@@ -5,8 +5,8 @@ import { useId, useState } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { ClubLink } from '../../../entities/club';
 import { TabList, TabPanel } from '../../../shared/ui/PageTabs';
-import type { LeagueChoice } from '../../../entities/league/lib/league';
-import { leagueName } from '../../../entities/league/ui/LeaguePicker';
+import type { LeagueChoice } from '../../../entities/league';
+import { leagueName } from '../../../entities/league';
 import s from '../../../shared/ui/styles/App.module.css';
 
 export type CompetitionRow = { id: string; points: number; gf: number; ga: number };

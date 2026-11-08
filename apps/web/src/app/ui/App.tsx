@@ -8,7 +8,7 @@ import {
   ClubOverviewHost,
   OfficeOverviewHost,
 } from '../office/OfficeOverviewHost';
-import { CashAlarm } from '../../widgets/cash-alarm/ui/CashAlarm';
+import { CashAlarm } from '../../widgets/cash-alarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
 import {
   activateTaskWorld,
@@ -20,7 +20,7 @@ import {
 import { PixelIcon, type PixelIconName } from '../../shared/ui/PixelIcon';
 import { useLocale } from '../../presentation/react';
 import type { Translator } from '../../presentation/locale';
-import { PresentationSettingsTrigger } from '../../widgets/presentation-settings/ui/PresentationSettings';
+import { PresentationSettingsTrigger } from '../../widgets/presentation-settings';
 import { AppMenu } from './AppMenu';
 import { BetaMark } from '../../shared/ui/BetaMark';
 import {
@@ -40,24 +40,24 @@ import { BOTTOM_ORDER, NAV, TABS, type NavEntry } from '../model/navigationTabs'
 import { personnelRoute } from '../../shared/routing/personnelNavigation';
 import { HudCash } from './HudCash';
 import { taskAddress, useTaskMemory } from '../../shared/routing/taskMemory';
-import { ClubCrest } from '../../entities/club/ui/ClubCrest';
-import { GameOver } from '../../pages/game-over/ui/GameOver';
-import { ProgressControls } from '../../widgets/progress-controls/ui/ProgressControls';
-import { LiveSeason } from '../../pages/journal/ui/LiveSeason';
+import { ClubCrest } from '../../entities/club';
+import { GameOver } from '../../pages/game-over';
+import { ProgressControls } from '../../widgets/progress-controls';
+import { LiveSeason } from '../../pages/journal';
 // The clubhouse loads when a game is ready, outside the start/slot entry.
 const ClubHub = lazy(() =>
   import('../../pages/clubhouse/ui/ClubHub').then((module) => ({ default: module.ClubHub })),
 );
-import { StartFlow } from '../../pages/start/ui/StartFlow.tsx';
-import { WORLD_START } from '../../entities/league/lib/startChoices';
-import { careerOver } from '../../entities/office/lib/ownerFigures';
+import { StartFlow } from '../../pages/start';
+import { WORLD_START } from '../../entities/league';
+import { careerOver } from '../../entities/office';
 const PlayGuide = lazy(() =>
   import('../../widgets/play-guide/ui/PlayGuide').then((module) => ({ default: module.PlayGuide })),
 );
 import { gameActionsBlocked, gameStore, useGameState } from '../../runtime/store';
 import { ProgressionController, approvalRequests, useProgression } from '../../runtime/progression';
 import { worldSelector } from '../../shared/lib/liveState';
-import { Standings } from '../../widgets/league-insights/ui/LeagueInsights';
+import { Standings } from '../../widgets/league-insights';
 import { todayStamp } from '../../../../../packages/engine/src/calendar';
 import s from '../../shared/ui/styles/App.module.css';
 import { Dialog } from '../../shared/ui/Dialog';
@@ -67,10 +67,10 @@ import {
   EventCenter,
   CommunicationsCenter,
   CommunicationsButton,
-} from '../../widgets/event-center/ui/EventCenter';
+} from '../../widgets/event-center';
 import { GlossaryHost } from './Glossary';
 import { useGlossary } from '../../shared/ui/metricGlossary';
-import { useNewsSheet } from '../../features/news-feed/ui/NewsFeed';
+import { useNewsSheet } from '../../features/news-feed';
 import { CelebrationHost } from './Celebration';
 const CupsView = lazy(() =>
   import('../../pages/cups/ui/CupsView').then((module) => ({ default: module.CupsView })),

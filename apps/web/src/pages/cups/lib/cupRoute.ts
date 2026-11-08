@@ -7,7 +7,7 @@ import type {
 } from '../../../../../../packages/contracts/src/types';
 import { COUNTRIES } from '../../../../../../packages/catalogs/src/index';
 import { knockoutStage } from '../../../../../../packages/engine/src/stages';
-import { ABROAD } from '../../../entities/league/lib/league';
+import { ABROAD } from '../../../entities/league';
 
 /** A nation as Korean media name it: the eight league countries, then the representatives'. */
 export function nationName(code: string) {

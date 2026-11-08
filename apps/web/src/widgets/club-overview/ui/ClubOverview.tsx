@@ -12,12 +12,12 @@ import {
   staffMember,
 } from '../../../../../../packages/engine/src/staff-info';
 import { Card } from '../../../shared/ui/Card';
-import { ClubCrest } from '../../../entities/club/ui/ClubCrest';
+import { ClubCrest } from '../../../entities/club';
 import { Money } from '../../../shared/ui/Money';
-import { clubDivision, orderIds, ownLeagueIds } from '../../../entities/league/lib/league';
+import { clubDivision, orderIds, ownLeagueIds } from '../../../entities/league';
 import { number, seasonName } from '../../../presentation/format';
-import { fanMovers, mood, moodChange } from '../../../entities/office/lib/ownerFigures';
-import { squadRegistration } from '../../../entities/player/lib/squadRegistration';
+import { fanMovers, mood, moodChange } from '../../../entities/office';
+import { squadRegistration } from '../../../entities/player';
 import {
   cashState,
   seasonBooks,
@@ -25,7 +25,7 @@ import {
   stateWarning,
   teamStates,
   type StateKey,
-} from '../../../entities/player/lib/teamState';
+} from '../../../entities/player';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import s from './ClubOverview.module.css';
 

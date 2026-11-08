@@ -6,13 +6,13 @@ import type { GameEntry } from '../../../adapters/games';
 import { BetaMark } from '../../../shared/ui/BetaMark';
 import { earlierRules, summarize, type GameSlots } from '../../../runtime/slots';
 import { gameStore, useGameState } from '../../../runtime/store';
-import { CrestMark } from '../../../entities/club/ui/ClubCrest';
-import type { Crest } from '../../../entities/club/lib/crests';
+import { CrestMark } from '../../../entities/club';
+import type { Crest } from '../../../entities/club';
 import { Dialog } from '../../../shared/ui/Dialog';
 import a from '../../../shared/ui/styles/App.module.css';
 import s from './GameSlotScreen.module.css';
 import { useLocale } from '../../../presentation/react';
-import { PresentationSettingsTrigger } from '../../../widgets/presentation-settings/ui/PresentationSettings';
+import { PresentationSettingsTrigger } from '../../../widgets/presentation-settings';
 
 const gameStoreWorld = () => gameStore.getSnapshot().view?.world;
 

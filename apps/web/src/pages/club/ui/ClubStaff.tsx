@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useTaskState } from '../../../shared/routing/taskMemory';
-import { PersonCareerLink } from '../../../features/person-career/ui/PersonCareer';
+import { PersonCareerLink } from '../../../features/person-career';
 import { useEffect } from 'react';
 import type {
   ContractTerm,
@@ -41,12 +41,12 @@ import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import type { GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { openTraining, useStaffRequest } from '../../../shared/routing/state';
-import { callLine } from '../../../entities/player/lib/teamState';
+import { callLine } from '../../../entities/player';
 import { DirectionFacts } from './DirectionFacts';
 import { Segments } from '../../../shared/ui/Segments';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { DecisionOwner } from './DecisionOwner';
-import { OvrBadge } from '../../../entities/player/ui/OvrBadge';
+import { OvrBadge } from '../../../entities/player';
 import { StaffRoleBadge } from './StaffRoleBadge';
 import { compactMoney, contractLine } from '../../../presentation/format';
 import { directorDecisions } from '../lib/shortlist';

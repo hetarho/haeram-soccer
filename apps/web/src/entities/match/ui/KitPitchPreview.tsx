@@ -3,11 +3,7 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { useEffect, useId, useRef, useState } from 'react';
 import type { MatchAppearance } from '../../../../../../packages/contracts/src/identity';
 import { previewLines, previewPose } from '../lib/identityPreview';
-import {
-  createFigurePainter,
-  playerLook,
-  type FigurePainter,
-} from '../lib/figurePainting';
+import { createFigurePainter, playerLook, type FigurePainter } from '../lib/figurePainting';
 import { matchLook } from '../lib/matchAppearance';
 import {
   drawNumberTag,

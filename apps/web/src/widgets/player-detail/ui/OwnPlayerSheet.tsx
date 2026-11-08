@@ -1,33 +1,28 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { PersonCareerLink } from '../../../features/person-career/ui/PersonCareer';
+import { PersonCareerLink } from '../../../features/person-career';
 import type { GameClient } from '../../../runtime/client';
 import { useMemo, useState } from 'react';
 import type { Player, World } from '../../../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../../../packages/engine/src/contracts';
 import { yellowWarning } from '../../../../../../packages/engine/src/discipline';
 import { seasonHeat, type HeatMap } from '../../../../../../packages/engine/src/material';
-import { HeatPitch } from '../../../entities/match/ui/HeatPitch';
-import { Attributes } from '../../../entities/player/ui/Attributes';
-import { clubRanks } from '../../../entities/player/lib/careerRecords';
+import { HeatPitch } from '../../../entities/match';
+import { Attributes } from '../../../entities/player';
+import { clubRanks } from '../../../entities/player';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { number, percent, seasonName } from '../../../presentation/format';
-import { PlayerAdvancedStats } from '../../../entities/player/ui/PlayerAdvancedStats';
-import { bansOf, banText } from '../../../entities/player/lib/discipline';
+import { PlayerAdvancedStats } from '../../../entities/player';
+import { bansOf, banText } from '../../../entities/player';
 import { Select } from '../../../shared/ui/Select';
-import {
-  appearanceText,
-  ofScope,
-  playerStatus,
-  type PlayerTally,
-} from '../../../entities/player/lib/playerAnalysis';
+import { appearanceText, ofScope, playerStatus, type PlayerTally } from '../../../entities/player';
 import type { PlayerScope } from '../../../entities/player';
-import { PlayerPerformance } from '../../../entities/player/ui/PlayerPerformance';
-import { PlayerProfile } from '../../../entities/player/ui/PlayerProfile';
-import { ballonDorLine } from '../../../entities/player/lib/ballonDorText';
+import { PlayerPerformance } from '../../../entities/player';
+import { PlayerProfile } from '../../../entities/player';
+import { ballonDorLine } from '../../../entities/player';
 import { openContractTalk } from '../../../shared/routing/state';
-import { playerCallLine } from '../../../entities/player/lib/teamState';
+import { playerCallLine } from '../../../entities/player';
 import a from '../../../shared/ui/styles/Analysis.module.css';
 import s from '../../../shared/ui/styles/App.module.css';
 

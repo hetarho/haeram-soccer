@@ -21,7 +21,7 @@ import {
   type SystemNotification,
 } from '../../../runtime/store';
 import { ApprovalRequestHost } from './ApprovalRequestHost';
-import { CommunicationsButton, EventCard, EventCenter } from '../../../widgets/event-center/ui/EventCenter';
+import { CommunicationsButton, EventCard, EventCenter } from '../../../widgets/event-center';
 import { useNavigation } from '../../../shared/routing/state';
 
 const reports = vi.hoisted(() => ({

@@ -14,10 +14,10 @@ import {
 import { clubOf, overall } from '../../../../../../packages/engine/src/player-state';
 import { staffMember } from '../../../../../../packages/engine/src/staff-info';
 import { scoutRangeScale } from '../../../../../../packages/engine/src/owner-traits';
-import { positionsLabel } from '../../../entities/player/ui/FormationPitch';
+import { positionsLabel } from '../../../entities/player';
 import { Money } from '../../../shared/ui/Money';
-import { OvrBadge } from '../../../entities/player/ui/OvrBadge';
-import { gradeLabel } from '../../../entities/player/ui/PlayerProfile';
+import { OvrBadge } from '../../../entities/player';
+import { gradeLabel } from '../../../entities/player';
 import s from './PlayerCompare.module.css';
 
 /** One side of a comparison: a market candidate with its terms, or a player of ours. */

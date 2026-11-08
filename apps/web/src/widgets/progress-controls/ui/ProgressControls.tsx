@@ -15,11 +15,11 @@ import {
 } from '../../../runtime/progression';
 import type { GameClient } from '../../../runtime/client';
 import { ProgressModeSwitch } from './ProgressModeSwitch';
-import { ownDivisionRound } from '../../../entities/league/lib/league';
+import { ownDivisionRound } from '../../../entities/league';
 import { useLocale } from '../../../presentation/react';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { openPrimary, useNavigation, type Page } from '../../../shared/routing/state';
-import { ApprovalButtons } from '../../../features/approvals/ui/ApprovalButtons';
+import { ApprovalButtons } from '../../../features/approvals';
 import p from '../../../shared/ui/styles/ProgressControls.module.css';
 
 // The result notice's report loads only when opened, outside the main chunk (→ARCH-28).

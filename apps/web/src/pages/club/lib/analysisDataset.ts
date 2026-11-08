@@ -2,7 +2,7 @@ import { ATTRIBUTES } from '../../../../../../packages/contracts/src/player';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import type { CsvCell } from '../../../adapters/csv';
-import type { PlayerScope } from '../../../entities/player/lib/playerAnalysis';
+import type { PlayerScope } from '../../../entities/player';
 export type AnalysisDataset = 'matches' | 'players' | 'seasons';
 export function analysisDataset(
   w: World,

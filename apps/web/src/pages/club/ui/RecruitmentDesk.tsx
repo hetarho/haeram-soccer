@@ -1,7 +1,7 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { squadRegistration } from '../../../entities/player/lib/squadRegistration';
+import { squadRegistration } from '../../../entities/player';
 import { RecruitmentCommitments } from './MediationReview';
 import { PlayerLink } from '../../../entities/player';
 import { useTaskState } from '../../../shared/routing/taskMemory';
@@ -23,9 +23,9 @@ import {
   TRAIT_LABEL,
 } from '../../../../../../packages/engine/src/player';
 import { releaseCost } from '../../../../../../packages/engine/src/staff-info';
-import { positionsLabel } from '../../../entities/player/ui/FormationPitch';
-import { bestRoles, PlayerProfile } from '../../../entities/player/ui/PlayerProfile';
-import { playerCallLine, runwayText } from '../../../entities/player/lib/teamState';
+import { positionsLabel } from '../../../entities/player';
+import { bestRoles, PlayerProfile } from '../../../entities/player';
+import { playerCallLine, runwayText } from '../../../entities/player';
 import type { ScoutVerdict } from '../../../../../../packages/engine/src/scout-verdict';
 import { bidBoard } from '../../../../../../packages/engine/src/transfers';
 import { transferWindow } from '../../../../../../packages/engine/src/transfer-window';
@@ -37,13 +37,13 @@ import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { compactMoney } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
-import { OvrBadge } from '../../../entities/player/ui/OvrBadge';
-import { PositionBadge } from '../../../entities/player/ui/PositionBadge';
+import { OvrBadge } from '../../../entities/player';
+import { PositionBadge } from '../../../entities/player';
 import { OfferAnswers } from './ClubStaff';
 import { CandidateSource, RecruitmentNeeds, ScoutShortlist } from './ScoutShortlist';
 import { candidateOrigin } from '../lib/shortlist';
 import { DirectionFacts } from './DirectionFacts';
-import { clubDivision } from '../../../entities/league/lib/league';
+import { clubDivision } from '../../../entities/league';
 import {
   DEFAULT_MARKET_QUERY,
   changeMarketQuery,

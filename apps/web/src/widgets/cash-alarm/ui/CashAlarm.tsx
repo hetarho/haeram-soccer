@@ -9,7 +9,7 @@ import {
 import { operatingCosts } from '../../../../../../packages/engine/src/finance';
 import { fixedCostRunway } from '../../../../../../packages/engine/src/investment';
 import { Money } from '../../../shared/ui/Money';
-import { careerOver, ownerStatuses } from '../../../entities/office/lib/ownerFigures';
+import { careerOver, ownerStatuses } from '../../../entities/office';
 import s from '../../../shared/ui/styles/App.module.css';
 
 /**

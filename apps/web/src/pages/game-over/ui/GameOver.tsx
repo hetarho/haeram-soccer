@@ -3,7 +3,7 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { useLocale } from '../../../presentation/react';
 import { number } from '../../../presentation/format';
-import { gameOverFacts } from '../../../entities/office/lib/ownerFigures';
+import { gameOverFacts } from '../../../entities/office';
 import app from '../../../shared/ui/styles/App.module.css';
 import s from './GameOver.module.css';
 

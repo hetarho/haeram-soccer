@@ -4,11 +4,7 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { PixelIcon } from '../../../shared/ui/PixelIcon';
 import { useId, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { POSITIONS } from '../../../../../../packages/contracts/src/player';
-import type {
-  PlayerOrder,
-  PlayerScope,
-  PositionFilter,
-} from '../../../entities/player/lib/playerAnalysis';
+import type { PlayerOrder, PlayerScope, PositionFilter } from '../../../entities/player';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { play } from '../../../shared/ui/motion';
 import s from './RosterFilters.module.css';

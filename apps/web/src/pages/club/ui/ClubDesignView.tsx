@@ -14,8 +14,8 @@ import { identityOf } from '../../../../../../packages/engine/src/club-identity'
 import { DESIGNERS, designFee, redrawFee } from '../../../../../../packages/engine/src/design-fees';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
-import { CrestMark } from '../../../entities/club/ui/ClubCrest';
-import { KitSwatch } from '../../../entities/match/ui/KitSwatch';
+import { CrestMark } from '../../../entities/club';
+import { KitSwatch } from '../../../entities/match';
 import { Money } from '../../../shared/ui/Money';
 import { Segments } from '../../../shared/ui/Segments';
 import s from './ClubDesignView.module.css';

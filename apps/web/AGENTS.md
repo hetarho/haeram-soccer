@@ -34,27 +34,37 @@ Do not promote an unconfirmed recommendation into a shared requirement or claim 
 proposal is already implemented. Preserve the resource-backed design contract and native
 handoff metadata when changing a control. Use the existing ARCH verification scopes.
 
-# Source layers (feature-sliced, migrating)
+# Source layers (feature-sliced)
 
-`src/` is moving from the flat `ui/` folder into feature-sliced layers, lowest first. ESLint
+`src/` follows Feature-Sliced Design (→ARCH-3/4), highest layer first. ESLint
 (`eslint.config.mjs`) enforces the direction; the UI engine-import guard covers every layer.
 
-| Layer       | Holds                                         | Today                                                                  |
-| ----------- | --------------------------------------------- | ---------------------------------------------------------------------- |
-| `shared/`   | game-free helpers and styles                  | `lib` (`useRead` for worker reads), `ui/TextLink.module.css`           |
-| `entities/` | one domain noun: its link, store, small views | `club` (`ClubLink`, `openClub`), `player` (`PlayerLink`, `openPlayer`) |
-| `features/` | one user action                               | —                                                                      |
-| `widgets/`  | a composed block used on many screens         | `club-detail`, `player-detail`                                         |
-| `pages/`    | a routed screen                               | — (screens are still in `ui/`)                                         |
-| `ui/`       | legacy screens and helpers, above every layer | everything not yet moved                                               |
+| Layer       | Holds                                                     | Slices or segments                                                                                                                                                           |
+| ----------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `app/`      | the shell: root component, navigation, app-wide overlays  | `ui` (App, menu, HUD, glossary, outcome overlays), `model`, `office` (the owner-office overlay)                                                                              |
+| `pages/`    | one routed screen per slice                               | `club` (Rich: team, people, operations, business, records), `journal`, `clubhouse`, `cups`, `start`, `slots`, `game-over`                                                    |
+| `widgets/`  | a composed block shown on several screens                 | `club-detail`, `player-detail`, `club-overview`, `event-center`, `progress-controls`, `league-insights`, `away-summary`, `play-guide`, `presentation-settings`, `cash-alarm` |
+| `features/` | one user interaction                                      | `match-viewer`, `match-prep`, `approvals`, `news-feed`, `person-career`                                                                                                      |
+| `entities/` | one domain noun: its views, Canvas painting, view helpers | `club`, `player`, `league`, `match`, `office`                                                                                                                                |
+| `shared/`   | game-free UI kit, shared styles, navigation state         | `ui` (controls; `styles/` for CSS modules several slices use), `lib`, `routing` (navigation and task state)                                                                  |
 
-- A layer imports only layers below it; `ui/` may import any layer. Slices of one layer never
-  import each other.
+`runtime/`, `adapters/` and `presentation/` (locale, theme, `format`) sit below every layer and
+import none of them; `lab/`, `constants/` and `design-system/` are separate tool entries that import
+slices through their index. Inside a slice, components live in `ui/`, stores and hooks in `model/`,
+framework-free helpers in `lib/`. A test sits beside its subject, or in the layer of the highest
+module it renders.
+
+- A layer imports only layers below it. Slices of one layer never import each other; an entity
+  names another only through that entity's `@x/<consumer>.ts` file.
 - Outside a slice, import its `index.ts` only. Each index opens with what the slice is for and
-  what it exports, so read the index before the files.
+  what it exports, so read the index before the files; it exports exactly what is used outside.
+- A lazy `import()` names the module file, not the index, so the screen keeps its own chunk. The
+  build treats feature-sliced modules as free of import side effects, so an index brings into a
+  chunk only the modules that chunk uses; keep work that must run on import out of these layers.
+- To move modules, write a `{ "from", "to" }` manifest and run
+  `pnpm exec tsx scripts/move-modules.ts <manifest.json>`; it moves the files and rewrites every
+  reference, so no import is edited by hand.
 - To show any club or player, use `ClubLink` / `PlayerLink` (or `openClub` / `openPlayer`). One
-  host per widget, mounted in `ui/App.tsx`, opens the detail; never build another club or player
-  dialog. Worker data comes from `client.clubProfile` / `client.playerProfile`
+  host per widget, mounted in `app/ui/App.tsx`, opens the detail; never build another club or
+  player dialog. Worker data comes from `client.clubProfile` / `client.playerProfile`
   (`runtime/clubProfile.ts`), and from `client.startClubProfile` before a takeover.
-- When touching a legacy file, move it into its layer if the change is about that slice anyway;
-  otherwise leave it.

@@ -48,7 +48,7 @@ import {
   WARTIME,
   WORLD_START,
   type ClubProfile,
-} from '../../../entities/league/lib/startChoices';
+} from '../../../entities/league';
 import presentationStyle from '../../../shared/ui/styles/PresentationSettings.module.css';
 import s from './StartFlow.module.css';
 

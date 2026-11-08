@@ -19,8 +19,8 @@ import {
   type OfficeView,
 } from '../../../shared/routing/state';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { DeskBody } from '../../../entities/office/ui/OfficeDesk';
-import { ClubOverview } from '../../../widgets/club-overview/ui/ClubOverview';
+import { DeskBody } from '../../../entities/office';
+import { ClubOverview } from '../../../widgets/club-overview';
 
 /**
  * The workspace overview or a selected approval's authoritative work form in a dialog.

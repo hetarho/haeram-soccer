@@ -3,7 +3,7 @@ import { richMessage } from '../../presentation/LocalizedMessage';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useGameState } from '../../runtime/store';
 import type { NewsItem } from '../../../../../packages/engine/src/news';
-import { useClubNews, useNewsQuiet } from '../../features/news-feed/ui/NewsFeed';
+import { useClubNews, useNewsQuiet } from '../../features/news-feed';
 import s from './Celebration.module.css';
 
 /** Fixed paper strips so the scene never depends on chance or wall time. */

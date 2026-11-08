@@ -35,6 +35,14 @@ export default defineConfig({
     // Standalone tools keep their code and inventory outside the game entry.
     rolldownOptions: {
       input: { main: page('index.html'), lab: page('lab.html'), constants: page('constants.html') },
+      // A feature-sliced module joins a chunk only when the chunk uses one of its exports (→ARCH-4):
+      // a slice index re-exports many modules, and this keeps each lazy screen in its own chunk.
+      treeshake: {
+        moduleSideEffects: (id) =>
+          /\/apps\/web\/src\/(app|pages|widgets|features|entities|shared)\/.*\.tsx?$/.test(id)
+            ? false
+            : undefined,
+      },
     },
   },
   // The project's own dev port (1950, the founding year, plus a zero), kept fixed so a busy port

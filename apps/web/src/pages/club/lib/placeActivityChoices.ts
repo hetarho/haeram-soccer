@@ -8,7 +8,7 @@ import {
 } from '../../../../../../packages/engine/src/calendar';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import { gameActionsBlocked } from '../../../runtime/store';
-import { placeAcademy, youthCall } from '../../../entities/player/lib/teamState';
+import { placeAcademy, youthCall } from '../../../entities/player';
 
 /**
  * The academy place's bounded live facts and real records (→WEB-102): the only place with owner

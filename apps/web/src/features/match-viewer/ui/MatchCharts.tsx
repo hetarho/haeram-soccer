@@ -3,15 +3,11 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useMemo, useState, type KeyboardEvent, type PointerEvent } from 'react';
 import type { MatchPlayback } from '../../../../../../packages/contracts/src/types';
-import { colourDistance, contrast, type Crest } from '../../../entities/club/lib/crests';
-import { KIT_ROLE_LABELS } from '../../../entities/match/lib/identityPreview';
-import { KitSwatch } from '../../../entities/match/ui/KitSwatch';
-import {
-  UNRECORDED_KIT,
-  type MatchLook,
-  type SideLook,
-} from '../../../entities/match/lib/matchAppearance';
-import { goalFrame, recordedGoals } from '../../../entities/match/lib/moments';
+import { colourDistance, contrast, type Crest } from '../../../entities/club';
+import { KIT_ROLE_LABELS } from '../../../entities/match';
+import { KitSwatch } from '../../../entities/match';
+import { UNRECORDED_KIT, type MatchLook, type SideLook } from '../../../entities/match';
+import { goalFrame, recordedGoals } from '../../../entities/match';
 import t from './Pitch.module.css';
 
 type Chart = 'possession' | 'xg' | 'shots';

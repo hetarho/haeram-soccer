@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
-import { hundredths, share } from '../../../entities/match/lib/advanced';
+import { hundredths, share } from '../../../entities/match';
 import { ClubLink } from '../../../entities/club';
 import {
   CLUB_ORDERS,
@@ -24,8 +24,8 @@ import {
   type FullStatsClub,
   type FullStatsPlayer,
   type LeaderKey,
-} from '../../../entities/league/lib/fullStatsView';
-import { leagueIds, type LeagueChoice } from '../../../entities/league/lib/league';
+} from '../../../entities/league';
+import { leagueIds, type LeagueChoice } from '../../../entities/league';
 import { worldSelector } from '../../../shared/lib/liveState';
 import { PlayerLink } from '../../../entities/player';
 import { Segments } from '../../../shared/ui/Segments';

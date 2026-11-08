@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { SeasonArchive } from '../../../../../../packages/contracts/src/types';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import { eloOf, eloRank } from '../../../../../../packages/engine/src/ratings';
-import { ownLeagueIds } from '../../../entities/league/lib/league';
+import { ownLeagueIds } from '../../../entities/league';
 import { eloDetail, eloStanding, leaguePositionDetail, pyramidPosition } from './recordTrends';
 
 const season = (

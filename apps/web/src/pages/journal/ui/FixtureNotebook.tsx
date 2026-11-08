@@ -8,11 +8,11 @@ import { Suspense, useEffect, useState } from 'react';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import type { GameClient } from '../../../runtime/client';
 import { fixtureDate, nextOwnFixture } from '../../../../../../packages/engine/src/calendar';
-import { ownSeasonFixtures } from '../../../entities/league/lib/fixtures';
-import { resultFor } from '../../../entities/league/lib/scouting';
+import { ownSeasonFixtures } from '../../../entities/league';
+import { resultFor } from '../../../entities/league';
 import { competitionLabel, kindLabel } from '../../../presentation/format';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { MatchMaterial, MatchReport } from '../../../features/match-viewer/ui/MatchReport';
+import { MatchMaterial, MatchReport } from '../../../features/match-viewer';
 import s from '../../../shared/ui/styles/Analysis.module.css';
 
 export function FixtureNotebook({ w, client }: { w: World; client: GameClient }) {

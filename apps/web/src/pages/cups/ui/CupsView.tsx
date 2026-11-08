@@ -28,7 +28,7 @@ import { emptyTable } from '../../../../../../packages/engine/src/league-fixture
 import type { GameClient } from '../../../runtime/client';
 import { Bracket, Club } from './Bracket';
 import { number, seasonName } from '../../../presentation/format';
-import { orderIds } from '../../../entities/league/lib/league';
+import { orderIds } from '../../../entities/league';
 import { replaceQuery, useAddressTab } from '../../../shared/ui/PageTabs';
 import { CompetitionHeader } from '../../../shared/ui/CompetitionTabs';
 import s from '../../../shared/ui/styles/App.module.css';

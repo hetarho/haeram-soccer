@@ -15,9 +15,9 @@ import {
   nextLeaderCount,
   trophyCabinet,
   type LeaderBoard,
-} from '../../../entities/player/lib/careerRecords';
+} from '../../../entities/player';
 import { number, seasonName } from '../../../presentation/format';
-import { ofScope, per90, playerStatus } from '../../../entities/player/lib/playerAnalysis';
+import { ofScope, per90, playerStatus } from '../../../entities/player';
 import { useGameState } from '../../../runtime/store';
 import { PlayerLink } from '../../../entities/player';
 import { Segments } from '../../../shared/ui/Segments';

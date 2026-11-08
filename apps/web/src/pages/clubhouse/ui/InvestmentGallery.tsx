@@ -1,6 +1,6 @@
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
-import { FacilityArt } from '../../../entities/office/ui/FacilityArt';
+import { FacilityArt } from '../../../entities/office';
 import { PixelIcon } from '../../../shared/ui/PixelIcon';
 import { INVESTMENT_AREAS } from '../../../shared/routing/investmentAreas';
 import { openInvestment } from '../../../shared/routing/state';

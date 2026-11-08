@@ -8,7 +8,7 @@ import { country } from '../../../../../../packages/catalogs/src/index';
 import { TAKEOVER_DEBT } from '../../../../../../packages/engine/src/owner-config';
 import { useRead } from '../../../shared/lib';
 import { ClubDetail } from '../../../widgets/club-detail';
-import { CrestMark } from '../../../entities/club/ui/ClubCrest';
+import { CrestMark } from '../../../entities/club';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { compactMoney, seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
@@ -25,7 +25,7 @@ import {
   type ClubProfile,
   type ListingFilter,
   type ListingSort,
-} from '../../../entities/league/lib/startChoices';
+} from '../../../entities/league';
 import s from './ClubListing.module.css';
 
 /** The fortune's money: the tiers are sized in pounds (→OWNER-3, ECON-35). */

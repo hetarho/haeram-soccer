@@ -2,7 +2,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { Player, World } from '../../../../../../packages/contracts/src/types';
-import { PD, per90, playerAdvanced, share, type PlayerAdvanced } from '../../match/lib/advanced';
+import { PD, per90, playerAdvanced, share, type PlayerAdvanced } from '../../match/@x/player';
 import { Term } from '../../../shared/ui/Term';
 import s from '../../../shared/ui/styles/Analysis.module.css';
 

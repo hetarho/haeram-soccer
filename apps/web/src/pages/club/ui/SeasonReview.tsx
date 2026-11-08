@@ -2,13 +2,13 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useMemo, useState, type PointerEvent } from 'react';
-import { ClubCrest } from '../../../entities/club/ui/ClubCrest';
+import { ClubCrest } from '../../../entities/club';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { clubOf, ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { number, seasonName, signed } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
-import { divisionName } from '../../../entities/league/lib/league';
-import type { SeasonFiles } from '../../../entities/league/lib/seasonArchive';
+import { divisionName } from '../../../entities/league';
+import type { SeasonFiles } from '../../../entities/league';
 import { seasonStats, share, type Leader, type SeasonStats } from '../lib/seasonStats';
 import s from '../../../shared/ui/styles/SeasonReview.module.css';
 import { Term } from '../../../shared/ui/Term';

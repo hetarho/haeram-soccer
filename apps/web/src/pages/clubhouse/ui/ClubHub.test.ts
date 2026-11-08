@@ -18,9 +18,9 @@ import {
 } from './ClubHub';
 import type { GameClient } from '../../../runtime/client';
 import korean from '../../../../public/presentation/locales/ko-KR.json';
-import { clubSituation, type SituationFact } from '../../../entities/player/lib/teamState';
+import { clubSituation, type SituationFact } from '../../../entities/player';
 import { openCupSeason } from '../../../shared/routing/state';
-import { ownLeagueProgress } from '../../../entities/league/lib/league';
+import { ownLeagueProgress } from '../../../entities/league';
 
 vi.mock('../../../shared/routing/state', async (original) => ({
   ...(await original<typeof import('../../../shared/routing/state')>()),

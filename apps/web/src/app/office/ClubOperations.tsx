@@ -13,15 +13,10 @@ import { STADIUM_STEPS } from '../../../../../packages/engine/src/facilities';
 import type { ProgressionController } from '../../runtime/progression';
 import type { ClientState, GameClient } from '../../runtime/client';
 import { useLocale } from '../../presentation/react';
-import { BusinessWorkbench } from '../../pages/club/ui/BusinessWorkbench';
+import { BusinessWorkbench } from '../../pages/club';
 import { FinanceOutlook } from './FinanceOutlook';
-import { DirectionAreas } from '../../pages/club/ui/DirectionFacts';
-import {
-  DeskBody,
-  DeskSettings,
-  DeskStats,
-  type DeskStat,
-} from '../../entities/office/ui/OfficeDesk';
+import { DirectionAreas } from '../../pages/club';
+import { DeskBody, DeskSettings, DeskStats, type DeskStat } from '../../entities/office';
 import { DESK_AREAS, DESK_RESPONSIBILITIES } from '../../shared/routing/officeDesks';
 import { OwnerOffice } from './OwnerOfficeView';
 import {
@@ -31,9 +26,9 @@ import {
 } from '../../shared/routing/clubSections';
 import { TabList, TabPanel, useAddressTab } from '../../shared/ui/PageTabs';
 import { openOperations } from '../../shared/routing/state';
-import { TaskReturn } from '../../pages/club/ui/TaskReturn';
+import { TaskReturn } from '../../pages/club';
 import { compactMoney, seasonName } from '../../presentation/format';
-import { cashState } from '../../entities/player/lib/teamState';
+import { cashState } from '../../entities/player';
 
 /** The applied facts a section's controls change, read from the live world only. */
 function OperationsFacts({

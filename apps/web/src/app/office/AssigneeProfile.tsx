@@ -5,14 +5,11 @@ import type { World } from '../../../../../packages/contracts/src/types';
 import { MANAGER_GONE } from '../../../../../packages/engine/src/staff-info';
 import type { GameClient } from '../../runtime/client';
 import { Dialog } from '../../shared/ui/Dialog';
-import { DeskStats } from '../../entities/office/ui/OfficeDesk';
-import { PersonCareerLink } from '../../features/person-career/ui/PersonCareer';
+import { DeskStats } from '../../entities/office';
+import { PersonCareerLink } from '../../features/person-career';
 import { Money } from '../../shared/ui/Money';
 import { contractLine } from '../../presentation/format';
-import {
-  responsibilityAssignee,
-  type ResponsibilityPost,
-} from '../../entities/office/lib/intervention';
+import { responsibilityAssignee, type ResponsibilityPost } from '../../entities/office';
 
 /** Current post holders remain readable even when an older save has no person-career record. */
 export function AssigneeProfile({

@@ -1,8 +1,8 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { RESPONSIBILITY_LABELS } from '../../../entities/office/lib/intervention';
-import type { OfficeProposal } from '../../../entities/office/lib/officeChanges';
+import { RESPONSIBILITY_LABELS } from '../../../entities/office';
+import type { OfficeProposal } from '../../../entities/office';
 import s from '../../../shared/ui/styles/OwnerOffice.module.css';
 
 export function PendingHandover({ proposal }: { proposal: OfficeProposal }) {

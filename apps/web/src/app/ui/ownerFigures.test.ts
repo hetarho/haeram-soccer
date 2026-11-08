@@ -18,12 +18,12 @@ import type { View } from '../../runtime/protocol';
 import { officeRead } from '../../runtime/officeRead';
 import { gameStore, initialClientState } from '../../runtime/store';
 import korean from '../../../public/presentation/locales/ko-KR.json';
-import { CashAlarm } from '../../widgets/cash-alarm/ui/CashAlarm';
-import { ClubOverview } from '../../widgets/club-overview/ui/ClubOverview';
-import { GameOver } from '../../pages/game-over/ui/GameOver';
+import { CashAlarm } from '../../widgets/cash-alarm';
+import { ClubOverview } from '../../widgets/club-overview';
+import { GameOver } from '../../pages/game-over';
 import { HudCash } from './HudCash';
-import { OwnerSheetBody } from '../../entities/office/ui/OwnerSheet';
-import { seasonBooks } from '../../entities/player/lib/teamState';
+import { OwnerSheetBody } from '../../entities/office';
+import { seasonBooks } from '../../entities/player';
 import {
   businessChance,
   careerOver,
@@ -41,7 +41,7 @@ import {
   ownerStatuses,
   stakeAmount,
   stakeOutlook,
-} from '../../entities/office/lib/ownerFigures';
+} from '../../entities/office';
 
 vi.mock('../../presentation/react', async (original) => ({
   ...(await original<typeof import('../../presentation/react')>()),

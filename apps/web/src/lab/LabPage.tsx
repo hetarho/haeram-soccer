@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { Catalog, CatalogLeaf } from '../../../../scripts/lab-tunables';
 import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { MatchPlayback, Tactic, World } from '../../../../packages/contracts/src/types';
-import { Pitch } from '../features/match-viewer/ui/Pitch';
+import { Pitch } from '../features/match-viewer';
 import catalogJson from './tunables.json';
 import koJson from './tunables.ko.json';
 import { LabPool, type LabRun } from './pool';

@@ -12,7 +12,7 @@ import { ATTRIBUTES } from '../../../../../../packages/contracts/src/player';
 import { ATTRIBUTE_LABEL } from '../../../../../../packages/engine/src/player';
 import type { GameClient } from '../../../runtime/client';
 import { Dialog } from '../../../shared/ui/Dialog';
-import { positionsLabel } from '../../../entities/player/ui/FormationPitch';
+import { positionsLabel } from '../../../entities/player';
 import {
   FULL_STATS_FAILED,
   fullStatsAdvanced,
@@ -23,10 +23,10 @@ import {
   leagueStatsScope,
   useFullStats,
   type FullStatsPlayer,
-} from '../../../entities/league/lib/fullStatsView';
-import { PlayerAdvancedStats } from '../../../entities/player/ui/PlayerAdvancedStats';
-import { PlayerPerformance } from '../../../entities/player/ui/PlayerPerformance';
-import { performanceRows, type PlayerScope } from '../../../entities/player/lib/playerAnalysis';
+} from '../../../entities/league';
+import { PlayerAdvancedStats } from '../../../entities/player';
+import { PlayerPerformance } from '../../../entities/player';
+import { performanceRows, type PlayerScope } from '../../../entities/player';
 import s from '../../../shared/ui/styles/Analysis.module.css';
 
 /** The 16 attributes, then potential and fatigue (→WEB-25). */

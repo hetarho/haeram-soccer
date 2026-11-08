@@ -35,15 +35,15 @@ import {
   type PastTab,
 } from '../../../shared/routing/state';
 import { useMatchView } from '../../../runtime/matchView';
-import type { PitchControls } from '../../../features/match-viewer/ui/Pitch';
+import type { PitchControls } from '../../../features/match-viewer';
 import {
   LeagueOverview,
   RankHistoryGraph,
   Standings,
   RoundResults,
-} from '../../../widgets/league-insights/ui/LeagueInsights';
+} from '../../../widgets/league-insights';
 import { DisciplineTable, ScorerStandings, ScorerHistory } from './ScorerPanels';
-import { StrategyPanel } from '../../../features/match-prep/ui/LazyStrategyPanel';
+import { StrategyPanel } from '../../../features/match-prep';
 import { FixtureNotebook } from './LazyFixtureNotebook';
 /** A closed season's pages load when one is opened, outside the first-play entry (→ARCH-28). */
 const ClosedSeason = lazy(() =>
@@ -74,12 +74,8 @@ import {
   parseLeague,
   sameLeague,
   type LeagueChoice,
-} from '../../../entities/league/lib/league';
-import {
-  LeaguePicker,
-  leagueName,
-  useLeagueFixtures,
-} from '../../../entities/league/ui/LeaguePicker';
+} from '../../../entities/league';
+import { LeaguePicker, leagueName, useLeagueFixtures } from '../../../entities/league';
 import { CompetitionHeader } from '../../../shared/ui/CompetitionTabs';
 import {
   selectLeagueWorld,

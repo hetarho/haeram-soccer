@@ -14,12 +14,12 @@ import { KIT_FIXTURE_CHANGED } from '../../../../../../packages/engine/src/ident
 import { appearanceForFixture } from '../../../../../../packages/engine/src/match-appearance';
 import type { GameClient } from '../../../runtime/client';
 import { gameActionsBlocked, gameStore, useGameState } from '../../../runtime/store';
-import { ownSeasonFixtures } from '../../../entities/league/lib/fixtures';
+import { ownSeasonFixtures } from '../../../entities/league';
 import { competitionLabel } from '../../../presentation/format';
-import { KIT_ROLE_LABELS } from '../../../entities/match/lib/identityPreview';
-import { KitPitchPreview } from '../../../entities/match/ui/KitPitchPreview';
-import { KitSwatch } from '../../../entities/match/ui/KitSwatch';
-import { matchLook } from '../../../entities/match/lib/matchAppearance';
+import { KIT_ROLE_LABELS } from '../../../entities/match';
+import { KitPitchPreview } from '../../../entities/match';
+import { KitSwatch } from '../../../entities/match';
+import { matchLook } from '../../../entities/match';
 import { worldSelector } from '../../../shared/lib/liveState';
 import s from './FixtureKitSelector.module.css';
 

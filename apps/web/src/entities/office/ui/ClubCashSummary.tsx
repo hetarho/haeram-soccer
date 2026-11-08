@@ -4,7 +4,7 @@ import type { World } from '../../../../../../packages/contracts/src/types';
 import { Card } from '../../../shared/ui/Card';
 import { DeskStats } from './OfficeDesk';
 import { compactMoney, money } from '../../../presentation/format';
-import { cashState, fixedCosts, seasonBooks } from '../../player/lib/teamState';
+import { cashState, fixedCosts, seasonBooks } from '../../player/@x/office';
 import o from '../../../shared/ui/styles/OwnerSheet.module.css';
 
 /**

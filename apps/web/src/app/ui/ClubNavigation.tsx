@@ -10,7 +10,7 @@ import {
   type Page,
 } from '../../shared/routing/state';
 import { INVESTMENT_AREAS } from '../../shared/routing/investmentAreas';
-import { ApprovalButtons } from '../../features/approvals/ui/ApprovalButtons';
+import { ApprovalButtons } from '../../features/approvals';
 import { PixelIcon } from '../../shared/ui/PixelIcon';
 import p from '../../shared/ui/styles/ProgressControls.module.css';
 import s from './ClubNavigation.module.css';

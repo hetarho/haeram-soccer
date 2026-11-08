@@ -5,7 +5,10 @@ import localeRegistryData from '../../../../public/presentation/locales/index.js
 import localeData from '../../../../public/presentation/locales/ko-KR.json';
 import themeRegistryData from '../../../../public/presentation/themes/index.json';
 import standardData from '../../../../public/presentation/themes/standard.json';
-import type { PresentationController, PresentationSnapshot } from '../../../presentation/controller';
+import type {
+  PresentationController,
+  PresentationSnapshot,
+} from '../../../presentation/controller';
 import { validateLocalePack, validateThemePack } from '../../../presentation/contracts';
 import { createLoadedLocale } from '../../../presentation/locale';
 import { PresentationProvider } from '../../../presentation/react';

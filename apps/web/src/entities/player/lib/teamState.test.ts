@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import { rating } from '../../../../../../packages/engine/src/world';
-import { ownLeagueIds } from '../../league/lib/league';
+import { ownLeagueIds } from '../../league/@x/player';
 import { squadRegistration } from './squadRegistration';
 import {
   cashState,
