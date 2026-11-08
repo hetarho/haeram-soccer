@@ -834,6 +834,7 @@
 - av07 continues through the host loop for up to eight hours; only the coordinator publishes after the complete final gate.
 
 ## log
+- 261108 fix tests: the portable contract diagnostic lists every differing top-level fact with its first path (bounded), so CI shows whether modern-european-season's Linux divergence reaches matches or only the books (T713)
 - 261108 update-ssot CLUB r61 + create-task T712: a player is paid on his club's division or the division his ability suits when higher, every club alike, in force only once LEAGUE-13's lower tiers and CLUB-48's books and champions parts hold with it (CLUB-25✎); T689 dep +T712 (av07)
 - 261108 T700 done: 38 reference careers read on production with `owner-balance.ts --growth` (read-only, inert against a control); screen go for the ability-fit wage price (discounted signings 90.1% of the lower tiers' XI points above the league's NPC median); every lower tier reaches and wins the top flight on the rules in force; no constant changed (av07)
 - 261108 T711 done: the Ballon d'Or case's assertions run at a stated modern spread with a new case reading the table in force on the 1950 England world, and the takeover round trip buys a club whose cash the case turns into an equal debt, `w.loan` = `takeoverLoan(debt)`; test files only, both cases left to the coordinator's final gate (av07)
@@ -853,4 +854,3 @@
 - 261107 update-ssot MATCH r55 + refresh T689: the keeper goes for a ball on its way to a receiver with nobody between only if he reaches it first, else holds set until the receiver has it, and shuts only the angle he can reach before the ball passes him (MATCH-35✎); T689's cv04-kpr window measures it to 20:30Z. cv07
 - 261107 update-ssot MATCH r54 + refresh T689: a man closes a shot from where he can reach the ball's path as it is struck, a chaser behind the ball only from touching distance, his take otherwise the pressure (MATCH-35✎); T689's cv04-sho window measures it, the diagnostic first, to 20:30Z. cv07
 - 261107 fix watch helper: when the resumed clock opens the next match-eve modal over the pace picker, continue through its public watch action; preserve every assertion and overall timeout. Resume cv07 to 07:00 KST on latest main. cv07
-- 261105 fix e2e port: Playwright starts webServer before the e2e lock's globalSetup, so the batch gate on 2d984ba2 failed at once while something else held 127.0.0.1:4173 (still held); without BROWSER_TEST_PORT each run now takes a free port and publishes it to its workers (tests/config/browser-port.ts). cv04

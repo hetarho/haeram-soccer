@@ -17,9 +17,25 @@ describe('portable canonical difference diagnostics', () => {
 
   it('finds the first nested difference in canonical key order', () => {
     expect(diagnostic({ z: 1, a: { score: 2 } }, { z: 3, a: { score: 4 } })).toBe(
-      '"small-fixture": first difference at $.a.score; expected 2; received 4',
+      '"small-fixture": first difference at $.a.score; expected 2; received 4; differing facts (2): $.a.score, $.z',
     );
     expect(diagnostic({ '2': 0, '10': 0 }, { '2': 1, '10': 1 })).toContain('$["10"]');
+  });
+
+  it("lists every differing top-level fact's first path, so books and matches read apart", () => {
+    const expected = { cash: '1', events: [1], matches: [{ score: [1, 0] }, { score: [2, 2] }] };
+    const received = { cash: '2', events: [1], matches: [{ score: [1, 0] }, { score: [2, 3] }] };
+    expect(diagnostic(expected, received)).toBe(
+      '"small-fixture": first difference at $.cash; expected "1"; received "2"; differing facts (2): $.cash, $.matches[1].score[1]',
+    );
+    const many = Object.fromEntries(Array.from({ length: 40 }, (_, i) => [`f${i}`, i]));
+    const shifted = Object.fromEntries(
+      Object.entries(many).map(([key, value]) => [key, value + 1]),
+    );
+    const message = diagnostic(many, shifted)!;
+    expect(message).toContain('differing facts (40): $.f0, $.f1, ');
+    expect(message.endsWith(', …')).toBe(true);
+    expect(message.length).toBeLessThanOrEqual(720 + 460);
   });
 
   it('walks arrays by index and reports nested fields', () => {
