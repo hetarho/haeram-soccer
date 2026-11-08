@@ -1,4 +1,4 @@
-import { expect, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { requestTitle } from '../../apps/web/src/ui/approvalOrder';
@@ -249,7 +249,28 @@ export async function openOfficePage(page: Page) {
 /** 우리 팀 오버뷰 (→WEB-44), the modal the office menu's 오버뷰 opens over the office. */
 export async function openClubOverview(page: Page) {
   await openOfficePage(page);
+  // T714 diagnostic: the view scroller's offset at each step of the click (Playwright's scroll,
+  // the browser's own focus, the app's handler), printed with a failing journey.
+  await page.evaluate(() => {
+    const scroller = document.querySelector('[data-testid="view-scroller"]');
+    const readings = [`before ${scroller?.scrollTop}`];
+    (window as unknown as { overviewScroll: string[] }).overviewScroll = readings;
+    const note = (label: string) => () => readings.push(`${label} ${scroller?.scrollTop}`);
+    window.addEventListener('pointerdown', note('pointerdown'), { capture: true, once: true });
+    window.addEventListener('click', note('click before the handler'), {
+      capture: true,
+      once: true,
+    });
+    window.addEventListener('click', note('click after the handler'), { once: true });
+  });
   await officeMenu(page).getByRole('button', { name: '오버뷰', exact: true }).click();
+  const readings = await page.evaluate(() =>
+    (window as unknown as { overviewScroll: string[] }).overviewScroll.join('\n'),
+  );
+  await test.info().attach('T714 view-scroller offsets', {
+    body: readings,
+    contentType: 'text/plain',
+  });
   const overview = page.getByRole('dialog', { name: '우리 팀 오버뷰', exact: true });
   await expect(overview.getByRole('region', { name: '우리 팀 오버뷰', exact: true })).toBeVisible();
   return overview;

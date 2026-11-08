@@ -62,7 +62,8 @@ export function ClubNavigation({ page }: { page: Page }) {
           className={p.approvals}
           aria-haspopup="dialog"
           onClick={(event) => {
-            event.currentTarget.focus();
+            // The dialog returns focus here; focusing must not scroll the view behind it (T714).
+            event.currentTarget.focus({ preventScroll: true });
             openClubOverview();
           }}
         >

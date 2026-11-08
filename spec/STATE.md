@@ -804,7 +804,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T713 | the portable golden's modern-european-season on CI's Linux x64 equals macOS arm64 | ARCH | - | doing@261108.mt08 |
-| T714 | opening 오버뷰 leaves the office unscrolled on Linux Firefox and WebKit | WEB ARCH | - | todo |
+| T714 | opening 오버뷰 leaves the office unscrolled on Linux Firefox and WebKit | WEB ARCH | - | doing@261108.mt08 |
 | T712 | the ability-fit wage on LEAGUE-13's lower tiers, in force only on a pass | CLUB LEAGUE ECON | T700 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 
