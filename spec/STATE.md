@@ -823,9 +823,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T726 | move the match viewer's own modules out of the match entity | ARCH | - | todo |
-| T727 | read cup calendars, knockout counts and aptitude labels from engine leaves | ARCH | T726 | todo |
-| T728 | close the layer lint's gaps and guard side-effect-only imports | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -854,6 +851,8 @@
 - the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
 
 ## log
+- 261109 T726–T728 done (lane fsd-phase-b, worker fs09-w4, reviewer fs09-r2: T726/T727 approved, T728 approved after its absolute-path fix): the match viewer owns its six playback modules (entity index 88→70 names, `@x` 7→6); cup calendars and knockout counts read from the `competition-keys` leaf (UI→orchestration exception keys 28→24, chunks 71/30 kept); a path-resolving layer rule replaces the pattern blocks and rejects sibling re-exports, deep/climbing paths, wrong `@x` consumers, dynamic `import()` of higher layers or indexes and side-effect-only imports (51/51 probes; the old patterns 29/47) fs09
+- 261109 fs09 gate on 9329121a (T725, T729) failed only `persistence.long-career.test.ts` by its 600 s timeout: T725's engine change re-keyed the cached ten-season world, re-simulated at load 38 beside the phase-B review; rerun as part of the final gate on a quiet machine fs09
 - 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
 - 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
 - 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits
