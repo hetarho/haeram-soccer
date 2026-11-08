@@ -46,6 +46,16 @@ for (const theme of readPresentationBaselines().themeRegistry.entries) {
     await expect(page.getByTestId('club-hub')).toBeVisible();
     const venue = page.locator('[data-home-part="fixture"] [data-ui="home-away-badge"]');
     await imageSkin(venue);
+    // The hub's sections rise in from opacity 0 and textContrast multiplies by ancestor opacity:
+    // read the badge once that entrance has finished (CI's WebKit read 1 mid-fade, 42507777267).
+    await page.getByTestId('club-hub').evaluate(async (hub) => {
+      await Promise.all(
+        hub
+          .getAnimations({ subtree: true })
+          .filter((animation) => animation.effect?.getComputedTiming().endTime !== Infinity)
+          .map((animation) => animation.finished.catch(() => undefined)),
+      );
+    });
     expect((await venue.evaluate(textContrast)).ratio).toBeGreaterThanOrEqual(4.5);
     await expect(page.locator('[data-home-part="entrances"]')).toHaveCount(0);
     await page.screenshot({ path: `.tmp/resource-audit/${theme.id}-home.png` });
