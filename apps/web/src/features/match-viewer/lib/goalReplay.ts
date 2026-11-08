@@ -1,7 +1,7 @@
 import type { MatchFrame } from '../../../../../../packages/contracts/src/types';
 import type { GoalFeedbackState, GoalInstant } from './goalFeedback';
 import { goalFrame } from './moments';
-import { WATCH_SPEEDS } from './presentationClock';
+import { WATCH_SPEEDS } from '../../../entities/match';
 
 /**
  * The goal-scene replay (→WEB-105): how many running seconds of build-up a clip shows before its

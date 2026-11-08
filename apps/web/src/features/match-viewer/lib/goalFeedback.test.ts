@@ -13,7 +13,7 @@ import {
   type GoalFeedbackState,
   type GoalInstant,
 } from './goalFeedback';
-import { presentationMs, runningLength, runningRate, WATCH_SPEEDS } from './presentationClock';
+import { presentationMs, runningLength, runningRate, WATCH_SPEEDS } from '../../../entities/match';
 
 const goalEvent = (t: number, side: 0 | 1): MatchEvent => ({
   t,

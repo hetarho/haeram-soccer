@@ -23,7 +23,7 @@ import {
   startGoalReplay,
   type ReplayOrigin,
 } from './goalReplay';
-import { runningLength, WATCH_SPEEDS } from './presentationClock';
+import { runningLength, WATCH_SPEEDS } from '../../../entities/match';
 
 const goalEvent = (t: number, side: 0 | 1): MatchEvent => ({
   t,

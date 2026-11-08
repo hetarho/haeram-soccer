@@ -13,7 +13,7 @@ import {
   presentationSamples,
   runningLength,
   type PresentationSample,
-} from './presentationClock';
+} from '../../../entities/match';
 import type { MatchRecord } from '../../../../../../packages/contracts/src/types';
 
 const player = (id: string, position: [number, number]) =>

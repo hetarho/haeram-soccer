@@ -3,8 +3,8 @@ import type {
   AppearanceSide,
   CrestDesign,
 } from '../../../../../../packages/contracts/src/identity';
-import { contrast } from '../../club/@x/match';
-import { matchLook, UNRECORDED_LOOK } from './matchAppearance';
+import { contrast } from '../../../entities/club';
+import { matchLook, UNRECORDED_LOOK } from '../../../entities/match';
 import { scoreboardHalves } from './scoreboardHalves';
 
 const CREST: CrestDesign = {
