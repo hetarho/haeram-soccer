@@ -808,7 +808,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T714 | opening 오버뷰 leaves the office unscrolled on Linux Firefox and WebKit | WEB ARCH | - | doing@261108.mt08 |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 
 ## work
@@ -834,11 +833,11 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 
 ## next
-- T714 second push: CI 42487386669 showed Playwright's pre-click scroll (not the app's focus) moving `view-scroller`; the helper now settles the office page before the click. Gate it with T712 (68fcc890) and push once; read growth-core on Linux Firefox/WebKit and WebKit's `resource-skins` `matchday-print` (new failure in 42487386669, outside T714) on that run.
-- then implement-task T689 (explore 2h): its deps are done (T712 done with the ability-fit wage out of force, so T689 measures on production as released).
+- implement-task T689 (explore 2h), main green (CI 42494165472): its deps are done (T712 done with the ability-fit wage out of force, so T689 measures on production as released).
 - the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
 
 ## log
+- 261109 T714 done: the journey helper settles the office before clicking 오버뷰 (Playwright's retried pre-click scroll moved the view, not the app's focus); CI 42494165472 on 145635c3 green in every job, main green again since 11-04. mt08
 - 261108 T713 done: every match model and the aggregate's odds read the portable math (`HOST_MATH` removed); the golden's `modern-european-season` regenerated to CI's Linux facts; CI 42487386669 `checks` green on bf4b6be0. mt08
 - 261108 T712 done: the ability-fit wage built behind `ABILITY_FIT` (off), `--ability-fit` overrides, inert against T700; CLUB-25's gate fails on 46 calibration careers (중견 titles 3/8, 지역 유지 reach 8/8, 자수성가 reach 6/6; upper tiers no club bankrupt), so it stays out of force; held-out and worlds not run (artifacts/benchmarks/T712). mt08
 - 261108 fix tests: the portable contract diagnostic lists every differing top-level fact with its first path (bounded), so CI shows whether modern-european-season's Linux divergence reaches matches or only the books (T713)
@@ -858,4 +857,3 @@
 - 261107 T693–T699 recovered from origin/wip/ba04; original evidence retained, combined source awaiting verification (av07)
 - 261107 update-ssot MATCH r56 + refresh T689: the carrier weighs his shot on the chance it would strike and its xG records, keeper and closing men included, and in the box outside a clear chance against the chance a pass, cut-back or further carry leads to (MATCH-16✎); T689's cv04-own window opens in the owner's next run with the box bar read over 600 matches beside xG a shot. cv07
 - 261107 planning T689 refresh, MATCH r55 unchanged: MATCH-16 r50/r51 already state which box entries a side makes once each is worth its chance; T689's cv04-ent window reads their switches on `t15s3fpc110` to 20:30Z (none from a unit starting at 20:00Z or later). cv07
-- 261107 update-ssot MATCH r55 + refresh T689: the keeper goes for a ball on its way to a receiver with nobody between only if he reaches it first, else holds set until the receiver has it, and shuts only the angle he can reach before the ball passes him (MATCH-35✎); T689's cv04-kpr window measures it to 20:30Z. cv07
