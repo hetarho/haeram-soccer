@@ -830,7 +830,7 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 
 ## next
-- implement-task T713 (explore 120m) first: main CI is red only on Linux. Read the differing-facts list the `checks` job prints for `modern-european-season` on 297fd329 or later, then dump the case round by round on both platforms to the first differing computation (an x64 Node under Rosetta makes it local; see inbox). Then T714 (explore 90m, verify on CI Firefox/WebKit).
+- implement-task T713 (explore 120m) first: main CI is red only on Linux. CI 42430275515 read it: on Linux 6 facts differ and the first recorded match to differ is matches[34] (highlight minute), matches 0–33 identical, so start in the match simulation of that match; dump it step by step on both platforms to the first differing computation (an x64 Node under Rosetta makes it local; see inbox). Then T714 (explore 90m, verify on CI Firefox/WebKit).
 - then implement-task T712 (explore 180m): CLUB r61's ability-fit wage behind `ABILITY_FIT` in `marketWageAt`, calibration careers first (all six tiers, ENG ESP FRA GER × seeds 0/1, 1950–1969), held-out careers and CLUB-48's books/champions worlds only if calibration passes, in force only on every part; then T689 whatever T712's verdict. T711's two integration cases still run in the coordinator's final gate. Preserve all measurement criteria and timeboxes.
 - av07 continuation is published (e974bb02, then 297fd329); hv08 closed at the owner's 10:00 KST cutoff. Coordinators gate with verify:batch before any main push.
 
