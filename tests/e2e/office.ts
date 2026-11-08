@@ -4,6 +4,7 @@ import { pendingDecisions } from '../../packages/engine/src/stopping';
 import { requestTitle } from '../../apps/web/src/ui/approvalOrder';
 import { clubhouseTab } from './competition-navigation';
 import { dismissFeedback } from './feedback';
+import { settle } from './layout';
 
 export const LOBBY = '결재함';
 /** The clubhouse's illustrated office entrance and the office's page (→WEB-11/39). */
@@ -249,20 +250,26 @@ export async function openOfficePage(page: Page) {
 /** 우리 팀 오버뷰 (→WEB-44), the modal the office menu's 오버뷰 opens over the office. */
 export async function openClubOverview(page: Page) {
   await openOfficePage(page);
+  // The office page enters with motion: a click on a target still moving is retried with forced
+  // scroll alignments, which moved the view behind the dialog on Linux Firefox and WebKit (T714).
+  await settle(page);
   // T714 diagnostic: the view scroller's offset at each step of the click (Playwright's scroll,
   // the browser's own focus, the app's handler), printed with a failing journey.
-  await page.evaluate(() => {
-    const scroller = document.querySelector('[data-testid="view-scroller"]');
-    const readings = [`before ${scroller?.scrollTop}`];
-    (window as unknown as { overviewScroll: string[] }).overviewScroll = readings;
-    const note = (label: string) => () => readings.push(`${label} ${scroller?.scrollTop}`);
-    window.addEventListener('pointerdown', note('pointerdown'), { capture: true, once: true });
-    window.addEventListener('click', note('click before the handler'), {
-      capture: true,
-      once: true,
+  await officeMenu(page)
+    .getByRole('button', { name: '오버뷰', exact: true })
+    .evaluate((button) => {
+      const scroller = document.querySelector('[data-testid="view-scroller"]');
+      const at = button.getBoundingClientRect().top - (scroller?.getBoundingClientRect().top ?? 0);
+      const readings = [`before ${scroller?.scrollTop}, the button ${at} px below its top`];
+      (window as unknown as { overviewScroll: string[] }).overviewScroll = readings;
+      const note = (label: string) => () => readings.push(`${label} ${scroller?.scrollTop}`);
+      window.addEventListener('pointerdown', note('pointerdown'), { capture: true, once: true });
+      window.addEventListener('click', note('click before the handler'), {
+        capture: true,
+        once: true,
+      });
+      window.addEventListener('click', note('click after the handler'), { once: true });
     });
-    window.addEventListener('click', note('click after the handler'), { once: true });
-  });
   await officeMenu(page).getByRole('button', { name: '오버뷰', exact: true }).click();
   const readings = await page.evaluate(() =>
     (window as unknown as { overviewScroll: string[] }).overviewScroll.join('\n'),
