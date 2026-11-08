@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { simulateMatch, nextOwnFixture } from '../../../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
-import { archivePlayback } from '../../../pages/club/lib/replay';
+import { archivePlayback } from './replay';
 import {
   goalFrame,
   incidentFrame,

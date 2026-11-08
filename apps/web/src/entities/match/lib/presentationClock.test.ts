@@ -24,7 +24,7 @@ import {
   WATCH_MINUTE_MS,
   WATCH_SPEEDS,
 } from './presentationClock';
-import { archivePlayback } from '../../../pages/club/lib/replay';
+import { archivePlayback } from './replay';
 
 /** A small timed minute: its start, its sample times and its ball knots (→MATCH-12). */
 function timedFrame(

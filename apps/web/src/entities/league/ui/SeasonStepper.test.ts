@@ -1,10 +1,10 @@
-import { captureRender } from '../lib/render.testkit';
+import { captureRender } from '../../../shared/lib/render.testkit';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import type { World } from '../../../../../packages/contracts/src/types';
-import { neighbourSeason, SeasonStepper } from './SeasonStepper';
-import { divisionValue, LeaguePicker, parseDivision } from '../../entities/league/ui/LeaguePicker';
+import type { World } from '../../../../../../packages/contracts/src/types';
+import { neighbourSeason, SeasonStepper } from '../../../shared/ui/SeasonStepper';
+import { divisionValue, LeaguePicker, parseDivision } from './LeaguePicker';
 
 /** Our club in England's fourth tier, in the 1952/53 season after two closed ones. */
 const world = {
@@ -13,11 +13,11 @@ const world = {
   clubs: [{ id: 'ours', country: 'ENG', tier: 3, group: 0 }],
   history: [{ year: 1950 }, { year: 1951 }],
 } as unknown as World;
-vi.mock('../../runtime/store', () => ({
+vi.mock('../../../runtime/store', () => ({
   useGameState: (select: (state: { view: { world: World } }) => unknown) =>
     select({ view: { world } }),
 }));
-vi.mock('../lib/liveState', () => ({ selectLeagueWorld: () => world }));
+vi.mock('../../../shared/lib/liveState', () => ({ selectLeagueWorld: () => world }));
 
 const YEARS = [1950, 1951, 1952];
 type Arrow = { props: { 'aria-label': string; disabled: boolean; onClick: () => void } };

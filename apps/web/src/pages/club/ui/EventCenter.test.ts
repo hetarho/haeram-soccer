@@ -20,8 +20,8 @@ import {
   notificationStore,
   type SystemNotification,
 } from '../../../runtime/store';
-import { ApprovalRequestHost } from '../../../pages/club/ui/ApprovalRequestHost';
-import { CommunicationsButton, EventCard, EventCenter } from './EventCenter';
+import { ApprovalRequestHost } from './ApprovalRequestHost';
+import { CommunicationsButton, EventCard, EventCenter } from '../../../widgets/event-center/ui/EventCenter';
 import { useNavigation } from '../../../shared/routing/state';
 
 const reports = vi.hoisted(() => ({

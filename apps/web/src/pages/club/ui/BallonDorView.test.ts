@@ -5,7 +5,7 @@ import type { BallonDorPlace, World } from '../../../../../../packages/contracts
 import { ballonDorBoards, BallonDorView } from './BallonDorView';
 import { ballonDorLine, ballonDorPremiumLine } from '../../../entities/player/lib/ballonDorText';
 
-vi.mock('../../../app/ui/App', () => ({
+vi.mock('../../../shared/ui/Panel', () => ({
   Panel: ({ title, children }: { title: string; children: unknown }) =>
     createElement('section', { 'aria-label': title }, children as never),
 }));

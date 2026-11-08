@@ -30,7 +30,7 @@ export const INTEGRATION_FILES = [
   'apps/web/src/pages/cups/lib/bracketTree.test.ts',
   'apps/web/src/pages/cups/lib/cupRoute.test.ts',
   'apps/web/src/entities/league/lib/fixtures.test.ts',
-  'apps/web/src/entities/league/lib/fullStatsView.test.ts',
+  'apps/web/src/pages/journal/lib/fullStatsView.test.ts',
   'apps/web/src/entities/league/lib/league.test.ts',
   'apps/web/src/entities/match/lib/matchAppearance.test.ts',
   'apps/web/src/features/match-viewer/ui/matchCharts.test.ts',

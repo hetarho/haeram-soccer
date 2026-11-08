@@ -1,18 +1,18 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
-import localeRegistryData from '../../../public/presentation/locales/index.json';
-import localeData from '../../../public/presentation/locales/ko-KR.json';
-import themeRegistryData from '../../../public/presentation/themes/index.json';
-import standardData from '../../../public/presentation/themes/standard.json';
-import type { PresentationController, PresentationSnapshot } from '../../presentation/controller';
-import { validateLocalePack, validateThemePack } from '../../presentation/contracts';
-import { createLoadedLocale } from '../../presentation/locale';
-import { PresentationProvider } from '../../presentation/react';
-import { validateRegistry } from '../../presentation/registry';
-import { createThemeResolver } from '../../presentation/theme';
-import { BetaMark } from './BetaMark';
-import { OfficeBar } from '../../pages/club/ui/OfficeBar';
+import localeRegistryData from '../../../../public/presentation/locales/index.json';
+import localeData from '../../../../public/presentation/locales/ko-KR.json';
+import themeRegistryData from '../../../../public/presentation/themes/index.json';
+import standardData from '../../../../public/presentation/themes/standard.json';
+import type { PresentationController, PresentationSnapshot } from '../../../presentation/controller';
+import { validateLocalePack, validateThemePack } from '../../../presentation/contracts';
+import { createLoadedLocale } from '../../../presentation/locale';
+import { PresentationProvider } from '../../../presentation/react';
+import { validateRegistry } from '../../../presentation/registry';
+import { createThemeResolver } from '../../../presentation/theme';
+import { BetaMark } from '../../../shared/ui/BetaMark';
+import { OfficeBar } from './OfficeBar';
 
 const snapshot: PresentationSnapshot = {
   locale: createLoadedLocale(

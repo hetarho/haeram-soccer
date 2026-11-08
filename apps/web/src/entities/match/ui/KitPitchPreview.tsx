@@ -2,19 +2,19 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { MatchAppearance } from '../../../../../../packages/contracts/src/identity';
-import { previewLines, previewPose } from '../../../entities/match/lib/identityPreview';
+import { previewLines, previewPose } from '../lib/identityPreview';
 import {
   createFigurePainter,
   playerLook,
   type FigurePainter,
-} from '../../../entities/match/lib/figurePainting';
-import { matchLook } from '../../../entities/match/lib/matchAppearance';
+} from '../lib/figurePainting';
+import { matchLook } from '../lib/matchAppearance';
 import {
   drawNumberTag,
   numberTagStyle,
   placeNumberTags,
   type NumberTagInput,
-} from '../../../entities/match/lib/numberTags';
+} from '../lib/numberTags';
 import s from './KitPitchPreview.module.css';
 import {
   createGroundPainter,
@@ -23,9 +23,9 @@ import {
   paintPitchGround,
   PITCH_PAD,
   type PitchSkin,
-} from '../../../entities/match/lib/pitchPainting';
-import { usePitchSkin } from '../../../entities/match/model/usePitchSkin';
-export { markerRadius } from '../../../entities/match/lib/pitchPainting';
+} from '../lib/pitchPainting';
+import { usePitchSkin } from '../model/usePitchSkin';
+export { markerRadius } from '../lib/pitchPainting';
 
 /**
  * A static example shape for one side in pitch units, keeper first, inside its own half; the away

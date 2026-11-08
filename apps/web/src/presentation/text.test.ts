@@ -10,7 +10,6 @@ import { LocalizedMessage } from './LocalizedMessage';
 import { displayMessage, localizeText, localizeValue, setTextLocale } from './text';
 import type { LocalePack } from './contracts';
 import { validateRegistry } from './registry';
-import { TierStep, TraitStep } from '../pages/start/ui/StartFlow';
 
 const korean: LocalePack = JSON.parse(
   readFileSync(new URL('../../public/presentation/locales/ko-KR.json', import.meta.url), 'utf8'),
@@ -35,28 +34,6 @@ const select = (messages: LocalePack['messages']) =>
 afterEach(() => setTextLocale());
 
 describe('source prose and display translation', () => {
-  it('renders the actual owner choices without Korean leakage in every non-default locale', () => {
-    const directory = new URL('../../public/presentation/locales/', import.meta.url);
-    const registry = validateRegistry(
-      JSON.parse(readFileSync(new URL('index.json', directory), 'utf8')),
-      'locale',
-    );
-    for (const entry of registry.entries) {
-      if (entry.id === registry.defaultId) continue;
-      const pack: LocalePack = JSON.parse(readFileSync(new URL(entry.resource, directory), 'utf8'));
-      setTextLocale(createLoadedLocale(registry, pack, korean));
-      const markup = renderToStaticMarkup(
-        createElement(
-          'main',
-          null,
-          createElement(TierStep, { tier: 'midsize', onChange: () => {} }),
-          createElement(TraitStep, { traits: [], onChange: () => {} }),
-        ),
-      );
-      expect(markup, entry.id).not.toMatch(/[가-힣]/);
-      expect(markup, entry.id).not.toMatch(/\{p\d+\}/);
-    }
-  });
   it('keeps every canonical source message unchanged without reading a locale', () => {
     for (const id of Object.keys(sourceMessages) as SourceMessageId[])
       expect(message(id)).toBe(sourceMessages[id]);

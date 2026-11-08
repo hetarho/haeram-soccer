@@ -26,7 +26,7 @@ import { Money } from '../../../shared/ui/Money';
 import { replaceQuery, TabList, useAddressTab } from '../../../shared/ui/PageTabs';
 import { Pitch } from '../../../features/match-viewer/ui/Pitch';
 import { PlayerLink } from '../../../entities/player';
-import { archivePlayback } from '../lib/replay';
+import { archivePlayback } from '../../../entities/match/lib/replay';
 import { SeasonAnalysis } from './SeasonAnalysis';
 import { TransferRecords } from './TransferRecords';
 import { BallonDorView } from './BallonDorView';

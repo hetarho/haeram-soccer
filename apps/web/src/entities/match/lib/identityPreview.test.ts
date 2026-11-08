@@ -25,7 +25,7 @@ import {
   markerRadius,
   paintKitPreview,
   PREVIEW_FORMATION,
-} from '../../../features/match-prep/ui/KitPitchPreview';
+} from '../ui/KitPitchPreview';
 
 function deepFreeze<T>(value: T): T {
   if (value && typeof value === 'object') {

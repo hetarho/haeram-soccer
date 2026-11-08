@@ -17,7 +17,7 @@ import { fullStatsRead } from '../../../../../../packages/engine/src/npc-stats';
 import { transferredScorerWorld } from '../../../../../../tests/fixtures/transferred-scorer';
 import { cachedWorld } from '../../../../../../tests/fixtures/cached-world';
 import { simulatedWorld, withCandidateModel } from '../../../../../../tests/fixtures/worlds';
-import { hundredths, recordCounters } from '../../match/lib/advanced';
+import { hundredths, recordCounters } from '../../../entities/match/lib/advanced';
 import {
   fullStatsAdvanced,
   fullStatsAppearances,
@@ -29,10 +29,10 @@ import {
   leagueStatsScope,
   orderClubs,
   perMatch,
-} from './fullStatsView';
-import { FullLeaders } from '../../../pages/journal/ui/LeagueFullStats';
+} from '../../../entities/league/lib/fullStatsView';
+import { FullLeaders } from '../ui/LeagueFullStats';
 import s from '../../../shared/ui/styles/LeagueInsights.module.css';
-import { appearanceText, performanceRows } from '../../player/lib/playerAnalysis';
+import { appearanceText, performanceRows } from '../../../entities/player/lib/playerAnalysis';
 
 /** Synthetic, marked rows: values chosen to read easily, not settled football. */
 const metrics = (values: Partial<Record<number, number>> = {}): Metrics =>

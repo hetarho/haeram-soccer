@@ -17,7 +17,7 @@ import { gameActionsBlocked, gameStore, useGameState } from '../../../runtime/st
 import { ownSeasonFixtures } from '../../../entities/league/lib/fixtures';
 import { competitionLabel } from '../../../presentation/format';
 import { KIT_ROLE_LABELS } from '../../../entities/match/lib/identityPreview';
-import { KitPitchPreview } from './KitPitchPreview';
+import { KitPitchPreview } from '../../../entities/match/ui/KitPitchPreview';
 import { KitSwatch } from '../../../entities/match/ui/KitSwatch';
 import { matchLook } from '../../../entities/match/lib/matchAppearance';
 import { worldSelector } from '../../../shared/lib/liveState';

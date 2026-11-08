@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import type { MatchRecord } from '../../../../../packages/contracts/src/types';
-import { emptyPlayerDetail, emptyTeamDetail } from '../../../../../packages/contracts/src/detail';
-import { cellName } from '../../../../../packages/engine/src/grid/pitch';
-import { matchComparison } from '../../entities/match/lib/advanced';
-import { GLOSSARY, glossaryEntry } from './glossaryEntries';
+import type { MatchRecord } from '../../../../../../packages/contracts/src/types';
+import { emptyPlayerDetail, emptyTeamDetail } from '../../../../../../packages/contracts/src/detail';
+import { cellName } from '../../../../../../packages/engine/src/grid/pitch';
+import { matchComparison } from './advanced';
+import { GLOSSARY, glossaryEntry } from '../../../shared/ui/glossaryEntries';
 
 const metrics = () => Array<number>(12).fill(0);
 

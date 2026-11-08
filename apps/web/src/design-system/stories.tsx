@@ -86,7 +86,7 @@ import { identityOf } from '../../../../packages/engine/src/club-identity';
 import { KIT_ROLES } from '../../../../packages/contracts/src/identity';
 import { ClubCrest } from '../entities/club/ui/ClubCrest';
 import { KitSwatch } from '../entities/match/ui/KitSwatch';
-import { KitPitchPreview } from '../features/match-prep/ui/KitPitchPreview';
+import { KitPitchPreview } from '../entities/match/ui/KitPitchPreview';
 import { editorPreviewAppearance, KIT_ROLE_LABELS } from '../entities/match/lib/identityPreview';
 import { DirectionAreas } from '../pages/club/ui/DirectionFacts';
 import { FacilityOverview } from '../pages/club/ui/FacilityOverview';

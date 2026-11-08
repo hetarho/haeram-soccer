@@ -5,23 +5,23 @@ import type {
   GameSettings,
   ResponsibilityKey,
   World,
-} from '../../../../../packages/contracts/src/types';
+} from '../../../../../../packages/contracts/src/types';
 import {
   defaultSettings,
   RESPONSIBILITY_KEYS,
-} from '../../../../../packages/engine/src/responsibilities';
-import type { StopReason } from '../../../../../packages/engine/src/stopping';
-import type { GameClient } from '../../runtime/client';
-import type { ProgressionController } from '../../runtime/progression';
-import { ApprovalQueue } from '../../pages/club/ui/ApprovalQueue';
+} from '../../../../../../packages/engine/src/responsibilities';
+import type { StopReason } from '../../../../../../packages/engine/src/stopping';
+import type { GameClient } from '../../../runtime/client';
+import type { ProgressionController } from '../../../runtime/progression';
+import { ApprovalQueue } from './ApprovalQueue';
 import {
   approvalGroups,
   orderApprovals,
   requestSubject,
   requestTitle,
   returnFocus,
-} from './approvalOrder';
-import { useTaskMemory } from './taskMemory';
+} from '../../../shared/routing/approvalOrder';
+import { useTaskMemory } from '../../../shared/routing/taskMemory';
 
 const request = (id: string, responsibility: ResponsibilityKey, extra: Partial<StopReason> = {}) =>
   ({

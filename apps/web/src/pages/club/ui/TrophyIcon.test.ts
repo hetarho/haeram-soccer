@@ -13,7 +13,7 @@ vi.mock('../../../presentation/react', async (original) => ({
   ...(await original<typeof import('../../../presentation/react')>()),
   useOptionalTheme: () => theme,
 }));
-vi.mock('../../../app/ui/App', () => ({
+vi.mock('../../../shared/ui/Panel', () => ({
   Panel: ({ children }: { children: ReactNode }) => createElement('section', null, children),
 }));
 vi.mock('./PlayerSheet', () => ({ PlayerLink: () => null }));

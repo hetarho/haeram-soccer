@@ -1,7 +1,8 @@
 import { createElement, type ReactElement, type ReactNode } from 'react';
-import { TakeoverConfirm } from '../../../pages/start/ui/ClubListing';
+import { TakeoverConfirm } from '../ui/ClubListing';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { readFileSync } from 'node:fs';
 import localeRegistryData from '../../../../public/presentation/locales/index.json';
 import localeData from '../../../../public/presentation/locales/ko-KR.json';
 import themeRegistryData from '../../../../public/presentation/themes/index.json';
@@ -23,17 +24,17 @@ import type {
   PresentationController,
   PresentationSnapshot,
 } from '../../../presentation/controller';
-import { validateLocalePack, validateThemePack } from '../../../presentation/contracts';
+import {
+  validateLocalePack,
+  validateThemePack,
+  type LocalePack,
+} from '../../../presentation/contracts';
+import { setTextLocale } from '../../../presentation/text';
 import { createLoadedLocale } from '../../../presentation/locale';
 import { PresentationProvider } from '../../../presentation/react';
 import { validateRegistry } from '../../../presentation/registry';
 import { createThemeResolver } from '../../../presentation/theme';
-import {
-  DecadeStep,
-  GenerationProgress,
-  StartFlow,
-  TraitStep,
-} from '../../../pages/start/ui/StartFlow';
+import { DecadeStep, GenerationProgress, StartFlow, TierStep, TraitStep } from '../ui/StartFlow';
 import {
   canAfford,
   DECADE_LINES,
@@ -50,7 +51,7 @@ import {
   TRAIT_EFFECTS,
   toggleTrait,
   traitDifficulty,
-} from './startChoices';
+} from '../../../entities/league/lib/startChoices';
 
 const snapshot: PresentationSnapshot = {
   locale: createLoadedLocale(
@@ -335,5 +336,37 @@ describe('start flow screens', () => {
     expect(html).toMatch(/aria-label="United[^"]*자금 부족"/);
     // The strongest club comes first.
     expect(html.indexOf('aria-label="United')).toBeLessThan(html.indexOf('aria-label="Rovers'));
+  });
+});
+
+describe('start flow translation', () => {
+  const korean: LocalePack = JSON.parse(
+    readFileSync(
+      new URL('../../../../public/presentation/locales/ko-KR.json', import.meta.url),
+      'utf8',
+    ),
+  );
+  afterEach(() => setTextLocale());
+  it('renders the actual owner choices without Korean leakage in every non-default locale', () => {
+    const directory = new URL('../../../../public/presentation/locales/', import.meta.url);
+    const registry = validateRegistry(
+      JSON.parse(readFileSync(new URL('index.json', directory), 'utf8')),
+      'locale',
+    );
+    for (const entry of registry.entries) {
+      if (entry.id === registry.defaultId) continue;
+      const pack: LocalePack = JSON.parse(readFileSync(new URL(entry.resource, directory), 'utf8'));
+      setTextLocale(createLoadedLocale(registry, pack, korean));
+      const markup = renderToStaticMarkup(
+        createElement(
+          'main',
+          null,
+          createElement(TierStep, { tier: 'midsize', onChange: () => {} }),
+          createElement(TraitStep, { traits: [], onChange: () => {} }),
+        ),
+      );
+      expect(markup, entry.id).not.toMatch(/[가-힣]/);
+      expect(markup, entry.id).not.toMatch(/\{p\d+\}/);
+    }
   });
 });

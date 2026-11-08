@@ -1,29 +1,29 @@
 import { createElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
-import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
-import { SEASON_END_DAY, seasonDayOf } from '../../../../../../packages/engine/src/calendar';
+import type { SeasonArchive, World } from '../../../../../packages/contracts/src/types';
+import { careerWorld } from '../../../../../packages/engine/src/career.testkit';
+import { SEASON_END_DAY, seasonDayOf } from '../../../../../packages/engine/src/calendar';
 import {
   FAN_MOOD,
   FFP,
   OWNER_BUSINESS,
   OWNER_LIVING,
   OWNER_TRAITS,
-} from '../../../../../../packages/engine/src/owner-config';
-import { scaleBy } from '../../../../../../packages/engine/src/primitives';
-import { withOwner } from '../../../../../../packages/engine/src/testing';
-import type { ClientState } from '../../../runtime/client';
-import type { View } from '../../../runtime/protocol';
-import { officeRead } from '../../../runtime/officeRead';
-import { gameStore, initialClientState } from '../../../runtime/store';
-import korean from '../../../../public/presentation/locales/ko-KR.json';
-import { CashAlarm } from '../../../widgets/cash-alarm/ui/CashAlarm';
-import { ClubOverview } from '../../../widgets/club-overview/ui/ClubOverview';
-import { GameOver } from '../../../pages/game-over/ui/GameOver';
-import { HudCash } from '../../../app/ui/HudCash';
-import { OwnerSheetBody } from '../ui/OwnerSheet';
-import { seasonBooks } from '../../player/lib/teamState';
+} from '../../../../../packages/engine/src/owner-config';
+import { scaleBy } from '../../../../../packages/engine/src/primitives';
+import { withOwner } from '../../../../../packages/engine/src/testing';
+import type { ClientState } from '../../runtime/client';
+import type { View } from '../../runtime/protocol';
+import { officeRead } from '../../runtime/officeRead';
+import { gameStore, initialClientState } from '../../runtime/store';
+import korean from '../../../public/presentation/locales/ko-KR.json';
+import { CashAlarm } from '../../widgets/cash-alarm/ui/CashAlarm';
+import { ClubOverview } from '../../widgets/club-overview/ui/ClubOverview';
+import { GameOver } from '../../pages/game-over/ui/GameOver';
+import { HudCash } from './HudCash';
+import { OwnerSheetBody } from '../../entities/office/ui/OwnerSheet';
+import { seasonBooks } from '../../entities/player/lib/teamState';
 import {
   businessChance,
   careerOver,
@@ -41,10 +41,10 @@ import {
   ownerStatuses,
   stakeAmount,
   stakeOutlook,
-} from './ownerFigures';
+} from '../../entities/office/lib/ownerFigures';
 
-vi.mock('../../../presentation/react', async (original) => ({
-  ...(await original<typeof import('../../../presentation/react')>()),
+vi.mock('../../presentation/react', async (original) => ({
+  ...(await original<typeof import('../../presentation/react')>()),
   useLocale: () => ({
     t: (id: string, values: Record<string, string> = {}) =>
       String(korean.messages[id as keyof typeof korean.messages] ?? id).replace(
@@ -53,11 +53,11 @@ vi.mock('../../../presentation/react', async (original) => ({
       ),
   }),
 }));
-vi.mock('../../../runtime/store', async (original) => ({
-  ...(await original<typeof import('../../../runtime/store')>()),
+vi.mock('../../runtime/store', async (original) => ({
+  ...(await original<typeof import('../../runtime/store')>()),
   useGameState: (selector: (state: ClientState) => unknown) => selector(gameStore.getState()),
 }));
-vi.mock('../../../shared/ui/Dialog', () => ({
+vi.mock('../../shared/ui/Dialog', () => ({
   Dialog: ({ children }: { children: ReactNode }) => createElement('section', null, children),
 }));
 

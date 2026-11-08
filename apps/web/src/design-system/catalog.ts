@@ -335,7 +335,7 @@ export const STORIES: Story[] = [
     [
       'entities/club/ui/ClubCrest',
       'entities/match/ui/KitSwatch',
-      'features/match-prep/ui/KitPitchPreview',
+      'entities/match/ui/KitPitchPreview',
     ],
     sourceMessage('copy.catalog.d179c2b43e'),
   ),
