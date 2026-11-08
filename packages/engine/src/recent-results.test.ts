@@ -165,7 +165,7 @@ describe('retained club results', () => {
     );
     w.fixtures[5]!.score = undefined;
     w.fixtures[17]!.score = undefined;
-    // A same-id fixture in a later list replaces the earlier copy where it was first seen.
+    // A same-id fixture in a later list replaces the earlier copy, so its score is the one returned.
     w.cups = [
       {
         fixtures: [
@@ -199,10 +199,13 @@ describe('retained club results', () => {
 
     const scanned = structuredClone(w);
     const expected = structuredClone(w);
-    scanned.recentResults = expected.recentResults = { b: [] };
+    // Each world gets its own tracked club, so both runs skip it and write the rest themselves.
+    scanned.recentResults = { b: [] };
+    expected.recentResults = { b: [] };
     retainRecentResults(scanned);
     reference.retainRecentResults(expected);
     expect(JSON.stringify(scanned.recentResults)).toBe(JSON.stringify(expected.recentResults));
+    expect(Object.keys(scanned.recentResults!).sort()).toEqual([...clubs].sort());
   });
 
   it('retains untracked clubs when an older save closes before playing another match', () => {
