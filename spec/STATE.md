@@ -820,10 +820,10 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T720 | move the web UI out of the flat `ui/` folder into Feature-Sliced layers | ARCH | - | todo |
 | T725 | scan settled fixtures with plain loops when a club has no recent results yet | ARCH | - | todo |
-| T726 | move the match viewer's own modules out of the match entity | ARCH | T720 | todo |
-| T727 | read cup calendars, knockout counts and aptitude labels from engine leaves | ARCH | T720 T726 | todo |
+| T726 | move the match viewer's own modules out of the match entity | ARCH | - | todo |
+| T727 | read cup calendars, knockout counts and aptitude labels from engine leaves | ARCH | T726 | todo |
+| T728 | close the layer lint's gaps and guard side-effect-only imports | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -852,6 +852,7 @@
 - the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
 
 ## log
+- 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
 - 261109 T721–T724 done (lane dev-cost, worker fs09-w2, reviewer fs09-r1 approved with P3 notes only): every CI job has a time limit and every browser two shards; host transcendental `Math.*` (log2 and hypot included) fails lint in engine/contracts source, the four kit-pattern hypots and both knockout log2s now portable/integer with the contract golden unchanged; typecheck and format:check reuse per-checkout caches (warm 2.7 s / 5.2 s from 27 s / 18 s). Integrated on main as c1aba11f..ffa2b7d2 (tree identical to the reviewed 009a49db); verify:batch and CI pending the run's single push fs09
 - 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720; ARCH r33 (CI shards and limits), F2–F4 adopted → T721–T723 (lane dev-cost), F5 rejected, F6 parked, F7 suggested
 - 261109 T714 done: the journey helper settles the office before clicking 오버뷰 (Playwright's retried pre-click scroll moved the view, not the app's focus); CI 42494165472 on 145635c3 green in every job, main green again since 11-04. mt08
