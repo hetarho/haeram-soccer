@@ -43,6 +43,8 @@
  * close, every top-flight book's competition money and, for each club the means level sells down,
  * the level its book would have kept with that season's money in it (`meansLevel`'s own search),
  * in `<out>.extra.json`; `--screen` reads those extras.
+ * T712: `--ability-fit` lives the world, from its generation, on CLUB-25 r61's ability-fit wage (a
+ * measurement override of `ABILITY_FIT`); the production side of a comparison runs without it.
  *
  *   pnpm exec tsx scripts/era-wage-spread.ts --seeds owner-balance-0 --spread table.json --means \
  *     --observe-cups --out screen.json                                     T697's screen world
@@ -76,6 +78,7 @@ import { BOOK_COMPETITIONS, keepsBooks } from '../packages/engine/src/books';
 import { RESULTS_LUCK } from '../packages/engine/src/results-only';
 import { MEANS_LEVEL, meansLevel, squadCostAt } from '../packages/engine/src/dynamics';
 import {
+  ABILITY_FIT,
   MARKET_CONFIG,
   marketPoints,
   marketWageAt,
@@ -176,6 +179,12 @@ const MEANS = args.includes('--means');
 /** T697: competition money in force (`--cups`), or observed beside the books without it. */
 const CUPS = args.includes('--cups');
 const OBSERVE_CUPS = args.includes('--observe-cups');
+/**
+ * T712: CLUB-25 r61's ability-fit wage in the lived world from its generation (`--ability-fit`), a
+ * measurement override of `ABILITY_FIT`, never a game setting.
+ */
+const FIT = args.includes('--ability-fit');
+if (FIT) ABILITY_FIT.inForce = true;
 /** T698: a placebo set, the world's first season's results drawn with this salt (`--placebo`). */
 const PLACEBO = option('placebo', '');
 

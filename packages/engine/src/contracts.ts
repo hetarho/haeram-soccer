@@ -11,7 +11,6 @@ import type {
   UnhappyReason,
   World,
 } from '../../contracts/src/types';
-import { country } from '../../catalogs/src/index';
 import { clamp, random, ratio, scaleBy } from './primitives';
 import { activePlayers, clubOf, overall, UNHAPPY_PENALTY } from './player-state';
 import { addEvent } from './events';
@@ -31,8 +30,11 @@ export {
   marketValueAt,
   marketWage,
   marketValue,
+  divisionFor,
+  ABILITY_FIT,
+  wageDivision,
 } from './market-prices';
-import { ownStarters, tierLevel } from './world';
+import { ownStarters } from './world';
 import { policyEffects, policyOf } from './policy';
 import { trainingGroundTerms } from './facility-model';
 import { talkRuleOf } from './hiring';
@@ -58,16 +60,6 @@ import { financeProjection } from './projection';
 import { isDelegated } from './responsibilities';
 import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
 import { BALLON_DOR_CONFIG, ballonDorPremium } from './ballon-dor';
-
-/**
- * The division a player's ability suits in a country, between tiers where it falls between their
- * levels: where a market player plays, so where his asking fee is set. Ability below the last
- * division's level reaches at most one step deeper, the price scale's floor (→CLUB-25).
- */
-export function divisionFor(code: string, ability: number) {
-  const top = tierLevel(0);
-  return clamp((top - ability) / (top - tierLevel(1)), 0, country(code).groups.length);
-}
 
 /**
  * Player agents (→CLUB-30): rated 1–5, drawn once when the player is created, more often strong

@@ -1,7 +1,9 @@
 import type { Player, World } from '../../contracts/src/types';
+import { country } from '../../catalogs/src/index';
 import { clamp } from './primitives';
 import { clubOf, overall } from './player-state';
 import { footballQuote } from './quotes';
+import { tierLevel } from './tier-levels';
 
 /**
  * Market wages and transfer values (→CLUB-25), in 1901 price units that the football index
@@ -215,7 +217,34 @@ export function marketValueUnits(
   return years * transferPremium(year) ** reach * scaleUnits(points, division);
 }
 
-/** A player's market wage in `code` and `year` money; `ovr` is his overall, when already read. */
+/**
+ * The division a player's ability suits in a country, between tiers where it falls between their
+ * levels: where a market player plays, so where his asking fee is set. Ability below the last
+ * division's level reaches at most one step deeper, the price scale's floor (→CLUB-25).
+ */
+export function divisionFor(code: string, ability: number) {
+  const top = tierLevel(0);
+  return clamp((top - ability) / (top - tierLevel(1)), 0, country(code).groups.length);
+}
+
+/**
+ * CLUB-25 r61's ability-fit wage: a player is paid on his club's division or on the division his
+ * ability suits (`divisionFor`) when that is higher, every club alike. Built behind this switch
+ * (T712) and in force only once CLUB-25's gate passes on LEAGUE-13's careers and CLUB-48's books
+ * and champions; `--ability-fit` in the balance scripts sets it for a measurement, never a game
+ * setting.
+ */
+export const ABILITY_FIT = { inForce: false };
+
+/** The division a player of overall `ovr` is paid on at a club of `division` (→CLUB-25). */
+export function wageDivision(code: string, division: number, ovr: number) {
+  return ABILITY_FIT.inForce ? Math.min(division, divisionFor(code, ovr)) : division;
+}
+
+/**
+ * A player's market wage in `code` and `year` money at a club of `division`, priced on the division
+ * he is paid on (`wageDivision`); `ovr` is his overall, when already read.
+ */
 export function marketWageAt(
   code: string,
   year: number,
@@ -226,7 +255,13 @@ export function marketWageAt(
   return footballQuote(
     code,
     year,
-    marketWageUnits(division, ovr, year - p.born, p.potential, starPaySpread(code, year)),
+    marketWageUnits(
+      wageDivision(code, division, ovr),
+      ovr,
+      year - p.born,
+      p.potential,
+      starPaySpread(code, year),
+    ),
   );
 }
 /** A player's transfer value in `code` and `year` money. */

@@ -188,10 +188,8 @@ export function makeManager(
 import { initialElo } from './elo';
 export { initialElo } from './elo';
 export { EUROPEAN_CUP_START } from './calendar';
-/** Generated strength of a club in a pyramid tier: each tier is about 11 points below the one above. */
-export function tierStrengthRange(tier: number): [number, number] {
-  return [72 - tier * 11, 82 - tier * 11];
-}
+import { tierLevel } from './tier-levels';
+export { tierLevel, tierStrengthRange } from './tier-levels';
 /**
  * Long-run size of each club relative to its division, stable for the career (→LEAGUE-10). Every
  * country has three giants (+13, +11, +9) and four big clubs (+6, +5, +5, +4), drawn mostly from
@@ -237,11 +235,6 @@ export function stature(seed: string, id: string) {
     table.get(id) ??
     (id.startsWith('euro:') ? Math.round(random(`${seed}:stature:${id}`)() * 12) - 4 : 0)
   );
-}
-/** Where a club of this stature settles in a division. */
-export function tierLevel(tier: number) {
-  const [low, high] = tierStrengthRange(tier);
-  return (low + high) / 2;
 }
 const colorOf = (r: () => number) =>
   '#' +
