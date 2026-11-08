@@ -21,6 +21,7 @@
 | fs09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T16:07Z | 2026-11-08T16:07Z | - |
 
 ## inbox
+- 261109 decided T720 ARCH-4: T720's deviations → accepted: layer modules built free of import side effects (vite `moduleSideEffects`), since slice indexes otherwise pulled 21 lazy screens into the entry (ARCH-4 r34 records the rule); the owner-office overlay in `app/office` (only app may lazy-load a page) instead of extracting Rich's approval views (1320 of 1709 lines with all 8 orchestration exceptions); `format.ts` in `presentation/` (its locale formatters are installed there); RecordsRoom inside `pages/club`; 71 JS chunks instead of 70 (PendingHandover split from OwnerOfficeView, every lazy screen still its own chunk) (alt: send T720 back to extract the approval views | merge lazy screens into the entry) fs09
 - 261109 decided ARCH-23 T721 review/self-improve-local-261109: whether splitting Chromium and Firefox journeys is within the run's delegation → yes: the same specs, retries and browsers run, only in two shards each, so ARCH-23 r33 records it with job time limits (alt: park the sharding for the owner | three shards each) fs09
 - 261109 decided T722 T723 review/self-improve-local-261109: which development-cost proposals to adopt → the portable-math lint guard (6 of 10 red main runs) and incremental typecheck/format caches; no performance change, since no recorded hotspot has a result-identical A/B measurement within the window (F5 rejected, F7 suggested) (alt: an unmeasured host view optimisation) fs09
 - 261109 decided T722 T724: T722's guard leaves `Math.log2` out because knockout.ts:28 and stages.ts:70 still call it → T722 kept as the first step and T724 replaces both with exact integer forms checked against the old expressions, then adds `log2` (alt: hold T722 until both are gone | leave `log2` unguarded) fs09
@@ -785,13 +786,13 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 33 | 33 | - | 2 |
+| ARCH | 34 | 34 | - | 2 |
 | WEB | 211 | 211 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
-| KIT | 9 | 9 | - | 0 |
+| KIT | 10 | 10 | - | 0 |
 | CLUB | 61 | 61 | - | 0 |
-| MATCH | 56 | 56 | - | 0 |
+| MATCH | 57 | 57 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
 | ECON | 49 | 49 | - | 0 |

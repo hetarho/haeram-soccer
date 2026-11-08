@@ -1,11 +1,11 @@
 # KIT Club identity and match kits
-> r9 | Let owners design a recognisable club and see its selected kits in match observation.
+> r10 | Let owners design a recognisable club and see its selected kits in match observation.
 
 ## decisions
 - KIT-1 [o] The editor offers exactly three colour choices: 홈 (home), 어웨이 (away) and 세컨 (third). Each is its named shirt’s base colour.
   - The stored representative palette follows home, away and third after a colour edit.
   - A crest's background pattern and a shirt's pattern are independent choices.
-- KIT-2 [o] A crest is one composition of the component catalogue — the six outer shapes, ten background patterns and twenty emblems in `apps/web/src/ui/crests.ts` — coloured from the home and away choices (→KIT-4/10). Designers compose their drafts' crests from it (→!WEB-108); there are no ready-made crests and no owner-side crest composition. ← with no editor, a fixed set of six ready-made crests has nobody to offer it to
+- KIT-2 [o] A crest is one composition of the component catalogue — the six outer shapes, ten background patterns and twenty emblems in `apps/web/src/entities/club/lib/crests.ts` — coloured from the home and away choices (→KIT-4/10). Designers compose their drafts' crests from it (→!WEB-108); there are no ready-made crests and no owner-side crest composition. ← with no editor, a fixed set of six ready-made crests has nobody to offer it to
   - The adopted crest agrees with the draft shown; adoption never introduces an undisclosed automatically chosen secondary colour.
 - KIT-3 [o] Each of home, away and third is a kit: its shirt (→KIT-1/4/5), shorts and socks.
   - Shorts and socks colours are free choices per kit, not limited to the three named colours.
@@ -67,6 +67,7 @@
 - The storage, responsiveness and reference-device budgets remain →SAVE-4/13 and →WEB-19; pattern detail must remain legible at the desktop match scale and in the large previews; at phone widths team colours, facing and large actions must remain legible (→MATCH-36).
 
 ## chg
+- r10 261109 KIT-2✎ catalogue path `apps/web/src/ui/crests.ts`→`apps/web/src/entities/club/lib/crests.ts` (T720 move; content unchanged)
 - r9 261103 KIT-2✎ crest editing from ready-made designs with 랜덤 and 직접 꾸미기→designers compose crests from the component catalogue, no ready-made crests; flow✎ Crest and Management through the designer commission
 - r8 261103 KIT-9✎ +adopting a draft lowers 팬 민심, the name never changes; KIT-10✎ editor before founding→no editor before the takeover, designer drafts start linked; KIT-14- founding crests and drafts removed; flow✎ Founding→Takeover keeps the generated identity
 - r7 261102 KIT-6✎ choice made in match preparation→the kit section of the next-match detailed report; skipping preparation→never opening that section; KIT-8✎ goalkeeper fallback shown in match preparation→in the next-match detailed report

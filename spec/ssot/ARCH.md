@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r33 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r34 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -43,7 +43,7 @@
   - React may display projections and submit commands; it does not directly modify canonical game state.
   - UI code imports engine values only from read leaves: modules whose runtime import closure reaches no world generation, season, match or grid-execution orchestration. Constants, labels and pure reads the UI needs live in such leaves beside their data. ← a label or read pulled through an orchestration module ties the screen and its tests to every engine change
   - Existing UI imports of orchestration modules are listed exceptions guarded by an architecture test: a new UI→orchestration import fails, and so does a listed import that no longer exists, so the list only shrinks. Moving domain reads into the published view instead is a separate measured decision.
-  - Web UI source follows Feature-Sliced Design, highest first: app → pages → widgets → features → entities → shared. A layer imports only lower layers; slices of one layer never import each other, except an entity naming another through that entity's `@x/<consumer>.ts` cross-import file; code outside a slice imports only its `index.ts`, which opens with what the slice is for. A dynamic `import()` names the module file instead of the index so lazy chunks stay split. `runtime`, `adapters` and `presentation` sit below every layer and never import one, keeping the Worker free of React (→ARCH-6). ESLint enforces the direction; no legacy flat UI folder remains. ← a change and its reading stay inside one cohesive folder behind one public API, and a slice's consumers are visible from its index
+  - Web UI source follows Feature-Sliced Design, highest first: app → pages → widgets → features → entities → shared. A layer imports only lower layers; slices of one layer never import each other, except an entity naming another through that entity's `@x/<consumer>.ts` cross-import file; code outside a slice imports only its `index.ts`, which opens with what the slice is for. A dynamic `import()` names the module file instead of the index, and the build treats layer modules as free of import side effects (a module joins a chunk only when the chunk uses one of its exports), so lazy chunks stay split; a layer module therefore never relies on being imported only for its side effects. `runtime`, `adapters` and `presentation` sit below every layer and never import one, keeping the Worker free of React (→ARCH-6). ESLint enforces the direction; no legacy flat UI folder remains. ← a change and its reading stay inside one cohesive folder behind one public API, and a slice's consumers are visible from its index
 - ARCH-5 [o] A versioned deterministic engine owns game progression.
   - Inputs: world seed, explicit commands and the game day each applies at, engine/rule versions, and catalog versions.
   - Use a documented seeded PRNG with portable test vectors and separately named streams for generation, matches, and other stochastic systems.
@@ -262,6 +262,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r34 261109 ARCH-4✎ lazy chunks kept split by dynamic `import()` of module files→also by building layer modules as free of import side effects; +a layer module never relies on a side-effect-only import
 - r33 261109 ARCH-23✎ browser jobs Chromium and Firefox in one shard, WebKit in two→every browser in two shards; +every CI job has a time limit (checks/unit 20 min, integration 45 min, browser shards 120 min)
 - r32 261109 ARCH-3✎ `apps/web/src/ui` React screens and view helpers→`app`, `pages`, `widgets`, `features`, `entities`, `shared` layers and the `lab`/`constants`/`design-system` tool entries; ARCH-4+ Feature-Sliced Design layer direction, slice public API, entity `@x` cross-imports, lazy `import()` of module files, infrastructure below every layer, no legacy flat UI folder
 - r31 261104 ARCH-32✎ deferred feature/engine extraction→resource-only prose, locale-independent source formatting and display-time resolution; mandatory executable guards for literals, keys, parameters and complete registered packs
