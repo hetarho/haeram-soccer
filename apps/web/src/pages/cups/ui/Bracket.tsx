@@ -4,7 +4,7 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useState } from 'react';
 import type { Fixture, KnockoutRound, World } from '../../../../../../packages/contracts/src/types';
 import { fixtureDate } from '../../../../../../packages/engine/src/calendar';
-import { legsOf } from '../../../../../../packages/engine/src/knockout';
+import { legsOf } from '../../../../../../packages/engine/src/competition-keys';
 import { tieAggregate } from '../../../../../../packages/engine/src/competition-keys';
 import { treeColumns, treeStart, type Slot } from '../lib/bracketTree';
 import { ClubLink } from '../../../entities/club';

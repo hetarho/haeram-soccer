@@ -1,5 +1,5 @@
 import type { World } from '../../../../../../packages/contracts/src/types';
-import { europeanEras } from '../../../../../../packages/engine/src/europe';
+import { europeanEras } from '../../../../../../packages/engine/src/competition-keys';
 /** Continental lineages under one key whatever the competition was called that season. */
 export const LINEAGES = [
   { key: 'ucl', first: 'European Cup', founded: 1955 },

@@ -13,22 +13,14 @@ import { simulateMatch } from './match';
 import type { DecideRule } from './grid/setup';
 import { recordMatch } from './season';
 import { fixtureDay } from './calendar';
-import { tieAggregate, tieId } from './competition-keys';
-export { roundLabel, tieAggregate, tieId } from './competition-keys';
+import { legsOf, tieAggregate, tieId } from './competition-keys';
+export { legsOf, roundLabel, roundsFor, tieAggregate, tieId } from './competition-keys';
 
 export type Settlement = (w: World, p: MatchPlayback) => void;
 
 /** A fixture is due on its day, or, for whole-round jumps, once its round has been reached. */
 export function isDue(w: World, f: Fixture, day?: number) {
   return !f.score && (day === undefined ? f.round <= w.round : fixtureDay(f) <= day);
-}
-
-/**
- * Knockout rounds needed to find one winner among `n` clubs, at least 1: ⌈log₂ n⌉, the bit length
- * of n − 1, exact in integers for the whole club counts it receives (below 2³²).
- */
-export function roundsFor(n: number) {
-  return 32 - Math.clz32(Math.max(2, n) - 1);
 }
 
 /**
@@ -98,21 +90,6 @@ export function tieFixtures(
         ]
       : [first];
   });
-}
-
-/** The legs of tie `t` in round `index` of the `year` season, in playing order. */
-export function legsOf(
-  w: World,
-  fixtures: readonly Fixture[],
-  key: string,
-  index: number,
-  t: number,
-  year = w.year,
-) {
-  const id = tieId(w, key, index, t, year);
-  return fixtures
-    .filter((f) => f.id === id || f.id === `${id}:2`)
-    .sort((a, b) => a.round - b.round);
 }
 
 /**

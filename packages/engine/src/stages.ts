@@ -1,14 +1,15 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Fixture } from '../../contracts/src/types';
-import { DOMESTIC_CUP_ROUNDS } from './cups';
 import {
   afterPhaseBack,
+  DOMESTIC_CUP_ROUNDS,
   type Era,
   europeanEras,
   knockoutLegs,
   LEGACY_EUROPE_CALENDAR,
-} from './europe';
-import { roundLabel, roundsFor } from './knockout';
+  roundLabel,
+  roundsFor,
+} from './competition-keys';
 
 /** Where a cup match stood: its competition, the stage as media name it and the leg of a tie. */
 export interface CupStage {

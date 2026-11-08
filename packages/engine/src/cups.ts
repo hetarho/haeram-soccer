@@ -3,8 +3,8 @@ import { awardReputation, REPUTATION_CONFIG } from './reputation';
 import type { DomesticCup, KnockoutRound, World } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { compareIds } from './primitives';
-import { cupKey, domesticCupName } from './competition-keys';
-export { cupKey, domesticCupName } from './competition-keys';
+import { cupKey, DOMESTIC_CUP_ROUNDS, domesticCupName } from './competition-keys';
+export { cupKey, DOMESTIC_CUP_ROUNDS, domesticCupName } from './competition-keys';
 import { addEvent } from './events';
 import { broadcastQuote } from './quotes';
 import { clubOf } from './player-state';
@@ -29,11 +29,6 @@ import {
   type Settlement,
 } from './knockout';
 
-/**
- * Midweek rounds of the domestic cup, final last (→LEAGUE-5): early September to a May final,
- * clear of every round the continental competitions use.
- */
-export const DOMESTIC_CUP_ROUNDS = [5, 11, 16, 23, 28, 35, 42] as const;
 /**
  * Cup prizes in units on the broadcasting index (→ECON-31): `ties` for each tie the own club wins,
  * by rounds left after it (semi-final first), and `honor` for the title.

@@ -63,7 +63,6 @@ export function uiOrchestrationImports(root: string): Record<string, string[]> {
 export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
   'apps/web/src/pages/club/ui/AcademyPanel.tsx': ['packages/engine/src/academy.ts'],
   'apps/web/src/widgets/away-summary/ui/AwaySummary.tsx': ['packages/engine/src/projection.ts'],
-  'apps/web/src/pages/cups/ui/Bracket.tsx': ['packages/engine/src/knockout.ts'],
   'apps/web/src/pages/club/ui/BusinessWorkbench.tsx': [
     'packages/engine/src/finance.ts',
     'packages/engine/src/investment.ts',
@@ -128,9 +127,6 @@ export const UI_ORCHESTRATION_IMPORTS: Record<string, string[]> = {
     'packages/engine/src/morale.ts',
     'packages/engine/src/training.ts',
   ],
-  'apps/web/src/pages/cups/lib/bracketTree.ts': ['packages/engine/src/europe.ts'],
-  'apps/web/src/pages/cups/lib/cupCompetitions.ts': ['packages/engine/src/europe.ts'],
-  'apps/web/src/pages/cups/lib/cupRoute.ts': ['packages/engine/src/stages.ts'],
   'apps/web/src/entities/player/lib/discipline.ts': ['packages/engine/src/world.ts'],
   'apps/web/src/entities/office/lib/officeChanges.ts': [
     'packages/engine/src/pending-work-preview.ts',
