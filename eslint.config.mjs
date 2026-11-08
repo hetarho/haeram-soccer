@@ -54,4 +54,28 @@ export default tseslint.config(
   restrict(['widgets'], [above(['pages']), PUBLIC_API, SIBLING]),
   restrict(['pages'], [PUBLIC_API, SIBLING]),
   restrict(['ui', 'design-system', 'runtime', 'adapters', 'presentation'], [PUBLIC_API]),
+  // Host transcendental Math is the CPU's C library (arm64 fuses multiply-adds), so its last bits
+  // differ between linux-x64 and darwin-arm64 and a season can settle otherwise (T713, →ARCH-5,
+  // ARCH-9). Engine and contracts source call portable-math.ts instead. `Math.log2` joins the list
+  // once knockout.ts's `roundsFor` and stages.ts's qualifier rounds stop calling it on whole counts.
+  {
+    files: [
+      'packages/engine/src/**/*.{js,mjs,ts,tsx}',
+      'packages/contracts/src/**/*.{js,mjs,ts,tsx}',
+    ],
+    ignores: ['**/*.test.*', '**/*.testkit.*', 'packages/engine/src/portable-math.ts'],
+    rules: {
+      'no-restricted-properties': [
+        'error',
+        ...'exp expm1 log log1p log10 sin cos tan asin acos atan atan2 sinh cosh tanh asinh acosh atanh cbrt hypot pow'
+          .split(' ')
+          .map((property) => ({
+            object: 'Math',
+            property,
+            message:
+              'Host Math gives other last bits on other CPUs; use packages/engine/src/portable-math.ts.',
+          })),
+      ],
+    },
+  },
 );

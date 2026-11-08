@@ -16,6 +16,7 @@
  * a boundary point written as a decimal does not flip its colour.
  */
 import type { ShirtDesign, ShirtPattern } from '../../contracts/src/identity';
+import { hypot } from './portable-math';
 
 /** A closed polygon of normalized `[x, y]` vertices; the last vertex joins the first. */
 export type Polygon = readonly (readonly [number, number])[];
@@ -117,7 +118,7 @@ function onSegment(
 ): boolean {
   const dx = bx - ax,
     dy = by - ay;
-  const length = Math.hypot(dx, dy);
+  const length = hypot(dx, dy);
   if (Math.abs(dx * (y - ay) - dy * (x - ax)) > EDGE_EPSILON * length) return false;
   const along = (x - ax) * dx + (y - ay) * dy;
   return along >= -EDGE_EPSILON * length && along <= length * length + EDGE_EPSILON * length;
@@ -137,7 +138,7 @@ export function insidePolygon(polygon: Polygon, x: number, y: number): boolean {
 }
 
 function normalizedRadius(x: number, y: number): number {
-  return Math.hypot(x - SHIRT_MARKER_CENTRE, y - SHIRT_MARKER_CENTRE) / SHIRT_MARKER_RADIUS;
+  return hypot(x - SHIRT_MARKER_CENTRE, y - SHIRT_MARKER_CENTRE) / SHIRT_MARKER_RADIUS;
 }
 
 /** Whether a point lies in the visible marker circle, its rim included. */
@@ -192,7 +193,7 @@ export const FIGURE_TORSO = Object.freeze({
 
 /** A point's normalized radius in an axis-aligned ellipse: 1 on its outline. */
 function ellipseRadius(x: number, y: number, cx: number, cy: number, rx: number, ry: number) {
-  return Math.hypot((x - cx) / rx, (y - cy) / ry);
+  return hypot((x - cx) / rx, (y - cy) / ry);
 }
 
 /**
@@ -208,7 +209,7 @@ export function insideFigureTorso(x: number, y: number): boolean {
     ry = cornerRadius;
   const dx = Math.max(rx - x, 0, x - (1 - rx)),
     dy = Math.max(ry - y, 0, y - (1 - ry));
-  if (Math.hypot(dx / rx, dy / ry) > 1 + EDGE_EPSILON) return false;
+  if (hypot(dx / rx, dy / ry) > 1 + EDGE_EPSILON) return false;
   return ellipseRadius(x, y, head.cx, head.cy, head.r, head.r * aspect) > 1 + EDGE_EPSILON;
 }
 
