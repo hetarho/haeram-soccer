@@ -23,6 +23,7 @@
 ## inbox
 - 261109 decided ARCH-23 T721 review/self-improve-local-261109: whether splitting Chromium and Firefox journeys is within the run's delegation → yes: the same specs, retries and browsers run, only in two shards each, so ARCH-23 r33 records it with job time limits (alt: park the sharding for the owner | three shards each) fs09
 - 261109 decided T722 T723 review/self-improve-local-261109: which development-cost proposals to adopt → the portable-math lint guard (6 of 10 red main runs) and incremental typecheck/format caches; no performance change, since no recorded hotspot has a result-identical A/B measurement within the window (F5 rejected, F7 suggested) (alt: an unmeasured host view optimisation) fs09
+- 261109 decided T722 T724: T722's guard leaves `Math.log2` out because knockout.ts:28 and stages.ts:70 still call it → T722 kept as the first step and T724 replaces both with exact integer forms checked against the old expressions, then adds `log2` (alt: hold T722 until both are gone | leave `log2` unguarded) fs09
 - 261109 parked review/self-improve-local-261109: F6 — the STATE inbox holds 735 lines (340 KB of 350 KB); `vibe brief` carries 33–52K tokens of it into every worker and loop prompt. Confirm the decided lines up to a date (reports keep them) and a session deletes them with one log line; also consider STATE cfg `brief: cited` and a narrower `always` (T713 brief 457→75 KB) fs09
 - 261109 suggest review/self-improve-local-261109: F7 — give `scripts/perf/ab.mjs` a host `view` workload so the remaining recorded hotspots (viewPublisher part serialisation, staffMarket/managerCandidates projections) can be measured result-identically before any speed-up fs09
 - 261109 decided ARCH-3 ARCH-4 T720 review/self-improve-local-261109: how far FSD goes in this run → the whole flat `ui/` folder into app/pages/widgets/features/entities/shared by measured import closure, entity `@x` cross-imports, lazy `import()` of module files, infrastructure (`runtime`/`adapters`/`presentation`) below every layer, one sequential worker with a reusable move codemod; the `presentation/` split deferred (alt: lower layers only, pages/widgets left in `ui/` | parallel move workers, which rewrite the same high-fan-in importers) fs09
@@ -820,6 +821,7 @@
 | T721 | give every CI job a time limit and every browser two shards | ARCH | - | todo |
 | T722 | reject host transcendental Math in engine and contracts source | ARCH | - | todo |
 | T723 | incremental typecheck and cached format check | ARCH | - | todo |
+| T724 | count knockout rounds with integer arithmetic and guard Math.log2 | ARCH | T722 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
