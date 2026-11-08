@@ -1,6 +1,6 @@
 import type { Player, Tactic } from '../../contracts/src/types';
 import { clamp } from './primitives';
-import { HOST_MATH, type MatchMath } from './portable-math';
+import { PORTABLE_MATH, type MatchMath } from './portable-math';
 import { fatigueLoad, unhappyPenalty } from './player-state';
 
 export const MATCH_DUEL_CONFIG = {
@@ -76,20 +76,20 @@ export const MATCH_DUEL_CONFIG = {
 
 const C = MATCH_DUEL_CONFIG;
 /** Diminishing returns on a skill margin: about linear up to half the saturation, then flat. */
-export const bend = (margin: number, math: MatchMath = HOST_MATH) =>
+export const bend = (margin: number, math: MatchMath = PORTABLE_MATH) =>
   C.saturation * math.tanh(margin / C.saturation);
 /** The strength gap a match plays at: close to the gap up to ~15 points, never past the cap. */
-export const effectiveGap = (gap: number, math: MatchMath = HOST_MATH) =>
+export const effectiveGap = (gap: number, math: MatchMath = PORTABLE_MATH) =>
   gap / Math.sqrt(Math.sqrt(1 + math.powInt(gap / C.gapSaturation, 4)));
 /** How much better than a chance's quality this shooter finishes against this keeper. */
-export const finishing = (shooting: number, keeping: number, math: MatchMath = HOST_MATH) =>
+export const finishing = (shooting: number, keeping: number, math: MatchMath = PORTABLE_MATH) =>
   math.exp(bend(shooting - keeping, math) / C.finishing) * (1 + (shooting - 55) / C.sharpness);
 /** Goal probability of a chance of quality `xg` for this shooter against this keeper. */
 export const goalChance = (
   xg: number,
   shooting: number,
   keeping: number,
-  math: MatchMath = HOST_MATH,
+  math: MatchMath = PORTABLE_MATH,
 ) => clamp(xg * finishing(shooting, keeping, math), 0.01, 0.8);
 export const targetChance = (goal: number, shooting: number) =>
   clamp(goal + C.onTarget + (shooting - 55) / 250, goal + 0.05, 0.95);

@@ -11,6 +11,7 @@ import { MATCH_MODEL_REVISIONS } from '../../../contracts/src/match-model';
 import { CELL_BASELINES } from '../grid/baselines';
 import { cellBand, cellLane } from '../grid/pitch';
 import { clamp, random } from '../primitives';
+import { cos, exp, log, tanh } from '../portable-math';
 import { AGGREGATE_CONFIG as C } from './config';
 import { participationIssues, sideCards, sideUnits, type AggregateUnits } from './input';
 import { deriveTeamFacts, inBoxCell, inGoalAreaCell } from './ledger';
@@ -53,14 +54,14 @@ export function aggregateStreams(
 function normal(r: Rng) {
   const u = Math.max(1e-12, r()),
     v = r();
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  return Math.sqrt(-2 * log(u)) * cos(2 * Math.PI * v);
 }
 function poisson(r: Rng, mean: number): number {
   if (!(mean > 0)) return 0;
   if (mean > 30) return Math.max(0, Math.round(mean + Math.sqrt(mean) * normal(r)));
   const u = r();
   let k = 0,
-    p = Math.exp(-mean),
+    p = exp(-mean),
     cdf = p;
   while (u > cdf && k < 200) {
     k++;
@@ -156,9 +157,9 @@ export function generateTeamFacts(
     );
   const r = streams.draw('latent');
   const latent: Latent = {
-    tempo: Math.exp(C.latent.tempoSd * normal(r)),
+    tempo: exp(C.latent.tempoSd * normal(r)),
     possession: C.latent.possessionSd * normal(r),
-    attack: [Math.exp(C.latent.attackSd * normal(r)), Math.exp(C.latent.attackSd * normal(r))],
+    attack: [exp(C.latent.attackSd * normal(r)), exp(C.latent.attackSd * normal(r))],
   };
   const periods: AggregatePeriod[] =
     participation.length === 120 ? ['regulation', 'extra'] : ['regulation'];
@@ -200,7 +201,7 @@ export function generateTeamFacts(
     // Chances are drawn often enough that no kept share exceeds one: a side behind by `cap`
     // keeps all of its shots, a side ahead all of its goals.
     const inflate = segmented
-      ? Math.exp(Math.max(Math.abs(S.volume), Math.abs(S.risk - S.volume)) * S.cap)
+      ? exp(Math.max(Math.abs(S.volume), Math.abs(S.risk - S.volume)) * S.cap)
       : 1;
     for (const side of [0, 1] as const) openPlayShots(m, p, side, shots, inflate);
     if (segmented) keepByScore(m, p, streams.draw('scoreState', period));
@@ -235,12 +236,12 @@ function passesAndCarries(m: Match, p: Period, side: AggregateSide, r: Rng) {
     pressing = tacticOf(m, o).press;
   const span = p.to - p.from;
   const mean = C.passes.perMatch * (span / 90) * m.latent.tempo * tactic.tempo * p.share[side];
-  const attempts = Math.max(0, Math.round(mean * Math.exp(C.passes.sideSd * normal(r))));
+  const attempts = Math.max(0, Math.round(mean * exp(C.passes.sideSd * normal(r))));
   const tilt = C.territory.dominance * (p.share[side] - 0.5) * 2;
   const origins = multinomial(
     r,
     attempts,
-    PASS_WEIGHT.map((w, c) => w * Math.exp((tilt * (cellBand(c) - 3.5)) / 3.5)),
+    PASS_WEIGHT.map((w, c) => w * exp((tilt * (cellBand(c) - 3.5)) / 3.5)),
   );
   const shift = completionShift(m, p, side);
   const crossShift =
@@ -563,7 +564,7 @@ function attackOf(m: Match, p: Period, side: AggregateSide) {
     opp = m.input.sides[o];
   // The margin flattens past about 15 points as key duels and finishing do (MATCH-11).
   const s = C.shots.saturation;
-  const margin = s * Math.tanh((p.units[side].attack - p.units[o].defence) / s);
+  const margin = s * tanh((p.units[side].attack - p.units[o].defence) / s);
   const manShort =
     Math.max(0, 1 - C.manShort.attack * p.units[side].missing) *
     (1 + C.manShort.defence * p.units[o].missing);
@@ -574,12 +575,12 @@ function attackOf(m: Match, p: Period, side: AggregateSide) {
   );
   return {
     rate:
-      Math.exp(margin / C.shots.skillScale) *
+      exp(margin / C.shots.skillScale) *
       profile *
       m.latent.attack[side] *
       manShort *
       tacticOf(m, o).guard,
-    quality: Math.exp(margin / C.xg.matchupScale),
+    quality: exp(margin / C.xg.matchupScale),
     shooting: p.units[side].shooting,
     keeping: p.units[o].keeping,
   };
@@ -607,7 +608,7 @@ function shoot(
       C.xg.kind[moveKind] *
       (shot.header ? C.xg.header : 1) *
       a.quality *
-      Math.exp(spread * normal(r) - (spread * spread) / 2);
+      exp(spread * normal(r) - (spread * spread) / 2);
     const max = inBoxCell(shot.cell) ? C.xg.max : C.xg.outsideMax;
     xg = Math.min(max, Math.max(C.xg.min, Math.round(value * 100)));
   }
@@ -653,8 +654,8 @@ function keepByScore(m: Match, p: Period, r: Rng) {
     const lead = goals[0]! - goals[1]!;
     for (const side of [0, 1] as const) {
       const ahead = clamp(side === 0 ? lead : -lead, -S.cap, S.cap);
-      const keep = Math.exp(-S.volume * ahead),
-        goal = Math.exp(S.risk * ahead);
+      const keep = exp(-S.volume * ahead),
+        goal = exp(S.risk * ahead);
       for (const shot of m.sides[side].shots) {
         if (!open(shot) || shot.minute <= lo || shot.minute > hi) continue;
         const drawn = drawnAt.get(shot) ?? 1;

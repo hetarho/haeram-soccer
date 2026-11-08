@@ -2,7 +2,7 @@
 import { ATTRIBUTES, type Attribute } from '../../../contracts/src/player';
 import type { Player, Tactic } from '../../../contracts/src/types';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
-import { HOST_MATH, PORTABLE_MATH, type MatchMath } from '../portable-math';
+import { PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { fatigueLoad, slotOvr, unhappyPenalty } from '../player-state';
 import { matchModelNumber } from '../../../contracts/src/match-model';
 import type { FreedomState } from './freedom';
@@ -283,7 +283,7 @@ export function createState(setup: GridSetup): GridState {
     possessionSince: 0,
     changes: [noChanges(), noChanges()],
     lineups: 0,
-    math: setup.model === undefined ? HOST_MATH : PORTABLE_MATH,
+    math: PORTABLE_MATH,
     // Revision 2's movement needs its per-match tendencies (T432).
     freedom:
       setup.tendencies && setup.model && matchModelNumber(setup.model) >= 2

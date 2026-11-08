@@ -1,5 +1,6 @@
 /**
- * Host-portable transcendental functions for the candidate grid engine (→ARCH-5, ARCH-9, T358).
+ * Host-portable transcendental functions for every match model's outcome-critical math (→ARCH-5,
+ * ARCH-9, T358, T713).
  *
  * The host's `Math.exp`, `Math.log`, `Math.tanh`, `Math.sin`, `Math.cos`, `Math.atan2` and `**` are
  * its C library compiled per CPU (on arm64 with fused multiply-adds), and `Math.hypot` differs
@@ -543,7 +544,10 @@ export function powInt(x: number, n: number): number {
 
 /**
  * The functions a match's outcome-critical positions, distances and odds read (→ARCH-9), bound
- * once per match on its state, so a hot loop reads one table instead of branching per call.
+ * once per match on its state. Every match model reads `PORTABLE_MATH`: until T713 the pre-feature
+ * model and the aggregate's odds read the host's `Math.*`, whose last bits differ between arm64
+ * and x64, and one `sin` bit in a carry heading (`chooseCarry`) settled another season on CI's
+ * linux-x64 than on darwin-arm64.
  */
 export interface MatchMath {
   readonly exp: (x: number) => number;
@@ -557,17 +561,5 @@ export interface MatchMath {
   readonly powInt: (x: number, n: number) => number;
 }
 
-/** The host's own `Math.*`: the pre-feature path, whose settled facts must not change. */
-export const HOST_MATH: MatchMath = {
-  exp: Math.exp,
-  log: Math.log,
-  tanh: Math.tanh,
-  sin: Math.sin,
-  cos: Math.cos,
-  atan2: Math.atan2,
-  hypot: Math.hypot,
-  powInt: (x, n) => x ** n,
-};
-
-/** The portable functions above: the candidate path, the same bits on every host. */
+/** The portable functions above: the same bits on every host. */
 export const PORTABLE_MATH: MatchMath = { exp, log, tanh, sin, cos, atan2, hypot, powInt };

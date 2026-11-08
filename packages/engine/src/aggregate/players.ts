@@ -14,6 +14,7 @@ import { RESTART_CONFIG } from '../grid/restarts';
 import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
+import { exp } from '../portable-math';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
 import { inBoxCell, isPassKind, looseBalls, moveKindIndex, xtGain } from './ledger';
 import {
@@ -288,7 +289,7 @@ class SideLines {
         const own =
           this.input.access.own?.(this.side, line, role.attribute) ??
           this.input.access.skill(this.side, line, role.attribute, mid);
-        term = Math.exp((-(own - OFFSIDE_CALL.pivot) / OFFSIDE_CALL.spread) * AC.offsideCall);
+        term = exp((-(own - OFFSIDE_CALL.pivot) / OFFSIDE_CALL.spread) * AC.offsideCall);
       } else {
         const value = Math.max(1, this.input.access.skill(this.side, line, role.attribute, mid));
         term = (value / AC.attributeScale) ** AC.attributePower;

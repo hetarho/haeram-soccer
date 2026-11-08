@@ -27,6 +27,7 @@ import { npcStrength } from './match';
 import { actionWeight, type MatchAction } from './match-weights';
 import { FORMATIONS, isWide, levelFactor, lineOf } from './player';
 import { clamp, random, zeroMetrics } from './primitives';
+import { exp } from './portable-math';
 import { npcTactic } from './strategy';
 import { findClub, startingSquad } from './world';
 
@@ -154,7 +155,7 @@ function elevenOf(xi: Player[], tactic: Tactic): Eleven {
 
 /** Knuth's Poisson draw. */
 function poisson(r: () => number, mean: number) {
-  const limit = Math.exp(-mean);
+  const limit = exp(-mean);
   let k = 0,
     p = r();
   while (p > limit) {
@@ -231,7 +232,7 @@ export function resultsOnlyMatch(w: World, f: Fixture, decide?: DecideRule): Mat
   const G = C.goals,
     lift = G.perLevel * ((strength[0]! + strength[1]!) / 2 - G.level);
   const mean = (side: 0 | 1) =>
-    Math.exp(G.base + lift + G.perPoint * (strength[side]! - strength[side === 0 ? 1 : 0]!));
+    exp(G.base + lift + G.perPoint * (strength[side]! - strength[side === 0 ? 1 : 0]!));
   const means = [mean(0), mean(1)];
   const assistOpen = C.assisted;
   const goal = (side: 0 | 1) => {

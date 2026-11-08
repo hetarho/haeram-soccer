@@ -8,6 +8,7 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  */
 import type { Incident } from '../../../contracts/src/types';
 import type { Line } from '../../../contracts/src/player';
+import { cos, exp, log } from '../portable-math';
 import { CHANGES_CONFIG, inMatchFatigue } from '../grid/changes';
 import { INTERVAL_STAMPS } from '../match-model';
 import type { EraRules } from '../grid/setup';
@@ -51,14 +52,14 @@ export function sideDraw(
 export function normalDraw(r: Rng) {
   const u = Math.max(1e-12, r()),
     v = r();
-  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  return Math.sqrt(-2 * log(u)) * cos(2 * Math.PI * v);
 }
 export function poissonDraw(r: Rng, mean: number): number {
   if (!(mean > 0)) return 0;
   if (mean > 30) return Math.max(0, Math.round(mean + Math.sqrt(mean) * normalDraw(r)));
   const u = r();
   let k = 0,
-    p = Math.exp(-mean),
+    p = exp(-mean),
     cdf = p;
   while (u > cdf && k < 200) {
     k++;
@@ -474,7 +475,7 @@ class SidePlanner {
     const a = Math.max(from, this.period.from);
     const h0 = CHANGES_CONFIG.hazardFrom,
       rise = CHANGES_CONFIG.hazardRise / 180;
-    const k = h0 * a + rise * a * a + (90 * -Math.log(1 - u)) / chance;
+    const k = h0 * a + rise * a * a + (90 * -log(1 - u)) / chance;
     const t = (-h0 + Math.sqrt(h0 * h0 + 4 * rise * k)) / (2 * rise);
     if (t < this.period.to) this.hurtAt.set(line, t);
   }

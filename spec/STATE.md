@@ -18,6 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| mt08 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T12:59Z | 2026-11-08T12:59Z | T713 |
 
 ## inbox
 - 261108 decided ARCH-21 ARCH-30 T713 T714: what main's red CI gets once av07's continuation is published (e974bb02, gate passed) — `checks` fails only the portable golden's `modern-european-season` ($.cash 995333402 expected, 970129584 on Linux x64) and Linux Firefox/WebKit fail growth-core's office-overview bounds (view scrolled 2/4 px), both red since 11-04 (41930383191) and neither reproducible on this darwin-arm64 machine (the case passes on Node 26.8.1/24.18.0, under TZ=UTC and with the world cache off; growth-core passes on macOS Firefox and WebKit) → two fix tasks with the evidence, T713 (explore 120m) and T714 (explore 90m), first in next, before T712 (alt: regenerate or loosen the golden and the bounds check to pass | push an unverified guess at either fix | start T712's 180-minute window past the owner's 10:00 KST cutoff). hv08
@@ -802,7 +803,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T713 | the portable golden's modern-european-season on CI's Linux x64 equals macOS arm64 | ARCH | - | todo |
+| T713 | the portable golden's modern-european-season on CI's Linux x64 equals macOS arm64 | ARCH | - | doing@261108.mt08 |
 | T714 | opening 오버뷰 leaves the office unscrolled on Linux Firefox and WebKit | WEB ARCH | - | todo |
 | T712 | the ability-fit wage on LEAGUE-13's lower tiers, in force only on a pass | CLUB LEAGUE ECON | T700 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |

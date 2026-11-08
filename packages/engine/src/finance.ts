@@ -7,6 +7,7 @@ import { currency } from '../../catalogs/src/index';
 import { activePlayers, clubOf, isOwnSeason, lastOwnSeason } from './player-state';
 import { broadcastQuote, footballQuote, quote } from './quotes';
 import { clamp, ratio, scaleBy } from './primitives';
+import { exp } from './portable-math';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { staffWageTotal } from './staff';
@@ -330,7 +331,7 @@ export function campaignEffectiveness(w: World, kind: string) {
   const club = clubOf(w);
   const focus =
     kind === 'tickets'
-      ? clamp(Math.exp((0.05 - w.ticket) / FINANCE_CONFIG.ticketDemandScale), 0.25, 1.25)
+      ? clamp(exp((0.05 - w.ticket) / FINANCE_CONFIG.ticketDemandScale), 0.25, 1.25)
       : kind === 'merchandise'
         ? 0.65 + club.reputation / 125
         : kind === 'player'
@@ -375,7 +376,7 @@ function opponentDraw(w: World, opponent?: string) {
 export function gateProjection(w: World, excluding?: string, opponent?: string) {
   const club = clubOf(w);
   const capacity = stadiumCapacity(w);
-  const demand = Math.exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
+  const demand = exp(-w.ticket / FINANCE_CONFIG.ticketDemandScale);
   const form = recentForm(w, excluding);
   // Recent form scales home demand from 0.6 to 1.15.
   const formDemand = 0.6 + form * 0.55;

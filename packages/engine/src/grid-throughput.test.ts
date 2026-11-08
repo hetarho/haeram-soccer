@@ -7,10 +7,11 @@
  * The candidate's digests are the same on every host and asserted everywhere: since T358 its grid
  * reads only the portable math of `portable-math.ts`, and CI's linux-x64 run 39829693762 gave every
  * one of darwin-arm64's values. Before that the host's float library flipped facts (run 39800627501,
- * 2024's observed shoot-out). The pre-feature path keeps the host's `Math.*`, so its facts stay per
- * host (`${process.platform}-${process.arch}`): a host with a value asserts it, another logs what it
- * got for a session there to paste in. A candidate behaviour change re-records the candidate's
- * digests with its calibration evidence, never alone; a presentation-only change (T359's kick
+ * 2024's observed shoot-out). The pre-feature path read the host's `Math.*` until T713 and its
+ * facts were recorded per host; it now reads the same portable table, and darwin-arm64 gives the
+ * digests linux-x64 recorded, so they are asserted everywhere too. A candidate behaviour change
+ * re-records the candidate's digests with its calibration evidence, never alone; a
+ * presentation-only change (T359's kick
  * snapshot) re-records positions alone; a person-name change (T645) re-records every digest that
  * carries a name, each equal to the source's once the names are removed. On every host each fixture replays bit for bit, the observed
  * league fixture's facts equal the unobserved one's (→MATCH-2, MATCH-7) and a one-bit change shows in
@@ -749,10 +750,15 @@ const REVISION_1: Record<Year, CandidateDigests> = {
   },
 };
 
-/** The pre-feature league fixture's facts by host; it plays the host's `Math.*`. */
-const PRE_FEATURE: Partial<Record<string, Record<Year, string>>> = {
-  // T670's start, linux-x64 (Node v24.22.1); darwin-arm64 logs its value for a session there.
-  'linux-x64': { 1975: '679b865a0cbebf03', 1995: '9fb02e0c8a6f35af', 2024: 'c44e75bee2cc4a7f' },
+/**
+ * The pre-feature league fixture's facts, the same on every host since T713 bound its grid to the
+ * portable table: recorded on linux-x64 (Node v24.22.1) at T670's start, when it still played the
+ * host's `Math.*`, and given bit for bit by darwin-arm64 on the portable functions.
+ */
+const PRE_FEATURE: Record<Year, string> = {
+  1975: '679b865a0cbebf03',
+  1995: '9fb02e0c8a6f35af',
+  2024: 'c44e75bee2cc4a7f',
 };
 
 describe('detailed engine throughput (T325)', () => {
@@ -831,10 +837,7 @@ describe('detailed engine throughput (T325)', () => {
       expect(earlier(8, REVISION_9_CASES[year]), `${year} revision-9 digests`).toEqual(
         REVISION_9[year],
       );
-      const recorded = PRE_FEATURE[HOST]?.[year];
-      if (recorded === undefined)
-        console.log(`no ${HOST} pre-feature digest for ${year}; this host gives ${factsOf(old)}`);
-      else expect(factsOf(old), `${year} pre-feature facts on ${HOST}`).toBe(recorded);
+      expect(factsOf(old), `${year} pre-feature facts on ${HOST}`).toBe(PRE_FEATURE[year]);
     });
   }
 

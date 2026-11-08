@@ -3,7 +3,7 @@ import type { Position, RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { lineOf } from '../player';
 import { actionWeight } from '../match-weights';
-import { HOST_MATH, type MatchMath } from '../portable-math';
+import { PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES, OVERALL_PROFILE, POSITION_PROFILES, profileKey } from './baselines';
 import { BOX_CONFIG, deliveries, DELIVERY_ACTION, type Delivery, type DeliveryAim } from './box';
 import {
@@ -1085,7 +1085,7 @@ function lineDepth(
 export function passProbabilities(
   options: readonly Pick<PassOption, 'score' | 'prior'>[],
   tau: number,
-  math: MatchMath = HOST_MATH,
+  math: MatchMath = PORTABLE_MATH,
 ): number[] {
   if (!options.length) return [];
   // Math.max folded over the scores: the same value as spreading them, without the copies.

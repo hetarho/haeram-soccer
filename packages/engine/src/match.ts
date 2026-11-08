@@ -41,7 +41,7 @@ import { synergyEffects, type SynergyEffects } from './synergy';
 import { buildEffects } from './build';
 import { talismanStrength } from './owner-traits';
 import { injuryChance } from './careers';
-import { HOST_MATH, type MatchMath } from './portable-math';
+import { exp, PORTABLE_MATH, type MatchMath } from './portable-math';
 import {
   activeMatchModel,
   matchModelNumber,
@@ -211,7 +211,7 @@ function chanceQuality(
  * of a fixture share it. Form is fat-tailed (Laplace): most days sit near the usual level, a few
  * are far off it — the off days on which favourites drop points.
  */
-export function matchForm(w: World, f: Fixture, math: MatchMath = HOST_MATH): [number, number] {
+export function matchForm(w: World, f: Fixture, math: MatchMath = PORTABLE_MATH): [number, number] {
   const r = random(`${w.seed}:form:${f.id}`);
   const draw = () => {
     const u = r() - 0.5;
@@ -293,7 +293,7 @@ export const HOME_STRENGTH = 3;
 export function formedStrength(
   base: readonly number[],
   form: readonly number[],
-  math: MatchMath = HOST_MATH,
+  math: MatchMath = PORTABLE_MATH,
 ) {
   const gap = base[0]! - base[1]!,
     ease = (effectiveGap(gap, math) - gap) / 2;
@@ -325,7 +325,7 @@ export function npcStrength(
 export function prepareMatch(
   w: World,
   f: Fixture,
-  math: MatchMath = HOST_MATH,
+  math: MatchMath = PORTABLE_MATH,
   model: MatchModelRevision | undefined = activeMatchModel(w),
   lab?: LabFixture,
 ): Prepared {
@@ -696,7 +696,7 @@ export const SUMMARY_DISCIPLINE = { yellows: 1.97, reds: 0.07 };
 const CARD_LINE_WEIGHT: Record<string, number> = { GK: 0.2, DF: 1.3, MF: 1.2, FW: 0.8 };
 /** Knuth's Poisson draw. */
 function poisson(r: () => number, mean: number) {
-  const limit = Math.exp(-mean);
+  const limit = exp(-mean);
   let k = 0,
     p = r();
   while (p > limit) {

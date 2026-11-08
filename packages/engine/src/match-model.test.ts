@@ -32,7 +32,7 @@ import { clubManager } from './managerMarket';
 import { matchForm, prepareMatch } from './match';
 import { effectiveGap } from './match-rules';
 import { trackingBoundary } from './npc-stats';
-import { HOST_MATH, PORTABLE_MATH } from './portable-math';
+import { PORTABLE_MATH } from './portable-math';
 import { zeroMetrics } from './primitives';
 import { findClub, ratingOf } from './world';
 
@@ -415,8 +415,8 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
   void _model;
   const prepared = (f: Fixture, model?: MatchModelRevision) =>
     model === undefined
-      ? prepareMatch(unmodelled as World, f, HOST_MATH)
-      : prepareMatch(w, f, HOST_MATH, model);
+      ? prepareMatch(unmodelled as World, f, PORTABLE_MATH)
+      : prepareMatch(w, f, PORTABLE_MATH, model);
   // The gap before diminishing returns, from what each side brings beyond its XI.
   const sides = (f: Fixture, context: [number, number]) => {
     const p = prepared(f, first),
@@ -463,7 +463,7 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
     // him leaves the world, its market and every stream as they were (→STAFF-17).
     const fresh = careerWorld({ seed: founding.seed });
     const untouched = canonical(fresh);
-    for (const f of nobodys.slice(0, 5)) prepareMatch(fresh, f, HOST_MATH, third);
+    for (const f of nobodys.slice(0, 5)) prepareMatch(fresh, f, PORTABLE_MATH, third);
     expect(canonical(fresh)).toBe(untouched);
   });
 

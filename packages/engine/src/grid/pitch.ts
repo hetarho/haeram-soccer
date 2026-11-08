@@ -1,6 +1,6 @@
 import { message as sourceMessage } from '../../../contracts/src/messages';
 /** The 40-cell grid pitch: geometry, cell names and attack-frame helpers (→MATCH-14, MATCH-16). */
-import { HOST_MATH, type MatchMath } from '../portable-math';
+import { PORTABLE_MATH, type MatchMath } from '../portable-math';
 
 export const PITCH = { length: 105, width: 68 } as const;
 export const LANE_EDGES = [0, 13.84, 24.84, 43.16, 54.16, 68] as const;
@@ -119,17 +119,17 @@ export function inGoalArea(p: Point): boolean {
   return p[0] >= BAND_EDGES[7]! && p[1] >= LANE_EDGES[2] && p[1] <= LANE_EDGES[3];
 }
 
-/** `math` is the match's (`GridState.math`); measurements without a match read the host's. */
-export function distance(a: Point, b: Point, math: MatchMath = HOST_MATH): number {
+/** `math` is the match's (`GridState.math`); measurements without a match read the same table. */
+export function distance(a: Point, b: Point, math: MatchMath = PORTABLE_MATH): number {
   return math.hypot(a[0] - b[0], a[1] - b[1]);
 }
 
-export function goalDistance(p: Point, math: MatchMath = HOST_MATH): number {
+export function goalDistance(p: Point, math: MatchMath = PORTABLE_MATH): number {
   return distance(p, GOAL, math);
 }
 
 /** The angle the goal mouth subtends at the point, in radians. */
-export function goalAngle(p: Point, math: MatchMath = HOST_MATH): number {
+export function goalAngle(p: Point, math: MatchMath = PORTABLE_MATH): number {
   const high = math.atan2(POST_HIGH[1] - p[1], POST_HIGH[0] - p[0]);
   const low = math.atan2(POST_LOW[1] - p[1], POST_LOW[0] - p[0]);
   return Math.abs(high - low);

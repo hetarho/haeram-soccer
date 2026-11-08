@@ -13,6 +13,7 @@ import {
   type Positions,
   type RoleId,
 } from '../../contracts/src/player';
+import { exp, log } from './portable-math';
 
 /**
  * The player model (→PLAYER): attributes, positions and roles, OVR on one scale, traits,
@@ -485,8 +486,7 @@ export function overshootFactor(excess: number) {
   for (let i = 1; i < OVERSHOOT.length; i++) {
     const [x1, y1] = OVERSHOOT[i]!,
       [x0, y0] = OVERSHOOT[i - 1]!;
-    if (excess <= x1)
-      return Math.exp(Math.log(y0) + ((excess - x0) / (x1 - x0)) * (Math.log(y1) - Math.log(y0)));
+    if (excess <= x1) return exp(log(y0) + ((excess - x0) / (x1 - x0)) * (log(y1) - log(y0)));
   }
   return 0.02;
 }

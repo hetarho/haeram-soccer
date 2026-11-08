@@ -23,7 +23,7 @@ import { clubManager } from '../managerMarket';
 import { activePlayers, ownMultiplier, slotOvr } from '../player-state';
 import { isInjured, squad } from '../world';
 import { prepareMatch, type Prepared } from '../match';
-import { HOST_MATH, PORTABLE_MATH } from '../portable-math';
+import { PORTABLE_MATH } from '../portable-math';
 import { isUnavailable } from '../discipline';
 import { subPolicyFor } from './changes';
 import { playerTendencies, type PlayerTendencies } from './tendencies';
@@ -235,8 +235,8 @@ export function buildGridSetup(
     ) as [Player[], Player[]],
     tactics: opts.lab.tactics,
   };
-  // The candidate's form and gap on the portable table, as `GridState.math` binds it (T358).
-  const prepared = prepareMatch(w, f, model === undefined ? HOST_MATH : PORTABLE_MATH, model, lab);
+  // Form and gap on the portable table, as `GridState.math` binds it (T358, T713).
+  const prepared = prepareMatch(w, f, PORTABLE_MATH, model, lab);
   const { ownSide, style, synergy } = prepared;
   const tactics = opts.tactics ?? prepared.tactics;
   const era = eraRules(f.year);

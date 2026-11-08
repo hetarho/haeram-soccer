@@ -4,7 +4,7 @@ import type { Tactic } from '../../../contracts/src/types';
 import { actionWeight } from '../match-weights';
 import { finishing, goalChance, targetChance } from '../match-rules';
 import { FORMATIONS, lineOf } from '../player';
-import { HOST_MATH, type MatchMath } from '../portable-math';
+import { PORTABLE_MATH, type MatchMath } from '../portable-math';
 import { CELL_BASELINES } from './baselines';
 import {
   attackFrame,
@@ -286,7 +286,7 @@ export function chanceXg(
     freeKick?: boolean;
     candidate?: boolean;
   } = {},
-  math: MatchMath = HOST_MATH,
+  math: MatchMath = PORTABLE_MATH,
 ): number {
   const C = SHOT_CONFIG;
   const z = C.a + C.b * goalDistance(p, math) + C.c * goalAngle(p, math);

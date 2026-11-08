@@ -16,7 +16,6 @@ import {
   atan2,
   cos,
   exp,
-  HOST_MATH,
   hypot,
   log,
   PORTABLE_MATH,
@@ -148,6 +147,9 @@ const UNARY: Record<'exp' | 'log' | 'tanh' | 'sin' | 'cos', [number, string][]> 
     [NaN, 'NaN'],
   ],
   sin: [
+    // T713: the carry heading of `modern-european-season`'s first diverging step; the host's
+    // Math.sin gave …725b on darwin-arm64 and …725a on CI's linux-x64.
+    [-0.7745954157999999, 'bfe661b4adbe725a'],
     [0, '0000000000000000'],
     [-0, '8000000000000000'],
     [5e-324, '0000000000000001'],
@@ -442,17 +444,14 @@ describe('portable math (T358)', () => {
     expect(powInt(1.6, 3)).toBe(1.6 * 1.6 * 1.6);
   });
 
-  it('is bound once per match: portable on the candidate model, the host Math.* before it', () => {
-    const keys = (m: MatchMath) => Object.keys(m);
-    expect(keys(PORTABLE_MATH)).toEqual(keys(HOST_MATH));
-    expect(HOST_MATH.exp).toBe(Math.exp);
-    expect(HOST_MATH.log).toBe(Math.log);
-    expect(HOST_MATH.tanh).toBe(Math.tanh);
-    expect(HOST_MATH.hypot).toBe(Math.hypot);
-    expect(HOST_MATH.powInt(1.6, 3)).toBe(1.6 ** 3);
-    expect(PORTABLE_MATH.atan2).toBe(atan2);
+  it('is bound once per match: portable on every model, the pre-feature one included (T713)', () => {
+    const table: MatchMath = { exp, log, tanh, sin, cos, atan2, hypot, powInt };
+    expect(PORTABLE_MATH).toEqual(table);
+    // The pre-feature model read the host's Math.* until T713; its sin's last bit differed
+    // between darwin-arm64 and linux-x64 and moved a whole season.
     const kit = gridKit(undefined, undefined, DISABLED_RELEASE);
-    expect(kit.state.math).toBe(HOST_MATH);
+    expect(kit.setup.model).toBeUndefined();
+    expect(kit.state.math).toBe(PORTABLE_MATH);
     const candidate = buildGridSetup(kit.w, kit.f, {
       observe: false,
       recordPlayers: false,
