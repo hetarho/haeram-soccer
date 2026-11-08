@@ -1,7 +1,13 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Fixture } from '../../contracts/src/types';
 import { DOMESTIC_CUP_ROUNDS } from './cups';
-import { afterPhaseBack, europeanEras, knockoutLegs, LEGACY_EUROPE_CALENDAR } from './europe';
+import {
+  afterPhaseBack,
+  type Era,
+  europeanEras,
+  knockoutLegs,
+  LEGACY_EUROPE_CALENDAR,
+} from './europe';
 import { roundLabel, roundsFor } from './knockout';
 
 /** Where a cup match stood: its competition, the stage as media name it and the leg of a tie. */
@@ -19,6 +25,15 @@ export interface CupStage {
 const DOMESTIC = /^\d+:cup:[A-Z]+:k(\d+):\d+$/;
 const CONTINENTAL = /^\d+:([a-z]+):k(\d+):\d+(:2)?$/;
 const PHASE = /^\d+:([a-z]+):(phase|second):\d+$/;
+
+/**
+ * Whether knockout round `round` (from 0) comes before an era's groups, as the 1991–93 Champions
+ * League played two: round < log₂(field / qualifier), i.e. qualifier · 2^round < field, in exact
+ * integers (rounds from 31 on never qualify while field / qualifier stays below 2³¹).
+ */
+export function beforeGroups(era: Pick<Era, 'field' | 'qualifier'>, round: number) {
+  return !!era.qualifier && round < 31 && era.qualifier * (1 << round) < era.field;
+}
 
 /**
  * The stage of a cup fixture or match record from its ID and calendar slot, so a closed season's
@@ -66,8 +81,7 @@ export function knockoutStage(
   if (!era) return undefined;
   const round = Number(index),
     leg = second ? 2 : 1;
-  // The 1991–93 Champions League played two knockout rounds before its groups.
-  if (era.qualifier && round < Math.log2(era.field / era.qualifier))
+  if (beforeGroups(era, round))
     return {
       competition: key,
       label: sourceMessage('copy.europe.ded8bacfd0', { p0: round + 1 }),

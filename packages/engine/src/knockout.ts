@@ -23,9 +23,12 @@ export function isDue(w: World, f: Fixture, day?: number) {
   return !f.score && (day === undefined ? f.round <= w.round : fixtureDay(f) <= day);
 }
 
-/** Knockout rounds needed to find one winner among `n` clubs. */
+/**
+ * Knockout rounds needed to find one winner among `n` clubs, at least 1: ⌈log₂ n⌉, the bit length
+ * of n − 1, exact in integers for the whole club counts it receives (below 2³²).
+ */
 export function roundsFor(n: number) {
-  return Math.max(1, Math.ceil(Math.log2(Math.max(2, n))));
+  return 32 - Math.clz32(Math.max(2, n) - 1);
 }
 
 /**
