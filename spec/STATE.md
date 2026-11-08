@@ -21,6 +21,7 @@
 | fs09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T16:07Z | 2026-11-08T16:07Z | - |
 
 ## inbox
+- 261109 decided T725 ARCH-34 review/self-improve-local-261109: whether a first-week `ab.mjs` window counts for a one-time scan → yes as the named workload `--workload day --reps 7`, reported beside the default 60-day run, and a speed-up is claimed only where its interval lies wholly below 1 (alt: reject F8 as invisible in the 60-day median | add a dedicated first-matchday workload to the harness) fs09
 - 261109 decided T720 ARCH-4: T720's deviations → accepted: layer modules built free of import side effects (vite `moduleSideEffects`), since slice indexes otherwise pulled 21 lazy screens into the entry (ARCH-4 r34 records the rule); the owner-office overlay in `app/office` (only app may lazy-load a page) instead of extracting Rich's approval views (1320 of 1709 lines with all 8 orchestration exceptions); `format.ts` in `presentation/` (its locale formatters are installed there); RecordsRoom inside `pages/club`; 71 JS chunks instead of 70 (PendingHandover split from OwnerOfficeView, every lazy screen still its own chunk) (alt: send T720 back to extract the approval views | merge lazy screens into the entry) fs09
 - 261109 decided ARCH-23 T721 review/self-improve-local-261109: whether splitting Chromium and Firefox journeys is within the run's delegation → yes: the same specs, retries and browsers run, only in two shards each, so ARCH-23 r33 records it with job time limits (alt: park the sharding for the owner | three shards each) fs09
 - 261109 decided T722 T723 review/self-improve-local-261109: which development-cost proposals to adopt → the portable-math lint guard (6 of 10 red main runs) and incremental typecheck/format caches; no performance change, since no recorded hotspot has a result-identical A/B measurement within the window (F5 rejected, F7 suggested) (alt: an unmeasured host view optimisation) fs09
@@ -819,6 +820,7 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T720 | move the web UI out of the flat `ui/` folder into Feature-Sliced layers | ARCH | - | todo |
+| T725 | scan settled fixtures with plain loops when a club has no recent results yet | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
