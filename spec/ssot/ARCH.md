@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r32 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r33 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -163,7 +163,7 @@
   - `verify` runs type/lint/format, unit/integration/contract tests, catalog validation, production build, and browser tests; benchmark artifacts are required at the storage and release gates.
   - Scaffolding implements the scripts; verification reports must identify actual executed commands and must not count planned scripts as passed checks.
 - ARCH-23 [o] CI and release use a reproducible static build.
-  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests per browser (Chromium, Firefox, WebKit in two shards), each installing only its pinned browser. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
+  - GitHub Actions runs parallel jobs on every code push, each on the pinned toolchain with `pnpm install --frozen-lockfile`: checks (type/lint/format, contract tests, catalog validation, production build); unit and integration tests in separate jobs (integration in three shards), each restoring the simulated test worlds (→ARCH-21); built-preview browser tests per browser, each browser in two shards, each installing only its pinned browser. Every job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min) so a hung run fails instead of holding main's run queue for the platform's six hours. Each retains its test/build reports; locally `pnpm run verify` runs the same checks in one go. ← one serial job took about 22 minutes, 15½ of them browser tests
   - The storage and first-play benchmarks against the production build run only on demand, in their own manually dispatched workflow that retains `apps/web/dist` and the benchmark reports; a storage or release gate task (→ARCH-14) runs `pnpm run benchmark` locally or has the owner dispatch that workflow. ← the 100-season benchmark took about 90 minutes on every push once own-league matches played the grid engine
   - Require verification checks on the protected production branch; Netlify production deploys only that branch and uses the pinned install/build commands.
   - Deploy to Netlify using the same pinned build command and output directory; preview branches do not replace production.
@@ -262,6 +262,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r33 261109 ARCH-23✎ browser jobs Chromium and Firefox in one shard, WebKit in two→every browser in two shards; +every CI job has a time limit (checks/unit 20 min, integration 45 min, browser shards 120 min)
 - r32 261109 ARCH-3✎ `apps/web/src/ui` React screens and view helpers→`app`, `pages`, `widgets`, `features`, `entities`, `shared` layers and the `lab`/`constants`/`design-system` tool entries; ARCH-4+ Feature-Sliced Design layer direction, slice public API, entity `@x` cross-imports, lazy `import()` of module files, infrastructure below every layer, no legacy flat UI folder
 - r31 261104 ARCH-32✎ deferred feature/engine extraction→resource-only prose, locale-independent source formatting and display-time resolution; mandatory executable guards for literals, keys, parameters and complete registered packs
 - r30 261104 ARCH-28✎ measured 261103 without the view only→also measured 261104 with the history view: 2000 129.8 s (2.06 s a season), 1970 61.1 s, the view at most 5.6% of generation

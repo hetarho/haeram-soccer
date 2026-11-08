@@ -21,6 +21,10 @@
 | fs09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T16:07Z | 2026-11-08T16:07Z | - |
 
 ## inbox
+- 261109 decided ARCH-23 T721 review/self-improve-local-261109: whether splitting Chromium and Firefox journeys is within the run's delegation → yes: the same specs, retries and browsers run, only in two shards each, so ARCH-23 r33 records it with job time limits (alt: park the sharding for the owner | three shards each) fs09
+- 261109 decided T722 T723 review/self-improve-local-261109: which development-cost proposals to adopt → the portable-math lint guard (6 of 10 red main runs) and incremental typecheck/format caches; no performance change, since no recorded hotspot has a result-identical A/B measurement within the window (F5 rejected, F7 suggested) (alt: an unmeasured host view optimisation) fs09
+- 261109 parked review/self-improve-local-261109: F6 — the STATE inbox holds 735 lines (340 KB of 350 KB); `vibe brief` carries 33–52K tokens of it into every worker and loop prompt. Confirm the decided lines up to a date (reports keep them) and a session deletes them with one log line; also consider STATE cfg `brief: cited` and a narrower `always` (T713 brief 457→75 KB) fs09
+- 261109 suggest review/self-improve-local-261109: F7 — give `scripts/perf/ab.mjs` a host `view` workload so the remaining recorded hotspots (viewPublisher part serialisation, staffMarket/managerCandidates projections) can be measured result-identically before any speed-up fs09
 - 261109 decided ARCH-3 ARCH-4 T720 review/self-improve-local-261109: how far FSD goes in this run → the whole flat `ui/` folder into app/pages/widgets/features/entities/shared by measured import closure, entity `@x` cross-imports, lazy `import()` of module files, infrastructure (`runtime`/`adapters`/`presentation`) below every layer, one sequential worker with a reusable move codemod; the `presentation/` split deferred (alt: lower layers only, pages/widgets left in `ui/` | parallel move workers, which rewrite the same high-fan-in importers) fs09
 - 261109 parked T689: `vibe loop` refused this checkout ("vibe loop는 단독 checkout에서 실행하세요"): the primary checkout is still registered as work group `module-1026`'s unmanaged space (4/4 done, status active since 261026); `work finish` would run its group verify and integrate its 10-26 branch, so closing it is the owner's call. T689 itself is runnable: one unit from a new conversation (`/start-vibe 맡김 단위1`), or `vibe loop --tag <tag> --provider claude` once `module-1026` is closed. mt08
 - 261108 decided T714 ARCH-21: what CI 42487386669's diagnostic leads to (`before 0`, `pointerdown 2`: the offset appears in Playwright's pre-click scrolling, not the app's focus) → the journey helper settles the office page before clicking 오버뷰 and also records the button's offset below the scroller's top; the `preventScroll` focus stays as `Dialog.tsx` does it (alt: click at the button's box with the mouse, skipping Playwright's actionability | revert the focus change). mt08
@@ -780,7 +784,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 32 | 32 | - | 2 |
+| ARCH | 33 | 33 | - | 2 |
 | WEB | 211 | 211 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
@@ -813,6 +817,9 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T720 | move the web UI out of the flat `ui/` folder into Feature-Sliced layers | ARCH | - | todo |
+| T721 | give every CI job a time limit and every browser two shards | ARCH | - | todo |
+| T722 | reject host transcendental Math in engine and contracts source | ARCH | - | todo |
+| T723 | incremental typecheck and cached format check | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -841,7 +848,7 @@
 - the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
 
 ## log
-- 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720
+- 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720; ARCH r33 (CI shards and limits), F2–F4 adopted → T721–T723 (lane dev-cost), F5 rejected, F6 parked, F7 suggested
 - 261109 T714 done: the journey helper settles the office before clicking 오버뷰 (Playwright's retried pre-click scroll moved the view, not the app's focus); CI 42494165472 on 145635c3 green in every job, main green again since 11-04. mt08
 - 261108 T713 done: every match model and the aggregate's odds read the portable math (`HOST_MATH` removed); the golden's `modern-european-season` regenerated to CI's Linux facts; CI 42487386669 `checks` green on bf4b6be0. mt08
 - 261108 T712 done: the ability-fit wage built behind `ABILITY_FIT` (off), `--ability-fit` overrides, inert against T700; CLUB-25's gate fails on 46 calibration careers (중견 titles 3/8, 지역 유지 reach 8/8, 자수성가 reach 6/6; upper tiers no club bankrupt), so it stays out of force; held-out and worlds not run (artifacts/benchmarks/T712). mt08
