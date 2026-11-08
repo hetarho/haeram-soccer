@@ -21,6 +21,7 @@
 | fs09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T16:07Z | 2026-11-08T16:07Z | - |
 
 ## inbox
+- 261109 suggest WEB-93 T729: the club hub's entrance animation (`.hub > *` `rise`, ClubHub.module.css) still plays when the browser asks for reduced motion (resource-skins runs with `reducedMotion: 'reduce'` and saw it); honouring `prefers-reduced-motion` there would be a small accessibility fix of its own fs09
 - 261109 decided T729 ARCH-23: CI 42507777267 on d0180ee1 fails only `e2e (webkit 2/2)` — resource-skins pixel and matchday-print read contrast 1 because the hub's fixture card is still fading in (opacity 0) on software WebKit, the same test failed for matchday-print in 42487386669 before this run → fix the spec to wait for the hub's animations, verified on local WebKit before the next push (alt: disable the hub animation under test | raise the WebKit retries); the six browser shards cut the run from 47 to about 33 min fs09
 - 261109 decided T727 T726 ARCH-4: where the moved engine reads go when a new leaf file reshapes the web chunks (a new `europe-calendar.ts` made the build 82 JS chunks, every `aptitudeLabel` placement changed the count) → the calendar blocks go verbatim into the existing `competition-keys.ts` leaf (71/30 chunks kept, exception keys 28→24) and `aptitudeLabel` stays, keeping the scouting key; T726's entity index is 70 names because the moved modules and tests import through it (alt: accept 82 chunks with a separate calendar leaf | a one-function `aptitude-label.ts` leaf) fs09
 - 261109 parked review/self-improve-local-261109 ARCH-3: F11 — the club page's lazy records area (21 files, 5.8k lines) shares no file with the rest of `pages/club`; recommended `pages/records` with the app shell routing to it and the club page's loading fallback replaced, which changes ARCH-3's page list and is not a pure move, so it waits for the owner (alt: `widgets/records`, against ARCH-3's "shown on several screens" | leave it inside `pages/club`) fs09
@@ -825,7 +826,6 @@
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | todo |
 | T727 | read cup calendars, knockout counts and aptitude labels from engine leaves | ARCH | T726 | todo |
 | T728 | close the layer lint's gaps and guard side-effect-only imports | ARCH | - | todo |
-| T729 | measure the hub's venue contrast after its entrance animation | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -854,6 +854,7 @@
 - the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
 
 ## log
+- 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
 - 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
 - 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits
 - 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
