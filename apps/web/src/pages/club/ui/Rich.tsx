@@ -51,7 +51,7 @@ import { UNHAPPY_MORALE } from '../../../../../../packages/engine/src/morale';
 import { ratio } from '../../../../../../packages/engine/src/primitives';
 import { gameActionsBlocked, useGameState } from '../../../runtime/store';
 import type { ClientState, GameClient } from '../../../runtime/client';
-import { Panel } from '../../../app/ui/App';
+import { Panel } from '../../../shared/ui/Panel';
 import { RecruitmentDesk } from './RecruitmentDesk';
 import { OperationsView } from './Operations';
 import { InvestmentView } from './InvestmentView';

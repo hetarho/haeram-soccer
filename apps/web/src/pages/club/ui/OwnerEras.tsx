@@ -5,7 +5,7 @@ import type { World } from '../../../../../../packages/contracts/src/types';
 import type { PreOwnerSeason } from '../../../../../../packages/contracts/src/owner';
 import { honoursBeforeOwner } from '../../../../../../packages/engine/src/club-past';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
-import { Panel } from '../../../app/ui/App';
+import { Panel } from '../../../shared/ui/Panel';
 import { seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
 import {

@@ -12,7 +12,8 @@ import type { View } from '../../runtime/protocol';
 import { gameStore, initialClientState } from '../../runtime/store';
 import { ApprovalRequestHost } from '../../pages/club/ui/ApprovalRequestHost';
 import type { ApprovalRequest } from '../../shared/routing/eventRouting';
-import { OfficeRow, OwnerOffice, PendingHandover } from './OwnerOfficeView';
+import { OfficeRow, OwnerOffice } from './OwnerOfficeView';
+import { PendingHandover } from '../../features/approvals/ui/PendingHandover';
 import { DESK_RESPONSIBILITIES } from '../../shared/routing/officeDesks';
 import {
   officeBulkChange,

@@ -7,7 +7,7 @@ import type { World } from '../../../../../../packages/contracts/src/types';
 import { country, currency } from '../../../../../../packages/catalogs/src/index';
 import { clubOf, ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { inTodayMoney } from '../../../../../../packages/engine/src/transfer-records';
-import { Panel } from '../../../app/ui/App';
+import { Panel } from '../../../shared/ui/Panel';
 import { Chart, type ChartBand } from './Chart';
 import { ClubLink } from '../../../entities/club';
 import { divisionName } from '../../../entities/player/lib/careerRecords';

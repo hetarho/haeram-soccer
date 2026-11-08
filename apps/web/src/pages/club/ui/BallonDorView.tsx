@@ -6,7 +6,7 @@ import {
   BALLON_DOR_CONFIG,
   BALLON_DOR_HONOUR_LABEL,
 } from '../../../../../../packages/engine/src/ballon-dor';
-import { Panel } from '../../../app/ui/App';
+import { Panel } from '../../../shared/ui/Panel';
 import { ClubLink } from '../../../entities/club';
 import { seasonName } from '../../../presentation/format';
 import { PlayerLink } from '../../../entities/player';

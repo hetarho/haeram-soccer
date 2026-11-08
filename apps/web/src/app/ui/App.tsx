@@ -32,7 +32,6 @@ import {
   useEffect,
   useRef,
   useState,
-  type ReactNode,
 } from 'react';
 import type { World } from '../../../../../packages/contracts/src/types';
 import { priceIndex } from '../../../../../packages/catalogs/src/index';
@@ -196,41 +195,6 @@ function NavIcon({ page }: { page: NavEntry }) {
 export function Crest({ color = '#b4c399' }: { color?: string }) {
   useTextLocale();
   return <span className={s.crest} style={{ backgroundColor: color }} aria-hidden="true" />;
-}
-export function Panel({
-  title,
-  note,
-  action,
-  children,
-  footer,
-}: {
-  title: string;
-  note?: ReactNode;
-  /** A control at the header's end, such as a view-settings button. */
-  action?: ReactNode;
-  children: ReactNode;
-  footer?: ReactNode;
-}) {
-  useTextLocale();
-  return (
-    <section data-surface="panel" data-ui="content-panel" className={s.panel}>
-      <div data-ui="panel-header" className={s.panelHead}>
-        <div className={s.panelHeading}>
-          <h3>{localizeValue(title)}</h3>
-          {localizeValue(note && <span>{localizeValue(note)}</span>)}
-        </div>
-        {localizeValue(action)}
-      </div>
-      {localizeValue(children)}
-      {localizeValue(
-        footer && (
-          <div data-ui="panel-footer" className={s.panelFoot}>
-            {localizeValue(footer)}
-          </div>
-        ),
-      )}
-    </section>
-  );
 }
 export function Table({ w, ids, limit }: { w: World; ids: string[]; limit?: number }) {
   useTextLocale();

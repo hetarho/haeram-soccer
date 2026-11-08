@@ -39,7 +39,7 @@ import {
   type OfficeChange,
   type OfficeProposal,
 } from '../../../entities/office/lib/officeChanges';
-import { PendingHandover } from '../../../app/office/OwnerOfficeView';
+import { PendingHandover } from '../../../features/approvals/ui/PendingHandover';
 import { modeSwitchBlocked } from '../../../entities/office/lib/progressMode';
 import { openApprovalRequest } from '../../../shared/routing/state';
 import { TaskReturn } from './TaskReturn';

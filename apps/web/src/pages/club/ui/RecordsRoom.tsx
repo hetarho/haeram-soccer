@@ -13,7 +13,7 @@ import { tacticLabel } from '../../../../../../packages/engine/src/tactics';
 import type { ClientState, GameClient } from '../../../runtime/client';
 import type { ClubRecords, RecordMatch, Run } from '../../../runtime/clubRecords';
 import type { Reply } from '../../../runtime/protocol';
-import { Panel } from '../../../app/ui/App';
+import { Panel } from '../../../shared/ui/Panel';
 import { AnalysisExport } from './AnalysisExport';
 import { CareerRecordBook, ClubLeaders, TrophyCabinet } from './CareerRecordBook';
 import { divisionName } from '../../../entities/player/lib/careerRecords';

@@ -3,7 +3,7 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useState } from 'react';
 import type { Player, SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
-import { Panel } from '../../../app/ui/App';
+import { Panel } from '../../../shared/ui/Panel';
 import {
   boardPlaces,
   careerRecords,
