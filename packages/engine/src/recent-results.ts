@@ -25,34 +25,52 @@ function summary(f: Fixture): Fixture {
   };
 }
 
-function* settledFixtures(w: ResultSource) {
-  for (const source of [
+/**
+ * Every fixture list a settled result can sit in, in scan order: league fixtures, each cup, each
+ * European tournament, then own matches. A later list's fixture replaces an earlier one with the
+ * same id in place, so this order decides which copy a scan keeps.
+ */
+function resultSources(w: ResultSource): Fixture[][] {
+  return [
     w.fixtures,
     ...(w.cups ?? []).map((cup) => cup.fixtures),
     ...w.europe.map((tournament) => tournament.fixtures),
     w.ownMatches,
-  ])
-    for (const f of source) if (f.score) yield f;
+  ];
 }
 
-/** Old saves fall back to their recorded fixtures; unavailable past results are never invented. */
+/**
+ * Old saves fall back to their recorded fixtures; unavailable past results are never invented.
+ * A new career takes this path once per club on its first matchday, so the scan is plain indexed
+ * loops rather than a generator resumed per fixture.
+ */
 export function recentClubResults(w: ResultSource, club: string): Fixture[] {
   const retained = w.recentResults?.[club];
   if (retained) return retained;
   const known = new Map<string, Fixture>();
-  for (const f of settledFixtures(w)) if (f.home === club || f.away === club) known.set(f.id, f);
+  const sources = resultSources(w);
+  for (let s = 0; s < sources.length; s++) {
+    const source = sources[s]!;
+    for (let i = 0; i < source.length; i++) {
+      const f = source[i]!;
+      if (f.score && (f.home === club || f.away === club)) known.set(f.id, f);
+    }
+  }
   return [...known.values()].sort(byDate).slice(-RECENT_RESULT_LIMIT).map(summary);
 }
 
 /** An old save may close immediately after loading, before any new match starts tracking a club. */
 export function retainRecentResults(w: World) {
   const untracked = new Map<string, Map<string, Fixture>>();
-  for (const f of settledFixtures(w))
-    for (const club of [f.home, f.away]) {
-      if (w.recentResults?.[club]) continue;
-      let results = untracked.get(club);
-      if (!results) untracked.set(club, (results = new Map()));
-      results.set(f.id, f);
+  for (const source of resultSources(w))
+    for (const f of source) {
+      if (!f.score) continue;
+      for (const club of [f.home, f.away]) {
+        if (w.recentResults?.[club]) continue;
+        let results = untracked.get(club);
+        if (!results) untracked.set(club, (results = new Map()));
+        results.set(f.id, f);
+      }
     }
   for (const [club, results] of untracked) {
     w.recentResults ??= {};

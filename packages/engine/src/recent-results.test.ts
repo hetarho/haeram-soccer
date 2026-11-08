@@ -1,7 +1,63 @@
 import { describe, expect, it } from 'vitest';
 import type { Fixture, World } from '../../contracts/src/types';
 import { RECENT_RESULT_LIMIT } from '../../contracts/src/recent-results';
+import { fixtureDay } from './calendar';
+import { compareIds } from './primitives';
 import { recentClubResults, recordRecentResult, retainRecentResults } from './recent-results';
+
+/** The pre-T725 generator scan, kept verbatim as the reference the indexed loops must match. */
+const reference = (() => {
+  const byDate = (a: Fixture, b: Fixture) =>
+    a.year - b.year || fixtureDay(a) - fixtureDay(b) || compareIds(a.id, b.id);
+  const summary = (f: Fixture): Fixture => ({
+    id: f.id,
+    year: f.year,
+    round: f.round,
+    kind: f.kind,
+    home: f.home,
+    away: f.away,
+    country: f.country,
+    groupKey: f.groupKey,
+    ...(f.score ? { score: { ...f.score } } : {}),
+    ...(f.shootout ? { shootout: { ...f.shootout } } : {}),
+  });
+  function* settledFixtures(w: World) {
+    for (const source of [
+      w.fixtures,
+      ...(w.cups ?? []).map((cup) => cup.fixtures),
+      ...w.europe.map((tournament) => tournament.fixtures),
+      w.ownMatches,
+    ])
+      for (const f of source) if (f.score) yield f;
+  }
+  return {
+    recentClubResults(w: World, club: string): Fixture[] {
+      const retained = w.recentResults?.[club];
+      if (retained) return retained;
+      const known = new Map<string, Fixture>();
+      for (const f of settledFixtures(w))
+        if (f.home === club || f.away === club) known.set(f.id, f);
+      return [...known.values()].sort(byDate).slice(-RECENT_RESULT_LIMIT).map(summary);
+    },
+    retainRecentResults(w: World) {
+      const untracked = new Map<string, Map<string, Fixture>>();
+      for (const f of settledFixtures(w))
+        for (const club of [f.home, f.away]) {
+          if (w.recentResults?.[club]) continue;
+          let results = untracked.get(club);
+          if (!results) untracked.set(club, (results = new Map()));
+          results.set(f.id, f);
+        }
+      for (const [club, results] of untracked) {
+        w.recentResults ??= {};
+        w.recentResults[club] = [...results.values()]
+          .sort(byDate)
+          .slice(-RECENT_RESULT_LIMIT)
+          .map(summary);
+      }
+    },
+  };
+})();
 
 const fixture = (year: number, round: number, kind: Fixture['kind'] = 'league'): Fixture => ({
   id: `${year}:${kind}:${round}`,
@@ -78,6 +134,75 @@ describe('retained club results', () => {
     expect(saved!.score).toEqual({ home: 2, away: 1 });
     expect(saved!.shootout).toEqual({ home: 4, away: 3 });
     expect(saved).not.toHaveProperty('players');
+  });
+
+  it('scans league, cup, European and own fixtures exactly as the generator scan did', () => {
+    const clubs = ['a', 'b', 'c', 'd', 'e', 'f'];
+    const game = (
+      id: string,
+      round: number,
+      kind: Fixture['kind'],
+      home: string,
+      away: string,
+      goals?: [number, number],
+    ): Fixture => ({
+      id,
+      year: 1959,
+      round,
+      kind,
+      home,
+      away,
+      country: 'ENG',
+      groupKey: kind === 'league' ? 'ENG:1:0' : kind,
+      ...(goals ? { score: { home: goals[0], away: goals[1] } } : {}),
+    });
+    const w = source();
+    w.fixtures = Array.from({ length: 36 }, (_, i) =>
+      game(`L${i}`, 1 + (i >> 2), 'league', clubs[i % 6]!, clubs[(i * 5 + 1) % 6]!, [
+        i % 4,
+        (i * 3) % 5,
+      ]),
+    );
+    w.fixtures[5]!.score = undefined;
+    w.fixtures[17]!.score = undefined;
+    // A same-id fixture in a later list replaces the earlier copy where it was first seen.
+    w.cups = [
+      {
+        fixtures: [
+          game('C0', 2, 'cup', 'a', 'c', [1, 1]),
+          game('L3', 1, 'league', 'd', 'e', [5, 0]),
+        ],
+      },
+      { fixtures: [{ ...game('C1', 4, 'cup', 'b', 'a', [0, 0]), shootout: { home: 4, away: 5 } }] },
+    ] as World['cups'];
+    w.europe = [
+      { fixtures: [game('E0', 3, 'europe', 'a', 'f', [2, 2]), game('E1', 6, 'europe', 'c', 'a')] },
+      { fixtures: [game('C0', 2, 'cup', 'a', 'c', [3, 2])] },
+    ] as World['europe'];
+    w.ownMatches = [
+      { ...game('L30', 8, 'league', 'a', 'b', [4, 4]), players: ['large'] },
+    ] as unknown as World['ownMatches'];
+
+    for (const club of [...clubs, 'unknown'])
+      expect(JSON.stringify(recentClubResults(w, club))).toBe(
+        JSON.stringify(reference.recentClubResults(w, club)),
+      );
+    expect(recentClubResults(w, 'a')).toHaveLength(RECENT_RESULT_LIMIT);
+    expect(recentClubResults(w, 'c').find((f) => f.id === 'C0')!.score).toEqual({
+      home: 3,
+      away: 2,
+    });
+    expect(recentClubResults(w, 'a').find((f) => f.id === 'L30')!.score).toEqual({
+      home: 4,
+      away: 4,
+    });
+
+    const scanned = structuredClone(w);
+    const expected = structuredClone(w);
+    scanned.recentResults = expected.recentResults = { b: [] };
+    retainRecentResults(scanned);
+    reference.retainRecentResults(expected);
+    expect(JSON.stringify(scanned.recentResults)).toBe(JSON.stringify(expected.recentResults));
   });
 
   it('retains untracked clubs when an older save closes before playing another match', () => {
