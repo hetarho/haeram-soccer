@@ -18,7 +18,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| fs09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-08T16:07Z | 2026-11-08T16:07Z | - |
 
 ## inbox
 - 261109 decided T726 review/self-improve-local-261109: the final gate on 16994234 could not load any Playwright spec — T726's moved `goalFeedback` imports `presentationClock` through the `entities/match` index, which drags CSS modules into Playwright's Node loader → revert T726 alone (61d6d6a2), keep T727/T728, block T726 on F13 (alt: a CSS-free public entry now, an ARCH-4 change without review time | stub CSS in Playwright's loader) fs09
@@ -826,6 +825,7 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
+| T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -850,10 +850,13 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 
 ## next
-- implement-task T689 (explore 2h) in a fresh session (this checkout's `vibe loop` is refused until work group `module-1026` is closed, see inbox), main green (CI 42494165472): its deps are done (T712 done with the ability-fit wage out of force, so T689 measures on production as released).
-- the inbox suggests two slices for the owner: CLUB-51's reach above the club's division (T712's lever, supply not price) and a portable `pow` (T713's remaining host math). Coordinators gate with verify:batch before any main push.
+- implement-task T730 first (fix-ci-first): CI 42519984966 on ad51162 is green except `e2e (webkit 2/2)` — progression-settings.spec.ts:287 read `결재함 · 대기 0건` after the stop (set-piece-defence.spec.ts:187 flaky); T729's resource-skins fix held. The failed job's re-run result is in the log.
+- the owner's decisions from review/self-improve-local-261109: F6 (confirm the decided inbox lines up to a date so a session can delete them — the largest per-task token cost), F13 (a CSS-free public entry so Playwright/Node consumers reach a slice's pure logic; then resume blocked T726), F11 (`pages/records`).
+- implement-task T689 (explore 2h) in a fresh session (this checkout's `vibe loop` is refused until work group `module-1026` is closed, see inbox): its deps are done.
+- F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 
 ## log
+- 261109 fs09 gate passed on ad511620 in 1836 s (every stage, Chromium 348 passed, tree untouched); pushed ad511620 to main; CI 42519984966: checks, unit, integration 1–3/3, Chromium 1–2/2, Firefox 1–2/2, WebKit 1/2 green, WebKit 2/2 failed progression-settings.spec.ts:287 (→T730) with set-piece-defence.spec.ts:187 flaky; re-running the failed job fs09
 - 261109 fs09 final gate `vibe check --tier batch -- pnpm run verify:batch` on 61d6d6a2: every stage passed — typecheck, lint, format, unit, integration 318 s, contract, catalogs, presentation, i18n, build, Chromium 348 passed (25.6 min); the receipt reads stale because this session committed spec-only files during the run (no code after 61d6d6a2) fs09
 - 261109 T726 reverted (61d6d6a2) and blocked: its lib moves made every Playwright spec fail to load through a CSS-carrying entity index; T727/T728 stay fs09
 - 261109 T726–T728 done (lane fsd-phase-b, worker fs09-w4, reviewer fs09-r2: T726/T727 approved, T728 approved after its absolute-path fix): the match viewer owns its six playback modules (entity index 88→70 names, `@x` 7→6); cup calendars and knockout counts read from the `competition-keys` leaf (UI→orchestration exception keys 28→24, chunks 71/30 kept); a path-resolving layer rule replaces the pattern blocks and rejects sibling re-exports, deep/climbing paths, wrong `@x` consumers, dynamic `import()` of higher layers or indexes and side-effect-only imports (51/51 probes; the old patterns 29/47) fs09
