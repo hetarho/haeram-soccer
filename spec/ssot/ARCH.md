@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r31 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r32 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -18,7 +18,13 @@
   | Path | Responsibility |
   |---|---|
   | `apps/web/src/main.tsx` | entry: presentation bootstrap, React root |
-  | `apps/web/src/ui` | React screens, Canvas pitch, SVG charts, and their framework-free view helpers (`*.ts`) |
+  | `apps/web/src/app` | application shell: root component, navigation, app-wide overlays and hosts |
+  | `apps/web/src/pages` | routed screens, one slice per screen |
+  | `apps/web/src/widgets` | composed blocks shown on several screens |
+  | `apps/web/src/features` | one user interaction each (match viewer, match preparation, approvals, …) |
+  | `apps/web/src/entities` | one domain noun each (club, player, league, match, office): its views, Canvas painting and framework-free view helpers (`*.ts`) |
+  | `apps/web/src/shared` | game-free UI kit, shared styles, formatting and navigation state |
+  | `apps/web/src/lab`, `constants`, `design-system` | separate developer tool entries; they import slices through their public API |
   | `apps/web/src/runtime` | main-thread client and store, engine worker host, protocol, view publisher, codec worker, read models shared with the worker |
   | `apps/web/src/adapters` | browser storage repositories, checkpoint commit, save codec and packing, preference stores, resource loaders |
   | `apps/web/src/presentation` | locale/theme registry and controller, shared presentation labels and assets (→ARCH-32) |
@@ -37,6 +43,7 @@
   - React may display projections and submit commands; it does not directly modify canonical game state.
   - UI code imports engine values only from read leaves: modules whose runtime import closure reaches no world generation, season, match or grid-execution orchestration. Constants, labels and pure reads the UI needs live in such leaves beside their data. ← a label or read pulled through an orchestration module ties the screen and its tests to every engine change
   - Existing UI imports of orchestration modules are listed exceptions guarded by an architecture test: a new UI→orchestration import fails, and so does a listed import that no longer exists, so the list only shrinks. Moving domain reads into the published view instead is a separate measured decision.
+  - Web UI source follows Feature-Sliced Design, highest first: app → pages → widgets → features → entities → shared. A layer imports only lower layers; slices of one layer never import each other, except an entity naming another through that entity's `@x/<consumer>.ts` cross-import file; code outside a slice imports only its `index.ts`, which opens with what the slice is for. A dynamic `import()` names the module file instead of the index so lazy chunks stay split. `runtime`, `adapters` and `presentation` sit below every layer and never import one, keeping the Worker free of React (→ARCH-6). ESLint enforces the direction; no legacy flat UI folder remains. ← a change and its reading stay inside one cohesive folder behind one public API, and a slice's consumers are visible from its index
 - ARCH-5 [o] A versioned deterministic engine owns game progression.
   - Inputs: world seed, explicit commands and the game day each applies at, engine/rule versions, and catalog versions.
   - Use a documented seeded PRNG with portable test vectors and separately named streams for generation, matches, and other stochastic systems.
@@ -255,6 +262,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r32 261109 ARCH-3✎ `apps/web/src/ui` React screens and view helpers→`app`, `pages`, `widgets`, `features`, `entities`, `shared` layers and the `lab`/`constants`/`design-system` tool entries; ARCH-4+ Feature-Sliced Design layer direction, slice public API, entity `@x` cross-imports, lazy `import()` of module files, infrastructure below every layer, no legacy flat UI folder
 - r31 261104 ARCH-32✎ deferred feature/engine extraction→resource-only prose, locale-independent source formatting and display-time resolution; mandatory executable guards for literals, keys, parameters and complete registered packs
 - r30 261104 ARCH-28✎ measured 261103 without the view only→also measured 261104 with the history view: 2000 129.8 s (2.06 s a season), 1970 61.1 s, the view at most 5.6% of generation
 - r29 261103 ARCH-30✎ batch before a push to main (full suite and Chromium)→quick batch before a session's push to `next` (unit, contract, build); +release: the last session working merges main into next, runs verify:batch once, merges next into main and pushes (deploy); CI after main pushes only
