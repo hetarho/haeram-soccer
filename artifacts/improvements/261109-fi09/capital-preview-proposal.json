@@ -1,0 +1,105 @@
+{
+  "kind": "proposal-only",
+  "base": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+  "finding": {
+    "priority": "P2-proposal",
+    "title": "Project the actually applied capital/dividend mood change with the unchanged settlement math",
+    "cause": "Owner preview duplicates only a raw proportional rule. Engine truncates its exact-money percentage to hundredths, applies friendly drops, clamps fanMood to 0..100 and stores hundredths; the preview uses an unrounded Number ratio and never projects the bounded stored mood. This gives incorrect before-commit effect disclosures, while every monetary amount can remain correct.",
+    "rawEvidence": [
+      {
+        "where": "apps/web/src/entities/office/lib/ownerFigures.ts:253-264",
+        "fact": "share uses unrounded Number(amount)/Number(base)*100; injectionMood returns the capped rule rise without considering current fanMood."
+      },
+      {
+        "where": "apps/web/src/entities/office/lib/ownerFigures.ts:280-290",
+        "fact": "Dividend amount is already exact and correctly cash-capped; mood uses unrounded share then friendly factor, without stored-state rounding/clamp."
+      },
+      {
+        "where": "packages/engine/src/fan-mood.ts:37-59",
+        "fact": "move applies friendly drop, clamps before+scaled to FAN_MOOD min/max and rounds the resulting mood to hundredths; percentOf uses BigInt truncation before Number conversion."
+      },
+      {
+        "where": "packages/engine/src/fan-mood.ts:239-249,265-270",
+        "fact": "Injection and dividend settlement use percentOf and move, with existing max and fallback semantics."
+      },
+      {
+        "where": "apps/web/src/entities/office/ui/OwnerSheet.tsx:299-310,395-405",
+        "fact": "The before-commit sheet renders preview mood as the effect; ownerFigures.ts:385-389 reduces it to one display decimal."
+      }
+    ],
+    "contractBlocks": [
+      {
+        "id": "OWNER-12",
+        "pointer": "spec/ssot/OWNER.md:44-55 (complete block)",
+        "requirement": "0..100 mood; existing injection/dividend rates and friendly factor."
+      },
+      {
+        "id": "OWNER-5",
+        "pointer": "spec/ssot/OWNER.md:21-31 (complete block)",
+        "requirement": "Friendly drops x0.7, rises unchanged."
+      },
+      {
+        "id": "OWNER-9",
+        "pointer": "spec/ssot/OWNER.md:41 (complete block)",
+        "requirement": "Capital transfer and turnover exclusion unchanged."
+      },
+      {
+        "id": "OWNER-11",
+        "pointer": "spec/ssot/OWNER.md:43 (complete block)",
+        "requirement": "Profit/cash-limited dividend remains exact."
+      },
+      {
+        "id": "WEB-114",
+        "pointer": "spec/ssot/WEB.md:599-600 (complete block)",
+        "requirement": "An injection or dial change shows its effect before applying."
+      },
+      {
+        "id": "ECON-1",
+        "pointer": "spec/ssot/ECON.md:5 (complete block)",
+        "requirement": "Exact monetary amounts remain unchanged."
+      },
+      {
+        "id": "ARCH-9",
+        "pointer": "spec/ssot/ARCH.md:76-81 (complete block)",
+        "requirement": "Explicit numeric representations; do not introduce monetary float settlement."
+      }
+    ],
+    "executedEvidence": {
+      "script": "/tmp/fi09-scout-capital-diagnostic.cjs",
+      "stdout": "/tmp/fi09-scout-capital-stdout.json",
+      "file": "/tmp/fi09-scout-capital-numeric.json",
+      "method": "Exact pinned AST-selected preview/engine functions plus actual presentation format.signed, ownerFigures.moodChange and locale.createLocaleFormatters, including actual engine event parameters. Minimal injected canonical turnover/result reads and event sink; no generation/progression/mounted UI/test suite.",
+      "primary": "Injection mood99 / amount10000 / turnover100000: actual ko/de/ar preview +10/+10/+١٠; unchanged settlement gives100, applied delta+1 and event p2=1.0. Mood100 gives preview+10 but applied0.",
+      "secondary": "Dividend amount10000 / turnover3330000 at mood60: actual ko/de/ar moodChange preview −0.2/−0,2/−٠٫٢; unchanged settlement mood59.85, delta actual formatter −0.1/−0,1/−٠٫١, actual event p2=0.1. At starting mood1 the binary delta differs and both preview/event show0.2.",
+      "roundingCaution": "Direct Intl rounding of exact −0.15 is −0.2. Production moodChange first applies Math.round(value*10)/10 before format.signed/Intl, so production moodChange(−0.15) is −0.1. No new rounding policy is proposed."
+    },
+    "proposedChange": "Extract the existing percentOf and existing move numeric projection into one pure read leaf with no orchestration imports, preserving operation order and constants. Have move delegate without changing any settled result. Let known-base owner previews return projected stored mood minus current mood using that same math. Keep current injection-unavailable behavior and dividend100% turnover fallback; do not change amount, turnover, fees, rates or save data.",
+    "minimalTouches": [
+      "packages/engine/src/fan-mood-read.ts (new pure helper and focused test)",
+      "packages/engine/src/fan-mood.ts (delegate unchanged private math only)",
+      "apps/web/src/entities/office/lib/ownerFigures.ts",
+      "apps/web/src/app/ui/ownerFigures.test.ts (or a small adjacent pure test; no OwnerSheet markup change needed)"
+    ],
+    "preservedRules": [
+      "Exact dividend amount, profit/cash cap and capital/fortune conservation",
+      "Canonical current/prior turnover, currency conversion and takeover base from T747",
+      "Zero/unknown-turnover fallback behavior",
+      "FAN_MOOD rates, injection maximum, fansFriend, rounding order and 0..100 clamp",
+      "Every existing simulation mood outcome/event, RNG/save format and UI locale resources"
+    ],
+    "meaningfulFastTests": [
+      "Differential helper vs the original numeric move expression across positive/negative changes, moods0/1/60/99/100, friendly on/off and fractional boundaries; preserve exact stored outcomes.",
+      "Synthetic preview vs actual exported injection/dividend hook on identical starting fields: 1/333 ratio, half-decimal display boundary, saturated moods, zero/cash-capped dividend and friendly drops.",
+      "Pure-read immutability, unchanged monetary amounts and unavailable/zero fallback tests; retain T747 turnover exclusion and currency cases.",
+      "Run required affected unit/type/lint/format/i18n/build only; no broad world progression."
+    ],
+    "cost": "45–60 minutes implementation/fast verification, plus independent review",
+    "decisionBoundary": "The owner already authorized numerical/preview consistency and WEB-114 requires the effect before commit. Treat this as projecting the existing applied rule, never changing it. If the coordinator interprets these values as intentional nominal rule pressure rather than applied effect, park that display interpretation instead of inventing new precision/rates. No source changes until coordinator adopts.",
+    "limits": "Known T747 preview precision was explicitly outside that earlier denominator correction. This packet scopes only this remaining duplicated numeric projection; no F18 general FX, NPC budgets, T755/T765 or league changes.",
+    "contractInterpretation": {
+      "explicit": "Complete WEB-114 at599–600 says an injection or dial change shows its effect before applying; complete OWNER-12 at44–55 defines fanMood on0..100 and its drivers. The UI labels the known-base injection value simply 팬 민심 (OwnerSheet299–310, source-messages2487), with no raw/nominal qualifier. Adjacent cash/fortune rows are actual before→after effects.",
+      "inference": "No SSOT sentence explicitly names applied delta versus nominal driver. Interpreting that unqualified pre-commit fanMood effect as the applied change is an engineering inference from WEB-114 plus the0..100 bound, requiring coordinator adoption. OwnerSheet dividend uses 약 via source-messages3667–3668, so the one-tenth dividend discrepancy alone is weaker evidence; the cap case is primary.",
+      "formatterPath": "ownerFigures.ts:388–389 Math.round to one decimal → presentation/format.ts:57–65 signed (toFixed absolute magnitude for fraction digits) → locale.ts:117–132 Intl formatting; engine fan-mood.ts:41 stored-hundredths calculation and43,51–52 actual moved delta.toFixed(1)."
+    }
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "base": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+  "method": "Executed exact pinned functions selected with TypeScript AST, actual presentation signed/moodChange/createLocaleFormatters (Intl) and actual engine event parameter formatting. Canonical result/turnover reads and event sink injected; no world generation, progression, mounted UI or suite execution.",
+  "exactMinusPoint15": {
+    "IntlDirect": "-0.2",
+    "moodChangeActual": {
+      "ko-KR": "−0.1",
+      "de-DE": "−0,1",
+      "ar-SA": "−٠٫١"
+    }
+  },
+  "examples": [
+    {
+      "kind": "dividend",
+      "fanMood": 60,
+      "traits": [],
+      "amount": "10000",
+      "turnover": "3330000",
+      "previewChange": -0.15015015015015015,
+      "previewActualFormatter": {
+        "ko-KR": "−0.2",
+        "de-DE": "−0,2",
+        "ar-SA": "−٠٫٢"
+      },
+      "settledMood": 59.85,
+      "settledChange": -0.14999999999999858,
+      "deltaActualFormatter": {
+        "ko-KR": "−0.1",
+        "de-DE": "−0,1",
+        "ar-SA": "−٠٫١"
+      },
+      "actualEngineEventParameters": {
+        "p0": {
+          "id": "copy.fan_mood.65d2c22e42",
+          "params": {
+            "p0": "0.3"
+          }
+        },
+        "p1": "−",
+        "p2": "0.1",
+        "p3": "59.9"
+      }
+    },
+    {
+      "kind": "dividend",
+      "fanMood": 60,
+      "traits": [
+        "fansFriend"
+      ],
+      "amount": "10000",
+      "turnover": "3330000",
+      "previewChange": -0.1051051051051051,
+      "previewActualFormatter": {
+        "ko-KR": "−0.1",
+        "de-DE": "−0,1",
+        "ar-SA": "−٠٫١"
+      },
+      "settledMood": 59.9,
+      "settledChange": -0.10000000000000142,
+      "deltaActualFormatter": {
+        "ko-KR": "−0.1",
+        "de-DE": "−0,1",
+        "ar-SA": "−٠٫١"
+      },
+      "actualEngineEventParameters": {
+        "p0": {
+          "id": "copy.fan_mood.65d2c22e42",
+          "params": {
+            "p0": "0.3"
+          }
+        },
+        "p1": "−",
+        "p2": "0.1",
+        "p3": "59.9"
+      }
+    },
+    {
+      "kind": "dividend",
+      "fanMood": 1,
+      "traits": [],
+      "amount": "10000",
+      "turnover": "3330000",
+      "previewChange": -0.15015015015015015,
+      "previewActualFormatter": {
+        "ko-KR": "−0.2",
+        "de-DE": "−0,2",
+        "ar-SA": "−٠٫٢"
+      },
+      "settledMood": 0.85,
+      "settledChange": -0.15000000000000002,
+      "deltaActualFormatter": {
+        "ko-KR": "−0.2",
+        "de-DE": "−0,2",
+        "ar-SA": "−٠٫٢"
+      },
+      "actualEngineEventParameters": {
+        "p0": {
+          "id": "copy.fan_mood.65d2c22e42",
+          "params": {
+            "p0": "0.3"
+          }
+        },
+        "p1": "−",
+        "p2": "0.2",
+        "p3": "0.8"
+      }
+    },
+    {
+      "kind": "injection",
+      "fanMood": 60,
+      "amount": "10000",
+      "turnover": "100000",
+      "previewChange": 10,
+      "previewActualFormatter": {
+        "ko-KR": "+10",
+        "de-DE": "+10",
+        "ar-SA": "+١٠"
+      },
+      "settledMood": 70,
+      "settledChange": 10,
+      "deltaActualFormatter": {
+        "ko-KR": "+10",
+        "de-DE": "+10",
+        "ar-SA": "+١٠"
+      },
+      "actualEngineEventParameters": {
+        "p0": {
+          "id": "copy.fan_mood.f85507dce3",
+          "params": {
+            "p0": "10.0"
+          }
+        },
+        "p1": "+",
+        "p2": "10.0",
+        "p3": "70.0"
+      }
+    },
+    {
+      "kind": "injection",
+      "fanMood": 99,
+      "amount": "10000",
+      "turnover": "100000",
+      "previewChange": 10,
+      "previewActualFormatter": {
+        "ko-KR": "+10",
+        "de-DE": "+10",
+        "ar-SA": "+١٠"
+      },
+      "settledMood": 100,
+      "settledChange": 1,
+      "deltaActualFormatter": {
+        "ko-KR": "+1",
+        "de-DE": "+1",
+        "ar-SA": "+١"
+      },
+      "actualEngineEventParameters": {
+        "p0": {
+          "id": "copy.fan_mood.f85507dce3",
+          "params": {
+            "p0": "10.0"
+          }
+        },
+        "p1": "+",
+        "p2": "1.0",
+        "p3": "100.0"
+      }
+    },
+    {
+      "kind": "injection",
+      "fanMood": 100,
+      "amount": "10000",
+      "turnover": "100000",
+      "previewChange": 10,
+      "previewActualFormatter": {
+        "ko-KR": "+10",
+        "de-DE": "+10",
+        "ar-SA": "+١٠"
+      },
+      "settledMood": 100,
+      "settledChange": 0,
+      "deltaActualFormatter": {
+        "ko-KR": "0",
+        "de-DE": "0",
+        "ar-SA": "٠"
+      },
+      "actualEngineEventParameters": {
+        "p0": {
+          "id": "copy.fan_mood.f85507dce3",
+          "params": {
+            "p0": "10.0"
+          }
+        },
+        "p1": "+",
+        "p2": "0.0",
+        "p3": "100.0"
+      }
+    }
+  ]
+}
