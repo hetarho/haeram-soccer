@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T02:13:27.005Z",
-  "sourceCommit": "acb5f1ef183f766f65c90a55447dc305f72940d7",
+  "snapshotAt": "2026-11-09T02:23:58.712Z",
+  "sourceCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -16,15 +16,17 @@
     "review": "all",
     "taskScope": [
       "T731",
-      "T732"
+      "T732",
+      "T733",
+      "T734"
     ]
   },
   "summary": {
-    "total": 2,
-    "completed": 1,
-    "remaining": 1,
-    "running": 0,
-    "review": 1,
+    "total": 4,
+    "completed": 2,
+    "remaining": 2,
+    "running": 2,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
@@ -33,7 +35,15 @@
       "id": "T732",
       "title": "choose affordable sporting improvements before free status",
       "dep": [],
-      "status": "reviewing"
+      "status": "doing"
+    },
+    {
+      "id": "T734",
+      "title": "refresh the portable transfer-value observation",
+      "dep": [
+        "T731"
+      ],
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -57,6 +67,8 @@
       "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
       "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
       "submittedAt": "2026-11-09T02:10:28.876Z",
+      "integratedCommit": "b97e2ec3a731f7cfb43b5e50de7a5786c957e897",
+      "integratedAt": "2026-11-09T02:13:27.947Z",
       "risk": null,
       "review": {
         "id": "dd83f717-acc9-4c4f-95eb-a545a2eaacd3",
@@ -91,6 +103,13 @@
           "startedAt": "2026-11-09T02:08:45.613Z",
           "finishedAt": "2026-11-09T02:10:27.436Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:13:27.615Z",
+          "finishedAt": "2026-11-09T02:13:27.627Z"
+        }
       ]
     },
     {
@@ -105,24 +124,37 @@
       "contributors": [
         "ec09-recruit"
       ],
-      "status": "reviewing",
-      "reason": null,
+      "status": "doing",
+      "reason": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
       "createdAt": "2026-11-09T02:01:20.473Z",
       "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe",
-      "verifiedCommit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
       "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
       "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
       "submittedAt": "2026-11-09T02:11:45.164Z",
       "risk": null,
-      "review": {
-        "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
-        "owner": "ec09-reviewer",
-        "status": "reviewing",
-        "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
-        "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
-        "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
-        "createdAt": "2026-11-09T02:12:08.562Z"
-      },
+      "reviewHistory": [
+        {
+          "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+          "owner": "ec09-reviewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/calibrate-cash-flow.ts:142-144,161-170,198-200 (T732)",
+              "message": "The events list requires event.currency===closed.currency before counting free-agent-signing, but signFreeAgentAtClose calls addEvent without an amount and addEvent only attaches currency when amount exists. Every such top-up is therefore discarded and freeTopUpArrivals is always zero. A direct addEvent synthetic reproduction yields a free-agent-signing event without currency and filtered count0. Free arrivals also depend on completed bid history, which is capped at60 by transfers.ts:pruneBids, while recordTransfer deliberately records no zero-fee facts. Count these nonmonetary arrival facts separately from currency-filtered money, and preserve complete per-season free counts rather than depending on a prunable bid buffer. Add a small regression including a currency-less top-up and free delegated arrival, and expose correct raw source evidence so existing cash-flow runs can be repaired/reported accurately."
+            }
+          ],
+          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+          "createdAt": "2026-11-09T02:12:08.562Z",
+          "finishedAt": "2026-11-09T02:14:09.377Z",
+          "invalidatedAt": "2026-11-09T02:16:43.428Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
       "steps": [
         {
           "taskId": "T732",
@@ -144,6 +176,78 @@
           "finishedAt": "2026-11-09T02:11:44.769Z"
         }
       ]
+    },
+    {
+      "id": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "group": "economy-ec09",
+      "taskId": "T733",
+      "tasks": [
+        "T733"
+      ],
+      "lane": null,
+      "owner": "ec09-transfer",
+      "contributors": [
+        "ec09-transfer"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T02:17:37.743Z",
+      "startCommit": "0194c2497345f3a551603bb97608b5a477459034",
+      "verifiedCommit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+      "submittedBase": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+      "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+      "submittedAt": "2026-11-09T02:22:27.731Z",
+      "risk": null,
+      "review": {
+        "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T733 corrects the cross-module reporting assumption identified after the initial T731 review: positive-fee-only TransferFacts and bounded bids are no longer used to infer free arrivals. The shared pure helper separately counts same-year/currency explicit zero-fee transfer-in events and same-year nonmonetary pool top-ups, labels zero-fee moves without claiming permanent/free-agent metadata, and tests 75 events without bid history. The transfer harness retains the arrival source fields including currency-less events, reads retained event years after close, excludes next-year summer events from the closing year's row, and reports missing legacy observations as unknown. The reviewer reran scripts/lib/transfer-flow.test.ts: 3/3 passed. Simulation pricing/ranking/save behavior is untouched. No blocking finding; T732's separate harness must consume this helper and receive its own review.",
+        "findings": [],
+        "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+        "baseCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+        "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+        "createdAt": "2026-11-09T02:22:41.716Z",
+        "finishedAt": "2026-11-09T02:23:38.071Z"
+      },
+      "steps": [
+        {
+          "taskId": "T733",
+          "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+          "at": "2026-11-09T02:22:27.681Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+              "startedAt": "2026-11-09T02:21:45.878Z",
+              "finishedAt": "2026-11-09T02:22:27.382Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-09T02:21:45.878Z",
+          "finishedAt": "2026-11-09T02:22:27.382Z"
+        }
+      ]
+    },
+    {
+      "id": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "group": "economy-ec09",
+      "taskId": "T734",
+      "tasks": [
+        "T734"
+      ],
+      "lane": null,
+      "owner": "ec09-transfer",
+      "contributors": [
+        "ec09-transfer"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T02:22:49.021Z",
+      "startCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c"
     }
   ],
   "history": [
@@ -471,6 +575,335 @@
       "group": "economy-ec09",
       "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
       "taskId": "T731",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 835,
+      "at": "2026-11-09T02:13:27.821Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:13:27.615Z",
+            "finishedAt": "2026-11-09T02:13:27.627Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 836,
+      "at": "2026-11-09T02:13:27.947Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "b97e2ec3a731f7cfb43b5e50de7a5786c957e897",
+        "integratedAt": "2026-11-09T02:13:27.947Z"
+      }
+    },
+    {
+      "sequence": 837,
+      "at": "2026-11-09T02:14:09.377Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+        "review": {
+          "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+          "owner": "ec09-reviewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/calibrate-cash-flow.ts:142-144,161-170,198-200 (T732)",
+              "message": "The events list requires event.currency===closed.currency before counting free-agent-signing, but signFreeAgentAtClose calls addEvent without an amount and addEvent only attaches currency when amount exists. Every such top-up is therefore discarded and freeTopUpArrivals is always zero. A direct addEvent synthetic reproduction yields a free-agent-signing event without currency and filtered count0. Free arrivals also depend on completed bid history, which is capped at60 by transfers.ts:pruneBids, while recordTransfer deliberately records no zero-fee facts. Count these nonmonetary arrival facts separately from currency-filtered money, and preserve complete per-season free counts rather than depending on a prunable bid buffer. Add a small regression including a currency-less top-up and free delegated arrival, and expose correct raw source evidence so existing cash-flow runs can be repaired/reported accurately."
+            }
+          ],
+          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+          "createdAt": "2026-11-09T02:12:08.562Z",
+          "finishedAt": "2026-11-09T02:14:09.377Z"
+        }
+      }
+    },
+    {
+      "sequence": 838,
+      "at": "2026-11-09T02:16:43.428Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+            "owner": "ec09-reviewer",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "scripts/calibrate-cash-flow.ts:142-144,161-170,198-200 (T732)",
+                "message": "The events list requires event.currency===closed.currency before counting free-agent-signing, but signFreeAgentAtClose calls addEvent without an amount and addEvent only attaches currency when amount exists. Every such top-up is therefore discarded and freeTopUpArrivals is always zero. A direct addEvent synthetic reproduction yields a free-agent-signing event without currency and filtered count0. Free arrivals also depend on completed bid history, which is capped at60 by transfers.ts:pruneBids, while recordTransfer deliberately records no zero-fee facts. Count these nonmonetary arrival facts separately from currency-filtered money, and preserve complete per-season free counts rather than depending on a prunable bid buffer. Add a small regression including a currency-less top-up and free delegated arrival, and expose correct raw source evidence so existing cash-flow runs can be repaired/reported accurately."
+              }
+            ],
+            "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+            "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+            "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+            "createdAt": "2026-11-09T02:12:08.562Z",
+            "finishedAt": "2026-11-09T02:14:09.377Z",
+            "invalidatedAt": "2026-11-09T02:16:43.428Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 839,
+      "at": "2026-11-09T02:17:36.156Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733"
+        ]
+      }
+    },
+    {
+      "sequence": 840,
+      "at": "2026-11-09T02:17:37.743Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+        "group": "economy-ec09",
+        "taskId": "T733",
+        "tasks": [
+          "T733"
+        ],
+        "lane": null,
+        "owner": "ec09-transfer",
+        "contributors": [
+          "ec09-transfer"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:17:37.743Z",
+        "startCommit": "0194c2497345f3a551603bb97608b5a477459034"
+      }
+    },
+    {
+      "sequence": 841,
+      "at": "2026-11-09T02:17:39.838Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 842,
+      "at": "2026-11-09T02:21:33.271Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734"
+        ]
+      }
+    },
+    {
+      "sequence": 843,
+      "at": "2026-11-09T02:21:45.653Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 844,
+      "at": "2026-11-09T02:22:27.731Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+        "submittedBase": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+        "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+        "submittedAt": "2026-11-09T02:22:27.731Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T733",
+            "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+            "at": "2026-11-09T02:22:27.681Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:21:45.878Z",
+                "finishedAt": "2026-11-09T02:22:27.382Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:21:45.878Z",
+            "finishedAt": "2026-11-09T02:22:27.382Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 845,
+      "at": "2026-11-09T02:22:41.717Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+          "baseCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+          "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+          "createdAt": "2026-11-09T02:22:41.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 846,
+      "at": "2026-11-09T02:22:49.021Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "7f322977-8984-484e-b84e-18efcc9cdf18",
+        "group": "economy-ec09",
+        "taskId": "T734",
+        "tasks": [
+          "T734"
+        ],
+        "lane": null,
+        "owner": "ec09-transfer",
+        "contributors": [
+          "ec09-transfer"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:22:49.021Z",
+        "startCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c"
+      }
+    },
+    {
+      "sequence": 847,
+      "at": "2026-11-09T02:22:51.255Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 848,
+      "at": "2026-11-09T02:23:38.071Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T733 corrects the cross-module reporting assumption identified after the initial T731 review: positive-fee-only TransferFacts and bounded bids are no longer used to infer free arrivals. The shared pure helper separately counts same-year/currency explicit zero-fee transfer-in events and same-year nonmonetary pool top-ups, labels zero-fee moves without claiming permanent/free-agent metadata, and tests 75 events without bid history. The transfer harness retains the arrival source fields including currency-less events, reads retained event years after close, excludes next-year summer events from the closing year's row, and reports missing legacy observations as unknown. The reviewer reran scripts/lib/transfer-flow.test.ts: 3/3 passed. Simulation pricing/ranking/save behavior is untouched. No blocking finding; T732's separate harness must consume this helper and receive its own review.",
+          "findings": [],
+          "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+          "baseCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+          "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+          "createdAt": "2026-11-09T02:22:41.716Z",
+          "finishedAt": "2026-11-09T02:23:38.071Z"
+        }
+      }
+    },
+    {
+      "sequence": 849,
+      "at": "2026-11-09T02:23:55.959Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
