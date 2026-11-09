@@ -837,7 +837,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T739 | separate the player wage era scale and observe settled payroll | CLUB ECON LEAGUE ARCH | - | todo |
-| T740 | normalize the English top-flight central distribution package | ECON ARCH | - | todo |
 | T741 | align financial integration expectations with the normalized central package | ECON ARCH | T740 | todo |
 | T742 | use the normalized central package in club valuation | ECON OWNER ARCH | T740 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
@@ -868,12 +867,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 5 | 5 | 0 | 0 | 0 | 0 | 2026-11-09T04:03:23.496Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 9 | 6 | 3 | 1 | 0 | 0 | 2026-11-09T05:05:37.303Z | [history](work/economy-ec09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T740 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
 - 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
 - 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
@@ -893,4 +893,3 @@
 - 261109 fs09 final gate `vibe check --tier batch -- pnpm run verify:batch` on 61d6d6a2: every stage passed — typecheck, lint, format, unit, integration 318 s, contract, catalogs, presentation, i18n, build, Chromium 348 passed (25.6 min); the receipt reads stale because this session committed spec-only files during the run (no code after 61d6d6a2) fs09
 - 261109 T726 reverted (61d6d6a2) and blocked: its lib moves made every Playwright spec fail to load through a CSS-carrying entity index; T727/T728 stay fs09
 - 261109 T726–T728 done (lane fsd-phase-b, worker fs09-w4, reviewer fs09-r2: T726/T727 approved, T728 approved after its absolute-path fix): the match viewer owns its six playback modules (entity index 88→70 names, `@x` 7→6); cup calendars and knockout counts read from the `competition-keys` leaf (UI→orchestration exception keys 28→24, chunks 71/30 kept); a path-resolving layer rule replaces the pattern blocks and rejects sibling re-exports, deep/climbing paths, wrong `@x` consumers, dynamic `import()` of higher layers or indexes and side-effect-only imports (51/51 probes; the old patterns 29/47) fs09
-- 261109 fs09 gate on 9329121a (T725, T729) failed only `persistence.long-career.test.ts` by its 600 s timeout: T725's engine change re-keyed the cached ten-season world, re-simulated at load 38 beside the phase-B review; rerun as part of the final gate on a quiet machine fs09

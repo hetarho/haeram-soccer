@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T04:03:23.496Z",
-  "sourceCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+  "snapshotAt": "2026-11-09T05:05:37.303Z",
+  "sourceCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -38,19 +38,46 @@
       "T732",
       "T733",
       "T734",
-      "T737"
+      "T737",
+      "T739",
+      "T740",
+      "T741",
+      "T742"
     ]
   },
   "summary": {
-    "total": 5,
-    "completed": 5,
-    "remaining": 0,
-    "running": 0,
+    "total": 9,
+    "completed": 6,
+    "remaining": 3,
+    "running": 1,
     "review": 0,
     "blocked": 0,
-    "unassigned": 0
+    "unassigned": 2
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "T739",
+      "title": "separate the player wage era scale and observe settled payroll",
+      "dep": [],
+      "status": "doing"
+    },
+    {
+      "id": "T741",
+      "title": "align financial integration expectations with the normalized central package",
+      "dep": [
+        "T740"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T742",
+      "title": "use the normalized central package in club valuation",
+      "dep": [
+        "T740"
+      ],
+      "status": "todo"
+    }
+  ],
   "attempts": [
     {
       "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
@@ -425,6 +452,96 @@
           "command": "git diff --check",
           "startedAt": "2026-11-09T03:59:35.684Z",
           "finishedAt": "2026-11-09T03:59:35.696Z"
+        }
+      ]
+    },
+    {
+      "id": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "group": "economy-ec09",
+      "taskId": "T739",
+      "tasks": [
+        "T739"
+      ],
+      "lane": null,
+      "owner": "ec10-wages",
+      "contributors": [
+        "ec10-wages"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T04:54:17.230Z",
+      "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2"
+    },
+    {
+      "id": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "group": "economy-ec09",
+      "taskId": "T740",
+      "tasks": [
+        "T740"
+      ],
+      "lane": null,
+      "owner": "ec10-distribution",
+      "contributors": [
+        "ec10-distribution"
+      ],
+      "status": "released",
+      "reason": "Owner-requested calibration: preserve source patch, release before correcting the official-total coefficient from exact canonical minor units",
+      "createdAt": "2026-11-09T04:54:21.339Z",
+      "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2",
+      "releasedAt": "2026-11-09T04:59:09.450Z"
+    },
+    {
+      "id": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "group": "economy-ec09",
+      "taskId": "T740",
+      "tasks": [
+        "T740"
+      ],
+      "lane": null,
+      "owner": "ec10-distribution",
+      "contributors": [
+        "ec10-distribution"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T04:59:48.395Z",
+      "startCommit": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
+      "verifiedCommit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+      "submittedBase": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
+      "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+      "submittedAt": "2026-11-09T05:02:03.384Z",
+      "risk": null,
+      "review": {
+        "id": "3329341b-4390-49df-8021-c0e595e718ae",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Scoped T740 componente37ad16c implements ECON51's exact ENG/top-flight normalization in leagueShare after the unchanged broadcast quote. Factor1 returns the old money byte-for-byte, geometric interpolation/flat ends follow the approved anchors, high-precision scaleBy preserves the official20-rank pots, and merit/installments/parachute calculations remain canonical. Own settlement/projection and NPC distribution consume leagueShare. Reviewer reran finance.league-distribution.test.ts:6/6 passed, including both official pots, pre1993 identity, country/tier controls, spread and lost-share payment. No scoped blocker in those cash-accounting paths. Overall increment is NOT publication-ready: an independently reproduced related gap remains in club-value.ts divisionDistribution, which still returns16560867645 rather than normalized10898461538 for ENG2024 and therefore misprices league-place/floor under ECON37. Root explicitly reserved required T742 to unify that path before publication; existing obsolete finance.test expectations are separately owned by T741. This component approval does not certify those follow-ups, economic gates or the whole feature. No worker/reviewer world, integration or browser run was performed.",
+        "findings": [],
+        "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+        "baseCommit": "865ed3451a64d94a065bb04ace4b37e783538cb1",
+        "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+        "createdAt": "2026-11-09T05:03:11.947Z",
+        "finishedAt": "2026-11-09T05:04:55.684Z"
+      },
+      "steps": [
+        {
+          "taskId": "T740",
+          "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+          "at": "2026-11-09T05:02:03.259Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T05:01:49.422Z",
+              "finishedAt": "2026-11-09T05:02:02.234Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T05:01:49.422Z",
+          "finishedAt": "2026-11-09T05:02:02.234Z"
         }
       ]
     }
@@ -1900,6 +2017,312 @@
             "T738"
           ]
         }
+      }
+    },
+    {
+      "sequence": 888,
+      "at": "2026-11-09T04:54:15.529Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740"
+        ]
+      }
+    },
+    {
+      "sequence": 889,
+      "at": "2026-11-09T04:54:17.230Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "8f5de303-d52d-441f-b5b8-d9342309d151",
+        "group": "economy-ec09",
+        "taskId": "T739",
+        "tasks": [
+          "T739"
+        ],
+        "lane": null,
+        "owner": "ec10-wages",
+        "contributors": [
+          "ec10-wages"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T04:54:17.230Z",
+        "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2"
+      }
+    },
+    {
+      "sequence": 890,
+      "at": "2026-11-09T04:54:19.590Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 891,
+      "at": "2026-11-09T04:54:21.339Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "taskId": "T740",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "94b8e683-2230-4513-a281-c061a9b0f68c",
+        "group": "economy-ec09",
+        "taskId": "T740",
+        "tasks": [
+          "T740"
+        ],
+        "lane": null,
+        "owner": "ec10-distribution",
+        "contributors": [
+          "ec10-distribution"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T04:54:21.339Z",
+        "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2"
+      }
+    },
+    {
+      "sequence": 892,
+      "at": "2026-11-09T04:54:23.599Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "taskId": "T740",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 893,
+      "at": "2026-11-09T04:57:01.492Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741"
+        ]
+      }
+    },
+    {
+      "sequence": 894,
+      "at": "2026-11-09T04:59:09.450Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "taskId": "T740",
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Owner-requested calibration: preserve source patch, release before correcting the official-total coefficient from exact canonical minor units",
+        "releasedAt": "2026-11-09T04:59:09.450Z"
+      }
+    },
+    {
+      "sequence": 895,
+      "at": "2026-11-09T04:59:48.395Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+        "group": "economy-ec09",
+        "taskId": "T740",
+        "tasks": [
+          "T740"
+        ],
+        "lane": null,
+        "owner": "ec10-distribution",
+        "contributors": [
+          "ec10-distribution"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T04:59:48.395Z",
+        "startCommit": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5"
+      }
+    },
+    {
+      "sequence": 896,
+      "at": "2026-11-09T04:59:51.229Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 897,
+      "at": "2026-11-09T05:01:48.156Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 898,
+      "at": "2026-11-09T05:02:03.384Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+        "submittedBase": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
+        "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+        "submittedAt": "2026-11-09T05:02:03.384Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T740",
+            "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+            "at": "2026-11-09T05:02:03.259Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T05:01:49.422Z",
+                "finishedAt": "2026-11-09T05:02:02.234Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T05:01:49.422Z",
+            "finishedAt": "2026-11-09T05:02:02.234Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 899,
+      "at": "2026-11-09T05:03:11.947Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "3329341b-4390-49df-8021-c0e595e718ae",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+          "baseCommit": "865ed3451a64d94a065bb04ace4b37e783538cb1",
+          "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+          "createdAt": "2026-11-09T05:03:11.947Z"
+        }
+      }
+    },
+    {
+      "sequence": 900,
+      "at": "2026-11-09T05:04:55.684Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "3329341b-4390-49df-8021-c0e595e718ae",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Scoped T740 componente37ad16c implements ECON51's exact ENG/top-flight normalization in leagueShare after the unchanged broadcast quote. Factor1 returns the old money byte-for-byte, geometric interpolation/flat ends follow the approved anchors, high-precision scaleBy preserves the official20-rank pots, and merit/installments/parachute calculations remain canonical. Own settlement/projection and NPC distribution consume leagueShare. Reviewer reran finance.league-distribution.test.ts:6/6 passed, including both official pots, pre1993 identity, country/tier controls, spread and lost-share payment. No scoped blocker in those cash-accounting paths. Overall increment is NOT publication-ready: an independently reproduced related gap remains in club-value.ts divisionDistribution, which still returns16560867645 rather than normalized10898461538 for ENG2024 and therefore misprices league-place/floor under ECON37. Root explicitly reserved required T742 to unify that path before publication; existing obsolete finance.test expectations are separately owned by T741. This component approval does not certify those follow-ups, economic gates or the whole feature. No worker/reviewer world, integration or browser run was performed.",
+          "findings": [],
+          "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+          "baseCommit": "865ed3451a64d94a065bb04ace4b37e783538cb1",
+          "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+          "createdAt": "2026-11-09T05:03:11.947Z",
+          "finishedAt": "2026-11-09T05:04:55.684Z"
+        }
+      }
+    },
+    {
+      "sequence": 901,
+      "at": "2026-11-09T05:05:13.279Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741",
+          "T742"
+        ]
+      }
+    },
+    {
+      "sequence": 902,
+      "at": "2026-11-09T05:05:32.868Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
