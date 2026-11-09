@@ -1,4 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { fileURLToPath } from 'node:url';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
+import { careerWorld } from '../career.testkit';
 import {
   MATCH_MODEL_REVISION,
   MATCH_MODEL_REVISIONS,
@@ -34,8 +37,29 @@ import { BAND_EDGES, LANE_EDGES, type Point } from './pitch';
 import { chanceXg } from './resolve';
 import { enterSlot, slotOf } from './state';
 import { computeTags, type Tags } from './tags';
-import { gridKit } from './testkit';
-import type { Tactic } from '../../../contracts/src/types';
+import { gridKitFromWorld } from './testkit';
+import type { Tactic, World } from '../../../contracts/src/types';
+
+/**
+ * Canonical generation inputs, captured before any scenario changes decision settings. This
+ * private fixture never stands in for generic gridKit's fresh-world behavior under tuning.
+ */
+const decisionInput = { version: 1, seed: 'grid-lab', release: structuredClone(DISABLED_RELEASE) };
+const decisionWorld = JSON.stringify(
+  cachedWorld(
+    'grid-decide-canonical-world',
+    () => careerWorld({ seed: decisionInput.seed }, decisionInput.release),
+    {
+      dependencies: [
+        fileURLToPath(import.meta.url),
+        fileURLToPath(new URL('../career.testkit.ts', import.meta.url)),
+      ],
+      input: decisionInput,
+    },
+  ),
+);
+const decisionKit = (tactics: [Tactic, Tactic] = ['balanced', 'balanced']) =>
+  gridKitFromWorld(JSON.parse(decisionWorld) as World, tactics);
 
 const CM = 7;
 const ST = 9;
@@ -47,7 +71,7 @@ const REVISION_3 = MATCH_MODEL_REVISIONS[2];
  * everyone else parked far away unless a test places them.
  */
 function scene(slot: number, at: Point, tactics: [Tactic, Tactic] = ['balanced', 'balanced']) {
-  const kit = gridKit(tactics, undefined, DISABLED_RELEASE);
+  const kit = decisionKit(tactics);
   const s = kit.state;
   for (const side of s.players)
     for (const gp of side) gp.pos = [gp.side === 0 ? 3 : 102, gp.side === 0 ? 2 : 66];
@@ -1003,7 +1027,7 @@ describe('grid decisions', () => {
 
   it('distributes short more often as a sweeper keeper than a shot stopper', () => {
     const share = (tactic: Tactic) => {
-      const kit = gridKit([tactic, 'balanced'], undefined, DISABLED_RELEASE);
+      const kit = decisionKit([tactic, 'balanced']);
       kit.state.owner = [0, 0];
       const r = random(`keeper-${tactic}`);
       let short = 0;

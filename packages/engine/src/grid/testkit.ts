@@ -21,7 +21,14 @@ export function gridKit(
   seed = 'grid-lab',
   release: MatchModelRelease = MATCH_MODEL_RELEASE,
 ): Kit {
-  const w = careerWorld({ seed }, release);
+  return gridKitFromWorld(careerWorld({ seed }, release), tactics);
+}
+
+/** Build a fresh match setup/state from a caller-owned mutable world, never a shared snapshot. */
+export function gridKitFromWorld(
+  w: World,
+  tactics: [Tactic, Tactic] = ['balanced', 'balanced'],
+): Kit {
   const [home, away] = w.clubs.filter(
     (c) => c.country === 'ENG' && c.tier === 0 && c.id !== w.playerClub,
   );
