@@ -1,9 +1,14 @@
 import { describe, expect, it } from 'vitest';
+import { ZodError } from 'zod';
+import { SaveCompatibilityError } from './versions';
 import { LOAD_CATALOG } from '../../catalogs/src/index';
 import { addEvent } from '../../engine/src/events';
 import { careerDate } from '../../engine/src/person-careers';
 import { withOwner } from '../../engine/src/testing';
 import { validateWorld } from './schema';
+import { CAREER_READS_FORMAT, OBSOLETE_CAREER_READS_FORMAT } from './career-reads';
+import { initializeCareerReads } from '../../engine/src/career-reads';
+import { initializeNewsJournal } from '../../engine/src/news';
 import type { World } from './types';
 import { careerWorld } from '../../engine/src/career.testkit';
 
@@ -251,5 +256,71 @@ describe('owner and takeover (→SAVE-27)', () => {
     const w = world();
     withOwner(w, owner as never);
     expect(() => validateWorld(w, LOAD_CATALOG)).toThrow();
+  });
+});
+
+describe('optional career-read format boundary', () => {
+  it('discards only a recognized obsolete object without changing retained facts or the input', () => {
+    const current = world();
+    initializeNewsJournal(current);
+    initializeCareerReads(current);
+    expect(current.careerReads!.format).toBe(CAREER_READS_FORMAT);
+    const expected = validateWorld(current, LOAD_CATALOG);
+    delete expected.careerReads;
+    // Obsolete contents are derived data, not a required legacy schema to maintain.
+    for (const careerReads of [
+      { ...current.careerReads, format: OBSOLETE_CAREER_READS_FORMAT },
+      { format: OBSOLETE_CAREER_READS_FORMAT, matches: 'invalid old cursor', players: null },
+    ]) {
+      const input = { ...current, careerReads };
+      const before = structuredClone(input);
+      expect(validateWorld(input, LOAD_CATALOG)).toEqual(expected);
+      expect(input).toEqual(before);
+    }
+    expect(expected.newsJournal!.format).toBe(1);
+  });
+
+  it('retains a valid current summary and still validates its cursors against retained facts', () => {
+    const current = world();
+    initializeCareerReads(current);
+    expect(validateWorld(current, LOAD_CATALOG).careerReads).toEqual(current.careerReads);
+    for (const invalid of [
+      { matches: current.ownMatches.length + 1 },
+      { events: current.events.length + 1 },
+      { history: current.history.length + 1 },
+      { year: current.year + 1 },
+    ])
+      expect(() =>
+        validateWorld(
+          { ...current, careerReads: { ...current.careerReads, ...invalid } },
+          LOAD_CATALOG,
+        ),
+      ).toThrow();
+  });
+
+  it('protects unknown/future formats and validates malformed current summaries normally', () => {
+    const current = world();
+    initializeCareerReads(current);
+    for (const careerReads of [
+      null,
+      [],
+      '1',
+      { format: '1' },
+      { format: '2' },
+      { ...current.careerReads, format: 0 },
+      { ...current.careerReads, format: CAREER_READS_FORMAT + 1 },
+      {},
+    ])
+      expect(() => validateWorld({ ...current, careerReads }, LOAD_CATALOG)).toThrow(
+        SaveCompatibilityError,
+      );
+    for (const careerReads of [
+      { ...current.careerReads, matches: -1 },
+      { format: CAREER_READS_FORMAT },
+    ])
+      expect(() => validateWorld({ ...current, careerReads }, LOAD_CATALOG)).toThrow(ZodError);
+    expect(validateWorld({ ...current, careerReads: undefined }, LOAD_CATALOG).careerReads).toBe(
+      undefined,
+    );
   });
 });

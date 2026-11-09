@@ -33,8 +33,8 @@ export interface Cards {
 const card = (kind: Incident['kind']) =>
   kind === 'yellow' ? [1, 0] : kind === 'secondYellow' ? [1, 1] : kind === 'red' ? [0, 1] : null;
 
-/** Season and career cards of every player booked in an own match, either side. */
-export const cardCounts = perOwnMatches((w: Matches) => {
+/** Season and career cards received on our side, including former own players. */
+export const cardCounts = perOwnMatches((w: Matches & Pick<World, 'playerClub'>) => {
   const counts = new Map<string, { season: Cards; career: Cards }>();
   if (w.careerReads) {
     for (const [id, p] of Object.entries(w.careerReads.players))
@@ -51,7 +51,7 @@ export const cardCounts = perOwnMatches((w: Matches) => {
   for (const m of w.ownMatches)
     for (const incident of m.incidents ?? []) {
       const [yellow, red] = card(incident.kind) ?? [];
-      if (yellow === undefined) continue;
+      if (yellow === undefined || incident.side !== ownSideOf(m, w.playerClub)) continue;
       let entry = counts.get(incident.player);
       if (!entry)
         counts.set(
@@ -149,7 +149,7 @@ export const tallies = perOwnMatches(
       const players: Record<string, PlayerTally> = {};
       for (const player of w.players) {
         const p = w.careerReads.players[player.id];
-        if (!p) continue;
+        if (!p || (!p.apps[1] && !p.yellow[1] && !p.red[1] && !p.heat)) continue;
         const season = p.year === w.year;
         players[player.id] = {
           apps: [season ? p.apps[0] : 0, p.apps[1]],

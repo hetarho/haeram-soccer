@@ -1,4 +1,5 @@
 import type { World } from '../../contracts/src/types';
+import { CAREER_READS_FORMAT } from '../../contracts/src/career-reads';
 import type { CareerReads, PlayerRead } from '../../contracts/src/career-reads';
 import { heatMap, MATERIAL_LAYOUT, ownSideOf } from './material';
 import { clubOf, isOwnSeason } from './player-state';
@@ -28,7 +29,7 @@ function playerRow(s: CareerReads, id: string, year: number): PlayerRead {
 export function initializeCareerReads(w: World) {
   if (w.careerReads) return;
   w.careerReads = {
-    format: 1,
+    format: CAREER_READS_FORMAT,
     year: w.year,
     matches: 0,
     events: 0,
@@ -73,15 +74,18 @@ export function refreshCareerReads(w: World) {
         p.sub[1]++;
       }
     }
+    const ownSide = ownSideOf(m, w.playerClub);
     for (const incident of m.incidents ?? []) {
       const yellow = incident.kind === 'yellow' || incident.kind === 'secondYellow' ? 1 : 0;
       const red = incident.kind === 'red' || incident.kind === 'secondYellow' ? 1 : 0;
       if (!yellow && !red) continue;
       const p = playerRow(s, incident.player, m.year);
-      p.yellow[0] += yellow;
-      p.yellow[1] += yellow;
-      p.red[0] += red;
-      p.red[1] += red;
+      if (incident.side === ownSide) {
+        p.yellow[0] += yellow;
+        p.yellow[1] += yellow;
+        p.red[0] += red;
+        p.red[1] += red;
+      }
       if (m.kind === 'league') p.leagueReds += red;
     }
     if (m.year === w.year && m.material) {

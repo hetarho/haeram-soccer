@@ -48,7 +48,7 @@ it('tallies appearances, substitutes, cards and season heat of own players', () 
     playerClub: OWN,
     players: players('starter', 'sub', 'former', 'unused'),
     ownMatches: [
-      match(YEAR - 1, 'league', [['former', 90]], [{ kind: 'yellow', player: 'former' }]),
+      match(YEAR - 1, 'league', [['former', 90]], [{ kind: 'yellow', side: 0, player: 'former' }]),
       match(
         YEAR,
         'league',
@@ -58,14 +58,14 @@ it('tallies appearances, substitutes, cards and season heat of own players', () 
           ['unused', 0],
         ],
         [
-          { kind: 'yellow', player: 'starter' },
-          { kind: 'secondYellow', player: 'starter' },
-          { kind: 'sub', player: 'former', other: 'sub' },
-          { kind: 'red', player: 'theirs' },
+          { kind: 'yellow', side: 0, player: 'starter' },
+          { kind: 'secondYellow', side: 0, player: 'starter' },
+          { kind: 'sub', side: 0, player: 'former', other: 'sub' },
+          { kind: 'red', side: 1, player: 'theirs' },
         ],
         [[3, 0, 0, 0, 0, 1]],
       ),
-      match(YEAR, 'cup', [['sub', 90]], [{ kind: 'red', player: 'sub' }]),
+      match(YEAR, 'cup', [['sub', 90]], [{ kind: 'red', side: 0, player: 'sub' }]),
     ],
   };
   const heat = Array<number>(MATERIAL_LAYOUT.cells).fill(0);
@@ -87,7 +87,9 @@ it('reuses the tallies until an own match is added or the season turns', () => {
     year: YEAR,
     playerClub: OWN,
     players: players('a'),
-    ownMatches: [match(YEAR, 'league', [['a', 90]], [{ kind: 'red', player: 'a' }], [[2]])],
+    ownMatches: [
+      match(YEAR, 'league', [['a', 90]], [{ kind: 'red', side: 0, player: 'a' }], [[2]]),
+    ],
   };
   const first = tallies(w);
   // A later revision of the same world, with no match played, keeps the read.
@@ -106,6 +108,47 @@ it('reuses the tallies until an own match is added or the season turns', () => {
   expect(turned).not.toBe(played);
   expect(turned).toEqual({
     players: { a: { apps: [0, 2], sub: [0, 0], yellow: [0, 0], red: [0, 1] } },
+    leagueReds: {},
+  });
+});
+
+it('keeps only recorded own-side cards when a person changes clubs', () => {
+  const home = match(
+    YEAR - 1,
+    'league',
+    [['sold', 90]],
+    [
+      { kind: 'yellow', side: 0, player: 'sold' },
+      { kind: 'secondYellow', side: 1, player: 'incoming' },
+    ],
+  );
+  const away = {
+    ...match(
+      YEAR,
+      'cup',
+      [['incoming', 90]],
+      [
+        { kind: 'secondYellow', side: 0, player: 'sold' },
+        { kind: 'red', side: 1, player: 'incoming' },
+        { kind: 'yellow', side: 1, player: 'bench' },
+      ],
+    ),
+    home: 'rival',
+    away: OWN,
+  };
+  const w = {
+    year: YEAR,
+    playerClub: OWN,
+    // The sold player is retained as a former person; membership cannot decide historical cards.
+    players: players('sold', 'incoming', 'bench'),
+    ownMatches: [home, away],
+  };
+  expect(tallies(w)).toEqual({
+    players: {
+      sold: { apps: [0, 1], sub: [0, 0], yellow: [0, 1], red: [0, 0] },
+      incoming: { apps: [1, 1], sub: [0, 0], yellow: [0, 0], red: [1, 1] },
+      bench: { apps: [0, 0], sub: [0, 0], yellow: [1, 1], red: [0, 0] },
+    },
     leagueReds: {},
   });
 });

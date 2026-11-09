@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T16:01:39.761Z",
-  "sourceCommit": "62749af569b1a5fe40a37bd2218760b766a9eb69",
+  "snapshotAt": "2026-11-09T16:09:31.211Z",
+  "sourceCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -60,12 +60,12 @@
   },
   "summary": {
     "total": 19,
-    "completed": 10,
-    "remaining": 9,
+    "completed": 11,
+    "remaining": 8,
     "running": 4,
     "review": 0,
     "blocked": 0,
-    "unassigned": 5
+    "unassigned": 4
   },
   "tasks": [
     {
@@ -101,7 +101,7 @@
         "T752"
       ],
       "lane": "league-record-views",
-      "status": "doing"
+      "status": "verifying"
     },
     {
       "id": "T762",
@@ -110,7 +110,7 @@
         "T752"
       ],
       "lane": "league-record-views",
-      "status": "doing"
+      "status": "verifying"
     },
     {
       "id": "T763",
@@ -119,13 +119,7 @@
         "T752"
       ],
       "lane": "league-record-views",
-      "status": "doing"
-    },
-    {
-      "id": "T764",
-      "title": "Rebuild career-card summaries by recorded side",
-      "dep": [],
-      "status": "doing"
+      "status": "verifying"
     },
     {
       "id": "T765",
@@ -133,7 +127,7 @@
       "dep": [
         "T753"
       ],
-      "status": "todo"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -579,6 +573,8 @@
       "submittedBase": "919a2f2d5c43bcee67577032b61ad1d53be8b4bf",
       "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
       "submittedAt": "2026-11-09T15:42:57.633Z",
+      "integratedCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+      "integratedAt": "2026-11-09T16:03:28.495Z",
       "risk": null,
       "review": {
         "id": "b3b2595f-5e30-447d-b5d1-c70cad3d5115",
@@ -613,6 +609,13 @@
           "startedAt": "2026-11-09T15:41:54.520Z",
           "finishedAt": "2026-11-09T15:42:57.168Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T16:01:40.140Z",
+          "finishedAt": "2026-11-09T16:03:27.851Z"
+        }
       ]
     },
     {
@@ -627,10 +630,49 @@
       "contributors": [
         "fi09-career-cards"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-09T15:50:50.148Z",
-      "startCommit": "972c570539e3340cb8d882f5b2749038bb3ca803"
+      "startCommit": "972c570539e3340cb8d882f5b2749038bb3ca803",
+      "verifiedCommit": "8b29db59bf311b423736171a4af06a9ff1314503",
+      "submittedBase": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+      "submissionId": "e9b290c2-4241-4d16-a055-34548fcb838a",
+      "submittedAt": "2026-11-09T16:05:20.239Z",
+      "risk": null,
+      "review": {
+        "id": "cba2ff2e-3034-462f-83ef-7a789f984e24",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T764 satisfies its six acceptance items at exact submission 8b29db59bf311b423736171a4af06a9ff1314503 and pinned base d52da9c3f2524f9458b13c5c33218ba34e028bf7. Reviewed the entire ten-file diff (four production files, five tests and its own task), complete current HIST-1/6/16/22, SAVE-5/11/28, MATCH-19, LEAGUE-15 and ARCH-4/9/21/30/32 blocks, and the base STATE clarification interpreting SAVE-11 with SAVE-28. Shared format2 is used by both schema and producer; only an object bearing numeric obsolete format1 is omitted at the optional world careerReads boundary. Source input and canonical facts are preserved. Current-format fields and relational cursor bounds remain validated. Unknown/future/null/string formats use the existing SaveCompatibilityError and existing host/codec/client/repository protection, preventing predecessor fallback or overwrite; malformed current2 contents still fail normal validation and retain supported-corruption recovery. No new error, copy, storage path, container/engine version or repository behavior is introduced. Engine and legacy card reads use recorded ownSideOf, retain earlier contributions of departed players, exclude incoming players opposing incidents, preserve second-yellow semantics and all scopes, and still invoke opponent playerRow for season reset and both-side leagueReds. The retained-row filter excludes only rows without actual own appearances/cards/heat; own cards without a player line remain included. Incremental/rebuild/legacy parity, repeated-update idempotence and existing no-historical-array-traversal checks cover these paths. Read-only decoding omits obsolete derived data without committing; existing writer activation reconstructs once through needsReadModels, while current reload remains incremental. Inspected all four integration-test designs, including current round-trip, obsolete/read-only/writer/current-reload lifecycle and unsupported-vs-corrupt repository protection; they remain explicitly UNRUN here and must pass the coordinator integration gate. Reused exact-source evidence: two new attribution regressions fail before correction, four focused files/38 cases pass, final 146 affected files/1310 cases and type/lint/format/i18n/build pass. No additional test run was needed. Upstream next still equals the pinned base; integrated loan, staff-currency and bid-quote changes do not overlap these paths. No source/spec/Git edits, integration/browser/full runs or child work was performed.",
+        "findings": [],
+        "commit": "8b29db59bf311b423736171a4af06a9ff1314503",
+        "baseCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+        "submissionId": "e9b290c2-4241-4d16-a055-34548fcb838a",
+        "createdAt": "2026-11-09T16:06:13.343Z",
+        "finishedAt": "2026-11-09T16:08:55.790Z"
+      },
+      "steps": [
+        {
+          "taskId": "T764",
+          "commit": "8b29db59bf311b423736171a4af06a9ff1314503",
+          "at": "2026-11-09T16:05:20.205Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T16:03:56.639Z",
+              "finishedAt": "2026-11-09T16:05:19.487Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T16:03:56.639Z",
+          "finishedAt": "2026-11-09T16:05:19.487Z"
+        }
+      ]
     },
     {
       "id": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
@@ -646,10 +688,44 @@
       "contributors": [
         "fi09-league-records"
       ],
-      "status": "doing",
-      "reason": "T761 strict round-scoped reads and retained discipline identities implementation started",
+      "status": "verifying",
+      "reason": "T761/T762 clean commits validated; T763 mounted locale, numeric sorting and request-cadence regression first",
       "createdAt": "2026-11-09T15:54:39.528Z",
       "startCommit": "82895b54c306c1624ef81f126bbc64ea81240b70"
+    },
+    {
+      "id": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "group": "fi09",
+      "taskId": "T765",
+      "tasks": [
+        "T765"
+      ],
+      "lane": null,
+      "owner": "fi09-market-denomination",
+      "contributors": [
+        "fi09-market-denomination"
+      ],
+      "status": "released",
+      "reason": "Clean idle source-free T765; minimal shared monetary presentation paths required to satisfy original comparison/source acceptance; reassign fresh six-path contract",
+      "createdAt": "2026-11-09T16:06:17.485Z",
+      "startCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+      "releasedAt": "2026-11-09T16:09:06.599Z"
+    },
+    {
+      "id": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "group": "fi09",
+      "taskId": "T765",
+      "tasks": [
+        "T765"
+      ],
+      "lane": null,
+      "owner": "fi09-market-denomination",
+      "contributors": [
+        "fi09-market-denomination"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T16:09:13.760Z",
+      "startCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8"
     }
   ],
   "history": [
@@ -2552,6 +2628,314 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2092,
+      "at": "2026-11-09T16:03:00.203Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": "T761 committed and validated; implementing T762 neutral contribution sets and actual active-roster emphasis"
+      }
+    },
+    {
+      "sequence": 2093,
+      "at": "2026-11-09T16:03:28.270Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T16:01:40.140Z",
+            "finishedAt": "2026-11-09T16:03:27.851Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2094,
+      "at": "2026-11-09T16:03:28.495Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+        "integratedAt": "2026-11-09T16:03:28.495Z"
+      }
+    },
+    {
+      "sequence": 2095,
+      "at": "2026-11-09T16:03:55.954Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2096,
+      "at": "2026-11-09T16:05:20.239Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "8b29db59bf311b423736171a4af06a9ff1314503",
+        "submittedBase": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+        "submissionId": "e9b290c2-4241-4d16-a055-34548fcb838a",
+        "submittedAt": "2026-11-09T16:05:20.239Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T764",
+            "commit": "8b29db59bf311b423736171a4af06a9ff1314503",
+            "at": "2026-11-09T16:05:20.205Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T16:03:56.639Z",
+                "finishedAt": "2026-11-09T16:05:19.487Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T16:03:56.639Z",
+            "finishedAt": "2026-11-09T16:05:19.487Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2097,
+      "at": "2026-11-09T16:06:13.343Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "cba2ff2e-3034-462f-83ef-7a789f984e24",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "8b29db59bf311b423736171a4af06a9ff1314503",
+          "baseCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+          "submissionId": "e9b290c2-4241-4d16-a055-34548fcb838a",
+          "createdAt": "2026-11-09T16:06:13.343Z"
+        }
+      }
+    },
+    {
+      "sequence": 2098,
+      "at": "2026-11-09T16:06:17.485Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "taskId": "T765",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+        "group": "fi09",
+        "taskId": "T765",
+        "tasks": [
+          "T765"
+        ],
+        "lane": null,
+        "owner": "fi09-market-denomination",
+        "contributors": [
+          "fi09-market-denomination"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T16:06:17.485Z",
+        "startCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7"
+      }
+    },
+    {
+      "sequence": 2099,
+      "at": "2026-11-09T16:06:19.527Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "taskId": "T765",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2100,
+      "at": "2026-11-09T16:07:06.498Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": "T761/T762 clean commits validated; T763 mounted locale, numeric sorting and request-cadence regression first"
+      }
+    },
+    {
+      "sequence": 2101,
+      "at": "2026-11-09T16:08:16.686Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "taskId": "T765",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Comparison and CandidateSource independently format money with current world; await coordinator-approved minimal additional touches and fresh assignment. No source/test changes made; workspace clean."
+      }
+    },
+    {
+      "sequence": 2102,
+      "at": "2026-11-09T16:08:55.790Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "cba2ff2e-3034-462f-83ef-7a789f984e24",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T764 satisfies its six acceptance items at exact submission 8b29db59bf311b423736171a4af06a9ff1314503 and pinned base d52da9c3f2524f9458b13c5c33218ba34e028bf7. Reviewed the entire ten-file diff (four production files, five tests and its own task), complete current HIST-1/6/16/22, SAVE-5/11/28, MATCH-19, LEAGUE-15 and ARCH-4/9/21/30/32 blocks, and the base STATE clarification interpreting SAVE-11 with SAVE-28. Shared format2 is used by both schema and producer; only an object bearing numeric obsolete format1 is omitted at the optional world careerReads boundary. Source input and canonical facts are preserved. Current-format fields and relational cursor bounds remain validated. Unknown/future/null/string formats use the existing SaveCompatibilityError and existing host/codec/client/repository protection, preventing predecessor fallback or overwrite; malformed current2 contents still fail normal validation and retain supported-corruption recovery. No new error, copy, storage path, container/engine version or repository behavior is introduced. Engine and legacy card reads use recorded ownSideOf, retain earlier contributions of departed players, exclude incoming players opposing incidents, preserve second-yellow semantics and all scopes, and still invoke opponent playerRow for season reset and both-side leagueReds. The retained-row filter excludes only rows without actual own appearances/cards/heat; own cards without a player line remain included. Incremental/rebuild/legacy parity, repeated-update idempotence and existing no-historical-array-traversal checks cover these paths. Read-only decoding omits obsolete derived data without committing; existing writer activation reconstructs once through needsReadModels, while current reload remains incremental. Inspected all four integration-test designs, including current round-trip, obsolete/read-only/writer/current-reload lifecycle and unsupported-vs-corrupt repository protection; they remain explicitly UNRUN here and must pass the coordinator integration gate. Reused exact-source evidence: two new attribution regressions fail before correction, four focused files/38 cases pass, final 146 affected files/1310 cases and type/lint/format/i18n/build pass. No additional test run was needed. Upstream next still equals the pinned base; integrated loan, staff-currency and bid-quote changes do not overlap these paths. No source/spec/Git edits, integration/browser/full runs or child work was performed.",
+          "findings": [],
+          "commit": "8b29db59bf311b423736171a4af06a9ff1314503",
+          "baseCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
+          "submissionId": "e9b290c2-4241-4d16-a055-34548fcb838a",
+          "createdAt": "2026-11-09T16:06:13.343Z",
+          "finishedAt": "2026-11-09T16:08:55.790Z"
+        }
+      }
+    },
+    {
+      "sequence": 2103,
+      "at": "2026-11-09T16:09:06.599Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "taskId": "T765",
+      "previousStatus": "blocked",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Clean idle source-free T765; minimal shared monetary presentation paths required to satisfy original comparison/source acceptance; reassign fresh six-path contract",
+        "releasedAt": "2026-11-09T16:09:06.599Z"
+      }
+    },
+    {
+      "sequence": 2104,
+      "at": "2026-11-09T16:09:13.760Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+        "group": "fi09",
+        "taskId": "T765",
+        "tasks": [
+          "T765"
+        ],
+        "lane": null,
+        "owner": "fi09-market-denomination",
+        "contributors": [
+          "fi09-market-denomination"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T16:09:13.760Z",
+        "startCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8"
+      }
+    },
+    {
+      "sequence": 2105,
+      "at": "2026-11-09T16:09:16.513Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2106,
+      "at": "2026-11-09T16:09:26.895Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2107,
+      "at": "2026-11-09T16:09:27.197Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
       }
     }
   ]
