@@ -1,0 +1,71 @@
+{
+  "session": "/root/scout_stat_scopes",
+  "base": "d489383e2aa023b754bc82af98a03649e00f31dc",
+  "mode": "read-only with small synthetic replays, no suites or world progression",
+  "proposals": [
+    {
+      "id": "h2h-regulation",
+      "evidence": [
+        "runtime/headToHead.ts:36-38 omits regulation",
+        "headToHead.ts:67-69 reads finalscore",
+        "widgets/club-detail/ui/CareerClubDetail.tsx:176 whole-block caption copy.CareerClubDetail.c31a5ae647 promises90-minute score scope"
+      ],
+      "replay": {
+        "regulation": "1-1",
+        "final": "3-1",
+        "actual": {
+          "won": 1,
+          "drawn": 0,
+          "gf": 3,
+          "ga": 1
+        },
+        "expected90": {
+          "won": 0,
+          "drawn": 1,
+          "gf": 1,
+          "ga": 1
+        }
+      },
+      "scope": "WDL,goals,margins,biggest and recent analyticMeeting rows all regulation??score; archive/report unchanged",
+      "contracts": [
+        "WEB-58",
+        "MATCH-6",
+        "HIST-1",
+        "HIST-13"
+      ]
+    },
+    {
+      "id": "npc-league-reds",
+      "evidence": [
+        "pages/journal/ui/ScorerPanels.tsx:513-516 uses only view.tallies.leagueReds",
+        "runtime/playerTallies.ts:71-83 only ownMatches",
+        "engine/npc-stats.ts:210-213 retains all participants PD.redCards",
+        "entities/player/lib/discipline.ts:47-74 omits post-ban NPC with no own-match red tally"
+      ],
+      "replay": "retained NPCred1 renders0 while banned, disappears after ban served",
+      "design": "reuse useFullStats(client,w,leagueStatsScope(w,league)); tracked read sole red source, no addition of legacy map; retain read identity/contributing clubs; new optional keepPrevious:false uses internal request key, default unchanged",
+      "contracts": [
+        "LEAGUE-15",
+        "WEB-40",
+        "WEB-89",
+        "HIST-6",
+        "HIST-16",
+        "HIST-17"
+      ],
+      "coverage": "reuse fullStatsCoverage and existing loading/error/retry/unavailable message IDs; no new protocol/save/copy"
+    }
+  ],
+  "parked": [
+    {
+      "id": "club-list-not-chronology",
+      "evidence": "npc-stats.ts:199-209 first-seen club set A->B->A remains[A,B], consumers incorrectly use last as latest",
+      "reason": "No old chronology recoverable; preserve contributions, need explicit data/compatibility boundary before claiming latest"
+    },
+    {
+      "id": "opponent-career-cards",
+      "evidence": "career-reads.ts:76-85 both-side incidents pollute own club card totals; runtime/playerTallies.ts:148-186 both paths",
+      "replay": "ownyellow1 then sold opponent yellow+red -> ownclub apps1,yellow2,red1; leagueRed must remain1",
+      "reason": "existing cached summaries not rebuilt; repair/reload compatibility must be proven without new save policy or each-update scan"
+    }
+  ]
+}

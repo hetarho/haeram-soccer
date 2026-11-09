@@ -1,0 +1,66 @@
+{
+  "session": "/root/scout_money_arithmetic",
+  "base": "d489383e2aa023b754bc82af98a03649e00f31dc",
+  "mode": "read-only source/decision analysis, no simulation/test execution",
+  "proposals": [
+    {
+      "id": "loan-projection",
+      "evidence": [
+        "packages/engine/src/projection.ts:80-89 excludes costs.loan from remaining costs",
+        "finance.ts:253-283 includes annual loan and roundShare payments",
+        "settlement.ts:220-222,279-291 actual round debit/loan ledger",
+        "projection.ts:164-167 charges full annual loan even last season midyear",
+        "owner.ts:224-227 deletes loan at close"
+      ],
+      "example": {
+        "installment": "230975",
+        "playedRounds": 10,
+        "paid": "50212",
+        "unpaid": "180763",
+        "seasonProjectionOverstatement": "180763"
+      },
+      "contracts": [
+        "ECON-18",
+        "ECON-38",
+        "ECON-1",
+        "ECON-10",
+        "ECON-12",
+        "ARCH-9"
+      ],
+      "downstream": "contracts.ts:637-643/signings.ts:176-184 staff affordability uses this projection; corrected future choices expected under unchanged policies"
+    },
+    {
+      "id": "coach-fixed-period-compensation",
+      "evidence": [
+        "coaching-market.ts:100-105 stores wage with explicit currency ID",
+        "managerMarket.ts:281-282 currently ignores currency and uses existing compensation ratio",
+        "ops-staff.ts:408-409 actual buyer debit uses resulting compensation",
+        "economy.ts:33-38 converts only active jobs matching buyer old currency",
+        "types.ts:1129-1137 has no wage-valued-at date; job.from is not safe proxy (season.ts:858-865)"
+      ],
+      "approvedBoundary": "same-currency identity or explicit employer-country stored period normalization via existing fixed parity only, then existing compensation ratio; no CPI, no date inference, unknown metadata retains legacy output",
+      "examples": [
+        "FRA/FRF655957 -> EUR100000 -> compensation150000",
+        "ENG/GBP-LSD2400 -> GBP1000 -> compensation1500",
+        "samecurrency101 ->151 retains existing floor"
+      ],
+      "existingFormula": "books.ts:443-452/economy.ts:13-18/owner.ts:92-101 ratio(amount,after.num*before.den*after.units,after.den*before.num*before.units), half-even via primitives.ts:21-29",
+      "contracts": [
+        "STAFF-28",
+        "ECON-1",
+        "ECON-4",
+        "ECON-5",
+        "ECON-6",
+        "ECON-35",
+        "ARCH-9"
+      ],
+      "downstream": "managerHireCost, actual hire debit and affordability; stored wages/jobs untouched"
+    }
+  ],
+  "parked": [
+    {
+      "id": "general-nominal-fx",
+      "reason": "No generic GBP->EUR convention; country valuation quotes differ across FRA/ITA despite sameEUR. One-way FFP EUR->buyer averaging at owner.ts:275-290 has no specified inverse/rounding. Needs an explicit rate policy, no invented footballQuote ratio."
+    }
+  ]
+}
