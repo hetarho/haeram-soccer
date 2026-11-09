@@ -895,7 +895,6 @@
 
 ## log
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
-- 261109 T755 integrated
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
@@ -904,6 +903,7 @@
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
+- 261109 T755 integrated
 - 261109 T765 integrated
 - 261109 T761 T762 T763 integrated
 - 261109 T764 integrated
@@ -912,5 +912,4 @@
 - 261109 T753 integrated
 - 261109 T749 T750 T751 T752 integrated
 - 261109 T747 T748 T757 integrated
-- 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
