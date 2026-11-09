@@ -1,0 +1,2 @@
+{ year: 2024, equalDistributionGBP: 165608676.45 }
+{ year: 2025, equalDistributionGBP: 173726358.64 }

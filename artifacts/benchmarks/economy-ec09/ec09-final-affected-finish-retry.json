@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "work": "economy-ec09",
+  "verified": {
+    "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+    "checks": [
+      {
+        "command": "node /tmp/ec09-affected-gate.mjs",
+        "startedAt": "2026-11-09T03:59:42.817Z",
+        "finishedAt": "2026-11-09T04:03:20.970Z"
+      }
+    ],
+    "at": "2026-11-09T04:03:21.038Z",
+    "excluded": [
+      "T689",
+      "T726",
+      "T730",
+      "T735",
+      "T736",
+      "T738"
+    ]
+  },
+  "snapshot": {
+    "schemaVersion": 1,
+    "work": "economy-ec09",
+    "commit": "de2daeaa5c503d89fbdd5c3683887891011b21fb",
+    "file": "spec/work/economy-ec09.json",
+    "candidate": null
+  }
+}

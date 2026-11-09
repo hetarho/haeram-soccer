@@ -1,0 +1,2221 @@
+{
+  "started": "2026-11-09T03:59:42.923Z",
+  "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+  "tree": "d96cde301140912c6b25645336a8b4c4b97400da",
+  "scope": "Pre-push batch: refresh all six fast checks, retain the unchanged build/unit/integration/contract receipts, and replace exactly the two management-spec results after running that complete affected file. App source/config and every other test file remain byte-identical to the 348-case whole-browser run.",
+  "originalWholeBrowser": {
+    "commit": "9494879acbb5876053c1f12f69402d24ae3104bc",
+    "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-resume/test-e2e.log",
+    "total": 348,
+    "failed": [
+      {
+        "outcome": "✘",
+        "ordinal": 100,
+        "file": "tests/e2e/management.spec.ts",
+        "title": "operates a club, reads a season and exports/imports the actual save"
+      }
+    ],
+    "unchangedCases": [
+      {
+        "outcome": "✓",
+        "ordinal": 3,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "the BETA mark shows on the start screen, the save slots and the play HUD at 360 px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 4,
+        "file": "tests/e2e/approval-requests.spec.ts",
+        "title": "the 결재함 reviews, returns to and keeps its context for live requests at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 1,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "downloads scoped analysis CSVs and disables empty competition samples on mobile"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 5,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "the BETA mark shows on the start screen, the save slots and the play HUD at 390 px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 6,
+        "file": "tests/e2e/approval-requests.spec.ts",
+        "title": "the 결재함 reviews, returns to and keeps its context for live requests at 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 8,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "the BETA mark shows on the start screen, the save slots and the play HUD at 1280 px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 9,
+        "file": "tests/e2e/builds.spec.ts",
+        "title": "reports the manager's tactic and the opponent's before an actual seeded match"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 10,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "matchday-print: the BETA mark reads on save slots and the shared HUD including the office"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 11,
+        "file": "tests/e2e/builds.spec.ts",
+        "title": "keeps the report's sticky confirmation reachable at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 2,
+        "file": "tests/e2e/ballon-dor.spec.ts",
+        "title": "browses the Ballon d’Or podium with our player marked and on his sheet (→WEB-111)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 12,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "standard: the BETA mark reads on save slots and the shared HUD including the office"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 13,
+        "file": "tests/e2e/builds.spec.ts",
+        "title": "keeps the report's sticky confirmation reachable at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 15,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "pixel: the BETA mark reads on save slots and the shared HUD including the office"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 17,
+        "file": "tests/e2e/beta-mark.spec.ts",
+        "title": "sticker-club: the BETA mark reads on save slots and the shared HUD including the office"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 14,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "older office and operations addresses open where their work lives now"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 18,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "a commission changes nothing until a draft is adopted, and the adopted crest reaches every screen"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 19,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "reads each facility's stage and a work under way at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 21,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "reads each facility's stage and a work under way at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 16,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "taken over, worn, edited and moved by file, designs and the earlier kit stay exact at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 20,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "a redraw costs half, a refused adoption keeps the drafts, and thrown-away drafts keep the fee spent"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 22,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "pays sponsor installments only for league games after the actual contract"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 7,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "reproduces earned season records after reload on mobile"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 24,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "navigation detours and passing days keep the drafts beside the policy draft"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 26,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "uses matching archive samples for season splits and competition filters"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 25,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "at level 4 the commercial staff sign an empty slot's best offer"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 23,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "taken over, worn, edited and moved by file, designs and the earlier kit stay exact at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 27,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "another game never sees the commission, which waits in its own game"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 28,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "filters the own-club fixture notebook and reads a settled full-season record"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 29,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "builds 지역 기반 over real rounds from the 지역 investment taken over with"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 31,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "a read-only tab inspects the design and the drafts but cannot commission or adopt"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 32,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "compares distinct own players with a shared scope and returns focus without progression"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 30,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "a shirt chosen for the next fixture and a waiting commission survive reload and slot parking; another game gets neither"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 33,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "reads the ticket price taken over with and charges it at an actual home gate"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 34,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "an imported file brings its own design and none of the drafts waiting in the replaced game"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 36,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "a pre-identity career keeps its crests and facts, gains only shirts on writer activation and says its kits were not recorded"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 38,
+        "file": "tests/e2e/club-identity-management.spec.ts",
+        "title": "colour steps take a main and optional sub and point colours once each, and a designer the cash cannot pay is unavailable"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 35,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "filters player samples and shows scoped per-90 evidence on a mobile profile"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 37,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "reads a genuine negative operating balance with no owner capital to add"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 39,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "a read-only tab installs nothing; taking ownership adopts the designs once through the writer"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 40,
+        "file": "tests/e2e/club-identity-observation.spec.ts",
+        "title": "the live Canvas wears the recorded stripes, checks and keeper colours at phone scale"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 42,
+        "file": "tests/e2e/business.spec.ts",
+        "title": "ends a bankrupt career on the game-over page and starts a new game from it"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 41,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "jumps between recorded periods without changing the final result or calendar"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 43,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "a refused adoption and a failed checkpoint keep the committed save, the drafts and the export"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 46,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "reveals the recorded match report only after choosing the final result"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 48,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "reads the manager's XI and matchday squad while the applied tactic and date stay unchanged"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 47,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "a failed adoption write keeps the original checkpoint and still exports the adopted career"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 45,
+        "file": "tests/e2e/club-identity-preparation.spec.ts",
+        "title": "our home league shirt is previewed, committed once, kept through reload and worn only in that fixture"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 44,
+        "file": "tests/e2e/club-identity-observation.spec.ts",
+        "title": "a design adopted while the match is paused mid-match leaves its recorded shirts on the pitch"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 50,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "newer save data (envelope schema 5) over a valid older predecessor stays protected"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 49,
+        "file": "tests/e2e/analysis.spec.ts",
+        "title": "opens the manager report on the next match without progressing the world"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 53,
+        "file": "tests/e2e/club-identity-continuity.spec.ts",
+        "title": "newer save data (identity format 3) over a valid older predecessor stays protected"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 55,
+        "file": "tests/e2e/constants.spec.ts",
+        "title": "explains gameplay outcomes, causal factors and actions at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 56,
+        "file": "tests/e2e/constants.spec.ts",
+        "title": "explains gameplay outcomes, causal factors and actions at 1440px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 51,
+        "file": "tests/e2e/club-identity-preparation.spec.ts",
+        "title": "our away shirt maps to the away side and leaves the manager's XI alone"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 52,
+        "file": "tests/e2e/club-identity-observation.spec.ts",
+        "title": "an old imported record says 유니폼 미기록 and never draws today’s design"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 54,
+        "file": "tests/e2e/competition-hubs.spec.ts",
+        "title": "competition hubs preserve selectors, legacy addresses, browser history and reloads"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 60,
+        "file": "tests/e2e/entry.spec.ts",
+        "title": "serves a real static application entry"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 59,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › shows the drawn domestic cup with our tie and the road to Europe"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 61,
+        "file": "tests/e2e/entry.spec.ts",
+        "title": "creates, computes and reloads through the bundled worker"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 58,
+        "file": "tests/e2e/club-identity-preparation.spec.ts",
+        "title": "a warned cup-tie clash can be confirmed, reads read-only elsewhere and returns to automatic selection"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 62,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › switches a player transfer stance from the roster badge and sets coaching per department"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 65,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › rates every league club and opens any club from the table"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 63,
+        "file": "tests/e2e/entry.spec.ts",
+        "title": "observes event-backed metrics, historical locks and responsive navigation"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 64,
+        "file": "tests/e2e/club-identity-preparation.spec.ts",
+        "title": "automatic play moving the next fixture restarts the preview and never applies the drafted shirt"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 68,
+        "file": "tests/e2e/club-identity-preparation.spec.ts",
+        "title": "preparation states a fixture-only keeper fallback without changing the saved design"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 66,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › opens the team sheet of a club in our cup tie and stacks sheets over sheets"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 67,
+        "file": "tests/e2e/facility-art.spec.ts",
+        "title": "loads only current heritage facility scenes at 360px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 70,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › keeps the transfer market as a primary entry with its own address"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 69,
+        "file": "tests/e2e/fast-checkpoint.spec.ts",
+        "title": "saves and reloads a larger portable gzip checkpoint through IndexedDB"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 71,
+        "file": "tests/e2e/facility-art.spec.ts",
+        "title": "loads only current terraces facility scenes at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 57,
+        "file": "tests/e2e/contract-talks.spec.ts",
+        "title": "declines a contract talk: the badge, then the transfer request"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 75,
+        "file": "tests/e2e/contract-talks.spec.ts",
+        "title": "the talk rule shows under 선수 as the club was taken over"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 74,
+        "file": "tests/e2e/facility-art.spec.ts",
+        "title": "loads only current contemporary facility scenes at 1440px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 76,
+        "file": "tests/e2e/full-stat-comparison.spec.ts",
+        "title": "compares current full statistics of every club in the same units on desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 78,
+        "file": "tests/e2e/full-stat-comparison.spec.ts",
+        "title": "compares current full statistics of every club in the same units on mobile"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 79,
+        "file": "tests/e2e/full-stat-comparison.spec.ts",
+        "title": "names a partial season start and sample through reload and import"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 77,
+        "file": "tests/e2e/facility-art.spec.ts",
+        "title": "updates era, training and academy scenes only on actual completion, retaining them after reload"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 81,
+        "file": "tests/e2e/growth-core.spec.ts",
+        "title": "19-player warning reads in the office summary at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 73,
+        "file": "tests/e2e/full-model-continuity.spec.ts",
+        "title": "continues a mid-season activated career on desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 72,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › replays a closed season of the cup: its bracket, our road, a report and the honours"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 84,
+        "file": "tests/e2e/cups-and-club.spec.ts",
+        "title": "cups, transfer stance, coaching and club trends at 390x844 › charts league position, Elo and values in the records room"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 82,
+        "file": "tests/e2e/growth-core.spec.ts",
+        "title": "growing club fits 360x740 and opens real play and details"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 80,
+        "file": "tests/e2e/goal-replay.spec.ts",
+        "title": "a seen goal replays its build-up and returns to the original viewing"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 86,
+        "file": "tests/e2e/growth-core.spec.ts",
+        "title": "19-player warning reads in the office summary at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 85,
+        "file": "tests/e2e/intervention.spec.ts",
+        "title": "reads the manager's XI on the mobile report, plays it and shows earned finances"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 87,
+        "file": "tests/e2e/lab.spec.ts",
+        "title": "the lab watches a match in the game’s match view and replays it with edited values"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 88,
+        "file": "tests/e2e/growth-core.spec.ts",
+        "title": "growing club fits 390x844 and opens real play and details"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 89,
+        "file": "tests/e2e/intervention.spec.ts",
+        "title": "intervenes over the league without losing filters or interrupting progress at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 90,
+        "file": "tests/e2e/lab.spec.ts",
+        "title": "the lab generates sides, edits values and compares runs against a baseline"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 92,
+        "file": "tests/e2e/intervention.spec.ts",
+        "title": "intervenes over the league without losing filters or interrupting progress at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 91,
+        "file": "tests/e2e/large-codec.spec.ts",
+        "title": "large portable codec writes, loads and exports under production CSP"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 95,
+        "file": "tests/e2e/management-surfaces.spec.ts",
+        "title": "matchday-print: next-event text remains readable on the dark transport"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 93,
+        "file": "tests/e2e/live-state.spec.ts",
+        "title": "keeps league views and nodes across silent progression and updates real scorers (interleaved)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 96,
+        "file": "tests/e2e/management-surfaces.spec.ts",
+        "title": "sticker-club: next-event text remains readable on the dark transport"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 94,
+        "file": "tests/e2e/intervention.spec.ts",
+        "title": "intervenes over the league without losing filters or interrupting progress at 1440"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 99,
+        "file": "tests/e2e/intervention.spec.ts",
+        "title": "opens the next report from the theatre while keeping the recorded score and playback context"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 97,
+        "file": "tests/e2e/live-state.spec.ts",
+        "title": "keeps league views and nodes across silent progression and updates real scorers (eve-first)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 83,
+        "file": "tests/e2e/full-model-continuity.spec.ts",
+        "title": "continues a mid-season activated career on mobile"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 98,
+        "file": "tests/e2e/management-surfaces.spec.ts",
+        "title": "standard: management cards, transport and choices retain inset content and separate actions"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 101,
+        "file": "tests/e2e/live-state.spec.ts",
+        "title": "watching a match pauses the calendar and retains playback across page switches"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 102,
+        "file": "tests/e2e/manager-history.spec.ts",
+        "title": "reads tenures page by page and comes back from their seasons on desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 104,
+        "file": "tests/e2e/live-state.spec.ts",
+        "title": "the club overview flags tired starters and offers no remedy (→WEB-44)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 107,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "exclusive-controls 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 108,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "next-match-eve-with-all-delegated 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 106,
+        "file": "tests/e2e/manager-history.spec.ts",
+        "title": "reads tenures page by page and comes back from their seasons on mobile"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 103,
+        "file": "tests/e2e/management-surfaces.spec.ts",
+        "title": "pixel: management cards, transport and choices retain inset content and separate actions"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 109,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "same-date-event-group 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 112,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "office-next-event-reaches-eve 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 113,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "exclusive-controls 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 114,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "next-match-eve-with-all-delegated 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 110,
+        "file": "tests/e2e/manager-history.spec.ts",
+        "title": "starts tracking an older career at the writer, never in a read-only tab"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 115,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "same-date-event-group 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 117,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "office-next-event-reaches-eve 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 118,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "manual entry enables match report with all business direct"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 116,
+        "file": "tests/e2e/manager-history.spec.ts",
+        "title": "never shows one game’s manager history in another"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 119,
+        "file": "tests/e2e/manual-progression.spec.ts",
+        "title": "manual entry enables match report with all business delegated"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 111,
+        "file": "tests/e2e/match-core.spec.ts",
+        "title": "keeps the full match loop in 360x740 and preserves actual seeded facts"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 120,
+        "file": "tests/e2e/match-material.spec.ts",
+        "title": "opens an own match material from its report and from the fixture notebook"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 121,
+        "file": "tests/e2e/match-themes.spec.ts",
+        "title": "match themes paint their grounds, frame controls and preserve a paused instant at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 123,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "direct-financial-conflict-review"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 126,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "case-support-is-not-standing-policy"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 125,
+        "file": "tests/e2e/match-themes.spec.ts",
+        "title": "match themes paint their grounds, frame controls and preserve a paused instant at 1380"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 124,
+        "file": "tests/e2e/milestones.spec.ts",
+        "title": "keeps a compact home with calendar progress and retained milestone facts at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 127,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "support changes retain the preview and confirm only the latest conditions"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 122,
+        "file": "tests/e2e/match-core.spec.ts",
+        "title": "keeps the full match loop in 390x844 and preserves actual seeded facts"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 128,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "matchday-print: readable match tabs and aligned result icon"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 130,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "retained-promise-status"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 133,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "direct mediation waits in the 결재함 without stopping manual and survives reading notifications"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 132,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "standard: readable match tabs and aligned result icon"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 129,
+        "file": "tests/e2e/milestones.spec.ts",
+        "title": "keeps a compact home with calendar progress and retained milestone facts at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 134,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "direct mediation waits in the 결재함 without stopping automatic and survives reading notifications"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 135,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "pixel: readable match tabs and aligned result icon"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 131,
+        "file": "tests/e2e/match-core.spec.ts",
+        "title": "an archived replay holds each goal it crosses, keeps a pause and skips what a seek passes"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 138,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "sticker-club: readable match tabs and aligned result icon"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 137,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "mediation-handover-on-apply discloses work and never replays its recorded policy"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 136,
+        "file": "tests/e2e/milestones.spec.ts",
+        "title": "keeps a compact home with calendar progress and retained milestone facts at 1280x800"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 139,
+        "file": "tests/e2e/mobile.spec.ts",
+        "title": "uses reachable mobile navigation and traps modal focus without scrolling the background"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 142,
+        "file": "tests/e2e/movement-backend.spec.ts",
+        "title": "the movement backend preserves observed facts and positions through every fallback"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 140,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "fixed pitch ratio 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 143,
+        "file": "tests/e2e/mobile.spec.ts",
+        "title": "keeps confirmation actions and its close control inside a small mobile viewport"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 146,
+        "file": "tests/e2e/mobile.spec.ts",
+        "title": "floating warnings leave the HUD and content fixed on low and phone screens"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 147,
+        "file": "tests/e2e/news-journal.spec.ts",
+        "title": "reads stored older news by page and category after saving and reloading"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 145,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "fixed pitch ratio 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 149,
+        "file": "tests/e2e/news.spec.ts",
+        "title": "keeps the crest, today and compact cash readable in a 360 px HUD"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 148,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "mobile result-only continuation preserves the exiting card position"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 144,
+        "file": "tests/e2e/native-touch.spec.ts",
+        "title": "keeps start and match preparation selectors touchable at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 152,
+        "file": "tests/e2e/native-touch.spec.ts",
+        "title": "keeps scouting and league exploration selectors touchable at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 150,
+        "file": "tests/e2e/news.spec.ts",
+        "title": "celebrates in one lower line, with headlines collected in the clock news button"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 141,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "promise-reload-and-deadline with none retains the original commitment"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 154,
+        "file": "tests/e2e/news.spec.ts",
+        "title": "\"뉴스 표시 안 함\" files achievements behind the news button without a banner"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 153,
+        "file": "tests/e2e/native-touch.spec.ts",
+        "title": "keeps start and match preparation selectors touchable at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 156,
+        "file": "tests/e2e/news.spec.ts",
+        "title": "shares one notification/news dialog with independent read counts and keyboard tabs at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 157,
+        "file": "tests/e2e/native-touch.spec.ts",
+        "title": "keeps scouting and league exploration selectors touchable at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 158,
+        "file": "tests/e2e/news.spec.ts",
+        "title": "shares one notification/news dialog with independent read counts and keyboard tabs at 1280px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 159,
+        "file": "tests/e2e/office-club-journeys.spec.ts",
+        "title": "matchday-print: 결재함 review returns to the remaining queue and 팀 leads to the actual people under their rooms at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 160,
+        "file": "tests/e2e/owner-sheet.spec.ts",
+        "title": "shows the owner's fortune with the cash and opens 자금 관리 at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 162,
+        "file": "tests/e2e/owner-sheet.spec.ts",
+        "title": "shows the owner's fortune with the cash and opens 자금 관리 at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 163,
+        "file": "tests/e2e/owner-sheet.spec.ts",
+        "title": "a career without owner state keeps the cash alone in the HUD"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 151,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "goal cue and ball ownership in the normal view at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 155,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "promise-reload-and-deadline with loan retains the original commitment"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 161,
+        "file": "tests/e2e/office-club-journeys.spec.ts",
+        "title": "standard: 결재함 review returns to the remaining queue and 팀 leads to the actual people under their rooms at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 164,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "market info reads the 영입 direction and restores the candidate work"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 168,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "the academy reads its investment and 유입 방식 as its office area sets them"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 167,
+        "file": "tests/e2e/office-club-journeys.spec.ts",
+        "title": "pixel: 결재함 review returns to the remaining queue and 팀 leads to the actual people under their rooms at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 169,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "training reads the team's call first and opens its named responsible coach at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 165,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "goal cue and ball ownership in the normal view at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 171,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "training reads the team's call first and opens its named responsible coach at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 170,
+        "file": "tests/e2e/office-club-journeys.spec.ts",
+        "title": "sticker-club: 결재함 review returns to the remaining queue and 팀 leads to the actual people under their rooms at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 173,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "training reads the team's call first and opens its named responsible coach at 1280x900"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 175,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "a player profile reads his training and keeps the squad search"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 172,
+        "file": "tests/e2e/mobile-match-presentation.spec.ts",
+        "title": "goal cue and ball ownership in the normal view at 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 176,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "recruitment needs open on demand and academy operations open their exact work"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 174,
+        "file": "tests/e2e/personnel-hubs.spec.ts",
+        "title": "five gameplay entries and personnel workflows at 360px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 178,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "opens club seasons in records and retains the detail scope through league and cup visits"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 166,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "promise-reload-and-deadline with free retains the original commitment"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 180,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "keeps a foreign league selected across all competition lenses without substituting our players"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 179,
+        "file": "tests/e2e/personnel-hubs.spec.ts",
+        "title": "five gameplay entries and personnel workflows at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 181,
+        "file": "tests/e2e/mediation.spec.ts",
+        "title": "promise-personnel-changes preserves director-independent promises and cancels on manager replacement"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 182,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "keeps the home briefing informational alongside the public clock and opens the current club record"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 177,
+        "file": "tests/e2e/personnel.spec.ts",
+        "title": "older player and staff desks open the actual workflow at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 184,
+        "file": "tests/e2e/place-workflows.spec.ts",
+        "title": "places only read, and the academy reviews promotion and release without mutation at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 183,
+        "file": "tests/e2e/personnel-hubs.spec.ts",
+        "title": "five gameplay entries and personnel workflows at 1280px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 187,
+        "file": "tests/e2e/place-workflows.spec.ts",
+        "title": "places only read, and the academy reviews promotion and release without mutation at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 188,
+        "file": "tests/e2e/personnel-hubs.spec.ts",
+        "title": "an older manager address opens the same manager workflow in 코치진"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 189,
+        "file": "tests/e2e/place-workflows.spec.ts",
+        "title": "places only read, and the academy reviews promotion and release without mutation at 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 190,
+        "file": "tests/e2e/personnel-hubs.spec.ts",
+        "title": "a vacant manager post reads as an interim in charge with 감독 선임"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 186,
+        "file": "tests/e2e/personnel.spec.ts",
+        "title": "older player and staff desks open the actual workflow at 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 193,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped en-GB: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 191,
+        "file": "tests/e2e/player-profile.spec.ts",
+        "title": "reads players as football media would at 360x740 (→WEB-59, CLUB-10, CLUB-14)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 194,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped en-GB: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 196,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped es-ES: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 197,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped es-ES: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 192,
+        "file": "tests/e2e/position-badges.spec.ts",
+        "title": "matchday-print: market rows show readable position family badges on phones and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 195,
+        "file": "tests/e2e/player-profile.spec.ts",
+        "title": "reads players as football media would at 390x844 (→WEB-59, CLUB-10, CLUB-14)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 198,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped pt-BR: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 201,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped pt-BR: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 202,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped fr-FR: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 200,
+        "file": "tests/e2e/preview.spec.ts",
+        "title": "built deep links, module worker, cache/CSP and missing assets"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 204,
+        "file": "tests/e2e/preview.spec.ts",
+        "title": "serves the _headers set"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 203,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped fr-FR: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 206,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped de-DE: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 207,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped de-DE: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 199,
+        "file": "tests/e2e/position-badges.spec.ts",
+        "title": "standard: market rows show readable position family badges on phones and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 185,
+        "file": "tests/e2e/owner-workflows.spec.ts",
+        "title": "chooses a cup once and keeps its archived season through competition and club-record visits"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 208,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped it-IT: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 211,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped it-IT: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 205,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "mobile clock keeps actions in one row and advances at the dropdown pace"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 210,
+        "file": "tests/e2e/records.spec.ts",
+        "title": "records room at 390x844 › refreshes manager history during automatic play without flashing progress or cancel"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 212,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped nl-NL: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 215,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped nl-NL: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 216,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped tr-TR: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 213,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "an own match day at x10 passes at the pace without a hold or animation and without moving the controls 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 217,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped tr-TR: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 209,
+        "file": "tests/e2e/position-badges.spec.ts",
+        "title": "pixel: market rows show readable position family badges on phones and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 219,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped ar-SA: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 218,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "an own match day at x10 passes at the pace without a hold or animation and without moving the controls 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 221,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped ar-SA: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 223,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped ja-JP: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 224,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped ja-JP: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 222,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "an own match day at x10 passes at the pace without a hold or animation and without moving the controls 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 225,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped id-ID: selection and reload at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 220,
+        "file": "tests/e2e/position-badges.spec.ts",
+        "title": "sticker-club: market rows show readable position family badges on phones and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 227,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped id-ID: selection and reload at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 229,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "matchday-print: readable transport choices and inset settings rows at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 226,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "a hidden tab plays on like an idle game, names the date in its title, and can pause instead"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 230,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "matchday-print: readable transport choices and inset settings rows at 1380"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 228,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "one writer, live read-only updates and ownership after reload"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 231,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "a page that closed with the clock running plays the time away on return and sums it up"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 232,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "standard: readable transport choices and inset settings rows at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 235,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "standard: readable transport choices and inset settings rows at 1380"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 234,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "approvals waiting in the 결재함 never stop a running clock (→WEB-42)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 236,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "pixel: readable transport choices and inset settings rows at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 237,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "restored match eve uses actual match actions instead of acknowledging the observation"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 233,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "recovers prior checkpoint after active corruption without clearing another application key"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 238,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "pixel: readable transport choices and inset settings rows at 1380"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 239,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "standard mode shortcut confirms, cancels and remembers both directions without advancing"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 241,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "sticker-club: readable transport choices and inset settings rows at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 242,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "pixel mode shortcut confirms, cancels and remembers both directions without advancing"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 243,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "sticker-club: readable transport choices and inset settings rows at 1380"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 240,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "quota failure preserves disk save, exports actual memory progress and retries"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 214,
+        "file": "tests/e2e/records.spec.ts",
+        "title": "records room at 390x844 › reads the records room in seven tabs with Elo context, chart bubbles and player sheets"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 246,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "unsupported import leaves the current world and manifest intact"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 244,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "office bulk report choices include observations and preserve mode 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 247,
+        "file": "tests/e2e/records.spec.ts",
+        "title": "records room at desktop › refreshes manager history during automatic play without flashing progress or cancel"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 248,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "a terminated real worker exposes recovery and retains the last committed checkpoint"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 249,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "office authority confirmation and pending handover 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 252,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "office bulk report choices include observations and preserve mode 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 253,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "office authority confirmation and pending handover 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 251,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "a new game goes into another slot, both careers survive switching and back navigation works"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 245,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "image-built themes cover home, pinned table cells and detail sheets without advancing play 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 255,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "deleting the game in play stays on the slot screen, even with every slot empty"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 254,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "manual can keep match eve disabled and stop at the next result"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 257,
+        "file": "tests/e2e/recovery.spec.ts",
+        "title": "a new game beside a parked game shows none of its club, cash or bands"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 258,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "standard dismissed NEXT MATCH reopens without settling until an explicit choice"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 259,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "compact market exposes rows before optional panels at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 260,
+        "file": "tests/e2e/progression-settings.spec.ts",
+        "title": "pixel dismissed NEXT MATCH reopens without settling until an explicit choice"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 261,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "compact market exposes rows before optional panels at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 256,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "image-built themes cover home, pinned table cells and detail sheets without advancing play 1380"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 262,
+        "file": "tests/e2e/resource-skins.spec.ts",
+        "title": "matchday-print: shared resource skins across captured management surfaces"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 264,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped standard theme replaces art and reloads while preserving facts at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 263,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "pages the global market by OVR, filters all scopes, and approaches a non-recommended player by identity"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 265,
+        "file": "tests/e2e/resource-skins.spec.ts",
+        "title": "standard: shared resource skins across captured management surfaces"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 266,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped pixel theme replaces art and reloads while preserving facts at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 250,
+        "file": "tests/e2e/records.spec.ts",
+        "title": "records room at desktop › reads the records room in seven tabs with Elo context, chart bubbles and player sheets"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 268,
+        "file": "tests/e2e/resource-skins.spec.ts",
+        "title": "pixel: shared resource skins across captured management surfaces"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 269,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped sticker-club theme replaces art and reloads while preserving facts at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 270,
+        "file": "tests/e2e/rules-three-owner.spec.ts",
+        "title": "rules three retains a joint career and promise through handover and portable reload"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 271,
+        "file": "tests/e2e/resource-skins.spec.ts",
+        "title": "sticker-club: shared resource skins across captured management surfaces"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 273,
+        "file": "tests/e2e/rules-three-owner.spec.ts",
+        "title": "the market discloses combined departure compensation before its approval"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 272,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped standard theme replaces art and reloads while preserving facts at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 274,
+        "file": "tests/e2e/save-upgrade.spec.ts",
+        "title": "old localStorage saves and retired strategies are ignored and left untouched"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 277,
+        "file": "tests/e2e/save-upgrade.spec.ts",
+        "title": "missing IndexedDB reports a storage error without writing localStorage checkpoints"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 278,
+        "file": "tests/e2e/save-upgrade.spec.ts",
+        "title": "a founded 0.7.0 career stays as stored in every tab and names its rules (→SAVE-26/29)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 276,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped pixel theme replaces art and reloads while preserving facts at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 279,
+        "file": "tests/e2e/save-upgrade.spec.ts",
+        "title": "earlier rules import refused"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 281,
+        "file": "tests/e2e/save-upgrade.spec.ts",
+        "title": "future selected save stays protected and exports exactly instead of downgrading its predecessor"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 275,
+        "file": "tests/e2e/season-flow.spec.ts",
+        "title": "advances real days at each speed, stops and restores the saved calendar"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 282,
+        "file": "tests/e2e/save-upgrade.spec.ts",
+        "title": "unsupported indexed career stays protected after writer handoff"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 280,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "shipped sticker-club theme replaces art and reloads while preserving facts at 1380px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 284,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "qualitative-aptitude-visibility"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 285,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "pending theme resources add no feedback row or picker layout shift"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 286,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "combined-playing-coach-review"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 287,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "theme reveal keeps controls in the composited dialog and backdrop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 283,
+        "file": "tests/e2e/season-flow.spec.ts",
+        "title": "shows independent player decisions and post-match league context"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 288,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "same-person-cross-role-links"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 289,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "registry settings at the start, on slots and in the HUD at 360px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 291,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "employed-coach-manager-quote"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 292,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "registry settings at the start, on slots and in the HUD at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 294,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "a failed initial default resource offers retry without creating game data"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 293,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "combined approval survives reload and portable import at 1280px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 290,
+        "file": "tests/e2e/set-piece-defence.spec.ts",
+        "title": "shows both sides through a delivered set piece on phone"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 295,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "denied preference storage keeps data-only selections usable for this session"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 298,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "a failed theme selection retains the usable pack and retries without losing a start draft"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 267,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "filters and compares stable candidates, discloses free wages, and saves real recruit and loan costs"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 296,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "combined approval survives reload and portable import at 390px"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 299,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "unseen routed locale and theme change actual resources while game facts, the section and Korean prose stay exact"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 301,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "coach-only dismissal preserves the playing contract through reload"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 297,
+        "file": "tests/e2e/set-piece-defence.spec.ts",
+        "title": "shows both sides through a delivered set piece on desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 302,
+        "file": "tests/e2e/presentation-settings.spec.ts",
+        "title": "a read-only game tab changes presentation without claiming ownership or issuing game commands"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 305,
+        "file": "tests/e2e/staff.spec.ts",
+        "title": "사람 at 360x740 › 사람 tabs keep their address and the manager criteria preview a gegenpress pick"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 304,
+        "file": "tests/e2e/stable-controls-and-pacing.spec.ts",
+        "title": "surveys every management destination during uninterrupted calendar play"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 303,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "joint contract authority direct/direct remains atomic"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 306,
+        "file": "tests/e2e/staff.spec.ts",
+        "title": "사람 at 360x740 › older 감독 and squad addresses land on their detailed people pages"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 300,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "reaches the forty-player ceiling with eight loans and prevents any further contract"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 310,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "disables an unaffordable fee while keeping a cheaper loan available with honest ongoing costs"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 307,
+        "file": "tests/e2e/stable-controls-and-pacing.spec.ts",
+        "title": "keeps browsing available and management edits locked over real automatic ticks"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 311,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "keeps the clock running while comparing candidates away from home until the owner stops it"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 312,
+        "file": "tests/e2e/stable-controls-and-pacing.spec.ts",
+        "title": "opens at 2x, one minute per 12 s at 1x, and provides five replay speeds"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 309,
+        "file": "tests/e2e/staff.spec.ts",
+        "title": "an unrenewed firefighter leaves at the close and the alert opens the market"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 308,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "joint contract authority direct/delegated remains atomic"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 313,
+        "file": "tests/e2e/recruitment.spec.ts",
+        "title": "the market ends with who answers offers and reads the recruitment level as founded"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 314,
+        "file": "tests/e2e/stable-controls-and-pacing.spec.ts",
+        "title": "draws a set-piece preparation in about 1.5 s with the players travelling"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 315,
+        "file": "tests/e2e/staff.spec.ts",
+        "title": "with the manager post delegated a resignation is filled at once and the clock runs on"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 317,
+        "file": "tests/e2e/start.spec.ts",
+        "title": "fits every start step and takes a club over at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 318,
+        "file": "tests/e2e/strategy.spec.ts",
+        "title": "reads the direction taken over with on the pages that set it"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 321,
+        "file": "tests/e2e/strategy.spec.ts",
+        "title": "keeps the direction in force readable at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 320,
+        "file": "tests/e2e/start.spec.ts",
+        "title": "fits every start step and takes a club over at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 322,
+        "file": "tests/e2e/strategy.spec.ts",
+        "title": "keeps the direction in force readable at 1280x800"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 324,
+        "file": "tests/e2e/styled-select.spec.ts",
+        "title": "selects by keyboard, exposes selection and dismisses without committing previews"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 316,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "joint contract authority delegated/direct remains atomic"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 325,
+        "file": "tests/e2e/styled-select.spec.ts",
+        "title": "keeps text season controls steady and selected competition on one line at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 323,
+        "file": "tests/e2e/start.spec.ts",
+        "title": "plays the world's history while a 1950 world is generated at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 327,
+        "file": "tests/e2e/styled-select.spec.ts",
+        "title": "keeps long dropdowns within the viewport and Escape inside a dialog at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 329,
+        "file": "tests/e2e/styled-select.spec.ts",
+        "title": "keeps text season controls steady and selected competition on one line at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 319,
+        "file": "tests/e2e/staff.spec.ts",
+        "title": "the 1 April card renews the firefighter in one tap"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 328,
+        "file": "tests/e2e/start.spec.ts",
+        "title": "plays the world's history while a 1950 world is generated at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 330,
+        "file": "tests/e2e/styled-select.spec.ts",
+        "title": "keeps long dropdowns within the viewport and Escape inside a dialog at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 332,
+        "file": "tests/e2e/start.spec.ts",
+        "title": "takes over without a direction choice and starts with standard defaults"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 331,
+        "file": "tests/e2e/staff.spec.ts",
+        "title": "스태프 leads with the 단장 and 이적시장 discloses the scout shortlist at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 334,
+        "file": "tests/e2e/start.spec.ts",
+        "title": "the owner adds to the club’s opening cash, and the guide reads the takeover"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 326,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "joint contract authority delegated/delegated remains atomic"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 333,
+        "file": "tests/e2e/team-directory.spec.ts",
+        "title": "matchday-print: 팀 lists our actual people compactly at the market's density and leads to their detailed work at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 337,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "synthetic two playing-coach years plus full-time service excludes unemployment and crosses the exact day"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 336,
+        "file": "tests/e2e/work-office.spec.ts",
+        "title": "the office's menu, its areas and 구단 운영 hold its proactive work at 360"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 335,
+        "file": "tests/e2e/training.spec.ts",
+        "title": "saves actual training without free growth and keeps home compact at 360x740"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 338,
+        "file": "tests/e2e/team-directory.spec.ts",
+        "title": "standard: 팀 lists our actual people compactly at the market's density and leads to their detailed work at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 342,
+        "file": "tests/e2e/team-directory.spec.ts",
+        "title": "pixel: 팀 lists our actual people compactly at the market's density and leads to their detailed work at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 340,
+        "file": "tests/e2e/work-office.spec.ts",
+        "title": "the office's menu, its areas and 구단 운영 hold its proactive work at 390"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 341,
+        "file": "tests/e2e/training.spec.ts",
+        "title": "saves actual training without free growth and keeps home compact at 390x844"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 345,
+        "file": "tests/e2e/training.spec.ts",
+        "title": "shows the assistant's own call and his rule, read only (→CLUB-13, WEB-70)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 346,
+        "file": "tests/e2e/training.spec.ts",
+        "title": "promotes a prospect from 유소년"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 343,
+        "file": "tests/e2e/team-directory.spec.ts",
+        "title": "sticker-club: 팀 lists our actual people compactly at the market's density and leads to their detailed work at 360px and desktop"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 347,
+        "file": "tests/e2e/training.spec.ts",
+        "title": "reads each player's focus as the assistant sets it and lists adaptation (→CLUB-11, PLAYER-12)"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 344,
+        "file": "tests/e2e/work-office.spec.ts",
+        "title": "the office's menu, its areas and 구단 운영 hold its proactive work at 1280"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 339,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "playing retirement retains the unexpired coach job at the real season close"
+      },
+      {
+        "outcome": "✓",
+        "ordinal": 348,
+        "file": "tests/e2e/second-career.spec.ts",
+        "title": "a disclosed player departure ends both jobs and charges coach compensation once"
+      }
+    ]
+  },
+  "approvedSpec": {
+    "commit": "39886dfc95d21319771786465b364b0586d787bb",
+    "file": "tests/e2e/management.spec.ts",
+    "sha256": "0e319f92406ec6c579c504ad930886a6e62a9c238a4098d6a0a82485a992ead7"
+  },
+  "stages": [
+    {
+      "name": "build",
+      "command": "pnpm run build",
+      "started": "2026-11-09T02:31:09.500Z",
+      "seconds": 7.02,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-initial/build.log",
+      "code": 0,
+      "signal": null,
+      "reusedFromIdenticalCommitAndTree": true,
+      "reusedFromUnchangedComputation": "9494879acbb5876053c1f12f69402d24ae3104bc"
+    },
+    {
+      "name": "test:unit",
+      "command": "pnpm run test:unit --maxWorkers 4",
+      "started": "2026-11-09T02:31:16.521Z",
+      "seconds": 237.924,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-initial/test-unit.log",
+      "code": 0,
+      "signal": null,
+      "reusedFromIdenticalCommitAndTree": true,
+      "reusedFromUnchangedComputation": "9494879acbb5876053c1f12f69402d24ae3104bc"
+    },
+    {
+      "name": "test:integration",
+      "command": "pnpm run test:integration --maxWorkers 4",
+      "started": "2026-11-09T02:31:16.523Z",
+      "seconds": 1521.219,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-initial/test-integration.log",
+      "code": 0,
+      "signal": null,
+      "reusedFromIdenticalCommitAndTree": true,
+      "reusedFromUnchangedComputation": "9494879acbb5876053c1f12f69402d24ae3104bc"
+    },
+    {
+      "name": "test:contract",
+      "command": "pnpm run test:contract --maxWorkers 2",
+      "started": "2026-11-09T02:31:16.526Z",
+      "seconds": 94.524,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-initial/test-contract.log",
+      "code": 0,
+      "signal": null,
+      "reusedFromIdenticalCommitAndTree": true,
+      "reusedFromUnchangedComputation": "9494879acbb5876053c1f12f69402d24ae3104bc"
+    },
+    {
+      "name": "validate:catalogs",
+      "command": "pnpm run validate:catalogs",
+      "started": "2026-11-09T03:59:42.938Z",
+      "seconds": 1.602,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/validate-catalogs.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "validate:presentation",
+      "command": "pnpm run validate:presentation",
+      "started": "2026-11-09T03:59:42.940Z",
+      "seconds": 2.246,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/validate-presentation.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "validate:i18n",
+      "command": "pnpm run validate:i18n",
+      "started": "2026-11-09T03:59:42.942Z",
+      "seconds": 4.628,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/validate-i18n.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm run typecheck",
+      "started": "2026-11-09T03:59:42.931Z",
+      "seconds": 7.363,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/typecheck.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "format:check",
+      "command": "pnpm run format:check",
+      "started": "2026-11-09T03:59:42.936Z",
+      "seconds": 13.781,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/format-check.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "lint",
+      "command": "pnpm run lint",
+      "started": "2026-11-09T03:59:42.934Z",
+      "seconds": 26.793,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/lint.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "test:e2e",
+      "command": "pnpm run test:e2e --project=chromium --workers=2 tests/e2e/management.spec.ts",
+      "started": "2026-11-09T04:00:09.731Z",
+      "seconds": 191.224,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09-affected/test-e2e.log",
+      "code": 0,
+      "signal": null
+    }
+  ],
+  "passed": true,
+  "browserCoverage": {
+    "selected": 348,
+    "reusedUnchanged": 346,
+    "freshlyPassed": 2,
+    "passed": 348,
+    "existingSkipped": 0,
+    "failures": 0
+  },
+  "finished": "2026-11-09T04:03:20.958Z"
+}

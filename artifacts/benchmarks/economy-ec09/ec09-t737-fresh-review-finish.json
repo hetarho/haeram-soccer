@@ -1,0 +1,133 @@
+{
+  "id": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+  "group": "economy-ec09",
+  "taskId": "T737",
+  "tasks": [
+    "T737"
+  ],
+  "lane": null,
+  "owner": "ec09-recruit",
+  "contributors": [
+    "ec09-recruit"
+  ],
+  "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T737-b5d17e0c",
+  "branch": "task/economy-ec09/T737-b5d17e0c",
+  "managed": true,
+  "startCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+  "touches": [
+    "tests/e2e/management.spec.ts"
+  ],
+  "status": "approved",
+  "creator": {
+    "pid": 975195,
+    "host": "hq-dev1-pve2-vm2"
+  },
+  "createdAt": "2026-11-09T03:24:46.381Z",
+  "heartbeatAt": "2026-11-09T03:41:18.863Z",
+  "gitDir": "/home/deep/haeram/haeram-soccor/.git/worktrees/economy-ec09-T737-b5d17e0c",
+  "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+  "submittedBase": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+  "verification": [
+    {
+      "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+      "startedAt": "2026-11-09T03:41:27.408Z",
+      "finishedAt": "2026-11-09T03:41:46.746Z",
+      "stdout": "\n RUN  v5.0.3 /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T737-b5d17e0c\n\nNo test files found, exiting with code 0\n\n",
+      "stderr": "projects: unit\n\n|unit| \n\ninclude: packages/**/*.test.ts, apps/**/*.test.ts, tests/fixtures/**/*.test.ts, scripts/**/*.test.ts, tests/config/**/*.test.ts\nexclude:  **/node_modules/**, **/.git/**, **/*.contract.test.ts, apps/web/src/adapters/newsJournal.test.ts, apps/web/src/adapters/careerPacking.test.ts, apps/web/src/adapters/managerHistoryPacking.test.ts, apps/web/src/adapters/matchModelPacking.test.ts, apps/web/src/adapters/packing.test.ts, apps/web/src/adapters/persistence.history.test.ts, apps/web/src/adapters/persistence.long-career.test.ts, apps/web/src/adapters/persistence.test.ts, apps/web/src/runtime/client.test.ts, apps/web/src/runtime/fixtureHelpers.integration.test.ts, apps/web/src/runtime/host.archive.test.ts, apps/web/src/runtime/host.generation.test.ts, apps/web/src/runtime/host.test.ts, apps/web/src/runtime/host.world-market.test.ts, apps/web/src/runtime/next-event.test.ts, apps/web/src/runtime/personCareer.test.ts, apps/web/src/pages/club/lib/analysisDataset.test.ts, apps/web/src/pages/cups/lib/bracketTree.test.ts, apps/web/src/pages/cups/lib/cupRoute.test.ts, apps/web/src/entities/league/lib/fixtures.test.ts, apps/web/src/pages/journal/lib/fullStatsView.test.ts, apps/web/src/entities/league/lib/league.test.ts, apps/web/src/entities/match/lib/matchAppearance.test.ts, apps/web/src/features/match-viewer/ui/matchCharts.test.ts, apps/web/src/entities/match/lib/moments.test.ts, apps/web/src/pages/journal/lib/scorers.test.ts, apps/web/src/entities/league/lib/scouting.test.ts, apps/web/src/entities/league/lib/seasonArchive.test.ts, apps/web/src/pages/club/lib/seasonStats.test.ts, apps/web/src/pages/club/lib/seasonTrends.test.ts, packages/engine/src/academy.season-close.test.ts, packages/engine/src/academy.test.ts, packages/engine/src/adaptation.test.ts, packages/engine/src/aggregate/engine.test.ts, packages/engine/src/aggregate/ledger.test.ts, packages/engine/src/aggregate/participation.test.ts, packages/engine/src/aggregate/players.test.ts, packages/engine/src/aggregate/team.test.ts, packages/engine/src/approvals.days.test.ts, packages/engine/src/bases.test.ts, packages/engine/src/build-cards.test.ts, packages/engine/src/build.pressing.test.ts, packages/engine/src/build.test.ts, packages/engine/src/build.tradeoffs.test.ts, packages/engine/src/business.reminder.test.ts, packages/engine/src/business.renewal.test.ts, packages/engine/src/business.test.ts, packages/engine/src/calendar.fast-path.test.ts, packages/engine/src/calendar.progression-eng.test.ts, packages/engine/src/calendar.progression-esp.test.ts, packages/engine/src/calendar.test.ts, packages/engine/src/calibration.grid-equal.test.ts, packages/engine/src/calibration.grid-favourite.test.ts, packages/engine/src/calibration.grid-giant.test.ts, packages/engine/src/calibration.test.ts, packages/engine/src/club-identity.test.ts, packages/engine/src/coach-training.test.ts, packages/engine/src/coaching-service.test.ts, packages/engine/src/contracts.test.ts, packages/engine/src/cups.test.ts, packages/engine/src/detail.test.ts, packages/engine/src/discipline.test.ts, packages/engine/src/economy.test.ts, packages/engine/src/europe.test.ts, packages/engine/src/fans.test.ts, packages/engine/src/feature-replay.retained.test.ts, packages/engine/src/feature-replay.test.ts, packages/engine/src/finance.commercial.test.ts, packages/engine/src/finance.league-share.test.ts, packages/engine/src/finance.operating.test.ts, packages/engine/src/finance.parachute.test.ts, packages/engine/src/finance.sponsor-income.test.ts, packages/engine/src/finance.test.ts, packages/engine/src/full-model-throughput.test.ts, packages/engine/src/goals.season.test.ts, packages/engine/src/goals.test.ts, packages/engine/src/grid-throughput.test.ts, packages/engine/src/grid/bands.test.ts, packages/engine/src/grid/changes.test.ts, packages/engine/src/grid/commentary.test.ts, packages/engine/src/grid/coordination.test.ts, packages/engine/src/grid/discipline.test.ts, packages/engine/src/grid/engine.test.ts, packages/engine/src/grid/intentions.test.ts, packages/engine/src/grid/movement.test.ts, packages/engine/src/grid/playback.test.ts, packages/engine/src/grid/record.test.ts, packages/engine/src/grid/resolve.test.ts, packages/engine/src/grid/shootout.test.ts, packages/engine/src/history.test.ts, packages/engine/src/identity-operations.test.ts, packages/engine/src/investment.test.ts, packages/engine/src/kit-selection.test.ts, packages/engine/src/knockout.test.ts, packages/engine/src/manager-history-capture.test.ts, packages/engine/src/managerMarket.test.ts, packages/engine/src/managers.test.ts, packages/engine/src/match-appearance.test.ts, packages/engine/src/match-model.test.ts, packages/engine/src/material.test.ts, packages/engine/src/morale.test.ts, packages/engine/src/news.test.ts, packages/engine/src/next-event.test.ts, packages/engine/src/npc-continuity.test.ts, packages/engine/src/npc-stats.test.ts, packages/engine/src/operations.test.ts, packages/engine/src/owner.ended.test.ts, packages/engine/src/pending-work.test.ts, packages/engine/src/policy.test.ts, packages/engine/src/projection.plain.test.ts, packages/engine/src/projection.test.ts, packages/engine/src/recruitment.test.ts, packages/engine/src/replacements.test.ts, packages/engine/src/reputation.test.ts, packages/engine/src/round-jobs.test.ts, packages/engine/src/scoring.test.ts, packages/engine/src/season.brackets.test.ts, packages/engine/src/season.contracts.test.ts, packages/engine/src/season.lowest.test.ts, packages/engine/src/season.settle.test.ts, packages/engine/src/season.test.ts, packages/engine/src/settlement.test.ts, packages/engine/src/signings.test.ts, packages/engine/src/sponsors.ending.test.ts, packages/engine/src/sponsors.migration.test.ts, packages/engine/src/sponsors.relegation.test.ts, packages/engine/src/sponsors.test.ts, packages/engine/src/squad-target.test.ts, packages/engine/src/staff.careers.test.ts, packages/engine/src/staff.retirement.test.ts, packages/engine/src/staff.seasons.test.ts, packages/engine/src/staff.test.ts, packages/engine/src/staff.trust-floor.test.ts, packages/engine/src/stages.test.ts, packages/engine/src/strategy.test.ts, packages/engine/src/summary.test.ts, packages/engine/src/takeover.season.test.ts, packages/engine/src/training.test.ts, packages/engine/src/transfer-records.test.ts, packages/engine/src/transfers.delegated.test.ts, packages/engine/src/transfers.incoming.test.ts, packages/engine/src/transfers.stance.test.ts, packages/engine/src/transfers.test.ts, packages/engine/src/world.capacities.test.ts, packages/engine/src/world.test.ts, scripts/lib/match-parity.test.ts, tests/fixtures/full-model-workload.test.ts, tests/fixtures/identity-workload.test.ts, tests/fixtures/worlds.test.ts\n\n"
+    }
+  ],
+  "steps": [
+    {
+      "taskId": "T737",
+      "commit": "4814556990060a286349c269fdadac3823ef1467",
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-09T03:41:27.408Z",
+          "finishedAt": "2026-11-09T03:41:46.746Z"
+        }
+      ],
+      "at": "2026-11-09T03:41:47.980Z"
+    }
+  ],
+  "submittedAt": "2026-11-09T03:41:48.042Z",
+  "reason": null,
+  "risk": null,
+  "candidates": [
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-9b41426e",
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-4ec5ee7c",
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-422f4d78",
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-3ffad793"
+  ],
+  "candidate": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-4ec5ee7c",
+  "targetCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+  "candidateCommit": null,
+  "integrationVerification": null,
+  "reviewHistory": [
+    {
+      "id": "9b41426e-3348-47ae-ad7c-7a24c36fe4cb",
+      "attempt": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "tasks": [
+        "T737"
+      ],
+      "group": "economy-ec09",
+      "owner": "ec09-reviewer",
+      "status": "approved",
+      "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+      "commit": "39886dfc95d21319771786465b364b0586d787bb",
+      "baseCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+      "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-9b41426e",
+      "createdAt": "2026-11-09T03:31:51.388Z",
+      "heartbeatAt": "2026-11-09T03:31:51.388Z",
+      "verdict": "approved",
+      "summary": "T737 exact39886dfc changes only management.spec.ts plus its task receipt. It resolves the invalid assumption that the chief scout's capped, quality-ranked shortlist must include a free player: selection now reads actual freeAgentsOf, resolves each through canonical worldMarketOffer, keeps available free offers, prefers lower offered wages, and requires recruitmentPreview eligibility/affordability. It neither fabricates a player nor alters funds or production checks. The existing marketCandidate helper searches the full market by retained identity, so the candidate remains reachable through the UI. All manual signing, roster21/40, full-season, export/import assertions and all timeouts/retries/skips are unchanged; missing candidates now give a clear diagnostic. No blocking finding. No browser tests run by reviewer; root must verify both management journeys on the integrated source before origin push and prove any reused receipt's unchanged scope.",
+      "findings": [],
+      "finishedAt": "2026-11-09T03:32:35.917Z",
+      "invalidatedAt": "2026-11-09T03:38:39.837Z",
+      "invalidationReason": "review snapshot changed"
+    },
+    {
+      "id": "422f4d78-250e-4f70-9299-85d77bbf9c76",
+      "attempt": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "tasks": [
+        "T737"
+      ],
+      "group": "economy-ec09",
+      "owner": "ec09-reviewer",
+      "status": "reviewing",
+      "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+      "commit": "39886dfc95d21319771786465b364b0586d787bb",
+      "baseCommit": "e9bf3ea0fd2def2d10726726d6cf4755ad81a097",
+      "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-422f4d78",
+      "createdAt": "2026-11-09T03:39:58.529Z",
+      "heartbeatAt": "2026-11-09T03:39:58.529Z",
+      "invalidatedAt": "2026-11-09T03:39:59.342Z",
+      "invalidationReason": "T737: WEB@212가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+    }
+  ],
+  "directive": {
+    "note": "Coordinator confirmed WEB213 freshness: WEB43 unchanged; sync planning metadata only",
+    "at": "2026-11-09T03:41:18.863Z"
+  },
+  "verifiedCommit": "4814556990060a286349c269fdadac3823ef1467",
+  "review": {
+    "id": "3ffad793-961c-4d1a-a1f3-199ffd090082",
+    "attempt": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+    "tasks": [
+      "T737"
+    ],
+    "group": "economy-ec09",
+    "owner": "ec09-reviewer",
+    "status": "approved",
+    "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+    "commit": "4814556990060a286349c269fdadac3823ef1467",
+    "baseCommit": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+    "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-3ffad793",
+    "createdAt": "2026-11-09T03:41:56.741Z",
+    "heartbeatAt": "2026-11-09T03:41:56.741Z",
+    "verdict": "approved",
+    "summary": "Fresh independent review of submission4d68fe1c on commit4814556990060a286349c269fdadac3823ef1467 against current basec6ee743207fae78872aaec8510421705ae2a8cd9. Rechecked the changed cited domain: WEB212→213 changes only WEB-54's season-history column switch; WEB-43's full-world market rule is unchanged, as are CLUB62 andARCH34. T737 now cites WEB213. The exact management.spec blob is c29848ffe06c90fc267f8e9d356013cce12fca4f, matching the earlier independently inspected patch, and the current whole diff contains only that spec plus task acceptance/result. Actual pool members are resolved through canonical worldMarketOffer and recruitmentPreview, with a lower-wage preference and explicit missing-candidate diagnostic. No production/fixture generator changes or assertion, timeout, retry or skip changes. This is a new approval on the refreshed snapshot, not reuse of the invalidated record. Root still owns both affected browser cases and source-scoped reuse proof before origin push.",
+    "findings": [],
+    "finishedAt": "2026-11-09T03:42:26.126Z"
+  }
+}

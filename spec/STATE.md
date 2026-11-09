@@ -14,7 +14,6 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T03:36Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -22,6 +21,7 @@
 | ow09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T03:07Z | 2026-11-09T03:07Z | - |
 
 ## inbox
+- 261109 decided ARCH-30 T737: economy-ec09 verified source731ed705 passes the combined gate (Chromium348 cases, including2 fresh management journeys); the owner authorizes origin publication → gather this batch on next while ow09 remains live, leave the main release to the last session. All5 adopted tasks are integrated; detailed evidence/report retained ec09
 - 261109 decided ARCH-30 T737: the owner authorizes origin publication in a suitable batch and reiterates unit tests per task, E2E at the push boundary → keep worker browser runs disabled, verify the combined batch before one code push; static checks remain basic checks and the final affected-file confirmation belongs to the coordinator ec09
 - 261109 decided OWNER-7 T735: how much a monthly settlement wins or loses once it settles eleven times a season at 60% → 5% of the staked share (about +10% a season at a full stake, +23% with 성공한 사업가; a 50% stake about +5%) (alt: the whole staked share each month, which shrinks a 50% stake by a third a season and ruins a full one | a third of it, the old season exposure, compounding ×2.6 a season with the trait) ow09
 - 261109 decided OWNER-5 OWNER-7 T735: 성공한 사업가 once the base is 60% → 70%, the same +10 points (alt: 65% | no business effect) ow09
