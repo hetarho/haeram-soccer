@@ -1,0 +1,2808 @@
+{
+ "kind": "detailed-model-calibration",
+ "version": "match-parity-6",
+ "task": "T278",
+ "model": "continuous-aggregate-10",
+ "productionActivation": "off: the runner requests the candidate through buildGridSetup({ model })",
+ "releaseEvidence": false,
+ "provenance": {
+  "date": "2026-11-09T09:49:53.983Z",
+  "gitHead": "f0e292d07799e02ed4b7a1f04c7698ce34c2a0bd",
+  "gitDirty": true,
+  "fingerprint": {
+   "algorithm": "sha256",
+   "sha256": "b170e717e96aaee8fdbeab2994fb690378b990f610196b1d02280afab8669c5f",
+   "files": 612,
+   "scope": [
+    "packages",
+    "apps/web/src/adapters",
+    "scripts",
+    "package.json",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "tsconfig.json"
+   ]
+  },
+  "computationFingerprint": {
+   "algorithm": "sha256",
+   "sha256": "78e71d47d15e9ed798d586df2b718101b262e46f7a0b4683dad2c4b6cfbd9096",
+   "files": 208,
+   "entry": "scripts/grid-bands.ts",
+   "scope": "runtime dependency closure and declared inputs"
+  },
+  "node": "v24.22.1",
+  "machine": {
+   "platform": "linux",
+   "arch": "x64",
+   "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+   "logicalCpus": 12
+  },
+  "command": "pnpm exec tsx scripts/grid-bands.ts --report --partition calibration --scale 2 --conditions tactics:press-counter,tactics:counter-press --jobs 3 --out artifacts/benchmarks/scoring-261109-cv04-own/pc-Pabp-calibration-2.json"
+ },
+ "settings": {
+  "partition": "calibration",
+  "round": 0,
+  "scale": 2,
+  "calibrationPerCondition": 600,
+  "workers": 2,
+  "movement": {
+   "acceleration": 4,
+   "braking": 6,
+   "turn": 180,
+   "step": 0.2,
+   "arrive": 0.05,
+   "horizon": 300,
+   "read": 3
+  },
+  "ball": {
+   "pass": 20,
+   "turnover": 20,
+   "restart": 18,
+   "shot": 30,
+   "max": 40,
+   "retrieval": 6,
+   "placement": 1.5
+  },
+  "forcedTactics": "tactic pairings force both tactics on the core pairs; each club's squad is built for the forced formation (forcedRosters: npcSquad with the forced tactic's squad places at the club's strength; XI = its formation slots) and both sides start from the condition's declared squad fatigue (NEUTRAL_SQUAD_FATIGUE), so a forced tactic changes only in-match behaviour and its in-match cost; end-of-match freshness (MATCH-29) is read only when that fatigue was applied",
+  "knockouts": "target counts and durations of a match with extra time are read per 90 minutes played (TargetBand.perNinety)"
+ },
+ "coverage": [
+  {
+   "condition": "core:equal-top-tier",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-35",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-30",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-25",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-20",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-15",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-10",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:-5",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:0",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:5",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:10",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:15",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:20",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:25",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:30",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:35",
+   "status": "not selected"
+  },
+  {
+   "condition": "gap:40",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:possession-possession",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:possession-press",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:possession-counter",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:possession-balanced",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:press-possession",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:press-press",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:press-counter",
+   "status": "measured"
+  },
+  {
+   "condition": "tactics:press-balanced",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:counter-possession",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:counter-press",
+   "status": "measured"
+  },
+  {
+   "condition": "tactics:counter-counter",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:counter-balanced",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:balanced-possession",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:balanced-press",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:balanced-counter",
+   "status": "not selected"
+  },
+  {
+   "condition": "tactics:balanced-balanced",
+   "status": "not selected"
+  },
+  {
+   "condition": "tier:tier1",
+   "status": "not selected"
+  },
+  {
+   "condition": "tier:tier2",
+   "status": "not selected"
+  },
+  {
+   "condition": "tier:tier3",
+   "status": "not selected"
+  },
+  {
+   "condition": "tier:tier4",
+   "status": "not selected"
+  },
+  {
+   "condition": "tier:amateur",
+   "status": "not selected"
+  },
+  {
+   "condition": "fatigue:0",
+   "status": "not measured: clubs nobody owns carry fixed squad fatigue (MATCH-2), so a pre-match fatigue condition needs a fixture-level input this runner does not set"
+  },
+  {
+   "condition": "fatigue:20",
+   "status": "not measured: clubs nobody owns carry fixed squad fatigue (MATCH-2), so a pre-match fatigue condition needs a fixture-level input this runner does not set"
+  },
+  {
+   "condition": "fatigue:32",
+   "status": "not measured: clubs nobody owns carry fixed squad fatigue (MATCH-2), so a pre-match fatigue condition needs a fixture-level input this runner does not set"
+  },
+  {
+   "condition": "fatigue:50",
+   "status": "not measured: clubs nobody owns carry fixed squad fatigue (MATCH-2), so a pre-match fatigue condition needs a fixture-level input this runner does not set"
+  },
+  {
+   "condition": "era:1950",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:1965",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:1967",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:1970",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:1987",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:1995",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:1996",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:2008",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:2022",
+   "status": "not selected"
+  },
+  {
+   "condition": "era:2024",
+   "status": "not selected"
+  },
+  {
+   "condition": "knockout:single-match",
+   "status": "not selected"
+  },
+  {
+   "condition": "knockout:second-leg",
+   "status": "not selected"
+  },
+  {
+   "condition": "knockout:second-leg-away-goals",
+   "status": "not selected"
+  },
+  {
+   "condition": "rare:discipline",
+   "status": "not measured: rare-event conditions need 10,000 matches each (CORPUS_CONFIG.rarePerCondition); measured conditions report card, penalty and extra-time rates instead"
+  },
+  {
+   "condition": "rare:penalties",
+   "status": "not measured: rare-event conditions need 10,000 matches each (CORPUS_CONFIG.rarePerCondition); measured conditions report card, penalty and extra-time rates instead"
+  },
+  {
+   "condition": "rare:injuries",
+   "status": "not measured: rare-event conditions need 10,000 matches each (CORPUS_CONFIG.rarePerCondition); measured conditions report card, penalty and extra-time rates instead"
+  },
+  {
+   "condition": "rare:extra-time",
+   "status": "not measured: rare-event conditions need 10,000 matches each (CORPUS_CONFIG.rarePerCondition); measured conditions report card, penalty and extra-time rates instead"
+  },
+  {
+   "condition": "season:league-20",
+   "status": "not measured: season distributions belong to T284 (scripts/calibrate.ts --only seasons)"
+  },
+  {
+   "condition": "season:century",
+   "status": "not measured: season distributions belong to T284 (scripts/calibrate.ts --only seasons)"
+  }
+ ],
+ "speed": {
+  "note": "Wall time on a shared, loaded machine: context for T285, never a football or release claim.",
+  "elapsedSeconds": 570.48,
+  "msPerMatch": {
+   "tactics:press-counter": 472.74,
+   "tactics:counter-press": 458.68
+  }
+ },
+ "outcomeCurve": null,
+ "tacticPairings": {
+  "version": "match-parity-6",
+  "target": 1,
+  "source": "MATCH-29",
+  "assignment": "forced",
+  "matches": 2400,
+  "venues": {
+   "press-counter": 1200,
+   "counter-press": 1200
+  },
+  "tactics": {
+   "possession": {
+    "points": {
+     "matches": 0,
+     "reason": "0 matches with possession at home to press, fewer than 30"
+    },
+    "possession": {
+     "matches": 0,
+     "reason": "0 matches with possession at home to press, fewer than 30"
+    },
+    "xgConceded": {
+     "matches": 0,
+     "reason": "0 matches with possession at home to press, fewer than 30"
+    },
+    "highRegains": {
+     "matches": 0,
+     "reason": "0 matches with possession at home to press, fewer than 30"
+    },
+    "freshness": {
+     "matches": 0,
+     "reason": "0 matches with possession at home to press, fewer than 30"
+    }
+   },
+   "press": {
+    "points": {
+     "matches": 2400,
+     "reason": "0 matches with press at home to possession, fewer than 30"
+    },
+    "possession": {
+     "matches": 2400,
+     "reason": "0 matches with press at home to possession, fewer than 30"
+    },
+    "xgConceded": {
+     "matches": 2400,
+     "reason": "0 matches with press at home to possession, fewer than 30"
+    },
+    "highRegains": {
+     "matches": 2400,
+     "reason": "0 matches with press at home to possession, fewer than 30"
+    },
+    "freshness": {
+     "matches": 2400,
+     "reason": "0 matches with press at home to possession, fewer than 30"
+    }
+   },
+   "counter": {
+    "points": {
+     "matches": 2400,
+     "reason": "0 matches with counter at home to possession, fewer than 30"
+    },
+    "possession": {
+     "matches": 2400,
+     "reason": "0 matches with counter at home to possession, fewer than 30"
+    },
+    "xgConceded": {
+     "matches": 2400,
+     "reason": "0 matches with counter at home to possession, fewer than 30"
+    },
+    "highRegains": {
+     "matches": 2400,
+     "reason": "0 matches with counter at home to possession, fewer than 30"
+    },
+    "freshness": {
+     "matches": 2400,
+     "reason": "0 matches with counter at home to possession, fewer than 30"
+    }
+   },
+   "balanced": {
+    "points": {
+     "matches": 0,
+     "reason": "0 matches with balanced at home to possession, fewer than 30"
+    },
+    "possession": {
+     "matches": 0,
+     "reason": "0 matches with balanced at home to possession, fewer than 30"
+    },
+    "xgConceded": {
+     "matches": 0,
+     "reason": "0 matches with balanced at home to possession, fewer than 30"
+    },
+    "highRegains": {
+     "matches": 0,
+     "reason": "0 matches with balanced at home to possession, fewer than 30"
+    },
+    "freshness": {
+     "matches": 0,
+     "reason": "0 matches with balanced at home to possession, fewer than 30"
+    }
+   }
+  },
+  "rows": [
+   {
+    "id": "draws:possession-possession",
+    "label": "draws, possession v possession",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to possession, fewer than 30"
+   },
+   {
+    "id": "draws:possession-press",
+    "label": "draws, possession v press",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to press, fewer than 30"
+   },
+   {
+    "id": "draws:possession-counter",
+    "label": "draws, possession v counter",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to counter, fewer than 30"
+   },
+   {
+    "id": "draws:possession-balanced",
+    "label": "draws, possession v balanced",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to balanced, fewer than 30"
+   },
+   {
+    "id": "draws:press-press",
+    "label": "draws, press v press",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with press at home to press, fewer than 30"
+   },
+   {
+    "id": "draws:press-counter",
+    "label": "draws, press v counter",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 2400,
+    "status": "inside",
+    "value": 0.23625,
+    "interval": [
+     0.21925,
+     0.25325
+    ]
+   },
+   {
+    "id": "draws:press-balanced",
+    "label": "draws, press v balanced",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with press at home to balanced, fewer than 30"
+   },
+   {
+    "id": "draws:counter-counter",
+    "label": "draws, counter v counter",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with counter at home to counter, fewer than 30"
+   },
+   {
+    "id": "draws:counter-balanced",
+    "label": "draws, counter v balanced",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with counter at home to balanced, fewer than 30"
+   },
+   {
+    "id": "draws:balanced-balanced",
+    "label": "draws, balanced v balanced",
+    "kind": "band",
+    "band": [
+     0.2,
+     0.3
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with balanced at home to balanced, fewer than 30"
+   },
+   {
+    "id": "winShareGap:possession-press",
+    "label": "possession win share minus press's, possession v press",
+    "kind": "band",
+    "band": [
+     -0.12,
+     0.12
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to press, fewer than 30"
+   },
+   {
+    "id": "winShareGap:possession-counter",
+    "label": "possession win share minus counter's, possession v counter",
+    "kind": "band",
+    "band": [
+     -0.12,
+     0.12
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to counter, fewer than 30"
+   },
+   {
+    "id": "winShareGap:possession-balanced",
+    "label": "possession win share minus balanced's, possession v balanced",
+    "kind": "band",
+    "band": [
+     -0.12,
+     0.12
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to balanced, fewer than 30"
+   },
+   {
+    "id": "winShareGap:press-counter",
+    "label": "press win share minus counter's, press v counter",
+    "kind": "band",
+    "band": [
+     -0.12,
+     0.12
+    ],
+    "matches": 2400,
+    "status": "outside",
+    "value": -0.23292,
+    "interval": [
+     -0.2659,
+     -0.19993
+    ]
+   },
+   {
+    "id": "winShareGap:press-balanced",
+    "label": "press win share minus balanced's, press v balanced",
+    "kind": "band",
+    "band": [
+     -0.12,
+     0.12
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with press at home to balanced, fewer than 30"
+   },
+   {
+    "id": "winShareGap:counter-balanced",
+    "label": "counter win share minus balanced's, counter v balanced",
+    "kind": "band",
+    "band": [
+     -0.12,
+     0.12
+    ],
+    "matches": 0,
+    "status": "insufficient",
+    "reason": "0 matches with counter at home to balanced, fewer than 30"
+   },
+   {
+    "id": "atLeast:counter-press",
+    "label": "counter win share at least press's, head to head",
+    "kind": "ordering",
+    "status": "inside",
+    "differences": [
+     {
+      "higher": "counter",
+      "lower": "press",
+      "strict": false,
+      "matches": 2400,
+      "status": "holds",
+      "value": 0.23292,
+      "interval": [
+       0.19993,
+       0.2659
+      ]
+     }
+    ],
+    "matches": 2400
+   },
+   {
+    "id": "points:possession",
+    "label": "possession points a match against the other three, minus the four's mean",
+    "kind": "band",
+    "band": [
+     -0.15,
+     0.15
+    ],
+    "matches": 2400,
+    "status": "insufficient",
+    "reason": "0 matches with possession at home to press, fewer than 30"
+   },
+   {
+    "id": "points:press",
+    "label": "press points a match against the other three, minus the four's mean",
+    "kind": "band",
+    "band": [
+     -0.15,
+     0.15
+    ],
+    "matches": 2400,
+    "status": "insufficient",
+    "reason": "0 matches with press at home to possession, fewer than 30"
+   },
+   {
+    "id": "points:counter",
+    "label": "counter points a match against the other three, minus the four's mean",
+    "kind": "band",
+    "band": [
+     -0.15,
+     0.15
+    ],
+    "matches": 2400,
+    "status": "insufficient",
+    "reason": "0 matches with counter at home to possession, fewer than 30"
+   },
+   {
+    "id": "points:balanced",
+    "label": "balanced points a match against the other three, minus the four's mean",
+    "kind": "band",
+    "band": [
+     -0.15,
+     0.15
+    ],
+    "matches": 2400,
+    "status": "insufficient",
+    "reason": "0 matches with balanced at home to possession, fewer than 30"
+   },
+   {
+    "id": "ordering:possession",
+    "label": "possession share: possession highest, counter lowest",
+    "kind": "ordering",
+    "status": "insufficient",
+    "differences": [
+     {
+      "higher": "possession",
+      "lower": "press",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with possession at home to press, fewer than 30"
+     },
+     {
+      "higher": "possession",
+      "lower": "counter",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with possession at home to press, fewer than 30"
+     },
+     {
+      "higher": "possession",
+      "lower": "balanced",
+      "strict": true,
+      "matches": 0,
+      "status": "insufficient",
+      "reason": "0 matches with possession at home to press, fewer than 30"
+     },
+     {
+      "higher": "press",
+      "lower": "counter",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with press at home to possession, fewer than 30"
+     },
+     {
+      "higher": "balanced",
+      "lower": "counter",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with balanced at home to possession, fewer than 30"
+     }
+    ],
+    "matches": 2400,
+    "reason": "0 matches with possession at home to press, fewer than 30"
+   },
+   {
+    "id": "ordering:xgConceded",
+    "label": "xG conceded a match: balanced at most the mean of the other three",
+    "kind": "ordering",
+    "status": "insufficient",
+    "differences": [
+     {
+      "higher": "mean of possession, press, counter",
+      "lower": "balanced",
+      "strict": false,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with possession at home to press, fewer than 30"
+     }
+    ],
+    "matches": 2400,
+    "reason": "0 matches with possession at home to press, fewer than 30"
+   },
+   {
+    "id": "ordering:highRegains",
+    "label": "high regains a match: press highest",
+    "kind": "ordering",
+    "status": "insufficient",
+    "differences": [
+     {
+      "higher": "press",
+      "lower": "possession",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with press at home to possession, fewer than 30"
+     },
+     {
+      "higher": "press",
+      "lower": "counter",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with press at home to possession, fewer than 30"
+     },
+     {
+      "higher": "press",
+      "lower": "balanced",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with press at home to possession, fewer than 30"
+     }
+    ],
+    "matches": 2400,
+    "reason": "0 matches with press at home to possession, fewer than 30"
+   },
+   {
+    "id": "ordering:freshness",
+    "label": "end-of-match freshness: press lowest",
+    "kind": "ordering",
+    "status": "insufficient",
+    "differences": [
+     {
+      "higher": "possession",
+      "lower": "press",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with possession at home to press, fewer than 30"
+     },
+     {
+      "higher": "counter",
+      "lower": "press",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with counter at home to possession, fewer than 30"
+     },
+     {
+      "higher": "balanced",
+      "lower": "press",
+      "strict": true,
+      "matches": 2400,
+      "status": "insufficient",
+      "reason": "0 matches with balanced at home to possession, fewer than 30"
+     }
+    ],
+    "matches": 2400,
+    "reason": "0 matches with possession at home to press, fewer than 30"
+   }
+  ],
+  "summary": {
+   "inside": 2,
+   "outside": 1,
+   "insufficient": 22
+  }
+ },
+ "advancedCounterTarget": {
+  "note": "MATCH-30 bands and sources: scripts/lib/match-parity.ts ADVANCED_COUNTER_TARGET, spec/ssot/MATCH.md",
+  "unbanded": {
+   "fieldTilt": "between equal sides it is 50% by construction (each side's share of both sides' final-third passes), so a level band says nothing; held to parity",
+   "lineBreakingPasses": "needs every opponent line's deepest player at each pass: public event data (StatsBomb, Wyscout) carries no line membership or full positions, and FIFA's published line breaks are tournament counts under its own line set; held to parity"
+  }
+ },
+ "conditions": [
+  {
+   "condition": "tactics:press-counter",
+   "family": "tactics",
+   "label": "press at home to counter",
+   "seeds": "parity-calibration:r0:tactics:press-counter:0 … 1199",
+   "matches": 1200,
+   "belowCalibrationSize": false,
+   "meanGap": {
+    "mean": 3.339,
+    "ci": [
+     3.1729,
+     3.505
+    ]
+   },
+   "outcome": {
+    "homeWin": {
+     "share": 0.35167,
+     "ci": [
+      0.32516,
+      0.37912
+     ]
+    },
+    "draw": {
+     "share": 0.2375,
+     "ci": [
+      0.21428,
+      0.26239
+     ]
+    },
+    "awayWin": {
+     "share": 0.41083,
+     "ci": [
+      0.38332,
+      0.43891
+     ]
+    }
+   },
+   "goals": {
+    "mean": 2.6475,
+    "ci": [
+     2.5517,
+     2.7433
+    ]
+   },
+   "yellowsPerMatch": 2.8842,
+   "redsPerMatch": 0.09,
+   "extraTime": 0,
+   "shootouts": 0,
+   "sides": [
+    {
+     "goals": 1.24,
+     "shots": 9.0733,
+     "xgPerShot": 0.13255,
+     "boxShotShare": 0.75285,
+     "boxEntries": 28.712,
+     "frontOfBoxEntries": 58.393,
+     "throughBalls": 0.00083333,
+     "throughBallsCompleted": 0.00083333,
+     "bigChances": 0.80333,
+     "passes": 524.04,
+     "completion": 0.87222,
+     "possession": 0.66325,
+     "pressActions": 20.165,
+     "highTurnovers": 4.6192,
+     "tacklesInterceptions": 19.027,
+     "shotsByLine": {
+      "FW": 5.235,
+      "MF": 2.7058,
+      "DF": 1.1325,
+      "GK": 0
+     },
+     "goalsByLine": {
+      "FW": 0.71667,
+      "MF": 0.35583,
+      "DF": 0.1675,
+      "GK": 0
+     }
+    },
+    {
+     "goals": 1.4075,
+     "shots": 20.195,
+     "xgPerShot": 0.066329,
+     "boxShotShare": 0.76603,
+     "boxEntries": 22.893,
+     "frontOfBoxEntries": 52.817,
+     "throughBalls": 4.3425,
+     "throughBallsCompleted": 3.5492,
+     "bigChances": 0.83417,
+     "passes": 265.21,
+     "completion": 0.80031,
+     "possession": 0.33675,
+     "pressActions": 23.306,
+     "highTurnovers": 5.3175,
+     "tacklesInterceptions": 25.464,
+     "shotsByLine": {
+      "FW": 13.43,
+      "MF": 6.37,
+      "DF": 0.395,
+      "GK": 0
+     },
+     "goalsByLine": {
+      "FW": 0.835,
+      "MF": 0.52,
+      "DF": 0.0525,
+      "GK": 0
+     }
+    }
+   ],
+   "concentration": {
+    "bracesPerMatch": 0.30333,
+    "hatTricksPerMatch": 0.055833,
+    "hatTricks": {
+     "id": "hatTricksPerMatch",
+     "label": "hat-tricks a match",
+     "band": [
+      0.02,
+      0.05
+     ],
+     "status": "context",
+     "value": 0.055833,
+     "interval": [
+      0.043944,
+      0.070939
+     ],
+     "n": 1200,
+     "note": "context: MATCH-23 states the hat-trick rate for a top-tier league season, which only the core condition's equal top-tier sides sample"
+    },
+    "clubsWith20Goals": 75,
+    "topScorerShare": {
+     "mean": 0.30942,
+     "ci": [
+      0.29234,
+      0.3265
+     ]
+    },
+    "topScorerGoalsPer38": {
+     "mean": 15.798,
+     "ci": [
+      14.646,
+      16.95
+     ]
+    }
+   },
+   "targets": [
+    {
+     "id": "passes",
+     "band": [
+      356.25,
+      593.75
+     ],
+     "status": "inside",
+     "value": 394.62,
+     "interval": [
+      393.54,
+      395.7
+     ],
+     "error": 0
+    },
+    {
+     "id": "passCompletion",
+     "band": [
+      60,
+      100
+     ],
+     "status": "inside",
+     "value": 84.806,
+     "interval": [
+      84.72,
+      84.892
+     ],
+     "error": 0
+    },
+    {
+     "id": "passForward",
+     "band": [
+      26.25,
+      43.75
+     ],
+     "status": "inside",
+     "value": 36.381,
+     "interval": [
+      36.257,
+      36.505
+     ],
+     "error": 0
+    },
+    {
+     "id": "passLateral",
+     "band": [
+      37.5,
+      62.5
+     ],
+     "status": "inside",
+     "value": 41.19,
+     "interval": [
+      41.082,
+      41.299
+     ],
+     "error": 0
+    },
+    {
+     "id": "passBack",
+     "band": [
+      11.25,
+      18.75
+     ],
+     "status": "outside",
+     "value": 22.429,
+     "interval": [
+      22.337,
+      22.522
+     ],
+     "error": 3.6791
+    },
+    {
+     "id": "possessions",
+     "band": [
+      71.25,
+      118.75
+     ],
+     "status": "outside",
+     "value": 67.917,
+     "interval": [
+      67.628,
+      68.205
+     ],
+     "error": 3.3333
+    },
+    {
+     "id": "passesPerPossession",
+     "band": [
+      2,
+      4
+     ],
+     "status": "inside",
+     "value": 4,
+     "interval": [
+      4,
+      4
+     ],
+     "error": 0
+    },
+    {
+     "id": "possessionShots",
+     "band": [
+      9.375,
+      15.625
+     ],
+     "status": "outside",
+     "value": 19.79,
+     "interval": [
+      19.571,
+      20.009
+     ],
+     "error": 4.1652
+    },
+    {
+     "id": "shots",
+     "band": [
+      9.375,
+      15.625
+     ],
+     "status": "inside",
+     "value": 14.634,
+     "interval": [
+      14.466,
+      14.802
+     ],
+     "error": 0
+    },
+    {
+     "id": "onTarget",
+     "band": [
+      25.125,
+      41.875
+     ],
+     "status": "inside",
+     "value": 28.728,
+     "interval": [
+      28.249,
+      29.208
+     ],
+     "error": 0
+    },
+    {
+     "id": "xgPerShot",
+     "band": [
+      0.07875,
+      0.13125
+     ],
+     "status": "inside",
+     "value": 0.086863,
+     "interval": [
+      0.085366,
+      0.08836
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsGoalArea",
+     "band": [
+      5.625,
+      9.375
+     ],
+     "status": "outside",
+     "value": 12.28,
+     "interval": [
+      11.89,
+      12.67
+     ],
+     "error": 2.9051
+    },
+    {
+     "id": "shotsBox",
+     "band": [
+      39.75,
+      66.25
+     ],
+     "status": "inside",
+     "value": 63.914,
+     "interval": [
+      63.346,
+      64.482
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsOutside",
+     "band": [
+      27.75,
+      46.25
+     ],
+     "status": "outside",
+     "value": 23.806,
+     "interval": [
+      23.334,
+      24.277
+     ],
+     "error": 3.9444
+    },
+    {
+     "id": "shotDistance",
+     "band": [
+      12.375,
+      20.625
+     ],
+     "status": "inside",
+     "value": 13.325,
+     "interval": [
+      13.245,
+      13.405
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsFar",
+     "band": [
+      0,
+      12.5
+     ],
+     "status": "inside",
+     "value": 2.2351,
+     "interval": [
+      2.0781,
+      2.3921
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsOwnHalf",
+     "band": [
+      0,
+      0.625
+     ],
+     "status": "inside",
+     "value": 0,
+     "interval": [
+      0,
+      0
+     ],
+     "error": 0
+    },
+    {
+     "id": "crosses",
+     "band": [
+      12.375,
+      20.625
+     ],
+     "status": "inside",
+     "value": 12.716,
+     "interval": [
+      12.557,
+      12.875
+     ],
+     "error": 0
+    },
+    {
+     "id": "crossCompletion",
+     "band": [
+      18.75,
+      31.25
+     ],
+     "status": "inside",
+     "value": 21.473,
+     "interval": [
+      21.001,
+      21.944
+     ],
+     "error": 0
+    },
+    {
+     "id": "takeOns",
+     "band": [
+      12.75,
+      21.25
+     ],
+     "status": "outside",
+     "value": 12.441,
+     "interval": [
+      12.287,
+      12.596
+     ],
+     "error": 0.30875
+    },
+    {
+     "id": "takeOnSuccess",
+     "band": [
+      37.5,
+      62.5
+     ],
+     "status": "inside",
+     "value": 57.534,
+     "interval": [
+      56.971,
+      58.097
+     ],
+     "error": 0
+    },
+    {
+     "id": "tacklesInterceptions",
+     "band": [
+      19.5,
+      32.5
+     ],
+     "status": "inside",
+     "value": 22.245,
+     "interval": [
+      22.054,
+      22.437
+     ],
+     "error": 0
+    },
+    {
+     "id": "throwIns",
+     "band": [
+      15,
+      25
+     ],
+     "status": "outside",
+     "value": 6.7454,
+     "interval": [
+      6.6406,
+      6.8502
+     ],
+     "error": 8.2546
+    },
+    {
+     "id": "corners",
+     "band": [
+      3.75,
+      6.25
+     ],
+     "status": "inside",
+     "value": 3.9021,
+     "interval": [
+      3.8172,
+      3.9869
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalKicks",
+     "band": [
+      6,
+      10
+     ],
+     "status": "inside",
+     "value": 8.4654,
+     "interval": [
+      8.3439,
+      8.5869
+     ],
+     "error": 0
+    },
+    {
+     "id": "fouls",
+     "band": [
+      8.625,
+      14.375
+     ],
+     "status": "inside",
+     "value": 8.7942,
+     "interval": [
+      8.6829,
+      8.9055
+     ],
+     "error": 0
+    },
+    {
+     "id": "offsides",
+     "band": [
+      1.35,
+      2.25
+     ],
+     "status": "unresolved",
+     "value": 2.2496,
+     "interval": [
+      2.1804,
+      2.3187
+     ],
+     "error": 0
+    },
+    {
+     "id": "yellowCards",
+     "band": [
+      2.85,
+      4.75
+     ],
+     "status": "unresolved",
+     "value": 2.8842,
+     "interval": [
+      2.7943,
+      2.974
+     ],
+     "error": 0
+    },
+    {
+     "id": "redCards",
+     "band": [
+      0.08,
+      0.15
+     ],
+     "status": "unresolved",
+     "value": 0.09,
+     "interval": [
+      0.072686,
+      0.10731
+     ],
+     "error": 0
+    },
+    {
+     "id": "goals",
+     "band": [
+      2.0625,
+      3.4375
+     ],
+     "status": "inside",
+     "value": 2.6475,
+     "interval": [
+      2.5517,
+      2.7433
+     ],
+     "error": 0
+    },
+    {
+     "id": "setPieceGoals",
+     "band": [
+      18,
+      30
+     ],
+     "status": "unresolved",
+     "value": 18.571,
+     "interval": [
+      17.208,
+      19.934
+     ],
+     "error": 0
+    },
+    {
+     "id": "penaltyGoals",
+     "band": [
+      5.625,
+      9.375
+     ],
+     "status": "unresolved",
+     "value": 5.8861,
+     "interval": [
+      5.0709,
+      6.7012
+     ],
+     "error": 0
+    },
+    {
+     "id": "headedGoals",
+     "band": [
+      12.75,
+      21.25
+     ],
+     "status": "inside",
+     "value": 17.847,
+     "interval": [
+      16.518,
+      19.176
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalsFW",
+     "band": [
+      41.25,
+      68.75
+     ],
+     "status": "inside",
+     "value": 58.609,
+     "interval": [
+      56.913,
+      60.304
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalsMF",
+     "band": [
+      24,
+      40
+     ],
+     "status": "inside",
+     "value": 33.082,
+     "interval": [
+      31.434,
+      34.729
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalsDF",
+     "band": [
+      8,
+      15
+     ],
+     "status": "unresolved",
+     "value": 8.3097,
+     "interval": [
+      7.3169,
+      9.3025
+     ],
+     "error": 0
+    },
+    {
+     "id": "ballInPlay",
+     "band": [
+      42,
+      70
+     ],
+     "status": "inside",
+     "value": 65.747,
+     "interval": [
+      65.591,
+      65.903
+     ],
+     "error": 0
+    },
+    {
+     "id": "addedTime",
+     "band": [
+      6,
+      12
+     ],
+     "status": "inside",
+     "value": 10.575,
+     "interval": [
+      10.474,
+      10.676
+     ],
+     "error": 0
+    }
+   ],
+   "advancedCounters": [
+    {
+     "id": "keyPasses",
+     "status": "outside",
+     "band": [
+      7.0875,
+      11.813
+     ],
+     "value": 11.996,
+     "interval": [
+      11.845,
+      12.146
+     ]
+    },
+    {
+     "id": "xa",
+     "status": "inside",
+     "band": [
+      0.7125,
+      1.1875
+     ],
+     "value": 1.0086,
+     "interval": [
+      0.98774,
+      1.0295
+     ]
+    },
+    {
+     "id": "bigChances",
+     "status": "inside",
+     "band": [
+      0.69375,
+      1.1563
+     ],
+     "value": 0.81875,
+     "interval": [
+      0.78356,
+      0.85394
+     ]
+    },
+    {
+     "id": "bigChancesScored",
+     "status": "inside",
+     "band": [
+      0.35625,
+      0.59375
+     ],
+     "value": 0.4025,
+     "interval": [
+      0.37766,
+      0.42734
+     ]
+    },
+    {
+     "id": "boxShots",
+     "status": "outside",
+     "band": [
+      5.4375,
+      9.0625
+     ],
+     "value": 11.15,
+     "interval": [
+      10.998,
+      11.302
+     ]
+    },
+    {
+     "id": "finalThirdPasses",
+     "status": "outside",
+     "band": [
+      82.875,
+      138.13
+     ],
+     "value": 78.689,
+     "interval": [
+      78.111,
+      79.267
+     ]
+    },
+    {
+     "id": "finalThirdCompleted",
+     "status": "inside",
+     "band": [
+      56.25,
+      93.75
+     ],
+     "value": 57.556,
+     "interval": [
+      57.057,
+      58.056
+     ]
+    },
+    {
+     "id": "progressivePasses",
+     "status": "inside",
+     "band": [
+      90,
+      150
+     ],
+     "value": 115.88,
+     "interval": [
+      115.44,
+      116.33
+     ]
+    },
+    {
+     "id": "takeOns",
+     "status": "outside",
+     "band": [
+      12.75,
+      21.25
+     ],
+     "value": 12.441,
+     "interval": [
+      12.287,
+      12.596
+     ],
+     "matchTarget": "takeOns"
+    },
+    {
+     "id": "takeOnSuccess",
+     "status": "inside",
+     "band": [
+      37.5,
+      62.5
+     ],
+     "value": 57.534,
+     "interval": [
+      56.971,
+      58.097
+     ],
+     "matchTarget": "takeOnSuccess"
+    },
+    {
+     "id": "highTurnovers",
+     "status": "unresolved",
+     "band": [
+      4.95,
+      8.25
+     ],
+     "value": 4.9683,
+     "interval": [
+      4.8776,
+      5.0591
+     ]
+    },
+    {
+     "id": "ppda",
+     "status": "inside",
+     "band": [
+      9.75,
+      16.25
+     ],
+     "value": 14.535,
+     "interval": [
+      14.406,
+      14.665
+     ]
+    },
+    {
+     "id": "fieldTilt",
+     "status": "unbanded",
+     "value": 62.253,
+     "interval": [
+      61.489,
+      63.017
+     ]
+    },
+    {
+     "id": "boxEntries",
+     "status": "outside",
+     "band": [
+      10.875,
+      18.125
+     ],
+     "value": 25.803,
+     "interval": [
+      25.584,
+      26.022
+     ]
+    },
+    {
+     "id": "frontOfBoxEntries",
+     "status": "outside",
+     "band": [
+      33,
+      55
+     ],
+     "value": 55.605,
+     "interval": [
+      55.326,
+      55.884
+     ]
+    },
+    {
+     "id": "lineBreakingPasses",
+     "status": "unbanded",
+     "value": 51.392,
+     "interval": [
+      51.046,
+      51.737
+     ]
+    },
+    {
+     "id": "xtAdded",
+     "status": "outside",
+     "band": [
+      1.6125,
+      2.6875
+     ],
+     "value": 4.4365,
+     "interval": [
+      4.4057,
+      4.4673
+     ]
+    },
+    {
+     "id": "cutBacks",
+     "status": "unresolved",
+     "band": [
+      0.35,
+      0.6
+     ],
+     "value": 0.37,
+     "interval": [
+      0.34162,
+      0.39838
+     ]
+    },
+    {
+     "id": "crosses",
+     "status": "inside",
+     "band": [
+      12.375,
+      20.625
+     ],
+     "value": 12.716,
+     "interval": [
+      12.557,
+      12.875
+     ],
+     "matchTarget": "crosses"
+    },
+    {
+     "id": "crossCompletion",
+     "status": "inside",
+     "band": [
+      18.75,
+      31.25
+     ],
+     "value": 21.473,
+     "interval": [
+      21.001,
+      21.944
+     ],
+     "matchTarget": "crossCompletion"
+    },
+    {
+     "id": "throughBalls",
+     "status": "inside",
+     "band": [
+      1.575,
+      2.625
+     ],
+     "value": 2.1717,
+     "interval": [
+      2.1119,
+      2.2315
+     ]
+    },
+    {
+     "id": "throughBallsCompleted",
+     "status": "outside",
+     "band": [
+      0.54375,
+      0.90625
+     ],
+     "value": 1.775,
+     "interval": [
+      1.7196,
+      1.8304
+     ]
+    },
+    {
+     "id": "progressiveCarries",
+     "status": "outside",
+     "band": [
+      45.563,
+      75.938
+     ],
+     "value": 113.49,
+     "interval": [
+      112.98,
+      114
+     ]
+    }
+   ],
+   "invariants": {
+    "failed": [],
+    "unsupported": 0,
+    "fullRecordFailures": 0,
+    "fullRecordExamples": []
+   }
+  },
+  {
+   "condition": "tactics:counter-press",
+   "family": "tactics",
+   "label": "counter at home to press",
+   "seeds": "parity-calibration:r0:tactics:counter-press:0 … 1199",
+   "matches": 1200,
+   "belowCalibrationSize": false,
+   "meanGap": {
+    "mean": 3.339,
+    "ci": [
+     3.1729,
+     3.505
+    ]
+   },
+   "outcome": {
+    "homeWin": {
+     "share": 0.58583,
+     "ci": [
+      0.55773,
+      0.61339
+     ]
+    },
+    "draw": {
+     "share": 0.235,
+     "ci": [
+      0.21188,
+      0.25981
+     ]
+    },
+    "awayWin": {
+     "share": 0.17917,
+     "ci": [
+      0.1585,
+      0.20188
+     ]
+    }
+   },
+   "goals": {
+    "mean": 2.6733,
+    "ci": [
+     2.5835,
+     2.7632
+    ]
+   },
+   "yellowsPerMatch": 2.8675,
+   "redsPerMatch": 0.091667,
+   "extraTime": 0,
+   "shootouts": 0,
+   "sides": [
+    {
+     "goals": 1.8083,
+     "shots": 23.569,
+     "xgPerShot": 0.068447,
+     "boxShotShare": 0.79047,
+     "boxEntries": 27.794,
+     "frontOfBoxEntries": 59.977,
+     "throughBalls": 4.5992,
+     "throughBallsCompleted": 3.9183,
+     "bigChances": 1.0067,
+     "passes": 278.7,
+     "completion": 0.82219,
+     "possession": 0.35887,
+     "pressActions": 24.907,
+     "highTurnovers": 6.0275,
+     "tacklesInterceptions": 26.41,
+     "shotsByLine": {
+      "FW": 15.489,
+      "MF": 7.6408,
+      "DF": 0.43917,
+      "GK": 0
+     },
+     "goalsByLine": {
+      "FW": 1.05,
+      "MF": 0.685,
+      "DF": 0.073333,
+      "GK": 0
+     }
+    },
+    {
+     "goals": 0.865,
+     "shots": 7.8592,
+     "xgPerShot": 0.12027,
+     "boxShotShare": 0.69918,
+     "boxEntries": 23.383,
+     "frontOfBoxEntries": 52.687,
+     "throughBalls": 0,
+     "throughBallsCompleted": 0,
+     "bigChances": 0.615,
+     "passes": 499.9,
+     "completion": 0.86081,
+     "possession": 0.64113,
+     "pressActions": 18.892,
+     "highTurnovers": 3.765,
+     "tacklesInterceptions": 18.296,
+     "shotsByLine": {
+      "FW": 4.4575,
+      "MF": 2.4317,
+      "DF": 0.96917,
+      "GK": 0.00083333
+     },
+     "goalsByLine": {
+      "FW": 0.50167,
+      "MF": 0.2475,
+      "DF": 0.11583,
+      "GK": 0
+     }
+    }
+   ],
+   "concentration": {
+    "bracesPerMatch": 0.31667,
+    "hatTricksPerMatch": 0.049167,
+    "hatTricks": {
+     "id": "hatTricksPerMatch",
+     "label": "hat-tricks a match",
+     "band": [
+      0.02,
+      0.05
+     ],
+     "status": "context",
+     "value": 0.049167,
+     "interval": [
+      0.038094,
+      0.063458
+     ],
+     "n": 1200,
+     "note": "context: MATCH-23 states the hat-trick rate for a top-tier league season, which only the core condition's equal top-tier sides sample"
+    },
+    "clubsWith20Goals": 71,
+    "topScorerShare": {
+     "mean": 0.30305,
+     "ci": [
+      0.28958,
+      0.31653
+     ]
+    },
+    "topScorerGoalsPer38": {
+     "mean": 16.523,
+     "ci": [
+      15.051,
+      17.995
+     ]
+    }
+   },
+   "targets": [
+    {
+     "id": "passes",
+     "band": [
+      356.25,
+      593.75
+     ],
+     "status": "inside",
+     "value": 389.3,
+     "interval": [
+      388.24,
+      390.36
+     ],
+     "error": 0
+    },
+    {
+     "id": "passCompletion",
+     "band": [
+      60,
+      100
+     ],
+     "status": "inside",
+     "value": 84.699,
+     "interval": [
+      84.614,
+      84.783
+     ],
+     "error": 0
+    },
+    {
+     "id": "passForward",
+     "band": [
+      26.25,
+      43.75
+     ],
+     "status": "inside",
+     "value": 36.655,
+     "interval": [
+      36.531,
+      36.779
+     ],
+     "error": 0
+    },
+    {
+     "id": "passLateral",
+     "band": [
+      37.5,
+      62.5
+     ],
+     "status": "inside",
+     "value": 41.094,
+     "interval": [
+      40.984,
+      41.204
+     ],
+     "error": 0
+    },
+    {
+     "id": "passBack",
+     "band": [
+      11.25,
+      18.75
+     ],
+     "status": "outside",
+     "value": 22.251,
+     "interval": [
+      22.157,
+      22.346
+     ],
+     "error": 3.5015
+    },
+    {
+     "id": "possessions",
+     "band": [
+      71.25,
+      118.75
+     ],
+     "status": "outside",
+     "value": 68.438,
+     "interval": [
+      68.16,
+      68.716
+     ],
+     "error": 2.8121
+    },
+    {
+     "id": "passesPerPossession",
+     "band": [
+      2,
+      4
+     ],
+     "status": "inside",
+     "value": 4,
+     "interval": [
+      4,
+      4
+     ],
+     "error": 0
+    },
+    {
+     "id": "possessionShots",
+     "band": [
+      9.375,
+      15.625
+     ],
+     "status": "outside",
+     "value": 21.052,
+     "interval": [
+      20.833,
+      21.271
+     ],
+     "error": 5.4269
+    },
+    {
+     "id": "shots",
+     "band": [
+      9.375,
+      15.625
+     ],
+     "status": "unresolved",
+     "value": 15.714,
+     "interval": [
+      15.537,
+      15.892
+     ],
+     "error": 0.089167
+    },
+    {
+     "id": "onTarget",
+     "band": [
+      25.125,
+      41.875
+     ],
+     "status": "inside",
+     "value": 28.321,
+     "interval": [
+      27.85,
+      28.792
+     ],
+     "error": 0
+    },
+    {
+     "id": "xgPerShot",
+     "band": [
+      0.07875,
+      0.13125
+     ],
+     "status": "inside",
+     "value": 0.081407,
+     "interval": [
+      0.080011,
+      0.082803
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsGoalArea",
+     "band": [
+      5.625,
+      9.375
+     ],
+     "status": "outside",
+     "value": 10.397,
+     "interval": [
+      10.042,
+      10.751
+     ],
+     "error": 1.0217
+    },
+    {
+     "id": "shotsBox",
+     "band": [
+      39.75,
+      66.25
+     ],
+     "status": "unresolved",
+     "value": 66.368,
+     "interval": [
+      65.828,
+      66.908
+     ],
+     "error": 0.11793
+    },
+    {
+     "id": "shotsOutside",
+     "band": [
+      27.75,
+      46.25
+     ],
+     "status": "outside",
+     "value": 23.235,
+     "interval": [
+      22.788,
+      23.683
+     ],
+     "error": 4.5146
+    },
+    {
+     "id": "shotDistance",
+     "band": [
+      12.375,
+      20.625
+     ],
+     "status": "inside",
+     "value": 13.425,
+     "interval": [
+      13.352,
+      13.498
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsFar",
+     "band": [
+      0,
+      12.5
+     ],
+     "status": "inside",
+     "value": 1.8057,
+     "interval": [
+      1.6676,
+      1.9437
+     ],
+     "error": 0
+    },
+    {
+     "id": "shotsOwnHalf",
+     "band": [
+      0,
+      0.625
+     ],
+     "status": "inside",
+     "value": 0,
+     "interval": [
+      0,
+      0
+     ],
+     "error": 0
+    },
+    {
+     "id": "crosses",
+     "band": [
+      12.375,
+      20.625
+     ],
+     "status": "outside",
+     "value": 12.155,
+     "interval": [
+      12.001,
+      12.308
+     ],
+     "error": 0.22042
+    },
+    {
+     "id": "crossCompletion",
+     "band": [
+      18.75,
+      31.25
+     ],
+     "status": "inside",
+     "value": 21.203,
+     "interval": [
+      20.719,
+      21.686
+     ],
+     "error": 0
+    },
+    {
+     "id": "takeOns",
+     "band": [
+      12.75,
+      21.25
+     ],
+     "status": "outside",
+     "value": 12.281,
+     "interval": [
+      12.126,
+      12.436
+     ],
+     "error": 0.46875
+    },
+    {
+     "id": "takeOnSuccess",
+     "band": [
+      37.5,
+      62.5
+     ],
+     "status": "inside",
+     "value": 57.455,
+     "interval": [
+      56.898,
+      58.013
+     ],
+     "error": 0
+    },
+    {
+     "id": "tacklesInterceptions",
+     "band": [
+      19.5,
+      32.5
+     ],
+     "status": "inside",
+     "value": 22.353,
+     "interval": [
+      22.164,
+      22.542
+     ],
+     "error": 0
+    },
+    {
+     "id": "throwIns",
+     "band": [
+      15,
+      25
+     ],
+     "status": "outside",
+     "value": 6.5938,
+     "interval": [
+      6.495,
+      6.6925
+     ],
+     "error": 8.4063
+    },
+    {
+     "id": "corners",
+     "band": [
+      3.75,
+      6.25
+     ],
+     "status": "inside",
+     "value": 4.0613,
+     "interval": [
+      3.9723,
+      4.1502
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalKicks",
+     "band": [
+      6,
+      10
+     ],
+     "status": "inside",
+     "value": 9.3067,
+     "interval": [
+      9.1786,
+      9.4347
+     ],
+     "error": 0
+    },
+    {
+     "id": "fouls",
+     "band": [
+      8.625,
+      14.375
+     ],
+     "status": "inside",
+     "value": 8.7846,
+     "interval": [
+      8.676,
+      8.8931
+     ],
+     "error": 0
+    },
+    {
+     "id": "offsides",
+     "band": [
+      1.35,
+      2.25
+     ],
+     "status": "unresolved",
+     "value": 2.2379,
+     "interval": [
+      2.1683,
+      2.3076
+     ],
+     "error": 0
+    },
+    {
+     "id": "yellowCards",
+     "band": [
+      2.85,
+      4.75
+     ],
+     "status": "unresolved",
+     "value": 2.8675,
+     "interval": [
+      2.7756,
+      2.9594
+     ],
+     "error": 0
+    },
+    {
+     "id": "redCards",
+     "band": [
+      0.08,
+      0.15
+     ],
+     "status": "unresolved",
+     "value": 0.091667,
+     "interval": [
+      0.07485,
+      0.10848
+     ],
+     "error": 0
+    },
+    {
+     "id": "goals",
+     "band": [
+      2.0625,
+      3.4375
+     ],
+     "status": "inside",
+     "value": 2.6733,
+     "interval": [
+      2.5835,
+      2.7632
+     ],
+     "error": 0
+    },
+    {
+     "id": "setPieceGoals",
+     "band": [
+      18,
+      30
+     ],
+     "status": "unresolved",
+     "value": 19.046,
+     "interval": [
+      17.734,
+      20.358
+     ],
+     "error": 0
+    },
+    {
+     "id": "penaltyGoals",
+     "band": [
+      5.625,
+      9.375
+     ],
+     "status": "unresolved",
+     "value": 6.2032,
+     "interval": [
+      5.3682,
+      7.0383
+     ],
+     "error": 0
+    },
+    {
+     "id": "headedGoals",
+     "band": [
+      12.75,
+      21.25
+     ],
+     "status": "inside",
+     "value": 18.173,
+     "interval": [
+      16.863,
+      19.484
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalsFW",
+     "band": [
+      41.25,
+      68.75
+     ],
+     "status": "inside",
+     "value": 58.042,
+     "interval": [
+      56.347,
+      59.738
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalsMF",
+     "band": [
+      24,
+      40
+     ],
+     "status": "inside",
+     "value": 34.882,
+     "interval": [
+      33.253,
+      36.51
+     ],
+     "error": 0
+    },
+    {
+     "id": "goalsDF",
+     "band": [
+      8,
+      15
+     ],
+     "status": "outside",
+     "value": 7.0761,
+     "interval": [
+      6.1658,
+      7.9864
+     ],
+     "error": 0.92394
+    },
+    {
+     "id": "ballInPlay",
+     "band": [
+      42,
+      70
+     ],
+     "status": "inside",
+     "value": 64.988,
+     "interval": [
+      64.836,
+      65.14
+     ],
+     "error": 0
+    },
+    {
+     "id": "addedTime",
+     "band": [
+      6,
+      12
+     ],
+     "status": "inside",
+     "value": 10.52,
+     "interval": [
+      10.423,
+      10.617
+     ],
+     "error": 0
+    }
+   ],
+   "advancedCounters": [
+    {
+     "id": "keyPasses",
+     "status": "outside",
+     "band": [
+      7.0875,
+      11.813
+     ],
+     "value": 12.795,
+     "interval": [
+      12.639,
+      12.95
+     ]
+    },
+    {
+     "id": "xa",
+     "status": "inside",
+     "band": [
+      0.7125,
+      1.1875
+     ],
+     "value": 1.0053,
+     "interval": [
+      0.98356,
+      1.0271
+     ]
+    },
+    {
+     "id": "bigChances",
+     "status": "inside",
+     "band": [
+      0.69375,
+      1.1563
+     ],
+     "value": 0.81083,
+     "interval": [
+      0.77428,
+      0.84739
+     ]
+    },
+    {
+     "id": "bigChancesScored",
+     "status": "inside",
+     "band": [
+      0.35625,
+      0.59375
+     ],
+     "value": 0.4,
+     "interval": [
+      0.37509,
+      0.42491
+     ]
+    },
+    {
+     "id": "boxShots",
+     "status": "outside",
+     "band": [
+      5.4375,
+      9.0625
+     ],
+     "value": 12.063,
+     "interval": [
+      11.903,
+      12.223
+     ]
+    },
+    {
+     "id": "finalThirdPasses",
+     "status": "outside",
+     "band": [
+      82.875,
+      138.13
+     ],
+     "value": 76.361,
+     "interval": [
+      75.81,
+      76.912
+     ]
+    },
+    {
+     "id": "finalThirdCompleted",
+     "status": "unresolved",
+     "band": [
+      56.25,
+      93.75
+     ],
+     "value": 55.922,
+     "interval": [
+      55.443,
+      56.402
+     ]
+    },
+    {
+     "id": "progressivePasses",
+     "status": "inside",
+     "band": [
+      90,
+      150
+     ],
+     "value": 115.96,
+     "interval": [
+      115.53,
+      116.39
+     ]
+    },
+    {
+     "id": "takeOns",
+     "status": "outside",
+     "band": [
+      12.75,
+      21.25
+     ],
+     "value": 12.281,
+     "interval": [
+      12.126,
+      12.436
+     ],
+     "matchTarget": "takeOns"
+    },
+    {
+     "id": "takeOnSuccess",
+     "status": "inside",
+     "band": [
+      37.5,
+      62.5
+     ],
+     "value": 57.455,
+     "interval": [
+      56.898,
+      58.013
+     ],
+     "matchTarget": "takeOnSuccess"
+    },
+    {
+     "id": "highTurnovers",
+     "status": "unresolved",
+     "band": [
+      4.95,
+      8.25
+     ],
+     "value": 4.8963,
+     "interval": [
+      4.8072,
+      4.9853
+     ]
+    },
+    {
+     "id": "ppda",
+     "status": "inside",
+     "band": [
+      9.75,
+      16.25
+     ],
+     "value": 14.29,
+     "interval": [
+      14.167,
+      14.412
+     ]
+    },
+    {
+     "id": "fieldTilt",
+     "status": "unbanded",
+     "value": 45.311,
+     "interval": [
+      44.552,
+      46.07
+     ]
+    },
+    {
+     "id": "boxEntries",
+     "status": "outside",
+     "band": [
+      10.875,
+      18.125
+     ],
+     "value": 25.589,
+     "interval": [
+      25.38,
+      25.798
+     ]
+    },
+    {
+     "id": "frontOfBoxEntries",
+     "status": "outside",
+     "band": [
+      33,
+      55
+     ],
+     "value": 56.332,
+     "interval": [
+      56.041,
+      56.622
+     ]
+    },
+    {
+     "id": "lineBreakingPasses",
+     "status": "unbanded",
+     "value": 52.553,
+     "interval": [
+      52.214,
+      52.892
+     ]
+    },
+    {
+     "id": "xtAdded",
+     "status": "outside",
+     "band": [
+      1.6125,
+      2.6875
+     ],
+     "value": 4.3725,
+     "interval": [
+      4.345,
+      4.4001
+     ]
+    },
+    {
+     "id": "cutBacks",
+     "status": "outside",
+     "band": [
+      0.35,
+      0.6
+     ],
+     "value": 0.26583,
+     "interval": [
+      0.24424,
+      0.28743
+     ]
+    },
+    {
+     "id": "crosses",
+     "status": "outside",
+     "band": [
+      12.375,
+      20.625
+     ],
+     "value": 12.155,
+     "interval": [
+      12.001,
+      12.308
+     ],
+     "matchTarget": "crosses"
+    },
+    {
+     "id": "crossCompletion",
+     "status": "inside",
+     "band": [
+      18.75,
+      31.25
+     ],
+     "value": 21.203,
+     "interval": [
+      20.719,
+      21.686
+     ],
+     "matchTarget": "crossCompletion"
+    },
+    {
+     "id": "throughBalls",
+     "status": "inside",
+     "band": [
+      1.575,
+      2.625
+     ],
+     "value": 2.2996,
+     "interval": [
+      2.2404,
+      2.3588
+     ]
+    },
+    {
+     "id": "throughBallsCompleted",
+     "status": "outside",
+     "band": [
+      0.54375,
+      0.90625
+     ],
+     "value": 1.9592,
+     "interval": [
+      1.9036,
+      2.0147
+     ]
+    },
+    {
+     "id": "progressiveCarries",
+     "status": "outside",
+     "band": [
+      45.563,
+      75.938
+     ],
+     "value": 111.38,
+     "interval": [
+      110.89,
+      111.87
+     ]
+    }
+   ],
+   "invariants": {
+    "failed": [],
+    "unsupported": 0,
+    "fullRecordFailures": 0,
+    "fullRecordExamples": []
+   }
+  }
+ ]
+}

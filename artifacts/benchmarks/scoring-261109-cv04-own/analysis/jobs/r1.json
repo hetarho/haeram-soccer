@@ -1,0 +1,384 @@
+[
+ {
+  "name": "chased-Bid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Bid.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Bid-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Perf-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Perf-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-ctl-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/ctl.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-ctl-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pa-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pa.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pa-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pab-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pab.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pab-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pabp-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabp.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pabp-0-300.json"
+  ]
+ },
+ {
+  "name": "bands-Perf-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Bid-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Bid.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "origins-Perf-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Perf-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Bid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Bid.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Bid-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pb-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pb.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pb-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pbp-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pbp.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pbp-0-300.json"
+  ]
+ },
+ {
+  "name": "bands-Pa-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pa.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Pab-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pab.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Pabp-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabp.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Pb-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pb.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Pbp-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pbp.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "origins-Pa-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pa.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pa-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Pab-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pab.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pab-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Pabp-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabp.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pabp-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Pb-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pb.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pb-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Pbp-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pbp.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pbp-0-300.json"
+  ]
+ },
+ {
+  "name": "entries-Perf-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Perf-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Bid-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Bid.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Bid-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Pa-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pa.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pa-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Pab-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pab.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pab-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Pabp-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabp.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pabp-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Pb-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pb.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pb-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Pbp-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pbp.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pbp-0-400.json"
+  ]
+ },
+ {
+  "name": "origins-Perf-300-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Perf-300-300.json"
+  ]
+ },
+ {
+  "name": "origins-Bid-300-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Bid.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Bid-300-300.json"
+  ]
+ }
+]

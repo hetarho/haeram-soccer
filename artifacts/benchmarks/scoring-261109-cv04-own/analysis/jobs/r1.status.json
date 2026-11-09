@@ -1,0 +1,160 @@
+{
+ "seconds": 1278,
+ "status": [
+  {
+   "name": "chased-Perf-0-300",
+   "code": 0,
+   "seconds": 196
+  },
+  {
+   "name": "chased-ctl-0-300",
+   "code": 0,
+   "seconds": 198
+  },
+  {
+   "name": "chased-Pab-0-300",
+   "code": 0,
+   "seconds": 199
+  },
+  {
+   "name": "chased-Pa-0-300",
+   "code": 0,
+   "seconds": 199
+  },
+  {
+   "name": "chased-Bid-0-300",
+   "code": 0,
+   "seconds": 199
+  },
+  {
+   "name": "chased-Pabp-0-300",
+   "code": 0,
+   "seconds": 203
+  },
+  {
+   "name": "bands-Bid-400",
+   "code": 0,
+   "seconds": 186
+  },
+  {
+   "name": "bands-Perf-400",
+   "code": 0,
+   "seconds": 193
+  },
+  {
+   "name": "origins-Perf-0-300",
+   "code": 0,
+   "seconds": 198
+  },
+  {
+   "name": "origins-Bid-0-300",
+   "code": 0,
+   "seconds": 201
+  },
+  {
+   "name": "chased-Pb-0-300",
+   "code": 0,
+   "seconds": 205
+  },
+  {
+   "name": "chased-Pbp-0-300",
+   "code": 0,
+   "seconds": 209
+  },
+  {
+   "name": "bands-Pa-400",
+   "code": 0,
+   "seconds": 219
+  },
+  {
+   "name": "bands-Pab-400",
+   "code": 0,
+   "seconds": 219
+  },
+  {
+   "name": "bands-Pb-400",
+   "code": 0,
+   "seconds": 212
+  },
+  {
+   "name": "bands-Pabp-400",
+   "code": 0,
+   "seconds": 218
+  },
+  {
+   "name": "bands-Pbp-400",
+   "code": 0,
+   "seconds": 218
+  },
+  {
+   "name": "origins-Pa-0-300",
+   "code": 0,
+   "seconds": 227
+  },
+  {
+   "name": "origins-Pab-0-300",
+   "code": 0,
+   "seconds": 202
+  },
+  {
+   "name": "origins-Pb-0-300",
+   "code": 0,
+   "seconds": 200
+  },
+  {
+   "name": "origins-Pabp-0-300",
+   "code": 0,
+   "seconds": 205
+  },
+  {
+   "name": "origins-Pbp-0-300",
+   "code": 0,
+   "seconds": 206
+  },
+  {
+   "name": "entries-Perf-0-400",
+   "code": 0,
+   "seconds": 263
+  },
+  {
+   "name": "entries-Bid-0-400",
+   "code": 0,
+   "seconds": 258
+  },
+  {
+   "name": "entries-Pa-0-400",
+   "code": 0,
+   "seconds": 272
+  },
+  {
+   "name": "entries-Pab-0-400",
+   "code": 0,
+   "seconds": 271
+  },
+  {
+   "name": "entries-Pabp-0-400",
+   "code": 0,
+   "seconds": 272
+  },
+  {
+   "name": "entries-Pb-0-400",
+   "code": 0,
+   "seconds": 270
+  },
+  {
+   "name": "origins-Perf-300-300",
+   "code": 0,
+   "seconds": 205
+  },
+  {
+   "name": "entries-Pbp-0-400",
+   "code": 0,
+   "seconds": 286
+  },
+  {
+   "name": "origins-Bid-300-300",
+   "code": 0,
+   "seconds": 201
+  }
+ ]
+}

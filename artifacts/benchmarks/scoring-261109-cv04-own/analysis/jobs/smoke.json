@@ -1,0 +1,28 @@
+[
+ {
+  "name": "chased-Pabp-0-4",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabp.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pabp-0-4.json"
+  ]
+ },
+ {
+  "name": "chased-Perf-0-4",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Perf-0-4.json"
+  ]
+ }
+]

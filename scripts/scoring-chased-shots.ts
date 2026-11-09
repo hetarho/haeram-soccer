@@ -21,6 +21,10 @@
  * m nearer the goal, `level` between), and every closing blocker's class with his chance and
  * whether he was the one who blocked it.
  *
+ * cv04-own adds `own|…` rows (`ownCarryRows`), the earlier rows unchanged: the same box's shots
+ * after the shooter's own carry with or without a defender between, the chance the decision read
+ * beside the recorded one, the metres carried after it and the free teammates it passed up.
+ *
  *   pnpm exec tsx --import ./scripts/scoring-candidate-patch.ts scripts/scoring-chased-shots.ts \
  *     --start 0 --matches 100 --seeds a,b --out FILE
  */
@@ -29,6 +33,7 @@ import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
 import type { Club, Fixture, Tactic, World } from '../packages/contracts/src/types';
 import { rating } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
+import { clearChance } from '../packages/engine/src/grid/decide';
 import { CELL_BASELINES } from '../packages/engine/src/grid/baselines';
 import { playGrid } from '../packages/engine/src/grid/engine';
 import { attackFrame, cellKey, cellOf, type Point } from '../packages/engine/src/grid/pitch';
@@ -42,7 +47,13 @@ import {
   unblocked,
 } from '../packages/engine/src/grid/resolve';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
-import { createState, enterSlot, onPitch, type GridState } from '../packages/engine/src/grid/state';
+import {
+  createState,
+  enterSlot,
+  onPitch,
+  type GridPlayer,
+  type GridState,
+} from '../packages/engine/src/grid/state';
 import { computeTags } from '../packages/engine/src/grid/tags';
 import type { TraceEntry } from '../packages/engine/src/grid/trace';
 
@@ -116,6 +127,104 @@ function place(
       gp.onAt = onAt.get(`${side}:${gp.idx}`) ?? 0;
       gp.pos = [layout.positions[(side * 11 + k) * 2]!, layout.positions[(side * 11 + k) * 2 + 1]!];
     }
+}
+
+/** cv04-own: a teammate at least this far up (attack frame) stands in the box or at its edge. */
+const EDGE = 83;
+/** cv04-own: as `Perf`'s entry `reach`, a defender goal-side within it leaves a teammate no chance. */
+const OWN_REACH = 8;
+
+/**
+ * cv04-own (→MATCH-16 r56): a box shot beyond the goal area after the shooter's own carry, split by
+ * whether a defender stood between as it was struck. Beside its recorded xG and factors (the state
+ * as struck, already placed on `s`): the chance the decision read where he decided — the previous
+ * entry's layout, after the carry — as `actionMix`'s in-box term does (`chanceXg` with the pressure
+ * there × the path's unblocked share, temperature 1), the metres he carried after that decision
+ * (to the kick of an in-stride carry, else 0) and what it passed up: teammates in the box or at its
+ * edge with no defender goal-side within `OWN_REACH` m, and the best `chanceXg` at one of them.
+ * Leaves `s` placed as struck again.
+ */
+function ownCarryRows(
+  s: GridState,
+  e: TraceEntry,
+  prev: TraceEntry,
+  group: 'between' | 'alone',
+  struck: { from: Point; pressure: number; keeper: GridPlayer; onAt: Map<string, number> },
+) {
+  const { from, pressure, keeper, onAt } = struck;
+  const foe = (1 - e.side) as 0 | 1;
+  const placeXg = chanceXg(from, { pressure: 0, candidate: true }, s.math);
+  const pf = Math.max(SHOT_CONFIG.pressureFloor, 1 - SHOT_CONFIG.pressure * pressure);
+  const narrow = keeperNarrowing(s, e.side, from, keeper);
+  const path = shotBlockers(s, e.side, from, false);
+  const uClose = unblocked(closingBlockers(s, e.side, from, path));
+  const uPath = unblocked(path);
+  const level = shotContext(s).levelFactor;
+  // Where he decided: the carry's end.
+  place(s, prev, prev.elapsed, prev.ball, onAt);
+  const me = s.players[e.side][e.idx]!;
+  const c = attackFrame(e.side, me.pos);
+  const decPressure = computeTags(s, e.side, e.idx).pressure;
+  const decPath = unblocked(shotBlockers(s, e.side, c, false));
+  const decision = chanceXg(c, { pressure: decPressure, candidate: true }, s.math) * decPath;
+  const decNarrow = keeperNarrowing(s, e.side, c, keeper);
+  const decClose = unblocked(closingBlockers(s, e.side, c, shotBlockers(s, e.side, c, false)));
+  // The chance as it would be recorded from there, and whether MATCH-16's clear chance (whose shot
+  // floor the in-box weight does not reach) held where he decided.
+  const decRecorded = decision * decNarrow * decClose;
+  const clear = clearChance(s, e.side, c);
+  let free = 0,
+    alt = 0;
+  for (const gp of s.players[e.side]) {
+    if (gp.idx === e.idx || !onPitch(gp) || gp.slot === 0) continue;
+    const p = attackFrame(e.side, gp.pos);
+    if (p[0] < EDGE || p[1] < 13.84 - 5.5 || p[1] > 54.16 + 5.5) continue;
+    const d = Math.hypot(GOAL[0] - p[0], GOAL[1] - p[1]);
+    let marked = false;
+    for (const o of s.players[foe]) {
+      if (!onPitch(o) || o.slot === 0) continue;
+      const q = attackFrame(e.side, o.pos);
+      if (
+        Math.hypot(q[0] - p[0], q[1] - p[1]) <= OWN_REACH &&
+        Math.hypot(GOAL[0] - q[0], GOAL[1] - q[1]) < d
+      )
+        marked = true;
+    }
+    if (marked) continue;
+    free++;
+    alt = Math.max(alt, chanceXg(p, { candidate: true }, s.math));
+  }
+  const carried = e.kick ? Math.hypot(from[0] - c[0], from[1] - c[1]) : 0;
+  const values = {
+    goals: e.result === 'goal' ? 1 : 0,
+    xg: e.xg ?? 0,
+    place: placeXg,
+    pressureFactor: pf,
+    narrow,
+    unblockedClose: uClose,
+    unblockedPath: uPath,
+    level,
+    decision,
+    decisionPressure: decPressure,
+    decisionPath: decPath,
+    decisionNarrow: decNarrow,
+    decisionClose: decClose,
+    kick: e.kick ? 1 : 0,
+    carried,
+    freeMates: free,
+    withFree: free > 0 ? 1 : 0,
+    alt,
+    altBetter: alt > decision ? 1 : 0,
+    decisionRecorded: decRecorded,
+    altBetterRecorded: alt > decRecorded ? 1 : 0,
+    clear: clear ? 1 : 0,
+  };
+  add(`own|${group}`, values);
+  add(`own|${group}|${e.kick ? 'stride' : 'still'}`, values);
+  add(`own|${group}|${alt > decision ? 'altBetter' : 'shotBetter'}`, values);
+  add(`own|${group}|${clear ? 'clear' : 'notClear'}`, values);
+  add('own|any', values);
+  place(s, e.kick ?? prev, e.kick ? e.kick.elapsed : prev.elapsed, prev.ball, onAt);
 }
 
 let played = 0,
@@ -205,6 +314,8 @@ for (let i = start; i < start + matches; i++) {
       }
       if (d <= CHASE && (!chaser || d < chaser.d)) chaser = { d, along };
     }
+    if (prev.side === e.side && prev.idx === e.idx && prev.action === 'carry')
+      ownCarryRows(s, e, prev, between ? 'between' : 'alone', { from, pressure, keeper, onAt });
     if (between) return;
     const chased = chaser ? 'chased' : 'free';
     // The factors.

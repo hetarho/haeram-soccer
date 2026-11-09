@@ -1,0 +1,57 @@
+[
+ {
+  "name": "pc-Pabc9-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/pc-Pabc9-calibration-2.json"
+  ]
+ },
+ {
+  "name": "origins-Pabc9-300-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pabc9-300-300.json"
+  ]
+ },
+ {
+  "name": "conc-Pabc9-calibration1200",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/scoring-concentration.ts",
+  "args": [
+   "--matches",
+   "1200",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/conc-Pabc9-calibration1200.json"
+  ]
+ },
+ {
+  "name": "origins-Pc9-300-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pc9.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "300",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pc9-300-300.json"
+  ]
+ }
+]

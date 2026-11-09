@@ -1,0 +1,118 @@
+[
+ {
+  "name": "pc-Pabp-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabp.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/pc-Pabp-calibration-2.json"
+  ]
+ },
+ {
+  "name": "bands-Pc9-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pc9.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "bands-Pabc9-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--candidate",
+   "--matches",
+   "400"
+  ]
+ },
+ {
+  "name": "origins-Pc9-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pc9.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pc9-0-300.json"
+  ]
+ },
+ {
+  "name": "origins-Pabc9-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/scoring-shot-origins.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/origins/origins-Pabc9-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pc9-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pc9.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pc9-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Pabc9-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Pabc9-0-300.json"
+  ]
+ },
+ {
+  "name": "entries-Pc9-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pc9.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pc9-0-400.json"
+  ]
+ },
+ {
+  "name": "entries-Pabc9-0-400",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pabc9.json",
+  "script": "scripts/scoring-box-entries.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "400",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/entries/entries-Pabc9-0-400.json"
+  ]
+ }
+]

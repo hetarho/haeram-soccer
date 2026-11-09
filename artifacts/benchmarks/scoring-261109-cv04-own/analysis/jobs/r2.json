@@ -1,0 +1,59 @@
+[
+ {
+  "name": "pc-Pab-calibration-2",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Pab.json",
+  "script": "scripts/grid-bands.ts",
+  "args": [
+   "--report",
+   "--partition",
+   "calibration",
+   "--scale",
+   "2",
+   "--conditions",
+   "tactics:press-counter,tactics:counter-press",
+   "--jobs",
+   "3",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/pc-Pab-calibration-2.json"
+  ]
+ },
+ {
+  "name": "chased-Perf-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Perf.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Perf-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-Bid-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/Bid.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-Bid-0-300.json"
+  ]
+ },
+ {
+  "name": "chased-ctl-0-300",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-own/candidates/ctl.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "300",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-own/chased/chased-ctl-0-300.json"
+  ]
+ }
+]
