@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
+import { decimal, number } from '../../../presentation/format';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { Select } from '../../../shared/ui/Select';
 import { useState } from 'react';
@@ -43,7 +44,7 @@ const status = (p: Player) =>
       : sourceMessage('copy.PlayerComparison.c4b01f6215');
 /** Own-club records, or this season's league with every club's players (→WEB-89). */
 type ComparisonScope = PlayerScope | 'league';
-const rate = (value: number | undefined) => (value === undefined ? '—' : value.toFixed(2));
+const rate = (value: number | undefined) => (value === undefined ? '—' : decimal(value, 2));
 
 export function PlayerComparison({
   w,
@@ -202,7 +203,7 @@ export function PlayerComparison({
                 skills.map(([label, key, read]) => (
                   <div key={key}>
                     <strong>
-                      {localizeValue(read(left).toFixed(1))}
+                      {localizeValue(decimal(read(left), 1))}
                       <progress
                         className={s.skillBar}
                         aria-label={localizeValue(`${left.name} ${label}`)}
@@ -212,7 +213,7 @@ export function PlayerComparison({
                     </strong>
                     <span>{localizeValue(label)}</span>
                     <strong>
-                      {localizeValue(read(right).toFixed(1))}
+                      {localizeValue(decimal(read(right), 1))}
                       <progress
                         className={s.skillBar}
                         aria-label={localizeValue(`${right.name} ${label}`)}
@@ -225,12 +226,12 @@ export function PlayerComparison({
               )}
               <div>
                 <strong>
-                  {localizeValue(left[ownScope][10])}
+                  {localizeValue(number(left[ownScope][10]))}
                   <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
                 </strong>
                 <span>{richMessage('copy.PlayerComparison.f0e9ef7161')}</span>
                 <strong>
-                  {localizeValue(right[ownScope][10])}
+                  {localizeValue(number(right[ownScope][10]))}
                   <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
                 </strong>
               </div>
@@ -374,12 +375,12 @@ function LeagueComparison({
               </div>
               <div>
                 <strong>
-                  {localizeValue(left.minutes)}
+                  {localizeValue(number(left.minutes))}
                   <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
                 </strong>
                 <span>{richMessage('copy.PlayerComparison.f0e9ef7161')}</span>
                 <strong>
-                  {localizeValue(right.minutes)}
+                  {localizeValue(number(right.minutes))}
                   <small>{richMessage('copy.PlayerComparison.ca4a187881')}</small>
                 </strong>
               </div>

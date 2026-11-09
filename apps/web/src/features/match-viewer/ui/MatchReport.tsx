@@ -5,7 +5,7 @@ import { lazy, Suspense, useState } from 'react';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { tacticLabel } from '../../../../../../packages/engine/src/tactics';
 import { ClubLink } from '../../../entities/club';
-import { kindLabel, seasonName } from '../../../presentation/format';
+import { decimal, kindLabel, number, seasonName } from '../../../presentation/format';
 import {
   hundredths,
   matchComparison,
@@ -45,7 +45,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
   const changes = new Map<string, string>();
   for (const incident of record.incidents ?? []) {
     if (incident.kind !== 'sub' || incident.side !== own) continue;
-    const at = `${incident.minute}${incident.added ? `+${incident.added}` : ''}′`;
+    const at = `${number(incident.minute)}${incident.added ? `+${number(incident.added)}` : ''}′`;
     if (incident.other)
       changes.set(incident.other, sourceMessage('copy.MatchReport.eae5c87cd9', { p0: at }));
     if (!changes.has(incident.player))
@@ -68,7 +68,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
           </small>
         </b>
         <span>
-          {localizeValue(record.score.home)}–{localizeValue(record.score.away)}
+          {localizeValue(number(record.score.home))}–{localizeValue(number(record.score.away))}
         </span>
         <b>
           <ClubLink w={w} id={record.away} crest={0} />
@@ -118,7 +118,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
         ),
       )}
       <p className={s.note}>{richMessage('copy.MatchReport.47eec9db89')}</p>
-      <h4>{richMessage('copy.MatchReport.8641267f15', { p0: contributions.length })}</h4>
+      <h4>{richMessage('copy.MatchReport.8641267f15', { p0: number(contributions.length) })}</h4>
       <div className={s.cards}>
         {localizeValue(
           contributions.map((p) => {
@@ -128,10 +128,10 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
                 <b>{localizeValue(players.get(p.id)?.name ?? p.id)}</b>
                 <p className={s.note}>
                   {richMessage('copy.MatchReport.7245e3516c', {
-                    p0: p.metrics[10],
+                    p0: number(p.metrics[10]),
                     p1: changes.has(p.id) && ` (${changes.get(p.id)})`,
-                    p2: p.metrics[0],
-                    p3: p.metrics[1],
+                    p2: number(p.metrics[0]),
+                    p3: number(p.metrics[1]),
                     p4: d && (
                       <>
                         {localizeValue(' ')}·{' '}
@@ -146,8 +146,8 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
                 </p>
                 <p className={s.note}>
                   {richMessage('copy.MatchReport.c44b39fa02', {
-                    p0: p.metrics[3],
-                    p1: p.metrics[2],
+                    p0: number(p.metrics[3]),
+                    p1: number(p.metrics[2]),
                     p2: d && (
                       <>
                         {richMessage('copy.MatchReport.89eab2cffc', {
@@ -155,7 +155,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
                           p1: (
                             <Term id="key-pass">{richMessage('copy.MatchReport.532ac6f371')}</Term>
                           ),
-                          p2: d[PD.keyPasses],
+                          p2: number(d[PD.keyPasses]),
                           p3: ' ',
                           p4: (
                             <Term id="final-third">
@@ -165,7 +165,7 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
                           p5: ' ',
                           p6: share(d[PD.finalThirdCompleted], d[PD.finalThirdPasses]),
                           p7: ' ',
-                          p8: d[PD.progressivePasses],
+                          p8: number(d[PD.progressivePasses]),
                         })}
                       </>
                     ),
@@ -173,14 +173,14 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
                 </p>
                 <p className={s.note}>
                   {richMessage('copy.MatchReport.ce8f692935', {
-                    p0: p.metrics[5],
-                    p1: p.metrics[4],
-                    p2: p.metrics[8],
-                    p3: d ? `/${d[PD.takeOns]}` : '',
-                    p4: p.metrics[6],
-                    p5: p.metrics[7],
+                    p0: number(p.metrics[5]),
+                    p1: number(p.metrics[4]),
+                    p2: number(p.metrics[8]),
+                    p3: d ? `/${number(d[PD.takeOns])}` : '',
+                    p4: number(p.metrics[6]),
+                    p5: number(p.metrics[7]),
                     p6: p.metrics[9]
-                      ? sourceMessage('copy.MatchReport.73cb75b111', { p0: p.metrics[9] })
+                      ? sourceMessage('copy.MatchReport.73cb75b111', { p0: number(p.metrics[9]) })
                       : '',
                   })}
                 </p>
@@ -188,19 +188,20 @@ export function MatchReport({ record, w }: { record: MatchRecord; w: World }) {
                   d && grid && (
                     <p className={s.note}>
                       <Term id="box-entry">{richMessage('copy.MatchReport.649752aebf')}</Term>{' '}
-                      {localizeValue(d[PD.boxEntries])} ·{localizeValue(' ')}
+                      {localizeValue(number(d[PD.boxEntries]))} ·{localizeValue(' ')}
                       <Term id="line-breaking">
                         {richMessage('copy.MatchReport.5986174268')}
                       </Term>{' '}
-                      {localizeValue(d[PD.lineBreakingPasses])} ·{localizeValue(' ')}
+                      {localizeValue(number(d[PD.lineBreakingPasses]))} ·{localizeValue(' ')}
                       <Term id="xt">{richMessage('copy.MatchReport.1265247a14')}</Term>{' '}
-                      {localizeValue((d[PD.xtAdded] / 1000).toFixed(2))}
+                      {localizeValue(decimal(d[PD.xtAdded] / 1000, 2))}
                       {localizeValue(
                         d[PD.yellowCards] + d[PD.redCards] > 0 && (
                           <>
                             {localizeValue(' ')}·{' '}
                             <Term id="cards">{richMessage('copy.MatchReport.54c8d68f37')}</Term>{' '}
-                            {localizeValue(d[PD.yellowCards])}·{localizeValue(d[PD.redCards])}
+                            {localizeValue(number(d[PD.yellowCards]))}·
+                            {localizeValue(number(d[PD.redCards]))}
                           </>
                         ),
                       )}

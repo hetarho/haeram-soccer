@@ -11,9 +11,9 @@ import { seasonDayLabel } from '../../../../../../packages/engine/src/calendar';
 import { playerTotals } from '../../../../../../packages/engine/src/npc-stats';
 import type { GameClient } from '../../../runtime/client';
 import { per90 as per90Text, type PlayerAdvanced } from '../../match/@x/league';
-import { seasonName } from '../../../presentation/format';
+import { decimal, number, seasonName } from '../../../presentation/format';
 import { ownLeague, type LeagueChoice } from './league';
-import { appearanceText, performanceRows, type PlayerTally } from '../../player/@x/league';
+import { performanceRows } from '../../player/@x/league';
 
 /**
  * Shared presentation of the season's complete statistics (→WEB-89, HIST-6, HIST-17): coverage,
@@ -71,7 +71,7 @@ export function fullStatsCoverage(
       status: 'whole',
       text: sourceMessage('copy.fullStatsView.6c28580244', {
         p0: seasonName(read.year),
-        p1: matches,
+        p1: number(matches),
       }),
       matches,
       untracked,
@@ -80,8 +80,8 @@ export function fullStatsCoverage(
     status: 'partial',
     text: sourceMessage('copy.fullStatsView.cca4f99bee', {
       p0: seasonDayLabel(read.year, read.trackedFrom.day),
-      p1: matches,
-      p2: untracked,
+      p1: number(matches),
+      p2: number(untracked),
     }),
     matches,
     untracked,
@@ -128,8 +128,10 @@ export function fullStatsPlayers(
 export function fullStatsAppearances(row: Pick<FullStatsPlayer, 'appearances' | 'starts'>) {
   const apps = row.appearances,
     sub = apps - row.starts;
-  const tally: PlayerTally = { apps: [apps, apps], sub: [sub, sub], yellow: [0, 0], red: [0, 0] };
-  return appearanceText(tally, 'season');
+  return sourceMessage('copy.managerHistoryView.8afd61210f', {
+    p0: number(apps),
+    p1: sub ? sourceMessage('copy.playerAnalysis.513b0ff3fd', { p0: number(sub) }) : '',
+  });
 }
 /**
  * A participant's per-90 rates as comparisons print them: own players' production rows
@@ -144,7 +146,7 @@ export function fullStatsRates(row: FullStatsPlayer): { label: string; text: str
   return [
     ...performanceRows(row.metrics).map(({ label, per90 }) => ({
       label,
-      text: per90 === undefined ? '—' : per90.toFixed(2),
+      text: per90 === undefined ? '—' : decimal(per90, 2),
     })),
     ...advanced.map(([label, index, scale]) => ({
       label,
@@ -202,7 +204,7 @@ export function fullStatsClubs(read: FullStatsRead, ids: readonly string[]): Ful
 }
 /** A per-match figure with its match denominator respected; no match means no figure. */
 export const perMatch = (value: number, matches: number, digits = 2) =>
-  matches > 0 ? (value / matches).toFixed(digits) : '—';
+  matches > 0 ? decimal(value / matches, digits) : '—';
 
 export type ClubOrder = 'xgd' | 'goals' | 'shots';
 export const CLUB_ORDERS: readonly (readonly [ClubOrder, string])[] = [
@@ -284,9 +286,9 @@ export function leaders(rows: readonly FullStatsPlayer[], key: LeaderKey, limit 
     .slice(0, limit)
     .map((player) => ({
       player,
-      total: (leader.value(player) / scale).toFixed(digits),
+      total: decimal(leader.value(player) / scale, digits),
       rate: per90Text(leader.value(player) / scale, player.minutes),
-      sample: sourceMessage('copy.LabPage.be847e9e64', { p0: player.minutes }),
+      sample: sourceMessage('copy.LabPage.be847e9e64', { p0: number(player.minutes) }),
     }));
 }
 

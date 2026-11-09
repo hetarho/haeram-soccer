@@ -1,10 +1,14 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import type { MatchRecord } from '../../../../../../packages/contracts/src/types';
 import {
   emptyPlayerDetail,
   emptyTeamDetail,
 } from '../../../../../../packages/contracts/src/detail';
-import { matchComparison, sideLines, TD } from './advanced';
+import { createLocaleFormatters } from '../../../presentation/locale';
+import { setLocaleFormatters } from '../../../presentation/format';
+import { hundredths, matchComparison, per90, share, sideLines, TD } from './advanced';
+
+afterEach(() => setLocaleFormatters());
 
 const metrics = () => Array<number>(12).fill(0);
 
@@ -171,5 +175,51 @@ describe('match report read model', () => {
     // Before `lineCounts`, the own eleven were saved whatever the side.
     const old = { ...record, players: record.players.slice(0, 11), lineCounts: undefined };
     expect(sideLines(old, 1)).toHaveLength(11);
+  });
+});
+
+describe('localized match-statistic formatting', () => {
+  it('keeps default precision and undefined samples', () => {
+    setLocaleFormatters(createLocaleFormatters('ko-KR'));
+    expect(hundredths(145)).toBe('1.45');
+    expect(per90(1, 200)).toBe('0.45');
+    expect(per90(2, 300, 1)).toBe('0.6');
+    expect(share(1, 3)).toBe('33%');
+    expect(per90(1, 0)).toBe('—');
+    expect(share(0, 0)).toBe('—');
+    expect(share(0, 10)).toBe('0%');
+  });
+
+  it('uses German decimal separators without changing comparisons or stored facts', () => {
+    const record = gridRecord(),
+      before = structuredClone(record);
+    const baseline = matchComparison(record).map(({ term, lead, homeShare }) => ({
+      term,
+      lead,
+      homeShare,
+    }));
+    setLocaleFormatters(createLocaleFormatters('de-DE'));
+    expect(hundredths(145)).toBe('1,45');
+    expect(per90(1, 200)).toBe('0,45');
+    const rows = matchComparison(record);
+    expect(rows.find((row) => row.term === 'xg')).toMatchObject({ home: '1,20', away: '0,80' });
+    expect(rows.find((row) => row.term === 'xt')).toMatchObject({ home: '1,23', away: '0,81' });
+    expect(rows.map(({ term, lead, homeShare }) => ({ term, lead, homeShare }))).toEqual(baseline);
+    expect(record).toEqual(before);
+  });
+
+  it('uses Arabic digits in percentages, count pairs and ratio denominators', () => {
+    setLocaleFormatters(createLocaleFormatters('ar-SA'));
+    const record = gridRecord();
+    record.metrics[0][2] = 10;
+    record.metrics[0][3] = 3;
+    record.detail![0][TD.finalThirdPasses] = 3;
+    record.detail![0][TD.finalThirdCompleted] = 1;
+    const rows = matchComparison(record);
+    expect(share(1, 3)).toBe('٣٣%');
+    expect(hundredths(145)).toBe('١٫٤٥');
+    expect(rows.find((row) => row.term === 'cross')?.home).toBe('١٥ (٤)');
+    expect(rows.find((row) => row.term === 'pass-accuracy')?.home).toBe('٣٠% · ٣/١٠');
+    expect(rows.find((row) => row.term === 'final-third')?.home).toBe('٣٣% · ١/٣');
   });
 });
