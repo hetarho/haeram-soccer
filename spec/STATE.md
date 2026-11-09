@@ -14,14 +14,14 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T03:21Z | T737 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
-- 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
+- 261109 decided ARCH-30 T737: economy-ec09 verified source731ed705 passes the combined gate (Chromium348 cases, including2 fresh management journeys); the owner authorizes origin publication → gather this batch on next while ow09 remains live, leave the main release to the last session. All5 adopted tasks are integrated; detailed evidence/report retained ec09
+- 261109 decided ARCH-30 T737: the owner authorizes origin publication in a suitable batch and reiterates unit tests per task, E2E at the push boundary → keep worker browser runs disabled, verify the combined batch before one code push; static checks remain basic checks and the final affected-file confirmation belongs to the coordinator ec09
 - 261109 decided OWNER-7 T735: how much a monthly settlement wins or loses once it settles eleven times a season at 60% → 5% of the staked share (about +10% a season at a full stake, +23% with 성공한 사업가; a 50% stake about +5%) (alt: the whole staked share each month, which shrinks a 50% stake by a third a season and ruins a full one | a third of it, the old season exposure, compounding ×2.6 a season with the trait) ow09
 - 261109 decided OWNER-5 OWNER-7 T735: 성공한 사업가 once the base is 60% → 70%, the same +10 points (alt: 65% | no business effect) ow09
 - 261109 decided OWNER-7 OWNER-8 T735: which days are monthly and what living costs do → the 1st of September–June and the close (eleven; the summer the close skips has none), living costs 0.8% a season split over them so the season total is unchanged (alt: twelve with a settlement on 1 August, which the day loop never processes | 0.2% a settlement, tripling living costs) ow09
@@ -776,6 +776,7 @@
 - 261105 decided STAFF-50 LEAGUE-1 T704: which seasons a tenure lists → every job off the pitch, the manager's and chief scout's included, with each season it overlaps by at least a day (the war's seasons skipped); a season the archive holds no row of his club for shows 순위 기록 없음 and the one being played 진행 중, read at request time (alt: coaching and 단장 jobs only | count a season only after a set share of it). rs01
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
+- 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
 
 ## ideation
 | id | st |
@@ -831,13 +832,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
-| T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
-| T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
-| T737 | find the free-signing journey player in the full market | WEB CLUB ARCH | T732 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -860,13 +857,14 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 2 | 1 | 1 | 0 | 1 | 0 | 2026-11-09T02:13:27.005Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 5 | 5 | 0 | 0 | 0 | 0 | 2026-11-09T04:03:23.496Z | [history](work/economy-ec09.json) |
 
 ## next
 - implement-task T730 first (fix-ci-first): CI 42519984966 on ad51162 is green except `e2e (webkit 2/2)` — progression-settings.spec.ts:287 read `결재함 · 대기 0건` after the stop (set-piece-defence.spec.ts:187 flaky); T729's resource-skins fix held. Its re-run failed the same way (deterministic on CI WebKit); bisect T725/T727 on CI first.
 - the owner's decisions from review/self-improve-local-261109: F6 (confirm the decided inbox lines up to a date so a session can delete them — the largest per-task token cost), F13 (a CSS-free public entry so Playwright/Node consumers reach a slice's pure logic; then resume blocked T726), F11 (`pages/records`).
 - implement-task T689 (explore 2h) in a fresh session (this checkout's `vibe loop` is refused until work group `module-1026` is closed, see inbox): its deps are done.
 - F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
+- inspect work board for remaining tasks
 
 ## log
 - 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
@@ -875,6 +873,11 @@
 - 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
 - 261109 T735 done: monthly owner business (1 Sep–1 Jun + close) at 60%/70% with a 5% swing; living costs 0.8% a season in eleven exact shares (ow09)
 - 261109 update-ssot OWNER r6 WORLD r10 HIST r23 WEB r212 + create-task T735 T736: monthly owner business at 60% with a 5% swing; one season history table with a takeover rule (ow09)
+- 261109 T737 integrated
+- 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
+- 261109 T734 integrated
+- 261109 T732 integrated
+- 261109 T733 integrated
 - 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
 - 261109 T731 integrated
 - 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
@@ -884,8 +887,3 @@
 - 261109 fs09 gate passed on ad511620 in 1836 s (every stage, Chromium 348 passed, tree untouched); pushed ad511620 to main; CI 42519984966: checks, unit, integration 1–3/3, Chromium 1–2/2, Firefox 1–2/2, WebKit 1/2 green, WebKit 2/2 failed progression-settings.spec.ts:287 (→T730) with set-piece-defence.spec.ts:187 flaky; re-running the failed job fs09
 - 261109 fs09 final gate `vibe check --tier batch -- pnpm run verify:batch` on 61d6d6a2: every stage passed — typecheck, lint, format, unit, integration 318 s, contract, catalogs, presentation, i18n, build, Chromium 348 passed (25.6 min); the receipt reads stale because this session committed spec-only files during the run (no code after 61d6d6a2) fs09
 - 261109 T726 reverted (61d6d6a2) and blocked: its lib moves made every Playwright spec fail to load through a CSS-carrying entity index; T727/T728 stay fs09
-- 261109 T726–T728 done (lane fsd-phase-b, worker fs09-w4, reviewer fs09-r2: T726/T727 approved, T728 approved after its absolute-path fix): the match viewer owns its six playback modules (entity index 88→70 names, `@x` 7→6); cup calendars and knockout counts read from the `competition-keys` leaf (UI→orchestration exception keys 28→24, chunks 71/30 kept); a path-resolving layer rule replaces the pattern blocks and rejects sibling re-exports, deep/climbing paths, wrong `@x` consumers, dynamic `import()` of higher layers or indexes and side-effect-only imports (51/51 probes; the old patterns 29/47) fs09
-- 261109 fs09 gate on 9329121a (T725, T729) failed only `persistence.long-career.test.ts` by its 600 s timeout: T725's engine change re-keyed the cached ten-season world, re-simulated at load 38 beside the phase-B review; rerun as part of the final gate on a quiet machine fs09
-- 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
-- 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
-- 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits

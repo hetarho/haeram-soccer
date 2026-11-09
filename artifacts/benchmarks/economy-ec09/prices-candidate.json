@@ -1,0 +1,389 @@
+{
+  "source": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+  "rows": [
+    {
+      "year": 1950,
+      "ability": 70,
+      "age": 20,
+      "units": 663.2079520584115,
+      "wageUnits": 331.60397602920574,
+      "nominalGBP": 2378.9
+    },
+    {
+      "year": 1950,
+      "ability": 70,
+      "age": 24,
+      "units": 988.7780957146924,
+      "wageUnits": 494.3890478573462,
+      "nominalGBP": 3546.704166666667
+    },
+    {
+      "year": 1950,
+      "ability": 70,
+      "age": 28,
+      "units": 1474.1712905141173,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 5287.7875
+    },
+    {
+      "year": 1950,
+      "ability": 70,
+      "age": 32,
+      "units": 737.0856452570587,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 2643.8958333333335
+    },
+    {
+      "year": 1950,
+      "ability": 80,
+      "age": 20,
+      "units": 1800,
+      "wageUnits": 900,
+      "nominalGBP": 6456.520833333333
+    },
+    {
+      "year": 1950,
+      "ability": 80,
+      "age": 24,
+      "units": 2033.8064434589728,
+      "wageUnits": 1341.8118455625,
+      "nominalGBP": 7295.175
+    },
+    {
+      "year": 1950,
+      "ability": 80,
+      "age": 28,
+      "units": 2297.982583030687,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 8242.766666666666
+    },
+    {
+      "year": 1950,
+      "ability": 80,
+      "age": 32,
+      "units": 1148.9912915153434,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 4121.383333333333
+    },
+    {
+      "year": 1950,
+      "ability": 90,
+      "age": 20,
+      "units": 2442.672761947402,
+      "wageUnits": 3528.3051005906914,
+      "nominalGBP": 8761.7625
+    },
+    {
+      "year": 1950,
+      "ability": 90,
+      "age": 24,
+      "units": 3641.7858297932135,
+      "wageUnits": 5260.357309701309,
+      "nominalGBP": 13062.929166666667
+    },
+    {
+      "year": 1950,
+      "ability": 90,
+      "age": 28,
+      "units": 5429.545961575768,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 19475.545833333334
+    },
+    {
+      "year": 1950,
+      "ability": 90,
+      "age": 32,
+      "units": 2714.772980787884,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 9737.775
+    },
+    {
+      "year": 1993,
+      "ability": 70,
+      "age": 20,
+      "units": 663.2079520584115,
+      "wageUnits": 331.60397602920574,
+      "nominalGBP": 86480.99
+    },
+    {
+      "year": 1993,
+      "ability": 70,
+      "age": 24,
+      "units": 988.7780957146924,
+      "wageUnits": 494.3890478573462,
+      "nominalGBP": 128934.69
+    },
+    {
+      "year": 1993,
+      "ability": 70,
+      "age": 28,
+      "units": 1474.1712905141173,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 192228.99
+    },
+    {
+      "year": 1993,
+      "ability": 70,
+      "age": 32,
+      "units": 737.0856452570587,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 96114.49
+    },
+    {
+      "year": 1993,
+      "ability": 80,
+      "age": 20,
+      "units": 3600,
+      "wageUnits": 900,
+      "nominalGBP": 469432.8
+    },
+    {
+      "year": 1993,
+      "ability": 80,
+      "age": 24,
+      "units": 5367.24738225,
+      "wageUnits": 1341.8118455625,
+      "nominalGBP": 699878.32
+    },
+    {
+      "year": 1993,
+      "ability": 80,
+      "age": 28,
+      "units": 8002.040128408187,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 1043450.03
+    },
+    {
+      "year": 1993,
+      "ability": 80,
+      "age": 32,
+      "units": 4001.0200642040936,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 521725.01
+    },
+    {
+      "year": 1993,
+      "ability": 90,
+      "age": 20,
+      "units": 9770.691047789607,
+      "wageUnits": 3528.3051005906914,
+      "nominalGBP": 1274078.57
+    },
+    {
+      "year": 1993,
+      "ability": 90,
+      "age": 24,
+      "units": 14567.143319172854,
+      "wageUnits": 5260.357309701309,
+      "nominalGBP": 1899526.35
+    },
+    {
+      "year": 1993,
+      "ability": 90,
+      "age": 28,
+      "units": 21718.183846303073,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 2832007.74
+    },
+    {
+      "year": 1993,
+      "ability": 90,
+      "age": 32,
+      "units": 10859.091923151536,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 1416003.87
+    },
+    {
+      "year": 2013,
+      "ability": 70,
+      "age": 20,
+      "units": 663.2079520584115,
+      "wageUnits": 331.60397602920574,
+      "nominalGBP": 484423.73
+    },
+    {
+      "year": 2013,
+      "ability": 70,
+      "age": 24,
+      "units": 988.7780957146924,
+      "wageUnits": 494.3890478573462,
+      "nominalGBP": 722228.33
+    },
+    {
+      "year": 2013,
+      "ability": 70,
+      "age": 28,
+      "units": 1474.1712905141173,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 1076771.69
+    },
+    {
+      "year": 2013,
+      "ability": 70,
+      "age": 32,
+      "units": 737.0856452570587,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 538385.85
+    },
+    {
+      "year": 2013,
+      "ability": 80,
+      "age": 20,
+      "units": 7020.000000000001,
+      "wageUnits": 900,
+      "nominalGBP": 5127584.12
+    },
+    {
+      "year": 2013,
+      "ability": 80,
+      "age": 24,
+      "units": 10466.1323953875,
+      "wageUnits": 1341.8118455625,
+      "nominalGBP": 7644725.68
+    },
+    {
+      "year": 2013,
+      "ability": 80,
+      "age": 28,
+      "units": 15603.978250395967,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 11397537.19
+    },
+    {
+      "year": 2013,
+      "ability": 80,
+      "age": 32,
+      "units": 7801.989125197983,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 5698768.59
+    },
+    {
+      "year": 2013,
+      "ability": 90,
+      "age": 20,
+      "units": 19052.847543189735,
+      "wageUnits": 3528.3051005906914,
+      "nominalGBP": 13916677.84
+    },
+    {
+      "year": 2013,
+      "ability": 90,
+      "age": 24,
+      "units": 28405.929472387066,
+      "wageUnits": 5260.357309701309,
+      "nominalGBP": 20748403.53
+    },
+    {
+      "year": 2013,
+      "ability": 90,
+      "age": 28,
+      "units": 42350.458500290995,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 30933837.38
+    },
+    {
+      "year": 2013,
+      "ability": 90,
+      "age": 32,
+      "units": 21175.229250145498,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 15466918.69
+    },
+    {
+      "year": 2025,
+      "ability": 70,
+      "age": 20,
+      "units": 663.2079520584115,
+      "wageUnits": 331.60397602920574,
+      "nominalGBP": 950418.99
+    },
+    {
+      "year": 2025,
+      "ability": 70,
+      "age": 24,
+      "units": 988.7780957146924,
+      "wageUnits": 494.3890478573462,
+      "nominalGBP": 1416981.63
+    },
+    {
+      "year": 2025,
+      "ability": 70,
+      "age": 28,
+      "units": 1474.1712905141173,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 2112580.81
+    },
+    {
+      "year": 2025,
+      "ability": 70,
+      "age": 32,
+      "units": 737.0856452570587,
+      "wageUnits": 737.0856452570587,
+      "nominalGBP": 1056290.41
+    },
+    {
+      "year": 2025,
+      "ability": 80,
+      "age": 20,
+      "units": 9360,
+      "wageUnits": 900,
+      "nominalGBP": 13413472.73
+    },
+    {
+      "year": 2025,
+      "ability": 80,
+      "age": 24,
+      "units": 13954.84319385,
+      "wageUnits": 1341.8118455625,
+      "nominalGBP": 19998174
+    },
+    {
+      "year": 2025,
+      "ability": 80,
+      "age": 28,
+      "units": 20805.304333861288,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 29815318.63
+    },
+    {
+      "year": 2025,
+      "ability": 80,
+      "age": 32,
+      "units": 10402.652166930644,
+      "wageUnits": 2000.5100321020468,
+      "nominalGBP": 14907659.31
+    },
+    {
+      "year": 2025,
+      "ability": 90,
+      "age": 20,
+      "units": 25403.79672425298,
+      "wageUnits": 3528.3051005906914,
+      "nominalGBP": 36405249.43
+    },
+    {
+      "year": 2025,
+      "ability": 90,
+      "age": 24,
+      "units": 37874.57262984942,
+      "wageUnits": 5260.357309701309,
+      "nominalGBP": 54276661.02
+    },
+    {
+      "year": 2025,
+      "ability": 90,
+      "age": 28,
+      "units": 56467.27800038799,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 80921185.22
+    },
+    {
+      "year": 2025,
+      "ability": 90,
+      "age": 32,
+      "units": 28233.639000193994,
+      "wageUnits": 7842.677500053887,
+      "nominalGBP": 40460592.61
+    }
+  ]
+}

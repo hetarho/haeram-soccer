@@ -1,0 +1,53 @@
+{
+  "source": "9494879acbb5876053c1f12f69402d24ae3104bc",
+  "inputs": {
+    "country": "ENG",
+    "division": 0,
+    "ability": 80,
+    "age": 24,
+    "potential": 80
+  },
+  "note": "Static model-price comparison; denominator is equal distribution only, not club turnover. No simulation or proposed production change.",
+  "rows": [
+    {
+      "year": 1950,
+      "footballReal": 1,
+      "broadcastReal": 1,
+      "annualWageGBP": 4813.020833333333,
+      "equalDistributionGBP": 45554.354166666664,
+      "payroll22IdenticalPlayersOverDistribution": 2.3243981891595618
+    },
+    {
+      "year": 1970,
+      "footballReal": 1,
+      "broadcastReal": 1.0756537569325701,
+      "annualWageGBP": 10655.916666666666,
+      "equalDistributionGBP": 108486.43333333333,
+      "payroll22IdenticalPlayersOverDistribution": 2.1609168949850255
+    },
+    {
+      "year": 1990,
+      "footballReal": 1.7977019463910837,
+      "broadcastReal": 1.8488403839263425,
+      "annualWageGBP": 125379.34,
+      "equalDistributionGBP": 1220449.49,
+      "payroll22IdenticalPlayersOverDistribution": 2.2601062170954735
+    },
+    {
+      "year": 2010,
+      "footballReal": 7.113786608980126,
+      "broadcastReal": 50.60595991810495,
+      "annualWageGBP": 812065.73,
+      "equalDistributionGBP": 54676929.48,
+      "payroll22IdenticalPlayersOverDistribution": 0.3267455987362076
+    },
+    {
+      "year": 2025,
+      "footballReal": 11,
+      "broadcastReal": 105,
+      "annualWageGBP": 1922901.35,
+      "equalDistributionGBP": 173726358.64,
+      "payroll22IdenticalPlayersOverDistribution": 0.2435084119138365
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "started": "2026-11-09T02:30:01.034Z",
+  "commit": "9494879acbb5876053c1f12f69402d24ae3104bc",
+  "tree": "6befa48701620b7b36add89407e79bf0ca5b5c48",
+  "scope": "All verify:batch stages; unit/integration/contract run concurrently with 4/4/2 workers, Chromium with 2 workers. No test filters, skips, timeout or retry changes.",
+  "stages": [
+    {
+      "name": "validate:catalogs",
+      "command": "pnpm run validate:catalogs",
+      "started": "2026-11-09T02:30:01.051Z",
+      "seconds": 1.668,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/validate-catalogs.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "validate:presentation",
+      "command": "pnpm run validate:presentation",
+      "started": "2026-11-09T02:30:01.053Z",
+      "seconds": 2.24,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/validate-presentation.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "validate:i18n",
+      "command": "pnpm run validate:i18n",
+      "started": "2026-11-09T02:30:01.055Z",
+      "seconds": 4.528,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/validate-i18n.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "lint",
+      "command": "pnpm run lint",
+      "started": "2026-11-09T02:30:01.047Z",
+      "seconds": 25.346,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/lint.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "format:check",
+      "command": "pnpm run format:check",
+      "started": "2026-11-09T02:30:01.049Z",
+      "seconds": 44.858,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/format-check.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "typecheck",
+      "command": "pnpm run typecheck",
+      "started": "2026-11-09T02:30:01.044Z",
+      "seconds": 68.456,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/typecheck.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "build",
+      "command": "pnpm run build",
+      "started": "2026-11-09T02:31:09.500Z",
+      "seconds": 7.02,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/build.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "test:contract",
+      "command": "pnpm run test:contract --maxWorkers 2",
+      "started": "2026-11-09T02:31:16.526Z",
+      "seconds": 94.524,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-contract.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "test:unit",
+      "command": "pnpm run test:unit --maxWorkers 4",
+      "started": "2026-11-09T02:31:16.521Z",
+      "seconds": 237.924,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-unit.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "test:integration",
+      "command": "pnpm run test:integration --maxWorkers 4",
+      "started": "2026-11-09T02:31:16.523Z",
+      "seconds": 1521.219,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-integration.log",
+      "code": 0,
+      "signal": null
+    },
+    {
+      "name": "test:e2e",
+      "command": "pnpm run test:e2e --project=chromium --workers=2",
+      "started": "2026-11-09T02:56:37.742Z",
+      "seconds": 447.222,
+      "log": "/home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-e2e.log",
+      "code": 130,
+      "signal": null
+    }
+  ],
+  "passed": false,
+  "finished": "2026-11-09T03:04:04.964Z",
+  "seconds": 2043.93
+}

@@ -89,8 +89,10 @@ function passFree(w: World) {
 const clubIndex = (w: World) => transferOffers(w).findIndex((offer) => !offer.freeAgent);
 
 describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
-  it('fills a short role with a free agent first', () => {
+  it('fills a short role with a free agent on equal sporting quality', () => {
     const w = club('careful');
+    const best = transferOffers(w)[0]!;
+    w.freeAgents = [{ ...structuredClone(best.player), id: 'signings:free', freeSince: w.year }];
     const free = transferOffers(w).find((offer) => offer.freeAgent)!;
     expect(free.freeAgent).toBe(true);
     keep(w, lineOf(free.player.position), 1);
@@ -260,7 +262,7 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
     return w;
   }
 
-  it('lists the reach count per role, free agents first, then ability, potential and id', () => {
+  it('lists the reach count per role by ability, potential, free status and id', () => {
     const w = owned();
     drawShortlist(w);
     expect(w.shortlist).toMatchObject({ year: w.year, day: currentDay(w) });
@@ -272,9 +274,9 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
         .filter((offer) => lineOf(offer.player.position) === role)
         .sort(
           (a, b) =>
-            Number(b.freeAgent) - Number(a.freeAgent) ||
             overall(b.player) - overall(a.player) ||
             b.player.potential - a.player.potential ||
+            Number(b.freeAgent) - Number(a.freeAgent) ||
             compareIds(a.player.id, b.player.id),
         )
         .slice(0, count)

@@ -6,7 +6,9 @@
  * transfer market charges against real English football:
  *  - the market: every top-flight squad's transfer values at each summer — the dearest player (the
  *    era's record fee), the ten dearest and the median player;
- *  - the fees our club actually paid and received (HIST-20's facts), by the division it played in;
+ *  - the fees our club actually paid and received (HIST-20's facts), separating permanent paid
+ *    fees from zero-fee incoming events and pool top-ups by division; roster values and paid-fee
+ *    averages are different populations;
  *  - the club's turnover (competition, matchday and commercial income) while in the top flight, the
  *    money those fees are weighed against.
  * Money is nominal pounds of the season (the reader compares with each era's real fees).
@@ -18,7 +20,8 @@
  * A career is a 1950 takeover (`careerWorld`: the lowest professional division's first club, one
  * year of fixed costs in cash) until T668 rebuilds the reference careers on generated worlds.
  */
-import type { CountryCode, World } from '../packages/contracts/src/types';
+import type { CountryCode, Event, World } from '../packages/contracts/src/types';
+import { countZeroFeeArrivals } from './lib/transfer-flow';
 import type { WealthTier } from '../packages/contracts/src/owner';
 import { CAREER_FUNDS, careerFunds, careerWorld } from '../packages/engine/src/career.testkit';
 import { currency, country } from '../packages/catalogs/src/index';
@@ -65,15 +68,15 @@ if (option('premium', ''))
  * British record fee standing at the era's end, and the average Premier League fee (Transfer
  * Price Index, free transfers excluded) where one is published.
  */
-const REAL: Record<string, { record: number; average?: number }> = {
+const REAL: Record<string, { record: number }> = {
   '1950s': { record: 65_000 },
   '1960s': { record: 165_000 },
   '1970s': { record: 1_469_000 },
   '1980s': { record: 4_250_000 },
-  '1990s': { record: 22_500_000, average: 594_000 },
-  '2000s': { record: 80_000_000, average: 2_400_000 },
-  '2010s': { record: 105_000_000, average: 5_600_000 },
-  '2020s': { record: 125_000_000, average: 24_000_000 },
+  '1990s': { record: 22_500_000 },
+  '2000s': { record: 80_000_000 },
+  '2010s': { record: 105_000_000 },
+  '2020s': { record: 125_000_000 },
 };
 
 /** British record fees as they were set: [year, pounds] (Progression of the British record). */
@@ -148,6 +151,9 @@ interface Fact {
 interface Season {
   year: number;
   tier: number;
+  /** Absent in older stored observations, whose zero-fee arrival count is unknown. */
+  currency?: string;
+  arrivalEvents?: Pick<Event, 'year' | 'kind' | 'amount' | 'currency'>[];
   /** Competition, matchday and commercial income of the season, pounds. */
   turnover: number;
   /** Top-flight market: dearest, mean of the ten dearest, median and mean player, pounds. */
@@ -169,7 +175,7 @@ const pounds = (code: string, year: number, minor: string | number) =>
   Number(minor) / currency(code, year).units;
 const median = (xs: number[]) => {
   const s = [...xs].sort((a, b) => a - b);
-  return s.length ? s[Math.floor(s.length / 2)] : NaN;
+  return s.length ? (s[Math.floor((s.length - 1) / 2)] + s[Math.floor(s.length / 2)]) / 2 : NaN;
 };
 const mean = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN);
 
@@ -225,6 +231,7 @@ function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
     const year = w.year,
       tier = clubOf(w).tier,
+      seasonCurrency = w.currency,
       summer = topFlightMarket(w),
       firstEvent = w.events.length;
     while (w.round < 46 && !w.bankrupt) {
@@ -257,9 +264,25 @@ function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career
         age: person ? f.year - person.born : NaN,
       });
     }
-    career.seasons.push({ year, tier, turnover, ...summer });
     if (year % 10 === 9) console.error(`${code}/${seed}: ${year} closed, division ${tier}`);
     closeSeason(w);
+    // Read the retained event year, including business opened at the previous close. The new
+    // year's top-ups and summer moves belong to the next row, outside the last row's window.
+    const arrivalEvents = w.events
+      .filter(
+        (event) =>
+          event.year === year &&
+          (event.kind === 'transfer-in' || event.kind === 'free-agent-signing'),
+      )
+      .map(({ year, kind, amount, currency }) => ({ year, kind, amount, currency }));
+    career.seasons.push({
+      year,
+      tier,
+      turnover,
+      ...summer,
+      currency: seasonCurrency,
+      arrivalEvents,
+    });
     w.revision++;
   }
   return career;
@@ -275,16 +298,26 @@ const money = (n: number) =>
         ? `£${Math.round(n / 1e3)}k`
         : `£${Math.round(n)}`;
 
+function arrivalCount(seasons: Season[], kind: 'zeroFeeMoves' | 'topUps') {
+  if (!seasons.length) return '-';
+  let count = 0;
+  for (const season of seasons) {
+    if (!season.arrivalEvents || !season.currency) return 'unknown';
+    count += countZeroFeeArrivals(season.arrivalEvents, season.year, season.currency)[kind];
+  }
+  return String(count);
+}
+
 function report(careers: Career[]) {
   const decades = [...new Set(careers.flatMap((c) => c.seasons.map((s) => decade(s.year))))];
   console.log(
     `\n${careers.length} careers (${careers.map((c) => `${c.code}/${c.seed}${c.bankrupt ? ` bankrupt ${c.bankrupt}` : ''}`).join(', ')})`,
   );
   console.log(
-    '\nTop-flight market each summer (decade means) against the real British record and average fee',
+    '\nTop-flight roster values each summer (decade means), with the British record for context',
   );
   console.log(
-    'decade | best OVR | dearest | ten dearest | median | mean | real record | real avg | dearest/record',
+    'decade | best OVR | dearest | ten dearest | roster median | roster mean | real record | dearest/record',
   );
   for (const d of decades) {
     const s = careers.flatMap((c) => c.seasons.filter((x) => decade(x.year) === d));
@@ -299,58 +332,96 @@ function report(careers: Career[]) {
         money(mean(s.map((x) => x.market.median))),
         money(mean(s.map((x) => x.market.mean))),
         money(real?.record ?? NaN),
-        money(real?.average ?? NaN),
         real ? (dearest / real.record).toFixed(2) : '-',
       ].join(' | '),
     );
   }
   console.log(
-    '\nCLUB-46 bands at the years real figures exist (summers within 2 years, career means)',
+    '\nCLUB-46 dearest-value band (summers within 2 years, career means; not a paid-fee distribution)',
   );
-  console.log(
-    'year | dearest | mean | record standing | real avg | dearest/record (0.5–1.0) | mean/avg (0.6–1.4)',
-  );
-  let missed = 0;
-  for (const [year, avg] of ANCHOR_YEARS) {
+  console.log('year | dearest | roster mean | record standing | dearest/record (0.5–1.0)');
+  let compared = 0,
+    missed = 0;
+  for (const [year] of ANCHOR_YEARS) {
     const s = careers.flatMap((c) => c.seasons.filter((x) => Math.abs(x.year - year) <= 2));
     if (!s.length) continue;
     const dearest = mean(s.map((x) => x.market.max)),
       average = mean(s.map((x) => x.market.mean)),
       record = standingRecord(year),
-      r = dearest / record,
-      a = avg ? average / avg : NaN;
-    const inBand = r >= 0.5 && r <= 1 && (!avg || (a >= 0.6 && a <= 1.4));
+      r = dearest / record;
+    const inBand = r >= 0.5 && r <= 1;
+    compared++;
     if (!inBand) missed++;
+    console.log(
+      [year, money(dearest), money(average), money(record), r.toFixed(2), inBand ? '' : '✗'].join(
+        ' | ',
+      ),
+    );
+  }
+  console.log(`${missed} of ${compared} measured years outside the dearest-value band`);
+  console.log(
+    '\nOur ENG top-flight arrivals within 2 years of each anchor: paid permanent fees and observed zero-fee moves',
+  );
+  console.log(
+    'Our club is a selected sample, not the whole league; the real paid mean is context.',
+  );
+  console.log(
+    'Zero-fee transfer events may include loans; pool top-ups are separate. Missing old observations are unknown.',
+  );
+  console.log(
+    'year | paid permanent n | zero-fee moves n | pool top-ups n | paid mean | paid median | real paid mean | paid/real mean',
+  );
+  for (const [year, avg] of ANCHOR_YEARS) {
+    if (!avg) continue;
+    const arrivals = careers
+      .filter((c) => c.code === 'ENG')
+      .flatMap((c) =>
+        c.facts.filter(
+          (f) => !f.loan && f.direction === 'in' && f.tier === 0 && Math.abs(f.year - year) <= 2,
+        ),
+      );
+    const paid = arrivals.filter((f) => f.fee > 0).map((f) => f.fee);
+    const seasons = careers
+      .filter((c) => c.code === 'ENG')
+      .flatMap((c) => c.seasons.filter((s) => s.tier === 0 && Math.abs(s.year - year) <= 2));
     console.log(
       [
         year,
-        money(dearest),
-        money(average),
-        money(record),
-        money(avg ?? NaN),
-        r.toFixed(2),
-        avg ? a.toFixed(2) : '-',
-        inBand ? '' : '✗',
+        paid.length,
+        arrivalCount(seasons, 'zeroFeeMoves'),
+        arrivalCount(seasons, 'topUps'),
+        money(mean(paid)),
+        money(median(paid)),
+        money(avg),
+        paid.length ? (mean(paid) / avg).toFixed(2) : '-',
       ].join(' | '),
     );
   }
-  console.log(`${missed} of ${ANCHOR_YEARS.length} years outside their bands`);
-  console.log('\nOur fees (permanent moves) by decade and our division at the time');
-  console.log('decade | division | buys n | buy mean | buy max | sales n | sale mean | sale max');
+  console.log('\nOur paid permanent fees and zero-fee arrival observations by decade and division');
+  console.log(
+    'decade | division | paid buys n | zero-fee moves n | pool top-ups n | paid mean | paid median | paid max | paid sales n | sale mean | sale max',
+  );
   for (const d of decades)
     for (const tier of [0, 1, 2, 3, 4]) {
       const f = careers.flatMap((c) =>
         c.facts.filter((x) => !x.loan && decade(x.year) === d && Math.min(x.tier, 4) === tier),
       );
-      if (!f.length) continue;
-      const buys = f.filter((x) => x.direction === 'in').map((x) => x.fee),
-        sales = f.filter((x) => x.direction === 'out').map((x) => x.fee);
+      const seasons = careers.flatMap((c) =>
+        c.seasons.filter((s) => decade(s.year) === d && Math.min(s.tier, 4) === tier),
+      );
+      if (!f.length && !seasons.length) continue;
+      const arrivals = f.filter((x) => x.direction === 'in'),
+        buys = arrivals.filter((x) => x.fee > 0).map((x) => x.fee),
+        sales = f.filter((x) => x.direction === 'out' && x.fee > 0).map((x) => x.fee);
       console.log(
         [
           d,
           tier === 4 ? 'amateur' : tier,
           buys.length,
+          arrivalCount(seasons, 'zeroFeeMoves'),
+          arrivalCount(seasons, 'topUps'),
           money(mean(buys)),
+          money(median(buys)),
           money(Math.max(...buys)),
           sales.length,
           money(mean(sales)),
@@ -359,7 +430,9 @@ function report(careers: Career[]) {
       );
     }
   console.log('\nFees against turnover, every division (decade sums)');
-  console.log('decade | turnover | sales | sales/turnover | buys | buys/turnover');
+  console.log(
+    'decade | turnover | sales | sales/turnover | buys | buys/turnover | net spending (buys - sales) | net/turnover',
+  );
   for (const d of decades) {
     const turnover = careers
       .flatMap((c) => c.seasons.filter((x) => decade(x.year) === d))
@@ -375,6 +448,8 @@ function report(careers: Career[]) {
         `${((100 * sum('out')) / turnover).toFixed(1)}%`,
         money(sum('in')),
         `${((100 * sum('in')) / turnover).toFixed(1)}%`,
+        money(sum('in') - sum('out')),
+        `${((100 * (sum('in') - sum('out'))) / turnover).toFixed(1)}%`,
       ].join(' | '),
     );
   }

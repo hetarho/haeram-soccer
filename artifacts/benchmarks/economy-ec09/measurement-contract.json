@@ -1,0 +1,34 @@
+{
+  "base": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+  "seed": "economy-ec09-0",
+  "years": [1950, 2025],
+  "cases": [
+    { "country": "ENG", "club": "ENG:0:0:8" },
+    { "country": "ESP", "club": "ESP:1:0:0" }
+  ],
+  "seasonsPerCase": 5,
+  "tier": "oil",
+  "ownerPurseApart": true,
+  "ownerStake": 0,
+  "ownerDividend": 0,
+  "ownerInjections": false,
+  "construction": false,
+  "delegation": "all",
+  "worldGeneration": "Released historyWorld/day progression from 1930 to each starting year; identical pre-takeover World JSON reused for both variants.",
+  "worldSource": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+  "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+  "metrics": [
+    "season cash flow (closingCash minus openingBoundaryCash) / turnover, when currencies match",
+    "purchases / turnover",
+    "sales / turnover",
+    "paidWagesRoundSamples / turnover, explicitly an estimate",
+    "closingCash / turnover",
+    "paid and free arrivals; mean and median paid fee",
+    "division and rank; career endings"
+  ],
+  "comparison": "Paired cases; report each era and case, and their unweighted season-ratio means. Never sum nominal amounts across currencies or eras.",
+  "claimRule": "Claim improved cash accumulation only if the modern cases' mean cash-flow/turnover falls and no additional sampled career ends in bankruptcy. Report worsened individual cases and historical cases separately. Increasing paid fees or purchases alone is insufficient.",
+  "scopeLimit": "One seed, two countries and five seasons are mechanism observations, not ECON-29's 50-season career gate or proof of worldwide real-football balance.",
+  "finalGate": "Independent review of exact submissions, then coordinator verify:batch on the combined integrated source.",
+  "budget": "One 60-minute cycle from 2026-11-09T01:50Z. Reserve final-gate and review time; do not conceal timeouts or failed attempts."
+}

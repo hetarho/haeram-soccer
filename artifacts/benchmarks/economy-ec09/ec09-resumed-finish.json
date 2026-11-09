@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "error": "검증 실패: node /tmp/ec09-resume-gate.mjs",
+  "details": [
+    "Complete Chromium: exit 1; 30.5 min; /home/deep/haeram/haeram-soccor/.tmp/verification/ec09-resume/test-e2e.log\n"
+  ]
+}

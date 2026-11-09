@@ -1,0 +1,8 @@
+{
+  "schemaVersion": 1,
+  "ok": false,
+  "error": "검증 실패: node /tmp/ec09-final-gate.mjs",
+  "details": [
+    "validate:catalogs: exit 0, 1.7s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/validate-catalogs.log\nvalidate:presentation: exit 0, 2.2s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/validate-presentation.log\nvalidate:i18n: exit 0, 4.5s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/validate-i18n.log\nlint: exit 0, 25.3s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/lint.log\nformat:check: exit 0, 44.9s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/format-check.log\ntypecheck: exit 0, 68.5s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/typecheck.log\nbuild: exit 0, 7.0s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/build.log\ntest:contract: exit 0, 94.5s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-contract.log\ntest:unit: exit 0, 237.9s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-unit.log\ntest:integration: exit 0, 1521.2s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-integration.log\ntest:e2e: exit 130, 447.2s, /home/deep/haeram/haeram-soccor/.tmp/verification/ec09/test-e2e.log\n"
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T02:13:27.005Z",
-  "sourceCommit": "acb5f1ef183f766f65c90a55447dc305f72940d7",
+  "snapshotAt": "2026-11-09T04:03:23.496Z",
+  "sourceCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -12,30 +12,45 @@
       "reviewers": 1,
       "maxPending": 8
     },
+    "verified": {
+      "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+      "checks": [
+        {
+          "command": "node /tmp/ec09-affected-gate.mjs",
+          "startedAt": "2026-11-09T03:59:42.817Z",
+          "finishedAt": "2026-11-09T04:03:20.970Z"
+        }
+      ],
+      "at": "2026-11-09T04:03:21.038Z",
+      "excluded": [
+        "T689",
+        "T726",
+        "T730",
+        "T735",
+        "T736",
+        "T738"
+      ]
+    },
     "push": null,
     "review": "all",
     "taskScope": [
       "T731",
-      "T732"
+      "T732",
+      "T733",
+      "T734",
+      "T737"
     ]
   },
   "summary": {
-    "total": 2,
-    "completed": 1,
-    "remaining": 1,
+    "total": 5,
+    "completed": 5,
+    "remaining": 0,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T732",
-      "title": "choose affordable sporting improvements before free status",
-      "dep": [],
-      "status": "reviewing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
@@ -57,6 +72,8 @@
       "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
       "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
       "submittedAt": "2026-11-09T02:10:28.876Z",
+      "integratedCommit": "b97e2ec3a731f7cfb43b5e50de7a5786c957e897",
+      "integratedAt": "2026-11-09T02:13:27.947Z",
       "risk": null,
       "review": {
         "id": "dd83f717-acc9-4c4f-95eb-a545a2eaacd3",
@@ -91,6 +108,13 @@
           "startedAt": "2026-11-09T02:08:45.613Z",
           "finishedAt": "2026-11-09T02:10:27.436Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:13:27.615Z",
+          "finishedAt": "2026-11-09T02:13:27.627Z"
+        }
       ]
     },
     {
@@ -105,34 +129,63 @@
       "contributors": [
         "ec09-recruit"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-09T02:01:20.473Z",
       "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe",
-      "verifiedCommit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
-      "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
-      "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
-      "submittedAt": "2026-11-09T02:11:45.164Z",
+      "verifiedCommit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+      "submittedBase": "aae3d522d379cd814887dc7c7205f883af9123e6",
+      "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+      "submittedAt": "2026-11-09T02:26:07.976Z",
+      "integratedCommit": "6d2c2f7a048baaf2a930f936d6255d59dbc0cfe4",
+      "integratedAt": "2026-11-09T02:27:25.363Z",
       "risk": null,
       "review": {
-        "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+        "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
         "owner": "ec09-reviewer",
-        "status": "reviewing",
-        "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
-        "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
-        "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
-        "createdAt": "2026-11-09T02:12:08.562Z"
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Corrected T732 c242c974 resolves review75cc9f53's P2. It collects all retained current-year events before currency-filtering money, delegates zero-fee/top-up counting to the independently tested T733 helper, removes prunable completed-bid and zero-fee-fact inference, retains nonmonetary arrival evidence, and labels zero-fee transfers as potentially including loans. Cash, purchases, sales, turnover and paid permanent-fee calculations are unchanged from the previously audited monetary path. The production ranking and its tests are byte-identical to the first reviewed submission: sporting measures precede free status while manager/list bands, stable ids and signingVerdict fallback remain intact; reviewer previously reran all16 scout-search tests successfully, and independently reran the shared helper's3 tests on T733. Source/world/script identity and nominal season boundaries remain explicit. No blocking findings. Frozen v1 free counts remain incomplete and may not be reported as complete; full economic fit, final integration and browser gates remain coordinator-owned.",
+        "findings": [],
+        "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+        "baseCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+        "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+        "createdAt": "2026-11-09T02:26:30.930Z",
+        "finishedAt": "2026-11-09T02:27:04.847Z"
       },
+      "reviewHistory": [
+        {
+          "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+          "owner": "ec09-reviewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/calibrate-cash-flow.ts:142-144,161-170,198-200 (T732)",
+              "message": "The events list requires event.currency===closed.currency before counting free-agent-signing, but signFreeAgentAtClose calls addEvent without an amount and addEvent only attaches currency when amount exists. Every such top-up is therefore discarded and freeTopUpArrivals is always zero. A direct addEvent synthetic reproduction yields a free-agent-signing event without currency and filtered count0. Free arrivals also depend on completed bid history, which is capped at60 by transfers.ts:pruneBids, while recordTransfer deliberately records no zero-fee facts. Count these nonmonetary arrival facts separately from currency-filtered money, and preserve complete per-season free counts rather than depending on a prunable bid buffer. Add a small regression including a currency-less top-up and free delegated arrival, and expose correct raw source evidence so existing cash-flow runs can be repaired/reported accurately."
+            }
+          ],
+          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+          "createdAt": "2026-11-09T02:12:08.562Z",
+          "finishedAt": "2026-11-09T02:14:09.377Z",
+          "invalidatedAt": "2026-11-09T02:16:43.428Z",
+          "invalidationReason": "correction assigned"
+        }
+      ],
       "steps": [
         {
           "taskId": "T732",
-          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
-          "at": "2026-11-09T02:11:45.114Z",
+          "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+          "at": "2026-11-09T02:26:07.934Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
-              "startedAt": "2026-11-09T02:10:40.143Z",
-              "finishedAt": "2026-11-09T02:11:44.769Z"
+              "startedAt": "2026-11-09T02:24:22.857Z",
+              "finishedAt": "2026-11-09T02:26:07.647Z"
             }
           ]
         }
@@ -140,8 +193,238 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
-          "startedAt": "2026-11-09T02:10:40.143Z",
-          "finishedAt": "2026-11-09T02:11:44.769Z"
+          "startedAt": "2026-11-09T02:24:22.857Z",
+          "finishedAt": "2026-11-09T02:26:07.647Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:27:25.097Z",
+          "finishedAt": "2026-11-09T02:27:25.104Z"
+        }
+      ]
+    },
+    {
+      "id": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "group": "economy-ec09",
+      "taskId": "T733",
+      "tasks": [
+        "T733"
+      ],
+      "lane": null,
+      "owner": "ec09-transfer",
+      "contributors": [
+        "ec09-transfer"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T02:17:37.743Z",
+      "startCommit": "0194c2497345f3a551603bb97608b5a477459034",
+      "verifiedCommit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+      "submittedBase": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+      "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+      "submittedAt": "2026-11-09T02:22:27.731Z",
+      "integratedCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+      "integratedAt": "2026-11-09T02:23:59.459Z",
+      "risk": null,
+      "review": {
+        "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T733 corrects the cross-module reporting assumption identified after the initial T731 review: positive-fee-only TransferFacts and bounded bids are no longer used to infer free arrivals. The shared pure helper separately counts same-year/currency explicit zero-fee transfer-in events and same-year nonmonetary pool top-ups, labels zero-fee moves without claiming permanent/free-agent metadata, and tests 75 events without bid history. The transfer harness retains the arrival source fields including currency-less events, reads retained event years after close, excludes next-year summer events from the closing year's row, and reports missing legacy observations as unknown. The reviewer reran scripts/lib/transfer-flow.test.ts: 3/3 passed. Simulation pricing/ranking/save behavior is untouched. No blocking finding; T732's separate harness must consume this helper and receive its own review.",
+        "findings": [],
+        "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+        "baseCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+        "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+        "createdAt": "2026-11-09T02:22:41.716Z",
+        "finishedAt": "2026-11-09T02:23:38.071Z"
+      },
+      "steps": [
+        {
+          "taskId": "T733",
+          "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+          "at": "2026-11-09T02:22:27.681Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+              "startedAt": "2026-11-09T02:21:45.878Z",
+              "finishedAt": "2026-11-09T02:22:27.382Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-09T02:21:45.878Z",
+          "finishedAt": "2026-11-09T02:22:27.382Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:23:59.190Z",
+          "finishedAt": "2026-11-09T02:23:59.198Z"
+        }
+      ]
+    },
+    {
+      "id": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "group": "economy-ec09",
+      "taskId": "T734",
+      "tasks": [
+        "T734"
+      ],
+      "lane": null,
+      "owner": "ec09-transfer",
+      "contributors": [
+        "ec09-transfer"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T02:22:49.021Z",
+      "startCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+      "verifiedCommit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+      "submittedBase": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+      "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+      "submittedAt": "2026-11-09T02:28:28.245Z",
+      "integratedCommit": "9494879acbb5876053c1f12f69402d24ae3104bc",
+      "integratedAt": "2026-11-09T02:29:42.988Z",
+      "risk": null,
+      "review": {
+        "id": "cd4273e2-a453-4349-a61d-ff1b8e4ded92",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed exact T73490a7cd17: the generated fixture diff contains exactly four amount substitutions in modern-european-season owner-living events, from2534951893 to2843913976. No scenario input, engine/catalog version, generator, assertion or other expected fact changes; final club cash remains970129584. The attribution is supported by the unchanged code: marketValueAt feeds clubValue, tierFortune determines takeover.fortune, and livingCost reads that starting fortune. The task's preflight wording calls the first event a takeover event; the implementation receipt correctly identifies the four owner-living events and explains the repeated effect. This wording error does not invalidate the narrowly authorized generated observation update. No blocking findings. Root owns final portable replay and full gate on the integrated candidate.",
+        "findings": [],
+        "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+        "baseCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+        "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+        "createdAt": "2026-11-09T02:28:48.033Z",
+        "finishedAt": "2026-11-09T02:29:17.432Z"
+      },
+      "steps": [
+        {
+          "taskId": "T734",
+          "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+          "at": "2026-11-09T02:28:28.207Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+              "startedAt": "2026-11-09T02:27:48.394Z",
+              "finishedAt": "2026-11-09T02:28:27.930Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-09T02:27:48.394Z",
+          "finishedAt": "2026-11-09T02:28:27.930Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:29:42.716Z",
+          "finishedAt": "2026-11-09T02:29:42.727Z"
+        }
+      ]
+    },
+    {
+      "id": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "group": "economy-ec09",
+      "taskId": "T737",
+      "tasks": [
+        "T737"
+      ],
+      "lane": null,
+      "owner": "ec09-recruit",
+      "contributors": [
+        "ec09-recruit"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T03:24:46.381Z",
+      "startCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+      "verifiedCommit": "4814556990060a286349c269fdadac3823ef1467",
+      "submittedBase": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+      "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+      "submittedAt": "2026-11-09T03:41:48.042Z",
+      "integratedCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+      "integratedAt": "2026-11-09T03:59:35.960Z",
+      "risk": null,
+      "review": {
+        "id": "3ffad793-961c-4d1a-a1f3-199ffd090082",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Fresh independent review of submission4d68fe1c on commit4814556990060a286349c269fdadac3823ef1467 against current basec6ee743207fae78872aaec8510421705ae2a8cd9. Rechecked the changed cited domain: WEB212→213 changes only WEB-54's season-history column switch; WEB-43's full-world market rule is unchanged, as are CLUB62 andARCH34. T737 now cites WEB213. The exact management.spec blob is c29848ffe06c90fc267f8e9d356013cce12fca4f, matching the earlier independently inspected patch, and the current whole diff contains only that spec plus task acceptance/result. Actual pool members are resolved through canonical worldMarketOffer and recruitmentPreview, with a lower-wage preference and explicit missing-candidate diagnostic. No production/fixture generator changes or assertion, timeout, retry or skip changes. This is a new approval on the refreshed snapshot, not reuse of the invalidated record. Root still owns both affected browser cases and source-scoped reuse proof before origin push.",
+        "findings": [],
+        "commit": "4814556990060a286349c269fdadac3823ef1467",
+        "baseCommit": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+        "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+        "createdAt": "2026-11-09T03:41:56.741Z",
+        "finishedAt": "2026-11-09T03:42:26.126Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "9b41426e-3348-47ae-ad7c-7a24c36fe4cb",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T737 exact39886dfc changes only management.spec.ts plus its task receipt. It resolves the invalid assumption that the chief scout's capped, quality-ranked shortlist must include a free player: selection now reads actual freeAgentsOf, resolves each through canonical worldMarketOffer, keeps available free offers, prefers lower offered wages, and requires recruitmentPreview eligibility/affordability. It neither fabricates a player nor alters funds or production checks. The existing marketCandidate helper searches the full market by retained identity, so the candidate remains reachable through the UI. All manual signing, roster21/40, full-season, export/import assertions and all timeouts/retries/skips are unchanged; missing candidates now give a clear diagnostic. No blocking finding. No browser tests run by reviewer; root must verify both management journeys on the integrated source before origin push and prove any reused receipt's unchanged scope.",
+          "findings": [],
+          "commit": "39886dfc95d21319771786465b364b0586d787bb",
+          "baseCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+          "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+          "createdAt": "2026-11-09T03:31:51.388Z",
+          "finishedAt": "2026-11-09T03:32:35.917Z",
+          "invalidatedAt": "2026-11-09T03:38:39.837Z",
+          "invalidationReason": "review snapshot changed"
+        },
+        {
+          "id": "422f4d78-250e-4f70-9299-85d77bbf9c76",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "39886dfc95d21319771786465b364b0586d787bb",
+          "baseCommit": "e9bf3ea0fd2def2d10726726d6cf4755ad81a097",
+          "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+          "createdAt": "2026-11-09T03:39:58.529Z",
+          "invalidatedAt": "2026-11-09T03:39:59.342Z",
+          "invalidationReason": "T737: WEB@212가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T737",
+          "commit": "4814556990060a286349c269fdadac3823ef1467",
+          "at": "2026-11-09T03:41:47.980Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-09T03:41:27.408Z",
+              "finishedAt": "2026-11-09T03:41:46.746Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-09T03:41:27.408Z",
+          "finishedAt": "2026-11-09T03:41:46.746Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T03:59:35.684Z",
+          "finishedAt": "2026-11-09T03:59:35.696Z"
         }
       ]
     }
@@ -475,6 +758,1148 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 835,
+      "at": "2026-11-09T02:13:27.821Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:13:27.615Z",
+            "finishedAt": "2026-11-09T02:13:27.627Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 836,
+      "at": "2026-11-09T02:13:27.947Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "b97e2ec3a731f7cfb43b5e50de7a5786c957e897",
+        "integratedAt": "2026-11-09T02:13:27.947Z"
+      }
+    },
+    {
+      "sequence": 837,
+      "at": "2026-11-09T02:14:09.377Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "reviewing",
+      "status": "changes_requested",
+      "changes": {
+        "status": "changes_requested",
+        "reason": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+        "review": {
+          "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+          "owner": "ec09-reviewer",
+          "status": "changes_requested",
+          "verdict": "changes_requested",
+          "summary": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+          "findings": [
+            {
+              "priority": "P2",
+              "where": "scripts/calibrate-cash-flow.ts:142-144,161-170,198-200 (T732)",
+              "message": "The events list requires event.currency===closed.currency before counting free-agent-signing, but signFreeAgentAtClose calls addEvent without an amount and addEvent only attaches currency when amount exists. Every such top-up is therefore discarded and freeTopUpArrivals is always zero. A direct addEvent synthetic reproduction yields a free-agent-signing event without currency and filtered count0. Free arrivals also depend on completed bid history, which is capped at60 by transfers.ts:pruneBids, while recordTransfer deliberately records no zero-fee facts. Count these nonmonetary arrival facts separately from currency-filtered money, and preserve complete per-season free counts rather than depending on a prunable bid buffer. Add a small regression including a currency-less top-up and free delegated arrival, and expose correct raw source evidence so existing cash-flow runs can be repaired/reported accurately."
+            }
+          ],
+          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+          "createdAt": "2026-11-09T02:12:08.562Z",
+          "finishedAt": "2026-11-09T02:14:09.377Z"
+        }
+      }
+    },
+    {
+      "sequence": 838,
+      "at": "2026-11-09T02:16:43.428Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "changes_requested",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+            "owner": "ec09-reviewer",
+            "status": "changes_requested",
+            "verdict": "changes_requested",
+            "summary": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+            "findings": [
+              {
+                "priority": "P2",
+                "where": "scripts/calibrate-cash-flow.ts:142-144,161-170,198-200 (T732)",
+                "message": "The events list requires event.currency===closed.currency before counting free-agent-signing, but signFreeAgentAtClose calls addEvent without an amount and addEvent only attaches currency when amount exists. Every such top-up is therefore discarded and freeTopUpArrivals is always zero. A direct addEvent synthetic reproduction yields a free-agent-signing event without currency and filtered count0. Free arrivals also depend on completed bid history, which is capped at60 by transfers.ts:pruneBids, while recordTransfer deliberately records no zero-fee facts. Count these nonmonetary arrival facts separately from currency-filtered money, and preserve complete per-season free counts rather than depending on a prunable bid buffer. Add a small regression including a currency-less top-up and free delegated arrival, and expose correct raw source evidence so existing cash-flow runs can be repaired/reported accurately."
+              }
+            ],
+            "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+            "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+            "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+            "createdAt": "2026-11-09T02:12:08.562Z",
+            "finishedAt": "2026-11-09T02:14:09.377Z",
+            "invalidatedAt": "2026-11-09T02:16:43.428Z",
+            "invalidationReason": "correction assigned"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 839,
+      "at": "2026-11-09T02:17:36.156Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733"
+        ]
+      }
+    },
+    {
+      "sequence": 840,
+      "at": "2026-11-09T02:17:37.743Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+        "group": "economy-ec09",
+        "taskId": "T733",
+        "tasks": [
+          "T733"
+        ],
+        "lane": null,
+        "owner": "ec09-transfer",
+        "contributors": [
+          "ec09-transfer"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:17:37.743Z",
+        "startCommit": "0194c2497345f3a551603bb97608b5a477459034"
+      }
+    },
+    {
+      "sequence": 841,
+      "at": "2026-11-09T02:17:39.838Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 842,
+      "at": "2026-11-09T02:21:33.271Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734"
+        ]
+      }
+    },
+    {
+      "sequence": 843,
+      "at": "2026-11-09T02:21:45.653Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 844,
+      "at": "2026-11-09T02:22:27.731Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+        "submittedBase": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+        "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+        "submittedAt": "2026-11-09T02:22:27.731Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T733",
+            "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+            "at": "2026-11-09T02:22:27.681Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:21:45.878Z",
+                "finishedAt": "2026-11-09T02:22:27.382Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:21:45.878Z",
+            "finishedAt": "2026-11-09T02:22:27.382Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 845,
+      "at": "2026-11-09T02:22:41.717Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+          "baseCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+          "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+          "createdAt": "2026-11-09T02:22:41.716Z"
+        }
+      }
+    },
+    {
+      "sequence": 846,
+      "at": "2026-11-09T02:22:49.021Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "7f322977-8984-484e-b84e-18efcc9cdf18",
+        "group": "economy-ec09",
+        "taskId": "T734",
+        "tasks": [
+          "T734"
+        ],
+        "lane": null,
+        "owner": "ec09-transfer",
+        "contributors": [
+          "ec09-transfer"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:22:49.021Z",
+        "startCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c"
+      }
+    },
+    {
+      "sequence": 847,
+      "at": "2026-11-09T02:22:51.255Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 848,
+      "at": "2026-11-09T02:23:38.071Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T733 corrects the cross-module reporting assumption identified after the initial T731 review: positive-fee-only TransferFacts and bounded bids are no longer used to infer free arrivals. The shared pure helper separately counts same-year/currency explicit zero-fee transfer-in events and same-year nonmonetary pool top-ups, labels zero-fee moves without claiming permanent/free-agent metadata, and tests 75 events without bid history. The transfer harness retains the arrival source fields including currency-less events, reads retained event years after close, excludes next-year summer events from the closing year's row, and reports missing legacy observations as unknown. The reviewer reran scripts/lib/transfer-flow.test.ts: 3/3 passed. Simulation pricing/ranking/save behavior is untouched. No blocking finding; T732's separate harness must consume this helper and receive its own review.",
+          "findings": [],
+          "commit": "993ab0521ef0a1b862e0e3a1116d167bff2c48ea",
+          "baseCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+          "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
+          "createdAt": "2026-11-09T02:22:41.716Z",
+          "finishedAt": "2026-11-09T02:23:38.071Z"
+        }
+      }
+    },
+    {
+      "sequence": 849,
+      "at": "2026-11-09T02:23:55.959Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 850,
+      "at": "2026-11-09T02:23:59.359Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:23:59.190Z",
+            "finishedAt": "2026-11-09T02:23:59.198Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 851,
+      "at": "2026-11-09T02:23:59.459Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+        "integratedAt": "2026-11-09T02:23:59.459Z"
+      }
+    },
+    {
+      "sequence": 852,
+      "at": "2026-11-09T02:24:22.608Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 853,
+      "at": "2026-11-09T02:26:07.976Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "aae3d522d379cd814887dc7c7205f883af9123e6",
+        "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+        "submittedAt": "2026-11-09T02:26:07.976Z",
+        "steps": [
+          {
+            "taskId": "T732",
+            "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+            "at": "2026-11-09T02:26:07.934Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:24:22.857Z",
+                "finishedAt": "2026-11-09T02:26:07.647Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:24:22.857Z",
+            "finishedAt": "2026-11-09T02:26:07.647Z"
+          }
+        ],
+        "verifiedCommit": "c242c974e0890eae9fe22b521cb01db16b925db9"
+      }
+    },
+    {
+      "sequence": 854,
+      "at": "2026-11-09T02:26:30.930Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+          "baseCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+          "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+          "createdAt": "2026-11-09T02:26:30.930Z"
+        }
+      }
+    },
+    {
+      "sequence": 855,
+      "at": "2026-11-09T02:27:04.848Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Corrected T732 c242c974 resolves review75cc9f53's P2. It collects all retained current-year events before currency-filtering money, delegates zero-fee/top-up counting to the independently tested T733 helper, removes prunable completed-bid and zero-fee-fact inference, retains nonmonetary arrival evidence, and labels zero-fee transfers as potentially including loans. Cash, purchases, sales, turnover and paid permanent-fee calculations are unchanged from the previously audited monetary path. The production ranking and its tests are byte-identical to the first reviewed submission: sporting measures precede free status while manager/list bands, stable ids and signingVerdict fallback remain intact; reviewer previously reran all16 scout-search tests successfully, and independently reran the shared helper's3 tests on T733. Source/world/script identity and nominal season boundaries remain explicit. No blocking findings. Frozen v1 free counts remain incomplete and may not be reported as complete; full economic fit, final integration and browser gates remain coordinator-owned.",
+          "findings": [],
+          "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+          "baseCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+          "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+          "createdAt": "2026-11-09T02:26:30.930Z",
+          "finishedAt": "2026-11-09T02:27:04.847Z"
+        }
+      }
+    },
+    {
+      "sequence": 856,
+      "at": "2026-11-09T02:27:21.625Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 857,
+      "at": "2026-11-09T02:27:25.262Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:27:25.097Z",
+            "finishedAt": "2026-11-09T02:27:25.104Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 858,
+      "at": "2026-11-09T02:27:25.363Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6d2c2f7a048baaf2a930f936d6255d59dbc0cfe4",
+        "integratedAt": "2026-11-09T02:27:25.363Z"
+      }
+    },
+    {
+      "sequence": 859,
+      "at": "2026-11-09T02:27:48.157Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 860,
+      "at": "2026-11-09T02:28:28.245Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+        "submittedBase": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+        "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+        "submittedAt": "2026-11-09T02:28:28.245Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T734",
+            "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+            "at": "2026-11-09T02:28:28.207Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:27:48.394Z",
+                "finishedAt": "2026-11-09T02:28:27.930Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:27:48.394Z",
+            "finishedAt": "2026-11-09T02:28:27.930Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 861,
+      "at": "2026-11-09T02:28:48.033Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "cd4273e2-a453-4349-a61d-ff1b8e4ded92",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+          "baseCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+          "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+          "createdAt": "2026-11-09T02:28:48.033Z"
+        }
+      }
+    },
+    {
+      "sequence": 862,
+      "at": "2026-11-09T02:29:17.433Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "cd4273e2-a453-4349-a61d-ff1b8e4ded92",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed exact T73490a7cd17: the generated fixture diff contains exactly four amount substitutions in modern-european-season owner-living events, from2534951893 to2843913976. No scenario input, engine/catalog version, generator, assertion or other expected fact changes; final club cash remains970129584. The attribution is supported by the unchanged code: marketValueAt feeds clubValue, tierFortune determines takeover.fortune, and livingCost reads that starting fortune. The task's preflight wording calls the first event a takeover event; the implementation receipt correctly identifies the four owner-living events and explains the repeated effect. This wording error does not invalidate the narrowly authorized generated observation update. No blocking findings. Root owns final portable replay and full gate on the integrated candidate.",
+          "findings": [],
+          "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+          "baseCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+          "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+          "createdAt": "2026-11-09T02:28:48.033Z",
+          "finishedAt": "2026-11-09T02:29:17.432Z"
+        }
+      }
+    },
+    {
+      "sequence": 863,
+      "at": "2026-11-09T02:29:39.484Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 864,
+      "at": "2026-11-09T02:29:42.880Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:29:42.716Z",
+            "finishedAt": "2026-11-09T02:29:42.727Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 865,
+      "at": "2026-11-09T02:29:42.988Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "9494879acbb5876053c1f12f69402d24ae3104bc",
+        "integratedAt": "2026-11-09T02:29:42.988Z"
+      }
+    },
+    {
+      "sequence": 866,
+      "at": "2026-11-09T03:24:43.381Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737"
+        ]
+      }
+    },
+    {
+      "sequence": 867,
+      "at": "2026-11-09T03:24:46.381Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+        "group": "economy-ec09",
+        "taskId": "T737",
+        "tasks": [
+          "T737"
+        ],
+        "lane": null,
+        "owner": "ec09-recruit",
+        "contributors": [
+          "ec09-recruit"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T03:24:46.381Z",
+        "startCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c"
+      }
+    },
+    {
+      "sequence": 868,
+      "at": "2026-11-09T03:24:49.630Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 869,
+      "at": "2026-11-09T03:28:54.581Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 870,
+      "at": "2026-11-09T03:29:06.859Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "39886dfc95d21319771786465b364b0586d787bb",
+        "submittedBase": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+        "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+        "submittedAt": "2026-11-09T03:29:06.858Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T737",
+            "commit": "39886dfc95d21319771786465b364b0586d787bb",
+            "at": "2026-11-09T03:29:06.808Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-09T03:28:55.105Z",
+                "finishedAt": "2026-11-09T03:29:06.385Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-09T03:28:55.105Z",
+            "finishedAt": "2026-11-09T03:29:06.385Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 871,
+      "at": "2026-11-09T03:31:51.388Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9b41426e-3348-47ae-ad7c-7a24c36fe4cb",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "39886dfc95d21319771786465b364b0586d787bb",
+          "baseCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+          "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+          "createdAt": "2026-11-09T03:31:51.388Z"
+        }
+      }
+    },
+    {
+      "sequence": 872,
+      "at": "2026-11-09T03:32:35.917Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9b41426e-3348-47ae-ad7c-7a24c36fe4cb",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T737 exact39886dfc changes only management.spec.ts plus its task receipt. It resolves the invalid assumption that the chief scout's capped, quality-ranked shortlist must include a free player: selection now reads actual freeAgentsOf, resolves each through canonical worldMarketOffer, keeps available free offers, prefers lower offered wages, and requires recruitmentPreview eligibility/affordability. It neither fabricates a player nor alters funds or production checks. The existing marketCandidate helper searches the full market by retained identity, so the candidate remains reachable through the UI. All manual signing, roster21/40, full-season, export/import assertions and all timeouts/retries/skips are unchanged; missing candidates now give a clear diagnostic. No blocking finding. No browser tests run by reviewer; root must verify both management journeys on the integrated source before origin push and prove any reused receipt's unchanged scope.",
+          "findings": [],
+          "commit": "39886dfc95d21319771786465b364b0586d787bb",
+          "baseCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+          "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+          "createdAt": "2026-11-09T03:31:51.388Z",
+          "finishedAt": "2026-11-09T03:32:35.917Z"
+        }
+      }
+    },
+    {
+      "sequence": 873,
+      "at": "2026-11-09T03:35:16.903Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 874,
+      "at": "2026-11-09T03:35:20.553Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 875,
+      "at": "2026-11-09T03:38:39.474Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 876,
+      "at": "2026-11-09T03:38:39.837Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "integrating",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": "상위 브랜치의 태스크/STATE를 먼저 정리하고 커밋하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "9b41426e-3348-47ae-ad7c-7a24c36fe4cb",
+            "owner": "ec09-reviewer",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T737 exact39886dfc changes only management.spec.ts plus its task receipt. It resolves the invalid assumption that the chief scout's capped, quality-ranked shortlist must include a free player: selection now reads actual freeAgentsOf, resolves each through canonical worldMarketOffer, keeps available free offers, prefers lower offered wages, and requires recruitmentPreview eligibility/affordability. It neither fabricates a player nor alters funds or production checks. The existing marketCandidate helper searches the full market by retained identity, so the candidate remains reachable through the UI. All manual signing, roster21/40, full-season, export/import assertions and all timeouts/retries/skips are unchanged; missing candidates now give a clear diagnostic. No blocking finding. No browser tests run by reviewer; root must verify both management journeys on the integrated source before origin push and prove any reused receipt's unchanged scope.",
+            "findings": [],
+            "commit": "39886dfc95d21319771786465b364b0586d787bb",
+            "baseCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+            "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+            "createdAt": "2026-11-09T03:31:51.388Z",
+            "finishedAt": "2026-11-09T03:32:35.917Z",
+            "invalidatedAt": "2026-11-09T03:38:39.837Z",
+            "invalidationReason": "review snapshot changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 877,
+      "at": "2026-11-09T03:39:58.529Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "422f4d78-250e-4f70-9299-85d77bbf9c76",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "39886dfc95d21319771786465b364b0586d787bb",
+          "baseCommit": "e9bf3ea0fd2def2d10726726d6cf4755ad81a097",
+          "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+          "createdAt": "2026-11-09T03:39:58.529Z"
+        }
+      }
+    },
+    {
+      "sequence": 878,
+      "at": "2026-11-09T03:39:59.343Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "reviewing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T737: WEB@212가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요.",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "9b41426e-3348-47ae-ad7c-7a24c36fe4cb",
+            "owner": "ec09-reviewer",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T737 exact39886dfc changes only management.spec.ts plus its task receipt. It resolves the invalid assumption that the chief scout's capped, quality-ranked shortlist must include a free player: selection now reads actual freeAgentsOf, resolves each through canonical worldMarketOffer, keeps available free offers, prefers lower offered wages, and requires recruitmentPreview eligibility/affordability. It neither fabricates a player nor alters funds or production checks. The existing marketCandidate helper searches the full market by retained identity, so the candidate remains reachable through the UI. All manual signing, roster21/40, full-season, export/import assertions and all timeouts/retries/skips are unchanged; missing candidates now give a clear diagnostic. No blocking finding. No browser tests run by reviewer; root must verify both management journeys on the integrated source before origin push and prove any reused receipt's unchanged scope.",
+            "findings": [],
+            "commit": "39886dfc95d21319771786465b364b0586d787bb",
+            "baseCommit": "4f1267a2ce32bf06b1763bf09bd7761b9151574c",
+            "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+            "createdAt": "2026-11-09T03:31:51.388Z",
+            "finishedAt": "2026-11-09T03:32:35.917Z",
+            "invalidatedAt": "2026-11-09T03:38:39.837Z",
+            "invalidationReason": "review snapshot changed"
+          },
+          {
+            "id": "422f4d78-250e-4f70-9299-85d77bbf9c76",
+            "owner": "ec09-reviewer",
+            "status": "reviewing",
+            "commit": "39886dfc95d21319771786465b364b0586d787bb",
+            "baseCommit": "e9bf3ea0fd2def2d10726726d6cf4755ad81a097",
+            "submissionId": "46bdc0d6-95c3-41f0-a6b3-13f9dd54bad5",
+            "createdAt": "2026-11-09T03:39:58.529Z",
+            "invalidatedAt": "2026-11-09T03:39:59.342Z",
+            "invalidationReason": "T737: WEB@212가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 879,
+      "at": "2026-11-09T03:41:18.863Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null,
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 880,
+      "at": "2026-11-09T03:41:26.780Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 881,
+      "at": "2026-11-09T03:41:48.043Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submittedBase": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+        "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+        "submittedAt": "2026-11-09T03:41:48.042Z",
+        "steps": [
+          {
+            "taskId": "T737",
+            "commit": "4814556990060a286349c269fdadac3823ef1467",
+            "at": "2026-11-09T03:41:47.980Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-09T03:41:27.408Z",
+                "finishedAt": "2026-11-09T03:41:46.746Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-09T03:41:27.408Z",
+            "finishedAt": "2026-11-09T03:41:46.746Z"
+          }
+        ],
+        "verifiedCommit": "4814556990060a286349c269fdadac3823ef1467"
+      }
+    },
+    {
+      "sequence": 882,
+      "at": "2026-11-09T03:41:56.742Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "3ffad793-961c-4d1a-a1f3-199ffd090082",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "4814556990060a286349c269fdadac3823ef1467",
+          "baseCommit": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+          "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+          "createdAt": "2026-11-09T03:41:56.741Z"
+        }
+      }
+    },
+    {
+      "sequence": 883,
+      "at": "2026-11-09T03:42:26.127Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "3ffad793-961c-4d1a-a1f3-199ffd090082",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh independent review of submission4d68fe1c on commit4814556990060a286349c269fdadac3823ef1467 against current basec6ee743207fae78872aaec8510421705ae2a8cd9. Rechecked the changed cited domain: WEB212→213 changes only WEB-54's season-history column switch; WEB-43's full-world market rule is unchanged, as are CLUB62 andARCH34. T737 now cites WEB213. The exact management.spec blob is c29848ffe06c90fc267f8e9d356013cce12fca4f, matching the earlier independently inspected patch, and the current whole diff contains only that spec plus task acceptance/result. Actual pool members are resolved through canonical worldMarketOffer and recruitmentPreview, with a lower-wage preference and explicit missing-candidate diagnostic. No production/fixture generator changes or assertion, timeout, retry or skip changes. This is a new approval on the refreshed snapshot, not reuse of the invalidated record. Root still owns both affected browser cases and source-scoped reuse proof before origin push.",
+          "findings": [],
+          "commit": "4814556990060a286349c269fdadac3823ef1467",
+          "baseCommit": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+          "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
+          "createdAt": "2026-11-09T03:41:56.741Z",
+          "finishedAt": "2026-11-09T03:42:26.126Z"
+        }
+      }
+    },
+    {
+      "sequence": 884,
+      "at": "2026-11-09T03:42:38.204Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 885,
+      "at": "2026-11-09T03:59:35.863Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T03:59:35.684Z",
+            "finishedAt": "2026-11-09T03:59:35.696Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 886,
+      "at": "2026-11-09T03:59:35.960Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+        "integratedAt": "2026-11-09T03:59:35.960Z"
+      }
+    },
+    {
+      "sequence": 887,
+      "at": "2026-11-09T04:03:21.077Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+          "checks": [
+            {
+              "command": "node /tmp/ec09-affected-gate.mjs",
+              "startedAt": "2026-11-09T03:59:42.817Z",
+              "finishedAt": "2026-11-09T04:03:20.970Z"
+            }
+          ],
+          "at": "2026-11-09T04:03:21.038Z",
+          "excluded": [
+            "T689",
+            "T726",
+            "T730",
+            "T735",
+            "T736",
+            "T738"
+          ]
+        }
       }
     }
   ]
