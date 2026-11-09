@@ -21,6 +21,8 @@
 | fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:27Z | - |
 
 ## inbox
+- 261110 decided review/football-data-consistency-261109 T758 T759 T760 T761: which next numerical corrections fit the owner's capital/fee/statistics mandate → missing loan projection costs, explicit fixed-period compensation,90-minute H2H and recorded NPC reds (alt: new nominal FX rates | implicit club chronology | unversioned career-card repair). Existing rules/ratios/save contracts stay; corrected affordability/debits are expected outcomes of F12/F13 and covered by tests fi09
+- 261110 parked review/football-data-consistency-261109: F18 general nominal GBP/EUR staff compensation needs an explicit rate/inverse-rounding policy; country price quotes vary even for sharedEUR and one-way FFP averaging is not a generic converter. Apply only already-defined fixed-period parity in T759 fi09
 - 261109 decided review/football-data-consistency-261109 T755 T756 T757: which next consistency fixes and verification blocker are adopted → actual appearance ranks plus corrected resource prose, wartime cup streak continuity, and a decide-test-only prepared world after independent cache safety review (alt: minutes ranks | calendar-year streaks | generic caching under unknown runtime settings | larger timeouts). T757 alone extends initial runtime scope after clean blocked finance execution/release; preserve prior IDs, all assertions and30s limit fi09
 - 261109 decided T752 T754 ARCH-21 ARCH-32: how to verify real locale subscriptions without an installed DOM unit environment → T752 adds pinned happy-dom21.0.4 as a test-only dev dependency and uses per-file Vitest environments, reused by T754 (alt: repeated SSR that never subscribes | a custom DOM imitation). No production dependency, global environment or validation reduction; worker paused clean after three task commits and assignment released before this contract amendment fi09
 - 261109 decided review/football-data-consistency-261109 T753 T754: which follow-up UI inconsistencies enter the eight-hour local scope → refreshed bid quotes and locale-stale chart detail strings, after the current six-task run finishes (alt: change pricing policy | overlap an active lane). Source evidence and complete current contracts checked; preserve submitted bid terms, stale-response guards and numerical chart facts fi09
@@ -832,7 +834,7 @@
 ## review
 | id | st |
 |---|---|
-| football-data-consistency-261109 | converted@261109 |
+| football-data-consistency-261109 | converted@261110 |
 | economy-transfers-261109 | converted@261109 |
 | automatic-play-hotspots-261103 | converted@261103 |
 | outside-t216-t255-261019 | converted@261019 |
@@ -855,6 +857,10 @@
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
 | T755 | rank career appearances by recorded matches | ARCH | - | todo |
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
+| T758 | include unpaid takeover loans in cash projections | ARCH | - | todo |
+| T759 | normalize fixed currency periods in coach compensation | ARCH | - | todo |
+| T760 | use regulation scores in head-to-head records | ARCH | - | todo |
+| T761 | show recorded npc league red cards | ARCH | T752 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -884,6 +890,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
 - 261109 T747 T748 T757 integrated
 - 261109 create-task review/football-data-consistency-261109 F9-F11: T755/T756 product follow-ups and T757 narrowly approved verification-cost fix; released clean finance attempt before rescope fi09
 - 261109 replan T752/T754: real mounted locale regression via pinned test-only happy-dom, existing test/browser scopes preserved; released clean football checkpoint108e6a84 before amendment fi09
@@ -903,4 +910,3 @@
 - 261109 T746 integrated
 - 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
 - 261109 T745 integrated
-- 261109 update-ssot CLUB64 ECON52/create-task T745: independent review confirms wage and package-only books failures; withdraw both activations byte-exact44, retain earlier transfer/recruitment changes and exact observation tools; no new cycle ec10.
