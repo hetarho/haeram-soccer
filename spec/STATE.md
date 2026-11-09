@@ -792,6 +792,7 @@
 - 261110 parked review/football-data-consistency-261109: F18 general nominal GBP/EUR staff compensation needs an explicit rate/inverse-rounding policy; country price quotes vary even for sharedEUR and one-way FFP averaging is not a generic converter. Apply only already-defined fixed-period parity in T759 fi09
 - 261110 decided review/football-data-consistency-261109 T761 T762 T763: how to finish shared league UI consistency without new tracking policy → serialize the existing-read discipline fix, neutral club contribution sets and remaining localized count cells in league-record-views (alt: infer chronology from first-seen arrays | add unsupported latest data | leave mixed digits). T761 remained unassigned before lane composition; all new scope is explicit fi09
 - 261110 decided HIST-16 HIST-22 SAVE-28 review/football-data-consistency-261109: how F17 can change its persisted summary after the owner says backward compatibility is unnecessary → current-format summary plus known obsolete-cache invalidation at validation, using existing writer reconstruction (alt: decode/migrate every old summary | rescan each reload | reject the whole world when only a disposable cache is stale). Canonical facts stay, current/future validation and current reload behavior remain required fi09
+- 261110 decided HIST-16 HIST-22 SAVE-28 T764 review/football-data-consistency-261109: how to implement the approved current career-card summary without old-format support work → one atomic shared-format/producer/reader unit, discard only known obsolete optional cache and reuse writer reconstruction (alt: separate partial contract changes that break typecheck | new old-body decoder | repeated reload scans). All source facts and current/unknown/future validation remain protected fi09
 
 ## ideation
 | id | st |
@@ -826,8 +827,8 @@
 | STAFF | 40 | 40 | - | 0 |
 | ECON | 52 | 52 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 24 | 23 | HIST-16✎ HIST-22✎ | 0 |
-| SAVE | 66 | 65 | SAVE-28✎ | 0 |
+| HIST | 24 | 24 | - | 0 |
+| SAVE | 66 | 66 | - | 0 |
 | OWNER | 6 | 6 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
@@ -866,6 +867,7 @@
 | T761 | show recorded npc league red cards | ARCH | T752 | todo |
 | T762 | present contributing clubs without invented chronology | ARCH | T752 | todo |
 | T763 | localize league statistic table counts | ARCH | T752 | todo |
+| T764 | rebuild career-card summaries by recorded side | HIST SAVE MATCH LEAGUE ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -893,20 +895,20 @@
 ## next
 - implement-task T689: finish the cv04-clr window's read and hand-off — `artifacts/benchmarks/scoring-261109-cv04-clr/README.md` (interim) names what is left; the engine experiment is its `analysis/cv04-clr-source.patch` (the same dirty tree is on `origin/wip/ev09` 16880b31); `c50`/`c25` met the box bar but failed goals, the goal-area share and entries, so the gate is unmet so far
 - release: ev09's T726, T730, ARCH r35, MATCH r58 and T689 evidence are on `origin/next` (not main); the code is 25799e26's, whose verify:batch passed unit, integration (1179 + 4 skips), contract, catalogs, presentation, i18n and build and its Chromium journeys reached about 281 of 348 with no failure before the check timed out at 50 minutes — the last session merges main into next, runs `pnpm run verify:batch` with a timeout above an hour, then pushes main
-- create-task HIST SAVE: consume current career-card summary policy delta as one atomic contract/producer/reader unit; original source facts and current reload invariants remain
+- implement-task T764 in its exact isolated assignment when a worker slot opens; phase2 approved units continue and final source freeze remains19:06Z
 
 ## log
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
+- 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
 - 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09
 - 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
 - 261109 T689 cv04-own (09:04–11:04Z window, measurements 09:08–10:33Z): MATCH r56's in-box shot weighing (`boxShot.read`/`against`, default off, uncommitted in the evidence patch) moves the shot mix but not the box's chance (xG a shot 0.056–0.061, bar 0.07), since 92% of the carried box shots with nobody between are MATCH-16 clear chances struck at xG 0.008 against a keeper already out; every candidate breaks MATCH-29 (−0.187 to −0.271); gate unmet, only the diagnostic and evidence committed, T689 stays todo ev09
 - 261109 T730 done: CI WebKit's 대기 0 was the career's first offer (1930.08.03–08.08) closing by its own deadline before an x10 owner stop landed, not diverging counts (both read `pendingDecisions` of one world); the journey observes the match eve, which stops on 08.07 at any pace with the offer waiting, and records every shown date; browser runs left to the release run ev09
 - 261109 T726 done: the match viewer's six playback modules live in `features/match-viewer/lib` and read the entity through its new CSS-free `entities/match/logic.ts`; ESLint keeps `logic.ts` to `lib/`, an architecture test keeps every e2e/fixture/`logic.ts` closure free of stylesheets and slice indexes; 71/30 chunks kept; browser specs left to the release run ev09
 - 261109 update-ssot ARCH r35 + create-task T726 refresh: code run outside the Vite build loads no stylesheet, asset or slice index and reaches other slices through `logic.ts` or `@x` (F13 adopted); T726 blocked → todo at ARCH@35 ev09
-- 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
 - 261109 T745 integrated
 - 261109 T743 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
