@@ -1,7 +1,7 @@
 import type { PlayerMotion } from '../../../../../../packages/contracts/src/types';
-import { PITCH_METRES } from './figureActions';
-import { FIGURE_POSE_CONFIG, type FigureInput } from './figurePose';
-import { locate, type PresentationSample } from './presentationClock';
+import { PITCH_METRES } from '../../../entities/match/logic';
+import { FIGURE_POSE_CONFIG, type FigureInput } from '../../../entities/match/logic';
+import { locate, type PresentationSample } from '../../../entities/match/logic';
 
 /**
  * MATCH-12/36/37, WEB-95: what each player figure of the presented instant is drawn from

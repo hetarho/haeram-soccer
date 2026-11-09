@@ -8,7 +8,7 @@ import {
   recordedGoals,
   recordedIncidents,
   type Moment,
-} from '../../../entities/match';
+} from '../lib/moments';
 import s from '../../../shared/ui/styles/Analysis.module.css';
 
 const incidentText = {

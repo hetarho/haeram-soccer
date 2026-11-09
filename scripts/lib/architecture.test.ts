@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, relative, resolve } from 'node:path';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 import ts from 'typescript';
-import { dependencies, runtimeImports, sourceGraph } from './source-graph';
+import { dependencies, isSource, runtimeImports, sourceGraph } from './source-graph';
 import {
   ORCHESTRATION,
   UI_LAYERS,
@@ -116,6 +116,41 @@ describe('runtime architecture boundaries', () => {
       'packages/engine/src/calendar.ts',
       'packages/engine/src/transfer-window.ts',
     ]);
+  });
+});
+
+const SLICED_LAYERS = ['pages', 'widgets', 'features', 'entities'];
+const SLICE_INDEX =
+  /^apps\/web\/src\/(pages|widgets|features|entities)\/[^/]+\/index\.[cm]?[jt]sx?$/;
+/** Every `*.ts` file under a test folder, which Playwright and Vitest load under Node. */
+const nodeLoaded = (dir: string) =>
+  readdirSync(dir, { recursive: true, encoding: 'utf8' })
+    .filter((name) => name.endsWith('.ts'))
+    .map((name) => join(dir, name).split('\\').join('/'));
+/** Each slice's framework-free entry (→ARCH-4 r35). */
+const logicEntries = () =>
+  SLICED_LAYERS.flatMap((layer) =>
+    readdirSync(`apps/web/src/${layer}`)
+      .map((slice) => `apps/web/src/${layer}/${slice}/logic.ts`)
+      .filter((file) => existsSync(file)),
+  );
+
+describe('outside the Vite build', () => {
+  it('code run outside the Vite build loads only script and JSON modules and no slice index', () => {
+    const graph = sourceGraph(process.cwd());
+    const entries = [
+      ...nodeLoaded('tests/e2e'),
+      ...nodeLoaded('tests/fixtures'),
+      ...logicEntries(),
+    ];
+    expect(entries).toContain('apps/web/src/entities/match/logic.ts');
+    const loaded = entries.flatMap((entry) =>
+      dependencies(graph, [entry])
+        .map((file) => relative(process.cwd(), file).split('\\').join('/'))
+        .filter((file) => !isSource(file) || SLICE_INDEX.test(file))
+        .map((file) => `${entry} → ${file}`),
+    );
+    expect(loaded).toEqual([]);
   });
 });
 

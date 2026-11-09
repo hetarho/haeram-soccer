@@ -2,8 +2,10 @@
  * Feature-sliced layers of apps/web/src (→ARCH-3/4), highest first: app, pages, widgets, features,
  * entities, shared. A layer imports only the layers below it, slices of one layer never import each
  * other (an entity names another only through that entity's `@x/<consumer>.ts` file), and anything
- * outside a slice imports it through its index, except that a dynamic `import()` names the module
- * file so the lazy chunk stays split. runtime, adapters and presentation sit below every layer and
+ * outside a slice imports it through its index or its `logic.ts`, except that a dynamic `import()`
+ * names the module file so the lazy chunk stays split. A slice's `logic.ts` re-exports only its own
+ * `lib/` modules, so code run outside the Vite build can load it without a component or stylesheet
+ * (→ARCH-4 r35). runtime, adapters and presentation sit below every layer and
  * import none of them, which keeps the Worker free of React (→ARCH-6). Layer modules are built free
  * of import side effects, so a side-effect-only import inside a layer would vanish from the build.
  *
@@ -17,6 +19,7 @@ const SLICED = new Set(['pages', 'widgets', 'features', 'entities']);
 const INFRASTRUCTURE = new Set(['runtime', 'adapters', 'presentation']);
 const ROOT = '/apps/web/src/';
 const INDEX = /^index(\.[cm]?[jt]sx?)?$/;
+const LOGIC = /^logic(\.[cm]?[jt]sx?)?$/;
 const MODULE = /\.[cm]?[jt]sx?$/;
 
 /** Where a path relative to apps/web/src sits: its layer, slice and the path inside the slice. */
@@ -29,6 +32,7 @@ function place(path) {
 
 const rank = (layer) => LAYERS.indexOf(layer);
 const isIndex = (to) => to.rest.length === 0 || (to.rest.length === 1 && INDEX.test(to.rest[0]));
+const isLogic = (to) => to.rest.length === 1 && LOGIC.test(to.rest[0]);
 const ownCrossImport = (me, to) =>
   me.layer === 'entities' &&
   to.rest.length === 2 &&
@@ -43,9 +47,11 @@ export const featureSlicedImports = {
       higher: 'A layer imports only the layers below it.',
       sibling: 'Slices of one layer do not import each other; move the shared part down a layer.',
       entity: "An entity names another only through that entity's `@x/{{consumer}}` file.",
-      publicApi: 'Import a slice through its index (its public API).',
+      publicApi: 'Import a slice through its index or its logic.ts (its public entries).',
       lazyIndex:
-        'A dynamic import() names the module file, not the slice index, so the lazy chunk stays split.',
+        'A dynamic import() names the module file, not a slice entry (its index or logic.ts), so the lazy chunk stays split.',
+      logicLib:
+        "A slice's logic.ts re-exports only its own lib/ modules, so code run outside the Vite build can load it.",
       infrastructure:
         'runtime, adapters and presentation sit below every layer and import none of them.',
       sideEffect:
@@ -58,6 +64,11 @@ export const featureSlicedImports = {
     if (at < 0) return {};
     const me = place(file.slice(at + ROOT.length));
     const layered = LAYERS.includes(me.layer);
+    // a slice's root logic.ts: every relative specifier must land in that slice's own lib/
+    const ownLib =
+      SLICED.has(me.layer) && isLogic(me)
+        ? `${posix.join(posix.dirname(file), 'lib')}/`
+        : undefined;
 
     /** `kind`: 'static' (import, export … from), 'dynamic' (import()) or 'type' (typeof import()). */
     const check = (node, specifier, kind) => {
@@ -65,11 +76,12 @@ export const featureSlicedImports = {
       // Resolve against the importer's full path, so a specifier that climbs above src and comes
       // back ('../../../../src/entities/…') is classified by where it lands.
       const target = posix.join(posix.dirname(file), specifier.replace(/[?#].*$/, ''));
+      const report = (messageId, data) => context.report({ node, messageId, data });
+      if (ownLib && !target.startsWith(ownLib)) return report('logicLib');
       const inside = target.lastIndexOf(ROOT);
       if (inside < 0) return;
       const to = place(target.slice(inside + ROOT.length));
       if (!LAYERS.includes(to.layer)) return;
-      const report = (messageId, data) => context.report({ node, messageId, data });
       if (INFRASTRUCTURE.has(me.layer)) return report('infrastructure');
       if (layered) {
         if (rank(to.layer) < rank(me.layer)) return report('higher');
@@ -82,8 +94,9 @@ export const featureSlicedImports = {
       }
       if (!SLICED.has(to.layer) || kind === 'type') return;
       if (!to.slice) return report('publicApi');
-      if (kind === 'static' && !isIndex(to)) return report('publicApi');
-      if (kind === 'dynamic' && isIndex(to)) return report('lazyIndex');
+      const entry = isIndex(to) || isLogic(to);
+      if (kind === 'static' && !entry) return report('publicApi');
+      if (kind === 'dynamic' && entry) return report('lazyIndex');
     };
     const literal = (node) =>
       node?.type === 'Literal'

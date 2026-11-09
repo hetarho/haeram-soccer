@@ -13,7 +13,7 @@ import { expect, test } from '@playwright/test';
 import { chooseLevel } from './events';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import {
   deadBallBeats,
   presentationAdvance,

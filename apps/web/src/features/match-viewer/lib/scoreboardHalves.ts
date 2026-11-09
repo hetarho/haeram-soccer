@@ -4,8 +4,8 @@
  * on it. Pure: the colours come from the match's resolved look only, so an unrecorded match shows
  * its stand-in shirts and nothing current repaints a played match (KIT-12).
  */
-import { contrast, inkOn } from '../../club/@x/match';
-import type { MatchLook } from './matchAppearance';
+import { contrast, inkOn } from '../../../entities/club';
+import type { MatchLook } from '../../../entities/match/logic';
 
 export interface ScoreboardHalf {
   /** The side's shirt base colour. */

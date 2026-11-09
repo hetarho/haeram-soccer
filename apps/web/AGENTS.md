@@ -58,8 +58,18 @@ module it renders.
 
 - A layer imports only layers below it. Slices of one layer never import each other; an entity
   names another only through that entity's `@x/<consumer>.ts` file.
-- Outside a slice, import its `index.ts` only. Each index opens with what the slice is for and
-  what it exports, so read the index before the files; it exports exactly what is used outside.
+- Outside a slice, import its `index.ts` only, or its `logic.ts` entry. Each index opens with what
+  the slice is for and what it exports, so read the index before the files; it exports exactly
+  what is used outside. A slice whose framework-free helpers are read outside the Vite build adds
+  a root `logic.ts` that re-exports only its own `lib/` modules, and its index re-exports it whole
+  (`export * from './logic'`); ESLint keeps `logic.ts` to `lib/`, and a dynamic `import()` names
+  neither entry. `entities/match/logic.ts` is the first.
+- Code run outside the Vite build (Playwright specs, test fixtures, scripts) loads only script and
+  JSON modules, never a stylesheet, another asset or a slice index (ARCH-4 r35): Playwright's Node
+  loader cannot load CSS, and an index re-exports components beside its logic. A module such code
+  reaches imports another slice only through an entity's `@x` file or that slice's `logic.ts`;
+  `scripts/lib/architecture.test.ts` walks the closure of every `tests/e2e` and `tests/fixtures`
+  file and every `logic.ts` to keep it so.
 - Layer modules are built free of import side effects (ARCH-4 r34): an index brings into a chunk
   only the modules that chunk uses. Top-level work in a layer module (a store subscription, a
   document listener) therefore runs only in a chunk that uses one of that module's exports, as

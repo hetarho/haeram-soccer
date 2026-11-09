@@ -23,8 +23,8 @@ import {
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
   WATCH_SPEEDS,
-} from './presentationClock';
-import { archivePlayback } from './replay';
+} from '../../../entities/match/logic';
+import { archivePlayback } from '../../../entities/match/logic';
 
 /** A small timed minute: its start, its sample times and its ball knots (→MATCH-12). */
 function timedFrame(

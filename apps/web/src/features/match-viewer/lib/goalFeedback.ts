@@ -1,6 +1,6 @@
 import type { MatchFrame, MatchRecord } from '../../../../../../packages/contracts/src/types';
 import { recordedGoals } from './moments';
-import { presentationAdvance, type Preparation } from './presentationClock';
+import { presentationAdvance, type Preparation } from '../../../entities/match/logic';
 
 /**
  * The goal-feedback transition (→WEB-94): how long the presented match holds at a recorded goal in
