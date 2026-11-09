@@ -1,0 +1,242 @@
+diff --git a/apps/web/src/entities/office/lib/ownerFigures.ts b/apps/web/src/entities/office/lib/ownerFigures.ts
+index 1b13d2ee..89393cb9 100644
+--- a/apps/web/src/entities/office/lib/ownerFigures.ts
++++ b/apps/web/src/entities/office/lib/ownerFigures.ts
+@@ -33,7 +33,11 @@ import {
+   OWNER_TIERS,
+   OWNER_TRAITS,
+ } from '../../../../../../packages/engine/src/owner-config';
+-import { seasonResult } from '../../../../../../packages/engine/src/finance-read';
++import {
++  lastSeasonTurnover,
++  seasonResult,
++  seasonTurnover,
++} from '../../../../../../packages/engine/src/finance-read';
+ import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
+ import { ratio } from '../../../../../../packages/engine/src/primitives';
+ import { quote } from '../../../../../../packages/engine/src/quotes';
+@@ -246,33 +250,6 @@ export function injectionSteps(w: World) {
+   return [...new Set(amounts)];
+ }
+ 
+-/** Ledger income that is not turnover (→ECON-30): player sales and compensation for leavers. */
+-const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation']);
+-/**
+- * Last season's turnover in today's money, the base of an injection's 팬 민심 (→OWNER-12): its
+- * archived income without player sales or compensation; in the takeover season, the bought club's
+- * last income before it (→ECON-36). Undefined without a closed season in the money of today.
+- */
+-function lastTurnover(w: World) {
+-  const takeover = w.owner?.takeover;
+-  if (takeover?.year === w.year)
+-    return takeover.lastIncome && BigInt(takeover.lastIncome) > 0n
+-      ? takeover.lastIncome
+-      : undefined;
+-  const season = w.history.at(-1);
+-  if (!season || season.year !== w.year - 1 || season.currency !== w.currency) return undefined;
+-  const sales = w.events
+-    .filter(
+-      (e) =>
+-        e.year === season.year &&
+-        e.amount &&
+-        (e.currency ?? season.currency) === season.currency &&
+-        NOT_TURNOVER.has(e.kind),
+-    )
+-    .reduce((sum, e) => sum + BigInt(e.amount!), 0n);
+-  const turnover = BigInt(season.income) - sales;
+-  return turnover > 0n ? turnover.toString() : undefined;
+-}
+ /** The percent of `base` that `amount` is, unrounded. */
+ const share = (amount: string, base: string) => (Number(amount) / Number(base)) * 100;
+ /**
+@@ -280,8 +257,10 @@ const share = (amount: string, base: string) => (Number(amount) / Number(base))
+  * most +10. Undefined when the club has no closed season to measure it by.
+  */
+ export function injectionMood(w: World, amount: string) {
+-  const turnover = lastTurnover(w);
+-  if (!turnover) return undefined;
++  const takeover = w.owner?.takeover;
++  const turnover =
++    lastSeasonTurnover(w) ?? (takeover?.year === w.year ? takeover.lastIncome : undefined);
++  if (!turnover || BigInt(turnover) <= 0n) return undefined;
+   return Math.min(FAN_MOOD.injection.max, share(amount, turnover) * FAN_MOOD.injection.perPercent);
+ }
+ /** What an injection of `amount` leaves (→OWNER-9, WEB-114): both pots and 팬 민심's rise. */
+@@ -295,8 +274,8 @@ export function injectionOutlook(w: World, amount: string) {
+ 
+ /**
+  * What the 배당 dial would take at the close on today's books (→OWNER-11): `share` of the season's
+- * result so far when positive, never more than the cash above zero, and the 팬 민심 it costs, −1
+- * per 1% of the season's turnover so far. The close settles on the whole season.
++ * result so far when positive, never more than the cash above zero, and the 팬 민심 it costs by
++ * its share of the season's turnover so far. The close settles on the whole season.
+  */
+ export function dividendOutlook(w: World, dividend: DividendShare) {
+   // The close's own result: an injection is the owner's money, not profit (→OWNER-11).
+@@ -305,11 +284,9 @@ export function dividendOutlook(w: World, dividend: DividendShare) {
+     cash = positive(BigInt(w.cash));
+   let amount = BigInt(ratio(profit.toString(), BigInt(dividend), 100n));
+   if (amount > cash) amount = cash;
+-  const income = BigInt(w.income);
+-  const mood =
+-    amount > 0n && income > 0n
+-      ? felt(w.owner!, share(amount.toString(), income.toString()) * FAN_MOOD.dividend.perPercent)
+-      : 0;
++  const turnover = seasonTurnover(w);
++  const percent = turnover > 0n ? share(amount.toString(), turnover.toString()) : 100;
++  const mood = amount > 0n ? felt(w.owner!, percent * FAN_MOOD.dividend.perPercent) : 0;
+   return { result: result.toString(), amount: amount.toString(), mood };
+ }
+ /** The last dividend the owner took, in the money of its season (→OWNER-11/17). */
+diff --git a/packages/engine/src/finance-read.ts b/packages/engine/src/finance-read.ts
+index 80fc7b20..4dfa6291 100644
+--- a/packages/engine/src/finance-read.ts
++++ b/packages/engine/src/finance-read.ts
+@@ -1,5 +1,8 @@
+ import type { World } from '../../contracts/src/types';
+ import { ratio } from './primitives';
++import { currency } from '../../catalogs/src/index';
++import { clubOf, lastOwnSeason } from './player-state';
++import { eventsInSeason } from './season-index';
+ 
+ /** Current-season result excluding the owner's transfers; no simulation or settlement imports. */
+ export function seasonResult(w: World): string {
+@@ -22,3 +25,51 @@ export function roundShare(annual: string, round: number, count = 46) {
+     BigInt(ratio(annual, BigInt(round - 1), BigInt(count)))
+   ).toString();
+ }
++
++/** Income that is not turnover (→ECON-30, OWNER-9). */
++const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation', 'owner-injection']);
++
++/**
++ * This season's turnover so far, excluding player sales, leaver compensation and owner capital.
++ * Events are only appended, so the scan stops at the first older one.
++ */
++export function seasonTurnover(w: World) {
++  let notTurnover = 0n;
++  for (let i = w.events.length - 1; i >= 0; i--) {
++    const e = w.events[i];
++    if (e.year < w.year) break;
++    if (e.year === w.year && e.currency === w.currency && e.amount && NOT_TURNOVER.has(e.kind))
++      notTurnover += BigInt(e.amount);
++  }
++  return BigInt(w.income) - notTurnover;
++}
++
++/**
++ * The last owned season's turnover, carried into this season's currency (→ECON-30/6).
++ * Archived income retains unexplained legacy ledger income; subtract only the recorded
++ * non-turnover lines, just as the ledger's named lines plus its residual do.
++ */
++export function lastSeasonTurnover(w: World): string | undefined {
++  const season = lastOwnSeason(w);
++  if (!season || season.year !== w.year - 1) return undefined;
++  const notTurnover = eventsInSeason(w, season.year)
++    .filter(
++      (event) =>
++        event.currency === season.currency &&
++        event.amount !== undefined &&
++        NOT_TURNOVER.has(event.kind),
++    )
++    .reduce((sum, event) => sum + BigInt(event.amount!), 0n);
++  const turnover = BigInt(season.income) - notTurnover;
++  const amount = turnover > 0n ? turnover.toString() : '0';
++  if (season.currency === w.currency) return amount;
++  const code = clubOf(w).country,
++    before = currency(code, season.year),
++    after = currency(code, w.year);
++  if (before.code !== season.currency || after.code !== w.currency) return undefined;
++  return ratio(
++    amount,
++    after.num * before.den * BigInt(after.units),
++    after.den * before.num * BigInt(before.units),
++  );
++}
+diff --git a/packages/engine/src/finance.ts b/packages/engine/src/finance.ts
+index 54809817..c83b4cb1 100644
+--- a/packages/engine/src/finance.ts
++++ b/packages/engine/src/finance.ts
+@@ -1,10 +1,16 @@
+ import { message as sourceMessage } from '../../contracts/src/messages';
+-import { roundShare as readRoundShare, seasonResult as readSeasonResult } from './finance-read';
++import {
++  lastSeasonTurnover,
++  roundShare as readRoundShare,
++  seasonResult as readSeasonResult,
++  seasonTurnover,
++} from './finance-read';
++export { lastSeasonTurnover, seasonTurnover } from './finance-read';
+ import { eventsInSeason, matchesInSeason } from './season-index';
+ import { baseEffects } from './bases';
+ import type { Event, MatchRecord, SponsorSlot, World } from '../../contracts/src/types';
+ import { currency } from '../../catalogs/src/index';
+-import { activePlayers, clubOf, isOwnSeason, lastOwnSeason } from './player-state';
++import { activePlayers, clubOf, isOwnSeason } from './player-state';
+ import { broadcastQuote, footballQuote, quote } from './quotes';
+ import { clamp, ratio, scaleBy } from './primitives';
+ import { exp } from './portable-math';
+@@ -80,41 +86,6 @@ export function operatingExpensesAt(code: string, year: number, tier: number) {
+   const table = EXPENSE_CONFIG.floor[code] ?? EXPENSE_CONFIG.floor.ENG;
+   return footballQuote(code, year, table[Math.min(tier, table.length - 1)]);
+ }
+-/**
+- * Income lines that are not turnover (→ECON-30): player sales, compensation for players who left
+- * and the owner's injections (→OWNER-9).
+- */
+-const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation', 'owner-injection']);
+-/**
+- * The club's turnover over its last completed season, in this season's money (→ECON-30): that
+- * season's ledger income (→ECON-10) without player sales or compensation for players who left.
+- * Undefined when no completed season's ledger is kept, as in a club's first season (a takeover's
+- * included: the world's season before it kept no ledger of the club's).
+- */
+-export function lastSeasonTurnover(w: World): string | undefined {
+-  const season = lastOwnSeason(w);
+-  if (!season || season.year !== w.year - 1) return undefined;
+-  const lines = ledgerLines(
+-    seasonEntries(w, season.year, season.currency),
+-    incomeKinds,
+-    season.income,
+-  );
+-  const turnover = lines
+-    .filter((line) => !NOT_TURNOVER.has(line.key))
+-    .reduce((sum, line) => sum + BigInt(line.amount), 0n);
+-  const amount = turnover > 0n ? turnover.toString() : '0';
+-  if (season.currency === w.currency) return amount;
+-  // A currency change between the seasons converts it like every live amount (→ECON-6).
+-  const code = clubOf(w).country,
+-    before = currency(code, season.year),
+-    after = currency(code, w.year);
+-  if (before.code !== season.currency || after.code !== w.currency) return undefined;
+-  return ratio(
+-    amount,
+-    after.num * before.den * BigInt(after.units),
+-    after.den * before.num * BigInt(before.units),
+-  );
+-}
+ /**
+  * This season's operating expenses as the season starts (→ECON-30): `share` of the last completed
+  * season's turnover, never below the division amount (floor) of the division played this season,
+@@ -151,21 +122,6 @@ export function wageBill(w: World) {
+     BigInt(costs.staffWages)
+   ).toString();
+ }
+-/**
+- * This season's turnover so far (→ECON-30): its income without player sales, compensation for
+- * players who left or the owner's injections. Events are only appended, so the scan stops at the
+- * first older one.
+- */
+-export function seasonTurnover(w: World) {
+-  let notTurnover = 0n;
+-  for (let i = w.events.length - 1; i >= 0; i--) {
+-    const e = w.events[i];
+-    if (e.year < w.year) break;
+-    if (e.year === w.year && e.currency === w.currency && e.amount && NOT_TURNOVER.has(e.kind))
+-      notTurnover += BigInt(e.amount);
+-  }
+-  return BigInt(w.income) - notTurnover;
+-}
+ /**
+  * This season's net result so far (→OWNER-11): its income less its expense without the owner's
+  * money, the injections he put in (→OWNER-9) and any dividend he took. The dividend is a share of
