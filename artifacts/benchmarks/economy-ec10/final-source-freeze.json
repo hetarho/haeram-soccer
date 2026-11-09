@@ -1,0 +1,26 @@
+{
+  "source": "51d072a18634436c76c0776c3896a547f34dbbbc",
+  "hashes": {
+    "scripts/calibrate-cash-flow.ts": "7fb014f7dbd4447a1d5d61a62a360eb6e92f38cda5c5ac1f478b6cbd2b0dc4d8",
+    "scripts/owner-balance.ts": "ebb0c86c99c6dc70b1f994b9791abf80400848e3e75ab2ead7900b07f1457ad4",
+    "scripts/lib/settlement-payroll.ts": "9d480ab3adb4ca07972cccce21a74a242e61b726ec07fe4d90143e8d31c37e72",
+    "scripts/lib/tool-messages.ts": "3a9fc9da5eb2e85f52fd3165ac155da2e5ed2ca68082a1588ad40d922f22ce02",
+    "packages/contracts/src/source-messages.ts": "a7251449ec7f396c91fc7c8b7b2d2d91ec23dd31f326646423547f8145b75b98",
+    "pnpm-lock.yaml": "fe5c933c17aae78992896407be25dbbbc3aba751b5800269e391c0fc89e3397f",
+    "tests/fixtures/portable-v1.json": "67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f",
+    "tests/fixtures/prepared/manager-journey.json": "51a624c0a1387f954ef58d9bd4e79062653a990da468f0f626da4b897066b94d",
+    "tests/fixtures/prepared/manager-activation.json": "fff9770d1e4363813efc283a677382b0ce0761aa0eda90f95dcfb97ac210a470",
+    "apps/web/public/presentation/locales/ko-KR.json": "aa2a2f3b48fcda60caa80ec8c7b0d40696e424204e2b061fa71f22eabc64c81f",
+    "apps/web/public/presentation/locales/en-GB.json": "79d74a05bbab8c4070652c03ee3bc1eacc650f40a4c028843f4454ce425e40e5",
+    "apps/web/public/presentation/locales/es-ES.json": "44d8307e3291717026472dad051bc75f25ea07ceff17769d0d724bfba1250bfc",
+    "apps/web/public/presentation/locales/pt-BR.json": "1a1df4c7930fc6624b9445f258559572d8e8c4975f34c2be819aec240581be2d",
+    "apps/web/public/presentation/locales/fr-FR.json": "eb0c69e39becb280410470163d55678b5a775228516019db1566d08861894437",
+    "apps/web/public/presentation/locales/de-DE.json": "4af1d2b29b6be012c55dbb5c5fe20ecdb9bd8ad9860a1b8e84f9adbde328cffd",
+    "apps/web/public/presentation/locales/it-IT.json": "96dbca5e3507ef702c4e705ec57da54562413bb7b87e58384b5b580c24265579",
+    "apps/web/public/presentation/locales/nl-NL.json": "cb56613f99457d1038fd25acaad827ba99355e8dcb12fb8f860a9725ad895798",
+    "apps/web/public/presentation/locales/tr-TR.json": "044b675599bae9f9c1c2d89bfb4b35453718370d65dcae6714dd07e39d23a1c6",
+    "apps/web/public/presentation/locales/ar-SA.json": "b2712c37a466a9f7637be5035e443f6468c240ab23d9460b44bc4fa75041a6f4",
+    "apps/web/public/presentation/locales/ja-JP.json": "5864a6160f13f9add8fc654f7acb51eb7fd363f31a374121dbc4702be0845665",
+    "apps/web/public/presentation/locales/id-ID.json": "2a26b26c11d61980f8551b26d79c23edc37dcf1d21f2757256f3210b05f7090f"
+  }
+}

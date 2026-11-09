@@ -1,0 +1,15 @@
+{
+  "sources": {
+    "release": {
+      "head": "51d072a18634436c76c0776c3896a547f34dbbbc",
+      "playerWageEra": null,
+      "normalization": null,
+      "allowedDirty": []
+    }
+  },
+  "ownedFile": "/tmp/ec10-v3-inputs/owned-ENG-top.json",
+  "ownedSha256": "4a40c7887fde8e5f1cc6c088fd5e628a11e1742d3692fd6ab6432378f7e6f8cd",
+  "nodeVersion": "v24.22.1",
+  "lockSha256": "fe5c933c17aae78992896407be25dbbbc3aba751b5800269e391c0fc89e3397f",
+  "observerSha256": "9d480ab3adb4ca07972cccce21a74a242e61b726ec07fe4d90143e8d31c37e72"
+}

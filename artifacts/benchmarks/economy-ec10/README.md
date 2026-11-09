@@ -40,3 +40,7 @@ Outer `vibe check` receipts for the split parity phase/reference may show stale 
 - [Premier League 2024/25 central payments](https://www.premierleague.com/en/news/4325409): rounded published table total GBP2,833.6m. The candidate fit the complete central pot across20 ranks, not the TV equal-share row alone.
 
 These source totals remain evidence. Their normalization coefficients are not active production rules.
+
+## Final verification continuation
+
+The original complete batch retained one 600-second parallel ten-season persistence timeout. Its unchanged exact isolated retry passed using the same provenance-checked fixture cache; no cold-generation speedup is claimed. The explicit1183-ID union preserves1178 original passes and exactly4 original skips, replaces only the failed ID, and reaches1179 passes. All six remaining stages then execute normally. Original failed/raw retry/continuation reports are preserved in final-test-results.tar.gz; the original batch is never relabeled green. Final derived stage metadata renames inherited initial elapsed time rather than presenting it as a final total. Actual source/case bindings, not an inherited CLI task label, prove coverage.

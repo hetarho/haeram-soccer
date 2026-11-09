@@ -1,0 +1,53 @@
+{
+  "source": "51d072a18634436c76c0776c3896a547f34dbbbc",
+  "cwd": "/home/deep/haeram/haeram-soccor",
+  "started": "2026-11-09T07:26:00.181Z",
+  "method": "same-source successes plus one unchanged isolated resource retry, followed by all remaining stages; original failed batch retained",
+  "stages": [
+    {
+      "id": "retained-observer-and-source-checks",
+      "code": 0,
+      "source": "51d072a18634436c76c0776c3896a547f34dbbbc",
+      "reference": "/tmp/ec10-first-final-attempt/gate.json"
+    },
+    {
+      "id": "integration-case-union",
+      "code": 0,
+      "total": 1183,
+      "passed": 1179,
+      "skipped": 4
+    },
+    {
+      "id": "test:contract",
+      "code": 0,
+      "seconds": 75.834
+    },
+    {
+      "id": "validate:catalogs",
+      "code": 0,
+      "seconds": 1.257
+    },
+    {
+      "id": "validate:presentation",
+      "code": 0,
+      "seconds": 1.783
+    },
+    {
+      "id": "validate:i18n",
+      "code": 0,
+      "seconds": 3.968
+    },
+    {
+      "id": "build",
+      "code": 0,
+      "seconds": 6.987
+    },
+    {
+      "id": "test:e2e",
+      "code": 0,
+      "seconds": 2086.866
+    }
+  ],
+  "passed": true,
+  "finished": "2026-11-09T08:02:17.878Z"
+}

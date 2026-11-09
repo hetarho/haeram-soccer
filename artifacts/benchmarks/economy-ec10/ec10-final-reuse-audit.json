@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "auditor": "independent economy_reviewer",
+  "createdAt": "2026-11-09T07:30:52.417997+00:00",
+  "scope": "Read-only review of retained receipts, exact retry and continuation driver; this artifact writes no source and executes no tests or simulations.",
+  "verdict": "verified",
+  "source": "51d072a18634436c76c0776c3896a547f34dbbbc",
+  "tree": "7e32b8b89772268d14d40db20bfc159f898428fb",
+  "sourceBindings": {
+    "originalCleanSource": true,
+    "originalCommit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+    "retryCheckCommit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+    "aggregateCommit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+    "currentHead": "51d072a18634436c76c0776c3896a547f34dbbbc",
+    "currentIndexTree": "7e32b8b89772268d14d40db20bfc159f898428fb",
+    "currentWorktreeClean": true,
+    "frozenFileHashesAllMatch": true,
+    "freezeFileSha256": "609cc03df01d353dd1e61d81c083d7817e3fa66c2945354c3debe7103a7bf768"
+  },
+  "integrationUnion": {
+    "originalSelectedUnique": 1183,
+    "originalPassed": 1178,
+    "originalFailed": 1,
+    "originalSkipped": 4,
+    "retrySelectedUnique": 1,
+    "retryPassed": 1,
+    "retryFailed": 0,
+    "retrySkipped": 0,
+    "aggregateSelectedUnique": 1183,
+    "aggregatePassed": 1179,
+    "aggregateFailed": 0,
+    "aggregateSkipped": 4,
+    "exactIdSetEquality": true,
+    "onlyReplacedId": "apps/web/src/adapters/persistence.long-career.test.ts\u0000builds an IndexedDB codec checkpoint of a 10-season career that decodes to the same world",
+    "sameOriginalSkippedIds": [
+      "packages/engine/src/build.tradeoffs.test.ts\u0000tactical roster tradeoffs favors a different tradeoff for defenders and finishers against pressin…",
+      "packages/engine/src/build.tradeoffs.test.ts\u0000tactical roster tradeoffs favors a different tradeoff for passing midfield against balanced oppon…",
+      "packages/engine/src/build.tradeoffs.test.ts\u0000tactical roster tradeoffs favors a different tradeoff for tired players exposed to counterattacks",
+      "packages/engine/src/calibration.grid-favourite.test.ts\u0000grid: calibrated outcomes gives equal sides real football’s share of draws"
+    ],
+    "idSetSha256": "34e84b742d5969fd524e5f5bcf60be3dd3d2f88761c6ac3c8f77f5ac2da34294",
+    "idSetSha256Encoding": "sha256 of UTF-8 JSON sorted case ID array, ensure_ascii=false, separators=(comma,colon)",
+    "caseIdsReference": "/tmp/ec10-final-verification/integration-aggregate.json"
+  },
+  "files": {
+    "/tmp/ec10-first-final-attempt/gate.json": {
+      "sha256": "5cc22b4f90ea379b73917cc50cdea9e59d421597ce9c8e0158bf89058f02daaa"
+    },
+    "/tmp/ec10-first-final-attempt/latest.json": {
+      "sha256": "ffd510248019d8b571a059e4a8a89b2be2b6d261cf0bca55d2e6de6281a3dfde"
+    },
+    "/tmp/ec10-first-final-attempt/unit-results.json": {
+      "sha256": "8dd21cd38abc780a29cab766a7a99e01dfacf4f6f73e459669cac2b78361a6d4"
+    },
+    "/tmp/ec10-first-final-attempt/integration-results.json": {
+      "sha256": "c246ee28655099bc64161175f3aa365a1cffc8c8586e6537689fe64afc72ed1f"
+    },
+    "/tmp/ec10-first-final-attempt/ec10-final-work-finish.json": {
+      "sha256": "d31a189cd4598715da0bab3bd6d4bf9ed5270793602e85c55389a9271709b950"
+    },
+    "/tmp/ec10-final-verification/integration-retry.json": {
+      "sha256": "a782c06ed33563f1222b78bcb34a5fb4b14ad6110b73384d8daa63f71043228d"
+    },
+    "/tmp/ec10-final-verification/integration-aggregate.json": {
+      "sha256": "ac27dce76cbd2384e5a3a32770a004b799e44723c07705500bc08b489ff299bb"
+    },
+    "/tmp/ec10-integration-retry-check.json": {
+      "sha256": "371611ad8dd80e7e5a9bd0ea78637d25734ad75128d5fb0bbad98d2e2bae6deb"
+    },
+    "/home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-877643b1-d495-49d8-8b76-cc627219d338.log": {
+      "sha256": "b85af3bba02e6dd887dbbe9c4f09f52457a163d5fd8a8be1693c0291b977b02c"
+    },
+    "/tmp/ec10-resume-final-gate.mjs": {
+      "sha256": "84dedbf3ff3ef07244d25557e64dddb9222a001823d482ad0a750be65031f414"
+    }
+  },
+  "originalFailure": {
+    "kind": "test timeout",
+    "timeoutMs": 600000,
+    "assertionMismatchReported": false,
+    "failedInvocationRetained": true,
+    "originalIntegrationSuccess": false
+  },
+  "exactRetry": {
+    "command": "pnpm exec vitest run --project integration apps/web/src/adapters/persistence.long-career.test.ts --maxWorkers 1 --reporter=default --reporter=json --outputFile=/tmp/ec10-final-verification/integration-retry.json",
+    "commandEvidence": ".git/haeram/v1/checks.json entry with log /home/deep/haeram/haeram-soccor/.git/haeram/v1/logs/check-877643b1-d495-49d8-8b76-cc627219d338.log",
+    "sourceTestTimeoutMs": 600000,
+    "sourceTestUnchangedFromRelease44": true,
+    "conditions": "Same frozen source/index/config/inputs/assertions/skips/timeout. Worker concurrency reduced to one; no test source or retry policy changes.",
+    "commandResultCacheUsed": false,
+    "fixtureCache": "Warm existing dependency-fingerprinted fixture cache; this is not a cold-generation or performance claim.",
+    "testDurationMs": 4139.806389000001,
+    "cliScopeLabels": {
+      "TIER": "batch",
+      "DIFF_BASE": "44a1069e54fbb6970cfd9b519f65773352954205",
+      "TASK": "T689",
+      "TASKS": "T689"
+    },
+    "coverageEvidence": "Exact command plus file/fullName case IDs and raw JSON statuses; inherited TASK/TASKS=T689 labels are not used as coverage or task-ownership proof."
+  },
+  "continuation": {
+    "driver": "/tmp/ec10-resume-final-gate.mjs",
+    "beforeAndAfterEachStageGuards": "Frozen HEAD, original index tree, clean worktree and all frozen file hashes",
+    "remainingStageScope": [
+      "test:contract",
+      "validate:catalogs",
+      "validate:presentation",
+      "validate:i18n",
+      "build",
+      "test:e2e --project=chromium"
+    ],
+    "failurePropagationVerified": true,
+    "description": "Explicit aggregate of same-source successful receipts, one isolated retry and all remaining stages; not a single green verify:batch invocation.",
+    "originalFailedLatestPreserved": true,
+    "inheritedElapsedMetadata": "resumed-latest copies the first failed attempt elapsedMs until derived closure metadata removes or renames it. It is not a total completed-gate duration or performance result.",
+    "receiptBindingNote": "The driver checks retry status but does not itself assert retryCheck.commit/tree equality; this independent audit explicitly checked those bindings against freeze, original and current source."
+  },
+  "limits": [
+    "No browser result or final publication approval is asserted by this receipt-union audit.",
+    "All remaining pre-push stages, including full Chromium, must finish successfully before publication.",
+    "The rejected wage/package economic pilots are not accepted by test-suite reuse."
+  ]
+}

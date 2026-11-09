@@ -1,0 +1,33 @@
+{
+  "verifiedSource": "51d072a18634436c76c0776c3896a547f34dbbbc",
+  "finalGatePassed": true,
+  "metrics": {
+    "unit": {
+      "numTotalTests": 2316,
+      "numPassedTests": 2316,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "integration": {
+      "numTotalTests": 1183,
+      "numPassedTests": 1179,
+      "numFailedTests": 0,
+      "numPendingTests": 4
+    },
+    "contract": {
+      "numTotalTests": 46,
+      "numPassedTests": 46,
+      "numFailedTests": 0,
+      "numPendingTests": 0
+    },
+    "chromium": {
+      "startTime": "2026-11-09T07:27:32.385Z",
+      "duration": 2085120.1830000002,
+      "expected": 348,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    }
+  },
+  "sourceAfterVerification": "Only report/state/work-snapshot and benchmark evidence metadata may follow; economic code, scripts, locale resources and test inputs must stay byte-identical."
+}

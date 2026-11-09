@@ -1,0 +1,118 @@
+{
+  "started": "2026-11-09T07:06:40.926Z",
+  "scope": "same-source final continuation, not a single successful verify:batch invocation",
+  "source": {
+    "commit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+    "tree": "7e32b8b89772268d14d40db20bfc159f898428fb",
+    "dirty": false,
+    "diff": ""
+  },
+  "machine": {
+    "node": "v24.22.1",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "Intel(R) Xeon(R) Silver 4214 CPU @ 2.20GHz",
+    "logicalCpus": 12,
+    "memoryBytes": 33577496576
+  },
+  "cache": "Existing caches retained; cache warmth and external host load uncontrolled.",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "command": "pnpm run typecheck",
+      "started": "2026-11-09T07:06:40.966Z",
+      "finished": "2026-11-09T07:07:48.665Z",
+      "elapsedMs": 67697,
+      "exitCode": 0,
+      "reused": true
+    },
+    {
+      "stage": "lint",
+      "command": "pnpm run lint",
+      "started": "2026-11-09T07:07:48.668Z",
+      "finished": "2026-11-09T07:08:10.265Z",
+      "elapsedMs": 21597,
+      "exitCode": 0,
+      "reused": true
+    },
+    {
+      "stage": "format:check",
+      "command": "pnpm run format:check",
+      "started": "2026-11-09T07:08:10.266Z",
+      "finished": "2026-11-09T07:08:25.164Z",
+      "elapsedMs": 14899,
+      "exitCode": 0,
+      "reused": true
+    },
+    {
+      "stage": "test:unit",
+      "command": "pnpm run test:unit --reporter=default --reporter=json --outputFile=.tmp/verification/unit-results.json",
+      "started": "2026-11-09T07:08:25.165Z",
+      "finished": "2026-11-09T07:11:03.467Z",
+      "elapsedMs": 158303,
+      "exitCode": 0,
+      "reused": true
+    },
+    {
+      "stage": "integration-case-union",
+      "kind": "aggregation",
+      "exitCode": 0,
+      "original": "c246ee28655099bc64161175f3aa365a1cffc8c8586e6537689fe64afc72ed1f",
+      "retry": "a782c06ed33563f1222b78bcb34a5fb4b14ad6110b73384d8daa63f71043228d",
+      "replacedId": "apps/web/src/adapters/persistence.long-career.test.ts\u0000builds an IndexedDB codec checkpoint of a 10-season career that decodes to the same world"
+    },
+    {
+      "stage": "test:contract",
+      "command": "pnpm run test:contract --reporter=default --reporter=json --outputFile=.tmp/verification/contract-results.json",
+      "started": "2026-11-09T07:26:00.330Z",
+      "finished": "2026-11-09T07:27:16.164Z",
+      "elapsedMs": 75834,
+      "exitCode": 0
+    },
+    {
+      "stage": "validate:catalogs",
+      "command": "pnpm run validate:catalogs",
+      "started": "2026-11-09T07:27:16.297Z",
+      "finished": "2026-11-09T07:27:17.554Z",
+      "elapsedMs": 1257,
+      "exitCode": 0
+    },
+    {
+      "stage": "validate:presentation",
+      "command": "pnpm run validate:presentation",
+      "started": "2026-11-09T07:27:17.684Z",
+      "finished": "2026-11-09T07:27:19.467Z",
+      "elapsedMs": 1783,
+      "exitCode": 0
+    },
+    {
+      "stage": "validate:i18n",
+      "command": "pnpm run validate:i18n",
+      "started": "2026-11-09T07:27:19.611Z",
+      "finished": "2026-11-09T07:27:23.579Z",
+      "elapsedMs": 3968,
+      "exitCode": 0
+    },
+    {
+      "stage": "build",
+      "command": "pnpm run build",
+      "started": "2026-11-09T07:27:23.709Z",
+      "finished": "2026-11-09T07:27:30.696Z",
+      "elapsedMs": 6987,
+      "exitCode": 0
+    },
+    {
+      "stage": "test:e2e",
+      "command": "pnpm run test:e2e --project=chromium",
+      "started": "2026-11-09T07:27:30.833Z",
+      "finished": "2026-11-09T08:02:17.699Z",
+      "elapsedMs": 2086866,
+      "exitCode": 0
+    }
+  ],
+  "finished": "2026-11-09T08:02:17.878Z",
+  "passed": true,
+  "originalAttempt": "/tmp/ec10-first-final-attempt",
+  "initialAttemptElapsedMs": 975414,
+  "durationNote": "Inherited initial duration is not a final gate total; stages include explicit same-source reuse."
+}
