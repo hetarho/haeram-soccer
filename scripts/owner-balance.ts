@@ -42,6 +42,8 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+import { observeSettlementPayroll } from './lib/settlement-payroll';
 import type { CountryCode, Player, World } from '../packages/contracts/src/types';
 import type { DividendShare, OwnerTrait, WealthTier } from '../packages/contracts/src/owner';
 import { careerEnded } from '../packages/contracts/src/owner';
@@ -255,6 +257,10 @@ interface Season {
   /** The season's expense without the dividend, which is owner money (→OWNER-11). */
   expense: number;
   wages: number;
+  /** Exact installments; absent in legacy reports whose wages were sampled before each round. */
+  wageAccounting?: WageAccounting;
+  sampledWages?: number;
+  sampledPlayerWages?: number;
   facilitySpend: number;
   real: number;
   cash: number;
@@ -331,7 +337,7 @@ interface BookLines {
   gate: number;
   commercial: number;
 }
-interface Career {
+export interface Career {
   code: CountryCode;
   tier: WealthTier;
   traits: string;
@@ -375,8 +381,61 @@ interface Career {
     book: BookLines;
   };
   seasons: Season[];
+  /** An ended season is not closed or included in the completed-season bands. */
+  partialPayroll?: ReturnType<typeof seasonPayroll>;
   /** How the career ended before 2009/10, and in which season. */
   end?: { cause: 'club' | 'owner' | 'fans'; year: number };
+}
+
+type PayrollRead = ReturnType<ReturnType<typeof observeSettlementPayroll>['read']>;
+interface WageAccounting extends PayrollRead {
+  version: 'settled-payroll-v1';
+  year: number;
+  currency: string;
+  priceUnit: number;
+  completeSeason: boolean;
+}
+
+/** Keep the exact minor-unit receipts beside converted values and the former samples. */
+export function seasonPayroll(
+  settled: PayrollRead,
+  year: number,
+  currency: string,
+  priceUnit: number,
+  sampledWages: number,
+  sampledPlayerWages: number,
+) {
+  return {
+    wages: Number(settled.payroll) / priceUnit,
+    sampledWages: sampledWages / priceUnit,
+    sampledPlayerWages: sampledPlayerWages / priceUnit,
+    wageAccounting: {
+      ...settled,
+      version: 'settled-payroll-v1' as const,
+      year,
+      currency,
+      priceUnit,
+      completeSeason:
+        settled.firstRound === 1 &&
+        settled.lastRound === SEASON_ROUNDS &&
+        settled.count === SEASON_ROUNDS,
+    },
+  };
+}
+
+/** --in never upgrades an unmarked historical observation into an exact payment. */
+export function payrollAccounting(seasons: readonly Pick<Season, 'wageAccounting'>[]) {
+  const exact = seasons.filter((s) => s.wageAccounting?.version === 'settled-payroll-v1').length;
+  return `${exact} exact settled; ${seasons.length - exact} legacy sampled/unknown`;
+}
+
+/** NPC book wages contain players only; legacy total payroll is not a comparable numerator. */
+export function bookPlayerPayroll(season: Pick<Season, 'wageAccounting' | 'growth'>) {
+  const exact = season.wageAccounting;
+  if (exact?.version === 'settled-payroll-v1')
+    return { amount: Number(exact.playerWages) / exact.priceUnit, label: 'exact player-only' };
+  if (season.growth) return { amount: season.growth.playerWagesPaid, label: 'sampled player-only' };
+  return { amount: undefined, label: 'legacy total payroll / NPC player-only mismatch' };
 }
 
 /** Minor units of one 1901 price unit in this country and year. */
@@ -634,191 +693,212 @@ function playCareer(
   let hold: Growth['hold'];
   const cuts = new Map<string, number>();
   if (GROWTH) MEANS_LEVEL.observe = (c, from, to) => cuts.set(c.id, from - to);
-  while (w.year <= UNTIL && !careerEnded(w)) {
-    const year = w.year,
-      unit = unitOf(code, year),
-      firstEvent = w.events.length;
-    const owner = w.owner!;
-    if (rules.inject && BigInt(owner.fortune) > 0n) {
-      let amount = BigInt(Math.floor(Number(owner.fortune) * rules.inject));
-      const room = ffpRoom(w);
-      if (room !== undefined && amount > BigInt(room)) amount = BigInt(room);
-      if (amount > 0n) ownerCommand(w, { type: 'owner-inject', amount: amount.toString() });
-    }
-    let wages = 0,
-      playerWages = 0,
-      moodLow = owner.fanMood,
-      belowFloor = 0;
-    const signings: GrowthSigning[] = [],
-      offered = new Map<string, [number, 0 | 1]>(),
-      draws = new Set<string>();
-    while (w.round < 46 && !careerEnded(w)) {
-      if (BUILD) buyFacilities(w);
-      const cost = operatingCosts(w, w.round + 1).payments;
-      wages += Number(cost.playerWages) + Number(cost.managerWage) + Number(cost.staffWages ?? '0');
-      playerWages += Number(cost.playerWages);
-      advanceRound(w, undefined, false);
-      const arrived = GROWTH ? arrivals.look(false) : [];
-      if (GROWTH && ownClub(w).tier > 0) {
-        for (const { p, origin, fee } of arrived) {
-          if (origin !== 'free' && origin !== 'fee') continue;
-          const tier = ownClub(w).tier,
-            fit = fitWage(w, p, tier);
-          if (fit.suits >= tier) continue;
-          signings.push({
-            day: w.calendar?.day ?? 0,
-            fee: Number(fee) / unit,
-            ovr: fit.ovr,
-            suits: fit.suits,
-            paid: Number(p.wage) / unit,
-            fit: Number(fit.wage) / unit,
-            refusedFit: replaySigning(w, p, fee, fit.wage),
-            refusedPaid: replaySigning(w, p, fee, BigInt(p.wage)),
-          });
-        }
-        const list = w.shortlist;
-        if (list && !draws.has(`${list.year}:${list.day}`)) {
-          draws.add(`${list.year}:${list.day}`);
-          const offers = new Map(transferOffers(w).map((o) => [o.player.id, o]));
-          for (const entry of list.entries) {
-            const o = offers.get(entry.playerId);
-            if (o && !offered.has(entry.playerId))
-              offered.set(entry.playerId, [overall(o.player), o.freeAgent ? 1 : 0]);
+  const payroll = observeSettlementPayroll(w);
+  try {
+    while (w.year <= UNTIL && !careerEnded(w)) {
+      const year = w.year,
+        unit = unitOf(code, year),
+        currency = w.currency,
+        firstRound = w.round + 1,
+        firstEvent = w.events.length;
+      const owner = w.owner!;
+      if (rules.inject && BigInt(owner.fortune) > 0n) {
+        let amount = BigInt(Math.floor(Number(owner.fortune) * rules.inject));
+        const room = ffpRoom(w);
+        if (room !== undefined && amount > BigInt(room)) amount = BigInt(room);
+        if (amount > 0n) ownerCommand(w, { type: 'owner-inject', amount: amount.toString() });
+      }
+      let sampledWages = 0,
+        sampledPlayerWages = 0,
+        moodLow = owner.fanMood,
+        belowFloor = 0;
+      const signings: GrowthSigning[] = [],
+        offered = new Map<string, [number, 0 | 1]>(),
+        draws = new Set<string>();
+      while (w.round < 46 && !careerEnded(w)) {
+        if (BUILD) buyFacilities(w);
+        const cost = operatingCosts(w, w.round + 1).payments;
+        sampledWages +=
+          Number(cost.playerWages) + Number(cost.managerWage) + Number(cost.staffWages ?? '0');
+        sampledPlayerWages += Number(cost.playerWages);
+        advanceRound(w, undefined, false);
+        const arrived = GROWTH ? arrivals.look(false) : [];
+        if (GROWTH && ownClub(w).tier > 0) {
+          for (const { p, origin, fee } of arrived) {
+            if (origin !== 'free' && origin !== 'fee') continue;
+            const tier = ownClub(w).tier,
+              fit = fitWage(w, p, tier);
+            if (fit.suits >= tier) continue;
+            signings.push({
+              day: w.calendar?.day ?? 0,
+              fee: Number(fee) / unit,
+              ovr: fit.ovr,
+              suits: fit.suits,
+              paid: Number(p.wage) / unit,
+              fit: Number(fit.wage) / unit,
+              refusedFit: replaySigning(w, p, fee, fit.wage),
+              refusedPaid: replaySigning(w, p, fee, BigInt(p.wage)),
+            });
+          }
+          const list = w.shortlist;
+          if (list && !draws.has(`${list.year}:${list.day}`)) {
+            draws.add(`${list.year}:${list.day}`);
+            const offers = new Map(transferOffers(w).map((o) => [o.player.id, o]));
+            for (const entry of list.entries) {
+              const o = offers.get(entry.playerId);
+              if (o && !offered.has(entry.playerId))
+                offered.set(entry.playerId, [overall(o.player), o.freeAgent ? 1 : 0]);
+            }
           }
         }
+        moodLow = Math.min(moodLow, w.owner!.fanMood);
+        if (w.owner!.fanMood < FAN_MOOD.floor) belowFloor++;
+        if (MOODS)
+          console.error(
+            `  ${year} round ${w.round} 팬 민심 ${w.owner!.fanMood.toFixed(1)} · ${w.events
+              .slice(firstEvent)
+              .filter((e) => e.kind === 'fan-mood' && e.round === w.round)
+              .map((e) => `${e.title} ${e.detail}`)
+              .join(' · ')}`,
+          );
       }
-      moodLow = Math.min(moodLow, w.owner!.fanMood);
-      if (w.owner!.fanMood < FAN_MOOD.floor) belowFloor++;
-      if (MOODS)
+      // Read before closeSeason changes the year, round or currency. Even an ended partial
+      // season retains its receipts, without closing it or adding it to the reference bands.
+      const measuredPayroll = seasonPayroll(
+        payroll.read(year, currency, firstRound, w.round),
+        year,
+        currency,
+        unit,
+        sampledWages,
+        sampledPlayerWages,
+      );
+      if (careerEnded(w)) {
+        career.partialPayroll = measuredPayroll;
+        break;
+      }
+      let lifeShare: number | undefined;
+      if (apart) {
+        setLiving(SSOT_LIVING);
+        const living = Number(seasonLivingCost(w, year));
+        setLiving(0);
+        lifeShare = living / Number(w.owner!.fortune);
+      }
+      const firstSeason = !career.seasons.length;
+      const leagueMatches = firstSeason
+        ? new Set(w.fixtures.filter((f) => f.kind === 'league').map((f) => f.id))
+        : undefined;
+      const bookAtClose = firstSeason
+        ? linesIn(
+            bookIncomeLines(
+              w,
+              w.clubs.find((c) => c.id === club.id)!,
+            ),
+            year,
+          )
+        : undefined;
+      let growth: Growth | undefined;
+      if (GROWTH && ownClub(w).tier > 0) {
+        const own = ownClub(w),
+          tier = own.tier,
+          slots = formationOf(w.tactic);
+        const xi = ownStarters(w).map((p, i): GrowthPlayer => {
+          const fit = fitWage(w, p, tier);
+          return {
+            origin: arrivals.origin(p),
+            ovr: fit.ovr,
+            suits: fit.suits,
+            contribution: slotOvr(p, slots[i]!, ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
+            paid: Number(p.wage) / unit,
+            fit: Number(fit.wage) / unit,
+          };
+        });
+        const squadNow = w.players.filter((p) => p.status === 'active');
+        const rivals = leagueRivals(w).map((c) => rating(w, c));
+        growth = {
+          rating: rating(w, own),
+          npcMedian: median(rivals),
+          npcBest: Math.max(...rivals),
+          npcClubs: rivals.length,
+          level: tierLevel(tier),
+          xi,
+          squad: squadNow.length,
+          squadPaid: squadNow.reduce((s, p) => s + Number(p.wage), 0) / unit,
+          squadFit: squadNow.reduce((s, p) => s + Number(fitWage(w, p, tier).wage), 0) / unit,
+          playerWagesPaid: Number(measuredPayroll.wageAccounting.playerWages) / unit,
+          signings,
+          offered: [...offered.values()],
+          ...(hold ? { hold } : {}),
+        };
+      }
+      cuts.clear();
+      closeSeason(w);
+      if (GROWTH) arrivals.look(true);
+      hold = GROWTH && ownClub(w).tier > 0 ? holdOf(w, cuts) : undefined;
+      w.revision++;
+      const archive = w.history.at(-1)!,
+        record = w.owner!.seasonRecords.find((r) => r.year === year);
+      const sources: Record<Source, number> = {
+        competition: 0,
+        matchday: 0,
+        commercial: 0,
+        sales: 0,
+        owner: 0,
+        other: 0,
+      };
+      let facilitySpend = 0,
+        dividend = 0;
+      for (const event of w.events.slice(firstEvent)) {
+        if (event.year !== year || !event.amount) continue;
+        const amount = Number(event.amount) / unit;
+        if (isIncomeKind(event.kind)) sources[sourceOf(event.kind)] += amount;
+        if (event.kind === 'facility') facilitySpend += amount;
+        if (event.kind === 'owner-dividend') dividend += amount;
+      }
+      if (leagueMatches && bookAtClose) {
+        const lines = { league: 0, cups: 0, leagueGate: 0, cupGate: 0, commercial: 0, other: 0 };
+        for (const event of w.events.slice(firstEvent)) {
+          if (event.year !== year || !event.amount || !isIncomeKind(event.kind)) continue;
+          const amount = Number(event.amount) / unit,
+            source = sourceOf(event.kind);
+          if (event.kind === 'gate') {
+            const match = readGateDetail(event.detail)?.matchId;
+            lines[match && leagueMatches.has(match) ? 'leagueGate' : 'cupGate'] += amount;
+          } else if (['league-share', 'league-merit', 'parachute'].includes(event.kind))
+            lines.league += amount;
+          else if (source === 'competition') lines.cups += amount;
+          else if (source === 'commercial') lines.commercial += amount;
+          else if (source === 'other') lines.other += amount;
+        }
+        career.first = { ...lines, book: bookAtClose };
+      }
+      const season: Season = {
+        year,
+        tier: archive.tier,
+        lowest: archive.tier === depth - 1,
+        rank: archive.rank,
+        sources,
+        expense: Number(archive.expense) / unit - dividend,
+        ...measuredPayroll,
+        facilitySpend,
+        real: footballIndex(code, year).real,
+        cash: Number(archive.cash) / unit,
+        fortune: record ? Number(record.fortune) / unit : NaN,
+        living: record ? Number(record.living) / unit : NaN,
+        dividend,
+        fanMood: record?.fanMood ?? w.owner!.fanMood,
+        moodLow,
+        belowFloor,
+        ...(lifeShare !== undefined ? { lifeShare } : {}),
+        ...(growth ? { growth } : {}),
+      };
+      career.seasons.push(season);
+      if (LOG)
         console.error(
-          `  ${year} round ${w.round} 팬 민심 ${w.owner!.fanMood.toFixed(1)} · ${w.events
-            .slice(firstEvent)
-            .filter((e) => e.kind === 'fan-mood' && e.round === w.round)
-            .map((e) => `${e.title} ${e.detail}`)
-            .join(' · ')}`,
+          `  ${year} ${season.tier + 1}부 ${season.rank} · cash ${Math.round(season.cash)} · fortune ${Math.round(season.fortune)} · mood ${season.fanMood.toFixed(0)}`,
         );
     }
-    if (careerEnded(w)) break;
-    let lifeShare: number | undefined;
-    if (apart) {
-      setLiving(SSOT_LIVING);
-      const living = Number(seasonLivingCost(w, year));
-      setLiving(0);
-      lifeShare = living / Number(w.owner!.fortune);
-    }
-    const firstSeason = !career.seasons.length;
-    const leagueMatches = firstSeason
-      ? new Set(w.fixtures.filter((f) => f.kind === 'league').map((f) => f.id))
-      : undefined;
-    const bookAtClose = firstSeason
-      ? linesIn(
-          bookIncomeLines(
-            w,
-            w.clubs.find((c) => c.id === club.id)!,
-          ),
-          year,
-        )
-      : undefined;
-    let growth: Growth | undefined;
-    if (GROWTH && ownClub(w).tier > 0) {
-      const own = ownClub(w),
-        tier = own.tier,
-        slots = formationOf(w.tactic);
-      const xi = ownStarters(w).map((p, i): GrowthPlayer => {
-        const fit = fitWage(w, p, tier);
-        return {
-          origin: arrivals.origin(p),
-          ovr: fit.ovr,
-          suits: fit.suits,
-          contribution: slotOvr(p, slots[i]!, ownMultiplier(p)) - fatigueLoad(p.fatigue) / 6,
-          paid: Number(p.wage) / unit,
-          fit: Number(fit.wage) / unit,
-        };
-      });
-      const squadNow = w.players.filter((p) => p.status === 'active');
-      const rivals = leagueRivals(w).map((c) => rating(w, c));
-      growth = {
-        rating: rating(w, own),
-        npcMedian: median(rivals),
-        npcBest: Math.max(...rivals),
-        npcClubs: rivals.length,
-        level: tierLevel(tier),
-        xi,
-        squad: squadNow.length,
-        squadPaid: squadNow.reduce((s, p) => s + Number(p.wage), 0) / unit,
-        squadFit: squadNow.reduce((s, p) => s + Number(fitWage(w, p, tier).wage), 0) / unit,
-        playerWagesPaid: playerWages / unit,
-        signings,
-        offered: [...offered.values()],
-        ...(hold ? { hold } : {}),
-      };
-    }
-    cuts.clear();
-    closeSeason(w);
-    if (GROWTH) arrivals.look(true);
-    hold = GROWTH && ownClub(w).tier > 0 ? holdOf(w, cuts) : undefined;
-    w.revision++;
-    const archive = w.history.at(-1)!,
-      record = w.owner!.seasonRecords.find((r) => r.year === year);
-    const sources: Record<Source, number> = {
-      competition: 0,
-      matchday: 0,
-      commercial: 0,
-      sales: 0,
-      owner: 0,
-      other: 0,
-    };
-    let facilitySpend = 0,
-      dividend = 0;
-    for (const event of w.events.slice(firstEvent)) {
-      if (event.year !== year || !event.amount) continue;
-      const amount = Number(event.amount) / unit;
-      if (isIncomeKind(event.kind)) sources[sourceOf(event.kind)] += amount;
-      if (event.kind === 'facility') facilitySpend += amount;
-      if (event.kind === 'owner-dividend') dividend += amount;
-    }
-    if (leagueMatches && bookAtClose) {
-      const lines = { league: 0, cups: 0, leagueGate: 0, cupGate: 0, commercial: 0, other: 0 };
-      for (const event of w.events.slice(firstEvent)) {
-        if (event.year !== year || !event.amount || !isIncomeKind(event.kind)) continue;
-        const amount = Number(event.amount) / unit,
-          source = sourceOf(event.kind);
-        if (event.kind === 'gate') {
-          const match = readGateDetail(event.detail)?.matchId;
-          lines[match && leagueMatches.has(match) ? 'leagueGate' : 'cupGate'] += amount;
-        } else if (['league-share', 'league-merit', 'parachute'].includes(event.kind))
-          lines.league += amount;
-        else if (source === 'competition') lines.cups += amount;
-        else if (source === 'commercial') lines.commercial += amount;
-        else if (source === 'other') lines.other += amount;
-      }
-      career.first = { ...lines, book: bookAtClose };
-    }
-    const season: Season = {
-      year,
-      tier: archive.tier,
-      lowest: archive.tier === depth - 1,
-      rank: archive.rank,
-      sources,
-      expense: Number(archive.expense) / unit - dividend,
-      wages: wages / unit,
-      facilitySpend,
-      real: footballIndex(code, year).real,
-      cash: Number(archive.cash) / unit,
-      fortune: record ? Number(record.fortune) / unit : NaN,
-      living: record ? Number(record.living) / unit : NaN,
-      dividend,
-      fanMood: record?.fanMood ?? w.owner!.fanMood,
-      moodLow,
-      belowFloor,
-      ...(lifeShare !== undefined ? { lifeShare } : {}),
-      ...(growth ? { growth } : {}),
-    };
-    career.seasons.push(season);
-    if (LOG)
-      console.error(
-        `  ${year} ${season.tier + 1}부 ${season.rank} · cash ${Math.round(season.cash)} · fortune ${Math.round(season.fortune)} · mood ${season.fanMood.toFixed(0)}`,
-      );
+  } finally {
+    payroll.stop();
   }
   if (careerEnded(w)) {
     const cause = w.bankrupt ? 'club' : (w.ended as 'club' | 'owner' | 'fans');
@@ -917,6 +997,7 @@ function balanceReport(careers: Career[]) {
  */
 function growthReport(careers: Career[]) {
   console.log('\n### Growth — top-flight reach and operating result by tier\n');
+  console.log(`Payroll accounting: ${payrollAccounting(careers.flatMap((c) => c.seasons))}.`);
   console.log(
     '| tier | traits | policy | careers | division bought (median) | started in the top flight | reached it from below | first top-flight season (median / range, of those from below) | operating result / revenue | wage bill / revenue | player sales / revenue |',
   );
@@ -1033,7 +1114,7 @@ function moodReport(careers: Career[]) {
   }
 }
 
-function econReport(careers: Career[]) {
+export function econReport(careers: Career[]) {
   const group = careers.filter(
     (c) => c.tier === 'midsize' && c.traits === 'none' && c.policy === 'none',
   );
@@ -1055,11 +1136,11 @@ function econReport(careers: Career[]) {
     console.log('| target | band | measured (seasons) |');
     console.log('|---|---|---|');
     console.log(
-      `| wage bill / revenue, first 50 seasons | 45–70% | ${cell(
+      `| modeled player + manager/coaching wage bill / revenue, first 50 seasons | 45–70% | ${cell(
         share(first, (s) => s.wages, turnover),
         first.length,
         BANDS.wages,
-      )} |`,
+      )}; ${payrollAccounting(first)} |`,
     );
     console.log(
       `| operating result / revenue before player trading | −5% to +10% | ${cell(share(first, operating, turnover), first.length, BANDS.operating)} |`,
@@ -1106,7 +1187,7 @@ function econReport(careers: Career[]) {
  * those at the close (what the takeover itself changed), and the first season's wages against the
  * books' last.
  */
-function econ36Report(careers: Career[]) {
+export function econ36Report(careers: Career[]) {
   const rows = careers.filter((c) => c.first && Number.isFinite(c.start.lastIncome));
   if (!rows.length) return;
   const r = (a: number, b: number) => (b > 0 ? num(a / b, 2) : '-');
@@ -1114,7 +1195,7 @@ function econ36Report(careers: Career[]) {
     '\n### ECON-36 — first owned season against the books (income in units of each season; ratios owned / book)\n',
   );
   console.log(
-    "| tier | country | seed | band | division | books' last income | first-season income | ratio | ±25% | league distribution | league gate | commercial | cups (share of income) | book at the takeover → close: gate, commercial | wages / books' last wages |",
+    "| tier | country | seed | band | division | books' last income | first-season income | ratio | ±25% | league distribution | league gate | commercial | cups (share of income) | book at the takeover → close: gate, commercial | player-only wages / books' last player wages (accounting) |",
   );
   console.log('|---|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|---:|---|---:|');
   const ratios = new Map<WealthTier, number[]>();
@@ -1123,10 +1204,11 @@ function econ36Report(careers: Career[]) {
       s = c.seasons[0]!,
       income = turnover(s),
       ratio = income / c.start.lastIncome,
-      before = c.start.bookBefore;
+      before = c.start.bookBefore,
+      playerPayroll = bookPlayerPayroll(s);
     ratios.set(c.tier, [...(ratios.get(c.tier) ?? []), ratio]);
     console.log(
-      `| ${c.tier} | ${c.code} | ${c.seed.slice(-1)} | ${c.start.band ?? c.tier}${c.start.substitute ? '*' : ''} | ${c.start.division + 1} | ${num(c.start.lastIncome)} | ${num(income)} | ${num(ratio, 2)} | ${Math.abs(ratio - 1) <= 0.25 ? 'ok' : 'OUT'} | ${r(f.league, f.book.distribution)} | ${r(f.leagueGate, f.book.gate)} | ${r(f.commercial, f.book.commercial)} | ${pct((f.cups + f.cupGate) / income)} | ${before ? `${r(f.book.gate, before.gate)}, ${r(f.book.commercial, before.commercial)}` : '-'} | ${r(s.wages, c.start.lastWages ?? NaN)} |`,
+      `| ${c.tier} | ${c.code} | ${c.seed.slice(-1)} | ${c.start.band ?? c.tier}${c.start.substitute ? '*' : ''} | ${c.start.division + 1} | ${num(c.start.lastIncome)} | ${num(income)} | ${num(ratio, 2)} | ${Math.abs(ratio - 1) <= 0.25 ? 'ok' : 'OUT'} | ${r(f.league, f.book.distribution)} | ${r(f.leagueGate, f.book.gate)} | ${r(f.commercial, f.book.commercial)} | ${pct((f.cups + f.cupGate) / income)} | ${before ? `${r(f.book.gate, before.gate)}, ${r(f.book.commercial, before.commercial)}` : '-'} | ${playerPayroll.amount === undefined ? '-' : r(playerPayroll.amount, c.start.lastWages ?? NaN)} (${playerPayroll.label}) |`,
     );
   }
   console.log('\n| tier | careers | ratio median (min–max) | within ±25% |');
@@ -1264,6 +1346,7 @@ function sourcesReport(careers: Career[]) {
   console.log(
     `# T700 — where a delegated club's rise below the top flight comes from (${grown.length} careers)\n`,
   );
+  console.log(`Payroll accounting: ${payrollAccounting(grown.flatMap((c) => c.seasons))}.`);
   console.log(
     "Read at each close of a season the owner's club played below the top flight (`--growth`, read-only). " +
       "Rating: `rating` (world.ts) of the club and of its league's clubs nobody owns (its division and group). " +
@@ -1498,65 +1581,69 @@ function compareReport(careers: Career[], file: string) {
   for (const line of details.slice(0, 300)) console.log(line);
 }
 
-const started = performance.now();
-const careers: Career[] = [];
-if (args.includes('--reach')) {
-  for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) reachReport(`owner-balance-${i}`);
-  process.exit(0);
-}
-/** --prepare: only live the seeds' worlds into --world-dir. */
-if (args.includes('--prepare')) {
-  for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) worldAt(`owner-balance-${i}`);
-  process.exit(0);
-}
-const saved = option('in', '');
-if (saved) careers.push(...keptCareers(saved));
-else if (SOURCES || COMPARE)
-  throw new Error('--sources and --compare report kept careers: give --in');
-else
-  for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++)
-    for (const tier of TIERS)
-      for (const code of COUNTRY_CODES)
-        for (const traits of TRAIT_SETS)
-          for (const policy of POLICIES) {
-            const t = performance.now();
-            const career = playCareer(code, tier, traits, policy, `owner-balance-${i}`);
-            if (!career) {
-              console.error(`${tier} ${code} seed ${i}: no club in the tier's reach there`);
-              continue;
+function main() {
+  const started = performance.now();
+  const careers: Career[] = [];
+  if (args.includes('--reach')) {
+    for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) reachReport(`owner-balance-${i}`);
+    process.exit(0);
+  }
+  /** --prepare: only live the seeds' worlds into --world-dir. */
+  if (args.includes('--prepare')) {
+    for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++) worldAt(`owner-balance-${i}`);
+    process.exit(0);
+  }
+  const saved = option('in', '');
+  if (saved) careers.push(...keptCareers(saved));
+  else if (SOURCES || COMPARE)
+    throw new Error('--sources and --compare report kept careers: give --in');
+  else
+    for (let i = FIRST_SEED; i < FIRST_SEED + SEEDS; i++)
+      for (const tier of TIERS)
+        for (const code of COUNTRY_CODES)
+          for (const traits of TRAIT_SETS)
+            for (const policy of POLICIES) {
+              const t = performance.now();
+              const career = playCareer(code, tier, traits, policy, `owner-balance-${i}`);
+              if (!career) {
+                console.error(`${tier} ${code} seed ${i}: no club in the tier's reach there`);
+                continue;
+              }
+              careers.push(career);
+              console.error(
+                `${tier} ${code} ${traits} ${policy} seed ${i}: ${career.club}, ${career.seasons.length} seasons${career.end ? `, ended ${career.end.cause} ${career.end.year}` : ''} in ${((performance.now() - t) / 1000).toFixed(0)} s`,
+              );
+              const out = option('out', '');
+              if (out) writeFileSync(out, JSON.stringify(careers));
             }
-            careers.push(career);
-            console.error(
-              `${tier} ${code} ${traits} ${policy} seed ${i}: ${career.club}, ${career.seasons.length} seasons${career.end ? `, ended ${career.end.cause} ${career.end.year}` : ''} in ${((performance.now() - t) / 1000).toFixed(0)} s`,
-            );
-            const out = option('out', '');
-            if (out) writeFileSync(out, JSON.stringify(careers));
-          }
-if (COMPARE) {
-  compareReport(careers, COMPARE);
-  process.exit(0);
+  if (COMPARE) {
+    compareReport(careers, COMPARE);
+    process.exit(0);
+  }
+  if (SOURCES) {
+    sourcesReport(careers);
+    process.exit(0);
+  }
+  console.log(
+    `# Owner balance — ${careers.length} careers from a ${TAKEOVER_YEAR} takeover to ${UNTIL}/${(UNTIL + 1) % 100}, every responsibility delegated, 기본 방향 (OWNER_TIERS ${Object.values(
+      OWNER_TIERS,
+    )
+      .map((t) => t.multiple)
+      .join(
+        '/',
+      )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
+  );
+  /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
+  if (option('note', '')) console.log(`\n${option('note', '')}`);
+  balanceReport(careers);
+  growthReport(careers);
+  livingReport(careers);
+  startReport(careers);
+  moodReport(careers);
+  econReport(careers);
+  econ36Report(careers);
+  careerList(careers);
+  console.log(`\n_${((performance.now() - started) / 1000).toFixed(0)} s_`);
 }
-if (SOURCES) {
-  sourcesReport(careers);
-  process.exit(0);
-}
-console.log(
-  `# Owner balance — ${careers.length} careers from a ${TAKEOVER_YEAR} takeover to ${UNTIL}/${(UNTIL + 1) % 100}, every responsibility delegated, 기본 방향 (OWNER_TIERS ${Object.values(
-    OWNER_TIERS,
-  )
-    .map((t) => t.multiple)
-    .join(
-      '/',
-    )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
-);
-/** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
-if (option('note', '')) console.log(`\n${option('note', '')}`);
-balanceReport(careers);
-growthReport(careers);
-livingReport(careers);
-startReport(careers);
-moodReport(careers);
-econReport(careers);
-econ36Report(careers);
-careerList(careers);
-console.log(`\n_${((performance.now() - started) / 1000).toFixed(0)} s_`);
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
