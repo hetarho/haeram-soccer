@@ -1,0 +1,481 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-11-09T02:13:27.005Z",
+  "sourceCommit": "acb5f1ef183f766f65c90a55447dc305f72940d7",
+  "group": {
+    "id": "economy-ec09",
+    "branch": "main",
+    "status": "active",
+    "createdAt": "2026-11-09T02:01:12.091Z",
+    "limits": {
+      "workers": 2,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": null,
+    "review": "all",
+    "taskScope": [
+      "T731",
+      "T732"
+    ]
+  },
+  "summary": {
+    "total": 2,
+    "completed": 1,
+    "remaining": 1,
+    "running": 0,
+    "review": 1,
+    "blocked": 0,
+    "unassigned": 0
+  },
+  "tasks": [
+    {
+      "id": "T732",
+      "title": "choose affordable sporting improvements before free status",
+      "dep": [],
+      "status": "reviewing"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "group": "economy-ec09",
+      "taskId": "T731",
+      "tasks": [
+        "T731"
+      ],
+      "lane": null,
+      "owner": "ec09-transfer",
+      "contributors": [
+        "ec09-transfer"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T02:01:16.829Z",
+      "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe",
+      "verifiedCommit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+      "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
+      "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
+      "submittedAt": "2026-11-09T02:10:28.876Z",
+      "risk": null,
+      "review": {
+        "id": "dd83f717-acc9-4c4f-95eb-a545a2eaacd3",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T731 follows CLUB r62: modern growth eligibility uses the existing current-ability/youth-promise term before age discounts, while base age/years, premium<=1, wage math, indices, anchors and canonical consumers are preserved. The extracted promisePoints keeps the old marketPoints operation order. Direct tests cover early output vectors, unchanged full-reach values and wages, old-age base discounts, premium-one continuity and ability/potential monotonicity; the reviewer reran market-prices.test.ts (40/40 passed). The reporting changes separate roster values from actual paid permanent arrivals and zero-fee arrivals, use arithmetic medians, and report purchases, sales and net spending with selected-sample caveats. No blocking issue found. Long-run economic fit and final integration/contract/browser checks remain coordinator-owned; approval is not a claim that the cash-surplus target has passed.",
+        "findings": [],
+        "commit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+        "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+        "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
+        "createdAt": "2026-11-09T02:10:48.274Z",
+        "finishedAt": "2026-11-09T02:11:52.242Z"
+      },
+      "steps": [
+        {
+          "taskId": "T731",
+          "commit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+          "at": "2026-11-09T02:10:28.812Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+              "startedAt": "2026-11-09T02:08:45.613Z",
+              "finishedAt": "2026-11-09T02:10:27.436Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-09T02:08:45.613Z",
+          "finishedAt": "2026-11-09T02:10:27.436Z"
+        }
+      ]
+    },
+    {
+      "id": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "group": "economy-ec09",
+      "taskId": "T732",
+      "tasks": [
+        "T732"
+      ],
+      "lane": null,
+      "owner": "ec09-recruit",
+      "contributors": [
+        "ec09-recruit"
+      ],
+      "status": "reviewing",
+      "reason": null,
+      "createdAt": "2026-11-09T02:01:20.473Z",
+      "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe",
+      "verifiedCommit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+      "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
+      "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+      "submittedAt": "2026-11-09T02:11:45.164Z",
+      "risk": null,
+      "review": {
+        "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+        "owner": "ec09-reviewer",
+        "status": "reviewing",
+        "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+        "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+        "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+        "createdAt": "2026-11-09T02:12:08.562Z"
+      },
+      "steps": [
+        {
+          "taskId": "T732",
+          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+          "at": "2026-11-09T02:11:45.114Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+              "startedAt": "2026-11-09T02:10:40.143Z",
+              "finishedAt": "2026-11-09T02:11:44.769Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-09T02:10:40.143Z",
+          "finishedAt": "2026-11-09T02:11:44.769Z"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "sequence": 819,
+      "at": "2026-11-09T02:01:12.203Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "economy-ec09",
+        "branch": "main",
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:01:12.091Z",
+        "limits": {
+          "workers": 2,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "all",
+        "taskScope": [
+          "T731",
+          "T732"
+        ]
+      }
+    },
+    {
+      "sequence": 820,
+      "at": "2026-11-09T02:01:12.289Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 821,
+      "at": "2026-11-09T02:01:16.829Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+        "group": "economy-ec09",
+        "taskId": "T731",
+        "tasks": [
+          "T731"
+        ],
+        "lane": null,
+        "owner": "ec09-transfer",
+        "contributors": [
+          "ec09-transfer"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:01:16.829Z",
+        "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe"
+      }
+    },
+    {
+      "sequence": 822,
+      "at": "2026-11-09T02:01:18.770Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 823,
+      "at": "2026-11-09T02:01:20.473Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+        "group": "economy-ec09",
+        "taskId": "T732",
+        "tasks": [
+          "T732"
+        ],
+        "lane": null,
+        "owner": "ec09-recruit",
+        "contributors": [
+          "ec09-recruit"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T02:01:20.473Z",
+        "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe"
+      }
+    },
+    {
+      "sequence": 824,
+      "at": "2026-11-09T02:01:22.420Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 825,
+      "at": "2026-11-09T02:08:45.195Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 826,
+      "at": "2026-11-09T02:10:28.876Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+        "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
+        "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
+        "submittedAt": "2026-11-09T02:10:28.876Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T731",
+            "commit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+            "at": "2026-11-09T02:10:28.812Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:08:45.613Z",
+                "finishedAt": "2026-11-09T02:10:27.436Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:08:45.613Z",
+            "finishedAt": "2026-11-09T02:10:27.436Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 827,
+      "at": "2026-11-09T02:10:38.907Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 828,
+      "at": "2026-11-09T02:10:48.274Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "dd83f717-acc9-4c4f-95eb-a545a2eaacd3",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
+          "createdAt": "2026-11-09T02:10:48.274Z"
+        }
+      }
+    },
+    {
+      "sequence": 829,
+      "at": "2026-11-09T02:11:45.164Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+        "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
+        "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+        "submittedAt": "2026-11-09T02:11:45.164Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T732",
+            "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+            "at": "2026-11-09T02:11:45.114Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:10:40.143Z",
+                "finishedAt": "2026-11-09T02:11:44.769Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:10:40.143Z",
+            "finishedAt": "2026-11-09T02:11:44.769Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 830,
+      "at": "2026-11-09T02:11:52.242Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "dd83f717-acc9-4c4f-95eb-a545a2eaacd3",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T731 follows CLUB r62: modern growth eligibility uses the existing current-ability/youth-promise term before age discounts, while base age/years, premium<=1, wage math, indices, anchors and canonical consumers are preserved. The extracted promisePoints keeps the old marketPoints operation order. Direct tests cover early output vectors, unchanged full-reach values and wages, old-age base discounts, premium-one continuity and ability/potential monotonicity; the reviewer reran market-prices.test.ts (40/40 passed). The reporting changes separate roster values from actual paid permanent arrivals and zero-fee arrivals, use arithmetic medians, and report purchases, sales and net spending with selected-sample caveats. No blocking issue found. Long-run economic fit and final integration/contract/browser checks remain coordinator-owned; approval is not a claim that the cash-surplus target has passed.",
+          "findings": [],
+          "commit": "5ee61cb1cf8f7420ebb7b024c83fef4d4ca6bdd7",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "04f9802d-b514-492b-b5a3-77a2ac1542b1",
+          "createdAt": "2026-11-09T02:10:48.274Z",
+          "finishedAt": "2026-11-09T02:11:52.242Z"
+        }
+      }
+    },
+    {
+      "sequence": 831,
+      "at": "2026-11-09T02:12:07.392Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 832,
+      "at": "2026-11-09T02:12:08.562Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+          "baseCommit": "4494c01f642b16b1b09581802190bfe1361ca8be",
+          "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
+          "createdAt": "2026-11-09T02:12:08.562Z"
+        }
+      }
+    },
+    {
+      "sequence": 833,
+      "at": "2026-11-09T02:12:11.771Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "integrating",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "reason": "통합 후보의 spec 검증에 실패했습니다."
+      }
+    },
+    {
+      "sequence": 834,
+      "at": "2026-11-09T02:13:23.905Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
+      "taskId": "T731",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    }
+  ]
+}

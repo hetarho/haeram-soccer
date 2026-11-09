@@ -42,7 +42,8 @@ export const MARKET_CONFIG = {
   ] as [number, number][],
   /**
    * The premium reaches a value in proportion to how far its points stand above `pivot`, in full
-   * from `premiumSpan` points above it: fees inflated at the top of the market, while a
+   * from `premiumSpan` points above it. Growth uses ability and promise before salary-age
+   * discounts; early compression keeps age-adjusted points. Fees inflated at the top, while a
    * lower-division player's fee grew with football's income alone.
    */
   premiumSpan: 10,
@@ -130,14 +131,17 @@ export function divisionShare(division: number) {
  * the share of his headroom counted (`MARKET_CONFIG.promise.wage` or `.value`).
  */
 export function marketPoints(ability: number, age: number, potential: number, promise: number) {
-  const { full, none } = MARKET_CONFIG.promise;
-  const youth = clamp((none - age) / (none - full), 0, 1);
   return (
-    ability +
-    Math.max(0, potential - ability) * youth * promise -
+    promisePoints(ability, age, potential, promise) -
     Math.max(0, MARKET_CONFIG.junior - age) -
     Math.max(0, age - MARKET_CONFIG.veteran)
   );
+}
+/** Current ability and the existing allowance for youth headroom, before salary-age discounts. */
+function promisePoints(ability: number, age: number, potential: number, promise: number) {
+  const { full, none } = MARKET_CONFIG.promise;
+  const youth = clamp((none - age) / (none - full), 0, 1);
+  return ability + Math.max(0, potential - ability) * youth * promise;
 }
 function scaleUnits(points: number, division: number) {
   const c = MARKET_CONFIG;
@@ -201,7 +205,8 @@ export function starWagePremium(ability: number) {
 }
 /**
  * Transfer value in 1901 units at football index 1: years of a wage that counts more promise,
- * carried by as much of `year`'s transfer premium as its points reach (→CLUB-46).
+ * carried by as much of `year`'s transfer premium as its points reach (→CLUB-46). Modern growth
+ * reads ability and promise before salary-age discounts; early compression retains them.
  */
 export function marketValueUnits(
   division: number,
@@ -213,8 +218,10 @@ export function marketValueUnits(
   const c = MARKET_CONFIG,
     years = clamp(c.years - Math.max(0, age - c.peak), c.minYears, c.years),
     points = marketPoints(ability, age, potential, c.promise.value),
-    reach = clamp((points - c.pivot) / c.premiumSpan, 0, 1);
-  return years * transferPremium(year) ** reach * scaleUnits(points, division);
+    premium = transferPremium(year),
+    premiumPoints = premium > 1 ? promisePoints(ability, age, potential, c.promise.value) : points,
+    reach = clamp((premiumPoints - c.pivot) / c.premiumSpan, 0, 1);
+  return years * premium ** reach * scaleUnits(points, division);
 }
 
 /**
