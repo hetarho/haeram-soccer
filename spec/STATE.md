@@ -21,6 +21,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261109 decided ARCH-4 ARCH-30 T726 review/self-improve-local-261109: F13, parked by fs09 — how code run outside the Vite build (Playwright specs, test fixtures, scripts) reaches a slice's framework-free logic when its index re-exports CSS-module components → ARCH r35: such code loads only script and JSON modules and no slice index; a module it reaches imports another slice only through an entity's `@x` file or that slice's `logic.ts`, a second public entry re-exporting only the slice's own `lib/` and re-exported whole by its index; ESLint keeps `logic.ts` to its `lib/`, an architecture test walks the closures of every e2e/fixture module and every `logic.ts`; named `logic.ts`, not F13's `model`/`lib`, since those names are already the slice's `model/`/`lib/` folders and `./lib` would resolve ambiguously; T726 restored to todo at ARCH@35 with 805ae503 as its reference move (alt: let tests and fixtures copy constants such as `GOAL_FEEDBACK_CONFIG`, two sources that drift | stub CSS in Playwright's loader, which still loads components and their top-level DOM work under Node | allow deep imports into another slice's `lib/`, hiding consumers from its public entries | leave the modules in the entity and drop T726) ev09
 - 261109 decided ARCH-30 ARCH-33 ECON-29 T744 T745 T746: bounded economy unit is complete and verified at51d072a (unit2316, integration1179 plus4 existing skips, contract46, Chromium348 with no skips/retries); both unaccepted pilots withdrawn, exact reporting/resources/fixtures retained → publish this closure to main and end, no automatic continuation ec10
 - 261109 decided ECON-29 ARCH-30 T739 T740 T741: the owner bounds the remaining work to the current increment and every linked task/fix → finish wage/package implementation, calibrated measurements and full checks, push the complete unit to main, then end; no new counterparty-budget model or further economy cycle ec10
 - 261109 decided ECON-29 ARCH-30 review/economy-transfers-261109: the owner asks why work stopped with the original realistic-economy goal unfinished and expects main publication → resume wage/distribution calibration across reviewed increments, treat reports and pushes as checkpoints; the verified first increment96a6290f is now on origin/main. Preserve task-unit and pre-push E2E tiers, no automatic schedule ec10
@@ -32,7 +33,6 @@
 - 261109 decided WEB-54 HIST-21 T736: "시간순" order of the one season table → newest first like every records list, the takeover rule between the eras (alt: oldest first, which puts up to 70 pre-owner seasons above the owner's own) ow09
 - 261109 decided CLUB-33 CLUB-46 review/economy-transfers-261109: how to address the owner's cash accumulation and low fees → remove unconditional free-agent priority and the duplicate age discount on modern transfer growth, preserve financial limits and historical compression, measure purchases and sales together (alt: inflate operating expenses above their existing 35% share | activate the rejected ability-fit wage) ec09
 - 261109 decided T726 review/self-improve-local-261109: the final gate on 16994234 could not load any Playwright spec — T726's moved `goalFeedback` imports `presentationClock` through the `entities/match` index, which drags CSS modules into Playwright's Node loader → revert T726 alone (61d6d6a2), keep T727/T728, block T726 on F13 (alt: a CSS-free public entry now, an ARCH-4 change without review time | stub CSS in Playwright's loader) fs09
-- 261109 parked review/self-improve-local-261109 ARCH-4: F13 — how code outside Vite (Playwright specs, fixtures, scripts) reaches a slice's pure logic when its index re-exports CSS-importing components; recommended a CSS-free `model`/`lib` public entry per slice beside `index.ts`, enforced by the layer rule, then resume T726 fs09
 - 261109 suggest WEB-93 T729: the club hub's entrance animation (`.hub > *` `rise`, ClubHub.module.css) still plays when the browser asks for reduced motion (resource-skins runs with `reducedMotion: 'reduce'` and saw it); honouring `prefers-reduced-motion` there would be a small accessibility fix of its own fs09
 - 261109 decided T729 ARCH-23: CI 42507777267 on d0180ee1 fails only `e2e (webkit 2/2)` — resource-skins pixel and matchday-print read contrast 1 because the hub's fixture card is still fading in (opacity 0) on software WebKit, the same test failed for matchday-print in 42487386669 before this run → fix the spec to wait for the hub's animations, verified on local WebKit before the next push (alt: disable the hub animation under test | raise the WebKit retries); the six browser shards cut the run from 47 to about 33 min fs09
 - 261109 decided T727 T726 ARCH-4: where the moved engine reads go when a new leaf file reshapes the web chunks (a new `europe-calendar.ts` made the build 82 JS chunks, every `aptitudeLabel` placement changed the count) → the calendar blocks go verbatim into the existing `competition-keys.ts` leaf (71/30 chunks kept, exception keys 28→24) and `aptitudeLabel` stays, keeping the scouting key; T726's entity index is 70 names because the moved modules and tests import through it (alt: accept 82 chunks with a separate calendar leaf | a one-function `aptitude-label.ts` leaf) fs09
@@ -804,7 +804,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 34 | 34 | - | 2 |
+| ARCH | 35 | 35 | - | 2 |
 | WEB | 213 | 213 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
@@ -837,7 +837,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
+| T726 | move the match viewer's own modules out of the match entity | ARCH | - | todo |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 
 ## work
@@ -864,9 +864,10 @@
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 
 ## next
-- inspect work board for remaining tasks
+- implement-task T726, then T730
 
 ## log
+- 261109 update-ssot ARCH r35 + create-task T726 refresh: code run outside the Vite build loads no stylesheet, asset or slice index and reaches other slices through `logic.ts` or `@x` (F13 adopted); T726 blocked → todo at ARCH@35 ev09
 - 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
 - 261109 T744 integrated
 - 261109 T746 integrated
@@ -886,4 +887,3 @@
 - 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
 - 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
 - 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
-- 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
