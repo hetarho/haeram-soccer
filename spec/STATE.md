@@ -19,8 +19,13 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| ow09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T03:07Z | 2026-11-09T03:07Z | - |
 
 ## inbox
+- 261109 decided OWNER-7 T735: how much a monthly settlement wins or loses once it settles eleven times a season at 60% → 5% of the staked share (about +10% a season at a full stake, +23% with 성공한 사업가; a 50% stake about +5%) (alt: the whole staked share each month, which shrinks a 50% stake by a third a season and ruins a full one | a third of it, the old season exposure, compounding ×2.6 a season with the trait) ow09
+- 261109 decided OWNER-5 OWNER-7 T735: 성공한 사업가 once the base is 60% → 70%, the same +10 points (alt: 65% | no business effect) ow09
+- 261109 decided OWNER-7 OWNER-8 T735: which days are monthly and what living costs do → the 1st of September–June and the close (eleven; the summer the close skips has none), living costs 0.8% a season split over them so the season total is unchanged (alt: twelve with a settlement on 1 August, which the day loop never processes | 0.2% a settlement, tripling living costs) ow09
+- 261109 decided WEB-54 HIST-21 T736: "시간순" order of the one season table → newest first like every records list, the takeover rule between the eras (alt: oldest first, which puts up to 70 pre-owner seasons above the owner's own) ow09
 - 261109 decided CLUB-33 CLUB-46 review/economy-transfers-261109: how to address the owner's cash accumulation and low fees → remove unconditional free-agent priority and the duplicate age discount on modern transfer growth, preserve financial limits and historical compression, measure purchases and sales together (alt: inflate operating expenses above their existing 35% share | activate the rejected ability-fit wage) ec09
 - 261109 decided T726 review/self-improve-local-261109: the final gate on 16994234 could not load any Playwright spec — T726's moved `goalFeedback` imports `presentationClock` through the `entities/match` index, which drags CSS modules into Playwright's Node loader → revert T726 alone (61d6d6a2), keep T727/T728, block T726 on F13 (alt: a CSS-free public entry now, an ARCH-4 change without review time | stub CSS in Playwright's loader) fs09
 - 261109 parked review/self-improve-local-261109 ARCH-4: F13 — how code outside Vite (Playwright specs, fixtures, scripts) reaches a slice's pure logic when its index re-exports CSS-importing components; recommended a CSS-free `model`/`lib` public entry per slice beside `index.ts`, enforced by the layer rule, then resume T726 fs09
@@ -795,9 +800,9 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 34 | 34 | - | 2 |
-| WEB | 211 | 211 | - | 0 |
+| WEB | 212 | 212 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
-| WORLD | 9 | 9 | - | 0 |
+| WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 62 | 62 | - | 0 |
 | MATCH | 57 | 57 | - | 0 |
@@ -805,9 +810,9 @@
 | STAFF | 40 | 40 | - | 0 |
 | ECON | 49 | 49 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 22 | 22 | - | 0 |
+| HIST | 23 | 23 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
-| OWNER | 5 | 5 | - | 0 |
+| OWNER | 6 | 6 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
 ## review
@@ -826,6 +831,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T736 | one season history with the takeover rule | WEB HIST OWNER ARCH | - | todo |
+| T735 | settle the owner's business monthly at better odds | OWNER WORLD WEB ARCH | - | todo |
 | T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
 | T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
@@ -878,6 +885,5 @@
 - 261109 T721–T724 done (lane dev-cost, worker fs09-w2, reviewer fs09-r1 approved with P3 notes only): every CI job has a time limit and every browser two shards; host transcendental `Math.*` (log2 and hypot included) fails lint in engine/contracts source, the four kit-pattern hypots and both knockout log2s now portable/integer with the contract golden unchanged; typecheck and format:check reuse per-checkout caches (warm 2.7 s / 5.2 s from 27 s / 18 s). Integrated on main as c1aba11f..ffa2b7d2 (tree identical to the reviewed 009a49db); verify:batch and CI pending the run's single push fs09
 - 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720; ARCH r33 (CI shards and limits), F2–F4 adopted → T721–T723 (lane dev-cost), F5 rejected, F6 parked, F7 suggested
 - 261109 T714 done: the journey helper settles the office before clicking 오버뷰 (Playwright's retried pre-click scroll moved the view, not the app's focus); CI 42494165472 on 145635c3 green in every job, main green again since 11-04. mt08
+- 261109 update-ssot OWNER r6 WORLD r10 HIST r23 WEB r212 + create-task T735 T736: monthly owner business at 60% with a 5% swing; one season history table with a takeover rule (ow09)
 - 261108 T713 done: every match model and the aggregate's odds read the portable math (`HOST_MATH` removed); the golden's `modern-european-season` regenerated to CI's Linux facts; CI 42487386669 `checks` green on bf4b6be0. mt08
-- 261108 T712 done: the ability-fit wage built behind `ABILITY_FIT` (off), `--ability-fit` overrides, inert against T700; CLUB-25's gate fails on 46 calibration careers (중견 titles 3/8, 지역 유지 reach 8/8, 자수성가 reach 6/6; upper tiers no club bankrupt), so it stays out of force; held-out and worlds not run (artifacts/benchmarks/T712). mt08
-- 261108 fix tests: the portable contract diagnostic lists every differing top-level fact with its first path (bounded), so CI shows whether modern-european-season's Linux divergence reaches matches or only the books (T713)
