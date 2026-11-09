@@ -18,7 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T05:02Z | - |
+| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T06:04Z | - |
 
 ## inbox
 - 261109 decided ECON-29 ARCH-30 T739 T740 T741: the owner bounds the remaining work to the current increment and every linked task/fix → finish wage/package implementation, calibrated measurements and full checks, push the complete unit to main, then end; no new counterparty-budget model or further economy cycle ec10
@@ -842,6 +842,7 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
+| T743 | use settled payroll in the reference career report | ECON CLUB OWNER LEAGUE ARCH | T739 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -889,8 +890,8 @@
 - 261109 T734 integrated
 - 261109 T732 integrated
 - 261109 T733 integrated
-- 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
 - 261109 T731 integrated
 - 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
 - 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
 - 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
+- 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
