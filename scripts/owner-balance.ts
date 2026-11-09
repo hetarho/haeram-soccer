@@ -44,6 +44,7 @@ import {
 } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { observeSettlementPayroll } from './lib/settlement-payroll';
+import { toolMessage } from './lib/tool-messages';
 import type { CountryCode, Player, World } from '../packages/contracts/src/types';
 import type { DividendShare, OwnerTrait, WealthTier } from '../packages/contracts/src/owner';
 import { careerEnded } from '../packages/contracts/src/owner';
@@ -426,16 +427,23 @@ export function seasonPayroll(
 /** --in never upgrades an unmarked historical observation into an exact payment. */
 export function payrollAccounting(seasons: readonly Pick<Season, 'wageAccounting'>[]) {
   const exact = seasons.filter((s) => s.wageAccounting?.version === 'settled-payroll-v1').length;
-  return `${exact} exact settled; ${seasons.length - exact} legacy sampled/unknown`;
+  return toolMessage('tool.payroll.accountingSummary', { exact, legacy: seasons.length - exact });
 }
 
 /** NPC book wages contain players only; legacy total payroll is not a comparable numerator. */
 export function bookPlayerPayroll(season: Pick<Season, 'wageAccounting' | 'growth'>) {
   const exact = season.wageAccounting;
   if (exact?.version === 'settled-payroll-v1')
-    return { amount: Number(exact.playerWages) / exact.priceUnit, label: 'exact player-only' };
-  if (season.growth) return { amount: season.growth.playerWagesPaid, label: 'sampled player-only' };
-  return { amount: undefined, label: 'legacy total payroll / NPC player-only mismatch' };
+    return {
+      amount: Number(exact.playerWages) / exact.priceUnit,
+      label: toolMessage('tool.payroll.exactPlayers'),
+    };
+  if (season.growth)
+    return {
+      amount: season.growth.playerWagesPaid,
+      label: toolMessage('tool.payroll.sampledPlayers'),
+    };
+  return { amount: undefined, label: toolMessage('tool.payroll.legacyScopeMismatch') };
 }
 
 /** Minor units of one 1901 price unit in this country and year. */
@@ -997,7 +1005,11 @@ function balanceReport(careers: Career[]) {
  */
 function growthReport(careers: Career[]) {
   console.log('\n### Growth — top-flight reach and operating result by tier\n');
-  console.log(`Payroll accounting: ${payrollAccounting(careers.flatMap((c) => c.seasons))}.`);
+  console.log(
+    toolMessage('tool.payroll.accountingLine', {
+      summary: payrollAccounting(careers.flatMap((c) => c.seasons)),
+    }),
+  );
   console.log(
     '| tier | traits | policy | careers | division bought (median) | started in the top flight | reached it from below | first top-flight season (median / range, of those from below) | operating result / revenue | wage bill / revenue | player sales / revenue |',
   );
@@ -1136,7 +1148,7 @@ export function econReport(careers: Career[]) {
     console.log('| target | band | measured (seasons) |');
     console.log('|---|---|---|');
     console.log(
-      `| modeled player + manager/coaching wage bill / revenue, first 50 seasons | 45–70% | ${cell(
+      `| ${toolMessage('tool.payroll.modeledRatio')} | 45–70% | ${cell(
         share(first, (s) => s.wages, turnover),
         first.length,
         BANDS.wages,
@@ -1195,7 +1207,7 @@ export function econ36Report(careers: Career[]) {
     '\n### ECON-36 — first owned season against the books (income in units of each season; ratios owned / book)\n',
   );
   console.log(
-    "| tier | country | seed | band | division | books' last income | first-season income | ratio | ±25% | league distribution | league gate | commercial | cups (share of income) | book at the takeover → close: gate, commercial | player-only wages / books' last player wages (accounting) |",
+    `| tier | country | seed | band | division | books' last income | first-season income | ratio | ±25% | league distribution | league gate | commercial | cups (share of income) | book at the takeover → close: gate, commercial | ${toolMessage('tool.payroll.npcComparison')} |`,
   );
   console.log('|---|---|---|---|---:|---:|---:|---:|---|---:|---:|---:|---:|---|---:|');
   const ratios = new Map<WealthTier, number[]>();
@@ -1346,7 +1358,11 @@ function sourcesReport(careers: Career[]) {
   console.log(
     `# T700 — where a delegated club's rise below the top flight comes from (${grown.length} careers)\n`,
   );
-  console.log(`Payroll accounting: ${payrollAccounting(grown.flatMap((c) => c.seasons))}.`);
+  console.log(
+    toolMessage('tool.payroll.accountingLine', {
+      summary: payrollAccounting(grown.flatMap((c) => c.seasons)),
+    }),
+  );
   console.log(
     "Read at each close of a season the owner's club played below the top flight (`--growth`, read-only). " +
       "Rating: `rating` (world.ts) of the club and of its league's clubs nobody owns (its division and group). " +

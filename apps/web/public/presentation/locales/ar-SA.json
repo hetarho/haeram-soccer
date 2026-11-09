@@ -6643,6 +6643,26 @@
     "copy.free_agents.b9563581fa": "{p0} ينضم في صفقة انتقال حر",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} سنة · الراتب {p2} · العقد حتى {p3} · تعزيز نهاية الموسم، دون رسوم انتقال",
     "copy.scout_search.f7c215bd95": "دورينا والدرجتان الأعلى والأدنى",
-    "copy.scout_search.7156229250": "جميع الدرجات المحلية"
+    "copy.scout_search.7156229250": "جميع الدرجات المحلية",
+    "tool.cash.ownedWorldRequired": "تتطلب المتابعة ملف JSON للعالم يحتوي على نادٍ مملوك بالفعل.",
+    "tool.cash.worldIdentityMismatch": "يجب أن يطابق ملف العالم البذرة والسنة ووضع الملكية المطلوبة.",
+    "tool.cash.clubChange": "لا يمكن تغيير النادي عند المتابعة.",
+    "tool.cash.tierChange": "لا يمكن تغيير فئة المالك عند المتابعة.",
+    "tool.cash.expensesMismatch": "المصروفات التشغيلية المرصودة لا تطابق دفتر سنة {year}.",
+    "tool.payroll.eventsProperty": "يتطلب رصد الرواتب أن تكون events خاصية بيانات قابلة للتهيئة والكتابة.",
+    "tool.payroll.eventMismatch": "حدث تسوية الرواتب لا يطابق السنة والجولة والعملة الحالية.",
+    "tool.payroll.roundOutsideSeason": "جولة تسوية الرواتب خارج موسم الدوري.",
+    "tool.payroll.duplicate": "تسوية رواتب مكررة: {settlement}",
+    "tool.payroll.componentsMismatch": "مكونات الرواتب لا تطابق operating-cost عند {settlement}.",
+    "tool.payroll.eventsArray": "يتطلب رصد الرواتب مصفوفة أحداث.",
+    "tool.payroll.invalidCoverage": "نطاق جولات رصد الرواتب غير صالح.",
+    "tool.payroll.missing": "تسوية رواتب مفقودة: {settlement}",
+    "tool.payroll.accountingSummary": "{exact} تسويات دقيقة؛ {legacy} عينات قديمة/غير معروفة",
+    "tool.payroll.exactPlayers": "رواتب اللاعبين فقط، دقيقة",
+    "tool.payroll.sampledPlayers": "رواتب اللاعبين فقط، بالعينة",
+    "tool.payroll.legacyScopeMismatch": "اختلاف النطاق بين إجمالي الرواتب القديمة ورواتب لاعبي الأندية غير المملوكة فقط",
+    "tool.payroll.accountingLine": "محاسبة الرواتب: {summary}.",
+    "tool.payroll.modeledRatio": "رواتب اللاعبين + المدرب/الجهاز الفني المشمولة في النموذج / الإيرادات، أول 50 موسمًا",
+    "tool.payroll.npcComparison": "رواتب اللاعبين فقط / آخر رواتب للاعبين في الدفتر (المحاسبة)"
   }
 }

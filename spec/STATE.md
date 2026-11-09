@@ -835,7 +835,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T746 | resource the newly added payroll tooling prose | ARCH | T739 T743 T745 | todo |
 | T744 | refresh validation fixtures on the accepted economy source | ARCH ECON CLUB OWNER | T739 T740 T742 T743 T745 T746 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
@@ -862,12 +861,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 12 | 11 | 1 | 0 | 0 | 0 | 2026-11-09T06:36:56.450Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 13 | 12 | 1 | 0 | 0 | 0 | 2026-11-09T06:48:18.467Z | [history](work/economy-ec09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T746 integrated
 - 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
 - 261109 T745 integrated
 - 261109 update-ssot CLUB64 ECON52/create-task T745: independent review confirms wage and package-only books failures; withdraw both activations byte-exact44, retain earlier transfer/recruitment changes and exact observation tools; no new cycle ec10.
@@ -887,4 +887,3 @@
 - 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
 - 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
 - 261109 T735 done: monthly owner business (1 Sep–1 Jun + close) at 60%/70% with a 5% swing; living costs 0.8% a season in eleven exact shares (ow09)
-- 261109 update-ssot OWNER r6 WORLD r10 HIST r23 WEB r212 + create-task T735 T736: monthly owner business at 60% with a 5% swing; one season history table with a takeover rule (ow09)

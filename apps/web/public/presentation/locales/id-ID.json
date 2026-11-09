@@ -6628,6 +6628,26 @@
     "copy.free_agents.b9563581fa": "{p0} bergabung dengan status bebas transfer",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} tahun · Gaji {p2} · Kontrak hingga {p3} · Tambahan akhir musim, tanpa biaya transfer",
     "copy.scout_search.f7c215bd95": "Liga kita serta divisi di atas dan di bawahnya",
-    "copy.scout_search.7156229250": "Semua divisi dalam negeri"
+    "copy.scout_search.7156229250": "Semua divisi dalam negeri",
+    "tool.cash.ownedWorldRequired": "Melanjutkan memerlukan JSON dunia dengan klub yang sudah dimiliki.",
+    "tool.cash.worldIdentityMismatch": "Berkas dunia harus sesuai dengan seed, tahun, dan mode kepemilikan yang diminta.",
+    "tool.cash.clubChange": "Klub tidak dapat diganti saat melanjutkan.",
+    "tool.cash.tierChange": "Tingkat pemilik tidak dapat diubah saat melanjutkan.",
+    "tool.cash.expensesMismatch": "Biaya operasional yang diamati tidak sesuai dengan buku besar tahun {year}.",
+    "tool.payroll.eventsProperty": "Pengamatan gaji mengharuskan events berupa properti data yang dapat dikonfigurasi dan ditulis.",
+    "tool.payroll.eventMismatch": "Peristiwa pembayaran gaji tidak sesuai dengan tahun, putaran, dan mata uang saat ini.",
+    "tool.payroll.roundOutsideSeason": "Putaran pembayaran gaji berada di luar musim liga.",
+    "tool.payroll.duplicate": "Pembayaran gaji duplikat: {settlement}",
+    "tool.payroll.componentsMismatch": "Komponen gaji tidak sesuai dengan operating-cost pada {settlement}.",
+    "tool.payroll.eventsArray": "Pengamatan gaji memerlukan larik peristiwa.",
+    "tool.payroll.invalidCoverage": "Rentang putaran pengamatan gaji tidak valid.",
+    "tool.payroll.missing": "Pembayaran gaji tidak ditemukan: {settlement}",
+    "tool.payroll.accountingSummary": "{exact} pembayaran tepat; {legacy} sampel lama/tidak diketahui",
+    "tool.payroll.exactPlayers": "hanya pemain, tepat",
+    "tool.payroll.sampledPlayers": "hanya pemain, sampel",
+    "tool.payroll.legacyScopeMismatch": "cakupan berbeda antara total gaji lama dan gaji pemain NPC saja",
+    "tool.payroll.accountingLine": "Akuntansi gaji: {summary}.",
+    "tool.payroll.modeledRatio": "gaji pemain + manajer/staf pelatih dalam model / pendapatan, 50 musim pertama",
+    "tool.payroll.npcComparison": "gaji pemain saja / gaji pemain terakhir dalam buku besar (akuntansi)"
   }
 }

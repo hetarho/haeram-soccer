@@ -6628,6 +6628,26 @@
     "copy.free_agents.b9563581fa": "{p0} 자유계약 입단",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1}세 · 연봉 {p2} · 계약 {p3}년 · 시즌 마감 보충, 이적료 없음",
     "copy.scout_search.f7c215bd95": "우리 리그와 위아래 리그",
-    "copy.scout_search.7156229250": "국내 전체 리그"
+    "copy.scout_search.7156229250": "국내 전체 리그",
+    "tool.cash.ownedWorldRequired": "이미 구단을 소유한 월드 JSON이 있어야 이어서 실행할 수 있습니다.",
+    "tool.cash.worldIdentityMismatch": "월드 파일은 요청한 시드·연도 및 소유 모드와 일치해야 합니다.",
+    "tool.cash.clubChange": "이어서 실행할 때는 구단을 바꿀 수 없습니다.",
+    "tool.cash.tierChange": "이어서 실행할 때는 구단주 등급을 바꿀 수 없습니다.",
+    "tool.cash.expensesMismatch": "관측한 운영비가 {year}년 원장과 일치하지 않습니다.",
+    "tool.payroll.eventsProperty": "급여를 관측하려면 events가 설정 변경과 쓰기가 가능한 데이터 속성이어야 합니다.",
+    "tool.payroll.eventMismatch": "급여 정산 이벤트가 현재 연도·라운드·통화와 일치하지 않습니다.",
+    "tool.payroll.roundOutsideSeason": "급여 정산 라운드가 리그 시즌 범위를 벗어났습니다.",
+    "tool.payroll.duplicate": "중복된 급여 정산: {settlement}",
+    "tool.payroll.componentsMismatch": "{settlement}의 급여 구성 요소가 operating-cost와 일치하지 않습니다.",
+    "tool.payroll.eventsArray": "급여를 관측하려면 이벤트 배열이 있어야 합니다.",
+    "tool.payroll.invalidCoverage": "급여 관측 라운드 범위가 올바르지 않습니다.",
+    "tool.payroll.missing": "급여 정산 누락: {settlement}",
+    "tool.payroll.accountingSummary": "정확한 정산 {exact}개; 과거 표본/불명 {legacy}개",
+    "tool.payroll.exactPlayers": "정확한 선수 급여만",
+    "tool.payroll.sampledPlayers": "표본 선수 급여만",
+    "tool.payroll.legacyScopeMismatch": "과거 총급여와 NPC 선수 전용 급여의 범위 불일치",
+    "tool.payroll.accountingLine": "급여 회계: {summary}.",
+    "tool.payroll.modeledRatio": "모델에 포함된 선수·감독·코칭 급여 / 수입, 첫 50시즌",
+    "tool.payroll.npcComparison": "선수 급여만 / 장부의 직전 선수 급여 (회계 방식)"
   }
 }

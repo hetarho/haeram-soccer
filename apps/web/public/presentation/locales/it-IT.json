@@ -6634,6 +6634,26 @@
     "copy.free_agents.b9563581fa": "{p0} arriva a parametro zero",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} anni · Stipendio {p2} · Contratto fino al {p3} · Rinforzo di fine stagione, senza costo",
     "copy.scout_search.f7c215bd95": "Il nostro campionato e le divisioni sopra e sotto",
-    "copy.scout_search.7156229250": "Tutte le divisioni nazionali"
+    "copy.scout_search.7156229250": "Tutte le divisioni nazionali",
+    "tool.cash.ownedWorldRequired": "La continuazione richiede un JSON del mondo con un club già acquisito.",
+    "tool.cash.worldIdentityMismatch": "Il file del mondo deve corrispondere al seme, all’anno e alla modalità di proprietà richiesti.",
+    "tool.cash.clubChange": "La continuazione non permette di cambiare club.",
+    "tool.cash.tierChange": "La continuazione non permette di cambiare il livello del proprietario.",
+    "tool.cash.expensesMismatch": "Le spese operative osservate non corrispondono al libro contabile del {year}.",
+    "tool.payroll.eventsProperty": "L’osservazione degli stipendi richiede che events sia una proprietà dati configurabile e scrivibile.",
+    "tool.payroll.eventMismatch": "L’evento di liquidazione degli stipendi non corrisponde all’anno, al turno e alla valuta attuali.",
+    "tool.payroll.roundOutsideSeason": "Il turno di liquidazione degli stipendi è fuori dalla stagione di campionato.",
+    "tool.payroll.duplicate": "Liquidazione degli stipendi duplicata: {settlement}",
+    "tool.payroll.componentsMismatch": "Le componenti degli stipendi non corrispondono a operating-cost in {settlement}.",
+    "tool.payroll.eventsArray": "L’osservazione degli stipendi richiede un array di eventi.",
+    "tool.payroll.invalidCoverage": "L’intervallo dei turni di osservazione degli stipendi non è valido.",
+    "tool.payroll.missing": "Liquidazione degli stipendi mancante: {settlement}",
+    "tool.payroll.accountingSummary": "{exact} liquidazioni esatte; {legacy} campioni storici/sconosciuti",
+    "tool.payroll.exactPlayers": "solo giocatori, esatto",
+    "tool.payroll.sampledPlayers": "solo giocatori, campionato",
+    "tool.payroll.legacyScopeMismatch": "ambiti diversi: monte ingaggi storico totale e soli stipendi dei giocatori NPC",
+    "tool.payroll.accountingLine": "Contabilità degli stipendi: {summary}.",
+    "tool.payroll.modeledRatio": "monte ingaggi modellato di giocatori + allenatore/staff tecnico / ricavi, prime 50 stagioni",
+    "tool.payroll.npcComparison": "soli stipendi dei giocatori / ultimi stipendi dei giocatori nel libro contabile (contabilità)"
   }
 }
