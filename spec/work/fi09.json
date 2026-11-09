@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T15:15:19.853Z",
-  "sourceCommit": "082bb0a1b73975ebcd1b8ac3a79328782cb010c2",
+  "snapshotAt": "2026-11-09T15:53:18.263Z",
+  "sourceCommit": "972c570539e3340cb8d882f5b2749038bb3ca803",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -43,19 +43,102 @@
       "T750",
       "T751",
       "T752",
-      "T757"
+      "T753",
+      "T754",
+      "T755",
+      "T756",
+      "T757",
+      "T758",
+      "T759",
+      "T760",
+      "T761",
+      "T762",
+      "T763",
+      "T764"
     ]
   },
   "summary": {
-    "total": 7,
-    "completed": 7,
-    "remaining": 0,
-    "running": 0,
-    "review": 0,
+    "total": 18,
+    "completed": 8,
+    "remaining": 10,
+    "running": 1,
+    "review": 2,
     "blocked": 0,
-    "unassigned": 0
+    "unassigned": 7
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "T754",
+      "title": "Refresh growth-chart details on locale changes",
+      "dep": [
+        "T752"
+      ],
+      "status": "todo"
+    },
+    {
+      "id": "T755",
+      "title": "Rank career appearances by recorded matches",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T756",
+      "title": "Preserve cup title streaks across skipped seasons",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T758",
+      "title": "Include unpaid takeover loans in cash projections",
+      "dep": [],
+      "status": "ready"
+    },
+    {
+      "id": "T759",
+      "title": "Normalize fixed currency periods in coach compensation",
+      "dep": [],
+      "status": "ready"
+    },
+    {
+      "id": "T760",
+      "title": "Use regulation scores in head-to-head records",
+      "dep": [],
+      "status": "todo"
+    },
+    {
+      "id": "T761",
+      "title": "Show recorded NPC league red cards",
+      "dep": [
+        "T752"
+      ],
+      "lane": "league-record-views",
+      "status": "todo"
+    },
+    {
+      "id": "T762",
+      "title": "Present contributing clubs without invented chronology",
+      "dep": [
+        "T752"
+      ],
+      "lane": "league-record-views",
+      "status": "todo"
+    },
+    {
+      "id": "T763",
+      "title": "Localize league statistic table counts",
+      "dep": [
+        "T752"
+      ],
+      "lane": "league-record-views",
+      "status": "todo"
+    },
+    {
+      "id": "T764",
+      "title": "Rebuild career-card summaries by recorded side",
+      "dep": [],
+      "status": "doing"
+    }
+  ],
   "attempts": [
     {
       "id": "563069b9-7a70-45d0-811d-e917f49d823d",
@@ -331,6 +414,181 @@
           "finishedAt": "2026-11-09T14:58:08.825Z"
         }
       ]
+    },
+    {
+      "id": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "group": "fi09",
+      "taskId": "T758",
+      "tasks": [
+        "T758"
+      ],
+      "lane": null,
+      "owner": "fi09-loan",
+      "contributors": [
+        "fi09-loan"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-11-09T15:20:53.328Z",
+      "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+      "verifiedCommit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+      "submittedBase": "fd56f083210f3dc89d70754753c45bafa561d167",
+      "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+      "submittedAt": "2026-11-09T15:31:10.730Z",
+      "risk": null,
+      "reviewHistory": [
+        {
+          "id": "a541e31b-866a-4aff-bf0d-d1ce24936637",
+          "owner": "fi09-review-loan",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T758 satisfies its four acceptance items and the complete current ECON-18, ECON-38 and ARCH-9 contracts at base fd56f083210f3dc89d70754753c45bafa561d167. Reviewed pinned commit d8f9498d5e604c5ba56253840bfcb5d89f75887f and its complete diff. The season horizon subtracts annual minus cumulative half-even rounded paid loan installments, matching the telescoping roundShare payment schedule. The 365-day horizon itemizes one full installment for a continuing loan and only the current unpaid installment in its final term, removing the loan from operating costs to avoid double counting. Both low/high cash bounds reconcile with their labelled signed rows. No-loan and expired-term behavior, source-world immutability, existing rates/terms/payments/ledger and staff-policy thresholds are preserved. The actual signingVerdict regression demonstrates the intentional affordability change. Integration-test edits are limited to the added loan label and excluding its separately itemized amount from operating-row expectations. Reused exact-submission evidence: 31 new cases (19 failing before the correction), 36 focused cases including unchanged loan settlement coverage, 128 files/1173 affected unit cases, typecheck/lint/format/i18n/build pass. An additional read-only numeric diagnostic checked all 47 played-round horizons for 8 installments, including half-even ties and an integer beyond Number precision; all 376 telescoping comparisons matched. Upstream next still equals the pinned base, with no overlapping changes. Integration-tier projection.test.ts/projection.plain.test.ts and the final full/browser gate remain coordinator-owned as explicitly authorized.",
+          "findings": [],
+          "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+          "baseCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+          "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+          "createdAt": "2026-11-09T15:33:27.845Z",
+          "finishedAt": "2026-11-09T15:36:56.740Z",
+          "invalidatedAt": "2026-11-09T15:50:45.407Z",
+          "invalidationReason": "review base changed"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T758",
+          "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+          "at": "2026-11-09T15:31:10.699Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:29:55.049Z",
+              "finishedAt": "2026-11-09T15:31:10.129Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T15:29:55.049Z",
+          "finishedAt": "2026-11-09T15:31:10.129Z"
+        }
+      ]
+    },
+    {
+      "id": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "group": "fi09",
+      "taskId": "T753",
+      "tasks": [
+        "T753"
+      ],
+      "lane": null,
+      "owner": "fi09-bid",
+      "contributors": [
+        "fi09-bid"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T15:21:59.510Z",
+      "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+      "verifiedCommit": "67d29a20a396550c290f8f872d23805454507ad8",
+      "submittedBase": "919a2f2d5c43bcee67577032b61ad1d53be8b4bf",
+      "submissionId": "d2d257b8-cf75-49d3-af84-91449aaf7f55",
+      "submittedAt": "2026-11-09T15:43:30.630Z",
+      "risk": null,
+      "review": {
+        "id": "40b81ee1-3978-4a7d-815f-1b988bae52c6",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T753 satisfies its complete acceptance and the current complete CLUB-14/15/18, ECON-6, WEB-109 and ARCH-4/21/30/32 decisions at pinned base 972c570539e3340cb8d882f5b2749038bb3ca803. Reviewed exact submission 67d29a20a396550c290f8f872d23805454507ad8, its complete merge-base diff (RecruitmentDesk.tsx, its test and task result only), and current upstream policy interaction. A verified exact-world/revision detail can refresh only the still-active unsubmitted asking. The selected percentage remains unchanged; useMarketDetail keys the resulting exact fee so odds cannot be reused for the previous fee. Transaction amounts stay unavailable and submission stays blocked while requesting or reconciling a changed quote; bid-head money from another revision is hidden across a currency period transition. Current fee/detail/bidding refs also reject retained old handlers, while existing live-state guards continue to reject stale revisions or blocked actions. Same asking causes no refresh loop. Already-submitted bid commands/terms, engine prices/chances, canonical facts, retained inspection behavior and locale subscriptions remain unchanged. The existing shared Money boundary supplies current-era notation and exact disclosure only after the verified quote is coherent. Mounted synthetic tests use the actual detail hook and task memory and controlled promises; they cover increased/decreased same-revision asking, 130% retention, exact displayed/submitted fees, old fee/revision replies, retained handlers, pending state, currency transitions, unchanged asking and closing. Red evidence reproduces both original repricing failures; focused evidence passes 78 cases in 2 files. The exact submission receipt passes 5 affected files/71 cases plus typecheck/lint/format/i18n/build. Happy-dom is per-file only and roots/task memory/globals are cleaned after each test. No new source test runs were necessary; no browser/integration/full checks were run. The separate broader held-market/inspection snapshot observation is outside T753 and was not folded into this review. Upstream next remains the pinned base and its newer HIST/SAVE policy-only changes do not interact with this market source.",
+        "findings": [],
+        "commit": "67d29a20a396550c290f8f872d23805454507ad8",
+        "baseCommit": "972c570539e3340cb8d882f5b2749038bb3ca803",
+        "submissionId": "d2d257b8-cf75-49d3-af84-91449aaf7f55",
+        "createdAt": "2026-11-09T15:50:45.407Z",
+        "finishedAt": "2026-11-09T15:52:59.281Z"
+      },
+      "steps": [
+        {
+          "taskId": "T753",
+          "commit": "67d29a20a396550c290f8f872d23805454507ad8",
+          "at": "2026-11-09T15:43:30.602Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:43:03.179Z",
+              "finishedAt": "2026-11-09T15:43:30.143Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T15:43:03.179Z",
+          "finishedAt": "2026-11-09T15:43:30.143Z"
+        }
+      ]
+    },
+    {
+      "id": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "group": "fi09",
+      "taskId": "T759",
+      "tasks": [
+        "T759"
+      ],
+      "lane": null,
+      "owner": "fi09-employment-money",
+      "contributors": [
+        "fi09-employment-money"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-11-09T15:33:31.917Z",
+      "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+      "verifiedCommit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+      "submittedBase": "919a2f2d5c43bcee67577032b61ad1d53be8b4bf",
+      "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
+      "submittedAt": "2026-11-09T15:42:57.633Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T759",
+          "commit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+          "at": "2026-11-09T15:42:57.604Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:41:54.520Z",
+              "finishedAt": "2026-11-09T15:42:57.168Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T15:41:54.520Z",
+          "finishedAt": "2026-11-09T15:42:57.168Z"
+        }
+      ]
+    },
+    {
+      "id": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "group": "fi09",
+      "taskId": "T764",
+      "tasks": [
+        "T764"
+      ],
+      "lane": null,
+      "owner": "fi09-career-cards",
+      "contributors": [
+        "fi09-career-cards"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T15:50:50.148Z",
+      "startCommit": "972c570539e3340cb8d882f5b2749038bb3ca803"
     }
   ],
   "history": [
@@ -1389,6 +1647,532 @@
             "T761"
           ]
         }
+      }
+    },
+    {
+      "sequence": 2053,
+      "at": "2026-11-09T15:20:52.582Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T753",
+          "T754",
+          "T755",
+          "T756",
+          "T757",
+          "T758",
+          "T759",
+          "T760",
+          "T761",
+          "T762",
+          "T763"
+        ]
+      }
+    },
+    {
+      "sequence": 2054,
+      "at": "2026-11-09T15:20:53.328Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "b18d804f-4276-433e-b74f-7b60820282f3",
+        "group": "fi09",
+        "taskId": "T758",
+        "tasks": [
+          "T758"
+        ],
+        "lane": null,
+        "owner": "fi09-loan",
+        "contributors": [
+          "fi09-loan"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T15:20:53.328Z",
+        "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167"
+      }
+    },
+    {
+      "sequence": 2055,
+      "at": "2026-11-09T15:20:54.911Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2056,
+      "at": "2026-11-09T15:21:59.510Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+        "group": "fi09",
+        "taskId": "T753",
+        "tasks": [
+          "T753"
+        ],
+        "lane": null,
+        "owner": "fi09-bid",
+        "contributors": [
+          "fi09-bid"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T15:21:59.510Z",
+        "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167"
+      }
+    },
+    {
+      "sequence": 2057,
+      "at": "2026-11-09T15:22:01.273Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2058,
+      "at": "2026-11-09T15:25:19.536Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2059,
+      "at": "2026-11-09T15:29:54.623Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2060,
+      "at": "2026-11-09T15:31:10.730Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+        "submittedBase": "fd56f083210f3dc89d70754753c45bafa561d167",
+        "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+        "submittedAt": "2026-11-09T15:31:10.730Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T758",
+            "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+            "at": "2026-11-09T15:31:10.699Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:29:55.049Z",
+                "finishedAt": "2026-11-09T15:31:10.129Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T15:29:55.049Z",
+            "finishedAt": "2026-11-09T15:31:10.129Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2061,
+      "at": "2026-11-09T15:33:27.845Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "a541e31b-866a-4aff-bf0d-d1ce24936637",
+          "owner": "fi09-review-loan",
+          "status": "reviewing",
+          "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+          "baseCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+          "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+          "createdAt": "2026-11-09T15:33:27.845Z"
+        }
+      }
+    },
+    {
+      "sequence": 2062,
+      "at": "2026-11-09T15:33:31.917Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+        "group": "fi09",
+        "taskId": "T759",
+        "tasks": [
+          "T759"
+        ],
+        "lane": null,
+        "owner": "fi09-employment-money",
+        "contributors": [
+          "fi09-employment-money"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T15:33:31.917Z",
+        "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167"
+      }
+    },
+    {
+      "sequence": 2063,
+      "at": "2026-11-09T15:33:33.945Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2064,
+      "at": "2026-11-09T15:36:56.740Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "a541e31b-866a-4aff-bf0d-d1ce24936637",
+          "owner": "fi09-review-loan",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T758 satisfies its four acceptance items and the complete current ECON-18, ECON-38 and ARCH-9 contracts at base fd56f083210f3dc89d70754753c45bafa561d167. Reviewed pinned commit d8f9498d5e604c5ba56253840bfcb5d89f75887f and its complete diff. The season horizon subtracts annual minus cumulative half-even rounded paid loan installments, matching the telescoping roundShare payment schedule. The 365-day horizon itemizes one full installment for a continuing loan and only the current unpaid installment in its final term, removing the loan from operating costs to avoid double counting. Both low/high cash bounds reconcile with their labelled signed rows. No-loan and expired-term behavior, source-world immutability, existing rates/terms/payments/ledger and staff-policy thresholds are preserved. The actual signingVerdict regression demonstrates the intentional affordability change. Integration-test edits are limited to the added loan label and excluding its separately itemized amount from operating-row expectations. Reused exact-submission evidence: 31 new cases (19 failing before the correction), 36 focused cases including unchanged loan settlement coverage, 128 files/1173 affected unit cases, typecheck/lint/format/i18n/build pass. An additional read-only numeric diagnostic checked all 47 played-round horizons for 8 installments, including half-even ties and an integer beyond Number precision; all 376 telescoping comparisons matched. Upstream next still equals the pinned base, with no overlapping changes. Integration-tier projection.test.ts/projection.plain.test.ts and the final full/browser gate remain coordinator-owned as explicitly authorized.",
+          "findings": [],
+          "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+          "baseCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+          "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+          "createdAt": "2026-11-09T15:33:27.845Z",
+          "finishedAt": "2026-11-09T15:36:56.740Z"
+        }
+      }
+    },
+    {
+      "sequence": 2065,
+      "at": "2026-11-09T15:41:54.134Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2066,
+      "at": "2026-11-09T15:42:57.633Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+        "submittedBase": "919a2f2d5c43bcee67577032b61ad1d53be8b4bf",
+        "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
+        "submittedAt": "2026-11-09T15:42:57.633Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T759",
+            "commit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+            "at": "2026-11-09T15:42:57.604Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:41:54.520Z",
+                "finishedAt": "2026-11-09T15:42:57.168Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T15:41:54.520Z",
+            "finishedAt": "2026-11-09T15:42:57.168Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2067,
+      "at": "2026-11-09T15:43:02.836Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2068,
+      "at": "2026-11-09T15:43:30.630Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "67d29a20a396550c290f8f872d23805454507ad8",
+        "submittedBase": "919a2f2d5c43bcee67577032b61ad1d53be8b4bf",
+        "submissionId": "d2d257b8-cf75-49d3-af84-91449aaf7f55",
+        "submittedAt": "2026-11-09T15:43:30.630Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T753",
+            "commit": "67d29a20a396550c290f8f872d23805454507ad8",
+            "at": "2026-11-09T15:43:30.602Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:43:03.179Z",
+                "finishedAt": "2026-11-09T15:43:30.143Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T15:43:03.179Z",
+            "finishedAt": "2026-11-09T15:43:30.143Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2069,
+      "at": "2026-11-09T15:50:44.603Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T753",
+          "T754",
+          "T755",
+          "T756",
+          "T757",
+          "T758",
+          "T759",
+          "T760",
+          "T761",
+          "T762",
+          "T763",
+          "T764"
+        ]
+      }
+    },
+    {
+      "sequence": 2070,
+      "at": "2026-11-09T15:50:45.407Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "approved",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "a541e31b-866a-4aff-bf0d-d1ce24936637",
+            "owner": "fi09-review-loan",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "T758 satisfies its four acceptance items and the complete current ECON-18, ECON-38 and ARCH-9 contracts at base fd56f083210f3dc89d70754753c45bafa561d167. Reviewed pinned commit d8f9498d5e604c5ba56253840bfcb5d89f75887f and its complete diff. The season horizon subtracts annual minus cumulative half-even rounded paid loan installments, matching the telescoping roundShare payment schedule. The 365-day horizon itemizes one full installment for a continuing loan and only the current unpaid installment in its final term, removing the loan from operating costs to avoid double counting. Both low/high cash bounds reconcile with their labelled signed rows. No-loan and expired-term behavior, source-world immutability, existing rates/terms/payments/ledger and staff-policy thresholds are preserved. The actual signingVerdict regression demonstrates the intentional affordability change. Integration-test edits are limited to the added loan label and excluding its separately itemized amount from operating-row expectations. Reused exact-submission evidence: 31 new cases (19 failing before the correction), 36 focused cases including unchanged loan settlement coverage, 128 files/1173 affected unit cases, typecheck/lint/format/i18n/build pass. An additional read-only numeric diagnostic checked all 47 played-round horizons for 8 installments, including half-even ties and an integer beyond Number precision; all 376 telescoping comparisons matched. Upstream next still equals the pinned base, with no overlapping changes. Integration-tier projection.test.ts/projection.plain.test.ts and the final full/browser gate remain coordinator-owned as explicitly authorized.",
+            "findings": [],
+            "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+            "baseCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
+            "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+            "createdAt": "2026-11-09T15:33:27.845Z",
+            "finishedAt": "2026-11-09T15:36:56.740Z",
+            "invalidatedAt": "2026-11-09T15:50:45.407Z",
+            "invalidationReason": "review base changed"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2071,
+      "at": "2026-11-09T15:50:45.407Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "40b81ee1-3978-4a7d-815f-1b988bae52c6",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "67d29a20a396550c290f8f872d23805454507ad8",
+          "baseCommit": "972c570539e3340cb8d882f5b2749038bb3ca803",
+          "submissionId": "d2d257b8-cf75-49d3-af84-91449aaf7f55",
+          "createdAt": "2026-11-09T15:50:45.407Z"
+        }
+      }
+    },
+    {
+      "sequence": 2072,
+      "at": "2026-11-09T15:50:50.148Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "17a63e2d-9492-4cd9-8839-808be7d22295",
+        "group": "fi09",
+        "taskId": "T764",
+        "tasks": [
+          "T764"
+        ],
+        "lane": null,
+        "owner": "fi09-career-cards",
+        "contributors": [
+          "fi09-career-cards"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T15:50:50.148Z",
+        "startCommit": "972c570539e3340cb8d882f5b2749038bb3ca803"
+      }
+    },
+    {
+      "sequence": 2073,
+      "at": "2026-11-09T15:50:52.654Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2074,
+      "at": "2026-11-09T15:52:59.281Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "40b81ee1-3978-4a7d-815f-1b988bae52c6",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T753 satisfies its complete acceptance and the current complete CLUB-14/15/18, ECON-6, WEB-109 and ARCH-4/21/30/32 decisions at pinned base 972c570539e3340cb8d882f5b2749038bb3ca803. Reviewed exact submission 67d29a20a396550c290f8f872d23805454507ad8, its complete merge-base diff (RecruitmentDesk.tsx, its test and task result only), and current upstream policy interaction. A verified exact-world/revision detail can refresh only the still-active unsubmitted asking. The selected percentage remains unchanged; useMarketDetail keys the resulting exact fee so odds cannot be reused for the previous fee. Transaction amounts stay unavailable and submission stays blocked while requesting or reconciling a changed quote; bid-head money from another revision is hidden across a currency period transition. Current fee/detail/bidding refs also reject retained old handlers, while existing live-state guards continue to reject stale revisions or blocked actions. Same asking causes no refresh loop. Already-submitted bid commands/terms, engine prices/chances, canonical facts, retained inspection behavior and locale subscriptions remain unchanged. The existing shared Money boundary supplies current-era notation and exact disclosure only after the verified quote is coherent. Mounted synthetic tests use the actual detail hook and task memory and controlled promises; they cover increased/decreased same-revision asking, 130% retention, exact displayed/submitted fees, old fee/revision replies, retained handlers, pending state, currency transitions, unchanged asking and closing. Red evidence reproduces both original repricing failures; focused evidence passes 78 cases in 2 files. The exact submission receipt passes 5 affected files/71 cases plus typecheck/lint/format/i18n/build. Happy-dom is per-file only and roots/task memory/globals are cleaned after each test. No new source test runs were necessary; no browser/integration/full checks were run. The separate broader held-market/inspection snapshot observation is outside T753 and was not folded into this review. Upstream next remains the pinned base and its newer HIST/SAVE policy-only changes do not interact with this market source.",
+          "findings": [],
+          "commit": "67d29a20a396550c290f8f872d23805454507ad8",
+          "baseCommit": "972c570539e3340cb8d882f5b2749038bb3ca803",
+          "submissionId": "d2d257b8-cf75-49d3-af84-91449aaf7f55",
+          "createdAt": "2026-11-09T15:50:45.407Z",
+          "finishedAt": "2026-11-09T15:52:59.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 2075,
+      "at": "2026-11-09T15:53:12.042Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]
