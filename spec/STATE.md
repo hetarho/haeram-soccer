@@ -791,6 +791,7 @@
 - 261110 decided review/football-data-consistency-261109 T758 T759 T760 T761: which next numerical corrections fit the owner's capital/fee/statistics mandate → missing loan projection costs, explicit fixed-period compensation,90-minute H2H and recorded NPC reds (alt: new nominal FX rates | implicit club chronology | unversioned career-card repair). Existing rules/ratios/save contracts stay; corrected affordability/debits are expected outcomes of F12/F13 and covered by tests fi09
 - 261110 parked review/football-data-consistency-261109: F18 general nominal GBP/EUR staff compensation needs an explicit rate/inverse-rounding policy; country price quotes vary even for sharedEUR and one-way FFP averaging is not a generic converter. Apply only already-defined fixed-period parity in T759 fi09
 - 261110 parked HIST-22 review/football-data-consistency-261109: F17 needs explicit owner scope for a backward-compatible stored-summary version and one-time writer repair; existing format1 has no semantic invalidation marker. Raw sources suffice, every-reload reconciliation would add load cost, no implementation before scope response fi09
+- 261110 decided review/football-data-consistency-261109 T761 T762 T763: how to finish shared league UI consistency without new tracking policy → serialize the existing-read discipline fix, neutral club contribution sets and remaining localized count cells in league-record-views (alt: infer chronology from first-seen arrays | add unsupported latest data | leave mixed digits). T761 remained unassigned before lane composition; all new scope is explicit fi09
 
 ## ideation
 | id | st |
@@ -863,6 +864,8 @@
 | T759 | normalize fixed currency periods in coach compensation | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T761 | show recorded npc league red cards | ARCH | T752 | todo |
+| T762 | present contributing clubs without invented chronology | ARCH | T752 | todo |
+| T763 | localize league statistic table counts | ARCH | T752 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -893,6 +896,7 @@
 
 ## log
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
+- 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09
 - 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
 - 261109 T689 cv04-own (09:04–11:04Z window, measurements 09:08–10:33Z): MATCH r56's in-box shot weighing (`boxShot.read`/`against`, default off, uncommitted in the evidence patch) moves the shot mix but not the box's chance (xG a shot 0.056–0.061, bar 0.07), since 92% of the carried box shots with nobody between are MATCH-16 clear chances struck at xG 0.008 against a keeper already out; every candidate breaks MATCH-29 (−0.187 to −0.271); gate unmet, only the diagnostic and evidence committed, T689 stays todo ev09
@@ -902,7 +906,6 @@
 - 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
 - 261109 T744 integrated
 - 261109 T746 integrated
-- 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
 - 261109 T745 integrated
 - 261109 T743 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
