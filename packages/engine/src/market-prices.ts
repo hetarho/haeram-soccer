@@ -1,6 +1,6 @@
 import type { Player, World } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
-import { clamp, scaleBy } from './primitives';
+import { clamp } from './primitives';
 import { clubOf, overall } from './player-state';
 import { footballQuote } from './quotes';
 import { tierLevel } from './tier-levels';
@@ -17,12 +17,6 @@ export const MARKET_CONFIG = {
    * top-flight wage bill weighs against the gate as it does in real football.
    */
   wage: 900,
-  /** Estimated player-pay growth beyond the football index; no effect on fees or staff. */
-  playerWageEra: [
-    [1992, 1],
-    [2005, 1.5],
-    [2025, 2.5],
-  ] as [number, number][],
   pivot: 70,
   /** Each ability point multiplies wage and value, so 80 earns 7.4× 60 (CLUB-25: 6–10×). */
   perPoint: 1.105,
@@ -76,17 +70,6 @@ export const MARKET_CONFIG = {
   /** A season's loan costs this share of the player's value. */
   loan: 0.1,
 };
-
-function playerWageEra(year: number) {
-  const table = MARKET_CONFIG.playerWageEra;
-  if (year <= table[0][0]) return table[0][1];
-  for (let i = 1; i < table.length; i++) {
-    const [from, low] = table[i - 1],
-      [to, high] = table[i];
-    if (year <= to) return low * (high / low) ** ((year - from) / (to - from));
-  }
-  return table[table.length - 1][1];
-}
 
 /**
  * The era's star pay spread s (스타 임금 격차, →CLUB-48), from 0 to 1: a wage above an ordinary
@@ -276,7 +259,7 @@ export function marketWageAt(
   p: Player,
   ovr = overall(p),
 ) {
-  const quote = footballQuote(
+  return footballQuote(
     code,
     year,
     marketWageUnits(
@@ -287,8 +270,6 @@ export function marketWageAt(
       starPaySpread(code, year),
     ),
   );
-  const era = playerWageEra(year);
-  return era === 1 ? quote : scaleBy(quote, era, 1_000_000n);
 }
 /** A player's transfer value in `code` and `year` money. */
 export function marketValueAt(code: string, year: number, division: number, p: Player) {

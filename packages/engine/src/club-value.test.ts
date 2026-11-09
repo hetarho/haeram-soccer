@@ -34,26 +34,6 @@ const leader = (w: World, tier: number) =>
     .sort((a, b) => b.strength - a.strength)[0]!;
 
 describe('club value (→ECON-37)', () => {
-  it('uses the official-scale modern package for league-place value and the indebted value floor', () => {
-    // An empty owned club isolates the league-place component without generating a world.
-    const w = {
-      year: 2024,
-      playerClub: 'own',
-      clubs: [{ id: 'own', country: 'ENG', tier: 0, fans: 0 }],
-      players: [],
-      stadium: 0,
-      trainingGround: 0,
-      academyFacility: 0,
-      cash: '0',
-    } as unknown as World;
-    const club = clubOf(w),
-      facilities = big(footballQuote('ENG', 2024, facilityBuiltUnits(facilityStage(w, club))));
-    expect(divisionDistribution('ENG', 2024, 0)).toBe('10898461538');
-    expect(big(clubValue(w, club))).toBe(facilities + 32695384614n);
-    w.loan = { balance: '999999999999999', installment: '0', seasonsLeft: 1 };
-    expect(clubValue(w, club)).toBe('10898461538');
-  });
-
   it('sums players, facilities, following, league place and the books', () => {
     const w = ownerlessWorld();
     const club = leader(w, 0);

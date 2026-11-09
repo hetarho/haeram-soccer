@@ -27,7 +27,6 @@ import {
   progressFacilityWorks,
   quote,
   roundShare,
-  scaleBy,
   settleLeagueMerit,
   settleRound,
   simulateMatch,
@@ -292,8 +291,6 @@ describe('earned, auditable club finances', () => {
 });
 
 describe('the league distribution', () => {
-  // ECON-28's independently fitted 2018/19 whole-pot anchor, not the raw TV equal share.
-  const central2018 = 0.8520865440307794;
   it('shares more in higher divisions of every country, priced on the broadcasting index', () => {
     for (const profile of COUNTRIES) {
       const table = DISTRIBUTION_CONFIG.share[profile.code];
@@ -305,20 +302,14 @@ describe('the league distribution', () => {
     const late = { ...world(), year: 2010 },
       units = DISTRIBUTION_CONFIG.share.ENG[0];
     expect(broadcastingIndex('ENG', 2010).real).toBeGreaterThan(footballIndex('ENG', 2010).real);
-    const expectedLate = scaleBy(
-      broadcastQuote('ENG', 2010, units),
-      central2018 ** ((2010 - 1992) / (2018 - 1992)),
-      1_000_000_000_000n,
-    );
-    const difference = BigInt(leagueShare(late, 0)) - BigInt(expectedLate);
-    expect(difference < 0n ? -difference : difference).toBeLessThanOrEqual(1n);
+    expect(leagueShare(late, 0)).toBe(broadcastQuote('ENG', 2010, units));
     expect(BigInt(leagueShare(late, 0))).toBeGreaterThan(BigInt(footballQuote('ENG', 2010, units)));
     // Before television paid the league its money follows prices.
     const early = { ...world(), year: 1955 };
     expect(Number(leagueShare(early, 0)) / Number(quote('ENG', 1955, units))).toBeCloseTo(1, 3);
   });
 
-  it('scales the top-flight share, merit and parachute from 1955 to 2005 by broadcasting and the normalized package', () => {
+  it('scales the top-flight share, merit and parachute from 1955 to 2005 by the broadcasting index', () => {
     // In pounds, so the pre-decimal penny (240 a pound) and the new penny compare.
     const pounds = (amount: string, year: number) =>
       Number(BigInt(amount)) / currency('ENG', year).units;
@@ -335,10 +326,8 @@ describe('the league distribution', () => {
     expect(broadcasting / football).toBeGreaterThan(5);
     const scaled = (money: (w: World) => string) =>
       pounds(money(at(2005)), 2005) / pounds(money(at(1955)), 1955);
-    // 2005 is the midpoint of the adopted 1992→2018 normalization interval.
-    const central2005 = Math.sqrt(central2018);
-    expect(scaled((w) => leagueShare(w)) / broadcasting).toBeCloseTo(central2005, 4);
-    expect(scaled((w) => leagueMerit(w, 1, 20)) / broadcasting).toBeCloseTo(central2005, 4);
+    expect(scaled((w) => leagueShare(w)) / broadcasting).toBeCloseTo(1, 4);
+    expect(scaled((w) => leagueMerit(w, 1, 20)) / broadcasting).toBeCloseTo(1, 4);
     // A club relegated from the top flight into the second tier keeps half the share it lost.
     const relegated = (year: number) => {
       const w = at(year);
@@ -347,12 +336,9 @@ describe('the league distribution', () => {
       return parachutePayment(w);
     };
     expect(pounds(relegated(1955), 1955)).toBeGreaterThan(0);
-    const [topUnits, secondUnits] = DISTRIBUTION_CONFIG.share.ENG;
-    // The top-flight package changes; the ordinary second-tier share being subtracted does not.
-    const lostShareGrowth = (topUnits * central2005 - secondUnits) / (topUnits - secondUnits);
     expect(
       pounds(relegated(2005), 2005) / pounds(relegated(1955), 1955) / broadcasting,
-    ).toBeCloseTo(lostShareGrowth, 4);
+    ).toBeCloseTo(1, 4);
   });
 
   it('orders the merit by final position, the champion taking 1.6× the bottom club up top and 1.3× below', () => {

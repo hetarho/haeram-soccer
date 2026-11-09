@@ -33,9 +33,9 @@ export const FINANCE_CONFIG = {
 
 /**
  * League distributions (→ECON-28), measured against ECON-29 (spec/ssot/ECON.md): each
- * country's minimum central package a season by division, from the top flight down, in 1901
- * price units before the broadcasting index (→ECON-31); the champion's total against the bottom
- * club's; the share of the lost package a relegated club keeps for a season.
+ * country's equal share a season by division, from the top flight down, in 1901 price units before
+ * the broadcasting index (→ECON-31); the champion's total against the bottom club's; the share of
+ * the lost equal share a relegated club keeps for a season.
  */
 export const DISTRIBUTION_CONFIG = {
   share: {
@@ -48,21 +48,6 @@ export const DISTRIBUTION_CONFIG = {
     NED: [7000, 400],
     BEL: [6400, 370],
   } as Record<string, readonly number[]>,
-  /**
-   * ENG's top-flight central pot, fitted to official 2018/19 and 2024/25 totals with the retained
-   * rank spread. This package includes central commercial and televised-appearance payments,
-   * distinct from club sponsorship and stadium facilities. Interpolated years are estimates;
-   * the 2024/25 source table is itself rounded to £0.1m per component.
-   */
-  normalization: {
-    ENG: {
-      0: [
-        [1992, 1],
-        [2018, 0.8520865440307794],
-        [2024, 0.6580851783905154],
-      ],
-    },
-  } as Record<string, Record<number, [number, number][]>>,
   champion: { top: 1.6, below: 1.3 },
   parachute: 0.5,
 };
@@ -617,34 +602,15 @@ export function financialBreakdown(w: World) {
 export function divisionLabel(tier: number) {
   return sourceMessage('copy.cupRoute.3d1e4a6467', { p0: tier + 1 });
 }
-/** A targeted league package's factor, geometric between anchors and flat outside them. */
-function leagueDistributionFactor(code: string, year: number, tier: number) {
-  const anchors = DISTRIBUTION_CONFIG.normalization[code]?.[tier];
-  if (!anchors) return 1;
-  if (year <= anchors[0][0]) return anchors[0][1];
-  for (let i = 1; i < anchors.length; i++) {
-    const [from, low] = anchors[i - 1],
-      [to, high] = anchors[i];
-    if (year <= to) return low * (high / low) ** ((year - from) / (to - from));
-  }
-  return anchors[anchors.length - 1][1];
-}
-/** Precision preserves the fitted central pot to minor-unit rounding across all 20 ranks. */
-const DISTRIBUTION_FACTOR_PRECISION = 1_000_000_000_000n;
 /**
- * The modeled minimum central package every club of a division earns (→ECON-28), not an observed
- * broadcast equal-share component. Its targeted normalization follows broadcast pricing; the
- * settlement pays league-round installments, and merit, parachutes and club valuation read it.
+ * The equal share every club of a division earns in a season (→ECON-28), in this season's money on
+ * the broadcasting index (→ECON-31); the settlement pays it in league-round installments through
+ * `roundShare`, and the merit payment and the parachute are reckoned from it.
  */
-export function leagueDistributionAt(code: string, year: number, tier: number) {
-  const table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG,
-    quoted = broadcastQuote(code, year, table[Math.min(tier, table.length - 1)]),
-    factor = leagueDistributionFactor(code, year, tier);
-  return factor === 1 ? quoted : scaleBy(quoted, factor, DISTRIBUTION_FACTOR_PRECISION);
-}
-/** The current world's view of the canonical code/year/tier central package (→ECON-28). */
 export function leagueShare(w: World, tier = clubOf(w).tier) {
-  return leagueDistributionAt(clubOf(w).country, w.year, tier);
+  const code = clubOf(w).country,
+    table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
+  return broadcastQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
 }
 /**
  * The merit payment for a final rank, paid at the close: nothing for the bottom club, rising evenly
