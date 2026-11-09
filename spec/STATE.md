@@ -859,9 +859,6 @@
 | T755 | rank career appearances by recorded matches | ARCH | - | todo |
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
-| T761 | show recorded npc league red cards | ARCH | T752 | todo |
-| T762 | present contributing clubs without invented chronology | ARCH | T752 | todo |
-| T763 | localize league statistic table counts | ARCH | T752 | todo |
 | T765 | preserve market snapshot money denominations | WEB ARCH ECON | T753 | todo |
 
 ## work
@@ -886,12 +883,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 19 | 11 | 8 | 4 | 0 | 0 | 2026-11-09T16:09:31.211Z | [history](work/fi09.json) |
+| fi09 | 2 | 19 | 14 | 5 | 2 | 0 | 0 | 2026-11-09T16:15:19.386Z | [history](work/fi09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T761 T762 T763 integrated
 - 261109 T764 integrated
 - 261109 T759 integrated
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
@@ -911,4 +909,3 @@
 - 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
 - 261109 T689 cv04-clr hand-off complete: nine pinned-Node confirmation jobs, seven exact origin comparisons; both candidates fail the screen, all experimental engine source restored; T689 stays todo av11
-- 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09

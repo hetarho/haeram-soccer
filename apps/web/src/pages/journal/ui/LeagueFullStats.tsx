@@ -1,6 +1,7 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
+import { number } from '../../../presentation/format';
 import { useMemo, useState } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
 import type { GameClient } from '../../../runtime/client';
@@ -172,24 +173,24 @@ function FullClubTable({
                   <th scope="row" className={s.club}>
                     <ClubLink w={w} id={row.club} crest={14} />
                   </th>
-                  <td>{localizeValue(row.matches)}</td>
-                  <td>{localizeValue(row.goals)}</td>
+                  <td>{number(row.matches)}</td>
+                  <td>{number(row.goals)}</td>
                   <td>{localizeValue(hundredths(row.xg))}</td>
                   <td>{localizeValue(hundredths(row.xga))}</td>
                   <td className={s.optional}>
                     {localizeValue(perMatch((row.xg - row.xga) / 100, row.matches))}
                   </td>
                   <td className={s.optional}>
-                    {localizeValue(row.shots)} ({localizeValue(row.onTarget)})
+                    {number(row.shots)} ({number(row.onTarget)})
                   </td>
                   <td className={s.optional}>
                     {localizeValue(share(row.completed, row.passes))}
                     {localizeValue(' ')}
                     <small>
-                      {localizeValue(row.completed)}/{localizeValue(row.passes)}
+                      {number(row.completed)}/{number(row.passes)}
                     </small>
                   </td>
-                  <td className={s.optional}>{localizeValue(row.bigChances)}</td>
+                  <td className={s.optional}>{number(row.bigChances)}</td>
                 </tr>
               )),
             )}
@@ -218,6 +219,9 @@ export function FullLeaders({
   useTextLocale();
   const leader = LEADERS.find((entry) => entry.key === order)!;
   const ranked = leaders(rows, order);
+  const activeOwn = new Set(
+    w.players.filter((player) => player.status === 'active').map((p) => p.id),
+  );
   return (
     <>
       <div className={s.coverage}>
@@ -258,26 +262,23 @@ export function FullLeaders({
               <tbody>
                 {localizeValue(
                   ranked.map(({ player, total, rate, sample }, i) => (
-                    <tr
-                      key={player.id}
-                      className={player.clubs.at(-1) === w.playerClub ? s.own : ''}
-                    >
-                      <td>{localizeValue(i + 1)}</td>
+                    <tr key={player.id} className={activeOwn.has(player.id) ? s.own : ''}>
+                      <td>{number(i + 1)}</td>
                       <th scope="row" className={s.club}>
-                        {/* Every player opens his detail, found at his latest club (→WEB-59). */}
+                        {/* Retained identity routes every profile; only the active roster proves affiliation. */}
                         <PlayerLink
                           id={player.id}
                           name={player.name}
                           scope="season"
-                          club={player.clubs.at(-1)}
+                          club={activeOwn.has(player.id) ? w.playerClub : undefined}
                         />
                         {localizeValue(' ')}· {localizeValue(player.position)}
                         <br />
-                        {/* Every contributing club, the latest last (→HIST-13). */}
+                        {/* Contributions are a set, with no claim about transfer order (→HIST-17). */}
                         {localizeValue(
                           player.clubs.map((club, n) => (
                             <span key={club}>
-                              {localizeValue(n > 0 && ' → ')}
+                              {localizeValue(n > 0 && ' · ')}
                               <ClubLink w={w} id={club} crest={14} />
                             </span>
                           )),

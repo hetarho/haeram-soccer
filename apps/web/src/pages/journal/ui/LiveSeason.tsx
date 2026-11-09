@@ -433,7 +433,7 @@ const PlayerPane = memo(function PlayerPane({
       {localizeValue(
         part === 'scorers' && <LeagueFullStats client={client} league={league} lens="players" />,
       )}
-      {localizeValue(part === 'scorers' && <DisciplineTable league={league} />)}
+      {localizeValue(part === 'scorers' && <DisciplineTable client={client} league={league} />)}
     </>
   );
 });

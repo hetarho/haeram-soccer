@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T16:09:31.211Z",
-  "sourceCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8",
+  "snapshotAt": "2026-11-09T16:15:19.386Z",
+  "sourceCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -60,12 +60,12 @@
   },
   "summary": {
     "total": 19,
-    "completed": 11,
-    "remaining": 8,
-    "running": 4,
+    "completed": 14,
+    "remaining": 5,
+    "running": 2,
     "review": 0,
     "blocked": 0,
-    "unassigned": 4
+    "unassigned": 3
   },
   "tasks": [
     {
@@ -80,7 +80,7 @@
       "id": "T755",
       "title": "Rank career appearances by recorded matches",
       "dep": [],
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T756",
@@ -93,33 +93,6 @@
       "title": "Use regulation scores in head-to-head records",
       "dep": [],
       "status": "todo"
-    },
-    {
-      "id": "T761",
-      "title": "Show recorded NPC league red cards",
-      "dep": [
-        "T752"
-      ],
-      "lane": "league-record-views",
-      "status": "verifying"
-    },
-    {
-      "id": "T762",
-      "title": "Present contributing clubs without invented chronology",
-      "dep": [
-        "T752"
-      ],
-      "lane": "league-record-views",
-      "status": "verifying"
-    },
-    {
-      "id": "T763",
-      "title": "Localize league statistic table counts",
-      "dep": [
-        "T752"
-      ],
-      "lane": "league-record-views",
-      "status": "verifying"
     },
     {
       "id": "T765",
@@ -638,6 +611,8 @@
       "submittedBase": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
       "submissionId": "e9b290c2-4241-4d16-a055-34548fcb838a",
       "submittedAt": "2026-11-09T16:05:20.239Z",
+      "integratedCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+      "integratedAt": "2026-11-09T16:10:54.472Z",
       "risk": null,
       "review": {
         "id": "cba2ff2e-3034-462f-83ef-7a789f984e24",
@@ -672,12 +647,19 @@
           "startedAt": "2026-11-09T16:03:56.639Z",
           "finishedAt": "2026-11-09T16:05:19.487Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T16:09:31.611Z",
+          "finishedAt": "2026-11-09T16:10:53.133Z"
+        }
       ]
     },
     {
       "id": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
       "group": "fi09",
-      "taskId": "T761",
+      "taskId": "T763",
       "tasks": [
         "T761",
         "T762",
@@ -688,10 +670,73 @@
       "contributors": [
         "fi09-league-records"
       ],
-      "status": "verifying",
-      "reason": "T761/T762 clean commits validated; T763 mounted locale, numeric sorting and request-cadence regression first",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T15:54:39.528Z",
-      "startCommit": "82895b54c306c1624ef81f126bbc64ea81240b70"
+      "startCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+      "verifiedCommit": "4889e890c117fd76d31401499579b01b2491b7db",
+      "submittedBase": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8",
+      "submissionId": "3d398d44-9347-42ed-b5d4-2b7e6b8bd80d",
+      "submittedAt": "2026-11-09T16:10:06.345Z",
+      "risk": null,
+      "review": {
+        "id": "6d5e0b6b-2723-4681-bbc5-818ad368ecb0",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed the complete serialized T761/T762/T763 submission 4889e890c117fd76d31401499579b01b2491b7db against pinned base 6766ceab33c409cae3cddbe403d767e6eb2c36a6, all three contracts/results and per-step changes bdeb4b40/0e98cd8f/4889e890. Current LEAGUE-15, WEB-40/59/89, HIST-6/13/16/17, WORLD-6/11 and unchanged ARCH-4/9/21/30/32 contracts are satisfied. T761 consumes selected FullStatsRead club contributions PD.redCards as the sole tracked red source, never adds legacy own-match reds, retains post-ban identities, and does not let roster fallback overwrite known identities. Current yellows/bans and the original known-data ordering remain. Loading/failure/unavailable reds are undefined and display as unavailable; partial coverage identifies the observed sample and omitted earlier fixtures, and no-cards appears only for an available whole sample. Empty tracked rows are a real sample zero under the existing FullStatsRead contract. The strict keepPrevious:false option keys held reads by request and hides obsolete round values, validates year/kind/group, and uses effect cleanup/request world identity for stale world replies; default held-read behavior and once-per-round rather than daily-revision cadence remain. T762 preserves every first-seen unique contributing-club set and aggregate without transfer arrows or latest-last inference; actual active own roster controls emphasis and profile hints, while retained past/present ours identity and routing remain unchanged. T763 uses shared number formatters for remaining integer cells; real mounted default/German/Arabic switches preserve values, decimal/rate precision, missing states, raw numeric sorting and request count. Synthetic/mounted tests cover straight/second-yellow red facts, post-ban/overlap/filtering/partial/failure/retry/stale cases, returning A-B-A and just-transferred players, departed/external routing and source immutability. T764 integration is disjoint: own-side career cards and both-side leagueReds are retained, and the new pane deliberately does not add that legacy source. Reused exact-submission receipt: 28 affected files/237 cases plus typecheck/lint/format/i18n/build pass, with focused and red/green task evidence inspected. Per-file DOM setup restores roots/stores/locales/globals. No additional tests were needed, and no source edits, integration/full/browser runs or children were used. Upstream next remains the pinned base; final integration gates remain coordinator-owned.",
+        "findings": [],
+        "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+        "baseCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+        "submissionId": "3d398d44-9347-42ed-b5d4-2b7e6b8bd80d",
+        "createdAt": "2026-11-09T16:11:27.463Z",
+        "finishedAt": "2026-11-09T16:14:57.870Z"
+      },
+      "steps": [
+        {
+          "taskId": "T761",
+          "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+          "at": "2026-11-09T16:10:06.312Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T16:09:27.802Z",
+              "finishedAt": "2026-11-09T16:10:05.712Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T762",
+          "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+          "at": "2026-11-09T16:10:06.312Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T16:09:27.802Z",
+              "finishedAt": "2026-11-09T16:10:05.712Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T763",
+          "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+          "at": "2026-11-09T16:10:06.312Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T16:09:27.802Z",
+              "finishedAt": "2026-11-09T16:10:05.712Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T16:09:27.802Z",
+          "finishedAt": "2026-11-09T16:10:05.712Z"
+        }
+      ]
     },
     {
       "id": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
@@ -726,6 +771,22 @@
       "status": "doing",
       "createdAt": "2026-11-09T16:09:13.760Z",
       "startCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8"
+    },
+    {
+      "id": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "group": "fi09",
+      "taskId": "T755",
+      "tasks": [
+        "T755"
+      ],
+      "lane": null,
+      "owner": "fi09-career-appearance",
+      "contributors": [
+        "fi09-career-appearance"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T16:11:35.951Z",
+      "startCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6"
     }
   ],
   "history": [
@@ -2936,6 +2997,225 @@
       "status": "verifying",
       "changes": {
         "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2108,
+      "at": "2026-11-09T16:10:06.345Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T763",
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "4889e890c117fd76d31401499579b01b2491b7db",
+        "submittedBase": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8",
+        "submissionId": "3d398d44-9347-42ed-b5d4-2b7e6b8bd80d",
+        "submittedAt": "2026-11-09T16:10:06.345Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T761",
+            "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+            "at": "2026-11-09T16:10:06.312Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T16:09:27.802Z",
+                "finishedAt": "2026-11-09T16:10:05.712Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T762",
+            "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+            "at": "2026-11-09T16:10:06.312Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T16:09:27.802Z",
+                "finishedAt": "2026-11-09T16:10:05.712Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T763",
+            "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+            "at": "2026-11-09T16:10:06.312Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T16:09:27.802Z",
+                "finishedAt": "2026-11-09T16:10:05.712Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T16:09:27.802Z",
+            "finishedAt": "2026-11-09T16:10:05.712Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2109,
+      "at": "2026-11-09T16:10:54.002Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T16:09:31.611Z",
+            "finishedAt": "2026-11-09T16:10:53.133Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2110,
+      "at": "2026-11-09T16:10:54.472Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+        "integratedAt": "2026-11-09T16:10:54.472Z"
+      }
+    },
+    {
+      "sequence": 2111,
+      "at": "2026-11-09T16:11:27.463Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6d5e0b6b-2723-4681-bbc5-818ad368ecb0",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+          "baseCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+          "submissionId": "3d398d44-9347-42ed-b5d4-2b7e6b8bd80d",
+          "createdAt": "2026-11-09T16:11:27.463Z"
+        }
+      }
+    },
+    {
+      "sequence": 2112,
+      "at": "2026-11-09T16:11:35.951Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+        "group": "fi09",
+        "taskId": "T755",
+        "tasks": [
+          "T755"
+        ],
+        "lane": null,
+        "owner": "fi09-career-appearance",
+        "contributors": [
+          "fi09-career-appearance"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T16:11:35.951Z",
+        "startCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6"
+      }
+    },
+    {
+      "sequence": 2113,
+      "at": "2026-11-09T16:11:39.054Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2114,
+      "at": "2026-11-09T16:14:57.870Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "6d5e0b6b-2723-4681-bbc5-818ad368ecb0",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed the complete serialized T761/T762/T763 submission 4889e890c117fd76d31401499579b01b2491b7db against pinned base 6766ceab33c409cae3cddbe403d767e6eb2c36a6, all three contracts/results and per-step changes bdeb4b40/0e98cd8f/4889e890. Current LEAGUE-15, WEB-40/59/89, HIST-6/13/16/17, WORLD-6/11 and unchanged ARCH-4/9/21/30/32 contracts are satisfied. T761 consumes selected FullStatsRead club contributions PD.redCards as the sole tracked red source, never adds legacy own-match reds, retains post-ban identities, and does not let roster fallback overwrite known identities. Current yellows/bans and the original known-data ordering remain. Loading/failure/unavailable reds are undefined and display as unavailable; partial coverage identifies the observed sample and omitted earlier fixtures, and no-cards appears only for an available whole sample. Empty tracked rows are a real sample zero under the existing FullStatsRead contract. The strict keepPrevious:false option keys held reads by request and hides obsolete round values, validates year/kind/group, and uses effect cleanup/request world identity for stale world replies; default held-read behavior and once-per-round rather than daily-revision cadence remain. T762 preserves every first-seen unique contributing-club set and aggregate without transfer arrows or latest-last inference; actual active own roster controls emphasis and profile hints, while retained past/present ours identity and routing remain unchanged. T763 uses shared number formatters for remaining integer cells; real mounted default/German/Arabic switches preserve values, decimal/rate precision, missing states, raw numeric sorting and request count. Synthetic/mounted tests cover straight/second-yellow red facts, post-ban/overlap/filtering/partial/failure/retry/stale cases, returning A-B-A and just-transferred players, departed/external routing and source immutability. T764 integration is disjoint: own-side career cards and both-side leagueReds are retained, and the new pane deliberately does not add that legacy source. Reused exact-submission receipt: 28 affected files/237 cases plus typecheck/lint/format/i18n/build pass, with focused and red/green task evidence inspected. Per-file DOM setup restores roots/stores/locales/globals. No additional tests were needed, and no source edits, integration/full/browser runs or children were used. Upstream next remains the pinned base; final integration gates remain coordinator-owned.",
+          "findings": [],
+          "commit": "4889e890c117fd76d31401499579b01b2491b7db",
+          "baseCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+          "submissionId": "3d398d44-9347-42ed-b5d4-2b7e6b8bd80d",
+          "createdAt": "2026-11-09T16:11:27.463Z",
+          "finishedAt": "2026-11-09T16:14:57.870Z"
+        }
+      }
+    },
+    {
+      "sequence": 2115,
+      "at": "2026-11-09T16:15:15.774Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

@@ -93,7 +93,7 @@ export interface FullStatsPlayer {
   id: string;
   name: string;
   position: Position;
-  /** Every club he played for in it, in recorded order; the last is the latest. */
+  /** First-seen contributing club set, preserved in stored order; not a transfer timeline. */
   clubs: string[];
   /** One of our players, past or present: his name opens our player sheet (→WEB-59). */
   ours: boolean;
@@ -308,12 +308,13 @@ export const FULL_STATS_FAILED = sourceMessage('copy.fullStatsView.543d84eb22');
  * changed (→WEB-89): the daily view never carries them. A league's settle only on a league match
  * day, when the round moves on, so a league lens reads once a round rather than every shown day;
  * each read first shows the days computed ahead (→WEB-18). A world without a match model asks for
- * nothing; the previous read stays on screen until the next one lands.
+ * nothing; the previous read stays on screen until the next one lands unless keepPrevious is false.
  */
 export function useFullStats(
   client: Pick<GameClient, 'fullStats'>,
   w: Pick<World, 'id' | 'year' | 'round' | 'revision' | 'matchModel'>,
   scope: FullStatsScope | undefined,
+  { keepPrevious = true }: { keepPrevious?: boolean } = {},
 ): FullStatsState {
   const on = activeMatchModel(w) !== undefined && scope !== undefined;
   const [attempt, setAttempt] = useState(0);
@@ -321,23 +322,40 @@ export function useFullStats(
   const name = on ? `${w.id}:${w.year}:${scope.kind}:${scope.groupKey}` : undefined,
     key = name && `${name}:${settled}:${attempt}`;
   const [held, setHeld] = useState<
-    { name: string; read: FullStatsRead | undefined } | { name: string; failed: string }
+    | { name: string; key: string; read: FullStatsRead | undefined }
+    | { name: string; failed: string }
   >();
   useEffect(() => {
     if (!on || !scope || !name || !key) return;
     let valid = true;
     client.fullStats(scope).then(
-      (read) => valid && setHeld({ name, read }),
+      (read) => {
+        if (!valid) return;
+        if (
+          !keepPrevious &&
+          read &&
+          (read.year !== w.year ||
+            read.competition.kind !== scope.kind ||
+            read.competition.groupKey !== scope.groupKey)
+        ) {
+          setHeld({ name, failed: key });
+          return;
+        }
+        setHeld({ name, key, read });
+      },
       () => valid && setHeld({ name, failed: key }),
     );
     return () => {
       valid = false;
     };
     // The name and key spell out the scope, so they are all the effect needs to follow.
-  }, [client, name, key]);
+  }, [client, name, key, keepPrevious]);
   if (!on) return { status: 'off' };
   if (!held || held.name !== name) return { status: 'loading' };
-  if (!('failed' in held)) return { status: 'ready', read: held.read };
+  if (!('failed' in held))
+    return !keepPrevious && held.key !== key
+      ? { status: 'loading' }
+      : { status: 'ready', read: held.read };
   // A retry or a later world asks again; until it answers the lens is loading, not failed.
   return held.failed === key
     ? { status: 'failed', retry: () => setAttempt((n) => n + 1) }
