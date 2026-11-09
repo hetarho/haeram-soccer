@@ -1,6 +1,7 @@
 import type { Event, World } from '../../packages/contracts/src/types';
 import { operatingCosts } from '../../packages/engine/src/finance';
 import { SEASON_ROUNDS } from '../../packages/engine/src/calendar';
+import { toolMessage } from './tool-messages';
 
 /** Exact league-round installments, not employment bonuses or termination payments. */
 export interface SettledPayroll {
@@ -42,7 +43,7 @@ const fields = [
 export function observeSettlementPayroll(world: World) {
   const descriptor = Object.getOwnPropertyDescriptor(world, 'events');
   if (!descriptor?.configurable || !descriptor.writable || !('value' in descriptor))
-    throw new Error('Payroll observation requires a configurable, writable events data property');
+    throw new Error(toolMessage('tool.payroll.eventsProperty'));
   const arrays = new Map<Event[], PropertyDescriptor | undefined>();
   const settlements = new Map<string, PayrollSettlement>();
   let active = true;
@@ -56,11 +57,12 @@ export function observeSettlementPayroll(world: World) {
       event.currency !== world.currency ||
       event.amount === undefined
     )
-      throw new Error('Payroll settlement event does not match the live year, round and currency');
+      throw new Error(toolMessage('tool.payroll.eventMismatch'));
     if (!Number.isInteger(event.round) || event.round < 1 || event.round > SEASON_ROUNDS)
-      throw new Error('Payroll settlement round is outside the league season');
+      throw new Error(toolMessage('tool.payroll.roundOutsideSeason'));
     const id = key(event.year, event.currency, event.round);
-    if (settlements.has(id)) throw new Error(`Duplicate payroll settlement ${id}`);
+    if (settlements.has(id))
+      throw new Error(toolMessage('tool.payroll.duplicate', { settlement: id }));
     const payments = operatingCosts(world, world.round).payments;
     const playerWages = BigInt(payments.playerWages),
       managerWages = BigInt(payments.managerWage),
@@ -71,7 +73,7 @@ export function observeSettlementPayroll(world: World) {
         BigInt(payments.investment ?? '0') +
         BigInt(payments.academy ?? '0');
     if (payroll + other !== BigInt(event.amount))
-      throw new Error(`Payroll components do not match operating-cost at ${id}`);
+      throw new Error(toolMessage('tool.payroll.componentsMismatch', { settlement: id }));
     settlements.set(id, {
       year: event.year,
       currency: event.currency,
@@ -88,7 +90,7 @@ export function observeSettlementPayroll(world: World) {
   };
 
   const instrument = (events: Event[]) => {
-    if (!Array.isArray(events)) throw new Error('Payroll observation requires an event array');
+    if (!Array.isArray(events)) throw new Error(toolMessage('tool.payroll.eventsArray'));
     if (!arrays.has(events)) {
       const pushDescriptor = Object.getOwnPropertyDescriptor(events, 'push');
       const push = events.push;
@@ -127,12 +129,12 @@ export function observeSettlementPayroll(world: World) {
         lastRound > SEASON_ROUNDS ||
         firstRound > lastRound + 1
       )
-        throw new Error('Invalid payroll observation round coverage');
+        throw new Error(toolMessage('tool.payroll.invalidCoverage'));
       const records: PayrollSettlement[] = [];
       for (let round = firstRound; round <= lastRound; round++) {
         const id = key(year, currency, round),
           record = settlements.get(id);
-        if (!record) throw new Error(`Missing payroll settlement ${id}`);
+        if (!record) throw new Error(toolMessage('tool.payroll.missing', { settlement: id }));
         records.push({ ...record });
       }
       const totals = Object.fromEntries(

@@ -6631,6 +6631,26 @@
     "copy.free_agents.b9563581fa": "{p0} kommt ablösefrei",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} Jahre · Gehalt {p2} · Vertrag bis {p3} · Auffüllung zum Saisonende, ohne Ablöse",
     "copy.scout_search.f7c215bd95": "Unsere Liga und die Ligen darüber und darunter",
-    "copy.scout_search.7156229250": "Alle Ligen im Inland"
+    "copy.scout_search.7156229250": "Alle Ligen im Inland",
+    "tool.cash.ownedWorldRequired": "Die Fortsetzung erfordert eine Welt-JSON mit einem bereits übernommenen Verein.",
+    "tool.cash.worldIdentityMismatch": "Die Weltdatei muss mit dem angeforderten Startwert, Jahr und Eigentumsmodus übereinstimmen.",
+    "tool.cash.clubChange": "Bei der Fortsetzung kann der Verein nicht gewechselt werden.",
+    "tool.cash.tierChange": "Bei der Fortsetzung kann die Eigentümerstufe nicht geändert werden.",
+    "tool.cash.expensesMismatch": "Die beobachteten Betriebsausgaben stimmen nicht mit dem Hauptbuch für {year} überein.",
+    "tool.payroll.eventsProperty": "Zur Gehaltsbeobachtung muss events eine konfigurierbare und beschreibbare Dateneigenschaft sein.",
+    "tool.payroll.eventMismatch": "Das Gehaltsabrechnungsereignis stimmt nicht mit dem aktuellen Jahr, Spieltag und der Währung überein.",
+    "tool.payroll.roundOutsideSeason": "Der Spieltag der Gehaltsabrechnung liegt außerhalb der Ligasaison.",
+    "tool.payroll.duplicate": "Doppelte Gehaltsabrechnung: {settlement}",
+    "tool.payroll.componentsMismatch": "Die Gehaltsbestandteile stimmen bei {settlement} nicht mit operating-cost überein.",
+    "tool.payroll.eventsArray": "Die Gehaltsbeobachtung erfordert ein Ereignisarray.",
+    "tool.payroll.invalidCoverage": "Ungültiger Spieltagsbereich für die Gehaltsbeobachtung.",
+    "tool.payroll.missing": "Fehlende Gehaltsabrechnung: {settlement}",
+    "tool.payroll.accountingSummary": "{exact} exakte Abrechnungen; {legacy} historische Stichproben/unbekannt",
+    "tool.payroll.exactPlayers": "nur Spieler, exakt",
+    "tool.payroll.sampledPlayers": "nur Spieler, Stichprobe",
+    "tool.payroll.legacyScopeMismatch": "abweichender Umfang: historische Gesamtgehälter und reine NPC-Spielergehälter",
+    "tool.payroll.accountingLine": "Gehaltsbuchhaltung: {summary}.",
+    "tool.payroll.modeledRatio": "modellierte Gehälter für Spieler + Trainer/Betreuer / Einnahmen, erste 50 Saisons",
+    "tool.payroll.npcComparison": "reine Spielergehälter / letzte Spielergehälter im Hauptbuch (Buchhaltung)"
   }
 }

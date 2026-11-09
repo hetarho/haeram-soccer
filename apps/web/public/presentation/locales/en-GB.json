@@ -6631,6 +6631,26 @@
     "copy.free_agents.b9563581fa": "{p0} joins on a free transfer",
     "copy.free_agents.66f9dc1d1c": "{p0} · Age {p1} · Wage {p2} · Contract until {p3} · End-of-season top-up, no fee",
     "copy.scout_search.f7c215bd95": "Our league and the divisions above and below",
-    "copy.scout_search.7156229250": "Every division at home"
+    "copy.scout_search.7156229250": "Every division at home",
+    "tool.cash.ownedWorldRequired": "Owned continuation requires an already-owned World JSON",
+    "tool.cash.worldIdentityMismatch": "World file must match the requested seed/year and ownership mode",
+    "tool.cash.clubChange": "Owned continuation cannot change club",
+    "tool.cash.tierChange": "Owned continuation cannot change owner tier",
+    "tool.cash.expensesMismatch": "Observed operating expenses disagree with the {year} ledger",
+    "tool.payroll.eventsProperty": "Payroll observation requires a configurable, writable events data property",
+    "tool.payroll.eventMismatch": "Payroll settlement event does not match the live year, round and currency",
+    "tool.payroll.roundOutsideSeason": "Payroll settlement round is outside the league season",
+    "tool.payroll.duplicate": "Duplicate payroll settlement {settlement}",
+    "tool.payroll.componentsMismatch": "Payroll components do not match operating-cost at {settlement}",
+    "tool.payroll.eventsArray": "Payroll observation requires an event array",
+    "tool.payroll.invalidCoverage": "Invalid payroll observation round coverage",
+    "tool.payroll.missing": "Missing payroll settlement {settlement}",
+    "tool.payroll.accountingSummary": "{exact} exact settled; {legacy} legacy sampled/unknown",
+    "tool.payroll.exactPlayers": "exact player-only",
+    "tool.payroll.sampledPlayers": "sampled player-only",
+    "tool.payroll.legacyScopeMismatch": "legacy total payroll / NPC player-only mismatch",
+    "tool.payroll.accountingLine": "Payroll accounting: {summary}.",
+    "tool.payroll.modeledRatio": "modeled player + manager/coaching wage bill / revenue, first 50 seasons",
+    "tool.payroll.npcComparison": "player-only wages / books' last player wages (accounting)"
   }
 }

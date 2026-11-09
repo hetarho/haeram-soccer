@@ -6631,6 +6631,26 @@
     "copy.free_agents.b9563581fa": "{p0} serbest oyuncu olarak katıldı",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} yaş · Maaş {p2} · Sözleşme {p3} yılına kadar · Sezon sonu takviyesi, bonservis yok",
     "copy.scout_search.f7c215bd95": "Ligimiz ile bir üst ve bir alt lig",
-    "copy.scout_search.7156229250": "Ülkedeki tüm ligler"
+    "copy.scout_search.7156229250": "Ülkedeki tüm ligler",
+    "tool.cash.ownedWorldRequired": "Devam etmek için kulübü önceden satın alınmış bir dünya JSON dosyası gerekir.",
+    "tool.cash.worldIdentityMismatch": "Dünya dosyası istenen tohum, yıl ve sahiplik moduyla eşleşmelidir.",
+    "tool.cash.clubChange": "Devam ederken kulüp değiştirilemez.",
+    "tool.cash.tierChange": "Devam ederken kulüp sahibinin kademesi değiştirilemez.",
+    "tool.cash.expensesMismatch": "Gözlemlenen işletme giderleri {year} yılı defteriyle uyuşmuyor.",
+    "tool.payroll.eventsProperty": "Maaş gözlemi için events yapılandırılabilir ve yazılabilir bir veri özelliği olmalıdır.",
+    "tool.payroll.eventMismatch": "Maaş ödeme olayı mevcut yıl, tur ve para birimiyle eşleşmiyor.",
+    "tool.payroll.roundOutsideSeason": "Maaş ödeme turu lig sezonunun dışında.",
+    "tool.payroll.duplicate": "Yinelenen maaş ödemesi: {settlement}",
+    "tool.payroll.componentsMismatch": "Maaş bileşenleri {settlement} için operating-cost ile eşleşmiyor.",
+    "tool.payroll.eventsArray": "Maaş gözlemi bir olay dizisi gerektirir.",
+    "tool.payroll.invalidCoverage": "Maaş gözleminin tur aralığı geçersiz.",
+    "tool.payroll.missing": "Eksik maaş ödemesi: {settlement}",
+    "tool.payroll.accountingSummary": "{exact} kesin ödeme; {legacy} eski örneklem/bilinmeyen",
+    "tool.payroll.exactPlayers": "yalnızca oyuncular, kesin",
+    "tool.payroll.sampledPlayers": "yalnızca oyuncular, örneklem",
+    "tool.payroll.legacyScopeMismatch": "eski toplam maaşlar ile NPC oyuncu maaşlarının kapsamı uyuşmuyor",
+    "tool.payroll.accountingLine": "Maaş muhasebesi: {summary}.",
+    "tool.payroll.modeledRatio": "modellenen oyuncu + teknik direktör/teknik ekip maaşları / gelir, ilk 50 sezon",
+    "tool.payroll.npcComparison": "yalnızca oyuncu maaşları / defterdeki son oyuncu maaşları (muhasebe)"
   }
 }

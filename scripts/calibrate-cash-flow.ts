@@ -27,6 +27,7 @@ import { OWNER_LIVING } from '../packages/engine/src/owner-config';
 import { currentDay, SEASON_ROUNDS } from '../packages/engine/src/calendar';
 import { countZeroFeeArrivals } from './lib/transfer-flow';
 import { observeSettlementPayroll } from './lib/settlement-payroll';
+import { toolMessage } from './lib/tool-messages';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string) => {
@@ -36,7 +37,7 @@ const option = (name: string, fallback: string) => {
 const ownedFile = option('owned-world-file', '');
 const ownedInput = ownedFile ? (JSON.parse(readFileSync(ownedFile, 'utf8')) as World) : undefined;
 if (ownedInput && (!ownedInput.owner || !ownedInput.playerClub))
-  throw new Error('Owned continuation requires an already-owned World JSON');
+  throw new Error(toolMessage('tool.cash.ownedWorldRequired'));
 const year = Number(option('year', String(ownedInput?.year ?? 1950)));
 const seasons = Number(option('seasons', '5'));
 if (!Number.isInteger(year) || year < HISTORY_START || !Number.isInteger(seasons) || seasons < 0)
@@ -78,7 +79,7 @@ if (file && existsSync(file)) {
   }
 }
 if (world.seed !== seed || world.year !== year || (!ownedFile && (world.playerClub || world.owner)))
-  throw new Error('World file must match the requested seed/year and ownership mode');
+  throw new Error(toolMessage('tool.cash.worldIdentityMismatch'));
 const worldSha256 = createHash('sha256').update(JSON.stringify(world)).digest('hex');
 const identity = {
   source,
@@ -102,10 +103,8 @@ if (args.includes('--prepare')) {
 const club = option('club', ownedFile ? world.playerClub : `${code}:0:0:8`);
 if (world.clubs.find((candidate) => candidate.id === club)?.country !== code)
   throw new Error('Club must exist in the requested country');
-if (ownedFile && club !== world.playerClub)
-  throw new Error('Owned continuation cannot change club');
-if (ownedFile && tier !== world.owner!.tier)
-  throw new Error('Owned continuation cannot change owner tier');
+if (ownedFile && club !== world.playerClub) throw new Error(toolMessage('tool.cash.clubChange'));
+if (ownedFile && tier !== world.owner!.tier) throw new Error(toolMessage('tool.cash.tierChange'));
 if (!ownedFile) takeOver(world, club, { tier, traits: [] });
 const delegateAll = !ownedFile || args.includes('--delegate-all');
 if (delegateAll) {
@@ -218,7 +217,7 @@ try {
       sum(events.filter((event) => event.kind === kind).map((event) => event.amount ?? '0'));
     const operatingExpenses = amountOf('operating-expenses');
     if (firstObservedRound === 1 && operatingExpenses !== BigInt(settled.operatingExpenses))
-      throw new Error(`Observed operating expenses disagree with the ${currentYear} ledger`);
+      throw new Error(toolMessage('tool.cash.expensesMismatch', { year: currentYear }));
     const leagueShare = amountOf('league-share'),
       leagueMerit = amountOf('league-merit'),
       parachute = amountOf('parachute');

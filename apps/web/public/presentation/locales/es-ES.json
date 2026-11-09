@@ -6634,6 +6634,26 @@
     "copy.free_agents.b9563581fa": "{p0} llega como agente libre",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} años · Salario {p2} · Contrato hasta {p3} · Refuerzo de cierre de temporada, sin traspaso",
     "copy.scout_search.f7c215bd95": "Nuestra liga y las divisiones de arriba y abajo",
-    "copy.scout_search.7156229250": "Todas las divisiones del país"
+    "copy.scout_search.7156229250": "Todas las divisiones del país",
+    "tool.cash.ownedWorldRequired": "La continuación requiere un JSON del mundo con un club ya adquirido.",
+    "tool.cash.worldIdentityMismatch": "El archivo del mundo debe coincidir con la semilla, el año y el modo de propiedad solicitados.",
+    "tool.cash.clubChange": "La continuación no permite cambiar de club.",
+    "tool.cash.tierChange": "La continuación no permite cambiar el nivel del propietario.",
+    "tool.cash.expensesMismatch": "Los gastos operativos observados no coinciden con el libro de {year}.",
+    "tool.payroll.eventsProperty": "La observación salarial requiere que events sea una propiedad de datos configurable y escribible.",
+    "tool.payroll.eventMismatch": "El evento de liquidación salarial no coincide con el año, la jornada y la moneda actuales.",
+    "tool.payroll.roundOutsideSeason": "La jornada de liquidación salarial queda fuera de la temporada de liga.",
+    "tool.payroll.duplicate": "Liquidación salarial duplicada: {settlement}",
+    "tool.payroll.componentsMismatch": "Los componentes salariales no coinciden con operating-cost en {settlement}.",
+    "tool.payroll.eventsArray": "La observación salarial requiere una matriz de eventos.",
+    "tool.payroll.invalidCoverage": "El intervalo de jornadas de observación salarial no es válido.",
+    "tool.payroll.missing": "Falta la liquidación salarial {settlement}.",
+    "tool.payroll.accountingSummary": "{exact} liquidaciones exactas; {legacy} muestras históricas/desconocidas",
+    "tool.payroll.exactPlayers": "solo jugadores, exacto",
+    "tool.payroll.sampledPlayers": "solo jugadores, muestreado",
+    "tool.payroll.legacyScopeMismatch": "incompatibilidad entre nómina total histórica y salarios de jugadores de NPC",
+    "tool.payroll.accountingLine": "Contabilidad salarial: {summary}.",
+    "tool.payroll.modeledRatio": "nómina modelada de jugadores + entrenador/cuerpo técnico / ingresos, primeras 50 temporadas",
+    "tool.payroll.npcComparison": "salarios de jugadores / últimos salarios de jugadores del libro (contabilidad)"
   }
 }

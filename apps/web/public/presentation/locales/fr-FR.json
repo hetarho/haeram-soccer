@@ -6634,6 +6634,26 @@
     "copy.free_agents.b9563581fa": "{p0} arrive libre",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} ans · Salaire {p2} · Contrat jusqu’en {p3} · Renfort de fin de saison, sans indemnité",
     "copy.scout_search.f7c215bd95": "Notre ligue et les divisions au-dessus et en dessous",
-    "copy.scout_search.7156229250": "Toutes les divisions du pays"
+    "copy.scout_search.7156229250": "Toutes les divisions du pays",
+    "tool.cash.ownedWorldRequired": "La continuation nécessite un JSON du monde avec un club déjà acquis.",
+    "tool.cash.worldIdentityMismatch": "Le fichier du monde doit correspondre à la graine, à l’année et au mode de propriété demandés.",
+    "tool.cash.clubChange": "La continuation ne permet pas de changer de club.",
+    "tool.cash.tierChange": "La continuation ne permet pas de changer de catégorie de propriétaire.",
+    "tool.cash.expensesMismatch": "Les charges d’exploitation observées ne correspondent pas au grand livre de {year}.",
+    "tool.payroll.eventsProperty": "L’observation des salaires exige que events soit une propriété de données configurable et modifiable.",
+    "tool.payroll.eventMismatch": "L’événement de règlement salarial ne correspond pas à l’année, à la journée et à la devise actuelles.",
+    "tool.payroll.roundOutsideSeason": "La journée de règlement salarial est hors de la saison de championnat.",
+    "tool.payroll.duplicate": "Règlement salarial en double : {settlement}",
+    "tool.payroll.componentsMismatch": "Les composantes salariales ne correspondent pas à operating-cost pour {settlement}.",
+    "tool.payroll.eventsArray": "L’observation des salaires exige un tableau d’événements.",
+    "tool.payroll.invalidCoverage": "La plage de journées d’observation des salaires est invalide.",
+    "tool.payroll.missing": "Règlement salarial manquant : {settlement}",
+    "tool.payroll.accountingSummary": "{exact} règlements exacts ; {legacy} échantillons historiques/inconnus",
+    "tool.payroll.exactPlayers": "joueurs uniquement, exact",
+    "tool.payroll.sampledPlayers": "joueurs uniquement, échantillonné",
+    "tool.payroll.legacyScopeMismatch": "périmètres incompatibles : masse salariale historique totale et salaires des joueurs des PNJ",
+    "tool.payroll.accountingLine": "Comptabilité des salaires : {summary}.",
+    "tool.payroll.modeledRatio": "masse salariale modélisée des joueurs + entraîneur/encadrement / recettes, 50 premières saisons",
+    "tool.payroll.npcComparison": "salaires des joueurs / derniers salaires des joueurs au grand livre (comptabilité)"
   }
 }

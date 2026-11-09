@@ -6631,6 +6631,26 @@
     "copy.free_agents.b9563581fa": "{p0} komt transfervrij",
     "copy.free_agents.66f9dc1d1c": "{p0} · {p1} jaar · Salaris {p2} · Contract tot {p3} · Aanvulling aan het seizoenseinde, zonder transfersom",
     "copy.scout_search.f7c215bd95": "Onze competitie en de divisies erboven en eronder",
-    "copy.scout_search.7156229250": "Alle binnenlandse divisies"
+    "copy.scout_search.7156229250": "Alle binnenlandse divisies",
+    "tool.cash.ownedWorldRequired": "Voortzetten vereist een wereld-JSON met een club die al in eigendom is.",
+    "tool.cash.worldIdentityMismatch": "Het wereldbestand moet overeenkomen met de gevraagde seed, het jaar en de eigendomsmodus.",
+    "tool.cash.clubChange": "Bij voortzetten kan de club niet worden gewijzigd.",
+    "tool.cash.tierChange": "Bij voortzetten kan de eigenaarscategorie niet worden gewijzigd.",
+    "tool.cash.expensesMismatch": "De waargenomen bedrijfskosten komen niet overeen met het grootboek van {year}.",
+    "tool.payroll.eventsProperty": "Voor salarisobservatie moet events een configureerbare, beschrijfbare gegevenseigenschap zijn.",
+    "tool.payroll.eventMismatch": "De salarisafrekening komt niet overeen met het huidige jaar, de speelronde en de valuta.",
+    "tool.payroll.roundOutsideSeason": "De speelronde van de salarisafrekening valt buiten het competitieseizoen.",
+    "tool.payroll.duplicate": "Dubbele salarisafrekening: {settlement}",
+    "tool.payroll.componentsMismatch": "De salariscomponenten komen bij {settlement} niet overeen met operating-cost.",
+    "tool.payroll.eventsArray": "Salarisobservatie vereist een gebeurtenissenarray.",
+    "tool.payroll.invalidCoverage": "Ongeldig bereik van speelronden voor salarisobservatie.",
+    "tool.payroll.missing": "Ontbrekende salarisafrekening: {settlement}",
+    "tool.payroll.accountingSummary": "{exact} exacte afrekeningen; {legacy} historische steekproeven/onbekend",
+    "tool.payroll.exactPlayers": "alleen spelers, exact",
+    "tool.payroll.sampledPlayers": "alleen spelers, steekproef",
+    "tool.payroll.legacyScopeMismatch": "verschillende reikwijdte: historische totale salarissen en alleen NPC-spelersalarissen",
+    "tool.payroll.accountingLine": "Salarisboekhouding: {summary}.",
+    "tool.payroll.modeledRatio": "gemodelleerde salarissen van spelers + trainer/begeleiders / inkomsten, eerste 50 seizoenen",
+    "tool.payroll.npcComparison": "alleen spelersalarissen / laatste spelersalarissen in het grootboek (boekhouding)"
   }
 }

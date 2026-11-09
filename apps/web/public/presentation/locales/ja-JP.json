@@ -6628,6 +6628,26 @@
     "copy.free_agents.b9563581fa": "{p0}が自由契約で加入",
     "copy.free_agents.66f9dc1d1c": "{p0}・{p1}歳・年俸{p2}・契約{p3}年まで・シーズン終了時の補充、移籍金なし",
     "copy.scout_search.f7c215bd95": "自リーグと上下のリーグ",
-    "copy.scout_search.7156229250": "国内の全リーグ"
+    "copy.scout_search.7156229250": "国内の全リーグ",
+    "tool.cash.ownedWorldRequired": "続行には、すでにクラブを所有しているワールドのJSONが必要です。",
+    "tool.cash.worldIdentityMismatch": "ワールドファイルは、指定したシード・年・所有モードと一致する必要があります。",
+    "tool.cash.clubChange": "続行時にクラブを変更することはできません。",
+    "tool.cash.tierChange": "続行時にオーナー階層を変更することはできません。",
+    "tool.cash.expensesMismatch": "観測した運営費が{year}年の元帳と一致しません。",
+    "tool.payroll.eventsProperty": "給与の観測には、eventsが設定変更と書き込みのできるデータプロパティである必要があります。",
+    "tool.payroll.eventMismatch": "給与精算イベントが現在の年・ラウンド・通貨と一致しません。",
+    "tool.payroll.roundOutsideSeason": "給与精算ラウンドがリーグシーズンの範囲外です。",
+    "tool.payroll.duplicate": "給与精算が重複しています: {settlement}",
+    "tool.payroll.componentsMismatch": "{settlement}の給与内訳がoperating-costと一致しません。",
+    "tool.payroll.eventsArray": "給与の観測にはイベント配列が必要です。",
+    "tool.payroll.invalidCoverage": "給与観測のラウンド範囲が無効です。",
+    "tool.payroll.missing": "給与精算がありません: {settlement}",
+    "tool.payroll.accountingSummary": "正確な精算{exact}件; 過去の標本/不明{legacy}件",
+    "tool.payroll.exactPlayers": "正確な選手給与のみ",
+    "tool.payroll.sampledPlayers": "標本による選手給与のみ",
+    "tool.payroll.legacyScopeMismatch": "過去の総給与とNPCの選手給与のみでは対象範囲が異なります",
+    "tool.payroll.accountingLine": "給与会計: {summary}。",
+    "tool.payroll.modeledRatio": "モデル内の選手・監督・コーチ給与 / 収入、最初の50シーズン",
+    "tool.payroll.npcComparison": "選手給与のみ / 帳簿上の直前の選手給与 (会計方式)"
   }
 }
