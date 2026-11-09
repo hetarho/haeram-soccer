@@ -1,0 +1,31 @@
+{
+  "generator": "unchanged scripts/update-golden.ts --write",
+  "definitions": 6,
+  "changedFacts": [
+    {
+      "path": "$.definitions[2].expected.events[35].amount",
+      "before": "2534951893",
+      "after": "2843913976"
+    },
+    {
+      "path": "$.definitions[2].expected.events[80].amount",
+      "before": "2534951893",
+      "after": "2843913976"
+    },
+    {
+      "path": "$.definitions[2].expected.events[114].amount",
+      "before": "2534951893",
+      "after": "2843913976"
+    },
+    {
+      "path": "$.definitions[2].expected.events[131].amount",
+      "before": "2534951893",
+      "after": "2843913976"
+    }
+  ],
+  "allOtherFactsAndInputsUnchanged": true,
+  "engine": "0.8.0",
+  "catalog": "2026-demo-5",
+  "finalCash": "970129584",
+  "attribution": "CLUB-46 transfer values -> ECON-37 squad/club values -> tierFortune/takeover.fortune -> existing OWNER-8 quarterly livingCost"
+}

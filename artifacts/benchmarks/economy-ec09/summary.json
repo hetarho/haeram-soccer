@@ -1,0 +1,171 @@
+{
+  "rows": [
+    {
+      "era": 1950,
+      "case": "ENG-top",
+      "variant": "baseline",
+      "seasons": 5,
+      "cashFlowRatio": 0.2850464819769227,
+      "purchasesRatio": 0.0764272695302429,
+      "salesRatio": 0.06617872388254664,
+      "wageSampleRatio": 0.40843211906896265,
+      "endingCashRatio": 1.8683127360923837,
+      "paidArrivals": 11,
+      "finalDivision": 0,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "4502fa644a60fd244629da07a8032ede72b5f3712499d3993610519c5013b69d",
+      "source": {
+        "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+        "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "era": 1950,
+      "case": "ENG-top",
+      "variant": "candidate",
+      "seasons": 5,
+      "cashFlowRatio": 0.27928097259938367,
+      "purchasesRatio": 0.08763473338162463,
+      "salesRatio": 0.06594070967341951,
+      "wageSampleRatio": 0.40436255285831,
+      "endingCashRatio": 1.779637963927114,
+      "paidArrivals": 13,
+      "finalDivision": 0,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "4502fa644a60fd244629da07a8032ede72b5f3712499d3993610519c5013b69d",
+      "source": {
+        "revision": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+        "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "era": 1950,
+      "case": "ESP-lower",
+      "variant": "baseline",
+      "seasons": 5,
+      "cashFlowRatio": 0.27729424840152633,
+      "purchasesRatio": 0.2226195340067985,
+      "salesRatio": 0.1454900228567784,
+      "wageSampleRatio": 0.3723121491730142,
+      "endingCashRatio": 1.4348314712354266,
+      "paidArrivals": 11,
+      "finalDivision": 0,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "4502fa644a60fd244629da07a8032ede72b5f3712499d3993610519c5013b69d",
+      "source": {
+        "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+        "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "era": 1950,
+      "case": "ESP-lower",
+      "variant": "candidate",
+      "seasons": 5,
+      "cashFlowRatio": 0.24214063181002854,
+      "purchasesRatio": 0.2718183565703192,
+      "salesRatio": 0.1472689956471885,
+      "wageSampleRatio": 0.3626621690826803,
+      "endingCashRatio": 1.3146702460415125,
+      "paidArrivals": 15,
+      "finalDivision": 0,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "4502fa644a60fd244629da07a8032ede72b5f3712499d3993610519c5013b69d",
+      "source": {
+        "revision": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
+        "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "era": 2025,
+      "case": "ENG-top",
+      "variant": "baseline",
+      "seasons": 5,
+      "cashFlowRatio": 0.4647550878421305,
+      "purchasesRatio": 0.022181301049226675,
+      "salesRatio": 0.04587584728803448,
+      "wageSampleRatio": 0.22105593149086264,
+      "endingCashRatio": 2.8919244632745653,
+      "paidArrivals": 4,
+      "finalDivision": 0,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+      "source": {
+        "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+        "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "era": 2025,
+      "case": "ENG-top",
+      "variant": "candidate",
+      "seasons": 5,
+      "cashFlowRatio": 0.43456582673765165,
+      "purchasesRatio": 0.08262195634403194,
+      "salesRatio": 0.08243265672717091,
+      "wageSampleRatio": 0.224360883324036,
+      "endingCashRatio": 2.758044575612573,
+      "paidArrivals": 9,
+      "finalDivision": 0,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+      "source": {
+        "revision": "0194c2497345f3a551603bb97608b5a477459034",
+        "trackedDiffSha256": "d5c1e10b5476196ec356634142e18259a27af4aa67e6227c57ef40ff182705b1"
+      }
+    },
+    {
+      "era": 2025,
+      "case": "ESP-lower",
+      "variant": "baseline",
+      "seasons": 5,
+      "cashFlowRatio": 0.5001939137775876,
+      "purchasesRatio": 0.2597699046591334,
+      "salesRatio": 0.21348677356684878,
+      "wageSampleRatio": 0.2276729885364546,
+      "endingCashRatio": 3.3011982163270606,
+      "paidArrivals": 8,
+      "finalDivision": 1,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+      "source": {
+        "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+        "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "era": 2025,
+      "case": "ESP-lower",
+      "variant": "candidate",
+      "seasons": 5,
+      "cashFlowRatio": 0.29745841997070344,
+      "purchasesRatio": 0.3122791673292011,
+      "salesRatio": 0.004040659723827568,
+      "wageSampleRatio": 0.1703589458781991,
+      "endingCashRatio": 1.678638352511091,
+      "paidArrivals": 6,
+      "finalDivision": 1,
+      "ended": null,
+      "harnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+      "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+      "source": {
+        "revision": "0194c2497345f3a551603bb97608b5a477459034",
+        "trackedDiffSha256": "d5c1e10b5476196ec356634142e18259a27af4aa67e6227c57ef40ff182705b1"
+      }
+    }
+  ],
+  "monetaryIdentityChecks": "40 of 40 exact; same currencies within each measured season; identical paired world and harness hashes",
+  "freeCounts": "v1 counts are lower bounds; do not use them as complete zero-fee recruitment measurements",
+  "modernCashFlowBefore": 0.48247450080985904,
+  "modernCashFlowAfter": 0.36601212335417754,
+  "historicalCashFlowBefore": 0.28117036518922456,
+  "historicalCashFlowAfter": 0.2607108022047061,
+  "scope": "One seed; two countries; two eras; five seasons/case; owner purse apart; no construction; not ECON-29 50-season gate."
+}

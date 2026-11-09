@@ -1,0 +1,12 @@
+{
+  "finalProductionSourceAt": "6d2c2f7a048baaf2a930f936d6255d59dbc0cfe4",
+  "productionHashes": {
+    "packages/engine/src/market-prices.ts": "1e76c1b17a77d6a73d37ba22581288d2023ee6467e41807008dbcbecf896a0c2",
+    "packages/engine/src/scout-search.ts": "3121f0cbd0f4e1d9c7a0ba3126eff41ddcc985fc7d9689bd040521c5ae7a494a",
+    "packages/engine/src/signings.ts": "2e12390babc9bd7b224718a438b1a52f9416ffebd146d153927044ddc75699b3"
+  },
+  "modern": "Combined measured three engine files are byte-identical to integrated production. Later reporting/golden/document commits cannot affect simulation.",
+  "historical": "T732-only samples are reused for the combined 1950\u20131954 source because T731 preserves exact premium<=1 pricing and all wages; those years have premiums below one.",
+  "frozenHarnessSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+  "countLimitation": "Frozen v1 free-arrival observations are lower bounds; v2 fixes are tested separately, no full free count is claimed from these samples."
+}

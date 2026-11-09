@@ -1,0 +1,5295 @@
+{
+  "source": {
+    "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+    "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scriptSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+  "generatedBy": {
+    "seed": "economy-ec09-0",
+    "year": 1950,
+    "source": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+    "seconds": 15.318118763000001
+  },
+  "worldSha256": "4502fa644a60fd244629da07a8032ede72b5f3712499d3993610519c5013b69d",
+  "worldFile": "/tmp/ec09-worlds/economy-ec09-0-1950.json",
+  "seed": "economy-ec09-0",
+  "year": 1950,
+  "country": "ENG",
+  "tier": "oil",
+  "club": "ENG:0:0:8",
+  "scenarios": "historical",
+  "purseApart": true,
+  "ownerMoneyMoved": false,
+  "construction": false,
+  "seasons": [
+    {
+      "year": 1950,
+      "division": 0,
+      "rank": 19,
+      "openingCurrency": "GBP-LSD",
+      "currency": "GBP-LSD",
+      "openingCash": "57006923",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "57006923",
+      "closingCash": "60194522",
+      "income": "51960473",
+      "expense": "48772874",
+      "turnover": "51120436",
+      "purchases": "4309006",
+      "sales": "840037",
+      "openingAnnualWageBill": "20446447",
+      "closingAnnualWageBill": "22852749",
+      "paidWagesRoundSamples": "22135986",
+      "paidArrivals": 2,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 1,
+      "paidMeanFee": "2154503",
+      "paidMedianFee": "2154503",
+      "ledgerEvents": [
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "takeover",
+          "title": "구단 인수",
+          "detail": "Durham Ironworks B1 인수 · 잉글랜드 1부",
+          "amount": "211517489",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "단장 Darren Powell 선임",
+          "detail": "능력 72 · 속전속결 · 연봉 £225 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "13559",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수석코치 Ermanno Parisi 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 £145 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8716",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "공격 코치 Philipp Jakob 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 £145 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8716",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수비 코치 Gino Bertolini 선임",
+          "detail": "능력 58 · 특기 없음 · 연봉 £150 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "9039",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Martin Newton 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 £145 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8716",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Timothy Parsons 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £134 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8071",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Noël Jean 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 £145 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8716",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Lee Arnold 선임",
+          "detail": "능력 56 · 발굴가 · 연봉 £139 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8394",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Durham Cooperative · 리그 경기 38/38",
+          "amount": "4533882",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "10933045",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,836 · 감독 £15 · 시설 £106",
+          "amount": "476391",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "19952423",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 21065명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:1:8",
+          "amount": "1327643",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 21065명 · 1950:ENG:0:0:1:8",
+          "amount": "41434",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,836 · 감독 £15 · 시설 £106",
+          "amount": "476392",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 2,
+          "kind": "transfer-in",
+          "title": "Dennis Wilson 영입",
+          "detail": "LWB · 18세 · 연봉 £3,567 · 계약 1953년 · 협상 타결",
+          "amount": "2110657",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495004",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30803명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:3:6",
+          "amount": "1941390",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30803명 · 1950:ENG:0:0:3:6",
+          "amount": "58200",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 23953명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:5:4",
+          "amount": "1509662",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 23953명 · 1950:ENG:0:0:5:4",
+          "amount": "46406",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495005",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 9,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 27591명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:7:2",
+          "amount": "1738951",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 9,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 27591명 · 1950:ENG:0:0:7:2",
+          "amount": "52670",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 31756명 · 티켓과 구단 상품 · 1950:cup:ENG:k1:28",
+          "amount": "1653375",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 31756명 · 1950:cup:ENG:k1:28",
+          "amount": "59841",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 11,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30243명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:9:0",
+          "amount": "1906096",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 11,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30243명 · 1950:ENG:0:0:9:0",
+          "amount": "57236",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 28740명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:10:1",
+          "amount": "1811368",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 28740명 · 1950:ENG:0:0:10:1",
+          "amount": "54648",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495004",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1950년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32342명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:12:3",
+          "amount": "2038387",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32342명 · 1950:ENG:0:0:12:3",
+          "amount": "60850",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26069명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:14:5",
+          "amount": "1643025",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26069명 · 1950:ENG:0:0:14:5",
+          "amount": "50049",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495004",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 24428명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:16:7",
+          "amount": "1539599",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 24428명 · 1950:ENG:0:0:16:7",
+          "amount": "47224",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26854명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:18:9",
+          "amount": "1692500",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26854명 · 1950:ENG:0:0:18:9",
+          "amount": "51401",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,913 · 감독 £15 · 시설 £106",
+          "amount": "495003",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Christopher Sharp 영입",
+          "detail": "ST · 22세 · 연봉 £4,355 · 계약 1953년 · 협상 타결",
+          "amount": "2198349",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 23,
+          "kind": "transfer-out",
+          "title": "Malcolm Lawrence의 새로운 도전",
+          "detail": "AUT Railway 5 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "840037",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Herbert Byrne 영입",
+          "detail": "GK · 24세 · 연봉 £4,813 · 계약 1953년 · 단장 영입",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 24,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 28991명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:19:9",
+          "amount": "1827187",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 24,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 28991명 · 1950:ENG:0:0:19:9",
+          "amount": "55080",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30515명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:21:7",
+          "amount": "1923239",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30515명 · 1950:ENG:0:0:21:7",
+          "amount": "57704",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32238명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:23:5",
+          "amount": "2031832",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32238명 · 1950:ENG:0:0:23:5",
+          "amount": "60671",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 31,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 23427명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:25:3",
+          "amount": "1476510",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 31,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 23427명 · 1950:ENG:0:0:25:3",
+          "amount": "45500",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 33,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 25459명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:27:1",
+          "amount": "1604579",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 33,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 25459명 · 1950:ENG:0:0:27:1",
+          "amount": "48999",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522276",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26426명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:30:2",
+          "amount": "1665525",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26426명 · 1950:ENG:0:0:30:2",
+          "amount": "50664",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32756명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:32:4",
+          "amount": "2064480",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32756명 · 1950:ENG:0:0:32:4",
+          "amount": "61563",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522276",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 29241명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:34:6",
+          "amount": "1842944",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 29241명 · 1950:ENG:0:0:34:6",
+          "amount": "55511",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32843명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1950:ENG:0:0:36:8",
+          "amount": "2069963",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32843명 · 1950:ENG:0:0:36:8",
+          "amount": "61712",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522274",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,027 · 감독 £15 · 시설 £106",
+          "amount": "522273",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "19/20위 · 최하위는 균등 배분금만",
+          "amount": "345254",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1950,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:17:p:12:109",
+          "person": "ENG:0:0:17:p:12:109",
+          "name": "Dennis Wilson",
+          "club": "ENG:0:0:17",
+          "fee": "2110657",
+          "currency": "GBP-LSD",
+          "year": 1950,
+          "day": 16
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:17:vacancy:16:1950",
+          "person": "ENG:0:0:17:vacancy:16:1950",
+          "name": "Christopher Sharp",
+          "club": "ENG:0:0:17",
+          "fee": "2198349",
+          "currency": "GBP-LSD",
+          "year": 1950,
+          "day": 162
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ENG:2:0:14:p:0:108"
+      ]
+    },
+    {
+      "year": 1951,
+      "division": 1,
+      "rank": 1,
+      "openingCurrency": "GBP-LSD",
+      "currency": "GBP-LSD",
+      "openingCash": "60194522",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "60194522",
+      "closingCash": "71805202",
+      "income": "34885633",
+      "expense": "23274953",
+      "turnover": "34372899",
+      "purchases": "2392013",
+      "sales": "512734",
+      "openingAnnualWageBill": "17859655",
+      "closingAnnualWageBill": "18013835",
+      "paidWagesRoundSamples": "17859668",
+      "paidArrivals": 1,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 1,
+      "paidMeanFee": "2392013",
+      "paidMedianFee": "2392013",
+      "ledgerEvents": [
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Durham Cooperative · 리그 경기 46/46",
+          "amount": "4533882",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13882명 · 티켓과 구단 상품 · 1951:ENG:1:0:0:5",
+          "amount": "784079",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13882명 · 1951:ENG:1:0:0:5",
+          "amount": "31709",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "845217",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "parachute",
+          "title": "강등 보전금",
+          "detail": "1부 → 2부 강등 · 줄어든 분배금의 절반 · 46/46라운드 분할",
+          "amount": "5540869",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,575 · 감독 £15 · 시설 £115",
+          "amount": "416044",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "2부 최저 수준 · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "845217",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "transfer-in",
+          "title": "Bobby Jones 영입",
+          "detail": "CM · 22세 · 연봉 £1,900 · 계약 1954년 · 단장 영입",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,616 · 감독 £15 · 시설 £115",
+          "amount": "425962",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 18423명 · 티켓과 구단 상품 · 1951:ENG:1:0:2:7",
+          "amount": "1040562",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 18423명 · 1951:ENG:1:0:2:7",
+          "amount": "40238",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,616 · 감독 £15 · 시설 £115",
+          "amount": "425960",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "transfer-out",
+          "title": "Christopher Dawson의 새로운 도전",
+          "detail": "Mainz Eisen B3 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "512734",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410423",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 5,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 17439명 · 티켓과 구단 상품 · 1951:ENG:1:0:4:9",
+          "amount": "984984",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 5,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 17439명 · 1951:ENG:1:0:4:9",
+          "amount": "38390",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 19867명 · 티켓과 구단 상품 · 1951:ENG:1:0:6:11",
+          "amount": "1122122",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 19867명 · 1951:ENG:1:0:6:11",
+          "amount": "42950",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 17193명 · 티켓과 구단 상품 · 1951:ENG:1:0:7:11",
+          "amount": "971090",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 17193명 · 1951:ENG:1:0:7:11",
+          "amount": "37928",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410423",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 19985명 · 티켓과 구단 상품 · 1951:ENG:1:0:9:9",
+          "amount": "1128787",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 19985명 · 1951:ENG:1:0:9:9",
+          "amount": "43172",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1951:cup:ENG:k1:13 · 홈·원정 동일 기준",
+          "amount": "2395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 21411명 · 티켓과 구단 상품 · 1951:cup:ENG:k1:13",
+          "amount": "1209329",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 21411명 · 1951:cup:ENG:k1:13",
+          "amount": "45850",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 64강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "845",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410421",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 12,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 16802명 · 티켓과 구단 상품 · 1951:ENG:1:0:11:7",
+          "amount": "949005",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 12,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 16802명 · 1951:ENG:1:0:11:7",
+          "amount": "37193",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 14,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 19291명 · 티켓과 구단 상품 · 1951:ENG:1:0:13:5",
+          "amount": "1089588",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 14,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 19291명 · 1951:ENG:1:0:13:5",
+          "amount": "41868",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410423",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1951:cup:ENG:k2:7 · 홈·원정 동일 기준",
+          "amount": "2395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 32강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "845",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 16,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 16438명 · 티켓과 구단 상품 · 1951:ENG:1:0:15:3",
+          "amount": "928446",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 16,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 16438명 · 1951:ENG:1:0:15:3",
+          "amount": "36510",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410421",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410423",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 19490명 · 티켓과 구단 상품 · 1951:ENG:1:0:17:1",
+          "amount": "1100828",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 19490명 · 1951:ENG:1:0:17:1",
+          "amount": "42242",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410421",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 21,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14647명 · 티켓과 구단 상품 · 1951:ENG:1:0:20:2",
+          "amount": "827287",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 21,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14647명 · 1951:ENG:1:0:20:2",
+          "amount": "33146",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,551 · 감독 £15 · 시설 £115",
+          "amount": "410422",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Freddie Sharp 영입",
+          "detail": "CB · 20세 · 연봉 £1,720 · 계약 1954년 · 협상 타결",
+          "amount": "2392013",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "match-bonus",
+          "title": "무승부 성과 수입",
+          "detail": "1951:cup:ENG:k3:5 · 홈·원정 동일 기준",
+          "amount": "798",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 16강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "1690",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 23,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13159명 · 티켓과 구단 상품 · 1951:ENG:1:0:22:4",
+          "amount": "743243",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 23,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13159명 · 1951:ENG:1:0:22:4",
+          "amount": "30351",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419398",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 16540명 · 티켓과 구단 상품 · 1951:ENG:1:0:24:6",
+          "amount": "934207",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 16540명 · 1951:ENG:1:0:24:6",
+          "amount": "36701",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 15099명 · 티켓과 구단 상품 · 1951:ENG:1:0:26:8",
+          "amount": "852817",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 15099명 · 1951:ENG:1:0:26:8",
+          "amount": "33995",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1951:cup:ENG:k4:3 · 홈·원정 동일 기준",
+          "amount": "2395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 8강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "3287",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 29,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 16854명 · 티켓과 구단 상품 · 1951:ENG:1:0:28:10",
+          "amount": "951942",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 29,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 16854명 · 1951:ENG:1:0:28:10",
+          "amount": "37291",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419397",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 16714명 · 티켓과 구단 상품 · 1951:ENG:1:0:31:10",
+          "amount": "944035",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 16714명 · 1951:ENG:1:0:31:10",
+          "amount": "37028",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419397",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14184명 · 티켓과 구단 상품 · 1951:ENG:1:0:33:8",
+          "amount": "801136",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14184명 · 1951:ENG:1:0:33:8",
+          "amount": "32276",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419397",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 36,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 15796명 · 티켓과 구단 상품 · 1951:ENG:1:0:35:6",
+          "amount": "892185",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 36,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 15796명 · 1951:ENG:1:0:35:6",
+          "amount": "35304",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419397",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 38,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 15163명 · 티켓과 구단 상품 · 1951:ENG:1:0:37:4",
+          "amount": "856432",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 38,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 15163명 · 1951:ENG:1:0:37:4",
+          "amount": "34115",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419398",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 40,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 19032명 · 티켓과 구단 상품 · 1951:ENG:1:0:39:2",
+          "amount": "1074959",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 40,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 19032명 · 1951:ENG:1:0:39:2",
+          "amount": "41382",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419395",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419397",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 17580명 · 티켓과 구단 상품 · 1951:ENG:1:0:41:0",
+          "amount": "992948",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 17580명 · 1951:ENG:1:0:41:0",
+          "amount": "38655",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419397",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 43,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 18264명 · 티켓과 구단 상품 · 1951:ENG:1:0:42:1",
+          "amount": "1031582",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 43,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 18264명 · 1951:ENG:1:0:42:1",
+          "amount": "39939",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 45,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 17229명 · 티켓과 구단 상품 · 1951:ENG:1:0:44:3",
+          "amount": "973123",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 45,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 17229명 · 1951:ENG:1:0:44:3",
+          "amount": "37995",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,589 · 감독 £15 · 시설 £115",
+          "amount": "419396",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "1/24위 · 최하위는 균등 배분금만",
+          "amount": "253565",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1951,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 6월 19일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:3:p:13:109",
+          "person": "ENG:0:0:3:p:13:109",
+          "name": "Freddie Sharp",
+          "club": "ENG:0:0:3",
+          "fee": "2392013",
+          "currency": "GBP-LSD",
+          "year": 1951,
+          "day": 155
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ENG:0:0:17:p:15:109"
+      ]
+    },
+    {
+      "year": 1952,
+      "division": 0,
+      "rank": 13,
+      "openingCurrency": "GBP-LSD",
+      "currency": "GBP-LSD",
+      "openingCash": "71724766",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "80436",
+      "openingBoundaryCash": "71805202",
+      "closingCash": "110797943",
+      "income": "88980053",
+      "expense": "49987312",
+      "turnover": "68470196",
+      "purchases": "11927131",
+      "sales": "20509857",
+      "openingAnnualWageBill": "22093666",
+      "closingAnnualWageBill": "25085126",
+      "paidWagesRoundSamples": "22972079",
+      "paidArrivals": 6,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 2,
+      "paidMeanFee": "1987855",
+      "paidMedianFee": "1813848",
+      "ledgerEvents": [
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "단장 Harry Burns 선임",
+          "detail": "능력 62 · 협상가 · 연봉 £187 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "11270",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석코치 Ottavio Cristiani 선임",
+          "detail": "능력 56 · 특기 없음 · 연봉 £166 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "9996",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "공격 코치 Jules Deprez 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £160 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "9612",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수비 코치 Brian Newton 선임",
+          "detail": "능력 58 · 특기 없음 · 연봉 £179 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10765",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Dylan Dupuy 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £160 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "9612",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Bruno Ackermann 선임",
+          "detail": "능력 58 · 특기 없음 · 연봉 £179 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10765",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Detlef Müller 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £160 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "9612",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Archie Holmes 선임",
+          "detail": "능력 55 · 발굴가 · 연봉 £146 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "8804",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Durham Cooperative · 리그 경기 38/38",
+          "amount": "5628264",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "13020260",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,956 · 감독 £15 · 시설 £126",
+          "amount": "510636",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "12030515",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 20690명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:1:8",
+          "amount": "1550760",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 20690명 · 1952:ENG:0:0:1:8",
+          "amount": "48575",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,956 · 감독 £15 · 시설 £126",
+          "amount": "510635",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,956 · 감독 £15 · 시설 £126",
+          "amount": "510636",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32726명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:3:6",
+          "amount": "2452885",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32726명 · 1952:ENG:0:0:3:6",
+          "amount": "73254",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,956 · 감독 £15 · 시설 £126",
+          "amount": "510636",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "transfer-out",
+          "title": "Daniel Pugh의 새로운 도전",
+          "detail": "Braga Vale B5 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "1169027",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494850",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 29131명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:5:4",
+          "amount": "2183432",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 29131명 · 1952:ENG:0:0:5:4",
+          "amount": "65883",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494852",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494852",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 9,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 34031명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:7:2",
+          "amount": "2550697",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 9,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 34031명 · 1952:ENG:0:0:7:2",
+          "amount": "75930",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494850",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1952:cup:ENG:k1:30 · 홈·원정 동일 기준",
+          "amount": "3153",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 29919명 · 티켓과 구단 상품 · 1952:cup:ENG:k1:30",
+          "amount": "1852495",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 29919명 · 1952:cup:ENG:k1:30",
+          "amount": "67498",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 64강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "923",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 11,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 38749명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:9:0",
+          "amount": "2904322",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 11,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 38749명 · 1952:ENG:0:0:9:0",
+          "amount": "85604",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494852",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494852",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 38212명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:10:1",
+          "amount": "2864072",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 38212명 · 1952:ENG:0:0:10:1",
+          "amount": "84503",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494850",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32352명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:12:3",
+          "amount": "2424853",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32352명 · 1952:ENG:0:0:12:3",
+          "amount": "72487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1952:cup:ENG:k2:12 · 홈·원정 동일 기준",
+          "amount": "3153",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30099명 · 티켓과 구단 상품 · 1952:cup:ENG:k2:12",
+          "amount": "1863640",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30099명 · 1952:cup:ENG:k2:12",
+          "amount": "67867",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 32강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "923",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 24939명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:14:5",
+          "amount": "1869232",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 24939명 · 1952:ENG:0:0:14:5",
+          "amount": "57287",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494852",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494850",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494852",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 31432명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:16:7",
+          "amount": "2355897",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 31432명 · 1952:ENG:0:0:16:7",
+          "amount": "70601",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,890 · 감독 £15 · 시설 £126",
+          "amount": "494851",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32403명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:18:9",
+          "amount": "2428675",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32403명 · 1952:ENG:0:0:18:9",
+          "amount": "72592",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,986 · 감독 £15 · 시설 £126",
+          "amount": "517887",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Frank Lee의 새로운 도전",
+          "detail": "Bergamo Olivo A8 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "1164199",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Dennis Wilson의 새로운 도전",
+          "detail": "Bergamo Officina A1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "3262639",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Christopher Sharp의 새로운 도전",
+          "detail": "Bergamo Officina A1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "3319616",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Bobby Jones의 새로운 도전",
+          "detail": "Modena Vela A5 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "3097446",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Albert King의 새로운 도전",
+          "detail": "Oviedo Puerto A2 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "2305563",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Edward Walsh 영입",
+          "detail": "DM · 22세 · 연봉 £3,922 · 계약 1955년 · 단장 영입",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Gareth Barrett의 새로운 도전",
+          "detail": "Bremen Wald B7 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "2525264",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,733 · 감독 £15 · 시설 £126",
+          "amount": "457100",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Stanley Harrison 영입",
+          "detail": "ST · 18세 · 연봉 £4,248 · 계약 1955년 · 협상 타결",
+          "amount": "1848455",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Oliver Gordon 영입",
+          "detail": "RW · 18세 · 연봉 £4,248 · 계약 1955년 · 협상 타결",
+          "amount": "1739722",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30490명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:19:9",
+          "amount": "2285292",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30490명 · 1952:ENG:0:0:19:9",
+          "amount": "68669",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,917 · 감독 £15 · 시설 £126",
+          "amount": "501432",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "transfer-out",
+          "title": "Thomas Sullivan의 새로운 도전",
+          "detail": "Aachen Adler C1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "2310733",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Samuel Nelson 영입",
+          "detail": "GK · 19세 · 연봉 £4,465 · 계약 1955년 · 협상 타결",
+          "amount": "1759370",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £1,946 · 감독 £15 · 시설 £126",
+          "amount": "508373",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 25,
+          "kind": "transfer-out",
+          "title": "Ian Cooper의 새로운 도전",
+          "detail": "AUT Riverside 6 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "1355370",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 25,
+          "kind": "transfer-in",
+          "title": "Arthur Grant 영입",
+          "detail": "LWB · 20세 · 연봉 £4,694 · 계약 1955년 · 협상 타결",
+          "amount": "1779241",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 25,
+          "kind": "transfer-in",
+          "title": "Malcolm Andrews 영입",
+          "detail": "DM · 22세 · 연봉 £3,479 · 계약 1955년 · 단장 영입",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 25,
+          "kind": "transfer-in",
+          "title": "Douglas Robinson 영입",
+          "detail": "LB · 20세 · 연봉 £4,694 · 계약 1955년 · 협상 타결",
+          "amount": "2224051",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 27230명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:21:7",
+          "amount": "2040948",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 27230명 · 1952:ENG:0:0:21:7",
+          "amount": "61985",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,105 · 감독 £15 · 시설 £126",
+          "amount": "546494",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "transfer-in",
+          "title": "Thomas O'Brien 영입",
+          "detail": "CM · 23세 · 연봉 £5,452 · 계약 1955년 · 협상 타결",
+          "amount": "2576292",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574943",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 27630명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:23:5",
+          "amount": "2070929",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 27630명 · 1952:ENG:0:0:23:5",
+          "amount": "62805",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574942",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574941",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574943",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 31,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 29165명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:25:3",
+          "amount": "2185980",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 31,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 29165명 · 1952:ENG:0:0:25:3",
+          "amount": "65952",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574943",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574941",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 33,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 31273명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:27:1",
+          "amount": "2343979",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 33,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 31273명 · 1952:ENG:0:0:27:1",
+          "amount": "70275",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574942",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £15 · 시설 £126",
+          "amount": "574942",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 34,
+          "kind": "manager-renew",
+          "title": "감독 재계약",
+          "detail": "George Doyle 재계약 · 1954/55 시즌 끝까지",
+          "amount": "20812",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 38408명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:30:2",
+          "amount": "2878763",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 38408명 · 1952:ENG:0:0:30:2",
+          "amount": "84904",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575666",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 25061명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:32:4",
+          "amount": "1878376",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 25061명 · 1952:ENG:0:0:32:4",
+          "amount": "57537",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575667",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 24382명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:34:6",
+          "amount": "1827484",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 24382명 · 1952:ENG:0:0:34:6",
+          "amount": "56145",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575667",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575667",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 28320명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ENG:0:0:36:8",
+          "amount": "2122646",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 28320명 · 1952:ENG:0:0:36:8",
+          "amount": "64220",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575668",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,224 · 감독 £18 · 시설 £126",
+          "amount": "575667",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "13/20위 · 최하위는 균등 배분금만",
+          "amount": "2878163",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:0:p:10:109",
+          "person": "ENG:0:0:0:p:10:109",
+          "name": "Stanley Harrison",
+          "club": "ENG:0:0:0",
+          "fee": "1848455",
+          "currency": "GBP-LSD",
+          "year": 1952,
+          "day": 163
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:3:p:10:109",
+          "person": "ENG:0:0:3:p:10:109",
+          "name": "Oliver Gordon",
+          "club": "ENG:0:0:3",
+          "fee": "1739722",
+          "currency": "GBP-LSD",
+          "year": 1952,
+          "day": 167
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:0:p:11:109",
+          "person": "ENG:0:0:0:p:11:109",
+          "name": "Samuel Nelson",
+          "club": "ENG:0:0:0",
+          "fee": "1759370",
+          "currency": "GBP-LSD",
+          "year": 1952,
+          "day": 172
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:0:p:12:109",
+          "person": "ENG:0:0:0:p:12:109",
+          "name": "Arthur Grant",
+          "club": "ENG:0:0:0",
+          "fee": "1779241",
+          "currency": "GBP-LSD",
+          "year": 1952,
+          "day": 176
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:3:p:12:109",
+          "person": "ENG:0:0:3:p:12:109",
+          "name": "Douglas Robinson",
+          "club": "ENG:0:0:3",
+          "fee": "2224051",
+          "currency": "GBP-LSD",
+          "year": 1952,
+          "day": 181
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:0:p:15:109",
+          "person": "ENG:0:0:0:p:15:109",
+          "name": "Thomas O'Brien",
+          "club": "ENG:0:0:0",
+          "fee": "2576292",
+          "currency": "GBP-LSD",
+          "year": 1952,
+          "day": 184
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ENG:1:0:8:p:14:109",
+        "ENG:0:0:1:p:14:109"
+      ]
+    },
+    {
+      "year": 1953,
+      "division": 0,
+      "rank": 3,
+      "openingCurrency": "GBP-LSD",
+      "currency": "GBP-LSD",
+      "openingCash": "110797943",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "110797943",
+      "closingCash": "130583175",
+      "income": "75551681",
+      "expense": "55766449",
+      "turnover": "75551681",
+      "purchases": "1914810",
+      "sales": "0",
+      "openingAnnualWageBill": "25780014",
+      "closingAnnualWageBill": "27104170",
+      "paidWagesRoundSamples": "26950551",
+      "paidArrivals": 1,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 0,
+      "paidMeanFee": "1914810",
+      "paidMedianFee": "1914810",
+      "ledgerEvents": [
+        {
+          "year": 1953,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Steven Hughes 영입",
+          "detail": "ST · 18세 · 연봉 £4,377 · 계약 1956년 · 협상 타결",
+          "amount": "1914810",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Durham Cooperative · 리그 경기 38/38",
+          "amount": "5628264",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "13417826",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "23964569",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 20397명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:1:7",
+          "amount": "1574798",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 20397명 · 1953:ENG:0:0:1:7",
+          "amount": "49439",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32381명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:3:5",
+          "amount": "2500050",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32381명 · 1953:ENG:0:0:3:5",
+          "amount": "74762",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26025명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:5:3",
+          "amount": "2009320",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26025명 · 1953:ENG:0:0:5:3",
+          "amount": "61331",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 9,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30761명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:7:1",
+          "amount": "2374974",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 9,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30761명 · 1953:ENG:0:0:7:1",
+          "amount": "71338",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1953:cup:ENG:k1:21 · 홈·원정 동일 기준",
+          "amount": "3249",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 64강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "951",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37053명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:10:2",
+          "amount": "2860763",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37053명 · 1953:ENG:0:0:10:2",
+          "amount": "84634",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 35882명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:12:4",
+          "amount": "2770353",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 35882명 · 1953:ENG:0:0:12:4",
+          "amount": "82159",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1953:cup:ENG:k2:9 · 홈·원정 동일 기준",
+          "amount": "3249",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 32강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "951",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 38113명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:14:6",
+          "amount": "2942602",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 38113명 · 1953:ENG:0:0:14:6",
+          "amount": "86874",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614543",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614541",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37781명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:16:8",
+          "amount": "2916970",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37781명 · 1953:ENG:0:0:16:8",
+          "amount": "86172",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,382 · 감독 £18 · 시설 £130",
+          "amount": "614542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 24,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 27355명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:19:8",
+          "amount": "2112006",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 24,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 27355명 · 1953:ENG:0:0:19:8",
+          "amount": "64141",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 33932명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:21:6",
+          "amount": "2619799",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 33932명 · 1953:ENG:0:0:21:6",
+          "amount": "78039",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 35267명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:23:4",
+          "amount": "2722870",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 35267명 · 1953:ENG:0:0:23:4",
+          "amount": "80860",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620485",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 31,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 36009명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:25:2",
+          "amount": "2780158",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 31,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 36009명 · 1953:ENG:0:0:25:2",
+          "amount": "82428",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620485",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 33,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37432명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:27:0",
+          "amount": "2890024",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 33,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37432명 · 1953:ENG:0:0:27:0",
+          "amount": "85435",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 38116명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:28:1",
+          "amount": "2942834",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 38116명 · 1953:ENG:0:0:28:1",
+          "amount": "86880",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620485",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32277명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:30:3",
+          "amount": "2492021",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32277명 · 1953:ENG:0:0:30:3",
+          "amount": "74542",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620485",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32575명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:32:5",
+          "amount": "2515028",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32575명 · 1953:ENG:0:0:32:5",
+          "amount": "75172",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620485",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37287명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:34:7",
+          "amount": "2878829",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37287명 · 1953:ENG:0:0:34:7",
+          "amount": "85128",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620485",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 34801명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:36:9",
+          "amount": "2686892",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 34801명 · 1953:ENG:0:0:36:9",
+          "amount": "79875",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620487",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 45,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 35018명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1953:ENG:0:0:37:9",
+          "amount": "2703646",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 45,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 35018명 · 1953:ENG:0:0:37:9",
+          "amount": "80334",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,407 · 감독 £18 · 시설 £130",
+          "amount": "620486",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "3/20위 · 최하위는 균등 배분금만",
+          "amount": "7203254",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:3:p:9:109",
+          "person": "ENG:0:0:3:p:9:109",
+          "name": "Steven Hughes",
+          "club": "ENG:0:0:3",
+          "fee": "1914810",
+          "currency": "GBP-LSD",
+          "year": 1953,
+          "day": 4
+        }
+      ],
+      "completedFreeBidPlayers": []
+    },
+    {
+      "year": 1954,
+      "division": 0,
+      "rank": 5,
+      "openingCurrency": "GBP-LSD",
+      "currency": "GBP-LSD",
+      "openingCash": "130509322",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "73853",
+      "openingBoundaryCash": "130583175",
+      "closingCash": "145690164",
+      "income": "77979538",
+      "expense": "62872549",
+      "turnover": "77979538",
+      "purchases": "2239271",
+      "sales": "0",
+      "openingAnnualWageBill": "29044274",
+      "closingAnnualWageBill": "31614091",
+      "paidWagesRoundSamples": "30984150",
+      "paidArrivals": 1,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 1,
+      "paidMeanFee": "2239271",
+      "paidMedianFee": "2239271",
+      "ledgerEvents": [
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "단장 Harry Burns 재계약",
+          "detail": "능력 62 · 연봉 £215 · 계약 1955/56 시즌 끝까지 · 스태프 위임",
+          "amount": "5172",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석코치 Tom Holmes 선임",
+          "detail": "능력 56 · 특기 없음 · 연봉 £175 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10504",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "공격 코치 Hugo Vanderstraeten 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £168 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10100",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수비 코치 Kyle McDonald 선임",
+          "detail": "능력 62 · 특기 없음 · 연봉 £215 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "12929",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Domenico Sorrentino 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 £181 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10908",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Tim Bauwens 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £168 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10100",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 John Murray 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 £168 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "10100",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "수석 스카우트 Archie Holmes 재계약",
+          "detail": "능력 55 · 연봉 £168 · 계약 1955/56 시즌 끝까지 · 스태프 위임",
+          "amount": "4040",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Timothy O'Neill 영입",
+          "detail": "CB · 23세 · 연봉 £5,730 · 계약 1957년 · 단장 영입",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Durham Cooperative · 리그 경기 38/38",
+          "amount": "5628264",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32629명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:0:9",
+          "amount": "2576131",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32629명 · 1954:ENG:0:0:0:9",
+          "amount": "76773",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "13682868",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "26443088",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26926명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:1:9",
+          "amount": "2125867",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26926명 · 1954:ENG:0:0:1:9",
+          "amount": "64484",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693176",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30651명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:3:7",
+          "amount": "2419964",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30651명 · 1954:ENG:0:0:3:7",
+          "amount": "72511",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30911명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:5:5",
+          "amount": "2440491",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30911명 · 1954:ENG:0:0:5:5",
+          "amount": "73071",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693176",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693178",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 9,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32688명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:7:3",
+          "amount": "2580789",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 9,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32688명 · 1954:ENG:0:0:7:3",
+          "amount": "76900",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693175",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1954:cup:ENG:k1:9 · 홈·원정 동일 기준",
+          "amount": "3313",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37779명 · 티켓과 구단 상품 · 1954:cup:ENG:k1:9",
+          "amount": "2463998",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37779명 · 1954:cup:ENG:k1:9",
+          "amount": "87870",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "잉글랜드 컵 64강 통과",
+          "detail": "잉글랜드 컵 상금",
+          "amount": "970",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 11,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 38139명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:9:1",
+          "amount": "3011158",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 11,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 38139명 · 1954:ENG:0:0:9:1",
+          "amount": "88646",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37848명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:12:2",
+          "amount": "2988183",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37848명 · 1954:ENG:0:0:12:2",
+          "amount": "88019",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693176",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 36699명 · 티켓과 구단 상품 · 1954:cup:ENG:k2:15",
+          "amount": "2393559",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 36699명 · 1954:cup:ENG:k2:15",
+          "amount": "85543",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693176",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26915명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:14:4",
+          "amount": "2124998",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26915명 · 1954:ENG:0:0:14:4",
+          "amount": "64460",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693178",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693177",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693175",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 23773명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:16:6",
+          "amount": "1876930",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 23773명 · 1954:ENG:0:0:16:6",
+          "amount": "57690",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693179",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693176",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 30535명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:18:8",
+          "amount": "2410805",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 30535명 · 1954:ENG:0:0:18:8",
+          "amount": "72261",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,704 · 감독 £18 · 시설 £132",
+          "amount": "693176",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Ryan Osborne 영입",
+          "detail": "RW · 20세 · 연봉 £4,933 · 계약 1957년 · 협상 타결",
+          "amount": "2239271",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718917",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718914",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718915",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 32667명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:21:8",
+          "amount": "2579131",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 32667명 · 1954:ENG:0:0:21:8",
+          "amount": "76855",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718914",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1955년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718917",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 29433명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:23:6",
+          "amount": "2323800",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 29433명 · 1954:ENG:0:0:23:6",
+          "amount": "69886",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718913",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718916",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718917",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 31,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 28540명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:25:4",
+          "amount": "2253296",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 31,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 28540명 · 1954:ENG:0:0:25:4",
+          "amount": "67962",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718914",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718915",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 33,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 33850명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:27:2",
+          "amount": "2672532",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 33,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 33850명 · 1954:ENG:0:0:27:2",
+          "amount": "79404",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718915",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £18 · 시설 £132",
+          "amount": "718916",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 34,
+          "kind": "manager-renew",
+          "title": "감독 재계약",
+          "detail": "George Doyle 재계약 · 1956/57 시즌 끝까지",
+          "amount": "21871",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719146",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 36,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 37225명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:29:0",
+          "amount": "2938995",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 36,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 37225명 · 1954:ENG:0:0:29:0",
+          "amount": "86676",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719144",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 35968명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:30:1",
+          "amount": "2839752",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 35968명 · 1954:ENG:0:0:30:1",
+          "amount": "83968",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719147",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719143",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 35169명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:32:3",
+          "amount": "2776670",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 35169명 · 1954:ENG:0:0:32:3",
+          "amount": "82246",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719147",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1955년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719145",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719146",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 28817명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:34:5",
+          "amount": "2275165",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 28817명 · 1954:ENG:0:0:34:5",
+          "amount": "68559",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719146",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719144",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 26732명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ENG:0:0:36:7",
+          "amount": "2110550",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 26732명 · 1954:ENG:0:0:36:7",
+          "amount": "64066",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719147",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719143",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 £2,812 · 감독 £19 · 시설 £132",
+          "amount": "719147",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "5/20위 · 최하위는 균등 배분금만",
+          "amount": "6481359",
+          "currency": "GBP-LSD"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1955년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "GBP-LSD"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ENG:0:0:1:p:10:109",
+          "person": "ENG:0:0:1:p:10:109",
+          "name": "Ryan Osborne",
+          "club": "ENG:0:0:1",
+          "fee": "2239271",
+          "currency": "GBP-LSD",
+          "year": 1954,
+          "day": 160
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ENG:0:0:1:p:13:109"
+      ]
+    }
+  ],
+  "ended": null
+}

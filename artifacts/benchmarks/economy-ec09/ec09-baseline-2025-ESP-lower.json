@@ -1,0 +1,5606 @@
+{
+  "source": {
+    "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+    "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scriptSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+  "generatedBy": {
+    "seed": "economy-ec09-0",
+    "year": 2025,
+    "source": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+    "seconds": 220.29543966999998
+  },
+  "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+  "worldFile": "/tmp/ec09-worlds/economy-ec09-0-2025.json",
+  "seed": "economy-ec09-0",
+  "year": 2025,
+  "country": "ESP",
+  "tier": "oil",
+  "club": "ESP:1:0:0",
+  "scenarios": "modern",
+  "purseApart": true,
+  "ownerMoneyMoved": false,
+  "construction": false,
+  "seasons": [
+    {
+      "year": 2025,
+      "division": 1,
+      "rank": 10,
+      "openingCurrency": "EUR",
+      "currency": "EUR",
+      "openingCash": "3166401813",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "3166401813",
+      "closingCash": "3871792305",
+      "income": "3594413522",
+      "expense": "2889023030",
+      "turnover": "3570894638",
+      "purchases": "1079580438",
+      "sales": "23518884",
+      "openingAnnualWageBill": "361046697",
+      "closingAnnualWageBill": "691962385",
+      "paidWagesRoundSamples": "614100813",
+      "paidArrivals": 1,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 2,
+      "paidMeanFee": "1079580438",
+      "paidMedianFee": "1079580438",
+      "ledgerEvents": [
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "takeover",
+          "title": "구단 인수",
+          "detail": "Leon Sierra A1 인수 · 스페인 2부",
+          "amount": "7609290738",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "단장 Higinio Maldonado 선임",
+          "detail": "능력 58 · 협상가 · 연봉 €64,289 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1607232",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수석코치 Richard Chambers 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €57,401 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1435028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "공격 코치 Stan Smith 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €57,401 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1435028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수비 코치 Keith Walton 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €57,401 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1435028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Jack Mitchell 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €57,401 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1435028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Raoul Weber 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €57,401 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1435028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Geoffrey Green 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €57,401 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1435028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Xavier Galán 선임",
+          "detail": "능력 60 · 발굴가 · 연봉 €68,881 · 계약 2026/27 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1722034",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "32002217",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "sponsor:kit",
+          "title": "용품 후원",
+          "detail": "Leon Athletic · 리그 경기 42/42",
+          "amount": "80005544",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서",
+          "detail": "Leon Motors · 리그 경기 42/42",
+          "amount": "144009978",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "sponsor:sleeve",
+          "title": "소매 스폰서",
+          "detail": "Leon Logistics · 리그 경기 42/42",
+          "amount": "32002217",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10075명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:0:7",
+          "amount": "100109104",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10075명 · 2025:ESP:1:0:0:7",
+          "amount": "500347",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "847240896",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €72,598 · 감독 €5,889 · 시설 €13,019",
+          "amount": "10188979",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "1108240635",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 1,
+          "kind": "transfer-in",
+          "title": "Pau Sierra 영입",
+          "detail": "GK · 27세 · 연봉 €1.55M · 계약 2028년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 2,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서 경기 보너스",
+          "detail": "Leon Motors · 리그 승리 · 2025:ESP:1:0:41:6",
+          "amount": "14172412",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €106K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13570325",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8775명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:2:9",
+          "amount": "87191800",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8775명 · 2025:ESP:1:0:2:9",
+          "amount": "450599",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €106K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13570328",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €106K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13570327",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 4,
+          "kind": "transfer-out",
+          "title": "Octavio Peña의 새로운 도전",
+          "detail": "GRE Foundry 8 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "23518884",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170890",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9923명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:5:9",
+          "amount": "98598773",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9923명 · 2025:ESP:1:0:5:9",
+          "amount": "494530",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170888",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170891",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10947명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:7:7",
+          "amount": "108773634",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10947명 · 2025:ESP:1:0:7:7",
+          "amount": "533716",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170888",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170891",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11664명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:9:5",
+          "amount": "115898023",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11664명 · 2025:ESP:1:0:9:5",
+          "amount": "561154",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170888",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2025:cup:ESP:k0:7 · 홈·원정 동일 기준",
+          "amount": "3600774",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11560명 · 티켓과 구단 상품 · 2025:cup:ESP:k0:7",
+          "amount": "104876410",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11560명 · 2025:cup:ESP:k0:7",
+          "amount": "557174",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "스페인 컵 1라운드 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "1270861",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170890",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170889",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11631명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:11:3",
+          "amount": "115570123",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11631명 · 2025:ESP:1:0:11:3",
+          "amount": "559891",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170890",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2025년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170888",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8975명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:13:1",
+          "amount": "89179077",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8975명 · 2025:ESP:1:0:13:1",
+          "amount": "458252",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170891",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10302명 · 티켓과 구단 상품 · 2025:cup:ESP:k1:2",
+          "amount": "93463389",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10302명 · 2025:cup:ESP:k1:2",
+          "amount": "509033",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170888",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170891",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8395명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:16:2",
+          "amount": "83415973",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8395명 · 2025:ESP:1:0:16:2",
+          "amount": "436057",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170888",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170890",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10237명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:18:4",
+          "amount": "101718798",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10237명 · 2025:ESP:1:0:18:4",
+          "amount": "506546",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170889",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170891",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9296명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:20:6",
+          "amount": "92368658",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9296명 · 2025:ESP:1:0:20:6",
+          "amount": "470536",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €102K · 감독 €5,889 · 시설 €13,019",
+          "amount": "13170887",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Gorka Castro 영입",
+          "detail": "ST · 18세 · 연봉 €897K · 계약 2028년 · 협상 타결",
+          "amount": "1079580438",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €121K · 감독 €5,889 · 시설 €13,019",
+          "amount": "15122487",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €121K · 감독 €5,889 · 시설 €13,019",
+          "amount": "15122487",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Nicolás Jurado 영입",
+          "detail": "CB · 22세 · 연봉 €562K · 계약 2028년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10099명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:22:8",
+          "amount": "100347577",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10099명 · 2025:ESP:1:0:22:8",
+          "amount": "501265",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344583",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2026년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 7074명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:24:10",
+          "amount": "70290005",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 7074명 · 2025:ESP:1:0:24:10",
+          "amount": "385506",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 7620명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:25:10",
+          "amount": "75715272",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 7620명 · 2025:ESP:1:0:25:10",
+          "amount": "406400",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344584",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8783명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:27:8",
+          "amount": "87271291",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8783명 · 2025:ESP:1:0:27:8",
+          "amount": "450905",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344587",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344584",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8563명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:29:6",
+          "amount": "85085286",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8563명 · 2025:ESP:1:0:29:6",
+          "amount": "442486",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344584",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10214명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:31:4",
+          "amount": "101490262",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10214명 · 2025:ESP:1:0:31:4",
+          "amount": "505666",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10517명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:33:2",
+          "amount": "104500987",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10517명 · 2025:ESP:1:0:33:2",
+          "amount": "517261",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13767명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:35:0",
+          "amount": "136794246",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13767명 · 2025:ESP:1:0:35:0",
+          "amount": "641630",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344584",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2026년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 40,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12354명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:36:1",
+          "amount": "122754131",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 40,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12354명 · 2025:ESP:1:0:36:1",
+          "amount": "587558",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344584",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9955명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:38:3",
+          "amount": "98916737",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9955명 · 2025:ESP:1:0:38:3",
+          "amount": "495755",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344585",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9764명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2025:ESP:1:0:40:5",
+          "amount": "97018887",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9764명 · 2025:ESP:1:0:40:5",
+          "amount": "488445",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344583",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €134K · 감독 €5,889 · 시설 €13,019",
+          "amount": "16344586",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "10/22위 · 최하위는 균등 배분금만",
+          "amount": "145241296",
+          "currency": "EUR"
+        },
+        {
+          "year": 2025,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2026년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:9:p:9:113",
+          "person": "ESP:0:0:9:p:9:113",
+          "name": "Gorka Castro",
+          "club": "ESP:0:0:9",
+          "fee": "1079580438",
+          "currency": "EUR",
+          "year": 2025,
+          "day": 157
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ESP:1:0:9:p:0:112",
+        "ESP:0:0:0:p:13:113"
+      ]
+    },
+    {
+      "year": 2026,
+      "division": 1,
+      "rank": 3,
+      "openingCurrency": "EUR",
+      "currency": "EUR",
+      "openingCash": "3871792305",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "3871792305",
+      "closingCash": "4679582243",
+      "income": "4048055122",
+      "expense": "3240265184",
+      "turnover": "4019005626",
+      "purchases": "939458523",
+      "sales": "29049496",
+      "openingAnnualWageBill": "840403052",
+      "closingAnnualWageBill": "1007952055",
+      "paidWagesRoundSamples": "975606231",
+      "paidArrivals": 1,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 2,
+      "paidMeanFee": "939458523",
+      "paidMedianFee": "939458523",
+      "ledgerEvents": [
+        {
+          "year": 2026,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Salvador Mendoza 영입",
+          "detail": "DM · 23세 · 연봉 €881K · 계약 2029년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "32002217",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "sponsor:kit",
+          "title": "용품 후원",
+          "detail": "Leon Athletic · 리그 경기 42/42",
+          "amount": "80005544",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서",
+          "detail": "Leon Motors · 리그 경기 42/42",
+          "amount": "144009978",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서 경기 보너스",
+          "detail": "Leon Motors · 리그 승리 · 2026:ESP:1:0:40:7",
+          "amount": "18744159",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "sponsor:sleeve",
+          "title": "소매 스폰서",
+          "detail": "Leon Logistics · 리그 경기 42/42",
+          "amount": "32002217",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8699명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:0:9",
+          "amount": "88301967",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8699명 · 2026:ESP:1:0:0:9",
+          "amount": "456644",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "864185713",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €166K · 감독 €5,889 · 시설 €13,279",
+          "amount": "19597595",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "1249813123",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 1,
+          "kind": "transfer-in",
+          "title": "Miguel Nieto 영입",
+          "detail": "LWB · 22세 · 연봉 €1.04M · 계약 2029년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12322명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:3:9",
+          "amount": "125078382",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12322명 · 2026:ESP:1:0:3:9",
+          "amount": "598060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865207",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11561명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:5:7",
+          "amount": "117353609",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11561명 · 2026:ESP:1:0:5:7",
+          "amount": "568356",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865207",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12811명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:7:5",
+          "amount": "130042132",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12811명 · 2026:ESP:1:0:7:5",
+          "amount": "617147",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11837명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:9:3",
+          "amount": "120155235",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11837명 · 2026:ESP:1:0:9:3",
+          "amount": "579129",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865207",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8334명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:11:1",
+          "amount": "84596919",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8334명 · 2026:ESP:1:0:11:1",
+          "amount": "442398",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2026년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2026:cup:ESP:k1:15 · 홈·원정 동일 기준",
+          "amount": "3672789",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10193명 · 티켓과 구단 상품 · 2026:cup:ESP:k1:15",
+          "amount": "94470134",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10193명 · 2026:cup:ESP:k1:15",
+          "amount": "514959",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "스페인 컵 32강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "1296279",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 16,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11317명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:14:2",
+          "amount": "114876810",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 16,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11317명 · 2026:ESP:1:0:14:2",
+          "amount": "558832",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865207",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11026명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:16:4",
+          "amount": "111922921",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11026명 · 2026:ESP:1:0:16:4",
+          "amount": "547474",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11538명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:18:6",
+          "amount": "117120140",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11538명 · 2026:ESP:1:0:18:6",
+          "amount": "567459",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865207",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21865206",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9179명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:20:8",
+          "amount": "93174360",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9179명 · 2026:ESP:1:0:20:8",
+          "amount": "475380",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €189K · 감독 €5,889 · 시설 €13,279",
+          "amount": "21943258",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Pascual Beltrán 영입",
+          "detail": "CM · 18세 · 연봉 €820K · 계약 2029년 · 협상 타결",
+          "amount": "939458523",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2026:cup:ESP:k2:3 · 홈·원정 동일 기준",
+          "amount": "3672789",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9455명 · 티켓과 구단 상품 · 2026:cup:ESP:k2:3",
+          "amount": "87630248",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9455명 · 2026:cup:ESP:k2:3",
+          "amount": "486153",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 22,
+          "kind": "cup-prize",
+          "title": "스페인 컵 16강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "2592557",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €207K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23727688",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €207K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23727688",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12407명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:22:10",
+          "amount": "125941201",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12407명 · 2026:ESP:1:0:22:10",
+          "amount": "601378",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €207K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23727686",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 25,
+          "kind": "transfer-out",
+          "title": "Toni Casado의 새로운 도전",
+          "detail": "AUT Harbour 3 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "29049496",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11605명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:23:10",
+          "amount": "117800245",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11605명 · 2026:ESP:1:0:23:10",
+          "amount": "570074",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2027년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12606명 · 티켓과 구단 상품 · 2026:cup:ESP:k3:3",
+          "amount": "116834152",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12606명 · 2026:cup:ESP:k3:3",
+          "amount": "609146",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9467명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:25:8",
+          "amount": "96097796",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9467명 · 2026:ESP:1:0:25:8",
+          "amount": "486622",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239963",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10137명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:27:6",
+          "amount": "102898844",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10137명 · 2026:ESP:1:0:27:6",
+          "amount": "512774",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10170명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:29:4",
+          "amount": "103233821",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10170명 · 2026:ESP:1:0:29:4",
+          "amount": "514062",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10222명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:31:2",
+          "amount": "103761664",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10222명 · 2026:ESP:1:0:31:2",
+          "amount": "516091",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239963",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10582명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:33:0",
+          "amount": "107415958",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10582명 · 2026:ESP:1:0:33:0",
+          "amount": "530143",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 38,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11625명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:34:1",
+          "amount": "118003262",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 38,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11625명 · 2026:ESP:1:0:34:1",
+          "amount": "570854",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239963",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2027년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 40,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10777명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:36:3",
+          "amount": "109395368",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 40,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10777명 · 2026:ESP:1:0:36:3",
+          "amount": "537755",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9761명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:38:5",
+          "amount": "99082136",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9761명 · 2026:ESP:1:0:38:5",
+          "amount": "498097",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11533명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2026:ESP:1:0:40:7",
+          "amount": "117069386",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11533명 · 2026:ESP:1:0:40:7",
+          "amount": "567263",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239964",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239963",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €202K · 감독 €5,889 · 시설 €13,279",
+          "amount": "23239965",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "3/22위 · 최하위는 균등 배분금만",
+          "amount": "234564694",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2027년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 46,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2026:promotion:ESP:0:0:2 · 홈·원정 동일 기준",
+          "amount": "3672789",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 46,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12862명 · 티켓과 구단 상품 · 2026:promotion:ESP:0:0:2",
+          "amount": "119206795",
+          "currency": "EUR"
+        },
+        {
+          "year": 2026,
+          "round": 46,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12862명 · 2026:promotion:ESP:0:0:2",
+          "amount": "619138",
+          "currency": "EUR"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:1:0:14:p:8:113",
+          "person": "ESP:1:0:14:p:8:113",
+          "name": "Pascual Beltrán",
+          "club": "ESP:1:0:14",
+          "fee": "939458523",
+          "currency": "EUR",
+          "year": 2026,
+          "day": 156
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ESP:1:0:9:p:13:113",
+        "ESP:0:0:11:p:12:113"
+      ]
+    },
+    {
+      "year": 2027,
+      "division": 1,
+      "rank": 1,
+      "openingCurrency": "EUR",
+      "currency": "EUR",
+      "openingCash": "4791315781",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "10526908",
+      "openingBoundaryCash": "4801842689",
+      "closingCash": "3600892528",
+      "income": "3756598562",
+      "expense": "4957548723",
+      "turnover": "3756598562",
+      "purchases": "1876139741",
+      "sales": "0",
+      "openingAnnualWageBill": "1474558037",
+      "closingAnnualWageBill": "1630253785",
+      "paidWagesRoundSamples": "1587210070",
+      "paidArrivals": 2,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 0,
+      "paidMeanFee": "938069870",
+      "paidMedianFee": "938069870",
+      "ledgerEvents": [
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "단장 Higinio Maldonado 재계약",
+          "detail": "능력 67 · 연봉 €88,385 · 계약 2028/29 시즌 끝까지 · 스태프 위임",
+          "amount": "883858",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석코치 Jim Fisher 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €59,720 · 계약 2028/29 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1493004",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "공격 코치 Tom Callens 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €59,720 · 계약 2028/29 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1493004",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "수비 코치 Keith Walton 재계약",
+          "detail": "능력 55 · 연봉 €59,720 · 계약 2028/29 시즌 끝까지 · 스태프 위임",
+          "amount": "597202",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Georg Hauser 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €59,720 · 계약 2028/29 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1493004",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Xavier Bouvier 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €59,720 · 계약 2028/29 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1493004",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Edward Evans 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €59,720 · 계약 2028/29 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1493004",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Enrique Arias 선임",
+          "detail": "능력 57 · 발굴가 · 연봉 €63,233 · 계약 2028/29 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1580828",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "32002217",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "sponsor:kit",
+          "title": "용품 후원",
+          "detail": "Leon Athletic · 리그 경기 42/42",
+          "amount": "80005544",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서",
+          "detail": "Leon Motors · 리그 경기 42/42",
+          "amount": "144009978",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서 경기 보너스",
+          "detail": "Leon Motors · 리그 승리 · 2027:ESP:1:0:41:6",
+          "amount": "21715796",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "sponsor:sleeve",
+          "title": "소매 스폰서",
+          "detail": "Leon Logistics · 리그 경기 42/42",
+          "amount": "32002217",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9855명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:0:7",
+          "amount": "102369588",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9855명 · 2027:ESP:1:0:0:7",
+          "amount": "511802",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "881469428",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €303K · 감독 €5,889 · 시설 €13,545",
+          "amount": "33410132",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "1406651969",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €303K · 감독 €5,889 · 시설 €13,545",
+          "amount": "33410131",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 2,
+          "kind": "transfer-in",
+          "title": "Pere Peralta 영입",
+          "detail": "CM · 19세 · 연봉 €800K · 계약 2030년 · 협상 타결",
+          "amount": "1058616299",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13594명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:2:9",
+          "amount": "141208745",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13594명 · 2027:ESP:1:0:2:9",
+          "amount": "660664",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13558명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:5:9",
+          "amount": "140834792",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13558명 · 2027:ESP:1:0:5:9",
+          "amount": "659231",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11157명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:7:7",
+          "amount": "115894215",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11157명 · 2027:ESP:1:0:7:7",
+          "amount": "563639",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12388명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:9:5",
+          "amount": "128681325",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12388명 · 2027:ESP:1:0:9:5",
+          "amount": "612649",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150341",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12643명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:11:3",
+          "amount": "131330157",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12643명 · 2027:ESP:1:0:11:3",
+          "amount": "622802",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2027년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11676명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:13:1",
+          "amount": "121285369",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11676명 · 2027:ESP:1:0:13:1",
+          "amount": "584302",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11342명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:16:2",
+          "amount": "117815917",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11342명 · 2027:ESP:1:0:16:2",
+          "amount": "571004",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10496명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:18:4",
+          "amount": "109028026",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10496명 · 2027:ESP:1:0:18:4",
+          "amount": "537322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150340",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11771명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:20:6",
+          "amount": "122272189",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11771명 · 2027:ESP:1:0:20:6",
+          "amount": "588084",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €320K · 감독 €5,889 · 시설 €13,545",
+          "amount": "35150339",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Fran Muñoz 영입",
+          "detail": "CM · 18세 · 연봉 €756K · 계약 2030년 · 협상 타결",
+          "amount": "817523442",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794821",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9228명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:22:8",
+          "amount": "95856576",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9228명 · 2027:ESP:1:0:22:8",
+          "amount": "486839",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2028년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 7764명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:24:10",
+          "amount": "80649161",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 7764명 · 2027:ESP:1:0:24:10",
+          "amount": "428552",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8135명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:25:10",
+          "amount": "84502953",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8135명 · 2027:ESP:1:0:25:10",
+          "amount": "443323",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8985명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:27:8",
+          "amount": "93332394",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8985명 · 2027:ESP:1:0:27:8",
+          "amount": "477164",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10063명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:29:6",
+          "amount": "104530204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10063명 · 2027:ESP:1:0:29:6",
+          "amount": "520083",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794821",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8421명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:31:4",
+          "amount": "87473800",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8421명 · 2027:ESP:1:0:31:4",
+          "amount": "454709",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794823",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9570명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:33:2",
+          "amount": "99409128",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9570명 · 2027:ESP:1:0:33:2",
+          "amount": "500455",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10270명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:35:0",
+          "amount": "106680433",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10270명 · 2027:ESP:1:0:35:0",
+          "amount": "528324",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2028년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 40,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10686명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:36:1",
+          "amount": "111001666",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 40,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10686명 · 2027:ESP:1:0:36:1",
+          "amount": "544887",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10429명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:38:3",
+          "amount": "108332058",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10429명 · 2027:ESP:1:0:38:3",
+          "amount": "534655",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794821",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9479명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2027:ESP:1:0:40:5",
+          "amount": "98463858",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9479명 · 2027:ESP:1:0:40:5",
+          "amount": "496832",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €337K · 감독 €5,889 · 시설 €13,545",
+          "amount": "36794822",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "1/22위 · 최하위는 균등 배분금만",
+          "amount": "264440828",
+          "currency": "EUR"
+        },
+        {
+          "year": 2027,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2028년 6월 19일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:p:8:113",
+          "person": "ESP:0:0:11:p:8:113",
+          "name": "Pere Peralta",
+          "club": "ESP:0:0:11",
+          "fee": "1058616299",
+          "currency": "EUR",
+          "year": 2027,
+          "day": 19
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:1:0:14:p:7:113",
+          "person": "ESP:1:0:14:p:7:113",
+          "name": "Fran Muñoz",
+          "club": "ESP:1:0:14",
+          "fee": "817523442",
+          "currency": "EUR",
+          "year": 2027,
+          "day": 157
+        }
+      ],
+      "completedFreeBidPlayers": []
+    },
+    {
+      "year": 2028,
+      "division": 0,
+      "rank": 18,
+      "openingCurrency": "EUR",
+      "currency": "EUR",
+      "openingCash": "3597725861",
+      "openingLedgerIncome": "16001109",
+      "openingLedgerExpense": "19167776",
+      "openingBoundaryCash": "3600892528",
+      "closingCash": "44423363019",
+      "income": "51710041802",
+      "expense": "10887571311",
+      "turnover": "25222879491",
+      "purchases": "6642261122",
+      "sales": "26487162311",
+      "openingAnnualWageBill": "2432966377",
+      "closingAnnualWageBill": "3395277571",
+      "paidWagesRoundSamples": "2813398789",
+      "paidArrivals": 4,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 4,
+      "paidMeanFee": "1660565280",
+      "paidMedianFee": "1652109362",
+      "ledgerEvents": [
+        {
+          "year": 2028,
+          "round": 46,
+          "kind": "sponsor:kit",
+          "title": "용품 후원 승격 보너스",
+          "detail": "Leon Athletic · 2027/28 시즌",
+          "amount": "16001109",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 46,
+          "kind": "manager-hire",
+          "title": "Chema Casado 감독 선임",
+          "detail": "소방수 · 역습 · 계약 2028/29 시즌 끝까지 · 단장 선임",
+          "amount": "19167776",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Arturo Quesada 영입",
+          "detail": "LB · 24세 · 연봉 €1.61M · 계약 2031년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 0,
+          "kind": "transfer-out",
+          "title": "Salvador Mendoza의 새로운 도전",
+          "detail": "Leeds Ironworks A4 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "7113368479",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 38/38",
+          "amount": "584544568",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "sponsor:kit",
+          "title": "용품 후원",
+          "detail": "Leon Athletic · 리그 경기 38/38",
+          "amount": "1461361419",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서",
+          "detail": "Leon Motors · 리그 경기 38/38",
+          "amount": "2630450554",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서 경기 보너스",
+          "detail": "Leon Motors · 리그 승리 · 2028:ESP:0:0:36:9",
+          "amount": "138444771",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "sponsor:sleeve",
+          "title": "소매 스폰서",
+          "detail": "Leon Logistics · 리그 경기 38/38",
+          "amount": "584544568",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "15734229286",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "1314809497",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13222명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:1:7",
+          "amount": "155797447",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13222명 · 2028:ESP:0:0:1:7",
+          "amount": "658771",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13447명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:3:5",
+          "amount": "158448666",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13447명 · 2028:ESP:0:0:3:5",
+          "amount": "667908",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14428명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:5:3",
+          "amount": "170007984",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14428명 · 2028:ESP:0:0:5:3",
+          "amount": "707746",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 9,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14654명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:7:1",
+          "amount": "172670987",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 9,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14654명 · 2028:ESP:0:0:7:1",
+          "amount": "716924",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472505",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14455명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:10:2",
+          "amount": "170326130",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14455명 · 2028:ESP:0:0:10:2",
+          "amount": "708842",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472501",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2028년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12809명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:12:4",
+          "amount": "150930986",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12809명 · 2028:ESP:0:0:12:4",
+          "amount": "641999",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12375명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:14:6",
+          "amount": "145817078",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12375명 · 2028:ESP:0:0:14:6",
+          "amount": "624374",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472503",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13796명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:16:8",
+          "amount": "162561002",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13796명 · 2028:ESP:0:0:16:8",
+          "amount": "682081",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472502",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €482K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51472504",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Nicolás Jurado의 새로운 도전",
+          "detail": "Bath Meadow A1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "3195339320",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Amador Soto 영입",
+          "detail": "RW · 22세 · 연봉 €3.49M · 계약 2031년 · 협상 타결",
+          "amount": "1911245923",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Gorka Castro의 새로운 도전",
+          "detail": "Bonn Werk A5 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "5654088000",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Simón Contreras 영입",
+          "detail": "LB · 24세 · 연봉 €2.41M · 계약 2031년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Ricardo Ríos의 새로운 도전",
+          "detail": "AUT Railway 1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "65770946",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Rubén Méndez의 새로운 도전",
+          "detail": "Haarlem IJzer A4 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "151460830",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Pascual Beltrán의 새로운 도전",
+          "detail": "Gent Haven A5 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "3877337932",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Roberto Prieto 영입",
+          "detail": "LW · 20세 · 연봉 €3.05M · 계약 2031년 · 협상 타결",
+          "amount": "1602045442",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €543K · 감독 €6,854 · 시설 €13,816",
+          "amount": "57574788",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 23,
+          "kind": "transfer-out",
+          "title": "Pere Peralta의 새로운 도전",
+          "detail": "Leuven Spoor A4 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "1917333811",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 23,
+          "kind": "transfer-out",
+          "title": "Pau Sierra의 새로운 도전",
+          "detail": "Norwich Borough C2 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "3051541062",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14923명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:19:8",
+          "amount": "175840667",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14923명 · 2028:ESP:0:0:19:8",
+          "amount": "727848",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €479K · 감독 €6,854 · 시설 €13,816",
+          "amount": "51131813",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Germán Pascual 영입",
+          "detail": "CM · 20세 · 연봉 €3.05M · 계약 2031년 · 협상 타결",
+          "amount": "1702173282",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "transfer-out",
+          "title": "Simón Contreras의 새로운 도전",
+          "detail": "Vigo Puerto A1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "1460921931",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Cipriano Fernández 영입",
+          "detail": "CM · 18세 · 연봉 €2.67M · 계약 2031년 · 협상 타결",
+          "amount": "1426796475",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Salvador Batlle 영입",
+          "detail": "GK · 30세 · 연봉 €5.56M · 계약 2031년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Alfredo Sánchez 영입",
+          "detail": "LWB · 24세 · 연봉 €2.17M · 계약 2031년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178286",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14281명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:21:6",
+          "amount": "168275854",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14281명 · 2028:ESP:0:0:21:6",
+          "amount": "701776",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178285",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2029년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178284",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12206명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:23:4",
+          "amount": "143825717",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12206명 · 2028:ESP:0:0:23:4",
+          "amount": "617511",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178285",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178286",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178285",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 31,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14146명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:25:2",
+          "amount": "166685122",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 31,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14146명 · 2028:ESP:0:0:25:2",
+          "amount": "696294",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178284",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178285",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 33,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12908명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:27:0",
+          "amount": "152097522",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 33,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12908명 · 2028:ESP:0:0:27:0",
+          "amount": "646019",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178286",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14715명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:28:1",
+          "amount": "173389762",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14715명 · 2028:ESP:0:0:28:1",
+          "amount": "719401",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,854 · 시설 €13,816",
+          "amount": "75178283",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 34,
+          "kind": "manager-renew",
+          "title": "감독 재계약",
+          "detail": "Chema Casado 재계약 · 2029/30 시즌 끝까지",
+          "amount": "3216289",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191997",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191995",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14539명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:30:3",
+          "amount": "171315919",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14539명 · 2028:ESP:0:0:30:3",
+          "amount": "712254",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191995",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191993",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14958명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:32:5",
+          "amount": "176253079",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14958명 · 2028:ESP:0:0:32:5",
+          "amount": "729269",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191995",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2029년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191996",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191993",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12760명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:34:7",
+          "amount": "150353609",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12760명 · 2028:ESP:0:0:34:7",
+          "amount": "640009",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191995",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191995",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12996명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:36:9",
+          "amount": "153134444",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12996명 · 2028:ESP:0:0:36:9",
+          "amount": "649593",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191996",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 45,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13734명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 2028:ESP:0:0:37:9",
+          "amount": "161830444",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 45,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13734명 · 2028:ESP:0:0:37:9",
+          "amount": "679563",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191993",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €720K · 감독 €6,991 · 시설 €13,816",
+          "amount": "75191995",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "18/20위 · 최하위는 균등 배분금만",
+          "amount": "993740797",
+          "currency": "EUR"
+        },
+        {
+          "year": 2028,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2029년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:3:vacancy:10:2028",
+          "person": "ESP:0:0:3:vacancy:10:2028",
+          "name": "Amador Soto",
+          "club": "ESP:0:0:3",
+          "fee": "1911245923",
+          "currency": "EUR",
+          "year": 2028,
+          "day": 155
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:3:p:8:113",
+          "person": "ESP:0:0:3:p:8:113",
+          "name": "Roberto Prieto",
+          "club": "ESP:0:0:3",
+          "fee": "1602045442",
+          "currency": "EUR",
+          "year": 2028,
+          "day": 160
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:vacancy:8:2028",
+          "person": "ESP:0:0:11:vacancy:8:2028",
+          "name": "Germán Pascual",
+          "club": "ESP:0:0:11",
+          "fee": "1702173282",
+          "currency": "EUR",
+          "year": 2028,
+          "day": 168
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:3:p:6:113",
+          "person": "ESP:0:0:3:p:6:113",
+          "name": "Cipriano Fernández",
+          "club": "ESP:0:0:3",
+          "fee": "1426796475",
+          "currency": "EUR",
+          "year": 2028,
+          "day": 172
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ESP:0:0:7:p:12:113",
+        "ESP:0:0:3:p:12:113",
+        "ESP:0:0:19:p:0:112",
+        "ESP:1:0:21:p:12:113"
+      ]
+    },
+    {
+      "year": 2029,
+      "division": 1,
+      "rank": 1,
+      "openingCurrency": "EUR",
+      "currency": "EUR",
+      "openingCash": "44411171819",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "12191200",
+      "openingBoundaryCash": "44423363019",
+      "closingCash": "58717931884",
+      "income": "17849021560",
+      "expense": "3554452695",
+      "turnover": "17786854359",
+      "purchases": "0",
+      "sales": "62167201",
+      "openingAnnualWageBill": "3103645404",
+      "closingAnnualWageBill": "3490248138",
+      "paidWagesRoundSamples": "3372187393",
+      "paidArrivals": 0,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 3,
+      "paidMeanFee": null,
+      "paidMedianFee": null,
+      "ledgerEvents": [
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "단장 Higinio Maldonado 재계약",
+          "detail": "능력 72 · 연봉 €104K · 계약 2030/31 시즌 끝까지 · 스태프 위임",
+          "amount": "1043832",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석코치 Luke Sullivan 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €62,132 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1553322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "공격 코치 Walter Bradley 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €62,132 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1553322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수비 코치 Lucas Geerts 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €62,132 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1553322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Lorenzo Sáez 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €62,132 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1553322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Sylvain Philippe 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €62,132 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1553322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Matías Mendoza 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 €62,132 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1553322",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Nicolás Bustos 선임",
+          "detail": "능력 60 · 발굴가 · 연봉 €73,097 · 계약 2030/31 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "1827436",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Iván Sierra 영입",
+          "detail": "CB · 26세 · 연봉 €1.98M · 계약 2032년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "584544568",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "sponsor:kit",
+          "title": "용품 후원",
+          "detail": "Leon Athletic · 리그 경기 42/42",
+          "amount": "1461361419",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서",
+          "detail": "Leon Motors · 리그 경기 42/42",
+          "amount": "2630450554",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "sponsor:shirt",
+          "title": "메인 스폰서 경기 보너스",
+          "detail": "Leon Motors · 리그 승리 · 2029:ESP:1:0:40:6",
+          "amount": "496862881",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "sponsor:sleeve",
+          "title": "소매 스폰서",
+          "detail": "Leon Logistics · 리그 경기 42/42",
+          "amount": "584544568",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8522명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:0:8",
+          "amount": "92350105",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8522명 · 2029:ESP:1:0:0:8",
+          "amount": "477263",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "917080793",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "parachute",
+          "title": "강등 보전금",
+          "detail": "1부 → 2부 강등 · 줄어든 분배금의 절반 · 46/46라운드 분할",
+          "amount": "7565916539",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €655K · 감독 €6,991 · 시설 €14,092",
+          "amount": "68879797",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "2부 최저 수준 · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "82843793",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €655K · 감독 €6,991 · 시설 €14,092",
+          "amount": "68879797",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 2,
+          "kind": "transfer-out",
+          "title": "Arturo Escudero의 새로운 도전",
+          "detail": "SUI Railway 9 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "44478260",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 2,
+          "kind": "transfer-out",
+          "title": "Xavier Trujillo의 새로운 도전",
+          "detail": "Lancaster Forge C1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "17688941",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12111명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:2:10",
+          "amount": "131242914",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12111명 · 2029:ESP:1:0:2:10",
+          "amount": "625926",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €643K · 감독 €6,991 · 시설 €14,092",
+          "amount": "67632434",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 3,
+          "kind": "transfer-in",
+          "title": "Rubén Roca 영입",
+          "detail": "DM · 27세 · 연봉 €2.19M · 계약 2032년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13685명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:3:10",
+          "amount": "148299834",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13685명 · 2029:ESP:1:0:3:10",
+          "amount": "691124",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12734명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:5:8",
+          "amount": "137994160",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12734명 · 2029:ESP:1:0:5:8",
+          "amount": "651732",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12855명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:7:6",
+          "amount": "139305397",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12855명 · 2029:ESP:1:0:7:6",
+          "amount": "656744",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13433명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:9:4",
+          "amount": "145568993",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13433명 · 2029:ESP:1:0:9:4",
+          "amount": "680686",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13095명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:11:2",
+          "amount": "141906198",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13095명 · 2029:ESP:1:0:11:2",
+          "amount": "666685",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2029년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12886명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:13:0",
+          "amount": "139641334",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12886명 · 2029:ESP:1:0:13:0",
+          "amount": "658028",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2029:cup:ESP:k1:1 · 홈·원정 동일 기준",
+          "amount": "3897593",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13255명 · 티켓과 구단 상품 · 2029:cup:ESP:k1:1",
+          "amount": "131149625",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13255명 · 2029:cup:ESP:k1:1",
+          "amount": "673313",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "스페인 컵 32강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "1375621",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 16,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13052명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:14:1",
+          "amount": "141440221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 16,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13052명 · 2029:ESP:1:0:14:1",
+          "amount": "664904",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12169명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:16:3",
+          "amount": "131871441",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12169명 · 2029:ESP:1:0:16:3",
+          "amount": "628329",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10442명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:18:5",
+          "amount": "113156512",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10442명 · 2029:ESP:1:0:18:5",
+          "amount": "556793",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407060",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €691K · 감독 €6,991 · 시설 €14,092",
+          "amount": "72407061",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 21,
+          "kind": "transfer-in",
+          "title": "Teodoro Domínguez 영입",
+          "detail": "ST · 23세 · 연봉 €1.33M · 계약 2032년 · 단장 영입",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12363명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:20:7",
+          "amount": "133973755",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12363명 · 2029:ESP:1:0:20:7",
+          "amount": "636365",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 22,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2029:cup:ESP:k2:5 · 홈·원정 동일 기준",
+          "amount": "3897593",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 22,
+          "kind": "cup-prize",
+          "title": "스페인 컵 16강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "2751242",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270220",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270220",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13032명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:22:9",
+          "amount": "141223488",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13032명 · 2029:ESP:1:0:22:9",
+          "amount": "664076",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2030년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 27,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2029:cup:ESP:k3:3 · 홈·원정 동일 기준",
+          "amount": "3897593",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14193명 · 티켓과 구단 상품 · 2029:cup:ESP:k3:3",
+          "amount": "140430526",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14193명 · 2029:cup:ESP:k3:3",
+          "amount": "712167",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 27,
+          "kind": "cup-prize",
+          "title": "스페인 컵 8강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "5349638",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11830명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:25:9",
+          "amount": "128197810",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11830명 · 2029:ESP:1:0:25:9",
+          "amount": "614287",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270220",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12875명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:27:7",
+          "amount": "139522131",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12875명 · 2029:ESP:1:0:27:7",
+          "amount": "657573",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13327명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:29:5",
+          "amount": "144420306",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13327명 · 2029:ESP:1:0:29:5",
+          "amount": "676295",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270220",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270220",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13872명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:31:3",
+          "amount": "150326291",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13872명 · 2029:ESP:1:0:31:3",
+          "amount": "698870",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €6,991 · 시설 €14,092",
+          "amount": "77270221",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 34,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "2029:cup:ESP:k4:0 · 홈·원정 동일 기준",
+          "amount": "3897593",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 34,
+          "kind": "cup-prize",
+          "title": "스페인 컵 4강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "10699276",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 34,
+          "kind": "manager-renew",
+          "title": "감독 재계약",
+          "detail": "Chema Casado 재계약 · 2030/31 시즌 끝까지",
+          "amount": "3280614",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11780명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:33:1",
+          "amount": "127655977",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11780명 · 2029:ESP:1:0:33:1",
+          "amount": "612216",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2030년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 40,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13986명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:36:2",
+          "amount": "151561671",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 40,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13986명 · 2029:ESP:1:0:36:2",
+          "amount": "703592",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 41,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13111명 · 티켓과 구단 상품 · 2029:cup:ESP:k5:0",
+          "amount": "129724838",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 41,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13111명 · 2029:cup:ESP:k5:0",
+          "amount": "667348",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10948명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:38:4",
+          "amount": "118639867",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10948명 · 2029:ESP:1:0:38:4",
+          "amount": "577753",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12513명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 2029:ESP:1:0:40:6",
+          "amount": "135599256",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12513명 · 2029:ESP:1:0:40:6",
+          "amount": "642578",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284205",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 €739K · 감독 €7,131 · 시설 €14,092",
+          "amount": "77284204",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "1/22위 · 최하위는 균등 배분금만",
+          "amount": "275124238",
+          "currency": "EUR"
+        },
+        {
+          "year": 2029,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "2030년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "EUR"
+        }
+      ],
+      "arrivalFacts": [],
+      "completedFreeBidPlayers": [
+        "ESP:0:0:7:p:13:113",
+        "ESP:0:0:3:p:14:113",
+        "ESP:0:0:11:p:10:113"
+      ]
+    }
+  ],
+  "ended": null
+}

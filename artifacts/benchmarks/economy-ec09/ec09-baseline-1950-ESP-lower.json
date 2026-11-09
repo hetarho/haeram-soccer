@@ -1,0 +1,5193 @@
+{
+  "source": {
+    "revision": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+    "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scriptSha256": "9806e2c5a91c7345477bbf57a46398827530a7f1ca3df617802dde2c4a9d1957",
+  "generatedBy": {
+    "seed": "economy-ec09-0",
+    "year": 1950,
+    "source": "60c5d4baa09a523cabc99b1f425f652d5b2f11e0",
+    "seconds": 15.318118763000001
+  },
+  "worldSha256": "4502fa644a60fd244629da07a8032ede72b5f3712499d3993610519c5013b69d",
+  "worldFile": "/tmp/ec09-worlds/economy-ec09-0-1950.json",
+  "seed": "economy-ec09-0",
+  "year": 1950,
+  "country": "ESP",
+  "tier": "oil",
+  "club": "ESP:1:0:0",
+  "scenarios": "historical",
+  "purseApart": true,
+  "ownerMoneyMoved": false,
+  "construction": false,
+  "seasons": [
+    {
+      "year": 1950,
+      "division": 1,
+      "rank": 18,
+      "openingCurrency": "ESP",
+      "currency": "ESP",
+      "openingCash": "621906899",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "621906899",
+      "closingCash": "614020680",
+      "income": "611041908",
+      "expense": "618928127",
+      "turnover": "602077836",
+      "purchases": "207716092",
+      "sales": "8964072",
+      "openingAnnualWageBill": "105260468",
+      "closingAnnualWageBill": "157224399",
+      "paidWagesRoundSamples": "147555527",
+      "paidArrivals": 2,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 0,
+      "paidMeanFee": "103858046",
+      "paidMedianFee": "103858046",
+      "ledgerEvents": [
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "takeover",
+          "title": "구단 인수",
+          "detail": "Leon Sierra A1 인수 · 스페인 2부",
+          "amount": "1391027259",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "단장 Rubén Flores 선임",
+          "detail": "능력 72 · 속전속결 · 연봉 ₧28,541 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "713526",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수석코치 Ermanno Parisi 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 ₧18,347 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "458696",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "공격 코치 Philipp Jakob 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 ₧18,347 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "458696",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수비 코치 Gino Bertolini 선임",
+          "detail": "능력 58 · 특기 없음 · 연봉 ₧19,027 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "475684",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Martin Newton 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 ₧18,347 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "458696",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Timothy Parsons 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧16,988 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "424718",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Noël Jean 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 ₧18,347 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "458696",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 0,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Gustavo Puig 선임",
+          "detail": "능력 56 · 발굴가 · 연봉 ₧17,668 · 계약 1951/52 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "441707",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "9274233",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10891명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:0:6",
+          "amount": "31996325",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10891명 · 1950:ESP:1:0:0:6",
+          "amount": "1258615",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "27181960",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧21,139 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3011892",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "217667415",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧21,139 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3011892",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9617명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:2:8",
+          "amount": "28253481",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9617명 · 1950:ESP:1:0:2:8",
+          "amount": "1143183",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧21,139 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3011893",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 3,
+          "kind": "transfer-in",
+          "title": "Felipe Soto 영입",
+          "detail": "CM · 20세 · 연봉 ₧204K · 계약 1953년 · 협상 타결",
+          "amount": "103646656",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 5,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9631명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:4:10",
+          "amount": "28294611",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 5,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9631명 · 1950:ESP:1:0:4:10",
+          "amount": "1144451",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8740명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:5:10",
+          "amount": "25676970",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8740명 · 1950:ESP:1:0:5:10",
+          "amount": "1063721",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 7936명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:7:8",
+          "amount": "23314924",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 7936명 · 1950:ESP:1:0:7:8",
+          "amount": "990873",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 7445명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:9:6",
+          "amount": "21872430",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 7445명 · 1950:ESP:1:0:9:6",
+          "amount": "946385",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1950:cup:ESP:k0:9 · 홈·원정 동일 기준",
+          "amount": "115523",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "스페인 컵 1라운드 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "40773",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9727명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:11:4",
+          "amount": "28576646",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9727명 · 1950:ESP:1:0:11:4",
+          "amount": "1153149",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1950년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11030명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:13:2",
+          "amount": "32404689",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11030명 · 1950:ESP:1:0:13:2",
+          "amount": "1271210",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10070명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:15:0",
+          "amount": "29584335",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10070명 · 1950:ESP:1:0:15:0",
+          "amount": "1184227",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8501명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:16:1",
+          "amount": "24974819",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8501명 · 1950:ESP:1:0:16:1",
+          "amount": "1042066",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455973",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9058명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:18:3",
+          "amount": "26611212",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9058명 · 1950:ESP:1:0:18:3",
+          "amount": "1092534",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455971",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8436명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:20:5",
+          "amount": "24783858",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8436명 · 1950:ESP:1:0:20:5",
+          "amount": "1036176",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧25,580 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3455972",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Alfredo Expósito 영입",
+          "detail": "ST · 22세 · 연봉 ₧226K · 계약 1953년 · 협상 타결",
+          "amount": "104069436",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧30,496 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3947596",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧30,496 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3947593",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8106명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:22:7",
+          "amount": "23814361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8106명 · 1950:ESP:1:0:22:7",
+          "amount": "1006276",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧30,496 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3947594",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧30,496 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3947595",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "transfer-out",
+          "title": "Ernesto Castro의 새로운 도전",
+          "detail": "Brest Atelier A4 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "8964072",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10597명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:24:9",
+          "amount": "31132592",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10597명 · 1950:ESP:1:0:24:9",
+          "amount": "1231977",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803248",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11627명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:27:9",
+          "amount": "34158596",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11627명 · 1950:ESP:1:0:27:9",
+          "amount": "1325302",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8583명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:29:7",
+          "amount": "25215725",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8583명 · 1950:ESP:1:0:29:7",
+          "amount": "1049495",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8876명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:31:5",
+          "amount": "26076520",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8876명 · 1950:ESP:1:0:31:5",
+          "amount": "1076043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803247",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8197명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:33:3",
+          "amount": "24081707",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8197명 · 1950:ESP:1:0:33:3",
+          "amount": "1014521",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8202명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:35:1",
+          "amount": "24096397",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8202명 · 1950:ESP:1:0:35:1",
+          "amount": "1014974",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803247",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9445명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:38:2",
+          "amount": "27748167",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9445명 · 1950:ESP:1:0:38:2",
+          "amount": "1127598",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 7231명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1950:ESP:1:0:40:4",
+          "amount": "21243727",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 7231명 · 1950:ESP:1:0:40:4",
+          "amount": "926995",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧29,053 · 감독 ₧1,743 · 시설 ₧3,853",
+          "amount": "3803245",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "18/22위 · 최하위는 균등 배분금만",
+          "amount": "1553255",
+          "currency": "ESP"
+        },
+        {
+          "year": 1950,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:p:14:109",
+          "person": "ESP:0:0:11:p:14:109",
+          "name": "Felipe Soto",
+          "club": "ESP:0:0:11",
+          "fee": "103646656",
+          "currency": "ESP",
+          "year": 1950,
+          "day": 25
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:p:16:109",
+          "person": "ESP:0:0:11:p:16:109",
+          "name": "Alfredo Expósito",
+          "club": "ESP:0:0:11",
+          "fee": "104069436",
+          "currency": "ESP",
+          "year": 1950,
+          "day": 157
+        }
+      ],
+      "completedFreeBidPlayers": []
+    },
+    {
+      "year": 1951,
+      "division": 1,
+      "rank": 1,
+      "openingCurrency": "ESP",
+      "currency": "ESP",
+      "openingCash": "614020680",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "0",
+      "openingBoundaryCash": "614020680",
+      "closingCash": "720954768",
+      "income": "825283237",
+      "expense": "718349149",
+      "turnover": "825283237",
+      "purchases": "238155071",
+      "sales": "0",
+      "openingAnnualWageBill": "179978170",
+      "closingAnnualWageBill": "233803716",
+      "paidWagesRoundSamples": "218747474",
+      "paidArrivals": 2,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 0,
+      "paidMeanFee": "119077535",
+      "paidMedianFee": "119077535",
+      "ledgerEvents": [
+        {
+          "year": 1951,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Mariano Romero 영입",
+          "detail": "ST · 23세 · 연봉 ₧259K · 계약 1954년 · 협상 타결",
+          "amount": "117059279",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "9274233",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9883명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:0:6",
+          "amount": "31656615",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9883명 · 1951:ESP:1:0:0:6",
+          "amount": "1273400",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "29653040",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "210727243",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12678명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:2:8",
+          "amount": "40609387",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12678명 · 1951:ESP:1:0:2:8",
+          "amount": "1549668",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 5,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13968명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:4:10",
+          "amount": "44741435",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 5,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13968명 · 1951:ESP:1:0:4:10",
+          "amount": "1677176",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12545명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:5:10",
+          "amount": "40183370",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12545명 · 1951:ESP:1:0:5:10",
+          "amount": "1536522",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11291명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:7:8",
+          "amount": "36166634",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11291명 · 1951:ESP:1:0:7:8",
+          "amount": "1412572",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897219",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10643명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:9:6",
+          "amount": "34091001",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10643명 · 1951:ESP:1:0:9:6",
+          "amount": "1348521",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1951:cup:ESP:k0:2 · 홈·원정 동일 기준",
+          "amount": "126025",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 10,
+          "kind": "cup-prize",
+          "title": "스페인 컵 1라운드 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "44480",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11810명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:11:4",
+          "amount": "37829063",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11810명 · 1951:ESP:1:0:11:4",
+          "amount": "1463872",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1951년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12825명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:13:2",
+          "amount": "41080248",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12825명 · 1951:ESP:1:0:13:2",
+          "amount": "1564198",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10031명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:15:0",
+          "amount": "32130680",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10031명 · 1951:ESP:1:0:15:0",
+          "amount": "1288029",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897218",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9845명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:16:1",
+          "amount": "31534896",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9845명 · 1951:ESP:1:0:16:1",
+          "amount": "1269644",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897219",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10067명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:18:3",
+          "amount": "32245993",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10067명 · 1951:ESP:1:0:18:3",
+          "amount": "1291588",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897219",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,642 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4897217",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12932명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:20:5",
+          "amount": "41422984",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12932명 · 1951:ESP:1:0:20:5",
+          "amount": "1574774",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,881 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4921144",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧39,881 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "4921145",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Octavio Vera 영입",
+          "detail": "ST · 23세 · 연봉 ₧267K · 계약 1954년 · 협상 타결",
+          "amount": "121095792",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12286명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:22:7",
+          "amount": "39353757",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12286명 · 1951:ESP:1:0:22:7",
+          "amount": "1510921",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11492명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:24:9",
+          "amount": "36810465",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11492명 · 1951:ESP:1:0:24:9",
+          "amount": "1432440",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503045",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12312명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:27:9",
+          "amount": "39437038",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12312명 · 1951:ESP:1:0:27:9",
+          "amount": "1513491",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11913명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:29:7",
+          "amount": "38158986",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11913명 · 1951:ESP:1:0:29:7",
+          "amount": "1474053",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10711명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:31:5",
+          "amount": "34308814",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10711명 · 1951:ESP:1:0:31:5",
+          "amount": "1355243",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503044",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14281명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:33:3",
+          "amount": "45744018",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14281명 · 1951:ESP:1:0:33:3",
+          "amount": "1708114",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12416명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:35:1",
+          "amount": "39770165",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12416명 · 1951:ESP:1:0:35:1",
+          "amount": "1523771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503045",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10482명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:38:2",
+          "amount": "33575295",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10482명 · 1951:ESP:1:0:38:2",
+          "amount": "1332608",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 8254명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1951:ESP:1:0:40:4",
+          "amount": "26438703",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 8254명 · 1951:ESP:1:0:40:4",
+          "amount": "1112384",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503044",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503043",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧45,700 · 감독 ₧1,743 · 시설 ₧4,203",
+          "amount": "5503042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "1/22위 · 최하위는 균등 배분금만",
+          "amount": "8895912",
+          "currency": "ESP"
+        },
+        {
+          "year": 1951,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 6월 19일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:vacancy:16:1951",
+          "person": "ESP:0:0:11:vacancy:16:1951",
+          "name": "Mariano Romero",
+          "club": "ESP:0:0:11",
+          "fee": "117059279",
+          "currency": "ESP",
+          "year": 1951,
+          "day": 2
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:8:p:16:109",
+          "person": "ESP:0:0:8:p:16:109",
+          "name": "Octavio Vera",
+          "club": "ESP:0:0:8",
+          "fee": "121095792",
+          "currency": "ESP",
+          "year": 1951,
+          "day": 164
+        }
+      ],
+      "completedFreeBidPlayers": []
+    },
+    {
+      "year": 1952,
+      "division": 0,
+      "rank": 20,
+      "openingCurrency": "ESP",
+      "currency": "ESP",
+      "openingCash": "716721952",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "4232816",
+      "openingBoundaryCash": "720954768",
+      "closingCash": "1416402806",
+      "income": "2099837663",
+      "expense": "1404389625",
+      "turnover": "1579762268",
+      "purchases": "335572045",
+      "sales": "520075395",
+      "openingAnnualWageBill": "533382256",
+      "closingAnnualWageBill": "787418288",
+      "paidWagesRoundSamples": "647672702",
+      "paidArrivals": 3,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 3,
+      "paidMeanFee": "111857348",
+      "paidMedianFee": "99764310",
+      "ledgerEvents": [
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "단장 Hugo Vallejo 선임",
+          "detail": "능력 62 · 협상가 · 연봉 ₧23,722 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "593061",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석코치 Ottavio Cristiani 선임",
+          "detail": "능력 56 · 특기 없음 · 연봉 ₧21,041 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "526032",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "공격 코치 Jules Deprez 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧20,232 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "505800",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수비 코치 Brian Newton 선임",
+          "detail": "능력 58 · 특기 없음 · 연봉 ₧22,659 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "566497",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Dylan Dupuy 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧20,232 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "505800",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Bruno Ackermann 선임",
+          "detail": "능력 58 · 특기 없음 · 연봉 ₧22,659 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "566497",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 Detlef Müller 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧20,232 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "505800",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석 스카우트 Daniel Nieto 선임",
+          "detail": "능력 55 · 발굴가 · 연봉 ₧18,533 · 계약 1953/54 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "463329",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Abel Campos 영입",
+          "detail": "GK · 26세 · 연봉 ₧910K · 계약 1955년 · 단장 영입",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 38/38",
+          "amount": "9274233",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "566496667",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧110K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "12054152",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "1부 최저 수준 · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "356083620",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13092명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:1:5",
+          "amount": "50978720",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13092명 · 1952:ESP:0:0:1:5",
+          "amount": "1736393",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧110K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "12054153",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧110K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "12054151",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13061명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:3:3",
+          "amount": "50858009",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13061명 · 1952:ESP:0:0:3:3",
+          "amount": "1733048",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧110K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "12054152",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 4,
+          "kind": "transfer-out",
+          "title": "Marcos Santiago의 새로운 도전",
+          "detail": "POL Foundry 8 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "15203530",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823362",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13975명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:5:1",
+          "amount": "54417019",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13975명 · 1952:ESP:0:0:5:1",
+          "amount": "1831673",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823360",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823360",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13487명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:8:2",
+          "amount": "52516804",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13487명 · 1952:ESP:0:0:8:2",
+          "amount": "1779015",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823360",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823362",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13154명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:10:4",
+          "amount": "51220140",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13154명 · 1952:ESP:0:0:10:4",
+          "amount": "1743083",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1952년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14613명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:12:6",
+          "amount": "56901316",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14613명 · 1952:ESP:0:0:12:6",
+          "amount": "1900515",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823359",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1952:cup:ESP:k1:4 · 홈·원정 동일 기준",
+          "amount": "165903",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "스페인 컵 32강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "48557",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14251명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:14:8",
+          "amount": "55491730",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14251명 · 1952:ESP:0:0:14:8",
+          "amount": "1861454",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823362",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823360",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 21,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12680명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:17:8",
+          "amount": "49374440",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 21,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12680명 · 1952:ESP:0:0:17:8",
+          "amount": "1691937",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823360",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧108K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "11823361",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Joaquín Nieto 영입",
+          "detail": "LM · 22세 · 연봉 ₧741K · 계약 1955년 · 협상 타결",
+          "amount": "95759486",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Amador Ríos의 새로운 도전",
+          "detail": "FIN Harbour 3 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "58317595",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Mariano Romero의 새로운 도전",
+          "detail": "Coimbra Mar A1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "133028005",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Felipe Soto의 새로운 도전",
+          "detail": "Braga Vale B5 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "150505632",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Martín Ramírez 영입",
+          "detail": "GK · 26세 · 연봉 ₧883K · 계약 1955년 · 단장 영입",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧131K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "14147729",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Paco Peralta 영입",
+          "detail": "ST · 18세 · 연봉 ₧618K · 계약 1955년 · 협상 타결",
+          "amount": "99764310",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "transfer-out",
+          "title": "Alfredo Expósito의 새로운 도전",
+          "detail": "Lubeck Werk C2 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "163020633",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 23,
+          "kind": "transfer-in",
+          "title": "Juan Domínguez 영입",
+          "detail": "LM · 22세 · 연봉 ₧495K · 계약 1955년 · 단장 영입",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14258명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:19:6",
+          "amount": "55518988",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14258명 · 1952:ESP:0:0:19:6",
+          "amount": "1862209",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧149K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "15938812",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧149K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "15938812",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14140명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:21:4",
+          "amount": "55059509",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14140명 · 1952:ESP:0:0:21:4",
+          "amount": "1849477",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧149K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "15938812",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "transfer-in",
+          "title": "Isidro Escobar 영입",
+          "detail": "LM · 22세 · 연봉 ₧741K · 계약 1955년 · 협상 타결",
+          "amount": "140048249",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13185명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:23:2",
+          "amount": "51340851",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13185명 · 1952:ESP:0:0:23:2",
+          "amount": "1746428",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 31,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13393명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:25:0",
+          "amount": "52150779",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 31,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13393명 · 1952:ESP:0:0:25:0",
+          "amount": "1768872",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13417명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:26:1",
+          "amount": "52244232",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13417명 · 1952:ESP:0:0:26:1",
+          "amount": "1771462",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13043명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:28:3",
+          "amount": "50787919",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13043명 · 1952:ESP:0:0:28:3",
+          "amount": "1731106",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576676",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13996명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:30:5",
+          "amount": "54498790",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13996명 · 1952:ESP:0:0:30:5",
+          "amount": "1833939",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14319명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:32:7",
+          "amount": "55756514",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14319명 · 1952:ESP:0:0:32:7",
+          "amount": "1868792",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13625명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:34:9",
+          "amount": "53054159",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13625명 · 1952:ESP:0:0:34:9",
+          "amount": "1793906",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 43,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12272명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:35:9",
+          "amount": "47785735",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 43,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12272명 · 1952:ESP:0:0:35:9",
+          "amount": "1647912",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 45,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13822명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1952:ESP:0:0:37:7",
+          "amount": "53821254",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 45,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13822명 · 1952:ESP:0:0:37:7",
+          "amount": "1815163",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576674",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧165K · 감독 ₧1,743 · 시설 ₧4,588",
+          "amount": "17576675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1952,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:8:p:14:109",
+          "person": "ESP:0:0:8:p:14:109",
+          "name": "Joaquín Nieto",
+          "club": "ESP:0:0:8",
+          "fee": "95759486",
+          "currency": "ESP",
+          "year": 1952,
+          "day": 156
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:8:p:10:109",
+          "person": "ESP:0:0:8:p:10:109",
+          "name": "Paco Peralta",
+          "club": "ESP:0:0:8",
+          "fee": "99764310",
+          "currency": "ESP",
+          "year": 1952,
+          "day": 162
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:8:vacancy:14:1952",
+          "person": "ESP:0:0:8:vacancy:14:1952",
+          "name": "Isidro Escobar",
+          "club": "ESP:0:0:8",
+          "fee": "140048249",
+          "currency": "ESP",
+          "year": 1952,
+          "day": 184
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ESP:0:0:16:p:0:108",
+        "ESP:1:0:7:p:0:108",
+        "ESP:1:0:16:p:14:109"
+      ]
+    },
+    {
+      "year": 1953,
+      "division": 1,
+      "rank": 1,
+      "openingCurrency": "ESP",
+      "currency": "ESP",
+      "openingCash": "1409675272",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "6727534",
+      "openingBoundaryCash": "1416402806",
+      "closingCash": "1908192947",
+      "income": "1360671245",
+      "expense": "868881104",
+      "turnover": "1360671245",
+      "purchases": "99170507",
+      "sales": "0",
+      "openingAnnualWageBill": "659142099",
+      "closingAnnualWageBill": "685489289",
+      "paidWagesRoundSamples": "672229313",
+      "paidArrivals": 1,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 1,
+      "paidMeanFee": "99170507",
+      "paidMedianFee": "99170507",
+      "ledgerEvents": [
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "manager-hire",
+          "title": "Genaro Lozano 감독 선임",
+          "detail": "소방수 · 전방 압박 · 계약 1953/54 시즌 끝까지 · 단장 선임",
+          "amount": "6727534",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 0,
+          "kind": "transfer-in",
+          "title": "Rodrigo Roca 영입",
+          "detail": "DM · 22세 · 연봉 ₧295K · 계약 1956년 · 단장 영입",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 42/42",
+          "amount": "13596327",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 9369명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:0:6",
+          "amount": "33910083",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 9369명 · 1953:ESP:1:0:0:6",
+          "amount": "1375419",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "2부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "33359675",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "parachute",
+          "title": "강등 보전금",
+          "detail": "1부 → 2부 강등 · 줄어든 분배금의 절반 · 46/46라운드 분할",
+          "amount": "275217315",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "2부 최저 수준 · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "27799729",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 3,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11530명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:2:8",
+          "amount": "41731590",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 3,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11530명 · 1953:ESP:1:0:2:8",
+          "amount": "1615720",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 5,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14099명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:4:10",
+          "amount": "51029808",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 5,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14099명 · 1953:ESP:1:0:4:10",
+          "amount": "1901390",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 6,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13046명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:5:10",
+          "amount": "47218588",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 6,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13046명 · 1953:ESP:1:0:5:10",
+          "amount": "1784298",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12064명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:7:8",
+          "amount": "43664345",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12064명 · 1953:ESP:1:0:7:8",
+          "amount": "1675100",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802075",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11475명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:9:6",
+          "amount": "41532523",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11475명 · 1953:ESP:1:0:9:6",
+          "amount": "1609604",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13167명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:11:4",
+          "amount": "47656534",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13167명 · 1953:ESP:1:0:11:4",
+          "amount": "1797753",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1953년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13698명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:13:2",
+          "amount": "49578431",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13698명 · 1953:ESP:1:0:13:2",
+          "amount": "1856799",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1953:cup:ESP:k1:12 · 홈·원정 동일 기준",
+          "amount": "141779",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "스페인 컵 32강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "50040",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13585명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:15:0",
+          "amount": "49169440",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13585명 · 1953:ESP:1:0:15:0",
+          "amount": "1844234",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 18,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11408명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:16:1",
+          "amount": "41290024",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 18,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11408명 · 1953:ESP:1:0:16:1",
+          "amount": "1602154",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 20,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13227명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:18:3",
+          "amount": "47873698",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 20,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13227명 · 1953:ESP:1:0:18:3",
+          "amount": "1804425",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802074",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14261명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:20:5",
+          "amount": "51616149",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14261명 · 1953:ESP:1:0:20:5",
+          "amount": "1919404",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧137K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "14802073",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "transfer-in",
+          "title": "Eduardo Santana 영입",
+          "detail": "RW · 19세 · 연봉 ₧260K · 계약 1956년 · 협상 타결",
+          "amount": "99170507",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1953:cup:ESP:k2:6 · 홈·원정 동일 기준",
+          "amount": "141779",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12010명 · 티켓과 구단 상품 · 1953:cup:ESP:k2:6",
+          "amount": "39688994",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12010명 · 1953:cup:ESP:k2:6",
+          "amount": "1669096",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 22,
+          "kind": "cup-prize",
+          "title": "스페인 컵 16강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "100079",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367641",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367642",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 25,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12823명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:22:7",
+          "amount": "46411463",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 25,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12823명 · 1953:ESP:1:0:22:7",
+          "amount": "1759500",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367639",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367641",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13191명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:24:9",
+          "amount": "47743400",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13191명 · 1953:ESP:1:0:24:9",
+          "amount": "1800422",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367639",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 27,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14116명 · 티켓과 구단 상품 · 1953:cup:ESP:k3:1",
+          "amount": "46648612",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 27,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14116명 · 1953:cup:ESP:k3:1",
+          "amount": "1903281",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367641",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367639",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 30,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10523명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:27:9",
+          "amount": "38086862",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 30,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10523명 · 1953:ESP:1:0:27:9",
+          "amount": "1503743",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367641",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367641",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 10353명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:29:7",
+          "amount": "37471565",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 10353명 · 1953:ESP:1:0:29:7",
+          "amount": "1484839",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367639",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367641",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12806명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:31:5",
+          "amount": "46349934",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12806명 · 1953:ESP:1:0:31:5",
+          "amount": "1757610",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,357 · 시설 ₧4,728",
+          "amount": "15367639",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 34,
+          "kind": "manager-renew",
+          "title": "감독 재계약",
+          "detail": "Genaro Lozano 재계약 · 1954/55 시즌 끝까지",
+          "amount": "1117549",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374840",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374837",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13100명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:33:3",
+          "amount": "47414035",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13100명 · 1953:ESP:1:0:33:3",
+          "amount": "1790303",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374840",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374837",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 11464명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:35:1",
+          "amount": "41492710",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 11464명 · 1953:ESP:1:0:35:1",
+          "amount": "1608381",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374840",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374839",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374838",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 42,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12633명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:38:2",
+          "amount": "45723779",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 42,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12633명 · 1953:ESP:1:0:38:2",
+          "amount": "1738373",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374839",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374838",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 44,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12365명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.10 · 1953:ESP:1:0:40:4",
+          "amount": "44753782",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 44,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12365명 · 1953:ESP:1:0:40:4",
+          "amount": "1708571",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374839",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374838",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧142K · 감독 ₧2,429 · 시설 ₧4,728",
+          "amount": "15374839",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "1/22위 · 최하위는 균등 배분금만",
+          "amount": "10007902",
+          "currency": "ESP"
+        },
+        {
+          "year": 1953,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:3:p:10:109",
+          "person": "ESP:0:0:3:p:10:109",
+          "name": "Eduardo Santana",
+          "club": "ESP:0:0:3",
+          "fee": "99170507",
+          "currency": "ESP",
+          "year": 1953,
+          "day": 155
+        }
+      ],
+      "completedFreeBidPlayers": [
+        "ESP:0:0:11:p:13:109"
+      ]
+    },
+    {
+      "year": 1954,
+      "division": 0,
+      "rank": 4,
+      "openingCurrency": "ESP",
+      "currency": "ESP",
+      "openingCash": "1904306320",
+      "openingLedgerIncome": "0",
+      "openingLedgerExpense": "3886627",
+      "openingBoundaryCash": "1908192947",
+      "closingCash": "2832865421",
+      "income": "2731223512",
+      "expense": "1806551038",
+      "turnover": "1974354116",
+      "purchases": "383463685",
+      "sales": "756869396",
+      "openingAnnualWageBill": "883784528",
+      "closingAnnualWageBill": "904982502",
+      "paidWagesRoundSamples": "883331150",
+      "paidArrivals": 3,
+      "freeTopUpArrivals": 0,
+      "freeArrivals": 0,
+      "paidMeanFee": "127821228",
+      "paidMedianFee": "123044618",
+      "ledgerEvents": [
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "단장 Hugo Vallejo 재계약",
+          "detail": "능력 62 · 연봉 ₧27,214 · 계약 1955/56 시즌 끝까지 · 스태프 위임",
+          "amount": "272149",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수석코치 Tom Holmes 선임",
+          "detail": "능력 56 · 특기 없음 · 연봉 ₧22,112 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "552803",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "공격 코치 Hugo Vanderstraeten 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧21,261 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "531541",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "수비 코치 Kyle McDonald 선임",
+          "detail": "능력 62 · 특기 없음 · 연봉 ₧27,214 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "680372",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "골키퍼 코치 Domenico Sorrentino 선임",
+          "detail": "능력 57 · 특기 없음 · 연봉 ₧22,962 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "574064",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "피지컬 코치 Tim Bauwens 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧21,261 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "531541",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-hire",
+          "title": "유스 디렉터 John Murray 선임",
+          "detail": "능력 55 · 특기 없음 · 연봉 ₧21,261 · 계약 1955/56 시즌 끝까지 · 스태프 위임 선임",
+          "amount": "531541",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "staff-renew",
+          "title": "수석 스카우트 Daniel Nieto 재계약",
+          "detail": "능력 55 · 연봉 ₧21,261 · 계약 1955/56 시즌 끝까지 · 스태프 위임",
+          "amount": "212616",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "sponsor:local",
+          "title": "지역 후원",
+          "detail": "Leon Cooperative · 리그 경기 38/38",
+          "amount": "13596327",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "league-share",
+          "title": "리그 분배금",
+          "detail": "1부 균등 배분·중계권 · 46/46라운드 분할",
+          "amount": "595325975",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694946",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 1,
+          "kind": "operating-expenses",
+          "title": "운영 경비",
+          "detail": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 46/46라운드 분할",
+          "amount": "476234936",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 2,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14669명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:1:4",
+          "amount": "60235995",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 2,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14669명 · 1954:ESP:0:0:1:4",
+          "amount": "2003584",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 2,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694946",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 3,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 4,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12378명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:3:2",
+          "amount": "50828356",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 4,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12378명 · 1954:ESP:0:0:3:2",
+          "amount": "1743795",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 4,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694947",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 5,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 6,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694946",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 7,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14601명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:5:0",
+          "amount": "59956764",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 7,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14601명 · 1954:ESP:0:0:5:0",
+          "amount": "1995873",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 7,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 8,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14572명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:6:1",
+          "amount": "59837680",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 8,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14572명 · 1954:ESP:0:0:6:1",
+          "amount": "1992584",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 8,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694947",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 9,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13505명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:8:3",
+          "amount": "55456208",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13505명 · 1954:ESP:0:0:8:3",
+          "amount": "1871591",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 10,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694947",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 11,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 12,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 13,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12385명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:10:5",
+          "amount": "50857100",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 13,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12385명 · 1954:ESP:0:0:10:5",
+          "amount": "1744589",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 13,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694947",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 13,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1954년 11월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 14,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694946",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13848명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:12:7",
+          "amount": "56864685",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13848명 · 1954:ESP:0:0:12:7",
+          "amount": "1910486",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "match-bonus",
+          "title": "승리 성과 수입",
+          "detail": "1954:cup:ESP:k1:7 · 홈·원정 동일 기준",
+          "amount": "174345",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 15,
+          "kind": "cup-prize",
+          "title": "스페인 컵 32강 통과",
+          "detail": "스페인 컵 상금",
+          "amount": "51028",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 16,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694946",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 17,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12233명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:14:9",
+          "amount": "50232936",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 17,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12233명 · 1954:ESP:0:0:14:9",
+          "amount": "1727352",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 17,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694947",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 18,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 19,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14864명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:15:9",
+          "amount": "61036733",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 19,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14864명 · 1954:ESP:0:0:15:9",
+          "amount": "2025696",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 19,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694945",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 20,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694946",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 21,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14350명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:17:7",
+          "amount": "58926071",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 21,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14350명 · 1954:ESP:0:0:17:7",
+          "amount": "1967411",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 21,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧185K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19694947",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 21,
+          "kind": "transfer-out",
+          "title": "Isidro Escobar의 새로운 도전",
+          "detail": "ROU Riverside 6 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "181762852",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧188K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "19958337",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Martín Ramírez의 새로운 도전",
+          "detail": "CRO Riverside 2 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "141150296",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Paco Peralta의 새로운 도전",
+          "detail": "Modena Aurora A4 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "161911246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Eduardo Santana의 새로운 도전",
+          "detail": "Parma Aurora A6 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "156309842",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 22,
+          "kind": "transfer-out",
+          "title": "Juan Domínguez의 새로운 도전",
+          "detail": "Sevilla Acero C1 이적 · 개인 경력 기록은 보존됩니다.",
+          "amount": "115735160",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 23,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧148K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "15939042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 24,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13617명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:19:5",
+          "amount": "55916119",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 24,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13617명 · 1954:ESP:0:0:19:5",
+          "amount": "1884292",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 24,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧148K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "15939042",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 24,
+          "kind": "transfer-in",
+          "title": "Pascual Gil 영입",
+          "detail": "LW · 18세 · 연봉 ₧628K · 계약 1957년 · 협상 타결",
+          "amount": "123044618",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 25,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧161K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "17305569",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 25,
+          "kind": "transfer-in",
+          "title": "Vicente Valverde 영입",
+          "detail": "ST · 20세 · 연봉 ₧699K · 계약 1957년 · 협상 타결",
+          "amount": "119955381",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 25,
+          "kind": "transfer-in",
+          "title": "Oriol Costa 영입",
+          "detail": "CM · 18세 · 연봉 ₧609K · 계약 1957년 · 협상 타결",
+          "amount": "140463686",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12061명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:21:3",
+          "amount": "49526644",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12061명 · 1954:ESP:0:0:21:3",
+          "amount": "1707848",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152206",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 26,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1955년 2월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 27,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152205",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 28,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13637명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:23:1",
+          "amount": "55998246",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 28,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13637명 · 1954:ESP:0:0:23:1",
+          "amount": "1886560",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 28,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152205",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 29,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152204",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 30,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152206",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 31,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152205",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 32,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14226명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:26:2",
+          "amount": "58416884",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 32,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14226명 · 1954:ESP:0:0:26:2",
+          "amount": "1953350",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 32,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152205",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 33,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152205",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 34,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 13877명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:28:4",
+          "amount": "56983769",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 34,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 13877명 · 1954:ESP:0:0:28:4",
+          "amount": "1913775",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 34,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,429 · 시설 ₧4,822",
+          "amount": "20152206",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 34,
+          "kind": "manager-renew",
+          "title": "감독 재계약",
+          "detail": "Genaro Lozano 재계약 · 1955/56 시즌 끝까지",
+          "amount": "1133954",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 35,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155769",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 36,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155772",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 37,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14385명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:30:6",
+          "amount": "59069793",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 37,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14385명 · 1954:ESP:0:0:30:6",
+          "amount": "1971379",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 37,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155772",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 38,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 14445명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:32:8",
+          "amount": "59316174",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 14445명 · 1954:ESP:0:0:32:8",
+          "amount": "1978183",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155772",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 39,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1955년 5월 1일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 40,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 41,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 42,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 43,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12958명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:35:8",
+          "amount": "53210037",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 43,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12958명 · 1954:ESP:0:0:35:8",
+          "amount": "1809564",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 43,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155772",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 44,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 45,
+          "kind": "gate",
+          "title": "홈 경기의 수입",
+          "detail": "관중 12600명 · 티켓과 구단 상품 · 시즌 46경기 기준 ×1.21 · 1954:ESP:0:0:37:6",
+          "amount": "51739965",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 45,
+          "kind": "match-cost",
+          "title": "홈 경기 개최비",
+          "detail": "관중 12600명 · 1954:ESP:0:0:37:6",
+          "amount": "1768969",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 45,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155771",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "operating-cost",
+          "title": "급여와 시설 유지비",
+          "detail": "선수 ₧190K · 감독 ₧2,465 · 시설 ₧4,822",
+          "amount": "20155772",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "league-merit",
+          "title": "리그 순위 배분금",
+          "detail": "4/20위 · 최하위는 균등 배분금만",
+          "amount": "300796282",
+          "currency": "ESP"
+        },
+        {
+          "year": 1954,
+          "round": 46,
+          "kind": "owner-living",
+          "title": "구단주 생활비",
+          "detail": "1955년 6월 20일 정산 · 시작 자산의 0%, 물가 반영",
+          "amount": "0",
+          "currency": "ESP"
+        }
+      ],
+      "arrivalFacts": [
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:3:p:8:109",
+          "person": "ESP:0:0:3:p:8:109",
+          "name": "Pascual Gil",
+          "club": "ESP:0:0:3",
+          "fee": "123044618",
+          "currency": "ESP",
+          "year": 1954,
+          "day": 172
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:p:10:109",
+          "person": "ESP:0:0:11:p:10:109",
+          "name": "Vicente Valverde",
+          "club": "ESP:0:0:11",
+          "fee": "119955381",
+          "currency": "ESP",
+          "year": 1954,
+          "day": 177
+        },
+        {
+          "direction": "in",
+          "loan": false,
+          "player": "ESP:0:0:11:p:8:109",
+          "person": "ESP:0:0:11:p:8:109",
+          "name": "Oriol Costa",
+          "club": "ESP:0:0:11",
+          "fee": "140463686",
+          "currency": "ESP",
+          "year": 1954,
+          "day": 180
+        }
+      ],
+      "completedFreeBidPlayers": []
+    }
+  ],
+  "ended": null
+}
