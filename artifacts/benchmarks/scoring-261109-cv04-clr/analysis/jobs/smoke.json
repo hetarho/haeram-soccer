@@ -1,0 +1,28 @@
+[
+ {
+  "name": "chased-c50-0-4",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c50.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-clr/chased/chased-c50-0-4.json"
+  ]
+ },
+ {
+  "name": "chased-c25-0-4",
+  "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c25.json",
+  "script": "scripts/scoring-chased-shots.ts",
+  "args": [
+   "--start",
+   "0",
+   "--matches",
+   "4",
+   "--out",
+   "artifacts/benchmarks/scoring-261109-cv04-clr/chased/chased-c25-0-4.json"
+  ]
+ }
+]

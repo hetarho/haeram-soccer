@@ -864,9 +864,10 @@
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 
 ## next
-- implement-task T689: its cv04-clr window on `Pab` (MATCH r58's clear chance read against the keeper where he stands, then MATCH-29 by how often counter gets in behind press's line)
+- implement-task T689: finish the cv04-clr window's read and hand-off — `artifacts/benchmarks/scoring-261109-cv04-clr/README.md` (interim) names what is left; the engine experiment is its `analysis/cv04-clr-source.patch` (the same dirty tree is on `origin/wip/ev09` 16880b31); `c50`/`c25` met the box bar but failed goals, the goal-area share and entries, so the gate is unmet so far
 
 ## log
+- 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09
 - 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
 - 261109 T689 cv04-own (09:04–11:04Z window, measurements 09:08–10:33Z): MATCH r56's in-box shot weighing (`boxShot.read`/`against`, default off, uncommitted in the evidence patch) moves the shot mix but not the box's chance (xG a shot 0.056–0.061, bar 0.07), since 92% of the carried box shots with nobody between are MATCH-16 clear chances struck at xG 0.008 against a keeper already out; every candidate breaks MATCH-29 (−0.187 to −0.271); gate unmet, only the diagnostic and evidence committed, T689 stays todo ev09
 - 261109 T730 done: CI WebKit's 대기 0 was the career's first offer (1930.08.03–08.08) closing by its own deadline before an x10 owner stop landed, not diverging counts (both read `pendingDecisions` of one world); the journey observes the match eve, which stops on 08.07 at any pace with the offer waiting, and records every shown date; browser runs left to the release run ev09
@@ -886,4 +887,3 @@
 - 261109 T739 integrated
 - 261109 T740 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
-- 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
