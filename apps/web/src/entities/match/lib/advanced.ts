@@ -1,11 +1,10 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
+import { decimal, number, percent } from '../../../presentation/format';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../../../packages/contracts/src/detail';
 
 /** Display read models for the advanced counters (→MATCH-13); nothing here changes the world. */
-export const share = (part: number, whole: number) =>
-  whole > 0 ? `${Math.round((part / whole) * 100)}%` : '—';
-const fixed = (value: number, digits = 2) => value.toFixed(digits);
+export const share = (part: number, whole: number) => (whole > 0 ? percent(part, whole) : '—');
 
 export interface ComparisonRow {
   /** Glossary entry explaining the metric. */
@@ -22,19 +21,20 @@ export interface ComparisonRow {
 function row(
   term: string,
   label: string,
-  values: [number, number],
+  values: [number | undefined, number | undefined],
   text: (side: 0 | 1) => string,
   lowerIsBetter = false,
 ): ComparisonRow {
   const [h, a] = values;
-  const total = h + a;
+  const comparable = h !== undefined && a !== undefined;
+  const total = comparable ? h + a : 0;
   return {
     term,
     label,
     home: text(0),
     away: text(1),
-    lead: h === a ? undefined : h > a !== lowerIsBetter ? 0 : 1,
-    homeShare: total > 0 ? (lowerIsBetter ? a / total : h / total) : 0.5,
+    lead: !comparable || h === a ? undefined : h > a !== lowerIsBetter ? 0 : 1,
+    homeShare: comparable && total > 0 ? (lowerIsBetter ? a / total : h / total) : 0.5,
   };
 }
 
@@ -52,7 +52,7 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
   const metric = (index: number): [number, number] => [home[index], away[index]];
   const minutes = home[11] + away[11];
   const rows: ComparisonRow[] = [];
-  if (record.xg) rows.push(row('xg', 'xG', record.xg, (side) => fixed(record.xg![side])));
+  if (record.xg) rows.push(row('xg', 'xG', record.xg, (side) => decimal(record.xg![side], 2)));
   rows.push(
     row('possession', sourceMessage('copy.stories.6169842c01'), metric(11), (side) =>
       share(record.metrics[side][11], minutes),
@@ -64,7 +64,7 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
       'on-target',
       sourceMessage('copy.LeagueFullStats.0927c60a4f'),
       metric(4),
-      (side) => `${record.metrics[side][4]} (${record.metrics[side][5]})`,
+      (side) => `${number(record.metrics[side][4])} (${number(record.metrics[side][5])})`,
     ),
   );
   if (detail) {
@@ -73,19 +73,20 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         'big-chance',
         sourceMessage('copy.advanced.7b2b4dbb2a'),
         [detail[0][TD.bigChances], detail[1][TD.bigChances]],
-        (side) => `${detail[side][TD.bigChances]} (${detail[side][TD.bigChancesScored]})`,
+        (side) =>
+          `${number(detail[side][TD.bigChances])} (${number(detail[side][TD.bigChancesScored])})`,
       ),
       row(
         'box-shot',
         sourceMessage('copy.advanced.6b88079ae9'),
         [detail[0][TD.boxShots], detail[1][TD.boxShots]],
-        (side) => String(detail[side][TD.boxShots]),
+        (side) => number(detail[side][TD.boxShots]),
       ),
       row(
         'key-pass',
         sourceMessage('copy.MatchReport.532ac6f371'),
         [detail[0][TD.keyPasses], detail[1][TD.keyPasses]],
-        (side) => String(detail[side][TD.keyPasses]),
+        (side) => number(detail[side][TD.keyPasses]),
       ),
     );
   }
@@ -94,11 +95,11 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
       'pass-accuracy',
       sourceMessage('copy.summary.5101559c4e'),
       [
-        record.metrics[0][2] ? record.metrics[0][3] / record.metrics[0][2] : 0,
-        record.metrics[1][2] ? record.metrics[1][3] / record.metrics[1][2] : 0,
+        record.metrics[0][2] ? record.metrics[0][3] / record.metrics[0][2] : undefined,
+        record.metrics[1][2] ? record.metrics[1][3] / record.metrics[1][2] : undefined,
       ],
       (side) =>
-        `${share(record.metrics[side][3], record.metrics[side][2])} · ${record.metrics[side][3]}/${record.metrics[side][2]}`,
+        `${share(record.metrics[side][3], record.metrics[side][2])} · ${number(record.metrics[side][3])}/${number(record.metrics[side][2])}`,
     ),
   );
   if (detail) {
@@ -108,11 +109,11 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         'final-third',
         sourceMessage('copy.PlayerAdvancedStats.c4f75aa388'),
         [
-          ft(0) ? detail[0][TD.finalThirdCompleted] / ft(0) : 0,
-          ft(1) ? detail[1][TD.finalThirdCompleted] / ft(1) : 0,
+          ft(0) ? detail[0][TD.finalThirdCompleted] / ft(0) : undefined,
+          ft(1) ? detail[1][TD.finalThirdCompleted] / ft(1) : undefined,
         ],
         (side) =>
-          `${share(detail[side][TD.finalThirdCompleted], ft(side))} · ${detail[side][TD.finalThirdCompleted]}/${ft(side)}`,
+          `${share(detail[side][TD.finalThirdCompleted], ft(side))} · ${number(detail[side][TD.finalThirdCompleted])}/${number(ft(side))}`,
       ),
       row('field-tilt', sourceMessage('copy.SeasonReview.c7c1a585f2'), [ft(0), ft(1)], (side) =>
         share(ft(side), ft(0) + ft(1)),
@@ -121,22 +122,22 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         'progressive',
         sourceMessage('copy.PlayerAdvancedStats.af1b560101'),
         [detail[0][TD.progressivePasses], detail[1][TD.progressivePasses]],
-        (side) => String(detail[side][TD.progressivePasses]),
+        (side) => number(detail[side][TD.progressivePasses]),
       ),
       row(
         'take-on',
         sourceMessage('copy.advanced.a85fbde940'),
         [record.metrics[0][8], record.metrics[1][8]],
-        (side) => `${record.metrics[side][8]}/${detail[side][TD.takeOns]}`,
+        (side) => `${number(record.metrics[side][8])}/${number(detail[side][TD.takeOns])}`,
       ),
       row(
         'high-turnover',
         sourceMessage('copy.PlayerAdvancedStats.11212f27d2'),
         [detail[0][TD.highTurnovers], detail[1][TD.highTurnovers]],
-        (side) => String(detail[side][TD.highTurnovers]),
+        (side) => number(detail[side][TD.highTurnovers]),
       ),
     );
-    const press = [ppda(record, 0) ?? 0, ppda(record, 1) ?? 0] as [number, number];
+    const press: [number | undefined, number | undefined] = [ppda(record, 0), ppda(record, 1)];
     rows.push(
       row(
         'ppda',
@@ -144,7 +145,7 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         press,
         (side) => {
           const value = ppda(record, side);
-          return value === undefined ? '—' : fixed(value, 1);
+          return value === undefined ? '—' : decimal(value, 1);
         },
         true,
       ),
@@ -155,10 +156,10 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
       'tackles-interceptions',
       sourceMessage('copy.advanced.1a691bf32f'),
       [home[6] + home[7], away[6] + away[7]],
-      (side) => String(record.metrics[side][6] + record.metrics[side][7]),
+      (side) => number(record.metrics[side][6] + record.metrics[side][7]),
     ),
     row('saves', sourceMessage('copy.RecordsRoom.2a022bd612'), metric(9), (side) =>
-      String(record.metrics[side][9]),
+      number(record.metrics[side][9]),
     ),
   );
   if (detail && record.lineCounts) rows.push(...spatialRows(detail));
@@ -172,9 +173,14 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
 function spatialRows(detail: [number[], number[]]): ComparisonRow[] {
   const pair = (index: number): [number, number] => [detail[0][index], detail[1][index]];
   const count = (term: string, label: string, index: number, lowerIsBetter = false) =>
-    row(term, label, pair(index), (side) => String(detail[side][index]), lowerIsBetter);
+    row(term, label, pair(index), (side) => number(detail[side][index]), lowerIsBetter);
   const completed = (term: string, label: string, attempts: number, done: number) =>
-    row(term, label, pair(attempts), (side) => `${detail[side][attempts]} (${detail[side][done]})`);
+    row(
+      term,
+      label,
+      pair(attempts),
+      (side) => `${number(detail[side][attempts])} (${number(detail[side][done])})`,
+    );
   const cards = (side: 0 | 1) => detail[side][TD.yellowCards] + 2 * detail[side][TD.redCards];
   return [
     count('box-entry', sourceMessage('copy.MatchReport.649752aebf'), TD.boxEntries),
@@ -185,7 +191,7 @@ function spatialRows(detail: [number[], number[]]): ComparisonRow[] {
       TD.lineBreakingPasses,
     ),
     row('xt', sourceMessage('copy.PlayerAdvancedStats.af1292ae9d'), pair(TD.xtAdded), (side) =>
-      fixed(detail[side][TD.xtAdded] / 1000),
+      decimal(detail[side][TD.xtAdded] / 1000, 2),
     ),
     completed('cross', sourceMessage('copy.advanced.1f4ed025cc'), TD.crosses, TD.crossesCompleted),
     count('cut-back', sourceMessage('copy.PlayerAdvancedStats.cf8188e2fc'), TD.cutBacks),
@@ -205,7 +211,7 @@ function spatialRows(detail: [number[], number[]]): ComparisonRow[] {
       'cards',
       sourceMessage('copy.MatchReport.54c8d68f37'),
       [cards(0), cards(1)],
-      (side) => `${detail[side][TD.yellowCards]}·${detail[side][TD.redCards]}`,
+      (side) => `${number(detail[side][TD.yellowCards])}·${number(detail[side][TD.redCards])}`,
       true,
     ),
     count('set-piece', sourceMessage('copy.summary.64f1e3a4bc'), TD.corners),
@@ -258,11 +264,11 @@ export function playerAdvanced(w: World, id: string, scope: 'season' | 'career')
 
 /** Per-90 rate text with the minute denominator respected; no minutes means no rate. */
 export function per90(value: number, minutes: number, digits = 2) {
-  return minutes > 0 ? ((value * 90) / minutes).toFixed(digits) : '—';
+  return minutes > 0 ? decimal((value * 90) / minutes, digits) : '—';
 }
 
 /** Hundredths as a two-decimal figure, as match reports print xG. */
-export const hundredths = (value: number) => (value / 100).toFixed(2);
+export const hundredths = (value: number) => decimal(value / 100, 2);
 
 /**
  * Which counters a recorded match carries (→MATCH-13, MATCH-26): a full-model result carries all of

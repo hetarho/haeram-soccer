@@ -849,10 +849,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T749 | keep missing match-statistic ratios neutral | ARCH | - | todo |
-| T750 | exclude opponent lines from own-season advanced leaders | ARCH | - | todo |
-| T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
-| T752 | localize football-statistic numbers consistently | ARCH | T749 | todo |
 | T753 | refresh bid percentage quotes consistently | ARCH | - | todo |
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
 | T755 | rank career appearances by recorded matches | ARCH | - | todo |
@@ -884,12 +880,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 7 | 3 | 4 | 4 | 0 | 0 | 2026-11-09T14:57:08.289Z | [history](work/fi09.json) |
+| fi09 | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-09T15:09:35.110Z | [history](work/fi09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T749 T750 T751 T752 integrated
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
 - 261109 T747 T748 T757 integrated
 - 261109 create-task review/football-data-consistency-261109 F9-F11: T755/T756 product follow-ups and T757 narrowly approved verification-cost fix; released clean finance attempt before rescope fi09
@@ -909,4 +906,3 @@
 - 261109 T744 integrated
 - 261109 T746 integrated
 - 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
-- 261109 T745 integrated

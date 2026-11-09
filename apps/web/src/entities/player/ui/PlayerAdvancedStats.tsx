@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
+import { decimal, number } from '../../../presentation/format';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { Player, World } from '../../../../../../packages/contracts/src/types';
 import { PD, per90, playerAdvanced, share, type PlayerAdvanced } from '../../match/@x/player';
@@ -24,42 +25,42 @@ export function PlayerAdvancedStats(
       </p>
     );
   const rows: [string, string, string, string][] = [
-    ['xg', 'xG', (totals[PD.xg] / 100).toFixed(2), per90(totals[PD.xg] / 100, minutes)],
-    ['xa', 'xA', (totals[PD.xa] / 100).toFixed(2), per90(totals[PD.xa] / 100, minutes)],
+    ['xg', 'xG', decimal(totals[PD.xg] / 100, 2), per90(totals[PD.xg] / 100, minutes)],
+    ['xa', 'xA', decimal(totals[PD.xa] / 100, 2), per90(totals[PD.xa] / 100, minutes)],
     [
       'key-pass',
       sourceMessage('copy.MatchReport.532ac6f371'),
-      String(totals[PD.keyPasses]),
+      number(totals[PD.keyPasses]),
       per90(totals[PD.keyPasses], minutes),
     ],
     [
       'big-chance',
       sourceMessage('copy.PlayerAdvancedStats.49edc138c5'),
-      String(totals[PD.bigChancesCreated]),
+      number(totals[PD.bigChancesCreated]),
       per90(totals[PD.bigChancesCreated], minutes),
     ],
     [
       'final-third',
       sourceMessage('copy.PlayerAdvancedStats.c4f75aa388'),
-      `${share(totals[PD.finalThirdCompleted], totals[PD.finalThirdPasses])} · ${totals[PD.finalThirdCompleted]}/${totals[PD.finalThirdPasses]}`,
+      `${share(totals[PD.finalThirdCompleted], totals[PD.finalThirdPasses])} · ${number(totals[PD.finalThirdCompleted])}/${number(totals[PD.finalThirdPasses])}`,
       per90(totals[PD.finalThirdCompleted], minutes, 1),
     ],
     [
       'progressive',
       sourceMessage('copy.PlayerAdvancedStats.af1b560101'),
-      String(totals[PD.progressivePasses]),
+      number(totals[PD.progressivePasses]),
       per90(totals[PD.progressivePasses], minutes, 1),
     ],
     [
       'take-on',
       sourceMessage('copy.PlayerAdvancedStats.a1acacac81'),
-      String(totals[PD.takeOns]),
+      number(totals[PD.takeOns]),
       per90(totals[PD.takeOns], minutes, 1),
     ],
     [
       'high-turnover',
       sourceMessage('copy.PlayerAdvancedStats.11212f27d2'),
-      String(totals[PD.highTurnovers]),
+      number(totals[PD.highTurnovers]),
       per90(totals[PD.highTurnovers], minutes),
     ],
   ];
@@ -72,7 +73,7 @@ export function PlayerAdvancedStats(
     ): [string, string, string, string] => [
       term,
       label,
-      String(totals[index]),
+      number(totals[index]),
       per90(totals[index], spatialMinutes, 1),
     ];
     rows.push(
@@ -85,7 +86,7 @@ export function PlayerAdvancedStats(
       [
         'xt',
         sourceMessage('copy.PlayerAdvancedStats.af1292ae9d'),
-        (totals[PD.xtAdded] / 1000).toFixed(2),
+        decimal(totals[PD.xtAdded] / 1000, 2),
         per90(totals[PD.xtAdded] / 1000, spatialMinutes),
       ],
       count('cut-back', sourceMessage('copy.PlayerAdvancedStats.cf8188e2fc'), PD.cutBacks),
@@ -127,13 +128,13 @@ export function PlayerAdvancedStats(
       </table>
       <p className={s.note}>
         {richMessage('copy.PlayerAdvancedStats.355a81fcda', {
-          p0: matches,
-          p1: minutes,
+          p0: number(matches),
+          p1: number(minutes),
           p2:
             spatialMatches && spatialMatches < matches
               ? sourceMessage('copy.PlayerAdvancedStats.542aafd70f', {
-                  p0: spatialMatches,
-                  p1: spatialMinutes,
+                  p0: number(spatialMatches),
+                  p1: number(spatialMinutes),
                 })
               : '',
           p3: minutes < 180 ? sourceMessage('copy.PlayerAdvancedStats.1998dc989b') : '',

@@ -1,5 +1,6 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
+import { decimal, number } from '../../../presentation/format';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import type { Metrics, Player } from '../../../../../../packages/contracts/src/types';
 import { performanceRows, type PlayerScope } from '../lib/playerAnalysis';
@@ -25,7 +26,7 @@ export function PlayerPerformance(
     <section className={s.content} aria-label={displayMessage('copy.PlayerPerformance.236ddc2ece')}>
       <h3>{localizeValue(title)}</h3>
       <p className={s.note}>
-        {richMessage('copy.PlayerPerformance.c8eb322a32', { p0: stats[10] })}
+        {richMessage('copy.PlayerPerformance.c8eb322a32', { p0: number(stats[10]) })}
       </p>
       {localizeValue(
         stats[10] < 180 && (
@@ -40,11 +41,11 @@ export function PlayerPerformance(
             <div key={row.label}>
               <dt>{richMessage('copy.PlayerPerformance.0d56a6e576', { p0: row.label })}</dt>
               <dd>
-                {localizeValue(row.per90 === undefined ? '—' : row.per90.toFixed(2))}
+                {localizeValue(row.per90 === undefined ? '—' : decimal(row.per90, 2))}
                 <small>
                   {richMessage('copy.PlayerPerformance.564ee8dba3', {
-                    p0: row.total,
-                    p1: stats[10],
+                    p0: number(row.total),
+                    p1: number(stats[10]),
                   })}
                 </small>
               </dd>
@@ -54,9 +55,12 @@ export function PlayerPerformance(
         <div>
           <dt>{richMessage('copy.PlayerPerformance.2544b4dec5')}</dt>
           <dd>
-            {localizeValue(pass.percent === undefined ? '—' : `${pass.percent.toFixed(1)}%`)}
+            {localizeValue(pass.percent === undefined ? '—' : `${decimal(pass.percent, 1)}%`)}
             <small>
-              {richMessage('copy.PlayerPerformance.95f2a3403f', { p0: stats[3], p1: stats[2] })}
+              {richMessage('copy.PlayerPerformance.95f2a3403f', {
+                p0: number(stats[3]),
+                p1: number(stats[2]),
+              })}
             </small>
           </dd>
         </div>

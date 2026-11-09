@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T14:57:08.289Z",
-  "sourceCommit": "40049261caac2161184f551d12da57e1d0d025b0",
+  "snapshotAt": "2026-11-09T15:09:35.110Z",
+  "sourceCommit": "9f5129223f2497c0f56bd9c90c8f9fe74c9747d4",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -26,45 +26,14 @@
   },
   "summary": {
     "total": 7,
-    "completed": 3,
-    "remaining": 4,
-    "running": 4,
+    "completed": 7,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T749",
-      "title": "Keep missing match-statistic ratios neutral",
-      "dep": [],
-      "lane": "football-data",
-      "status": "doing"
-    },
-    {
-      "id": "T750",
-      "title": "Exclude opponent lines from own-season advanced leaders",
-      "dep": [],
-      "lane": "football-data",
-      "status": "doing"
-    },
-    {
-      "id": "T751",
-      "title": "Retain Poisson tails in expected-points calculations",
-      "dep": [],
-      "lane": "football-data",
-      "status": "doing"
-    },
-    {
-      "id": "T752",
-      "title": "Localize football-statistic numbers consistently",
-      "dep": [
-        "T749"
-      ],
-      "lane": "football-data",
-      "status": "doing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "563069b9-7a70-45d0-811d-e917f49d823d",
@@ -149,7 +118,7 @@
     {
       "id": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
       "group": "fi09",
-      "taskId": "T749",
+      "taskId": "T752",
       "tasks": [
         "T749",
         "T750",
@@ -161,9 +130,85 @@
       "contributors": [
         "fi09-football-v3"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T14:26:50.483Z",
-      "startCommit": "af092f5f6db8c6d95b5714ebdf244df1cdffa4f7"
+      "startCommit": "af092f5f6db8c6d95b5714ebdf244df1cdffa4f7",
+      "verifiedCommit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+      "submittedBase": "f417481042ffbfd6b9acbfd8245a77978e081e53",
+      "submissionId": "d169a641-4303-4694-a4e8-862e2337ba3d",
+      "submittedAt": "2026-11-09T15:04:19.266Z",
+      "risk": null,
+      "review": {
+        "id": "4e5cae0d-9b39-46df-bc9b-08053660884c",
+        "owner": "fi09-review-football",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed T749/T750/T751/T752 at pinned 42ff8c07 against current base 9f512922. Missing ratios remain unavailable with neutral bars while sampled zeros remain comparable. Advanced own-season leaders use the established side selector, retaining legitimate sold-player contributions and legacy/substitute layouts. Expected points follows the existing independent-Poisson rule across schema means [0,50]; the stated Markov tail bound and cumulative calculation are sound. An independent read-only 121-pair comparison against 250-score support found maximum absolute difference 2.1316282072803006e-14. Shared display formatters preserve precision, numeric sorting and source facts; consumers subscribe and recalculate, including a real memoized ReactDOM locale-switch regression. happy-dom is pinned dev-only and selected per test file, with unmount/locale/global cleanup and no global environment change. Checked focused49, whole-lane139files/1265tests and exact-submission36files/331tests plus type/lint/format/i18n/build evidence; no overlapping upstream source changes found. No P1/P2 findings. Integration, existing seasonStats integration cases and browser/full gates remain coordinator-owned.",
+        "findings": [],
+        "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+        "baseCommit": "9f5129223f2497c0f56bd9c90c8f9fe74c9747d4",
+        "submissionId": "d169a641-4303-4694-a4e8-862e2337ba3d",
+        "createdAt": "2026-11-09T15:06:03.162Z",
+        "finishedAt": "2026-11-09T15:09:17.141Z"
+      },
+      "steps": [
+        {
+          "taskId": "T749",
+          "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+          "at": "2026-11-09T15:04:19.239Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:03:50.462Z",
+              "finishedAt": "2026-11-09T15:04:18.800Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T750",
+          "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+          "at": "2026-11-09T15:04:19.239Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:03:50.462Z",
+              "finishedAt": "2026-11-09T15:04:18.800Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T751",
+          "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+          "at": "2026-11-09T15:04:19.239Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:03:50.462Z",
+              "finishedAt": "2026-11-09T15:04:18.800Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T752",
+          "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+          "at": "2026-11-09T15:04:19.239Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T15:03:50.462Z",
+              "finishedAt": "2026-11-09T15:04:18.800Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T15:03:50.462Z",
+          "finishedAt": "2026-11-09T15:04:18.800Z"
+        }
+      ]
     },
     {
       "id": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
@@ -187,6 +232,8 @@
       "submittedBase": "d489383e2aa023b754bc82af98a03649e00f31dc",
       "submissionId": "a10e61ed-ba8d-4ef8-a31a-c1db1b6b36cc",
       "submittedAt": "2026-11-09T14:53:15.049Z",
+      "integratedCommit": "f417481042ffbfd6b9acbfd8245a77978e081e53",
+      "integratedAt": "2026-11-09T14:58:09.124Z",
       "risk": null,
       "review": {
         "id": "0b0be4cf-064a-45f0-a0f2-4fcf221f5b08",
@@ -244,6 +291,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T14:51:40.365Z",
           "finishedAt": "2026-11-09T14:53:14.497Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T14:57:08.471Z",
+          "finishedAt": "2026-11-09T14:58:08.825Z"
         }
       ]
     }
@@ -978,6 +1032,249 @@
         "T747",
         "T748",
         "T757"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2042,
+      "at": "2026-11-09T14:58:09.027Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T14:57:08.471Z",
+            "finishedAt": "2026-11-09T14:58:08.825Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2043,
+      "at": "2026-11-09T14:58:09.124Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "f417481042ffbfd6b9acbfd8245a77978e081e53",
+        "integratedAt": "2026-11-09T14:58:09.124Z"
+      }
+    },
+    {
+      "sequence": 2044,
+      "at": "2026-11-09T15:00:44.234Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2045,
+      "at": "2026-11-09T15:03:50.073Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2046,
+      "at": "2026-11-09T15:04:19.266Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T752",
+        "status": "ready",
+        "verifiedCommit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+        "submittedBase": "f417481042ffbfd6b9acbfd8245a77978e081e53",
+        "submissionId": "d169a641-4303-4694-a4e8-862e2337ba3d",
+        "submittedAt": "2026-11-09T15:04:19.266Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T749",
+            "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+            "at": "2026-11-09T15:04:19.239Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:03:50.462Z",
+                "finishedAt": "2026-11-09T15:04:18.800Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T750",
+            "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+            "at": "2026-11-09T15:04:19.239Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:03:50.462Z",
+                "finishedAt": "2026-11-09T15:04:18.800Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T751",
+            "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+            "at": "2026-11-09T15:04:19.239Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:03:50.462Z",
+                "finishedAt": "2026-11-09T15:04:18.800Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T752",
+            "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+            "at": "2026-11-09T15:04:19.239Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T15:03:50.462Z",
+                "finishedAt": "2026-11-09T15:04:18.800Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T15:03:50.462Z",
+            "finishedAt": "2026-11-09T15:04:18.800Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2047,
+      "at": "2026-11-09T15:06:03.162Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "4e5cae0d-9b39-46df-bc9b-08053660884c",
+          "owner": "fi09-review-football",
+          "status": "reviewing",
+          "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+          "baseCommit": "9f5129223f2497c0f56bd9c90c8f9fe74c9747d4",
+          "submissionId": "d169a641-4303-4694-a4e8-862e2337ba3d",
+          "createdAt": "2026-11-09T15:06:03.162Z"
+        }
+      }
+    },
+    {
+      "sequence": 2048,
+      "at": "2026-11-09T15:09:17.141Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "4e5cae0d-9b39-46df-bc9b-08053660884c",
+          "owner": "fi09-review-football",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed T749/T750/T751/T752 at pinned 42ff8c07 against current base 9f512922. Missing ratios remain unavailable with neutral bars while sampled zeros remain comparable. Advanced own-season leaders use the established side selector, retaining legitimate sold-player contributions and legacy/substitute layouts. Expected points follows the existing independent-Poisson rule across schema means [0,50]; the stated Markov tail bound and cumulative calculation are sound. An independent read-only 121-pair comparison against 250-score support found maximum absolute difference 2.1316282072803006e-14. Shared display formatters preserve precision, numeric sorting and source facts; consumers subscribe and recalculate, including a real memoized ReactDOM locale-switch regression. happy-dom is pinned dev-only and selected per test file, with unmount/locale/global cleanup and no global environment change. Checked focused49, whole-lane139files/1265tests and exact-submission36files/331tests plus type/lint/format/i18n/build evidence; no overlapping upstream source changes found. No P1/P2 findings. Integration, existing seasonStats integration cases and browser/full gates remain coordinator-owned.",
+          "findings": [],
+          "commit": "42ff8c078aa8d830338a53ae44bb205cb7f37caf",
+          "baseCommit": "9f5129223f2497c0f56bd9c90c8f9fe74c9747d4",
+          "submissionId": "d169a641-4303-4694-a4e8-862e2337ba3d",
+          "createdAt": "2026-11-09T15:06:03.162Z",
+          "finishedAt": "2026-11-09T15:09:17.141Z"
+        }
+      }
+    },
+    {
+      "sequence": 2049,
+      "at": "2026-11-09T15:09:32.751Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
       ],
       "previousStatus": "approved",
       "status": "integrating",
