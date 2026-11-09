@@ -784,6 +784,7 @@
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
 - 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
+- 261109 decided review/football-data-consistency-261109 ARCH-4 ARCH-21 ARCH-30 ARCH-32 T747 T748 T749 T750 T751 T752: which observed football-data and finance inconsistencies the eight-hour local invocation adopts → six bounded fixes with independent implementation/review, no economic-policy or simulation-result changes (alt: tune balance speculatively | leave preview and derived-stat errors). Prior capital/currency previews, exact money disclosure, missing ratios, opponent leader leakage, Poisson tail loss and shared number formatting have raw scout evidence; review notes freeze scope and checks fi09
 
 ## ideation
 | id | st |
@@ -826,6 +827,7 @@
 ## review
 | id | st |
 |---|---|
+| football-data-consistency-261109 | converted@261109 |
 | economy-transfers-261109 | converted@261109 |
 | automatic-play-hotspots-261103 | converted@261103 |
 | outside-t216-t255-261019 | converted@261019 |
@@ -840,6 +842,12 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T747 | align owner money previews with canonical turnover | ARCH | - | todo |
+| T748 | expose exact amounts in the cash summary | ARCH | - | todo |
+| T749 | keep missing match-statistic ratios neutral | ARCH | - | todo |
+| T750 | exclude opponent lines from own-season advanced leaders | ARCH | - | todo |
+| T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
+| T752 | localize football-statistic numbers consistently | ARCH | T749 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -886,6 +894,6 @@
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 T742 integrated
 - 261109 T741 integrated
-- 261109 T739 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
+- 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
