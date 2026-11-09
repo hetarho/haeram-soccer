@@ -18,9 +18,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T15:37Z | - |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T16:09Z | - |
 
 ## inbox
+- 261110 decided T765 WEB-43 ECON-5 ECON-6: how snapshot denominations reach shared monetary consumers → add the two existing comparison/source source paths with optional explicit provenance and current defaults (alt: fake w.year | leave source fees wrong | silently widen active touches). Clean source-free attempt released before six-path fresh assignment; mixed-unit derived money stays unavailable fi09
 - 261110 decided WEB-43 WEB-97 ECON-5 ECON-6 T765 review/football-data-consistency-261109: how retained running-market snapshots survive a denomination transition → preserve their known UI monetary context, otherwise keep inspection but withhold ambiguous money (alt: relabel old minor units with current currency | clear inspection or refetch every revision | add a public money protocol). Existing read cadence and T753 transaction revalidation remain; no new FX or game facts fi09
 - 261110 decided SAVE-11 SAVE-28 T764: how summary validation preserves existing storage protection and recovery → unsupported formats use existing compatibility failure protection; malformed current contents fail validation with existing supported-corruption recovery (alt: classify a future format as corruption | discard malformed current data | redesign repository). This clarifies the existing cross-referenced rules without changing T764's frozen contract or SSOT revision fi09
 - 261110 decided HIST-16 HIST-22 SAVE-28 T764 review/football-data-consistency-261109: how to implement the approved current career-card summary without old-format support work → one atomic shared-format/producer/reader unit, discard only known obsolete optional cache and reuse writer reconstruction (alt: separate partial contract changes that break typecheck | new old-body decoder | repeated reload scans). All source facts and current/unknown/future validation remain protected fi09
