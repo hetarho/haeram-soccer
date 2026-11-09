@@ -10,8 +10,8 @@ import { CLUB_TAKEOVER, CLUB_VALUE, OWNER_TIERS } from './owner-config';
 import { squad, stature } from './world';
 import { marketValueAt } from './market-prices';
 import { facilityBuiltUnits, MAX_LEVEL, STADIUM_STEPS } from './facility-model';
-import { broadcastQuote, footballQuote, quote } from './quotes';
-import { DISTRIBUTION_CONFIG } from './finance';
+import { footballQuote, quote } from './quotes';
+import { leagueDistributionAt } from './finance';
 import { fanFollowing } from './fans';
 import { clamp, compareIds, ratio, scaleBy } from './primitives';
 
@@ -57,12 +57,11 @@ export function clubFollowing(w: World, club: Club) {
 }
 
 /**
- * One season of a division's distribution (→ECON-28): the equal share every club of it earns, in
- * the country's money of `year` on the broadcasting index (→ECON-31).
+ * One season of the same minimum central package the division's clubs receive (→ECON-28), in
+ * the country's money of `year`, including the canonical normalization after broadcast pricing.
  */
 export function divisionDistribution(code: string, year: number, tier: number) {
-  const table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
-  return broadcastQuote(code, year, table[Math.min(tier, table.length - 1)]!);
+  return leagueDistributionAt(code, year, tier);
 }
 
 /** A club's cash less its debt: the owner's club's own, a club nobody owns's books (→ECON-36). */

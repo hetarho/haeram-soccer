@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest';
 import type { World } from '../../contracts/src/types';
 import { COUNTRIES } from '../../catalogs/src/index';
 import { broadcastQuote } from './quotes';
-import { DISTRIBUTION_CONFIG, leagueMerit, leagueShare, parachutePayment } from './finance';
+import {
+  DISTRIBUTION_CONFIG,
+  leagueDistributionAt,
+  leagueMerit,
+  leagueShare,
+  parachutePayment,
+} from './finance';
+import { divisionDistribution } from './club-value';
 import { roundShare } from './finance-read';
 
 /** Only the fields these pure financial reads need; no generated world or season advancement. */
@@ -24,6 +31,34 @@ const observedFactor = (year: number) =>
 const abs = (n: bigint) => (n < 0n ? -n : n);
 
 describe('English top-flight central package (ECON-28)', () => {
+  it('quotes the same package for settlement and valuation across countries, eras and tiers', () => {
+    for (const country of COUNTRIES)
+      for (const year of [1901, 1950, 1992, 2005, 2018, 2024, 2030])
+        for (let tier = 0; tier <= country.groups.length + 1; tier++) {
+          const w = view(year, country.code, tier),
+            quoted = leagueDistributionAt(country.code, year, tier);
+          expect(leagueShare(w)).toBe(quoted);
+          expect(divisionDistribution(country.code, year, tier)).toBe(quoted);
+          if (tier >= country.groups.length)
+            expect(quoted).toBe(
+              leagueDistributionAt(country.code, year, country.groups.length - 1),
+            );
+        }
+  });
+
+  it('uses the same English table fallback without normalizing another country', () => {
+    const kept = DISTRIBUTION_CONFIG.share.ESP;
+    try {
+      delete DISTRIBUTION_CONFIG.share.ESP;
+      const expected = broadcastQuote('ESP', 2024, DISTRIBUTION_CONFIG.share.ENG[0]);
+      expect(leagueDistributionAt('ESP', 2024, 0)).toBe(expected);
+      expect(leagueShare(view(2024, 'ESP'))).toBe(expected);
+      expect(divisionDistribution('ESP', 2024, 0)).toBe(expected);
+    } finally {
+      DISTRIBUTION_CONFIG.share.ESP = kept;
+    }
+  });
+
   it.each([
     // 2018/19 official total; 2024/25 components were published rounded to £0.1m.
     { year: 2018, pot: 245_600_834_600n },

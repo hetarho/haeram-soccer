@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T05:57:27.847Z",
-  "sourceCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+  "snapshotAt": "2026-11-09T05:58:49.380Z",
+  "sourceCommit": "8152e29d2e5338c75214808ffcefab795161d351",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -47,23 +47,14 @@
   },
   "summary": {
     "total": 9,
-    "completed": 8,
-    "remaining": 1,
+    "completed": 9,
+    "remaining": 0,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T742",
-      "title": "use the normalized central package in club valuation",
-      "dep": [
-        "T740"
-      ],
-      "status": "reviewing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
@@ -601,7 +592,7 @@
       "contributors": [
         "ec10-canonical"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-09T05:52:27.638Z",
       "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
@@ -613,11 +604,15 @@
       "review": {
         "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
         "owner": "ec10-reviewer",
-        "status": "reviewing",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T74267563afe resolves the canonical-distribution gap independently identified in T740 review. One leagueDistributionAt(code,year,tier) now owns the original table fallback, upper-tier clamp, broadcast quote, targeted factor and precision; leagueShare and club-value.divisionDistribution preserve their public signatures and delegate without another formula. The dependency graph gains no production edge because club-value already imported finance. Modern league-place value and indebted floor are explicitly pinned to the official-scale package, while historical/non-target amounts, wages, fees, facilities, following, cash/debt and owner-business logic are untouched. Public-entry parity covers eight countries, historical/modern years, tier clamp and country-specific fallback without accidentally normalizing another country. Reviewer reran both named pure unit files:21/21 passed. No blocking findings. Downstream takeover/portable observation changes and economic matrices remain coordinator-owned checks before publication; this approval certifies the scoped consistency fix, not the candidate's economic realism or pending wage/revenue activation gates.",
+        "findings": [],
         "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
         "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
         "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
-        "createdAt": "2026-11-09T05:57:21.623Z"
+        "createdAt": "2026-11-09T05:57:21.623Z",
+        "finishedAt": "2026-11-09T05:58:24.955Z"
       },
       "steps": [
         {
@@ -661,6 +656,8 @@
       "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
       "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
       "submittedAt": "2026-11-09T05:55:15.732Z",
+      "integratedCommit": "8152e29d2e5338c75214808ffcefab795161d351",
+      "integratedAt": "2026-11-09T05:57:28.702Z",
       "risk": null,
       "review": {
         "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
@@ -694,6 +691,13 @@
           "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-09T05:55:07.489Z",
           "finishedAt": "2026-11-09T05:55:15.311Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:57:28.419Z",
+          "finishedAt": "2026-11-09T05:57:28.427Z"
         }
       ]
     }
@@ -2920,6 +2924,79 @@
       "group": "economy-ec09",
       "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
       "taskId": "T741",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 924,
+      "at": "2026-11-09T05:57:28.604Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:57:28.419Z",
+            "finishedAt": "2026-11-09T05:57:28.427Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 925,
+      "at": "2026-11-09T05:57:28.702Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "8152e29d2e5338c75214808ffcefab795161d351",
+        "integratedAt": "2026-11-09T05:57:28.702Z"
+      }
+    },
+    {
+      "sequence": 926,
+      "at": "2026-11-09T05:58:24.956Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T74267563afe resolves the canonical-distribution gap independently identified in T740 review. One leagueDistributionAt(code,year,tier) now owns the original table fallback, upper-tier clamp, broadcast quote, targeted factor and precision; leagueShare and club-value.divisionDistribution preserve their public signatures and delegate without another formula. The dependency graph gains no production edge because club-value already imported finance. Modern league-place value and indebted floor are explicitly pinned to the official-scale package, while historical/non-target amounts, wages, fees, facilities, following, cash/debt and owner-business logic are untouched. Public-entry parity covers eight countries, historical/modern years, tier clamp and country-specific fallback without accidentally normalizing another country. Reviewer reran both named pure unit files:21/21 passed. No blocking findings. Downstream takeover/portable observation changes and economic matrices remain coordinator-owned checks before publication; this approval certifies the scoped consistency fix, not the candidate's economic realism or pending wage/revenue activation gates.",
+          "findings": [],
+          "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+          "createdAt": "2026-11-09T05:57:21.623Z",
+          "finishedAt": "2026-11-09T05:58:24.955Z"
+        }
+      }
+    },
+    {
+      "sequence": 927,
+      "at": "2026-11-09T05:58:46.641Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
