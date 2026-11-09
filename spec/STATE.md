@@ -835,6 +835,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T744 | refresh validation fixtures on the accepted economy source | ARCH ECON CLUB OWNER | T739 T740 T742 T743 | todo |
 | T743 | use settled payroll in the reference career report | ECON CLUB OWNER LEAGUE ARCH | T739 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
@@ -871,6 +872,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 T742 integrated
 - 261109 T741 integrated
@@ -890,4 +892,3 @@
 - 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
 - 261109 T734 integrated
 - 261109 T732 integrated
-- 261109 T733 integrated
