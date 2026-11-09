@@ -33,7 +33,8 @@ export function OpenPlayerDetail({ id, client }: { id: string; client: GameClien
   const scope = usePlayerDetail((state) => state.scope);
   const club = usePlayerDetail((state) => state.club);
   const close = usePlayerDetail((state) => state.close);
-  const tally = useGameState((state) => state.view?.tallies.players[id]);
+  const tallies = useGameState((state) => state.view?.tallies.players);
+  const tally = tallies?.[id];
   const own = w?.players.find((p) => p.id === id);
   const read = useRead(w && !own ? `${w.id}:${w.year}:${id}` : undefined, () =>
     client.playerProfile(id, club),
@@ -49,6 +50,7 @@ export function OpenPlayerDetail({ id, client }: { id: string; client: GameClien
         onClose={close}
         client={client}
         tally={tally}
+        tallies={tallies}
       />
     );
   return <OtherPlayerSheet key={id} w={w} id={id} read={read} client={client} onClose={close} />;

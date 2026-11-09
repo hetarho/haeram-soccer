@@ -2304,7 +2304,7 @@
     "copy.CareerRecordBook.c263a34471": "더 보기 · {p0}–{p1}위",
     "copy.CareerRecordBook.49093e1fb3": "아직 기록이 없어요.",
     "copy.CareerRecordBook.214de2a818": "통산 기록 종류",
-    "copy.CareerRecordBook.92c3ad57ea": "모든 대회에서 우리 클럽 소속으로 남긴 기록이에요. 교체 없이 선발 11명이 90분을 모두 뛰어 출전 시간을 90분으로 나눈 값이 출전 경기 수예요. 같은 기록은 순위를 함께 나누고 선수 ID 순으로 적어요. 지금 선수단은 굵게 표시해요.",
+    "copy.CareerRecordBook.92c3ad57ea": "모든 대회에서 우리 클럽 소속으로 남긴 기록이에요. 출전 경기 수는 교체 출전을 포함해 실제로 뛴 경기를 세고, 출전 시간을 90분으로 나눈 값은 90분당 지표의 분모로만 써요. 같은 기록은 순위를 함께 나누고 선수 ID 순으로 적어요. 지금 선수단은 굵게 표시해요.",
     "copy.CashAlarm.7c6b2c4fa1": "구단 파산 위기",
     "copy.CashAlarm.be03d028d1": "파산 위기",
     "copy.CashAlarm.466cd5aa0d": "{p0} 잔고 {p1} ·{p2}{p3}라운드 안에 흑자로 돌아오지 못하면 파산해요",

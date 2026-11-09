@@ -859,7 +859,6 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
-| T755 | rank career appearances by recorded matches | ARCH | - | todo |
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T766 | match capital mood previews to settlement | OWNER WEB ECON ARCH | T747 | todo |
@@ -887,12 +886,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 20 | 15 | 2026-11-09T17:25Z | 2 | 0 | 0 | 2026-11-09T16:24:56.430Z | [history](work/fi09.json) |
+| fi09 | 2 | 21 | 16 | 5 | 2 | 1 | 1 | 2026-11-09T17:48:57.770Z | [history](work/fi09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T755 integrated
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09

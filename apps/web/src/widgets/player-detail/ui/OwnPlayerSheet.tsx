@@ -3,6 +3,7 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { PersonCareerLink } from '../../../features/person-career';
 import type { GameClient } from '../../../runtime/client';
+import type { Tallies } from '../../../runtime/playerTallies';
 import { useMemo, useState } from 'react';
 import type { Player, World } from '../../../../../../packages/contracts/src/types';
 import { agentOf, clausesLabel, talkFor } from '../../../../../../packages/engine/src/contracts';
@@ -38,6 +39,7 @@ export function OwnPlayerSheet({
   onClose,
   client,
   tally,
+  tallies,
 }: {
   w: World;
   player: Player;
@@ -46,6 +48,8 @@ export function OwnPlayerSheet({
   client: GameClient;
   /** His appearances, cards and season heat over every own match (the view's tallies). */
   tally?: PlayerTally;
+  /** Complete retained counts, needed to compare his appearances with every other own identity. */
+  tallies?: Readonly<Tallies['players']>;
 }) {
   useTextLocale();
   const active = player.status === 'active';
@@ -55,7 +59,9 @@ export function OwnPlayerSheet({
   const scope = active ? chosen : 'career';
   const career = player.career,
     stats = player[scope],
-    ranks = clubRanks(w.players, player.id);
+    ranks = clubRanks(w.players, player.id, tallies);
+  const appearances = (scope: PlayerScope) =>
+    tally || tallies ? appearanceText(tally, scope) : '—';
   return (
     <Dialog label={player.name} fixed onClose={onClose}>
       {localizeValue(
@@ -121,7 +127,7 @@ export function OwnPlayerSheet({
         <h3>{richMessage('copy.AnalysisExport.05b05e1b81')}</h3>
         <p className={a.careerLine}>
           {richMessage('copy.OwnPlayerSheet.de486b2191', {
-            p0: appearanceText(tally, 'career'),
+            p0: appearances('career'),
             p1: career[0],
             p2: career[1],
             p3:
@@ -130,6 +136,7 @@ export function OwnPlayerSheet({
                 : '',
           })}
         </p>
+        {!tallies && <p className={a.note}>{richMessage('copy.fullStatsView.bacdff45b0')}</p>}
         <div className={a.chips}>
           <span className={a.status} data-status={player.status}>
             {localizeValue(playerStatus(player))}
@@ -148,7 +155,7 @@ export function OwnPlayerSheet({
         </div>
         <p className={a.note}>
           {richMessage('copy.OwnPlayerSheet.696342ccdb', {
-            p0: ranks.length ? '' : sourceMessage('copy.OwnPlayerSheet.a71a8e4900'),
+            p0: ranks.length || !tallies ? '' : sourceMessage('copy.OwnPlayerSheet.a71a8e4900'),
           })}
         </p>
       </section>
@@ -183,7 +190,7 @@ export function OwnPlayerSheet({
       <PlayerPerformance player={player} scope={scope} />
       <Attributes
         rows={[
-          [sourceMessage('copy.BallonDorView.b849877c07'), appearanceText(tally, scope)],
+          [sourceMessage('copy.BallonDorView.b849877c07'), appearances(scope)],
           [sourceMessage('copy.summary.eb4e291be3'), stats[0]],
           [sourceMessage('copy.BallonDorView.8d901cc28d'), stats[1]],
           [sourceMessage('copy.OwnPlayerSheet.05721df8c3'), stats[10]],

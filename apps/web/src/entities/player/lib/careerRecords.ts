@@ -2,6 +2,7 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import type { Player, SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { divisionName } from '../../../presentation/competitionLabels';
+import type { Tallies } from '../../../runtime/playerTallies';
 
 export { divisionName };
 
@@ -14,7 +15,7 @@ function bestFinish(history: readonly SeasonArchive[]) {
 
 /**
  * The club's all-time boards, read from every player's club career; sold and retired players keep
- * theirs. The appearance board ranks by minutes played; match counts come from the view's tallies.
+ * theirs. The appearance board uses actual played matches from the complete retained tallies.
  */
 export const LEADER_BOARDS = [
   {
@@ -45,8 +46,11 @@ export const LEADER_BOARDS = [
 ] as const;
 export type LeaderBoard = (typeof LEADER_BOARDS)[number];
 
-const onBoard = (board: LeaderBoard, p: Player) =>
-  p.career[board.index] > 0 && (!('position' in board) || p.position === board.position);
+type CareerTallies = Readonly<Tallies['players']>;
+const boardValue = (board: LeaderBoard, p: Player, tallies: CareerTallies | undefined) =>
+  board.key === 'apps' ? (tallies?.[p.id]?.apps[1] ?? 0) : p.career[board.index];
+const onBoard = (board: LeaderBoard, p: Player, tallies: CareerTallies | undefined) =>
+  boardValue(board, p, tallies) > 0 && (!('position' in board) || p.position === board.position);
 
 /** 선수 통산 shows ten at a time, up to a hundred players on a board (→WEB-54). */
 export const LEADER_PAGE = 10;
@@ -57,19 +61,34 @@ export function nextLeaderCount(shown: number, total: number) {
 }
 
 /** A board's top `limit`; equal records list the lower player ID first, as in the record book. */
-export function clubLeaders(players: readonly Player[], board: LeaderBoard, limit = 10) {
+export function clubLeaders(
+  players: readonly Player[],
+  board: LeaderBoard,
+  limit = 10,
+  tallies?: CareerTallies,
+) {
   return players
-    .filter((p) => onBoard(board, p))
-    .sort((a, b) => b.career[board.index] - a.career[board.index] || a.id.localeCompare(b.id))
+    .filter((p) => onBoard(board, p, tallies))
+    .sort(
+      (a, b) =>
+        boardValue(board, b, tallies) - boardValue(board, a, tallies) || a.id.localeCompare(b.id),
+    )
     .slice(0, limit);
 }
 
 /** Places down a board's listing: equal records share one, the next place skips past them. */
-export function boardPlaces(leaders: readonly Player[], board: LeaderBoard) {
+export function boardPlaces(
+  leaders: readonly Player[],
+  board: LeaderBoard,
+  tallies?: CareerTallies,
+) {
+  if (board.key === 'apps' && !tallies) return [];
   const places: number[] = [];
   leaders.forEach((p, i) =>
     places.push(
-      i && p.career[board.index] === leaders[i - 1].career[board.index] ? places[i - 1] : i + 1,
+      i && boardValue(board, p, tallies) === boardValue(board, leaders[i - 1], tallies)
+        ? places[i - 1]
+        : i + 1,
     ),
   );
   return places;
@@ -82,15 +101,15 @@ export const leaderBoard = (key: LeaderBoard['key']) =>
  * The boards a player stands in the top 10 of: his place is one more than the players above him,
  * and `shared` when another player has the same record.
  */
-export function clubRanks(players: readonly Player[], id: string) {
+export function clubRanks(players: readonly Player[], id: string, tallies?: CareerTallies) {
   const player = players.find((p) => p.id === id);
   if (!player) return [];
   return LEADER_BOARDS.flatMap((board) => {
-    if (!onBoard(board, player)) return [];
-    const value = player.career[board.index],
-      rivals = players.filter((p) => onBoard(board, p) && p.id !== id);
-    const rank = rivals.filter((p) => p.career[board.index] > value).length + 1;
-    const shared = rivals.some((p) => p.career[board.index] === value);
+    if (!onBoard(board, player, tallies)) return [];
+    const value = boardValue(board, player, tallies),
+      rivals = players.filter((p) => onBoard(board, p, tallies) && p.id !== id);
+    const rank = rivals.filter((p) => boardValue(board, p, tallies) > value).length + 1;
+    const shared = rivals.some((p) => boardValue(board, p, tallies) === value);
     return rank <= 10 ? [{ board, rank, shared }] : [];
   });
 }

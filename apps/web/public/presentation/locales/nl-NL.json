@@ -2407,7 +2407,7 @@
     "copy.CareerRecordBook.c263a34471": "Zie meer · {p0}–{p1}",
     "copy.CareerRecordBook.49093e1fb3": "Er zijn nog geen gegevens.",
     "copy.CareerRecordBook.214de2a818": "Totaal recordtype",
-    "copy.CareerRecordBook.92c3ad57ea": "Dit is het record dat we als lid van onze club in alle competities hebben nagelaten. Het aantal gespeelde wedstrijden wordt berekend door de speeltijd te delen door 90 minuten, waarbij 11 startspelers alle 90 minuten spelen zonder vervanging. Dezelfde records zijn onderverdeeld in ranglijsten en geschreven in volgorde van speler-ID. De huidige ploeg wordt vetgedrukt weergegeven.",
+    "copy.CareerRecordBook.92c3ad57ea": "Dit zijn de statistieken van elke speler voor onze club in alle competities. Optredens tellen daadwerkelijk gespeelde wedstrijden, ook als invaller; minuten gedeeld door 90 dienen alleen als noemer voor cijfers per 90 minuten. Gelijke cijfers delen een plaats en worden op speler-ID gerangschikt. De huidige selectie wordt vetgedrukt weergegeven.",
     "copy.CashAlarm.7c6b2c4fa1": "Club dreigt failliet te gaan",
     "copy.CashAlarm.be03d028d1": "faillissementscrisis",
     "copy.CashAlarm.466cd5aa0d": "{p0} Saldo {p1} ·{p2}{p3} Als u binnen de ronde niet terugkeert naar het overschot, gaat u failliet.",

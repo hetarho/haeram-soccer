@@ -2407,7 +2407,7 @@
     "copy.CareerRecordBook.c263a34471": "Daha fazlasını görün · {p0}–{p1}",
     "copy.CareerRecordBook.49093e1fb3": "Henüz kayıt yok.",
     "copy.CareerRecordBook.214de2a818": "Toplam kayıt türü",
-    "copy.CareerRecordBook.92c3ad57ea": "Bu, kulübümüzün bir üyesi olarak tüm müsabakalarda bıraktığımız rekordur. Oynanan oyun sayısı, oyun süresinin 90 dakikaya bölünmesiyle hesaplanır ve 11 başlangıç ​​oyuncusu 90 dakikanın tamamını değiştirmeden oynar. Aynı kayıtlar sıralamalara ayrılarak oyuncu ID sırasına göre yazılır. Mevcut kadro kalın harflerle gösterilmiştir.",
+    "copy.CareerRecordBook.92c3ad57ea": "Bunlar, her oyuncunun tüm müsabakalarda kulübümüz adına kaydettiği istatistiklerdir. Maça çıkma sayısı, sonradan oyuna girilenler dahil gerçekten oynanan maçları sayar; dakikaların 90'a bölümü yalnızca 90 dakika başına istatistiklerin paydasıdır. Eşit değerler aynı sırayı paylaşır ve oyuncu kimliğine göre listelenir. Mevcut kadro kalın yazıyla gösterilir.",
     "copy.CashAlarm.7c6b2c4fa1": "Kulüp iflas tehlikesiyle karşı karşıya",
     "copy.CashAlarm.be03d028d1": "iflas krizi",
     "copy.CashAlarm.466cd5aa0d": "{p0} Bakiye {p1} ·{p2}{p3} Turda fazlaya dönmezseniz iflas edersiniz.",

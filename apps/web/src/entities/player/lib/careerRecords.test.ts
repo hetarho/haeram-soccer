@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
+import type { PlayerTally, Tallies } from '../../../runtime/playerTallies';
+import type { Player, SeasonArchive, World } from '../../../../../../packages/contracts/src/types';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
 import {
   boardPlaces,
@@ -183,8 +184,15 @@ describe('all-time boards', () => {
     expect(clubLeaders(w.players, goals, 2)).toHaveLength(2);
     // Saves count only goalkeepers.
     expect(clubLeaders(w.players, leaderBoard('saves')).map((p) => p.id)).toEqual([keeper.id]);
-    expect(clubLeaders(w.players, leaderBoard('apps')).map((p) => p.id)).toEqual([keeper.id, a.id]);
-    expect(clubRanks(w.players, a.id)).toEqual([
+    const apps = {
+      [keeper.id]: { apps: [0, 40] },
+      [a.id]: { apps: [0, 12] },
+    } as Tallies['players'];
+    expect(clubLeaders(w.players, leaderBoard('apps'), 10, apps).map((p) => p.id)).toEqual([
+      keeper.id,
+      a.id,
+    ]);
+    expect(clubRanks(w.players, a.id, apps)).toEqual([
       { board: leaderBoard('apps'), rank: 2, shared: false },
       { board: leaderBoard('goals'), rank: 2, shared: true },
     ]);
@@ -222,5 +230,83 @@ describe('all-time boards', () => {
     expect(nextLeaderCount(10, 14)).toBe(14);
     expect(nextLeaderCount(14, 14)).toBe(14);
     expect(nextLeaderCount(95, 120)).toBe(100);
+  });
+});
+
+describe('recorded career appearances', () => {
+  const player = (id: string, minutes: number, status: Player['status'] = 'active'): Player => {
+    const career = Array<number>(12).fill(0);
+    career[10] = minutes;
+    return { id, name: id, position: 'CM', career, status } as Player;
+  };
+  const tally = (apps: number): PlayerTally => ({
+    apps: [0, apps],
+    sub: [0, 0],
+    yellow: [0, 0],
+    red: [0, 0],
+  });
+  const apps = leaderBoard('apps');
+  it('puts a short substitute above a longer-minute starter and retains departed identities', () => {
+    const players = [
+      player('long', 1800),
+      player('short', 200, 'sold'),
+      player('retired', 450, 'retired'),
+      player('absent', 9000),
+    ];
+    const tallies = { long: tally(20), short: tally(30), retired: tally(25) },
+      before = structuredClone(players);
+    expect(clubLeaders(players, apps, 100, tallies).map((p) => p.id)).toEqual([
+      'short',
+      'retired',
+      'long',
+    ]);
+    expect(clubRanks(players, 'short', tallies)).toEqual([{ board: apps, rank: 1, shared: false }]);
+    expect(players).toEqual(before);
+  });
+  it('shares actual-appearance places regardless of minutes and orders ties by stable ID', () => {
+    const players = [
+      player('z-tie', 900),
+      player('a-tie', 90),
+      player('first', 100),
+      player('fourth', 2000),
+    ];
+    const tallies = { 'z-tie': tally(10), 'a-tie': tally(10), first: tally(20), fourth: tally(9) };
+    const listed = clubLeaders(players, apps, 100, tallies);
+    expect(listed.map((p) => p.id)).toEqual(['first', 'a-tie', 'z-tie', 'fourth']);
+    expect(boardPlaces(listed, apps, tallies)).toEqual([1, 2, 2, 4]);
+    for (const p of players.filter((p) => p.id.endsWith('tie')))
+      expect(clubRanks(players, p.id, tallies)).toEqual([{ board: apps, rank: 2, shared: true }]);
+  });
+  it('keeps missing maps unavailable and absent entries in an available map at actual zero', () => {
+    const players = [player('only', 900)];
+    expect(clubLeaders(players, apps)).toEqual([]);
+    expect(boardPlaces(players, apps)).toEqual([]);
+    expect(clubRanks(players, 'only')).toEqual([]);
+    expect(clubLeaders(players, apps, 100, {})).toEqual([]);
+    expect(clubLeaders(players, apps, 100, { only: tally(0) })).toEqual([]);
+  });
+  it('keeps top-ten shared places, pagination and every other board independent of appearance tallies', () => {
+    const players = Array.from({ length: 12 }, (_, i) =>
+      player(`p${String(i).padStart(2, '0')}`, (i + 1) * 90),
+    );
+    const tallies = Object.fromEntries(
+      players.map((p, i) => [p.id, tally(i < 9 ? 30 - i : i < 11 ? 10 : 9)]),
+    );
+    expect(clubLeaders(players, apps, 100, tallies)).toHaveLength(12);
+    expect(clubLeaders(players, apps, 10, tallies)).toHaveLength(10);
+    expect(clubRanks(players, players[10]!.id, tallies)).toEqual([
+      { board: apps, rank: 10, shared: true },
+    ]);
+    expect(clubRanks(players, players[11]!.id, tallies)).toEqual([]);
+    players[0]!.career[0] = 5;
+    players[1]!.career[1] = 7;
+    players[2]!.position = 'GK';
+    players[2]!.career[9] = 11;
+    for (const key of ['goals', 'assists', 'saves'] as const) {
+      const board = leaderBoard(key),
+        original = clubLeaders(players, board);
+      expect(clubLeaders(players, board, 10, tallies)).toEqual(original);
+      expect(boardPlaces(original, board, tallies)).toEqual(boardPlaces(original, board));
+    }
   });
 });

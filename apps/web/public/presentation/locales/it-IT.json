@@ -2390,7 +2390,7 @@
     "copy.CareerRecordBook.c263a34471": "Scopri di più · {p0}–{p1}",
     "copy.CareerRecordBook.49093e1fb3": "Non ci sono ancora record",
     "copy.CareerRecordBook.214de2a818": "Tipo di record totale",
-    "copy.CareerRecordBook.92c3ad57ea": "Questo è il record che abbiamo lasciato come membri del nostro club in tutte le competizioni. Il numero di partite giocate viene calcolato dividendo il tempo di gioco per 90 minuti con 11 giocatori titolari che giocano tutti i 90 minuti senza sostituzione. Gli stessi record sono divisi in classifiche e scritti in ordine di ID giocatore. La squadra attuale viene visualizzata in grassetto.",
+    "copy.CareerRecordBook.92c3ad57ea": "Queste statistiche riguardano ogni giocatore del nostro club in tutte le competizioni. Le presenze contano le partite effettivamente giocate, comprese quelle da subentrato; i minuti divisi per 90 sono usati solo come denominatore delle statistiche per 90 minuti. I valori uguali condividono la posizione e sono elencati in ordine di ID del giocatore. La rosa attuale è mostrata in grassetto.",
     "copy.CashAlarm.7c6b2c4fa1": "Club a rischio fallimento",
     "copy.CashAlarm.be03d028d1": "crisi fallimentare",
     "copy.CashAlarm.466cd5aa0d": "{p0} Saldo {p1} ·{p2}{p3} Se non ritorni in surplus entro il round, andrai in bancarotta.",

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T16:24:56.430Z",
-  "sourceCommit": "0ce3994f264880ea8d252c2f28a7aeef4593e2c0",
+  "snapshotAt": "2026-11-09T17:48:57.770Z",
+  "sourceCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -56,17 +56,18 @@
       "T763",
       "T764",
       "T765",
-      "T766"
+      "T766",
+      "T767"
     ]
   },
   "summary": {
-    "total": 20,
-    "completed": 15,
+    "total": 21,
+    "completed": 16,
     "remaining": 5,
     "running": 2,
-    "review": 0,
-    "blocked": 0,
-    "unassigned": 3
+    "review": 1,
+    "blocked": 1,
+    "unassigned": 1
   },
   "tasks": [
     {
@@ -75,19 +76,13 @@
       "dep": [
         "T752"
       ],
-      "status": "doing"
-    },
-    {
-      "id": "T755",
-      "title": "Rank career appearances by recorded matches",
-      "dep": [],
-      "status": "verifying"
+      "status": "ready"
     },
     {
       "id": "T756",
       "title": "Preserve cup title streaks across skipped seasons",
       "dep": [],
-      "status": "todo"
+      "status": "blocked"
     },
     {
       "id": "T760",
@@ -101,7 +96,13 @@
       "dep": [
         "T747"
       ],
-      "status": "todo"
+      "status": "doing"
+    },
+    {
+      "id": "T767",
+      "title": "Observe live league report state before reopening",
+      "dep": [],
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -210,6 +211,7 @@
       "submittedAt": "2026-11-09T15:04:19.266Z",
       "integratedCommit": "589e6903fe4d796168cd3c0c4f158435d9b8c8d6",
       "integratedAt": "2026-11-09T15:10:37.755Z",
+      "cleanedAt": "2026-11-09T16:59:45.130Z",
       "risk": null,
       "review": {
         "id": "4e5cae0d-9b39-46df-bc9b-08053660884c",
@@ -313,6 +315,7 @@
       "submittedAt": "2026-11-09T14:53:15.049Z",
       "integratedCommit": "f417481042ffbfd6b9acbfd8245a77978e081e53",
       "integratedAt": "2026-11-09T14:58:09.124Z",
+      "cleanedAt": "2026-11-09T17:03:46.059Z",
       "risk": null,
       "review": {
         "id": "0b0be4cf-064a-45f0-a0f2-4fcf221f5b08",
@@ -402,6 +405,7 @@
       "submittedAt": "2026-11-09T15:31:10.730Z",
       "integratedCommit": "e19cde7f45facbc77f13744556c8c4856979e4e0",
       "integratedAt": "2026-11-09T15:58:11.189Z",
+      "cleanedAt": "2026-11-09T17:06:52.268Z",
       "risk": null,
       "review": {
         "id": "60a0ab90-8f8d-46ff-8af6-ecd4189b9f93",
@@ -484,6 +488,7 @@
       "submittedAt": "2026-11-09T15:43:30.630Z",
       "integratedCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
       "integratedAt": "2026-11-09T15:54:25.104Z",
+      "cleanedAt": "2026-11-09T16:55:32.331Z",
       "risk": null,
       "review": {
         "id": "40b81ee1-3978-4a7d-815f-1b988bae52c6",
@@ -549,6 +554,7 @@
       "submittedAt": "2026-11-09T15:42:57.633Z",
       "integratedCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
       "integratedAt": "2026-11-09T16:03:28.495Z",
+      "cleanedAt": "2026-11-09T17:08:07.567Z",
       "risk": null,
       "review": {
         "id": "b3b2595f-5e30-447d-b5d1-c70cad3d5115",
@@ -614,6 +620,7 @@
       "submittedAt": "2026-11-09T16:05:20.239Z",
       "integratedCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
       "integratedAt": "2026-11-09T16:10:54.472Z",
+      "cleanedAt": "2026-11-09T17:09:09.838Z",
       "risk": null,
       "review": {
         "id": "cba2ff2e-3034-462f-83ef-7a789f984e24",
@@ -681,6 +688,7 @@
       "submittedAt": "2026-11-09T16:10:06.345Z",
       "integratedCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
       "integratedAt": "2026-11-09T16:16:24.621Z",
+      "cleanedAt": "2026-11-09T17:10:21.938Z",
       "risk": null,
       "review": {
         "id": "6d5e0b6b-2723-4681-bbc5-818ad368ecb0",
@@ -764,7 +772,8 @@
       "reason": "Clean idle source-free T765; minimal shared monetary presentation paths required to satisfy original comparison/source acceptance; reassign fresh six-path contract",
       "createdAt": "2026-11-09T16:06:17.485Z",
       "startCommit": "d52da9c3f2524f9458b13c5c33218ba34e028bf7",
-      "releasedAt": "2026-11-09T16:09:06.599Z"
+      "releasedAt": "2026-11-09T16:09:06.599Z",
+      "cleanedAt": "2026-11-09T17:12:14.712Z"
     },
     {
       "id": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
@@ -786,6 +795,9 @@
       "submittedBase": "c9110ae808a2c4a982cc0322b12759e07294abb7",
       "submissionId": "377c517e-74bc-41bf-89a3-5aedfe8a21ab",
       "submittedAt": "2026-11-09T16:20:11.512Z",
+      "integratedCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+      "integratedAt": "2026-11-09T16:28:56.809Z",
+      "cleanedAt": "2026-11-09T17:11:45.959Z",
       "risk": null,
       "review": {
         "id": "7cc7d15d-496d-43c1-a56c-9055f1108f2f",
@@ -820,6 +832,13 @@
           "startedAt": "2026-11-09T16:19:26.627Z",
           "finishedAt": "2026-11-09T16:20:10.921Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T16:24:57.674Z",
+          "finishedAt": "2026-11-09T16:28:56.301Z"
+        }
       ]
     },
     {
@@ -834,10 +853,68 @@
       "contributors": [
         "fi09-career-appearance"
       ],
-      "status": "verifying",
-      "reason": "T755 focused16 tests pass; full-map career appearances, mounted board/sheet agreement, missing-map distinction and all12 translations implemented; final affected/fast checks",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T16:11:35.951Z",
-      "startCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6"
+      "startCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+      "verifiedCommit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+      "submittedBase": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+      "submissionId": "6626ef5c-7b3c-42a2-bfa0-74726a3c991c",
+      "submittedAt": "2026-11-09T17:21:29.126Z",
+      "risk": null,
+      "review": {
+        "id": "2d589096-7cd4-4134-99be-cc3d48abd263",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Fresh independent T755 review after the interrupted ENOSPC integration, pinned to submission 6626ef5c-7b3c-42a2-bfa0-74726a3c991c / commit 290fde6d9fed17c1cbb220b248c5734e66db9f07 against new base fcce405843cfb60d5be24d4d2c245eaa3177e6bc. Re-read the current complete task contract and new-base brief (complete:yes), relevant complete ARCH-4/21/30/32, HIST-13, WEB-28/54/59 blocks, and the full upstream change. The a16e6d81-to-fcce4058 changes are only T767 planning, STATE, review and report metadata; apps/packages/tests/toolchain/SSOT have zero differences and no interaction with T755. Confirmed the 19 source/test/locale paths and total author diff are byte-identical to the independently reviewed prior submission, so its semantic assessment is explicitly reused: actual apps[1] controls membership/order/stable ties/shared places/sheet ranks; rival-only full-map updates recalculate the actual PlayerDetailHost sheet; missing maps differ from available zero; sold/retired identities, other boards, pagination, minutes/per90 and all 12 one-key translations are preserved; T764 card-only tallies create no appearances. Checked the new native review/attempt/submission bindings and post-disk submit receipt. The cached record points to the unchanged exact verified commit, identical task-start selection base 6766ceab33c409cae3cddbe403d767e6eb2c36a6 and identical serial command/flags, referring to the original successful 16:37:05.840Z cache entry, not a newly executed test run. Reused original nonempty raw evidence for 223 affected files/1995 tests, 16 focused cases, typecheck/lint/format/i18n/build; the original parallel timeout failure and interrupted integration remain preserved. No new tests, source edits or coverage changes were made. Current target remains the new pinned base. This is fresh production-code approval under unchanged contracts; integration and the actual final full/browser gate remain coordinator-owned.",
+        "findings": [],
+        "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+        "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+        "submissionId": "6626ef5c-7b3c-42a2-bfa0-74726a3c991c",
+        "createdAt": "2026-11-09T17:37:46.005Z",
+        "finishedAt": "2026-11-09T17:41:59.881Z"
+      },
+      "reviewHistory": [
+        {
+          "id": "bb253c44-aabc-4233-9109-74defaeb6e19",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Independent T755 review of pinned 290fde6d9fed17c1cbb220b248c5734e66db9f07 against a16e6d819fe0c02e4c224019af1af41ccea50372. Read the complete task/acceptance/result, current complete ARCH-4/21/30/32, HIST-13 and WEB-28/54/59 blocks, and all 20 changed paths. The full retained Tallies.players map and apps[1] now control appearance-board membership, descending order, stable-ID ties, shared/skipped places and player-sheet top-ten ranks. Undefined maps produce an unavailable state without a minutes/90 fallback; missing entries in available maps are zero, and T764 card-only rows cannot invent appearances. Sold/retired identities, pagination, other leader boards, source minutes and per-90 operands are preserved. The actual lazy PlayerDetailHost path subscribes to the complete map, so rival-only updates refresh an open sheet even when the selected entry and world identities are unchanged. Canonical source copy and all 12 registered locale packs change only the existing explanation ID and retain the same actual-appearance/per-90 meaning. Checked the mounted and helper regression design and reused exact-submission verification: focused 16 cases and the serial affected selection of 223 files/1995 cases, plus typecheck/lint/format/i18n/build. The original parallel timeout failure receipt is preserved; its resource-limited retry retains selection, assertions and timeouts. No reviewer test run, source edit or coverage change was made. Current upstream still equals the pinned base; final integration/browser/full verification remains coordinator-owned.",
+          "findings": [],
+          "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+          "baseCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+          "submissionId": "9b087564-9846-4bc8-aeaa-24299f960997",
+          "createdAt": "2026-11-09T16:37:48.237Z",
+          "finishedAt": "2026-11-09T16:41:08.824Z",
+          "invalidatedAt": "2026-11-09T17:21:22.329Z",
+          "invalidationReason": "new submission"
+        }
+      ],
+      "steps": [
+        {
+          "taskId": "T755",
+          "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+          "at": "2026-11-09T17:21:28.810Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+              "startedAt": "2026-11-09T17:21:25.605Z",
+              "finishedAt": "2026-11-09T17:21:25.605Z",
+              "cached": "2026-11-09T16:37:05.840Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+          "startedAt": "2026-11-09T17:21:25.605Z",
+          "finishedAt": "2026-11-09T17:21:25.605Z",
+          "cached": "2026-11-09T16:37:05.840Z"
+        }
+      ]
     },
     {
       "id": "011a4423-938d-42cf-a9ca-fb28c9f54480",
@@ -851,9 +928,86 @@
       "contributors": [
         "fi09-growth-locale"
       ],
-      "status": "doing",
+      "status": "ready",
+      "reason": null,
       "createdAt": "2026-11-09T16:21:26.275Z",
-      "startCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7"
+      "startCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+      "verifiedCommit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+      "submittedBase": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+      "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
+      "submittedAt": "2026-11-09T16:38:50.983Z",
+      "risk": null,
+      "steps": [
+        {
+          "taskId": "T754",
+          "commit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+          "at": "2026-11-09T16:38:50.950Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+              "startedAt": "2026-11-09T16:38:08.819Z",
+              "finishedAt": "2026-11-09T16:38:50.432Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+          "startedAt": "2026-11-09T16:38:08.819Z",
+          "finishedAt": "2026-11-09T16:38:50.432Z"
+        }
+      ]
+    },
+    {
+      "id": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "group": "fi09",
+      "taskId": "T766",
+      "tasks": [
+        "T766"
+      ],
+      "lane": null,
+      "owner": "fi09-capital-mood",
+      "contributors": [
+        "fi09-capital-mood"
+      ],
+      "status": "doing",
+      "reason": null,
+      "createdAt": "2026-11-09T16:37:55.560Z",
+      "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372"
+    },
+    {
+      "id": "f471efc6-f998-4d04-b79a-e3e6759542a3",
+      "group": "fi09",
+      "taskId": "T756",
+      "tasks": [
+        "T756"
+      ],
+      "lane": null,
+      "owner": "fi09-cup-seasons",
+      "contributors": [
+        "fi09-cup-seasons"
+      ],
+      "status": "blocked",
+      "reason": "Temporary verification scheduling after ENOSPC; four-path WIP and12 focused passes preserved, waiting heavy-gate slot",
+      "createdAt": "2026-11-09T16:39:41.706Z",
+      "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372"
+    },
+    {
+      "id": "71d1a37b-b229-410d-9c81-a32ca92f6248",
+      "group": "fi09",
+      "taskId": "T767",
+      "tasks": [
+        "T767"
+      ],
+      "lane": null,
+      "owner": "fi09-live-observation",
+      "contributors": [
+        "fi09-live-observation"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T17:38:27.599Z",
+      "startCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc"
     }
   ],
   "history": [
@@ -3534,6 +3688,848 @@
       "group": "fi09",
       "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
       "taskId": "T765",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2128,
+      "at": "2026-11-09T16:28:34.304Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+      }
+    },
+    {
+      "sequence": 2129,
+      "at": "2026-11-09T16:28:56.666Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T16:24:57.674Z",
+            "finishedAt": "2026-11-09T16:28:56.301Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2130,
+      "at": "2026-11-09T16:28:56.809Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+        "integratedAt": "2026-11-09T16:28:56.809Z"
+      }
+    },
+    {
+      "sequence": 2131,
+      "at": "2026-11-09T16:32:41.809Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2132,
+      "at": "2026-11-09T16:32:42.384Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2133,
+      "at": "2026-11-09T16:37:06.284Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+        "submittedBase": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+        "submissionId": "9b087564-9846-4bc8-aeaa-24299f960997",
+        "submittedAt": "2026-11-09T16:37:06.284Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T755",
+            "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+            "at": "2026-11-09T16:37:06.248Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+                "startedAt": "2026-11-09T16:32:42.749Z",
+                "finishedAt": "2026-11-09T16:37:05.716Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+            "startedAt": "2026-11-09T16:32:42.749Z",
+            "finishedAt": "2026-11-09T16:37:05.716Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2134,
+      "at": "2026-11-09T16:37:48.237Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "bb253c44-aabc-4233-9109-74defaeb6e19",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+          "baseCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+          "submissionId": "9b087564-9846-4bc8-aeaa-24299f960997",
+          "createdAt": "2026-11-09T16:37:48.237Z"
+        }
+      }
+    },
+    {
+      "sequence": 2135,
+      "at": "2026-11-09T16:37:55.560Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "0a41d5cf-df38-4597-9506-48129be346c6",
+        "group": "fi09",
+        "taskId": "T766",
+        "tasks": [
+          "T766"
+        ],
+        "lane": null,
+        "owner": "fi09-capital-mood",
+        "contributors": [
+          "fi09-capital-mood"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T16:37:55.560Z",
+        "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372"
+      }
+    },
+    {
+      "sequence": 2136,
+      "at": "2026-11-09T16:37:58.876Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2137,
+      "at": "2026-11-09T16:38:08.277Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2138,
+      "at": "2026-11-09T16:38:50.983Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+        "submittedBase": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+        "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
+        "submittedAt": "2026-11-09T16:38:50.983Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T754",
+            "commit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+            "at": "2026-11-09T16:38:50.950Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+                "startedAt": "2026-11-09T16:38:08.819Z",
+                "finishedAt": "2026-11-09T16:38:50.432Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+            "startedAt": "2026-11-09T16:38:08.819Z",
+            "finishedAt": "2026-11-09T16:38:50.432Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2139,
+      "at": "2026-11-09T16:39:41.706Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "f471efc6-f998-4d04-b79a-e3e6759542a3",
+      "taskId": "T756",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "f471efc6-f998-4d04-b79a-e3e6759542a3",
+        "group": "fi09",
+        "taskId": "T756",
+        "tasks": [
+          "T756"
+        ],
+        "lane": null,
+        "owner": "fi09-cup-seasons",
+        "contributors": [
+          "fi09-cup-seasons"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T16:39:41.706Z",
+        "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372"
+      }
+    },
+    {
+      "sequence": 2140,
+      "at": "2026-11-09T16:39:45.537Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "f471efc6-f998-4d04-b79a-e3e6759542a3",
+      "taskId": "T756",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2141,
+      "at": "2026-11-09T16:41:08.825Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "bb253c44-aabc-4233-9109-74defaeb6e19",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Independent T755 review of pinned 290fde6d9fed17c1cbb220b248c5734e66db9f07 against a16e6d819fe0c02e4c224019af1af41ccea50372. Read the complete task/acceptance/result, current complete ARCH-4/21/30/32, HIST-13 and WEB-28/54/59 blocks, and all 20 changed paths. The full retained Tallies.players map and apps[1] now control appearance-board membership, descending order, stable-ID ties, shared/skipped places and player-sheet top-ten ranks. Undefined maps produce an unavailable state without a minutes/90 fallback; missing entries in available maps are zero, and T764 card-only rows cannot invent appearances. Sold/retired identities, pagination, other leader boards, source minutes and per-90 operands are preserved. The actual lazy PlayerDetailHost path subscribes to the complete map, so rival-only updates refresh an open sheet even when the selected entry and world identities are unchanged. Canonical source copy and all 12 registered locale packs change only the existing explanation ID and retain the same actual-appearance/per-90 meaning. Checked the mounted and helper regression design and reused exact-submission verification: focused 16 cases and the serial affected selection of 223 files/1995 cases, plus typecheck/lint/format/i18n/build. The original parallel timeout failure receipt is preserved; its resource-limited retry retains selection, assertions and timeouts. No reviewer test run, source edit or coverage change was made. Current upstream still equals the pinned base; final integration/browser/full verification remains coordinator-owned.",
+          "findings": [],
+          "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+          "baseCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+          "submissionId": "9b087564-9846-4bc8-aeaa-24299f960997",
+          "createdAt": "2026-11-09T16:37:48.237Z",
+          "finishedAt": "2026-11-09T16:41:08.824Z"
+        }
+      }
+    },
+    {
+      "sequence": 2142,
+      "at": "2026-11-09T16:41:46.482Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2143,
+      "at": "2026-11-09T16:51:06.257Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "integrating",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "interrupted operation; inspect preserved workspace before resubmitting"
+      }
+    },
+    {
+      "sequence": 2144,
+      "at": "2026-11-09T16:54:47.084Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2145,
+      "at": "2026-11-09T16:55:32.331Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T16:55:32.331Z"
+      }
+    },
+    {
+      "sequence": 2146,
+      "at": "2026-11-09T16:58:34.907Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2147,
+      "at": "2026-11-09T16:59:45.130Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T16:59:45.130Z"
+      }
+    },
+    {
+      "sequence": 2148,
+      "at": "2026-11-09T17:02:07.318Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2149,
+      "at": "2026-11-09T17:03:46.059Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T17:03:46.059Z"
+      }
+    },
+    {
+      "sequence": 2150,
+      "at": "2026-11-09T17:06:15.234Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2151,
+      "at": "2026-11-09T17:06:52.268Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T17:06:52.268Z"
+      }
+    },
+    {
+      "sequence": 2152,
+      "at": "2026-11-09T17:07:42.752Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2153,
+      "at": "2026-11-09T17:08:07.567Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T17:08:07.567Z"
+      }
+    },
+    {
+      "sequence": 2154,
+      "at": "2026-11-09T17:08:41.579Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2155,
+      "at": "2026-11-09T17:09:09.838Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T17:09:09.838Z"
+      }
+    },
+    {
+      "sequence": 2156,
+      "at": "2026-11-09T17:09:53.663Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2157,
+      "at": "2026-11-09T17:10:21.938Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T17:10:21.938Z"
+      }
+    },
+    {
+      "sequence": 2158,
+      "at": "2026-11-09T17:11:18.323Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2159,
+      "at": "2026-11-09T17:11:45.959Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T17:11:45.959Z"
+      }
+    },
+    {
+      "sequence": 2160,
+      "at": "2026-11-09T17:12:08.394Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "taskId": "T765",
+      "previousStatus": "released",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2161,
+      "at": "2026-11-09T17:12:14.712Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "aaacd6a2-3417-4d16-bb6b-c4d52ef3a7d5",
+      "taskId": "T765",
+      "previousStatus": "cleaning",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "cleanedAt": "2026-11-09T17:12:14.712Z"
+      }
+    },
+    {
+      "sequence": 2162,
+      "at": "2026-11-09T17:18:39.695Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Temporary verification scheduling after ENOSPC; all six-path WIP preserved, no source blocker; focused one unchanged timeout awaits quiescent retry"
+      }
+    },
+    {
+      "sequence": 2163,
+      "at": "2026-11-09T17:18:47.797Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "f471efc6-f998-4d04-b79a-e3e6759542a3",
+      "taskId": "T756",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Temporary verification scheduling after ENOSPC; four-path WIP and12 focused passes preserved, waiting heavy-gate slot"
+      }
+    },
+    {
+      "sequence": 2164,
+      "at": "2026-11-09T17:21:22.329Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "blocked",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null,
+        "review": null,
+        "reviewHistory": [
+          {
+            "id": "bb253c44-aabc-4233-9109-74defaeb6e19",
+            "owner": "fi09-transfer-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Independent T755 review of pinned 290fde6d9fed17c1cbb220b248c5734e66db9f07 against a16e6d819fe0c02e4c224019af1af41ccea50372. Read the complete task/acceptance/result, current complete ARCH-4/21/30/32, HIST-13 and WEB-28/54/59 blocks, and all 20 changed paths. The full retained Tallies.players map and apps[1] now control appearance-board membership, descending order, stable-ID ties, shared/skipped places and player-sheet top-ten ranks. Undefined maps produce an unavailable state without a minutes/90 fallback; missing entries in available maps are zero, and T764 card-only rows cannot invent appearances. Sold/retired identities, pagination, other leader boards, source minutes and per-90 operands are preserved. The actual lazy PlayerDetailHost path subscribes to the complete map, so rival-only updates refresh an open sheet even when the selected entry and world identities are unchanged. Canonical source copy and all 12 registered locale packs change only the existing explanation ID and retain the same actual-appearance/per-90 meaning. Checked the mounted and helper regression design and reused exact-submission verification: focused 16 cases and the serial affected selection of 223 files/1995 cases, plus typecheck/lint/format/i18n/build. The original parallel timeout failure receipt is preserved; its resource-limited retry retains selection, assertions and timeouts. No reviewer test run, source edit or coverage change was made. Current upstream still equals the pinned base; final integration/browser/full verification remains coordinator-owned.",
+            "findings": [],
+            "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+            "baseCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+            "submissionId": "9b087564-9846-4bc8-aeaa-24299f960997",
+            "createdAt": "2026-11-09T16:37:48.237Z",
+            "finishedAt": "2026-11-09T16:41:08.824Z",
+            "invalidatedAt": "2026-11-09T17:21:22.329Z",
+            "invalidationReason": "new submission"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2165,
+      "at": "2026-11-09T17:21:29.126Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submissionId": "6626ef5c-7b3c-42a2-bfa0-74726a3c991c",
+        "submittedAt": "2026-11-09T17:21:29.126Z",
+        "steps": [
+          {
+            "taskId": "T755",
+            "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+            "at": "2026-11-09T17:21:28.810Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+                "startedAt": "2026-11-09T17:21:25.605Z",
+                "finishedAt": "2026-11-09T17:21:25.605Z",
+                "cached": "2026-11-09T16:37:05.840Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 1 --no-file-parallelism && pnpm run build",
+            "startedAt": "2026-11-09T17:21:25.605Z",
+            "finishedAt": "2026-11-09T17:21:25.605Z",
+            "cached": "2026-11-09T16:37:05.840Z"
+          }
+        ],
+        "verifiedCommit": "290fde6d9fed17c1cbb220b248c5734e66db9f07"
+      }
+    },
+    {
+      "sequence": 2166,
+      "at": "2026-11-09T17:37:41.623Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T753",
+          "T754",
+          "T755",
+          "T756",
+          "T757",
+          "T758",
+          "T759",
+          "T760",
+          "T761",
+          "T762",
+          "T763",
+          "T764",
+          "T765",
+          "T766",
+          "T767"
+        ]
+      }
+    },
+    {
+      "sequence": 2167,
+      "at": "2026-11-09T17:37:46.005Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2d589096-7cd4-4134-99be-cc3d48abd263",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+          "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+          "submissionId": "6626ef5c-7b3c-42a2-bfa0-74726a3c991c",
+          "createdAt": "2026-11-09T17:37:46.005Z"
+        }
+      }
+    },
+    {
+      "sequence": 2168,
+      "at": "2026-11-09T17:38:27.599Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "71d1a37b-b229-410d-9c81-a32ca92f6248",
+      "taskId": "T767",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "71d1a37b-b229-410d-9c81-a32ca92f6248",
+        "group": "fi09",
+        "taskId": "T767",
+        "tasks": [
+          "T767"
+        ],
+        "lane": null,
+        "owner": "fi09-live-observation",
+        "contributors": [
+          "fi09-live-observation"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T17:38:27.599Z",
+        "startCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc"
+      }
+    },
+    {
+      "sequence": 2169,
+      "at": "2026-11-09T17:38:53.357Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "71d1a37b-b229-410d-9c81-a32ca92f6248",
+      "taskId": "T767",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2170,
+      "at": "2026-11-09T17:38:56.509Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2171,
+      "at": "2026-11-09T17:41:59.881Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "2d589096-7cd4-4134-99be-cc3d48abd263",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh independent T755 review after the interrupted ENOSPC integration, pinned to submission 6626ef5c-7b3c-42a2-bfa0-74726a3c991c / commit 290fde6d9fed17c1cbb220b248c5734e66db9f07 against new base fcce405843cfb60d5be24d4d2c245eaa3177e6bc. Re-read the current complete task contract and new-base brief (complete:yes), relevant complete ARCH-4/21/30/32, HIST-13, WEB-28/54/59 blocks, and the full upstream change. The a16e6d81-to-fcce4058 changes are only T767 planning, STATE, review and report metadata; apps/packages/tests/toolchain/SSOT have zero differences and no interaction with T755. Confirmed the 19 source/test/locale paths and total author diff are byte-identical to the independently reviewed prior submission, so its semantic assessment is explicitly reused: actual apps[1] controls membership/order/stable ties/shared places/sheet ranks; rival-only full-map updates recalculate the actual PlayerDetailHost sheet; missing maps differ from available zero; sold/retired identities, other boards, pagination, minutes/per90 and all 12 one-key translations are preserved; T764 card-only tallies create no appearances. Checked the new native review/attempt/submission bindings and post-disk submit receipt. The cached record points to the unchanged exact verified commit, identical task-start selection base 6766ceab33c409cae3cddbe403d767e6eb2c36a6 and identical serial command/flags, referring to the original successful 16:37:05.840Z cache entry, not a newly executed test run. Reused original nonempty raw evidence for 223 affected files/1995 tests, 16 focused cases, typecheck/lint/format/i18n/build; the original parallel timeout failure and interrupted integration remain preserved. No new tests, source edits or coverage changes were made. Current target remains the new pinned base. This is fresh production-code approval under unchanged contracts; integration and the actual final full/browser gate remain coordinator-owned.",
+          "findings": [],
+          "commit": "290fde6d9fed17c1cbb220b248c5734e66db9f07",
+          "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+          "submissionId": "6626ef5c-7b3c-42a2-bfa0-74726a3c991c",
+          "createdAt": "2026-11-09T17:37:46.005Z",
+          "finishedAt": "2026-11-09T17:41:59.881Z"
+        }
+      }
+    },
+    {
+      "sequence": 2172,
+      "at": "2026-11-09T17:47:46.194Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
