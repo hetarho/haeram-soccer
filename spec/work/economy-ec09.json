@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T03:42:44.232Z",
-  "sourceCommit": "c6ee743207fae78872aaec8510421705ae2a8cd9",
+  "snapshotAt": "2026-11-09T04:03:23.496Z",
+  "sourceCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -11,6 +11,25 @@
       "workers": 2,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+      "checks": [
+        {
+          "command": "node /tmp/ec09-affected-gate.mjs",
+          "startedAt": "2026-11-09T03:59:42.817Z",
+          "finishedAt": "2026-11-09T04:03:20.970Z"
+        }
+      ],
+      "at": "2026-11-09T04:03:21.038Z",
+      "excluded": [
+        "T689",
+        "T726",
+        "T730",
+        "T735",
+        "T736",
+        "T738"
+      ]
     },
     "push": null,
     "review": "all",
@@ -336,6 +355,8 @@
       "submittedBase": "c6ee743207fae78872aaec8510421705ae2a8cd9",
       "submissionId": "4d68fe1c-4f91-494f-b228-b776a5b581d1",
       "submittedAt": "2026-11-09T03:41:48.042Z",
+      "integratedCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+      "integratedAt": "2026-11-09T03:59:35.960Z",
       "risk": null,
       "review": {
         "id": "3ffad793-961c-4d1a-a1f3-199ffd090082",
@@ -397,6 +418,13 @@
           "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-09T03:41:27.408Z",
           "finishedAt": "2026-11-09T03:41:46.746Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T03:59:35.684Z",
+          "finishedAt": "2026-11-09T03:59:35.696Z"
         }
       ]
     }
@@ -1809,6 +1837,69 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 885,
+      "at": "2026-11-09T03:59:35.863Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T03:59:35.684Z",
+            "finishedAt": "2026-11-09T03:59:35.696Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 886,
+      "at": "2026-11-09T03:59:35.960Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "b5d17e0c-6fd6-49b7-afbd-e5f5b92f59f9",
+      "taskId": "T737",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+        "integratedAt": "2026-11-09T03:59:35.960Z"
+      }
+    },
+    {
+      "sequence": 887,
+      "at": "2026-11-09T04:03:21.077Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+          "checks": [
+            {
+              "command": "node /tmp/ec09-affected-gate.mjs",
+              "startedAt": "2026-11-09T03:59:42.817Z",
+              "finishedAt": "2026-11-09T04:03:20.970Z"
+            }
+          ],
+          "at": "2026-11-09T04:03:21.038Z",
+          "excluded": [
+            "T689",
+            "T726",
+            "T730",
+            "T735",
+            "T736",
+            "T738"
+          ]
+        }
       }
     }
   ]
