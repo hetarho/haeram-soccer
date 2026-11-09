@@ -1,4 +1,5 @@
 import type { Club, CupFinal, SeasonArchive } from '../../../../../../packages/contracts/src/types';
+import { seasonAfter } from '../../../../../../packages/engine/src/season-years';
 import { nationName } from './cupRoute';
 
 /** One season's final of the competition, with the name it carried that season. */
@@ -68,7 +69,8 @@ export function cupHonours(
   country: string,
   key: string,
 ): CupHonours {
-  const chronological: FinalRow[] = [];
+  const chronological: FinalRow[] = [],
+    runs: Streak[] = [];
   for (const h of [...history].sort((a, b) => a.year - b.year)) {
     let row: Omit<FinalRow, 'streak'> | undefined;
     if (key === 'cup') {
@@ -80,13 +82,12 @@ export function cupHonours(
     }
     if (!row) continue;
     const previous = chronological.at(-1);
-    chronological.push({
-      ...row,
-      streak:
-        previous && previous.winner === row.winner && previous.year === row.year - 1
-          ? previous.streak + 1
-          : 1,
-    });
+    if (previous && previous.winner === row.winner && seasonAfter(previous.year) === row.year) {
+      const run = runs.at(-1)!;
+      run.length++;
+      run.to = row.year;
+    } else runs.push({ club: row.winner, length: 1, from: row.year, to: row.year });
+    chronological.push({ ...row, streak: runs.at(-1)!.length });
   }
 
   const records = new Map<string, ClubRecord>();
@@ -136,7 +137,7 @@ export function cupHonours(
     }
   }
 
-  const longest = Math.max(0, ...chronological.map((row) => row.streak));
+  const longest = Math.max(0, ...runs.map((run) => run.length));
   const latestFirst = [...history].sort((a, b) => b.year - a.year);
   return {
     finals: [...chronological].reverse(),
@@ -148,17 +149,7 @@ export function cupHonours(
         b.clubs - a.clubs ||
         a.name.localeCompare(b.name),
     ),
-    streaks:
-      longest < 2
-        ? []
-        : chronological
-            .filter((row) => row.streak === longest)
-            .map((row) => ({
-              club: row.winner,
-              length: longest,
-              from: row.year - longest + 1,
-              to: row.year,
-            })),
+    streaks: longest < 2 ? [] : runs.filter((run) => run.length === longest),
     doubles:
       key === 'cup'
         ? latestFirst.flatMap((h) => {

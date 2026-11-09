@@ -178,3 +178,84 @@ describe('cup honours', () => {
     expect(uecl.streaks).toEqual([]);
   });
 });
+
+/** Synthetic retained winners only; no simulated season is added inside the declared war gap. */
+const winners = (rows: readonly (readonly [number, string])[]): Season[] =>
+  rows.map(([year, cup]) => ({
+    year,
+    champions: [{ country: 'ENG', club: 'ENG:0:0:2', cup }],
+    europe: [],
+  }));
+
+describe('title runs over actually played seasons', () => {
+  it.each([
+    { years: [1938, 1946] },
+    { years: [1937, 1938, 1946] },
+    { years: [1937, 1938, 1946, 1947] },
+  ])('keeps the actual start of the run $years', ({ years }) => {
+    const source = winners(years.map((year) => [year, 'ENG:0:0:1']));
+    // The view sorts a supplied archive without changing its facts or requiring input order.
+    source.reverse();
+    const before = structuredClone(source);
+    const honours = cupHonours(source, clubs, 'ENG', 'cup');
+    expect(honours.streaks).toEqual([
+      { club: 'ENG:0:0:1', length: years.length, from: years[0], to: years.at(-1) },
+    ]);
+    expect(honours.finals.map((row) => [row.year, row.streak])).toEqual(
+      years.map((year, i) => [year, i + 1]).reverse(),
+    );
+    expect(source).toEqual(before);
+  });
+
+  it('keeps tied longest runs with their actual start/end seasons', () => {
+    const honours = cupHonours(
+      winners([
+        [1938, 'ENG:0:0:1'],
+        [1946, 'ENG:0:0:1'],
+        [1947, 'ENG:club'],
+        [1948, 'ENG:club'],
+      ]),
+      clubs,
+      'ENG',
+      'cup',
+    );
+    expect(honours.streaks).toEqual([
+      { club: 'ENG:0:0:1', length: 2, from: 1938, to: 1946 },
+      { club: 'ENG:club', length: 2, from: 1947, to: 1948 },
+    ]);
+  });
+
+  it.each([
+    [
+      [1938, 'ENG:0:0:1'],
+      [1946, 'ENG:club'],
+    ],
+    [
+      [1938, 'ENG:0:0:1'],
+      [1947, 'ENG:0:0:1'],
+    ],
+    [
+      [1946, 'ENG:0:0:1'],
+      [1948, 'ENG:0:0:1'],
+    ],
+  ] as const)('breaks a run for a changed winner or an unrecorded played season: %j', (...rows) => {
+    const honours = cupHonours(winners(rows), clubs, 'ENG', 'cup');
+    expect(honours.streaks).toEqual([]);
+    expect(honours.finals.every((row) => row.streak === 1)).toBe(true);
+  });
+
+  it('does not join a pre-war run when the restart season is missing', () => {
+    const honours = cupHonours(
+      winners([
+        [1937, 'ENG:0:0:1'],
+        [1938, 'ENG:0:0:1'],
+        [1947, 'ENG:0:0:1'],
+      ]),
+      clubs,
+      'ENG',
+      'cup',
+    );
+    expect(honours.streaks).toEqual([{ club: 'ENG:0:0:1', length: 2, from: 1937, to: 1938 }]);
+    expect(honours.finals[0]).toMatchObject({ year: 1947, streak: 1 });
+  });
+});
