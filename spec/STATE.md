@@ -826,6 +826,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
 | T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
