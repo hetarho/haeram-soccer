@@ -19,7 +19,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| ow09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T03:07Z | 2026-11-09T03:07Z | - |
 
 ## inbox
 - 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
@@ -870,6 +869,7 @@
 - F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 
 ## log
+- 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
 - 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
 - 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
 - 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
@@ -889,4 +889,3 @@
 - 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
 - 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
 - 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits
-- 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
