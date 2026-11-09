@@ -1,0 +1,43 @@
+{
+  "session": "/root/scout_transfer",
+  "assignedBase": "321d1784618f99d89c69b15b28b6f56466d58a31",
+  "mode": "read-only static source/contract review; no interactive reproduction or tests",
+  "proposals": [
+    {
+      "id": "stale-bid-asking",
+      "evidence": [
+        "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:600-602 retains asking per world ID",
+        "RecruitmentDesk.tsx:655-658 fee based on retained asking",
+        "RecruitmentDesk.tsx:1730 displays refreshed outlook.asking",
+        "RecruitmentDesk.tsx:1748-1749 step fee uses old asking",
+        "RecruitmentDesk.tsx:1682 submits fee",
+        "apps/web/src/pages/club/lib/worldMarket.ts:193-208,227-240 refreshes on current revision"
+      ],
+      "derivedExample": "retained asking1000 refreshed asking2000 => 100% label shows offer1000 rather than2000",
+      "contracts": [
+        "CLUB-14",
+        "CLUB-15",
+        "CLUB-18",
+        "ECON-6",
+        "WEB-109"
+      ],
+      "unknown": "interactive reproduction pending; worker first writes a failing focused synthetic lifecycle test"
+    },
+    {
+      "id": "trend-locale-memo",
+      "evidence": [
+        "apps/web/src/pages/club/ui/ClubTrends.tsx:236 subscribes locale",
+        "ClubTrends.tsx:239 series memo omits locale",
+        "ClubTrends.tsx:62,109,114,122,128 formats money/supporter detail strings in memo"
+      ],
+      "contracts": [
+        "ARCH-32",
+        "WEB-54"
+      ],
+      "preserves": "numeric chart points, historical/CPI conversion, selected metric and same world facts"
+    }
+  ],
+  "parked": [
+    "NPC budgets existing economy-review F3; rejected wage/package pilots unchanged"
+  ]
+}
