@@ -55,6 +55,64 @@ function gridRecord(): MatchRecord {
 }
 
 describe('match report read model', () => {
+  const ratioRecord = () => {
+    const record = gridRecord();
+    for (const side of [0, 1] as const) {
+      record.metrics[side][2] = 10;
+      record.metrics[side][3] = side === 0 ? 6 : 8;
+      record.detail![side][TD.finalThirdPasses] = 10;
+      record.detail![side][TD.finalThirdCompleted] = side === 0 ? 6 : 8;
+      record.detail![side][TD.pressActions] = 5;
+      record.detail![side][TD.buildUpPasses] = side === 0 ? 25 : 50;
+    }
+    return record;
+  };
+
+  describe.each(['ppda', 'pass-accuracy', 'final-third'])('%s sample availability', (term) => {
+    it.each([[0], [1], [0, 1]])('keeps missing sides %j neutral', (...missing) => {
+      const record = ratioRecord();
+      for (const index of missing) {
+        const side = index as 0 | 1;
+        if (term === 'ppda') record.detail![side][TD.pressActions] = 0;
+        else if (term === 'final-third') {
+          record.detail![side][TD.finalThirdPasses] = 0;
+          record.detail![side][TD.finalThirdCompleted] = 0;
+        } else {
+          record.metrics[side][2] = 0;
+          record.metrics[side][3] = 0;
+        }
+      }
+      const before = structuredClone(record);
+      const row = matchComparison(record).find((entry) => entry.term === term)!;
+      expect(row.lead).toBeUndefined();
+      expect(row.homeShare).toBe(0.5);
+      for (const side of missing) expect(side === 0 ? row.home : row.away).toContain('—');
+      expect(record).toEqual(before);
+    });
+
+    it('compares a recorded zero with a valid denominator', () => {
+      const record = ratioRecord();
+      if (term === 'ppda') record.detail![1][TD.buildUpPasses] = 0;
+      else if (term === 'final-third') record.detail![0][TD.finalThirdCompleted] = 0;
+      else record.metrics[0][3] = 0;
+      const row = matchComparison(record).find((entry) => entry.term === term)!;
+      expect(row.home).not.toContain('—');
+      expect(row.lead).toBe(term === 'ppda' ? 0 : 1);
+      expect(row.homeShare).toBe(term === 'ppda' ? 1 : 0);
+    });
+  });
+
+  it('preserves comparisons of fully observed ratios and counts', () => {
+    const rows = matchComparison(ratioRecord());
+    const by = (term: string) => rows.find((entry) => entry.term === term)!;
+    expect(by('pass-accuracy')).toMatchObject({ home: '60% · 6/10', away: '80% · 8/10', lead: 1 });
+    expect(by('pass-accuracy').homeShare).toBeCloseTo(0.6 / 1.4);
+    expect(by('final-third')).toMatchObject({ home: '60% · 6/10', away: '80% · 8/10', lead: 1 });
+    expect(by('ppda')).toMatchObject({ home: '10.0', away: '5.0', lead: 1 });
+    expect(by('ppda').homeShare).toBeCloseTo(1 / 3);
+    expect(by('fouls')).toMatchObject({ home: '9', away: '12', lead: 0, homeShare: 12 / 21 });
+  });
+
   it('adds the spatial counters to the comparison', () => {
     const rows = matchComparison(gridRecord());
     const labels = rows.map((row) => row.label);

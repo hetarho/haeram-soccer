@@ -22,19 +22,20 @@ export interface ComparisonRow {
 function row(
   term: string,
   label: string,
-  values: [number, number],
+  values: [number | undefined, number | undefined],
   text: (side: 0 | 1) => string,
   lowerIsBetter = false,
 ): ComparisonRow {
   const [h, a] = values;
-  const total = h + a;
+  const comparable = h !== undefined && a !== undefined;
+  const total = comparable ? h + a : 0;
   return {
     term,
     label,
     home: text(0),
     away: text(1),
-    lead: h === a ? undefined : h > a !== lowerIsBetter ? 0 : 1,
-    homeShare: total > 0 ? (lowerIsBetter ? a / total : h / total) : 0.5,
+    lead: !comparable || h === a ? undefined : h > a !== lowerIsBetter ? 0 : 1,
+    homeShare: comparable && total > 0 ? (lowerIsBetter ? a / total : h / total) : 0.5,
   };
 }
 
@@ -94,8 +95,8 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
       'pass-accuracy',
       sourceMessage('copy.summary.5101559c4e'),
       [
-        record.metrics[0][2] ? record.metrics[0][3] / record.metrics[0][2] : 0,
-        record.metrics[1][2] ? record.metrics[1][3] / record.metrics[1][2] : 0,
+        record.metrics[0][2] ? record.metrics[0][3] / record.metrics[0][2] : undefined,
+        record.metrics[1][2] ? record.metrics[1][3] / record.metrics[1][2] : undefined,
       ],
       (side) =>
         `${share(record.metrics[side][3], record.metrics[side][2])} · ${record.metrics[side][3]}/${record.metrics[side][2]}`,
@@ -108,8 +109,8 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         'final-third',
         sourceMessage('copy.PlayerAdvancedStats.c4f75aa388'),
         [
-          ft(0) ? detail[0][TD.finalThirdCompleted] / ft(0) : 0,
-          ft(1) ? detail[1][TD.finalThirdCompleted] / ft(1) : 0,
+          ft(0) ? detail[0][TD.finalThirdCompleted] / ft(0) : undefined,
+          ft(1) ? detail[1][TD.finalThirdCompleted] / ft(1) : undefined,
         ],
         (side) =>
           `${share(detail[side][TD.finalThirdCompleted], ft(side))} · ${detail[side][TD.finalThirdCompleted]}/${ft(side)}`,
@@ -136,7 +137,7 @@ export function matchComparison(record: MatchRecord): ComparisonRow[] {
         (side) => String(detail[side][TD.highTurnovers]),
       ),
     );
-    const press = [ppda(record, 0) ?? 0, ppda(record, 1) ?? 0] as [number, number];
+    const press: [number | undefined, number | undefined] = [ppda(record, 0), ppda(record, 1)];
     rows.push(
       row(
         'ppda',
