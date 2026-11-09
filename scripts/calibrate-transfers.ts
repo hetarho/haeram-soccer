@@ -6,8 +6,9 @@
  * transfer market charges against real English football:
  *  - the market: every top-flight squad's transfer values at each summer — the dearest player (the
  *    era's record fee), the ten dearest and the median player;
- *  - the fees our club actually paid and received (HIST-20's facts), separating paid and free
- *    arrivals by division; roster values and paid-fee averages are different populations;
+ *  - the fees our club actually paid and received (HIST-20's facts), separating permanent paid
+ *    fees from zero-fee incoming events and pool top-ups by division; roster values and paid-fee
+ *    averages are different populations;
  *  - the club's turnover (competition, matchday and commercial income) while in the top flight, the
  *    money those fees are weighed against.
  * Money is nominal pounds of the season (the reader compares with each era's real fees).
@@ -19,7 +20,8 @@
  * A career is a 1950 takeover (`careerWorld`: the lowest professional division's first club, one
  * year of fixed costs in cash) until T668 rebuilds the reference careers on generated worlds.
  */
-import type { CountryCode, World } from '../packages/contracts/src/types';
+import type { CountryCode, Event, World } from '../packages/contracts/src/types';
+import { countZeroFeeArrivals } from './lib/transfer-flow';
 import type { WealthTier } from '../packages/contracts/src/owner';
 import { CAREER_FUNDS, careerFunds, careerWorld } from '../packages/engine/src/career.testkit';
 import { currency, country } from '../packages/catalogs/src/index';
@@ -149,6 +151,9 @@ interface Fact {
 interface Season {
   year: number;
   tier: number;
+  /** Absent in older stored observations, whose zero-fee arrival count is unknown. */
+  currency?: string;
+  arrivalEvents?: Pick<Event, 'year' | 'kind' | 'amount' | 'currency'>[];
   /** Competition, matchday and commercial income of the season, pounds. */
   turnover: number;
   /** Top-flight market: dearest, mean of the ten dearest, median and mean player, pounds. */
@@ -226,6 +231,7 @@ function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career
   for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
     const year = w.year,
       tier = clubOf(w).tier,
+      seasonCurrency = w.currency,
       summer = topFlightMarket(w),
       firstEvent = w.events.length;
     while (w.round < 46 && !w.bankrupt) {
@@ -258,9 +264,25 @@ function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career
         age: person ? f.year - person.born : NaN,
       });
     }
-    career.seasons.push({ year, tier, turnover, ...summer });
     if (year % 10 === 9) console.error(`${code}/${seed}: ${year} closed, division ${tier}`);
     closeSeason(w);
+    // Read the retained event year, including business opened at the previous close. The new
+    // year's top-ups and summer moves belong to the next row, outside the last row's window.
+    const arrivalEvents = w.events
+      .filter(
+        (event) =>
+          event.year === year &&
+          (event.kind === 'transfer-in' || event.kind === 'free-agent-signing'),
+      )
+      .map(({ year, kind, amount, currency }) => ({ year, kind, amount, currency }));
+    career.seasons.push({
+      year,
+      tier,
+      turnover,
+      ...summer,
+      currency: seasonCurrency,
+      arrivalEvents,
+    });
     w.revision++;
   }
   return career;
@@ -275,6 +297,16 @@ const money = (n: number) =>
       : n >= 1e3
         ? `£${Math.round(n / 1e3)}k`
         : `£${Math.round(n)}`;
+
+function arrivalCount(seasons: Season[], kind: 'zeroFeeMoves' | 'topUps') {
+  if (!seasons.length) return '-';
+  let count = 0;
+  for (const season of seasons) {
+    if (!season.arrivalEvents || !season.currency) return 'unknown';
+    count += countZeroFeeArrivals(season.arrivalEvents, season.year, season.currency)[kind];
+  }
+  return String(count);
+}
 
 function report(careers: Career[]) {
   const decades = [...new Set(careers.flatMap((c) => c.seasons.map((s) => decade(s.year))))];
@@ -328,12 +360,17 @@ function report(careers: Career[]) {
   }
   console.log(`${missed} of ${compared} measured years outside the dearest-value band`);
   console.log(
-    '\nOur ENG top-flight permanent arrivals within 2 years of each anchor: paid fees and free arrivals',
+    '\nOur ENG top-flight arrivals within 2 years of each anchor: paid permanent fees and observed zero-fee moves',
   );
   console.log(
     'Our club is a selected sample, not the whole league; the real paid mean is context.',
   );
-  console.log('year | paid n | free n | paid mean | paid median | real paid mean | paid/real mean');
+  console.log(
+    'Zero-fee transfer events may include loans; pool top-ups are separate. Missing old observations are unknown.',
+  );
+  console.log(
+    'year | paid permanent n | zero-fee moves n | pool top-ups n | paid mean | paid median | real paid mean | paid/real mean',
+  );
   for (const [year, avg] of ANCHOR_YEARS) {
     if (!avg) continue;
     const arrivals = careers
@@ -344,11 +381,15 @@ function report(careers: Career[]) {
         ),
       );
     const paid = arrivals.filter((f) => f.fee > 0).map((f) => f.fee);
+    const seasons = careers
+      .filter((c) => c.code === 'ENG')
+      .flatMap((c) => c.seasons.filter((s) => s.tier === 0 && Math.abs(s.year - year) <= 2));
     console.log(
       [
         year,
         paid.length,
-        arrivals.filter((f) => f.fee === 0).length,
+        arrivalCount(seasons, 'zeroFeeMoves'),
+        arrivalCount(seasons, 'topUps'),
         money(mean(paid)),
         money(median(paid)),
         money(avg),
@@ -356,16 +397,19 @@ function report(careers: Career[]) {
       ].join(' | '),
     );
   }
-  console.log('\nOur fees (permanent moves) by decade and our division at the time');
+  console.log('\nOur paid permanent fees and zero-fee arrival observations by decade and division');
   console.log(
-    'decade | division | paid buys n | free arrivals n | paid mean | paid median | paid max | paid sales n | sale mean | sale max',
+    'decade | division | paid buys n | zero-fee moves n | pool top-ups n | paid mean | paid median | paid max | paid sales n | sale mean | sale max',
   );
   for (const d of decades)
     for (const tier of [0, 1, 2, 3, 4]) {
       const f = careers.flatMap((c) =>
         c.facts.filter((x) => !x.loan && decade(x.year) === d && Math.min(x.tier, 4) === tier),
       );
-      if (!f.length) continue;
+      const seasons = careers.flatMap((c) =>
+        c.seasons.filter((s) => decade(s.year) === d && Math.min(s.tier, 4) === tier),
+      );
+      if (!f.length && !seasons.length) continue;
       const arrivals = f.filter((x) => x.direction === 'in'),
         buys = arrivals.filter((x) => x.fee > 0).map((x) => x.fee),
         sales = f.filter((x) => x.direction === 'out' && x.fee > 0).map((x) => x.fee);
@@ -374,7 +418,8 @@ function report(careers: Career[]) {
           d,
           tier === 4 ? 'amateur' : tier,
           buys.length,
-          arrivals.filter((x) => x.fee === 0).length,
+          arrivalCount(seasons, 'zeroFeeMoves'),
+          arrivalCount(seasons, 'topUps'),
           money(mean(buys)),
           money(median(buys)),
           money(Math.max(...buys)),
