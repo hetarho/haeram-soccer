@@ -4,7 +4,12 @@ import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useId, useState } from 'react';
 import type { DividendShare } from '../../../../../../packages/contracts/src/owner';
 import type { Command, World } from '../../../../../../packages/contracts/src/types';
-import { FAN_MOOD, FFP, OWNER_BUSINESS } from '../../../../../../packages/engine/src/owner-config';
+import {
+  FAN_MOOD,
+  FFP,
+  OWNER_BUSINESS,
+  OWNER_SETTLEMENTS,
+} from '../../../../../../packages/engine/src/owner-config';
 import type { GameClient } from '../../../runtime/client';
 import { useGameState } from '../../../runtime/store';
 import { Card } from '../../../shared/ui/Card';
@@ -151,6 +156,12 @@ export function OwnerSheetBody({ w, lock, sending, message, onCommand }: OwnerSh
             onChange={(event) => setStake(Number(event.currentTarget.value))}
           />
         </label>
+        <p className={s.note}>
+          {richMessage('copy.OwnerSheet.7c3e91a5d2', {
+            p0: OWNER_BUSINESS.swing,
+            p1: OWNER_SETTLEMENTS,
+          })}
+        </p>
         {localizeValue(
           business.staked && stake > 0 ? (
             <dl className={s.outcomes}>

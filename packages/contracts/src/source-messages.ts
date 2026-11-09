@@ -1137,7 +1137,7 @@ export const sourceMessages = {
   'copy.influences.c4c0405302': '0 이하이면 걸 돈이 없습니다.',
   'copy.influences.fc9f107c29': '성공한 사업가 특성',
   'copy.influences.f83a2b83a5': '선택했으면 성공 확률이 더 높습니다.',
-  'copy.influences.9a1699bec9': '분기·시즌 마감의 정산과 추첨',
+  'copy.influences.9a1699bec9': '매달·시즌 마감의 정산과 추첨',
   'copy.influences.c35453720c': '정산 시점에 판정하고 생활비도 함께 빠집니다.',
   'copy.influences.d8ca4931da': '성공·실패로 개인 자금 변화',
   'copy.influences.e3d69eaf0f': '큰 실패와 생활비로 위기 가능',
@@ -1179,7 +1179,7 @@ export const sourceMessages = {
   'copy.influences.f18c4dee65': '자산 등급의 시작 재산·인수 이후 물가',
   'copy.influences.16eca6fdb0':
     '현재 잔액이 아니라 시작 재산을 기준으로 생활비를 산정하고 물가를 반영합니다.',
-  'copy.influences.2c1a57e4fb': '분기 정산·사업 손실·현재 음수 잔고',
+  'copy.influences.2c1a57e4fb': '월 정산·사업 손실·현재 음수 잔고',
   'copy.influences.607c06310d':
     '정산으로 음수가 되면 위기가 시작되고 음수 자금으로 사업에 걸 수는 없습니다.',
   'copy.influences.e66f73e255': '시즌 배당 설정',
@@ -3643,6 +3643,8 @@ export const sourceMessages = {
   'copy.OwnerSheet.bbdfc835e7': '사업에 걸지 않아요. 정산 뒤 {p0}',
   'copy.OwnerSheet.91146ba139': '사업자금이 0 이하라 사업에 걸 돈이 없어요.',
   'copy.OwnerSheet.42ff9fb1ea': '{p0} 정산부터 적용 · 생활비 {p1}도 정산 때 함께 빠져요',
+  'copy.OwnerSheet.7c3e91a5d2':
+    '정산은 9월부터 6월까지 매달 1일과 시즌 마감일, 시즌에 {p1}번이에요. 정산마다 투자금의 {p0}%를 벌거나 잃어요.',
   'copy.OwnerSheet.87b2bb7374': '{p0}%로 정하기',
   'copy.OwnerSheet.5ec119faf4': '사업 투자 비중을 {p0}%로 정했어요. {p1} 정산부터 적용돼요.',
   'copy.OwnerSheet.16175e8ef5': '최대 {p0}',
@@ -5943,7 +5945,7 @@ export const sourceMessages = {
   'copy.owner.6d7167145e': '사업 실패',
   'copy.owner.63176133cc': '{p0} · 자금의 {p1}% 투자 · 성공 확률 {p2}%',
   'copy.owner.232cfe2b08': '구단주 생활비',
-  'copy.owner.bad96cce83': '{p0} · 시작 자산의 {p1}%, 물가 반영',
+  'copy.owner.bad96cce83': '{p0} · 시즌마다 시작 자산의 {p1}%를 {p2}번에 나눠 냄, 물가 반영',
   'copy.owner.0cde9f23e6': '구단주 파산 위기 · 시즌 마감까지 자금을 회복하세요',
   'copy.owner.b7907d4f12':
     '구단주 자금이 {p0}예요. 마이너스 자금은 사업에 걸 수 없어요. 시즌 마감의 배당과 생활비 뒤에도 마이너스면 구단주가 파산해 게임이 끝나요.',
