@@ -1,0 +1,113 @@
+[
+  {
+    "name": "av11-bands-c50-400",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c50.json",
+    "script": "scripts/grid-bands.ts",
+    "args": [
+      "--candidate",
+      "--matches",
+      "400"
+    ]
+  },
+  {
+    "name": "av11-bands-c25-400",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c25.json",
+    "script": "scripts/grid-bands.ts",
+    "args": [
+      "--candidate",
+      "--matches",
+      "400"
+    ]
+  },
+  {
+    "name": "av11-origins-c50-0-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c50.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "0",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-c50-0-300.json"
+    ]
+  },
+  {
+    "name": "av11-origins-c25-0-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c25.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "0",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-c25-0-300.json"
+    ]
+  },
+  {
+    "name": "av11-origins-Pab-0-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/Pab.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "0",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-Pab-0-300.json"
+    ]
+  },
+  {
+    "name": "av11-origins-c50-300-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c50.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "300",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-c50-300-300.json"
+    ]
+  },
+  {
+    "name": "av11-origins-c25-300-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/c25.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "300",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-c25-300-300.json"
+    ]
+  },
+  {
+    "name": "av11-origins-Bid-0-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/Bid.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "0",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-Bid-0-300.json"
+    ]
+  },
+  {
+    "name": "av11-origins-Perf-0-300",
+    "patch": "artifacts/benchmarks/scoring-261109-cv04-clr/candidates/Perf.json",
+    "script": "scripts/scoring-shot-origins.ts",
+    "args": [
+      "--start",
+      "0",
+      "--matches",
+      "300",
+      "--out",
+      "artifacts/benchmarks/scoring-261109-cv04-clr/analysis/av11/origins/origins-Perf-0-300.json"
+    ]
+  }
+]

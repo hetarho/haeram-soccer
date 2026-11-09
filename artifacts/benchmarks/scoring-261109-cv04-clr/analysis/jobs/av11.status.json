@@ -1,0 +1,50 @@
+{
+ "seconds": 215,
+ "status": [
+  {
+   "name": "av11-bands-c25-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "av11-bands-c50-400",
+   "code": 0,
+   "seconds": 71
+  },
+  {
+   "name": "av11-origins-c25-0-300",
+   "code": 0,
+   "seconds": 73
+  },
+  {
+   "name": "av11-origins-c50-0-300",
+   "code": 0,
+   "seconds": 74
+  },
+  {
+   "name": "av11-origins-Pab-0-300",
+   "code": 0,
+   "seconds": 83
+  },
+  {
+   "name": "av11-origins-Bid-0-300",
+   "code": 0,
+   "seconds": 80
+  },
+  {
+   "name": "av11-origins-c25-300-300",
+   "code": 0,
+   "seconds": 81
+  },
+  {
+   "name": "av11-origins-c50-300-300",
+   "code": 0,
+   "seconds": 84
+  },
+  {
+   "name": "av11-origins-Perf-0-300",
+   "code": 0,
+   "seconds": 62
+  }
+ ]
+}
