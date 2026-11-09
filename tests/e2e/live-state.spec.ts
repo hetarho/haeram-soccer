@@ -67,10 +67,8 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
   // The clubhouse detour can meet the observation before its second click. Dismiss it through
   // its real control, then reopen the unchanged work in the event order this case exercises.
   const eveDialog = matchReport(page);
-  let dismissedEve = false;
   await page.addLocatorHandler(eveDialog, async (dialog) => {
     await dialog.getByRole('button', { name: '창 닫기', exact: true }).click();
-    dismissedEve = true;
   });
   try {
     await resumeLeague(page);
@@ -84,6 +82,21 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
     eveDialog.getByRole('heading', { name: `${day} · 경기 준비 보고`, exact: true });
   const reopenOn = (day: string) =>
     page.getByRole('button', { name: `경기 준비 보고 · ${day} · 열기`, exact: true });
+  const observeEve = async (day: string) => {
+    await expect
+      .poll(async () => {
+        if (await eveOn(day).isVisible()) return true;
+        const reopen = reopenOn(day);
+        if (await reopen.isVisible())
+          try {
+            await reopen.click({ timeout: 1000 });
+          } catch {
+            // The report can open while its reopen control is becoming actionable.
+          }
+        return await eveOn(day).isVisible();
+      })
+      .toBe(true);
+  };
   await expect
     .poll(
       async () =>
@@ -92,13 +105,10 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
         (await reopenOn('1930년 8월 7일').isVisible()),
     )
     .toBe(true);
-  // An eve met inside the detour's office visit never opens its dialog there (CI WebKit
-  // 41226127751): it waits behind its reopen access exactly as a dismissed report does.
-  if (await reopenOn('1930년 8월 7일').isVisible()) dismissedEve = true;
   await expect(rankTab).toHaveAttribute('aria-selected', 'true');
   const playersTab = page.getByRole('tab', { name: '선수 기록', exact: true });
   // Cover both event orders without racing an observed report's background lock.
-  if (dismissedEve && observation === 'eve-first') await page.getByTestId('event-pill').click();
+  if (observation === 'eve-first') await observeEve('1930년 8월 7일');
   if (observation === 'eve-first') await expect(eveDialog).toBeVisible();
   while (!(await eveDialog.isVisible()))
     try {
@@ -117,7 +127,7 @@ async function proveLiveLeague(page: Page, observation: 'interleaved' | 'eve-fir
     } catch {
       // Covered by the eve's backdrop, or not yet actionable: look again.
     }
-  if (dismissedEve && observation === 'interleaved') await page.getByTestId('event-pill').click();
+  if (observation === 'interleaved') await observeEve('1930년 8월 7일');
   await expect(eveDialog).toBeVisible();
   await expect(eveOn('1930년 8월 7일')).toBeVisible();
   if ((await playersTab.getAttribute('aria-selected')) !== 'true') {
