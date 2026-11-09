@@ -1,0 +1,65 @@
+{
+  "session": "/root/scout_records",
+  "base": "af092f5f6db8c6d95b5714ebdf244df1cdffa4f7",
+  "mode": "read-only; isolated helper replay, no suite or edits",
+  "proposals": [
+    {
+      "id": "appearance-rank",
+      "evidence": [
+        "entities/player/lib/careerRecords.ts:19-24,60-94 ranks apps by career[10] minutes",
+        "pages/club/ui/CareerRecordBook.tsx:343-349,389 displays actual tally appearances",
+        "widgets/player-detail/ui/OwnPlayerSheet.tsx:58,138-144 uses minute-based clubRanks",
+        "widgets/player-detail/ui/OpenPlayerDetail.tsx:36,51 currently passes only individual tally",
+        "packages/contracts/src/source-messages.ts:2343-2344 copy.CareerRecordBook.92c3ad57ea incorrectly says no substitutes and minutes/90 equals appearances"
+      ],
+      "replay": {
+        "actualApps": {
+          "A": 1,
+          "B": 3
+        },
+        "minutes": {
+          "A": 90,
+          "B": 30
+        },
+        "currentOrder": [
+          "A",
+          "B"
+        ],
+        "playerBRank": 2
+      },
+      "existingData": "View.tallies.players, Tallies[players] from runtime/playerTallies.ts; PlayerTally.apps[1] is actual career appearances; complete map already available, no protocol/save change",
+      "contracts": [
+        "HIST-13",
+        "WEB-54",
+        "WEB-59",
+        "WEB-28"
+      ]
+    },
+    {
+      "id": "wartime-cup-streak",
+      "evidence": [
+        "pages/cups/lib/cupHonours.ts:85-88 uses year+1 adjacency",
+        "cupHonours.ts:155-160 derives from=year-length+1",
+        "packages/engine/src/wartime.ts:10-19 canonical seasonAfter1938=1946"
+      ],
+      "replay": {
+        "years": [
+          1938,
+          1946
+        ],
+        "sameChampion": "A",
+        "currentStreaks": [
+          1,
+          1
+        ],
+        "currentLongest": []
+      },
+      "contracts": [
+        "WORLD-14",
+        "HIST-13",
+        "WEB-40"
+      ],
+      "preserves": "ordinary missing archive interrupts streak; only declared skipped wartime seasons are adjacent"
+    }
+  ]
+}
