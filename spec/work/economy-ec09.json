@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T08:02:21.001Z",
-  "sourceCommit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+  "snapshotAt": "2026-11-09T08:07:24.453Z",
+  "sourceCommit": "1d3898031fd76ca36719b8b0b74e5c5bfd911255",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -13,15 +13,15 @@
       "maxPending": 8
     },
     "verified": {
-      "commit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+      "commit": "1d3898031fd76ca36719b8b0b74e5c5bfd911255",
       "checks": [
         {
-          "command": "node /tmp/ec10-resume-final-gate.mjs",
-          "startedAt": "2026-11-09T07:26:00.124Z",
-          "finishedAt": "2026-11-09T08:02:17.899Z"
+          "command": "node /tmp/ec10-publication-bridge.mjs",
+          "startedAt": "2026-11-09T08:07:21.906Z",
+          "finishedAt": "2026-11-09T08:07:22.079Z"
         }
       ],
-      "at": "2026-11-09T08:02:17.976Z",
+      "at": "2026-11-09T08:07:22.137Z",
       "excluded": [
         "T689",
         "T726",
@@ -4167,6 +4167,32 @@
             }
           ],
           "at": "2026-11-09T08:02:17.976Z",
+          "excluded": [
+            "T689",
+            "T726",
+            "T730"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 971,
+      "at": "2026-11-09T08:07:22.172Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "1d3898031fd76ca36719b8b0b74e5c5bfd911255",
+          "checks": [
+            {
+              "command": "node /tmp/ec10-publication-bridge.mjs",
+              "startedAt": "2026-11-09T08:07:21.906Z",
+              "finishedAt": "2026-11-09T08:07:22.079Z"
+            }
+          ],
+          "at": "2026-11-09T08:07:22.137Z",
           "excluded": [
             "T689",
             "T726",
