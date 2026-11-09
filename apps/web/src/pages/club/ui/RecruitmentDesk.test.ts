@@ -33,6 +33,7 @@ const { choices, reads } = vi.hoisted(() => ({
     blocked: false,
     current: true,
     mounted: false,
+    mountedPage: false,
     query: vi.fn(),
     inspect: vi.fn(),
   },
@@ -43,13 +44,25 @@ vi.mock('../lib/worldMarket', async (original) => {
     ...actual,
     useMarketPage: (...args: unknown[]) => {
       reads.query(...args);
-      return { value: reads.page, error: reads.error, retry: vi.fn() };
+      if (reads.mountedPage)
+        return actual.useMarketPage(...(args as Parameters<typeof actual.useMarketPage>));
+      return {
+        value: reads.page,
+        error: reads.error,
+        retry: vi.fn(),
+        money: { code: 'ENG', year: w.year },
+      };
     },
     useMarketDetail: (...args: unknown[]) => {
       reads.inspect(...args);
       if (reads.mounted)
         return actual.useMarketDetail(...(args as Parameters<typeof actual.useMarketDetail>));
-      return { value: args[3] ? reads.detail : undefined, current: reads.current, retry: vi.fn() };
+      return {
+        value: args[3] ? reads.detail : undefined,
+        current: reads.current,
+        retry: vi.fn(),
+        money: { code: 'ENG', year: w.year },
+      };
     },
   };
 });
@@ -194,6 +207,7 @@ beforeEach(() => {
   reads.blocked = false;
   reads.current = true;
   reads.mounted = false;
+  reads.mountedPage = false;
   w.bids = undefined;
   vi.clearAllMocks();
   Object.assign(client.state, {
@@ -701,6 +715,7 @@ afterEach(async () => {
   document.body.replaceChildren();
   useTaskMemory.setState({ world: undefined, values: {} });
   reads.mounted = false;
+  reads.mountedPage = false;
   vi.unstubAllGlobals();
 });
 
@@ -927,5 +942,282 @@ describe('verified bid quote lifecycle', () => {
     expect(f.send()).toBeUndefined();
     expect(f.command).not.toHaveBeenCalled();
     expect(f.requests).toHaveLength(1);
+  });
+});
+
+/** Both real read hooks, retained inspection state and controlled replies across a currency boundary. */
+async function mountedSnapshot(values: Record<string, unknown> = {}) {
+  reads.mounted = true;
+  reads.mountedPage = true;
+  vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+  let world = structuredClone(w);
+  Object.assign(world, { year: 1998, revision: 10, currency: 'ESP' });
+  world.clubs.find((c) => c.id === world.playerClub)!.country = 'ESP';
+  const target = { ...offer.target, world: world.id };
+  useTaskMemory.setState({
+    world: world.id,
+    values: { 'world-market-viewing': target, ...values },
+  });
+  const pages: { revision: number; resolve: (value: WorldMarketPage) => void }[] = [];
+  const details: {
+    target: typeof target;
+    revision: number;
+    resolve: (value: MarketDetail) => void;
+  }[] = [];
+  const mountedClient = {
+    state: {
+      ...initialClientState,
+      busy: false,
+      readonly: false,
+      processing: false,
+      clockRunning: true,
+      view: { world, transfers: [] },
+    },
+    command: vi.fn(async () => ({ ok: true })),
+    worldMarket: vi.fn(
+      () =>
+        new Promise<WorldMarketPage>((resolve) =>
+          pages.push({ revision: world.revision, resolve }),
+        ),
+    ),
+    worldMarketDetail: vi.fn(
+      (target: typeof offer.target) =>
+        new Promise<MarketDetail>((resolve) =>
+          details.push({ target, revision: world.revision, resolve }),
+        ),
+    ),
+  } as unknown as GameClient;
+  const container = document.createElement('div');
+  document.body.append(container);
+  mountedRoot = createRoot(container);
+  const draw = () =>
+    mountedRoot!.render(
+      createElement(MountedDesk, { state: mountedClient.state, client: mountedClient }),
+    );
+  await act(async () => draw());
+  return {
+    container,
+    client: mountedClient,
+    pages,
+    details,
+    target,
+    get world() {
+      return world;
+    },
+    async page(index = 0, revision = pages[index]!.revision) {
+      await act(async () => {
+        pages[index]!.resolve({
+          world: world.id,
+          revision,
+          page: 0,
+          pageSize: 50,
+          total: 1,
+          items: [{ ...offer, source: { ...offer.source!, country: 'ENG' }, target }],
+        });
+        await Promise.resolve();
+      });
+    },
+    async detail(index = 0, revision = details[index]!.revision) {
+      const request = details[index]!;
+      await act(async () => {
+        request.resolve({
+          ...detail(),
+          world: request.target.world,
+          revision,
+          offer: { ...offer, source: { ...offer.source!, country: 'ENG' }, target: request.target },
+        });
+        await Promise.resolve();
+      });
+    },
+    async update(patch: Partial<World>, running = true) {
+      world = { ...world, ...patch };
+      mountedClient.state.view = {
+        ...mountedClient.state.view!,
+        world: { ...world, people: undefined },
+      };
+      mountedClient.state.clockRunning = running;
+      await act(async () => draw());
+    },
+  };
+}
+
+describe('market snapshot denominations', () => {
+  it('retains the captured fee denomination across the euro boundary without another running read', async () => {
+    const f = await mountedSnapshot();
+    await f.page();
+    await f.detail();
+    const row = () => f.container.querySelector('[data-candidate-id="external"]')!;
+    expect(row().querySelector('[data-money]')!.getAttribute('title')).toBe(
+      money('1000', 'ESP', 1998),
+    );
+    await f.update({ year: 1999, revision: 11, currency: 'EUR' });
+    expect(row().querySelector('[data-money]')!.getAttribute('title')).toBe(
+      money('1000', 'ESP', 1998),
+    );
+    expect(f.client.worldMarket).toHaveBeenCalledOnce();
+    expect(f.client.worldMarketDetail).toHaveBeenCalledOnce();
+  });
+});
+
+describe('market denomination presentation boundaries', () => {
+  const candidate = (f: Awaited<ReturnType<typeof mountedSnapshot>>) =>
+    f.container.querySelector('[data-testid="candidate-external"]')!;
+  const titles = (node: Element) =>
+    [...node.querySelectorAll('[data-money]')].map((n) => n.getAttribute('title'));
+  const row = (node: Element, label: string) =>
+    [...node.querySelectorAll('tr')].find(
+      (tr) =>
+        tr.querySelector('[data-side]') &&
+        [...tr.querySelectorAll('th')].some((th) => th.textContent === label),
+    )!;
+  it('keeps retained source/card fee and wage in the captured unit and withholds stale financial projections', async () => {
+    const f = await mountedSnapshot();
+    await f.page();
+    await f.detail();
+    expect(titles(candidate(f))).toContain(money('1000', 'ESP', 1998));
+    expect(candidate(f).querySelector('[data-testid="scout-verdict"]')).not.toBeNull();
+    await f.update({ year: 1999, revision: 11, currency: 'EUR' });
+    const card = candidate(f);
+    expect(titles(card)).toEqual([
+      money('1000', 'ESP', 1998),
+      money('1000', 'ESP', 1998),
+      money('100', 'ESP', 1998),
+      money('200', 'ESP', 1998),
+    ]);
+    expect(card.textContent).toContain('확인 중');
+    expect(card.querySelector('[data-testid="scout-verdict"]')).toBeNull();
+    expect(titles(card)).not.toContain(money(preview.cashAfter, 'ESP', 1998));
+    expect(f.client.worldMarket).toHaveBeenCalledOnce();
+    expect(f.client.worldMarketDetail).toHaveBeenCalledOnce();
+  });
+  it('withholds an intermediate-revision reply without losing inspection identity or adding a running request', async () => {
+    const f = await mountedSnapshot();
+    await f.update({ year: 1999, revision: 12, currency: 'EUR' });
+    await f.page(0, 11);
+    await f.detail(0, 11);
+    expect(f.container.textContent).toContain('External Player');
+    expect(candidate(f).textContent).toContain('확인 중');
+    expect(titles(candidate(f))).toEqual([]);
+    const marketRow = f.container.querySelector('tr[data-candidate-id="external"]')!;
+    expect(titles(marketRow)).toEqual([]);
+    expect(useTaskMemory.getState().values['world-market-viewing']).toEqual(f.target);
+    expect(f.client.worldMarket).toHaveBeenCalledOnce();
+    expect(f.client.worldMarketDetail).toHaveBeenCalledOnce();
+  });
+  it('uses an identifiable current endpoint reply immediately with its actual current denomination', async () => {
+    const f = await mountedSnapshot();
+    await f.update({ year: 1999, revision: 12, currency: 'EUR' });
+    await f.page(0, 12);
+    await f.detail(0, 12);
+    expect(titles(candidate(f))).toContain(money('1000', 'ESP', 1999));
+    expect(titles(candidate(f))).not.toContain(money('1000', 'ESP', 1998));
+    expect(f.client.worldMarket).toHaveBeenCalledOnce();
+    expect(f.client.worldMarketDetail).toHaveBeenCalledOnce();
+  });
+  it('retains old money during stopped refresh and replaces it only with the accepted current read', async () => {
+    const f = await mountedSnapshot();
+    await f.page();
+    await f.detail();
+    await f.update({ year: 1999, revision: 11, currency: 'EUR' }, false);
+    expect(titles(candidate(f))).toContain(money('200', 'ESP', 1998));
+    expect(f.client.worldMarket).toHaveBeenCalledTimes(2);
+    expect(f.client.worldMarketDetail).toHaveBeenCalledTimes(2);
+    await f.page(1);
+    await f.detail(1);
+    expect(titles(candidate(f))).toContain(money('200', 'ESP', 1999));
+    expect(titles(candidate(f))).not.toContain(money('200', 'ESP', 1998));
+    expect(f.client.command).not.toHaveBeenCalled();
+  });
+  it('keeps current own-player wage separate and disables money winners across different known units', async () => {
+    const f = await mountedSnapshot({
+      'world-market-viewing': undefined,
+      'market-own-compare': { target: offer.target },
+    });
+    await f.page();
+    await f.detail();
+    const players = f.world.players.map((p) => ({ ...p, wage: '300' }));
+    await f.update({ year: 1999, revision: 11, currency: 'EUR', players });
+    const wage = row(f.container, korean.messages['team.column.wage']);
+    const left = wage.querySelector('[data-side="left"]')!,
+      right = wage.querySelector('[data-side="right"]')!;
+    expect(titles(left)).toEqual([money('200', 'ESP', 1998)]);
+    expect(titles(right)).toEqual([money('300', 'ESP', 1999)]);
+    expect(wage.querySelector('[data-better="true"]')).toBeNull();
+    const after = row(f.container, korean.messages['copy.PlayerCompare.8933209ede']);
+    expect(after.querySelector('[data-side="left"]')!.textContent).toContain('확인 중');
+    const age = row(f.container, korean.messages['team.column.age']);
+    expect(age.querySelector('[data-side="left"]')!.textContent).toContain(
+      String(1999 - offer.player.born),
+    );
+  });
+});
+
+describe('retained comparison money and first-frame safety', () => {
+  const moneyRow = (container: Element, label: string) =>
+    [...container.querySelectorAll('tr')].find(
+      (tr) =>
+        tr.querySelector('[data-side]') &&
+        [...tr.querySelectorAll('th')].some((th) => th.textContent === label),
+    )!;
+  it.each([11, 12])(
+    'keeps independently captured comparison contexts for reply revision %s',
+    async (revision) => {
+      const f = await mountedSnapshot({
+        'world-market-viewing': undefined,
+        'world-market-comparison': [offer.target, { ...offer.target, playerId: 'second' }],
+        'market-comparing': true,
+      });
+      await f.page();
+      await f.detail(0);
+      await f.update({ year: 1999, revision: 12, currency: 'EUR' });
+      await f.detail(1, revision);
+      const wage = moneyRow(f.container, korean.messages['team.column.wage']);
+      expect(wage.querySelector('[data-side="left"] [data-money]')!.getAttribute('title')).toBe(
+        money('200', 'ESP', 1998),
+      );
+      const right = wage.querySelector('[data-side="right"]')!;
+      if (revision === 11) {
+        expect(right.querySelector('[data-money]')).toBeNull();
+        expect(right.textContent).toContain('확인 중');
+      } else
+        expect(right.querySelector('[data-money]')!.getAttribute('title')).toBe(
+          money('200', 'ESP', 1999),
+        );
+      expect(wage.querySelector('[data-better="true"]')).toBeNull();
+      const after = moneyRow(f.container, korean.messages['copy.PlayerCompare.8933209ede']);
+      expect(after.querySelector('[data-side="left"] [data-money]')).toBeNull();
+      expect(f.client.worldMarketDetail).toHaveBeenCalledTimes(2);
+      expect(f.client.worldMarket).toHaveBeenCalledOnce();
+    },
+  );
+  it('never installs a current-currency title for a retained old amount during render/effects', async () => {
+    const f = await mountedSnapshot();
+    await f.page();
+    await f.detail();
+    const observed: string[] = [];
+    const collect = (records: MutationRecord[]) => {
+      for (const record of records)
+        if (record.attributeName === 'title' && record.oldValue) observed.push(record.oldValue);
+      observed.push(
+        ...[...f.container.querySelectorAll('[data-money]')].map(
+          (node) => node.getAttribute('title') ?? '',
+        ),
+      );
+    };
+    const observer = new MutationObserver(collect);
+    observer.observe(f.container, {
+      subtree: true,
+      attributes: true,
+      attributeOldValue: true,
+      attributeFilter: ['title'],
+      childList: true,
+    });
+    await f.update({ year: 1999, revision: 11, currency: 'EUR' });
+    await Promise.resolve();
+    collect(observer.takeRecords());
+    observer.disconnect();
+    expect(observed).toContain(money('1000', 'ESP', 1998));
+    expect(observed).not.toContain(money('1000', 'ESP', 1999));
+    expect(observed).not.toContain(money('200', 'ESP', 1999));
   });
 });

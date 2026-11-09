@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T16:15:19.386Z",
-  "sourceCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6",
+  "snapshotAt": "2026-11-09T16:24:56.430Z",
+  "sourceCommit": "0ce3994f264880ea8d252c2f28a7aeef4593e2c0",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -55,12 +55,13 @@
       "T762",
       "T763",
       "T764",
-      "T765"
+      "T765",
+      "T766"
     ]
   },
   "summary": {
-    "total": 19,
-    "completed": 14,
+    "total": 20,
+    "completed": 15,
     "remaining": 5,
     "running": 2,
     "review": 0,
@@ -74,13 +75,13 @@
       "dep": [
         "T752"
       ],
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T755",
       "title": "Rank career appearances by recorded matches",
       "dep": [],
-      "status": "doing"
+      "status": "verifying"
     },
     {
       "id": "T756",
@@ -95,12 +96,12 @@
       "status": "todo"
     },
     {
-      "id": "T765",
-      "title": "Preserve market snapshot money denominations",
+      "id": "T766",
+      "title": "Match capital mood previews to settlement",
       "dep": [
-        "T753"
+        "T747"
       ],
-      "status": "doing"
+      "status": "todo"
     }
   ],
   "attempts": [
@@ -678,6 +679,8 @@
       "submittedBase": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8",
       "submissionId": "3d398d44-9347-42ed-b5d4-2b7e6b8bd80d",
       "submittedAt": "2026-11-09T16:10:06.345Z",
+      "integratedCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+      "integratedAt": "2026-11-09T16:16:24.621Z",
       "risk": null,
       "review": {
         "id": "6d5e0b6b-2723-4681-bbc5-818ad368ecb0",
@@ -736,6 +739,13 @@
           "startedAt": "2026-11-09T16:09:27.802Z",
           "finishedAt": "2026-11-09T16:10:05.712Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T16:15:19.659Z",
+          "finishedAt": "2026-11-09T16:16:24.087Z"
+        }
       ]
     },
     {
@@ -768,9 +778,49 @@
       "contributors": [
         "fi09-market-denomination"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T16:09:13.760Z",
-      "startCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8"
+      "startCommit": "8c2b639d84bdb7e3a8f5fc3f62c496cb46ba3bf8",
+      "verifiedCommit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+      "submittedBase": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+      "submissionId": "377c517e-74bc-41bf-89a3-5aedfe8a21ab",
+      "submittedAt": "2026-11-09T16:20:11.512Z",
+      "risk": null,
+      "review": {
+        "id": "7cc7d15d-496d-43c1-a56c-9055f1108f2f",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T765 satisfies its five acceptance items at pinned submission 1c8427f074d7bf84f0132c964d784a1b64a44b54 against base c9110ae808a2c4a982cc0322b12759e07294abb7. Reviewed all six allowed source/test paths plus its task, complete current WEB-43/97, ECON-5/6 and ARCH-4/6/21/30/32 decisions, and the full T566 retained-snapshot contract. Request/current revision endpoints capture buyer-country/year money context; seller-country is never used. Intermediate replies across a denomination boundary get explicit null, while same nominal denominations can retain known context. New values and provenance publish atomically; a replacement without provenance cannot borrow an earlier snapshot unit. Every money-bearing page/card/source/comparison snapshot path passes its matching known/null context, with current defaults confined to live/unrelated consumers and the fee=false source-only list path emitting no money. Captured old fee/wage titles stay old on render/year changes, unknown amounts render unavailable, and current own wages/pending bids remain separately live. Mixed or unknown denominations cannot produce money winners, current-cash/annual projections, financial verdicts or action eligibility. Nonmonetary identity, age/current-world facts, selection and inspection remain usable. Same-query snapshots, stale game/query/target guards, one in-flight/latest replacement, running cadence and stopped refresh are unchanged. T753 selected ratio, exact-fee odds, current quote/detail refs and old-handler guards remain intact with an additional same-unit gate. No amounts are rewritten and no conversion/rate/protocol/RPC/save/new-copy policy is added. Real mounted evidence reproduces the original ESP10.00-to-EUR10.00 title defect; current tests cover request/intermediate/current endpoints, retained titles and MutationObserver frame safety, source/card/table and independent comparison sides, live own wage, suppressed winners/projections, world/query changes, errors and stopped refresh. Reused exact-source evidence: 94 focused cases and final 6 files/129 affected cases plus type/lint/format/i18n/build pass. No additional test run was needed, and no source edits, browser/integration/full runs or children were used. Upstream next remains the pinned base; its integrated T764 and league changes have no overlapping source interaction. Coordinator still owns the final recruitment Chromium journeys and complete integration gates.",
+        "findings": [],
+        "commit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+        "baseCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+        "submissionId": "377c517e-74bc-41bf-89a3-5aedfe8a21ab",
+        "createdAt": "2026-11-09T16:21:22.084Z",
+        "finishedAt": "2026-11-09T16:24:22.493Z"
+      },
+      "steps": [
+        {
+          "taskId": "T765",
+          "commit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+          "at": "2026-11-09T16:20:11.475Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T16:19:26.627Z",
+              "finishedAt": "2026-11-09T16:20:10.921Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T16:19:26.627Z",
+          "finishedAt": "2026-11-09T16:20:10.921Z"
+        }
+      ]
     },
     {
       "id": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
@@ -784,9 +834,26 @@
       "contributors": [
         "fi09-career-appearance"
       ],
-      "status": "doing",
+      "status": "verifying",
+      "reason": "T755 focused16 tests pass; full-map career appearances, mounted board/sheet agreement, missing-map distinction and all12 translations implemented; final affected/fast checks",
       "createdAt": "2026-11-09T16:11:35.951Z",
       "startCommit": "6766ceab33c409cae3cddbe403d767e6eb2c36a6"
+    },
+    {
+      "id": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "group": "fi09",
+      "taskId": "T754",
+      "tasks": [
+        "T754"
+      ],
+      "lane": null,
+      "owner": "fi09-growth-locale",
+      "contributors": [
+        "fi09-growth-locale"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T16:21:26.275Z",
+      "startCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7"
     }
   ],
   "history": [
@@ -3212,6 +3279,261 @@
         "T762",
         "T763"
       ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2116,
+      "at": "2026-11-09T16:16:24.479Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T16:15:19.659Z",
+            "finishedAt": "2026-11-09T16:16:24.087Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2117,
+      "at": "2026-11-09T16:16:24.621Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T763",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+        "integratedAt": "2026-11-09T16:16:24.621Z"
+      }
+    },
+    {
+      "sequence": 2118,
+      "at": "2026-11-09T16:19:24.952Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2119,
+      "at": "2026-11-09T16:19:25.098Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": "T755 focused16 tests pass; full-map career appearances, mounted board/sheet agreement, missing-map distinction and all12 translations implemented; final affected/fast checks"
+      }
+    },
+    {
+      "sequence": 2120,
+      "at": "2026-11-09T16:20:11.512Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+        "submittedBase": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+        "submissionId": "377c517e-74bc-41bf-89a3-5aedfe8a21ab",
+        "submittedAt": "2026-11-09T16:20:11.512Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T765",
+            "commit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+            "at": "2026-11-09T16:20:11.475Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T16:19:26.627Z",
+                "finishedAt": "2026-11-09T16:20:10.921Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T16:19:26.627Z",
+            "finishedAt": "2026-11-09T16:20:10.921Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2121,
+      "at": "2026-11-09T16:21:22.084Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7cc7d15d-496d-43c1-a56c-9055f1108f2f",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+          "baseCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+          "submissionId": "377c517e-74bc-41bf-89a3-5aedfe8a21ab",
+          "createdAt": "2026-11-09T16:21:22.084Z"
+        }
+      }
+    },
+    {
+      "sequence": 2122,
+      "at": "2026-11-09T16:21:26.275Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+        "group": "fi09",
+        "taskId": "T754",
+        "tasks": [
+          "T754"
+        ],
+        "lane": null,
+        "owner": "fi09-growth-locale",
+        "contributors": [
+          "fi09-growth-locale"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T16:21:26.275Z",
+        "startCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7"
+      }
+    },
+    {
+      "sequence": 2123,
+      "at": "2026-11-09T16:21:28.994Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2124,
+      "at": "2026-11-09T16:24:08.284Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T753",
+          "T754",
+          "T755",
+          "T756",
+          "T757",
+          "T758",
+          "T759",
+          "T760",
+          "T761",
+          "T762",
+          "T763",
+          "T764",
+          "T765",
+          "T766"
+        ]
+      }
+    },
+    {
+      "sequence": 2125,
+      "at": "2026-11-09T16:24:22.493Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "7cc7d15d-496d-43c1-a56c-9055f1108f2f",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T765 satisfies its five acceptance items at pinned submission 1c8427f074d7bf84f0132c964d784a1b64a44b54 against base c9110ae808a2c4a982cc0322b12759e07294abb7. Reviewed all six allowed source/test paths plus its task, complete current WEB-43/97, ECON-5/6 and ARCH-4/6/21/30/32 decisions, and the full T566 retained-snapshot contract. Request/current revision endpoints capture buyer-country/year money context; seller-country is never used. Intermediate replies across a denomination boundary get explicit null, while same nominal denominations can retain known context. New values and provenance publish atomically; a replacement without provenance cannot borrow an earlier snapshot unit. Every money-bearing page/card/source/comparison snapshot path passes its matching known/null context, with current defaults confined to live/unrelated consumers and the fee=false source-only list path emitting no money. Captured old fee/wage titles stay old on render/year changes, unknown amounts render unavailable, and current own wages/pending bids remain separately live. Mixed or unknown denominations cannot produce money winners, current-cash/annual projections, financial verdicts or action eligibility. Nonmonetary identity, age/current-world facts, selection and inspection remain usable. Same-query snapshots, stale game/query/target guards, one in-flight/latest replacement, running cadence and stopped refresh are unchanged. T753 selected ratio, exact-fee odds, current quote/detail refs and old-handler guards remain intact with an additional same-unit gate. No amounts are rewritten and no conversion/rate/protocol/RPC/save/new-copy policy is added. Real mounted evidence reproduces the original ESP10.00-to-EUR10.00 title defect; current tests cover request/intermediate/current endpoints, retained titles and MutationObserver frame safety, source/card/table and independent comparison sides, live own wage, suppressed winners/projections, world/query changes, errors and stopped refresh. Reused exact-source evidence: 94 focused cases and final 6 files/129 affected cases plus type/lint/format/i18n/build pass. No additional test run was needed, and no source edits, browser/integration/full runs or children were used. Upstream next remains the pinned base; its integrated T764 and league changes have no overlapping source interaction. Coordinator still owns the final recruitment Chromium journeys and complete integration gates.",
+          "findings": [],
+          "commit": "1c8427f074d7bf84f0132c964d784a1b64a44b54",
+          "baseCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
+          "submissionId": "377c517e-74bc-41bf-89a3-5aedfe8a21ab",
+          "createdAt": "2026-11-09T16:21:22.084Z",
+          "finishedAt": "2026-11-09T16:24:22.493Z"
+        }
+      }
+    },
+    {
+      "sequence": 2126,
+      "at": "2026-11-09T16:24:39.532Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2127,
+      "at": "2026-11-09T16:24:49.182Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e0766cc8-6e34-4cb7-81f9-1080a0fd7869",
+      "taskId": "T765",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

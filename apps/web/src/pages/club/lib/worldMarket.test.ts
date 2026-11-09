@@ -7,6 +7,7 @@ import {
   DEFAULT_MARKET_QUERY,
   changeMarketQuery,
   createMarketReader,
+  sameMarketMoney,
   marketLeagueKey,
   marketLeagues,
   readMarket,
@@ -324,4 +325,130 @@ describe('coalesced market snapshots', () => {
       expect(f.publish.mock.lastCall?.[0].value).toBeUndefined();
     },
   );
+});
+
+describe('UI market money provenance', () => {
+  const oldMoney = { code: 'ESP', year: 1998 };
+  const newMoney = { code: 'ESP', year: 1999 };
+  it.each([
+    [10, oldMoney],
+    [11, null],
+    [12, newMoney],
+  ])(
+    'attributes boundary reply revision %s only when an endpoint establishes its unit',
+    async (revision, money) => {
+      let current = { world: 'one', revision: 10, money: oldMoney };
+      const publish = vi.fn();
+      const reader = createMarketReader<WorldMarketPage>(() => current, publish);
+      const pending = deferred<WorldMarketPage>();
+      const load = vi.fn(() => pending.promise);
+      const update = () =>
+        reader.update({ ...current, key: 'one:page', snapshot: true, attempt: 0, load });
+      update();
+      current = { world: 'one', revision: 12, money: newMoney };
+      update();
+      pending.resolve({ ...page, revision: revision as number });
+      await pending.promise;
+      await Promise.resolve();
+      expect(publish.mock.lastCall?.[0]).toMatchObject({ value: { revision }, money });
+      current = { ...current, revision: 20 };
+      update();
+      expect(load).toHaveBeenCalledOnce();
+      expect(publish.mock.lastCall?.[0].money).toEqual(money);
+    },
+  );
+  it('knows intermediate replies when both endpoint years have the same denomination', async () => {
+    let current = { world: 'one', revision: 10, money: { code: 'ENG', year: 1969 } };
+    const publish = vi.fn();
+    const pending = deferred<WorldMarketPage>();
+    const reader = createMarketReader<WorldMarketPage>(() => current, publish);
+    reader.update({
+      ...current,
+      key: 'one:page',
+      snapshot: true,
+      attempt: 0,
+      load: () => pending.promise,
+    });
+    current = { ...current, revision: 12, money: { code: 'ENG', year: 1970 } };
+    pending.resolve({ ...page, revision: 11 });
+    await pending.promise;
+    await Promise.resolve();
+    expect(publish.mock.lastCall?.[0].money).toEqual({ code: 'ENG', year: 1969 });
+  });
+  it('keeps the retained unit on stopped refresh errors and clears it on selection/world changes', async () => {
+    let current = { world: 'one', revision: 10, money: oldMoney };
+    const publish = vi.fn();
+    const pending: ReturnType<typeof deferred<WorldMarketPage>>[] = [];
+    const load = vi.fn(() => {
+      const next = deferred<WorldMarketPage>();
+      pending.push(next);
+      return next.promise;
+    });
+    const reader = createMarketReader<WorldMarketPage>(() => current, publish);
+    const update = (key = 'one:page', snapshot = true) =>
+      reader.update({ ...current, key, snapshot, attempt: 0, load });
+    update();
+    pending[0].resolve({ ...page, revision: 10 });
+    await pending[0].promise;
+    await Promise.resolve();
+    current = { ...current, revision: 12, money: newMoney };
+    update('one:page', false);
+    pending[1].reject(new Error('retry'));
+    await pending[1].promise.catch(() => undefined);
+    await Promise.resolve();
+    expect(publish.mock.lastCall?.[0]).toMatchObject({
+      value: { revision: 10 },
+      money: oldMoney,
+      error: 'retry',
+    });
+    update('one:another-selection');
+    expect(publish.mock.lastCall?.[0]).not.toHaveProperty('money');
+    current = { world: 'two', revision: 1, money: newMoney };
+    update('two:page');
+    pending[2].resolve({ ...page, revision: 12 });
+    await pending[2].promise;
+    await Promise.resolve();
+    pending[3].resolve({ ...page, world: 'two', revision: 1 });
+    await pending[3].promise;
+    await Promise.resolve();
+    expect(publish.mock.lastCall?.[0]).toMatchObject({ value: { world: 'two' }, money: newMoney });
+    expect(load).toHaveBeenCalledTimes(4);
+  });
+  it('compares nominal units without deriving any FX from country-price factors', () => {
+    expect(sameMarketMoney({ code: 'FRA', year: 1959 }, { code: 'FRA', year: 1960 })).toBe(false);
+    expect(sameMarketMoney({ code: 'ENG', year: 1970 }, { code: 'ENG', year: 1971 })).toBe(false);
+    expect(sameMarketMoney(oldMoney, newMoney)).toBe(false);
+    expect(sameMarketMoney({ code: 'ESP', year: 2000 }, { code: 'FRA', year: 2020 })).toBe(true);
+    expect(sameMarketMoney(null, newMoney)).toBe(false);
+  });
+});
+
+it('never lends an older snapshot context to a replacement whose buyer context is unknown', async () => {
+  const oldMoney = { code: 'ESP', year: 1998 };
+  let current: { world: string; revision: number; money?: typeof oldMoney } = {
+    world: 'one',
+    revision: 10,
+    money: oldMoney,
+  };
+  const publish = vi.fn();
+  const pending: ReturnType<typeof deferred<WorldMarketPage>>[] = [];
+  const load = () => {
+    const next = deferred<WorldMarketPage>();
+    pending.push(next);
+    return next.promise;
+  };
+  const reader = createMarketReader<WorldMarketPage>(() => current, publish);
+  const update = () =>
+    reader.update({ ...current, key: 'one:page', snapshot: false, attempt: 0, load });
+  update();
+  pending[0].resolve({ ...page, revision: 10 });
+  await pending[0].promise;
+  await Promise.resolve();
+  expect(publish.mock.lastCall?.[0].money).toEqual(oldMoney);
+  current = { world: 'one', revision: 11 };
+  update();
+  pending[1].resolve({ ...page, revision: 11 });
+  await pending[1].promise;
+  await Promise.resolve();
+  expect(publish.mock.lastCall?.[0]).toMatchObject({ value: { revision: 11 }, money: null });
 });

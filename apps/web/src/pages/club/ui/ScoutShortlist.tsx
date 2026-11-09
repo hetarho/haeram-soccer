@@ -9,6 +9,7 @@ import { staffMember } from '../../../../../../packages/engine/src/staff-info';
 import { clubOf, overall } from '../../../../../../packages/engine/src/player-state';
 import { ClubLink } from '../../../entities/club';
 import { clubDivision } from '../../../entities/league';
+import type { MarketMoney } from '../lib/worldMarket';
 import { Money } from '../../../shared/ui/Money';
 import { OvrBadge } from '../../../entities/player';
 import {
@@ -31,14 +32,18 @@ export function CandidateSource({
   origin,
   division = false,
   fee = true,
+  money,
 }: {
   w: World;
   origin: CandidateOrigin;
   division?: boolean;
   fee?: boolean;
+  /** Undefined keeps live-world callers; null is unresolved snapshot money. */
+  money?: MarketMoney | null;
 }) {
   useTextLocale();
   const club = clubOf(w);
+  const context = money === undefined ? { code: club.country, year: w.year } : money;
   const at = origin.kind === 'club' ? w.clubs.find((c) => c.id === origin.club) : undefined;
   const link = origin.kind === 'club' && <ClubLink w={w} id={origin.club} crest={12} />;
   const named =
@@ -57,7 +62,11 @@ export function CandidateSource({
           : fee
             ? richMessage('market.source.club', {
                 club: named,
-                fee: <Money value={origin.fee} code={club.country} year={w.year} plain />,
+                fee: context ? (
+                  <Money value={origin.fee} code={context.code} year={context.year} plain />
+                ) : (
+                  sourceMessage('copy.RecruitmentDesk.414f13ede8')
+                ),
               })
             : named,
       )}
