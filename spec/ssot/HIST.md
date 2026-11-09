@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r23 | Define the browser-demo rules for durable metrics and history.
+> r24 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -50,6 +50,7 @@
   - news about a second career or mediation derives only from these recorded facts (→HIST-11); no fabricated interviews, allegations or unperformed signings.
 
 - HIST-16 [o] Own players keep season and career totals of the spatial counters and discipline — box entries, front-of-box entries, line-breaking passes, xT added, cut-backs, crosses, through balls, progressive carries, yellow and red cards, bans served (→MATCH-13, →MATCH-19). ← fans compare these across a career
+  - Yellow/red career and season contributions belong to the club on the incident's recorded match side, including earlier own-club contributions from players who later leave. An opposing-side incident never adds to our club totals; league discipline still counts both sides under →=LEAGUE-15.
   - per-match shot maps, heat maps, pass networks and tactical reports live for the current season only; at the season close they become one season heat map per own player, kept with the season (→MATCH-5).
   - other leagues' discipline tables are current-season facts (→LEAGUE-15); a closed season keeps none for players of clubs nobody owns.
 
@@ -84,7 +85,7 @@
 - HIST-22 [o] Career totals, streaks, record maxima, player appearances/cards and current-season financial summaries are updated from newly settled facts and read without scanning older seasons.
   - separate season-scoped counters from career counters; reset only season counters at rollover, preserving cross-season runs and career totals.
   - repeated settlement, viewing, saving, reloading and importing never count a fact twice. Existing contributions, competition scopes and denominators stay unchanged.
-  - source matches, events and season archives remain retained under →!HIST-1/2/8; supported older careers may reconstruct missing summaries once.
+  - source matches, events and season archives remain retained under →!HIST-1/2/8; writer activation reconstructs missing or recognized obsolete summaries once under →=SAVE-28. Current summaries remain incremental across normal updates and reloads.
 
 ## flow
 
@@ -92,6 +93,7 @@
 
 
 ## chg
+- r24 261110 HIST-16✎ implicit own-card contribution scope→recorded match-side attribution; HIST-22✎ missing-only reconstruction→missing or recognized obsolete summaries once, current reloads stay incremental
 - r23 261109 HIST-21✎ pre-owner seasons kept apart from the owner's era→marked off from it by the takeover (one season list, →WEB-54)
 - r22 261103 HIST-11✎ regenerate on read and never store→record source-linked news once and retain across seasons with bounded publication; HIST-13✎ appearance counts derived on read→incremental retained-participation totals; HIST-22+ incremental season/career read summaries with reconstruction and duplicate protection
 - r21 261103 HIST-5✎ founding the first entry→the takeover the first entry of the owner's era; HIST-21+ pre-takeover seasons shown as the club's history before the owner, the owner's era from the takeover with the owner's season record

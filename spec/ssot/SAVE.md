@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r65 | Define the browser-demo rules for browser persistence and protocol.
+> r66 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -99,7 +99,9 @@
 
 - SAVE-28 [o] Persist the fact-backed news journal and incremental read summaries (→!HIST-11/22) as optional, versioned save data.
   - supported worlds without them remain loadable; writer activation reconstructs missing summaries once from retained facts, while read-only inspection never upgrades disk state.
-  - saved cursors and summary fields are bounded and validated; unsupported summary formats fail explicitly without replacing a committed checkpoint.
+  - saved cursors and summary fields are bounded and validated.
+  - A recognized obsolete own-career card summary may be discarded as optional derived data before current-schema validation; writer activation reconstructs the current summary from retained source facts. Compatibility with the obsolete summary contents is not required. The recognized formats are defined in `packages/contracts/src/career-reads.ts`.
+  - Other unsupported formats, unknown/future formats and malformed current summaries fail explicitly without replacing a committed checkpoint. This exception never discards or rewrites canonical matches, incidents, events or other game facts.
   - export/import and checkpoint replay preserve the journal, record totals and stable IDs; existing generation ordering, recovery, size limits and original-fact retention remain →!SAVE-2/3/4/5.
 
 - SAVE-29 [o] This beta does not maintain earlier localStorage game-storage layouts. Remove their slot readers/writers, IndexedDB migration, fallback quotas and startup legacy-reset/strategy-cleanup paths; do not migrate or delete old browser keys.
@@ -107,6 +109,7 @@
   - IndexedDB checkpoints retain generation ordering, verified previous-copy recovery, unsupported-save protection and explicit deletion (→!SAVE-3/5/6/11). This policy supersedes historical release-reset clauses, without changing simulation rules or pruning career facts.
 
 ## chg
+- r66 261110 SAVE-28✎ every unsupported summary refused→recognized obsolete career-card cache omitted and reconstructed once; obsolete-content compatibility not required, current validation and unknown/future rejection preserved
 - r65 261103 SAVE-2/3/4/5/10/11/14/16/18/19/25/26✎ retire localStorage checkpoint compatibility, fallback and startup cleanup; SAVE-29+ beta IndexedDB-only checkpoints, current device metadata retained
 - r64 261103 SAVE-2✎ gzip threshold only then maximum Brotli→also accept budget-verified gzip for IndexedDB/export; SAVE-4✎ all stores 3 MiB UTF-16→IndexedDB 6 MiB, fallback 3 MiB with unchanged 3.5 MiB total; portable file 8 MiB and decompressed 32 MiB unchanged
 - r63 261103 SAVE-28+ optional versioned news journal and incremental summaries, one-time supported-save reconstruction and existing checkpoint safeguards

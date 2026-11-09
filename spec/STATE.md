@@ -18,11 +18,11 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:27Z | - |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T15:37Z | - |
 
 ## inbox
+- 261110 decided HIST-16 HIST-22 SAVE-28 review/football-data-consistency-261109: how F17 can change its persisted summary after the owner says backward compatibility is unnecessary → current-format summary plus known obsolete-cache invalidation at validation, using existing writer reconstruction (alt: decode/migrate every old summary | rescan each reload | reject the whole world when only a disposable cache is stale). Canonical facts stay, current/future validation and current reload behavior remain required fi09
 - 261110 decided review/football-data-consistency-261109 T761 T762 T763: how to finish shared league UI consistency without new tracking policy → serialize the existing-read discipline fix, neutral club contribution sets and remaining localized count cells in league-record-views (alt: infer chronology from first-seen arrays | add unsupported latest data | leave mixed digits). T761 remained unassigned before lane composition; all new scope is explicit fi09
-- 261110 parked HIST-22 review/football-data-consistency-261109: F17 needs explicit owner scope for a backward-compatible stored-summary version and one-time writer repair; existing format1 has no semantic invalidation marker. Raw sources suffice, every-reload reconciliation would add load cost, no implementation before scope response fi09
 - 261110 decided review/football-data-consistency-261109 T758 T759 T760 T761: which next numerical corrections fit the owner's capital/fee/statistics mandate → missing loan projection costs, explicit fixed-period compensation,90-minute H2H and recorded NPC reds (alt: new nominal FX rates | implicit club chronology | unversioned career-card repair). Existing rules/ratios/save contracts stay; corrected affordability/debits are expected outcomes of F12/F13 and covered by tests fi09
 - 261110 parked review/football-data-consistency-261109: F18 general nominal GBP/EUR staff compensation needs an explicit rate/inverse-rounding policy; country price quotes vary even for sharedEUR and one-way FFP averaging is not a generic converter. Apply only already-defined fixed-period parity in T759 fi09
 - 261109 decided review/football-data-consistency-261109 T755 T756 T757: which next consistency fixes and verification blocker are adopted → actual appearance ranks plus corrected resource prose, wartime cup streak continuity, and a decide-test-only prepared world after independent cache safety review (alt: minutes ranks | calendar-year streaks | generic caching under unknown runtime settings | larger timeouts). T757 alone extends initial runtime scope after clean blocked finance execution/release; preserve prior IDs, all assertions and30s limit fi09
@@ -828,8 +828,8 @@
 | STAFF | 40 | 40 | - | 0 |
 | ECON | 52 | 52 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 23 | 23 | - | 0 |
-| SAVE | 65 | 65 | - | 0 |
+| HIST | 24 | 23 | HIST-16✎ HIST-22✎ | 0 |
+| SAVE | 66 | 65 | SAVE-28✎ | 0 |
 | OWNER | 6 | 6 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
@@ -887,9 +887,12 @@
 | fi09 | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-11-09T15:15:19.853Z | [history](work/fi09.json) |
 
 ## next
+- create-task HIST SAVE: consume current career-card summary policy delta as one atomic contract/producer/reader unit; original source facts and current reload invariants remain
 - inspect work board for remaining tasks
 
 ## log
+- 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
+- 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
 - 261109 T749 T750 T751 T752 integrated
@@ -908,5 +911,3 @@
 - 261109 T726 done: the match viewer's six playback modules live in `features/match-viewer/lib` and read the entity through its new CSS-free `entities/match/logic.ts`; ESLint keeps `logic.ts` to `lib/`, an architecture test keeps every e2e/fixture/`logic.ts` closure free of stylesheets and slice indexes; 71/30 chunks kept; browser specs left to the release run ev09
 - 261109 update-ssot ARCH r35 + create-task T726 refresh: code run outside the Vite build loads no stylesheet, asset or slice index and reaches other slices through `logic.ts` or `@x` (F13 adopted); T726 blocked → todo at ARCH@35 ev09
 - 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
-- 261109 T744 integrated
-- 261109 T746 integrated
