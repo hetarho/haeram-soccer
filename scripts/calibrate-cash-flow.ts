@@ -22,6 +22,7 @@ import { operatingCosts, seasonTurnover, wageBill } from '../packages/engine/src
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 import { OWNER_LIVING } from '../packages/engine/src/owner-config';
 import { SEASON_ROUNDS } from '../packages/engine/src/calendar';
+import { countZeroFeeArrivals } from './lib/transfer-flow';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string) => {
@@ -122,12 +123,6 @@ for (let index = 0; index < seasons && !careerEnded(world); index++) {
   }
   const closingAnnualWageBill = wageBill(world);
   const turnover = seasonTurnover(world).toString();
-  const completedFreeBids = (world.bids ?? [])
-    .filter(
-      (bid) =>
-        bid.year === currentYear && bid.staff && bid.status === 'completed' && bid.fee === '0',
-    )
-    .map((bid) => bid.playerId);
   const beforeClose = {
     cash: world.cash,
     income: world.income,
@@ -139,9 +134,11 @@ for (let index = 0; index < seasons && !careerEnded(world); index++) {
   if (!careerEnded(world)) closeSeason(world);
   const archive = world.history.findLast((entry) => entry.year === currentYear);
   const closed = archive && archive.year === currentYear ? archive : beforeClose;
-  const events = world.events.filter(
-    (event) => event.year === currentYear && event.currency === closed.currency,
-  );
+  const yearEvents = world.events.filter((event) => event.year === currentYear);
+  // Money is in the closed season's currency. Nonmonetary arrivals have no currency and
+  // must survive independently; bid history is prunable and zero-fee transfer facts absent.
+  const events = yearEvents.filter((event) => event.currency === closed.currency);
+  const zeroFee = countZeroFeeArrivals(yearEvents, currentYear, closed.currency);
   const sales = sum(
     events
       .filter((event) => ['transfer-out', 'free-transfer-compensation'].includes(event.kind))
@@ -158,16 +155,6 @@ for (let index = 0; index < seasons && !careerEnded(world); index++) {
     .map((fact) => BigInt(fact.fee))
     .filter((fee) => fee > 0n)
     .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
-  const freeIds = new Set([
-    ...completedFreeBids,
-    ...arrivals.filter((fact) => fact.fee === '0').map((fact) => fact.player),
-    ...(world.bids ?? [])
-      .filter(
-        (bid) =>
-          bid.year === currentYear && bid.staff && bid.status === 'completed' && bid.fee === '0',
-      )
-      .map((bid) => bid.playerId),
-  ]);
   const saleTurnover = sum(
     events
       .filter((event) =>
@@ -195,9 +182,10 @@ for (let index = 0; index < seasons && !careerEnded(world); index++) {
     closingAnnualWageBill,
     paidWagesRoundSamples: paidWagesRoundSamples.toString(),
     paidArrivals: paidFees.length,
-    freeTopUpArrivals: events.filter((event) => event.kind === 'free-agent-signing').length,
-    freeArrivals:
-      freeIds.size + events.filter((event) => event.kind === 'free-agent-signing').length,
+    zeroFeeTransferMoves: zeroFee.zeroFeeMoves,
+    freeTopUpArrivals: zeroFee.topUps,
+    // Zero-fee ledger moves include zero-fee loans: the ledger does not encode free-agent origin.
+    zeroFeeArrivals: zeroFee.total,
     paidMeanFee: paidFees.length
       ? (paidFees.reduce((a, b) => a + b, 0n) / BigInt(paidFees.length)).toString()
       : null,
@@ -208,17 +196,16 @@ for (let index = 0; index < seasons && !careerEnded(world); index++) {
           2n
         ).toString()
       : null,
-    ledgerEvents: events.filter(
-      (event) => event.amount !== undefined || event.kind === 'free-agent-signing',
+    ledgerEvents: yearEvents.filter(
+      (event) => event.amount === undefined || event.currency === closed.currency,
     ),
     arrivalFacts: arrivals,
-    completedFreeBidPlayers: completedFreeBids,
   });
   process.stderr.write(
-    `${currentYear}: ${club}, cash ${closed.cash}, paid ${paidFees.length}, free ${freeIds.size}\n`,
+    `${currentYear}: ${club}, cash ${closed.cash}, paid ${paidFees.length}, zero-fee ${zeroFee.total}\n`,
   );
 }
-const output = `${JSON.stringify({ ...identity, club, scenarios: year < 1980 ? 'historical' : 'modern', purseApart: args.includes('--purse-apart'), ownerMoneyMoved: false, construction: false, seasons: rows, ended: world.ended ?? world.bankrupt ?? null }, null, 2)}\n`;
+const output = `${JSON.stringify({ ...identity, arrivalAccounting: 'ledger-zero-fee-including-loans-and-topups-v2', club, scenarios: year < 1980 ? 'historical' : 'modern', purseApart: args.includes('--purse-apart'), ownerMoneyMoved: false, construction: false, seasons: rows, ended: world.ended ?? world.bankrupt ?? null }, null, 2)}\n`;
 const out = option('out', '');
 if (out) writeFileSync(out, output);
 else process.stdout.write(output);
