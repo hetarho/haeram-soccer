@@ -14,12 +14,11 @@ import type {
 } from '../../contracts/src/types';
 import { country } from '../../catalogs/src/index';
 import { FAN_MOOD } from './owner-config';
-import { hasTrait } from './owner-traits';
+import { fanMoodAfter, percentOf } from './fan-mood-read';
 import { careerEnded } from './owner';
 import { addEvent } from './events';
 import { pushInbox } from './inbox';
 import { activePlayers, clubOf, overall } from './player-state';
-import { clamp } from './primitives';
 import { isLeagueMatch, lastSeasonTurnover, seasonTurnover } from './finance';
 import { DEFAULT_TICKET, TICKET_PRESETS } from './presets';
 import { transferRanking } from './transfer-records';
@@ -36,9 +35,8 @@ function live(w: World) {
  */
 function move(w: World, change: number, why?: { title: string; detail: string }) {
   const owner = w.owner!,
-    scaled = change < 0 && hasTrait(w, 'fansFriend') ? change * FAN_MOOD.friendly : change,
     before = owner.fanMood;
-  owner.fanMood = Math.round(clamp(before + scaled, FAN_MOOD.min, FAN_MOOD.max) * 100) / 100;
+  owner.fanMood = fanMoodAfter(w, change);
   if (!why) return;
   const moved = owner.fanMood - before;
   addEvent(
@@ -53,12 +51,6 @@ function move(w: World, change: number, why?: { title: string; detail: string })
     }),
   );
 }
-/** `amount` as a percentage of `turnover`, to hundredths; undefined without a turnover. */
-function percentOf(amount: bigint, turnover: bigint | undefined) {
-  if (turnover === undefined || turnover <= 0n) return undefined;
-  return Number((amount * 10000n) / turnover) / 100;
-}
-
 /** Preset steps a ticket price stands above the default (→ECON-17); a custom price counts those it passes. */
 function ticketSteps(price: number) {
   return TICKET_PRESETS.filter((preset) => preset > DEFAULT_TICKET && preset <= price).length;

@@ -40,6 +40,7 @@ import {
 } from '../../../../../../packages/engine/src/finance-read';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../../../packages/engine/src/primitives';
+import { fanMoodAfter, percentOf } from '../../../../../../packages/engine/src/fan-mood-read';
 import { quote } from '../../../../../../packages/engine/src/quotes';
 import type { ClientState } from '../../../runtime/client';
 import { gameActionsBlocked } from '../../../runtime/store';
@@ -250,18 +251,20 @@ export function injectionSteps(w: World) {
   return [...new Set(amounts)];
 }
 
-/** The percent of `base` that `amount` is, unrounded. */
-const share = (amount: string, base: string) => (Number(amount) / Number(base)) * 100;
 /**
- * The 팬 민심 an injection of `amount` raises (→OWNER-12): +1 per 1% of last season's turnover, at
- * most +10. Undefined when the club has no closed season to measure it by.
+ * The applied 팬 민심 rise from an injection of `amount` (→OWNER-12), using the settlement's
+ * exact-money percentage and bounded stored mood. Undefined without a known turnover/owner.
  */
 export function injectionMood(w: World, amount: string) {
   const takeover = w.owner?.takeover;
   const turnover =
     lastSeasonTurnover(w) ?? (takeover?.year === w.year ? takeover.lastIncome : undefined);
-  if (!turnover || BigInt(turnover) <= 0n) return undefined;
-  return Math.min(FAN_MOOD.injection.max, share(amount, turnover) * FAN_MOOD.injection.perPercent);
+  if (!turnover || BigInt(turnover) <= 0n || !w.owner) return undefined;
+  const percent = percentOf(BigInt(amount), BigInt(turnover))!;
+  return (
+    fanMoodAfter(w, Math.min(FAN_MOOD.injection.max, percent * FAN_MOOD.injection.perPercent)) -
+    w.owner.fanMood
+  );
 }
 /** What an injection of `amount` leaves (→OWNER-9, WEB-114): both pots and 팬 민심's rise. */
 export function injectionOutlook(w: World, amount: string) {
@@ -285,8 +288,9 @@ export function dividendOutlook(w: World, dividend: DividendShare) {
   let amount = BigInt(ratio(profit.toString(), BigInt(dividend), 100n));
   if (amount > cash) amount = cash;
   const turnover = seasonTurnover(w);
-  const percent = turnover > 0n ? share(amount.toString(), turnover.toString()) : 100;
-  const mood = amount > 0n ? felt(w.owner!, percent * FAN_MOOD.dividend.perPercent) : 0;
+  const percent = percentOf(amount, turnover) ?? 100;
+  const mood =
+    amount > 0n ? fanMoodAfter(w, percent * FAN_MOOD.dividend.perPercent) - w.owner!.fanMood : 0;
   return { result: result.toString(), amount: amount.toString(), mood };
 }
 /** The last dividend the owner took, in the money of its season (→OWNER-11/17). */

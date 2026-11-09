@@ -12,6 +12,7 @@ import {
   OWNER_SETTLEMENTS,
   OWNER_TRAITS,
 } from '../../../../../packages/engine/src/owner-config';
+import { fanMoodInjection, fanMoodDividend } from '../../../../../packages/engine/src/fan-mood';
 import { scaleBy } from '../../../../../packages/engine/src/primitives';
 import { withOwner } from '../../../../../packages/engine/src/testing';
 import type { ClientState } from '../../runtime/client';
@@ -35,6 +36,7 @@ import {
   gameOverFacts,
   injectionLimit,
   injectionMood,
+  moodChange,
   injectionSteps,
   livingCost,
   nextSettlement,
@@ -43,6 +45,8 @@ import {
   stakeAmount,
   stakeOutlook,
 } from '../../entities/office';
+
+const { injectionOutlook } = await import('../../entities/office/lib/ownerFigures');
 
 vi.mock('../../presentation/react', async (original) => ({
   ...(await original<typeof import('../../presentation/react')>()),
@@ -129,7 +133,7 @@ function financialWorld() {
     cash: '5000',
     events: [],
     history: [],
-    owner: { traits: [], takeover: { year: 1970 }, fortune: '10000' },
+    owner: { traits: [], takeover: { year: 1970 }, fortune: '10000', fanMood: FAN_MOOD.start },
   } as unknown as World;
 }
 function financialEntry(w: World, kind: string, amount: string, year = w.year): Event {
@@ -523,4 +527,94 @@ describe('the game-over page (→WEB-56, OWNER-16)', () => {
     expect(markup).toContain('구단주 퇴진');
     for (const action of ['기록 내보내기', '이 슬롯에서 새 게임']) expect(markup).toContain(action);
   });
+});
+
+describe('capital mood previews versus actual existing hooks', () => {
+  it.each([60, 99, 100])(
+    'shows the bounded injection delta at mood %s without touching money',
+    (before) => {
+      const w = financialWorld();
+      w.owner!.fanMood = before;
+      w.owner!.takeover.lastIncome = '100000';
+      const snapshot = structuredClone(w),
+        preview = injectionOutlook(w, '10000');
+      expect(w).toEqual(snapshot);
+      expect(preview).toMatchObject({ cash: '15000', fortune: '0' });
+      fanMoodInjection(w, 10000n);
+      expect(preview.mood).toBe(w.owner!.fanMood - before);
+      expect(preview.mood).toBe(before === 60 ? 10 : before === 99 ? 1 : 0);
+      expect(w.cash).toBe(snapshot.cash);
+      expect(w.owner!.fortune).toBe(snapshot.owner!.fortune);
+      expect(w.events).toHaveLength(1);
+    },
+  );
+  it.each([false, true])(
+    'matches truncated percentages, stored hundredths and the existing display with friendly=%s',
+    (friendly) => {
+      const w = financialWorld();
+      w.owner!.traits = friendly ? ['fansFriend'] : [];
+      w.income = '3330000';
+      w.expense = '3320000';
+      w.cash = '10000';
+      const before = w.owner!.fanMood,
+        snapshot = structuredClone(w),
+        preview = dividendOutlook(w, 100);
+      expect(preview.amount).toBe('10000');
+      expect(w).toEqual(snapshot);
+      fanMoodDividend(w, BigInt(preview.amount));
+      expect(preview.mood).toBe(w.owner!.fanMood - before);
+      expect(w.owner!.fanMood).toBe(friendly ? 59.9 : 59.85);
+      expect(moodChange(preview.mood)).toBe('−0.1');
+      expect(w.events[0]!.detail).toContain('−0.1');
+      expect(w.cash).toBe(snapshot.cash);
+      expect(w.owner!.fortune).toBe(snapshot.owner!.fortune);
+    },
+  );
+  it('matches the lower bound, capped cash and zero dividend without creating a zero hook event', () => {
+    const w = financialWorld();
+    w.owner!.fanMood = 1;
+    w.income = '1000';
+    w.expense = '0';
+    w.cash = '200';
+    const preview = dividendOutlook(w, 100);
+    expect(preview.amount).toBe('200');
+    fanMoodDividend(w, BigInt(preview.amount));
+    expect(preview.mood).toBe(-1);
+    expect(w.owner!.fanMood).toBe(0);
+    w.cash = '0';
+    const snapshot = structuredClone(w),
+      zero = dividendOutlook(w, 100);
+    fanMoodDividend(w, BigInt(zero.amount));
+    expect(zero).toMatchObject({ amount: '0', mood: 0 });
+    expect(w).toEqual(snapshot);
+  });
+  it('keeps unknown injection disclosure and the zero-turnover dividend fallback', () => {
+    const w = financialWorld();
+    expect(injectionMood(w, '10')).toBeUndefined();
+    fanMoodInjection(w, 10n);
+    expect(w.owner!.fanMood).toBe(70);
+    w.owner!.fanMood = 60;
+    w.income = '1000';
+    w.events = [financialEntry(w, 'transfer-out', '1000')];
+    const preview = dividendOutlook(w, 100);
+    fanMoodDividend(w, BigInt(preview.amount));
+    expect(preview.mood).toBe(-50);
+    expect(w.owner!.fanMood).toBe(10);
+  });
+});
+
+it('retains the existing IEEE display difference at the same dividend ratio and a different starting mood', () => {
+  const w = financialWorld();
+  w.owner!.fanMood = 1;
+  w.income = '3330000';
+  w.expense = '3320000';
+  w.cash = '10000';
+  const preview = dividendOutlook(w, 100);
+  fanMoodDividend(w, BigInt(preview.amount));
+  expect(w.owner!.fanMood).toBe(0.85);
+  expect(preview.mood).toBe(w.owner!.fanMood - 1);
+  expect(preview.mood).toBe(-0.15000000000000002);
+  expect(moodChange(preview.mood)).toBe('−0.2');
+  expect(moodChange(-0.15)).toBe('−0.1'); // preserve the display formatter's existing pre-rounding
+  expect(w.events[0]!.detail).toContain('−0.2');
 });
