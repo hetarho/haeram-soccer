@@ -93,7 +93,7 @@ export interface FullStatsPlayer {
   id: string;
   name: string;
   position: Position;
-  /** Every club he played for in it, in recorded order; the last is the latest. */
+  /** First-seen contributing club set, preserved in stored order; not a transfer timeline. */
   clubs: string[];
   /** One of our players, past or present: his name opens our player sheet (→WEB-59). */
   ours: boolean;

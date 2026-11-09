@@ -303,7 +303,7 @@ function LeagueComparison({
     rows.find((row) => !row.ours && row.id !== left?.id) ||
     rows.find((row) => row.id !== left?.id);
   const club = (id: string) => w.clubs.find((c) => c.id === id)?.short || id;
-  const clubs = (row: FullStatsPlayer) => row.clubs.map(club).join(' → ');
+  const clubs = (row: FullStatsPlayer) => row.clubs.map(club).join(' · ');
   const option = (row: FullStatsPlayer) => (
     <option key={row.id} value={row.id}>
       {row.name} · {localizeValue(row.position)} · {localizeValue(clubs(row))}
