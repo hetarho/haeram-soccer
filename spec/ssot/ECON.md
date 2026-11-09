@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r51 | Define the browser-demo rules for historical club economy.
+> r52 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -158,8 +158,7 @@
   - the index is a source-attributed catalog per country and year, marked estimated where it is (→ECON-3), projected after its coverage like prices (→ECON-2).
 - ECON-27 [o] A club earns as real clubs do, simplified: competition money (league distribution →ECON-28, cup prizes →LEAGUE-5, continental prizes →EURO-7), matchday tickets (→ECON-9), sponsor contracts (→ECON-8) and player sales; owner money enters only as an injection outside turnover (→OWNER-9) and no marketing campaign starts (→ECON-7). No income grows with supporters alone. ← an income without a ceiling made every club rich by mid-career (measured 261012: £197m by 2004 from a 1950 founding with no owner action)
 - ECON-28 [o] Each league pays a season distribution that carries its broadcasting money: an equal share for every club of the division, paid in league-round installments, and a merit payment by final position, paid at the close; amounts per country and division follow the broadcasting index (→ECON-31). ← broadcasting is football's largest income, and real leagues share it by division and finish
-  - England's top flight normalizes its combined central package after the broadcasting index by the estimated table1992:1,2018:0.8520865440307794,2024:0.6580851783905154, geometric between anchors and flat outside. The2018/19 official central total is GBP2,456,008,346; the rounded2024/25 published table totals GBP2,833.6m. With the existing merit ratio, these fit the mean across all20 ranks, not the observed TV equal-share line. The normalized installment is the minimum central package; domestic/international TV, televised-appearance facility fees and central commercial money are combined once, separate from club-specific sponsorship. Sources: Premier League official2018/19 payment table and2024/25 central payments, linked in the calibration report. Interpolated years are estimates.
-  - every year through1992, other English divisions and other countries retain their original distribution. Cup/European prizes, the common broadcasting index, wages and transfer quotes are unchanged by this normalization. The existing parachute formula uses the corrected lost top-flight package, so its post-relegation amount changes with the package; ordinary lower-division shares do not.
+  - the estimated English central-package normalization (1992:1,2018:0.8520865440307794,2024:0.6580851783905154) was withdrawn after its standalone lived books failed the unchanged every-nonproject-club condition (measured261109). The released broadcasting-index distribution, valuation and lost-share parachute remain in force. The official2018/19 total GBP2,456,008,346 and published rounded2024/25 total GBP2,833.6m remain calibration evidence, not active coefficients; see the linked source tables and raw experiments in the economy report.
   - the champion's total is 1.6× the bottom club's in the top flight and 1.3× in the divisions below.
   - a club relegated keeps 50% of the share it lost for one season (parachute); a promotion pays the new division's share from its first round.
   - the season prize line (최종 순위 상금) becomes the merit payment.
@@ -224,6 +223,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r52 261109 ECON-28✎ provisional ENG package normalization→withdrawn after standalone lived-books gate failure; original distribution/valuation/parachute retained. ECON-29 exact payroll and unchanged acceptance criteria remain
 - r51 261109 ECON-28✎ 2024 factor0.6580853431019185 from rounded unit price→0.6580851783905154 from exact canonical GBP165,608,676.45 base; official whole-pot target unchanged
 - r50 261109 ECON-28✎ ENG top-flight raw broadcast-index package→official-total normalization (1992:1,2018:0.8520865440307794,2024:0.6580853431019185), lost-share parachute follows; ECON-29+ exact payroll components, joint wage/income screening and lived-world holdouts without weakening reference gates
 - r49 261104 ECON-22✎ 스카우팅/유입 cards' candidate ability, potential and count→the scout's search (band, ranking, per line, reach abroad →CLUB-51); ECON-16✎ recruitment market offers age/ability bands with potential +12/+6→the scout's search bands, levels 1–2 ranking potential first; 해외 스카우트망 market candidates +0–4 and potential +0–2→the scout's reach abroad (→CLUB-51); each setting combination draws its own list→a setting shapes the next shortlist draw and creates no player
