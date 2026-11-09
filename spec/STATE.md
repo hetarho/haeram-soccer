@@ -19,7 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | av11 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T13:59Z | 2026-11-09T14:07Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:08Z | - |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:21Z | T747 |
 
 ## inbox
 - 261109 decided review/football-data-consistency-261109 T753 T754: which follow-up UI inconsistencies enter the eight-hour local scope → refreshed bid quotes and locale-stale chart detail strings, after the current six-task run finishes (alt: change pricing policy | overlap an active lane). Source evidence and complete current contracts checked; preserve submitted bid terms, stale-response guards and numerical chart facts fi09
