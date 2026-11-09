@@ -2645,7 +2645,7 @@
     "copy.CareerRecordBook.c263a34471": "Weitere Informationen · {p0}–{p1}",
     "copy.CareerRecordBook.49093e1fb3": "Es liegen noch keine Aufzeichnungen vor.",
     "copy.CareerRecordBook.214de2a818": "Gesamtdatensatztyp",
-    "copy.CareerRecordBook.92c3ad57ea": "Dies ist der Rekord, den wir als Mitglied unseres Vereins in allen Wettbewerben hinterlassen haben. Die Anzahl der gespielten Spiele wird berechnet, indem die Spielzeit durch 90 Minuten geteilt wird, wobei 11 Startspieler alle 90 Minuten ohne Ersatz spielen. Dieselben Datensätze werden in Ranglisten unterteilt und in der Reihenfolge der Spieler-ID aufgeführt. Der aktuelle Kader wird fett dargestellt.",
+    "copy.CareerRecordBook.92c3ad57ea": "Diese Statistiken umfassen die Leistungen jedes Spielers für unseren Verein in allen Wettbewerben. Einsätze zählen tatsächlich gespielte Partien, einschließlich Einwechslungen; Spielminuten geteilt durch 90 dienen nur als Nenner für Werte pro 90 Minuten. Gleiche Werte teilen sich einen Rang und werden nach Spieler-ID aufgelistet. Der aktuelle Kader wird fett dargestellt.",
     "copy.CashAlarm.7c6b2c4fa1": "Verein droht Insolvenz",
     "copy.CashAlarm.be03d028d1": "Insolvenzkrise",
     "copy.CashAlarm.466cd5aa0d": "{p0} Kontostand {p1} ·{p2}{p3} Wenn Sie innerhalb der Runde nicht wieder einen Überschuss haben, gehen Sie bankrott.",

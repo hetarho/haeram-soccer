@@ -2256,7 +2256,7 @@
     "copy.CareerRecordBook.c263a34471": "Ver más · {p0}–{p1} arriba",
     "copy.CareerRecordBook.49093e1fb3": "Aún no hay registros.",
     "copy.CareerRecordBook.214de2a818": "Tipo de registro total",
-    "copy.CareerRecordBook.92c3ad57ea": "Este es el récord que nos queda como socio de nuestro club en todas las competiciones. El número de partidos jugados se calcula dividiendo el tiempo de juego por 90 minutos con 11 jugadores titulares jugando los 90 minutos sin reemplazo. Los mismos registros se dividen en clasificaciones y se escriben en orden de identificación del jugador. El equipo actual se muestra en negrita.",
+    "copy.CareerRecordBook.92c3ad57ea": "Son las estadísticas de cada jugador con nuestro club en todas las competiciones. Las participaciones cuentan los partidos realmente disputados, incluidos aquellos en los que se entra como suplente; los minutos divididos entre 90 solo se usan como denominador de las tasas por 90 minutos. Los registros iguales comparten puesto y se muestran por orden de ID del jugador. La plantilla actual aparece en negrita.",
     "copy.CashAlarm.7c6b2c4fa1": "Club en peligro de quiebra",
     "copy.CashAlarm.be03d028d1": "crisis de quiebras",
     "copy.CashAlarm.466cd5aa0d": "{p0} Saldo {p1} ·{p2}{p3} Si no vuelve a tener superávit dentro de la ronda, irá a la quiebra.",

@@ -2320,7 +2320,7 @@
     "copy.CareerRecordBook.c263a34471": "Voir plus · {p0}–{p1} ci-dessus",
     "copy.CareerRecordBook.49093e1fb3": "Il n'y a pas encore d'enregistrements.",
     "copy.CareerRecordBook.214de2a818": "Type d'enregistrement total",
-    "copy.CareerRecordBook.92c3ad57ea": "C'est le record que nous avons laissé en tant que membre de notre club toutes compétitions confondues. Le nombre de parties jouées est calculé en divisant le temps de jeu par 90 minutes, 11 joueurs titulaires jouant les 90 minutes sans remplacement. Les mêmes enregistrements sont divisés en classements et écrits par ordre d'identification du joueur. L'équipe actuelle est affichée en gras.",
+    "copy.CareerRecordBook.92c3ad57ea": "Ces statistiques concernent chaque joueur sous les couleurs de notre club, toutes compétitions confondues. Les apparitions comptent les matchs réellement joués, y compris les entrées en jeu ; les minutes divisées par 90 servent uniquement de dénominateur aux statistiques par 90 minutes. Les valeurs identiques partagent le même rang et sont affichés par ordre d’identifiant du joueur. L’effectif actuel apparaît en gras.",
     "copy.CashAlarm.7c6b2c4fa1": "Un club menacé de faillite",
     "copy.CashAlarm.be03d028d1": "crise de faillite",
     "copy.CashAlarm.466cd5aa0d": "{p0} Solde {p1} ·{p2}{p3} Si vous ne revenez pas à l'excédent au cours du tour, vous ferez faillite.",

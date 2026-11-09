@@ -2479,7 +2479,7 @@
     "copy.CareerRecordBook.c263a34471": "Lihat selengkapnya · {p0}–{p1}",
     "copy.CareerRecordBook.49093e1fb3": "Belum ada catatan.",
     "copy.CareerRecordBook.214de2a818": "Jenis rekaman total",
-    "copy.CareerRecordBook.92c3ad57ea": "Ini adalah rekor yang kami tinggalkan sebagai anggota klub kami di semua kompetisi. Jumlah permainan yang dimainkan dihitung dengan membagi waktu bermain selama 90 menit dengan 11 pemain awal bermain sepanjang 90 menit tanpa penggantian. Rekor yang sama dibagi menjadi peringkat dan ditulis berdasarkan ID pemain. Skuad saat ini ditampilkan dalam huruf tebal.",
+    "copy.CareerRecordBook.92c3ad57ea": "Ini adalah catatan setiap pemain bersama klub kita di semua kompetisi. Penampilan menghitung pertandingan yang benar-benar dimainkan, termasuk sebagai pemain pengganti; menit dibagi 90 hanya digunakan sebagai penyebut statistik per 90 menit. Catatan yang sama berbagi peringkat dan diurutkan menurut ID pemain. Skuad saat ini ditampilkan dengan huruf tebal.",
     "copy.CashAlarm.7c6b2c4fa1": "Klub terancam bangkrut",
     "copy.CashAlarm.be03d028d1": "krisis kebangkrutan",
     "copy.CashAlarm.466cd5aa0d": "{p0} Saldo {p1} ·{p2}{p3} Jika Anda tidak kembali surplus dalam putaran tersebut, Anda akan bangkrut.",

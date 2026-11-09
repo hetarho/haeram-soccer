@@ -28,7 +28,7 @@ import s from '../../../shared/ui/styles/App.module.css';
 /** Club career appearances from every own match (the view's tallies, →HIST-13). */
 function useCareerApps() {
   const tallies = useGameState((state) => state.view?.tallies.players);
-  return (id: string) => ofScope(tallies?.[id]?.apps, 'career');
+  return { tallies, count: (id: string) => (tallies ? ofScope(tallies[id]?.apps, 'career') : '—') };
 }
 const ownCountry = (w: World) => w.clubs.find((c) => c.id === w.playerClub)!.country;
 
@@ -48,7 +48,7 @@ function SeasonContext({ code, record }: { code: string; record: SeasonArchive }
 }
 function Leader({ player, index, label }: { player?: Player; index: number; label: string }) {
   useTextLocale();
-  const careerApps = useCareerApps();
+  const { count: careerApps } = useCareerApps();
   return (
     <article data-surface="panel">
       <h4>{localizeValue(label)}</h4>
@@ -340,13 +340,13 @@ export function TrophyCabinet({ w }: { w: World }) {
 
 function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
   useTextLocale();
-  const all = clubLeaders(w.players, board, LEADER_LIMIT),
-    places = boardPlaces(all, board),
+  const { tallies, count: careerApps } = useCareerApps();
+  const all = clubLeaders(w.players, board, LEADER_LIMIT, tallies),
+    places = boardPlaces(all, board, tallies),
     apps = board.key === 'apps';
   const [shown, setShown] = useState(LEADER_PAGE);
   const leaders = all.slice(0, shown),
     next = nextLeaderCount(shown, all.length);
-  const careerApps = useCareerApps();
   return (
     <Panel
       title={localizeValue(board.title)}
@@ -418,7 +418,11 @@ function LeaderTable({ w, board }: { w: World; board: LeaderBoard }) {
             )}
           </div>
         ) : (
-          <div className={s.empty}>{richMessage('copy.CareerRecordBook.49093e1fb3')}</div>
+          <div className={s.empty}>
+            {apps && !tallies
+              ? richMessage('copy.fullStatsView.bacdff45b0')
+              : richMessage('copy.CareerRecordBook.49093e1fb3')}
+          </div>
         ),
       )}
     </Panel>

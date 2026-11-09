@@ -2175,7 +2175,7 @@
     "copy.CareerRecordBook.c263a34471": "See more · {p0}–{p1} above",
     "copy.CareerRecordBook.49093e1fb3": "There are no records yet.",
     "copy.CareerRecordBook.214de2a818": "Total record type",
-    "copy.CareerRecordBook.92c3ad57ea": "This is the record we have left as a member of our club in all competitions. The number of games played is calculated by dividing the playing time by 90 minutes with 11 starting players playing all 90 minutes without replacement. Same records are divided into rankings and written in order of player ID. The current squad is displayed in bold.",
+    "copy.CareerRecordBook.92c3ad57ea": "These are each player's records for our club across all competitions. Appearances count matches actually played, including substitute appearances; minutes divided by 90 is used only as the denominator for per-90 rates. Equal records share a rank and are listed by player ID. The current squad is shown in bold.",
     "copy.CashAlarm.7c6b2c4fa1": "Club in danger of bankruptcy",
     "copy.CashAlarm.be03d028d1": "bankruptcy crisis",
     "copy.CashAlarm.466cd5aa0d": "{p0} Balance {p1} ·{p2}{p3} If you do not return to surplus within the round, you will go bankrupt.",

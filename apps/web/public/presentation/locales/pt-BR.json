@@ -2356,7 +2356,7 @@
     "copy.CareerRecordBook.c263a34471": "Veja mais · {p0}–{p1} acima",
     "copy.CareerRecordBook.49093e1fb3": "Ainda não há registros.",
     "copy.CareerRecordBook.214de2a818": "Tipo de registro total",
-    "copy.CareerRecordBook.92c3ad57ea": "Este é o recorde que deixamos como sócios do nosso clube em todas as competições. O número de jogos disputados é calculado dividindo o tempo de jogo por 90 minutos, com 11 jogadores titulares jogando todos os 90 minutos sem reposição. Os mesmos registros são divididos em classificações e escritos na ordem do ID do jogador. O time atual é exibido em negrito.",
+    "copy.CareerRecordBook.92c3ad57ea": "Estas são as estatísticas de cada jogador pelo nosso clube em todas as competições. As participações contam as partidas realmente disputadas, incluindo entradas como substituto; os minutos divididos por 90 são usados apenas como denominador das taxas por 90 minutos. Números iguais compartilham a posição e são listados por ID do jogador. O elenco atual aparece em negrito.",
     "copy.CashAlarm.7c6b2c4fa1": "Clube em perigo de falência",
     "copy.CashAlarm.be03d028d1": "crise de falência",
     "copy.CashAlarm.466cd5aa0d": "{p0} Saldo {p1} ·{p2}{p3} Se você não retornar ao superávit dentro da rodada, você irá à falência.",
