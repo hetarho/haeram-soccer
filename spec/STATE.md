@@ -777,6 +777,7 @@
 - 261105 decided STAFF-50 LEAGUE-1 T704: which seasons a tenure lists → every job off the pitch, the manager's and chief scout's included, with each season it overlaps by at least a day (the war's seasons skipped); a season the archive holds no row of his club for shows 순위 기록 없음 and the one being played 진행 중, read at request time (alt: coaching and 단장 jobs only | count a season only after a set share of it). rs01
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
+- 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
 
 ## ideation
 | id | st |
@@ -801,7 +802,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 34 | 34 | - | 2 |
-| WEB | 212 | 212 | - | 0 |
+| WEB | 213 | 213 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -838,6 +839,7 @@
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 | T736 | one season history with the takeover rule | WEB HIST OWNER ARCH | - | todo |
 | T735 | settle the owner's business monthly at better odds | OWNER WORLD WEB ARCH | - | todo |
+| T738 | switch the season history between 순위 and 재정 | WEB OWNER ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
