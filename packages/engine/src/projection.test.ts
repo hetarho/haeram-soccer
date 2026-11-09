@@ -28,6 +28,7 @@ describe('finance projection', () => {
     expect(projection.lines.map((line) => line.label)).toEqual([
       '급여·시설 유지',
       '운영 경비',
+      ...(operatingCosts(w).loan === '0' ? [] : ['인수 부채 상환']),
       '홈 경기 수입(개최비 제외)',
       '리그 분배금',
       '후원 계약',
@@ -48,7 +49,7 @@ describe('finance projection', () => {
     let w = setups.academy();
     const start = financeProjection(w),
       first = operatingCosts(w),
-      bill = BigInt(first.annual) - BigInt(first.expenses);
+      bill = BigInt(first.annual) - BigInt(first.expenses) - BigInt(first.loan);
     expect(BigInt(first.academy)).toBeGreaterThan(0n);
     expect(lineOf(start.lines, 'operating').amount).toBe(`${-bill}`);
     expect(lineOf(start.seasonLines, 'operating').amount).toBe(`${-bill}`);
@@ -71,7 +72,7 @@ describe('finance projection', () => {
     const mid = financeProjection(w);
     expect(BigInt(lineOf(mid.seasonLines, 'operating').amount)).toBe(-remaining);
     expect(BigInt(lineOf(mid.lines, 'operating').amount)).toBe(
-      BigInt(costs.expenses) - BigInt(costs.annual),
+      BigInt(costs.expenses) + BigInt(costs.loan) - BigInt(costs.annual),
     );
     expect(BigInt(lineOf(mid.seasonLines, 'expenses').amount)).toBe(-remainingExpenses);
     // The remaining bills are exactly what the rounds then charge.
