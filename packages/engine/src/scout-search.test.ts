@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type {
   Line,
   PolicyLevel,
@@ -8,6 +8,7 @@ import type {
   World,
 } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
+import { ATTRIBUTES } from '../../contracts/src/player';
 import type { ClubBuild } from '../../contracts/src/build';
 import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
 import { clubById, squad } from './world';
@@ -16,6 +17,10 @@ import { dailyMarket, operate, placeBid } from './index';
 import { holdRows } from './testing';
 import { world } from './transfers.testkit';
 import { isForeignCandidate, SCOUT_CONFIG, scoutReach, transferOffers } from './scout-search';
+import * as scoutSearch from './scout-search';
+import { requestCandidates, signingVerdict, staffSignings } from './signings';
+import { staffAuthority } from './testing';
+import { seasonDayOf } from './calendar';
 
 /** The chief scout at `ability` (vacant when undefined), as a hired one stands. */
 function scoutAt(w: World, ability: number | undefined, trait?: StaffTrait) {
@@ -158,14 +163,102 @@ describe('the chief scout reach (CLUB-51)', () => {
 });
 
 describe('ranking (CLUB-33, ECON-16)', () => {
-  /** Each line in rank order: free agents first, then the two measures, then the id. */
+  it('keeps a materially better paid player before weak free players at the per-line cap', () => {
+    const w = scoutAt(world(), 85);
+    w.freeAgents = [];
+    const paid = transferOffers(w).find((offer) => !offer.freeAgent)!;
+    const weak = { ...structuredClone(paid.player), id: 'ranking:free', freeSince: w.year };
+    for (const attribute of ATTRIBUTES) weak.attrs[attribute] = 40;
+    weak.potential = 40;
+    w.freeAgents = [weak];
+    const listed = transferOffers(w).filter((offer) => lineOfOffer(offer) === lineOfOffer(paid));
+    expect(listed[0]!.player.id).toBe(paid.player.id);
+    expect(listed.some((offer) => offer.player.id === weak.id)).toBe(false);
+  });
+
+  it('prefers free status only for equal sporting quality, then stable id', () => {
+    const w = scoutAt(world(), 85);
+    w.freeAgents = [];
+    const paid = transferOffers(w)[0]!;
+    const free = ['ranking:z', 'ranking:a'].map((id) => ({
+      ...structuredClone(paid.player),
+      id,
+      freeSince: w.year,
+    }));
+    w.freeAgents = free;
+    const relevant = transferOffers(w).filter((offer) =>
+      [paid.player.id, ...free.map((p) => p.id)].includes(offer.player.id),
+    );
+    expect(relevant.map((offer) => offer.player.id)).toEqual([
+      'ranking:a',
+      'ranking:z',
+      paid.player.id,
+    ]);
+    const before = ids(w);
+    w.freeAgents = [...free].reverse();
+    expect(ids(w)).toEqual(before);
+  });
+
+  it('ranks director candidates by quality and falls back when the better fee is unaffordable', () => {
+    const w = scoutAt(world(), 85);
+    w.settings = staffAuthority(4);
+    w.round = 23;
+    w.income = '999999999999';
+    w.cash = '999999999999';
+    w.calendar = { day: seasonDayOf(w.year, 1, 1) };
+    delete w.shortlist;
+    w.freeAgents = [];
+    const paid = transferOffers(w).find((offer) => offer.player.position === 'GK')!;
+    const freePlayer = {
+      ...structuredClone(paid.player),
+      id: 'ranking:affordable',
+      freeSince: w.year,
+    };
+    for (const attribute of ATTRIBUTES) freePlayer.attrs[attribute] = 45;
+    freePlayer.potential = 45;
+    freePlayer.wage = '1';
+    w.freeAgents = [freePlayer];
+    const free: ScoutOffer = {
+      ...paid,
+      player: freePlayer,
+      freeAgent: true,
+      fee: '0',
+      loanFee: '0',
+      source: { kind: 'free' },
+    };
+    const dear: ScoutOffer = { ...paid, fee: '999999999999999' };
+    // This isolates director ordering from the scout's independent cap and ranking.
+    const search = vi.spyOn(scoutSearch, 'transferOffers').mockReturnValue([free, dear]);
+    try {
+      expect(
+        requestCandidates(w, { kind: 'short', line: 'GK' }).map(({ offer }) => offer.player.id),
+      ).toEqual([dear.player.id, free.player.id]);
+      const keep = activePlayers(w).filter((player) => player.position === 'GK')[0]!;
+      for (const player of activePlayers(w))
+        if (player.position === 'GK' && player.id !== keep.id) player.status = 'sold';
+      const cash = w.cash;
+      expect(signingVerdict(w, dear.player, dear.fee).ok).toBe(false);
+      expect(signingVerdict(w, free.player, free.fee).ok).toBe(true);
+      staffSignings(w);
+      expect(w.players.find((player) => player.id === free.player.id)?.status).toBe('active');
+      expect(w.cash).toBe(cash);
+      expect(w.bids?.find((bid) => bid.playerId === free.player.id)).toMatchObject({
+        status: 'completed',
+        fee: '0',
+      });
+    } finally {
+      search.mockRestore();
+    }
+  });
+
+  /** Each line in rank order: sporting measures, free status, stable id. */
   function expectRanked(w: World, potentialFirst: (offer: ScoutOffer) => boolean) {
     const key = (offer: ScoutOffer) => {
       const first = potentialFirst(offer);
       return [
-        offer.freeAgent ? 1 : 0,
         first ? offer.player.potential : overall(offer.player),
         first ? overall(offer.player) : offer.player.potential,
+        offer.freeAgent ? 1 : 0,
       ];
     };
     for (const line of LINES) {
@@ -179,11 +272,10 @@ describe('ranking (CLUB-33, ECON-16)', () => {
     }
   }
 
-  it('ranks free agents first, then ability, potential and id at the balanced level', () => {
+  it('ranks ability and potential before free status at the balanced level', () => {
     const w = scoutAt(world(), 85);
     expect(scoutReach(w).potentialFirst).toBe('none');
     expectRanked(w, () => false);
-    expect(transferOffers(w).some((offer) => offer.freeAgent)).toBe(true);
   });
 
   it('ranks potential first for levels 1–2 and 데이터 스카우팅, never under 광역 네트워크', () => {

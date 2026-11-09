@@ -147,11 +147,11 @@ interface Found {
   first: number;
   second: number;
 }
-/** Free agents first, then the first measure, the second, and the id (→CLUB-33). */
+/** Sporting measures first, then free status and stable id (→CLUB-33). */
 const byRank = (a: Found, b: Found) =>
-  Number(!b.club) - Number(!a.club) ||
   b.first - a.first ||
   b.second - a.second ||
+  Number(!b.club) - Number(!a.club) ||
   compareIds(a.player.id, b.player.id);
 
 function offerOf(w: World, found: Found, multiplier: number, graduates: Set<string>): ScoutOffer {
@@ -176,8 +176,8 @@ function abilities(players: readonly Player[]) {
 }
 
 /**
- * The players within the reach (→CLUB-51) whose age and ability fit the search, ranked free
- * agents first, then by ability and potential (potential first where the search says so), then
+ * The players within the reach (→CLUB-51) whose age and ability fit the search, ranked
+ * by ability and potential (potential first where the search says so), then free status and
  * id; per line the reach's count, keeping its places abroad for the ablest found there. Our
  * players, players on loan at their club and announced retirements are never listed.
  */
