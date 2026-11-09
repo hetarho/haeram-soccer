@@ -11,10 +11,11 @@ import {
   POSITION_LABEL,
   TRAIT_LABEL,
 } from '../../../../../../packages/engine/src/player';
-import { clubOf, overall } from '../../../../../../packages/engine/src/player-state';
+import { overall } from '../../../../../../packages/engine/src/player-state';
 import { staffMember } from '../../../../../../packages/engine/src/staff-info';
 import { scoutRangeScale } from '../../../../../../packages/engine/src/owner-traits';
 import { positionsLabel } from '../../../entities/player';
+import { marketMoneyContext, sameMarketMoney, type MarketMoney } from '../lib/worldMarket';
 import { Money } from '../../../shared/ui/Money';
 import { OvrBadge } from '../../../entities/player';
 import { gradeLabel } from '../../../entities/player';
@@ -25,6 +26,8 @@ export type CompareSide = {
   label: string;
   player: Player;
   own: boolean;
+  /** Omitted for live own-player consumers; null explicitly withholds unresolved snapshot money. */
+  money?: MarketMoney | null;
   /** Market terms; a player of ours has none. */
   terms?: {
     fee: string;
@@ -63,10 +66,20 @@ export function PlayerCompare({
   label: string;
 }) {
   useTextLocale();
-  const club = clubOf(w);
   const scout = staffMember(w, 'scout')?.ability;
   const range = scoutRangeScale(w);
-  const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
+  const currentMoney = marketMoneyContext(w)!;
+  const context = (side: CompareSide) => (side.money === undefined ? currentMoney : side.money);
+  const comparable = sameMarketMoney(context(sides[0]), context(sides[1]));
+  const cash = (side: CompareSide, value: string, projected = false): Cell => {
+    const money = context(side);
+    if (!money || (projected && !sameMarketMoney(money, currentMoney)))
+      return { text: sourceMessage('copy.RecruitmentDesk.414f13ede8') };
+    return {
+      text: <Money value={value} code={money.code} year={money.year} />,
+      value: comparable ? BigInt(value) : undefined,
+    };
+  };
   const both = (read: (side: CompareSide) => Cell): readonly [Cell, Cell] => [
     read(sides[0]),
     read(sides[1]),
@@ -75,12 +88,9 @@ export function PlayerCompare({
   const money = (
     read: (terms: NonNullable<CompareSide['terms']>) => string,
     better: Better,
+    projected = false,
   ): Omit<Row, 'label'> => ({
-    cells: both((side) =>
-      side.terms
-        ? { text: cash(read(side.terms)), value: BigInt(read(side.terms)) }
-        : { text: '—' },
-    ),
+    cells: both((side) => (side.terms ? cash(side, read(side.terms), projected) : { text: '—' })),
     better,
   });
   const groups: { title: string; rows: Row[]; note?: string }[] = [
@@ -132,10 +142,10 @@ export function PlayerCompare({
           cells: both((side) =>
             side.terms
               ? {
-                  text: side.terms.freeAgent
-                    ? sourceMessage('copy.PlayerCompare.f201ec1d4f')
-                    : cash(side.terms.fee),
-                  value: BigInt(side.terms.fee),
+                  ...cash(side, side.terms.fee),
+                  ...(side.terms.freeAgent && context(side)
+                    ? { text: sourceMessage('copy.PlayerCompare.f201ec1d4f') }
+                    : {}),
                 }
               : { text: '—' },
           ),
@@ -146,10 +156,7 @@ export function PlayerCompare({
         },
         {
           label: sourceMessage('team.column.wage'),
-          cells: both((side) => ({
-            text: cash(side.player.wage),
-            value: BigInt(side.player.wage),
-          })),
+          cells: both((side) => cash(side, side.player.wage)),
           better: 'lower',
         },
         {
@@ -160,18 +167,18 @@ export function PlayerCompare({
         },
         {
           label: sourceMessage('copy.PlayerCompare.8933209ede'),
-          ...money((terms) => terms.cashAfter, 'higher'),
+          ...money((terms) => terms.cashAfter, 'higher', true),
         },
         {
           label: sourceMessage('copy.BusinessWorkbench.d69ab3db74'),
-          ...money((terms) => terms.annualAfter, 'lower'),
+          ...money((terms) => terms.annualAfter, 'lower', true),
         },
       ],
     });
   else
     groups[0].rows.push({
       label: sourceMessage('team.column.wage'),
-      cells: both((side) => ({ text: cash(side.player.wage), value: BigInt(side.player.wage) })),
+      cells: both((side) => cash(side, side.player.wage)),
       better: 'lower',
     });
   for (const group of ATTRIBUTE_GROUPS)

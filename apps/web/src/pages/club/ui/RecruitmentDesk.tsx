@@ -49,12 +49,15 @@ import {
   changeMarketQuery,
   marketLeagueKey,
   marketLeagues,
+  marketMoneyContext,
+  sameMarketMoney,
   signedFreeAgentTarget,
   toggleMarketComparison,
   useMarketDetail,
   useMarketPage,
   type MarketDetail,
   type MarketQuery,
+  type MarketMoney,
 } from '../lib/worldMarket';
 import { PlayerCompare, type CompareSide } from './PlayerCompare';
 import s from './RecruitmentDesk.module.css';
@@ -68,11 +71,13 @@ export function candidateSide(
   candidate: Candidate,
   label: string,
   onOpen?: () => void,
+  money?: MarketMoney | null,
 ): CompareSide {
   return {
     label,
     player: candidate.offer.player,
     own: candidate.offer.own,
+    money,
     terms: candidate.offer.own
       ? undefined
       : {
@@ -203,6 +208,7 @@ function CandidateCard({
   onRecruit,
   onBid,
   pending,
+  money,
   bid = false,
 }: {
   w: World;
@@ -215,14 +221,20 @@ function CandidateCard({
   onRecruit: (loan: boolean) => void;
   onBid: () => void;
   pending?: TransferBid;
+  money: MarketMoney | null;
   bid?: boolean;
 }) {
   useTextLocale();
   const { offer, buy, loan, verdict } = candidate,
     player = offer.player,
     club = clubOf(w);
-  const cash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
-  const short = (value: string) => compactMoney(value, club.country, w.year);
+  const unavailable = sourceMessage('copy.RecruitmentDesk.414f13ede8');
+  const coherent = sameMarketMoney(money, marketMoneyContext(w));
+  const cash = (value: string) =>
+    money ? <Money value={value} code={money.code} year={money.year} /> : unavailable;
+  const short = (value: string) =>
+    money ? compactMoney(value, money.code, money.year) : unavailable;
+  const liveCash = (value: string) => <Money value={value} code={club.country} year={w.year} />;
   const window = transferWindow(w);
   const growth = Math.max(0, Math.round(player.potential) - overall(player));
   const best = bestRoles(player, 1)[0];
@@ -231,7 +243,7 @@ function CandidateCard({
     : offer.recommended
       ? sourceMessage('copy.RecruitmentDesk.741ff4233f')
       : sourceMessage('copy.RecruitmentDesk.32024b055b');
-  const free = BigInt(offer.fee) === 0n;
+  const free = !!money && BigInt(offer.fee) === 0n;
   // Signed and with us: his first-team training as the assistant sets it (→CLUB-13).
   const joined = bid
     ? undefined
@@ -269,6 +281,7 @@ function CandidateCard({
               w={w}
               origin={candidateOrigin(offer)}
               division
+              money={money}
               fee={
                 !offer.own &&
                 (!bid || (candidate.world === w.id && candidate.revision === w.revision))
@@ -298,7 +311,7 @@ function CandidateCard({
           </div>
         ),
       )}
-      {localizeValue(verdict && <VerdictCard verdict={verdict} />)}
+      {localizeValue(coherent && verdict && <VerdictCard verdict={verdict} />)}
       {localizeValue(
         !bid && offer.available && (
           <Section
@@ -408,24 +421,26 @@ function CandidateCard({
                     <div>
                       <dt>{richMessage('copy.PlayerCompare.8933209ede')}</dt>
                       <dd>
-                        {localizeValue(cash(buy.cashAfter))}
+                        {localizeValue(coherent ? cash(buy.cashAfter) : unavailable)}
                         {localizeValue(' ')}
                         <small className={s.sub}>
-                          {richMessage('copy.RecruitmentDesk.5e0a2459f7', {
-                            p0: runwayText(buy.runwayRounds),
-                          })}
+                          {coherent &&
+                            richMessage('copy.RecruitmentDesk.5e0a2459f7', {
+                              p0: runwayText(buy.runwayRounds),
+                            })}
                         </small>
                       </dd>
                     </div>
                     <div>
                       <dt>{richMessage('copy.RecruitmentDesk.dfe24d38ff')}</dt>
                       <dd>
-                        {localizeValue(cash(loan.cashAfter))}
+                        {localizeValue(coherent ? cash(loan.cashAfter) : unavailable)}
                         {localizeValue(' ')}
                         <small className={s.sub}>
-                          {richMessage('copy.RecruitmentDesk.5e0a2459f7', {
-                            p0: runwayText(loan.runwayRounds),
-                          })}
+                          {coherent &&
+                            richMessage('copy.RecruitmentDesk.5e0a2459f7', {
+                              p0: runwayText(loan.runwayRounds),
+                            })}
                         </small>
                       </dd>
                     </div>
@@ -441,7 +456,7 @@ function CandidateCard({
                     offer.available && (
                       <>
                         {richMessage('copy.RecruitmentDesk.1dfae53abc', {
-                          p0: cash(buy.annualAfter),
+                          p0: coherent ? cash(buy.annualAfter) : unavailable,
                         })}
                       </>
                     ),
@@ -474,13 +489,13 @@ function CandidateCard({
                 pending.status === 'countered' ? (
                   <>
                     {richMessage('copy.RecruitmentDesk.df14100077', {
-                      p0: cash(pending.counterFee || pending.fee),
+                      p0: liveCash(pending.counterFee || pending.fee),
                     })}
                   </>
                 ) : (
                   <>
                     {richMessage('copy.RecruitmentDesk.e0d3c704cd', {
-                      p0: cash(pending.fee),
+                      p0: liveCash(pending.fee),
                       p1: ' ',
                       p2: Math.max(0, pending.due - (w.calendar?.day ?? 0)),
                     })}
@@ -525,7 +540,9 @@ function CandidateCard({
                     <small data-tone="block">{localizeValue(window.label)}</small>
                   ) : (
                     (!buy.eligible || !buy.affordable) && (
-                      <small data-tone="block">{localizeValue(buy.reason)}</small>
+                      <small data-tone="block">
+                        {localizeValue(coherent ? buy.reason : unavailable)}
+                      </small>
                     )
                   ),
                 )}
@@ -544,7 +561,9 @@ function CandidateCard({
                   offer.freeAgent ? (
                     <small>{richMessage('copy.RecruitmentDesk.cd560b565b')}</small>
                   ) : !loan.eligible || !loan.affordable ? (
-                    <small data-tone="block">{localizeValue(loan.reason)}</small>
+                    <small data-tone="block">
+                      {localizeValue(coherent ? loan.reason : unavailable)}
+                    </small>
                   ) : (
                     offer.available && (
                       <small>{richMessage('copy.RecruitmentDesk.42b7db7fec')}</small>
@@ -640,6 +659,7 @@ export function RecruitmentDesk({
     ageMax: youth ? YOUTH_MARKET_AGE : undefined,
   });
   const page = market.value;
+  const currentMoney = marketMoneyContext(w)!;
   const selectedComparison = comparison.filter((target) => target.world === w.id).slice(0, 2);
   const detail = useMarketDetail(client, w.id, w.revision, viewing);
   const comparisonA = useMarketDetail(
@@ -667,6 +687,7 @@ export function RecruitmentDesk({
   const quoted = bidDetail.value?.bid;
   const bidCurrent =
     bidDetail.current &&
+    sameMarketMoney(bidDetail.money, currentMoney) &&
     bidDetail.value?.world === w.id &&
     bidDetail.value.revision === w.revision &&
     quoted?.asking === bidding?.asking;
@@ -765,18 +786,36 @@ export function RecruitmentDesk({
     // Inside a control that already answers the tap: the notation, the exact amount as its title.
     plain = (value: string) => <Money value={value} code={club.country} year={w.year} plain />,
     text = (value: string) => compactMoney(value, club.country, w.year);
-  const render = (candidate: Candidate, current: boolean, bid = false) => (
+  const snapshotPlain = (value: string) =>
+    market.money ? (
+      <Money value={value} code={market.money.code} year={market.money.year} plain />
+    ) : (
+      sourceMessage('copy.RecruitmentDesk.414f13ede8')
+    );
+  const render = (
+    candidate: Candidate,
+    current: boolean,
+    money: MarketMoney | null,
+    bid = false,
+  ) => (
     <CandidateCard
       key={candidate.offer.player.id}
       w={w}
       candidate={candidate}
+      money={money}
       bid={bid}
-      blocked={blocked || !current || candidate.revision !== w.revision || candidate.offer.own}
+      blocked={
+        blocked ||
+        !current ||
+        !sameMarketMoney(money, currentMoney) ||
+        candidate.revision !== w.revision ||
+        candidate.offer.own
+      }
       selected={selectedComparison.some((target) => target.playerId === candidate.offer.player.id)}
       onCompare={() => toggle(candidate.offer.target)}
       onCompareOwn={() => setOwnCompare({ target: candidate.offer.target })}
       onRecruit={(loan) => {
-        if (current) void recruit(candidate, loan);
+        if (current && sameMarketMoney(money, currentMoney)) void recruit(candidate, loan);
       }}
       onBid={() => {
         setComparing(false);
@@ -1058,12 +1097,14 @@ export function RecruitmentDesk({
                           })}
                         </span>
                       ) : (
-                        <span className={s.moneyValue}>{localizeValue(plain(offer.fee))}</span>
+                        <span className={s.moneyValue}>
+                          {localizeValue(snapshotPlain(offer.fee))}
+                        </span>
                       ),
                     )}
                   </td>
                   <td className={s.wageColumn}>
-                    <span className={s.wageValue}>{localizeValue(plain(player.wage))}</span>
+                    <span className={s.wageValue}>{localizeValue(snapshotPlain(player.wage))}</span>
                   </td>
                   <td>
                     <button
@@ -1562,6 +1603,7 @@ export function RecruitmentDesk({
                           setComparing(false);
                           setViewing(candidate.offer.target);
                         },
+                        index ? comparisonB.money : comparisonA.money,
                       ),
                     ) as [CompareSide, CompareSide]
                   }
@@ -1639,6 +1681,8 @@ export function RecruitmentDesk({
                           candidateSide(
                             candidate,
                             sourceMessage('copy.ClubSettingControl.2051d3609a'),
+                            undefined,
+                            ownCandidate.money,
                           ),
                           {
                             label: sourceMessage('copy.EventCenter.45d9ddc729'),
@@ -1750,7 +1794,7 @@ export function RecruitmentDesk({
             )}
             {localizeValue(
               bidDetail.value ? (
-                render(bidDetail.value, bidDetail.current, true)
+                render(bidDetail.value, bidDetail.current, bidDetail.money, true)
               ) : (
                 <p role="status">
                   {localizeValue(
@@ -1840,7 +1884,7 @@ export function RecruitmentDesk({
             )}
             {localizeValue(
               detail.value ? (
-                render(detail.value, detail.current)
+                render(detail.value, detail.current, detail.money)
               ) : (
                 <p role="status">
                   {localizeValue(detail.error ?? sourceMessage('copy.RecruitmentDesk.965c4d30c9'))}
