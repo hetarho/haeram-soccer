@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T06:48:18.467Z",
-  "sourceCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+  "snapshotAt": "2026-11-09T07:01:42.344Z",
+  "sourceCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -51,28 +51,14 @@
   },
   "summary": {
     "total": 13,
-    "completed": 12,
-    "remaining": 1,
+    "completed": 13,
+    "remaining": 0,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 1
+    "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T744",
-      "title": "refresh validation fixtures on the accepted economy source",
-      "dep": [
-        "T739",
-        "T740",
-        "T742",
-        "T743",
-        "T745",
-        "T746"
-      ],
-      "status": "todo"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
@@ -878,6 +864,8 @@
       "submittedBase": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
       "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
       "submittedAt": "2026-11-09T06:46:43.084Z",
+      "integratedCommit": "249730bc59bfef427efa70360f0de27ddcd64fcf",
+      "integratedAt": "2026-11-09T06:48:19.381Z",
       "risk": null,
       "review": {
         "id": "7acd2eec-fb61-4f17-a520-e062f7e05b53",
@@ -911,6 +899,69 @@
           "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
           "startedAt": "2026-11-09T06:46:37.854Z",
           "finishedAt": "2026-11-09T06:46:42.789Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T06:48:18.904Z",
+          "finishedAt": "2026-11-09T06:48:18.947Z"
+        }
+      ]
+    },
+    {
+      "id": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "group": "economy-ec09",
+      "taskId": "T744",
+      "tasks": [
+        "T744"
+      ],
+      "lane": null,
+      "owner": "ec10-fixtures",
+      "contributors": [
+        "ec10-fixtures"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T06:49:52.101Z",
+      "startCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+      "verifiedCommit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+      "submittedBase": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+      "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+      "submittedAt": "2026-11-09T06:59:05.253Z",
+      "risk": null,
+      "review": {
+        "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+        "owner": "ec10-review-fixtures",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T744 independently reviewed at fixed a760bc081d27a7fa84b73ba71df0a1704c5599fc against d4e2a8a633dda50bb0c320f96747825a56c21df3. Diff contains only the two prepared fixtures and task receipt; generators, builders, assertions, migration input and portable fixture are unchanged. Portable SHA remains original 67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f. Independently decompressed old/new payloads and checked their checksums: only events, owner and shortlist differ; every event except owner-living is exactly identical after alignment, and every other world field including players, clubs, cash and matches is identical. Journey living counts change 1950 4-to-11 and elapsed 1951 1-to-5; the combined ledger difference exactly equals the 9,012,048-unit fortune reduction. Activation annual living increases 2 units with exactly 2 fewer fortune units. Each shortlist changes only two GK candidate IDs, consistent with already released T732; no roster or signing changes. Both new fixture file hashes match the retained actual generator receipt, metadata pins clean d4e2a8a6, and independently recomputed the 208-file source fingerprint 7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86. Independently reran the two decoding/schema units successfully in clean exact author HEAD. No delta is attributed to withdrawn wage/package pilots. Final canonical replay, actual instrumentation invariance and full pre-push checks remain coordinator-owned.",
+        "findings": [],
+        "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+        "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+        "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+        "createdAt": "2026-11-09T06:59:50.419Z",
+        "finishedAt": "2026-11-09T07:01:13.250Z"
+      },
+      "steps": [
+        {
+          "taskId": "T744",
+          "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+          "at": "2026-11-09T06:59:05.217Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T06:59:01.187Z",
+              "finishedAt": "2026-11-09T06:59:04.921Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:59:01.187Z",
+          "finishedAt": "2026-11-09T06:59:04.921Z"
         }
       ]
     }
@@ -3865,6 +3916,193 @@
       "group": "economy-ec09",
       "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
       "taskId": "T746",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 959,
+      "at": "2026-11-09T06:48:19.163Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T06:48:18.904Z",
+            "finishedAt": "2026-11-09T06:48:18.947Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 960,
+      "at": "2026-11-09T06:48:19.381Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "249730bc59bfef427efa70360f0de27ddcd64fcf",
+        "integratedAt": "2026-11-09T06:48:19.381Z"
+      }
+    },
+    {
+      "sequence": 961,
+      "at": "2026-11-09T06:49:52.101Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+        "group": "economy-ec09",
+        "taskId": "T744",
+        "tasks": [
+          "T744"
+        ],
+        "lane": null,
+        "owner": "ec10-fixtures",
+        "contributors": [
+          "ec10-fixtures"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T06:49:52.101Z",
+        "startCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3"
+      }
+    },
+    {
+      "sequence": 962,
+      "at": "2026-11-09T06:49:54.109Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 963,
+      "at": "2026-11-09T06:59:00.922Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 964,
+      "at": "2026-11-09T06:59:05.253Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+        "submittedBase": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+        "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+        "submittedAt": "2026-11-09T06:59:05.253Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T744",
+            "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+            "at": "2026-11-09T06:59:05.217Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T06:59:01.187Z",
+                "finishedAt": "2026-11-09T06:59:04.921Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T06:59:01.187Z",
+            "finishedAt": "2026-11-09T06:59:04.921Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 965,
+      "at": "2026-11-09T06:59:50.419Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+          "owner": "ec10-review-fixtures",
+          "status": "reviewing",
+          "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+          "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+          "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+          "createdAt": "2026-11-09T06:59:50.419Z"
+        }
+      }
+    },
+    {
+      "sequence": 966,
+      "at": "2026-11-09T07:01:13.250Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+          "owner": "ec10-review-fixtures",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T744 independently reviewed at fixed a760bc081d27a7fa84b73ba71df0a1704c5599fc against d4e2a8a633dda50bb0c320f96747825a56c21df3. Diff contains only the two prepared fixtures and task receipt; generators, builders, assertions, migration input and portable fixture are unchanged. Portable SHA remains original 67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f. Independently decompressed old/new payloads and checked their checksums: only events, owner and shortlist differ; every event except owner-living is exactly identical after alignment, and every other world field including players, clubs, cash and matches is identical. Journey living counts change 1950 4-to-11 and elapsed 1951 1-to-5; the combined ledger difference exactly equals the 9,012,048-unit fortune reduction. Activation annual living increases 2 units with exactly 2 fewer fortune units. Each shortlist changes only two GK candidate IDs, consistent with already released T732; no roster or signing changes. Both new fixture file hashes match the retained actual generator receipt, metadata pins clean d4e2a8a6, and independently recomputed the 208-file source fingerprint 7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86. Independently reran the two decoding/schema units successfully in clean exact author HEAD. No delta is attributed to withdrawn wage/package pilots. Final canonical replay, actual instrumentation invariance and full pre-push checks remain coordinator-owned.",
+          "findings": [],
+          "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+          "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+          "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+          "createdAt": "2026-11-09T06:59:50.419Z",
+          "finishedAt": "2026-11-09T07:01:13.250Z"
+        }
+      }
+    },
+    {
+      "sequence": 967,
+      "at": "2026-11-09T07:01:39.807Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
