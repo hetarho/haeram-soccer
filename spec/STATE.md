@@ -18,8 +18,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T04:45Z | - |
 
 ## inbox
+- 261109 decided ECON-29 ARCH-30 review/economy-transfers-261109: the owner asks why work stopped with the original realistic-economy goal unfinished and expects main publication → resume wage/distribution calibration across reviewed increments, treat reports and pushes as checkpoints; the verified first increment96a6290f is now on origin/main. Preserve task-unit and pre-push E2E tiers, no automatic schedule ec10
 - 261109 decided ARCH-30 T737: economy-ec09 verified source731ed705 passes the combined gate (Chromium348 cases, including2 fresh management journeys); the owner authorizes origin publication → gather this batch on next while ow09 remains live, leave the main release to the last session. All5 adopted tasks are integrated; detailed evidence/report retained ec09
 - 261109 decided ARCH-30 T737: the owner authorizes origin publication in a suitable batch and reiterates unit tests per task, E2E at the push boundary → keep worker browser runs disabled, verify the combined batch before one code push; static checks remain basic checks and the final affected-file confirmation belongs to the coordinator ec09
 - 261109 decided OWNER-7 T735: how much a monthly settlement wins or loses once it settles eleven times a season at 60% → 5% of the staked share (about +10% a season at a full stake, +23% with 성공한 사업가; a 50% stake about +5%) (alt: the whole staked share each month, which shrinks a 50% stake by a third a season and ruins a full one | a third of it, the old season exposure, compounding ×2.6 a season with the trait) ow09
