@@ -62,11 +62,17 @@ function formerPlayer(w: World, index: number, role?: StaffRole): PersonCareer {
 describe('club staff holders (→STAFF-49)', () => {
   it('names every club a holder of each post from the seed and its count, storing nothing', () => {
     const w = fresh(),
-      before = JSON.stringify(w);
+      before = JSON.stringify(w),
+      comparisonBase = structuredClone(w);
     for (const club of others(w).slice(0, 30))
       for (const role of STAFF_ROLES) {
-        const member = clubStaffMember(w, club, role);
-        expect(clubStaffMember(structuredClone(w), club, role)).toEqual(member);
+        const member = clubStaffMember(w, club, role),
+          comparison = {
+            ...comparisonBase,
+            clubs: [...comparisonBase.clubs],
+            ...(comparisonBase.people ? { people: { ...comparisonBase.people } } : {}),
+          };
+        expect(clubStaffMember(comparison, club, role)).toEqual(member);
         expect(member.id).toBe(`club-staff:${club.id}:${role}:${countOf(member.id)}`);
         // Within 8 of the club's strength, inside the market's levels.
         const [low, high] = STAFF_MARKET_CONFIG.levels;
@@ -86,6 +92,7 @@ describe('club staff holders (→STAFF-49)', () => {
         expect(member.wage).toBe(coachWage(w, member.ability));
       }
     expect(JSON.stringify(w)).toBe(before);
+    expect(JSON.stringify(comparisonBase)).toBe(before);
   });
 
   it('names the next holder when the count moves, and the next again when he retires', () => {
