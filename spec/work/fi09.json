@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 1,
+  "snapshotAt": "2026-11-09T14:14:34.701Z",
+  "sourceCommit": "72c3da863fbe5f258239de47520b02877640f8c2",
+  "group": {
+    "id": "fi09",
+    "branch": "next",
+    "status": "active",
+    "createdAt": "2026-11-09T14:11:29.091Z",
+    "limits": {
+      "workers": 2,
+      "reviewers": 1,
+      "maxPending": 8
+    },
+    "push": null,
+    "review": "all",
+    "taskScope": [
+      "T747",
+      "T748",
+      "T749",
+      "T750",
+      "T751",
+      "T752"
+    ]
+  },
+  "summary": {
+    "total": 6,
+    "completed": 0,
+    "remaining": 6,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 6
+  },
+  "tasks": [
+    {
+      "id": "T747",
+      "title": "Align owner money previews with canonical turnover",
+      "dep": [],
+      "lane": "finance-views",
+      "status": "todo"
+    },
+    {
+      "id": "T748",
+      "title": "Expose exact amounts in the cash summary",
+      "dep": [],
+      "lane": "finance-views",
+      "status": "todo"
+    },
+    {
+      "id": "T749",
+      "title": "Keep missing match-statistic ratios neutral",
+      "dep": [],
+      "lane": "football-data",
+      "status": "todo"
+    },
+    {
+      "id": "T750",
+      "title": "Exclude opponent lines from own-season advanced leaders",
+      "dep": [],
+      "lane": "football-data",
+      "status": "todo"
+    },
+    {
+      "id": "T751",
+      "title": "Retain Poisson tails in expected-points calculations",
+      "dep": [],
+      "lane": "football-data",
+      "status": "todo"
+    },
+    {
+      "id": "T752",
+      "title": "Localize football-statistic numbers consistently",
+      "dep": [
+        "T749"
+      ],
+      "lane": "football-data",
+      "status": "todo"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "563069b9-7a70-45d0-811d-e917f49d823d",
+      "group": "fi09",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "lane": "finance-views",
+      "owner": "fi09-finance",
+      "contributors": [
+        "fi09-finance"
+      ],
+      "status": "released",
+      "reason": "Coordinator corrects unstarted unit-test file paths; worker paused, dirty code preserved, no live commands",
+      "createdAt": "2026-11-09T14:11:34.905Z",
+      "startCommit": "321d1784618f99d89c69b15b28b6f56466d58a31",
+      "releasedAt": "2026-11-09T14:13:27.596Z"
+    },
+    {
+      "id": "55ae7ca1-c235-48f5-b70e-6021b2a208a2",
+      "group": "fi09",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "lane": "football-data",
+      "owner": "fi09-football",
+      "contributors": [
+        "fi09-football"
+      ],
+      "status": "released",
+      "reason": "Coordinator corrects unstarted unit-test file paths; worker paused, dirty T749 preserved, no live commands",
+      "createdAt": "2026-11-09T14:11:43.641Z",
+      "startCommit": "321d1784618f99d89c69b15b28b6f56466d58a31",
+      "releasedAt": "2026-11-09T14:13:29.649Z"
+    }
+  ],
+  "history": [
+    {
+      "sequence": 2011,
+      "at": "2026-11-09T14:11:29.384Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "fi09",
+        "branch": "next",
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:11:29.091Z",
+        "limits": {
+          "workers": 2,
+          "reviewers": 1,
+          "maxPending": 8
+        },
+        "push": null,
+        "review": "all",
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752"
+        ]
+      }
+    },
+    {
+      "sequence": 2012,
+      "at": "2026-11-09T14:11:29.516Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "preparing",
+      "status": "active",
+      "changes": {
+        "status": "active"
+      }
+    },
+    {
+      "sequence": 2013,
+      "at": "2026-11-09T14:11:34.905Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "563069b9-7a70-45d0-811d-e917f49d823d",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "563069b9-7a70-45d0-811d-e917f49d823d",
+        "group": "fi09",
+        "taskId": "T747",
+        "tasks": [
+          "T747",
+          "T748"
+        ],
+        "lane": "finance-views",
+        "owner": "fi09-finance",
+        "contributors": [
+          "fi09-finance"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:11:34.905Z",
+        "startCommit": "321d1784618f99d89c69b15b28b6f56466d58a31"
+      }
+    },
+    {
+      "sequence": 2014,
+      "at": "2026-11-09T14:11:39.932Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "563069b9-7a70-45d0-811d-e917f49d823d",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2015,
+      "at": "2026-11-09T14:11:43.642Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "55ae7ca1-c235-48f5-b70e-6021b2a208a2",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "55ae7ca1-c235-48f5-b70e-6021b2a208a2",
+        "group": "fi09",
+        "taskId": "T749",
+        "tasks": [
+          "T749",
+          "T750",
+          "T751",
+          "T752"
+        ],
+        "lane": "football-data",
+        "owner": "fi09-football",
+        "contributors": [
+          "fi09-football"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:11:43.641Z",
+        "startCommit": "321d1784618f99d89c69b15b28b6f56466d58a31"
+      }
+    },
+    {
+      "sequence": 2016,
+      "at": "2026-11-09T14:11:47.267Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "55ae7ca1-c235-48f5-b70e-6021b2a208a2",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2017,
+      "at": "2026-11-09T14:12:11.491Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "563069b9-7a70-45d0-811d-e917f49d823d",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2018,
+      "at": "2026-11-09T14:12:32.170Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "55ae7ca1-c235-48f5-b70e-6021b2a208a2",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2019,
+      "at": "2026-11-09T14:13:27.596Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "563069b9-7a70-45d0-811d-e917f49d823d",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Coordinator corrects unstarted unit-test file paths; worker paused, dirty code preserved, no live commands",
+        "releasedAt": "2026-11-09T14:13:27.596Z"
+      }
+    },
+    {
+      "sequence": 2020,
+      "at": "2026-11-09T14:13:29.649Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "55ae7ca1-c235-48f5-b70e-6021b2a208a2",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Coordinator corrects unstarted unit-test file paths; worker paused, dirty T749 preserved, no live commands",
+        "releasedAt": "2026-11-09T14:13:29.649Z"
+      }
+    }
+  ]
+}
