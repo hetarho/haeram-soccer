@@ -18,9 +18,11 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T16:09Z | - |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T17:25Z | - |
 
 ## inbox
+- 261110 decided ARCH-21 ARCH-30 T767 review/football-data-consistency-261109: how the inherited live-league verification observes an already-open report → use actual expected report/date-specific reopen state in both event orders (alt: stale prior-dismissal click | longer timeout | drop navigation/node assertions). Raw335 trace and av11 preserved patch establish a test-control defect; no product/fixture/coverage change fi09
+- 261110 decided ARCH-30 T755: how to recover observed host resource failures → identical-selection single-worker verification with unchanged30s limits, preserving original failure and exact-source cached success (alt: larger limits | skipped cases | source changes for timing). ENOSPC during later integration moved no target commit; runtime recovery and fresh submission/review are required fi09
 - 261110 decided OWNER-12 WEB-114 T766 review/football-data-consistency-261109: how capital previews respect the existing0..100 fan-mood property → share unchanged percentage/move math and disclose its actual before→after change (alt: show+10 at mood100 | recalibrate rates/clamp | introduce new precision). Source/event-backed capped injection is the primary bug; approximate dividend follows the same canonical projection. Actual settlement, money and copy remain unchanged fi09
 - 261110 decided T765 WEB-43 ECON-5 ECON-6: how snapshot denominations reach shared monetary consumers → add the two existing comparison/source source paths with optional explicit provenance and current defaults (alt: fake w.year | leave source fees wrong | silently widen active touches). Clean source-free attempt released before six-path fresh assignment; mixed-unit derived money stays unavailable fi09
 - 261110 decided WEB-43 WEB-97 ECON-5 ECON-6 T765 review/football-data-consistency-261109: how retained running-market snapshots survive a denomination transition → preserve their known UI monetary context, otherwise keep inspection but withhold ambiguous money (alt: relabel old minor units with current currency | clear inspection or refetch every revision | add a public money protocol). Existing read cadence and T753 transaction revalidation remain; no new FX or game facts fi09
@@ -861,6 +863,7 @@
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T766 | match capital mood previews to settlement | OWNER WEB ECON ARCH | T747 | todo |
+| T767 | observe live league report state before reopening | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -884,12 +887,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 20 | 15 | 5 | 2 | 0 | 0 | 2026-11-09T16:24:56.430Z | [history](work/fi09.json) |
+| fi09 | 2 | 20 | 15 | 2026-11-09T17:25Z | 2 | 0 | 0 | 2026-11-09T16:24:56.430Z | [history](work/fi09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261109 T765 integrated
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
@@ -909,4 +913,3 @@
 - 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
 - 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
-- 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
