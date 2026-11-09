@@ -839,7 +839,7 @@
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 | T736 | one season history with the takeover rule | WEB HIST OWNER ARCH | - | todo |
 | T735 | settle the owner's business monthly at better odds | OWNER WORLD WEB ARCH | - | todo |
-| T738 | switch the season history between 순위 and 재정 | WEB OWNER ARCH | - | todo |
+| T738 | switch the season history between 순위 and 재정 | WEB HIST OWNER ARCH | T736 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
