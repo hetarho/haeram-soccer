@@ -826,7 +826,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
+| T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
@@ -853,12 +853,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 2 | 1 | 1 | 0 | 1 | 0 | 2026-11-09T02:13:27.005Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 4 | 2 | 2 | 2 | 0 | 0 | 2026-11-09T02:23:58.712Z | [history](work/economy-ec09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T733 integrated
 - 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
 - 261109 T731 integrated
 - 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
@@ -878,5 +879,3 @@
 - 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720; ARCH r33 (CI shards and limits), F2–F4 adopted → T721–T723 (lane dev-cost), F5 rejected, F6 parked, F7 suggested
 - 261109 T714 done: the journey helper settles the office before clicking 오버뷰 (Playwright's retried pre-click scroll moved the view, not the app's focus); CI 42494165472 on 145635c3 green in every job, main green again since 11-04. mt08
 - 261108 T713 done: every match model and the aggregate's odds read the portable math (`HOST_MATH` removed); the golden's `modern-european-season` regenerated to CI's Linux facts; CI 42487386669 `checks` green on bf4b6be0. mt08
-- 261108 T712 done: the ability-fit wage built behind `ABILITY_FIT` (off), `--ability-fit` overrides, inert against T700; CLUB-25's gate fails on 46 calibration careers (중견 titles 3/8, 지역 유지 reach 8/8, 자수성가 reach 6/6; upper tiers no club bankrupt), so it stays out of force; held-out and worlds not run (artifacts/benchmarks/T712). mt08
-- 261108 fix tests: the portable contract diagnostic lists every differing top-level fact with its first path (bounded), so CI shows whether modern-european-season's Linux divergence reaches matches or only the books (T713)
