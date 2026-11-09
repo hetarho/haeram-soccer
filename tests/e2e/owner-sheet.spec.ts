@@ -58,7 +58,9 @@ for (const viewport of [
     // The stake slider previews its odds before anything applies (→OWNER-7, WEB-36).
     await sheet.getByRole('slider', { name: /사업에 걸기/ }).fill('40');
     await expect(sheet).toContainText('자금의 40%를 사업에 걸기');
-    await expect(sheet).toContainText('성공 50%');
+    await expect(sheet).toContainText('성공 60%');
+    // It settles monthly, winning or losing 5% of what is staked (→OWNER-7).
+    await expect(sheet).toContainText('정산마다 투자금의 5%를 벌거나 잃어요');
     await settle(page);
     const sheetBox = (await sheet.boundingBox())!;
     expect(sheetBox.x).toBeGreaterThanOrEqual(0);
