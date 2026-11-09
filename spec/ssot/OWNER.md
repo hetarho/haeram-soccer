@@ -1,5 +1,5 @@
 # OWNER Owner fortune, takeover start, traits and standing
-> r5 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
+> r6 | Define the owner as a person with his own fortune, business and standing with the fans, set apart from the club he buys.
 
 ## decisions
 - OWNER-1 [o] The owner's fortune (구단주 자금) and the club's cash (구단 자금) are separate pots; money moves between them only by an injection (→OWNER-9) or a dividend (→OWNER-11). From the takeover the fortune is kept in the club's currency and converts with it (→ECON-5/6). ← the owner's own money and the club's books are different stakes
@@ -21,7 +21,7 @@
 - OWNER-5 [o] The owner picks 0 to 5 of eight traits at the start, fixed for the career:
   | trait | effect (OWNER_TRAITS) |
   |---|---|
-  | 성공한 사업가 | business success chance 50% → 60% (→OWNER-7) |
+  | 성공한 사업가 | business success chance 60% → 70% (→OWNER-7) |
   | 승리의 부적 | the own club's match strength +1 on the OVR scale (→OWNER-6) |
   | 협상의 달인 | player wage demands and asked transfer fees for the own club −10% |
   | 팬들의 친구 | every 팬 민심 drop ×0.7 (→OWNER-12) |
@@ -31,10 +31,11 @@
   | 정치력 | operating expenses ×0.9 (→ECON-30) |
 - OWNER-6 [o] 승리의 부적 is the one stated exception to the same-terms rule (→MATCH-2): taken by the owner's own choice at the start, it lifts only the own club's match strength. ← chosen openly as part of the start's difficulty, never a hidden edge
 - OWNER-7 [o] The owner's business is a bet he sizes: a stake slider from 0% to 100% of his fortune, in whole percent, changeable at any time and applied at the next settlement.
-  - settlements: 1 November, 1 February, 1 May and the season's close day (→LEAGUE-9); each succeeds with 50% (60% with 성공한 사업가) and adds the stake's share of the fortune, or fails and takes it away; the draw comes from the world's stream, so a seed replays it.
+  - settlements: the 1st of every month from September to June and the season's close day (→LEAGUE-9), eleven a season; the summer the close skips has none.
+  - each settlement succeeds with 60% (70% with 성공한 사업가) and adds OWNER_BUSINESS.swing (5%) of the staked share of the fortune, or fails and takes it away; the draw comes from the world's stream, so a seed replays it.
   - a fortune at zero or below is not staked.
-  - the slider states the success chance, the amount won or lost at the current fortune and the next settlement's date. ← even odds make the business a gamble without the trait (one win and one loss leave 1 − r²), so dividends are the steady way to grow the fortune
-- OWNER-8 [o] At each settlement the owner pays living costs of OWNER_LIVING.rate (0.2%) of his tier's starting fortune, grown with prices (→ECON-2); they are paid even below zero, deepening the debt. ← without outgoings a failed bet only reaches zero at 100% and owner bankruptcy would be self-chosen
+  - the slider states the success chance, the amount won or lost at the current fortune and the next settlement's date. ← a business succeeds more often than it fails, so a stake earns on average; the small monthly swing keeps a full stake near football's own price growth (about +10% a season, +23% with 성공한 사업가, against 4–13% a year for football values →ECON-2), so the dividend stays a steady way to grow the fortune
+- OWNER-8 [o] Each season the owner pays living costs of OWNER_LIVING.season (0.8%) of his tier's starting fortune, grown with prices (→ECON-2), split evenly over the season's settlements (→OWNER-7); they are paid even below zero, deepening the debt. ← without outgoings a failed bet only reaches zero at 100% and owner bankruptcy would be self-chosen
   - an owner who moves no money (stake 0%, no injection, dividend 0%) is never bankrupt within 15 seasons, yet uses much of his fortune within a generation, so dividends stay the way to keep it.
   - measured 261104 (LEAGUE-13's reference careers, no traits, 2 seeds × ENG ESP FRA GER, 1950–1969): none bankrupt before his 17th season; the others had used 41–87% of their fortune by 1969. At 1.3× and 0.25%, 14 of 38 were bankrupt within 15 seasons, the earliest in his 3rd.
 - OWNER-9 [o] The owner may put any amount of his fortune into the club's cash at any time (자금 투입), never more than his fortune above zero and within →OWNER-10. An injection is owner capital in the ledger, outside turnover (→ECON-10, →ECON-30), and raises 팬 민심 (→OWNER-12).
@@ -61,10 +62,11 @@
 
 ## flow
 - Start: wealth tier → traits (0–5) → takeover decade (→WEB-2) → world generation (→WORLD-13) → club list → takeover (→ECON-38)
-- Season: stake set → quarterly settlement (bet, living costs) → injections at will → league rounds move 팬 민심 → season close (dividend, business, living costs, crisis checks, record)
+- Season: stake set → monthly settlement (bet, living costs) → injections at will → league rounds move 팬 민심 → season close (dividend, business, living costs, crisis checks, record)
 - End: club bankruptcy | owner bankruptcy | 구단주 퇴진 → game-over page
 
 ## chg
+- r6 261109 OWNER-7✎ settlements 1 Nov/1 Feb/1 May + close, success 50%, the whole staked share won or lost→the 1st of each month September–June + close (eleven), success 60%, 5% of the staked share won or lost; OWNER-5✎ 성공한 사업가 50→60%→60→70%; OWNER-8✎ 0.2% of the starting fortune a settlement→0.8% a season split over its settlements
 - r5 261104 OWNER-5✎ 마당발 candidate lists one longer, each candidate +5→free-agent pools one larger, each new free agent +5 (→STAFF-17/49)
 - r4 261104 OWNER-4✎ founding direction chosen at takeover→standard defaults without a choice
 - r3 261104 OWNER-3✎ starting fortune of the five tiers below 석유 재벌 1.3→1.6 × anchor, +the multiple's measured reason; OWNER-8✎ living costs 0.25%→0.2% a settlement, +no owner who moves no money bankrupt within 15 seasons, measured 261104

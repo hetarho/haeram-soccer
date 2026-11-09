@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r22 | Define the browser-demo rules for durable metrics and history.
+> r23 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -79,7 +79,7 @@
   - a career whose transfers predate these facts ranks its recorded transfer-in/transfer-out ledger entries by amount, labelled with the entry's recorded text; it never invents a player, club or date link (→SAVE-24).
   - the facts fit →SAVE-4/13's century budgets without pruning.
 
-- HIST-21 [o] The bought club's seasons before the takeover show in its records as its history before the owner — league finishes, cup runs and honours from the season archives (→HIST-2) — kept apart from the owner's era, whose own-club metrics (→HIST-1) start at the takeover; each season close of the owner's era also keeps the owner's record (→OWNER-17). ← fans read a club's past, and judge the owner by his own seasons
+- HIST-21 [o] The bought club's seasons before the takeover show in its records as its history before the owner — league finishes, cup runs and honours from the season archives (→HIST-2) — marked off from the owner's era by the takeover, whose own-club metrics (→HIST-1) start there; each season close of the owner's era also keeps the owner's record (→OWNER-17). ← fans read a club's past, and judge the owner by his own seasons
 
 - HIST-22 [o] Career totals, streaks, record maxima, player appearances/cards and current-season financial summaries are updated from newly settled facts and read without scanning older seasons.
   - separate season-scoped counters from career counters; reset only season counters at rollover, preserving cross-season runs and career totals.
@@ -92,6 +92,7 @@
 
 
 ## chg
+- r23 261109 HIST-21✎ pre-owner seasons kept apart from the owner's era→marked off from it by the takeover (one season list, →WEB-54)
 - r22 261103 HIST-11✎ regenerate on read and never store→record source-linked news once and retain across seasons with bounded publication; HIST-13✎ appearance counts derived on read→incremental retained-participation totals; HIST-22+ incremental season/career read summaries with reconstruction and duplicate protection
 - r21 261103 HIST-5✎ founding the first entry→the takeover the first entry of the owner's era; HIST-21+ pre-takeover seasons shown as the club's history before the owner, the owner's era from the takeover with the owner's season record
 - r20 261102 HIST-5✎ tactics application/refusal appended as new facts→not appended, facts already recorded stay; HIST-11✎ owner requests in club events→removed; HIST-14✎ once-per-player coaching encouragement and response→removed
