@@ -57,3 +57,38 @@ export const businessSign = (record: Pick<OwnerSeasonRecord, 'business'>) => {
   const value = BigInt(record.business);
   return value > 0n ? '+' : '';
 };
+
+/** A row of 시즌별 기록 (→WEB-54): an owned season, the takeover rule or a season before the owner. */
+export type SeasonListRow<Owned, Before> =
+  | { kind: 'owned'; season: Owned }
+  | { kind: 'takeover'; year: number }
+  | { kind: 'before'; season: Before };
+
+/**
+ * 시즌별 기록's closed seasons as one newest-first history (→WEB-54, HIST-21): the owner's seasons,
+ * the rule naming the takeover season, then the bought club's seasons before the owner. `limit`
+ * counts seasons, never the rule, which shows above the first season before the owner on the page;
+ * `remaining` is what 더 보기 adds.
+ */
+export function seasonListRows<Owned extends { year: number }, Before extends { year: number }>(
+  owned: readonly Owned[],
+  before: readonly Before[],
+  takeoverYear: number | undefined,
+  limit: number,
+) {
+  const seasons: SeasonListRow<Owned, Before>[] = [
+      ...newestFirst(owned).map((season) => ({ kind: 'owned' as const, season })),
+      ...newestFirst(before).map((season) => ({ kind: 'before' as const, season })),
+    ],
+    shown = seasons.slice(0, Math.max(0, limit)),
+    first = shown.findIndex((row) => row.kind === 'before');
+  const rows =
+    first < 0 || takeoverYear === undefined
+      ? shown
+      : [
+          ...shown.slice(0, first),
+          { kind: 'takeover' as const, year: takeoverYear },
+          ...shown.slice(first),
+        ];
+  return { rows, remaining: seasons.length - shown.length };
+}

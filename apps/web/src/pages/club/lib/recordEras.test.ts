@@ -7,6 +7,7 @@ import {
   newestFirst,
   ownerSeasonRows,
   runsText,
+  seasonListRows,
 } from './recordEras';
 
 const record = (year: number, business: string): OwnerSeasonRecord => ({
@@ -64,5 +65,45 @@ describe('the records room’s eras (→HIST-21, OWNER-17)', () => {
     expect(businessSign(record(1960, '500'))).toBe('+');
     expect(businessSign(record(1960, '-500'))).toBe('');
     expect(businessSign(record(1960, '0'))).toBe('');
+  });
+
+  it('lists the owner’s seasons, the takeover rule, then the seasons before, newest first', () => {
+    const owned = [{ year: 1950 }, { year: 1952 }, { year: 1951 }],
+      before = [{ year: 1948 }, { year: 1949 }];
+    const read = (limit: number, takeover: number | undefined = 1950) =>
+      seasonListRows(owned, before, takeover, limit).rows.map((row) =>
+        row.kind === 'takeover' ? `rule ${row.year}` : `${row.kind} ${row.season.year}`,
+      );
+    expect(read(49)).toEqual([
+      'owned 1952',
+      'owned 1951',
+      'owned 1950',
+      'rule 1950',
+      'before 1949',
+      'before 1948',
+    ]);
+    // The rule waits for the first season before the owner on the page, and is never counted.
+    expect(read(3)).toEqual(['owned 1952', 'owned 1951', 'owned 1950']);
+    expect(seasonListRows(owned, before, 1950, 3).remaining).toBe(2);
+    expect(read(4)).toEqual(['owned 1952', 'owned 1951', 'owned 1950', 'rule 1950', 'before 1949']);
+    expect(seasonListRows(owned, before, 1950, 4).remaining).toBe(1);
+  });
+
+  it('draws no rule without seasons before the owner or without an owner', () => {
+    const owned = [{ year: 1950 }];
+    // Bought in the world's first season: no earlier rows, no rule.
+    expect(seasonListRows(owned, [], 1950, 49).rows).toEqual([
+      { kind: 'owned', season: { year: 1950 } },
+    ]);
+    // A founded career has no takeover.
+    expect(seasonListRows(owned, [{ year: 1949 }], undefined, 49).rows.map((r) => r.kind)).toEqual([
+      'owned',
+      'before',
+    ]);
+    // Before the first close, the rule leads the closed list.
+    expect(seasonListRows([], [{ year: 1949 }], 1950, 49).rows.map((r) => r.kind)).toEqual([
+      'takeover',
+      'before',
+    ]);
   });
 });
