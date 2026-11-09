@@ -843,8 +843,9 @@
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 | T743 | use settled payroll in the reference career report | ECON CLUB OWNER LEAGUE ARCH | T739 | todo |
-| T744 | refresh validation fixtures on the accepted economy source | ARCH ECON CLUB OWNER | T739 T740 T742 T743 T745 | todo |
+| T744 | refresh validation fixtures on the accepted economy source | ARCH ECON CLUB OWNER | T739 T740 T742 T743 T745 T746 | todo |
 | T745 | withdraw rejected wage and central-package pilots | ARCH CLUB ECON | T739 T740 T741 T742 T743 | todo |
+| T746 | resource the newly added payroll tooling prose | ARCH | T739 T743 T745 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -887,7 +888,6 @@
 - 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
 - 261109 T735 done: monthly owner business (1 Sep–1 Jun + close) at 60%/70% with a 5% swing; living costs 0.8% a season in eleven exact shares (ow09)
 - 261109 update-ssot OWNER r6 WORLD r10 HIST r23 WEB r212 + create-task T735 T736: monthly owner business at 60% with a 5% swing; one season history table with a takeover rule (ow09)
-- 261109 T737 integrated
 - 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
 - 261109 T732 integrated
 - 261109 T731 integrated
@@ -897,3 +897,4 @@
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.
 - 261109 update-ssot CLUB64 ECON52/create-task T745: independent review confirms wage and package-only books failures; withdraw both activations byte-exact44, retain earlier transfer/recruitment changes and exact observation tools; no new cycle ec10.
+- 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
