@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T02:23:58.712Z",
-  "sourceCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+  "snapshotAt": "2026-11-09T02:27:24.690Z",
+  "sourceCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -23,20 +23,14 @@
   },
   "summary": {
     "total": 4,
-    "completed": 2,
-    "remaining": 2,
-    "running": 2,
+    "completed": 3,
+    "remaining": 1,
+    "running": 1,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
   "tasks": [
-    {
-      "id": "T732",
-      "title": "choose affordable sporting improvements before free status",
-      "dep": [],
-      "status": "doing"
-    },
     {
       "id": "T734",
       "title": "refresh the portable transfer-value observation",
@@ -124,14 +118,28 @@
       "contributors": [
         "ec09-recruit"
       ],
-      "status": "doing",
-      "reason": "T732's production comparator changes correctly implement sporting-quality ordering while preserving request bands and financial verdicts; the reviewer reran scout-search.test.ts and all 16 passed. The measurement harness has a blocking free-arrival accounting error, so its paid/free reports cannot yet support the economic comparison. Fix the reporting and add a small synthetic regression; no simulation-rule expansion is needed.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T02:01:20.473Z",
       "startCommit": "67ace414b926e87f387e4c4513cae1d81defb0fe",
-      "submittedBase": "4494c01f642b16b1b09581802190bfe1361ca8be",
-      "submissionId": "e8fa0f30-0e56-4161-b228-3c47f5e63b36",
-      "submittedAt": "2026-11-09T02:11:45.164Z",
+      "verifiedCommit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+      "submittedBase": "aae3d522d379cd814887dc7c7205f883af9123e6",
+      "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+      "submittedAt": "2026-11-09T02:26:07.976Z",
       "risk": null,
+      "review": {
+        "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Corrected T732 c242c974 resolves review75cc9f53's P2. It collects all retained current-year events before currency-filtering money, delegates zero-fee/top-up counting to the independently tested T733 helper, removes prunable completed-bid and zero-fee-fact inference, retains nonmonetary arrival evidence, and labels zero-fee transfers as potentially including loans. Cash, purchases, sales, turnover and paid permanent-fee calculations are unchanged from the previously audited monetary path. The production ranking and its tests are byte-identical to the first reviewed submission: sporting measures precede free status while manager/list bands, stable ids and signingVerdict fallback remain intact; reviewer previously reran all16 scout-search tests successfully, and independently reran the shared helper's3 tests on T733. Source/world/script identity and nominal season boundaries remain explicit. No blocking findings. Frozen v1 free counts remain incomplete and may not be reported as complete; full economic fit, final integration and browser gates remain coordinator-owned.",
+        "findings": [],
+        "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+        "baseCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+        "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+        "createdAt": "2026-11-09T02:26:30.930Z",
+        "finishedAt": "2026-11-09T02:27:04.847Z"
+      },
       "reviewHistory": [
         {
           "id": "75cc9f53-97f4-44b5-9d51-f16da255cd5f",
@@ -158,13 +166,13 @@
       "steps": [
         {
           "taskId": "T732",
-          "commit": "ecb3a3ae00a057542194d9d43c1e04956fdd2615",
-          "at": "2026-11-09T02:11:45.114Z",
+          "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+          "at": "2026-11-09T02:26:07.934Z",
           "verification": [
             {
               "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
-              "startedAt": "2026-11-09T02:10:40.143Z",
-              "finishedAt": "2026-11-09T02:11:44.769Z"
+              "startedAt": "2026-11-09T02:24:22.857Z",
+              "finishedAt": "2026-11-09T02:26:07.647Z"
             }
           ]
         }
@@ -172,8 +180,8 @@
       "verification": [
         {
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
-          "startedAt": "2026-11-09T02:10:40.143Z",
-          "finishedAt": "2026-11-09T02:11:44.769Z"
+          "startedAt": "2026-11-09T02:24:22.857Z",
+          "finishedAt": "2026-11-09T02:26:07.647Z"
         }
       ]
     },
@@ -197,6 +205,8 @@
       "submittedBase": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
       "submissionId": "9bbb65b1-12d9-405c-98b1-c076f78f8a41",
       "submittedAt": "2026-11-09T02:22:27.731Z",
+      "integratedCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+      "integratedAt": "2026-11-09T02:23:59.459Z",
       "risk": null,
       "review": {
         "id": "51c9282c-1a7b-4fcf-b2a4-c687624a70c3",
@@ -230,6 +240,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
           "startedAt": "2026-11-09T02:21:45.878Z",
           "finishedAt": "2026-11-09T02:22:27.382Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:23:59.190Z",
+          "finishedAt": "2026-11-09T02:23:59.198Z"
         }
       ]
     },
@@ -904,6 +921,153 @@
       "group": "economy-ec09",
       "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
       "taskId": "T733",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 850,
+      "at": "2026-11-09T02:23:59.359Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:23:59.190Z",
+            "finishedAt": "2026-11-09T02:23:59.198Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 851,
+      "at": "2026-11-09T02:23:59.459Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ac1079d9-9e76-4a80-8e75-5bcedc0324ff",
+      "taskId": "T733",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+        "integratedAt": "2026-11-09T02:23:59.459Z"
+      }
+    },
+    {
+      "sequence": 852,
+      "at": "2026-11-09T02:24:22.608Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 853,
+      "at": "2026-11-09T02:26:07.976Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "submittedBase": "aae3d522d379cd814887dc7c7205f883af9123e6",
+        "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+        "submittedAt": "2026-11-09T02:26:07.976Z",
+        "steps": [
+          {
+            "taskId": "T732",
+            "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+            "at": "2026-11-09T02:26:07.934Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:24:22.857Z",
+                "finishedAt": "2026-11-09T02:26:07.647Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:24:22.857Z",
+            "finishedAt": "2026-11-09T02:26:07.647Z"
+          }
+        ],
+        "verifiedCommit": "c242c974e0890eae9fe22b521cb01db16b925db9"
+      }
+    },
+    {
+      "sequence": 854,
+      "at": "2026-11-09T02:26:30.930Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+          "baseCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+          "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+          "createdAt": "2026-11-09T02:26:30.930Z"
+        }
+      }
+    },
+    {
+      "sequence": 855,
+      "at": "2026-11-09T02:27:04.848Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Corrected T732 c242c974 resolves review75cc9f53's P2. It collects all retained current-year events before currency-filtering money, delegates zero-fee/top-up counting to the independently tested T733 helper, removes prunable completed-bid and zero-fee-fact inference, retains nonmonetary arrival evidence, and labels zero-fee transfers as potentially including loans. Cash, purchases, sales, turnover and paid permanent-fee calculations are unchanged from the previously audited monetary path. The production ranking and its tests are byte-identical to the first reviewed submission: sporting measures precede free status while manager/list bands, stable ids and signingVerdict fallback remain intact; reviewer previously reran all16 scout-search tests successfully, and independently reran the shared helper's3 tests on T733. Source/world/script identity and nominal season boundaries remain explicit. No blocking findings. Frozen v1 free counts remain incomplete and may not be reported as complete; full economic fit, final integration and browser gates remain coordinator-owned.",
+          "findings": [],
+          "commit": "c242c974e0890eae9fe22b521cb01db16b925db9",
+          "baseCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+          "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
+          "createdAt": "2026-11-09T02:26:30.930Z",
+          "finishedAt": "2026-11-09T02:27:04.847Z"
+        }
+      }
+    },
+    {
+      "sequence": 856,
+      "at": "2026-11-09T02:27:21.625Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
