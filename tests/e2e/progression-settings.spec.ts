@@ -3,7 +3,13 @@ import { advanceDays } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer, pendingAcquisitionCareer } from './responsibility-fixtures';
 import { expect, test, type Page } from '@playwright/test';
-import { chooseLevel, configureResponsibilities, openOffice } from './events';
+import {
+  chooseLevel,
+  configureResponsibilities,
+  dismissMatchReport,
+  matchReport,
+  openOffice,
+} from './events';
 import { horizontalOverflow, settle } from './layout';
 import { approvalQueue, approvalRows, leaveOffice } from './office';
 import { startCareer } from './start';
@@ -286,11 +292,16 @@ test('a page that closed with the clock running plays the time away on return an
 
 test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)', async ({ page }) => {
   await foundQuiet(page);
-  // Level 4 observes nothing, so only the owner can stop the clock; offers and mediation stay
-  // with the owner.
+  // Level 4 leaves offers and mediation with the owner here and observes only the match eve, so
+  // the clock stops by itself only on the eve of our first match, 1930.08.07. This career's first
+  // offer for one of our players arrives on 1930.08.03 and its own deadline closes it after
+  // 08.08 (→CLUB-18), the only owner-held work until 08.20, so it still waits on that eve however
+  // many days a slow runner lets pass. An owner's stop at x10 could land after it had closed: CI
+  // WebKit 42519984966 saw the entrance's count during play, then 대기 0 once stopped.
   await chooseLevel(page, 4);
   await configureResponsibilities(page, {
     responsibilities: { sales: 'direct', recruitment: 'direct' },
+    observations: { matchEve: true },
   });
   const clock = page.getByRole('region', { name: '시즌 진행', exact: true });
   await chooseOption(clock.getByRole('combobox', { name: '자동 진행 배속', exact: true }), 'x10');
@@ -301,28 +312,67 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
   const waiting = page
     .getByTestId('club-hub')
     .locator('[data-home-part="office"] [data-ui="count"]');
+  // Every date the calendar shows from here on, with whether the entrance's count stood and how
+  // many event cards the page held, so the run is read whatever the runner's pace.
+  type ShownDay = { date: string; waiting: boolean; cards: number };
+  await page.evaluate(() => {
+    const days: ShownDay[] = [];
+    Object.assign(window, { shownDays: days });
+    const read = () => {
+      const day = {
+        date: document.querySelector('[data-testid="game-date"]')?.textContent ?? '',
+        waiting: !!document.querySelector(
+          '[data-testid="club-hub"] [data-home-part="office"] [data-ui="count"]',
+        ),
+        cards: document.querySelectorAll('[data-testid="event-card"]').length,
+      };
+      const last = days.at(-1);
+      if (
+        !last ||
+        last.date !== day.date ||
+        last.waiting !== day.waiting ||
+        last.cards !== day.cards
+      )
+        days.push(day);
+    };
+    read();
+    new MutationObserver(read).observe(document.body, {
+      subtree: true,
+      childList: true,
+      characterData: true,
+    });
+  });
   await play.click();
-  await expect(waiting).toBeVisible({ timeout: 60000 });
-  await expect(page.getByTestId('event-card')).toHaveCount(0);
-  await expect(stop).toBeVisible();
-  const shown = await date.innerText();
-  await expect(date).not.toHaveText(shown);
-  await expect(stop).toBeVisible();
-  await stop.click();
+  const eve = '1930.08.07';
+  await expect(matchReport(page)).toBeVisible({ timeout: 60000 });
+  await expect(date).toHaveText(eve);
+  await expect(waiting).toHaveText('1');
+  await expect(page.getByTestId('event-card')).toHaveCount(1);
+  await expect(matchReport(page).getByTestId('event-card')).toContainText('내일 경기');
+  // The running clock passed every day the offer waited, without stopping for it or showing it
+  // as a home card; it stopped for the match eve alone (→WEB-18/42).
+  const shown = await page.evaluate(
+    () => (window as unknown as { shownDays: ShownDay[] }).shownDays,
+  );
+  expect([...new Set(shown.filter((day) => day.waiting).map((day) => day.date))]).toEqual([
+    '1930.08.03',
+    '1930.08.04',
+    '1930.08.05',
+    '1930.08.06',
+    eve,
+  ]);
+  expect(shown.filter((day) => day.cards > 0 && day.date !== eve)).toEqual([]);
+  // Dismissing the report hides it and advances nothing (→WEB-42).
+  await dismissMatchReport(page);
   await expect(play).toBeVisible();
-  // The controller's 결재함 counts the same work and opens the office's queue (→WEB-18/100).
+  await expect(date).toHaveText(eve);
+  // The controller's 결재함 counts the same work as the entrance and opens the office's queue
+  // (→WEB-18/100).
   const inbox = clock.getByTestId('approval-inbox');
-  await expect(inbox).toHaveAttribute('aria-label', /^결재함 · 대기 [1-9]/);
+  await expect(inbox).toHaveAttribute('aria-label', '결재함 · 대기 1건');
   await inbox.click();
   await expect(approvalQueue(page)).toBeVisible();
-  // A day already in flight when play stopped may still add work, so the count and the rows are
-  // read together.
-  await expect
-    .poll(async () => {
-      const label = (await inbox.getAttribute('aria-label')) ?? '';
-      return Number(/대기 (\d+)/.exec(label)?.[1]) - (await approvalRows(page).count());
-    })
-    .toBe(0);
+  await expect(approvalRows(page)).toHaveCount(1);
   await expect(approvalRows(page).first().getByTestId('approval-deadline')).toHaveText(
     /^(D-[1-7]|지연 \d+일)$/,
   );
@@ -333,6 +383,9 @@ test('approvals waiting in the 결재함 never stop a running clock (→WEB-42)'
     approvalRows(page).evaluateAll((rows) => rows.map((row) => row.textContent).join('|'));
   const before = await read();
   await leaveOffice(page);
+  // Without the eve report only the owner stops the clock again, so play runs on through the
+  // match day until the stop below.
+  await configureResponsibilities(page, { observations: { matchEve: false } });
   await play.click();
   await expect(stop).toBeVisible();
   await inbox.click();
