@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T15:53:18.263Z",
-  "sourceCommit": "972c570539e3340cb8d882f5b2749038bb3ca803",
+  "snapshotAt": "2026-11-09T15:56:10.464Z",
+  "sourceCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -59,12 +59,12 @@
   },
   "summary": {
     "total": 18,
-    "completed": 8,
-    "remaining": 10,
-    "running": 1,
-    "review": 2,
+    "completed": 9,
+    "remaining": 9,
+    "running": 4,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 7
+    "unassigned": 4
   },
   "tasks": [
     {
@@ -88,12 +88,6 @@
       "status": "todo"
     },
     {
-      "id": "T758",
-      "title": "Include unpaid takeover loans in cash projections",
-      "dep": [],
-      "status": "ready"
-    },
-    {
       "id": "T759",
       "title": "Normalize fixed currency periods in coach compensation",
       "dep": [],
@@ -112,7 +106,7 @@
         "T752"
       ],
       "lane": "league-record-views",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T762",
@@ -121,7 +115,7 @@
         "T752"
       ],
       "lane": "league-record-views",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T763",
@@ -130,7 +124,7 @@
         "T752"
       ],
       "lane": "league-record-views",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T764",
@@ -427,7 +421,7 @@
       "contributors": [
         "fi09-loan"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-09T15:20:53.328Z",
       "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
@@ -436,6 +430,19 @@
       "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
       "submittedAt": "2026-11-09T15:31:10.730Z",
       "risk": null,
+      "review": {
+        "id": "60a0ab90-8f8d-46ff-8af6-ecd4189b9f93",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Fresh review of T758 submission d8f9498d5e604c5ba56253840bfcb5d89f75887f against new pinned base 82895b54c306c1624ef81f126bbc64ea81240b70. Re-read the current base task, full four-file merge-base diff and complete ECON-18/38, ARCH-9, HIST-16/22 and SAVE-28 blocks. Since the former fd56f083 base, the only source changes are T753 RecruitmentDesk.tsx and its test; these do not intersect projection, operatingCosts, ratio/roundShare, ownerClose, signings, contracts or their dependencies. HIST r24 attributes career cards to recorded match sides and permits missing/recognized obsolete summary reconstruction; SAVE r66 limits optional-data discard to recognized obsolete own-career card summaries and explicitly preserves canonical facts, current-summary validation and unknown/future rejection. T758 neither reads nor writes those summaries or save lifecycle paths, and its loan terms, payment facts and pure projection behavior are compatible with the updated policies. The implementation still subtracts the exact unpaid cumulative-rounded installment from both season bounds, gives continuing loans one full installment across the year horizon, and gives final-term loans only the unpaid current installment; a separate labelled row removes the same amount from operating costs, avoiding a second charge. No-loan/expired-term cases and read immutability remain correct. The real signingVerdict regression intentionally changes affordability under unchanged staff thresholds; integration expectation edits remain limited to loan itemization. Existing exact-source evidence is reused explicitly rather than rerun: 31 new cases reproduce 19 failures before correction, 36 focused cases and 128 files/1173 affected cases pass, with type/lint/format/i18n/build; the earlier independent 376 numeric comparisons covered every played-round horizon, half-even ties and a beyond-Number integer. No source/dependency change creates a reason to repeat those diagnostics. Current upstream equals the new pinned base. Integration-tier projection tests and the final full/browser gate remain coordinator-owned.",
+        "findings": [],
+        "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+        "baseCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+        "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+        "createdAt": "2026-11-09T15:54:35.616Z",
+        "finishedAt": "2026-11-09T15:55:46.222Z"
+      },
       "reviewHistory": [
         {
           "id": "a541e31b-866a-4aff-bf0d-d1ce24936637",
@@ -495,6 +502,8 @@
       "submittedBase": "919a2f2d5c43bcee67577032b61ad1d53be8b4bf",
       "submissionId": "d2d257b8-cf75-49d3-af84-91449aaf7f55",
       "submittedAt": "2026-11-09T15:43:30.630Z",
+      "integratedCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+      "integratedAt": "2026-11-09T15:54:25.104Z",
       "risk": null,
       "review": {
         "id": "40b81ee1-3978-4a7d-815f-1b988bae52c6",
@@ -528,6 +537,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:43:03.179Z",
           "finishedAt": "2026-11-09T15:43:30.143Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T15:53:18.447Z",
+          "finishedAt": "2026-11-09T15:54:24.697Z"
         }
       ]
     },
@@ -589,6 +605,24 @@
       "status": "doing",
       "createdAt": "2026-11-09T15:50:50.148Z",
       "startCommit": "972c570539e3340cb8d882f5b2749038bb3ca803"
+    },
+    {
+      "id": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "group": "fi09",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "lane": "league-record-views",
+      "owner": "fi09-league-records",
+      "contributors": [
+        "fi09-league-records"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T15:54:39.528Z",
+      "startCommit": "82895b54c306c1624ef81f126bbc64ea81240b70"
     }
   ],
   "history": [
@@ -2169,6 +2203,152 @@
       "group": "fi09",
       "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
       "taskId": "T753",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2076,
+      "at": "2026-11-09T15:54:24.991Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T15:53:18.447Z",
+            "finishedAt": "2026-11-09T15:54:24.697Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2077,
+      "at": "2026-11-09T15:54:25.104Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3c0477ee-57b4-405e-8877-cc7de354f3e7",
+      "taskId": "T753",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+        "integratedAt": "2026-11-09T15:54:25.104Z"
+      }
+    },
+    {
+      "sequence": 2078,
+      "at": "2026-11-09T15:54:35.616Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "60a0ab90-8f8d-46ff-8af6-ecd4189b9f93",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+          "baseCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+          "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+          "createdAt": "2026-11-09T15:54:35.616Z"
+        }
+      }
+    },
+    {
+      "sequence": 2079,
+      "at": "2026-11-09T15:54:39.528Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+        "group": "fi09",
+        "taskId": "T761",
+        "tasks": [
+          "T761",
+          "T762",
+          "T763"
+        ],
+        "lane": "league-record-views",
+        "owner": "fi09-league-records",
+        "contributors": [
+          "fi09-league-records"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T15:54:39.528Z",
+        "startCommit": "82895b54c306c1624ef81f126bbc64ea81240b70"
+      }
+    },
+    {
+      "sequence": 2080,
+      "at": "2026-11-09T15:54:42.847Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2081,
+      "at": "2026-11-09T15:55:46.222Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "60a0ab90-8f8d-46ff-8af6-ecd4189b9f93",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Fresh review of T758 submission d8f9498d5e604c5ba56253840bfcb5d89f75887f against new pinned base 82895b54c306c1624ef81f126bbc64ea81240b70. Re-read the current base task, full four-file merge-base diff and complete ECON-18/38, ARCH-9, HIST-16/22 and SAVE-28 blocks. Since the former fd56f083 base, the only source changes are T753 RecruitmentDesk.tsx and its test; these do not intersect projection, operatingCosts, ratio/roundShare, ownerClose, signings, contracts or their dependencies. HIST r24 attributes career cards to recorded match sides and permits missing/recognized obsolete summary reconstruction; SAVE r66 limits optional-data discard to recognized obsolete own-career card summaries and explicitly preserves canonical facts, current-summary validation and unknown/future rejection. T758 neither reads nor writes those summaries or save lifecycle paths, and its loan terms, payment facts and pure projection behavior are compatible with the updated policies. The implementation still subtracts the exact unpaid cumulative-rounded installment from both season bounds, gives continuing loans one full installment across the year horizon, and gives final-term loans only the unpaid current installment; a separate labelled row removes the same amount from operating costs, avoiding a second charge. No-loan/expired-term cases and read immutability remain correct. The real signingVerdict regression intentionally changes affordability under unchanged staff thresholds; integration expectation edits remain limited to loan itemization. Existing exact-source evidence is reused explicitly rather than rerun: 31 new cases reproduce 19 failures before correction, 36 focused cases and 128 files/1173 affected cases pass, with type/lint/format/i18n/build; the earlier independent 376 numeric comparisons covered every played-round horizon, half-even ties and a beyond-Number integer. No source/dependency change creates a reason to repeat those diagnostics. Current upstream equals the new pinned base. Integration-tier projection tests and the final full/browser gate remain coordinator-owned.",
+          "findings": [],
+          "commit": "d8f9498d5e604c5ba56253840bfcb5d89f75887f",
+          "baseCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+          "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
+          "createdAt": "2026-11-09T15:54:35.616Z",
+          "finishedAt": "2026-11-09T15:55:46.222Z"
+        }
+      }
+    },
+    {
+      "sequence": 2082,
+      "at": "2026-11-09T15:56:04.496Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

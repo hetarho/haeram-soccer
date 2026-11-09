@@ -14,7 +14,15 @@ import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
 
 export type ProjectionKey =
-  'operating' | 'expenses' | 'gate' | 'share' | 'parachute' | 'sponsor' | 'performance' | 'merit';
+  | 'operating'
+  | 'expenses'
+  | 'loan'
+  | 'gate'
+  | 'share'
+  | 'parachute'
+  | 'sponsor'
+  | 'performance'
+  | 'merit';
 export interface ProjectionLine {
   key: ProjectionKey;
   label: string;
@@ -39,6 +47,7 @@ export interface FinanceProjection {
 const LABELS: Record<ProjectionKey, string> = {
   operating: sourceMessage('copy.finance.9df2ce4df3'),
   expenses: sourceMessage('copy.FinancialBreakdown.2d914c9be2'),
+  loan: sourceMessage('copy.FinancialBreakdown.ddebd211b6'),
   gate: sourceMessage('copy.projection.d6fc2ee1b5'),
   share: sourceMessage('copy.finance.2d1ae295d1'),
   parachute: sourceMessage('copy.finance.28f00ca15d'),
@@ -89,7 +98,8 @@ export function financeProjection(w: World): FinanceProjection {
   );
   // This season's operating expenses, a fixed cost of their own (→ECON-30), carried forward at the
   // squad investment in force (→ECON-16): the rounds left then pay exactly this at that level.
-  const remainingExpenses = unpaid(costs.expenses);
+  const remainingExpenses = unpaid(costs.expenses),
+    remainingLoan = unpaid(costs.loan);
 
   const league = w.fixtures.filter(
     (f) =>
@@ -149,11 +159,13 @@ export function financeProjection(w: World): FinanceProjection {
   const { rank, clubs } = currentLeagueRank(w);
   const merit = settled || !rank ? 0n : big(leagueMerit(w, rank, clubs));
 
-  // The parachute line shows only in the season after a relegation.
-  const shown = (row: ProjectionLine) => row.key !== 'parachute' || row.high !== '0';
+  // Show the loan only while an installment is in force, and the parachute while it pays.
+  const shown = (row: ProjectionLine) =>
+    row.key === 'loan' ? costs.loan !== '0' : row.key !== 'parachute' || row.high !== '0';
   const seasonLines = [
     line('operating', -remainingCosts, -remainingCosts),
     line('expenses', -remainingExpenses, -remainingExpenses),
+    line('loan', -remainingLoan, -remainingLoan),
     line('gate', gateLow * BigInt(remainingHome), gateHigh * BigInt(remainingHome)),
     line('share', shareSeason, shareSeason),
     line('parachute', parachute, parachute),
@@ -161,11 +173,15 @@ export function financeProjection(w: World): FinanceProjection {
     line('performance', 0n, performanceSeason),
     line('merit', 0n, merit),
   ].filter(shown);
-  const yearExpenses = big(costs.expenses),
-    yearCost = big(costs.annual) - yearExpenses;
+  // A continuing loan pays a full installment across this horizon. Its last season pays only
+  // the current unpaid share: ownerClose removes it before the next season's rounds.
+  const yearLoan = w.loan && w.loan.seasonsLeft > 1 ? big(costs.loan) : remainingLoan,
+    yearExpenses = big(costs.expenses),
+    yearCost = big(costs.annual) - yearExpenses - big(costs.loan);
   const lines = [
     line('operating', -yearCost, -yearCost),
     line('expenses', -yearExpenses, -yearExpenses),
+    line('loan', -yearLoan, -yearLoan),
     line('gate', gateLow * BigInt(homeGames), gateHigh * BigInt(homeGames)),
     line('share', big(share), big(share)),
     line('parachute', parachute, parachute),

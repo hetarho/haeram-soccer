@@ -855,7 +855,6 @@
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
 | T755 | rank career appearances by recorded matches | ARCH | - | todo |
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
-| T758 | include unpaid takeover loans in cash projections | ARCH | - | todo |
 | T759 | normalize fixed currency periods in coach compensation | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T761 | show recorded npc league red cards | ARCH | T752 | todo |
@@ -885,12 +884,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 18 | 8 | 10 | 1 | 2 | 0 | 2026-11-09T15:53:18.263Z | [history](work/fi09.json) |
+| fi09 | 2 | 18 | 9 | 9 | 4 | 1 | 0 | 2026-11-09T15:56:10.464Z | [history](work/fi09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T758 integrated
 - 261109 T753 integrated
 - 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
@@ -910,4 +910,3 @@
 - 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
 - 261109 T689 cv04-own (09:04–11:04Z window, measurements 09:08–10:33Z): MATCH r56's in-box shot weighing (`boxShot.read`/`against`, default off, uncommitted in the evidence patch) moves the shot mix but not the box's chance (xG a shot 0.056–0.061, bar 0.07), since 92% of the carried box shots with nobody between are MATCH-16 clear chances struck at xG 0.008 against a keeper already out; every candidate breaks MATCH-29 (−0.187 to −0.271); gate unmet, only the diagnostic and evidence committed, T689 stays todo ev09
 - 261109 T730 done: CI WebKit's 대기 0 was the career's first offer (1930.08.03–08.08) closing by its own deadline before an x10 owner stop landed, not diverging counts (both read `pendingDecisions` of one world); the journey observes the match eve, which stops on 08.07 at any pace with the offer waiting, and records every shown date; browser runs left to the release run ev09
-- 261109 T726 done: the match viewer's six playback modules live in `features/match-viewer/lib` and read the entity through its new CSS-free `entities/match/logic.ts`; ESLint keeps `logic.ts` to `lib/`, an architecture test keeps every e2e/fixture/`logic.ts` closure free of stylesheets and slice indexes; 71/30 chunks kept; browser specs left to the release run ev09
