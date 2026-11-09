@@ -1,7 +1,7 @@
 import { createElement, type ReactNode } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { SeasonArchive, World } from '../../../../../packages/contracts/src/types';
+import type { Event, SeasonArchive, World } from '../../../../../packages/contracts/src/types';
 import { careerWorld } from '../../../../../packages/engine/src/career.testkit';
 import { SEASON_END_DAY, seasonDayOf } from '../../../../../packages/engine/src/calendar';
 import {
@@ -116,6 +116,34 @@ function show(w: World, state: Partial<ClientState> = {}) {
 }
 afterEach(() => gameStore.setState({ ...initialClientState }));
 
+/** Minimal synthetic money state for previews, without constructing or progressing a world. */
+function financialWorld() {
+  return {
+    year: 1970,
+    round: 0,
+    playerClub: 'synthetic',
+    clubs: [{ id: 'synthetic', country: 'ENG', tier: 0 }],
+    currency: 'GBP-LSD',
+    income: '1000',
+    expense: '600',
+    cash: '5000',
+    events: [],
+    history: [],
+    owner: { traits: [], takeover: { year: 1970 }, fortune: '10000' },
+  } as unknown as World;
+}
+function financialEntry(w: World, kind: string, amount: string, year = w.year): Event {
+  return {
+    year,
+    round: 0,
+    kind,
+    title: 'Synthetic entry',
+    detail: '',
+    amount,
+    currency: w.currency,
+  };
+}
+
 describe('the business stake (→OWNER-7/8)', () => {
   it('states the chance, the amount at stake and the next settlement', () => {
     const w = owned();
@@ -225,6 +253,66 @@ describe('자금 투입 within FFP (→OWNER-9/10)', () => {
     closed(w, { income: '1000000' });
     expect(injectionMood(w, '50000')).toBeCloseTo(5);
     expect(injectionMood(w, '500000')).toBe(FAN_MOOD.injection.max);
+  });
+});
+
+describe('owner previews on canonical turnover', () => {
+  it('excludes prior owner capital, sales and compensation from the injection base', () => {
+    const w = financialWorld();
+    w.year++;
+    closed(w, { income: '1000000' });
+    w.events = [
+      financialEntry(w, 'owner-injection', '300000', 1970),
+      financialEntry(w, 'transfer-out', '150000', 1970),
+      financialEntry(w, 'free-transfer-compensation', '50000', 1970),
+    ];
+    expect(injectionMood(w, '25000')).toBe(5);
+    w.owner!.traits = ['fansFriend'];
+    expect(injectionMood(w, '25000')).toBe(5);
+  });
+
+  it('converts the prior injection base and retains takeover and unavailable fallbacks', () => {
+    const w = financialWorld();
+    expect(injectionMood(w, '100')).toBeUndefined();
+    w.owner!.takeover.lastIncome = '10000';
+    expect(injectionMood(w, '100')).toBe(1);
+    w.owner!.takeover.lastIncome = '0';
+    expect(injectionMood(w, '100')).toBeUndefined();
+    w.year = 1971;
+    closed(w, { income: '24000' });
+    w.currency = 'GBP';
+    expect(injectionMood(w, '100')).toBe(1);
+    w.history[0].income = '0';
+    expect(injectionMood(w, '100')).toBeUndefined();
+    w.history = [];
+    expect(injectionMood(w, '100')).toBeUndefined();
+  });
+
+  it('bases dividend mood on turnover without changing profit, cash cap or friendly drops', () => {
+    const w = financialWorld();
+    w.income = '2500';
+    w.events = [
+      financialEntry(w, 'owner-injection', '500'),
+      financialEntry(w, 'transfer-out', '600'),
+      financialEntry(w, 'free-transfer-compensation', '400'),
+    ];
+    expect(dividendOutlook(w, 50)).toEqual({ result: '1400', amount: '700', mood: -35 });
+    w.cash = '200';
+    expect(dividendOutlook(w, 50)).toEqual({ result: '1400', amount: '200', mood: -10 });
+    w.owner!.traits = ['fansFriend'];
+    expect(dividendOutlook(w, 50)).toEqual({ result: '1400', amount: '200', mood: -7 });
+  });
+
+  it('uses the settlement fallback of 100 percent for a dividend without positive turnover', () => {
+    const w = financialWorld();
+    w.income = '1000';
+    w.events = [financialEntry(w, 'transfer-out', '1000')];
+    expect(dividendOutlook(w, 50)).toEqual({ result: '400', amount: '200', mood: -50 });
+    w.owner!.traits = ['fansFriend'];
+    expect(dividendOutlook(w, 50).mood).toBe(-35);
+    expect(dividendOutlook(w, 0).mood).toBe(0);
+    w.cash = '0';
+    expect(dividendOutlook(w, 50)).toMatchObject({ amount: '0', mood: 0 });
   });
 });
 

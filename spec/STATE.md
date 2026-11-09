@@ -847,8 +847,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T747 | align owner money previews with canonical turnover | ARCH | - | todo |
-| T748 | expose exact amounts in the cash summary | ARCH | - | todo |
 | T749 | keep missing match-statistic ratios neutral | ARCH | - | todo |
 | T750 | exclude opponent lines from own-season advanced leaders | ARCH | - | todo |
 | T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
@@ -857,7 +855,6 @@
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
 | T755 | rank career appearances by recorded matches | ARCH | - | todo |
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
-| T757 | reuse an isolated canonical world in decision tests | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -881,13 +878,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 6 | 0 | 6 | 0 | 0 | 0 | 2026-11-09T14:14:34.701Z | [history](work/fi09.json) |
+| fi09 | 2 | 7 | 3 | 4 | 4 | 0 | 0 | 2026-11-09T14:57:08.289Z | [history](work/fi09.json) |
 
 ## next
-- release: next is integrated into this checkout; run the pinned-toolchain full release gate with a timeout above an hour, publish main only after it passes and wait for CI
-- T689: cv04-clr hand-off is complete; both candidates fail the unchanged screen. Read its final README before another bounded window; the remaining question is why the round/square alternatives add goal-area chances and box entries
+- inspect work board for remaining tasks
 
 ## log
+- 261109 T747 T748 T757 integrated
 - 261109 create-task review/football-data-consistency-261109 F9-F11: T755/T756 product follow-ups and T757 narrowly approved verification-cost fix; released clean finance attempt before rescope fi09
 - 261109 replan T752/T754: real mounted locale regression via pinned test-only happy-dom, existing test/browser scopes preserved; released clean football checkpoint108e6a84 before amendment fi09
 - 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
@@ -907,4 +904,3 @@
 - 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
 - 261109 T745 integrated
 - 261109 update-ssot CLUB64 ECON52/create-task T745: independent review confirms wage and package-only books failures; withdraw both activations byte-exact44, retain earlier transfer/recruitment changes and exact observation tools; no new cycle ec10.
-- 261109 T743 integrated
