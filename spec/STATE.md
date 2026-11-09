@@ -808,11 +808,11 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 62 | 62 | - | 0 |
+| CLUB | 63 | 63 | - | 0 |
 | MATCH | 57 | 57 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
-| ECON | 49 | 49 | - | 0 |
+| ECON | 50 | 50 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 23 | 23 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
@@ -835,6 +835,8 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T739 | separate the player wage era scale and observe settled payroll | CLUB ECON LEAGUE ARCH | - | todo |
+| T740 | normalize the English top-flight central distribution package | ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
@@ -869,6 +871,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
 - 261109 T737 integrated
 - 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
 - 261109 T734 integrated
@@ -888,4 +891,3 @@
 - 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
 - 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
 - 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits
-- 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
