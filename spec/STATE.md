@@ -14,7 +14,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T01:58Z | - |
+| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T03:21Z | T737 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -831,6 +831,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T737 | find the free-signing journey player in the full market | WEB CLUB ARCH | T732 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
@@ -864,6 +865,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
 - 261109 T734 integrated
 - 261109 T732 integrated
 - 261109 T733 integrated
