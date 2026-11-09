@@ -786,6 +786,7 @@
 - 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
 - 261109 decided review/football-data-consistency-261109 ARCH-4 ARCH-21 ARCH-30 ARCH-32 T747 T748 T749 T750 T751 T752: which observed football-data and finance inconsistencies the eight-hour local invocation adopts → six bounded fixes with independent implementation/review, no economic-policy or simulation-result changes (alt: tune balance speculatively | leave preview and derived-stat errors). Prior capital/currency previews, exact money disclosure, missing ratios, opponent leader leakage, Poisson tail loss and shared number formatting have raw scout evidence; review notes freeze scope and checks fi09
 - 261109 decided review/football-data-consistency-261109 T753 T754: which follow-up UI inconsistencies enter the eight-hour local scope → refreshed bid quotes and locale-stale chart detail strings, after the current six-task run finishes (alt: change pricing policy | overlap an active lane). Source evidence and complete current contracts checked; preserve submitted bid terms, stale-response guards and numerical chart facts fi09
+- 261109 decided T752 T754 ARCH-21 ARCH-32: how to verify real locale subscriptions without an installed DOM unit environment → T752 adds pinned happy-dom21.0.4 as a test-only dev dependency and uses per-file Vitest environments, reused by T754 (alt: repeated SSR that never subscribes | a custom DOM imitation). No production dependency, global environment or validation reduction; worker paused clean after three task commits and assignment released before this contract amendment fi09
 
 ## ideation
 | id | st |
@@ -850,7 +851,7 @@
 | T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
 | T752 | localize football-statistic numbers consistently | ARCH | T749 | todo |
 | T753 | refresh bid percentage quotes consistently | ARCH | - | todo |
-| T754 | refresh growth-chart details on locale changes | ARCH | - | todo |
+| T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -894,9 +895,9 @@
 - 261109 update-ssot CLUB64 ECON52/create-task T745: independent review confirms wage and package-only books failures; withdraw both activations byte-exact44, retain earlier transfer/recruitment changes and exact observation tools; no new cycle ec10.
 - 261109 T743 integrated
 - 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.
-- 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
 - 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
 - 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
+- 261109 replan T752/T754: real mounted locale regression via pinned test-only happy-dom, existing test/browser scopes preserved; released clean football checkpoint108e6a84 before amendment fi09
