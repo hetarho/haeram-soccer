@@ -861,6 +861,7 @@
 - F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 
 ## log
+- 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
 - 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
 - 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
 - 261109 fs09 CI 42519984966 re-run of `e2e (webkit 2/2)` failed progression-settings.spec.ts:287 again in all three attempts (passed on CI WebKit at d0180ee1, passes on local WebKit at ad51162): deterministic on CI's Linux WebKit for this tree, so T730 starts by bisecting T725/T727 on CI; main stays red until then fs09
