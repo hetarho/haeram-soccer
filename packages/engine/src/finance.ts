@@ -634,14 +634,17 @@ const DISTRIBUTION_FACTOR_PRECISION = 1_000_000_000_000n;
 /**
  * The modeled minimum central package every club of a division earns (→ECON-28), not an observed
  * broadcast equal-share component. Its targeted normalization follows broadcast pricing; the
- * settlement pays league-round installments, and merit and parachutes are reckoned from it.
+ * settlement pays league-round installments, and merit, parachutes and club valuation read it.
  */
-export function leagueShare(w: World, tier = clubOf(w).tier) {
-  const code = clubOf(w).country,
-    table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG,
-    quoted = broadcastQuote(code, w.year, table[Math.min(tier, table.length - 1)]),
-    factor = leagueDistributionFactor(code, w.year, tier);
+export function leagueDistributionAt(code: string, year: number, tier: number) {
+  const table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG,
+    quoted = broadcastQuote(code, year, table[Math.min(tier, table.length - 1)]),
+    factor = leagueDistributionFactor(code, year, tier);
   return factor === 1 ? quoted : scaleBy(quoted, factor, DISTRIBUTION_FACTOR_PRECISION);
+}
+/** The current world's view of the canonical code/year/tier central package (→ECON-28). */
+export function leagueShare(w: World, tier = clubOf(w).tier) {
+  return leagueDistributionAt(clubOf(w).country, w.year, tier);
 }
 /**
  * The merit payment for a final rank, paid at the close: nothing for the bottom club, rising evenly
