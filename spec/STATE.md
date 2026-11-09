@@ -826,6 +826,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
@@ -858,6 +859,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
 - 261109 T731 integrated
 - 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
 - 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
