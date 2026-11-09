@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T15:56:10.464Z",
-  "sourceCommit": "82895b54c306c1624ef81f126bbc64ea81240b70",
+  "snapshotAt": "2026-11-09T16:01:39.761Z",
+  "sourceCommit": "62749af569b1a5fe40a37bd2218760b766a9eb69",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -54,17 +54,18 @@
       "T761",
       "T762",
       "T763",
-      "T764"
+      "T764",
+      "T765"
     ]
   },
   "summary": {
-    "total": 18,
-    "completed": 9,
+    "total": 19,
+    "completed": 10,
     "remaining": 9,
     "running": 4,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
-    "unassigned": 4
+    "unassigned": 5
   },
   "tasks": [
     {
@@ -86,12 +87,6 @@
       "title": "Preserve cup title streaks across skipped seasons",
       "dep": [],
       "status": "todo"
-    },
-    {
-      "id": "T759",
-      "title": "Normalize fixed currency periods in coach compensation",
-      "dep": [],
-      "status": "ready"
     },
     {
       "id": "T760",
@@ -131,6 +126,14 @@
       "title": "Rebuild career-card summaries by recorded side",
       "dep": [],
       "status": "doing"
+    },
+    {
+      "id": "T765",
+      "title": "Preserve market snapshot money denominations",
+      "dep": [
+        "T753"
+      ],
+      "status": "todo"
     }
   ],
   "attempts": [
@@ -429,6 +432,8 @@
       "submittedBase": "fd56f083210f3dc89d70754753c45bafa561d167",
       "submissionId": "0481931b-8ba8-41c4-bdca-7f2903bddbf6",
       "submittedAt": "2026-11-09T15:31:10.730Z",
+      "integratedCommit": "e19cde7f45facbc77f13744556c8c4856979e4e0",
+      "integratedAt": "2026-11-09T15:58:11.189Z",
       "risk": null,
       "review": {
         "id": "60a0ab90-8f8d-46ff-8af6-ecd4189b9f93",
@@ -479,6 +484,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:29:55.049Z",
           "finishedAt": "2026-11-09T15:31:10.129Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T15:56:10.684Z",
+          "finishedAt": "2026-11-09T15:58:10.782Z"
         }
       ]
     },
@@ -559,7 +571,7 @@
       "contributors": [
         "fi09-employment-money"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-09T15:33:31.917Z",
       "startCommit": "fd56f083210f3dc89d70754753c45bafa561d167",
@@ -568,6 +580,19 @@
       "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
       "submittedAt": "2026-11-09T15:42:57.633Z",
       "risk": null,
+      "review": {
+        "id": "b3b2595f-5e30-447d-b5d1-c70cad3d5115",
+        "owner": "fi09-transfer-review",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T759 satisfies its complete acceptance and current STAFF-28/14/17/18/24, ECON-1/4/5/6/35 and ARCH-4/9/21/30/32 contracts. Reviewed exact pinned submission efd8efd389f8476cacef2005b7f6d09c08486e2d against base e19cde7f45facbc77f13744556c8c4856979e4e0 and its complete seven-file merge-base diff. currencyById reads the unchanged existing denomination definitions, rejects unknown countries/IDs, rejects ambiguous units/parity, and excludes future denominations by the world year. The pure employment helper uses an explicit stored currency and actual employer country, never the employment start date. It applies the existing exact rational half-even conversion only when the employer current period equals buyer currency, then careerCandidates applies the unchanged truncating COMPENSATION 3/2 ratio. Same-currency 101 remains compensation 151; FRF 655957 becomes EUR 100000 and compensation 150000; GBP-LSD 2400 becomes GBP 1000 and compensation 1500. Missing/unknown/inconsistent provenance, unresolved general FX and future-denomination cases retain legacy behavior; no rate, CPI, footballQuote or FFP inverse is introduced. Internal/free candidates, ordinary wages/signing fees, eligibility and ordering remain intact. Candidate queries do not mutate stored employment, salary or identity. Direct hire recomputes and debits the same disclosed candidate cost before installation, and delegated matching uses managerHireCost for the same corrected compensation. Tests cover exact-funds success, one-unit-short rollback, delegated boundary and original record preservation on normal job closure. An additional read-only in-memory source diagnostic verified unchanged currency outputs for all 16,808 playable-country/year pairs from 1900 through 4000 and checked seven normalization/rounding/fallback examples without mutation. Reused worker evidence: 46 focused cases, exact-submission 162 files/1501 cases and type/lint/format/i18n/build pass. Current upstream additions after the pinned base are only T765 planning/evidence and existing-policy interpretation records, with no source/SSOT overlap. No browser/integration/full suites or repository edits were performed. Remaining final integration gates are coordinator-owned.",
+        "findings": [],
+        "commit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+        "baseCommit": "e19cde7f45facbc77f13744556c8c4856979e4e0",
+        "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
+        "createdAt": "2026-11-09T15:58:53.498Z",
+        "finishedAt": "2026-11-09T16:01:07.427Z"
+      },
       "steps": [
         {
           "taskId": "T759",
@@ -603,6 +628,7 @@
         "fi09-career-cards"
       ],
       "status": "doing",
+      "reason": null,
       "createdAt": "2026-11-09T15:50:50.148Z",
       "startCommit": "972c570539e3340cb8d882f5b2749038bb3ca803"
     },
@@ -621,6 +647,7 @@
         "fi09-league-records"
       ],
       "status": "doing",
+      "reason": "T761 strict round-scoped reads and retained discipline identities implementation started",
       "createdAt": "2026-11-09T15:54:39.528Z",
       "startCommit": "82895b54c306c1624ef81f126bbc64ea81240b70"
     }
@@ -2349,6 +2376,178 @@
       "group": "fi09",
       "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
       "taskId": "T758",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2083,
+      "at": "2026-11-09T15:57:22.424Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "cded9e6f-092e-48c5-bbec-60e9b1b404d5",
+      "taskId": "T761",
+      "tasks": [
+        "T761",
+        "T762",
+        "T763"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": "T761 strict round-scoped reads and retained discipline identities implementation started"
+      }
+    },
+    {
+      "sequence": 2084,
+      "at": "2026-11-09T15:58:11.081Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T15:56:10.684Z",
+            "finishedAt": "2026-11-09T15:58:10.782Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2085,
+      "at": "2026-11-09T15:58:11.189Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "b18d804f-4276-433e-b74f-7b60820282f3",
+      "taskId": "T758",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "e19cde7f45facbc77f13744556c8c4856979e4e0",
+        "integratedAt": "2026-11-09T15:58:11.189Z"
+      }
+    },
+    {
+      "sequence": 2086,
+      "at": "2026-11-09T15:58:29.862Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Await coordinator clarification of SAVE-28 unsupported-format compatibility classification versus malformed-current recovery; scoped implementation and fast checks retained."
+      }
+    },
+    {
+      "sequence": 2087,
+      "at": "2026-11-09T15:58:53.498Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b3b2595f-5e30-447d-b5d1-c70cad3d5115",
+          "owner": "fi09-transfer-review",
+          "status": "reviewing",
+          "commit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+          "baseCommit": "e19cde7f45facbc77f13744556c8c4856979e4e0",
+          "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
+          "createdAt": "2026-11-09T15:58:53.498Z"
+        }
+      }
+    },
+    {
+      "sequence": 2088,
+      "at": "2026-11-09T15:59:06.812Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "17a63e2d-9492-4cd9-8839-808be7d22295",
+      "taskId": "T764",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2089,
+      "at": "2026-11-09T16:00:45.792Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T753",
+          "T754",
+          "T755",
+          "T756",
+          "T757",
+          "T758",
+          "T759",
+          "T760",
+          "T761",
+          "T762",
+          "T763",
+          "T764",
+          "T765"
+        ]
+      }
+    },
+    {
+      "sequence": 2090,
+      "at": "2026-11-09T16:01:07.427Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b3b2595f-5e30-447d-b5d1-c70cad3d5115",
+          "owner": "fi09-transfer-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T759 satisfies its complete acceptance and current STAFF-28/14/17/18/24, ECON-1/4/5/6/35 and ARCH-4/9/21/30/32 contracts. Reviewed exact pinned submission efd8efd389f8476cacef2005b7f6d09c08486e2d against base e19cde7f45facbc77f13744556c8c4856979e4e0 and its complete seven-file merge-base diff. currencyById reads the unchanged existing denomination definitions, rejects unknown countries/IDs, rejects ambiguous units/parity, and excludes future denominations by the world year. The pure employment helper uses an explicit stored currency and actual employer country, never the employment start date. It applies the existing exact rational half-even conversion only when the employer current period equals buyer currency, then careerCandidates applies the unchanged truncating COMPENSATION 3/2 ratio. Same-currency 101 remains compensation 151; FRF 655957 becomes EUR 100000 and compensation 150000; GBP-LSD 2400 becomes GBP 1000 and compensation 1500. Missing/unknown/inconsistent provenance, unresolved general FX and future-denomination cases retain legacy behavior; no rate, CPI, footballQuote or FFP inverse is introduced. Internal/free candidates, ordinary wages/signing fees, eligibility and ordering remain intact. Candidate queries do not mutate stored employment, salary or identity. Direct hire recomputes and debits the same disclosed candidate cost before installation, and delegated matching uses managerHireCost for the same corrected compensation. Tests cover exact-funds success, one-unit-short rollback, delegated boundary and original record preservation on normal job closure. An additional read-only in-memory source diagnostic verified unchanged currency outputs for all 16,808 playable-country/year pairs from 1900 through 4000 and checked seven normalization/rounding/fallback examples without mutation. Reused worker evidence: 46 focused cases, exact-submission 162 files/1501 cases and type/lint/format/i18n/build pass. Current upstream additions after the pinned base are only T765 planning/evidence and existing-policy interpretation records, with no source/SSOT overlap. No browser/integration/full suites or repository edits were performed. Remaining final integration gates are coordinator-owned.",
+          "findings": [],
+          "commit": "efd8efd389f8476cacef2005b7f6d09c08486e2d",
+          "baseCommit": "e19cde7f45facbc77f13744556c8c4856979e4e0",
+          "submissionId": "14b98a4d-d961-4200-908e-166f65dca483",
+          "createdAt": "2026-11-09T15:58:53.498Z",
+          "finishedAt": "2026-11-09T16:01:07.427Z"
+        }
+      }
+    },
+    {
+      "sequence": 2091,
+      "at": "2026-11-09T16:01:34.721Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "3dce08af-2205-4bf8-9329-331d8fe1e739",
+      "taskId": "T759",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

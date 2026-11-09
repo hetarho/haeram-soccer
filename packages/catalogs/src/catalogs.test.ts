@@ -1,5 +1,5 @@
 import { expect, it } from 'vitest';
-import { COUNTRIES, priceIndex, currency } from './index';
+import { COUNTRIES, priceIndex, currency, currencyById } from './index';
 import { SPONSOR_SLOTS, broadcastingIndex, footballIndex, sponsorSlotOpens } from './index';
 import { footballData, namesData, NAME_POOL_MINIMUM, validateNamePools } from './index';
 it('holds sourced person-name pools for every country', () => {
@@ -128,6 +128,49 @@ it('uses historical unit boundaries and fixed euro factors', () => {
   expect(currency('FRA', 1999).code).toBe('EUR');
   expect(currency('GER', 1999).num).toBe(100000n);
   expect(currency('GER', 1999).den).toBe(1955830n);
+});
+
+it('looks up explicit currency IDs from the unchanged country periods and boundaries', () => {
+  // Source-derived period facts, including each exact denomination boundary on both sides.
+  const periods: [string, number, number, string, string, number, bigint, bigint, boolean][] = [
+    ['ENG', 1900, 1970, 'GBP-LSD', '£', 240, 1n, 1n, false],
+    ['ENG', 1971, 4000, 'GBP', '£', 100, 1n, 1n, false],
+    ['ESP', 1900, 1998, 'ESP', '₧', 100, 1n, 1n, false],
+    ['ESP', 1999, 4000, 'EUR', '€', 100, 1000n, 166386n, false],
+    ['GER', 1900, 1947, 'MARK', 'M', 100, 1n, 1n, true],
+    ['GER', 1948, 1998, 'DEM', 'DM', 100, 1n, 10n, false],
+    ['GER', 1999, 4000, 'EUR', '€', 100, 100000n, 1955830n, false],
+    ['ITA', 1900, 1998, 'ITL', '₤', 100, 1n, 1n, false],
+    ['ITA', 1999, 4000, 'EUR', '€', 100, 100n, 193627n, false],
+    ['FRA', 1900, 1959, 'FRF-OLD', 'Fr', 100, 1n, 1n, false],
+    ['FRA', 1960, 1998, 'FRF', 'Fr', 100, 1n, 100n, false],
+    ['FRA', 1999, 4000, 'EUR', '€', 100, 100000n, 65595700n, false],
+    ['POR', 1900, 1910, 'REIS', 'Rs', 1, 1n, 1n, false],
+    ['POR', 1911, 1998, 'PTE', 'Esc', 100, 1n, 1000n, false],
+    ['POR', 1999, 4000, 'EUR', '€', 100, 1000n, 200482000n, false],
+    ['NED', 1900, 1998, 'NLG', 'ƒ', 100, 1n, 1n, false],
+    ['NED', 1999, 4000, 'EUR', '€', 100, 100000n, 220371n, false],
+    ['BEL', 1900, 1998, 'BEF', 'Fr', 100, 1n, 1n, false],
+    ['BEL', 1999, 4000, 'EUR', '€', 100, 10000n, 403399n, false],
+  ];
+  for (const [country, from, to, code, symbol, units, num, den, estimated] of periods) {
+    const expected = { code, symbol, units, num, den, estimated };
+    expect(currency(country, from)).toEqual(expected);
+    expect(currency(country, to)).toEqual(expected);
+    expect(currencyById(country, code)).toEqual(expected);
+  }
+  expect(currencyById('FRA', 'GBP')).toBeUndefined();
+  expect(currencyById('ENG', 'EUR')).toBeUndefined();
+  expect(currencyById('FRA', 'unknown')).toBeUndefined();
+  expect(currencyById('unknown', 'EUR')).toBeUndefined();
+  expect(currencyById('FRA', 'EUR', 1998)).toBeUndefined();
+  expect(currencyById('FRA', 'EUR', 1999)).toEqual(currency('FRA', 1999));
+  expect(currencyById('GER', 'DEM', 1947)).toBeUndefined();
+  expect(currencyById('GER', 'DEM', 1948)).toEqual(currency('GER', 1948));
+  const changed = currencyById('ENG', 'GBP')!;
+  changed.units = 1;
+  expect(currency('ENG', 1971).units).toBe(100);
+  expect(currencyById('ENG', 'GBP')!.units).toBe(100);
 });
 
 it('selects the approved sourced squad registration eras and ceiling-only fallbacks', async () => {

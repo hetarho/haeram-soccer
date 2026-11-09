@@ -857,7 +857,6 @@
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
 | T755 | rank career appearances by recorded matches | ARCH | - | todo |
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
-| T759 | normalize fixed currency periods in coach compensation | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T761 | show recorded npc league red cards | ARCH | T752 | todo |
 | T762 | present contributing clubs without invented chronology | ARCH | T752 | todo |
@@ -887,12 +886,13 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 18 | 9 | 9 | 4 | 1 | 0 | 2026-11-09T15:56:10.464Z | [history](work/fi09.json) |
+| fi09 | 2 | 19 | 10 | 9 | 4 | 0 | 0 | 2026-11-09T16:01:39.761Z | [history](work/fi09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T759 integrated
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
 - 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
@@ -912,4 +912,3 @@
 - 261109 T689 cv04-clr hand-off complete: nine pinned-Node confirmation jobs, seven exact origin comparisons; both candidates fail the screen, all experimental engine source restored; T689 stays todo av11
 - 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09
 - 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
-- 261109 T689 cv04-own (09:04–11:04Z window, measurements 09:08–10:33Z): MATCH r56's in-box shot weighing (`boxShot.read`/`against`, default off, uncommitted in the evidence patch) moves the shot mix but not the box's chance (xG a shot 0.056–0.061, bar 0.07), since 92% of the carried box shots with nobody between are MATCH-16 clear chances struck at xG 0.008 against a keeper already out; every candidate breaks MATCH-29 (−0.187 to −0.271); gate unmet, only the diagnostic and evidence committed, T689 stays todo ev09

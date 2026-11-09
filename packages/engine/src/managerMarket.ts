@@ -45,6 +45,7 @@ import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';
 import { annualWageLimit, wageWithinLimit } from './direction';
 import { networkCandidates, networkedCandidate } from './owner-traits';
+import { employmentWageInBuyerCurrency } from './employment-money';
 
 /** The market moves every four league rounds and at the season close (→STAFF-17). */
 export const MARKET_REFRESH_ROUNDS = 4;
@@ -248,6 +249,15 @@ function careerCandidates(w: World): ManagerCandidate[] {
       internal = job?.club === w.playerClub,
       member = internal ? w.staff?.find((member) => member.person === person.id) : undefined;
     if (job && !internal && job.wage === undefined) return [];
+    const coachingWage =
+      job && !internal
+        ? employmentWageInBuyerCurrency(
+            job,
+            w.clubs.find((club) => club.id === job.club)?.country,
+            w.year,
+            w.currency,
+          )
+        : undefined;
     const style = profile.school,
       info = STYLE_INFO[style],
       key = `${code}|${w.seed}|${person.id}|${profile.at.year}|${style}`;
@@ -279,7 +289,12 @@ function careerCandidates(w: World): ManagerCandidate[] {
         ...(job ? { club: job.club } : {}),
         ...(member ? { coachingRelease: releaseCost(w, member) } : {}),
         ...(job && !internal
-          ? { compensation: ((BigInt(job.wage!) * COMPENSATION[0]) / COMPENSATION[1]).toString() }
+          ? {
+              compensation: (
+                (BigInt(coachingWage!) * COMPENSATION[0]) /
+                COMPENSATION[1]
+              ).toString(),
+            }
           : {}),
       },
     ];

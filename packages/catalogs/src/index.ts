@@ -381,27 +381,41 @@ const euro: Record<string, [bigint, bigint]> = {
   NED: [100000n, 220371n],
   BEL: [10000n, 403399n],
 };
+/** Every denomination boundary used by the currency selector and its period-ID lookup. */
+const CURRENCY_CHANGES = {
+  escudo: 1911,
+  deutscheMark: 1948,
+  newFranc: 1960,
+  decimalPound: 1971,
+  euro: 1999,
+};
 export function currency(code: string, year: number): CurrencyPeriod {
   if (code === 'ENG')
     return {
-      code: year < 1971 ? 'GBP-LSD' : 'GBP',
+      code: year < CURRENCY_CHANGES.decimalPound ? 'GBP-LSD' : 'GBP',
       symbol: '£',
-      units: year < 1971 ? 240 : 100,
+      units: year < CURRENCY_CHANGES.decimalPound ? 240 : 100,
       num: 1n,
       den: 1n,
       estimated: false,
     };
-  if (year >= 1999) {
+  if (year >= CURRENCY_CHANGES.euro) {
     const [num, den] = euro[code];
     const historical = code === 'FRA' ? 100n : code === 'POR' ? 1000n : code === 'GER' ? 10n : 1n;
     return { code: 'EUR', symbol: '€', units: 100, num, den: den * historical, estimated: false };
   }
   const legacy: Record<string, [string, string]> = {
     ESP: ['ESP', '₧'],
-    GER: [year < 1948 ? 'MARK' : 'DEM', year < 1948 ? 'M' : 'DM'],
+    GER: [
+      year < CURRENCY_CHANGES.deutscheMark ? 'MARK' : 'DEM',
+      year < CURRENCY_CHANGES.deutscheMark ? 'M' : 'DM',
+    ],
     ITA: ['ITL', '₤'],
-    FRA: [year < 1960 ? 'FRF-OLD' : 'FRF', 'Fr'],
-    POR: [year < 1911 ? 'REIS' : 'PTE', year < 1911 ? 'Rs' : 'Esc'],
+    FRA: [year < CURRENCY_CHANGES.newFranc ? 'FRF-OLD' : 'FRF', 'Fr'],
+    POR: [
+      year < CURRENCY_CHANGES.escudo ? 'REIS' : 'PTE',
+      year < CURRENCY_CHANGES.escudo ? 'Rs' : 'Esc',
+    ],
     NED: ['NLG', 'ƒ'],
     BEL: ['BEF', 'Fr'],
   };
@@ -409,18 +423,45 @@ export function currency(code: string, year: number): CurrencyPeriod {
   return {
     code: label,
     symbol,
-    units: code === 'POR' && year < 1911 ? 1 : 100,
+    units: code === 'POR' && year < CURRENCY_CHANGES.escudo ? 1 : 100,
     num: 1n,
     den:
-      code === 'FRA' && year >= 1960
+      code === 'FRA' && year >= CURRENCY_CHANGES.newFranc
         ? 100n
-        : code === 'POR' && year >= 1911
+        : code === 'POR' && year >= CURRENCY_CHANGES.escudo
           ? 1000n
-          : code === 'GER' && year >= 1948
+          : code === 'GER' && year >= CURRENCY_CHANGES.deutscheMark
             ? 10n
             : 1n,
-    estimated: code === 'GER' && year < 1948,
+    estimated: code === 'GER' && year < CURRENCY_CHANGES.deutscheMark,
   };
+}
+/**
+ * A uniquely denominated period named explicitly in a stored amount (→ECON-5/6). Read the same
+ * definitions as `currency`, without inferring a valuation date from an employment's start date.
+ * A reused ID with different units or parity would be ambiguous and must not be guessed. An
+ * optional current year excludes denominations not introduced yet, without dating the salary.
+ */
+export function currencyById(
+  code: string,
+  id: string,
+  throughYear = Number.POSITIVE_INFINITY,
+): CurrencyPeriod | undefined {
+  if (!COUNTRIES.some((country) => country.code === code)) return undefined;
+  const periods = [Number.NEGATIVE_INFINITY, ...Object.values(CURRENCY_CHANGES)]
+    .filter((year) => year <= throughYear)
+    .map((year) => currency(code, year))
+    .filter((period) => period.code === id);
+  const first = periods[0];
+  if (
+    !first ||
+    periods.some(
+      (period) =>
+        period.units !== first.units || period.num !== first.num || period.den !== first.den,
+    )
+  )
+    return undefined;
+  return first;
 }
 export { priceData, footballData, squadRulesData, namesData };
 
