@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T15:09:35.110Z",
-  "sourceCommit": "9f5129223f2497c0f56bd9c90c8f9fe74c9747d4",
+  "snapshotAt": "2026-11-09T15:15:19.853Z",
+  "sourceCommit": "082bb0a1b73975ebcd1b8ac3a79328782cb010c2",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -11,6 +11,28 @@
       "workers": 2,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "082bb0a1b73975ebcd1b8ac3a79328782cb010c2",
+      "checks": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run build",
+          "startedAt": "2026-11-09T15:13:56.873Z",
+          "finishedAt": "2026-11-09T15:15:17.291Z"
+        }
+      ],
+      "at": "2026-11-09T15:15:17.377Z",
+      "excluded": [
+        "T689",
+        "T753",
+        "T754",
+        "T755",
+        "T756",
+        "T758",
+        "T759",
+        "T760",
+        "T761"
+      ]
     },
     "push": null,
     "review": "all",
@@ -138,6 +160,8 @@
       "submittedBase": "f417481042ffbfd6b9acbfd8245a77978e081e53",
       "submissionId": "d169a641-4303-4694-a4e8-862e2337ba3d",
       "submittedAt": "2026-11-09T15:04:19.266Z",
+      "integratedCommit": "589e6903fe4d796168cd3c0c4f158435d9b8c8d6",
+      "integratedAt": "2026-11-09T15:10:37.755Z",
       "risk": null,
       "review": {
         "id": "4e5cae0d-9b39-46df-bc9b-08053660884c",
@@ -207,6 +231,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
           "startedAt": "2026-11-09T15:03:50.462Z",
           "finishedAt": "2026-11-09T15:04:18.800Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T15:09:35.273Z",
+          "finishedAt": "2026-11-09T15:10:37.387Z"
         }
       ]
     },
@@ -1280,6 +1311,84 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2050,
+      "at": "2026-11-09T15:10:37.592Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T15:09:35.273Z",
+            "finishedAt": "2026-11-09T15:10:37.387Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2051,
+      "at": "2026-11-09T15:10:37.755Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T752",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "589e6903fe4d796168cd3c0c4f158435d9b8c8d6",
+        "integratedAt": "2026-11-09T15:10:37.755Z"
+      }
+    },
+    {
+      "sequence": 2052,
+      "at": "2026-11-09T15:15:17.398Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "082bb0a1b73975ebcd1b8ac3a79328782cb010c2",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run test:unit && pnpm run test:contract && pnpm run build",
+              "startedAt": "2026-11-09T15:13:56.873Z",
+              "finishedAt": "2026-11-09T15:15:17.291Z"
+            }
+          ],
+          "at": "2026-11-09T15:15:17.377Z",
+          "excluded": [
+            "T689",
+            "T753",
+            "T754",
+            "T755",
+            "T756",
+            "T758",
+            "T759",
+            "T760",
+            "T761"
+          ]
+        }
       }
     }
   ]
