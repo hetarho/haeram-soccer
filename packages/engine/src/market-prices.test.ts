@@ -165,6 +165,69 @@ describe('transfer premium (CLUB-46)', () => {
           prices.marketValueUnits(0, ability, 26, ability, year),
         );
   });
+
+  it('lets established young players reach modern growth while retaining the base age discount', () => {
+    expect(prices.marketValueUnits(0, 80, 20, 80, 2025)).toBe(9360);
+    expect(prices.marketValueUnits(0, 80, 24, 80, 2025)).toBe(13954.84319385);
+    expect(prices.marketValueUnits(0, 80, 20, 80, 2025)).toBeLessThan(
+      prices.marketValueUnits(0, 80, 24, 80, 2025),
+    );
+    expect(prices.marketValueUnits(0, 79, 18, 90, 2025)).toBeGreaterThan(
+      prices.marketValueUnits(0, 79, 18, 79, 2025),
+    );
+  });
+
+  it('keeps already-full-reach stars and prices below the premium pivot unchanged', () => {
+    expect(prices.marketValueUnits(0, 90, 20, 90, 2025)).toBe(25403.79672425298);
+    expect(prices.marketValueUnits(0, 60, 20, 60, 2025)).toBe(244.35821537417345);
+  });
+
+  it('still discounts older players through their base price and earning years', () => {
+    expect(prices.marketValueUnits(0, 80, 32, 80, 2025)).toBe(10402.652166930644);
+    expect(prices.marketValueUnits(0, 80, 32, 80, 2025)).toBe(
+      prices.marketValueUnits(0, 80, 28, 80, 2025) / 2,
+    );
+    expect(prices.marketValueUnits(0, 80, 38, 80, 2025)).toBeLessThan(
+      prices.marketValueUnits(0, 80, 32, 80, 2025),
+    );
+  });
+
+  it('retains early compressed values and wages exactly', () => {
+    const ages = [20, 24, 28, 32];
+    expect(ages.map((age) => prices.marketValueUnits(0, 80, age, 80, 1950))).toEqual([
+      1800, 2033.8064434589728, 2297.982583030687, 1148.9912915153434,
+    ]);
+    expect(ages.map((age) => prices.marketWageUnits(0, 80, age, 80))).toEqual([
+      900, 1341.8118455625, 2000.5100321020468, 2000.5100321020468,
+    ]);
+  });
+
+  it('is continuous as the transfer premium crosses one', () => {
+    const kept = prices.MARKET_CONFIG.premium;
+    try {
+      const at = (multiple: number) => {
+        prices.MARKET_CONFIG.premium = [[2025, multiple]];
+        return prices.marketValueUnits(0, 80, 20, 80, 2025);
+      };
+      expect(at(1)).toBe(1800);
+      expect(at(1 - 1e-10)).toBeCloseTo(1800, 5);
+      expect(at(1 + 1e-10)).toBeCloseTo(1800, 5);
+    } finally {
+      prices.MARKET_CONFIG.premium = kept;
+    }
+  });
+
+  it('never reduces a value when current ability or potential rises, young or old', () => {
+    for (const year of [1950, 2025])
+      for (const age of [18, 24, 32, 38])
+        for (let ability = 60; ability < 99; ability++) {
+          const value = prices.marketValueUnits(0, ability, age, 99, year);
+          expect(prices.marketValueUnits(0, ability + 1, age, 99, year)).toBeGreaterThan(value);
+          expect(
+            prices.marketValueUnits(0, ability, age, ability + 1, year),
+          ).toBeGreaterThanOrEqual(prices.marketValueUnits(0, ability, age, ability, year));
+        }
+  });
 });
 
 describe('market pricing read leaf', () => {

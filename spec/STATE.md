@@ -826,7 +826,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T731 | price modern transfer growth before salary age discounts | CLUB ECON ARCH | - | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
@@ -853,14 +852,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
+| economy-ec09 | 2 | 2 | 1 | 1 | 0 | 1 | 0 | 2026-11-09T02:13:27.005Z | [history](work/economy-ec09.json) |
 
 ## next
-- implement-task T730 first (fix-ci-first): CI 42519984966 on ad51162 is green except `e2e (webkit 2/2)` — progression-settings.spec.ts:287 read `결재함 · 대기 0건` after the stop (set-piece-defence.spec.ts:187 flaky); T729's resource-skins fix held. Its re-run failed the same way (deterministic on CI WebKit); bisect T725/T727 on CI first.
-- the owner's decisions from review/self-improve-local-261109: F6 (confirm the decided inbox lines up to a date so a session can delete them — the largest per-task token cost), F13 (a CSS-free public entry so Playwright/Node consumers reach a slice's pure logic; then resume blocked T726), F11 (`pages/records`).
-- implement-task T689 (explore 2h) in a fresh session (this checkout's `vibe loop` is refused until work group `module-1026` is closed, see inbox): its deps are done.
-- F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
+- inspect work board for remaining tasks
 
 ## log
+- 261109 T731 integrated
 - 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
 - 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
 - 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
@@ -880,5 +878,3 @@
 - 261108 T713 done: every match model and the aggregate's odds read the portable math (`HOST_MATH` removed); the golden's `modern-european-season` regenerated to CI's Linux facts; CI 42487386669 `checks` green on bf4b6be0. mt08
 - 261108 T712 done: the ability-fit wage built behind `ABILITY_FIT` (off), `--ability-fit` overrides, inert against T700; CLUB-25's gate fails on 46 calibration careers (중견 titles 3/8, 지역 유지 reach 8/8, 자수성가 reach 6/6; upper tiers no club bankrupt), so it stays out of force; held-out and worlds not run (artifacts/benchmarks/T712). mt08
 - 261108 fix tests: the portable contract diagnostic lists every differing top-level fact with its first path (bounded), so CI shows whether modern-european-season's Linux divergence reaches matches or only the books (T713)
-- 261108 update-ssot CLUB r61 + create-task T712: a player is paid on his club's division or the division his ability suits when higher, every club alike, in force only once LEAGUE-13's lower tiers and CLUB-48's books and champions parts hold with it (CLUB-25✎); T689 dep +T712 (av07)
-- 261108 T700 done: 38 reference careers read on production with `owner-balance.ts --growth` (read-only, inert against a control); screen go for the ability-fit wage price (discounted signings 90.1% of the lower tiers' XI points above the league's NPC median); every lower tier reaches and wins the top flight on the rules in force; no constant changed (av07)
