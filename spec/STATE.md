@@ -21,6 +21,7 @@
 | fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T16:09Z | - |
 
 ## inbox
+- 261110 decided OWNER-12 WEB-114 T766 review/football-data-consistency-261109: how capital previews respect the existing0..100 fan-mood property → share unchanged percentage/move math and disclose its actual before→after change (alt: show+10 at mood100 | recalibrate rates/clamp | introduce new precision). Source/event-backed capped injection is the primary bug; approximate dividend follows the same canonical projection. Actual settlement, money and copy remain unchanged fi09
 - 261110 decided T765 WEB-43 ECON-5 ECON-6: how snapshot denominations reach shared monetary consumers → add the two existing comparison/source source paths with optional explicit provenance and current defaults (alt: fake w.year | leave source fees wrong | silently widen active touches). Clean source-free attempt released before six-path fresh assignment; mixed-unit derived money stays unavailable fi09
 - 261110 decided WEB-43 WEB-97 ECON-5 ECON-6 T765 review/football-data-consistency-261109: how retained running-market snapshots survive a denomination transition → preserve their known UI monetary context, otherwise keep inspection but withhold ambiguous money (alt: relabel old minor units with current currency | clear inspection or refetch every revision | add a public money protocol). Existing read cadence and T753 transaction revalidation remain; no new FX or game facts fi09
 - 261110 decided SAVE-11 SAVE-28 T764: how summary validation preserves existing storage protection and recovery → unsupported formats use existing compatibility failure protection; malformed current contents fail validation with existing supported-corruption recovery (alt: classify a future format as corruption | discard malformed current data | redesign repository). This clarifies the existing cross-referenced rules without changing T764's frozen contract or SSOT revision fi09
@@ -860,6 +861,7 @@
 | T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T765 | preserve market snapshot money denominations | WEB ARCH ECON | T753 | todo |
+| T766 | match capital mood previews to settlement | OWNER WEB ECON ARCH | T747 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -889,6 +891,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
 - 261109 T761 T762 T763 integrated
 - 261109 T764 integrated
 - 261109 T759 integrated
@@ -908,4 +911,3 @@
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
 - 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
-- 261109 T689 cv04-clr hand-off complete: nine pinned-Node confirmation jobs, seven exact origin comparisons; both candidates fail the screen, all experimental engine source restored; T689 stays todo av11
