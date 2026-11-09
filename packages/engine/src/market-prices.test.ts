@@ -1,9 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { Player, World } from '../../contracts/src/types';
 import * as legacy from './contracts';
 import * as prices from './market-prices';
 import { footballQuote } from './quotes';
+import { scaleBy } from './primitives';
+import { coachWage, staffQuote } from './staff';
+import { clubTerms, freeAgentTerms } from './world-market';
 
 /**
  * Captured from contracts.ts before extraction; synthetic ratings, no generated world. Only the GER
@@ -47,7 +50,7 @@ const vectors = [
     share: 0.275,
     wageUnits: 135.9569881607702,
     valueUnits: 271.9139763215404,
-    wage: '7712968',
+    wage: '11569452',
     value: '15425937',
   },
   {
@@ -60,7 +63,7 @@ const vectors = [
     share: 1,
     wageUnits: 2442.672761947402,
     valueUnits: 11267.065689690868,
-    wage: '248117208',
+    wage: '545927082',
     value: '1144464755',
   },
   {
@@ -280,7 +283,141 @@ describe('market pricing read leaf', () => {
   );
 });
 
+describe('the independent player wage era (CLUB-25)', () => {
+  const player = (year: number, ability: number, age = 27) =>
+    ({
+      id: 'signed-player',
+      position: 'CM',
+      attrs: Object.fromEntries(ATTRIBUTES.map((a) => [a, ability])),
+      born: year - age,
+      potential: Math.min(99, ability + 10),
+      status: 'active',
+      wage: '12345',
+      until: year + 5,
+      clauses: { promotion: 20 },
+    }) as unknown as Player;
+  const baseQuote = (code: string, year: number, division: number, p: Player, ability: number) =>
+    footballQuote(
+      code,
+      year,
+      prices.marketWageUnits(
+        division,
+        ability,
+        year - p.born,
+        p.potential,
+        prices.starPaySpread(code, year),
+      ),
+    );
+
+  it('keeps the named estimated anchors separate from the common price base', () => {
+    expect(prices.MARKET_CONFIG.playerWageEra).toEqual([
+      [1992, 1],
+      [2005, 1.5],
+      [2025, 2.5],
+    ]);
+    expect(prices.MARKET_CONFIG.wage).toBe(900);
+    expect(prices.ABILITY_FIT.inForce).toBe(false);
+  });
+
+  it('keeps historical quotes exact and scales complete ordinary/star quotes at anchors and midpoint', () => {
+    for (const code of ['ENG', 'ESP', 'GER', 'FRA', 'ITA', 'POR', 'NED', 'BEL'])
+      for (const division of [0, 1, 3])
+        for (const ability of [60, 80, 92])
+          for (const [year, factor] of [
+            [1930, 1],
+            [1950, 1],
+            [1992, 1],
+            [2005, 1.5],
+            [2015, Math.sqrt(3.75)],
+            [2025, 2.5],
+            [2050, 2.5],
+          ]) {
+            const p = player(year, ability),
+              before = structuredClone(p);
+            const original = baseQuote(code, year, division, p, ability);
+            expect(prices.marketWageAt(code, year, division, p, ability)).toBe(
+              factor === 1 ? original : scaleBy(original, factor, 1_000_000n),
+            );
+            expect(p).toEqual(before);
+          }
+  });
+
+  it('is positive and nondecreasing between anchors and flat outside them', () => {
+    let previous = 0;
+    for (let year = 1950; year <= 2050; year++) {
+      const p = player(year, 80);
+      const factor =
+        Number(prices.marketWageAt('ENG', year, 0, p, 80)) /
+        Number(baseQuote('ENG', year, 0, p, 80));
+      expect(factor).toBeGreaterThan(0);
+      expect(factor + 0.00001).toBeGreaterThanOrEqual(previous);
+      previous = factor;
+    }
+  });
+
+  it('shares the canonical quote with free/club arrivals and renewal worth, without rewriting contracts', () => {
+    const p = player(2025, 92),
+      before = structuredClone(p);
+    const w = {
+      year: 2025,
+      playerClub: 'own',
+      clubs: [{ id: 'own', country: 'ENG', tier: 0 }],
+      players: [],
+      history: [],
+    } as unknown as World;
+    const quote = prices.marketWageAt('ENG', 2025, 0, p);
+    expect(freeAgentTerms(w, { ...p, freeSince: 2024 }).player.wage).toBe(quote);
+    expect(
+      clubTerms(
+        w,
+        { id: 'seller', country: 'ENG', tier: 1 } as World['clubs'][number],
+        p,
+        1,
+        new Set(),
+      ).player.wage,
+    ).toBe(quote);
+    expect(legacy.playerWorth(w, p)).toBe(quote);
+    expect(p).toEqual(before);
+  });
+
+  it('leaves fee vectors and manager/coaching quotes unchanged when the wage table is tuned', () => {
+    const w = {
+      year: 2025,
+      playerClub: 'own',
+      clubs: [{ id: 'own', country: 'ENG', tier: 0 }],
+    } as World;
+    const p = player(2025, 92),
+      fee = prices.marketValueAt('ENG', 2025, 0, p);
+    const manager = staffQuote(w, 200),
+      coach = coachWage(w, 80),
+      wage = prices.marketWageAt('ENG', 2025, 0, p);
+    const table = prices.MARKET_CONFIG.playerWageEra;
+    try {
+      prices.MARKET_CONFIG.playerWageEra = [
+        [1992, 1],
+        [2005, 2],
+        [2025, 3],
+      ];
+      expect(prices.marketValueAt('ENG', 2025, 0, p)).toBe(fee);
+      expect(staffQuote(w, 200)).toBe(manager);
+      expect(coachWage(w, 80)).toBe(coach);
+      expect(BigInt(prices.marketWageAt('ENG', 2025, 0, p))).toBeGreaterThan(BigInt(wage));
+    } finally {
+      prices.MARKET_CONFIG.playerWageEra = table;
+    }
+  });
+});
+
 describe('era star pay spread (CLUB-48)', () => {
+  // Isolate the historical star-spread mechanism; the wage-era policy has its own joint tests.
+  let wageEra: typeof prices.MARKET_CONFIG.playerWageEra;
+  beforeEach(() => {
+    wageEra = prices.MARKET_CONFIG.playerWageEra;
+    prices.MARKET_CONFIG.playerWageEra = [[1992, 1]];
+  });
+  afterEach(() => {
+    prices.MARKET_CONFIG.playerWageEra = wageEra;
+  });
   const codes = ['ENG', 'ESP', 'GER', 'ITA', 'FRA', 'POR', 'NED', 'BEL'];
   const player = (ability: number, age: number, potential: number, year: number) =>
     ({
