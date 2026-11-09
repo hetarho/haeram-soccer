@@ -18,9 +18,11 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T17:25Z | - |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T18:42Z | - |
 
 ## inbox
+- 261110 decided ARCH-21 ARCH-30 T754 T756 T760 T766 T767: how to preserve required checks under observed host contention → consolidate stopped clean source checkpoints into one reviewable final-data-consistency lane, retain every original SHA/author and run the unchanged complete task checks once on the combined source (alt: duplicate identical checks after result-only edits | cut test selection or increase limits). Native git diff --check records consistency only; original full guard evidence, docs-only follow-up diff, independent whole-lane review, merged fast gate and final full batch remain required fi09
+- 261110 decided ARCH-30: how fresh same-clone typechecks reuse normal incremental compilation → copy an immutable completed-check tsbuildinfo only with matching compiler/lock/flat config/environment and original receipt SHA/time window, preserve existing caches atomically, then actually run the unchanged typecheck (alt: reuse a pass verdict | alter compiler diagnostics | modify cache records). Independent helper review cleared provenance/race concerns; cross-worktree Prettier reuse is parked because its keys/options contain absolute paths fi09
 - 261110 decided ARCH-21 ARCH-30 T767 review/football-data-consistency-261109: how the inherited live-league verification observes an already-open report → use actual expected report/date-specific reopen state in both event orders (alt: stale prior-dismissal click | longer timeout | drop navigation/node assertions). Raw335 trace and av11 preserved patch establish a test-control defect; no product/fixture/coverage change fi09
 - 261110 decided ARCH-30 T755: how to recover observed host resource failures → identical-selection single-worker verification with unchanged30s limits, preserving original failure and exact-source cached success (alt: larger limits | skipped cases | source changes for timing). ENOSPC during later integration moved no target commit; runtime recovery and fresh submission/review are required fi09
 - 261110 decided OWNER-12 WEB-114 T766 review/football-data-consistency-261109: how capital previews respect the existing0..100 fan-mood property → share unchanged percentage/move math and disclose its actual before→after change (alt: show+10 at mood100 | recalibrate rates/clamp | introduce new precision). Source/event-backed capped injection is the primary bug; approximate dividend follows the same canonical projection. Actual settlement, money and copy remain unchanged fi09
@@ -889,9 +891,10 @@
 | fi09 | 2 | 21 | 16 | 5 | 2 | 1 | 1 | 2026-11-09T17:48:57.770Z | [history](work/fi09.json) |
 
 ## next
-- inspect work board for remaining tasks
+- implement-task T754 in final-data-consistency; complete required checks and independent review, then coordinator full frozen-source batch
 
 ## log
+- 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261109 T755 integrated
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
@@ -911,4 +914,3 @@
 - 261109 T747 T748 T757 integrated
 - 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
-- 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
