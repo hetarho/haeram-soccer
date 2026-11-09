@@ -837,7 +837,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T726 | move the match viewer's own modules out of the match entity | ARCH | - | todo |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 
 ## work
@@ -864,9 +863,10 @@
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 
 ## next
-- implement-task T726, then T730
+- implement-task T730
 
 ## log
+- 261109 T726 done: the match viewer's six playback modules live in `features/match-viewer/lib` and read the entity through its new CSS-free `entities/match/logic.ts`; ESLint keeps `logic.ts` to `lib/`, an architecture test keeps every e2e/fixture/`logic.ts` closure free of stylesheets and slice indexes; 71/30 chunks kept; browser specs left to the release run ev09
 - 261109 update-ssot ARCH r35 + create-task T726 refresh: code run outside the Vite build loads no stylesheet, asset or slice index and reaches other slices through `logic.ts` or `@x` (F13 adopted); T726 blocked → todo at ARCH@35 ev09
 - 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
 - 261109 T744 integrated
@@ -886,4 +886,3 @@
 - 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
 - 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
 - 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
-- 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
