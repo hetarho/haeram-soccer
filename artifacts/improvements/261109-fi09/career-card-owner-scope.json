@@ -1,0 +1,11 @@
+{
+  "questionId": "call_f42ec435f7414208b630efd6b76c0b3f:0",
+  "ownerAnswer": "호환 가능하게 하지 않아도 돼",
+  "scope": "F17 career-card derived-summary update; backward compatibility is not required",
+  "chosenPolicy": "Recognized obsolete optional cache may be discarded, current summary reconstructed through existing writer activation; current save/reload/incremental behavior and canonical source facts protected; no old-body decoder and no per-reload scan",
+  "revisions": [
+    "HIST@24",
+    "SAVE@66"
+  ],
+  "notAuthorized": "new rates/FX policy, unrelated save changes, canonical source deletion, unknown/future format acceptance"
+}
