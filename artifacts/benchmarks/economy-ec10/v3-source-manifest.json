@@ -1,0 +1,67 @@
+{
+  "baselineProduction": "44a1069e54fbb6970cfd9b519f65773352954205",
+  "jointProduction": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+  "sources": {
+    "baseline": {
+      "cwd": "/tmp/haeram-ec10-v3-baseline",
+      "head": "893733abc9231ddfbcbf80d47384d19019b5b1ba",
+      "productionParent": "44a1069e54fbb6970cfd9b519f65773352954205",
+      "approvedProductionFiles": {},
+      "measurementOnly": [
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ],
+      "changesFromProduction": [
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ]
+    },
+    "wage-only": {
+      "cwd": "/tmp/haeram-ec10-v3-wage-only",
+      "head": "7bccb41afef1a58b1605a20a2bb174b8b09750f6",
+      "productionParent": "44a1069e54fbb6970cfd9b519f65773352954205",
+      "approvedProductionFiles": {
+        "packages/engine/src/market-prices.ts": "1c196d7a9aee675abf8a98890baa633ebfd9540885c7f3426ea3942499e47593"
+      },
+      "measurementOnly": [
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ],
+      "changesFromProduction": [
+        "packages/engine/src/market-prices.ts",
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ]
+    },
+    "distribution-only": {
+      "cwd": "/tmp/haeram-ec10-v3-distribution-only",
+      "head": "c9a094e0b2ee925913c2c8b2ec1cbc6041654a1d",
+      "productionParent": "44a1069e54fbb6970cfd9b519f65773352954205",
+      "approvedProductionFiles": {
+        "packages/engine/src/finance.ts": "3d778d9950e08a47e5d9d7f50acf298228752d2b5941ce0263d8ca6647496050",
+        "packages/engine/src/club-value.ts": "f35f98ef6c3f66999205e037bb19c742d93fa5fad6802c873f2d3d7f564333d4"
+      },
+      "measurementOnly": [
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ],
+      "changesFromProduction": [
+        "packages/engine/src/club-value.ts",
+        "packages/engine/src/finance.ts",
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ]
+    },
+    "joint": {
+      "cwd": "/tmp/haeram-ec10-v3-joint",
+      "head": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+      "productionParent": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+      "approvedProductionFiles": {},
+      "measurementOnly": [
+        "scripts/calibrate-cash-flow.ts",
+        "scripts/lib/settlement-payroll.ts"
+      ],
+      "changesFromProduction": []
+    }
+  }
+}

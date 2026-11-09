@@ -1,0 +1,23 @@
+{
+  "referenceAccountingCommit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+  "referenceSha256": "0c293ece90094566a5464a9996eb85da30a7392e45c53210c543f4cc0feb8810",
+  "observerSha256": "a0d202893b4f9725787131cc7336abcd6c669b8ad9d8c420e28ae66b61d87247",
+  "sources": {
+    "baseline": {
+      "cwd": "/tmp/haeram-ec10-reference-baseline",
+      "head": "4c330278e49120043edfd3b014c6e040f743b3cb",
+      "pricingSource": "893733abc9231ddfbcbf80d47384d19019b5b1ba",
+      "changes": [
+        "scripts/owner-balance.ts"
+      ]
+    },
+    "joint": {
+      "cwd": "/tmp/haeram-ec10-reference-joint",
+      "head": "12b9c64cc3c1cb5dbc8006db5e0be46b8293f6f0",
+      "pricingSource": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+      "changes": [
+        "scripts/owner-balance.ts"
+      ]
+    }
+  }
+}

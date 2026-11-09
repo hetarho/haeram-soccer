@@ -1,0 +1,90 @@
+{
+  "manager-journey": {
+    "changedDecodedRoots": [
+      "events",
+      "owner",
+      "shortlist"
+    ],
+    "allOtherWorldFieldsExact": true,
+    "nonOwnerEventsExactAfterAlignment": true,
+    "ownerBalanceDifferenceMatchesLivingLedger": 9012048,
+    "closed1950Living": 40387333,
+    "closed1950LivingEntries": 11,
+    "ownerChanges": [
+      {
+        "path": "$.owner.fortune",
+        "before": "4993355033",
+        "after": "4984342985"
+      },
+      {
+        "path": "$.owner.seasonRecords[0].fortune",
+        "before": "5004369757",
+        "after": "5004369756"
+      },
+      {
+        "path": "$.owner.seasonRecords[0].living",
+        "before": "40387332",
+        "after": "40387333"
+      }
+    ],
+    "shortlistChangesFromRetainedT732": [
+      {
+        "beforeFreeAgent": "ENG:0:0:13:p:0:108",
+        "afterClubPlayer": "ENG:0:0:1:p:11:109"
+      },
+      {
+        "beforeFreeAgent": "ENG:0:0:10:p:0:108",
+        "afterClubPlayer": "ENG:0:0:4:p:11:109"
+      }
+    ],
+    "provenance": {
+      "dirty": false,
+      "commit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+      "computation": "7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86"
+    }
+  },
+  "manager-activation": {
+    "changedDecodedRoots": [
+      "events",
+      "owner",
+      "shortlist"
+    ],
+    "allOtherWorldFieldsExact": true,
+    "nonOwnerEventsExactAfterAlignment": true,
+    "ownerBalanceDifferenceMatchesLivingLedger": 2,
+    "closed1950Living": 40582054,
+    "closed1950LivingEntries": 11,
+    "ownerChanges": [
+      {
+        "path": "$.owner.fortune",
+        "before": "5026796845",
+        "after": "5026796843"
+      },
+      {
+        "path": "$.owner.seasonRecords[0].fortune",
+        "before": "5026796845",
+        "after": "5026796843"
+      },
+      {
+        "path": "$.owner.seasonRecords[0].living",
+        "before": "40582052",
+        "after": "40582054"
+      }
+    ],
+    "shortlistChangesFromRetainedT732": [
+      {
+        "beforeFreeAgent": "ENG:0:0:6:p:0:108",
+        "afterClubPlayer": "ENG:1:0:1:p:11:109"
+      },
+      {
+        "beforeFreeAgent": "ENG:0:0:2:p:0:108",
+        "afterClubPlayer": "ENG:1:0:9:p:11:109"
+      }
+    ],
+    "provenance": {
+      "dirty": false,
+      "commit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+      "computation": "7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86"
+    }
+  }
+}

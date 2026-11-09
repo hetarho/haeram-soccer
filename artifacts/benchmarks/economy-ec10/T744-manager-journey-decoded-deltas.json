@@ -1,0 +1,7566 @@
+[
+  {
+    "path": "$.events[24].amount",
+    "before": "1291",
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[24].detail",
+    "before": "1950:cup:ENG:k0:15 · 홈·원정 동일 기준",
+    "after": "1950년 9월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[24].kind",
+    "before": "match-bonus",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[24].title",
+    "before": "승리 성과 수입",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[25].amount",
+    "before": "224161",
+    "after": "1291"
+  },
+  {
+    "path": "$.events[25].detail",
+    "before": "관중 4505명 · 티켓과 구단 상품 · 1950:cup:ENG:k0:15",
+    "after": "1950:cup:ENG:k0:15 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[25].kind",
+    "before": "gate",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[25].title",
+    "before": "홈 경기의 수입",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[26].amount",
+    "before": "12922",
+    "after": "224161"
+  },
+  {
+    "path": "$.events[26].detail",
+    "before": "관중 4505명 · 1950:cup:ENG:k0:15",
+    "after": "관중 4505명 · 티켓과 구단 상품 · 1950:cup:ENG:k0:15"
+  },
+  {
+    "path": "$.events[26].kind",
+    "before": "match-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[26].title",
+    "before": "홈 경기 개최비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[27].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "12922"
+  },
+  {
+    "path": "$.events[27].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[27].detail",
+    "before": "약 9주 결장 · 1950년 11월 3일 복귀 예상",
+    "after": "관중 4505명 · 1950:cup:ENG:k0:15"
+  },
+  {
+    "path": "$.events[27].kind",
+    "before": "injury",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[27].title",
+    "before": "Eric Webster 발목 인대 부상",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[28].amount",
+    "before": "775",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[28].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[28].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "약 9주 결장 · 1950년 11월 3일 복귀 예상"
+  },
+  {
+    "path": "$.events[28].kind",
+    "before": "cup-prize",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[28].title",
+    "before": "잉글랜드 컵 1라운드 통과",
+    "after": "Eric Webster 발목 인대 부상"
+  },
+  {
+    "path": "$.events[29].amount",
+    "before": "238790",
+    "after": "775"
+  },
+  {
+    "path": "$.events[29].detail",
+    "before": "관중 4799명 · 티켓과 구단 상품 · 1950:ENG:3:0:4:0",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[29].kind",
+    "before": "gate",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[29].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[29].title",
+    "before": "홈 경기의 수입",
+    "after": "잉글랜드 컵 1라운드 통과"
+  },
+  {
+    "path": "$.events[30].amount",
+    "before": "13428",
+    "after": "238790"
+  },
+  {
+    "path": "$.events[30].detail",
+    "before": "관중 4799명 · 1950:ENG:3:0:4:0",
+    "after": "관중 4799명 · 티켓과 구단 상품 · 1950:ENG:3:0:4:0"
+  },
+  {
+    "path": "$.events[30].kind",
+    "before": "match-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[30].title",
+    "before": "홈 경기 개최비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[31].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13428"
+  },
+  {
+    "path": "$.events[31].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[31].detail",
+    "before": "약 1주 결장 · 1950년 9월 13일 복귀 예상",
+    "after": "관중 4799명 · 1950:ENG:3:0:4:0"
+  },
+  {
+    "path": "$.events[31].kind",
+    "before": "injury",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[31].title",
+    "before": "Clive Stevenson 가벼운 발목 염좌",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[32].amount",
+    "before": "13672",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[32].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[32].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "약 1주 결장 · 1950년 9월 13일 복귀 예상"
+  },
+  {
+    "path": "$.events[32].kind",
+    "before": "operating-cost",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[32].title",
+    "before": "급여와 시설 유지비",
+    "after": "Clive Stevenson 가벼운 발목 염좌"
+  },
+  {
+    "path": "$.events[33].amount",
+    "before": "13671",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[33].round",
+    "before": 6,
+    "after": 5
+  },
+  {
+    "path": "$.events[34].amount",
+    "before": "212567",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[34].detail",
+    "before": "관중 4272명 · 티켓과 구단 상품 · 1950:ENG:3:0:6:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[34].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[34].round",
+    "before": 7,
+    "after": 6
+  },
+  {
+    "path": "$.events[34].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[35].amount",
+    "before": "12520",
+    "after": "212567"
+  },
+  {
+    "path": "$.events[35].detail",
+    "before": "관중 4272명 · 1950:ENG:3:0:6:0",
+    "after": "관중 4272명 · 티켓과 구단 상품 · 1950:ENG:3:0:6:0"
+  },
+  {
+    "path": "$.events[35].kind",
+    "before": "match-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[35].title",
+    "before": "홈 경기 개최비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[36].amount",
+    "before": "13670",
+    "after": "12520"
+  },
+  {
+    "path": "$.events[36].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4272명 · 1950:ENG:3:0:6:0"
+  },
+  {
+    "path": "$.events[36].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[36].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[37].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13670"
+  },
+  {
+    "path": "$.events[37].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[37].detail",
+    "before": "약 2주 결장 · 1950년 10월 7일 복귀 예상",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[37].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[37].round",
+    "before": 8,
+    "after": 7
+  },
+  {
+    "path": "$.events[37].title",
+    "before": "Kenneth Goodwin 가벼운 발목 염좌",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[38].amount",
+    "before": "13672",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[38].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[38].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "약 2주 결장 · 1950년 10월 7일 복귀 예상"
+  },
+  {
+    "path": "$.events[38].kind",
+    "before": "operating-cost",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[38].title",
+    "before": "급여와 시설 유지비",
+    "after": "Kenneth Goodwin 가벼운 발목 염좌"
+  },
+  {
+    "path": "$.events[39].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13672"
+  },
+  {
+    "path": "$.events[39].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[39].detail",
+    "before": "실리 역습 · OVR 35 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[39].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[39].title",
+    "before": "York Borough B6, Derek Walton 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[40].amount",
+    "before": "243069",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[40].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[40].detail",
+    "before": "관중 4885명 · 티켓과 구단 상품 · 1950:ENG:3:0:8:0",
+    "after": "실리 역습 · OVR 35 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[40].kind",
+    "before": "gate",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[40].round",
+    "before": 9,
+    "after": 8
+  },
+  {
+    "path": "$.events[40].title",
+    "before": "홈 경기의 수입",
+    "after": "York Borough B6, Derek Walton 감독 경질"
+  },
+  {
+    "path": "$.events[41].amount",
+    "before": "13576",
+    "after": "3671575"
+  },
+  {
+    "path": "$.events[41].detail",
+    "before": "관중 4885명 · 1950:ENG:3:0:8:0",
+    "after": "1950년 10월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[41].kind",
+    "before": "match-cost",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[41].round",
+    "before": 9,
+    "after": 8
+  },
+  {
+    "path": "$.events[41].title",
+    "before": "홈 경기 개최비",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[42].amount",
+    "before": "13671",
+    "after": "243069"
+  },
+  {
+    "path": "$.events[42].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4885명 · 티켓과 구단 상품 · 1950:ENG:3:0:8:0"
+  },
+  {
+    "path": "$.events[42].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[42].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[43].amount",
+    "before": "13671",
+    "after": "13576"
+  },
+  {
+    "path": "$.events[43].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4885명 · 1950:ENG:3:0:8:0"
+  },
+  {
+    "path": "$.events[43].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[43].round",
+    "before": 10,
+    "after": 9
+  },
+  {
+    "path": "$.events[43].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[44].amount",
+    "before": "1291",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[44].detail",
+    "before": "1950:cup:ENG:k1:4 · 홈·원정 동일 기준",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[44].kind",
+    "before": "match-bonus",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[44].round",
+    "before": 10,
+    "after": 9
+  },
+  {
+    "path": "$.events[44].title",
+    "before": "승리 성과 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[45].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13671"
+  },
+  {
+    "path": "$.events[45].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[45].detail",
+    "before": "약 1주 결장 · 1950년 10월 20일 복귀 예상",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[45].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[45].title",
+    "before": "Walter Rees 가벼운 발목 염좌",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[46].amount",
+    "before": "775",
+    "after": "1291"
+  },
+  {
+    "path": "$.events[46].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "1950:cup:ENG:k1:4 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[46].kind",
+    "before": "cup-prize",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[46].title",
+    "before": "잉글랜드 컵 64강 통과",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[47].amount",
+    "before": "202964",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[47].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[47].detail",
+    "before": "관중 4079명 · 티켓과 구단 상품 · 1950:ENG:3:0:10:0",
+    "after": "약 1주 결장 · 1950년 10월 20일 복귀 예상"
+  },
+  {
+    "path": "$.events[47].kind",
+    "before": "gate",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[47].round",
+    "before": 11,
+    "after": 10
+  },
+  {
+    "path": "$.events[47].title",
+    "before": "홈 경기의 수입",
+    "after": "Walter Rees 가벼운 발목 염좌"
+  },
+  {
+    "path": "$.events[48].amount",
+    "before": "12188",
+    "after": "775"
+  },
+  {
+    "path": "$.events[48].detail",
+    "before": "관중 4079명 · 1950:ENG:3:0:10:0",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[48].kind",
+    "before": "match-cost",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[48].round",
+    "before": 11,
+    "after": 10
+  },
+  {
+    "path": "$.events[48].title",
+    "before": "홈 경기 개최비",
+    "after": "잉글랜드 컵 64강 통과"
+  },
+  {
+    "path": "$.events[49].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "202964"
+  },
+  {
+    "path": "$.events[49].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[49].detail",
+    "before": "약 2주 결장 · 1950년 10월 30일 복귀 예상",
+    "after": "관중 4079명 · 티켓과 구단 상품 · 1950:ENG:3:0:10:0"
+  },
+  {
+    "path": "$.events[49].kind",
+    "before": "injury",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[49].title",
+    "before": "Harold Scott 근육 타박상",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[50].amount",
+    "before": "13670",
+    "after": "12188"
+  },
+  {
+    "path": "$.events[50].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4079명 · 1950:ENG:3:0:10:0"
+  },
+  {
+    "path": "$.events[50].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[50].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[51].amount",
+    "before": "13672",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[51].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[51].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "약 2주 결장 · 1950년 10월 30일 복귀 예상"
+  },
+  {
+    "path": "$.events[51].kind",
+    "before": "operating-cost",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[51].round",
+    "before": 12,
+    "after": 11
+  },
+  {
+    "path": "$.events[51].title",
+    "before": "급여와 시설 유지비",
+    "after": "Harold Scott 근육 타박상"
+  },
+  {
+    "path": "$.events[52].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13670"
+  },
+  {
+    "path": "$.events[52].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[52].detail",
+    "before": "동기부여형 · OVR 49 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[52].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[52].round",
+    "before": 12,
+    "after": 11
+  },
+  {
+    "path": "$.events[52].title",
+    "before": "Leeds Mill B1, Darren White 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[53].amount",
+    "before": "217941",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[53].detail",
+    "before": "관중 4380명 · 티켓과 구단 상품 · 1950:ENG:3:0:12:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[53].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[53].round",
+    "before": 13,
+    "after": 12
+  },
+  {
+    "path": "$.events[53].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[54].amount",
+    "before": "12706",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[54].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[54].detail",
+    "before": "관중 4380명 · 1950:ENG:3:0:12:0",
+    "after": "동기부여형 · OVR 49 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[54].kind",
+    "before": "match-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[54].round",
+    "before": 13,
+    "after": 12
+  },
+  {
+    "path": "$.events[54].title",
+    "before": "홈 경기 개최비",
+    "after": "Leeds Mill B1, Darren White 감독 경질"
+  },
+  {
+    "path": "$.events[55].amount",
+    "before": "13672",
+    "after": "217941"
+  },
+  {
+    "path": "$.events[55].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4380명 · 티켓과 구단 상품 · 1950:ENG:3:0:12:0"
+  },
+  {
+    "path": "$.events[55].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[55].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[56].amount",
+    "before": "10096833",
+    "after": "12706"
+  },
+  {
+    "path": "$.events[56].detail",
+    "before": "1950년 11월 1일 정산 · 시작 자산의 0.2%, 물가 반영",
+    "after": "관중 4380명 · 1950:ENG:3:0:12:0"
+  },
+  {
+    "path": "$.events[56].kind",
+    "before": "owner-living",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[56].title",
+    "before": "구단주 생활비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[57].amount",
+    "before": "13670",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[57].round",
+    "before": 14,
+    "after": 13
+  },
+  {
+    "path": "$.events[58].amount",
+    "before": "235207",
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[58].detail",
+    "before": "관중 4727명 · 티켓과 구단 상품 · 1950:ENG:3:0:14:0",
+    "after": "1950년 11월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[58].kind",
+    "before": "gate",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[58].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[58].title",
+    "before": "홈 경기의 수입",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[59].amount",
+    "before": "13304",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[59].detail",
+    "before": "관중 4727명 · 1950:ENG:3:0:14:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[59].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[59].round",
+    "before": 15,
+    "after": 14
+  },
+  {
+    "path": "$.events[59].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[60].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "235207"
+  },
+  {
+    "path": "$.events[60].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[60].detail",
+    "before": "약 4주 결장 · 1950년 12월 11일 복귀 예상",
+    "after": "관중 4727명 · 티켓과 구단 상품 · 1950:ENG:3:0:14:0"
+  },
+  {
+    "path": "$.events[60].kind",
+    "before": "injury",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[60].title",
+    "before": "Nicholas Johnston 종아리 근육 부상",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[61].amount",
+    "before": "13672",
+    "after": "13304"
+  },
+  {
+    "path": "$.events[61].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4727명 · 1950:ENG:3:0:14:0"
+  },
+  {
+    "path": "$.events[61].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[61].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[62].amount",
+    "before": "1291",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[62].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[62].detail",
+    "before": "1950:cup:ENG:k2:10 · 홈·원정 동일 기준",
+    "after": "약 4주 결장 · 1950년 12월 11일 복귀 예상"
+  },
+  {
+    "path": "$.events[62].kind",
+    "before": "match-bonus",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[62].title",
+    "before": "승리 성과 수입",
+    "after": "Nicholas Johnston 종아리 근육 부상"
+  },
+  {
+    "path": "$.events[63].amount",
+    "before": "775",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[63].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[63].kind",
+    "before": "cup-prize",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[63].title",
+    "before": "잉글랜드 컵 32강 통과",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[64].amount",
+    "before": "13670",
+    "after": "1291"
+  },
+  {
+    "path": "$.events[64].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "1950:cup:ENG:k2:10 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[64].kind",
+    "before": "operating-cost",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[64].round",
+    "before": 16,
+    "after": 15
+  },
+  {
+    "path": "$.events[64].title",
+    "before": "급여와 시설 유지비",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[65].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "775"
+  },
+  {
+    "path": "$.events[65].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[65].detail",
+    "before": "수비 조직가 · OVR 43 · 자유계약 감독 명단에 올랐어요",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[65].kind",
+    "before": "rival-sacking",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[65].round",
+    "before": 16,
+    "after": 15
+  },
+  {
+    "path": "$.events[65].title",
+    "before": "York Borough B6, Norman Roberts 감독 경질",
+    "after": "잉글랜드 컵 32강 통과"
+  },
+  {
+    "path": "$.events[66].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13670"
+  },
+  {
+    "path": "$.events[66].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[66].detail",
+    "before": "게겐프레싱 · OVR 36 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[66].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[66].title",
+    "before": "York Railway C7, Wilfred Osborne 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[67].amount",
+    "before": "210477",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[67].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[67].detail",
+    "before": "관중 4230명 · 티켓과 구단 상품 · 1950:ENG:3:0:16:0",
+    "after": "수비 조직가 · OVR 43 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[67].kind",
+    "before": "gate",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[67].round",
+    "before": 17,
+    "after": 16
+  },
+  {
+    "path": "$.events[67].title",
+    "before": "홈 경기의 수입",
+    "after": "York Borough B6, Norman Roberts 감독 경질"
+  },
+  {
+    "path": "$.events[68].amount",
+    "before": "12448",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[68].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[68].detail",
+    "before": "관중 4230명 · 1950:ENG:3:0:16:0",
+    "after": "게겐프레싱 · OVR 36 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[68].kind",
+    "before": "match-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[68].round",
+    "before": 17,
+    "after": 16
+  },
+  {
+    "path": "$.events[68].title",
+    "before": "홈 경기 개최비",
+    "after": "York Railway C7, Wilfred Osborne 감독 경질"
+  },
+  {
+    "path": "$.events[69].amount",
+    "before": "13671",
+    "after": "210477"
+  },
+  {
+    "path": "$.events[69].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4230명 · 티켓과 구단 상품 · 1950:ENG:3:0:16:0"
+  },
+  {
+    "path": "$.events[69].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[69].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[70].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "12448"
+  },
+  {
+    "path": "$.events[70].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[70].detail",
+    "before": "AM · 감독이 다른 선수로 선발을 짜요.",
+    "after": "관중 4230명 · 1950:ENG:3:0:16:0"
+  },
+  {
+    "path": "$.events[70].kind",
+    "before": "suspension",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[70].round",
+    "before": 18,
+    "after": 17
+  },
+  {
+    "path": "$.events[70].title",
+    "before": "Gordon Cole 출장 정지 1경기 (리그) — 경고 누적",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[71].amount",
+    "before": "13672",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[71].round",
+    "before": 18,
+    "after": 17
+  },
+  {
+    "path": "$.events[72].amount",
+    "before": "209930",
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[72].detail",
+    "before": "관중 4219명 · 티켓과 구단 상품 · 1950:ENG:3:0:18:0",
+    "after": "1950년 12월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[72].kind",
+    "before": "gate",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[72].round",
+    "before": 19,
+    "after": 17
+  },
+  {
+    "path": "$.events[72].title",
+    "before": "홈 경기의 수입",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[73].amount",
+    "before": "12429",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[73].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[73].detail",
+    "before": "관중 4219명 · 1950:ENG:3:0:18:0",
+    "after": "AM · 감독이 다른 선수로 선발을 짜요."
+  },
+  {
+    "path": "$.events[73].kind",
+    "before": "match-cost",
+    "after": "suspension"
+  },
+  {
+    "path": "$.events[73].round",
+    "before": 19,
+    "after": 18
+  },
+  {
+    "path": "$.events[73].title",
+    "before": "홈 경기 개최비",
+    "after": "Gordon Cole 출장 정지 1경기 (리그) — 경고 누적"
+  },
+  {
+    "path": "$.events[74].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13672"
+  },
+  {
+    "path": "$.events[74].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[74].detail",
+    "before": "약 1주 결장 · 1950년 12월 19일 복귀 예상",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[74].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[74].round",
+    "before": 19,
+    "after": 18
+  },
+  {
+    "path": "$.events[74].title",
+    "before": "Walter Rees 근육 타박상",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[75].amount",
+    "before": "13671",
+    "after": "209930"
+  },
+  {
+    "path": "$.events[75].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4219명 · 티켓과 구단 상품 · 1950:ENG:3:0:18:0"
+  },
+  {
+    "path": "$.events[75].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[75].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[76].amount",
+    "before": "13671",
+    "after": "12429"
+  },
+  {
+    "path": "$.events[76].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4219명 · 1950:ENG:3:0:18:0"
+  },
+  {
+    "path": "$.events[76].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[76].round",
+    "before": 20,
+    "after": 19
+  },
+  {
+    "path": "$.events[76].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[77].detail",
+    "before": "게겐프레싱 · OVR 39 · 자유계약 감독 명단에 올랐어요",
+    "after": "약 1주 결장 · 1950년 12월 19일 복귀 예상"
+  },
+  {
+    "path": "$.events[77].kind",
+    "before": "rival-sacking",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[77].round",
+    "before": 20,
+    "after": 19
+  },
+  {
+    "path": "$.events[77].title",
+    "before": "Lancaster Vale A5, Ethan Jennings 감독 경질",
+    "after": "Walter Rees 근육 타박상"
+  },
+  {
+    "path": "$.events[78].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13671"
+  },
+  {
+    "path": "$.events[78].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[78].detail",
+    "before": "소방수 · OVR 31 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[78].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[78].round",
+    "before": 20,
+    "after": 19
+  },
+  {
+    "path": "$.events[78].title",
+    "before": "Bristol Borough B5, Trevor Gray 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[79].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13671"
+  },
+  {
+    "path": "$.events[79].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[79].detail",
+    "before": "포지셔널 플레이 · OVR 43 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[79].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[79].title",
+    "before": "York Railway C7, Daniel Cooper 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[80].amount",
+    "before": "222370",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[80].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[80].detail",
+    "before": "관중 4469명 · 티켓과 구단 상품 · 1950:ENG:3:0:20:0",
+    "after": "게겐프레싱 · OVR 39 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[80].kind",
+    "before": "gate",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[80].round",
+    "before": 21,
+    "after": 20
+  },
+  {
+    "path": "$.events[80].title",
+    "before": "홈 경기의 수입",
+    "after": "Lancaster Vale A5, Ethan Jennings 감독 경질"
+  },
+  {
+    "path": "$.events[81].amount",
+    "before": "12860",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[81].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[81].detail",
+    "before": "관중 4469명 · 1950:ENG:3:0:20:0",
+    "after": "소방수 · OVR 31 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[81].kind",
+    "before": "match-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[81].round",
+    "before": 21,
+    "after": 20
+  },
+  {
+    "path": "$.events[81].title",
+    "before": "홈 경기 개최비",
+    "after": "Bristol Borough B5, Trevor Gray 감독 경질"
+  },
+  {
+    "path": "$.events[82].amount",
+    "before": "13670",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[82].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[82].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "포지셔널 플레이 · OVR 43 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[82].kind",
+    "before": "operating-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[82].round",
+    "before": 21,
+    "after": 20
+  },
+  {
+    "path": "$.events[82].title",
+    "before": "급여와 시설 유지비",
+    "after": "York Railway C7, Daniel Cooper 감독 경질"
+  },
+  {
+    "path": "$.events[83].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "222370"
+  },
+  {
+    "path": "$.events[83].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[83].detail",
+    "before": "CB · 감독이 다른 선수로 선발을 짜요.",
+    "after": "관중 4469명 · 티켓과 구단 상품 · 1950:ENG:3:0:20:0"
+  },
+  {
+    "path": "$.events[83].kind",
+    "before": "suspension",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[83].round",
+    "before": 22,
+    "after": 21
+  },
+  {
+    "path": "$.events[83].title",
+    "before": "Eric Webster 출장 정지 1경기 (리그) — 경고 누적",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[84].amount",
+    "before": "13672",
+    "after": "12860"
+  },
+  {
+    "path": "$.events[84].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4469명 · 1950:ENG:3:0:20:0"
+  },
+  {
+    "path": "$.events[84].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[84].round",
+    "before": 22,
+    "after": 21
+  },
+  {
+    "path": "$.events[84].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[85].amount",
+    "before": "1291",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[85].detail",
+    "before": "1950:cup:ENG:k3:2 · 홈·원정 동일 기준",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[85].kind",
+    "before": "match-bonus",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[85].round",
+    "before": 22,
+    "after": 21
+  },
+  {
+    "path": "$.events[85].title",
+    "before": "승리 성과 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[86].amount",
+    "before": "1550",
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[86].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "1951년 1월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[86].kind",
+    "before": "cup-prize",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[86].round",
+    "before": 22,
+    "after": 21
+  },
+  {
+    "path": "$.events[86].title",
+    "before": "잉글랜드 컵 16강 통과",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[87].amount",
+    "before": "209433",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[87].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[87].detail",
+    "before": "관중 4209명 · 티켓과 구단 상품 · 1950:ENG:3:0:22:0",
+    "after": "CB · 감독이 다른 선수로 선발을 짜요."
+  },
+  {
+    "path": "$.events[87].kind",
+    "before": "gate",
+    "after": "suspension"
+  },
+  {
+    "path": "$.events[87].round",
+    "before": 23,
+    "after": 22
+  },
+  {
+    "path": "$.events[87].title",
+    "before": "홈 경기의 수입",
+    "after": "Eric Webster 출장 정지 1경기 (리그) — 경고 누적"
+  },
+  {
+    "path": "$.events[88].amount",
+    "before": "12412",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[88].detail",
+    "before": "관중 4209명 · 1950:ENG:3:0:22:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[88].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[88].round",
+    "before": 23,
+    "after": 22
+  },
+  {
+    "path": "$.events[88].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[89].amount",
+    "before": "13671",
+    "after": "1291"
+  },
+  {
+    "path": "$.events[89].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "1950:cup:ENG:k3:2 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[89].kind",
+    "before": "operating-cost",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[89].round",
+    "before": 23,
+    "after": 22
+  },
+  {
+    "path": "$.events[89].title",
+    "before": "급여와 시설 유지비",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[90].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "1550"
+  },
+  {
+    "path": "$.events[90].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[90].detail",
+    "before": "약 1주 결장 · 1951년 1월 21일 복귀 예상",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[90].kind",
+    "before": "injury",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[90].round",
+    "before": 24,
+    "after": 22
+  },
+  {
+    "path": "$.events[90].title",
+    "before": "Reginald Hill 근육 경련",
+    "after": "잉글랜드 컵 16강 통과"
+  },
+  {
+    "path": "$.events[91].amount",
+    "before": "13670",
+    "after": "209433"
+  },
+  {
+    "path": "$.events[91].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4209명 · 티켓과 구단 상품 · 1950:ENG:3:0:22:0"
+  },
+  {
+    "path": "$.events[91].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[91].round",
+    "before": 24,
+    "after": 23
+  },
+  {
+    "path": "$.events[91].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[92].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "12412"
+  },
+  {
+    "path": "$.events[92].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[92].detail",
+    "before": "실리 역습 · OVR 37 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4209명 · 1950:ENG:3:0:22:0"
+  },
+  {
+    "path": "$.events[92].kind",
+    "before": "rival-sacking",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[92].round",
+    "before": 24,
+    "after": 23
+  },
+  {
+    "path": "$.events[92].title",
+    "before": "Lancaster Vale A5, Henry Pugh 감독 경질",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[93].amount",
+    "before": "207542",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[93].detail",
+    "before": "관중 4171명 · 티켓과 구단 상품 · 1950:ENG:3:0:24:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[93].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[93].round",
+    "before": 25,
+    "after": 23
+  },
+  {
+    "path": "$.events[93].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[94].amount",
+    "before": "12347",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[94].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[94].detail",
+    "before": "관중 4171명 · 1950:ENG:3:0:24:0",
+    "after": "약 1주 결장 · 1951년 1월 21일 복귀 예상"
+  },
+  {
+    "path": "$.events[94].kind",
+    "before": "match-cost",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[94].round",
+    "before": 25,
+    "after": 24
+  },
+  {
+    "path": "$.events[94].title",
+    "before": "홈 경기 개최비",
+    "after": "Reginald Hill 근육 경련"
+  },
+  {
+    "path": "$.events[95].amount",
+    "before": "13672",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[95].round",
+    "before": 25,
+    "after": 24
+  },
+  {
+    "path": "$.events[96].detail",
+    "before": "약 4주 결장 · 1951년 2월 28일 복귀 예상",
+    "after": "실리 역습 · OVR 37 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[96].kind",
+    "before": "injury",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[96].round",
+    "before": 26,
+    "after": 24
+  },
+  {
+    "path": "$.events[96].title",
+    "before": "Stan Clarke 사타구니 부상",
+    "after": "Lancaster Vale A5, Henry Pugh 감독 경질"
+  },
+  {
+    "path": "$.events[97].amount",
+    "before": "13670",
+    "after": "207542"
+  },
+  {
+    "path": "$.events[97].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4171명 · 티켓과 구단 상품 · 1950:ENG:3:0:24:0"
+  },
+  {
+    "path": "$.events[97].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[97].round",
+    "before": 26,
+    "after": 25
+  },
+  {
+    "path": "$.events[97].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[98].amount",
+    "before": "10096833",
+    "after": "12347"
+  },
+  {
+    "path": "$.events[98].detail",
+    "before": "1951년 2월 1일 정산 · 시작 자산의 0.2%, 물가 반영",
+    "after": "관중 4171명 · 1950:ENG:3:0:24:0"
+  },
+  {
+    "path": "$.events[98].kind",
+    "before": "owner-living",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[98].round",
+    "before": 26,
+    "after": 25
+  },
+  {
+    "path": "$.events[98].title",
+    "before": "구단주 생활비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[99].amount",
+    "before": "226947",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[99].detail",
+    "before": "관중 4561명 · 티켓과 구단 상품 · 1950:ENG:3:0:26:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[99].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[99].round",
+    "before": 27,
+    "after": 25
+  },
+  {
+    "path": "$.events[99].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[100].amount",
+    "before": "13018",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[100].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[100].detail",
+    "before": "관중 4561명 · 1950:ENG:3:0:26:0",
+    "after": "약 4주 결장 · 1951년 2월 28일 복귀 예상"
+  },
+  {
+    "path": "$.events[100].kind",
+    "before": "match-cost",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[100].round",
+    "before": 27,
+    "after": 26
+  },
+  {
+    "path": "$.events[100].title",
+    "before": "홈 경기 개최비",
+    "after": "Stan Clarke 사타구니 부상"
+  },
+  {
+    "path": "$.events[101].amount",
+    "before": "13671",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[101].round",
+    "before": 27,
+    "after": 26
+  },
+  {
+    "path": "$.events[102].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "3671575"
+  },
+  {
+    "path": "$.events[102].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[102].detail",
+    "before": "CM · 감독이 다른 선수로 선발을 짜요.",
+    "after": "1951년 2월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[102].kind",
+    "before": "suspension",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[102].round",
+    "before": 27,
+    "after": 26
+  },
+  {
+    "path": "$.events[102].title",
+    "before": "Edward Burke 출장 정지 1경기 (컵 대회) — 경고 누적",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[103].amount",
+    "before": "1291",
+    "after": "226947"
+  },
+  {
+    "path": "$.events[103].detail",
+    "before": "1950:cup:ENG:k4:2 · 홈·원정 동일 기준",
+    "after": "관중 4561명 · 티켓과 구단 상품 · 1950:ENG:3:0:26:0"
+  },
+  {
+    "path": "$.events[103].kind",
+    "before": "match-bonus",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[103].title",
+    "before": "승리 성과 수입",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[104].amount",
+    "before": "239188",
+    "after": "13018"
+  },
+  {
+    "path": "$.events[104].detail",
+    "before": "관중 4807명 · 티켓과 구단 상품 · 1950:cup:ENG:k4:2",
+    "after": "관중 4561명 · 1950:ENG:3:0:26:0"
+  },
+  {
+    "path": "$.events[104].kind",
+    "before": "gate",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[104].title",
+    "before": "홈 경기의 수입",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[105].amount",
+    "before": "13442",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[105].detail",
+    "before": "관중 4807명 · 1950:cup:ENG:k4:2",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[105].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[105].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[106].amount",
+    "before": "3013",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[106].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[106].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "CM · 감독이 다른 선수로 선발을 짜요."
+  },
+  {
+    "path": "$.events[106].kind",
+    "before": "cup-prize",
+    "after": "suspension"
+  },
+  {
+    "path": "$.events[106].title",
+    "before": "잉글랜드 컵 8강 통과",
+    "after": "Edward Burke 출장 정지 1경기 (컵 대회) — 경고 누적"
+  },
+  {
+    "path": "$.events[107].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "1291"
+  },
+  {
+    "path": "$.events[107].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[107].detail",
+    "before": "ST · 감독이 다른 선수로 선발을 짜요.",
+    "after": "1950:cup:ENG:k4:2 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[107].kind",
+    "before": "suspension",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[107].round",
+    "before": 28,
+    "after": 27
+  },
+  {
+    "path": "$.events[107].title",
+    "before": "Nicholas Johnston 출장 정지 3경기 (국내 대회) — 심한 반칙 퇴장",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[108].amount",
+    "before": "13671",
+    "after": "239188"
+  },
+  {
+    "path": "$.events[108].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4807명 · 티켓과 구단 상품 · 1950:cup:ENG:k4:2"
+  },
+  {
+    "path": "$.events[108].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[108].round",
+    "before": 28,
+    "after": 27
+  },
+  {
+    "path": "$.events[108].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[109].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13442"
+  },
+  {
+    "path": "$.events[109].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[109].detail",
+    "before": "수비 조직가 · OVR 35 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4807명 · 1950:cup:ENG:k4:2"
+  },
+  {
+    "path": "$.events[109].kind",
+    "before": "rival-sacking",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[109].round",
+    "before": 28,
+    "after": 27
+  },
+  {
+    "path": "$.events[109].title",
+    "before": "York Railway C7, Harry Gibbs 감독 경질",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[110].amount",
+    "before": "227395",
+    "after": "3013"
+  },
+  {
+    "path": "$.events[110].detail",
+    "before": "관중 4570명 · 티켓과 구단 상품 · 1950:ENG:3:0:28:0",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[110].kind",
+    "before": "gate",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[110].round",
+    "before": 29,
+    "after": 27
+  },
+  {
+    "path": "$.events[110].title",
+    "before": "홈 경기의 수입",
+    "after": "잉글랜드 컵 8강 통과"
+  },
+  {
+    "path": "$.events[111].amount",
+    "before": "13034",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[111].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[111].detail",
+    "before": "관중 4570명 · 1950:ENG:3:0:28:0",
+    "after": "ST · 감독이 다른 선수로 선발을 짜요."
+  },
+  {
+    "path": "$.events[111].kind",
+    "before": "match-cost",
+    "after": "suspension"
+  },
+  {
+    "path": "$.events[111].round",
+    "before": 29,
+    "after": 28
+  },
+  {
+    "path": "$.events[111].title",
+    "before": "홈 경기 개최비",
+    "after": "Nicholas Johnston 출장 정지 3경기 (국내 대회) — 심한 반칙 퇴장"
+  },
+  {
+    "path": "$.events[112].amount",
+    "before": "13672",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[112].round",
+    "before": 29,
+    "after": 28
+  },
+  {
+    "path": "$.events[113].amount",
+    "before": "13671",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[113].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[113].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "수비 조직가 · OVR 35 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[113].kind",
+    "before": "operating-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[113].round",
+    "before": 30,
+    "after": 28
+  },
+  {
+    "path": "$.events[113].title",
+    "before": "급여와 시설 유지비",
+    "after": "York Railway C7, Harry Gibbs 감독 경질"
+  },
+  {
+    "path": "$.events[114].amount",
+    "before": "237297",
+    "after": "227395"
+  },
+  {
+    "path": "$.events[114].detail",
+    "before": "관중 4769명 · 티켓과 구단 상품 · 1950:ENG:3:0:30:0",
+    "after": "관중 4570명 · 티켓과 구단 상품 · 1950:ENG:3:0:28:0"
+  },
+  {
+    "path": "$.events[114].round",
+    "before": 31,
+    "after": 29
+  },
+  {
+    "path": "$.events[115].amount",
+    "before": "13376",
+    "after": "13034"
+  },
+  {
+    "path": "$.events[115].detail",
+    "before": "관중 4769명 · 1950:ENG:3:0:30:0",
+    "after": "관중 4570명 · 1950:ENG:3:0:28:0"
+  },
+  {
+    "path": "$.events[115].round",
+    "before": 31,
+    "after": 29
+  },
+  {
+    "path": "$.events[116].amount",
+    "before": "13670",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[116].round",
+    "before": 31,
+    "after": 29
+  },
+  {
+    "path": "$.events[117].amount",
+    "before": "13672",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[117].round",
+    "before": 32,
+    "after": 30
+  },
+  {
+    "path": "$.events[118].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[118].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[118].detail",
+    "before": "수비 조직가 · OVR 38 · 자유계약 감독 명단에 올랐어요",
+    "after": "1951년 3월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[118].kind",
+    "before": "rival-sacking",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[118].round",
+    "before": 32,
+    "after": 30
+  },
+  {
+    "path": "$.events[118].title",
+    "before": "Lancaster Vale A5, Geoffrey Riley 감독 경질",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[119].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "237297"
+  },
+  {
+    "path": "$.events[119].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[119].detail",
+    "before": "동기부여형 · OVR 37 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4769명 · 티켓과 구단 상품 · 1950:ENG:3:0:30:0"
+  },
+  {
+    "path": "$.events[119].kind",
+    "before": "rival-sacking",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[119].round",
+    "before": 32,
+    "after": 31
+  },
+  {
+    "path": "$.events[119].title",
+    "before": "Durham Vale C5, Mason Taylor 감독 경질",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[120].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13376"
+  },
+  {
+    "path": "$.events[120].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[120].detail",
+    "before": "실리 역습 · OVR 42 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4769명 · 1950:ENG:3:0:30:0"
+  },
+  {
+    "path": "$.events[120].kind",
+    "before": "rival-sacking",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[120].round",
+    "before": 32,
+    "after": 31
+  },
+  {
+    "path": "$.events[120].title",
+    "before": "York Railway C7, Walter Hodgson 감독 경질",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[121].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13670"
+  },
+  {
+    "path": "$.events[121].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[121].detail",
+    "before": "가장 기대되는 유망주 Wilfred Mann · AM 16세 · 능력 27 · 잠재력 67",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[121].kind",
+    "before": "youth-intake",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[121].round",
+    "before": 32,
+    "after": 31
+  },
+  {
+    "path": "$.events[121].title",
+    "before": "유스 아카데미 입단 3명",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[122].amount",
+    "before": "233317",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[122].detail",
+    "before": "관중 4689명 · 티켓과 구단 상품 · 1950:ENG:3:0:32:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[122].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[122].round",
+    "before": 33,
+    "after": 32
+  },
+  {
+    "path": "$.events[122].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[123].amount",
+    "before": "13238",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[123].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[123].detail",
+    "before": "관중 4689명 · 1950:ENG:3:0:32:0",
+    "after": "수비 조직가 · OVR 38 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[123].kind",
+    "before": "match-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[123].round",
+    "before": 33,
+    "after": 32
+  },
+  {
+    "path": "$.events[123].title",
+    "before": "홈 경기 개최비",
+    "after": "Lancaster Vale A5, Geoffrey Riley 감독 경질"
+  },
+  {
+    "path": "$.events[124].amount",
+    "before": "13670",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[124].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[124].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "동기부여형 · OVR 37 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[124].kind",
+    "before": "operating-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[124].round",
+    "before": 33,
+    "after": 32
+  },
+  {
+    "path": "$.events[124].title",
+    "before": "급여와 시설 유지비",
+    "after": "Durham Vale C5, Mason Taylor 감독 경질"
+  },
+  {
+    "path": "$.events[125].detail",
+    "before": "약 1주 결장 · 1951년 4월 4일 복귀 예상",
+    "after": "실리 역습 · OVR 42 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[125].kind",
+    "before": "injury",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[125].round",
+    "before": 34,
+    "after": 32
+  },
+  {
+    "path": "$.events[125].title",
+    "before": "Gordon Cole 가벼운 발목 염좌",
+    "after": "York Railway C7, Walter Hodgson 감독 경질"
+  },
+  {
+    "path": "$.events[126].amount",
+    "before": "13672",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[126].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[126].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "가장 기대되는 유망주 Wilfred Mann · AM 16세 · 능력 27 · 잠재력 67"
+  },
+  {
+    "path": "$.events[126].kind",
+    "before": "operating-cost",
+    "after": "youth-intake"
+  },
+  {
+    "path": "$.events[126].round",
+    "before": 34,
+    "after": 32
+  },
+  {
+    "path": "$.events[126].title",
+    "before": "급여와 시설 유지비",
+    "after": "유스 아카데미 입단 3명"
+  },
+  {
+    "path": "$.events[127].amount",
+    "before": "1291",
+    "after": "233317"
+  },
+  {
+    "path": "$.events[127].detail",
+    "before": "1950:cup:ENG:k5:0 · 홈·원정 동일 기준",
+    "after": "관중 4689명 · 티켓과 구단 상품 · 1950:ENG:3:0:32:0"
+  },
+  {
+    "path": "$.events[127].kind",
+    "before": "match-bonus",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[127].round",
+    "before": 34,
+    "after": 33
+  },
+  {
+    "path": "$.events[127].title",
+    "before": "승리 성과 수입",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[128].amount",
+    "before": "234760",
+    "after": "13238"
+  },
+  {
+    "path": "$.events[128].detail",
+    "before": "관중 4718명 · 티켓과 구단 상품 · 1950:cup:ENG:k5:0",
+    "after": "관중 4689명 · 1950:ENG:3:0:32:0"
+  },
+  {
+    "path": "$.events[128].kind",
+    "before": "gate",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[128].round",
+    "before": 34,
+    "after": 33
+  },
+  {
+    "path": "$.events[128].title",
+    "before": "홈 경기의 수입",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[129].amount",
+    "before": "13288",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[129].detail",
+    "before": "관중 4718명 · 1950:cup:ENG:k5:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[129].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[129].round",
+    "before": 34,
+    "after": 33
+  },
+  {
+    "path": "$.events[129].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[130].amount",
+    "before": "6026",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[130].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[130].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "약 1주 결장 · 1951년 4월 4일 복귀 예상"
+  },
+  {
+    "path": "$.events[130].kind",
+    "before": "cup-prize",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[130].title",
+    "before": "잉글랜드 컵 4강 통과",
+    "after": "Gordon Cole 가벼운 발목 염좌"
+  },
+  {
+    "path": "$.events[131].amount",
+    "before": "212119",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[131].detail",
+    "before": "관중 4263명 · 티켓과 구단 상품 · 1950:ENG:3:0:34:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[131].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[131].round",
+    "before": 35,
+    "after": 34
+  },
+  {
+    "path": "$.events[131].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[132].amount",
+    "before": "12505",
+    "after": "1291"
+  },
+  {
+    "path": "$.events[132].detail",
+    "before": "관중 4263명 · 1950:ENG:3:0:34:0",
+    "after": "1950:cup:ENG:k5:0 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[132].kind",
+    "before": "match-cost",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[132].round",
+    "before": 35,
+    "after": 34
+  },
+  {
+    "path": "$.events[132].title",
+    "before": "홈 경기 개최비",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[133].amount",
+    "before": "13672",
+    "after": "234760"
+  },
+  {
+    "path": "$.events[133].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4718명 · 티켓과 구단 상품 · 1950:cup:ENG:k5:0"
+  },
+  {
+    "path": "$.events[133].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[133].round",
+    "before": 35,
+    "after": 34
+  },
+  {
+    "path": "$.events[133].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[134].amount",
+    "before": "13670",
+    "after": "13288"
+  },
+  {
+    "path": "$.events[134].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4718명 · 1950:cup:ENG:k5:0"
+  },
+  {
+    "path": "$.events[134].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[134].round",
+    "before": 36,
+    "after": 34
+  },
+  {
+    "path": "$.events[134].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[135].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "6026"
+  },
+  {
+    "path": "$.events[135].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[135].detail",
+    "before": "포지셔널 플레이 · OVR 44 · 자유계약 감독 명단에 올랐어요",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[135].kind",
+    "before": "rival-sacking",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[135].round",
+    "before": 36,
+    "after": 34
+  },
+  {
+    "path": "$.events[135].title",
+    "before": "York Borough B6, Ian Martin 감독 경질",
+    "after": "잉글랜드 컵 4강 통과"
+  },
+  {
+    "path": "$.events[136].amount",
+    "before": "245856",
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[136].detail",
+    "before": "관중 4941명 · 티켓과 구단 상품 · 1950:ENG:3:0:36:0",
+    "after": "1951년 4월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[136].kind",
+    "before": "gate",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[136].round",
+    "before": 37,
+    "after": 34
+  },
+  {
+    "path": "$.events[136].title",
+    "before": "홈 경기의 수입",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[137].amount",
+    "before": "13672",
+    "after": "212119"
+  },
+  {
+    "path": "$.events[137].detail",
+    "before": "관중 4941명 · 1950:ENG:3:0:36:0",
+    "after": "관중 4263명 · 티켓과 구단 상품 · 1950:ENG:3:0:34:0"
+  },
+  {
+    "path": "$.events[137].kind",
+    "before": "match-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[137].round",
+    "before": 37,
+    "after": 35
+  },
+  {
+    "path": "$.events[137].title",
+    "before": "홈 경기 개최비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[138].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "12505"
+  },
+  {
+    "path": "$.events[138].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[138].detail",
+    "before": "약 3주 결장 · 1951년 5월 7일 복귀 예상",
+    "after": "관중 4263명 · 1950:ENG:3:0:34:0"
+  },
+  {
+    "path": "$.events[138].kind",
+    "before": "injury",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[138].round",
+    "before": 37,
+    "after": 35
+  },
+  {
+    "path": "$.events[138].title",
+    "before": "Jacob Whitehead 훈련 중 종아리 근육 부상",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[139].amount",
+    "before": "13671",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[139].round",
+    "before": 37,
+    "after": 35
+  },
+  {
+    "path": "$.events[140].amount",
+    "before": "13671",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[140].round",
+    "before": 38,
+    "after": 36
+  },
+  {
+    "path": "$.events[141].amount",
+    "before": "235954",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[141].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[141].detail",
+    "before": "관중 4742명 · 티켓과 구단 상품 · 1950:ENG:3:0:38:0",
+    "after": "포지셔널 플레이 · OVR 44 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[141].kind",
+    "before": "gate",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[141].round",
+    "before": 39,
+    "after": 36
+  },
+  {
+    "path": "$.events[141].title",
+    "before": "홈 경기의 수입",
+    "after": "York Borough B6, Ian Martin 감독 경질"
+  },
+  {
+    "path": "$.events[142].amount",
+    "before": "13330",
+    "after": "245856"
+  },
+  {
+    "path": "$.events[142].detail",
+    "before": "관중 4742명 · 1950:ENG:3:0:38:0",
+    "after": "관중 4941명 · 티켓과 구단 상품 · 1950:ENG:3:0:36:0"
+  },
+  {
+    "path": "$.events[142].kind",
+    "before": "match-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[142].round",
+    "before": 39,
+    "after": 37
+  },
+  {
+    "path": "$.events[142].title",
+    "before": "홈 경기 개최비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[143].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4941명 · 1950:ENG:3:0:36:0"
+  },
+  {
+    "path": "$.events[143].kind",
+    "before": "operating-cost",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[143].round",
+    "before": 39,
+    "after": 37
+  },
+  {
+    "path": "$.events[143].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[144].amount",
+    "before": "10096833",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[144].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[144].detail",
+    "before": "1951년 5월 1일 정산 · 시작 자산의 0.2%, 물가 반영",
+    "after": "약 3주 결장 · 1951년 5월 7일 복귀 예상"
+  },
+  {
+    "path": "$.events[144].kind",
+    "before": "owner-living",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[144].round",
+    "before": 39,
+    "after": 37
+  },
+  {
+    "path": "$.events[144].title",
+    "before": "구단주 생활비",
+    "after": "Jacob Whitehead 훈련 중 종아리 근육 부상"
+  },
+  {
+    "path": "$.events[145].amount",
+    "before": "13670",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[145].round",
+    "before": 40,
+    "after": 37
+  },
+  {
+    "path": "$.events[146].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13671"
+  },
+  {
+    "path": "$.events[146].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[146].detail",
+    "before": "동기부여형 · OVR 43 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[146].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[146].round",
+    "before": 40,
+    "after": 38
+  },
+  {
+    "path": "$.events[146].title",
+    "before": "York Railway C7, Daniel Price 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[147].amount",
+    "before": "228689",
+    "after": "235954"
+  },
+  {
+    "path": "$.events[147].detail",
+    "before": "관중 4596명 · 티켓과 구단 상품 · 1950:ENG:3:0:40:0",
+    "after": "관중 4742명 · 티켓과 구단 상품 · 1950:ENG:3:0:38:0"
+  },
+  {
+    "path": "$.events[147].round",
+    "before": 41,
+    "after": 39
+  },
+  {
+    "path": "$.events[148].amount",
+    "before": "13078",
+    "after": "13330"
+  },
+  {
+    "path": "$.events[148].detail",
+    "before": "관중 4596명 · 1950:ENG:3:0:40:0",
+    "after": "관중 4742명 · 1950:ENG:3:0:38:0"
+  },
+  {
+    "path": "$.events[148].round",
+    "before": 41,
+    "after": 39
+  },
+  {
+    "path": "$.events[149].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13672"
+  },
+  {
+    "path": "$.events[149].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[149].detail",
+    "before": "약 1주 결장 · 1951년 5월 20일 복귀 예상",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[149].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[149].round",
+    "before": 41,
+    "after": 39
+  },
+  {
+    "path": "$.events[149].title",
+    "before": "Scott Ford 근육 경련",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[150].amount",
+    "before": "13671",
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[150].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "1951년 5월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[150].kind",
+    "before": "operating-cost",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[150].round",
+    "before": 41,
+    "after": 39
+  },
+  {
+    "path": "$.events[150].title",
+    "before": "급여와 시설 유지비",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[151].amount",
+    "before": "1291",
+    "after": "13670"
+  },
+  {
+    "path": "$.events[151].detail",
+    "before": "1950:cup:ENG:k6:0 · 홈·원정 동일 기준",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[151].kind",
+    "before": "match-bonus",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[151].round",
+    "before": 41,
+    "after": 40
+  },
+  {
+    "path": "$.events[151].title",
+    "before": "승리 성과 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[152].amount",
+    "before": "23243",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[152].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[152].detail",
+    "before": "1950/51 · 결승 승리",
+    "after": "동기부여형 · OVR 43 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[152].kind",
+    "before": "cup-honor",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[152].round",
+    "before": 41,
+    "after": 40
+  },
+  {
+    "path": "$.events[152].title",
+    "before": "잉글랜드 컵 우승",
+    "after": "York Railway C7, Daniel Price 감독 경질"
+  },
+  {
+    "path": "$.events[153].amount",
+    "before": "13672",
+    "after": "228689"
+  },
+  {
+    "path": "$.events[153].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "관중 4596명 · 티켓과 구단 상품 · 1950:ENG:3:0:40:0"
+  },
+  {
+    "path": "$.events[153].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[153].round",
+    "before": 42,
+    "after": 41
+  },
+  {
+    "path": "$.events[153].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[154].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13078"
+  },
+  {
+    "path": "$.events[154].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[154].detail",
+    "before": "1950–1950 · 구단의 선택",
+    "after": "관중 4596명 · 1950:ENG:3:0:40:0"
+  },
+  {
+    "path": "$.events[154].kind",
+    "before": "manager-departure",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[154].round",
+    "before": 42,
+    "after": 41
+  },
+  {
+    "path": "$.events[154].title",
+    "before": "Patrick Knight 감독 교체",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[155].amount",
+    "before": "170452",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[155].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[155].detail",
+    "before": "실리 역습 · 역습 · 계약 1952/53 시즌 끝까지",
+    "after": "약 1주 결장 · 1951년 5월 20일 복귀 예상"
+  },
+  {
+    "path": "$.events[155].kind",
+    "before": "manager-hire",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[155].round",
+    "before": 42,
+    "after": 41
+  },
+  {
+    "path": "$.events[155].title",
+    "before": "Derek Walton 감독 선임",
+    "after": "Scott Ford 근육 경련"
+  },
+  {
+    "path": "$.events[156].amount",
+    "before": "212011",
+    "after": "13671"
+  },
+  {
+    "path": "$.events[156].detail",
+    "before": "관중 4252명 · 티켓과 구단 상품 · 1950:ENG:3:0:42:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[156].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[156].round",
+    "before": 43,
+    "after": 41
+  },
+  {
+    "path": "$.events[156].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[157].amount",
+    "before": "12486",
+    "after": "1291"
+  },
+  {
+    "path": "$.events[157].detail",
+    "before": "관중 4252명 · 1950:ENG:3:0:42:0",
+    "after": "1950:cup:ENG:k6:0 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[157].kind",
+    "before": "match-cost",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[157].round",
+    "before": 43,
+    "after": 41
+  },
+  {
+    "path": "$.events[157].title",
+    "before": "홈 경기 개최비",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[158].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "23243"
+  },
+  {
+    "path": "$.events[158].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[158].detail",
+    "before": "약 1주 결장 · 1951년 6월 7일 복귀 예상",
+    "after": "1950/51 · 결승 승리"
+  },
+  {
+    "path": "$.events[158].kind",
+    "before": "injury",
+    "after": "cup-honor"
+  },
+  {
+    "path": "$.events[158].round",
+    "before": 43,
+    "after": 41
+  },
+  {
+    "path": "$.events[158].title",
+    "before": "Edward Burke 훈련 중 근육 경련",
+    "after": "잉글랜드 컵 우승"
+  },
+  {
+    "path": "$.events[159].amount",
+    "before": "13502",
+    "after": "13672"
+  },
+  {
+    "path": "$.events[159].round",
+    "before": 43,
+    "after": 42
+  },
+  {
+    "path": "$.events[160].detail",
+    "before": "약 1주 결장 · 1951년 6월 11일 복귀 예상",
+    "after": "1950–1950 · 구단의 선택"
+  },
+  {
+    "path": "$.events[160].kind",
+    "before": "injury",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[160].round",
+    "before": 44,
+    "after": 42
+  },
+  {
+    "path": "$.events[160].title",
+    "before": "Kenneth Goodwin 가벼운 발목 염좌",
+    "after": "Patrick Knight 감독 교체"
+  },
+  {
+    "path": "$.events[161].amount",
+    "before": "13502",
+    "after": "170452"
+  },
+  {
+    "path": "$.events[161].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "실리 역습 · 역습 · 계약 1952/53 시즌 끝까지"
+  },
+  {
+    "path": "$.events[161].kind",
+    "before": "operating-cost",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[161].round",
+    "before": 44,
+    "after": 42
+  },
+  {
+    "path": "$.events[161].title",
+    "before": "급여와 시설 유지비",
+    "after": "Derek Walton 감독 선임"
+  },
+  {
+    "path": "$.events[162].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "212011"
+  },
+  {
+    "path": "$.events[162].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[162].detail",
+    "before": "게겐프레싱 · OVR 44 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4252명 · 티켓과 구단 상품 · 1950:ENG:3:0:42:0"
+  },
+  {
+    "path": "$.events[162].kind",
+    "before": "rival-sacking",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[162].round",
+    "before": 44,
+    "after": 43
+  },
+  {
+    "path": "$.events[162].title",
+    "before": "York Borough B6, Dennis Collins 감독 경질",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[163].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "12486"
+  },
+  {
+    "path": "$.events[163].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[163].detail",
+    "before": "육성형 · OVR 36 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4252명 · 1950:ENG:3:0:42:0"
+  },
+  {
+    "path": "$.events[163].kind",
+    "before": "rival-sacking",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[163].round",
+    "before": 44,
+    "after": 43
+  },
+  {
+    "path": "$.events[163].title",
+    "before": "Durham Vale C5, Scott Townsend 감독 경질",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[164].amount",
+    "before": "222582",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[164].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[164].detail",
+    "before": "관중 4464명 · 티켓과 구단 상품 · 1950:ENG:3:0:44:0",
+    "after": "약 1주 결장 · 1951년 6월 7일 복귀 예상"
+  },
+  {
+    "path": "$.events[164].kind",
+    "before": "gate",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[164].round",
+    "before": 45,
+    "after": 43
+  },
+  {
+    "path": "$.events[164].title",
+    "before": "홈 경기의 수입",
+    "after": "Edward Burke 훈련 중 근육 경련"
+  },
+  {
+    "path": "$.events[165].amount",
+    "before": "12851",
+    "after": "13502"
+  },
+  {
+    "path": "$.events[165].detail",
+    "before": "관중 4464명 · 1950:ENG:3:0:44:0",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[165].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[165].round",
+    "before": 45,
+    "after": 43
+  },
+  {
+    "path": "$.events[165].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[166].amount",
+    "before": "13503",
+    "after": "3671575"
+  },
+  {
+    "path": "$.events[166].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "1951년 6월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[166].kind",
+    "before": "operating-cost",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[166].round",
+    "before": 45,
+    "after": 43
+  },
+  {
+    "path": "$.events[166].title",
+    "before": "급여와 시설 유지비",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[167].detail",
+    "before": "약 3주 결장 · 1951년 7월 9일 복귀 예상",
+    "after": "약 1주 결장 · 1951년 6월 11일 복귀 예상"
+  },
+  {
+    "path": "$.events[167].round",
+    "before": 46,
+    "after": 44
+  },
+  {
+    "path": "$.events[167].title",
+    "before": "Edward Burke 종아리 근육 부상",
+    "after": "Kenneth Goodwin 가벼운 발목 염좌"
+  },
+  {
+    "path": "$.events[168].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13502"
+  },
+  {
+    "path": "$.events[168].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[168].detail",
+    "before": "약 7주 결장 · 1951년 8월 7일 복귀 예상",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[168].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[168].round",
+    "before": 46,
+    "after": 44
+  },
+  {
+    "path": "$.events[168].title",
+    "before": "Reginald Hill 무릎 내측 인대 부상",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[169].detail",
+    "before": "약 1주 결장 · 1951년 6월 24일 복귀 예상",
+    "after": "게겐프레싱 · OVR 44 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[169].kind",
+    "before": "injury",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[169].round",
+    "before": 46,
+    "after": 44
+  },
+  {
+    "path": "$.events[169].title",
+    "before": "Eric Webster 훈련 중 가벼운 발목 염좌",
+    "after": "York Borough B6, Dennis Collins 감독 경질"
+  },
+  {
+    "path": "$.events[170].amount",
+    "before": "13503",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[170].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[170].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £15",
+    "after": "육성형 · OVR 36 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[170].kind",
+    "before": "operating-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[170].round",
+    "before": 46,
+    "after": 44
+  },
+  {
+    "path": "$.events[170].title",
+    "before": "급여와 시설 유지비",
+    "after": "Durham Vale C5, Scott Townsend 감독 경질"
+  },
+  {
+    "path": "$.events[171].amount",
+    "before": "56817",
+    "after": "222582"
+  },
+  {
+    "path": "$.events[171].detail",
+    "before": "1/24위 · 최하위는 균등 배분금만",
+    "after": "관중 4464명 · 티켓과 구단 상품 · 1950:ENG:3:0:44:0"
+  },
+  {
+    "path": "$.events[171].kind",
+    "before": "league-merit",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[171].round",
+    "before": 46,
+    "after": 45
+  },
+  {
+    "path": "$.events[171].title",
+    "before": "리그 순위 배분금",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[172].amount",
+    "before": "10096833",
+    "after": "12851"
+  },
+  {
+    "path": "$.events[172].detail",
+    "before": "1951년 6월 20일 정산 · 시작 자산의 0.2%, 물가 반영",
+    "after": "관중 4464명 · 1950:ENG:3:0:44:0"
+  },
+  {
+    "path": "$.events[172].kind",
+    "before": "owner-living",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[172].round",
+    "before": 46,
+    "after": 45
+  },
+  {
+    "path": "$.events[172].title",
+    "before": "구단주 생활비",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[173].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13503"
+  },
+  {
+    "path": "$.events[173].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[173].detail",
+    "before": "4부 → 3부",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[173].kind",
+    "before": "promotion",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[173].round",
+    "before": 46,
+    "after": 45
+  },
+  {
+    "path": "$.events[173].title",
+    "before": "새로운 무대로",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[174].detail",
+    "before": "시즌 마감 · 팬 민심 +12.8 → 100.0",
+    "after": "약 3주 결장 · 1951년 7월 9일 복귀 예상"
+  },
+  {
+    "path": "$.events[174].kind",
+    "before": "fan-mood",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[174].title",
+    "before": "리그 우승",
+    "after": "Edward Burke 종아리 근육 부상"
+  },
+  {
+    "path": "$.events[175].detail",
+    "before": "시즌 마감 · 팬 민심 +0.0 → 100.0",
+    "after": "약 7주 결장 · 1951년 8월 7일 복귀 예상"
+  },
+  {
+    "path": "$.events[175].kind",
+    "before": "fan-mood",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[175].title",
+    "before": "컵 우승",
+    "after": "Reginald Hill 무릎 내측 인대 부상"
+  },
+  {
+    "path": "$.events[176].detail",
+    "before": "4부 → 3부 · 팬 민심 +0.0 → 100.0",
+    "after": "약 1주 결장 · 1951년 6월 24일 복귀 예상"
+  },
+  {
+    "path": "$.events[176].kind",
+    "before": "fan-mood",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[176].title",
+    "before": "승격",
+    "after": "Eric Webster 훈련 중 가벼운 발목 염좌"
+  },
+  {
+    "path": "$.events[177].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13503"
+  },
+  {
+    "path": "$.events[177].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[177].detail",
+    "before": "1950/51 · 132점",
+    "after": "선수 £2 · 감독 £12 · 시설 £15"
+  },
+  {
+    "path": "$.events[177].kind",
+    "before": "season",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[177].title",
+    "before": "시즌의 마지막 페이지",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[178].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "56817"
+  },
+  {
+    "path": "$.events[178].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[178].detail",
+    "before": "단장 Ted Johnson 58→63 · 수비 코치 Paul Russell 61→65 · 피지컬 코치 Stephen Morgan 57→56 · 유스 디렉터 Duncan Lynch 59→58 · 수석 스카우트 Stephen Parsons 58→59",
+    "after": "1/24위 · 최하위는 균등 배분금만"
+  },
+  {
+    "path": "$.events[178].kind",
+    "before": "staff-growth",
+    "after": "league-merit"
+  },
+  {
+    "path": "$.events[178].title",
+    "before": "코치진 성장 · 5명",
+    "after": "리그 순위 배분금"
+  },
+  {
+    "path": "$.events[178].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[179].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "3671576"
+  },
+  {
+    "path": "$.events[179].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[179].detail",
+    "before": "1950–1951 · 구단의 선택",
+    "after": "1951년 6월 20일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[179].kind",
+    "before": "manager-departure",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[179].round",
+    "before": 0,
+    "after": 46
+  },
+  {
+    "path": "$.events[179].title",
+    "before": "Derek Walton 감독 교체",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[179].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[180].amount",
+    "before": "145605",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[180].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[180].detail",
+    "before": "포지셔널 플레이 · 점유 · 계약 1953/54 시즌 끝까지",
+    "after": "4부 → 3부"
+  },
+  {
+    "path": "$.events[180].kind",
+    "before": "manager-hire",
+    "after": "promotion"
+  },
+  {
+    "path": "$.events[180].round",
+    "before": 0,
+    "after": 46
+  },
+  {
+    "path": "$.events[180].title",
+    "before": "Ian Martin 감독 선임",
+    "after": "새로운 무대로"
+  },
+  {
+    "path": "$.events[180].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[181].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "시즌 마감 · 팬 민심 +12.8 → 100.0"
+  },
+  {
+    "path": "$.events[181].kind",
+    "before": "manager-departure",
+    "after": "fan-mood"
+  },
+  {
+    "path": "$.events[181].round",
+    "before": 0,
+    "after": 46
+  },
+  {
+    "path": "$.events[181].title",
+    "before": "Ian Martin 감독 교체",
+    "after": "리그 우승"
+  },
+  {
+    "path": "$.events[181].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[182].amount",
+    "before": "176322",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[182].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[182].detail",
+    "before": "실리 역습 · 역습 · 계약 1953/54 시즌 끝까지",
+    "after": "시즌 마감 · 팬 민심 +0.0 → 100.0"
+  },
+  {
+    "path": "$.events[182].kind",
+    "before": "manager-hire",
+    "after": "fan-mood"
+  },
+  {
+    "path": "$.events[182].round",
+    "before": 0,
+    "after": 46
+  },
+  {
+    "path": "$.events[182].title",
+    "before": "Derek Walton 감독 선임",
+    "after": "컵 우승"
+  },
+  {
+    "path": "$.events[182].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[183].detail",
+    "before": "1951–1951 · 구단주와의 신뢰가 무너져 사임했습니다.",
+    "after": "4부 → 3부 · 팬 민심 +0.0 → 100.0"
+  },
+  {
+    "path": "$.events[183].kind",
+    "before": "manager-departure",
+    "after": "fan-mood"
+  },
+  {
+    "path": "$.events[183].round",
+    "before": 0,
+    "after": 46
+  },
+  {
+    "path": "$.events[183].title",
+    "before": "Derek Walton 감독의 마지막 날",
+    "after": "승격"
+  },
+  {
+    "path": "$.events[183].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[184].amount",
+    "before": "18260",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[184].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[184].detail",
+    "before": "York Cooperative · 리그 경기 23/46",
+    "after": "1950/51 · 132점"
+  },
+  {
+    "path": "$.events[184].kind",
+    "before": "sponsor:local",
+    "after": "season"
+  },
+  {
+    "path": "$.events[184].round",
+    "before": 1,
+    "after": 46
+  },
+  {
+    "path": "$.events[184].title",
+    "before": "지역 후원",
+    "after": "시즌의 마지막 페이지"
+  },
+  {
+    "path": "$.events[184].year",
+    "before": 1951,
+    "after": 1950
+  },
+  {
+    "path": "$.events[185].detail",
+    "before": "약 1주 결장 · 1951년 8월 17일 복귀 예상",
+    "after": "단장 Ted Johnson 58→63 · 수비 코치 Paul Russell 61→65 · 피지컬 코치 Stephen Morgan 57→56 · 유스 디렉터 Duncan Lynch 59→58 · 수석 스카우트 Stephen Parsons 58→59"
+  },
+  {
+    "path": "$.events[185].kind",
+    "before": "injury",
+    "after": "staff-growth"
+  },
+  {
+    "path": "$.events[185].round",
+    "before": 1,
+    "after": 46
+  },
+  {
+    "path": "$.events[185].title",
+    "before": "Eric Webster 훈련 중 근육 경련",
+    "after": "코치진 성장 · 5명"
+  },
+  {
+    "path": "$.events[186].amount",
+    "before": "187826",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[186].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[186].detail",
+    "before": "3부 균등 배분·중계권 · 23/46라운드 분할",
+    "after": "1950–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[186].kind",
+    "before": "league-share",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[186].round",
+    "before": 1,
+    "after": 0
+  },
+  {
+    "path": "$.events[186].title",
+    "before": "리그 분배금",
+    "after": "Derek Walton 감독 교체"
+  },
+  {
+    "path": "$.events[187].amount",
+    "before": "11830",
+    "after": "145605"
+  },
+  {
+    "path": "$.events[187].detail",
+    "before": "선수 £2 · 감독 £3 · 시설 £17",
+    "after": "포지셔널 플레이 · 점유 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[187].kind",
+    "before": "operating-cost",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[187].round",
+    "before": 1,
+    "after": 0
+  },
+  {
+    "path": "$.events[187].title",
+    "before": "급여와 시설 유지비",
+    "after": "Ian Martin 감독 선임"
+  },
+  {
+    "path": "$.events[188].amount",
+    "before": "1071207",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[188].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[188].detail",
+    "before": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 23/46라운드 분할",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[188].kind",
+    "before": "operating-expenses",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[188].round",
+    "before": 1,
+    "after": 0
+  },
+  {
+    "path": "$.events[188].title",
+    "before": "운영 경비",
+    "after": "Ian Martin 감독 교체"
+  },
+  {
+    "path": "$.events[189].amount",
+    "before": "247399",
+    "after": "176322"
+  },
+  {
+    "path": "$.events[189].detail",
+    "before": "관중 4522명 · 티켓과 구단 상품 · 1951:ENG:2:0:1:2",
+    "after": "실리 역습 · 역습 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[189].kind",
+    "before": "gate",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[189].round",
+    "before": 2,
+    "after": 0
+  },
+  {
+    "path": "$.events[189].title",
+    "before": "홈 경기의 수입",
+    "after": "Derek Walton 감독 선임"
+  },
+  {
+    "path": "$.events[190].amount",
+    "before": "14128",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[190].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[190].detail",
+    "before": "관중 4522명 · 1951:ENG:2:0:1:2",
+    "after": "1951–1951 · 구단주와의 신뢰가 무너져 사임했습니다."
+  },
+  {
+    "path": "$.events[190].kind",
+    "before": "match-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[190].round",
+    "before": 2,
+    "after": 0
+  },
+  {
+    "path": "$.events[190].title",
+    "before": "홈 경기 개최비",
+    "after": "Derek Walton 감독의 마지막 날"
+  },
+  {
+    "path": "$.events[191].amount",
+    "before": "11828",
+    "after": "18260"
+  },
+  {
+    "path": "$.events[191].detail",
+    "before": "선수 £2 · 감독 £3 · 시설 £17",
+    "after": "York Cooperative · 리그 경기 23/46"
+  },
+  {
+    "path": "$.events[191].kind",
+    "before": "operating-cost",
+    "after": "sponsor:local"
+  },
+  {
+    "path": "$.events[191].round",
+    "before": 2,
+    "after": 1
+  },
+  {
+    "path": "$.events[191].title",
+    "before": "급여와 시설 유지비",
+    "after": "지역 후원"
+  },
+  {
+    "path": "$.events[192].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "약 1주 결장 · 1951년 8월 17일 복귀 예상"
+  },
+  {
+    "path": "$.events[192].kind",
+    "before": "manager-departure",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[192].round",
+    "before": 2,
+    "after": 1
+  },
+  {
+    "path": "$.events[192].title",
+    "before": "Billy Shepherd 감독 교체",
+    "after": "Eric Webster 훈련 중 근육 경련"
+  },
+  {
+    "path": "$.events[193].amount",
+    "before": "73252",
+    "after": "187826"
+  },
+  {
+    "path": "$.events[193].detail",
+    "before": "수비 조직가 · 균형 · 계약 1953/54 시즌 끝까지",
+    "after": "3부 균등 배분·중계권 · 23/46라운드 분할"
+  },
+  {
+    "path": "$.events[193].kind",
+    "before": "manager-hire",
+    "after": "league-share"
+  },
+  {
+    "path": "$.events[193].round",
+    "before": 2,
+    "after": 1
+  },
+  {
+    "path": "$.events[193].title",
+    "before": "Nathan Lloyd 감독 선임",
+    "after": "리그 분배금"
+  },
+  {
+    "path": "$.events[194].amount",
+    "before": "13971",
+    "after": "11830"
+  },
+  {
+    "path": "$.events[194].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £17",
+    "after": "선수 £2 · 감독 £3 · 시설 £17"
+  },
+  {
+    "path": "$.events[194].round",
+    "before": 3,
+    "after": 1
+  },
+  {
+    "path": "$.events[195].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "1071207"
+  },
+  {
+    "path": "$.events[195].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[195].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "직전 시즌 매출의 35% · 경기 운영·원정·행정·의료·용품·직원 · 23/46라운드 분할"
+  },
+  {
+    "path": "$.events[195].kind",
+    "before": "manager-departure",
+    "after": "operating-expenses"
+  },
+  {
+    "path": "$.events[195].round",
+    "before": 3,
+    "after": 1
+  },
+  {
+    "path": "$.events[195].title",
+    "before": "Nathan Lloyd 감독 교체",
+    "after": "운영 경비"
+  },
+  {
+    "path": "$.events[196].amount",
+    "before": "179961",
+    "after": "247399"
+  },
+  {
+    "path": "$.events[196].detail",
+    "before": "포지셔널 플레이 · 점유 · 로테이션 · 계약 1953/54 시즌 끝까지",
+    "after": "관중 4522명 · 티켓과 구단 상품 · 1951:ENG:2:0:1:2"
+  },
+  {
+    "path": "$.events[196].kind",
+    "before": "manager-hire",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[196].round",
+    "before": 3,
+    "after": 2
+  },
+  {
+    "path": "$.events[196].title",
+    "before": "Darren Hudson 감독 선임",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[197].amount",
+    "before": "262827",
+    "after": "14128"
+  },
+  {
+    "path": "$.events[197].detail",
+    "before": "관중 4804명 · 티켓과 구단 상품 · 1951:ENG:2:0:3:0",
+    "after": "관중 4522명 · 1951:ENG:2:0:1:2"
+  },
+  {
+    "path": "$.events[197].kind",
+    "before": "gate",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[197].round",
+    "before": 4,
+    "after": 2
+  },
+  {
+    "path": "$.events[197].title",
+    "before": "홈 경기의 수입",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[198].amount",
+    "before": "14658",
+    "after": "11828"
+  },
+  {
+    "path": "$.events[198].detail",
+    "before": "관중 4804명 · 1951:ENG:2:0:3:0",
+    "after": "선수 £2 · 감독 £3 · 시설 £17"
+  },
+  {
+    "path": "$.events[198].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[198].round",
+    "before": 4,
+    "after": 2
+  },
+  {
+    "path": "$.events[198].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[199].amount",
+    "before": "14064",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[199].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[199].detail",
+    "before": "선수 £2 · 감독 £12 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[199].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[199].round",
+    "before": 4,
+    "after": 2
+  },
+  {
+    "path": "$.events[199].title",
+    "before": "급여와 시설 유지비",
+    "after": "Billy Shepherd 감독 교체"
+  },
+  {
+    "path": "$.events[200].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "73252"
+  },
+  {
+    "path": "$.events[200].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[200].detail",
+    "before": "소방수 · OVR 59 · 자유계약 감독 명단에 올랐어요",
+    "after": "수비 조직가 · 균형 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[200].kind",
+    "before": "rival-sacking",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[200].round",
+    "before": 4,
+    "after": 2
+  },
+  {
+    "path": "$.events[200].title",
+    "before": "Durham Forge A3, Dennis Wilson 감독 경질",
+    "after": "Nathan Lloyd 감독 선임"
+  },
+  {
+    "path": "$.events[201].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13971"
+  },
+  {
+    "path": "$.events[201].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[201].detail",
+    "before": "육성형 · OVR 53 · 자유계약 감독 명단에 올랐어요",
+    "after": "선수 £2 · 감독 £12 · 시설 £17"
+  },
+  {
+    "path": "$.events[201].kind",
+    "before": "rival-sacking",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[201].round",
+    "before": 4,
+    "after": 3
+  },
+  {
+    "path": "$.events[201].title",
+    "before": "Lancaster Meadow A8, Frederick Preston 감독 경질",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[202].round",
+    "before": 4,
+    "after": 3
+  },
+  {
+    "path": "$.events[202].title",
+    "before": "Darren Hudson 감독 교체",
+    "after": "Nathan Lloyd 감독 교체"
+  },
+  {
+    "path": "$.events[203].amount",
+    "before": "201033",
+    "after": "179961"
+  },
+  {
+    "path": "$.events[203].detail",
+    "before": "수비 조직가 · 균형 · 계약 1953/54 시즌 끝까지",
+    "after": "포지셔널 플레이 · 점유 · 로테이션 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[203].round",
+    "before": 4,
+    "after": 3
+  },
+  {
+    "path": "$.events[203].title",
+    "before": "Kenneth Gardner 감독 선임",
+    "after": "Darren Hudson 감독 선임"
+  },
+  {
+    "path": "$.events[204].amount",
+    "before": "1902",
+    "after": "262827"
+  },
+  {
+    "path": "$.events[204].detail",
+    "before": "1951:cup:ENG:k0:15 · 홈·원정 동일 기준",
+    "after": "관중 4804명 · 티켓과 구단 상품 · 1951:ENG:2:0:3:0"
+  },
+  {
+    "path": "$.events[204].kind",
+    "before": "match-bonus",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[204].title",
+    "before": "승리 성과 수입",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[205].amount",
+    "before": "845",
+    "after": "14658"
+  },
+  {
+    "path": "$.events[205].detail",
+    "before": "잉글랜드 컵 상금",
+    "after": "관중 4804명 · 1951:ENG:2:0:3:0"
+  },
+  {
+    "path": "$.events[205].kind",
+    "before": "cup-prize",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[205].title",
+    "before": "잉글랜드 컵 1라운드 통과",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[206].amount",
+    "before": "224913",
+    "after": "14064"
+  },
+  {
+    "path": "$.events[206].detail",
+    "before": "관중 4111명 · 티켓과 구단 상품 · 1951:ENG:2:0:4:1",
+    "after": "선수 £2 · 감독 £12 · 시설 £17"
+  },
+  {
+    "path": "$.events[206].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[206].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[206].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[207].amount",
+    "before": "13356",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[207].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[207].detail",
+    "before": "관중 4111명 · 1951:ENG:2:0:4:1",
+    "after": "소방수 · OVR 59 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[207].kind",
+    "before": "match-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[207].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[207].title",
+    "before": "홈 경기 개최비",
+    "after": "Durham Forge A3, Dennis Wilson 감독 경질"
+  },
+  {
+    "path": "$.events[208].detail",
+    "before": "약 1주 결장 · 1951년 9월 13일 복귀 예상",
+    "after": "육성형 · OVR 53 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[208].kind",
+    "before": "injury",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[208].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[208].title",
+    "before": "Joseph Hewitt 근육 타박상",
+    "after": "Lancaster Meadow A8, Frederick Preston 감독 경질"
+  },
+  {
+    "path": "$.events[209].amount",
+    "before": "14727",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[209].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[209].detail",
+    "before": "선수 £2 · 감독 £15 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[209].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[209].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[209].title",
+    "before": "급여와 시설 유지비",
+    "after": "Darren Hudson 감독 교체"
+  },
+  {
+    "path": "$.events[210].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "201033"
+  },
+  {
+    "path": "$.events[210].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[210].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "수비 조직가 · 균형 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[210].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[210].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[210].title",
+    "before": "Kenneth Gardner 감독 교체",
+    "after": "Kenneth Gardner 감독 선임"
+  },
+  {
+    "path": "$.events[211].amount",
+    "before": "201444",
+    "after": "4005354"
+  },
+  {
+    "path": "$.events[211].detail",
+    "before": "수비 조직가 · 균형 · 계약 1953/54 시즌 끝까지",
+    "after": "1951년 9월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[211].kind",
+    "before": "manager-hire",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[211].round",
+    "before": 5,
+    "after": 4
+  },
+  {
+    "path": "$.events[211].title",
+    "before": "Nathan Lloyd 감독 선임",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[212].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "1902"
+  },
+  {
+    "path": "$.events[212].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[212].detail",
+    "before": "약 1주 결장 · 1951년 9월 22일 복귀 예상",
+    "after": "1951:cup:ENG:k0:15 · 홈·원정 동일 기준"
+  },
+  {
+    "path": "$.events[212].kind",
+    "before": "injury",
+    "after": "match-bonus"
+  },
+  {
+    "path": "$.events[212].round",
+    "before": 6,
+    "after": 4
+  },
+  {
+    "path": "$.events[212].title",
+    "before": "Clive Stevenson 근육 경련",
+    "after": "승리 성과 수입"
+  },
+  {
+    "path": "$.events[213].amount",
+    "before": "14238",
+    "after": "845"
+  },
+  {
+    "path": "$.events[213].detail",
+    "before": "선수 £2 · 감독 £13 · 시설 £17",
+    "after": "잉글랜드 컵 상금"
+  },
+  {
+    "path": "$.events[213].kind",
+    "before": "operating-cost",
+    "after": "cup-prize"
+  },
+  {
+    "path": "$.events[213].round",
+    "before": 6,
+    "after": 4
+  },
+  {
+    "path": "$.events[213].title",
+    "before": "급여와 시설 유지비",
+    "after": "잉글랜드 컵 1라운드 통과"
+  },
+  {
+    "path": "$.events[214].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "224913"
+  },
+  {
+    "path": "$.events[214].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[214].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "관중 4111명 · 티켓과 구단 상품 · 1951:ENG:2:0:4:1"
+  },
+  {
+    "path": "$.events[214].kind",
+    "before": "manager-departure",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[214].round",
+    "before": 6,
+    "after": 5
+  },
+  {
+    "path": "$.events[214].title",
+    "before": "Nathan Lloyd 감독 교체",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[215].amount",
+    "before": "204261",
+    "after": "13356"
+  },
+  {
+    "path": "$.events[215].detail",
+    "before": "소방수 · 점유 · 계약 1951/52 시즌 끝까지",
+    "after": "관중 4111명 · 1951:ENG:2:0:4:1"
+  },
+  {
+    "path": "$.events[215].kind",
+    "before": "manager-hire",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[215].round",
+    "before": 6,
+    "after": 5
+  },
+  {
+    "path": "$.events[215].title",
+    "before": "Dennis Wilson 감독 선임",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[216].amount",
+    "before": "244116",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[216].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[216].detail",
+    "before": "관중 4462명 · 티켓과 구단 상품 · 1951:ENG:2:0:6:3",
+    "after": "약 1주 결장 · 1951년 9월 13일 복귀 예상"
+  },
+  {
+    "path": "$.events[216].kind",
+    "before": "gate",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[216].round",
+    "before": 7,
+    "after": 5
+  },
+  {
+    "path": "$.events[216].title",
+    "before": "홈 경기의 수입",
+    "after": "Joseph Hewitt 근육 타박상"
+  },
+  {
+    "path": "$.events[217].amount",
+    "before": "14016",
+    "after": "14727"
+  },
+  {
+    "path": "$.events[217].detail",
+    "before": "관중 4462명 · 1951:ENG:2:0:6:3",
+    "after": "선수 £2 · 감독 £15 · 시설 £17"
+  },
+  {
+    "path": "$.events[217].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[217].round",
+    "before": 7,
+    "after": 5
+  },
+  {
+    "path": "$.events[217].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[218].amount",
+    "before": "14668",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[218].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[218].detail",
+    "before": "선수 £2 · 감독 £15 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[218].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[218].round",
+    "before": 7,
+    "after": 5
+  },
+  {
+    "path": "$.events[218].title",
+    "before": "급여와 시설 유지비",
+    "after": "Kenneth Gardner 감독 교체"
+  },
+  {
+    "path": "$.events[219].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "201444"
+  },
+  {
+    "path": "$.events[219].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[219].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "수비 조직가 · 균형 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[219].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[219].round",
+    "before": 7,
+    "after": 5
+  },
+  {
+    "path": "$.events[219].title",
+    "before": "Dennis Wilson 감독 교체",
+    "after": "Nathan Lloyd 감독 선임"
+  },
+  {
+    "path": "$.events[220].amount",
+    "before": "129365",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[220].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[220].detail",
+    "before": "육성형 · 역습 · 계약 1953/54 시즌 끝까지",
+    "after": "약 1주 결장 · 1951년 9월 22일 복귀 예상"
+  },
+  {
+    "path": "$.events[220].kind",
+    "before": "manager-hire",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[220].round",
+    "before": 7,
+    "after": 6
+  },
+  {
+    "path": "$.events[220].title",
+    "before": "Frederick Preston 감독 선임",
+    "after": "Clive Stevenson 근육 경련"
+  },
+  {
+    "path": "$.events[221].amount",
+    "before": "14545",
+    "after": "14238"
+  },
+  {
+    "path": "$.events[221].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "선수 £2 · 감독 £13 · 시설 £17"
+  },
+  {
+    "path": "$.events[221].round",
+    "before": 8,
+    "after": 6
+  },
+  {
+    "path": "$.events[222].detail",
+    "before": "동기부여형 · OVR 51 · 자유계약 감독 명단에 올랐어요",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[222].kind",
+    "before": "rival-sacking",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[222].round",
+    "before": 8,
+    "after": 6
+  },
+  {
+    "path": "$.events[222].title",
+    "before": "York Mill B3, Anthony Chambers 감독 경질",
+    "after": "Nathan Lloyd 감독 교체"
+  },
+  {
+    "path": "$.events[223].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "204261"
+  },
+  {
+    "path": "$.events[223].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[223].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "소방수 · 점유 · 계약 1951/52 시즌 끝까지"
+  },
+  {
+    "path": "$.events[223].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[223].round",
+    "before": 8,
+    "after": 6
+  },
+  {
+    "path": "$.events[223].title",
+    "before": "Frederick Preston 감독 교체",
+    "after": "Dennis Wilson 감독 선임"
+  },
+  {
+    "path": "$.events[224].amount",
+    "before": "199800",
+    "after": "244116"
+  },
+  {
+    "path": "$.events[224].detail",
+    "before": "포지셔널 플레이 · 점유 · 로테이션 · 계약 1953/54 시즌 끝까지",
+    "after": "관중 4462명 · 티켓과 구단 상품 · 1951:ENG:2:0:6:3"
+  },
+  {
+    "path": "$.events[224].kind",
+    "before": "manager-hire",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[224].round",
+    "before": 8,
+    "after": 7
+  },
+  {
+    "path": "$.events[224].title",
+    "before": "Darren Hudson 감독 선임",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[225].amount",
+    "before": "257575",
+    "after": "14016"
+  },
+  {
+    "path": "$.events[225].detail",
+    "before": "관중 4708명 · 티켓과 구단 상품 · 1951:ENG:2:0:8:5",
+    "after": "관중 4462명 · 1951:ENG:2:0:6:3"
+  },
+  {
+    "path": "$.events[225].kind",
+    "before": "gate",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[225].round",
+    "before": 9,
+    "after": 7
+  },
+  {
+    "path": "$.events[225].title",
+    "before": "홈 경기의 수입",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[226].amount",
+    "before": "14478",
+    "after": "14668"
+  },
+  {
+    "path": "$.events[226].detail",
+    "before": "관중 4708명 · 1951:ENG:2:0:8:5",
+    "after": "선수 £2 · 감독 £15 · 시설 £17"
+  },
+  {
+    "path": "$.events[226].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[226].round",
+    "before": 9,
+    "after": 7
+  },
+  {
+    "path": "$.events[226].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[227].amount",
+    "before": "14340",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[227].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[227].detail",
+    "before": "선수 £2 · 감독 £13 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[227].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[227].round",
+    "before": 9,
+    "after": 7
+  },
+  {
+    "path": "$.events[227].title",
+    "before": "급여와 시설 유지비",
+    "after": "Dennis Wilson 감독 교체"
+  },
+  {
+    "path": "$.events[228].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "129365"
+  },
+  {
+    "path": "$.events[228].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[228].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "육성형 · 역습 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[228].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[228].round",
+    "before": 9,
+    "after": 7
+  },
+  {
+    "path": "$.events[228].title",
+    "before": "Darren Hudson 감독 교체",
+    "after": "Frederick Preston 감독 선임"
+  },
+  {
+    "path": "$.events[229].amount",
+    "before": "207782",
+    "after": "14545"
+  },
+  {
+    "path": "$.events[229].detail",
+    "before": "소방수 · 점유 · 계약 1951/52 시즌 끝까지",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[229].kind",
+    "before": "manager-hire",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[229].round",
+    "before": 9,
+    "after": 8
+  },
+  {
+    "path": "$.events[229].title",
+    "before": "Dennis Wilson 감독 선임",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[230].amount",
+    "before": "14667",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[230].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[230].detail",
+    "before": "선수 £2 · 감독 £15 · 시설 £17",
+    "after": "동기부여형 · OVR 51 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[230].kind",
+    "before": "operating-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[230].round",
+    "before": 10,
+    "after": 8
+  },
+  {
+    "path": "$.events[230].title",
+    "before": "급여와 시설 유지비",
+    "after": "York Mill B3, Anthony Chambers 감독 경질"
+  },
+  {
+    "path": "$.events[231].round",
+    "before": 10,
+    "after": 8
+  },
+  {
+    "path": "$.events[231].title",
+    "before": "Dennis Wilson 감독 교체",
+    "after": "Frederick Preston 감독 교체"
+  },
+  {
+    "path": "$.events[232].amount",
+    "before": "127487",
+    "after": "199800"
+  },
+  {
+    "path": "$.events[232].detail",
+    "before": "동기부여형 · 점유 · 계약 1953/54 시즌 끝까지",
+    "after": "포지셔널 플레이 · 점유 · 로테이션 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[232].round",
+    "before": 10,
+    "after": 8
+  },
+  {
+    "path": "$.events[232].title",
+    "before": "Anthony Chambers 감독 선임",
+    "after": "Darren Hudson 감독 선임"
+  },
+  {
+    "path": "$.events[233].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "4005355"
+  },
+  {
+    "path": "$.events[233].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[233].detail",
+    "before": "약 2주 결장 · 1951년 10월 29일 복귀 예상",
+    "after": "1951년 10월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[233].kind",
+    "before": "injury",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[233].round",
+    "before": 10,
+    "after": 8
+  },
+  {
+    "path": "$.events[233].title",
+    "before": "Nicholas Johnston 종아리 근육 부상",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[234].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "257575"
+  },
+  {
+    "path": "$.events[234].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[234].detail",
+    "before": "잉글랜드 컵",
+    "after": "관중 4708명 · 티켓과 구단 상품 · 1951:ENG:2:0:8:5"
+  },
+  {
+    "path": "$.events[234].kind",
+    "before": "cup-exit",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[234].round",
+    "before": 10,
+    "after": 9
+  },
+  {
+    "path": "$.events[234].title",
+    "before": "잉글랜드 컵 64강 탈락",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[235].amount",
+    "before": "241380",
+    "after": "14478"
+  },
+  {
+    "path": "$.events[235].detail",
+    "before": "관중 4412명 · 티켓과 구단 상품 · 1951:ENG:2:0:10:7",
+    "after": "관중 4708명 · 1951:ENG:2:0:8:5"
+  },
+  {
+    "path": "$.events[235].kind",
+    "before": "gate",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[235].round",
+    "before": 11,
+    "after": 9
+  },
+  {
+    "path": "$.events[235].title",
+    "before": "홈 경기의 수입",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[236].amount",
+    "before": "13922",
+    "after": "14340"
+  },
+  {
+    "path": "$.events[236].detail",
+    "before": "관중 4412명 · 1951:ENG:2:0:10:7",
+    "after": "선수 £2 · 감독 £13 · 시설 £17"
+  },
+  {
+    "path": "$.events[236].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[236].round",
+    "before": 11,
+    "after": 9
+  },
+  {
+    "path": "$.events[236].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[237].amount",
+    "before": "14505",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[237].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[237].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[237].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[237].round",
+    "before": 11,
+    "after": 9
+  },
+  {
+    "path": "$.events[237].title",
+    "before": "급여와 시설 유지비",
+    "after": "Darren Hudson 감독 교체"
+  },
+  {
+    "path": "$.events[238].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "207782"
+  },
+  {
+    "path": "$.events[238].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[238].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "소방수 · 점유 · 계약 1951/52 시즌 끝까지"
+  },
+  {
+    "path": "$.events[238].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[238].round",
+    "before": 11,
+    "after": 9
+  },
+  {
+    "path": "$.events[238].title",
+    "before": "Anthony Chambers 감독 교체",
+    "after": "Dennis Wilson 감독 선임"
+  },
+  {
+    "path": "$.events[239].amount",
+    "before": "209660",
+    "after": "14667"
+  },
+  {
+    "path": "$.events[239].detail",
+    "before": "실리 역습 · 역습 · 유망주 중용 · 계약 1953/54 시즌 끝까지",
+    "after": "선수 £2 · 감독 £15 · 시설 £17"
+  },
+  {
+    "path": "$.events[239].kind",
+    "before": "manager-hire",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[239].round",
+    "before": 11,
+    "after": 10
+  },
+  {
+    "path": "$.events[239].title",
+    "before": "Tommy Martin 감독 선임",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[240].amount",
+    "before": "14584",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[240].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[240].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[240].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[240].round",
+    "before": 12,
+    "after": 10
+  },
+  {
+    "path": "$.events[240].title",
+    "before": "급여와 시설 유지비",
+    "after": "Dennis Wilson 감독 교체"
+  },
+  {
+    "path": "$.events[241].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "127487"
+  },
+  {
+    "path": "$.events[241].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[241].detail",
+    "before": "데이터 헤드코치 · OVR 48 · 자유계약 감독 명단에 올랐어요",
+    "after": "동기부여형 · 점유 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[241].kind",
+    "before": "rival-sacking",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[241].round",
+    "before": 12,
+    "after": 10
+  },
+  {
+    "path": "$.events[241].title",
+    "before": "Bristol Meadow B7, Ralph Mills 감독 경질",
+    "after": "Anthony Chambers 감독 선임"
+  },
+  {
+    "path": "$.events[242].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "약 2주 결장 · 1951년 10월 29일 복귀 예상"
+  },
+  {
+    "path": "$.events[242].kind",
+    "before": "manager-departure",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[242].round",
+    "before": 12,
+    "after": 10
+  },
+  {
+    "path": "$.events[242].title",
+    "before": "Tommy Martin 감독 교체",
+    "after": "Nicholas Johnston 종아리 근육 부상"
+  },
+  {
+    "path": "$.events[243].amount",
+    "before": "210600",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[243].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[243].detail",
+    "before": "육성형 · 역습 · 계약 1953/54 시즌 끝까지",
+    "after": "잉글랜드 컵"
+  },
+  {
+    "path": "$.events[243].kind",
+    "before": "manager-hire",
+    "after": "cup-exit"
+  },
+  {
+    "path": "$.events[243].round",
+    "before": 12,
+    "after": 10
+  },
+  {
+    "path": "$.events[243].title",
+    "before": "Frederick Preston 감독 선임",
+    "after": "잉글랜드 컵 64강 탈락"
+  },
+  {
+    "path": "$.events[244].amount",
+    "before": "237387",
+    "after": "241380"
+  },
+  {
+    "path": "$.events[244].detail",
+    "before": "관중 4339명 · 티켓과 구단 상품 · 1951:ENG:2:0:12:9",
+    "after": "관중 4412명 · 티켓과 구단 상품 · 1951:ENG:2:0:10:7"
+  },
+  {
+    "path": "$.events[244].round",
+    "before": 13,
+    "after": 11
+  },
+  {
+    "path": "$.events[245].amount",
+    "before": "13785",
+    "after": "13922"
+  },
+  {
+    "path": "$.events[245].detail",
+    "before": "관중 4339명 · 1951:ENG:2:0:12:9",
+    "after": "관중 4412명 · 1951:ENG:2:0:10:7"
+  },
+  {
+    "path": "$.events[245].round",
+    "before": 13,
+    "after": 11
+  },
+  {
+    "path": "$.events[246].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "14505"
+  },
+  {
+    "path": "$.events[246].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[246].detail",
+    "before": "약 1주 결장 · 1951년 11월 5일 복귀 예상",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[246].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[246].round",
+    "before": 13,
+    "after": 11
+  },
+  {
+    "path": "$.events[246].title",
+    "before": "Charles Dean 훈련 중 근육 경련",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[247].amount",
+    "before": "14545",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[247].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[247].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[247].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[247].round",
+    "before": 13,
+    "after": 11
+  },
+  {
+    "path": "$.events[247].title",
+    "before": "급여와 시설 유지비",
+    "after": "Anthony Chambers 감독 교체"
+  },
+  {
+    "path": "$.events[248].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "209660"
+  },
+  {
+    "path": "$.events[248].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[248].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "실리 역습 · 역습 · 유망주 중용 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[248].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[248].round",
+    "before": 13,
+    "after": 11
+  },
+  {
+    "path": "$.events[248].title",
+    "before": "Frederick Preston 감독 교체",
+    "after": "Tommy Martin 감독 선임"
+  },
+  {
+    "path": "$.events[249].amount",
+    "before": "214826",
+    "after": "14584"
+  },
+  {
+    "path": "$.events[249].detail",
+    "before": "소방수 · 점유 · 계약 1951/52 시즌 끝까지",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[249].kind",
+    "before": "manager-hire",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[249].round",
+    "before": 13,
+    "after": 12
+  },
+  {
+    "path": "$.events[249].title",
+    "before": "Dennis Wilson 감독 선임",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[250].amount",
+    "before": "11014724",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[250].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[250].detail",
+    "before": "1951년 11월 1일 정산 · 시작 자산의 0.2%, 물가 반영",
+    "after": "데이터 헤드코치 · OVR 48 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[250].kind",
+    "before": "owner-living",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[250].round",
+    "before": 13,
+    "after": 12
+  },
+  {
+    "path": "$.events[250].title",
+    "before": "구단주 생활비",
+    "after": "Bristol Meadow B7, Ralph Mills 감독 경질"
+  },
+  {
+    "path": "$.events[251].amount",
+    "before": "14667",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[251].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[251].detail",
+    "before": "선수 £2 · 감독 £15 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[251].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[251].round",
+    "before": 14,
+    "after": 12
+  },
+  {
+    "path": "$.events[251].title",
+    "before": "급여와 시설 유지비",
+    "after": "Tommy Martin 감독 교체"
+  },
+  {
+    "path": "$.events[252].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "210600"
+  },
+  {
+    "path": "$.events[252].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[252].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "육성형 · 역습 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[252].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[252].round",
+    "before": 14,
+    "after": 12
+  },
+  {
+    "path": "$.events[252].title",
+    "before": "Dennis Wilson 감독 교체",
+    "after": "Frederick Preston 감독 선임"
+  },
+  {
+    "path": "$.events[253].amount",
+    "before": "127487",
+    "after": "237387"
+  },
+  {
+    "path": "$.events[253].detail",
+    "before": "동기부여형 · 점유 · 계약 1953/54 시즌 끝까지",
+    "after": "관중 4339명 · 티켓과 구단 상품 · 1951:ENG:2:0:12:9"
+  },
+  {
+    "path": "$.events[253].kind",
+    "before": "manager-hire",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[253].round",
+    "before": 14,
+    "after": 13
+  },
+  {
+    "path": "$.events[253].title",
+    "before": "Anthony Chambers 감독 선임",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[254].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13785"
+  },
+  {
+    "path": "$.events[254].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[254].detail",
+    "before": "CM · 감독이 다른 선수로 선발을 짜요.",
+    "after": "관중 4339명 · 1951:ENG:2:0:12:9"
+  },
+  {
+    "path": "$.events[254].kind",
+    "before": "suspension",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[254].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[254].title",
+    "before": "Edward Burke 출장 정지 1경기 (리그) — 경고 누적",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[255].amount",
+    "before": "255714",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[255].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[255].detail",
+    "before": "관중 4674명 · 티켓과 구단 상품 · 1951:ENG:2:0:14:11",
+    "after": "약 1주 결장 · 1951년 11월 5일 복귀 예상"
+  },
+  {
+    "path": "$.events[255].kind",
+    "before": "gate",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[255].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[255].title",
+    "before": "홈 경기의 수입",
+    "after": "Charles Dean 훈련 중 근육 경련"
+  },
+  {
+    "path": "$.events[256].amount",
+    "before": "14414",
+    "after": "14545"
+  },
+  {
+    "path": "$.events[256].detail",
+    "before": "관중 4674명 · 1951:ENG:2:0:14:11",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[256].kind",
+    "before": "match-cost",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[256].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[256].title",
+    "before": "홈 경기 개최비",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[257].amount",
+    "before": "14504",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[257].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[257].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[257].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[257].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[257].title",
+    "before": "급여와 시설 유지비",
+    "after": "Frederick Preston 감독 교체"
+  },
+  {
+    "path": "$.events[258].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "214826"
+  },
+  {
+    "path": "$.events[258].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[258].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "소방수 · 점유 · 계약 1951/52 시즌 끝까지"
+  },
+  {
+    "path": "$.events[258].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[258].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[258].title",
+    "before": "Anthony Chambers 감독 교체",
+    "after": "Dennis Wilson 감독 선임"
+  },
+  {
+    "path": "$.events[259].amount",
+    "before": "203086",
+    "after": "4005354"
+  },
+  {
+    "path": "$.events[259].detail",
+    "before": "데이터 헤드코치 · 균형 · 계약 1953/54 시즌 끝까지",
+    "after": "1951년 11월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[259].kind",
+    "before": "manager-hire",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[259].round",
+    "before": 15,
+    "after": 13
+  },
+  {
+    "path": "$.events[259].title",
+    "before": "Ralph Mills 감독 선임",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[260].amount",
+    "before": "227265",
+    "after": "14667"
+  },
+  {
+    "path": "$.events[260].detail",
+    "before": "관중 4154명 · 티켓과 구단 상품 · 1951:ENG:2:0:15:11",
+    "after": "선수 £2 · 감독 £15 · 시설 £17"
+  },
+  {
+    "path": "$.events[260].kind",
+    "before": "gate",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[260].round",
+    "before": 16,
+    "after": 14
+  },
+  {
+    "path": "$.events[260].title",
+    "before": "홈 경기의 수입",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[261].amount",
+    "before": "13437",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[261].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[261].detail",
+    "before": "관중 4154명 · 1951:ENG:2:0:15:11",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[261].kind",
+    "before": "match-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[261].round",
+    "before": 16,
+    "after": 14
+  },
+  {
+    "path": "$.events[261].title",
+    "before": "홈 경기 개최비",
+    "after": "Dennis Wilson 감독 교체"
+  },
+  {
+    "path": "$.events[262].amount",
+    "before": "14443",
+    "after": "127487"
+  },
+  {
+    "path": "$.events[262].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "동기부여형 · 점유 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[262].kind",
+    "before": "operating-cost",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[262].round",
+    "before": 16,
+    "after": 14
+  },
+  {
+    "path": "$.events[262].title",
+    "before": "급여와 시설 유지비",
+    "after": "Anthony Chambers 감독 선임"
+  },
+  {
+    "path": "$.events[263].detail",
+    "before": "실리 역습 · OVR 48 · 자유계약 감독 명단에 올랐어요",
+    "after": "CM · 감독이 다른 선수로 선발을 짜요."
+  },
+  {
+    "path": "$.events[263].kind",
+    "before": "rival-sacking",
+    "after": "suspension"
+  },
+  {
+    "path": "$.events[263].round",
+    "before": 16,
+    "after": 15
+  },
+  {
+    "path": "$.events[263].title",
+    "before": "Durham Ironworks C2, Philip Wells 감독 경질",
+    "after": "Edward Burke 출장 정지 1경기 (리그) — 경고 누적"
+  },
+  {
+    "path": "$.events[264].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "255714"
+  },
+  {
+    "path": "$.events[264].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[264].detail",
+    "before": "데이터 헤드코치 · OVR 58 · 자유계약 감독 명단에 올랐어요",
+    "after": "관중 4674명 · 티켓과 구단 상품 · 1951:ENG:2:0:14:11"
+  },
+  {
+    "path": "$.events[264].kind",
+    "before": "rival-sacking",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[264].round",
+    "before": 16,
+    "after": 15
+  },
+  {
+    "path": "$.events[264].title",
+    "before": "Bath Mill B2, Terence Carroll 감독 경질",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[265].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "14414"
+  },
+  {
+    "path": "$.events[265].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[265].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "관중 4674명 · 1951:ENG:2:0:14:11"
+  },
+  {
+    "path": "$.events[265].kind",
+    "before": "manager-departure",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[265].round",
+    "before": 16,
+    "after": 15
+  },
+  {
+    "path": "$.events[265].title",
+    "before": "Ralph Mills 감독 교체",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[266].amount",
+    "before": "207547",
+    "after": "14504"
+  },
+  {
+    "path": "$.events[266].detail",
+    "before": "실리 역습 · 역습 · 유망주 중용 · 계약 1953/54 시즌 끝까지",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[266].kind",
+    "before": "manager-hire",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[266].round",
+    "before": 16,
+    "after": 15
+  },
+  {
+    "path": "$.events[266].title",
+    "before": "Tommy Martin 감독 선임",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[267].detail",
+    "before": "약 1주 결장 · 1951년 12월 6일 복귀 예상",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[267].kind",
+    "before": "injury",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[267].round",
+    "before": 17,
+    "after": 15
+  },
+  {
+    "path": "$.events[267].title",
+    "before": "Joseph Hewitt 근육 타박상",
+    "after": "Anthony Chambers 감독 교체"
+  },
+  {
+    "path": "$.events[268].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "203086"
+  },
+  {
+    "path": "$.events[268].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[268].detail",
+    "before": "약 1주 결장 · 1951년 12월 5일 복귀 예상",
+    "after": "데이터 헤드코치 · 균형 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[268].kind",
+    "before": "injury",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[268].round",
+    "before": 17,
+    "after": 15
+  },
+  {
+    "path": "$.events[268].title",
+    "before": "Edward Burke 근육 타박상",
+    "after": "Ralph Mills 감독 선임"
+  },
+  {
+    "path": "$.events[269].amount",
+    "before": "14585",
+    "after": "227265"
+  },
+  {
+    "path": "$.events[269].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "관중 4154명 · 티켓과 구단 상품 · 1951:ENG:2:0:15:11"
+  },
+  {
+    "path": "$.events[269].kind",
+    "before": "operating-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[269].round",
+    "before": 17,
+    "after": 16
+  },
+  {
+    "path": "$.events[269].title",
+    "before": "급여와 시설 유지비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[270].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "13437"
+  },
+  {
+    "path": "$.events[270].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[270].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "관중 4154명 · 1951:ENG:2:0:15:11"
+  },
+  {
+    "path": "$.events[270].kind",
+    "before": "manager-departure",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[270].round",
+    "before": 17,
+    "after": 16
+  },
+  {
+    "path": "$.events[270].title",
+    "before": "Tommy Martin 감독 교체",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[271].amount",
+    "before": "210600",
+    "after": "14443"
+  },
+  {
+    "path": "$.events[271].detail",
+    "before": "육성형 · 역습 · 계약 1953/54 시즌 끝까지",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[271].kind",
+    "before": "manager-hire",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[271].round",
+    "before": 17,
+    "after": 16
+  },
+  {
+    "path": "$.events[271].title",
+    "before": "Frederick Preston 감독 선임",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[272].amount",
+    "before": "268462",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[272].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[272].detail",
+    "before": "관중 4907명 · 티켓과 구단 상품 · 1951:ENG:2:0:17:9",
+    "after": "실리 역습 · OVR 48 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[272].kind",
+    "before": "gate",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[272].round",
+    "before": 18,
+    "after": 16
+  },
+  {
+    "path": "$.events[272].title",
+    "before": "홈 경기의 수입",
+    "after": "Durham Ironworks C2, Philip Wells 감독 경질"
+  },
+  {
+    "path": "$.events[273].amount",
+    "before": "14851",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[273].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[273].detail",
+    "before": "관중 4907명 · 1951:ENG:2:0:17:9",
+    "after": "데이터 헤드코치 · OVR 58 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[273].kind",
+    "before": "match-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[273].round",
+    "before": 18,
+    "after": 16
+  },
+  {
+    "path": "$.events[273].title",
+    "before": "홈 경기 개최비",
+    "after": "Bath Mill B2, Terence Carroll 감독 경질"
+  },
+  {
+    "path": "$.events[274].amount",
+    "before": "14545",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[274].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[274].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[274].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[274].round",
+    "before": 18,
+    "after": 16
+  },
+  {
+    "path": "$.events[274].title",
+    "before": "급여와 시설 유지비",
+    "after": "Ralph Mills 감독 교체"
+  },
+  {
+    "path": "$.events[275].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "207547"
+  },
+  {
+    "path": "$.events[275].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[275].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "실리 역습 · 역습 · 유망주 중용 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[275].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[275].round",
+    "before": 18,
+    "after": 16
+  },
+  {
+    "path": "$.events[275].title",
+    "before": "Frederick Preston 감독 교체",
+    "after": "Tommy Martin 감독 선임"
+  },
+  {
+    "path": "$.events[276].amount",
+    "before": "214826",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[276].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[276].detail",
+    "before": "소방수 · 점유 · 계약 1951/52 시즌 끝까지",
+    "after": "약 1주 결장 · 1951년 12월 6일 복귀 예상"
+  },
+  {
+    "path": "$.events[276].kind",
+    "before": "manager-hire",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[276].round",
+    "before": 18,
+    "after": 17
+  },
+  {
+    "path": "$.events[276].title",
+    "before": "Dennis Wilson 감독 선임",
+    "after": "Joseph Hewitt 근육 타박상"
+  },
+  {
+    "path": "$.events[277].amount",
+    "before": "14667",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[277].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[277].detail",
+    "before": "선수 £2 · 감독 £15 · 시설 £17",
+    "after": "약 1주 결장 · 1951년 12월 5일 복귀 예상"
+  },
+  {
+    "path": "$.events[277].kind",
+    "before": "operating-cost",
+    "after": "injury"
+  },
+  {
+    "path": "$.events[277].round",
+    "before": 19,
+    "after": 17
+  },
+  {
+    "path": "$.events[277].title",
+    "before": "급여와 시설 유지비",
+    "after": "Edward Burke 근육 타박상"
+  },
+  {
+    "path": "$.events[278].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "14585"
+  },
+  {
+    "path": "$.events[278].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[278].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[278].kind",
+    "before": "manager-departure",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[278].round",
+    "before": 19,
+    "after": 17
+  },
+  {
+    "path": "$.events[278].title",
+    "before": "Dennis Wilson 감독 교체",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[279].amount",
+    "before": "127487",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[279].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[279].detail",
+    "before": "동기부여형 · 점유 · 계약 1953/54 시즌 끝까지",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[279].kind",
+    "before": "manager-hire",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[279].round",
+    "before": 19,
+    "after": 17
+  },
+  {
+    "path": "$.events[279].title",
+    "before": "Anthony Chambers 감독 선임",
+    "after": "Tommy Martin 감독 교체"
+  },
+  {
+    "path": "$.events[280].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "210600"
+  },
+  {
+    "path": "$.events[280].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[280].detail",
+    "before": "CM · 감독이 다른 선수로 선발을 짜요.",
+    "after": "육성형 · 역습 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[280].kind",
+    "before": "suspension",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[280].round",
+    "before": 20,
+    "after": 17
+  },
+  {
+    "path": "$.events[280].title",
+    "before": "Jacob Whitehead 출장 정지 1경기 (리그) — 경고 누적",
+    "after": "Frederick Preston 감독 선임"
+  },
+  {
+    "path": "$.events[281].amount",
+    "before": "237277",
+    "after": "4005354"
+  },
+  {
+    "path": "$.events[281].detail",
+    "before": "관중 4337명 · 티켓과 구단 상품 · 1951:ENG:2:0:19:7",
+    "after": "1951년 12월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영"
+  },
+  {
+    "path": "$.events[281].kind",
+    "before": "gate",
+    "after": "owner-living"
+  },
+  {
+    "path": "$.events[281].round",
+    "before": 20,
+    "after": 17
+  },
+  {
+    "path": "$.events[281].title",
+    "before": "홈 경기의 수입",
+    "after": "구단주 생활비"
+  },
+  {
+    "path": "$.events[282].amount",
+    "before": "13781",
+    "after": "268462"
+  },
+  {
+    "path": "$.events[282].detail",
+    "before": "관중 4337명 · 1951:ENG:2:0:19:7",
+    "after": "관중 4907명 · 티켓과 구단 상품 · 1951:ENG:2:0:17:9"
+  },
+  {
+    "path": "$.events[282].kind",
+    "before": "match-cost",
+    "after": "gate"
+  },
+  {
+    "path": "$.events[282].round",
+    "before": 20,
+    "after": 18
+  },
+  {
+    "path": "$.events[282].title",
+    "before": "홈 경기 개최비",
+    "after": "홈 경기의 수입"
+  },
+  {
+    "path": "$.events[283].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "14851"
+  },
+  {
+    "path": "$.events[283].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[283].detail",
+    "before": "약 1주 결장 · 1951년 12월 24일 복귀 예상",
+    "after": "관중 4907명 · 1951:ENG:2:0:17:9"
+  },
+  {
+    "path": "$.events[283].kind",
+    "before": "injury",
+    "after": "match-cost"
+  },
+  {
+    "path": "$.events[283].round",
+    "before": 20,
+    "after": 18
+  },
+  {
+    "path": "$.events[283].title",
+    "before": "Jacob Whitehead 근육 타박상",
+    "after": "홈 경기 개최비"
+  },
+  {
+    "path": "$.events[284].amount",
+    "before": "14504",
+    "after": "14545"
+  },
+  {
+    "path": "$.events[284].round",
+    "before": 20,
+    "after": 18
+  },
+  {
+    "path": "$.events[285].detail",
+    "before": "육성형 · OVR 58 · 자유계약 감독 명단에 올랐어요",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[285].kind",
+    "before": "rival-sacking",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[285].round",
+    "before": 20,
+    "after": 18
+  },
+  {
+    "path": "$.events[285].title",
+    "before": "Bath Mill B2, Robert Freeman 감독 경질",
+    "after": "Frederick Preston 감독 교체"
+  },
+  {
+    "path": "$.events[286].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "214826"
+  },
+  {
+    "path": "$.events[286].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[286].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "소방수 · 점유 · 계약 1951/52 시즌 끝까지"
+  },
+  {
+    "path": "$.events[286].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[286].round",
+    "before": 20,
+    "after": 18
+  },
+  {
+    "path": "$.events[286].title",
+    "before": "Anthony Chambers 감독 교체",
+    "after": "Dennis Wilson 감독 선임"
+  },
+  {
+    "path": "$.events[287].amount",
+    "before": "203086",
+    "after": "14667"
+  },
+  {
+    "path": "$.events[287].detail",
+    "before": "실리 역습 · 역습 · 계약 1953/54 시즌 끝까지",
+    "after": "선수 £2 · 감독 £15 · 시설 £17"
+  },
+  {
+    "path": "$.events[287].kind",
+    "before": "manager-hire",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[287].round",
+    "before": 20,
+    "after": 19
+  },
+  {
+    "path": "$.events[287].title",
+    "before": "Philip Wells 감독 선임",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[288].amount",
+    "before": "14443",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[288].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[288].detail",
+    "before": "선수 £2 · 감독 £14 · 시설 £17",
+    "after": "1951–1951 · 구단의 선택"
+  },
+  {
+    "path": "$.events[288].kind",
+    "before": "operating-cost",
+    "after": "manager-departure"
+  },
+  {
+    "path": "$.events[288].round",
+    "before": 21,
+    "after": 19
+  },
+  {
+    "path": "$.events[288].title",
+    "before": "급여와 시설 유지비",
+    "after": "Dennis Wilson 감독 교체"
+  },
+  {
+    "path": "$.events[289].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "127487"
+  },
+  {
+    "path": "$.events[289].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[289].detail",
+    "before": "1951–1951 · 구단의 선택",
+    "after": "동기부여형 · 점유 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[289].kind",
+    "before": "manager-departure",
+    "after": "manager-hire"
+  },
+  {
+    "path": "$.events[289].round",
+    "before": 21,
+    "after": 19
+  },
+  {
+    "path": "$.events[289].title",
+    "before": "Philip Wells 감독 교체",
+    "after": "Anthony Chambers 감독 선임"
+  },
+  {
+    "path": "$.events[290].amount",
+    "before": "210365",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[290].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[290].detail",
+    "before": "데이터 헤드코치 · 균형 · 계약 1953/54 시즌 끝까지",
+    "after": "CM · 감독이 다른 선수로 선발을 짜요."
+  },
+  {
+    "path": "$.events[290].kind",
+    "before": "manager-hire",
+    "after": "suspension"
+  },
+  {
+    "path": "$.events[290].round",
+    "before": 21,
+    "after": 20
+  },
+  {
+    "path": "$.events[290].title",
+    "before": "Terence Carroll 감독 선임",
+    "after": "Jacob Whitehead 출장 정지 1경기 (리그) — 경고 누적"
+  },
+  {
+    "path": "$.events[291].amount",
+    "before": "269173",
+    "after": "237277"
+  },
+  {
+    "path": "$.events[291].detail",
+    "before": "관중 4920명 · 티켓과 구단 상품 · 1951:ENG:2:0:21:5",
+    "after": "관중 4337명 · 티켓과 구단 상품 · 1951:ENG:2:0:19:7"
+  },
+  {
+    "path": "$.events[291].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[292].amount",
+    "before": "14876",
+    "after": "13781"
+  },
+  {
+    "path": "$.events[292].detail",
+    "before": "관중 4920명 · 1951:ENG:2:0:21:5",
+    "after": "관중 4337명 · 1951:ENG:2:0:19:7"
+  },
+  {
+    "path": "$.events[292].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[293].detail",
+    "before": "약 6주 결장 · 1952년 2월 11일 복귀 예상",
+    "after": "약 1주 결장 · 1951년 12월 24일 복귀 예상"
+  },
+  {
+    "path": "$.events[293].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[293].title",
+    "before": "Eric Webster 발목 인대 부상",
+    "after": "Jacob Whitehead 근육 타박상"
+  },
+  {
+    "path": "$.events[294].amount",
+    "before": {
+      "$missing": true
+    },
+    "after": "14504"
+  },
+  {
+    "path": "$.events[294].currency",
+    "before": {
+      "$missing": true
+    },
+    "after": "GBP-LSD"
+  },
+  {
+    "path": "$.events[294].detail",
+    "before": "약 1주 결장 · 1952년 1월 9일 복귀 예상",
+    "after": "선수 £2 · 감독 £14 · 시설 £17"
+  },
+  {
+    "path": "$.events[294].kind",
+    "before": "injury",
+    "after": "operating-cost"
+  },
+  {
+    "path": "$.events[294].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[294].title",
+    "before": "Daniel Perry 훈련 중 근육 타박상",
+    "after": "급여와 시설 유지비"
+  },
+  {
+    "path": "$.events[295].amount",
+    "before": "14646",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[295].currency",
+    "before": "GBP-LSD",
+    "after": {
+      "$missing": true
+    }
+  },
+  {
+    "path": "$.events[295].detail",
+    "before": "선수 £2 · 감독 £15 · 시설 £17",
+    "after": "육성형 · OVR 58 · 자유계약 감독 명단에 올랐어요"
+  },
+  {
+    "path": "$.events[295].kind",
+    "before": "operating-cost",
+    "after": "rival-sacking"
+  },
+  {
+    "path": "$.events[295].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[295].title",
+    "before": "급여와 시설 유지비",
+    "after": "Bath Mill B2, Robert Freeman 감독 경질"
+  },
+  {
+    "path": "$.events[296].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[296].title",
+    "before": "Terence Carroll 감독 교체",
+    "after": "Anthony Chambers 감독 교체"
+  },
+  {
+    "path": "$.events[297].amount",
+    "before": "208017",
+    "after": "203086"
+  },
+  {
+    "path": "$.events[297].detail",
+    "before": "데이터 헤드코치 · 균형 · 계약 1953/54 시즌 끝까지",
+    "after": "실리 역습 · 역습 · 계약 1953/54 시즌 끝까지"
+  },
+  {
+    "path": "$.events[297].round",
+    "before": 22,
+    "after": 20
+  },
+  {
+    "path": "$.events[297].title",
+    "before": "Ralph Mills 감독 선임",
+    "after": "Philip Wells 감독 선임"
+  },
+  {
+    "path": "$.events[298].amount",
+    "before": "14444",
+    "after": "14443"
+  },
+  {
+    "path": "$.events[298].round",
+    "before": 23,
+    "after": 21
+  },
+  {
+    "path": "$.events[299]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 21,
+      "kind": "manager-departure",
+      "title": "Philip Wells 감독 교체",
+      "detail": "1951–1951 · 구단의 선택"
+    }
+  },
+  {
+    "path": "$.events[300]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 21,
+      "kind": "manager-hire",
+      "title": "Terence Carroll 감독 선임",
+      "detail": "데이터 헤드코치 · 균형 · 계약 1953/54 시즌 끝까지",
+      "amount": "210365",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.events[301]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 21,
+      "kind": "owner-living",
+      "title": "구단주 생활비",
+      "detail": "1952년 1월 1일 정산 · 시즌마다 시작 자산의 0.8%를 11번에 나눠 냄, 물가 반영",
+      "amount": "4005354",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.events[302]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "gate",
+      "title": "홈 경기의 수입",
+      "detail": "관중 4920명 · 티켓과 구단 상품 · 1951:ENG:2:0:21:5",
+      "amount": "269173",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.events[303]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "match-cost",
+      "title": "홈 경기 개최비",
+      "detail": "관중 4920명 · 1951:ENG:2:0:21:5",
+      "amount": "14876",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.events[304]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "injury",
+      "title": "Eric Webster 발목 인대 부상",
+      "detail": "약 6주 결장 · 1952년 2월 11일 복귀 예상"
+    }
+  },
+  {
+    "path": "$.events[305]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "injury",
+      "title": "Daniel Perry 훈련 중 근육 타박상",
+      "detail": "약 1주 결장 · 1952년 1월 9일 복귀 예상"
+    }
+  },
+  {
+    "path": "$.events[306]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "operating-cost",
+      "title": "급여와 시설 유지비",
+      "detail": "선수 £2 · 감독 £15 · 시설 £17",
+      "amount": "14646",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.events[307]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "manager-departure",
+      "title": "Terence Carroll 감독 교체",
+      "detail": "1951–1951 · 구단의 선택"
+    }
+  },
+  {
+    "path": "$.events[308]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 22,
+      "kind": "manager-hire",
+      "title": "Ralph Mills 감독 선임",
+      "detail": "데이터 헤드코치 · 균형 · 계약 1953/54 시즌 끝까지",
+      "amount": "208017",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.events[309]",
+    "before": {
+      "$missing": true
+    },
+    "after": {
+      "year": 1951,
+      "round": 23,
+      "kind": "operating-cost",
+      "title": "급여와 시설 유지비",
+      "detail": "선수 £2 · 감독 £14 · 시설 £17",
+      "amount": "14444",
+      "currency": "GBP-LSD"
+    }
+  },
+  {
+    "path": "$.owner.fortune",
+    "before": "4993355033",
+    "after": "4984342985"
+  },
+  {
+    "path": "$.owner.seasonRecords[0].fortune",
+    "before": "5004369757",
+    "after": "5004369756"
+  },
+  {
+    "path": "$.owner.seasonRecords[0].living",
+    "before": "40387332",
+    "after": "40387333"
+  },
+  {
+    "path": "$.shortlist.entries[0].playerId",
+    "before": "ENG:0:0:13:p:0:108",
+    "after": "ENG:0:0:1:p:11:109"
+  },
+  {
+    "path": "$.shortlist.entries[1].playerId",
+    "before": "ENG:0:0:10:p:0:108",
+    "after": "ENG:0:0:4:p:11:109"
+  }
+]

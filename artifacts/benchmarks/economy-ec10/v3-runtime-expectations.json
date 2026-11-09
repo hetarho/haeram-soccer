@@ -1,0 +1,98 @@
+{
+  "sources": {
+    "baseline": {
+      "head": "893733abc9231ddfbcbf80d47384d19019b5b1ba",
+      "playerWageEra": null,
+      "normalization": null,
+      "allowedDirty": []
+    },
+    "wage-only": {
+      "head": "7bccb41afef1a58b1605a20a2bb174b8b09750f6",
+      "playerWageEra": [
+        [
+          1992,
+          1
+        ],
+        [
+          2005,
+          1.5
+        ],
+        [
+          2025,
+          2.5
+        ]
+      ],
+      "normalization": null,
+      "allowedDirty": []
+    },
+    "distribution-only": {
+      "head": "c9a094e0b2ee925913c2c8b2ec1cbc6041654a1d",
+      "playerWageEra": null,
+      "normalization": {
+        "ENG": {
+          "0": [
+            [
+              1992,
+              1
+            ],
+            [
+              2018,
+              0.8520865440307794
+            ],
+            [
+              2024,
+              0.6580851783905154
+            ]
+          ]
+        }
+      },
+      "allowedDirty": []
+    },
+    "joint": {
+      "head": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+      "playerWageEra": [
+        [
+          1992,
+          1
+        ],
+        [
+          2005,
+          1.5
+        ],
+        [
+          2025,
+          2.5
+        ]
+      ],
+      "normalization": {
+        "ENG": {
+          "0": [
+            [
+              1992,
+              1
+            ],
+            [
+              2018,
+              0.8520865440307794
+            ],
+            [
+              2024,
+              0.6580851783905154
+            ]
+          ]
+        }
+      },
+      "allowedDirty": []
+    }
+  },
+  "worldFile": "/tmp/ec09-worlds/economy-ec09-0-2025.json",
+  "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+  "ownedFile": "/tmp/ec10-v3-inputs/owned-ENG-top.json",
+  "ownedSha256": "4a40c7887fde8e5f1cc6c088fd5e628a11e1742d3692fd6ab6432378f7e6f8cd",
+  "harnessSha256": "eaa77891e1ee5370274072b3948f219db0aeb2e97d9526c3a4a2b487e25b059a",
+  "observerSha256": "a0d202893b4f9725787131cc7336abcd6c669b8ad9d8c420e28ae66b61d87247",
+  "contractFile": "/tmp/ec10-v3-measurement-contract.json",
+  "contractSha256": "c9df21253dc47bddbce17fbcfdcba3d334f5394353422a279e7de5dc4cb989c5",
+  "nodeVersion": "v24.22.1",
+  "lockSha256": "fe5c933c17aae78992896407be25dbbbc3aba751b5800269e391c0fc89e3397f"
+}

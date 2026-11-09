@@ -1,0 +1,6 @@
+tree 3faf74f24653dcd3543fa35239052f01121b9af0
+parent 507d0d1c0c65da55513cd643cd10b2a029ab7d55
+author hetarho <sunlikeperson@gmail.com> 1794205141 +0900
+committer hetarho <sunlikeperson@gmail.com> 1794205141 +0900
+
+measurement: freeze approved exact reference payroll harness

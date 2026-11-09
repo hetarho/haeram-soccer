@@ -1,0 +1,6 @@
+{
+  "at": "2026-11-09T06:25:23.917741+00:00",
+  "pid": 1828351,
+  "state": "queued-not-executed",
+  "reason": "Wage candidate failed the prior hard books gate. Prioritize distribution-only hard gate before spending ten-season cash jobs on an unaccepted candidate."
+}

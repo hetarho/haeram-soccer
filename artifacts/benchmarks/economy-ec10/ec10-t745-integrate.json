@@ -1,0 +1,101 @@
+{
+  "id": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+  "group": "economy-ec09",
+  "taskId": "T745",
+  "tasks": [
+    "T745"
+  ],
+  "lane": null,
+  "owner": "ec10-withdraw",
+  "contributors": [
+    "ec10-withdraw"
+  ],
+  "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T745-7a1af923",
+  "branch": "task/economy-ec09/T745-7a1af923",
+  "managed": true,
+  "startCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+  "touches": [
+    "packages/engine/src/market-prices.ts",
+    "packages/engine/src/market-prices.test.ts",
+    "packages/engine/src/finance.ts",
+    "packages/engine/src/finance.test.ts",
+    "packages/engine/src/finance.league-distribution.test.ts",
+    "packages/engine/src/club-value.ts",
+    "packages/engine/src/club-value.test.ts"
+  ],
+  "status": "integrated",
+  "creator": {
+    "pid": 1857076,
+    "host": "hq-dev1-pve2-vm2"
+  },
+  "createdAt": "2026-11-09T06:32:26.037Z",
+  "heartbeatAt": "2026-11-09T06:32:26.037Z",
+  "gitDir": "/home/deep/haeram/haeram-soccor/.git/worktrees/economy-ec09-T745-7a1af923",
+  "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+  "verifiedCommit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+  "submittedBase": "d7f8188943634470680a47362eef7645ed31d64d",
+  "verification": [
+    {
+      "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts packages/engine/src/club-value.test.ts scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts --maxWorkers 4",
+      "startedAt": "2026-11-09T06:35:13.728Z",
+      "finishedAt": "2026-11-09T06:35:20.121Z",
+      "stdout": "\n RUN  v5.0.3 /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T745-7a1af923\n\n\n Test Files  4 passed (4)\n      Tests  60 passed (60)\n   Start at  15:35:14\n   Duration  5.07s (transform 55%, tests 27%, import 18%)\n\n",
+      "stderr": ""
+    }
+  ],
+  "steps": [
+    {
+      "taskId": "T745",
+      "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts packages/engine/src/club-value.test.ts scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:35:13.728Z",
+          "finishedAt": "2026-11-09T06:35:20.121Z"
+        }
+      ],
+      "at": "2026-11-09T06:35:20.407Z"
+    }
+  ],
+  "submittedAt": "2026-11-09T06:35:20.455Z",
+  "reason": null,
+  "risk": null,
+  "review": {
+    "id": "6ef59280-8c8f-42c7-8c90-fe4a49153c7d",
+    "attempt": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+    "tasks": [
+      "T745"
+    ],
+    "group": "economy-ec09",
+    "owner": "ec10-review-withdraw",
+    "status": "approved",
+    "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+    "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+    "baseCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+    "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-6ef59280",
+    "createdAt": "2026-11-09T06:35:42.984Z",
+    "heartbeatAt": "2026-11-09T06:35:42.984Z",
+    "verdict": "approved",
+    "summary": "T745 independently reviewed at fixed a6a0f4a645a1d7fc2d105d7647da54f36f425258 against d7f8188943634470680a47362eef7645ed31d64d. All six restored production/test blob hashes exactly equal released 44a1069e54fbb6970cfd9b519f65773352954205; the new distribution test exists in neither release nor submission; the entire packages/apps diff against release is empty. Scripts are unchanged from the assigned parent, preserving the exact-payroll observer/cash/reference tools. Restoring the release also preserves its earlier transfer/recruitment fixes and monthly owner rules, with no inactive alternative pricing path. Independently confirmed raw pilot hard failures justify withdrawal; the task truthfully records rejection and deferred coordinator checks, not economic calibration success. Worker named 60-unit/static evidence is declared; reviewer used exact Git blob/tree proofs and did not run heavy checks. This component approval does not waive the separately reported localization follow-up for newly authored tooling prose or the final combined pre-push gate.",
+    "findings": [],
+    "finishedAt": "2026-11-09T06:36:39.436Z"
+  },
+  "candidates": [
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-6ef59280",
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-bcc89f7a"
+  ],
+  "candidate": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-bcc89f7a",
+  "targetCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+  "candidateCommit": "51a1cec6e82c83699601952718f92c63d32a138a",
+  "integrationVerification": [
+    {
+      "command": "git diff --check",
+      "startedAt": "2026-11-09T06:36:56.940Z",
+      "finishedAt": "2026-11-09T06:36:57.038Z",
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "integratedCommit": "51a1cec6e82c83699601952718f92c63d32a138a",
+  "integratedAt": "2026-11-09T06:36:57.368Z"
+}

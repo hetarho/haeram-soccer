@@ -1,0 +1,63 @@
+{
+  "at": "2026-11-09T06:16:42.847Z",
+  "reason": "All four parity stages passed; split ten-season arm jobs into bounded heavy commands before the 15-minute command limit",
+  "retained": [
+    {
+      "id": "invariance-baseline",
+      "cwd": "/tmp/haeram-ec10-v3-baseline",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "/tmp/ec10-v3-invariance.mts",
+        "/tmp/ec10-v3-inputs/owned-ENG-top.json",
+        "/tmp/ec10-v3-measurements/invariance-baseline.json"
+      ],
+      "code": 0,
+      "seconds": 112.596
+    },
+    {
+      "id": "invariance-wage-only",
+      "cwd": "/tmp/haeram-ec10-v3-wage-only",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "/tmp/ec10-v3-invariance.mts",
+        "/tmp/ec10-v3-inputs/owned-ENG-top.json",
+        "/tmp/ec10-v3-measurements/invariance-wage-only.json"
+      ],
+      "code": 0,
+      "seconds": 121.046
+    },
+    {
+      "id": "invariance-distribution-only",
+      "cwd": "/tmp/haeram-ec10-v3-distribution-only",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "/tmp/ec10-v3-invariance.mts",
+        "/tmp/ec10-v3-inputs/owned-ENG-top.json",
+        "/tmp/ec10-v3-measurements/invariance-distribution-only.json"
+      ],
+      "code": 0,
+      "seconds": 108.202
+    },
+    {
+      "id": "invariance-joint",
+      "cwd": "/tmp/haeram-ec10-v3-joint",
+      "command": [
+        "pnpm",
+        "exec",
+        "tsx",
+        "/tmp/ec10-v3-invariance.mts",
+        "/tmp/ec10-v3-inputs/owned-ENG-top.json",
+        "/tmp/ec10-v3-measurements/invariance-joint.json"
+      ],
+      "code": 0,
+      "seconds": 100.164
+    }
+  ],
+  "haltedCli": 1723726
+}

@@ -1,0 +1,5 @@
+{
+  "verdict": "approved",
+  "summary": "T745 independently reviewed at fixed a6a0f4a645a1d7fc2d105d7647da54f36f425258 against d7f8188943634470680a47362eef7645ed31d64d. All six restored production/test blob hashes exactly equal released 44a1069e54fbb6970cfd9b519f65773352954205; the new distribution test exists in neither release nor submission; the entire packages/apps diff against release is empty. Scripts are unchanged from the assigned parent, preserving the exact-payroll observer/cash/reference tools. Restoring the release also preserves its earlier transfer/recruitment fixes and monthly owner rules, with no inactive alternative pricing path. Independently confirmed raw pilot hard failures justify withdrawal; the task truthfully records rejection and deferred coordinator checks, not economic calibration success. Worker named 60-unit/static evidence is declared; reviewer used exact Git blob/tree proofs and did not run heavy checks. This component approval does not waive the separately reported localization follow-up for newly authored tooling prose or the final combined pre-push gate.",
+  "findings": []
+}

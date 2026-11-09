@@ -1,0 +1,97 @@
+{
+  "id": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+  "group": "economy-ec09",
+  "taskId": "T744",
+  "tasks": [
+    "T744"
+  ],
+  "lane": null,
+  "owner": "ec10-fixtures",
+  "contributors": [
+    "ec10-fixtures"
+  ],
+  "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T744-e36f2f50",
+  "branch": "task/economy-ec09/T744-e36f2f50",
+  "managed": true,
+  "startCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "touches": [
+    "tests/fixtures/portable-v1.json",
+    "tests/fixtures/prepared/manager-journey.json",
+    "tests/fixtures/prepared/manager-activation.json"
+  ],
+  "status": "integrated",
+  "creator": {
+    "pid": 1902108,
+    "host": "hq-dev1-pve2-vm2"
+  },
+  "createdAt": "2026-11-09T06:49:52.101Z",
+  "heartbeatAt": "2026-11-09T06:49:52.101Z",
+  "gitDir": "/home/deep/haeram/haeram-soccor/.git/worktrees/economy-ec09-T744-e36f2f50",
+  "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+  "verifiedCommit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+  "submittedBase": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "verification": [
+    {
+      "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+      "startedAt": "2026-11-09T06:59:01.187Z",
+      "finishedAt": "2026-11-09T06:59:04.921Z",
+      "stdout": "\n RUN  v5.0.3 /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T744-e36f2f50\n\n\n Test Files  1 passed (1)\n      Tests  2 passed (2)\n   Start at  15:59:02\n   Duration  2.46s (tests 77%, transform 15%, import 7%)\n\n",
+      "stderr": ""
+    }
+  ],
+  "steps": [
+    {
+      "taskId": "T744",
+      "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:59:01.187Z",
+          "finishedAt": "2026-11-09T06:59:04.921Z"
+        }
+      ],
+      "at": "2026-11-09T06:59:05.217Z"
+    }
+  ],
+  "submittedAt": "2026-11-09T06:59:05.253Z",
+  "reason": null,
+  "risk": null,
+  "review": {
+    "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+    "attempt": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+    "tasks": [
+      "T744"
+    ],
+    "group": "economy-ec09",
+    "owner": "ec10-review-fixtures",
+    "status": "approved",
+    "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+    "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+    "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+    "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-9c792dca",
+    "createdAt": "2026-11-09T06:59:50.419Z",
+    "heartbeatAt": "2026-11-09T06:59:50.419Z",
+    "verdict": "approved",
+    "summary": "T744 independently reviewed at fixed a760bc081d27a7fa84b73ba71df0a1704c5599fc against d4e2a8a633dda50bb0c320f96747825a56c21df3. Diff contains only the two prepared fixtures and task receipt; generators, builders, assertions, migration input and portable fixture are unchanged. Portable SHA remains original 67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f. Independently decompressed old/new payloads and checked their checksums: only events, owner and shortlist differ; every event except owner-living is exactly identical after alignment, and every other world field including players, clubs, cash and matches is identical. Journey living counts change 1950 4-to-11 and elapsed 1951 1-to-5; the combined ledger difference exactly equals the 9,012,048-unit fortune reduction. Activation annual living increases 2 units with exactly 2 fewer fortune units. Each shortlist changes only two GK candidate IDs, consistent with already released T732; no roster or signing changes. Both new fixture file hashes match the retained actual generator receipt, metadata pins clean d4e2a8a6, and independently recomputed the 208-file source fingerprint 7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86. Independently reran the two decoding/schema units successfully in clean exact author HEAD. No delta is attributed to withdrawn wage/package pilots. Final canonical replay, actual instrumentation invariance and full pre-push checks remain coordinator-owned.",
+    "findings": [],
+    "finishedAt": "2026-11-09T07:01:13.250Z"
+  },
+  "candidates": [
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-9c792dca",
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-d20a9573"
+  ],
+  "candidate": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-d20a9573",
+  "targetCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "candidateCommit": "70eb85d29b79bd19cf8cd8fbe50c69996c6cea67",
+  "integrationVerification": [
+    {
+      "command": "git diff --check",
+      "startedAt": "2026-11-09T07:01:42.798Z",
+      "finishedAt": "2026-11-09T07:01:42.859Z",
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "integratedCommit": "70eb85d29b79bd19cf8cd8fbe50c69996c6cea67",
+  "integratedAt": "2026-11-09T07:01:43.209Z"
+}

@@ -1,0 +1,112 @@
+{
+  "id": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+  "group": "economy-ec09",
+  "taskId": "T746",
+  "tasks": [
+    "T746"
+  ],
+  "lane": null,
+  "owner": "ec10-tooling",
+  "contributors": [
+    "ec10-tooling"
+  ],
+  "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T746-9be462ed",
+  "branch": "task/economy-ec09/T746-9be462ed",
+  "managed": true,
+  "startCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+  "touches": [
+    "scripts/calibrate-cash-flow.ts",
+    "scripts/owner-balance.ts",
+    "scripts/lib/settlement-payroll.ts",
+    "scripts/lib/tool-messages.ts",
+    "scripts/lib/tool-messages.test.ts",
+    "packages/contracts/src/source-messages.ts",
+    "apps/web/public/presentation/locales/ko-KR.json",
+    "apps/web/public/presentation/locales/en-GB.json",
+    "apps/web/public/presentation/locales/es-ES.json",
+    "apps/web/public/presentation/locales/pt-BR.json",
+    "apps/web/public/presentation/locales/fr-FR.json",
+    "apps/web/public/presentation/locales/de-DE.json",
+    "apps/web/public/presentation/locales/it-IT.json",
+    "apps/web/public/presentation/locales/nl-NL.json",
+    "apps/web/public/presentation/locales/tr-TR.json",
+    "apps/web/public/presentation/locales/ar-SA.json",
+    "apps/web/public/presentation/locales/ja-JP.json",
+    "apps/web/public/presentation/locales/id-ID.json"
+  ],
+  "status": "integrated",
+  "creator": {
+    "pid": 1876890,
+    "host": "hq-dev1-pve2-vm2"
+  },
+  "createdAt": "2026-11-09T06:39:57.706Z",
+  "heartbeatAt": "2026-11-09T06:39:57.706Z",
+  "gitDir": "/home/deep/haeram/haeram-soccor/.git/worktrees/economy-ec09-T746-9be462ed",
+  "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+  "verifiedCommit": "1ce7071d42939139edff911579158522934c02be",
+  "submittedBase": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+  "verification": [
+    {
+      "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
+      "startedAt": "2026-11-09T06:46:37.854Z",
+      "finishedAt": "2026-11-09T06:46:42.789Z",
+      "stdout": "\n RUN  v5.0.3 /home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T746-9be462ed\n\n\n Test Files  3 passed (3)\n      Tests  11 passed (11)\n   Start at  15:46:39\n   Duration  3.60s (transform 74%, import 18%, tests 7%)\n\n",
+      "stderr": ""
+    }
+  ],
+  "steps": [
+    {
+      "taskId": "T746",
+      "commit": "1ce7071d42939139edff911579158522934c02be",
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:46:37.854Z",
+          "finishedAt": "2026-11-09T06:46:42.789Z"
+        }
+      ],
+      "at": "2026-11-09T06:46:43.045Z"
+    }
+  ],
+  "submittedAt": "2026-11-09T06:46:43.084Z",
+  "reason": null,
+  "risk": null,
+  "review": {
+    "id": "7acd2eec-fb61-4f17-a520-e062f7e05b53",
+    "attempt": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+    "tasks": [
+      "T746"
+    ],
+    "group": "economy-ec09",
+    "owner": "ec10-review-tooling",
+    "status": "approved",
+    "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+    "commit": "1ce7071d42939139edff911579158522934c02be",
+    "baseCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+    "workspace": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-7acd2eec",
+    "createdAt": "2026-11-09T06:47:07.902Z",
+    "heartbeatAt": "2026-11-09T06:47:07.902Z",
+    "verdict": "approved",
+    "summary": "T746 independently reviewed at fixed 1ce7071d42939139edff911579158522934c02be against b32a89d5f5e192a5ef219c5763946c43171a33c9. All 20 inventoried new/changed runtime prose strings now use typed resource IDs and named parameters. Each of 12 registered packs adds exactly those 20 keys; no existing messages or metadata changed, Korean source matches the Korean default, and translations are genuine target-language text. The shared fixed-en-GB boundary uses existing pure translator/validation modules, imports no React/browser preference state, and throws diagnostics before fallback. Tests preserve old English bytes, opaque parameters and existing observer/report assertions. Diff inspection found only message substitution/imports in the three accounting files: successful arithmetic, JSON fields, coverage, interception/restoration and progression are unchanged; economic pilots remain withdrawn. Independently reran all 11 named pure tests successfully in the clean exact author HEAD matching fixed reviewer source/helper hashes. Coordinator final-source actual invariance and complete pre-push gate remain required; no economic-pilot acceptance is claimed.",
+    "findings": [],
+    "finishedAt": "2026-11-09T06:47:57.078Z"
+  },
+  "candidates": [
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-review-7acd2eec",
+    "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-9ba4f6a9"
+  ],
+  "candidate": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-integrate-9ba4f6a9",
+  "targetCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+  "candidateCommit": "249730bc59bfef427efa70360f0de27ddcd64fcf",
+  "integrationVerification": [
+    {
+      "command": "git diff --check",
+      "startedAt": "2026-11-09T06:48:18.904Z",
+      "finishedAt": "2026-11-09T06:48:18.947Z",
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "integratedCommit": "249730bc59bfef427efa70360f0de27ddcd64fcf",
+  "integratedAt": "2026-11-09T06:48:19.381Z"
+}

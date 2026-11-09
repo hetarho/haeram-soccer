@@ -1,0 +1,110 @@
+{
+  "version": "ec10-screen-v3",
+  "frozenBeforeMeasurement": true,
+  "baselineSource": "44a1069e54fbb6970cfd9b519f65773352954205",
+  "parameterPilot": {
+    "wageEra": [
+      [
+        1992,
+        1
+      ],
+      [
+        2005,
+        1.5
+      ],
+      [
+        2025,
+        2.5
+      ]
+    ],
+    "engTopPackage": [
+      [
+        1992,
+        1
+      ],
+      [
+        2018,
+        0.8520865440307794
+      ],
+      [
+        2024,
+        0.6580851783905154
+      ]
+    ],
+    "fallbackWageEndpoints": [
+      2,
+      2.5,
+      2.75
+    ]
+  },
+  "arms": [
+    "released baseline",
+    "wage only",
+    "distribution only",
+    "joint"
+  ],
+  "controlledInputs": {
+    "seed": "economy-ec09-0",
+    "year": 2025,
+    "worldFile": "/tmp/ec09-worlds/economy-ec09-0-2025.json",
+    "worldSha256": "eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302",
+    "clubs": [
+      "ENG:0:0:8",
+      "ESP:1:0:0",
+      "ENG:3:0:6"
+    ],
+    "weakEnglishClubSelectedBeforeSimulation": {
+      "id": "ENG:3:0:6",
+      "strength": 68,
+      "method": "minimum cached top-flight strength, ID tie-break; no forced result or relegation"
+    },
+    "ownedInputSource": "44a1069e54fbb6970cfd9b519f65773352954205"
+  },
+  "screenSeasons": 10,
+  "extension": "Extend to10 if initial player contracts have not all expired or fewer than2 mature seasons remain. Record each actual initial until-year and analyze transition separately.",
+  "screenTargets": {
+    "matureModernMeanModeledPayrollRevenue": [
+      0.45,
+      0.7
+    ],
+    "matureOperatingBeforeTradingRevenue": [
+      -0.05,
+      0.1
+    ],
+    "matureNetCashIncreaseRevenueAtMost": 0.15,
+    "clubBankruptciesAboveMatchedBaseline": 0,
+    "note": "Screening targets do not replace existing full career/books/champions gates. Report every case and squad strength/division; do not claim every weak or recently promoted club must meet the average band."
+  },
+  "measurementDefinitions": [
+    "Exact settled player/manager/coaching payments and modeled total; retain pre-round sample separately",
+    "OPEX, domestic equal/minimum package, merit, parachute, cup/continental, commercial, gate, purchases and sales separately",
+    "Exact cash-boundary and ledger identities; no owner money or automatic cash destruction",
+    "Actual owned continuation for contract lag; preserve its paid contracts and book/cash transients"
+  ],
+  "holdouts": {
+    "unseenSeeds": [
+      "economy-ec10-1",
+      "economy-ec10-2"
+    ],
+    "countries": [
+      "ENG",
+      "ESP",
+      "GER",
+      "BEL"
+    ],
+    "minimumSeasons": 5,
+    "arms": [
+      "baseline",
+      "selected joint"
+    ],
+    "condition": "At least2 mature seasons; extend to10 as needed. Report naturally relegated/promoted cases and owner solvency separately."
+  },
+  "productionValidation": [
+    "Shared exact pre1992 checkpoints are reusable only on proven identical rules; live later candidate history under its own quotes/distributions",
+    "ECON29 exact reference facility policy and50-season averages, with2000s rows beside",
+    "CLUB48 NPC books and champions gates, preserving statutory source/relative-star terms",
+    "Existing LEAGUE13 solvency/growth gates and T712 ability-fit rejection remain authoritative",
+    "Independent exact-commit reviews and complete combined pre-main-push checks including ChromiumE2E"
+  ],
+  "baselineRevisionReason": "Published owner/history main44 replaces main96 before any economic scenario; freezes common monthly business/annual living semantics"
+}

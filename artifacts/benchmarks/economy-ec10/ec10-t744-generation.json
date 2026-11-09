@@ -1,0 +1,44 @@
+{
+  "source": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "cwd": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T744-e36f2f50",
+  "started": "2026-11-09T06:51:09.165Z",
+  "before": {
+    "tests/fixtures/portable-v1.json": "67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f",
+    "tests/fixtures/prepared/manager-journey.json": "5bc3972cdd30b92ec8fdb1cefd900623186e62211078c9cfbb1c1e4ce3a5cd1c",
+    "tests/fixtures/prepared/manager-activation.json": "05f35ff36c9e193abb433855f19984d4bc8f6fe0315b6885b3951a802e4f67d6"
+  },
+  "stages": [
+    {
+      "argv": [
+        "exec",
+        "tsx",
+        "scripts/prepare-manager-fixtures.ts",
+        "--write"
+      ],
+      "code": 0,
+      "seconds": 70.069
+    },
+    {
+      "argv": [
+        "exec",
+        "tsx",
+        "scripts/update-golden.ts",
+        "--write"
+      ],
+      "code": 0,
+      "seconds": 23.597
+    }
+  ],
+  "passed": true,
+  "after": {
+    "tests/fixtures/portable-v1.json": "b79bbc5beda1181388dfd3592e62410df1bcd8a3def2daeff24ebe3c03fa95dd",
+    "tests/fixtures/prepared/manager-journey.json": "51a624c0a1387f954ef58d9bd4e79062653a990da468f0f626da4b897066b94d",
+    "tests/fixtures/prepared/manager-activation.json": "fff9770d1e4363813efc283a677382b0ce0761aa0eda90f95dcfb97ac210a470"
+  },
+  "changed": [
+    "tests/fixtures/portable-v1.json",
+    "tests/fixtures/prepared/manager-activation.json",
+    "tests/fixtures/prepared/manager-journey.json"
+  ],
+  "finished": "2026-11-09T06:52:42.862Z"
+}

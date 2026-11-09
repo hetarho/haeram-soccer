@@ -1,0 +1,25 @@
+{
+  "source": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "cwd": "/home/deep/haeram/.haeram-worktrees/haeram-soccor-17cecd52/economy-ec09-T744-e36f2f50",
+  "started": "2026-11-09T06:50:41.901Z",
+  "before": {
+    "tests/fixtures/portable-v1.json": "67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f",
+    "tests/fixtures/prepared/manager-journey.json": "5bc3972cdd30b92ec8fdb1cefd900623186e62211078c9cfbb1c1e4ce3a5cd1c",
+    "tests/fixtures/prepared/manager-activation.json": "05f35ff36c9e193abb433855f19984d4bc8f6fe0315b6885b3951a802e4f67d6"
+  },
+  "stages": [
+    {
+      "argv": [
+        "exec",
+        "tsx",
+        "scripts/prepare-manager-fixtures.ts",
+        "--write"
+      ],
+      "code": 1,
+      "seconds": 1.211
+    }
+  ],
+  "passed": false,
+  "error": "Error: EC10_FIXTURE_GENERATION\n    at file:///tmp/ec10-generate-final-fixtures.mjs:5:317\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)",
+  "finished": "2026-11-09T06:50:43.123Z"
+}

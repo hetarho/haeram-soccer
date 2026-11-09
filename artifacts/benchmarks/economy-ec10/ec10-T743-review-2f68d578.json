@@ -1,0 +1,5 @@
+{
+  "verdict": "approved",
+  "summary": "T743 independently reviewed at fixed commit 04d966d95eda188e78818a70e0c60e3214921e7a against base 507d0d1c0c65da55513cd643cd10b2a029ab7d55. Exact payroll is read before rollover in season currency and existing price units; raw components/coverage/version and former samples are retained. Ended partial seasons stay outside completed-season bands, observer restoration uses finally, NPC comparisons use labeled player-only amounts, and unmarked retained reports remain explicitly sampled/unknown. Source diff preserves monthly owner business, seasonLivingCost, selection, build policy, progression and stops. Independently reran the 8 named unit tests successfully using a clean author checkout whose HEAD and all four tested source/helper hashes matched the fixed review workspace; the fixed workspace has no dependencies installed. Approval covers measurement implementation and unit evidence only: coordinator actual observer invariance, full reference and economic acceptance gates remain required.",
+  "findings": []
+}

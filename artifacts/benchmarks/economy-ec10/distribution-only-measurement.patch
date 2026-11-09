@@ -1,0 +1,691 @@
+diff --git a/packages/engine/src/club-value.ts b/packages/engine/src/club-value.ts
+index 59dd4344..bb06969d 100644
+--- a/packages/engine/src/club-value.ts
++++ b/packages/engine/src/club-value.ts
+@@ -10,8 +10,8 @@ import { CLUB_TAKEOVER, CLUB_VALUE, OWNER_TIERS } from './owner-config';
+ import { squad, stature } from './world';
+ import { marketValueAt } from './market-prices';
+ import { facilityBuiltUnits, MAX_LEVEL, STADIUM_STEPS } from './facility-model';
+-import { broadcastQuote, footballQuote, quote } from './quotes';
+-import { DISTRIBUTION_CONFIG } from './finance';
++import { footballQuote, quote } from './quotes';
++import { leagueDistributionAt } from './finance';
+ import { fanFollowing } from './fans';
+ import { clamp, compareIds, ratio, scaleBy } from './primitives';
+ 
+@@ -57,12 +57,11 @@ export function clubFollowing(w: World, club: Club) {
+ }
+ 
+ /**
+- * One season of a division's distribution (→ECON-28): the equal share every club of it earns, in
+- * the country's money of `year` on the broadcasting index (→ECON-31).
++ * One season of the same minimum central package the division's clubs receive (→ECON-28), in
++ * the country's money of `year`, including the canonical normalization after broadcast pricing.
+  */
+ export function divisionDistribution(code: string, year: number, tier: number) {
+-  const table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
+-  return broadcastQuote(code, year, table[Math.min(tier, table.length - 1)]!);
++  return leagueDistributionAt(code, year, tier);
+ }
+ 
+ /** A club's cash less its debt: the owner's club's own, a club nobody owns's books (→ECON-36). */
+diff --git a/packages/engine/src/finance.ts b/packages/engine/src/finance.ts
+index 54809817..9c1c0211 100644
+--- a/packages/engine/src/finance.ts
++++ b/packages/engine/src/finance.ts
+@@ -33,9 +33,9 @@ export const FINANCE_CONFIG = {
+ 
+ /**
+  * League distributions (→ECON-28), measured against ECON-29 (spec/ssot/ECON.md): each
+- * country's equal share a season by division, from the top flight down, in 1901 price units before
+- * the broadcasting index (→ECON-31); the champion's total against the bottom club's; the share of
+- * the lost equal share a relegated club keeps for a season.
++ * country's minimum central package a season by division, from the top flight down, in 1901
++ * price units before the broadcasting index (→ECON-31); the champion's total against the bottom
++ * club's; the share of the lost package a relegated club keeps for a season.
+  */
+ export const DISTRIBUTION_CONFIG = {
+   share: {
+@@ -48,6 +48,21 @@ export const DISTRIBUTION_CONFIG = {
+     NED: [7000, 400],
+     BEL: [6400, 370],
+   } as Record<string, readonly number[]>,
++  /**
++   * ENG's top-flight central pot, fitted to official 2018/19 and 2024/25 totals with the retained
++   * rank spread. This package includes central commercial and televised-appearance payments,
++   * distinct from club sponsorship and stadium facilities. Interpolated years are estimates;
++   * the 2024/25 source table is itself rounded to £0.1m per component.
++   */
++  normalization: {
++    ENG: {
++      0: [
++        [1992, 1],
++        [2018, 0.8520865440307794],
++        [2024, 0.6580851783905154],
++      ],
++    },
++  } as Record<string, Record<number, [number, number][]>>,
+   champion: { top: 1.6, below: 1.3 },
+   parachute: 0.5,
+ };
+@@ -602,15 +617,34 @@ export function financialBreakdown(w: World) {
+ export function divisionLabel(tier: number) {
+   return sourceMessage('copy.cupRoute.3d1e4a6467', { p0: tier + 1 });
+ }
++/** A targeted league package's factor, geometric between anchors and flat outside them. */
++function leagueDistributionFactor(code: string, year: number, tier: number) {
++  const anchors = DISTRIBUTION_CONFIG.normalization[code]?.[tier];
++  if (!anchors) return 1;
++  if (year <= anchors[0][0]) return anchors[0][1];
++  for (let i = 1; i < anchors.length; i++) {
++    const [from, low] = anchors[i - 1],
++      [to, high] = anchors[i];
++    if (year <= to) return low * (high / low) ** ((year - from) / (to - from));
++  }
++  return anchors[anchors.length - 1][1];
++}
++/** Precision preserves the fitted central pot to minor-unit rounding across all 20 ranks. */
++const DISTRIBUTION_FACTOR_PRECISION = 1_000_000_000_000n;
+ /**
+- * The equal share every club of a division earns in a season (→ECON-28), in this season's money on
+- * the broadcasting index (→ECON-31); the settlement pays it in league-round installments through
+- * `roundShare`, and the merit payment and the parachute are reckoned from it.
++ * The modeled minimum central package every club of a division earns (→ECON-28), not an observed
++ * broadcast equal-share component. Its targeted normalization follows broadcast pricing; the
++ * settlement pays league-round installments, and merit, parachutes and club valuation read it.
+  */
++export function leagueDistributionAt(code: string, year: number, tier: number) {
++  const table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG,
++    quoted = broadcastQuote(code, year, table[Math.min(tier, table.length - 1)]),
++    factor = leagueDistributionFactor(code, year, tier);
++  return factor === 1 ? quoted : scaleBy(quoted, factor, DISTRIBUTION_FACTOR_PRECISION);
++}
++/** The current world's view of the canonical code/year/tier central package (→ECON-28). */
+ export function leagueShare(w: World, tier = clubOf(w).tier) {
+-  const code = clubOf(w).country,
+-    table = DISTRIBUTION_CONFIG.share[code] ?? DISTRIBUTION_CONFIG.share.ENG;
+-  return broadcastQuote(code, w.year, table[Math.min(tier, table.length - 1)]);
++  return leagueDistributionAt(clubOf(w).country, w.year, tier);
+ }
+ /**
+  * The merit payment for a final rank, paid at the close: nothing for the bottom club, rising evenly
+diff --git a/scripts/calibrate-cash-flow.ts b/scripts/calibrate-cash-flow.ts
+index 4d679e1e..f0699731 100644
+--- a/scripts/calibrate-cash-flow.ts
++++ b/scripts/calibrate-cash-flow.ts
+@@ -4,6 +4,9 @@
+  *   --world-file /tmp/world.json --world-source REV --club ENG:0:0:8 --seasons 5 --out run.json
+  * A missing world file is generated with the production history/day loop and kept with a
+  * .meta.json sidecar. Reuse both across revisions. --prepare writes it without taking over.
++ * --owned-world-file save.json continues an owned world without takeover/repricing. Its settings,
++ * stake, dividend and existing works stay as saved; --delegate-all and --owner-money-zero opt into
++ * the reference policy. --save-owned-world opening.json retains the actual paired opening world.
+  * Monetary strings are nominal minor units, never inflation-adjusted. Paid-wage round samples
+  * follow owner-balance.ts; opening/closing annual wage bills are exact reads, not cash expenses.
+  */
+@@ -17,27 +20,32 @@ import { country } from '../packages/catalogs/src/index';
+ import { generateHistory, HISTORY_START, liveHistory } from '../packages/engine/src/history';
+ import { takeOver } from '../packages/engine/src/takeover';
+ import { advanceRound, closeSeason } from '../packages/engine/src/season';
+-import { clubOf } from '../packages/engine/src/player-state';
++import { activePlayers, clubOf } from '../packages/engine/src/player-state';
+ import { operatingCosts, seasonTurnover, wageBill } from '../packages/engine/src/finance';
+ import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
+ import { OWNER_LIVING } from '../packages/engine/src/owner-config';
+-import { SEASON_ROUNDS } from '../packages/engine/src/calendar';
++import { currentDay, SEASON_ROUNDS } from '../packages/engine/src/calendar';
+ import { countZeroFeeArrivals } from './lib/transfer-flow';
++import { observeSettlementPayroll } from './lib/settlement-payroll';
+ 
+ const args = process.argv.slice(2);
+ const option = (name: string, fallback: string) => {
+   const at = args.indexOf(`--${name}`);
+   return at < 0 ? fallback : args[at + 1];
+ };
+-const year = Number(option('year', '1950'));
++const ownedFile = option('owned-world-file', '');
++const ownedInput = ownedFile ? (JSON.parse(readFileSync(ownedFile, 'utf8')) as World) : undefined;
++if (ownedInput && (!ownedInput.owner || !ownedInput.playerClub))
++  throw new Error('Owned continuation requires an already-owned World JSON');
++const year = Number(option('year', String(ownedInput?.year ?? 1950)));
+ const seasons = Number(option('seasons', '5'));
+ if (!Number.isInteger(year) || year < HISTORY_START || !Number.isInteger(seasons) || seasons < 0)
+   throw new Error('Invalid year or season count');
+-const code = option('country', 'ENG') as CountryCode;
++const code = option('country', ownedInput ? clubOf(ownedInput).country : 'ENG') as CountryCode;
+ country(code);
+-const seed = option('seed', 'economy-0');
+-const tier = option('tier', 'oil') as WealthTier;
+-const file = option('world-file', '');
++const seed = option('seed', ownedInput?.seed ?? 'economy-0');
++const tier = option('tier', ownedInput?.owner?.tier ?? 'oil') as WealthTier;
++const file = ownedFile || option('world-file', '');
+ const sourceRevision = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+ const diff = execFileSync('git', ['diff', 'HEAD'], {
+   encoding: 'utf8',
+@@ -50,6 +58,9 @@ const source = {
+ const scriptSha256 = createHash('sha256')
+   .update(readFileSync(new URL(import.meta.url)))
+   .digest('hex');
++const payrollObserverSha256 = createHash('sha256')
++  .update(readFileSync(new URL('./lib/settlement-payroll.ts', import.meta.url)))
++  .digest('hex');
+ let world: World;
+ let generatedBy: unknown;
+ if (file && existsSync(file)) {
+@@ -66,14 +77,18 @@ if (file && existsSync(file)) {
+     writeFileSync(`${file}.meta.json`, JSON.stringify(generatedBy, null, 2));
+   }
+ }
+-if (world.seed !== seed || world.year !== year || world.playerClub || world.owner)
+-  throw new Error('World file must be the specified seed/year before any takeover');
++if (world.seed !== seed || world.year !== year || (!ownedFile && (world.playerClub || world.owner)))
++  throw new Error('World file must match the requested seed/year and ownership mode');
+ const worldSha256 = createHash('sha256').update(JSON.stringify(world)).digest('hex');
+ const identity = {
+   source,
+   scriptSha256,
++  payrollObserverSha256,
+   generatedBy,
+   worldSha256,
++  inputFileSha256:
++    file && existsSync(file) ? createHash('sha256').update(readFileSync(file)).digest('hex') : null,
++  inputMode: ownedFile ? 'owned-continuation' : 'ownerless-takeover',
+   worldFile: file ? resolve(file) : null,
+   seed,
+   year,
+@@ -84,128 +99,218 @@ if (args.includes('--prepare')) {
+   process.stdout.write(`${JSON.stringify(identity, null, 2)}\n`);
+   process.exit(0);
+ }
+-const club = option('club', `${code}:0:0:8`);
++const club = option('club', ownedFile ? world.playerClub : `${code}:0:0:8`);
+ if (world.clubs.find((candidate) => candidate.id === club)?.country !== code)
+   throw new Error('Club must exist in the requested country');
+-takeOver(world, club, { tier, traits: [] });
+-world.settings = defaultSettings();
+-for (const key of RESPONSIBILITY_KEYS) world.settings.responsibilities[key] = 'delegated';
+-world.owner!.stake = 0;
+-world.owner!.dividendShare = 0;
++if (ownedFile && club !== world.playerClub)
++  throw new Error('Owned continuation cannot change club');
++if (ownedFile && tier !== world.owner!.tier)
++  throw new Error('Owned continuation cannot change owner tier');
++if (!ownedFile) takeOver(world, club, { tier, traits: [] });
++const delegateAll = !ownedFile || args.includes('--delegate-all');
++if (delegateAll) {
++  world.settings = defaultSettings();
++  for (const key of RESPONSIBILITY_KEYS) world.settings.responsibilities[key] = 'delegated';
++}
++const zeroOwnerMoney = !ownedFile || args.includes('--owner-money-zero');
++if (zeroOwnerMoney) {
++  world.owner!.stake = 0;
++  world.owner!.dividendShare = 0;
++}
+ if (args.includes('--purse-apart')) (OWNER_LIVING as { season: number }).season = 0;
++const initialContracts = activePlayers(world).map((p) => ({
++  id: p.id,
++  wage: p.wage,
++  until: p.until,
++  remainingSeasons: p.until - world.year,
++  ...(p.clauses ? { clauses: p.clauses } : {}),
++}));
++const initialContractHorizon = {
++  year: world.year,
++  round: world.round,
++  day: currentDay(world),
++  players: initialContracts,
++  manager: { wage: world.manager.wage, until: world.manager.until },
++  coaches: (world.staff ?? []).map((p) => ({ id: p.id, wage: p.wage, until: p.until })),
++};
++const initialContractSha256 = createHash('sha256')
++  .update(JSON.stringify(initialContractHorizon))
++  .digest('hex');
++const openingOwnedWorldSha256 = createHash('sha256').update(JSON.stringify(world)).digest('hex');
++const policy = {
++  settings: delegateAll ? 'all-delegated' : 'preserved',
++  ownerMoney: zeroOwnerMoney ? 'stake-and-dividend-zero' : 'preserved',
++  settingsAtStart: structuredClone(world.settings ?? null),
++  stake: world.owner!.stake,
++  dividendShare: world.owner!.dividendShare,
++  automaticConstruction: false,
++  existingFacilityWorks: structuredClone(world.facilityWorks ?? []),
++};
++const savedOwnedFile = option('save-owned-world', '');
++if (savedOwnedFile) {
++  writeFileSync(savedOwnedFile, JSON.stringify(world));
++  writeFileSync(
++    `${savedOwnedFile}.meta.json`,
++    JSON.stringify(
++      { ...identity, openingOwnedWorldSha256, initialContractSha256, policy },
++      null,
++      2,
++    ),
++  );
++}
+ const rows = [];
+ const sum = (values: readonly string[]) =>
+   values.reduce((total, value) => total + BigInt(value), 0n);
+-for (let index = 0; index < seasons && !careerEnded(world); index++) {
+-  const currentYear = world.year;
+-  const openingCash = world.cash;
+-  // New-summer business can already have happened in takeOver/closeSeason. Subtract its
+-  // ledger net from live cash to give this year's actual opening boundary.
+-  const openingLedgerIncome = world.income;
+-  const openingLedgerExpense = world.expense;
+-  const openingBoundaryCash = (
+-    BigInt(openingCash) -
+-    BigInt(openingLedgerIncome) +
+-    BigInt(openingLedgerExpense)
+-  ).toString();
+-  const openingCurrency = world.currency;
+-  const openingWageBill = wageBill(world);
+-  const division = clubOf(world).tier;
+-  let paidWagesRoundSamples = 0n;
+-  while (world.round < SEASON_ROUNDS && !careerEnded(world)) {
+-    const payments = operatingCosts(world, world.round + 1).payments;
+-    paidWagesRoundSamples += sum([
+-      payments.playerWages,
+-      payments.managerWage,
+-      payments.staffWages ?? '0',
+-    ]);
+-    advanceRound(world, undefined, false);
++const payroll = observeSettlementPayroll(world);
++try {
++  for (let index = 0; index < seasons && !careerEnded(world); index++) {
++    const currentYear = world.year;
++    const openingCash = world.cash;
++    // New-summer business can already have happened in takeOver/closeSeason. Subtract its
++    // ledger net from live cash to give this year's actual opening boundary.
++    const openingLedgerIncome = world.income;
++    const openingLedgerExpense = world.expense;
++    const openingBoundaryCash = (
++      BigInt(openingCash) -
++      BigInt(openingLedgerIncome) +
++      BigInt(openingLedgerExpense)
++    ).toString();
++    const openingCurrency = world.currency;
++    const openingWageBill = wageBill(world);
++    const division = clubOf(world).tier;
++    const firstObservedRound = world.round + 1;
++    let paidWagesRoundSamples = 0n;
++    while (world.round < SEASON_ROUNDS && !careerEnded(world)) {
++      const payments = operatingCosts(world, world.round + 1).payments;
++      paidWagesRoundSamples += sum([
++        payments.playerWages,
++        payments.managerWage,
++        payments.staffWages ?? '0',
++      ]);
++      advanceRound(world, undefined, false);
++    }
++    const closingAnnualWageBill = wageBill(world);
++    const lastObservedRound = world.round;
++    const turnover = seasonTurnover(world).toString();
++    const beforeClose = {
++      cash: world.cash,
++      income: world.income,
++      expense: world.expense,
++      currency: world.currency,
++    };
++    // Real season close includes merit, sales, contract settlements and the next summer opening.
++    // Archived cash belongs to this year; live cash after close belongs to the new year.
++    if (!careerEnded(world)) closeSeason(world);
++    const archive = world.history.findLast((entry) => entry.year === currentYear);
++    const closed = archive && archive.year === currentYear ? archive : beforeClose;
++    const settled = payroll.read(
++      currentYear,
++      closed.currency,
++      firstObservedRound,
++      lastObservedRound,
++    );
++    const yearEvents = world.events.filter((event) => event.year === currentYear);
++    // Money is in the closed season's currency. Nonmonetary arrivals have no currency and
++    // must survive independently; bid history is prunable and zero-fee transfer facts absent.
++    const events = yearEvents.filter((event) => event.currency === closed.currency);
++    const zeroFee = countZeroFeeArrivals(yearEvents, currentYear, closed.currency);
++    const amountOf = (kind: string) =>
++      sum(events.filter((event) => event.kind === kind).map((event) => event.amount ?? '0'));
++    const operatingExpenses = amountOf('operating-expenses');
++    if (firstObservedRound === 1 && operatingExpenses !== BigInt(settled.operatingExpenses))
++      throw new Error(`Observed operating expenses disagree with the ${currentYear} ledger`);
++    const leagueShare = amountOf('league-share'),
++      leagueMerit = amountOf('league-merit'),
++      parachute = amountOf('parachute');
++    const sales = sum(
++      events
++        .filter((event) => ['transfer-out', 'free-transfer-compensation'].includes(event.kind))
++        .map((event) => event.amount ?? '0'),
++    );
++    const purchases = sum(
++      events.filter((event) => event.kind === 'transfer-in').map((event) => event.amount ?? '0'),
++    );
++    const arrivals =
++      world.transfers?.facts.filter(
++        (fact) => fact.year === currentYear && fact.direction === 'in' && !fact.loan,
++      ) ?? [];
++    const paidFees = arrivals
++      .map((fact) => BigInt(fact.fee))
++      .filter((fee) => fee > 0n)
++      .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
++    const saleTurnover = sum(
++      events
++        .filter((event) =>
++          ['transfer-out', 'free-transfer-compensation', 'owner-injection'].includes(event.kind),
++        )
++        .map((event) => event.amount ?? '0'),
++    );
++    rows.push({
++      year: currentYear,
++      division,
++      rank: archive?.rank ?? null,
++      openingCurrency,
++      currency: closed.currency,
++      openingCash,
++      openingLedgerIncome,
++      openingLedgerExpense,
++      openingBoundaryCash,
++      closingCash: closed.cash,
++      income: closed.income,
++      expense: closed.expense,
++      turnover: archive ? (BigInt(closed.income) - saleTurnover).toString() : turnover,
++      purchases: purchases.toString(),
++      sales: sales.toString(),
++      openingAnnualWageBill: openingWageBill,
++      closingAnnualWageBill,
++      paidWagesRoundSamples: paidWagesRoundSamples.toString(),
++      settledPlayerWages: settled.playerWages,
++      settledManagerWages: settled.managerWages,
++      settledCoachingWages: settled.coachingWages,
++      settledWages: settled.payroll,
++      settledOperatingExpenses: settled.operatingExpenses,
++      operatingExpenses: operatingExpenses.toString(),
++      domesticDistribution: (leagueShare + leagueMerit + parachute).toString(),
++      distributionComponents: {
++        leagueShare: leagueShare.toString(),
++        leagueMerit: leagueMerit.toString(),
++        parachute: parachute.toString(),
++      },
++      payrollCoverage: {
++        firstRound: settled.firstRound,
++        lastRound: settled.lastRound,
++        count: settled.count,
++        completeSeason: firstObservedRound === 1 && lastObservedRound === SEASON_ROUNDS,
++      },
++      payrollSettlements: settled.records,
++      paidArrivals: paidFees.length,
++      zeroFeeTransferMoves: zeroFee.zeroFeeMoves,
++      freeTopUpArrivals: zeroFee.topUps,
++      // Zero-fee ledger moves include zero-fee loans: the ledger does not encode free-agent origin.
++      zeroFeeArrivals: zeroFee.total,
++      paidMeanFee: paidFees.length
++        ? (paidFees.reduce((a, b) => a + b, 0n) / BigInt(paidFees.length)).toString()
++        : null,
++      paidMedianFee: paidFees.length
++        ? (
++            (paidFees[Math.floor((paidFees.length - 1) / 2)] +
++              paidFees[Math.floor(paidFees.length / 2)]) /
++            2n
++          ).toString()
++        : null,
++      ledgerEvents: yearEvents.filter(
++        (event) => event.amount === undefined || event.currency === closed.currency,
++      ),
++      arrivalFacts: arrivals,
++    });
++    process.stderr.write(
++      `${currentYear}: ${club}, cash ${closed.cash}, paid ${paidFees.length}, zero-fee ${zeroFee.total}\n`,
++    );
+   }
+-  const closingAnnualWageBill = wageBill(world);
+-  const turnover = seasonTurnover(world).toString();
+-  const beforeClose = {
+-    cash: world.cash,
+-    income: world.income,
+-    expense: world.expense,
+-    currency: world.currency,
+-  };
+-  // Real season close includes merit, sales, contract settlements and the next summer opening.
+-  // Archived cash belongs to this year; live cash after close belongs to the new year.
+-  if (!careerEnded(world)) closeSeason(world);
+-  const archive = world.history.findLast((entry) => entry.year === currentYear);
+-  const closed = archive && archive.year === currentYear ? archive : beforeClose;
+-  const yearEvents = world.events.filter((event) => event.year === currentYear);
+-  // Money is in the closed season's currency. Nonmonetary arrivals have no currency and
+-  // must survive independently; bid history is prunable and zero-fee transfer facts absent.
+-  const events = yearEvents.filter((event) => event.currency === closed.currency);
+-  const zeroFee = countZeroFeeArrivals(yearEvents, currentYear, closed.currency);
+-  const sales = sum(
+-    events
+-      .filter((event) => ['transfer-out', 'free-transfer-compensation'].includes(event.kind))
+-      .map((event) => event.amount ?? '0'),
+-  );
+-  const purchases = sum(
+-    events.filter((event) => event.kind === 'transfer-in').map((event) => event.amount ?? '0'),
+-  );
+-  const arrivals =
+-    world.transfers?.facts.filter(
+-      (fact) => fact.year === currentYear && fact.direction === 'in' && !fact.loan,
+-    ) ?? [];
+-  const paidFees = arrivals
+-    .map((fact) => BigInt(fact.fee))
+-    .filter((fee) => fee > 0n)
+-    .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
+-  const saleTurnover = sum(
+-    events
+-      .filter((event) =>
+-        ['transfer-out', 'free-transfer-compensation', 'owner-injection'].includes(event.kind),
+-      )
+-      .map((event) => event.amount ?? '0'),
+-  );
+-  rows.push({
+-    year: currentYear,
+-    division,
+-    rank: archive?.rank ?? null,
+-    openingCurrency,
+-    currency: closed.currency,
+-    openingCash,
+-    openingLedgerIncome,
+-    openingLedgerExpense,
+-    openingBoundaryCash,
+-    closingCash: closed.cash,
+-    income: closed.income,
+-    expense: closed.expense,
+-    turnover: archive ? (BigInt(closed.income) - saleTurnover).toString() : turnover,
+-    purchases: purchases.toString(),
+-    sales: sales.toString(),
+-    openingAnnualWageBill: openingWageBill,
+-    closingAnnualWageBill,
+-    paidWagesRoundSamples: paidWagesRoundSamples.toString(),
+-    paidArrivals: paidFees.length,
+-    zeroFeeTransferMoves: zeroFee.zeroFeeMoves,
+-    freeTopUpArrivals: zeroFee.topUps,
+-    // Zero-fee ledger moves include zero-fee loans: the ledger does not encode free-agent origin.
+-    zeroFeeArrivals: zeroFee.total,
+-    paidMeanFee: paidFees.length
+-      ? (paidFees.reduce((a, b) => a + b, 0n) / BigInt(paidFees.length)).toString()
+-      : null,
+-    paidMedianFee: paidFees.length
+-      ? (
+-          (paidFees[Math.floor((paidFees.length - 1) / 2)] +
+-            paidFees[Math.floor(paidFees.length / 2)]) /
+-          2n
+-        ).toString()
+-      : null,
+-    ledgerEvents: yearEvents.filter(
+-      (event) => event.amount === undefined || event.currency === closed.currency,
+-    ),
+-    arrivalFacts: arrivals,
+-  });
+-  process.stderr.write(
+-    `${currentYear}: ${club}, cash ${closed.cash}, paid ${paidFees.length}, zero-fee ${zeroFee.total}\n`,
+-  );
++} finally {
++  payroll.stop();
+ }
+-const output = `${JSON.stringify({ ...identity, arrivalAccounting: 'ledger-zero-fee-including-loans-and-topups-v2', club, scenarios: year < 1980 ? 'historical' : 'modern', purseApart: args.includes('--purse-apart'), ownerMoneyMoved: false, construction: false, seasons: rows, ended: world.ended ?? world.bankrupt ?? null }, null, 2)}\n`;
++const output = `${JSON.stringify({ ...identity, initialContractHorizon, initialContractSha256, openingOwnedWorldSha256, policy, payrollAccounting: 'verified-operating-cost-boundary-v1', arrivalAccounting: 'ledger-zero-fee-including-loans-and-topups-v2', club, scenarios: year < 1980 ? 'historical' : 'modern', purseApart: args.includes('--purse-apart'), construction: false, seasons: rows, ended: world.ended ?? world.bankrupt ?? null }, null, 2)}\n`;
+ const out = option('out', '');
+ if (out) writeFileSync(out, output);
+ else process.stdout.write(output);
+diff --git a/scripts/lib/settlement-payroll.ts b/scripts/lib/settlement-payroll.ts
+new file mode 100644
+index 00000000..89d2a7a5
+--- /dev/null
++++ b/scripts/lib/settlement-payroll.ts
+@@ -0,0 +1,156 @@
++import type { Event, World } from '../../packages/contracts/src/types';
++import { operatingCosts } from '../../packages/engine/src/finance';
++import { SEASON_ROUNDS } from '../../packages/engine/src/calendar';
++
++/** Exact league-round installments, not employment bonuses or termination payments. */
++export interface SettledPayroll {
++  playerWages: string;
++  managerWages: string;
++  coachingWages: string;
++  payroll: string;
++  operatingExpenses: string;
++  loanRepayment: string;
++  otherOperatingCosts: string;
++  operatingCostAmount: string;
++}
++export interface PayrollSettlement extends SettledPayroll {
++  year: number;
++  currency: string;
++  round: number;
++}
++const fields = [
++  'playerWages',
++  'managerWages',
++  'coachingWages',
++  'payroll',
++  'operatingExpenses',
++  'loanRepayment',
++  'otherOperatingCosts',
++  'operatingCostAmount',
++] as const satisfies readonly (keyof SettledPayroll)[];
++
++/**
++ * Measurement-only boundary observer. addEvent pushes operating-cost synchronously after the
++ * debit, before wages or policy can change again. Its amount excludes operating expenses and
++ * loan installments. We recompute that same round's components and fail closed if they disagree.
++ * No display prose is parsed. Array methods are nonenumerable; replacements are instrumented,
++ * while retained/pruned historical events are never replayed into the observations.
++ *
++ * Only plain writable World.events data properties are supported. stop() restores its descriptor
++ * and every array's push method, retaining whichever event array production assigned last.
++ */
++export function observeSettlementPayroll(world: World) {
++  const descriptor = Object.getOwnPropertyDescriptor(world, 'events');
++  if (!descriptor?.configurable || !descriptor.writable || !('value' in descriptor))
++    throw new Error('Payroll observation requires a configurable, writable events data property');
++  const arrays = new Map<Event[], PropertyDescriptor | undefined>();
++  const settlements = new Map<string, PayrollSettlement>();
++  let active = true;
++  const key = (year: number, currency: string, round: number) => `${year}:${currency}:${round}`;
++
++  const capture = (event: Event) => {
++    if (event.kind !== 'operating-cost') return;
++    if (
++      event.year !== world.year ||
++      event.round !== world.round ||
++      event.currency !== world.currency ||
++      event.amount === undefined
++    )
++      throw new Error('Payroll settlement event does not match the live year, round and currency');
++    if (!Number.isInteger(event.round) || event.round < 1 || event.round > SEASON_ROUNDS)
++      throw new Error('Payroll settlement round is outside the league season');
++    const id = key(event.year, event.currency, event.round);
++    if (settlements.has(id)) throw new Error(`Duplicate payroll settlement ${id}`);
++    const payments = operatingCosts(world, world.round).payments;
++    const playerWages = BigInt(payments.playerWages),
++      managerWages = BigInt(payments.managerWage),
++      coachingWages = BigInt(payments.staffWages ?? '0'),
++      payroll = playerWages + managerWages + coachingWages,
++      other =
++        BigInt(payments.maintenance) +
++        BigInt(payments.investment ?? '0') +
++        BigInt(payments.academy ?? '0');
++    if (payroll + other !== BigInt(event.amount))
++      throw new Error(`Payroll components do not match operating-cost at ${id}`);
++    settlements.set(id, {
++      year: event.year,
++      currency: event.currency,
++      round: event.round,
++      playerWages: playerWages.toString(),
++      managerWages: managerWages.toString(),
++      coachingWages: coachingWages.toString(),
++      payroll: payroll.toString(),
++      operatingExpenses: payments.expenses,
++      loanRepayment: payments.loan ?? '0',
++      otherOperatingCosts: other.toString(),
++      operatingCostAmount: event.amount,
++    });
++  };
++
++  const instrument = (events: Event[]) => {
++    if (!Array.isArray(events)) throw new Error('Payroll observation requires an event array');
++    if (!arrays.has(events)) {
++      const pushDescriptor = Object.getOwnPropertyDescriptor(events, 'push');
++      const push = events.push;
++      arrays.set(events, pushDescriptor);
++      Object.defineProperty(events, 'push', {
++        configurable: true,
++        writable: true,
++        enumerable: false,
++        value: function (this: Event[], ...items: Event[]) {
++          if (active && this === events) for (const event of items) capture(event);
++          return Reflect.apply(push, this, items) as number;
++        },
++      });
++    }
++    return events;
++  };
++  let events = instrument(world.events);
++  Object.defineProperty(world, 'events', {
++    configurable: true,
++    enumerable: descriptor.enumerable,
++    get: () => events,
++    set: (next: Event[]) => {
++      events = instrument(next);
++    },
++  });
++
++  return {
++    /** Missing installments are errors even if event retention has already pruned the ledger. */
++    read(year: number, currency: string, firstRound: number, lastRound: number) {
++      if (
++        !Number.isInteger(firstRound) ||
++        !Number.isInteger(lastRound) ||
++        firstRound < 1 ||
++        firstRound > SEASON_ROUNDS + 1 ||
++        lastRound < 0 ||
++        lastRound > SEASON_ROUNDS ||
++        firstRound > lastRound + 1
++      )
++        throw new Error('Invalid payroll observation round coverage');
++      const records: PayrollSettlement[] = [];
++      for (let round = firstRound; round <= lastRound; round++) {
++        const id = key(year, currency, round),
++          record = settlements.get(id);
++        if (!record) throw new Error(`Missing payroll settlement ${id}`);
++        records.push({ ...record });
++      }
++      const totals = Object.fromEntries(
++        fields.map((field) => [
++          field,
++          records.reduce((sum, record) => sum + BigInt(record[field]), 0n).toString(),
++        ]),
++      ) as unknown as SettledPayroll;
++      return { firstRound, lastRound, count: records.length, ...totals, records };
++    },
++    stop() {
++      if (!active) return;
++      active = false;
++      Object.defineProperty(world, 'events', { ...descriptor, value: events });
++      for (const [array, original] of arrays) {
++        if (original) Object.defineProperty(array, 'push', original);
++        else Reflect.deleteProperty(array, 'push');
++      }
++    },
++  };
++}

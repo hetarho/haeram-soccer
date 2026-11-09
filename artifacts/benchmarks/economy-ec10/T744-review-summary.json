@@ -1,0 +1,209 @@
+{
+  "source": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "fixtures": {
+    "tests/fixtures/portable-v1.json": {
+      "beforeFileHash": "67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f",
+      "generatedFileHash": "b79bbc5beda1181388dfd3592e62410df1bcd8a3def2daeff24ebe3c03fa95dd",
+      "allJSONChanges": 0
+    },
+    "tests/fixtures/prepared/manager-journey.json": {
+      "beforeFileHash": "5bc3972cdd30b92ec8fdb1cefd900623186e62211078c9cfbb1c1e4ce3a5cd1c",
+      "generatedFileHash": "51a624c0a1387f954ef58d9bd4e79062653a990da468f0f626da4b897066b94d",
+      "sourceBefore": {
+        "dirty": false,
+        "commit": "84a128d2737f8638c09037b1682a9f89f33ca35a",
+        "computation": "2cbf9f493643b087f5c68a44cc42f8effdf9917d89b8c73237691bd859b15344"
+      },
+      "sourceAfter": {
+        "dirty": false,
+        "commit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+        "computation": "7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86"
+      },
+      "allDecodedChanges": 1390,
+      "changedTopLevel": {
+        "events": 1385,
+        "owner": 3,
+        "shortlist": 2
+      },
+      "sameTopLevel": [
+        "academy",
+        "academyFacility",
+        "academyReviews",
+        "approvalWaits",
+        "bids",
+        "calendar",
+        "campaigns",
+        "cash",
+        "catalog",
+        "catalogHash",
+        "clubs",
+        "coachingMarketAt",
+        "cupWinners",
+        "cups",
+        "currency",
+        "discipline",
+        "engine",
+        "europe",
+        "expense",
+        "fixtures",
+        "freeAgents",
+        "hardStreak",
+        "history",
+        "id",
+        "inbox",
+        "income",
+        "lastChampions",
+        "manager",
+        "managerHistory",
+        "managerMarket",
+        "matchModel",
+        "morale",
+        "npcSeason",
+        "operatingExpenses",
+        "ownMatches",
+        "people",
+        "playerClub",
+        "players",
+        "priceIndex",
+        "rankHistory",
+        "receiptIds",
+        "recentResults",
+        "replacementNeeds",
+        "revision",
+        "round",
+        "schema",
+        "scorerSeason",
+        "seed",
+        "settings",
+        "sponsors",
+        "stadium",
+        "staff",
+        "staffMarket",
+        "tables",
+        "tactic",
+        "ticket",
+        "trainingAt",
+        "trainingGround",
+        "year"
+      ],
+      "seedBefore": "manager-journey-2",
+      "seedAfter": "manager-journey-2",
+      "yearBefore": 1951,
+      "yearAfter": 1951,
+      "dayBefore": {
+        "day": 161
+      },
+      "dayAfter": {
+        "day": 161
+      },
+      "matchesBefore": 78,
+      "matchesAfter": 78,
+      "nonOwnerEventsEqual": true,
+      "livingCountsBefore": {
+        "1950": 4,
+        "1951": 1
+      },
+      "livingCountsAfter": {
+        "1950": 11,
+        "1951": 5
+      }
+    },
+    "tests/fixtures/prepared/manager-activation.json": {
+      "beforeFileHash": "05f35ff36c9e193abb433855f19984d4bc8f6fe0315b6885b3951a802e4f67d6",
+      "generatedFileHash": "fff9770d1e4363813efc283a677382b0ce0761aa0eda90f95dcfb97ac210a470",
+      "sourceBefore": {
+        "dirty": false,
+        "commit": "84a128d2737f8638c09037b1682a9f89f33ca35a",
+        "computation": "2cbf9f493643b087f5c68a44cc42f8effdf9917d89b8c73237691bd859b15344"
+      },
+      "sourceAfter": {
+        "dirty": false,
+        "commit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+        "computation": "7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86"
+      },
+      "allDecodedChanges": 725,
+      "changedTopLevel": {
+        "events": 720,
+        "owner": 3,
+        "shortlist": 2
+      },
+      "sameTopLevel": [
+        "academy",
+        "academyFacility",
+        "academyReviews",
+        "bids",
+        "calendar",
+        "campaigns",
+        "cash",
+        "catalog",
+        "catalogHash",
+        "clubs",
+        "coachingMarketAt",
+        "cupWinners",
+        "cups",
+        "currency",
+        "discipline",
+        "engine",
+        "europe",
+        "expense",
+        "fixtures",
+        "freeAgents",
+        "history",
+        "id",
+        "inbox",
+        "income",
+        "lastChampions",
+        "manager",
+        "managerMarket",
+        "morale",
+        "operatingExpenses",
+        "ownMatches",
+        "people",
+        "playerClub",
+        "players",
+        "priceIndex",
+        "rankHistory",
+        "receiptIds",
+        "recentResults",
+        "recruitmentArrivals",
+        "replacementNeeds",
+        "revision",
+        "round",
+        "schema",
+        "scorerSeason",
+        "seed",
+        "settings",
+        "sponsors",
+        "stadium",
+        "staff",
+        "staffMarket",
+        "tables",
+        "tactic",
+        "ticket",
+        "trainingAt",
+        "trainingGround",
+        "transfers",
+        "year"
+      ],
+      "seedBefore": "manager-activation",
+      "seedAfter": "manager-activation",
+      "yearBefore": 1951,
+      "yearAfter": 1951,
+      "dayBefore": {
+        "day": 21
+      },
+      "dayAfter": {
+        "day": 21
+      },
+      "matchesBefore": 50,
+      "matchesAfter": 50,
+      "nonOwnerEventsEqual": true,
+      "livingCountsBefore": {
+        "1950": 4
+      },
+      "livingCountsAfter": {
+        "1950": 11
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+import {writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
+import {resolve} from 'node:path';
+import {pathToFileURL} from 'node:url';
+const [out]=process.argv.slice(2);
+const source=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
+if(!out||source!=='60c5d4baa09a523cabc99b1f425f652d5b2f11e0')throw Error('EC10_SOURCE_ARGUMENTS');
+const {generateHistory,HISTORY_START,liveHistory}=await import(pathToFileURL(resolve('packages/engine/src/history.ts')).href);
+const seed='economy-ec09-0',year=2025;
+const world=liveHistory(generateHistory(seed,HISTORY_START),year),raw=JSON.stringify(world);
+const worldSha256=createHash('sha256').update(raw).digest('hex');
+if(worldSha256!=='eeab9ee49b0703c042e7639f41dc444d5318b9da323bb9e5b2590924cf40c302')throw Error('EC10_INPUT_HASH');
+writeFileSync(out,raw);writeFileSync(out+'.meta.json',JSON.stringify({source,seed,year,worldSha256,node:process.version},null,2));
+console.log(JSON.stringify({source,seed,year,worldSha256,out}));
