@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T05:05:37.303Z",
-  "sourceCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+  "snapshotAt": "2026-11-09T05:52:34.658Z",
+  "sourceCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -47,20 +47,14 @@
   },
   "summary": {
     "total": 9,
-    "completed": 6,
-    "remaining": 3,
+    "completed": 7,
+    "remaining": 2,
     "running": 1,
     "review": 0,
     "blocked": 0,
-    "unassigned": 2
+    "unassigned": 1
   },
   "tasks": [
-    {
-      "id": "T739",
-      "title": "separate the player wage era scale and observe settled payroll",
-      "dep": [],
-      "status": "doing"
-    },
     {
       "id": "T741",
       "title": "align financial integration expectations with the normalized central package",
@@ -75,7 +69,7 @@
       "dep": [
         "T740"
       ],
-      "status": "todo"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -467,9 +461,49 @@
       "contributors": [
         "ec10-wages"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T04:54:17.230Z",
-      "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2"
+      "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2",
+      "verifiedCommit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+      "submittedBase": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+      "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+      "submittedAt": "2026-11-09T05:06:00.683Z",
+      "risk": null,
+      "review": {
+        "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Scoped T739c8cd8717 follows CLUB63's candidate contract: the geometric era factor scales only the completed canonical marketWageAt quote after existing age/division/star terms; factor1 returns exact historical money, and fees, MARKET_CONFIG.wage, manager/staff quotes, ABILITY_FIT and stored contracts are untouched. Derived/free/renewal pricing uses the same leaf. The measurement-only observer intercepts synchronous operating-cost appends, recomputes that round's signed installments at the actual event boundary, asserts payroll plus nonpayroll equals the real operating-cost amount, rejects missing/duplicate/mismatched year/currency/round receipts, and retains coverage independently of event pruning/replacement. Nonenumerable array instrumentation and descriptor restoration preserve enumerable/clone facts in unit cases; there is no production schema/event/hook API change. The harness is baseline-compatible, records observer/script/input hashes, separates exact player/manager/modeled-staff payroll from pre-round samples, labels partial coverage, and supports already-owned continuation without takeover or default policy/contract rewriting; policy changes require explicit flags. Reviewer reran both named pure unit files:49/49 passed. No scoped blocker found. This approves implementation and measurement tooling only, not economic activation: actual progressed-world observer invariance, transition/mature careers, lived-candidate/held-out books/champions/solvency and required reference-career gates remain mandatory coordinator evidence before publication. Static repricing already warns the initial2.5 factor can overburden unchanged squads and is not a realism pass.",
+        "findings": [],
+        "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+        "baseCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+        "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+        "createdAt": "2026-11-09T05:06:26.591Z",
+        "finishedAt": "2026-11-09T05:08:28.433Z"
+      },
+      "steps": [
+        {
+          "taskId": "T739",
+          "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+          "at": "2026-11-09T05:06:00.637Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T05:05:46.807Z",
+              "finishedAt": "2026-11-09T05:05:59.668Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T05:05:46.807Z",
+          "finishedAt": "2026-11-09T05:05:59.668Z"
+        }
+      ]
     },
     {
       "id": "94b8e683-2230-4513-a281-c061a9b0f68c",
@@ -509,6 +543,8 @@
       "submittedBase": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
       "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
       "submittedAt": "2026-11-09T05:02:03.384Z",
+      "integratedCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+      "integratedAt": "2026-11-09T05:52:25.210Z",
       "risk": null,
       "review": {
         "id": "3329341b-4390-49df-8021-c0e595e718ae",
@@ -543,7 +579,30 @@
           "startedAt": "2026-11-09T05:01:49.422Z",
           "finishedAt": "2026-11-09T05:02:02.234Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:52:24.893Z",
+          "finishedAt": "2026-11-09T05:52:24.924Z"
+        }
       ]
+    },
+    {
+      "id": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "group": "economy-ec09",
+      "taskId": "T742",
+      "tasks": [
+        "T742"
+      ],
+      "lane": null,
+      "owner": "ec10-canonical",
+      "contributors": [
+        "ec10-canonical"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T05:52:27.638Z",
+      "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db"
     }
   ],
   "history": [
@@ -2319,6 +2378,193 @@
       "group": "economy-ec09",
       "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
       "taskId": "T740",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 903,
+      "at": "2026-11-09T05:05:46.081Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 904,
+      "at": "2026-11-09T05:06:00.683Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+        "submittedBase": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+        "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+        "submittedAt": "2026-11-09T05:06:00.683Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T739",
+            "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+            "at": "2026-11-09T05:06:00.637Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T05:05:46.807Z",
+                "finishedAt": "2026-11-09T05:05:59.668Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T05:05:46.807Z",
+            "finishedAt": "2026-11-09T05:05:59.668Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 905,
+      "at": "2026-11-09T05:06:26.592Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+          "baseCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+          "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+          "createdAt": "2026-11-09T05:06:26.591Z"
+        }
+      }
+    },
+    {
+      "sequence": 906,
+      "at": "2026-11-09T05:08:28.434Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Scoped T739c8cd8717 follows CLUB63's candidate contract: the geometric era factor scales only the completed canonical marketWageAt quote after existing age/division/star terms; factor1 returns exact historical money, and fees, MARKET_CONFIG.wage, manager/staff quotes, ABILITY_FIT and stored contracts are untouched. Derived/free/renewal pricing uses the same leaf. The measurement-only observer intercepts synchronous operating-cost appends, recomputes that round's signed installments at the actual event boundary, asserts payroll plus nonpayroll equals the real operating-cost amount, rejects missing/duplicate/mismatched year/currency/round receipts, and retains coverage independently of event pruning/replacement. Nonenumerable array instrumentation and descriptor restoration preserve enumerable/clone facts in unit cases; there is no production schema/event/hook API change. The harness is baseline-compatible, records observer/script/input hashes, separates exact player/manager/modeled-staff payroll from pre-round samples, labels partial coverage, and supports already-owned continuation without takeover or default policy/contract rewriting; policy changes require explicit flags. Reviewer reran both named pure unit files:49/49 passed. No scoped blocker found. This approves implementation and measurement tooling only, not economic activation: actual progressed-world observer invariance, transition/mature careers, lived-candidate/held-out books/champions/solvency and required reference-career gates remain mandatory coordinator evidence before publication. Static repricing already warns the initial2.5 factor can overburden unchanged squads and is not a realism pass.",
+          "findings": [],
+          "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+          "baseCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+          "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+          "createdAt": "2026-11-09T05:06:26.591Z",
+          "finishedAt": "2026-11-09T05:08:28.433Z"
+        }
+      }
+    },
+    {
+      "sequence": 907,
+      "at": "2026-11-09T05:52:25.101Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:52:24.893Z",
+            "finishedAt": "2026-11-09T05:52:24.924Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 908,
+      "at": "2026-11-09T05:52:25.210Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+        "integratedAt": "2026-11-09T05:52:25.210Z"
+      }
+    },
+    {
+      "sequence": 909,
+      "at": "2026-11-09T05:52:27.638Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "17641376-59d8-4346-8fd1-65a17bde0641",
+        "group": "economy-ec09",
+        "taskId": "T742",
+        "tasks": [
+          "T742"
+        ],
+        "lane": null,
+        "owner": "ec10-canonical",
+        "contributors": [
+          "ec10-canonical"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T05:52:27.638Z",
+        "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db"
+      }
+    },
+    {
+      "sequence": 910,
+      "at": "2026-11-09T05:52:29.704Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 911,
+      "at": "2026-11-09T05:52:31.276Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
