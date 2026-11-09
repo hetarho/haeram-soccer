@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T17:48:57.770Z",
-  "sourceCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+  "snapshotAt": "2026-11-09T20:38:50.966Z",
+  "sourceCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -62,49 +62,14 @@
   },
   "summary": {
     "total": 21,
-    "completed": 16,
-    "remaining": 5,
-    "running": 2,
-    "review": 1,
-    "blocked": 1,
-    "unassigned": 1
+    "completed": 21,
+    "remaining": 0,
+    "running": 0,
+    "review": 0,
+    "blocked": 0,
+    "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T754",
-      "title": "Refresh growth-chart details on locale changes",
-      "dep": [
-        "T752"
-      ],
-      "status": "ready"
-    },
-    {
-      "id": "T756",
-      "title": "Preserve cup title streaks across skipped seasons",
-      "dep": [],
-      "status": "blocked"
-    },
-    {
-      "id": "T760",
-      "title": "Use regulation scores in head-to-head records",
-      "dep": [],
-      "status": "todo"
-    },
-    {
-      "id": "T766",
-      "title": "Match capital mood previews to settlement",
-      "dep": [
-        "T747"
-      ],
-      "status": "doing"
-    },
-    {
-      "id": "T767",
-      "title": "Observe live league report state before reopening",
-      "dep": [],
-      "status": "doing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "563069b9-7a70-45d0-811d-e917f49d823d",
@@ -861,6 +826,8 @@
       "submittedBase": "a16e6d819fe0c02e4c224019af1af41ccea50372",
       "submissionId": "6626ef5c-7b3c-42a2-bfa0-74726a3c991c",
       "submittedAt": "2026-11-09T17:21:29.126Z",
+      "integratedCommit": "aece3fdf15bc28eec4f4097f7fc28968a28cbe43",
+      "integratedAt": "2026-11-09T18:37:28.923Z",
       "risk": null,
       "review": {
         "id": "2d589096-7cd4-4134-99be-cc3d48abd263",
@@ -914,6 +881,13 @@
           "finishedAt": "2026-11-09T17:21:25.605Z",
           "cached": "2026-11-09T16:37:05.840Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-09T17:49:25.150Z",
+          "finishedAt": "2026-11-09T18:37:04.497Z"
+        }
       ]
     },
     {
@@ -928,15 +902,33 @@
       "contributors": [
         "fi09-growth-locale"
       ],
-      "status": "ready",
-      "reason": null,
+      "status": "released",
+      "reason": "Source-ready checkpoint preserved at 7f2b0f1da78c7e071f868650de72e1e29d3426ac; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
       "createdAt": "2026-11-09T16:21:26.275Z",
       "startCommit": "c9110ae808a2c4a982cc0322b12759e07294abb7",
       "verifiedCommit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
       "submittedBase": "a16e6d819fe0c02e4c224019af1af41ccea50372",
       "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
       "submittedAt": "2026-11-09T16:38:50.983Z",
+      "releasedAt": "2026-11-09T18:20:15.231Z",
       "risk": null,
+      "reviewHistory": [
+        {
+          "id": "1645d648-b2b4-44fa-a310-b92693e04b4e",
+          "owner": "fi09-growth-locale-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Independent T754 review of pinned commit 7f2b0f1da78c7e071f868650de72e1e29d3426ac and submission 384aceff-f44f-4953-9b28-5e2b1be79861 against fcce405843cfb60d5be24d4d2c245eaa3177e6bc. Read the entire task/acceptance/result, complete current brief and ARCH-4/21/30/32 and WEB-54 blocks, full three-file author diff, formatter subscription and chart selection/geometry paths, and root/web localization guidance. The production change uses the actual LoadedLocale identity returned by useTextLocale as an additional trendSeries memo dependency. This updates preformatted money/supporter details under a real locale subscription while preserving the original country/year CPI and denomination conversion, numeric series, precision, history selection, metric memory and simulation/save facts. Five mounted tests use React.memo with identical world/history references, switch ko/de/ar for squad value, club value, cash and supporters, retain a pinned earlier season and geometry, assert source immutability, and verify ordinary revisions do not rerun conversion; cleanup restores root, locale/formatters, task memory, spies and globals. The preserved baseline shows four stale-detail failures and one passing revision check. Reused focused five-test success and native exact-submission six-file/42-test affected verification with typecheck/lint/format/i18n/build; no reviewer tests/install/browser or full gate ran. No dependency/global-environment, display-copy or production numeric change exists. At the final pre-submit check target next still equals the pinned base. T755 affects different production/test paths and a separate existing explanation key, with no locale/format/helper or ClubTrends overlap; any later target advance remains subject to the native nonoverlap check. Coordinator retains integration and final full/Chromium verification.",
+          "findings": [],
+          "commit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+          "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+          "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
+          "createdAt": "2026-11-09T17:59:11.827Z",
+          "finishedAt": "2026-11-09T18:03:09.022Z",
+          "invalidatedAt": "2026-11-09T18:20:15.231Z",
+          "invalidationReason": "attempt released"
+        }
+      ],
       "steps": [
         {
           "taskId": "T754",
@@ -971,10 +963,11 @@
       "contributors": [
         "fi09-capital-mood"
       ],
-      "status": "doing",
-      "reason": null,
+      "status": "released",
+      "reason": "Source-ready checkpoint preserved at 78fbac67ee40bec72ed27eab11f46f0cb34fe18a; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
       "createdAt": "2026-11-09T16:37:55.560Z",
-      "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372"
+      "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+      "releasedAt": "2026-11-09T18:20:44.228Z"
     },
     {
       "id": "f471efc6-f998-4d04-b79a-e3e6759542a3",
@@ -988,10 +981,11 @@
       "contributors": [
         "fi09-cup-seasons"
       ],
-      "status": "blocked",
-      "reason": "Temporary verification scheduling after ENOSPC; four-path WIP and12 focused passes preserved, waiting heavy-gate slot",
+      "status": "released",
+      "reason": "Source-ready checkpoint preserved at f0c16dffd4c55379c8b79183fcac979a41d044e7; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
       "createdAt": "2026-11-09T16:39:41.706Z",
-      "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372"
+      "startCommit": "a16e6d819fe0c02e4c224019af1af41ccea50372",
+      "releasedAt": "2026-11-09T18:20:25.866Z"
     },
     {
       "id": "71d1a37b-b229-410d-9c81-a32ca92f6248",
@@ -1005,9 +999,137 @@
       "contributors": [
         "fi09-live-observation"
       ],
-      "status": "doing",
+      "status": "released",
+      "reason": "Source-ready checkpoint preserved at 37190239a090aa14f3f5f06d02719c316c9c7bac; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
       "createdAt": "2026-11-09T17:38:27.599Z",
-      "startCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc"
+      "startCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+      "releasedAt": "2026-11-09T18:20:53.558Z"
+    },
+    {
+      "id": "507dba8e-9cf5-4c20-8421-1ee22ddd537c",
+      "group": "fi09",
+      "taskId": "T760",
+      "tasks": [
+        "T760"
+      ],
+      "lane": null,
+      "owner": "fi09-regulation-h2h",
+      "contributors": [
+        "fi09-regulation-h2h"
+      ],
+      "status": "released",
+      "reason": "Source-ready checkpoint preserved at 952f330ab02c75480ab49986ef88922aebc68a72; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
+      "createdAt": "2026-11-09T17:56:38.782Z",
+      "startCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+      "releasedAt": "2026-11-09T18:20:35.575Z"
+    },
+    {
+      "id": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "group": "fi09",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "lane": "final-data-consistency",
+      "owner": "fi09-final-data",
+      "contributors": [
+        "fi09-final-data"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T18:49:34.004Z",
+      "startCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+      "verifiedCommit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+      "submittedBase": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+      "submissionId": "8357d7a2-dd50-4399-8092-3a61d8bd9d67",
+      "submittedAt": "2026-11-09T20:27:52.469Z",
+      "risk": null,
+      "review": {
+        "id": "9fcc8a75-ef97-43e1-9f74-92e136ab0a31",
+        "owner": "fi09-final-independent",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Formal independent review of T754/T756/T760/T766/T767 submission 8357d7a2-dd50-4399-8092-3a61d8bd9d67, pinned c15c8d2c4b2889f8727afa96f6ef1b9129527ee4 against 1e726e3b61a3dd43b826e81a35e407029d3c4af0. Reused the explicit read-only semantic pre-review of all 15 source paths at f274199a, after independently verifying that the frozen submission has identical source; original author endpoints/ancestry were preserved. Reviewed all five task contracts, complete relevant ARCH/WORLD/HIST/WEB/OWNER/ECON decisions and the complete source/result changes. T754 refreshes formatted details on actual locale identity while retaining numeric geometry/history/selection and normal revision memoization. T756 moves unchanged season-year definitions into a pure leaf, retains wartime reexports and uses actual played-season adjacency/start/end without joining missing played seasons. T760 consistently uses regulation-or-final fallback for WDL/goals/margins/biggest/recent analytics, preserving legacy records, venues, competition counts, ordering and shootout markers; the host passes canonical retained records. T766 preserves the original BigInt percentage truncation, friendly-drop ordering, clamp, hundredths, events and settlement/cash/fortune/turnover rules; previews show the actual bounded delta and keep existing unknown/fallback/IEEE display semantics. Its one-case fixture preparation creates a fresh whole clone for each unchanged input/hook/assertion. T767 observes the actual expected date-specific report or reopen state in both event orders, preserving every previous browser assertion, fixture, pace and timeout. Checked real phase evidence and raw hashes: the first uncached same-source guard passed install/type/lint/format/i18n before the broad affected-unit phase timed out with the preserved original decide:1137 31.878-second failure, no unit JSON and no build. Under the separately recorded, explicitly adopted task-impact selection, the second uncached same-source guard actually passed all six complete modified unit files, 85/85 with no pending/todo, and build. Verified exact source/base/tasks, six file identities/all-passed assertions, raw logs, producer/decision/receipt/unit hashes and execution metadata; raw spec lint reports normal consistency with existing editorial hints. Subsequent ee2b958f-to-c15c8d2c changes are exactly the five own task acceptance/results documents. The native submit command validates consistency and existing phase evidence only; it is not another unit run or a broad-run pass. The failed broad attempt and narrower task selection remain honestly disclosed in every result, with evidence links preserved in limits despite archive verified-line replacement. No reviewer tests/install/source edits or browser/full execution occurred. Current upstream remains the pinned base. This approves the bounded implementation/task unit only: the coordinator must still pass the canonical complete unit suite including decide:1137, integration/contract and the full required Chromium batch including both T767 variants before group completion; no final/release waiver or final-gate success is claimed.",
+        "findings": [],
+        "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+        "baseCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+        "submissionId": "8357d7a2-dd50-4399-8092-3a61d8bd9d67",
+        "createdAt": "2026-11-09T20:33:06.658Z",
+        "finishedAt": "2026-11-09T20:37:16.513Z"
+      },
+      "steps": [
+        {
+          "taskId": "T754",
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "at": "2026-11-09T20:27:51.709Z",
+          "verification": [
+            {
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "startedAt": "2026-11-09T20:27:36.706Z",
+              "finishedAt": "2026-11-09T20:27:39.875Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T756",
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "at": "2026-11-09T20:27:51.709Z",
+          "verification": [
+            {
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "startedAt": "2026-11-09T20:27:36.706Z",
+              "finishedAt": "2026-11-09T20:27:39.875Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T760",
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "at": "2026-11-09T20:27:51.709Z",
+          "verification": [
+            {
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "startedAt": "2026-11-09T20:27:36.706Z",
+              "finishedAt": "2026-11-09T20:27:39.875Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T766",
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "at": "2026-11-09T20:27:51.709Z",
+          "verification": [
+            {
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "startedAt": "2026-11-09T20:27:36.706Z",
+              "finishedAt": "2026-11-09T20:27:39.875Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T767",
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "at": "2026-11-09T20:27:51.709Z",
+          "verification": [
+            {
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+              "startedAt": "2026-11-09T20:27:36.706Z",
+              "finishedAt": "2026-11-09T20:27:39.875Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+          "startedAt": "2026-11-09T20:27:36.706Z",
+          "finishedAt": "2026-11-09T20:27:39.875Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -4530,6 +4652,536 @@
       "group": "fi09",
       "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
       "taskId": "T755",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2173,
+      "at": "2026-11-09T17:56:26.496Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Coordinator scheduling hold: T755 fast integration running under high host load; source preserved, no correctness blocker. Free bounded source-author slot for approved T760 while T766 awaits serialized gate."
+      }
+    },
+    {
+      "sequence": 2174,
+      "at": "2026-11-09T17:56:38.782Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "507dba8e-9cf5-4c20-8421-1ee22ddd537c",
+      "taskId": "T760",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "507dba8e-9cf5-4c20-8421-1ee22ddd537c",
+        "group": "fi09",
+        "taskId": "T760",
+        "tasks": [
+          "T760"
+        ],
+        "lane": null,
+        "owner": "fi09-regulation-h2h",
+        "contributors": [
+          "fi09-regulation-h2h"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T17:56:38.782Z",
+        "startCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc"
+      }
+    },
+    {
+      "sequence": 2175,
+      "at": "2026-11-09T17:57:57.285Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "507dba8e-9cf5-4c20-8421-1ee22ddd537c",
+      "taskId": "T760",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2176,
+      "at": "2026-11-09T17:59:11.827Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "1645d648-b2b4-44fa-a310-b92693e04b4e",
+          "owner": "fi09-growth-locale-review",
+          "status": "reviewing",
+          "commit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+          "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+          "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
+          "createdAt": "2026-11-09T17:59:11.827Z"
+        }
+      }
+    },
+    {
+      "sequence": 2177,
+      "at": "2026-11-09T18:02:54.576Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "507dba8e-9cf5-4c20-8421-1ee22ddd537c",
+      "taskId": "T760",
+      "previousStatus": "doing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "Source-only T760 ready; serialized verification waits for T755 integration. Original source and new cases preserved; no correctness blocker."
+      }
+    },
+    {
+      "sequence": 2178,
+      "at": "2026-11-09T18:02:56.532Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2179,
+      "at": "2026-11-09T18:03:09.022Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "1645d648-b2b4-44fa-a310-b92693e04b4e",
+          "owner": "fi09-growth-locale-review",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Independent T754 review of pinned commit 7f2b0f1da78c7e071f868650de72e1e29d3426ac and submission 384aceff-f44f-4953-9b28-5e2b1be79861 against fcce405843cfb60d5be24d4d2c245eaa3177e6bc. Read the entire task/acceptance/result, complete current brief and ARCH-4/21/30/32 and WEB-54 blocks, full three-file author diff, formatter subscription and chart selection/geometry paths, and root/web localization guidance. The production change uses the actual LoadedLocale identity returned by useTextLocale as an additional trendSeries memo dependency. This updates preformatted money/supporter details under a real locale subscription while preserving the original country/year CPI and denomination conversion, numeric series, precision, history selection, metric memory and simulation/save facts. Five mounted tests use React.memo with identical world/history references, switch ko/de/ar for squad value, club value, cash and supporters, retain a pinned earlier season and geometry, assert source immutability, and verify ordinary revisions do not rerun conversion; cleanup restores root, locale/formatters, task memory, spies and globals. The preserved baseline shows four stale-detail failures and one passing revision check. Reused focused five-test success and native exact-submission six-file/42-test affected verification with typecheck/lint/format/i18n/build; no reviewer tests/install/browser or full gate ran. No dependency/global-environment, display-copy or production numeric change exists. At the final pre-submit check target next still equals the pinned base. T755 affects different production/test paths and a separate existing explanation key, with no locale/format/helper or ClubTrends overlap; any later target advance remains subject to the native nonoverlap check. Coordinator retains integration and final full/Chromium verification.",
+          "findings": [],
+          "commit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+          "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+          "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
+          "createdAt": "2026-11-09T17:59:11.827Z",
+          "finishedAt": "2026-11-09T18:03:09.022Z"
+        }
+      }
+    },
+    {
+      "sequence": 2180,
+      "at": "2026-11-09T18:20:15.232Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "011a4423-938d-42cf-a9ca-fb28c9f54480",
+      "taskId": "T754",
+      "previousStatus": "approved",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Source-ready checkpoint preserved at 7f2b0f1da78c7e071f868650de72e1e29d3426ac; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
+        "review": null,
+        "releasedAt": "2026-11-09T18:20:15.231Z",
+        "reviewHistory": [
+          {
+            "id": "1645d648-b2b4-44fa-a310-b92693e04b4e",
+            "owner": "fi09-growth-locale-review",
+            "status": "approved",
+            "verdict": "approved",
+            "summary": "Independent T754 review of pinned commit 7f2b0f1da78c7e071f868650de72e1e29d3426ac and submission 384aceff-f44f-4953-9b28-5e2b1be79861 against fcce405843cfb60d5be24d4d2c245eaa3177e6bc. Read the entire task/acceptance/result, complete current brief and ARCH-4/21/30/32 and WEB-54 blocks, full three-file author diff, formatter subscription and chart selection/geometry paths, and root/web localization guidance. The production change uses the actual LoadedLocale identity returned by useTextLocale as an additional trendSeries memo dependency. This updates preformatted money/supporter details under a real locale subscription while preserving the original country/year CPI and denomination conversion, numeric series, precision, history selection, metric memory and simulation/save facts. Five mounted tests use React.memo with identical world/history references, switch ko/de/ar for squad value, club value, cash and supporters, retain a pinned earlier season and geometry, assert source immutability, and verify ordinary revisions do not rerun conversion; cleanup restores root, locale/formatters, task memory, spies and globals. The preserved baseline shows four stale-detail failures and one passing revision check. Reused focused five-test success and native exact-submission six-file/42-test affected verification with typecheck/lint/format/i18n/build; no reviewer tests/install/browser or full gate ran. No dependency/global-environment, display-copy or production numeric change exists. At the final pre-submit check target next still equals the pinned base. T755 affects different production/test paths and a separate existing explanation key, with no locale/format/helper or ClubTrends overlap; any later target advance remains subject to the native nonoverlap check. Coordinator retains integration and final full/Chromium verification.",
+            "findings": [],
+            "commit": "7f2b0f1da78c7e071f868650de72e1e29d3426ac",
+            "baseCommit": "fcce405843cfb60d5be24d4d2c245eaa3177e6bc",
+            "submissionId": "384aceff-f44f-4953-9b28-5e2b1be79861",
+            "createdAt": "2026-11-09T17:59:11.827Z",
+            "finishedAt": "2026-11-09T18:03:09.022Z",
+            "invalidatedAt": "2026-11-09T18:20:15.231Z",
+            "invalidationReason": "attempt released"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2181,
+      "at": "2026-11-09T18:20:25.866Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "f471efc6-f998-4d04-b79a-e3e6759542a3",
+      "taskId": "T756",
+      "previousStatus": "blocked",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Source-ready checkpoint preserved at f0c16dffd4c55379c8b79183fcac979a41d044e7; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
+        "releasedAt": "2026-11-09T18:20:25.866Z"
+      }
+    },
+    {
+      "sequence": 2182,
+      "at": "2026-11-09T18:20:35.578Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "507dba8e-9cf5-4c20-8421-1ee22ddd537c",
+      "taskId": "T760",
+      "previousStatus": "blocked",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Source-ready checkpoint preserved at 952f330ab02c75480ab49986ef88922aebc68a72; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
+        "releasedAt": "2026-11-09T18:20:35.575Z"
+      }
+    },
+    {
+      "sequence": 2183,
+      "at": "2026-11-09T18:20:44.245Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "0a41d5cf-df38-4597-9506-48129be346c6",
+      "taskId": "T766",
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Source-ready checkpoint preserved at 78fbac67ee40bec72ed27eab11f46f0cb34fe18a; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
+        "releasedAt": "2026-11-09T18:20:44.228Z"
+      }
+    },
+    {
+      "sequence": 2184,
+      "at": "2026-11-09T18:20:53.579Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "71d1a37b-b229-410d-9c81-a32ca92f6248",
+      "taskId": "T767",
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Source-ready checkpoint preserved at 37190239a090aa14f3f5f06d02719c316c9c7bac; clean stopped author confirmed. Consolidate same approved scope into one new lane to avoid repeated full task verification. No source/acceptance waiver.",
+        "releasedAt": "2026-11-09T18:20:53.558Z"
+      }
+    },
+    {
+      "sequence": 2185,
+      "at": "2026-11-09T18:37:19.019Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-09T17:49:25.150Z",
+            "finishedAt": "2026-11-09T18:37:04.497Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2186,
+      "at": "2026-11-09T18:37:28.923Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "ccadd29d-9dde-4c51-927f-cd7d10ba929f",
+      "taskId": "T755",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "aece3fdf15bc28eec4f4097f7fc28968a28cbe43",
+        "integratedAt": "2026-11-09T18:37:28.923Z"
+      }
+    },
+    {
+      "sequence": 2187,
+      "at": "2026-11-09T18:49:34.004Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T754",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+        "group": "fi09",
+        "taskId": "T754",
+        "tasks": [
+          "T754",
+          "T756",
+          "T760",
+          "T766",
+          "T767"
+        ],
+        "lane": "final-data-consistency",
+        "owner": "fi09-final-data",
+        "contributors": [
+          "fi09-final-data"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T18:49:34.004Z",
+        "startCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0"
+      }
+    },
+    {
+      "sequence": 2188,
+      "at": "2026-11-09T18:49:40.457Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T754",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2189,
+      "at": "2026-11-09T20:11:39.348Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T754",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2190,
+      "at": "2026-11-09T20:27:26.468Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T754",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2191,
+      "at": "2026-11-09T20:27:52.469Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T767",
+        "status": "ready",
+        "verifiedCommit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+        "submittedBase": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+        "submissionId": "8357d7a2-dd50-4399-8092-3a61d8bd9d67",
+        "submittedAt": "2026-11-09T20:27:52.469Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T754",
+            "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+            "at": "2026-11-09T20:27:51.709Z",
+            "verification": [
+              {
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "startedAt": "2026-11-09T20:27:36.706Z",
+                "finishedAt": "2026-11-09T20:27:39.875Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T756",
+            "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+            "at": "2026-11-09T20:27:51.709Z",
+            "verification": [
+              {
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "startedAt": "2026-11-09T20:27:36.706Z",
+                "finishedAt": "2026-11-09T20:27:39.875Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T760",
+            "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+            "at": "2026-11-09T20:27:51.709Z",
+            "verification": [
+              {
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "startedAt": "2026-11-09T20:27:36.706Z",
+                "finishedAt": "2026-11-09T20:27:39.875Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T766",
+            "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+            "at": "2026-11-09T20:27:51.709Z",
+            "verification": [
+              {
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "startedAt": "2026-11-09T20:27:36.706Z",
+                "finishedAt": "2026-11-09T20:27:39.875Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T767",
+            "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+            "at": "2026-11-09T20:27:51.709Z",
+            "verification": [
+              {
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+                "startedAt": "2026-11-09T20:27:36.706Z",
+                "finishedAt": "2026-11-09T20:27:39.875Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+            "startedAt": "2026-11-09T20:27:36.706Z",
+            "finishedAt": "2026-11-09T20:27:39.875Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2192,
+      "at": "2026-11-09T20:33:06.658Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9fcc8a75-ef97-43e1-9f74-92e136ab0a31",
+          "owner": "fi09-final-independent",
+          "status": "reviewing",
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "baseCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+          "submissionId": "8357d7a2-dd50-4399-8092-3a61d8bd9d67",
+          "createdAt": "2026-11-09T20:33:06.658Z"
+        }
+      }
+    },
+    {
+      "sequence": 2193,
+      "at": "2026-11-09T20:37:16.513Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9fcc8a75-ef97-43e1-9f74-92e136ab0a31",
+          "owner": "fi09-final-independent",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Formal independent review of T754/T756/T760/T766/T767 submission 8357d7a2-dd50-4399-8092-3a61d8bd9d67, pinned c15c8d2c4b2889f8727afa96f6ef1b9129527ee4 against 1e726e3b61a3dd43b826e81a35e407029d3c4af0. Reused the explicit read-only semantic pre-review of all 15 source paths at f274199a, after independently verifying that the frozen submission has identical source; original author endpoints/ancestry were preserved. Reviewed all five task contracts, complete relevant ARCH/WORLD/HIST/WEB/OWNER/ECON decisions and the complete source/result changes. T754 refreshes formatted details on actual locale identity while retaining numeric geometry/history/selection and normal revision memoization. T756 moves unchanged season-year definitions into a pure leaf, retains wartime reexports and uses actual played-season adjacency/start/end without joining missing played seasons. T760 consistently uses regulation-or-final fallback for WDL/goals/margins/biggest/recent analytics, preserving legacy records, venues, competition counts, ordering and shootout markers; the host passes canonical retained records. T766 preserves the original BigInt percentage truncation, friendly-drop ordering, clamp, hundredths, events and settlement/cash/fortune/turnover rules; previews show the actual bounded delta and keep existing unknown/fallback/IEEE display semantics. Its one-case fixture preparation creates a fresh whole clone for each unchanged input/hook/assertion. T767 observes the actual expected date-specific report or reopen state in both event orders, preserving every previous browser assertion, fixture, pace and timeout. Checked real phase evidence and raw hashes: the first uncached same-source guard passed install/type/lint/format/i18n before the broad affected-unit phase timed out with the preserved original decide:1137 31.878-second failure, no unit JSON and no build. Under the separately recorded, explicitly adopted task-impact selection, the second uncached same-source guard actually passed all six complete modified unit files, 85/85 with no pending/todo, and build. Verified exact source/base/tasks, six file identities/all-passed assertions, raw logs, producer/decision/receipt/unit hashes and execution metadata; raw spec lint reports normal consistency with existing editorial hints. Subsequent ee2b958f-to-c15c8d2c changes are exactly the five own task acceptance/results documents. The native submit command validates consistency and existing phase evidence only; it is not another unit run or a broad-run pass. The failed broad attempt and narrower task selection remain honestly disclosed in every result, with evidence links preserved in limits despite archive verified-line replacement. No reviewer tests/install/source edits or browser/full execution occurred. Current upstream remains the pinned base. This approves the bounded implementation/task unit only: the coordinator must still pass the canonical complete unit suite including decide:1137, integration/contract and the full required Chromium batch including both T767 variants before group completion; no final/release waiver or final-gate success is claimed.",
+          "findings": [],
+          "commit": "c15c8d2c4b2889f8727afa96f6ef1b9129527ee4",
+          "baseCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+          "submissionId": "8357d7a2-dd50-4399-8092-3a61d8bd9d67",
+          "createdAt": "2026-11-09T20:33:06.658Z",
+          "finishedAt": "2026-11-09T20:37:16.513Z"
+        }
+      }
+    },
+    {
+      "sequence": 2194,
+      "at": "2026-11-09T20:37:46.120Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

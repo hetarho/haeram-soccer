@@ -1,3 +1,4 @@
+import { message as sourceMessage } from '../../contracts/src/messages';
 import { describe, expect, it } from 'vitest';
 import type { MatchRecord, OwnerTrait, SeasonArchive, World } from '../../contracts/src/types';
 import { operate } from './operations';
@@ -5,6 +6,8 @@ import {
   fanMoodAfterLeagueMatch,
   fanMoodClose,
   fanMoodIdentity,
+  fanMoodInjection,
+  fanMoodDividend,
   fanMoodMovers,
   fanMoodRound,
   fanMoodTransfer,
@@ -55,6 +58,7 @@ describe('팬 민심 by league results and the ticket price (→OWNER-12)', () =
     expect(fanMoodMovers(w)).toEqual([]);
   });
   it('costs 0.2 a home league match per preset step above the default price', () => {
+    const prepared = world();
     for (const [ticket, change] of [
       [0.05, 0],
       [0.035, 0],
@@ -62,7 +66,7 @@ describe('팬 민심 by league results and the ticket price (→OWNER-12)', () =
       [0.1, -0.2],
       [0.12, -0.4],
     ] as const) {
-      const w = world();
+      const w = structuredClone(prepared);
       w.ticket = ticket;
       fanMoodAfterLeagueMatch(w, result(w, 1, 1));
       expect(mood(w)).toBeCloseTo(60 + change, 5);
@@ -326,4 +330,115 @@ describe('transfers and identity (→OWNER-12, KIT-9)', () => {
     expect(mood(w)).toBe(60 + FAN_MOOD.identity);
     expect(fanMoodMovers(w)[0]!.title).toBe('구단 정체성 변경');
   });
+});
+
+// Frozen pre-extraction arithmetic from a16e6d81; exact values/events must not be recalibrated.
+function legacyMood(before: number, change: number, friendly: boolean) {
+  const scaled = change < 0 && friendly ? change * FAN_MOOD.friendly : change;
+  return Math.round(Math.max(FAN_MOOD.min, Math.min(FAN_MOOD.max, before + scaled)) * 100) / 100;
+}
+function legacyPercent(amount: bigint, turnover: bigint | undefined) {
+  if (turnover === undefined || turnover <= 0n) return undefined;
+  return Number((amount * 10000n) / turnover) / 100;
+}
+function capitalState(before: number, friendly: boolean, turnover?: string): World {
+  return {
+    year: 1970,
+    round: 3,
+    currency: 'GBP-LSD',
+    playerClub: 'synthetic',
+    income: turnover ?? '0',
+    expense: '0',
+    cash: '12345',
+    history: [],
+    events: [],
+    owner: {
+      fanMood: before,
+      fortune: '54321',
+      traits: friendly ? ['fansFriend'] : [],
+      takeover: { year: 1970, lastIncome: turnover },
+    },
+  } as unknown as World;
+}
+it('preserves pre-extraction capital-hook stored values, complete events and all other state at boundaries', () => {
+  let cases = 0;
+  for (const before of [0, 0.005, 1, 59.995, 60, 99, 99.995, 100])
+    for (const friendly of [false, true])
+      for (const turnover of [undefined, '0', '100000', '3330000'])
+        for (const amount of [0n, 1n, 9999n, 10000n, 3330000n])
+          for (const kind of ['injection', 'dividend'] as const) {
+            const w = capitalState(before, friendly, turnover),
+              expected = structuredClone(w);
+            if (kind === 'dividend' && amount === 0n) {
+              fanMoodDividend(w, amount);
+              expect(w).toEqual(expected);
+              cases++;
+              continue;
+            }
+            const percent = legacyPercent(
+              amount,
+              turnover === undefined ? undefined : BigInt(turnover),
+            );
+            const change =
+              kind === 'injection'
+                ? percent === undefined
+                  ? FAN_MOOD.injection.max
+                  : Math.min(FAN_MOOD.injection.max, percent * FAN_MOOD.injection.perPercent)
+                : (percent ?? 100) * FAN_MOOD.dividend.perPercent;
+            const after = legacyMood(before, change, friendly),
+              moved = after - before;
+            expected.owner!.fanMood = after;
+            const detail =
+              kind === 'injection'
+                ? percent === undefined
+                  ? sourceMessage('copy.fan_mood.c084fa3596')
+                  : sourceMessage('copy.fan_mood.f85507dce3', { p0: percent.toFixed(1) })
+                : sourceMessage('copy.fan_mood.65d2c22e42', { p0: (percent ?? 100).toFixed(1) });
+            expected.events.push({
+              year: w.year,
+              round: w.round,
+              kind: 'fan-mood',
+              title: sourceMessage(
+                kind === 'injection' ? 'copy.fan_mood.3881f2a2d6' : 'copy.fan_mood.eb9f33a674',
+              ),
+              detail: sourceMessage('copy.fan_mood.8447102cff', {
+                p0: detail,
+                p1: moved >= 0 ? '+' : '−',
+                p2: Math.abs(moved).toFixed(1),
+                p3: after.toFixed(1),
+              }),
+            });
+            if (kind === 'injection') fanMoodInjection(w, amount);
+            else fanMoodDividend(w, amount);
+            expect(w).toEqual(expected);
+            cases++;
+          }
+  expect(cases).toBe(640);
+});
+it('keeps actual capital-hook live-owner guards and zero/negative dividend guards unchanged', () => {
+  const noOwner = capitalState(60, false);
+  delete noOwner.owner;
+  const ended = capitalState(60, false);
+  ended.ended = 'owner';
+  const bankrupt = capitalState(60, false);
+  bankrupt.bankrupt = { year: 1970, round: 0 } as World['bankrupt'];
+  for (const w of [noOwner, ended, bankrupt]) {
+    const before = structuredClone(w);
+    fanMoodInjection(w, 10n);
+    fanMoodDividend(w, 10n);
+    expect(w).toEqual(before);
+  }
+  const zero = capitalState(60, false),
+    before = structuredClone(zero);
+  fanMoodDividend(zero, 0n);
+  fanMoodDividend(zero, -1n);
+  expect(zero).toEqual(before);
+});
+it('preserves exact boundary projection for a non-capital named driver too', () => {
+  for (const before of [0, 0.005, 59.995, 60, 99.995, 100])
+    for (const friendly of [false, true]) {
+      const w = capitalState(before, friendly);
+      fanMoodIdentity(w);
+      expect(w.owner!.fanMood).toBe(legacyMood(before, FAN_MOOD.identity, friendly));
+    }
 });

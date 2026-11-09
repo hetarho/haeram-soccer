@@ -35,7 +35,7 @@ export interface HeadToHead {
 }
 type Played = Pick<
   MatchRecord,
-  'id' | 'year' | 'round' | 'kind' | 'home' | 'away' | 'score' | 'highlights'
+  'id' | 'year' | 'round' | 'kind' | 'home' | 'away' | 'score' | 'regulation' | 'highlights'
 >;
 
 /** A wider margin, then more goals for the winner; the earlier meeting keeps a tie. */
@@ -65,8 +65,9 @@ export function headToHead(matches: readonly Played[], own: string, club: string
   for (const m of matches) {
     if (!((m.home === own && m.away === club) || (m.home === club && m.away === own))) continue;
     const home = m.home === own,
-      gf = home ? m.score.home : m.score.away,
-      ga = home ? m.score.away : m.score.home,
+      score = m.regulation ?? m.score,
+      gf = home ? score.home : score.away,
+      ga = home ? score.away : score.home,
       shootout = m.highlights.find((h) => h.player === sourceMessage('copy.headToHead.16fa957ea6'));
     const meeting: Meeting = {
       id: m.id,
