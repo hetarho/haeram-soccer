@@ -18,10 +18,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| av11 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T13:59Z | 2026-11-09T14:07Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:21Z | T747 |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:27Z | - |
 
 ## inbox
+- 261109 decided review/football-data-consistency-261109 T755 T756 T757: which next consistency fixes and verification blocker are adopted → actual appearance ranks plus corrected resource prose, wartime cup streak continuity, and a decide-test-only prepared world after independent cache safety review (alt: minutes ranks | calendar-year streaks | generic caching under unknown runtime settings | larger timeouts). T757 alone extends initial runtime scope after clean blocked finance execution/release; preserve prior IDs, all assertions and30s limit fi09
 - 261109 decided T752 T754 ARCH-21 ARCH-32: how to verify real locale subscriptions without an installed DOM unit environment → T752 adds pinned happy-dom21.0.4 as a test-only dev dependency and uses per-file Vitest environments, reused by T754 (alt: repeated SSR that never subscribes | a custom DOM imitation). No production dependency, global environment or validation reduction; worker paused clean after three task commits and assignment released before this contract amendment fi09
 - 261109 decided review/football-data-consistency-261109 T753 T754: which follow-up UI inconsistencies enter the eight-hour local scope → refreshed bid quotes and locale-stale chart detail strings, after the current six-task run finishes (alt: change pricing policy | overlap an active lane). Source evidence and complete current contracts checked; preserve submitted bid terms, stale-response guards and numerical chart facts fi09
 - 261109 decided review/football-data-consistency-261109 ARCH-4 ARCH-21 ARCH-30 ARCH-32 T747 T748 T749 T750 T751 T752: which observed football-data and finance inconsistencies the eight-hour local invocation adopts → six bounded fixes with independent implementation/review, no economic-policy or simulation-result changes (alt: tune balance speculatively | leave preview and derived-stat errors). Prior capital/currency previews, exact money disclosure, missing ratios, opponent leader leakage, Poisson tail loss and shared number formatting have raw scout evidence; review notes freeze scope and checks fi09
@@ -847,14 +847,14 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T747 | align owner money previews with canonical turnover | ARCH | - | todo |
-| T748 | expose exact amounts in the cash summary | ARCH | - | todo |
 | T749 | keep missing match-statistic ratios neutral | ARCH | - | todo |
 | T750 | exclude opponent lines from own-season advanced leaders | ARCH | - | todo |
 | T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
 | T752 | localize football-statistic numbers consistently | ARCH | T749 | todo |
 | T753 | refresh bid percentage quotes consistently | ARCH | - | todo |
 | T754 | refresh growth-chart details on locale changes | ARCH | T752 | todo |
+| T755 | rank career appearances by recorded matches | ARCH | - | todo |
+| T756 | preserve cup title streaks across skipped seasons | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -878,13 +878,14 @@
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 6 | 0 | 6 | 0 | 0 | 0 | 2026-11-09T14:14:34.701Z | [history](work/fi09.json) |
+| fi09 | 2 | 7 | 3 | 4 | 4 | 0 | 0 | 2026-11-09T14:57:08.289Z | [history](work/fi09.json) |
 
 ## next
-- release: next is integrated into this checkout; run the pinned-toolchain full release gate with a timeout above an hour, publish main only after it passes and wait for CI
-- T689: cv04-clr hand-off is complete; both candidates fail the unchanged screen. Read its final README before another bounded window; the remaining question is why the round/square alternatives add goal-area chances and box entries
+- inspect work board for remaining tasks
 
 ## log
+- 261109 T747 T748 T757 integrated
+- 261109 create-task review/football-data-consistency-261109 F9-F11: T755/T756 product follow-ups and T757 narrowly approved verification-cost fix; released clean finance attempt before rescope fi09
 - 261109 replan T752/T754: real mounted locale regression via pinned test-only happy-dom, existing test/browser scopes preserved; released clean football checkpoint108e6a84 before amendment fi09
 - 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
@@ -903,5 +904,3 @@
 - 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
 - 261109 T745 integrated
 - 261109 update-ssot CLUB64 ECON52/create-task T745: independent review confirms wage and package-only books failures; withdraw both activations byte-exact44, retain earlier transfer/recruitment changes and exact observation tools; no new cycle ec10.
-- 261109 T743 integrated
-- 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.

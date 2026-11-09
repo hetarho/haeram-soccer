@@ -3,7 +3,8 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import type { World } from '../../../../../../packages/contracts/src/types';
 import { Card } from '../../../shared/ui/Card';
 import { DeskStats } from './OfficeDesk';
-import { compactMoney, money } from '../../../presentation/format';
+import { money } from '../../../presentation/format';
+import { Money } from '../../../shared/ui/Money';
 import { cashState, fixedCosts, seasonBooks } from '../../player/@x/office';
 import o from '../../../shared/ui/styles/OwnerSheet.module.css';
 
@@ -14,7 +15,7 @@ import o from '../../../shared/ui/styles/OwnerSheet.module.css';
 export function ClubCashSummary({ w }: { w: World }) {
   useTextLocale();
   const own = w.clubs.find((club) => club.id === w.playerClub)!;
-  const format = (value: string) => compactMoney(value, own.country, w.year);
+  const format = (value: string) => <Money value={value} code={own.country} year={w.year} />;
   const state = cashState(w);
   const costs = fixedCosts(w);
   const books = seasonBooks(w);

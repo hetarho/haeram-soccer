@@ -33,7 +33,11 @@ import {
   OWNER_TIERS,
   OWNER_TRAITS,
 } from '../../../../../../packages/engine/src/owner-config';
-import { seasonResult } from '../../../../../../packages/engine/src/finance-read';
+import {
+  lastSeasonTurnover,
+  seasonResult,
+  seasonTurnover,
+} from '../../../../../../packages/engine/src/finance-read';
 import { ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { ratio } from '../../../../../../packages/engine/src/primitives';
 import { quote } from '../../../../../../packages/engine/src/quotes';
@@ -246,33 +250,6 @@ export function injectionSteps(w: World) {
   return [...new Set(amounts)];
 }
 
-/** Ledger income that is not turnover (→ECON-30): player sales and compensation for leavers. */
-const NOT_TURNOVER = new Set(['transfer-out', 'free-transfer-compensation']);
-/**
- * Last season's turnover in today's money, the base of an injection's 팬 민심 (→OWNER-12): its
- * archived income without player sales or compensation; in the takeover season, the bought club's
- * last income before it (→ECON-36). Undefined without a closed season in the money of today.
- */
-function lastTurnover(w: World) {
-  const takeover = w.owner?.takeover;
-  if (takeover?.year === w.year)
-    return takeover.lastIncome && BigInt(takeover.lastIncome) > 0n
-      ? takeover.lastIncome
-      : undefined;
-  const season = w.history.at(-1);
-  if (!season || season.year !== w.year - 1 || season.currency !== w.currency) return undefined;
-  const sales = w.events
-    .filter(
-      (e) =>
-        e.year === season.year &&
-        e.amount &&
-        (e.currency ?? season.currency) === season.currency &&
-        NOT_TURNOVER.has(e.kind),
-    )
-    .reduce((sum, e) => sum + BigInt(e.amount!), 0n);
-  const turnover = BigInt(season.income) - sales;
-  return turnover > 0n ? turnover.toString() : undefined;
-}
 /** The percent of `base` that `amount` is, unrounded. */
 const share = (amount: string, base: string) => (Number(amount) / Number(base)) * 100;
 /**
@@ -280,8 +257,10 @@ const share = (amount: string, base: string) => (Number(amount) / Number(base)) 
  * most +10. Undefined when the club has no closed season to measure it by.
  */
 export function injectionMood(w: World, amount: string) {
-  const turnover = lastTurnover(w);
-  if (!turnover) return undefined;
+  const takeover = w.owner?.takeover;
+  const turnover =
+    lastSeasonTurnover(w) ?? (takeover?.year === w.year ? takeover.lastIncome : undefined);
+  if (!turnover || BigInt(turnover) <= 0n) return undefined;
   return Math.min(FAN_MOOD.injection.max, share(amount, turnover) * FAN_MOOD.injection.perPercent);
 }
 /** What an injection of `amount` leaves (→OWNER-9, WEB-114): both pots and 팬 민심's rise. */
@@ -295,8 +274,8 @@ export function injectionOutlook(w: World, amount: string) {
 
 /**
  * What the 배당 dial would take at the close on today's books (→OWNER-11): `share` of the season's
- * result so far when positive, never more than the cash above zero, and the 팬 민심 it costs, −1
- * per 1% of the season's turnover so far. The close settles on the whole season.
+ * result so far when positive, never more than the cash above zero, and the 팬 민심 it costs by
+ * its share of the season's turnover so far. The close settles on the whole season.
  */
 export function dividendOutlook(w: World, dividend: DividendShare) {
   // The close's own result: an injection is the owner's money, not profit (→OWNER-11).
@@ -305,11 +284,9 @@ export function dividendOutlook(w: World, dividend: DividendShare) {
     cash = positive(BigInt(w.cash));
   let amount = BigInt(ratio(profit.toString(), BigInt(dividend), 100n));
   if (amount > cash) amount = cash;
-  const income = BigInt(w.income);
-  const mood =
-    amount > 0n && income > 0n
-      ? felt(w.owner!, share(amount.toString(), income.toString()) * FAN_MOOD.dividend.perPercent)
-      : 0;
+  const turnover = seasonTurnover(w);
+  const percent = turnover > 0n ? share(amount.toString(), turnover.toString()) : 100;
+  const mood = amount > 0n ? felt(w.owner!, percent * FAN_MOOD.dividend.perPercent) : 0;
   return { result: result.toString(), amount: amount.toString(), mood };
 }
 /** The last dividend the owner took, in the money of its season (→OWNER-11/17). */

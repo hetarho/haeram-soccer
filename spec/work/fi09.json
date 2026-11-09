@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T14:14:34.701Z",
-  "sourceCommit": "72c3da863fbe5f258239de47520b02877640f8c2",
+  "snapshotAt": "2026-11-09T14:57:08.289Z",
+  "sourceCommit": "40049261caac2161184f551d12da57e1d0d025b0",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -20,53 +20,40 @@
       "T749",
       "T750",
       "T751",
-      "T752"
+      "T752",
+      "T757"
     ]
   },
   "summary": {
-    "total": 6,
-    "completed": 0,
-    "remaining": 6,
-    "running": 0,
+    "total": 7,
+    "completed": 3,
+    "remaining": 4,
+    "running": 4,
     "review": 0,
     "blocked": 0,
-    "unassigned": 6
+    "unassigned": 0
   },
   "tasks": [
-    {
-      "id": "T747",
-      "title": "Align owner money previews with canonical turnover",
-      "dep": [],
-      "lane": "finance-views",
-      "status": "todo"
-    },
-    {
-      "id": "T748",
-      "title": "Expose exact amounts in the cash summary",
-      "dep": [],
-      "lane": "finance-views",
-      "status": "todo"
-    },
     {
       "id": "T749",
       "title": "Keep missing match-statistic ratios neutral",
       "dep": [],
       "lane": "football-data",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T750",
       "title": "Exclude opponent lines from own-season advanced leaders",
       "dep": [],
       "lane": "football-data",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T751",
       "title": "Retain Poisson tails in expected-points calculations",
       "dep": [],
       "lane": "football-data",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "T752",
@@ -75,7 +62,7 @@
         "T749"
       ],
       "lane": "football-data",
-      "status": "todo"
+      "status": "doing"
     }
   ],
   "attempts": [
@@ -118,6 +105,147 @@
       "createdAt": "2026-11-09T14:11:43.641Z",
       "startCommit": "321d1784618f99d89c69b15b28b6f56466d58a31",
       "releasedAt": "2026-11-09T14:13:29.649Z"
+    },
+    {
+      "id": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "group": "fi09",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "lane": "finance-views",
+      "owner": "fi09-finance-v2",
+      "contributors": [
+        "fi09-finance-v2"
+      ],
+      "status": "released",
+      "reason": "Clean implementation ended blocked on unchanged decide test fixture cost; preserve both commits and failure receipts before approved test-only rescope",
+      "createdAt": "2026-11-09T14:15:37.270Z",
+      "startCommit": "a48adec65d18a6a06b080bf6125ca95e15d21b48",
+      "releasedAt": "2026-11-09T14:39:22.160Z"
+    },
+    {
+      "id": "e199eda6-3bbf-4a59-909e-3a9dee6be804",
+      "group": "fi09",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "lane": "football-data",
+      "owner": "fi09-football-v2",
+      "contributors": [
+        "fi09-football-v2"
+      ],
+      "status": "released",
+      "reason": "Worker clean after T749-T751; stop before T752 to authorize a real DOM test-only dependency for required mounted locale regression",
+      "createdAt": "2026-11-09T14:15:46.967Z",
+      "startCommit": "a48adec65d18a6a06b080bf6125ca95e15d21b48",
+      "releasedAt": "2026-11-09T14:25:33.815Z"
+    },
+    {
+      "id": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "group": "fi09",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "lane": "football-data",
+      "owner": "fi09-football-v3",
+      "contributors": [
+        "fi09-football-v3"
+      ],
+      "status": "doing",
+      "createdAt": "2026-11-09T14:26:50.483Z",
+      "startCommit": "af092f5f6db8c6d95b5714ebdf244df1cdffa4f7"
+    },
+    {
+      "id": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "group": "fi09",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "lane": "finance-views",
+      "owner": "fi09-finance-v3",
+      "contributors": [
+        "fi09-finance-v3"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T14:42:10.566Z",
+      "startCommit": "d489383e2aa023b754bc82af98a03649e00f31dc",
+      "verifiedCommit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+      "submittedBase": "d489383e2aa023b754bc82af98a03649e00f31dc",
+      "submissionId": "a10e61ed-ba8d-4ef8-a31a-c1db1b6b36cc",
+      "submittedAt": "2026-11-09T14:53:15.049Z",
+      "risk": null,
+      "review": {
+        "id": "0b0be4cf-064a-45f0-a0f2-4fcf221f5b08",
+        "owner": "fi09-review-finance",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed T747/T748/T757 at pinned 80498a0f against d489383e. Canonical turnover extraction preserves the original ledger-residual algebra, owned-season/year/currency selection, bigint/clamp/conversion and finance exports; owner previews now use those turnover bases and preserve the approved fallback/fansFriend semantics. Cash summary reuses Money disclosure with original signed values and labels. The canonical world cache is private to decide.test.ts with explicit seed, complete copied release, fixture version and transitive dependency identity; generic gridKit remains fresh, each scene recreates world/setup/state/RNG, and the 53 original scenarios, assertions, draw counts and 30-second timeout remain intact. Checked focused parity/isolation/regression evidence and exact-submission host verification (126 files, 1141 tests plus typecheck/lint/format/i18n/build). No overlapping upstream source changes found. Existing preview percentage precision is explicitly retained outside the denominator scope; single uncontrolled before/after timings are not a stable speedup claim. Coordinator retains integration/browser/full gates.",
+        "findings": [],
+        "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+        "baseCommit": "d489383e2aa023b754bc82af98a03649e00f31dc",
+        "submissionId": "a10e61ed-ba8d-4ef8-a31a-c1db1b6b36cc",
+        "createdAt": "2026-11-09T14:53:53.975Z",
+        "finishedAt": "2026-11-09T14:56:45.228Z"
+      },
+      "steps": [
+        {
+          "taskId": "T747",
+          "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+          "at": "2026-11-09T14:53:15.021Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T14:51:40.365Z",
+              "finishedAt": "2026-11-09T14:53:14.497Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T748",
+          "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+          "at": "2026-11-09T14:53:15.021Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T14:51:40.365Z",
+              "finishedAt": "2026-11-09T14:53:14.497Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T757",
+          "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+          "at": "2026-11-09T14:53:15.021Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+              "startedAt": "2026-11-09T14:51:40.365Z",
+              "finishedAt": "2026-11-09T14:53:14.497Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+          "startedAt": "2026-11-09T14:51:40.365Z",
+          "finishedAt": "2026-11-09T14:53:14.497Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -337,6 +465,524 @@
         "status": "released",
         "reason": "Coordinator corrects unstarted unit-test file paths; worker paused, dirty T749 preserved, no live commands",
         "releasedAt": "2026-11-09T14:13:29.649Z"
+      }
+    },
+    {
+      "sequence": 2021,
+      "at": "2026-11-09T14:15:37.270Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "14e190ce-648c-4a77-b5b1-656ee7663411",
+        "group": "fi09",
+        "taskId": "T747",
+        "tasks": [
+          "T747",
+          "T748"
+        ],
+        "lane": "finance-views",
+        "owner": "fi09-finance-v2",
+        "contributors": [
+          "fi09-finance-v2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:15:37.270Z",
+        "startCommit": "a48adec65d18a6a06b080bf6125ca95e15d21b48"
+      }
+    },
+    {
+      "sequence": 2022,
+      "at": "2026-11-09T14:15:45.567Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2023,
+      "at": "2026-11-09T14:15:46.967Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e199eda6-3bbf-4a59-909e-3a9dee6be804",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "e199eda6-3bbf-4a59-909e-3a9dee6be804",
+        "group": "fi09",
+        "taskId": "T749",
+        "tasks": [
+          "T749",
+          "T750",
+          "T751",
+          "T752"
+        ],
+        "lane": "football-data",
+        "owner": "fi09-football-v2",
+        "contributors": [
+          "fi09-football-v2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:15:46.967Z",
+        "startCommit": "a48adec65d18a6a06b080bf6125ca95e15d21b48"
+      }
+    },
+    {
+      "sequence": 2024,
+      "at": "2026-11-09T14:15:52.778Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e199eda6-3bbf-4a59-909e-3a9dee6be804",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2025,
+      "at": "2026-11-09T14:16:22.810Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2026,
+      "at": "2026-11-09T14:23:54.401Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e199eda6-3bbf-4a59-909e-3a9dee6be804",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2027,
+      "at": "2026-11-09T14:24:25.303Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2028,
+      "at": "2026-11-09T14:25:33.815Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "e199eda6-3bbf-4a59-909e-3a9dee6be804",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Worker clean after T749-T751; stop before T752 to authorize a real DOM test-only dependency for required mounted locale regression",
+        "releasedAt": "2026-11-09T14:25:33.815Z"
+      }
+    },
+    {
+      "sequence": 2029,
+      "at": "2026-11-09T14:26:50.483Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+        "group": "fi09",
+        "taskId": "T749",
+        "tasks": [
+          "T749",
+          "T750",
+          "T751",
+          "T752"
+        ],
+        "lane": "football-data",
+        "owner": "fi09-football-v3",
+        "contributors": [
+          "fi09-football-v3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:26:50.483Z",
+        "startCommit": "af092f5f6db8c6d95b5714ebdf244df1cdffa4f7"
+      }
+    },
+    {
+      "sequence": 2030,
+      "at": "2026-11-09T14:27:09.689Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "db13bc3a-590d-4b7e-be0a-52fa95e24f4b",
+      "taskId": "T749",
+      "tasks": [
+        "T749",
+        "T750",
+        "T751",
+        "T752"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2031,
+      "at": "2026-11-09T14:29:26.932Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "verifying",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "검증 실패: pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build"
+      }
+    },
+    {
+      "sequence": 2032,
+      "at": "2026-11-09T14:39:22.160Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "14e190ce-648c-4a77-b5b1-656ee7663411",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748"
+      ],
+      "previousStatus": "blocked",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Clean implementation ended blocked on unchanged decide test fixture cost; preserve both commits and failure receipts before approved test-only rescope",
+        "releasedAt": "2026-11-09T14:39:22.160Z"
+      }
+    },
+    {
+      "sequence": 2033,
+      "at": "2026-11-09T14:40:53.631Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T757"
+        ]
+      }
+    },
+    {
+      "sequence": 2034,
+      "at": "2026-11-09T14:42:10.566Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+        "group": "fi09",
+        "taskId": "T747",
+        "tasks": [
+          "T747",
+          "T748",
+          "T757"
+        ],
+        "lane": "finance-views",
+        "owner": "fi09-finance-v3",
+        "contributors": [
+          "fi09-finance-v3"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T14:42:10.566Z",
+        "startCommit": "d489383e2aa023b754bc82af98a03649e00f31dc"
+      }
+    },
+    {
+      "sequence": 2035,
+      "at": "2026-11-09T14:42:35.805Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2036,
+      "at": "2026-11-09T14:45:32.841Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2037,
+      "at": "2026-11-09T14:51:39.864Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T747",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2038,
+      "at": "2026-11-09T14:53:15.049Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "taskId": "T757",
+        "status": "ready",
+        "verifiedCommit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+        "submittedBase": "d489383e2aa023b754bc82af98a03649e00f31dc",
+        "submissionId": "a10e61ed-ba8d-4ef8-a31a-c1db1b6b36cc",
+        "submittedAt": "2026-11-09T14:53:15.049Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T747",
+            "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+            "at": "2026-11-09T14:53:15.021Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T14:51:40.365Z",
+                "finishedAt": "2026-11-09T14:53:14.497Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T748",
+            "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+            "at": "2026-11-09T14:53:15.021Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T14:51:40.365Z",
+                "finishedAt": "2026-11-09T14:53:14.497Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T757",
+            "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+            "at": "2026-11-09T14:53:15.021Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+                "startedAt": "2026-11-09T14:51:40.365Z",
+                "finishedAt": "2026-11-09T14:53:14.497Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests && pnpm run build",
+            "startedAt": "2026-11-09T14:51:40.365Z",
+            "finishedAt": "2026-11-09T14:53:14.497Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2039,
+      "at": "2026-11-09T14:53:53.975Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "0b0be4cf-064a-45f0-a0f2-4fcf221f5b08",
+          "owner": "fi09-review-finance",
+          "status": "reviewing",
+          "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+          "baseCommit": "d489383e2aa023b754bc82af98a03649e00f31dc",
+          "submissionId": "a10e61ed-ba8d-4ef8-a31a-c1db1b6b36cc",
+          "createdAt": "2026-11-09T14:53:53.975Z"
+        }
+      }
+    },
+    {
+      "sequence": 2040,
+      "at": "2026-11-09T14:56:45.228Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "0b0be4cf-064a-45f0-a0f2-4fcf221f5b08",
+          "owner": "fi09-review-finance",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed T747/T748/T757 at pinned 80498a0f against d489383e. Canonical turnover extraction preserves the original ledger-residual algebra, owned-season/year/currency selection, bigint/clamp/conversion and finance exports; owner previews now use those turnover bases and preserve the approved fallback/fansFriend semantics. Cash summary reuses Money disclosure with original signed values and labels. The canonical world cache is private to decide.test.ts with explicit seed, complete copied release, fixture version and transitive dependency identity; generic gridKit remains fresh, each scene recreates world/setup/state/RNG, and the 53 original scenarios, assertions, draw counts and 30-second timeout remain intact. Checked focused parity/isolation/regression evidence and exact-submission host verification (126 files, 1141 tests plus typecheck/lint/format/i18n/build). No overlapping upstream source changes found. Existing preview percentage precision is explicitly retained outside the denominator scope; single uncontrolled before/after timings are not a stable speedup claim. Coordinator retains integration/browser/full gates.",
+          "findings": [],
+          "commit": "80498a0f0d46838ef10a7753ff6b48f23de3d708",
+          "baseCommit": "d489383e2aa023b754bc82af98a03649e00f31dc",
+          "submissionId": "a10e61ed-ba8d-4ef8-a31a-c1db1b6b36cc",
+          "createdAt": "2026-11-09T14:53:53.975Z",
+          "finishedAt": "2026-11-09T14:56:45.228Z"
+        }
+      }
+    },
+    {
+      "sequence": 2041,
+      "at": "2026-11-09T14:57:05.335Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "57403414-fee7-49eb-b8d4-4f746a8ddb8a",
+      "taskId": "T757",
+      "tasks": [
+        "T747",
+        "T748",
+        "T757"
+      ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

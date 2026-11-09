@@ -1,0 +1,29 @@
+{
+  "session": "/root/scout_transfer",
+  "mode": "independent read-only safety review, no tests/edits",
+  "problem": "unchanged decide file timed out in different cases across host submission and isolated rerun; latter53 cases52pass,223.62s, case1113=55.472s; per-test timeout30s unchanged",
+  "approve": "decide-test-only private canonical prepared-world snapshot; preserve generic gridKit fresh careerWorld semantics",
+  "rejected": "generic gridKit cache under guessed generation-config keys: runtime ABILITY_FIT/MARKET/opening-book overrides are not source fingerprints",
+  "evidence": [
+    "grid/testkit.ts:24 careerWorld per call,25-30 setup/state",
+    "grid/decide.test.ts:50,1006 actual defaultseed and DISABLED_RELEASE",
+    "career.testkit.ts:45-59 fresh historyWorld/takeOver, no decision simulation",
+    "tests/fixtures/cached-world.ts:9-14 caller dependencies and explicit input wrapping",
+    "tests/fixtures/json-cache.ts:86-115 fingerprint,194 fresh JSON copies; directory off still memory-cached",
+    "source-graph.ts:113-131 toolchain fingerprints"
+  ],
+  "frozenInput": "actual grid-lab seed; complete copied DISABLED_RELEASE; fixture version and builder transitive dependency graph; prepare before test overrides",
+  "preserves": [
+    "all53 scenarios/draw counts/assertions and30s timeout",
+    "fresh nested mutable World, fixture, buildGridSetup, createState and RNG for every scene",
+    "generic gridKit respects current generation settings, remains uncached"
+  ],
+  "checks": [
+    "direct/prepared canonical world+setup+roster+state+RNG equality",
+    "nested mutation isolation",
+    "decision-setting action equivalence",
+    "generic generation-setting distinction",
+    "original unchanged53 cases"
+  ],
+  "limits": "no measured speedup yet; shared-host load uncontrolled; stop if JSON cloning changes observable facts"
+}
