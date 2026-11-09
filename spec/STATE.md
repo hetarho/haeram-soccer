@@ -836,7 +836,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T744 | refresh validation fixtures on the accepted economy source | ARCH ECON CLUB OWNER | T739 T740 T742 T743 | todo |
-| T743 | use settled payroll in the reference career report | ECON CLUB OWNER LEAGUE ARCH | T739 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
@@ -862,16 +861,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 9 | 9 | 0 | 0 | 0 | 0 | 2026-11-09T05:58:49.380Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 11 | 10 | 1 | 0 | 0 | 0 | 2026-11-09T06:17:40.611Z | [history](work/economy-ec09.json) |
 
 ## next
-- implement-task T730 first (fix-ci-first): CI 42519984966 on ad51162 is green except `e2e (webkit 2/2)` — progression-settings.spec.ts:287 read `결재함 · 대기 0건` after the stop (set-piece-defence.spec.ts:187 flaky); T729's resource-skins fix held. Its re-run failed the same way (deterministic on CI WebKit); bisect T725/T727 on CI first.
-- the owner's decisions from review/self-improve-local-261109: F6 (confirm the decided inbox lines up to a date so a session can delete them — the largest per-task token cost), F13 (a CSS-free public entry so Playwright/Node consumers reach a slice's pure logic; then resume blocked T726), F11 (`pages/records`).
-- implement-task T689 (explore 2h) in a fresh session (this checkout's `vibe loop` is refused until work group `module-1026` is closed, see inbox): its deps are done.
-- F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T743 integrated
 - 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 T742 integrated
@@ -891,4 +887,3 @@
 - 261109 T737 integrated
 - 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
 - 261109 T734 integrated
-- 261109 T732 integrated
