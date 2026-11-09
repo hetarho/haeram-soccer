@@ -832,7 +832,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T738 | switch the season history between 순위 and 재정 | WEB OWNER ARCH | - | todo |
 | T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
 | T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
@@ -871,6 +870,7 @@
 - F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 
 ## log
+- 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
 - 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
 - 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
 - 261109 T735 done: monthly owner business (1 Sep–1 Jun + close) at 60%/70% with a 5% swing; living costs 0.8% a season in eleven exact shares (ow09)
@@ -890,4 +890,3 @@
 - 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
 - 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits
 - 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
-- 261109 T721–T724 done (lane dev-cost, worker fs09-w2, reviewer fs09-r1 approved with P3 notes only): every CI job has a time limit and every browser two shards; host transcendental `Math.*` (log2 and hypot included) fails lint in engine/contracts source, the four kit-pattern hypots and both knockout log2s now portable/integer with the contract golden unchanged; typecheck and format:check reuse per-checkout caches (warm 2.7 s / 5.2 s from 27 s / 18 s). Integrated on main as c1aba11f..ffa2b7d2 (tree identical to the reviewed 009a49db); verify:batch and CI pending the run's single push fs09

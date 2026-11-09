@@ -152,11 +152,17 @@ for (const [label, viewport] of [
       for (const season of await seasons.locator('tbody tr').all()) {
         expect(await season.evaluate((element) => element.getBoundingClientRect().height)).toBe(44);
       }
-      // The owner's record of each close shares its season's row (→OWNER-17, WEB-54); a 1930
-      // takeover has no seasons before the owner, so no takeover rule.
-      await expect(seasons.getByRole('columnheader', { name: '구단주 자금' })).toBeVisible();
-      await expect(seasons.getByRole('columnheader', { name: '팬 민심' })).toBeVisible();
+      // A 1930 takeover has no seasons before the owner, so no takeover rule. 재정 swaps the
+      // club's columns for the owner's record of each close over the same rows (→OWNER-17, WEB-54).
       await expect(seasons).not.toContainText('구단 인수');
+      await expect(seasons.getByRole('columnheader', { name: '구단주 자금' })).toHaveCount(0);
+      const seasonView = page.getByRole('group', { name: '시즌별 기록 항목' });
+      await seasonView.getByRole('button', { name: '재정', exact: true }).click();
+      await expect(seasons.getByRole('columnheader', { name: '구단주 자금' })).toBeVisible();
+      await expect(seasons.getByRole('columnheader', { name: '승점' })).toHaveCount(0);
+      await expect(seasons).toContainText('1930/31');
+      await seasonView.getByRole('button', { name: '순위', exact: true }).click();
+      await expect(seasons.getByRole('columnheader', { name: '승점' })).toBeVisible();
       const row = page.getByRole('button', { name: '1930/31 구단 시즌 기록 보기', exact: true });
       // Centred, so the floating news button and the tab bar stay clear of the row.
       await row.evaluate((element) => element.scrollIntoView({ block: 'center' }));
