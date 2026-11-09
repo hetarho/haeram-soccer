@@ -53,7 +53,7 @@ const axisMoney = (w: World, plot: number) => {
 
 /**
  * Every records chart's series with the line each season shows in its bubble, computed once per
- * closed season (or a change of division) so moving over a chart never recomputes them. The club's
+ * closed season, division or display locale so moving over a chart never recomputes them. The club's
  * growth starts at the takeover: the seasons before it kept no own-club figures (→HIST-21).
  */
 function trendSeries(w: World) {
@@ -233,10 +233,10 @@ type TrendMetric = (typeof TREND_METRICS)[number][0];
  * today's money.
  */
 export function ClubTrends({ w }: { w: World }) {
-  useTextLocale();
+  const locale = useTextLocale();
   const club = clubOf(w),
     code = club.country;
-  const series = useMemo(() => trendSeries(w), [w.history, w.year, club.tier]);
+  const series = useMemo(() => trendSeries(w), [w.history, w.year, club.tier, locale]);
   const standing = useEloStanding(w);
   const [metric, setMetric] = useTaskState<TrendMetric>(w.id, 'growth-metric', () =>
     new URLSearchParams(location.search).get('part') === 'elo' ? 'elo' : 'league',
