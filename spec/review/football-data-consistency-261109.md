@@ -2,7 +2,7 @@
 > st:converted@261109 | scope:apps/web/src packages/engine/src/finance-read.ts packages/engine/src/finance.ts | at:3a8cf727 | base:ARCH@35
 
 ## summary
-- The owner's direct eight-hour self-improve-local invocation delegates bounded local adoption for football figures, club finances/transfers and conventional football-data UI. Six observed contract violations are approved; simulation results, economic policy and saved facts remain unchanged.
+- The owner's direct eight-hour self-improve-local invocation delegates bounded local adoption for football figures, club finances/transfers and conventional football-data UI. Eight observed contract violations are approved; simulation results, economic policy and saved facts remain unchanged.
 
 ## findings
 - F1 [o] P2 apps/web/src/entities/office/lib/ownerFigures.ts:249-311: bug: injection and dividend previews use different turnover bases from actual fan-mood settlement ← owner capital, sales and currency changes make disclosed effects disagree with existing rules →T747
@@ -11,6 +11,9 @@
 - F4 [o] P2 apps/web/src/pages/club/lib/seasonStats.ts:221-225: bug: retained former players' opposing-side advanced contributions enter our leaders ← own-season xA and key-pass rankings include the opponent's play →T750
 - F5 [o] P2 apps/web/src/pages/club/lib/seasonStats.ts:5-25: bug: a fixed ten-goal grid drops Poisson probability mass ← expected points can fall when own xG rises, contrary to the declared independent-Poisson statistic →T751
 - F6 [o] P3 apps/web/src/entities/match/lib/advanced.ts and football-stat consumers: bug: raw decimal and percentage strings bypass shared locale formatters ← the same football statistics use inconsistent separators and digits across screens →T752
+
+- F7 [o] P2 apps/web/src/pages/club/ui/RecruitmentDesk.tsx:600-658,1730-1749: bug: refreshed asking terms are displayed beside percentage offers still based on a retained older asking ← the displayed percentage, amount and odds can describe different quotes →T753
+- F8 [o] P2 apps/web/src/pages/club/ui/ClubTrends.tsx:236-239: bug: a locale subscription does not invalidate preformatted chart detail strings ← chart amounts and supporter counts retain the previous locale while neighboring views update →T754
 
 ## notes
 - Proposal artifacts: `artifacts/improvements/261109-fi09/scout-finance.json` from `/root/scout_finance` and `scout-data-ui.json` from `/root/scout_data_ui`; both independent read-only sessions. Coordinator checked the quoted raw source blocks and complete ARCH-4/21/30/32, WEB-22/47/67/89/114, OWNER-11/12 and ECON-30 decisions before adoption. The source is unchanged from their assigned base through the approval HEAD `3a8cf7277f8560fe15b10b09db118a291e575da1`.
@@ -24,3 +27,4 @@
 - Verification: every worker uses affected unit tests plus ARCH-30 task checks and validate:i18n; UI changes include build. No worker runs browsers or full suites. Coordinator owns integration checks, independent review and the final ARCH-30 gate, with two hours reserved for final verification/failure correction.
 - [x] FinancialBreakdown compact-notation proposal withdrawn: it is the ledger detail exception explicitly allowed by WEB-67.
 - [?] NPC counterparties' spending budgets and failed wage/recruitment pilots remain in the existing economy review; no policy expansion or repeated balance experiment is authorized. Existing T689 calibration belongs to its own task and is excluded.
+- Follow-up approval from independent `/root/scout_transfer`: `artifacts/improvements/261109-fi09/scout-transfer.json`, raw source pointers and complete CLUB-14/15/18, ECON-6, WEB-109/54 blocks checked at a48adec65d18a6a06b080bf6125ca95e15d21b48. F7 begins with a focused failing synthetic revision/quote test (source-derived evidence, not a claimed interactive replay); change only unsubmitted quote controls, preserving submitted bids and stale-response protection. Budget75m. F8 uses existing subscribed locale in memo dependencies or render-boundary formatting, preserving every plotted value and selected metric; mounted regression, budget45m. Both wait outside the current six-task work scope until that run finishes; later expansion must retain previous approved IDs and review-all/push-off policy.
