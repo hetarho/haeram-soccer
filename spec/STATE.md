@@ -18,7 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T06:15Z | - |
+| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T06:49Z | - |
 
 ## inbox
 - 261109 decided ECON-29 ARCH-30 T739 T740 T741: the owner bounds the remaining work to the current increment and every linked task/fix → finish wage/package implementation, calibrated measurements and full checks, push the complete unit to main, then end; no new counterparty-budget model or further economy cycle ec10
