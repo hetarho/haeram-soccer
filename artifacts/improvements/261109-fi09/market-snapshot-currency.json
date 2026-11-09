@@ -1,0 +1,42 @@
+{
+  "finding": "F21",
+  "scout": "/root/scout_data_ui",
+  "scoutHead": "67d29a20a396550c290f8f872d23805454507ad8",
+  "coordinatorEvidenceHead": "82895b54c306c1624ef81f126bbc64ea81240b70",
+  "status": "approved-as-T765",
+  "evidenceKind": "source-confirmed; actual reader/formatter diagnostic reported by independent scout, not a GUI replay",
+  "rawReceiptLimit": "The diagnostic ran from tsx stdin. Its original script/stdout files were not retained. The following reported output is preserved from the scout message; task acceptance requires retained failing mounted-test evidence before implementation.",
+  "reportedDiagnostic": {
+    "calls": 1,
+    "payloadRevision": 10,
+    "displayedRevision": 11,
+    "beforeCurrency": "ESP",
+    "afterCurrency": "EUR",
+    "originalFee": "₧10.00",
+    "deskFeeAfterBoundary": "€10.00",
+    "originalWage": "₧2.00",
+    "deskWageAfterBoundary": "€2.00"
+  },
+  "sourcePointers": [
+    "packages/contracts/src/types.ts:536-572: money responses lack capture-date/currency; seller source.country is not buyer currency",
+    "packages/engine/src/world-market.ts:51-71,252-275: money is computed in buyer's then-current units",
+    "apps/web/src/pages/club/lib/worldMarket.ts:164-240: running token preserves same-query response over revisions",
+    "apps/web/src/pages/club/ui/RecruitmentDesk.tsx:224-225: retained candidate money formatted with current country/year"
+  ],
+  "completeDecisions": ["WEB-43", "WEB-97", "ARCH-6", "ECON-5", "ECON-6"],
+  "priorContract": "spec/tasks/done/T566.market-read-during-progression.md",
+  "approval": {
+    "authority": "owner's direct eight-hour self-improve-local mandate, bounded correction under existing currency and snapshot rules",
+    "task": "T765",
+    "allowedTouches": [
+      "apps/web/src/pages/club/lib/worldMarket.ts",
+      "apps/web/src/pages/club/lib/worldMarket.test.ts",
+      "apps/web/src/pages/club/ui/RecruitmentDesk.tsx",
+      "apps/web/src/pages/club/ui/RecruitmentDesk.test.ts"
+    ],
+    "budgetMinutes": 60,
+    "preserve": ["bounded running snapshots", "inspection identity/selection", "one in-flight/latest replacement cadence", "T753 quote and command revalidation", "game facts, rates, engine, protocol and save contracts"],
+    "design": "Keep demonstrably known snapshot denomination alongside the UI read. Format in that unit; withhold ambiguous monetary values before render without discarding inspection. Do not infer buyer currency from seller country or current-year fallback.",
+    "checks": "retained failing mounted proof, controlled-promise stale/period cases, affected unit, typecheck/lint/format/i18n/build; separate independent review and final coordinator Chromium gate"
+  }
+}
