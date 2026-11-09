@@ -836,7 +836,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T741 | align financial integration expectations with the normalized central package | ECON ARCH | T740 | todo |
 | T742 | use the normalized central package in club valuation | ECON OWNER ARCH | T740 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
@@ -866,12 +865,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 9 | 7 | 2 | 1 | 0 | 0 | 2026-11-09T05:52:34.658Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 9 | 8 | 1 | 0 | 1 | 0 | 2026-11-09T05:57:27.847Z | [history](work/economy-ec09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T741 integrated
 - 261109 T739 integrated
 - 261109 T740 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
@@ -891,4 +891,3 @@
 - 261109 fs09 CI 42519984966 re-run of `e2e (webkit 2/2)` failed progression-settings.spec.ts:287 again in all three attempts (passed on CI WebKit at d0180ee1, passes on local WebKit at ad51162): deterministic on CI's Linux WebKit for this tree, so T730 starts by bisecting T725/T727 on CI; main stays red until then fs09
 - 261109 fs09 gate passed on ad511620 in 1836 s (every stage, Chromium 348 passed, tree untouched); pushed ad511620 to main; CI 42519984966: checks, unit, integration 1–3/3, Chromium 1–2/2, Firefox 1–2/2, WebKit 1/2 green, WebKit 2/2 failed progression-settings.spec.ts:287 (→T730) with set-piece-defence.spec.ts:187 flaky; re-running the failed job fs09
 - 261109 fs09 final gate `vibe check --tier batch -- pnpm run verify:batch` on 61d6d6a2: every stage passed — typecheck, lint, format, unit, integration 318 s, contract, catalogs, presentation, i18n, build, Chromium 348 passed (25.6 min); the receipt reads stale because this session committed spec-only files during the run (no code after 61d6d6a2) fs09
-- 261109 T726 reverted (61d6d6a2) and blocked: its lib moves made every Playwright spec fail to load through a CSS-carrying entity index; T727/T728 stay fs09

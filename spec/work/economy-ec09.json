@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T05:52:34.658Z",
-  "sourceCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+  "snapshotAt": "2026-11-09T05:57:27.847Z",
+  "sourceCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -47,29 +47,21 @@
   },
   "summary": {
     "total": 9,
-    "completed": 7,
-    "remaining": 2,
-    "running": 1,
-    "review": 0,
+    "completed": 8,
+    "remaining": 1,
+    "running": 0,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 1
+    "unassigned": 0
   },
   "tasks": [
-    {
-      "id": "T741",
-      "title": "align financial integration expectations with the normalized central package",
-      "dep": [
-        "T740"
-      ],
-      "status": "todo"
-    },
     {
       "id": "T742",
       "title": "use the normalized central package in club valuation",
       "dep": [
         "T740"
       ],
-      "status": "doing"
+      "status": "reviewing"
     }
   ],
   "attempts": [
@@ -469,6 +461,8 @@
       "submittedBase": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
       "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
       "submittedAt": "2026-11-09T05:06:00.683Z",
+      "integratedCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "integratedAt": "2026-11-09T05:52:35.352Z",
       "risk": null,
       "review": {
         "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
@@ -502,6 +496,13 @@
           "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
           "startedAt": "2026-11-09T05:05:46.807Z",
           "finishedAt": "2026-11-09T05:05:59.668Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:52:35.022Z",
+          "finishedAt": "2026-11-09T05:52:35.033Z"
         }
       ]
     },
@@ -600,9 +601,101 @@
       "contributors": [
         "ec10-canonical"
       ],
-      "status": "doing",
+      "status": "reviewing",
+      "reason": null,
       "createdAt": "2026-11-09T05:52:27.638Z",
-      "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db"
+      "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+      "verifiedCommit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+      "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+      "submittedAt": "2026-11-09T05:56:22.247Z",
+      "risk": null,
+      "review": {
+        "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
+        "owner": "ec10-reviewer",
+        "status": "reviewing",
+        "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+        "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+        "createdAt": "2026-11-09T05:57:21.623Z"
+      },
+      "steps": [
+        {
+          "taskId": "T742",
+          "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+          "at": "2026-11-09T05:56:22.203Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T05:56:14.901Z",
+              "finishedAt": "2026-11-09T05:56:21.883Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T05:56:14.901Z",
+          "finishedAt": "2026-11-09T05:56:21.883Z"
+        }
+      ]
+    },
+    {
+      "id": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "group": "economy-ec09",
+      "taskId": "T741",
+      "tasks": [
+        "T741"
+      ],
+      "lane": null,
+      "owner": "ec10-tests",
+      "contributors": [
+        "ec10-tests"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T05:52:37.414Z",
+      "startCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "verifiedCommit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+      "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+      "submittedAt": "2026-11-09T05:55:15.732Z",
+      "risk": null,
+      "review": {
+        "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed exact T7418eedb02d againsta097bc34. Only finance.test.ts and the task receipt change. The four former raw-broadcast expectations now use the independently adopted2018 central-pot anchor and explicit geometric interpolation:2010 normalized money to one minor unit,2005 share/merit growth at the interval midpoint, and lost-share parachute growth with the ordinary second-tier amount left unscaled. The expected values do not call leagueShare/leagueMerit/parachutePayment to reproduce their own answers; they retain independently anchored arithmetic and currency-aware growth checks. Existing scenarios, substantive assertion count, historical/other-tier/rank checks and timeouts/retries/skips remain intact. No production behavior change or blocking finding. The file is integration-tier; no financial world/integration/browser execution was performed by reviewer or claimed from the worker's empty changed-unit selection. Root must run the complete financial integration coverage at the combined gate and still finish T742's canonical valuation-source correction before publication.",
+        "findings": [],
+        "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+        "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+        "createdAt": "2026-11-09T05:56:25.547Z",
+        "finishedAt": "2026-11-09T05:56:56.281Z"
+      },
+      "steps": [
+        {
+          "taskId": "T741",
+          "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+          "at": "2026-11-09T05:55:15.683Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-09T05:55:07.489Z",
+              "finishedAt": "2026-11-09T05:55:15.311Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-09T05:55:07.489Z",
+          "finishedAt": "2026-11-09T05:55:15.311Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -2565,6 +2658,268 @@
       "group": "economy-ec09",
       "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
       "taskId": "T739",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 912,
+      "at": "2026-11-09T05:52:35.221Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:52:35.022Z",
+            "finishedAt": "2026-11-09T05:52:35.033Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 913,
+      "at": "2026-11-09T05:52:35.352Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "integratedAt": "2026-11-09T05:52:35.352Z"
+      }
+    },
+    {
+      "sequence": 914,
+      "at": "2026-11-09T05:52:37.415Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+        "group": "economy-ec09",
+        "taskId": "T741",
+        "tasks": [
+          "T741"
+        ],
+        "lane": null,
+        "owner": "ec10-tests",
+        "contributors": [
+          "ec10-tests"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T05:52:37.414Z",
+        "startCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1"
+      }
+    },
+    {
+      "sequence": 915,
+      "at": "2026-11-09T05:52:39.570Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 916,
+      "at": "2026-11-09T05:55:07.241Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 917,
+      "at": "2026-11-09T05:55:15.732Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+        "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+        "submittedAt": "2026-11-09T05:55:15.732Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T741",
+            "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+            "at": "2026-11-09T05:55:15.683Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-09T05:55:07.489Z",
+                "finishedAt": "2026-11-09T05:55:15.311Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-09T05:55:07.489Z",
+            "finishedAt": "2026-11-09T05:55:15.311Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 918,
+      "at": "2026-11-09T05:56:14.619Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 919,
+      "at": "2026-11-09T05:56:22.247Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+        "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+        "submittedAt": "2026-11-09T05:56:22.247Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T742",
+            "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+            "at": "2026-11-09T05:56:22.203Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T05:56:14.901Z",
+                "finishedAt": "2026-11-09T05:56:21.883Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T05:56:14.901Z",
+            "finishedAt": "2026-11-09T05:56:21.883Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 920,
+      "at": "2026-11-09T05:56:25.547Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+          "createdAt": "2026-11-09T05:56:25.547Z"
+        }
+      }
+    },
+    {
+      "sequence": 921,
+      "at": "2026-11-09T05:56:56.281Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed exact T7418eedb02d againsta097bc34. Only finance.test.ts and the task receipt change. The four former raw-broadcast expectations now use the independently adopted2018 central-pot anchor and explicit geometric interpolation:2010 normalized money to one minor unit,2005 share/merit growth at the interval midpoint, and lost-share parachute growth with the ordinary second-tier amount left unscaled. The expected values do not call leagueShare/leagueMerit/parachutePayment to reproduce their own answers; they retain independently anchored arithmetic and currency-aware growth checks. Existing scenarios, substantive assertion count, historical/other-tier/rank checks and timeouts/retries/skips remain intact. No production behavior change or blocking finding. The file is integration-tier; no financial world/integration/browser execution was performed by reviewer or claimed from the worker's empty changed-unit selection. Root must run the complete financial integration coverage at the combined gate and still finish T742's canonical valuation-source correction before publication.",
+          "findings": [],
+          "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+          "createdAt": "2026-11-09T05:56:25.547Z",
+          "finishedAt": "2026-11-09T05:56:56.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 922,
+      "at": "2026-11-09T05:57:21.623Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+          "createdAt": "2026-11-09T05:57:21.623Z"
+        }
+      }
+    },
+    {
+      "sequence": 923,
+      "at": "2026-11-09T05:57:24.937Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
