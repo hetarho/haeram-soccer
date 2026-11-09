@@ -14,12 +14,14 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T01:58Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261109 decided CLUB-33 CLUB-46 review/economy-transfers-261109: how to address the owner's cash accumulation and low fees → remove unconditional free-agent priority and the duplicate age discount on modern transfer growth, preserve financial limits and historical compression, measure purchases and sales together (alt: inflate operating expenses above their existing 35% share | activate the rejected ability-fit wage) ec09
 - 261109 decided T726 review/self-improve-local-261109: the final gate on 16994234 could not load any Playwright spec — T726's moved `goalFeedback` imports `presentationClock` through the `entities/match` index, which drags CSS modules into Playwright's Node loader → revert T726 alone (61d6d6a2), keep T727/T728, block T726 on F13 (alt: a CSS-free public entry now, an ARCH-4 change without review time | stub CSS in Playwright's loader) fs09
 - 261109 parked review/self-improve-local-261109 ARCH-4: F13 — how code outside Vite (Playwright specs, fixtures, scripts) reaches a slice's pure logic when its index re-exports CSS-importing components; recommended a CSS-free `model`/`lib` public entry per slice beside `index.ts`, enforced by the layer rule, then resume T726 fs09
 - 261109 suggest WEB-93 T729: the club hub's entrance animation (`.hub > *` `rise`, ClubHub.module.css) still plays when the browser asks for reduced motion (resource-skins runs with `reducedMotion: 'reduce'` and saw it); honouring `prefers-reduced-motion` there would be a small accessibility fix of its own fs09
@@ -797,7 +799,7 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 61 | 61 | - | 0 |
+| CLUB | 62 | 62 | - | 0 |
 | MATCH | 57 | 57 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
@@ -811,6 +813,7 @@
 ## review
 | id | st |
 |---|---|
+| economy-transfers-261109 | converted@261109 |
 | automatic-play-hotspots-261103 | converted@261103 |
 | outside-t216-t255-261019 | converted@261019 |
 | recent-code-quality-261023 | converted@261023 |
@@ -823,6 +826,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
+| T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
+| T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
@@ -848,6 +854,7 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
+| economy-ec09 | 2 | 2 | 1 | 1 | 0 | 1 | 0 | 2026-11-09T02:13:27.005Z | [history](work/economy-ec09.json) |
 
 ## next
 - implement-task T730 first (fix-ci-first): CI 42519984966 on ad51162 is green except `e2e (webkit 2/2)` — progression-settings.spec.ts:287 read `결재함 · 대기 0건` after the stop (set-piece-defence.spec.ts:187 flaky); T729's resource-skins fix held. Its re-run failed the same way (deterministic on CI WebKit); bisect T725/T727 on CI first.
@@ -856,6 +863,11 @@
 - F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 
 ## log
+- 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
+- 261109 T731 integrated
+- 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
+- 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
+- 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
 - 261109 fs09 CI 42519984966 re-run of `e2e (webkit 2/2)` failed progression-settings.spec.ts:287 again in all three attempts (passed on CI WebKit at d0180ee1, passes on local WebKit at ad51162): deterministic on CI's Linux WebKit for this tree, so T730 starts by bisecting T725/T727 on CI; main stays red until then fs09
 - 261109 fs09 gate passed on ad511620 in 1836 s (every stage, Chromium 348 passed, tree untouched); pushed ad511620 to main; CI 42519984966: checks, unit, integration 1–3/3, Chromium 1–2/2, Firefox 1–2/2, WebKit 1/2 green, WebKit 2/2 failed progression-settings.spec.ts:287 (→T730) with set-piece-defence.spec.ts:187 flaky; re-running the failed job fs09
 - 261109 fs09 final gate `vibe check --tier batch -- pnpm run verify:batch` on 61d6d6a2: every stage passed — typecheck, lint, format, unit, integration 318 s, contract, catalogs, presentation, i18n, build, Chromium 348 passed (25.6 min); the receipt reads stale because this session committed spec-only files during the run (no code after 61d6d6a2) fs09
