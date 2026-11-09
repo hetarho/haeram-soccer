@@ -8,7 +8,9 @@ import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { decode } from '../../apps/web/src/adapters/persistence';
-import { transferOffers } from '../../packages/engine/src/operations';
+import { freeAgentsOf } from '../../packages/engine/src/free-agents';
+import { worldMarketOffer } from '../../packages/engine/src/world-market';
+import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { horizontalOverflow } from './layout';
 import { openSaveMenu } from './save-menu';
 import { leaveOffice, openOfficeArea } from './office';
@@ -51,7 +53,27 @@ test('operates a club, reads a season and exports/imports the actual save', asyn
   const saved = await exported;
   await exportMenu.getByRole('button', { name: '창 닫기', exact: true }).click();
   const { world } = await decode(readFileSync((await saved.path())!, 'utf8'));
-  const free = transferOffers(world).find((offer) => BigInt(offer.fee) === 0n)!;
+  // The owner's full market includes real free agents outside the scout's capped shortlist.
+  // Keep this season-long fixture's payroll modest while following the UI's signing preview.
+  const free = freeAgentsOf(world)
+    .flatMap((agent) => {
+      const offer = worldMarketOffer(world, {
+        world: world.id,
+        kind: 'offer',
+        playerId: agent.id,
+      });
+      return offer?.available && offer.freeAgent ? [offer] : [];
+    })
+    .sort((a, b) => {
+      const left = BigInt(a.player.wage),
+        right = BigInt(b.player.wage);
+      return left < right ? -1 : left > right ? 1 : 0;
+    })
+    .find((offer) => {
+      const preview = recruitmentPreview(world, offer);
+      return preview.eligible && preview.affordable;
+    });
+  if (!free) throw new Error('The actual save has no eligible, affordable free agent to sign');
   await marketCandidate(page, free.player.id, free.player.name);
   await page.getByRole('button', { name: '자유계약 영입', exact: true }).click();
   await closeMarketPanel(page, '영입 후보 상세');
