@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T04:03:23.496Z",
-  "sourceCommit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+  "snapshotAt": "2026-11-09T08:02:21.001Z",
+  "sourceCommit": "51d072a18634436c76c0776c3896a547f34dbbbc",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -13,22 +13,19 @@
       "maxPending": 8
     },
     "verified": {
-      "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+      "commit": "51d072a18634436c76c0776c3896a547f34dbbbc",
       "checks": [
         {
-          "command": "node /tmp/ec09-affected-gate.mjs",
-          "startedAt": "2026-11-09T03:59:42.817Z",
-          "finishedAt": "2026-11-09T04:03:20.970Z"
+          "command": "node /tmp/ec10-resume-final-gate.mjs",
+          "startedAt": "2026-11-09T07:26:00.124Z",
+          "finishedAt": "2026-11-09T08:02:17.899Z"
         }
       ],
-      "at": "2026-11-09T04:03:21.038Z",
+      "at": "2026-11-09T08:02:17.976Z",
       "excluded": [
         "T689",
         "T726",
-        "T730",
-        "T735",
-        "T736",
-        "T738"
+        "T730"
       ]
     },
     "push": null,
@@ -38,12 +35,20 @@
       "T732",
       "T733",
       "T734",
-      "T737"
+      "T737",
+      "T739",
+      "T740",
+      "T741",
+      "T742",
+      "T743",
+      "T744",
+      "T745",
+      "T746"
     ]
   },
   "summary": {
-    "total": 5,
-    "completed": 5,
+    "total": 13,
+    "completed": 13,
     "remaining": 0,
     "running": 0,
     "review": 0,
@@ -425,6 +430,544 @@
           "command": "git diff --check",
           "startedAt": "2026-11-09T03:59:35.684Z",
           "finishedAt": "2026-11-09T03:59:35.696Z"
+        }
+      ]
+    },
+    {
+      "id": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "group": "economy-ec09",
+      "taskId": "T739",
+      "tasks": [
+        "T739"
+      ],
+      "lane": null,
+      "owner": "ec10-wages",
+      "contributors": [
+        "ec10-wages"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T04:54:17.230Z",
+      "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2",
+      "verifiedCommit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+      "submittedBase": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+      "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+      "submittedAt": "2026-11-09T05:06:00.683Z",
+      "integratedCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "integratedAt": "2026-11-09T05:52:35.352Z",
+      "risk": null,
+      "review": {
+        "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Scoped T739c8cd8717 follows CLUB63's candidate contract: the geometric era factor scales only the completed canonical marketWageAt quote after existing age/division/star terms; factor1 returns exact historical money, and fees, MARKET_CONFIG.wage, manager/staff quotes, ABILITY_FIT and stored contracts are untouched. Derived/free/renewal pricing uses the same leaf. The measurement-only observer intercepts synchronous operating-cost appends, recomputes that round's signed installments at the actual event boundary, asserts payroll plus nonpayroll equals the real operating-cost amount, rejects missing/duplicate/mismatched year/currency/round receipts, and retains coverage independently of event pruning/replacement. Nonenumerable array instrumentation and descriptor restoration preserve enumerable/clone facts in unit cases; there is no production schema/event/hook API change. The harness is baseline-compatible, records observer/script/input hashes, separates exact player/manager/modeled-staff payroll from pre-round samples, labels partial coverage, and supports already-owned continuation without takeover or default policy/contract rewriting; policy changes require explicit flags. Reviewer reran both named pure unit files:49/49 passed. No scoped blocker found. This approves implementation and measurement tooling only, not economic activation: actual progressed-world observer invariance, transition/mature careers, lived-candidate/held-out books/champions/solvency and required reference-career gates remain mandatory coordinator evidence before publication. Static repricing already warns the initial2.5 factor can overburden unchanged squads and is not a realism pass.",
+        "findings": [],
+        "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+        "baseCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+        "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+        "createdAt": "2026-11-09T05:06:26.591Z",
+        "finishedAt": "2026-11-09T05:08:28.433Z"
+      },
+      "steps": [
+        {
+          "taskId": "T739",
+          "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+          "at": "2026-11-09T05:06:00.637Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T05:05:46.807Z",
+              "finishedAt": "2026-11-09T05:05:59.668Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T05:05:46.807Z",
+          "finishedAt": "2026-11-09T05:05:59.668Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:52:35.022Z",
+          "finishedAt": "2026-11-09T05:52:35.033Z"
+        }
+      ]
+    },
+    {
+      "id": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "group": "economy-ec09",
+      "taskId": "T740",
+      "tasks": [
+        "T740"
+      ],
+      "lane": null,
+      "owner": "ec10-distribution",
+      "contributors": [
+        "ec10-distribution"
+      ],
+      "status": "released",
+      "reason": "Owner-requested calibration: preserve source patch, release before correcting the official-total coefficient from exact canonical minor units",
+      "createdAt": "2026-11-09T04:54:21.339Z",
+      "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2",
+      "releasedAt": "2026-11-09T04:59:09.450Z"
+    },
+    {
+      "id": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "group": "economy-ec09",
+      "taskId": "T740",
+      "tasks": [
+        "T740"
+      ],
+      "lane": null,
+      "owner": "ec10-distribution",
+      "contributors": [
+        "ec10-distribution"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T04:59:48.395Z",
+      "startCommit": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
+      "verifiedCommit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+      "submittedBase": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
+      "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+      "submittedAt": "2026-11-09T05:02:03.384Z",
+      "integratedCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+      "integratedAt": "2026-11-09T05:52:25.210Z",
+      "risk": null,
+      "review": {
+        "id": "3329341b-4390-49df-8021-c0e595e718ae",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Scoped T740 componente37ad16c implements ECON51's exact ENG/top-flight normalization in leagueShare after the unchanged broadcast quote. Factor1 returns the old money byte-for-byte, geometric interpolation/flat ends follow the approved anchors, high-precision scaleBy preserves the official20-rank pots, and merit/installments/parachute calculations remain canonical. Own settlement/projection and NPC distribution consume leagueShare. Reviewer reran finance.league-distribution.test.ts:6/6 passed, including both official pots, pre1993 identity, country/tier controls, spread and lost-share payment. No scoped blocker in those cash-accounting paths. Overall increment is NOT publication-ready: an independently reproduced related gap remains in club-value.ts divisionDistribution, which still returns16560867645 rather than normalized10898461538 for ENG2024 and therefore misprices league-place/floor under ECON37. Root explicitly reserved required T742 to unify that path before publication; existing obsolete finance.test expectations are separately owned by T741. This component approval does not certify those follow-ups, economic gates or the whole feature. No worker/reviewer world, integration or browser run was performed.",
+        "findings": [],
+        "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+        "baseCommit": "865ed3451a64d94a065bb04ace4b37e783538cb1",
+        "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+        "createdAt": "2026-11-09T05:03:11.947Z",
+        "finishedAt": "2026-11-09T05:04:55.684Z"
+      },
+      "steps": [
+        {
+          "taskId": "T740",
+          "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+          "at": "2026-11-09T05:02:03.259Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T05:01:49.422Z",
+              "finishedAt": "2026-11-09T05:02:02.234Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T05:01:49.422Z",
+          "finishedAt": "2026-11-09T05:02:02.234Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:52:24.893Z",
+          "finishedAt": "2026-11-09T05:52:24.924Z"
+        }
+      ]
+    },
+    {
+      "id": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "group": "economy-ec09",
+      "taskId": "T742",
+      "tasks": [
+        "T742"
+      ],
+      "lane": null,
+      "owner": "ec10-canonical",
+      "contributors": [
+        "ec10-canonical"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T05:52:27.638Z",
+      "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+      "verifiedCommit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+      "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+      "submittedAt": "2026-11-09T05:56:22.247Z",
+      "integratedCommit": "6bdbc9a3232b69197420af729db576cddde73be5",
+      "integratedAt": "2026-11-09T05:58:50.241Z",
+      "risk": null,
+      "review": {
+        "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T74267563afe resolves the canonical-distribution gap independently identified in T740 review. One leagueDistributionAt(code,year,tier) now owns the original table fallback, upper-tier clamp, broadcast quote, targeted factor and precision; leagueShare and club-value.divisionDistribution preserve their public signatures and delegate without another formula. The dependency graph gains no production edge because club-value already imported finance. Modern league-place value and indebted floor are explicitly pinned to the official-scale package, while historical/non-target amounts, wages, fees, facilities, following, cash/debt and owner-business logic are untouched. Public-entry parity covers eight countries, historical/modern years, tier clamp and country-specific fallback without accidentally normalizing another country. Reviewer reran both named pure unit files:21/21 passed. No blocking findings. Downstream takeover/portable observation changes and economic matrices remain coordinator-owned checks before publication; this approval certifies the scoped consistency fix, not the candidate's economic realism or pending wage/revenue activation gates.",
+        "findings": [],
+        "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+        "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+        "createdAt": "2026-11-09T05:57:21.623Z",
+        "finishedAt": "2026-11-09T05:58:24.955Z"
+      },
+      "steps": [
+        {
+          "taskId": "T742",
+          "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+          "at": "2026-11-09T05:56:22.203Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T05:56:14.901Z",
+              "finishedAt": "2026-11-09T05:56:21.883Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T05:56:14.901Z",
+          "finishedAt": "2026-11-09T05:56:21.883Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:58:49.850Z",
+          "finishedAt": "2026-11-09T05:58:49.921Z"
+        }
+      ]
+    },
+    {
+      "id": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "group": "economy-ec09",
+      "taskId": "T741",
+      "tasks": [
+        "T741"
+      ],
+      "lane": null,
+      "owner": "ec10-tests",
+      "contributors": [
+        "ec10-tests"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T05:52:37.414Z",
+      "startCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "verifiedCommit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+      "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+      "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+      "submittedAt": "2026-11-09T05:55:15.732Z",
+      "integratedCommit": "8152e29d2e5338c75214808ffcefab795161d351",
+      "integratedAt": "2026-11-09T05:57:28.702Z",
+      "risk": null,
+      "review": {
+        "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
+        "owner": "ec10-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed exact T7418eedb02d againsta097bc34. Only finance.test.ts and the task receipt change. The four former raw-broadcast expectations now use the independently adopted2018 central-pot anchor and explicit geometric interpolation:2010 normalized money to one minor unit,2005 share/merit growth at the interval midpoint, and lost-share parachute growth with the ordinary second-tier amount left unscaled. The expected values do not call leagueShare/leagueMerit/parachutePayment to reproduce their own answers; they retain independently anchored arithmetic and currency-aware growth checks. Existing scenarios, substantive assertion count, historical/other-tier/rank checks and timeouts/retries/skips remain intact. No production behavior change or blocking finding. The file is integration-tier; no financial world/integration/browser execution was performed by reviewer or claimed from the worker's empty changed-unit selection. Root must run the complete financial integration coverage at the combined gate and still finish T742's canonical valuation-source correction before publication.",
+        "findings": [],
+        "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+        "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+        "createdAt": "2026-11-09T05:56:25.547Z",
+        "finishedAt": "2026-11-09T05:56:56.281Z"
+      },
+      "steps": [
+        {
+          "taskId": "T741",
+          "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+          "at": "2026-11-09T05:55:15.683Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-09T05:55:07.489Z",
+              "finishedAt": "2026-11-09T05:55:15.311Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-09T05:55:07.489Z",
+          "finishedAt": "2026-11-09T05:55:15.311Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T05:57:28.419Z",
+          "finishedAt": "2026-11-09T05:57:28.427Z"
+        }
+      ]
+    },
+    {
+      "id": "ceba3772-233a-4367-8461-a10f89887466",
+      "group": "economy-ec09",
+      "taskId": "T743",
+      "tasks": [
+        "T743"
+      ],
+      "lane": null,
+      "owner": "ec10-reference",
+      "contributors": [
+        "ec10-reference"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T06:05:05.436Z",
+      "startCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+      "verifiedCommit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+      "submittedBase": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+      "submissionId": "fd7ada22-e522-4215-815d-925bf57e9b85",
+      "submittedAt": "2026-11-09T06:14:35.695Z",
+      "integratedCommit": "20ea0cbbb314287febbacb8c5087f37919b391f0",
+      "integratedAt": "2026-11-09T06:31:20.491Z",
+      "risk": null,
+      "review": {
+        "id": "2f68d578-d43a-4603-a4a2-9c24cacefbeb",
+        "owner": "ec10-review-reference",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T743 independently reviewed at fixed commit 04d966d95eda188e78818a70e0c60e3214921e7a against base 507d0d1c0c65da55513cd643cd10b2a029ab7d55. Exact payroll is read before rollover in season currency and existing price units; raw components/coverage/version and former samples are retained. Ended partial seasons stay outside completed-season bands, observer restoration uses finally, NPC comparisons use labeled player-only amounts, and unmarked retained reports remain explicitly sampled/unknown. Source diff preserves monthly owner business, seasonLivingCost, selection, build policy, progression and stops. Independently reran the 8 named unit tests successfully using a clean author checkout whose HEAD and all four tested source/helper hashes matched the fixed review workspace; the fixed workspace has no dependencies installed. Approval covers measurement implementation and unit evidence only: coordinator actual observer invariance, full reference and economic acceptance gates remain required.",
+        "findings": [],
+        "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+        "baseCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+        "submissionId": "fd7ada22-e522-4215-815d-925bf57e9b85",
+        "createdAt": "2026-11-09T06:14:54.182Z",
+        "finishedAt": "2026-11-09T06:17:27.512Z"
+      },
+      "steps": [
+        {
+          "taskId": "T743",
+          "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+          "at": "2026-11-09T06:14:35.649Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-09T06:14:26.774Z",
+              "finishedAt": "2026-11-09T06:14:35.331Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-09T06:14:26.774Z",
+          "finishedAt": "2026-11-09T06:14:35.331Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T06:31:20.220Z",
+          "finishedAt": "2026-11-09T06:31:20.228Z"
+        }
+      ]
+    },
+    {
+      "id": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "group": "economy-ec09",
+      "taskId": "T745",
+      "tasks": [
+        "T745"
+      ],
+      "lane": null,
+      "owner": "ec10-withdraw",
+      "contributors": [
+        "ec10-withdraw"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T06:32:26.037Z",
+      "startCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+      "verifiedCommit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+      "submittedBase": "d7f8188943634470680a47362eef7645ed31d64d",
+      "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+      "submittedAt": "2026-11-09T06:35:20.455Z",
+      "integratedCommit": "51a1cec6e82c83699601952718f92c63d32a138a",
+      "integratedAt": "2026-11-09T06:36:57.368Z",
+      "risk": null,
+      "review": {
+        "id": "6ef59280-8c8f-42c7-8c90-fe4a49153c7d",
+        "owner": "ec10-review-withdraw",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T745 independently reviewed at fixed a6a0f4a645a1d7fc2d105d7647da54f36f425258 against d7f8188943634470680a47362eef7645ed31d64d. All six restored production/test blob hashes exactly equal released 44a1069e54fbb6970cfd9b519f65773352954205; the new distribution test exists in neither release nor submission; the entire packages/apps diff against release is empty. Scripts are unchanged from the assigned parent, preserving the exact-payroll observer/cash/reference tools. Restoring the release also preserves its earlier transfer/recruitment fixes and monthly owner rules, with no inactive alternative pricing path. Independently confirmed raw pilot hard failures justify withdrawal; the task truthfully records rejection and deferred coordinator checks, not economic calibration success. Worker named 60-unit/static evidence is declared; reviewer used exact Git blob/tree proofs and did not run heavy checks. This component approval does not waive the separately reported localization follow-up for newly authored tooling prose or the final combined pre-push gate.",
+        "findings": [],
+        "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+        "baseCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+        "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+        "createdAt": "2026-11-09T06:35:42.984Z",
+        "finishedAt": "2026-11-09T06:36:39.436Z"
+      },
+      "steps": [
+        {
+          "taskId": "T745",
+          "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+          "at": "2026-11-09T06:35:20.407Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts packages/engine/src/club-value.test.ts scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T06:35:13.728Z",
+              "finishedAt": "2026-11-09T06:35:20.121Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts packages/engine/src/club-value.test.ts scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:35:13.728Z",
+          "finishedAt": "2026-11-09T06:35:20.121Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T06:36:56.940Z",
+          "finishedAt": "2026-11-09T06:36:57.038Z"
+        }
+      ]
+    },
+    {
+      "id": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "group": "economy-ec09",
+      "taskId": "T746",
+      "tasks": [
+        "T746"
+      ],
+      "lane": null,
+      "owner": "ec10-tooling",
+      "contributors": [
+        "ec10-tooling"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T06:39:57.706Z",
+      "startCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+      "verifiedCommit": "1ce7071d42939139edff911579158522934c02be",
+      "submittedBase": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+      "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+      "submittedAt": "2026-11-09T06:46:43.084Z",
+      "integratedCommit": "249730bc59bfef427efa70360f0de27ddcd64fcf",
+      "integratedAt": "2026-11-09T06:48:19.381Z",
+      "risk": null,
+      "review": {
+        "id": "7acd2eec-fb61-4f17-a520-e062f7e05b53",
+        "owner": "ec10-review-tooling",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T746 independently reviewed at fixed 1ce7071d42939139edff911579158522934c02be against b32a89d5f5e192a5ef219c5763946c43171a33c9. All 20 inventoried new/changed runtime prose strings now use typed resource IDs and named parameters. Each of 12 registered packs adds exactly those 20 keys; no existing messages or metadata changed, Korean source matches the Korean default, and translations are genuine target-language text. The shared fixed-en-GB boundary uses existing pure translator/validation modules, imports no React/browser preference state, and throws diagnostics before fallback. Tests preserve old English bytes, opaque parameters and existing observer/report assertions. Diff inspection found only message substitution/imports in the three accounting files: successful arithmetic, JSON fields, coverage, interception/restoration and progression are unchanged; economic pilots remain withdrawn. Independently reran all 11 named pure tests successfully in the clean exact author HEAD matching fixed reviewer source/helper hashes. Coordinator final-source actual invariance and complete pre-push gate remain required; no economic-pilot acceptance is claimed.",
+        "findings": [],
+        "commit": "1ce7071d42939139edff911579158522934c02be",
+        "baseCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+        "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+        "createdAt": "2026-11-09T06:47:07.902Z",
+        "finishedAt": "2026-11-09T06:47:57.078Z"
+      },
+      "steps": [
+        {
+          "taskId": "T746",
+          "commit": "1ce7071d42939139edff911579158522934c02be",
+          "at": "2026-11-09T06:46:43.045Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T06:46:37.854Z",
+              "finishedAt": "2026-11-09T06:46:42.789Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:46:37.854Z",
+          "finishedAt": "2026-11-09T06:46:42.789Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T06:48:18.904Z",
+          "finishedAt": "2026-11-09T06:48:18.947Z"
+        }
+      ]
+    },
+    {
+      "id": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "group": "economy-ec09",
+      "taskId": "T744",
+      "tasks": [
+        "T744"
+      ],
+      "lane": null,
+      "owner": "ec10-fixtures",
+      "contributors": [
+        "ec10-fixtures"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T06:49:52.101Z",
+      "startCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+      "verifiedCommit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+      "submittedBase": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+      "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+      "submittedAt": "2026-11-09T06:59:05.253Z",
+      "integratedCommit": "70eb85d29b79bd19cf8cd8fbe50c69996c6cea67",
+      "integratedAt": "2026-11-09T07:01:43.209Z",
+      "risk": null,
+      "review": {
+        "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+        "owner": "ec10-review-fixtures",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T744 independently reviewed at fixed a760bc081d27a7fa84b73ba71df0a1704c5599fc against d4e2a8a633dda50bb0c320f96747825a56c21df3. Diff contains only the two prepared fixtures and task receipt; generators, builders, assertions, migration input and portable fixture are unchanged. Portable SHA remains original 67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f. Independently decompressed old/new payloads and checked their checksums: only events, owner and shortlist differ; every event except owner-living is exactly identical after alignment, and every other world field including players, clubs, cash and matches is identical. Journey living counts change 1950 4-to-11 and elapsed 1951 1-to-5; the combined ledger difference exactly equals the 9,012,048-unit fortune reduction. Activation annual living increases 2 units with exactly 2 fewer fortune units. Each shortlist changes only two GK candidate IDs, consistent with already released T732; no roster or signing changes. Both new fixture file hashes match the retained actual generator receipt, metadata pins clean d4e2a8a6, and independently recomputed the 208-file source fingerprint 7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86. Independently reran the two decoding/schema units successfully in clean exact author HEAD. No delta is attributed to withdrawn wage/package pilots. Final canonical replay, actual instrumentation invariance and full pre-push checks remain coordinator-owned.",
+        "findings": [],
+        "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+        "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+        "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+        "createdAt": "2026-11-09T06:59:50.419Z",
+        "finishedAt": "2026-11-09T07:01:13.250Z"
+      },
+      "steps": [
+        {
+          "taskId": "T744",
+          "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+          "at": "2026-11-09T06:59:05.217Z",
+          "verification": [
+            {
+              "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+              "startedAt": "2026-11-09T06:59:01.187Z",
+              "finishedAt": "2026-11-09T06:59:04.921Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+          "startedAt": "2026-11-09T06:59:01.187Z",
+          "finishedAt": "2026-11-09T06:59:04.921Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T07:01:42.798Z",
+          "finishedAt": "2026-11-09T07:01:42.859Z"
         }
       ]
     }
@@ -1898,6 +2441,1736 @@
             "T735",
             "T736",
             "T738"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 888,
+      "at": "2026-11-09T04:54:15.529Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740"
+        ]
+      }
+    },
+    {
+      "sequence": 889,
+      "at": "2026-11-09T04:54:17.230Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "8f5de303-d52d-441f-b5b8-d9342309d151",
+        "group": "economy-ec09",
+        "taskId": "T739",
+        "tasks": [
+          "T739"
+        ],
+        "lane": null,
+        "owner": "ec10-wages",
+        "contributors": [
+          "ec10-wages"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T04:54:17.230Z",
+        "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2"
+      }
+    },
+    {
+      "sequence": 890,
+      "at": "2026-11-09T04:54:19.590Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 891,
+      "at": "2026-11-09T04:54:21.339Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "taskId": "T740",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "94b8e683-2230-4513-a281-c061a9b0f68c",
+        "group": "economy-ec09",
+        "taskId": "T740",
+        "tasks": [
+          "T740"
+        ],
+        "lane": null,
+        "owner": "ec10-distribution",
+        "contributors": [
+          "ec10-distribution"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T04:54:21.339Z",
+        "startCommit": "bd8ed4f25d2d4f7aeab93a2d95d026c972a9efd2"
+      }
+    },
+    {
+      "sequence": 892,
+      "at": "2026-11-09T04:54:23.599Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "taskId": "T740",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 893,
+      "at": "2026-11-09T04:57:01.492Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741"
+        ]
+      }
+    },
+    {
+      "sequence": 894,
+      "at": "2026-11-09T04:59:09.450Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "94b8e683-2230-4513-a281-c061a9b0f68c",
+      "taskId": "T740",
+      "previousStatus": "doing",
+      "status": "released",
+      "changes": {
+        "status": "released",
+        "reason": "Owner-requested calibration: preserve source patch, release before correcting the official-total coefficient from exact canonical minor units",
+        "releasedAt": "2026-11-09T04:59:09.450Z"
+      }
+    },
+    {
+      "sequence": 895,
+      "at": "2026-11-09T04:59:48.395Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+        "group": "economy-ec09",
+        "taskId": "T740",
+        "tasks": [
+          "T740"
+        ],
+        "lane": null,
+        "owner": "ec10-distribution",
+        "contributors": [
+          "ec10-distribution"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T04:59:48.395Z",
+        "startCommit": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5"
+      }
+    },
+    {
+      "sequence": 896,
+      "at": "2026-11-09T04:59:51.229Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 897,
+      "at": "2026-11-09T05:01:48.156Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 898,
+      "at": "2026-11-09T05:02:03.384Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+        "submittedBase": "5f365a37f6d80fcdf1e152b035ebe7c06b42bbe5",
+        "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+        "submittedAt": "2026-11-09T05:02:03.384Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T740",
+            "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+            "at": "2026-11-09T05:02:03.259Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T05:01:49.422Z",
+                "finishedAt": "2026-11-09T05:02:02.234Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T05:01:49.422Z",
+            "finishedAt": "2026-11-09T05:02:02.234Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 899,
+      "at": "2026-11-09T05:03:11.947Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "3329341b-4390-49df-8021-c0e595e718ae",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+          "baseCommit": "865ed3451a64d94a065bb04ace4b37e783538cb1",
+          "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+          "createdAt": "2026-11-09T05:03:11.947Z"
+        }
+      }
+    },
+    {
+      "sequence": 900,
+      "at": "2026-11-09T05:04:55.684Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "3329341b-4390-49df-8021-c0e595e718ae",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Scoped T740 componente37ad16c implements ECON51's exact ENG/top-flight normalization in leagueShare after the unchanged broadcast quote. Factor1 returns the old money byte-for-byte, geometric interpolation/flat ends follow the approved anchors, high-precision scaleBy preserves the official20-rank pots, and merit/installments/parachute calculations remain canonical. Own settlement/projection and NPC distribution consume leagueShare. Reviewer reran finance.league-distribution.test.ts:6/6 passed, including both official pots, pre1993 identity, country/tier controls, spread and lost-share payment. No scoped blocker in those cash-accounting paths. Overall increment is NOT publication-ready: an independently reproduced related gap remains in club-value.ts divisionDistribution, which still returns16560867645 rather than normalized10898461538 for ENG2024 and therefore misprices league-place/floor under ECON37. Root explicitly reserved required T742 to unify that path before publication; existing obsolete finance.test expectations are separately owned by T741. This component approval does not certify those follow-ups, economic gates or the whole feature. No worker/reviewer world, integration or browser run was performed.",
+          "findings": [],
+          "commit": "e37ad16c2a27de889be542ae5556dd693de10da6",
+          "baseCommit": "865ed3451a64d94a065bb04ace4b37e783538cb1",
+          "submissionId": "92bb07cc-6046-4a4f-8ebe-086c20f06c56",
+          "createdAt": "2026-11-09T05:03:11.947Z",
+          "finishedAt": "2026-11-09T05:04:55.684Z"
+        }
+      }
+    },
+    {
+      "sequence": 901,
+      "at": "2026-11-09T05:05:13.279Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741",
+          "T742"
+        ]
+      }
+    },
+    {
+      "sequence": 902,
+      "at": "2026-11-09T05:05:32.868Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 903,
+      "at": "2026-11-09T05:05:46.081Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 904,
+      "at": "2026-11-09T05:06:00.683Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+        "submittedBase": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+        "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+        "submittedAt": "2026-11-09T05:06:00.683Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T739",
+            "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+            "at": "2026-11-09T05:06:00.637Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T05:05:46.807Z",
+                "finishedAt": "2026-11-09T05:05:59.668Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts scripts/lib/settlement-payroll.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T05:05:46.807Z",
+            "finishedAt": "2026-11-09T05:05:59.668Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 905,
+      "at": "2026-11-09T05:06:26.592Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+          "baseCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+          "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+          "createdAt": "2026-11-09T05:06:26.591Z"
+        }
+      }
+    },
+    {
+      "sequence": 906,
+      "at": "2026-11-09T05:08:28.434Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "dd16fe72-d9c2-4326-84da-d2654c0596f0",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Scoped T739c8cd8717 follows CLUB63's candidate contract: the geometric era factor scales only the completed canonical marketWageAt quote after existing age/division/star terms; factor1 returns exact historical money, and fees, MARKET_CONFIG.wage, manager/staff quotes, ABILITY_FIT and stored contracts are untouched. Derived/free/renewal pricing uses the same leaf. The measurement-only observer intercepts synchronous operating-cost appends, recomputes that round's signed installments at the actual event boundary, asserts payroll plus nonpayroll equals the real operating-cost amount, rejects missing/duplicate/mismatched year/currency/round receipts, and retains coverage independently of event pruning/replacement. Nonenumerable array instrumentation and descriptor restoration preserve enumerable/clone facts in unit cases; there is no production schema/event/hook API change. The harness is baseline-compatible, records observer/script/input hashes, separates exact player/manager/modeled-staff payroll from pre-round samples, labels partial coverage, and supports already-owned continuation without takeover or default policy/contract rewriting; policy changes require explicit flags. Reviewer reran both named pure unit files:49/49 passed. No scoped blocker found. This approves implementation and measurement tooling only, not economic activation: actual progressed-world observer invariance, transition/mature careers, lived-candidate/held-out books/champions/solvency and required reference-career gates remain mandatory coordinator evidence before publication. Static repricing already warns the initial2.5 factor can overburden unchanged squads and is not a realism pass.",
+          "findings": [],
+          "commit": "c8cd8717e0dc41edbb7ae508fc32abde3f259cc7",
+          "baseCommit": "daa26ee2dc00b63716ae2d688180b5c94118d30d",
+          "submissionId": "d2604213-df5e-4ad4-9e27-8c3a728cc0cf",
+          "createdAt": "2026-11-09T05:06:26.591Z",
+          "finishedAt": "2026-11-09T05:08:28.433Z"
+        }
+      }
+    },
+    {
+      "sequence": 907,
+      "at": "2026-11-09T05:52:25.101Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:52:24.893Z",
+            "finishedAt": "2026-11-09T05:52:24.924Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 908,
+      "at": "2026-11-09T05:52:25.210Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "61ea3737-882a-4aec-b830-933d3f51aa9c",
+      "taskId": "T740",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "1358ac301ee1a55b09e5da79008905683c2652db",
+        "integratedAt": "2026-11-09T05:52:25.210Z"
+      }
+    },
+    {
+      "sequence": 909,
+      "at": "2026-11-09T05:52:27.638Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "17641376-59d8-4346-8fd1-65a17bde0641",
+        "group": "economy-ec09",
+        "taskId": "T742",
+        "tasks": [
+          "T742"
+        ],
+        "lane": null,
+        "owner": "ec10-canonical",
+        "contributors": [
+          "ec10-canonical"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T05:52:27.638Z",
+        "startCommit": "1358ac301ee1a55b09e5da79008905683c2652db"
+      }
+    },
+    {
+      "sequence": 910,
+      "at": "2026-11-09T05:52:29.704Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 911,
+      "at": "2026-11-09T05:52:31.276Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 912,
+      "at": "2026-11-09T05:52:35.221Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:52:35.022Z",
+            "finishedAt": "2026-11-09T05:52:35.033Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 913,
+      "at": "2026-11-09T05:52:35.352Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8f5de303-d52d-441f-b5b8-d9342309d151",
+      "taskId": "T739",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "integratedAt": "2026-11-09T05:52:35.352Z"
+      }
+    },
+    {
+      "sequence": 914,
+      "at": "2026-11-09T05:52:37.415Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+        "group": "economy-ec09",
+        "taskId": "T741",
+        "tasks": [
+          "T741"
+        ],
+        "lane": null,
+        "owner": "ec10-tests",
+        "contributors": [
+          "ec10-tests"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T05:52:37.414Z",
+        "startCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1"
+      }
+    },
+    {
+      "sequence": 915,
+      "at": "2026-11-09T05:52:39.570Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 916,
+      "at": "2026-11-09T05:55:07.241Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 917,
+      "at": "2026-11-09T05:55:15.732Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+        "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+        "submittedAt": "2026-11-09T05:55:15.732Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T741",
+            "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+            "at": "2026-11-09T05:55:15.683Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-09T05:55:07.489Z",
+                "finishedAt": "2026-11-09T05:55:15.311Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-09T05:55:07.489Z",
+            "finishedAt": "2026-11-09T05:55:15.311Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 918,
+      "at": "2026-11-09T05:56:14.619Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 919,
+      "at": "2026-11-09T05:56:22.247Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+        "submittedBase": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+        "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+        "submittedAt": "2026-11-09T05:56:22.247Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T742",
+            "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+            "at": "2026-11-09T05:56:22.203Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T05:56:14.901Z",
+                "finishedAt": "2026-11-09T05:56:21.883Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/club-value.test.ts packages/engine/src/finance.league-distribution.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T05:56:14.901Z",
+            "finishedAt": "2026-11-09T05:56:21.883Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 920,
+      "at": "2026-11-09T05:56:25.547Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+          "createdAt": "2026-11-09T05:56:25.547Z"
+        }
+      }
+    },
+    {
+      "sequence": 921,
+      "at": "2026-11-09T05:56:56.281Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "b1284578-8b26-40c9-9ae0-8c370e352d37",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed exact T7418eedb02d againsta097bc34. Only finance.test.ts and the task receipt change. The four former raw-broadcast expectations now use the independently adopted2018 central-pot anchor and explicit geometric interpolation:2010 normalized money to one minor unit,2005 share/merit growth at the interval midpoint, and lost-share parachute growth with the ordinary second-tier amount left unscaled. The expected values do not call leagueShare/leagueMerit/parachutePayment to reproduce their own answers; they retain independently anchored arithmetic and currency-aware growth checks. Existing scenarios, substantive assertion count, historical/other-tier/rank checks and timeouts/retries/skips remain intact. No production behavior change or blocking finding. The file is integration-tier; no financial world/integration/browser execution was performed by reviewer or claimed from the worker's empty changed-unit selection. Root must run the complete financial integration coverage at the combined gate and still finish T742's canonical valuation-source correction before publication.",
+          "findings": [],
+          "commit": "8eedb02d0256724a875e10b15450cbcd940bc605",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "026f6431-453e-4b34-bd4e-b4a2d2afc2f4",
+          "createdAt": "2026-11-09T05:56:25.547Z",
+          "finishedAt": "2026-11-09T05:56:56.281Z"
+        }
+      }
+    },
+    {
+      "sequence": 922,
+      "at": "2026-11-09T05:57:21.623Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
+          "owner": "ec10-reviewer",
+          "status": "reviewing",
+          "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+          "createdAt": "2026-11-09T05:57:21.623Z"
+        }
+      }
+    },
+    {
+      "sequence": 923,
+      "at": "2026-11-09T05:57:24.937Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 924,
+      "at": "2026-11-09T05:57:28.604Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:57:28.419Z",
+            "finishedAt": "2026-11-09T05:57:28.427Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 925,
+      "at": "2026-11-09T05:57:28.702Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ca92ca6e-55b4-4219-9b78-a2f002677d52",
+      "taskId": "T741",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "8152e29d2e5338c75214808ffcefab795161d351",
+        "integratedAt": "2026-11-09T05:57:28.702Z"
+      }
+    },
+    {
+      "sequence": 926,
+      "at": "2026-11-09T05:58:24.956Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "71acf7e2-db2c-4df6-b003-87a1938cb013",
+          "owner": "ec10-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T74267563afe resolves the canonical-distribution gap independently identified in T740 review. One leagueDistributionAt(code,year,tier) now owns the original table fallback, upper-tier clamp, broadcast quote, targeted factor and precision; leagueShare and club-value.divisionDistribution preserve their public signatures and delegate without another formula. The dependency graph gains no production edge because club-value already imported finance. Modern league-place value and indebted floor are explicitly pinned to the official-scale package, while historical/non-target amounts, wages, fees, facilities, following, cash/debt and owner-business logic are untouched. Public-entry parity covers eight countries, historical/modern years, tier clamp and country-specific fallback without accidentally normalizing another country. Reviewer reran both named pure unit files:21/21 passed. No blocking findings. Downstream takeover/portable observation changes and economic matrices remain coordinator-owned checks before publication; this approval certifies the scoped consistency fix, not the candidate's economic realism or pending wage/revenue activation gates.",
+          "findings": [],
+          "commit": "67563afef59fea7f9794cf0996808eaae3e79c85",
+          "baseCommit": "a097bc34d18447c22e4b4436f7046434e24a3ab1",
+          "submissionId": "9b9c012a-c296-46bf-8363-d2bedd0c1926",
+          "createdAt": "2026-11-09T05:57:21.623Z",
+          "finishedAt": "2026-11-09T05:58:24.955Z"
+        }
+      }
+    },
+    {
+      "sequence": 927,
+      "at": "2026-11-09T05:58:46.641Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 928,
+      "at": "2026-11-09T05:58:50.148Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T05:58:49.850Z",
+            "finishedAt": "2026-11-09T05:58:49.921Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 929,
+      "at": "2026-11-09T05:58:50.241Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "17641376-59d8-4346-8fd1-65a17bde0641",
+      "taskId": "T742",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6bdbc9a3232b69197420af729db576cddde73be5",
+        "integratedAt": "2026-11-09T05:58:50.241Z"
+      }
+    },
+    {
+      "sequence": 930,
+      "at": "2026-11-09T06:05:03.595Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741",
+          "T742",
+          "T743"
+        ]
+      }
+    },
+    {
+      "sequence": 931,
+      "at": "2026-11-09T06:05:05.436Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "ceba3772-233a-4367-8461-a10f89887466",
+        "group": "economy-ec09",
+        "taskId": "T743",
+        "tasks": [
+          "T743"
+        ],
+        "lane": null,
+        "owner": "ec10-reference",
+        "contributors": [
+          "ec10-reference"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T06:05:05.436Z",
+        "startCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55"
+      }
+    },
+    {
+      "sequence": 932,
+      "at": "2026-11-09T06:05:07.761Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 933,
+      "at": "2026-11-09T06:14:26.472Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 934,
+      "at": "2026-11-09T06:14:35.695Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+        "submittedBase": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+        "submissionId": "fd7ada22-e522-4215-815d-925bf57e9b85",
+        "submittedAt": "2026-11-09T06:14:35.695Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T743",
+            "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+            "at": "2026-11-09T06:14:35.649Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-09T06:14:26.774Z",
+                "finishedAt": "2026-11-09T06:14:35.331Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-09T06:14:26.774Z",
+            "finishedAt": "2026-11-09T06:14:35.331Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 935,
+      "at": "2026-11-09T06:14:54.182Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "2f68d578-d43a-4603-a4a2-9c24cacefbeb",
+          "owner": "ec10-review-reference",
+          "status": "reviewing",
+          "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+          "baseCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+          "submissionId": "fd7ada22-e522-4215-815d-925bf57e9b85",
+          "createdAt": "2026-11-09T06:14:54.182Z"
+        }
+      }
+    },
+    {
+      "sequence": 936,
+      "at": "2026-11-09T06:15:20.904Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741",
+          "T742",
+          "T743",
+          "T744"
+        ]
+      }
+    },
+    {
+      "sequence": 937,
+      "at": "2026-11-09T06:17:27.512Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "2f68d578-d43a-4603-a4a2-9c24cacefbeb",
+          "owner": "ec10-review-reference",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T743 independently reviewed at fixed commit 04d966d95eda188e78818a70e0c60e3214921e7a against base 507d0d1c0c65da55513cd643cd10b2a029ab7d55. Exact payroll is read before rollover in season currency and existing price units; raw components/coverage/version and former samples are retained. Ended partial seasons stay outside completed-season bands, observer restoration uses finally, NPC comparisons use labeled player-only amounts, and unmarked retained reports remain explicitly sampled/unknown. Source diff preserves monthly owner business, seasonLivingCost, selection, build policy, progression and stops. Independently reran the 8 named unit tests successfully using a clean author checkout whose HEAD and all four tested source/helper hashes matched the fixed review workspace; the fixed workspace has no dependencies installed. Approval covers measurement implementation and unit evidence only: coordinator actual observer invariance, full reference and economic acceptance gates remain required.",
+          "findings": [],
+          "commit": "04d966d95eda188e78818a70e0c60e3214921e7a",
+          "baseCommit": "507d0d1c0c65da55513cd643cd10b2a029ab7d55",
+          "submissionId": "fd7ada22-e522-4215-815d-925bf57e9b85",
+          "createdAt": "2026-11-09T06:14:54.182Z",
+          "finishedAt": "2026-11-09T06:17:27.512Z"
+        }
+      }
+    },
+    {
+      "sequence": 938,
+      "at": "2026-11-09T06:17:37.701Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 939,
+      "at": "2026-11-09T06:31:20.391Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T06:31:20.220Z",
+            "finishedAt": "2026-11-09T06:31:20.228Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 940,
+      "at": "2026-11-09T06:31:20.491Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "ceba3772-233a-4367-8461-a10f89887466",
+      "taskId": "T743",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "20ea0cbbb314287febbacb8c5087f37919b391f0",
+        "integratedAt": "2026-11-09T06:31:20.491Z"
+      }
+    },
+    {
+      "sequence": 941,
+      "at": "2026-11-09T06:32:24.137Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741",
+          "T742",
+          "T743",
+          "T744",
+          "T745"
+        ]
+      }
+    },
+    {
+      "sequence": 942,
+      "at": "2026-11-09T06:32:26.037Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+        "group": "economy-ec09",
+        "taskId": "T745",
+        "tasks": [
+          "T745"
+        ],
+        "lane": null,
+        "owner": "ec10-withdraw",
+        "contributors": [
+          "ec10-withdraw"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T06:32:26.037Z",
+        "startCommit": "d7f8188943634470680a47362eef7645ed31d64d"
+      }
+    },
+    {
+      "sequence": 943,
+      "at": "2026-11-09T06:32:28.129Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 944,
+      "at": "2026-11-09T06:35:13.435Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 945,
+      "at": "2026-11-09T06:35:20.455Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+        "submittedBase": "d7f8188943634470680a47362eef7645ed31d64d",
+        "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+        "submittedAt": "2026-11-09T06:35:20.455Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T745",
+            "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+            "at": "2026-11-09T06:35:20.407Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts packages/engine/src/club-value.test.ts scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T06:35:13.728Z",
+                "finishedAt": "2026-11-09T06:35:20.121Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit packages/engine/src/market-prices.test.ts packages/engine/src/club-value.test.ts scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T06:35:13.728Z",
+            "finishedAt": "2026-11-09T06:35:20.121Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 946,
+      "at": "2026-11-09T06:35:42.984Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "6ef59280-8c8f-42c7-8c90-fe4a49153c7d",
+          "owner": "ec10-review-withdraw",
+          "status": "reviewing",
+          "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+          "baseCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+          "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+          "createdAt": "2026-11-09T06:35:42.984Z"
+        }
+      }
+    },
+    {
+      "sequence": 947,
+      "at": "2026-11-09T06:36:39.437Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "6ef59280-8c8f-42c7-8c90-fe4a49153c7d",
+          "owner": "ec10-review-withdraw",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T745 independently reviewed at fixed a6a0f4a645a1d7fc2d105d7647da54f36f425258 against d7f8188943634470680a47362eef7645ed31d64d. All six restored production/test blob hashes exactly equal released 44a1069e54fbb6970cfd9b519f65773352954205; the new distribution test exists in neither release nor submission; the entire packages/apps diff against release is empty. Scripts are unchanged from the assigned parent, preserving the exact-payroll observer/cash/reference tools. Restoring the release also preserves its earlier transfer/recruitment fixes and monthly owner rules, with no inactive alternative pricing path. Independently confirmed raw pilot hard failures justify withdrawal; the task truthfully records rejection and deferred coordinator checks, not economic calibration success. Worker named 60-unit/static evidence is declared; reviewer used exact Git blob/tree proofs and did not run heavy checks. This component approval does not waive the separately reported localization follow-up for newly authored tooling prose or the final combined pre-push gate.",
+          "findings": [],
+          "commit": "a6a0f4a645a1d7fc2d105d7647da54f36f425258",
+          "baseCommit": "d7f8188943634470680a47362eef7645ed31d64d",
+          "submissionId": "3dc63a43-a144-4efe-8ad6-9541688da5d3",
+          "createdAt": "2026-11-09T06:35:42.984Z",
+          "finishedAt": "2026-11-09T06:36:39.436Z"
+        }
+      }
+    },
+    {
+      "sequence": 948,
+      "at": "2026-11-09T06:36:53.851Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 949,
+      "at": "2026-11-09T06:36:57.274Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T06:36:56.940Z",
+            "finishedAt": "2026-11-09T06:36:57.038Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 950,
+      "at": "2026-11-09T06:36:57.368Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7a1af923-cad0-41b6-a95c-6cb48b5b6ad9",
+      "taskId": "T745",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "51a1cec6e82c83699601952718f92c63d32a138a",
+        "integratedAt": "2026-11-09T06:36:57.368Z"
+      }
+    },
+    {
+      "sequence": 951,
+      "at": "2026-11-09T06:39:55.796Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T731",
+          "T732",
+          "T733",
+          "T734",
+          "T737",
+          "T739",
+          "T740",
+          "T741",
+          "T742",
+          "T743",
+          "T744",
+          "T745",
+          "T746"
+        ]
+      }
+    },
+    {
+      "sequence": 952,
+      "at": "2026-11-09T06:39:57.706Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+        "group": "economy-ec09",
+        "taskId": "T746",
+        "tasks": [
+          "T746"
+        ],
+        "lane": null,
+        "owner": "ec10-tooling",
+        "contributors": [
+          "ec10-tooling"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T06:39:57.706Z",
+        "startCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9"
+      }
+    },
+    {
+      "sequence": 953,
+      "at": "2026-11-09T06:39:59.751Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 954,
+      "at": "2026-11-09T06:46:37.634Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 955,
+      "at": "2026-11-09T06:46:43.084Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "1ce7071d42939139edff911579158522934c02be",
+        "submittedBase": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+        "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+        "submittedAt": "2026-11-09T06:46:43.084Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T746",
+            "commit": "1ce7071d42939139edff911579158522934c02be",
+            "at": "2026-11-09T06:46:43.045Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T06:46:37.854Z",
+                "finishedAt": "2026-11-09T06:46:42.789Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit scripts/lib/settlement-payroll.test.ts scripts/owner-balance.test.ts scripts/lib/tool-messages.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T06:46:37.854Z",
+            "finishedAt": "2026-11-09T06:46:42.789Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 956,
+      "at": "2026-11-09T06:47:07.902Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "7acd2eec-fb61-4f17-a520-e062f7e05b53",
+          "owner": "ec10-review-tooling",
+          "status": "reviewing",
+          "commit": "1ce7071d42939139edff911579158522934c02be",
+          "baseCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+          "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+          "createdAt": "2026-11-09T06:47:07.902Z"
+        }
+      }
+    },
+    {
+      "sequence": 957,
+      "at": "2026-11-09T06:47:57.079Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "7acd2eec-fb61-4f17-a520-e062f7e05b53",
+          "owner": "ec10-review-tooling",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T746 independently reviewed at fixed 1ce7071d42939139edff911579158522934c02be against b32a89d5f5e192a5ef219c5763946c43171a33c9. All 20 inventoried new/changed runtime prose strings now use typed resource IDs and named parameters. Each of 12 registered packs adds exactly those 20 keys; no existing messages or metadata changed, Korean source matches the Korean default, and translations are genuine target-language text. The shared fixed-en-GB boundary uses existing pure translator/validation modules, imports no React/browser preference state, and throws diagnostics before fallback. Tests preserve old English bytes, opaque parameters and existing observer/report assertions. Diff inspection found only message substitution/imports in the three accounting files: successful arithmetic, JSON fields, coverage, interception/restoration and progression are unchanged; economic pilots remain withdrawn. Independently reran all 11 named pure tests successfully in the clean exact author HEAD matching fixed reviewer source/helper hashes. Coordinator final-source actual invariance and complete pre-push gate remain required; no economic-pilot acceptance is claimed.",
+          "findings": [],
+          "commit": "1ce7071d42939139edff911579158522934c02be",
+          "baseCommit": "b32a89d5f5e192a5ef219c5763946c43171a33c9",
+          "submissionId": "1521c375-852b-4b6e-b2fa-7a0c62f3e53b",
+          "createdAt": "2026-11-09T06:47:07.902Z",
+          "finishedAt": "2026-11-09T06:47:57.078Z"
+        }
+      }
+    },
+    {
+      "sequence": 958,
+      "at": "2026-11-09T06:48:15.474Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 959,
+      "at": "2026-11-09T06:48:19.163Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T06:48:18.904Z",
+            "finishedAt": "2026-11-09T06:48:18.947Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 960,
+      "at": "2026-11-09T06:48:19.381Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "9be462ed-f0c2-4dbf-86f6-8caa3b6d92ec",
+      "taskId": "T746",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "249730bc59bfef427efa70360f0de27ddcd64fcf",
+        "integratedAt": "2026-11-09T06:48:19.381Z"
+      }
+    },
+    {
+      "sequence": 961,
+      "at": "2026-11-09T06:49:52.101Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+        "group": "economy-ec09",
+        "taskId": "T744",
+        "tasks": [
+          "T744"
+        ],
+        "lane": null,
+        "owner": "ec10-fixtures",
+        "contributors": [
+          "ec10-fixtures"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T06:49:52.101Z",
+        "startCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3"
+      }
+    },
+    {
+      "sequence": 962,
+      "at": "2026-11-09T06:49:54.109Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 963,
+      "at": "2026-11-09T06:59:00.922Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 964,
+      "at": "2026-11-09T06:59:05.253Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+        "submittedBase": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+        "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+        "submittedAt": "2026-11-09T06:59:05.253Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T744",
+            "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+            "at": "2026-11-09T06:59:05.217Z",
+            "verification": [
+              {
+                "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+                "startedAt": "2026-11-09T06:59:01.187Z",
+                "finishedAt": "2026-11-09T06:59:04.921Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
+            "startedAt": "2026-11-09T06:59:01.187Z",
+            "finishedAt": "2026-11-09T06:59:04.921Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 965,
+      "at": "2026-11-09T06:59:50.419Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+          "owner": "ec10-review-fixtures",
+          "status": "reviewing",
+          "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+          "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+          "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+          "createdAt": "2026-11-09T06:59:50.419Z"
+        }
+      }
+    },
+    {
+      "sequence": 966,
+      "at": "2026-11-09T07:01:13.250Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
+          "owner": "ec10-review-fixtures",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T744 independently reviewed at fixed a760bc081d27a7fa84b73ba71df0a1704c5599fc against d4e2a8a633dda50bb0c320f96747825a56c21df3. Diff contains only the two prepared fixtures and task receipt; generators, builders, assertions, migration input and portable fixture are unchanged. Portable SHA remains original 67e63a188482b6ff4c724fc4e4513d6a83626143a12b620d8ba831aea89cbd0f. Independently decompressed old/new payloads and checked their checksums: only events, owner and shortlist differ; every event except owner-living is exactly identical after alignment, and every other world field including players, clubs, cash and matches is identical. Journey living counts change 1950 4-to-11 and elapsed 1951 1-to-5; the combined ledger difference exactly equals the 9,012,048-unit fortune reduction. Activation annual living increases 2 units with exactly 2 fewer fortune units. Each shortlist changes only two GK candidate IDs, consistent with already released T732; no roster or signing changes. Both new fixture file hashes match the retained actual generator receipt, metadata pins clean d4e2a8a6, and independently recomputed the 208-file source fingerprint 7ca0f6585ca9255bfa75ae5cd1290826c1e1cdedb1c8f4d98892f8b1eb259b86. Independently reran the two decoding/schema units successfully in clean exact author HEAD. No delta is attributed to withdrawn wage/package pilots. Final canonical replay, actual instrumentation invariance and full pre-push checks remain coordinator-owned.",
+          "findings": [],
+          "commit": "a760bc081d27a7fa84b73ba71df0a1704c5599fc",
+          "baseCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+          "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
+          "createdAt": "2026-11-09T06:59:50.419Z",
+          "finishedAt": "2026-11-09T07:01:13.250Z"
+        }
+      }
+    },
+    {
+      "sequence": 967,
+      "at": "2026-11-09T07:01:39.807Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 968,
+      "at": "2026-11-09T07:01:43.077Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T07:01:42.798Z",
+            "finishedAt": "2026-11-09T07:01:42.859Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 969,
+      "at": "2026-11-09T07:01:43.209Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "70eb85d29b79bd19cf8cd8fbe50c69996c6cea67",
+        "integratedAt": "2026-11-09T07:01:43.209Z"
+      }
+    },
+    {
+      "sequence": 970,
+      "at": "2026-11-09T08:02:18.035Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+          "checks": [
+            {
+              "command": "node /tmp/ec10-resume-final-gate.mjs",
+              "startedAt": "2026-11-09T07:26:00.124Z",
+              "finishedAt": "2026-11-09T08:02:17.899Z"
+            }
+          ],
+          "at": "2026-11-09T08:02:17.976Z",
+          "excluded": [
+            "T689",
+            "T726",
+            "T730"
           ]
         }
       }
