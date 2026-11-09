@@ -238,15 +238,15 @@ const recruitmentLine = (w: World) =>
     p0: POLICY_INFO.recruitment.levels[policyOf(w).recruitment - 1].name,
   });
 
-/** Free agents first, then by ability, potential and id. */
+/** Ability and potential first, then free status and stable id. */
 const byCandidate = (a: Offer, b: Offer) =>
-  Number(b.freeAgent) - Number(a.freeAgent) ||
   overall(b.player) - overall(a.player) ||
   b.player.potential - a.player.potential ||
+  Number(b.freeAgent) - Number(a.freeAgent) ||
   compareIds(a.player.id, b.player.id);
 /**
  * The candidates for a need (→CLUB-33): the manager's pick, then the rest of the shortlist, then
- * the market list, each free agents first, then by ability, potential and id.
+ * the market list, each by ability, potential, free status and id.
  */
 function candidates(w: World, offers: Offer[], need: SigningNeed, tried: Set<string>) {
   const listed = new Set(shortlistOffers(w).map(({ offer }) => offer.player.id)),
@@ -388,8 +388,8 @@ function managerRequests(w: World, listed: Offer[]): SigningRequest[] {
 }
 /**
  * The chief scout's draw (→CLUB-33), on a window's opening day and after every 4th league round:
- * his list (→CLUB-51), his reach's count per line with its places abroad, free agents first, then
- * by ability, potential and id, as 영입's rows shape it, with the manager's requests. A window's
+ * his list (→CLUB-51), his reach's count per line with its places abroad, by the sporting measures,
+ * free status and id, as 영입's rows shape it, with the manager's requests. A window's
  * requests stay as they were at its opening.
  */
 export function drawShortlist(w: World) {
