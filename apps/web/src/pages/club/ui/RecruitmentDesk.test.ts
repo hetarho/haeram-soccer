@@ -1,7 +1,10 @@
-import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
+// @vitest-environment happy-dom
+import { act, createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type {
+  World,
   WorldMarketOffer,
   WorldMarketPage,
 } from '../../../../../../packages/contracts/src/types';
@@ -11,6 +14,8 @@ import type { ClientState, GameClient } from '../../../runtime/client';
 import { initialClientState } from '../../../runtime/store';
 import korean from '../../../../public/presentation/locales/ko-KR.json';
 import { PositionBadge } from '../../../entities/player';
+import { useTaskMemory } from '../../../shared/routing/taskMemory';
+import { money } from '../../../presentation/format';
 import { candidateSide, RecruitmentDesk } from './RecruitmentDesk';
 import {
   DEFAULT_MARKET_QUERY,
@@ -27,29 +32,42 @@ const { choices, reads } = vi.hoisted(() => ({
     error: undefined as string | undefined,
     blocked: false,
     current: true,
+    mounted: false,
     query: vi.fn(),
     inspect: vi.fn(),
   },
 }));
-vi.mock('../lib/worldMarket', async (original) => ({
-  ...(await original<typeof import('../lib/worldMarket')>()),
-  useMarketPage: (...args: unknown[]) => {
-    reads.query(...args);
-    return { value: reads.page, error: reads.error, retry: vi.fn() };
-  },
-  useMarketDetail: (...args: unknown[]) => {
-    reads.inspect(...args);
-    return { value: args[3] ? reads.detail : undefined, current: reads.current, retry: vi.fn() };
-  },
-}));
-vi.mock('../../../shared/routing/taskMemory', () => ({
-  useTaskState: (_world: string, key: string, initial: unknown) => [
-    choices[key] ?? initial,
-    (value: unknown) => {
-      choices[key] = typeof value === 'function' ? value(choices[key] ?? initial) : value;
+vi.mock('../lib/worldMarket', async (original) => {
+  const actual = await original<typeof import('../lib/worldMarket')>();
+  return {
+    ...actual,
+    useMarketPage: (...args: unknown[]) => {
+      reads.query(...args);
+      return { value: reads.page, error: reads.error, retry: vi.fn() };
     },
-  ],
-}));
+    useMarketDetail: (...args: unknown[]) => {
+      reads.inspect(...args);
+      if (reads.mounted)
+        return actual.useMarketDetail(...(args as Parameters<typeof actual.useMarketDetail>));
+      return { value: args[3] ? reads.detail : undefined, current: reads.current, retry: vi.fn() };
+    },
+  };
+});
+vi.mock('../../../shared/routing/taskMemory', async (original) => {
+  const actual = await original<typeof import('../../../shared/routing/taskMemory')>();
+  return {
+    ...actual,
+    useTaskState: (world: string, key: string, initial: unknown) =>
+      reads.mounted
+        ? actual.useTaskState(world, key, initial)
+        : [
+            choices[key] ?? initial,
+            (value: unknown) => {
+              choices[key] = typeof value === 'function' ? value(choices[key] ?? initial) : value;
+            },
+          ],
+  };
+});
 vi.mock('../../../runtime/store', async (original) => ({
   ...(await original<typeof import('../../../runtime/store')>()),
   useGameState: (selector: (state: ClientState) => unknown) =>
@@ -175,6 +193,7 @@ beforeEach(() => {
   reads.error = undefined;
   reads.blocked = false;
   reads.current = true;
+  reads.mounted = false;
   w.bids = undefined;
   vi.clearAllMocks();
   Object.assign(client.state, {
@@ -673,4 +692,240 @@ describe('paged whole-world recruitment desk', () => {
       expect(client.command).not.toHaveBeenCalled();
     },
   );
+});
+
+let mountedRoot: Root | undefined;
+afterEach(async () => {
+  if (mountedRoot) await act(async () => mountedRoot?.unmount());
+  mountedRoot = undefined;
+  document.body.replaceChildren();
+  useTaskMemory.setState({ world: undefined, values: {} });
+  reads.mounted = false;
+  vi.unstubAllGlobals();
+});
+
+function MountedDesk(props: Parameters<typeof RecruitmentDesk>[0]) {
+  tree = RecruitmentDesk(props);
+  return tree;
+}
+
+/** Real detail hooks and task memory, controlled promises, synthetic data; no worker or progression. */
+async function mountedBid(initial = structuredClone(w)) {
+  reads.mounted = true;
+  vi.stubGlobal('IS_REACT_ACT_ENVIRONMENT', true);
+  let world = initial;
+  const target = { ...offer.target, world: world.id };
+  useTaskMemory.setState({
+    world: world.id,
+    values: { 'world-market-bidding': { target, asking: '1000' }, 'market-step': 3 },
+  });
+  const requests: {
+    target: typeof target;
+    fee?: string;
+    revision: number;
+    resolve: (value: MarketDetail) => void;
+    promise: Promise<MarketDetail>;
+  }[] = [];
+  const command = vi.fn(async () => ({ ok: true }));
+  const mountedClient = {
+    state: {
+      ...initialClientState,
+      busy: false,
+      processing: false,
+      readonly: false,
+      clockRunning: false,
+      view: { world, transfers: [] },
+    },
+    command,
+    worldMarketDetail: vi.fn((readTarget: typeof target, fee?: string) => {
+      let resolve!: (value: MarketDetail) => void;
+      const promise = new Promise<MarketDetail>((done) => (resolve = done));
+      requests.push({ target: readTarget, fee, revision: world.revision, resolve, promise });
+      return promise;
+    }),
+  } as unknown as GameClient;
+  const container = document.createElement('div');
+  document.body.append(container);
+  mountedRoot = createRoot(container);
+  const draw = () =>
+    mountedRoot!.render(
+      createElement(MountedDesk, {
+        state: mountedClient.state,
+        client: mountedClient,
+      }),
+    );
+  await act(async () => draw());
+  const send = () =>
+    [...container.querySelectorAll<HTMLButtonElement>('button')].find((button) =>
+      button.textContent?.includes('제안 보내기'),
+    );
+  const radios = () => [...container.querySelectorAll<HTMLButtonElement>('[role="radio"]')];
+  return {
+    container,
+    requests,
+    command,
+    target,
+    send,
+    radios,
+    client: mountedClient,
+    get world() {
+      return world;
+    },
+    async resolve(index: number, asking: string, chance = 0.73) {
+      const request = requests[index]!;
+      await act(async () => {
+        request.resolve({
+          ...detail(),
+          world: request.target.world,
+          revision: request.revision,
+          offer: { ...offer, target: request.target, fee: asking },
+          buy: { ...preview, fee: asking },
+          bid: {
+            asking,
+            chance,
+            label: chance >= 0.6 ? '높음' : chance >= 0.35 ? '보통' : '낮음',
+            counterPossible: true,
+          },
+        });
+        await request.promise;
+        await Promise.resolve();
+      });
+    },
+    async update(patch: Partial<World>) {
+      world = { ...world, ...patch };
+      mountedClient.state.view = {
+        ...mountedClient.state.view!,
+        world: { ...world, people: undefined },
+      };
+      await act(async () => draw());
+    },
+    async choose(index: number) {
+      await act(async () => radios()[index]!.click());
+    },
+  };
+}
+
+describe('verified bid quote lifecycle', () => {
+  it.each(['2000', '500'])(
+    'reprices a refreshed asking of %s at the same revision and preserves 130 percent',
+    async (asking) => {
+      const f = await mountedBid();
+      expect(f.requests[0]?.fee).toBe('1300');
+      expect(f.send()?.disabled).toBe(true);
+      const revision = f.world.revision;
+      await f.resolve(0, asking, 0.22);
+      expect(f.send()?.disabled).toBe(true);
+      const fee = ((BigInt(asking) * 130n) / 100n).toString();
+      expect(f.requests[1]?.fee).toBe(fee);
+      await f.resolve(1, asking);
+      expect(f.world.revision).toBe(revision);
+      expect(f.radios()[3]?.getAttribute('aria-checked')).toBe('true');
+      expect(f.send()?.disabled).toBe(false);
+      expect(f.send()?.querySelector('[data-money]')?.getAttribute('title')).toBe(
+        money(fee, 'ENG', f.world.year),
+      );
+      expect(f.container.textContent).toContain('약 73%');
+      await act(async () => f.send()!.click());
+      expect(f.command).toHaveBeenCalledExactlyOnceWith(
+        { type: 'bid', target: f.target, fee },
+        { background: true },
+      );
+      expect(f.requests).toHaveLength(2);
+    },
+  );
+
+  it('keeps an unchanged quote current without a fee-refresh loop', async () => {
+    const f = await mountedBid();
+    await f.resolve(0, '1000');
+    expect(f.send()?.disabled).toBe(false);
+    await f.update({ revision: f.world.revision });
+    expect(f.requests).toHaveLength(1);
+    expect(f.send()?.querySelector('[data-money]')?.getAttribute('title')).toBe(
+      money('1300', 'ENG', f.world.year),
+    );
+  });
+
+  it('ignores an old fee reply and blocks submission until the latest percentage has odds', async () => {
+    const f = await mountedBid();
+    await f.resolve(0, '1000');
+    const oldSend = submit().props.onClick as () => Promise<void>;
+    await f.choose(0);
+    expect(f.requests[1]?.fee).toBe('800');
+    await f.choose(2);
+    expect(f.send()?.disabled).toBe(true);
+    await act(async () => oldSend());
+    expect(f.command).not.toHaveBeenCalled();
+    await f.resolve(1, '1000', 0.11);
+    expect(f.requests[2]?.fee).toBe('1150');
+    expect(f.send()?.disabled).toBe(true);
+    expect(f.container.textContent).not.toContain('약 11%');
+    await f.resolve(2, '1000', 0.77);
+    expect(f.send()?.disabled).toBe(false);
+    expect(f.container.textContent).toContain('약 77%');
+    await act(async () => f.send()!.click());
+    expect(f.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'bid', target: f.target, fee: '1150' },
+      { background: true },
+    );
+  });
+
+  it('rejects the old revision before accepting a refreshed asking and its exact-fee odds', async () => {
+    const f = await mountedBid();
+    await f.update({ revision: f.world.revision + 1 });
+    await f.resolve(0, '500');
+    expect(f.requests[1]?.revision).toBe(f.world.revision);
+    expect(f.send()?.disabled).toBe(true);
+    await f.resolve(1, '2000');
+    expect(f.requests[2]?.fee).toBe('2600');
+    await f.resolve(2, '2000', 0.66);
+    expect(f.send()?.disabled).toBe(false);
+    expect(f.container.textContent).toContain('약 66%');
+  });
+
+  it('refreshes currency-era amounts without reinterpreting an old asking as the new fee', async () => {
+    const initial = structuredClone(w);
+    initial.year = 1990;
+    initial.currency = 'ESP';
+    initial.clubs.find((club) => club.id === initial.playerClub)!.country = 'ESP';
+    const f = await mountedBid(initial);
+    await f.resolve(0, '1000');
+    expect(f.send()?.disabled).toBe(false);
+    await f.update({ year: 2002, revision: f.world.revision + 1, currency: 'EUR', cash: '50000' });
+    expect(f.send()?.disabled).toBe(true);
+    expect(f.send()?.querySelector('[data-money]')).toBeNull();
+    expect(f.container.textContent).toContain('External Player');
+    expect(f.container.querySelector('[data-testid="candidate-source"] [data-money]')).toBeNull();
+    await f.resolve(1, '600');
+    expect(f.requests[2]?.fee).toBe('780');
+    expect(f.send()?.disabled).toBe(true);
+    const snapshot = structuredClone(f.world);
+    await f.resolve(2, '600', 0.62);
+    expect(f.send()?.querySelector('[data-money]')?.getAttribute('title')).toBe(
+      money('780', 'ESP', 2002),
+    );
+    expect(
+      f.container
+        .querySelector('[data-testid="candidate-source"] [data-money]')
+        ?.getAttribute('title'),
+    ).toBe(money('600', 'ESP', 2002));
+    expect(f.container.textContent).toContain('약 62%');
+    expect(f.world).toEqual(snapshot);
+    await act(async () => f.send()!.click());
+    expect(f.command).toHaveBeenCalledExactlyOnceWith(
+      { type: 'bid', target: f.target, fee: '780' },
+      { background: true },
+    );
+  });
+
+  it('keeps a closed bid closed when its old quote arrives', async () => {
+    const f = await mountedBid();
+    const cancel = [...f.container.querySelectorAll<HTMLButtonElement>('button')].find(
+      (button) => button.textContent === '취소',
+    )!;
+    await act(async () => cancel.click());
+    await f.resolve(0, '2000');
+    expect(f.send()).toBeUndefined();
+    expect(f.command).not.toHaveBeenCalled();
+    expect(f.requests).toHaveLength(1);
+  });
 });

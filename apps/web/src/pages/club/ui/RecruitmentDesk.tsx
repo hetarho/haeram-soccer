@@ -265,8 +265,16 @@ function CandidateCard({
             {localizeValue(positionsLabel(player.positions))}
           </small>
           <small className={s.origin} data-testid="candidate-source">
-            <CandidateSource w={w} origin={candidateOrigin(offer)} division fee={!offer.own} /> ·{' '}
-            {localizeValue(origin)}
+            <CandidateSource
+              w={w}
+              origin={candidateOrigin(offer)}
+              division
+              fee={
+                !offer.own &&
+                (!bid || (candidate.world === w.id && candidate.revision === w.revision))
+              }
+            />{' '}
+            · {localizeValue(origin)}
           </small>
         </div>
       </header>
@@ -656,7 +664,34 @@ export function RecruitmentDesk({
   const steps = [80n, 100n, 115n, 130n];
   const fee = ((asking * steps[step]) / 100n).toString();
   const bidDetail = useMarketDetail(client, w.id, w.revision, bidding?.target, fee);
-  const outlook = bidDetail.value?.bid;
+  const quoted = bidDetail.value?.bid;
+  const bidCurrent =
+    bidDetail.current &&
+    bidDetail.value?.world === w.id &&
+    bidDetail.value.revision === w.revision &&
+    quoted?.asking === bidding?.asking;
+  const outlook = bidCurrent ? quoted : undefined;
+  const activeTerms = useRef({ fee, current: bidCurrent, detail: bidDetail.value });
+  activeTerms.current = { fee, current: bidCurrent, detail: bidDetail.value };
+  useEffect(() => {
+    const candidate = bidDetail.value;
+    if (
+      !bidding ||
+      activeBid.current !== bidding ||
+      !bidDetail.current ||
+      !candidate?.bid ||
+      candidate.world !== w.id ||
+      candidate.revision !== w.revision ||
+      client.state.view?.world.id !== w.id ||
+      client.state.view.world.revision !== w.revision ||
+      candidate.bid.asking === bidding.asking
+    )
+      return;
+    // Keep the selected percentage, then read odds for its exact fee under this verified asking.
+    // An unchanged asking does no work, and the reader discards superseded fee/target replies.
+    const refreshed = candidate.bid.asking;
+    setBidding((current) => (current === bidding ? { ...current, asking: refreshed } : current));
+  }, [bidding, bidDetail.current, bidDetail.value, client, setBidding, w.id, w.revision]);
   const leagues = marketLeagues(w.clubs);
   const leagueKey = query.league ? marketLeagueKey(query.league) : '';
   const teams = w.clubs.filter((team) => !leagueKey || marketLeagueKey(team) === leagueKey);
@@ -1667,6 +1702,10 @@ export function RecruitmentDesk({
                       !bidDetail.value ||
                       !bidDetail.current ||
                       !outlook ||
+                      activeBid.current !== bidding ||
+                      !activeTerms.current.current ||
+                      activeTerms.current.fee !== fee ||
+                      activeTerms.current.detail !== bidDetail.value ||
                       !bidDetail.value.buy.eligible ||
                       bidDetail.value.offer.own ||
                       !currentWorld() ||
@@ -1695,7 +1734,9 @@ export function RecruitmentDesk({
                     if (reply?.ok) setBidding(undefined);
                   }}
                 >
-                  {richMessage('copy.RecruitmentDesk.a917b94665', { p0: plain(fee) })}
+                  {richMessage('copy.RecruitmentDesk.a917b94665', {
+                    p0: outlook ? plain(fee) : '—',
+                  })}
                 </button>
               </div>
             }
@@ -1727,7 +1768,7 @@ export function RecruitmentDesk({
             )}
             <p className={s.note}>
               {richMessage('copy.RecruitmentDesk.2145596719', {
-                p0: format(outlook?.asking || bidding.asking),
+                p0: outlook ? format(outlook.asking) : '—',
               })}
             </p>
             <div
@@ -1746,7 +1787,9 @@ export function RecruitmentDesk({
                     onClick={() => setStep(i)}
                   >
                     <b>{localizeValue(String(percent))}%</b>
-                    <small>{localizeValue(plain(((asking * percent) / 100n).toString()))}</small>
+                    <small>
+                      {localizeValue(outlook ? plain(((asking * percent) / 100n).toString()) : '—')}
+                    </small>
                   </button>
                 )),
               )}
@@ -1767,11 +1810,13 @@ export function RecruitmentDesk({
               </div>
               <div>
                 <dt>{richMessage('copy.RecruitmentDesk.14d30523d4')}</dt>
-                <dd>{localizeValue(format((BigInt(w.cash) - BigInt(fee)).toString()))}</dd>
+                <dd>
+                  {localizeValue(outlook ? format((BigInt(w.cash) - BigInt(fee)).toString()) : '—')}
+                </dd>
               </div>
             </dl>
             {localizeValue(
-              BigInt(fee) > BigInt(w.cash) && (
+              outlook && BigInt(fee) > BigInt(w.cash) && (
                 <p data-surface="inset" className={s.warning}>
                   {richMessage('copy.RecruitmentDesk.b1a864c839')}
                 </p>
