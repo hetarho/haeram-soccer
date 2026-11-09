@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T07:01:42.344Z",
-  "sourceCommit": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
+  "snapshotAt": "2026-11-09T08:02:21.001Z",
+  "sourceCommit": "51d072a18634436c76c0776c3896a547f34dbbbc",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -13,22 +13,19 @@
       "maxPending": 8
     },
     "verified": {
-      "commit": "731ed705488fc5d1bc13f1529a89f783c75c0cef",
+      "commit": "51d072a18634436c76c0776c3896a547f34dbbbc",
       "checks": [
         {
-          "command": "node /tmp/ec09-affected-gate.mjs",
-          "startedAt": "2026-11-09T03:59:42.817Z",
-          "finishedAt": "2026-11-09T04:03:20.970Z"
+          "command": "node /tmp/ec10-resume-final-gate.mjs",
+          "startedAt": "2026-11-09T07:26:00.124Z",
+          "finishedAt": "2026-11-09T08:02:17.899Z"
         }
       ],
-      "at": "2026-11-09T04:03:21.038Z",
+      "at": "2026-11-09T08:02:17.976Z",
       "excluded": [
         "T689",
         "T726",
-        "T730",
-        "T735",
-        "T736",
-        "T738"
+        "T730"
       ]
     },
     "push": null,
@@ -929,6 +926,8 @@
       "submittedBase": "d4e2a8a633dda50bb0c320f96747825a56c21df3",
       "submissionId": "895c8d68-801c-49df-bcfe-98b60a98491b",
       "submittedAt": "2026-11-09T06:59:05.253Z",
+      "integratedCommit": "70eb85d29b79bd19cf8cd8fbe50c69996c6cea67",
+      "integratedAt": "2026-11-09T07:01:43.209Z",
       "risk": null,
       "review": {
         "id": "9c792dca-6b23-47ef-aebf-1e82d061f633",
@@ -962,6 +961,13 @@
           "command": "pnpm exec vitest run --project unit tests/fixtures/prepared-world.test.ts --maxWorkers 4",
           "startedAt": "2026-11-09T06:59:01.187Z",
           "finishedAt": "2026-11-09T06:59:04.921Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T07:01:42.798Z",
+          "finishedAt": "2026-11-09T07:01:42.859Z"
         }
       ]
     }
@@ -4107,6 +4113,66 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 968,
+      "at": "2026-11-09T07:01:43.077Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T07:01:42.798Z",
+            "finishedAt": "2026-11-09T07:01:42.859Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 969,
+      "at": "2026-11-09T07:01:43.209Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "e36f2f50-bb87-438f-837f-c6c8b20fe7d5",
+      "taskId": "T744",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "70eb85d29b79bd19cf8cd8fbe50c69996c6cea67",
+        "integratedAt": "2026-11-09T07:01:43.209Z"
+      }
+    },
+    {
+      "sequence": 970,
+      "at": "2026-11-09T08:02:18.035Z",
+      "type": "group",
+      "group": "economy-ec09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "51d072a18634436c76c0776c3896a547f34dbbbc",
+          "checks": [
+            {
+              "command": "node /tmp/ec10-resume-final-gate.mjs",
+              "startedAt": "2026-11-09T07:26:00.124Z",
+              "finishedAt": "2026-11-09T08:02:17.899Z"
+            }
+          ],
+          "at": "2026-11-09T08:02:17.976Z",
+          "excluded": [
+            "T689",
+            "T726",
+            "T730"
+          ]
+        }
       }
     }
   ]
