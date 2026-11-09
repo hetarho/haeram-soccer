@@ -19,6 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | av11 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T13:59Z | 2026-11-09T14:07Z | - |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:08Z | - |
 
 ## inbox
 - 261109 decided T689 ARCH-30 ARCH-33: how to finish the interrupted cv04-clr window → read the retained diagnostics and confirm the missing bands and shot-origin controls on pinned Node24.22.1, preserving original data separately (alt: accept the interim fingerprint claim and missing band logs | start new tuning before the hand-off). Nine jobs pass, seven origin reports match exactly; both candidates still fail goals, goal-area shot share and entries, no scoring source enters production, T689 stays todo av11
@@ -871,6 +872,7 @@
 - T689: cv04-clr hand-off is complete; both candidates fail the unchanged screen. Read its final README before another bounded window; the remaining question is why the round/square alternatives add goal-area chances and box entries
 
 ## log
+- 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
 - 261109 T689 cv04-clr hand-off complete: nine pinned-Node confirmation jobs, seven exact origin comparisons; both candidates fail the screen, all experimental engine source restored; T689 stays todo av11
 - 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09
 - 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
@@ -890,4 +892,3 @@
 - 261109 T742 integrated
 - 261109 T741 integrated
 - 261109 T739 integrated
-- 261109 T740 integrated
