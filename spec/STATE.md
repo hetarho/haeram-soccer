@@ -14,7 +14,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T03:21Z | T737 |
+| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T03:36Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -22,6 +22,7 @@
 | ow09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T03:07Z | 2026-11-09T03:07Z | - |
 
 ## inbox
+- 261109 decided ARCH-30 T737: the owner authorizes origin publication in a suitable batch and reiterates unit tests per task, E2E at the push boundary → keep worker browser runs disabled, verify the combined batch before one code push; static checks remain basic checks and the final affected-file confirmation belongs to the coordinator ec09
 - 261109 decided OWNER-7 T735: how much a monthly settlement wins or loses once it settles eleven times a season at 60% → 5% of the staked share (about +10% a season at a full stake, +23% with 성공한 사업가; a 50% stake about +5%) (alt: the whole staked share each month, which shrinks a 50% stake by a third a season and ruins a full one | a third of it, the old season exposure, compounding ×2.6 a season with the trait) ow09
 - 261109 decided OWNER-5 OWNER-7 T735: 성공한 사업가 once the base is 60% → 70%, the same +10 points (alt: 65% | no business effect) ow09
 - 261109 decided OWNER-7 OWNER-8 T735: which days are monthly and what living costs do → the 1st of September–June and the close (eleven; the summer the close skips has none), living costs 0.8% a season split over them so the season total is unchanged (alt: twelve with a settlement on 1 August, which the day loop never processes | 0.2% a settlement, tripling living costs) ow09
@@ -776,6 +777,7 @@
 - 261105 decided STAFF-50 LEAGUE-1 T704: which seasons a tenure lists → every job off the pitch, the manager's and chief scout's included, with each season it overlaps by at least a day (the war's seasons skipped); a season the archive holds no row of his club for shows 순위 기록 없음 and the one being played 진행 중, read at request time (alt: coaching and 단장 jobs only | count a season only after a set share of it). rs01
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
+- 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
 
 ## ideation
 | id | st |
@@ -800,7 +802,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 34 | 34 | - | 2 |
-| WEB | 212 | 212 | - | 0 |
+| WEB | 213 | 213 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -837,6 +839,7 @@
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 | T736 | one season history with the takeover rule | WEB HIST OWNER ARCH | - | todo |
 | T735 | settle the owner's business monthly at better odds | OWNER WORLD WEB ARCH | - | todo |
+| T738 | switch the season history between 순위 and 재정 | WEB HIST OWNER ARCH | T736 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
