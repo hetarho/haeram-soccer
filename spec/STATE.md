@@ -19,7 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | av11 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T13:59Z | 2026-11-09T14:07Z | - |
-| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:21Z | T747 |
+| fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:27Z | - |
 
 ## inbox
 - 261109 decided T752 T754 ARCH-21 ARCH-32: how to verify real locale subscriptions without an installed DOM unit environment → T752 adds pinned happy-dom21.0.4 as a test-only dev dependency and uses per-file Vitest environments, reused by T754 (alt: repeated SSR that never subscribes | a custom DOM imitation). No production dependency, global environment or validation reduction; worker paused clean after three task commits and assignment released before this contract amendment fi09
