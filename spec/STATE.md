@@ -22,6 +22,7 @@
 | fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:08Z | - |
 
 ## inbox
+- 261109 decided review/football-data-consistency-261109 T753 T754: which follow-up UI inconsistencies enter the eight-hour local scope → refreshed bid quotes and locale-stale chart detail strings, after the current six-task run finishes (alt: change pricing policy | overlap an active lane). Source evidence and complete current contracts checked; preserve submitted bid terms, stale-response guards and numerical chart facts fi09
 - 261109 decided review/football-data-consistency-261109 ARCH-4 ARCH-21 ARCH-30 ARCH-32 T747 T748 T749 T750 T751 T752: which observed football-data and finance inconsistencies the eight-hour local invocation adopts → six bounded fixes with independent implementation/review, no economic-policy or simulation-result changes (alt: tune balance speculatively | leave preview and derived-stat errors). Prior capital/currency previews, exact money disclosure, missing ratios, opponent leader leakage, Poisson tail loss and shared number formatting have raw scout evidence; review notes freeze scope and checks fi09
 - 261109 decided T689 ARCH-30 ARCH-33: how to finish the interrupted cv04-clr window → read the retained diagnostics and confirm the missing bands and shot-origin controls on pinned Node24.22.1, preserving original data separately (alt: accept the interim fingerprint claim and missing band logs | start new tuning before the hand-off). Nine jobs pass, seven origin reports match exactly; both candidates still fail goals, goal-area shot share and entries, no scoring source enters production, T689 stays todo av11
 - 261109 parked ARCH-30: headless loop a911 ended before dispatch because its Codex workspace-write probe could not resolve github.com; current-session continuation reaches GitHub, no host restart or permission bypass attempted av11
@@ -851,6 +852,8 @@
 | T750 | exclude opponent lines from own-season advanced leaders | ARCH | - | todo |
 | T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
 | T752 | localize football-statistic numbers consistently | ARCH | T749 | todo |
+| T753 | refresh bid percentage quotes consistently | ARCH | - | todo |
+| T754 | refresh growth-chart details on locale changes | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -881,6 +884,7 @@
 - T689: cv04-clr hand-off is complete; both candidates fail the unchanged screen. Read its final README before another bounded window; the remaining question is why the round/square alternatives add goal-area chances and box entries
 
 ## log
+- 261109 create-task review/football-data-consistency-261109 F7/F8: T753/T754; await first fi09 scope completion before group expansion
 - 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
 - 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
@@ -900,4 +904,3 @@
 - 261109 T743 integrated
 - 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
-- 261109 T742 integrated
