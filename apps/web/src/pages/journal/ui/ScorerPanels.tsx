@@ -7,9 +7,17 @@ import { PlayerLink } from '../../../entities/player';
 import { memo, useMemo, useState } from 'react';
 import type { GoalScorer, World } from '../../../../../../packages/contracts/src/types';
 import { useGameState } from '../../../runtime/store';
+import type { GameClient } from '../../../runtime/client';
 import { banText, leagueDiscipline } from '../../../entities/player';
-import { seasonName } from '../../../presentation/format';
-import { leagueIds, type LeagueChoice } from '../../../entities/league';
+import { number, seasonName } from '../../../presentation/format';
+import {
+  FULL_STATS_FAILED,
+  fullStatsCoverage,
+  leagueIds,
+  leagueStatsScope,
+  useFullStats,
+  type LeagueChoice,
+} from '../../../entities/league';
 import { worldSelector } from '../../../shared/lib/liveState';
 import { rankedScorers, scorerTrend } from '../lib/scorers';
 import s from './Scorers.module.css';
@@ -502,18 +510,28 @@ const selectDisciplineWorld = worldSelector([
   'discipline',
   'players',
   'seed',
+  'round',
+  'matchModel',
 ]);
 /**
  * The selected league's 징계 table for the season in progress (→WEB-40, LEAGUE-15): league yellows
- * and current bans from the discipline state, league reds from this season's records.
+ * and current bans from the discipline state, league reds from the complete tracked sample.
  */
-export function DisciplineTable({ league }: { league?: LeagueChoice }) {
+export function DisciplineTable({
+  client,
+  league,
+}: {
+  client: Pick<GameClient, 'fullStats'>;
+  league?: LeagueChoice;
+}) {
   useTextLocale();
   const w = useGameState(selectDisciplineWorld)!;
-  const reds = useGameState((state) => state.view?.tallies.leagueReds);
+  const scope = useMemo(() => leagueStatsScope(w, league), [w, league]);
+  const full = useFullStats(client, w, scope, { keepPrevious: false });
+  const read = full.status === 'ready' ? full.read : undefined;
   const rows = useMemo(
-    () => leagueDiscipline(w, leagueIds(w, league), reds ?? {}),
-    [w, league, reds],
+    () => leagueDiscipline(w, leagueIds(w, league), {}, read ?? null),
+    [w, league, read],
   );
   return (
     <section
@@ -528,6 +546,21 @@ export function DisciplineTable({ league }: { league?: LeagueChoice }) {
           <p>{richMessage('copy.ScorerPanels.957903df3a', { p0: seasonName(w.year) })}</p>
         </div>
       </div>
+      <p className={s.note} data-testid="league-red-coverage">
+        <b>{richMessage('copy.LabPage.68e69c7b9c')}</b> ·{' '}
+        {localizeValue(
+          full.status === 'loading'
+            ? sourceMessage('copy.LeagueFullStats.3cb5c68f5c')
+            : full.status === 'failed'
+              ? FULL_STATS_FAILED
+              : fullStatsCoverage(read, w.year).text,
+        )}
+        {full.status === 'failed' && (
+          <button type="button" onClick={full.retry}>
+            {richMessage('copy.ConstantsPage.9cee01b433')}
+          </button>
+        )}
+      </p>
       {localizeValue(
         rows.length ? (
           <div className={s.tableWrap}>
@@ -558,10 +591,15 @@ export function DisciplineTable({ league }: { league?: LeagueChoice }) {
                         )}
                       </th>
                       <td className={s.club}>
-                        <ClubLink w={w} id={row.club} crest={14} />
+                        {row.clubs.map((club, i) => (
+                          <span key={club}>
+                            {i > 0 && ' · '}
+                            <ClubLink w={w} id={club} crest={14} />
+                          </span>
+                        ))}
                       </td>
-                      <td>{localizeValue(row.yellows)}</td>
-                      <td>{localizeValue(row.reds)}</td>
+                      <td>{number(row.yellows)}</td>
+                      <td>{row.reds === undefined ? '—' : number(row.reds)}</td>
                       <td>{localizeValue(row.bans.map(banText).join(' · ') || '—')}</td>
                     </tr>
                   )),
@@ -569,9 +607,9 @@ export function DisciplineTable({ league }: { league?: LeagueChoice }) {
               </tbody>
             </table>
           </div>
-        ) : (
+        ) : read && !read.untracked ? (
           <p className={s.empty}>{richMessage('copy.ScorerPanels.37400b7127')}</p>
-        ),
+        ) : null,
       )}
     </section>
   );
