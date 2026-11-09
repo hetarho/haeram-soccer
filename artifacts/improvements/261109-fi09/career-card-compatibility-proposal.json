@@ -1,0 +1,28 @@
+{
+  "finding": "F17",
+  "scout": "/root/scout_records",
+  "mode": "read-only feasibility; no implementation",
+  "problem": "opposing incidents of departed players pollute own-club career yellow/red counts in both incremental/legacy reads",
+  "retainedEvidence": [
+    "season.ts:233-248 keeps own-side lines and all incident sides/players",
+    "material.ts:265-283 removes material only",
+    "packing.ts:382-425,887-901 retains lineCounts and incidents"
+  ],
+  "existingBoundary": [
+    "contracts/career-reads.ts:16-18 schema format literal1",
+    "engine/career-reads.ts:28-29 cached summary skips initializer",
+    "read-models.ts:19-34 checks cursor/year, no semantic revision",
+    "supported engine0.8.0 only; no existing once-per-bug trigger"
+  ],
+  "recommendedOwnerDecision": "Allow backward-compatible semantic summary-version update: accept old cache, rebuild from supported retained source facts once on writer activation, persist current version, preserve read-only inspection and subsequent incremental/no-upgrade reloads. No match/incident/ledger mutation or invented missing values. Exact codec/schema/SSOT/task plan follows only if approved.",
+  "alternative": "Keep F17 parked; per-activation unversioned scans add cost on every reload and are not a one-time repair.",
+  "requiredTests": [
+    "own and opponent side after transfer, both venues, secondYellow",
+    "incremental/legacy equality and leagueReds retained for both teams",
+    "old prefix/suffix cursors not double counted",
+    "old cache repaired once, current cache reload no revision/upgrade/raw change",
+    "encode/decode and read-only inspect",
+    "existing no-old-array-scan proxy in normal incremental/UI paths"
+  ],
+  "authorization": "Pending owner: saved-summary contract changes exceed bounded no-new-save-format delegation."
+}
