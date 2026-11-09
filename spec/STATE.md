@@ -894,13 +894,13 @@
 
 ## log
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
-- 261109 T758 integrated
-- 261109 T753 integrated
 - 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
+- 261109 T758 integrated
+- 261109 T753 integrated
 - 261109 T749 T750 T751 T752 integrated
 - 261109 T747 T748 T757 integrated
 - 261109 create-task review/football-data-consistency-261109 F9-F11: T755/T756 product follow-ups and T757 narrowly approved verification-cost fix; released clean finance attempt before rescope fi09
