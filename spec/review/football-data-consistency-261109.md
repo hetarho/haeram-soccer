@@ -1,0 +1,26 @@
+# REVIEW football-data-consistency-261109
+> st:converted@261109 | scope:apps/web/src packages/engine/src/finance-read.ts packages/engine/src/finance.ts | at:3a8cf727 | base:ARCH@35
+
+## summary
+- The owner's direct eight-hour self-improve-local invocation delegates bounded local adoption for football figures, club finances/transfers and conventional football-data UI. Six observed contract violations are approved; simulation results, economic policy and saved facts remain unchanged.
+
+## findings
+- F1 [o] P2 apps/web/src/entities/office/lib/ownerFigures.ts:249-311: bug: injection and dividend previews use different turnover bases from actual fan-mood settlement ← owner capital, sales and currency changes make disclosed effects disagree with existing rules →T747
+- F2 [o] P2 apps/web/src/entities/office/ui/ClubCashSummary.tsx:17-90: bug: abbreviated financial figures omit WEB-67's exact hover/tap disclosure ← comparable compact amounts cannot be inspected precisely →T748
+- F3 [o] P2 apps/web/src/entities/match/lib/advanced.ts:36-37,97-112,139: bug: unavailable ratios become zero for comparative lead and bar calculation ← missing PPDA is highlighted as the stronger result →T749
+- F4 [o] P2 apps/web/src/pages/club/lib/seasonStats.ts:221-225: bug: retained former players' opposing-side advanced contributions enter our leaders ← own-season xA and key-pass rankings include the opponent's play →T750
+- F5 [o] P2 apps/web/src/pages/club/lib/seasonStats.ts:5-25: bug: a fixed ten-goal grid drops Poisson probability mass ← expected points can fall when own xG rises, contrary to the declared independent-Poisson statistic →T751
+- F6 [o] P3 apps/web/src/entities/match/lib/advanced.ts and football-stat consumers: bug: raw decimal and percentage strings bypass shared locale formatters ← the same football statistics use inconsistent separators and digits across screens →T752
+
+## notes
+- Proposal artifacts: `artifacts/improvements/261109-fi09/scout-finance.json` from `/root/scout_finance` and `scout-data-ui.json` from `/root/scout_data_ui`; both independent read-only sessions. Coordinator checked the quoted raw source blocks and complete ARCH-4/21/30/32, WEB-22/47/67/89/114, OWNER-11/12 and ECON-30 decisions before adoption. The source is unchanged from their assigned base through the approval HEAD `3a8cf7277f8560fe15b10b09db118a291e575da1`.
+- Approval authority: this invocation only, 2026-11-09T14:06:00Z through 22:06:00Z. No standing scheduler or model-policy authority is added. Each task's touches, preserved contracts, targeted checks and timebox bound implementation. Review approval remains separate and must come from another session.
+- F1: extract/reuse canonical pure turnover reads under ARCH-4, retain settlement outputs and every existing import API; compare previews with existing rules for owner capital, sales, compensation, currency transitions and fansFriend. Budget90m.
+- F2: existing Money component only, preserving amounts, compact notation, signs, tone and layout; exact ledger detail remains exact. Budget45m.
+- F3: neutral comparison when either ratio sample is absent, observed zero still comparable, no new statistics or record mutation. Budget45m.
+- F4: use the existing side selector for advanced totals; keep genuine own-side contributions from a subsequently sold player, both venues and variable line counts. Budget45m.
+- F5: correct only the numerical evaluation of WEB-47's existing independent-Poisson formula. Changed displayed xPTS at larger means is intentional correction of omitted probability, not a new precision or football model. Bound approximation error and execution; do not change xG, stored facts, outcomes or RNG. Analytic zero-opponent cases, monotonicity, symmetry and probability identities must pass. Budget75m.
+- F6: use existing shared number/percent formatters with the existing precision and denominators, ensure subscribed consumers recalculate on locale change. No new authored prose is needed. Budget90m.
+- Verification: every worker uses affected unit tests plus ARCH-30 task checks and validate:i18n; UI changes include build. No worker runs browsers or full suites. Coordinator owns integration checks, independent review and the final ARCH-30 gate, with two hours reserved for final verification/failure correction.
+- [x] FinancialBreakdown compact-notation proposal withdrawn: it is the ledger detail exception explicitly allowed by WEB-67.
+- [?] NPC counterparties' spending budgets and failed wage/recruitment pilots remain in the existing economy review; no policy expansion or repeated balance experiment is authorized. Existing T689 calibration belongs to its own task and is excluded.

@@ -22,6 +22,7 @@
 | fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:08Z | - |
 
 ## inbox
+- 261109 decided review/football-data-consistency-261109 ARCH-4 ARCH-21 ARCH-30 ARCH-32 T747 T748 T749 T750 T751 T752: which observed football-data and finance inconsistencies the eight-hour local invocation adopts → six bounded fixes with independent implementation/review, no economic-policy or simulation-result changes (alt: tune balance speculatively | leave preview and derived-stat errors). Prior capital/currency previews, exact money disclosure, missing ratios, opponent leader leakage, Poisson tail loss and shared number formatting have raw scout evidence; review notes freeze scope and checks fi09
 - 261109 decided T689 ARCH-30 ARCH-33: how to finish the interrupted cv04-clr window → read the retained diagnostics and confirm the missing bands and shot-origin controls on pinned Node24.22.1, preserving original data separately (alt: accept the interim fingerprint claim and missing band logs | start new tuning before the hand-off). Nine jobs pass, seven origin reports match exactly; both candidates still fail goals, goal-area shot share and entries, no scoring source enters production, T689 stays todo av11
 - 261109 parked ARCH-30: headless loop a911 ended before dispatch because its Codex workspace-write probe could not resolve github.com; current-session continuation reaches GitHub, no host restart or permission bypass attempted av11
 - 261109 decided MATCH-16 MATCH-35 MATCH-29 T689: cv04-own's planning question — when a clear chance in the box is still clear, since 92% of the carried box shots with nobody between are MATCH-16 clear chances decided with the keeper already out (struck at xG 0.008 while a free teammate had a better chance 61% of the time), and how MATCH-29 holds once counter's 1v1s behind press's line are not struck into the keeper → MATCH r58: a clear chance is read against the keeper where he stands as any carrier decides; once he is out with the angle shut, chased or not, the carrier goes round him, squares it to a teammate arriving free or carries to an open angle, weighed as r56's box shot outside a clear chance, striking into him only with none on (MATCH-16✎, r53's chased choice for every carrier); counter v press is held by how often counter's chances behind press's line arise, how they are taken and press's own chances against counter's deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `DECISION_CONFIG.candidate.clear.keeper` at 0.5/0.25 on `Pab`, then cv04-rec's existing frequency switches (`dr6l30`, `sw5m28`, `w0`) where `scoring-press-counter.ts` points, with the goal-area share no higher than `Perf`'s 16.0% added to the screen bar (alt: relieve the keeper's narrowing for a keeper out, which gave counter's 1v1s back without making them fewer, press v counter −0.36 | keep the clear-chance floor and accept the box's chance at about half real football's, leaving MATCH-23's box level unmet | hold MATCH-29 by suppressing counter's 1v1 conversion, which MATCH-16's "never by suppressing the shot" forbids) ev09
@@ -829,6 +830,7 @@
 ## review
 | id | st |
 |---|---|
+| football-data-consistency-261109 | converted@261109 |
 | economy-transfers-261109 | converted@261109 |
 | automatic-play-hotspots-261103 | converted@261103 |
 | outside-t216-t255-261019 | converted@261019 |
@@ -843,6 +845,12 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T747 | align owner money previews with canonical turnover | ARCH | - | todo |
+| T748 | expose exact amounts in the cash summary | ARCH | - | todo |
+| T749 | keep missing match-statistic ratios neutral | ARCH | - | todo |
+| T750 | exclude opponent lines from own-season advanced leaders | ARCH | - | todo |
+| T751 | retain poisson tails in expected-points calculations | ARCH | - | todo |
+| T752 | localize football-statistic numbers consistently | ARCH | T749 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -872,6 +880,7 @@
 - T689: cv04-clr hand-off is complete; both candidates fail the unchanged screen. Read its final README before another bounded window; the remaining question is why the round/square alternatives add goal-area chances and box entries
 
 ## log
+- 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
 - 261109 T689 cv04-clr hand-off complete: nine pinned-Node confirmation jobs, seven exact origin comparisons; both candidates fail the screen, all experimental engine source restored; T689 stays todo av11
 - 261109 T689 cv04-clr (window from 10:45Z, cut when the ev09 loop stopped on the unit's dirty tree at 11:01Z): `clear.keeper` 0.5/0.25 on `Pab` reach the box bar (conversion 10.5/10.4%, xG a shot 0.100/0.098) but break goals (3.07/3.03), the goal-area share and box entries, so no MATCH-29 read and the gate is unmet; the coordinator saved the engine diff as the window's patch, restored the source and committed the evidence with an interim README, T689 stays todo ev09
@@ -891,4 +900,3 @@
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 T742 integrated
 - 261109 T741 integrated
-- 261109 T739 integrated
