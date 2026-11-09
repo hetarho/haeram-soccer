@@ -9,6 +9,7 @@ import {
   OWNER_BUSINESS,
   OWNER_DIVIDEND,
   OWNER_LIVING,
+  OWNER_SETTLEMENTS,
   OWNER_TIERS,
   OWNER_TRAIT_LIMIT,
   OWNER_TRAITS,
@@ -44,7 +45,7 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
     expect(OWNER_TRAIT_LIMIT).toBe(5);
     expect(Object.keys(OWNER_TRAITS)).toEqual([...OWNER_TRAIT_IDS]);
     expect(OWNER_TRAITS).toEqual({
-      businessman: { label: '성공한 사업가', success: 0.6 },
+      businessman: { label: '성공한 사업가', success: 0.7 },
       talisman: { label: '승리의 부적', strength: 1 },
       negotiator: { label: '협상의 달인', wages: 0.9, fees: 0.9 },
       fansFriend: { label: '팬들의 친구', drop: 0.7 },
@@ -55,18 +56,16 @@ describe('owner settings (→OWNER, ECON-36–38, CLUB-1)', () => {
     });
   });
 
-  it('settles the business on 1 Nov, 1 Feb, 1 May and the close at even odds (→OWNER-7/8)', () => {
+  it('settles the business monthly from 1 September to 1 June and at the close, 5% of the stake at 60% (→OWNER-7/8)', () => {
     expect(OWNER_BUSINESS).toEqual({
-      dates: [
-        { month: 11, date: 1 },
-        { month: 2, date: 1 },
-        { month: 5, date: 1 },
-      ],
+      dates: [9, 10, 11, 12, 1, 2, 3, 4, 5, 6].map((month) => ({ month, date: 1 })),
       close: true,
-      chance: 0.5,
+      chance: 0.6,
+      swing: 5,
       stake: { min: 0, max: 100, start: 0 },
     });
-    expect(OWNER_LIVING.rate).toBe(0.002);
+    expect(OWNER_SETTLEMENTS).toBe(11);
+    expect(OWNER_LIVING.season).toBe(0.008);
     expect(OWNER_DIVIDEND).toEqual({ shares: [0, 25, 50, 75, 100], start: 0 });
   });
 

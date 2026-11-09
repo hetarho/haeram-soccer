@@ -18,7 +18,7 @@
  *   pnpm exec tsx scripts/owner-balance.ts            six tiers × ENG ESP FRA GER × 5 seeds, no traits
  *   options: --tiers oil,midsize   --countries ENG,FRA   --seeds N   --first-seed N
  *            --until YEAR (the last season played; 2009)   --traits none,five
- *            --policies none,dividend,dividend25,patron,mixed   --build (ECON-29's facility rule)
+ *            --policies none,dividend,dividend25,patron,mixed,business   --build (ECON-29's facility rule)
  *            --purse-apart   --world-dir DIR (keep each seed's 1950 world)   --prepare (only that)
  *            --out careers.json (keep the careers)   --in a.json,dir (report kept careers only;
  *            --measured-rate R and --note TEXT say what they were played on)   --reach   --moods
@@ -30,7 +30,8 @@
  *
  * Policies: none, the reference; dividend, the 배당 dial at 50% (dividend25 at 25%); patron, a
  * quarter of the fortune above zero put in on each season's first day (within FFP); mixed, a tenth
- * put in and the dial at 50%. The business stake stays 0% in every policy.
+ * put in and the dial at 50%; business, the stake and the dial at 50% (T735). The stake stays 0%
+ * in every other policy.
  */
 import {
   existsSync,
@@ -57,7 +58,7 @@ import {
 import { pays } from '../packages/engine/src/listing';
 import { BOOK_COMPETITIONS, bookIncomeLines } from '../packages/engine/src/books';
 import { readGateDetail } from '../packages/engine/src/settlement';
-import { ffpRoom, livingCost, ownerCommand } from '../packages/engine/src/owner';
+import { ffpRoom, ownerCommand, seasonLivingCost } from '../packages/engine/src/owner';
 import { defaultSettings, RESPONSIBILITY_KEYS } from '../packages/engine/src/responsibilities';
 import {
   advanceRound,
@@ -74,12 +75,7 @@ import {
   quote,
   startFacilityWork,
 } from '../packages/engine/src/index';
-import {
-  FAN_MOOD,
-  OWNER_BUSINESS,
-  OWNER_LIVING,
-  OWNER_TIERS,
-} from '../packages/engine/src/owner-config';
+import { FAN_MOOD, OWNER_LIVING, OWNER_TIERS } from '../packages/engine/src/owner-config';
 import {
   ABILITY_FIT,
   marketWageAt,
@@ -126,13 +122,16 @@ const MOODS = args.includes('--moods');
  * move money pay their living costs as the game does.
  */
 const PURSE_APART = args.includes('--purse-apart');
-/** The living-cost rates the owner's bankruptcy season is read at (→OWNER-8), the SSOT's first. */
-const LIVING_RATES = [...new Set([OWNER_LIVING.rate, 0.0025, 0.0015, 0.001, 0.0005])];
-const SSOT_LIVING = OWNER_LIVING.rate;
-/** --measured-rate: the living-cost rate kept careers were played at (`--in`), if not the SSOT's. */
+/**
+ * The season living-cost rates the owner's bankruptcy season is read at (→OWNER-8), the SSOT's
+ * first; four times the per-settlement rates T686 read at four settlements a season.
+ */
+const LIVING_RATES = [...new Set([OWNER_LIVING.season, 0.01, 0.006, 0.004, 0.002])];
+const SSOT_LIVING = OWNER_LIVING.season;
+/** --measured-rate: the season living-cost rate kept careers were played at (`--in`). */
 const MEASURED_LIVING = Number(option('measured-rate', String(SSOT_LIVING)));
 /** Sets the living-cost rate the engine reads (a measurement override, never a game setting). */
-const setLiving = (rate: number) => ((OWNER_LIVING as { rate: number }).rate = rate);
+const setLiving = (rate: number) => ((OWNER_LIVING as { season: number }).season = rate);
 /**
  * --spread FILE: the era's star pay spread table the careers and their worlds price with
  * (→CLUB-48; { shared: [[year, s], ...], own: { CODE: { through, spread } } }), a measurement
@@ -192,13 +191,14 @@ const CAREER = 50;
  */
 const FIVE: OwnerTrait[] = ['talisman', 'negotiator', 'networker', 'marketer', 'politician'];
 
-type Policy = 'none' | 'dividend' | 'dividend25' | 'patron' | 'mixed';
-const POLICY: Record<Policy, { inject: number; dividend: DividendShare }> = {
+type Policy = 'none' | 'dividend' | 'dividend25' | 'patron' | 'mixed' | 'business';
+const POLICY: Record<Policy, { inject: number; dividend: DividendShare; stake?: number }> = {
   none: { inject: 0, dividend: 0 },
   dividend: { inject: 0, dividend: 50 },
   dividend25: { inject: 0, dividend: 25 },
   patron: { inject: 0.25, dividend: 0 },
   mixed: { inject: 0.1, dividend: 50 },
+  business: { inject: 0, dividend: 50, stake: 50 },
 };
 
 // ---- Bands -----------------------------------------------------------------------------------
@@ -600,6 +600,7 @@ function playCareer(
   setLiving(apart ? 0 : SSOT_LIVING);
   const rules = POLICY[policy];
   if (rules.dividend) ownerCommand(w, { type: 'owner-dividend', share: rules.dividend });
+  if (rules.stake) ownerCommand(w, { type: 'owner-stake', percent: rules.stake });
   const takeover = w.owner!.takeover;
   const career: Career = {
     code,
@@ -701,7 +702,7 @@ function playCareer(
     let lifeShare: number | undefined;
     if (apart) {
       setLiving(SSOT_LIVING);
-      const living = Number(livingCost(w, year)) * (OWNER_BUSINESS.dates.length + 1);
+      const living = Number(seasonLivingCost(w, year));
       setLiving(0);
       lifeShare = living / Number(w.owner!.fortune);
     }
@@ -994,8 +995,7 @@ function startReport(careers: Career[]) {
     const divisions = new Map<number, number>();
     for (const c of group)
       divisions.set(c.start.division + 1, (divisions.get(c.start.division + 1) ?? 0) + 1);
-    const living = (c: Career) =>
-      c.start.fortune * MEASURED_LIVING * (OWNER_BUSINESS.dates.length + 1);
+    const living = (c: Career) => c.start.fortune * MEASURED_LIVING;
     console.log(
       `| ${tier} | ${group.length} | ${[...divisions]
         .sort((a, b) => a[0] - b[0])
@@ -1547,7 +1547,7 @@ console.log(
     .map((t) => t.multiple)
     .join(
       '/',
-    )}, living ${SSOT_LIVING * 100}% a settlement${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
+    )}, living ${SSOT_LIVING * 100}% a season${PURSE_APART ? ', reference purse apart' : ''}, star pay spread ${JSON.stringify(STAR_SPREAD_CONFIG)}${SPREAD ? ' (--spread)' : ''}${MEANS_LEVEL.inForce ? `, LEAGUE-10's means level on${MEANS ? ' (--means)' : ''}` : ''}${BOOK_COMPETITIONS.inForce ? `, competition money in the books${CUPS ? ' (--cups)' : ''}` : ''}${ABILITY_FIT.inForce ? `, CLUB-25's ability-fit wage on${FIT ? ' (--ability-fit)' : ''}` : ''})`,
 );
 /** --note: what the kept careers were played on, when it is not the tree's settings (`--in`). */
 if (option('note', '')) console.log(`\n${option('note', '')}`);

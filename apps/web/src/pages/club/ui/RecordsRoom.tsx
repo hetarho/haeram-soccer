@@ -19,7 +19,6 @@ import { CareerRecordBook, ClubLeaders, TrophyCabinet } from './CareerRecordBook
 import { divisionName } from '../../../entities/player';
 import { ClubLink } from '../../../entities/club';
 import { ClubTrends, SeasonTable } from './ClubTrends';
-import { OwnerSeasons, SeasonsBeforeOwner } from './OwnerEras';
 import { Dialog } from '../../../shared/ui/Dialog';
 import { kindLabel, number, seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
@@ -246,11 +245,7 @@ export function RecordsRoom({ state, client }: Props) {
         {localizeValue(
           tab === 'seasons' ? (
             year === undefined ? (
-              <>
-                <SeasonTable w={w} onSeason={openSeason} />
-                <OwnerSeasons w={w} />
-                <SeasonsBeforeOwner w={w} seasons={state.view!.preOwner} />
-              </>
+              <SeasonTable w={w} onSeason={openSeason} preOwner={state.view!.preOwner} />
             ) : (
               <>
                 <div className={s.recordControls}>

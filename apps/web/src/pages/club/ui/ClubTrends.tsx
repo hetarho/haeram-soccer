@@ -2,8 +2,13 @@ import { message as sourceMessage } from '../../../../../../packages/contracts/s
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useTaskState } from '../../../shared/routing/taskMemory';
-import { useMemo } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import type { World } from '../../../../../../packages/contracts/src/types';
+import type {
+  OwnerSeasonRecord,
+  PreOwnerSeason,
+} from '../../../../../../packages/contracts/src/owner';
+import { honoursBeforeOwner } from '../../../../../../packages/engine/src/club-past';
 import { country, currency } from '../../../../../../packages/catalogs/src/index';
 import { clubOf, ownSeasons } from '../../../../../../packages/engine/src/player-state';
 import { inTodayMoney } from '../../../../../../packages/engine/src/transfer-records';
@@ -13,7 +18,14 @@ import { ClubLink } from '../../../entities/club';
 import { divisionName } from '../../../entities/player';
 import { compactMoney, number, seasonName } from '../../../presentation/format';
 import { Money } from '../../../shared/ui/Money';
-import { runsText } from '../lib/recordEras';
+import {
+  businessSign,
+  finishText,
+  honoursText,
+  ownerSeasonRows,
+  runsText,
+  seasonListRows,
+} from '../lib/recordEras';
 import {
   eloDetail,
   eloStanding,
@@ -388,185 +400,351 @@ export function ClubTrends({ w }: { w: World }) {
   );
 }
 
+/** 시즌별 기록's two column groups over the same rows (→WEB-54). */
+const SEASON_VIEWS = [
+  ['rank', sourceMessage('copy.ClubTrends.b2e64f0c17')],
+  ['finance', sourceMessage('copy.ClubTrends.c8a1d93e45')],
+] as const;
+type SeasonView = (typeof SEASON_VIEWS)[number][0];
+
 /**
- * One row per closed season of the club's own, newest first; with `onSeason` a row opens that
- * season (→WEB-54). The seasons before the takeover are listed apart (→HIST-21).
+ * 시즌별 기록 (→WEB-54): the club's whole history in one newest-first table. The current season
+ * leads, then the owner's closed seasons; a rule names the takeover season above the bought club's
+ * seasons before the owner, which open no review (→HIST-21). A 순위/재정 switch shows the club's
+ * figures or the owner's record of each close (→OWNER-17) over the same rows; a founded career has
+ * no owner and no switch. With `onSeason` an owned row opens that season.
  */
-export function SeasonTable({ w, onSeason }: { w: World; onSeason?: (year: number) => void }) {
+export function SeasonTable({
+  w,
+  onSeason,
+  preOwner,
+}: {
+  w: World;
+  onSeason?: (year: number) => void;
+  preOwner?: readonly PreOwnerSeason[];
+}) {
   useTextLocale();
   const code = clubOf(w).country,
-    seasons = ownSeasons(w);
+    owner = w.owner,
+    seasons = ownSeasons(w),
+    before = (owner && preOwner) || [],
+    records = new Map(ownerSeasonRows(owner).map((record) => [record.year, record]));
   const [limit, setLimit] = useTaskState(w.id, 'record-season-limit', 49);
+  const [chosen, setView] = useTaskState<SeasonView>(w.id, 'record-season-view', 'rank');
+  const finance = !!owner && chosen === 'finance';
+  const { rows, remaining } = seasonListRows(seasons, before, owner?.takeover.year, limit);
+  const money = (value: string, year: number) => <Money value={value} code={code} year={year} />;
+  const dashes = (count: number) => Array.from({ length: count }, (_, i) => <td key={i}>—</td>);
+  /** The owner's record of a close under 재정; dashes for a season without one. */
+  const ownerCells = (record: OwnerSeasonRecord | undefined) =>
+    record ? (
+      <>
+        <td data-label={sourceMessage('shell.fortune')}>
+          {localizeValue(money(record.fortune, record.year))}
+        </td>
+        <td data-label={sourceMessage('copy.OwnerEras.7b3733aab2')}>
+          {localizeValue(businessSign(record))}
+          {localizeValue(money(record.business, record.year))}
+        </td>
+        <td data-label={sourceMessage('copy.OwnerEras.ef04fe60f2')}>
+          {localizeValue(money(record.living, record.year))}
+        </td>
+        <td data-label={sourceMessage('copy.OwnerEras.64a6c964ab')}>
+          {localizeValue(money(record.injected, record.year))}
+        </td>
+        <td data-label={sourceMessage('copy.OwnerEras.176494aa44')}>
+          {localizeValue(money(record.dividend, record.year))}
+        </td>
+        <td data-label={sourceMessage('copy.ClubOverview.27bdec9180')}>
+          {localizeValue(Math.round(record.fanMood))}
+        </td>
+      </>
+    ) : (
+      dashes(6)
+    );
+  const note = before.length
+    ? sourceMessage('copy.ClubTrends.5e0b7a91c4', {
+        p0: seasons.length,
+        p1: before.length,
+        p2: honoursText(honoursBeforeOwner(before)),
+      })
+    : sourceMessage('copy.BallonDorView.3585c2642b', { p0: seasons.length });
   return (
-    <Panel
-      title={displayMessage('copy.ClubTrends.f402b0218e')}
-      note={sourceMessage('copy.BallonDorView.3585c2642b', { p0: seasons.length })}
-    >
-      <div className={s.tableWrap}>
-        <table
-          className={t.seasonHistory}
-          role="table"
-          aria-label={displayMessage('copy.ClubTrends.f402b0218e')}
-        >
-          <thead>
-            <tr>
-              <th scope="col">{richMessage('copy.ClubTrends.a3142392a3')}</th>
-              <th scope="col">{richMessage('navigation.league')}</th>
-              <th scope="col">{richMessage('copy.ClubTrends.e8fd75919a')}</th>
-              <th scope="col">{richMessage('copy.ClubTrends.cf5a6ab3e0')}</th>
-              <th scope="col">{richMessage('copy.ClubTrends.fbd742149e')}</th>
-              <th scope="col">
-                {richMessage('copy.ClubTrends.04da029e77', {
-                  p0: (
-                    <span className={t.valueScope}>
-                      {richMessage('copy.ClubTrends.c111372590')}
-                    </span>
+    <>
+      {localizeValue(
+        owner && (
+          <div className={s.recordControls}>
+            <Segments
+              label={displayMessage('copy.ClubTrends.e7f05a2b19')}
+              options={SEASON_VIEWS}
+              value={chosen}
+              onChange={setView}
+            />
+          </div>
+        ),
+      )}
+      <Panel title={displayMessage('copy.ClubTrends.f402b0218e')} note={note}>
+        <div className={s.tableWrap}>
+          <table
+            className={t.seasonHistory}
+            role="table"
+            aria-label={displayMessage('copy.ClubTrends.f402b0218e')}
+          >
+            <thead>
+              <tr>
+                <th scope="col">{richMessage('copy.ClubTrends.a3142392a3')}</th>
+                {localizeValue(
+                  finance ? (
+                    <>
+                      <th scope="col">{richMessage('shell.fortune')}</th>
+                      <th scope="col">{richMessage('copy.OwnerEras.7b3733aab2')}</th>
+                      <th scope="col">{richMessage('copy.OwnerEras.ef04fe60f2')}</th>
+                      <th scope="col">{richMessage('copy.OwnerEras.64a6c964ab')}</th>
+                      <th scope="col">{richMessage('copy.OwnerEras.176494aa44')}</th>
+                      <th scope="col">{richMessage('copy.ClubOverview.27bdec9180')}</th>
+                    </>
+                  ) : (
+                    <>
+                      <th scope="col">{richMessage('navigation.league')}</th>
+                      <th scope="col">{richMessage('copy.ClubTrends.e8fd75919a')}</th>
+                      <th scope="col">{richMessage('copy.ClubTrends.cf5a6ab3e0')}</th>
+                      <th scope="col">{richMessage('copy.ClubTrends.fbd742149e')}</th>
+                      <th scope="col">
+                        {richMessage('copy.ClubTrends.04da029e77', {
+                          p0: (
+                            <span className={t.valueScope}>
+                              {richMessage('copy.ClubTrends.c111372590')}
+                            </span>
+                          ),
+                          p1: (
+                            <span className={t.valueBasis}>
+                              {richMessage('copy.ClubTrends.7a70ccf2b0')}
+                            </span>
+                          ),
+                        })}
+                      </th>
+                    </>
                   ),
-                  p1: (
-                    <span className={t.valueBasis}>
-                      {richMessage('copy.ClubTrends.7a70ccf2b0')}
-                    </span>
-                  ),
-                })}
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              className={`${t.currentSeason} ${onSeason ? s.seasonRow : ''}`}
-              aria-current="true"
-              onClick={onSeason && (() => onSeason(w.year))}
-            >
-              <td>
-                <button
-                  data-ui="link"
-                  type="button"
-                  className={s.seasonRowLink}
-                  aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
-                    p0: seasonName(w.year),
-                  })}
-                  aria-description={displayMessage('copy.ClubTrends.8e03ed8a86')}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onSeason?.(w.year);
-                  }}
-                >
-                  <span className={t.cellText}>{localizeValue(seasonName(w.year))}</span>
-                </button>
-              </td>
-              <td data-label={sourceMessage('navigation.league')}>
-                <span
-                  className={t.cellText}
-                  title={localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
-                >
-                  {localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
-                </span>
-              </td>
-              <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
-                {localizeValue(w.tables[w.playerClub]?.points ?? 0)}
-              </td>
-              <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>—</td>
-              <td data-label="Elo">{localizeValue(clubOf(w).elo?.toFixed(0) ?? '—')}</td>
-              <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>—</td>
-            </tr>
-            {localizeValue(
-              [...seasons]
-                .reverse()
-                .slice(0, limit)
-                .map((h) => (
-                  <tr
-                    key={h.year}
-                    className={onSeason ? s.seasonRow : undefined}
-                    onClick={onSeason && (() => onSeason(h.year))}
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                className={`${t.currentSeason} ${onSeason ? s.seasonRow : ''}`}
+                aria-current="true"
+                onClick={onSeason && (() => onSeason(w.year))}
+              >
+                <td>
+                  <button
+                    data-ui="link"
+                    type="button"
+                    className={s.seasonRowLink}
+                    aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
+                      p0: seasonName(w.year),
+                    })}
+                    aria-description={displayMessage('copy.ClubTrends.8e03ed8a86')}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSeason?.(w.year);
+                    }}
                   >
-                    <td>
+                    <span className={t.cellText}>{localizeValue(seasonName(w.year))}</span>
+                  </button>
+                </td>
+                {localizeValue(
+                  finance ? (
+                    <>
+                      <td data-label={sourceMessage('shell.fortune')}>
+                        {localizeValue(money(owner!.fortune, w.year))}
+                      </td>
+                      {localizeValue(dashes(4))}
+                      <td data-label={sourceMessage('copy.ClubOverview.27bdec9180')}>
+                        {localizeValue(Math.round(owner!.fanMood))}
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td data-label={sourceMessage('navigation.league')}>
+                        <span
+                          className={t.cellText}
+                          title={localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
+                        >
+                          {localizeValue(divisionName(code, clubOf(w).tier, clubOf(w).group))}
+                        </span>
+                      </td>
+                      <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
+                        {localizeValue(w.tables[w.playerClub]?.points ?? 0)}
+                      </td>
+                      <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>—</td>
+                      <td data-label="Elo">{localizeValue(clubOf(w).elo?.toFixed(0) ?? '—')}</td>
+                      <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>—</td>
+                    </>
+                  ),
+                )}
+              </tr>
+              {localizeValue(
+                rows.map((row) =>
+                  row.kind === 'takeover' ? (
+                    <tr key="takeover" className={t.takeoverRule}>
+                      <th scope="rowgroup" colSpan={finance ? 7 : 6}>
+                        <span>
+                          {richMessage('copy.ClubTrends.9d41c2e6a8', { p0: seasonName(row.year) })}
+                        </span>
+                      </th>
+                    </tr>
+                  ) : row.kind === 'before' ? (
+                    <tr key={`before-${row.season.year}`} className={t.beforeOwner}>
+                      <td>
+                        <span className={t.cellText}>
+                          {localizeValue(seasonName(row.season.year))}
+                        </span>
+                      </td>
                       {localizeValue(
-                        onSeason ? (
-                          <button
-                            data-ui="link"
-                            type="button"
-                            className={s.seasonRowLink}
-                            aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
-                              p0: seasonName(h.year),
-                            })}
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              onSeason(h.year);
-                            }}
-                          >
-                            <span className={t.cellText}>{localizeValue(seasonName(h.year))}</span>
-                          </button>
+                        finance ? (
+                          dashes(6)
                         ) : (
-                          seasonName(h.year)
+                          <>
+                            <td data-label={sourceMessage('navigation.league')}>
+                              <span className={t.cellText}>
+                                {localizeValue(finishText(code, row.season))}
+                              </span>
+                            </td>
+                            <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>—</td>
+                            <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>
+                              <span className={t.cellText}>
+                                {localizeValue(runsText(row.season.runs))}
+                              </span>
+                            </td>
+                            <td data-label="Elo">—</td>
+                            <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>—</td>
+                          </>
                         ),
                       )}
-                    </td>
-                    <td data-label={sourceMessage('navigation.league')}>
-                      <span
-                        className={t.cellText}
-                        title={displayMessage('copy.CareerRecordBook.2df6533b51', {
-                          p0: divisionName(code, h.tier, h.group),
-                          p1: h.rank,
-                        })}
-                      >
-                        {richMessage('copy.CareerRecordBook.58e3ce05f8', {
-                          p0: divisionName(code, h.tier, h.group),
-                          p1: h.rank,
-                        })}
-                      </span>
-                    </td>
-                    <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
-                      <span
-                        className={t.cellText}
-                        title={localizeValue(`${h.points} (${h.won}-${h.drawn}-${h.lost})`)}
-                      >
-                        {localizeValue(h.points)} ({localizeValue(h.won)}-{localizeValue(h.drawn)}-
-                        {localizeValue(h.lost)})
-                      </span>
-                    </td>
-                    <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>
-                      <span className={t.cellText}>{localizeValue(runsText(h.runs))}</span>
-                    </td>
-                    <td data-label="Elo">
-                      <span className={t.cellText}>
-                        {localizeValue(
-                          h.elo !== undefined
-                            ? `${Math.round(h.elo)}${h.eloRank ? sourceMessage('copy.ClubTrends.631b514ecd', { p0: h.eloRank }) : ''}`
-                            : '—',
-                        )}
-                      </span>
-                    </td>
-                    <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>
-                      {localizeValue(
-                        h.squadValue ? (
-                          <Money
-                            value={inTodayMoney(w, h.squadValue, h.year)}
-                            code={code}
-                            year={w.year}
-                          />
-                        ) : (
-                          '—'
-                        ),
-                      )}
-                    </td>
-                  </tr>
-                )),
-            )}
-          </tbody>
-        </table>
+                    </tr>
+                  ) : (
+                    <OwnedSeasonRow
+                      key={row.season.year}
+                      w={w}
+                      h={row.season}
+                      onSeason={onSeason}
+                      finance={finance ? ownerCells(records.get(row.season.year)) : undefined}
+                    />
+                  ),
+                ),
+              )}
+            </tbody>
+          </table>
+          {localizeValue(
+            remaining > 0 && (
+              <button type="button" onClick={() => setLimit(limit + 50)}>
+                {richMessage('copy.ClubTrends.fbea915f3f', { p0: remaining })}
+              </button>
+            ),
+          )}
+          {localizeValue(
+            !seasons.length && !before.length && (
+              <div className={s.empty}>{richMessage('copy.ClubTrends.82338e0d4b')}</div>
+            ),
+          )}
+        </div>
+      </Panel>
+    </>
+  );
+}
+
+/**
+ * A closed season of the club's own: its finish, points, cup runs, Elo and squad value, or under
+ * 재정 the owner's record of its close (`finance`).
+ */
+function OwnedSeasonRow({
+  w,
+  h,
+  onSeason,
+  finance,
+}: {
+  w: World;
+  h: ReturnType<typeof ownSeasons>[number];
+  onSeason?: (year: number) => void;
+  finance?: ReactNode;
+}) {
+  const code = clubOf(w).country;
+  return (
+    <tr
+      className={onSeason ? s.seasonRow : undefined}
+      onClick={onSeason && (() => onSeason(h.year))}
+    >
+      <td>
         {localizeValue(
-          seasons.length > limit && (
-            <button type="button" onClick={() => setLimit(limit + 50)}>
-              {richMessage('copy.ClubTrends.fbea915f3f', { p0: seasons.length - limit })}
+          onSeason ? (
+            <button
+              data-ui="link"
+              type="button"
+              className={s.seasonRowLink}
+              aria-label={displayMessage('copy.ClubTrends.16c1b9fa93', {
+                p0: seasonName(h.year),
+              })}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSeason(h.year);
+              }}
+            >
+              <span className={t.cellText}>{localizeValue(seasonName(h.year))}</span>
             </button>
+          ) : (
+            seasonName(h.year)
           ),
         )}
-        {localizeValue(
-          !seasons.length && (
-            <div className={s.empty}>{richMessage('copy.ClubTrends.82338e0d4b')}</div>
-          ),
-        )}
-      </div>
-    </Panel>
+      </td>
+      {localizeValue(
+        finance ?? (
+          <>
+            <td data-label={sourceMessage('navigation.league')}>
+              <span
+                className={t.cellText}
+                title={displayMessage('copy.CareerRecordBook.2df6533b51', {
+                  p0: divisionName(code, h.tier, h.group),
+                  p1: h.rank,
+                })}
+              >
+                {richMessage('copy.CareerRecordBook.58e3ce05f8', {
+                  p0: divisionName(code, h.tier, h.group),
+                  p1: h.rank,
+                })}
+              </span>
+            </td>
+            <td data-label={sourceMessage('copy.ClubTrends.e8fd75919a')}>
+              <span
+                className={t.cellText}
+                title={localizeValue(`${h.points} (${h.won}-${h.drawn}-${h.lost})`)}
+              >
+                {localizeValue(h.points)} ({localizeValue(h.won)}-{localizeValue(h.drawn)}-
+                {localizeValue(h.lost)})
+              </span>
+            </td>
+            <td data-label={sourceMessage('copy.ClubTrends.cf5a6ab3e0')}>
+              <span className={t.cellText}>{localizeValue(runsText(h.runs))}</span>
+            </td>
+            <td data-label="Elo">
+              <span className={t.cellText}>
+                {localizeValue(
+                  h.elo !== undefined
+                    ? `${Math.round(h.elo)}${h.eloRank ? sourceMessage('copy.ClubTrends.631b514ecd', { p0: h.eloRank }) : ''}`
+                    : '—',
+                )}
+              </span>
+            </td>
+            <td data-label={sourceMessage('copy.ClubTrends.3df7710039')}>
+              {localizeValue(
+                h.squadValue ? (
+                  <Money value={inTodayMoney(w, h.squadValue, h.year)} code={code} year={w.year} />
+                ) : (
+                  '—'
+                ),
+              )}
+            </td>
+          </>
+        ),
+      )}
+    </tr>
   );
 }

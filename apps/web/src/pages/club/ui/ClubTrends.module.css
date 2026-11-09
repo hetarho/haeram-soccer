@@ -75,3 +75,26 @@
 .seasonHistory .currentSeason > td:first-child {
   box-shadow: inset 3px 0 var(--accent);
 }
+
+/* The takeover rule (→WEB-54): a line across the history naming the season the owner bought the
+   club; its label stays in view while a narrow table scrolls sideways. */
+.seasonHistory .takeoverRule {
+  height: auto;
+}
+.seasonHistory .takeoverRule > th {
+  padding: 12px 12px 4px;
+  border-top: 2px solid var(--accent);
+  background: none;
+  color: var(--accent-text);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: start;
+}
+.takeoverRule > th > span {
+  position: sticky;
+  left: 12px;
+}
+/* Seasons before the owner are the club's past, read but not opened. */
+.seasonHistory .beforeOwner > td {
+  color: var(--text-muted);
+}

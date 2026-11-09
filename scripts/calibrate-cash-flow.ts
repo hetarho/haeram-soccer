@@ -117,7 +117,7 @@ if (zeroOwnerMoney) {
   world.owner!.stake = 0;
   world.owner!.dividendShare = 0;
 }
-if (args.includes('--purse-apart')) (OWNER_LIVING as { rate: number }).rate = 0;
+if (args.includes('--purse-apart')) (OWNER_LIVING as { season: number }).season = 0;
 const initialContracts = activePlayers(world).map((p) => ({
   id: p.id,
   wage: p.wage,

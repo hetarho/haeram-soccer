@@ -18,7 +18,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| ow09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T03:07Z | 2026-11-09T03:07Z | - |
 | ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T05:02Z | - |
 
 ## inbox
@@ -839,9 +838,6 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
-| T736 | one season history with the takeover rule | WEB HIST OWNER ARCH | - | todo |
-| T735 | settle the owner's business monthly at better odds | OWNER WORLD WEB ARCH | - | todo |
-| T738 | switch the season history between 순위 and 재정 | WEB HIST OWNER ARCH | T736 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -867,6 +863,10 @@
 | economy-ec09 | 2 | 9 | 9 | 0 | 0 | 0 | 0 | 2026-11-09T05:58:49.380Z | [history](work/economy-ec09.json) |
 
 ## next
+- implement-task T730 first (fix-ci-first): CI 42519984966 on ad51162 is green except `e2e (webkit 2/2)` — progression-settings.spec.ts:287 read `결재함 · 대기 0건` after the stop (set-piece-defence.spec.ts:187 flaky); T729's resource-skins fix held. Its re-run failed the same way (deterministic on CI WebKit); bisect T725/T727 on CI first.
+- the owner's decisions from review/self-improve-local-261109: F6 (confirm the decided inbox lines up to a date so a session can delete them — the largest per-task token cost), F13 (a CSS-free public entry so Playwright/Node consumers reach a slice's pure logic; then resume blocked T726), F11 (`pages/records`).
+- implement-task T689 (explore 2h) in a fresh session (this checkout's `vibe loop` is refused until work group `module-1026` is closed, see inbox): its deps are done.
+- F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 - inspect work board for remaining tasks
 
 ## log
@@ -878,15 +878,15 @@
 - 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
 - 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
 - 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
+- 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
+- 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
+- 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
+- 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
+- 261109 T735 done: monthly owner business (1 Sep–1 Jun + close) at 60%/70% with a 5% swing; living costs 0.8% a season in eleven exact shares (ow09)
+- 261109 update-ssot OWNER r6 WORLD r10 HIST r23 WEB r212 + create-task T735 T736: monthly owner business at 60% with a 5% swing; one season history table with a takeover rule (ow09)
 - 261109 T737 integrated
 - 261109 create-task T737 review/economy-transfers-261109 F8: final browser gate exposes a stale free-agent shortlist assumption; preserve all journey assertions and fix only its canonical candidate selection. T735/T736 belong to ow09 and are untouched ec09.
 - 261109 T734 integrated
 - 261109 T732 integrated
 - 261109 T733 integrated
 - 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
-- 261109 T731 integrated
-- 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
-- 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
-- 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
-- 261109 fs09 CI 42519984966 re-run of `e2e (webkit 2/2)` failed progression-settings.spec.ts:287 again in all three attempts (passed on CI WebKit at d0180ee1, passes on local WebKit at ad51162): deterministic on CI's Linux WebKit for this tree, so T730 starts by bisecting T725/T727 on CI; main stays red until then fs09
-- 261109 fs09 gate passed on ad511620 in 1836 s (every stage, Chromium 348 passed, tree untouched); pushed ad511620 to main; CI 42519984966: checks, unit, integration 1–3/3, Chromium 1–2/2, Firefox 1–2/2, WebKit 1/2 green, WebKit 2/2 failed progression-settings.spec.ts:287 (→T730) with set-piece-defence.spec.ts:187 flaky; re-running the failed job fs09

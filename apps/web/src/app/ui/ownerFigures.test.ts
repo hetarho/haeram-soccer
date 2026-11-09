@@ -9,6 +9,7 @@ import {
   FFP,
   OWNER_BUSINESS,
   OWNER_LIVING,
+  OWNER_SETTLEMENTS,
   OWNER_TRAITS,
 } from '../../../../../packages/engine/src/owner-config';
 import { scaleBy } from '../../../../../packages/engine/src/primitives';
@@ -122,13 +123,17 @@ describe('the business stake (→OWNER-7/8)', () => {
     expect(businessChance(owner)).toBe(OWNER_BUSINESS.chance);
     owner.traits = ['businessman'];
     expect(businessChance(owner)).toBe(OWNER_TRAITS.businessman.success);
-    expect(stakeAmount('1000', 25)).toBe('250');
+    // 5% of the quarter staked.
+    expect(stakeAmount('100000', 25)).toBe('1250');
     // A fortune at zero or below is never staked.
     expect(stakeAmount('0', 50)).toBe('0');
     expect(stakeAmount('-500', 50)).toBe('0');
-    // Living costs in the takeover season are the rate of the starting fortune exactly.
-    const living = livingCost(w);
-    expect(living).toBe(scaleBy(owner.takeover.fortune, OWNER_LIVING.rate, 10000n));
+    // Living costs in the takeover season are an eleventh of the season's rate of the starting
+    // fortune, give or take the minor unit carried between settlements.
+    const living = livingCost(w),
+      season = BigInt(scaleBy(owner.takeover.fortune, OWNER_LIVING.season, 10000n)),
+      share = season / BigInt(OWNER_SETTLEMENTS);
+    expect([share, share + 1n]).toContain(BigInt(living));
     const outlook = stakeOutlook(w, 40);
     expect(outlook.amount).toBe(stakeAmount(owner.fortune, 40));
     expect(BigInt(outlook.win)).toBe(
@@ -139,18 +144,18 @@ describe('the business stake (→OWNER-7/8)', () => {
     );
     expect(outlook.staked).toBe(true);
   });
-  it('dates the next settlement: 1 November, 1 February, 1 May, then the close', () => {
+  it('dates the next settlement: the next month’s 1st from September to June, then the close', () => {
     const w = owned();
     w.calendar = { day: 0 };
     expect(nextSettlement(w)).toMatchObject({
-      day: seasonDayOf(w.year, 11, 1),
-      date: `${w.year}년 11월 1일`,
+      day: seasonDayOf(w.year, 9, 1),
+      date: `${w.year}년 9월 1일`,
       close: false,
     });
     // A settlement day the clock already reads has settled.
-    w.calendar = { day: seasonDayOf(w.year, 11, 1) };
-    expect(nextSettlement(w).date).toBe(`${w.year + 1}년 2월 1일`);
-    w.calendar = { day: seasonDayOf(w.year, 5, 1) };
+    w.calendar = { day: seasonDayOf(w.year, 12, 1) };
+    expect(nextSettlement(w).date).toBe(`${w.year + 1}년 1월 1일`);
+    w.calendar = { day: seasonDayOf(w.year, 6, 1) };
     expect(nextSettlement(w)).toMatchObject({ day: SEASON_END_DAY + 1, close: true });
   });
   it('grows living costs with prices after the takeover season', () => {

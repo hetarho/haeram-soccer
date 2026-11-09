@@ -46,7 +46,7 @@ export const OWNER_TIERS: Record<
 /** The eight traits' effects (→OWNER-5), each read only while the owner holds the trait. */
 export const OWNER_TRAITS = {
   /** 성공한 사업가: a business settlement succeeds with this chance instead of `OWNER_BUSINESS.chance`. */
-  businessman: { label: sourceMessage('copy.owner_config.1616a30dd9'), success: 0.6 },
+  businessman: { label: sourceMessage('copy.owner_config.1616a30dd9'), success: 0.7 },
   /** 승리의 부적: the own club's match strength, on the OVR scale (→OWNER-6). */
   talisman: { label: sourceMessage('copy.owner_config.20ed096d80'), strength: 1 },
   /** 협상의 달인: factors on player wage demands and asked transfer fees for the own club. */
@@ -68,28 +68,39 @@ export const OWNER_TRAITS = {
 } as const satisfies Record<OwnerTrait, { label: string; [effect: string]: string | number }>;
 
 /**
- * The owner's business bet (→OWNER-7): settled on three dates of the season and on its close day
- * (→LEAGUE-9); each wins or loses the stake's share of a fortune above zero with `chance`, drawn
- * from the world's stream. The stake is whole percent from `stake.min` to `stake.max`, starting at
- * `stake.start`.
+ * The owner's business (→OWNER-7): settled on the 1st of every month from September to June and on
+ * the season's close day (→LEAGUE-9); each succeeds with `chance`, drawn from the world's stream,
+ * and wins or loses `swing` percent of the staked share of a fortune above zero. The stake is whole
+ * percent from `stake.min` to `stake.max`, starting at `stake.start`.
  */
 export const OWNER_BUSINESS = {
   dates: [
+    { month: 9, date: 1 },
+    { month: 10, date: 1 },
     { month: 11, date: 1 },
+    { month: 12, date: 1 },
+    { month: 1, date: 1 },
     { month: 2, date: 1 },
+    { month: 3, date: 1 },
+    { month: 4, date: 1 },
     { month: 5, date: 1 },
+    { month: 6, date: 1 },
   ],
   close: true,
-  chance: 0.5,
+  chance: 0.6,
+  swing: 5,
   stake: { min: 0, max: 100, start: 0 },
 } as const;
+/** A season's settlements: the dated ones and the close (→OWNER-7). */
+export const OWNER_SETTLEMENTS = OWNER_BUSINESS.dates.length + (OWNER_BUSINESS.close ? 1 : 0);
 
 /**
- * Living costs at each settlement: `rate` of the tier's starting fortune, grown with prices (→OWNER-8).
- * T686: 0.25% → 0.2%, with the 1.6 multiples, so no reference owner who moves no money is
- * bankrupt within 15 seasons (the earliest at 18).
+ * Living costs a season: `season` of the tier's starting fortune, grown with prices and split evenly
+ * over the season's settlements (→OWNER-8). T686 measured 0.2% at each of four settlements, with
+ * the 1.6 multiples, so no reference owner who moves no money is bankrupt within 15 seasons (the
+ * earliest at 18); T735 keeps that season total over eleven settlements.
  */
-export const OWNER_LIVING = { rate: 0.002 } as const;
+export const OWNER_LIVING = { season: 0.008 } as const;
 
 /** The 배당 dial's shares in percent and its default (→OWNER-11). */
 export const OWNER_DIVIDEND = { shares: DIVIDEND_SHARES, start: 0 } as const;

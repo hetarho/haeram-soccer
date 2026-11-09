@@ -13,10 +13,11 @@ import {
   ownerClose,
   ownerDay,
   ownerSettleGap,
+  seasonLivingCost,
   settlementDays,
   stakeAmount,
 } from './owner';
-import { FFP, OWNER_BUSINESS, OWNER_LIVING, OWNER_TRAITS } from './owner-config';
+import { FFP, OWNER_BUSINESS, OWNER_LIVING, OWNER_SETTLEMENTS, OWNER_TRAITS } from './owner-config';
 import { SEASON_END_DAY, seasonDayOf } from './calendar';
 import { clubOf } from './player-state';
 import { quote } from './quotes';
@@ -129,26 +130,38 @@ const on = (w: World, day: number) => {
 };
 
 describe('the business settlements (→OWNER-7/8)', () => {
-  it('settle on 1 November, 1 February and 1 May, and nowhere else in the season', () => {
+  const MONTHS = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
+  it('settle on the 1st of each month from September to June, and nowhere else in the season', () => {
     const w = ownerWorld();
     operate(w, { type: 'owner-stake', percent: 10 });
     for (let day = 0; day <= SEASON_END_DAY; day++) on(w, day);
-    const days = [seasonDayOf(1950, 11, 1), seasonDayOf(1950, 2, 1), seasonDayOf(1950, 5, 1)];
+    const days = MONTHS.map((month) => seasonDayOf(1950, month, 1));
     expect(settlementDays(1950)).toEqual(days);
-    expect(kinds(w, 'owner-business')).toHaveLength(3);
-    expect(kinds(w, 'owner-living')).toHaveLength(3);
+    expect(OWNER_SETTLEMENTS).toBe(11);
+    expect(kinds(w, 'owner-business')).toHaveLength(10);
+    expect(kinds(w, 'owner-living')).toHaveLength(10);
     expect(kinds(w, 'owner-living').map((e) => e.detail.split(' · ')[0])).toEqual([
+      '1950년 9월 1일 정산',
+      '1950년 10월 1일 정산',
       '1950년 11월 1일 정산',
+      '1950년 12월 1일 정산',
+      '1951년 1월 1일 정산',
       '1951년 2월 1일 정산',
+      '1951년 3월 1일 정산',
+      '1951년 4월 1일 정산',
       '1951년 5월 1일 정산',
+      '1951년 6월 1일 정산',
     ]);
   });
-  it('win or lose the stake’s share on even odds, 60% for 성공한 사업가, replayed by the seed', () => {
+  it('win or lose 5% of the staked share at 60%, 70% for 성공한 사업가, replayed by the seed', () => {
+    const day = seasonDayOf(1950, 11, 1);
     const rate = (traits: OwnerTrait[]) => {
       const w = ownerWorld(),
         start = w.owner!.fortune,
         stake = BigInt(stakeAmount({ ...w, owner: { ...w.owner!, stake: 40 } })),
-        living = BigInt(livingCost(w));
+        living = BigInt(livingCost(w, 1950, day));
+      // 40% of the fortune staked, 5% of it won or lost.
+      expect(stake).toBe((BigInt(start) * 40n * 5n) / 10000n);
       w.owner!.traits = traits;
       let wins = 0;
       for (let i = 0; i < 2000; i++) {
@@ -156,33 +169,34 @@ describe('the business settlements (→OWNER-7/8)', () => {
         w.events = [];
         w.owner!.fortune = start;
         w.owner!.stake = 40;
-        on(w, seasonDayOf(1950, 11, 1));
+        on(w, day);
         const after = BigInt(w.owner!.fortune) + living - BigInt(start);
         expect([stake, -stake]).toContain(after);
         if (after > 0n) wins++;
       }
       return wins / 2000;
     };
-    const even = rate([]),
+    const base = rate([]),
       businessman = rate(['businessman']);
-    expect(OWNER_BUSINESS.chance).toBe(0.5);
-    expect(OWNER_TRAITS.businessman.success).toBe(0.6);
-    expect(even).toBeGreaterThan(0.46);
-    expect(even).toBeLessThan(0.54);
-    expect(businessman).toBeGreaterThan(0.56);
-    expect(businessman).toBeLessThan(0.64);
+    expect(OWNER_BUSINESS.chance).toBe(0.6);
+    expect(OWNER_BUSINESS.swing).toBe(5);
+    expect(OWNER_TRAITS.businessman.success).toBe(0.7);
+    expect(base).toBeGreaterThan(0.56);
+    expect(base).toBeLessThan(0.64);
+    expect(businessman).toBeGreaterThan(0.66);
+    expect(businessman).toBeLessThan(0.74);
     const a = ownerWorld(),
       b = ownerWorld();
     for (const w of [a, b]) {
       w.owner!.stake = 50;
-      on(w, seasonDayOf(1950, 11, 1));
+      on(w, day);
     }
     expect(a.owner!.fortune).toBe(b.owner!.fortune);
   });
   it('stake nothing at zero or below, pay living costs into debt and open 구단주 파산 위기', () => {
-    const w = ownerWorld(1950, '-1000'),
-      living = livingCost(w),
-      day = seasonDayOf(1950, 11, 1);
+    const day = seasonDayOf(1950, 11, 1),
+      w = ownerWorld(1950, '-1000'),
+      living = livingCost(w, 1950, day);
     w.owner!.stake = 100;
     expect(stakeAmount(w)).toBe('0');
     on(w, day);
@@ -197,48 +211,67 @@ describe('the business settlements (→OWNER-7/8)', () => {
     expect(w.inbox!.length).toBe(items);
     expect(w.owner!.ownerCrisis!.since.day).toBe(day);
   });
-  it('take living costs of 0.2% of the starting fortune grown with prices, across a currency change', () => {
+  it('take 0.8% of the starting fortune a season, grown with prices, split over its settlements', () => {
     const w = ownerWorld(1950),
-      share = scaleBy(w.owner!.takeover.fortune, OWNER_LIVING.rate, 10000n),
+      season = scaleBy(w.owner!.takeover.fortune, OWNER_LIVING.season, 10000n),
       grown = (year: number) =>
-        ratio(share, BigInt(quote('ENG', year, 100000)), BigInt(quote('ENG', 1950, 100000)));
-    expect(OWNER_LIVING.rate).toBe(0.002);
-    expect(livingCost(w)).toBe(share);
-    expect(livingCost(w, 1960)).toBe(grown(1960));
-    expect(BigInt(livingCost(w, 1960))).toBeGreaterThan(BigInt(share));
+        ratio(season, BigInt(quote('ENG', year, 100000)), BigInt(quote('ENG', 1950, 100000)));
+    expect(OWNER_LIVING.season).toBe(0.008);
+    expect(seasonLivingCost(w)).toBe(season);
+    // The season's eleven settlements pay the whole of it, none more than a minor unit apart.
+    const days = [...settlementDays(1950), SEASON_END_DAY + 1],
+      shares = days.map((day) => BigInt(livingCost(w, 1950, day)));
+    expect(shares.reduce((sum, share) => sum + share, 0n)).toBe(BigInt(season));
+    expect(shares.every((share) => share - shares[0]! <= 1n && shares[0]! - share <= 1n)).toBe(
+      true,
+    );
+    expect(livingCost(w)).toBe(shares[0]!.toString());
+    expect(seasonLivingCost(w, 1960)).toBe(grown(1960));
+    expect(BigInt(seasonLivingCost(w, 1960))).toBeGreaterThan(BigInt(season));
     // From 1971 the quotes are in decimal pence, so the costs carry on in the new money.
     w.year = 1971;
     w.currency = 'GBP';
-    expect(livingCost(w)).toBe(grown(1971));
+    expect(seasonLivingCost(w)).toBe(grown(1971));
     // A settlement of an earlier season's prices is carried into the new money: 100 for 240.
-    expect(livingCost(w, 1970)).toBe(ratio(grown(1970), 100n, 240n));
-    expect(BigInt(livingCost(w))).toBeGreaterThan(BigInt(livingCost(w, 1970)));
+    expect(seasonLivingCost(w, 1970)).toBe(ratio(grown(1970), 100n, 240n));
+    expect(BigInt(seasonLivingCost(w))).toBeGreaterThan(BigInt(seasonLivingCost(w, 1970)));
   });
-  it('name the next settlement: a date of the season, its close, then next season’s first', () => {
+  it('pay the close its share, and a whole season of living costs by the close', () => {
+    const w = ownerWorld();
+    for (let day = 0; day <= SEASON_END_DAY; day++) on(w, day);
+    w.calendar = { day: SEASON_END_DAY + 1 };
+    ownerClose(w);
+    const paid = kinds(w, 'owner-living').reduce((sum, e) => sum + BigInt(e.amount!), 0n);
+    expect(kinds(w, 'owner-living')).toHaveLength(11);
+    expect(paid).toBe(BigInt(seasonLivingCost(w)));
+  });
+  it('name the next settlement: the next month’s 1st, the close, then next season’s first', () => {
     const w = ownerWorld();
     w.calendar = { day: 0 };
-    expect(nextSettlement(w)).toEqual({ year: 1950, day: seasonDayOf(1950, 11, 1) });
-    w.calendar = { day: seasonDayOf(1950, 5, 1) };
+    expect(nextSettlement(w)).toEqual({ year: 1950, day: seasonDayOf(1950, 9, 1) });
+    w.calendar = { day: seasonDayOf(1950, 11, 1) };
+    expect(nextSettlement(w)).toEqual({ year: 1950, day: seasonDayOf(1950, 12, 1) });
+    w.calendar = { day: seasonDayOf(1950, 6, 1) };
     expect(nextSettlement(w)).toEqual({ year: 1950, day: SEASON_END_DAY + 1 });
     w.calendar = { day: SEASON_END_DAY + 1 };
-    expect(nextSettlement(w)).toEqual({ year: 1951, day: seasonDayOf(1951, 11, 1) });
+    expect(nextSettlement(w)).toEqual({ year: 1951, day: seasonDayOf(1951, 9, 1) });
     expect(businessChance(w)).toBe(OWNER_BUSINESS.chance);
   });
 });
 
 describe('a calendar jump (→WORLD-14)', () => {
-  it('settles every quarter of the skipped seasons and nothing outside the gap', () => {
+  it('settles every month of the skipped seasons and nothing outside the gap', () => {
     const w = ownerWorld(1938);
     w.owner!.stake = 10;
     ownerSettleGap(w, { year: 1938, day: SEASON_END_DAY + 1 }, { year: 1946, day: 0 });
-    // 1939/40 to 1945/46: three dates and a close a season.
-    expect(kinds(w, 'owner-living')).toHaveLength(28);
-    expect(kinds(w, 'owner-business')).toHaveLength(28);
-    expect(kinds(w, 'owner-living')[0]!.detail).toContain('1939년 11월 1일');
+    // 1939/40 to 1945/46: ten monthly dates and a close a season.
+    expect(kinds(w, 'owner-living')).toHaveLength(77);
+    expect(kinds(w, 'owner-business')).toHaveLength(77);
+    expect(kinds(w, 'owner-living')[0]!.detail).toContain('1939년 9월 1일');
     expect(kinds(w, 'owner-living').at(-1)!.detail).toContain('1946년');
     // Each paid at its own season's prices, booked in the season in play.
-    expect(kinds(w, 'owner-living')[0]!.amount).toBe(livingCost(w, 1939));
-    expect(kinds(w, 'owner-living').at(-1)!.amount).toBe(livingCost(w, 1945));
+    expect(kinds(w, 'owner-living')[0]!.amount).toBe(livingCost(w, 1939, seasonDayOf(1939, 9, 1)));
+    expect(kinds(w, 'owner-living').at(-1)!.amount).toBe(livingCost(w, 1945, SEASON_END_DAY + 1));
     expect(kinds(w, 'owner-living').every((e) => e.year === 1938)).toBe(true);
     const part = ownerWorld(1950);
     ownerSettleGap(
@@ -246,7 +279,8 @@ describe('a calendar jump (→WORLD-14)', () => {
       { year: 1950, day: seasonDayOf(1950, 11, 1) },
       { year: 1950, day: seasonDayOf(1950, 5, 1) },
     );
-    expect(kinds(part, 'owner-living')).toHaveLength(2);
+    // December to May: six settlements after 1 November up to 1 May.
+    expect(kinds(part, 'owner-living')).toHaveLength(6);
   });
 });
 
@@ -356,7 +390,7 @@ describe('the season close (→OWNER-11/14)', () => {
   };
   it('pays the dial’s share of a positive result from cash, capped at the cash above zero', () => {
     const w = closing('100000', '900000', '500000', '1000000'),
-      living = BigInt(livingCost(w));
+      living = BigInt(livingCost(w, 1950, SEASON_END_DAY + 1));
     w.owner!.dividendShare = 50;
     ownerClose(w);
     expect(kinds(w, 'owner-dividend').map((e) => e.amount)).toEqual(['200000']);
@@ -371,6 +405,16 @@ describe('the season close (→OWNER-11/14)', () => {
     ownerClose(capped);
     expect(kinds(capped, 'owner-dividend').map((e) => e.amount)).toEqual(['150000']);
     expect(capped.cash).toBe('0');
+  });
+  it('pays the share of a profitable season’s result without the owner’s injection', () => {
+    const w = closing('900000', '900000', '500000', '1000000');
+    w.owner!.dividendShare = 50;
+    operate(w, { type: 'owner-inject', amount: '500000' });
+    // Income 1,400,000 with the injection, expense 500,000: the club earned 400,000.
+    expect(seasonResult(w)).toBe('400000');
+    ownerClose(w);
+    expect(kinds(w, 'owner-dividend').map((e) => e.amount)).toEqual(['200000']);
+    expect(w.cash).toBe('1300000');
   });
   it('pays nothing for a loss season, or from injections, or from cash below zero', () => {
     const loss = closing('100000', '400000', '500000', '1000000');
@@ -396,7 +440,8 @@ describe('the season close (→OWNER-11/14)', () => {
     ownerClose(w);
     const business = kinds(w, 'owner-business');
     expect(business).toHaveLength(1);
-    expect(['200000', '-200000']).toContain(business[0]!.amount);
+    // 5% of half the 400,000 taken home.
+    expect(['10000', '-10000']).toContain(business[0]!.amount);
     expect(kinds(w, 'owner-living')).toHaveLength(1);
   });
   it('ends the career when the fortune is still below zero after the close', () => {

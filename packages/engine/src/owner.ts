@@ -8,7 +8,14 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import type { CareerDate, Command, World } from '../../contracts/src/types';
 import { careerEnded, DIVIDEND_SHARES } from '../../contracts/src/owner';
 import { COUNTRIES, currency } from '../../catalogs/src/index';
-import { FFP, OWNER_BUSINESS, OWNER_LIVING, OWNER_TRAITS, TAKEOVER_DEBT } from './owner-config';
+import {
+  FFP,
+  OWNER_BUSINESS,
+  OWNER_LIVING,
+  OWNER_SETTLEMENTS,
+  OWNER_TRAITS,
+  TAKEOVER_DEBT,
+} from './owner-config';
 import { hasTrait } from './owner-traits';
 import { currentDay, SEASON_END_DAY, seasonDayLabel, seasonDayOf } from './calendar';
 import { addEvent } from './events';
@@ -16,7 +23,7 @@ import { pushInbox } from './inbox';
 import { clubOf } from './player-state';
 import { quote } from './quotes';
 import { random, ratio, scaleBy } from './primitives';
-import { moneyLabel, seasonResult } from './finance';
+import { moneyLabel, roundShare, seasonResult } from './finance';
 import { credit, debit } from './transactions';
 import { fanMoodDividend, fanMoodInjection } from './fan-mood';
 
@@ -45,33 +52,38 @@ export { careerEnded };
 const PROBE = 100_000;
 
 /**
- * The season days of the settlements on the three dates (→OWNER-7), in calendar order; the fourth,
- * the close's, settles in `ownerClose`.
+ * The season days of the monthly settlements (→OWNER-7), in calendar order; the season's last, the
+ * close's, settles in `ownerClose`.
  */
 export function settlementDays(year: number) {
   return OWNER_BUSINESS.dates
     .map(({ month, date }) => seasonDayOf(year, month, date))
     .sort((a, b) => a - b);
 }
-/** The season close's day, the year's fourth settlement (→LEAGUE-9, OWNER-7). */
+/** The season close's day, the season's last settlement (→LEAGUE-9, OWNER-7). */
 const CLOSE_DAY = SEASON_END_DAY + 1;
+/** Every settlement day of a season in order, the close last. */
+const seasonSettlementDays = (year: number) => [...settlementDays(year), CLOSE_DAY];
 /** The next settlement after today: a date of this season, its close, or next season's first. */
 export function nextSettlement(w: World): CareerDate {
   const today = currentDay(w),
-    day = [...settlementDays(w.year), CLOSE_DAY].find((d) => d > today);
+    day = seasonSettlementDays(w.year).find((d) => d > today);
   return day === undefined
     ? { year: w.year + 1, day: settlementDays(w.year + 1)[0]! }
     : { year: w.year, day };
 }
-/** A settlement's chance of success: 50%, or 60% for 성공한 사업가 (→OWNER-7, OWNER-5). */
+/** A settlement's chance of success: 60%, or 70% for 성공한 사업가 (→OWNER-7, OWNER-5). */
 export function businessChance(w: World) {
   return hasTrait(w, 'businessman') ? OWNER_TRAITS.businessman.success : OWNER_BUSINESS.chance;
 }
-/** What the next settlement wins or loses at today's fortune and stake; nothing below zero. */
+/**
+ * What the next settlement wins or loses at today's fortune and stake: OWNER_BUSINESS.swing percent
+ * of the staked share (→OWNER-7); nothing below zero.
+ */
 export function stakeAmount(w: World) {
   const owner = w.owner;
   if (!owner || BigInt(owner.fortune) <= 0n) return '0';
-  return ratio(owner.fortune, BigInt(owner.stake), 100n);
+  return ratio(owner.fortune, BigInt(owner.stake * OWNER_BUSINESS.swing), 10000n);
 }
 /**
  * `amount` of `from` year's money in the club's money of `to` year: unchanged within one currency,
@@ -89,27 +101,36 @@ function carried(w: World, amount: string, from: number, to: number) {
   );
 }
 /**
- * One settlement's living costs (→OWNER-8): OWNER_LIVING.rate of the tier's starting fortune, grown
- * with prices (→ECON-2) from the takeover to `year`, in the club's money of today.
+ * A season's living costs (→OWNER-8): OWNER_LIVING.season of the tier's starting fortune, grown
+ * with prices (→ECON-2) from the takeover to `year`, in `year`'s money.
  */
-export function livingCost(w: World, year = w.year) {
-  const owner = w.owner;
-  if (!owner) return '0';
-  const code = clubOf(w).country,
-    { takeover } = owner,
-    base = scaleBy(takeover.fortune, OWNER_LIVING.rate, 10000n),
-    grown = ratio(
-      base,
-      BigInt(quote(code, year, PROBE)),
-      BigInt(quote(code, takeover.year, PROBE)),
-    );
-  return carried(w, grown, year, w.year);
+function seasonLiving(w: World, year: number) {
+  const { takeover } = w.owner!,
+    code = clubOf(w).country,
+    base = scaleBy(takeover.fortune, OWNER_LIVING.season, 10000n);
+  return ratio(base, BigInt(quote(code, year, PROBE)), BigInt(quote(code, takeover.year, PROBE)));
+}
+/**
+ * One settlement's living costs (→OWNER-8): its even share of `year`'s season living costs, the
+ * remainders carried so the season's settlements pay the whole of it, in the club's money of
+ * today. `day` names the settlement; without one, the season's first.
+ */
+export function livingCost(w: World, year = w.year, day?: number) {
+  if (!w.owner) return '0';
+  // A day off the calendar (a close moved past its day) pays the close's share.
+  const at = day === undefined ? 0 : seasonSettlementDays(year).indexOf(day),
+    index = at < 0 ? OWNER_SETTLEMENTS : at + 1;
+  return carried(w, roundShare(seasonLiving(w, year), index, OWNER_SETTLEMENTS), year, w.year);
+}
+/** A whole season's living costs in the club's money of today (→OWNER-8). */
+export function seasonLivingCost(w: World, year = w.year) {
+  return w.owner ? carried(w, seasonLiving(w, year), year, w.year) : '0';
 }
 
 /**
- * One settlement of the owner's business (→OWNER-7/8) on `date`: the stake's share of a fortune
- * above zero is won or lost on one draw from the world's stream for that date, then living costs
- * are paid even below zero. Both are appended as events in the season in play; a settlement before
+ * One settlement of the owner's business (→OWNER-7/8) on `date`: OWNER_BUSINESS.swing percent of
+ * the staked share of a fortune above zero is won or lost on one draw from the world's stream for
+ * that date, then that settlement's living costs are paid even below zero. Both are appended as events in the season in play; a settlement before
  * the close that leaves the fortune below zero opens 구단주 파산 위기 (→OWNER-14), which runs to the
  * season close.
  */
@@ -134,13 +155,17 @@ function settle(w: World, date: CareerDate, close = false) {
       result,
     );
   }
-  const living = livingCost(w, date.year);
+  const living = livingCost(w, date.year, date.day);
   owner.fortune = (BigInt(owner.fortune) - BigInt(living)).toString();
   addEvent(
     w,
     'owner-living',
     sourceMessage('copy.owner.232cfe2b08'),
-    sourceMessage('copy.owner.bad96cce83', { p0: when, p1: OWNER_LIVING.rate * 100 }),
+    sourceMessage('copy.owner.bad96cce83', {
+      p0: when,
+      p1: OWNER_LIVING.season * 100,
+      p2: OWNER_SETTLEMENTS,
+    }),
     living,
   );
   if (close || owner.ownerCrisis || BigInt(owner.fortune) >= 0n) return;
@@ -232,7 +257,7 @@ export function ownerClose(w: World) {
 
 /**
  * Every settlement on the days a calendar jump skips (the war, →WORLD-14), after `fromDay` up to
- * and including `toDay`, as each would have settled: the three dates and each skipped season's
+ * and including `toDay`, as each would have settled: the monthly dates and each skipped season's
  * close day, with that season's prices. No season closes in the gap, so no dividend is taken and a
  * crisis opened there runs to the next close; the facts are booked in the season in play.
  */
@@ -240,7 +265,7 @@ export function ownerSettleGap(w: World, fromDay: CareerDate, toDay: CareerDate)
   if (!w.owner || careerEnded(w)) return;
   const after = (a: CareerDate, b: CareerDate) => a.year - b.year || a.day - b.day;
   for (let year = fromDay.year; year <= toDay.year; year++)
-    for (const day of [...settlementDays(year), CLOSE_DAY]) {
+    for (const day of seasonSettlementDays(year)) {
       const date = { year, day };
       if (after(date, fromDay) > 0 && after(date, toDay) <= 0) settle(w, date);
     }

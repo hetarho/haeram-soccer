@@ -29,6 +29,7 @@ import {
   OWNER_BUSINESS,
   OWNER_DIVIDEND,
   OWNER_LIVING,
+  OWNER_SETTLEMENTS,
   OWNER_TIERS,
   OWNER_TRAITS,
 } from '../../../../../../packages/engine/src/owner-config';
@@ -67,14 +68,17 @@ export function ownerIdentity(owner: OwnerState) {
   };
 }
 
-/** A business settlement's success chance: 50%, 60% with 성공한 사업가 (→OWNER-7). */
+/** A business settlement's success chance: 60%, 70% with 성공한 사업가 (→OWNER-7). */
 export function businessChance(owner: OwnerState) {
   return has(owner, 'businessman') ? OWNER_TRAITS.businessman.success : OWNER_BUSINESS.chance;
 }
-/** The stake's share of a fortune above zero; a fortune at zero or below is not staked (→OWNER-7). */
+/**
+ * What a settlement wins or loses: OWNER_BUSINESS.swing percent of the stake's share of a fortune
+ * above zero; a fortune at zero or below is not staked (→OWNER-7).
+ */
 export function stakeAmount(fortune: string, percent: number) {
   const value = BigInt(fortune);
-  return value > 0n ? ratio(fortune, BigInt(percent), 100n) : '0';
+  return value > 0n ? ratio(fortune, BigInt(percent * OWNER_BUSINESS.swing), 10000n) : '0';
 }
 
 export interface Settlement {
@@ -84,22 +88,29 @@ export interface Settlement {
   date: string;
   /** Days from today. */
   days: number;
-  /** The season's close day rather than one of the three dated settlements. */
+  /** The season's close day rather than one of the monthly settlements. */
   close: boolean;
 }
 /** The season's close day, the day after its final round (→LEAGUE-9). */
 const CLOSE_DAY = SEASON_END_DAY + 1;
+/** Every settlement day of a season in order, the close last (→OWNER-7). */
+function settlementDays(year: number) {
+  return [
+    ...OWNER_BUSINESS.dates
+      .map(({ month, date }) => seasonDayOf(year, month, date))
+      .filter((day) => day < CLOSE_DAY)
+      .sort((a, b) => a - b),
+    CLOSE_DAY,
+  ];
+}
 /**
- * The next business settlement after today (→OWNER-7): 1 November, 1 February, 1 May or the
- * season's close day. Today's own settlement has already settled when the clock reads it.
+ * The next business settlement after today (→OWNER-7): the 1st of the next month from September
+ * to June or the season's close day. Today's own settlement has already settled when the clock
+ * reads it.
  */
 export function nextSettlement(w: World): Settlement {
   const today = currentDay(w);
-  const day =
-    OWNER_BUSINESS.dates
-      .map(({ month, date }) => seasonDayOf(w.year, month, date))
-      .filter((day) => day > today && day < CLOSE_DAY)
-      .sort((a, b) => a - b)[0] ?? CLOSE_DAY;
+  const day = settlementDays(w.year).find((day) => day > today) ?? CLOSE_DAY;
   return {
     day,
     date: seasonDayLabel(w.year, day),
@@ -118,19 +129,23 @@ function seasonClose(w: World) {
 /** Price precision for the living-cost factor; the money itself stays exact (→ECON-1). */
 const FACTOR_SCALE = 1_000_000_000n;
 /**
- * Living costs at each settlement (→OWNER-8): `OWNER_LIVING.rate` of the tier's starting fortune,
- * grown with the country's prices since the takeover and carried into today's money (→ECON-2/6).
+ * The next settlement's living costs (→OWNER-8): its even share of the season's
+ * `OWNER_LIVING.season` of the tier's starting fortune, grown with the country's prices since the
+ * takeover and carried into today's money (→ECON-2/6).
  */
 export function livingCost(w: World) {
   const owner = w.owner!;
   const code = ownClub(w).country,
     then = owner.takeover.year,
-    grown = (OWNER_LIVING.rate * priceIndex(code, w.year).value) / priceIndex(code, then).value;
-  const base = ratio(
-    owner.takeover.fortune,
-    BigInt(Math.round(grown * Number(FACTOR_SCALE))),
-    FACTOR_SCALE,
-  );
+    grown = (OWNER_LIVING.season * priceIndex(code, w.year).value) / priceIndex(code, then).value;
+  const index = settlementDays(w.year).indexOf(nextSettlement(w).day) + 1;
+  const season = ratio(
+      owner.takeover.fortune,
+      BigInt(Math.round(grown * Number(FACTOR_SCALE))),
+      FACTOR_SCALE,
+    ),
+    share = (count: number) => BigInt(ratio(season, BigInt(count), BigInt(OWNER_SETTLEMENTS))),
+    base = (share(index) - share(index - 1)).toString();
   const before = currency(code, then),
     after = currency(code, w.year);
   if (before.code === after.code) return base;
