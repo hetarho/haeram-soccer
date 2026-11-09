@@ -18,9 +18,9 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T06:49Z | - |
 
 ## inbox
+- 261109 decided ARCH-30 ARCH-33 ECON-29 T744 T745 T746: bounded economy unit is complete and verified at51d072a (unit2316, integration1179 plus4 existing skips, contract46, Chromium348 with no skips/retries); both unaccepted pilots withdrawn, exact reporting/resources/fixtures retained → publish this closure to main and end, no automatic continuation ec10
 - 261109 decided ECON-29 ARCH-30 T739 T740 T741: the owner bounds the remaining work to the current increment and every linked task/fix → finish wage/package implementation, calibrated measurements and full checks, push the complete unit to main, then end; no new counterparty-budget model or further economy cycle ec10
 - 261109 decided ECON-29 ARCH-30 review/economy-transfers-261109: the owner asks why work stopped with the original realistic-economy goal unfinished and expects main publication → resume wage/distribution calibration across reviewed increments, treat reports and pushes as checkpoints; the verified first increment96a6290f is now on origin/main. Preserve task-unit and pre-push E2E tiers, no automatic schedule ec10
 - 261109 decided ARCH-30 T737: economy-ec09 verified source731ed705 passes the combined gate (Chromium348 cases, including2 fresh management journeys); the owner authorizes origin publication → gather this batch on next while ow09 remains live, leave the main release to the last session. All5 adopted tasks are integrated; detailed evidence/report retained ec09
@@ -866,6 +866,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
 - 261109 T744 integrated
 - 261109 T746 integrated
 - 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
@@ -885,4 +886,3 @@
 - 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
 - 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
 - 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
-- 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
