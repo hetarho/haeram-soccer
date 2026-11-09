@@ -2,25 +2,38 @@ import type { MatchRecord, World } from '../../../../../../packages/contracts/sr
 import { PD, PLAYER_DETAIL_SIZE, TD } from '../../../../../../packages/contracts/src/detail';
 import { sideLines } from '../../../entities/match';
 
-function poisson(lambda: number, goals: number) {
-  let p = Math.exp(-lambda);
-  for (let k = 1; k <= goals; k++) p *= lambda / k;
-  return p;
+const POISSON_TAIL = 1e-14;
+/**
+ * Retained match xG is finite in [0, 50] (contracts/schema.ts), so exp(-mean) and this forward
+ * recurrence are stable. Markov's inequality with E[2^X] = exp(mean) bounds P(X >= cutoff) by
+ * exp(mean - cutoff * ln(2)) <= POISSON_TAIL. At the schema maximum this needs only 119 terms.
+ * Keep their original probability mass: neither clamp the xG nor renormalize a truncated grid.
+ */
+function poissonMass(mean: number) {
+  if (mean === 0) return [1];
+  const cutoff = Math.ceil((mean - Math.log(POISSON_TAIL)) / Math.LN2),
+    probabilities = [Math.exp(-mean)];
+  for (let goals = 1; goals < cutoff; goals++)
+    probabilities.push((probabilities[goals - 1]! * mean) / goals);
+  return probabilities;
 }
 /**
  * Expected points from both sides' total xG: each side's goals as an independent Poisson count,
- * three points for a win and one for a draw (the common xPTS method; grid truncated at 10).
+ * three points for a win and one for a draw (→WEB-47). Cumulative opposing probabilities make
+ * this linear in the retained supports. The omitted joint mass is at most 2 * POISSON_TAIL,
+ * hence the xPTS truncation error is at most 6e-14, in addition to floating-point roundoff.
  */
 export function expectedPoints(own: number, other: number) {
-  let win = 0,
+  const ours = poissonMass(own),
+    theirs = poissonMass(other);
+  let opponentBelow = 0,
+    win = 0,
     draw = 0;
-  for (let a = 0; a <= 10; a++) {
-    const pa = poisson(own, a);
-    for (let b = 0; b <= 10; b++) {
-      const p = pa * poisson(other, b);
-      if (a > b) win += p;
-      else if (a === b) draw += p;
-    }
+  for (let goals = 0; goals < ours.length; goals++) {
+    const equal = theirs[goals] ?? 0;
+    win += ours[goals]! * opponentBelow;
+    draw += ours[goals]! * equal;
+    opponentBelow += equal;
   }
   return 3 * win + draw;
 }

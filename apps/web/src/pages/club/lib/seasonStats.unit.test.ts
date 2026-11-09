@@ -5,7 +5,7 @@ import {
   PD,
 } from '../../../../../../packages/contracts/src/detail';
 import type { MatchRecord } from '../../../../../../packages/contracts/src/types';
-import { seasonStats } from './seasonStats';
+import { expectedPoints, seasonStats } from './seasonStats';
 
 /** Synthetic retained identities; a sold player can later appear on an opponent's side. */
 const world = {
@@ -113,5 +113,69 @@ describe('own-club season leaders', () => {
     const stats = seasonStats(world, [record(1, 1, [line('former', 2, 50)], [], true)]);
     expect(stats.leaders.keyPasses).toEqual([{ id: 'former', name: 'Former', value: 2 }]);
     expect(stats.leaders.xa).toEqual([{ id: 'former', name: 'Former', value: 0.5 }]);
+  });
+});
+
+describe('independent-Poisson expected points', () => {
+  it.each([0, 0.01, 1, 4, 5, 8, 10, 25, 50])(
+    'retains the full winning probability against zero xG at mean %s',
+    (mean) => {
+      expect(expectedPoints(mean, 0)).toBeCloseTo(3 - 2 * Math.exp(-mean), 10);
+      expect(expectedPoints(0, mean)).toBeCloseTo(Math.exp(-mean), 10);
+    },
+  );
+
+  it('preserves the ordinary Poisson definition, including zero versus zero', () => {
+    expect(expectedPoints(0, 0)).toBe(1);
+    // Independent 70-digit Decimal enumeration of score pairs 0..159 gives this reference.
+    expect(expectedPoints(1.34, 0.87)).toBeCloseTo(1.7105673326832545, 10);
+  });
+
+  /** P(X = Y), summed independently as exp(-(a+b)) * sum((a*b)^k / (k!)^2). */
+  const drawProbability = (a: number, b: number) => {
+    let term = Math.exp(-(a + b)),
+      total = term;
+    for (let goals = 1; goals <= 200; goals++) {
+      term *= (a * b) / (goals * goals);
+      total += term;
+    }
+    return total;
+  };
+
+  it.each([
+    [0, 0],
+    [1.34, 0.87],
+    [5, 8],
+    [10, 10],
+    [25, 50],
+    [50, 50],
+  ])('conserves the expected shared points for means %s and %s', (a, b) => {
+    const draw = drawProbability(a, b);
+    expect(expectedPoints(a, b) + expectedPoints(b, a)).toBeCloseTo(3 - draw, 10);
+    if (a === b) expect(expectedPoints(a, b)).toBeCloseTo((3 - draw) / 2, 10);
+  });
+
+  it.each([0, 1, 5, 10, 50])('never loses expected points as own xG grows against %s', (other) => {
+    let previous = expectedPoints(0, other);
+    for (let own = 1; own <= 50; own++) {
+      const current = expectedPoints(own, other);
+      expect(current).toBeGreaterThanOrEqual(previous - 1e-12);
+      previous = current;
+    }
+  });
+
+  it('stays finite at the existing retained-record xG boundary', () => {
+    for (const [a, b] of [
+      [50, 0],
+      [0, 50],
+      [50, 50],
+      [49.99, 50],
+    ]) {
+      const value = expectedPoints(a!, b!);
+      expect(Number.isFinite(value)).toBe(true);
+      expect(value).toBeGreaterThanOrEqual(0);
+      expect(value).toBeLessThanOrEqual(3 + 1e-12);
+    }
+    expect(expectedPoints(50, 50)).toBeCloseTo(1.4800278103504517, 10);
   });
 });
