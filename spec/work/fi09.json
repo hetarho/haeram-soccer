@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T20:38:50.966Z",
-  "sourceCommit": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
+  "snapshotAt": "2026-11-09T21:55:30.034Z",
+  "sourceCommit": "c06fa5b9c71059772cc569268894b9f091c04cf7",
   "group": {
     "id": "fi09",
     "branch": "next",
@@ -57,12 +57,13 @@
       "T764",
       "T765",
       "T766",
-      "T767"
+      "T767",
+      "T768"
     ]
   },
   "summary": {
-    "total": 21,
-    "completed": 21,
+    "total": 22,
+    "completed": 22,
     "remaining": 0,
     "running": 0,
     "review": 0,
@@ -1047,6 +1048,9 @@
       "submittedBase": "1e726e3b61a3dd43b826e81a35e407029d3c4af0",
       "submissionId": "8357d7a2-dd50-4399-8092-3a61d8bd9d67",
       "submittedAt": "2026-11-09T20:27:52.469Z",
+      "integratedCommit": "3b4affd08fdf84b31a6f5ce7c99bf752328fcd64",
+      "integratedAt": "2026-11-09T20:40:14.378Z",
+      "cleanedAt": "2026-11-09T21:40:51.354Z",
       "risk": null,
       "review": {
         "id": "9fcc8a75-ef97-43e1-9f74-92e136ab0a31",
@@ -1128,6 +1132,69 @@
           "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
           "startedAt": "2026-11-09T20:27:36.706Z",
           "finishedAt": "2026-11-09T20:27:39.875Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+          "startedAt": "2026-11-09T20:39:07.918Z",
+          "finishedAt": "2026-11-09T20:40:06.109Z"
+        }
+      ]
+    },
+    {
+      "id": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "group": "fi09",
+      "taskId": "T768",
+      "tasks": [
+        "T768"
+      ],
+      "lane": null,
+      "owner": "fi09-staff-fixture",
+      "contributors": [
+        "fi09-staff-fixture"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-09T21:41:14.483Z",
+      "startCommit": "c06fa5b9c71059772cc569268894b9f091c04cf7",
+      "verifiedCommit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
+      "submittedBase": "c06fa5b9c71059772cc569268894b9f091c04cf7",
+      "submissionId": "d74be16d-e12a-4b6f-af2d-3641cf9f5154",
+      "submittedAt": "2026-11-09T21:52:59.151Z",
+      "risk": null,
+      "review": {
+        "id": "8878ad8f-c2b5-4f7c-9f72-c373fb2c9aca",
+        "owner": "fi09-t768-independent",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Formal independent T768 review of submission d74be16d-e12a-4b6f-af2d-3641cf9f5154, pinned bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a against c06fa5b9c71059772cc569268894b9f091c04cf7. Read the complete current task contract/result and two-file diff; the relevant complete ARCH-4/21/30/32 decisions are unchanged from the previously read base. Reused the explicit frozen-source pre-review at 27a5ddb2 only after confirming the later diff changes exactly the own T768 result document and no program/test/config source. The one existing holder test retains 30 clubs x8 roles, 240 comparisons/480 total calls, original order/facts/assertions, seed/release/RNG inputs and 30000ms limit. A single independent deep comparison snapshot is reused only through fresh World roots, fresh clubs arrays and fresh optional people registries per comparison. These preserve the reached World coaching, registry peopleLists, clubs ownIndex and active-array placedIndexes cold identities; scalar holder/member/quote caches remain warm exactly as in the original source-then-comparison calls. Existing source immutability is retained and comparisonBase immutability is added. No production or generic fixture/cache helper changes exist. Independently checked the sealed first native receipt and actual whole-file JSON hashes, exact task/attempt/source/workspace/command, uncached execution interval 21:44:03.759Z–21:51:39.647Z, all12 exact-file cases passed with no failures/pending/todo, and completed typecheck/lint/format/i18n/build stdout. The first observed target duration3100.791375ms and the preserved prior49822.181958ms timeout are uncontrolled samples, not a speedup benchmark. Final native submission validates the existing sealed evidence and docs-only difference; it is not a second test execution. Current upstream equals the pinned base. No reviewer tests/install/source edits were performed. This approves the bounded verification correction only: the earlier canonical full batch remains failed/unfulfilled, and no full-batch, unrelated staff/shape/browser or release success is implied.",
+        "findings": [],
+        "commit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
+        "baseCommit": "c06fa5b9c71059772cc569268894b9f091c04cf7",
+        "submissionId": "d74be16d-e12a-4b6f-af2d-3641cf9f5154",
+        "createdAt": "2026-11-09T21:53:09.709Z",
+        "finishedAt": "2026-11-09T21:54:48.468Z"
+      },
+      "steps": [
+        {
+          "taskId": "T768",
+          "commit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
+          "at": "2026-11-09T21:52:58.814Z",
+          "verification": [
+            {
+              "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+              "startedAt": "2026-11-09T21:52:51.394Z",
+              "finishedAt": "2026-11-09T21:52:53.512Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+          "startedAt": "2026-11-09T21:52:51.394Z",
+          "finishedAt": "2026-11-09T21:52:53.512Z"
         }
       ]
     }
@@ -5182,6 +5249,333 @@
         "T766",
         "T767"
       ],
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2195,
+      "at": "2026-11-09T20:40:12.077Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-lane-checks.mjs",
+            "startedAt": "2026-11-09T20:39:07.918Z",
+            "finishedAt": "2026-11-09T20:40:06.109Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2196,
+      "at": "2026-11-09T20:40:14.378Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "3b4affd08fdf84b31a6f5ce7c99bf752328fcd64",
+        "integratedAt": "2026-11-09T20:40:14.378Z"
+      }
+    },
+    {
+      "sequence": 2197,
+      "at": "2026-11-09T21:39:53.249Z",
+      "type": "group",
+      "group": "fi09",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T747",
+          "T748",
+          "T749",
+          "T750",
+          "T751",
+          "T752",
+          "T753",
+          "T754",
+          "T755",
+          "T756",
+          "T757",
+          "T758",
+          "T759",
+          "T760",
+          "T761",
+          "T762",
+          "T763",
+          "T764",
+          "T765",
+          "T766",
+          "T767",
+          "T768"
+        ]
+      }
+    },
+    {
+      "sequence": 2198,
+      "at": "2026-11-09T21:40:37.979Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2199,
+      "at": "2026-11-09T21:40:51.354Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "8659b097-19a2-4e85-a8e0-f51d81e6b37e",
+      "taskId": "T767",
+      "tasks": [
+        "T754",
+        "T756",
+        "T760",
+        "T766",
+        "T767"
+      ],
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-09T21:40:51.354Z"
+      }
+    },
+    {
+      "sequence": 2200,
+      "at": "2026-11-09T21:41:14.483Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+        "group": "fi09",
+        "taskId": "T768",
+        "tasks": [
+          "T768"
+        ],
+        "lane": null,
+        "owner": "fi09-staff-fixture",
+        "contributors": [
+          "fi09-staff-fixture"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-09T21:41:14.483Z",
+        "startCommit": "c06fa5b9c71059772cc569268894b9f091c04cf7"
+      }
+    },
+    {
+      "sequence": 2201,
+      "at": "2026-11-09T21:41:15.519Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2202,
+      "at": "2026-11-09T21:43:58.349Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2203,
+      "at": "2026-11-09T21:51:44.088Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "27a5ddb2aa656569290bfbb1e35cd4b0b259f780",
+        "submittedBase": "c06fa5b9c71059772cc569268894b9f091c04cf7",
+        "submissionId": "f5d8717a-1caa-455a-b487-a5da1580ab06",
+        "submittedAt": "2026-11-09T21:51:44.088Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T768",
+            "commit": "27a5ddb2aa656569290bfbb1e35cd4b0b259f780",
+            "at": "2026-11-09T21:51:43.740Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/club-staff.test.ts --maxWorkers 1 --no-file-parallelism --reporter=default --reporter=json --outputFile=.tmp/fi09-t768/unit-results.json && pnpm run build",
+                "startedAt": "2026-11-09T21:44:03.759Z",
+                "finishedAt": "2026-11-09T21:51:39.647Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit packages/engine/src/club-staff.test.ts --maxWorkers 1 --no-file-parallelism --reporter=default --reporter=json --outputFile=.tmp/fi09-t768/unit-results.json && pnpm run build",
+            "startedAt": "2026-11-09T21:44:03.759Z",
+            "finishedAt": "2026-11-09T21:51:39.647Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2204,
+      "at": "2026-11-09T21:52:45.012Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "ready",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying",
+        "verifiedCommit": null
+      }
+    },
+    {
+      "sequence": 2205,
+      "at": "2026-11-09T21:52:59.151Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "submissionId": "d74be16d-e12a-4b6f-af2d-3641cf9f5154",
+        "submittedAt": "2026-11-09T21:52:59.151Z",
+        "steps": [
+          {
+            "taskId": "T768",
+            "commit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
+            "at": "2026-11-09T21:52:58.814Z",
+            "verification": [
+              {
+                "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+                "startedAt": "2026-11-09T21:52:51.394Z",
+                "finishedAt": "2026-11-09T21:52:53.512Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "git diff --check && node /Users/ihaelam/project/haeram-soccer/.tmp/self-improve-local-261109-fi09/assert-t768-evidence.mjs",
+            "startedAt": "2026-11-09T21:52:51.394Z",
+            "finishedAt": "2026-11-09T21:52:53.512Z"
+          }
+        ],
+        "verifiedCommit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a"
+      }
+    },
+    {
+      "sequence": 2206,
+      "at": "2026-11-09T21:53:09.710Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "8878ad8f-c2b5-4f7c-9f72-c373fb2c9aca",
+          "owner": "fi09-t768-independent",
+          "status": "reviewing",
+          "commit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
+          "baseCommit": "c06fa5b9c71059772cc569268894b9f091c04cf7",
+          "submissionId": "d74be16d-e12a-4b6f-af2d-3641cf9f5154",
+          "createdAt": "2026-11-09T21:53:09.709Z"
+        }
+      }
+    },
+    {
+      "sequence": 2207,
+      "at": "2026-11-09T21:54:48.469Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "8878ad8f-c2b5-4f7c-9f72-c373fb2c9aca",
+          "owner": "fi09-t768-independent",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Formal independent T768 review of submission d74be16d-e12a-4b6f-af2d-3641cf9f5154, pinned bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a against c06fa5b9c71059772cc569268894b9f091c04cf7. Read the complete current task contract/result and two-file diff; the relevant complete ARCH-4/21/30/32 decisions are unchanged from the previously read base. Reused the explicit frozen-source pre-review at 27a5ddb2 only after confirming the later diff changes exactly the own T768 result document and no program/test/config source. The one existing holder test retains 30 clubs x8 roles, 240 comparisons/480 total calls, original order/facts/assertions, seed/release/RNG inputs and 30000ms limit. A single independent deep comparison snapshot is reused only through fresh World roots, fresh clubs arrays and fresh optional people registries per comparison. These preserve the reached World coaching, registry peopleLists, clubs ownIndex and active-array placedIndexes cold identities; scalar holder/member/quote caches remain warm exactly as in the original source-then-comparison calls. Existing source immutability is retained and comparisonBase immutability is added. No production or generic fixture/cache helper changes exist. Independently checked the sealed first native receipt and actual whole-file JSON hashes, exact task/attempt/source/workspace/command, uncached execution interval 21:44:03.759Z–21:51:39.647Z, all12 exact-file cases passed with no failures/pending/todo, and completed typecheck/lint/format/i18n/build stdout. The first observed target duration3100.791375ms and the preserved prior49822.181958ms timeout are uncontrolled samples, not a speedup benchmark. Final native submission validates the existing sealed evidence and docs-only difference; it is not a second test execution. Current upstream equals the pinned base. No reviewer tests/install/source edits were performed. This approves the bounded verification correction only: the earlier canonical full batch remains failed/unfulfilled, and no full-batch, unrelated staff/shape/browser or release success is implied.",
+          "findings": [],
+          "commit": "bd96e3e61c4f3ec882bdeea390b8f1b2fd18a17a",
+          "baseCommit": "c06fa5b9c71059772cc569268894b9f091c04cf7",
+          "submissionId": "d74be16d-e12a-4b6f-af2d-3641cf9f5154",
+          "createdAt": "2026-11-09T21:53:09.709Z",
+          "finishedAt": "2026-11-09T21:54:48.468Z"
+        }
+      }
+    },
+    {
+      "sequence": 2208,
+      "at": "2026-11-09T21:55:02.137Z",
+      "type": "attempt",
+      "group": "fi09",
+      "attemptId": "1bcd0438-3f8a-4d1b-8b4b-c9b99be8d1bd",
+      "taskId": "T768",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
