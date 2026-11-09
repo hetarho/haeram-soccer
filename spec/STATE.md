@@ -19,6 +19,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | av07 | ihaelam-ui-MacBookPro | autopilot | 2026-11-07T14:14Z | 2026-11-07T14:14Z | - |
+| ec09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T01:50Z | 2026-11-09T01:58Z | - |
 
 ## inbox
 - 261107 decided ARCH-21 ARCH-30 CLUB-48 LEAGUE-10 ECON-36 T710 T700: when to refresh fixtures after the recovered economy meets current recruitment/localization → T710 before T700, using existing generators and explicit provenance, after the parallel group gate ends; retain its failure evidence and separate the historical Linux divergence from legitimate economy changes (alt: keep stale prepared payloads | hand-edit expected facts | run heavy measurements beside the existing final gate). av07
@@ -746,6 +747,7 @@
 - 261108 decided CLUB-25 CLUB-48 ECON-36 LEAGUE-10 LEAGUE-13 T712 T689: how T700's go enters CLUB-25 and what decides it → CLUB r61: a player is paid on his club's division or the division his ability suits when higher (`divisionFor`, fractional between the tiers' typical strengths, the top flight from OVR 77), every club alike, books and means level included as ECON-36's same scales require; the 35–50% second-tier target restated per player (a second-tier club pays a player who suits the second tier 40% of a top-flight club's wage, `MARKET_CONFIG.divisions`), transfer values kept on the selling club's division; it enters production only on CLUB-25's gate — LEAGUE-13's 중견 사업가/지역 유지/자수성가 축구팬 reach and bankruptcy bands on calibration careers (ENG ESP FRA GER × seeds 0/1, 1950–1969) and, judged apart, held-out careers (seeds 2/3 and ITA POR NED BEL on seed 0), "about half" read as 35–65%, the upper tiers with no club bankrupt, and CLUB-48's books and champions parts on worlds lived with it (T698's allowance 6 reused) — as T712 (explore 180m, a default-off `ABILITY_FIT` read inside `marketWageAt`, no partial-fit knob, held-out reads only after calibration passes); T689 depends on T712 and runs whatever its verdict (alt: the owner's club only, against ECON-36's same scales | a partial-fit share tuned in the window, a rule CLUB-25 does not state | the scout's reach above the club's division first, the supply rule T700 printed beside | fees on the ability-fit division too, which the screen did not read). av07
 - 261108 decided ARCH-21 ARCH-30 T713 T714: what main's red CI gets once av07's continuation is published (e974bb02, gate passed) — `checks` fails only the portable golden's `modern-european-season` ($.cash 995333402 expected, 970129584 on Linux x64) and Linux Firefox/WebKit fail growth-core's office-overview bounds (view scrolled 2/4 px), both red since 11-04 (41930383191) and neither reproducible on this darwin-arm64 machine (the case passes on Node 26.8.1/24.18.0, under TZ=UTC and with the world cache off; growth-core passes on macOS Firefox and WebKit) → two fix tasks with the evidence, T713 (explore 120m) and T714 (explore 90m), first in next, before T712 (alt: regenerate or loosen the golden and the bounds check to pass | push an unverified guess at either fix | start T712's 180-minute window past the owner's 10:00 KST cutoff). hv08
 - 261108 parked ARCH-21 T713: a local x64 reproduction of the portable divergence needs an official darwin-x64 Node 24.22.1 run under Rosetta, a download outside autopilot's permissions; the owner may install it (e.g. into ~/Library/pnpm/nodejs), otherwise T713 dumps the case's per-round facts from a diagnostic CI push. hv08
+- 261109 decided CLUB-33 CLUB-46 review/economy-transfers-261109: how to address the owner's cash accumulation and low fees → remove unconditional free-agent priority and the duplicate age discount on modern transfer growth, preserve financial limits and historical compression, measure purchases and sales together (alt: inflate operating expenses above their existing 35% share | activate the rejected ability-fit wage) ec09
 
 ## ideation
 | id | st |
@@ -774,7 +776,7 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 9 | 9 | - | 0 |
 | KIT | 9 | 9 | - | 0 |
-| CLUB | 61 | 61 | - | 0 |
+| CLUB | 62 | 62 | - | 0 |
 | MATCH | 56 | 56 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
@@ -795,6 +797,7 @@
 | module-boundaries-261026 | converted@261026 |
 | ui-engine-boundary-261027 | converted@261027 |
 | engine-architecture-261030 | converted@261031 |
+| economy-transfers-261109 | converted@261109 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -806,6 +809,8 @@
 | T712 | the ability-fit wage on LEAGUE-13's lower tiers, in force only on a pass | CLUB LEAGUE ECON | T700 | todo |
 | T713 | the portable golden's modern-european-season on CI's Linux x64 equals macOS arm64 | ARCH | - | todo |
 | T714 | opening 오버뷰 leaves the office unscrolled on Linux Firefox and WebKit | WEB ARCH | - | todo |
+| T731 | price modern transfer growth before salary age discounts | CLUB ECON ARCH | - | todo |
+| T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -837,6 +842,8 @@
 - implement-task T712 (explore 180m): CLUB r61's ability-fit wage behind `ABILITY_FIT` in `marketWageAt`, calibration careers first (all six tiers, ENG ESP FRA GER × seeds 0/1, 1950–1969), held-out careers and CLUB-48's books/champions worlds only if calibration passes, in force only on every part; then T689 whatever T712's verdict. T711's two integration cases still run in the coordinator's final gate. Preserve all measurement criteria and timeboxes.
 
 ## log
+- 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
+- 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
 - 261108 create-task T711: the gate's two integration cases on the rules in force before T700 (T700 dep +T711); no SSOT delta (av07)
 - 261108 update-ssot CLUB r61 + create-task T712: a player is paid on his club's division or the division his ability suits when higher, every club alike, in force only once LEAGUE-13's lower tiers and CLUB-48's books and champions parts hold with it (CLUB-25✎); T689 dep +T712 (av07)
 - 261107 create-task T710: recovered economy fixtures before T700; parallel T708/T709 integrated (av07)
@@ -855,5 +862,3 @@
 - 261105 fix e2e port: Playwright starts webServer before the e2e lock's globalSetup, so the batch gate on 2d984ba2 failed at once while something else held 127.0.0.1:4173 (still held); without BROWSER_TEST_PORT each run now takes a free port and publishes it to its workers (tests/config/browser-port.ts). cv04
 - 261105 fix e2e for the released owner office: tests/e2e follow the 결재함/결재 설정 modals, home's area cards, the office page, the merged HUD money and the funding slider instead of the retired section tabs, office bar and fortune button (helpers and ~30 specs); app fixes the suite caught: nested dialogs stack by depth so 계약 협상/영입 중재 answer from the 결재함, the first-team training page is back, office pages name a detour's way back (WEB-74), the overview warns a thin squad (WEB-44), cup history no longer calls a hook in its lazy loader; chromium full suite 345/345
 - 261105 fix integration tests: contracts.test.ts expects the recruitment dial to leave asking fees unchanged (ECON-16 as released) and managerMarket.test.ts the renewal notice with 연봉 한도, both stale since the released owner controls. oe05
-- 261105 fix office effects: the ledger's floors and ceilings are finite min/max, since the view's canonical changes reject Infinity (host and client integration tests on d708cd17); a ledger test now canonicalizes it. oe05
-- 261105 update-ssot WEB r210 + create-task T706: 구단주 사무실 opens on the effects in force, each value opening its factors and each factor the control that sets it (WEB-116); an investment area's totals combine its own controls only (WEB-117); home lists the areas under the office entrance (WEB-11/14/39✎). oe05
