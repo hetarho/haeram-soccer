@@ -891,8 +891,8 @@
 
 ## log
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
-- 261109 T749 T750 T751 T752 integrated
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
+- 261109 T749 T750 T751 T752 integrated
 - 261109 T747 T748 T757 integrated
 - 261109 create-task review/football-data-consistency-261109 F9-F11: T755/T756 product follow-ups and T757 narrowly approved verification-cost fix; released clean finance attempt before rescope fi09
 - 261109 replan T752/T754: real mounted locale regression via pinned test-only happy-dom, existing test/browser scopes preserved; released clean football checkpoint108e6a84 before amendment fi09
