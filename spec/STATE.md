@@ -21,6 +21,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261109 decided WEB-42 WEB-18 ARCH-21 T730: how the 결재함 journey keeps work waiting at its stop on any runner, once the impl notes' CI bisect needs a pushed branch this unit may not make → explain from the code and an engine replay of the career's calendar (three owner-held offers in 200 days, each lapsing after 5 days), and stop on the first match eve (1930.08.07, which WEB-18 lands at any pace while the 08.03 offer still waits), proving the passing days with a MutationObserver over every shown date, then turning the eve report off so the running-queue check ends at the owner's stop (alt: keep the owner's stop and stop at x1, which still bets on how many days a slow runner lets pass | accept 대기 0 and skip the queue checks then, a conditional assertion | pin a seed whose offer outlives seven run-ahead days, which a later engine change can move) ev09
 - 261109 decided ARCH-4 ARCH-30 T726 review/self-improve-local-261109: F13, parked by fs09 — how code run outside the Vite build (Playwright specs, test fixtures, scripts) reaches a slice's framework-free logic when its index re-exports CSS-module components → ARCH r35: such code loads only script and JSON modules and no slice index; a module it reaches imports another slice only through an entity's `@x` file or that slice's `logic.ts`, a second public entry re-exporting only the slice's own `lib/` and re-exported whole by its index; ESLint keeps `logic.ts` to its `lib/`, an architecture test walks the closures of every e2e/fixture module and every `logic.ts`; named `logic.ts`, not F13's `model`/`lib`, since those names are already the slice's `model/`/`lib/` folders and `./lib` would resolve ambiguously; T726 restored to todo at ARCH@35 with 805ae503 as its reference move (alt: let tests and fixtures copy constants such as `GOAL_FEEDBACK_CONFIG`, two sources that drift | stub CSS in Playwright's loader, which still loads components and their top-level DOM work under Node | allow deep imports into another slice's `lib/`, hiding consumers from its public entries | leave the modules in the entity and drop T726) ev09
 - 261109 decided ARCH-30 ARCH-33 ECON-29 T744 T745 T746: bounded economy unit is complete and verified at51d072a (unit2316, integration1179 plus4 existing skips, contract46, Chromium348 with no skips/retries); both unaccepted pilots withdrawn, exact reporting/resources/fixtures retained → publish this closure to main and end, no automatic continuation ec10
 - 261109 decided ECON-29 ARCH-30 T739 T740 T741: the owner bounds the remaining work to the current increment and every linked task/fix → finish wage/package implementation, calibrated measurements and full checks, push the complete unit to main, then end; no new counterparty-budget model or further economy cycle ec10
@@ -837,7 +838,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -863,9 +863,10 @@
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 
 ## next
-- implement-task T730
+- implement-task T689
 
 ## log
+- 261109 T730 done: CI WebKit's 대기 0 was the career's first offer (1930.08.03–08.08) closing by its own deadline before an x10 owner stop landed, not diverging counts (both read `pendingDecisions` of one world); the journey observes the match eve, which stops on 08.07 at any pace with the offer waiting, and records every shown date; browser runs left to the release run ev09
 - 261109 T726 done: the match viewer's six playback modules live in `features/match-viewer/lib` and read the entity through its new CSS-free `entities/match/logic.ts`; ESLint keeps `logic.ts` to `lib/`, an architecture test keeps every e2e/fixture/`logic.ts` closure free of stylesheets and slice indexes; 71/30 chunks kept; browser specs left to the release run ev09
 - 261109 update-ssot ARCH r35 + create-task T726 refresh: code run outside the Vite build loads no stylesheet, asset or slice index and reaches other slices through `logic.ts` or `@x` (F13 adopted); T726 blocked → todo at ARCH@35 ev09
 - 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
@@ -885,4 +886,3 @@
 - 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
 - 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
 - 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
-- 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
