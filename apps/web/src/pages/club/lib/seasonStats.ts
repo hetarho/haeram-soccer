@@ -218,7 +218,7 @@ export function seasonStats(
       opponentFinalThird += o[TD.finalThirdPasses];
       opponentBuildUp += o[TD.buildUpPasses];
       pressActions += t[TD.pressActions];
-      for (const player of m.players) {
+      for (const player of sideLines(m, side)) {
         if (!player.detail || !w.players.some((p) => p.id === player.id)) continue;
         const row = detailTotals.get(player.id) || Array<number>(PLAYER_DETAIL_SIZE).fill(0);
         player.detail.forEach((value, index) => (row[index] += value));
