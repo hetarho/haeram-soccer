@@ -1,0 +1,97 @@
+{
+  "session": "/root/scout_data_ui",
+  "assignedBase": "458bcab69e06a9c72e723b9c84dffce0cc7b462d",
+  "mode": "read-only; small exact-source diagnostic replays, no full tests",
+  "proposals": [
+    {
+      "id": "missing-samples",
+      "evidence": [
+        "apps/web/src/entities/match/lib/advanced.ts:139 missing PPDA replaced by0",
+        "advanced.ts:97-98,111-112 missing accuracy replaced by0",
+        "advanced.ts:36-37 zero participates in lead/bar"
+      ],
+      "observed": {
+        "term": "ppda",
+        "home": "—",
+        "away": "5.0",
+        "lead": 0,
+        "homeShare": 1
+      },
+      "contracts": [
+        "WEB-22",
+        "MATCH-13"
+      ]
+    },
+    {
+      "id": "opponent-leaders",
+      "evidence": [
+        "apps/web/src/pages/club/lib/seasonStats.ts:221-225 all m.players for advanced totals",
+        "seasonStats.ts:238-242 own sideLines for basic totals"
+      ],
+      "observed": "retained sold opponent with keypasses9/xA2 outranks own Current with keypasses1/xA0.1",
+      "contracts": [
+        "WEB-47",
+        "WEB-89",
+        "HIST-6"
+      ]
+    },
+    {
+      "id": "poisson-tail",
+      "evidence": [
+        "apps/web/src/pages/club/lib/seasonStats.ts:5-25 discards probability mass beyond10 goals"
+      ],
+      "observed": [
+        {
+          "ownXg": 4,
+          "otherXg": 0,
+          "actual": 2.954849,
+          "exact": 2.963369
+        },
+        {
+          "ownXg": 5,
+          "otherXg": 0,
+          "actual": 2.945438,
+          "exact": 2.986524
+        },
+        {
+          "ownXg": 8,
+          "otherXg": 0,
+          "actual": 2.446986,
+          "exact": 2.999329
+        },
+        {
+          "ownXg": 10,
+          "otherXg": 0,
+          "actual": 1.749028,
+          "exact": 2.999909
+        }
+      ],
+      "exactReference": "3-2*exp(-ownXg) when otherXg=0",
+      "contracts": [
+        "WEB-47"
+      ]
+    },
+    {
+      "id": "locale-numbers",
+      "evidence": [
+        "entities/match/lib/advanced.ts:6-8,260-265 raw percentage/decimal",
+        "entities/league/lib/fullStatsView.ts:147,205,287 raw rates",
+        "entities/player/ui/PlayerPerformance.tsx:43,57 raw rates",
+        "entities/player/ui/PlayerAdvancedStats.tsx:26-27 raw decimals",
+        "pages/club/ui/PlayerComparison.tsx:46,205,215 raw rates",
+        "features/match-viewer/ui/MatchReport.tsx:197 raw xT"
+      ],
+      "observed": [
+        "German xG raw1.45 vs shared1,45",
+        "German per90 raw0.45 vs shared0,45",
+        "Arabic raw33% vs shared٣٣%"
+      ],
+      "contracts": [
+        "AGENTS.md",
+        "apps/web/AGENTS.md",
+        "ARCH-32",
+        "WEB-89"
+      ]
+    }
+  ]
+}
