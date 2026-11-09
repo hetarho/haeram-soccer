@@ -21,6 +21,7 @@
 | fi09 | ihaelam-ui-MacBookPro | autopilot | 2026-11-09T14:08Z | 2026-11-09T14:27Z | - |
 
 ## inbox
+- 261110 decided review/football-data-consistency-261109 T761 T762 T763: how to finish shared league UI consistency without new tracking policy → serialize the existing-read discipline fix, neutral club contribution sets and remaining localized count cells in league-record-views (alt: infer chronology from first-seen arrays | add unsupported latest data | leave mixed digits). T761 remained unassigned before lane composition; all new scope is explicit fi09
 - 261110 parked HIST-22 review/football-data-consistency-261109: F17 needs explicit owner scope for a backward-compatible stored-summary version and one-time writer repair; existing format1 has no semantic invalidation marker. Raw sources suffice, every-reload reconciliation would add load cost, no implementation before scope response fi09
 - 261110 decided review/football-data-consistency-261109 T758 T759 T760 T761: which next numerical corrections fit the owner's capital/fee/statistics mandate → missing loan projection costs, explicit fixed-period compensation,90-minute H2H and recorded NPC reds (alt: new nominal FX rates | implicit club chronology | unversioned career-card repair). Existing rules/ratios/save contracts stay; corrected affordability/debits are expected outcomes of F12/F13 and covered by tests fi09
 - 261110 parked review/football-data-consistency-261109: F18 general nominal GBP/EUR staff compensation needs an explicit rate/inverse-rounding policy; country price quotes vary even for sharedEUR and one-way FFP averaging is not a generic converter. Apply only already-defined fixed-period parity in T759 fi09
@@ -858,6 +859,8 @@
 | T759 | normalize fixed currency periods in coach compensation | ARCH | - | todo |
 | T760 | use regulation scores in head-to-head records | ARCH | - | todo |
 | T761 | show recorded npc league red cards | ARCH | T752 | todo |
+| T762 | present contributing clubs without invented chronology | ARCH | T752 | todo |
+| T763 | localize league statistic table counts | ARCH | T752 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -887,6 +890,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261109 T749 T750 T751 T752 integrated
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
 - 261109 T747 T748 T757 integrated
@@ -906,4 +910,3 @@
 - 261109 ec10 closed: all13 adopted tasks integrated; actual final observer parity and full source-matched verification passed. Main delivery is the final operation; unrelated T689/T726/T730 remain outside this unit.
 - 261109 T744 integrated
 - 261109 T746 integrated
-- 261109 create-task T746: independent review finds new executable measurement prose omitted from resource-only copy; fix only20 strings with deterministic en-GB output and12 locale entries, preserve all accounting and withdrawn pilots; T744 waits for final resources ec10.
