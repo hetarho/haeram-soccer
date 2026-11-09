@@ -1,4 +1,5 @@
 import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import tseslint from 'typescript-eslint';
 
@@ -6,7 +7,7 @@ const require = createRequire(import.meta.url);
 const { Linter } = require('eslint');
 const { featureSlicedImports } = require('./layer-rules.mjs');
 const linter = new Linter();
-const verify = (file: string, code: string): { ruleId: string | null; messageId?: string }[] =>
+const lint = (filename: string, code: string): { ruleId: string | null; messageId?: string }[] =>
   linter.verify(
     code,
     [
@@ -20,8 +21,9 @@ const verify = (file: string, code: string): { ruleId: string | null; messageId?
         rules: { 'layers/feature-sliced-imports': 'error' },
       },
     ],
-    { filename: `apps/web/src/${file}` },
+    { filename },
   );
+const verify = (file: string, code: string) => lint(`apps/web/src/${file}`, code);
 
 describe('feature-sliced import guard', () => {
   it.each([
@@ -78,6 +80,13 @@ describe('feature-sliced import guard', () => {
     ['app/ui/X.tsx', "import { A } from '../../pages/club/ui/Rich';", 'publicApi'],
     ['design-system/X.tsx', "import { A } from '../entities/player/ui/PlayerLink';", 'publicApi'],
     ['app/ui/X.tsx', "const a = () => import('../../pages/club');", 'lazyIndex'],
+    // a dynamic import() naming a slice's logic.ts entry
+    ['app/ui/X.tsx', "const a = () => import('../../entities/match/logic');", 'lazyIndex'],
+    // a slice's logic.ts re-exporting anything but its own lib/
+    ['entities/match/logic.ts', "export { A } from './ui/HeatPitch';", 'logicLib'],
+    ['entities/match/logic.ts', "export { A } from './model/usePitchSkin';", 'logicLib'],
+    ['entities/match/logic.ts', "export { A } from '../club/lib/crests';", 'logicLib'],
+    ['features/match-viewer/logic.ts', "export * from '../../entities/match';", 'logicLib'],
     ['runtime/X.ts', "import { A } from '../entities/player';", 'infrastructure'],
     ['presentation/X.ts', "const a = () => import('../shared/lib/x');", 'infrastructure'],
   ])('rejects %s: %s', (file, code, messageId) => {
@@ -90,6 +99,12 @@ describe('feature-sliced import guard', () => {
     // index imports, with or without the file name
     ['features/approvals/ui/X.tsx', "import { A } from '../../../entities/club';"],
     ['features/approvals/ui/X.tsx', "import { A } from '../../../entities/club/index';"],
+    // a slice's framework-free logic.ts entry, and that file re-exporting its own lib/
+    ['features/match-viewer/lib/X.ts', "import { A } from '../../../entities/match/logic';"],
+    [
+      'entities/match/logic.ts',
+      "export { A } from './lib/advanced';\nexport * from './lib/replay';",
+    ],
     ['main.tsx', "import { A } from './widgets/presentation-settings';"],
     [
       'design-system/X.tsx',
@@ -126,5 +141,13 @@ describe('feature-sliced import guard', () => {
     ['presentation/X.ts', "import './theme.css';\nimport '../adapters/themeTransition.css';"],
   ])('allows %s: %s', (file, code) => {
     expect(verify(file, code)).toEqual([]);
+  });
+
+  it('keeps logic.ts to its own lib/ under the absolute file name ESLint passes', () => {
+    const file = resolve('apps/web/src/entities/match/logic.ts');
+    expect(lint(file, "export { A } from './lib/advanced';")).toEqual([]);
+    expect(lint(file, "export { A } from './ui/HeatPitch';")).toEqual([
+      expect.objectContaining({ messageId: 'logicLib' }),
+    ]);
   });
 });

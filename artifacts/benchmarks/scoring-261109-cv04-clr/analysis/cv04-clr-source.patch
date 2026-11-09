@@ -1,0 +1,1803 @@
+diff --git a/packages/engine/src/grid/decide.ts b/packages/engine/src/grid/decide.ts
+index 67420749..77368dec 100644
+--- a/packages/engine/src/grid/decide.ts
++++ b/packages/engine/src/grid/decide.ts
+@@ -21,7 +21,14 @@ import {
+   type Point,
+ } from './pitch';
+ import { reachOnPath } from './lanes';
+-import { chanceXg, shotBlockers, unblocked } from './resolve';
++import {
++  chanceXg,
++  closingBlockers,
++  keeperNarrowing,
++  roundPoint,
++  shotBlockers,
++  unblocked,
++} from './resolve';
+ import { modelAtLeast } from './rules';
+ import { offsideLine } from './shape';
+ import { onPitch, other, skill, slotOf, type GridPlayer, type GridState } from './state';
+@@ -50,6 +57,8 @@ export interface Decision {
+   lineBreaking?: boolean;
+   /** Candidate model (T444, →MATCH-33): the zone a cross or cut-back is played into; `target` is its runner. */
+   delivery?: DeliveryAim;
++  /** T689 cv04-cha experiment: a take-on against the keeper out to him, going round him. */
++  round?: boolean;
+ }
+ 
+ /** Initial values; T215 and T216 tune them. The style bends `pass` and `lineHigh`/`lineLow` are applied by T209 and T206. */
+@@ -106,7 +115,21 @@ export const DECISION_CONFIG = {
+     pressure: 0.5,
+     margin: 0.5,
+   },
+-  keeper: { sweeper: 0.7, stopper: 0.45, press: 0.15, longRisk: 0.5 },
++  /**
++   * `safe`: T689 experiment, default off at 0 (see `keeperDistribution`). `hold`: T689 experiment,
++   * default off at 0: seconds a keeper with the ball in his hands holds it before he chooses (engine).
++   */
++  keeper: {
++    sweeper: 0.7,
++    stopper: 0.45,
++    press: 0.15,
++    longRisk: 0.5,
++    safe: 0,
++    free: 0,
++    hold: 0,
++    /** T689 experiment, default off at 0: a keeper plays his ball at his feet as he chooses it (engine). */
++    quick: 0,
++  },
+   /**
+    * Candidate model only (→MATCH-16, MATCH-17): teammates' intentions bend the carrier's choice. A
+    * teammate showing for him scores `show` more; an overlap combining with him scores `release` more
+@@ -244,7 +267,10 @@ export const DECISION_CONFIG = {
+      * further off; the shot share floor and the carry further out hold as revision 6/7's.
+      */
+     revision9: {
+-      clear: { alone: 5 },
++      /** `view`: T689 experiment, default off at 0 (`clearChance`'s alone clause needs that unblocked share). */
++      // `far` (T689 cv04-ori experiment, default off at 0): beyond `revision6.clear.shootFrom` m of
++      // goal and outside the box only the nobody-ahead clause makes the carrier's clear chance.
++      clear: { alone: 5, view: 0, within: 0, far: 0 },
+       /**
+        * T580 (→MATCH-16 r42): in and around the opponents' box (`tight.from` m up the pitch on) a
+        * receiver with an opponent within `mark` m of him scores `score` less as a pass target, so
+@@ -266,6 +292,25 @@ export const DECISION_CONFIG = {
+      * the kick's share only 48 → 45–50% and took passes out of the box instead.
+      */
+     revision10: { kick: { closed: 1.5 } },
++    // T689 cv04-cha experiment (default off at `give` 0, →MATCH-16 r53): in a clear chance near goal
++    // with an outfielder within `reach` m of him and the keeper out to him (more than `out` m off his
++    // line, within `near` m of him), `give` of his shot share (more with 판단력 and 침착성 by
++    // `judge`) gives way to going round the keeper (`round`), a square ball to a teammate arriving
++    // free (`square`: in the box, nobody within `free` m, a clear lane and a clear chance there) or a
++    // carry to an open angle (`carry`); chased with the keeper still set, his shot share is at least
++    // `early` (0 = as revision 6/7).
++    chased: {
++      give: 0,
++      out: 3,
++      near: 8,
++      reach: 4.6,
++      judge: 0.5,
++      round: 1,
++      square: 1,
++      carry: 1,
++      free: 3,
++      early: 0,
++    },
+     /**
+      * Beyond `longShot.from` a shot's weight falls by e per this many metres, in place of
+      * `longShot.scale` (T324), so the stronger midfield weight does not bring shots from 30 m+.
+@@ -312,7 +357,8 @@ export const DECISION_CONFIG = {
+      * Neutral at 1 and 1; T397 keeps the prior and halves the pull (taking it away entirely sent
+      * long shots out of MATCH-23 and handed press's high line a free hand).
+      */
+-    past: { prior: 1, through: 0.5 },
++    // `flag` (cv04-chc, default 0, →MATCH-16 r51): such a pass's prior × (1 − `flag` × the carrier's 판단력/99), a ball the flag may stop.
++    past: { prior: 1, through: 0.5, flag: 0 },
+     /**
+      * The share of a cut-back zone's crosses played back as cut-backs, in place of `cutBackShare`
+      * (T397: 0.1 → 0.5; cut-backs 0.17 → 0.23 a team, still short of MATCH-30's 0.35–0.60).
+@@ -342,6 +388,63 @@ export const DECISION_CONFIG = {
+      * (MATCH-23 6–9%).
+      */
+     goalAreaCarry: 15,
++    /**
++     * T689 cv04-box experiment (default off at `set` 0, →MATCH-16: a carrier with no room ahead
++     * against a set defence recycles): a carrier outside the box at least `from` m up, not in a
++     * clear chance, with at least `set` opposing outfielders in the box, weighs a carry heading that
++     * ends in the box `carry` xT points less and a pass into the box to a receiver with an opponent
++     * within `free` m `pass` less (`chooseCarry`, `passOptions`).
++     */
++    setDefence: { set: 0, from: 70, carry: 10, pass: 1.5, free: 4 },
++    /**
++     * T689 cv04-att experiment (default off at `from` 0, →MATCH-16 r50): from in front of the box
++     * (at least `from` m up, outside it, not in a clear chance) a carry heading or a pass ending in
++     * the box is worth the chance at its arrival — MATCH-11's shot quality there (`chanceXg`), none
++     * when an opposing outfielder stands goal-side of the arrival point within `reach` m — never
++     * its cell's xT gain: a carry heading scores (chance − the carrier's cell xT) × 100 × `carry`,
++     * a pass the same at the pass gain's weight less `pass` × (1 − chance / `ref`, at least 0).
++     * `rest`: with no entry worth `worth` (no teammate in the box within pass reach, nor the carry
++     * straight at goal, arriving with that chance), the carrier's shot weight is multiplied by
++     * `shot` when at least `view` of the shot's path is unblocked, his pass weight by `pass` and
++     * his carry weight by `carry` (`actionMix`).
++     */
++    // `through` (0 off): a ball in behind is read where it lands (`throughPoint`), not at the runner;
++    // `lead` (0 off): a moving receiver is read `lead` seconds along his velocity.
++    entry: {
++      from: 0,
++      reach: 4,
++      carry: 1,
++      pass: 0,
++      ref: 0.1,
++      through: 0,
++      lead: 0,
++      rest: { worth: 0, shot: 1, view: 0, pass: 1, carry: 1 },
++    },
++    /**
++     * T689 cv04-own experiment (default off, →MATCH-16 r56): `read` 1 — the in-box shot weight reads
++     * the chance as `resolveShot` records it, the keeper's narrowing where he stands and the share
++     * the men who can close it leave as well as the path's; `against` > 0 — outside a clear chance
++     * that shot is weighed against the best chance a pass to a teammate in the box or at its edge
++     * (at least `edge` m up, not past the offside line ahead of the ball) or a carry `carry` m straight
++     * at goal leads to, `chanceXg` at the arrival and none with an opposing outfielder goal-side
++     * within `reach` m: the shot weight × (shot / best)^`against` when the best is the greater;
++     * `pass` > 0 — an in-box carrier then values such a receiver's pass by that chance (`passOptions`,
++     * as `entry` does from in front of the box, `pass` its weight).
++     */
++    boxShot: { read: 0, against: 0, edge: 83, reach: 8, carry: 4, pass: 0 },
++    /**
++     * T689 cv04-clr experiment (default off at `keeper` 0, →MATCH-16 r58): a clear chance read
++     * against the keeper where he stands — `keeper` is the share of the chance his narrowing where
++     * the carrier decides (`keeperNarrowing`, as `boxShot.read` reads it) must leave for the
++     * clear-chance floor to hold. Below it any carrier in a clear chance near goal, chased or not,
++     * weighs cv04-cha's `chased` options (round the keeper, the square to a free teammate, the carry
++     * to an open angle) and `boxShot`'s alternatives (a pass to a teammate at least `boxShot.edge` m
++     * up, the carry straight at goal), each worth `boxChance` at its arrival: the shot, the chance as
++     * recorded, keeps (shot / best)^`boxShot.against` (1 at `against` 0) of its weight when the best
++     * is greater, the rest going to the options worth more in proportion to their worth; with none
++     * worth more he strikes.
++     */
++    clear: { keeper: 0 },
+     /**
+      * Settled play in the final third (T408, →MATCH-13, MATCH-30): a passer at least `from` m up
+      * the pitch weighs lateral options `lateral` and backward ones `back` times as much, and a
+@@ -529,9 +632,23 @@ export function actionMix(
+     // The bodies between the ball and the goal (T445, →MATCH-35): the share of the chance nobody
+     // in its path blocks, to the power 1/his temperature, so a sharp head passes up a blocked view
+     // more surely and pressure on a shaky one less (→MATCH-16); at temperature 1 it is the share.
+-    const open = unblocked(shotBlockers(s, side, c));
++    const path = shotBlockers(s, side, c);
++    const open = unblocked(path);
+     const seen = open < 1 ? s.math.exp(s.math.log(open) / temperature(s, side, idx, tags)) : open;
+-    const xg = chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) * seen;
++    let xg = chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) * seen;
++    // T689 cv04-own experiment (default off, →MATCH-16 r56): the chance as it would be recorded,
++    // weighed against the chance a pass or a further carry leads to.
++    const BS = C.candidate.boxShot;
++    if (BS.read > 0) {
++      const foe = other(side);
++      const keeper = s.players[foe].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[foe][0]!;
++      xg *= keeperNarrowing(s, side, c, keeper);
++      if (modelAtLeast(s.setup, 7)) xg *= unblocked(closingBlockers(s, side, c, path));
++    }
++    if (BS.against > 0 && xg > 0 && !takesClearChance(s, side, c, tags)) {
++      const best = boxAlternative(s, side, idx, c);
++      if (best > xg) mix.shot *= s.math.exp(BS.against * s.math.log(xg / best));
++    }
+     mix.shot *= Math.min(Q.most, s.math.exp(Q.power * s.math.log(xg / Q.ref)));
+   }
+   if (tags.pressure >= 1) {
+@@ -612,6 +729,22 @@ export function actionMix(
+   const decisions = skill(s, side, idx, 'decisions');
+   if (cell.xgPerShot !== null && cell.xgPerShot < C.lowXg) mix.shot *= 1 - (decisions - 50) / 200;
+   if (cell.xgPerShot !== null && cell.xgPerShot >= C.highXg) mix.shot *= 1 + (decisions - 50) / 300;
++  // T689 cv04-att experiment (default off): with no entry worth its chance he shoots from distance
++  // with a view of goal, keeps it in front of the box or plays it wide (→MATCH-16 r50).
++  const E = C.candidate.entry;
++  if (
++    candidate &&
++    E.from > 0 &&
++    E.rest.worth > 0 &&
++    !inBox(c) &&
++    c[0] >= E.from &&
++    !takesClearChance(s, side, c, tags) &&
++    !entryWorth(s, side, idx, c)
++  ) {
++    if (unblocked(shotBlockers(s, side, c)) >= E.rest.view) mix.shot *= E.rest.shot;
++    mix.pass *= E.rest.pass;
++    mix.carry *= E.rest.carry;
++  }
+   // Hard restrictions.
+   if (tags.band <= 3) mix.shot = 0;
+   if (tags.band < 5) {
+@@ -637,12 +770,40 @@ export function actionMix(
+     const K = r6.clear;
+     const close = inBox(c) || goalDistance(c, s.math) <= K.shootFrom;
+     const key: Action = close ? 'shot' : 'carry';
+-    const floor = close
++    const CH = C.candidate.chased;
++    const chase = close && CH.give > 0 ? chasedState(s, side, c) : undefined;
++    const base = close
+       ? K.shot + (K.sharp - K.shot) * clamp((decisions - 40) / 50, 0, 1)
+       : K.carry;
++    const floor = chase === 'set' && CH.early > 0 ? Math.max(base, CH.early) : base;
+     const rest = 1 - mix[key];
+     if (mix[key] < floor && rest > 0)
+       for (const a of ACTIONS) mix[a] = a === key ? floor : (mix[a] * (1 - floor)) / rest;
++    // T689 cv04-clr experiment (default off): the keeper's angle already shut where he decides,
++    // the shot gives way to the options worth more (→MATCH-16 r58).
++    const shut = close && C.candidate.clear.keeper > 0 ? keeperShut(s, side, idx, c, tags) : undefined;
++    if (shut && shut.total > 0) {
++      const moved = mix.shot * (1 - shut.factor);
++      mix.shot -= moved;
++      mix.takeOn += (moved * shut.round) / shut.total;
++      mix.pass += (moved * shut.pass) / shut.total;
++      mix.carry += (moved * shut.carry) / shut.total;
++    }
++    // T689 cv04-cha experiment (default off): the keeper out to a chased carrier, he gives the shot
++    // up for going round him, a square ball or a carry to an open angle (→MATCH-16 r53).
++    if (chase === 'out') {
++      const judge = (decisions + skill(s, side, idx, 'composure')) / 2;
++      const g = clamp(CH.give * (1 + (CH.judge * (judge - 60)) / 30), 0, 1);
++      const moved = mix.shot * g;
++      const square = squareTarget(s, side, idx, c) !== undefined ? CH.square : 0;
++      const w = CH.round + square + CH.carry;
++      if (moved > 0 && w > 0) {
++        mix.shot -= moved;
++        mix.takeOn += (moved * CH.round) / w;
++        mix.pass += (moved * square) / w;
++        mix.carry += (moved * CH.carry) / w;
++      }
++    }
+   }
+   return mix;
+ }
+@@ -724,10 +885,11 @@ function onWing(s: GridState, side: 0 | 1, c: Point): boolean {
+  * man behind or beside him, however near, does not take it away. On revision 9 (T579) nobody within
+  * `revision9.clear.alone` m of him is one too. Pressure is the caller's to read (`takesClearChance`).
+  */
+-export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
++export function clearChance(s: GridState, side: 0 | 1, c: Point, aloneClause = true): boolean {
+   const K = DECISION_CONFIG.candidate.revision6.clear;
+   const r7 = modelAtLeast(s.setup, 7);
+-  const alone = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.alone : 0;
++  const alone =
++    aloneClause && modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.alone : 0;
+   const corridor = r7 ? DECISION_CONFIG.candidate.revision7.clear.corridor : K.corridor;
+   const lane = cellLane(cellOf(c));
+   if (c[0] < K.from || lane < 1 || lane > 3) return false;
+@@ -747,7 +909,15 @@ export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
+     const t = (dx * vx + dy * vy) / (length * length);
+     if (t > 0 && t < 1 && Math.abs(dx * vy - dy * vx) / length < corridor) ahead = true;
+   }
+-  return !ahead || (alone > 0 && !near);
++  if (!ahead) return true;
++  if (!(alone > 0 && !near)) return false;
++  // T689 experiment (default off): alone, he has a clear chance only with that share of the goal
++  // nobody in the shot's path blocks (→MATCH-35).
++  const view = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.view : 0;
++  // T689 experiment (default off): alone, only within `within` m of the goal centre.
++  const within = modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.clear.within : 0;
++  if (within > 0 && length > within) return false;
++  return view <= 0 || unblocked(shotBlockers(s, side, c)) >= view;
+ }
+ 
+ /**
+@@ -755,11 +925,142 @@ export function clearChance(s: GridState, side: 0 | 1, c: Point): boolean {
+  * revision 7 whoever chases him (→MATCH-16; the closing men's block is the shot's, →MATCH-35).
+  */
+ function takesClearChance(s: GridState, side: 0 | 1, c: Point, tags: Pick<Tags, 'pressure'>) {
+-  return (
+-    modelAtLeast(s.setup, 6) &&
+-    (modelAtLeast(s.setup, 7) || tags.pressure < 1) &&
+-    clearChance(s, side, c)
++  if (!(modelAtLeast(s.setup, 6) && (modelAtLeast(s.setup, 7) || tags.pressure < 1))) return false;
++  // T689 cv04-ori experiment (default off): far out, a man alone with defenders ahead of him plays
++  // his own choice (shot, pass or carry) rather than carrying at goal.
++  const far =
++    modelAtLeast(s.setup, 9) &&
++    DECISION_CONFIG.candidate.revision9.clear.far > 0 &&
++    !inBox(c) &&
++    goalDistance(c, s.math) > DECISION_CONFIG.candidate.revision6.clear.shootFrom;
++  return clearChance(s, side, c, !far);
++}
++
++/**
++ * T689 cv04-cha experiment (`candidate.chased`, →MATCH-16 r53): for a carrier at `c` (attack frame)
++ * with an outfield opponent within `chased.reach` m of him, `'out'` when the keeper stands more than
++ * `chased.out` m off his line within `chased.near` m of him, else `'set'`; undefined when nobody
++ * chases him. The caller reads it only in a clear chance.
++ */
++export function chasedState(s: GridState, side: 0 | 1, c: Point): 'out' | 'set' | undefined {
++  const K = DECISION_CONFIG.candidate.chased;
++  if (!modelAtLeast(s.setup, 9)) return undefined;
++  const { hypot } = s.math;
++  let chaser = false,
++    out = false;
++  for (const opp of s.players[other(side)]) {
++    if (!onPitch(opp)) continue;
++    const o = attackFrame(side, opp.pos);
++    const d = hypot(o[0] - c[0], o[1] - c[1]);
++    if (slotOf(s, opp).position === 'GK') {
++      if (PITCH.length - o[0] > K.out && d <= K.near) out = true;
++    } else if (d <= K.reach) chaser = true;
++  }
++  return chaser ? (out ? 'out' : 'set') : undefined;
++}
++
++/** T689 cv04-cha experiment: a clear chance near goal, chased, the keeper out to him. */
++function chasedOutChance(s: GridState, side: 0 | 1, c: Point, tags: Pick<Tags, 'pressure'>) {
++  if (DECISION_CONFIG.candidate.chased.give <= 0 || s.setup.model === undefined) return false;
++  const close =
++    inBox(c) || goalDistance(c, s.math) <= DECISION_CONFIG.candidate.revision6.clear.shootFrom;
++  return close && takesClearChance(s, side, c, tags) && chasedState(s, side, c) === 'out';
++}
++
++/**
++ * T689 cv04-cha experiment: a chased carrier's carry to an open angle with the keeper out to him —
++ * a box carry's length on one of seven headings about the goal, weighed by the chance at its end
++ * (`chanceXg` with the pressure there, times the keeper's narrowing from there), engine frame.
++ */
++function openAngle(
++  s: GridState,
++  side: 0 | 1,
++  idx: number,
++  c: Point,
++  r: () => number,
++): [number, number] {
++  const K = DECISION_CONFIG.carry;
++  const { exp } = s.math;
++  const keeper = s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp));
++  const ends = openAngleEnds(s, c, K.boxLength[0] + K.boxLength[1] * r());
++  const scores = ends.map(
++    (p) =>
++      100 *
++      chanceXg(p, { pressure: pressureAt(s, side, p), candidate: true }, s.math) *
++      (keeper ? keeperNarrowing(s, side, p, keeper) : 1),
+   );
++  const tau = temperature(s, side, idx, computeTagsLite(s, side, idx, c));
++  let top = -Infinity;
++  for (const v of scores) top = Math.max(top, v);
++  const weights = scores.map((v) => exp((v - top) / tau));
++  const total = weights.reduce((a, b) => a + b, 0);
++  const end = draw(
++    ends,
++    weights.map((w) => w / total),
++    r,
++  );
++  const [x, y] = attackFrame(side, end);
++  return [x, y];
++}
++
++/** cv04-cha's open-angle ends: a carry of `length` m on seven headings about the goal (attack frame). */
++function openAngleEnds(s: GridState, c: Point, length: number): Point[] {
++  const K = DECISION_CONFIG.carry;
++  const { atan2, cos, sin } = s.math;
++  const toGoal = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
++  return [0, -30, 30, -60, 60, -90, 90].map((deg): Point => {
++    const a = toGoal + deg * DEG;
++    return [
++      clamp(c[0] + length * cos(a), K.margin, PITCH.length - K.margin),
++      clamp(c[1] + length * sin(a), K.margin, PITCH.width - K.margin),
++    ];
++  });
++}
++
++/** The pressure tag alone, for `temperature` (cv04-cha's open angle). */
++function computeTagsLite(s: GridState, side: 0 | 1, idx: number, c: Point): Tags {
++  return { ...keeperTags(s, side, idx), pressure: pressureAt(s, side, c) };
++}
++
++/**
++ * T689 cv04-cha experiment: the teammate a chased carrier at `c` squares it to with the keeper out
++ * to him — in the box, `chased.free` m clear of every opponent, nobody within 1.5 m of the ball's
++ * line to him, with a clear chance where he stands; the nearest the goal, or undefined.
++ */
++export function squareTarget(
++  s: GridState,
++  side: 0 | 1,
++  idx: number,
++  c: Point,
++): number | undefined {
++  const K = DECISION_CONFIG.candidate.chased;
++  const { hypot } = s.math;
++  let best: number | undefined,
++    bestGoal = Infinity;
++  for (const mate of s.players[side]) {
++    if (mate.idx === idx || !onPitch(mate) || slotOf(s, mate).position === 'GK') continue;
++    const p = attackFrame(side, mate.pos);
++    const len = hypot(p[0] - c[0], p[1] - c[1]);
++    if (!inBox(p) || len < 3 || len > 20) continue;
++    let open = true;
++    for (const opp of s.players[other(side)]) {
++      if (!onPitch(opp)) continue;
++      const o = attackFrame(side, opp.pos);
++      if (hypot(o[0] - p[0], o[1] - p[1]) < K.free) {
++        open = false;
++        break;
++      }
++      const t = clamp(((o[0] - c[0]) * (p[0] - c[0]) + (o[1] - c[1]) * (p[1] - c[1])) / (len * len), 0, 1);
++      if (hypot(c[0] + (p[0] - c[0]) * t - o[0], c[1] + (p[1] - c[1]) * t - o[1]) < 1.5) {
++        open = false;
++        break;
++      }
++    }
++    if (!open || !clearChance(s, side, p)) continue;
++    const g = goalDistance(p, s.math);
++    if (g < bestGoal) [best, bestGoal] = [mate.idx, g];
++  }
++  return best;
+ }
+ 
+ /**
+@@ -865,6 +1166,10 @@ export function passOptions(
+     judge?: boolean;
+     /** A receiver closed down during the carry (revision 10, T600, `rereadPass`). */
+     closed?: number;
++    /** T689 experiment: no receiver with an opponent within this many m, nor a lane one reaches cleanly. */
++    safe?: number;
++    /** T689 experiment, with `safe`: nor a lane any opponent reaches at all. */
++    free?: boolean;
+   } = {},
+ ): PassOption[] {
+   const P = DECISION_CONFIG.pass;
+@@ -919,6 +1224,9 @@ export function passOptions(
+     opts.judge && modelAtLeast(s.setup, 6) ? DECISION_CONFIG.candidate.revision6 : undefined;
+   const clear = r6 !== undefined && takesClearChance(s, side, c, tags);
+   const beat = r6 !== undefined && beaten(s, side, idx);
++  // T689 cv04-box experiment (default off): a set defence's crowded box is no target.
++  const setPass =
++    opts.judge && !clear && setDefence(s, side, c) ? DECISION_CONFIG.candidate.setDefence : undefined;
+   const r9 =
+     opts.judge && modelAtLeast(s.setup, 9) ? DECISION_CONFIG.candidate.revision9.tight : undefined;
+   const gainWeight = !candidate
+@@ -938,7 +1246,36 @@ export function passOptions(
+       !(clearChance(s, side, p) && goalDistance(p, s.math) < goalDistance(c, s.math))
+     )
+       continue;
+-    const gain = (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 * gainWeight;
++    // T689 cv04-att experiment (default off): an entry is worth the chance it leads to.
++    const E = DECISION_CONFIG.candidate.entry;
++    // `entry.through`: a ball in behind is read where it lands (`throughPoint`), not at the runner.
++    // `entry.lead` (0 off): a moving receiver is read `lead` s along his run, where he takes it.
++    const v = gp.vel ?? [0, 0];
++    const arrival: Point =
++      E.from > 0 &&
++      E.through > 0 &&
++      ((gp.run?.kind === 'behind' && gp.run.until > s.elapsed) || p[0] > offside)
++        ? attackFrame(side, throughPoint(s, side, idx, gp.idx))
++        : E.from > 0 && E.lead > 0
++          ? [
++              p[0] + (side === 0 ? v[0] : -v[0]) * E.lead,
++              p[1] + (side === 0 ? v[1] : -v[1]) * E.lead,
++            ]
++          : p;
++    const chance = opts.judge && !clear ? entryChance(s, side, c, arrival) : undefined;
++    // T689 cv04-own experiment (default off at `boxShot.pass` 0): in the box, the same for a receiver
++    // in it or at its edge.
++    const BS = DECISION_CONFIG.candidate.boxShot;
++    const boxed =
++      chance === undefined && BS.pass > 0 && opts.judge && !clear && inBox(c) && p[0] >= BS.edge
++        ? boxChance(s, side, p)
++        : undefined;
++    const gain =
++      chance !== undefined
++        ? (chance - xt0) * 100 * gainWeight - E.pass * Math.max(0, 1 - chance / E.ref)
++        : boxed !== undefined
++          ? (boxed - xt0) * 100 * gainWeight - BS.pass * Math.max(0, 1 - boxed / E.ref)
++          : (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 * gainWeight;
+     let nearest = Infinity,
+       risk = 0;
+     const dx = p[0] - c[0],
+@@ -964,6 +1301,7 @@ export function passOptions(
+     if (path) risk = path.weight;
+     // A contested target is only ever a forward pass's risk (T538).
+     if (judge && dir !== 'forward' && (nearest < judge.contested.mark || path?.clean)) continue;
++    if (opts.safe && (nearest < opts.safe || (opts.free ? path?.first : path?.clean))) continue;
+     const open = Math.min(1, (Number.isFinite(nearest) ? nearest : 8) / 8);
+     const behindRun = gp.run?.kind === 'behind' && gp.run.until > s.elapsed;
+     // A man already past the offside line as the ball is played (candidate model, T397).
+@@ -1008,6 +1346,7 @@ export function passOptions(
+       wing +
+       free -
+       tight -
++      (setPass && inBox(p) && nearest < setPass.free ? setPass.pass : 0) -
+       // The receiver closed down during the carry (revision 10, T600).
+       (gp.idx === opts.closed ? DECISION_CONFIG.candidate.revision10.kick.closed : 0) +
+       (combo === 'show'
+@@ -1019,6 +1358,8 @@ export function passOptions(
+     if (dir === 'back') prior *= P.backPrior * (opts.backBias ?? 1) * (direct ? D.back : 1);
+     if (settled && dir !== 'forward') prior *= dir === 'back' ? settled.back : settled.lateral;
+     if (beyondLine) prior *= past.prior;
++    if (beyondLine && past.flag > 0)
++      prior *= Math.max(0, 1 - past.flag * Math.min(1, skill(s, side, idx, 'decisions') / 99));
+     // Settled play in the final third (candidate model, T408).
+     if (candidate) {
+       const F = DECISION_CONFIG.candidate.finalThird;
+@@ -1147,6 +1488,206 @@ export function chooseDelivery(
+   return draw(options, passProbabilities(weighed, temperature(s, side, idx, tags), s.math), r);
+ }
+ 
++/**
++ * T689 cv04-box experiment (default off at `setDefence.set` 0): the carrier at `c` (his attack
++ * frame) is outside the box at least `from` m up and the opponents hold at least `set` outfielders
++ * in their box — a set defence in front of him.
++ */
++function setDefence(s: GridState, side: 0 | 1, c: Point): boolean {
++  const D = DECISION_CONFIG.candidate.setDefence;
++  if (D.set <= 0 || s.setup.model === undefined || inBox(c) || c[0] < D.from) return false;
++  let n = 0;
++  for (const gp of s.players[other(side)])
++    if (onPitch(gp) && gp.slot > 0 && inBox(attackFrame(side, gp.pos))) n++;
++  return n >= D.set;
++}
++
++/**
++ * T689 cv04-att experiment (default off at `entry.from` 0, →MATCH-16 r50): the chance a carry or a
++ * pass from `c` (the carrier's attack frame, in front of the box) arriving at `p` in the box leads
++ * to — `chanceXg` there, 0 with an opposing outfielder goal-side of `p` within `entry.reach` m;
++ * undefined where the switch does not apply.
++ */
++function entryChance(s: GridState, side: 0 | 1, c: Point, p: Point): number | undefined {
++  const E = DECISION_CONFIG.candidate.entry;
++  if (E.from <= 0 || s.setup.model === undefined || inBox(c) || c[0] < E.from || !inBox(p))
++    return undefined;
++  const { hypot } = s.math;
++  const gx = PITCH.length,
++    gy = PITCH.width / 2;
++  const d = hypot(gx - p[0], gy - p[1]);
++  for (const gp of s.players[other(side)]) {
++    if (!onPitch(gp) || gp.slot === 0) continue;
++    const o = attackFrame(side, gp.pos);
++    if (hypot(o[0] - p[0], o[1] - p[1]) <= E.reach && hypot(gx - o[0], gy - o[1]) < d) return 0;
++  }
++  return chanceXg(p, { candidate: true }, s.math);
++}
++
++/**
++ * T689 cv04-att experiment: whether carrier `idx` at `c` has an entry worth `entry.rest.worth` —
++ * a teammate in the box within pass reach, or the carry straight at goal, arriving with that chance.
++ */
++function entryWorth(s: GridState, side: 0 | 1, idx: number, c: Point): boolean {
++  const E = DECISION_CONFIG.candidate.entry;
++  const { atan2, cos, hypot, sin } = s.math;
++  const me = s.players[side][idx]!;
++  const slot = slotOf(s, me);
++  const reach =
++    slot.position === 'GK' || slot.position === 'CB'
++      ? DECISION_CONFIG.pass.reachLong
++      : DECISION_CONFIG.pass.reach;
++  for (const gp of s.players[side]) {
++    if (gp.idx === idx || !onPitch(gp)) continue;
++    const p = attackFrame(side, gp.pos);
++    if (hypot(p[0] - c[0], p[1] - c[1]) > reach) continue;
++    if ((entryChance(s, side, c, p) ?? 0) >= E.rest.worth) return true;
++  }
++  const a = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
++  const len = DECISION_CONFIG.carry.length[0] + DECISION_CONFIG.carry.length[1] / 2;
++  const end: Point = [c[0] + len * cos(a), c[1] + len * sin(a)];
++  return (entryChance(s, side, c, end) ?? 0) >= E.rest.worth;
++}
++
++/**
++ * T689 cv04-own experiment (`boxShot`, →MATCH-16 r56): the chance a ball arriving at `p` (attack
++ * frame) leads to — `chanceXg` there, 0 with an opposing outfielder goal-side of `p` within
++ * `boxShot.reach` m.
++ */
++function boxChance(s: GridState, side: 0 | 1, p: Point): number {
++  const { hypot } = s.math;
++  const reach = DECISION_CONFIG.candidate.boxShot.reach;
++  const gx = PITCH.length,
++    gy = PITCH.width / 2;
++  const d = hypot(gx - p[0], gy - p[1]);
++  for (const gp of s.players[other(side)]) {
++    if (!onPitch(gp) || gp.slot === 0) continue;
++    const o = attackFrame(side, gp.pos);
++    if (hypot(o[0] - p[0], o[1] - p[1]) <= reach && hypot(gx - o[0], gy - o[1]) < d) return 0;
++  }
++  return chanceXg(p, { candidate: true }, s.math);
++}
++
++/**
++ * T689 cv04-own experiment: the best chance an in-box carrier `idx` at `c` could make instead of
++ * shooting — a pass to a teammate at least `boxShot.edge` m up and not past the offside line ahead
++ * of the ball, or a carry `boxShot.carry` m straight at goal (`boxChance` at the arrival).
++ */
++function boxAlternative(s: GridState, side: 0 | 1, idx: number, c: Point): number {
++  return Math.max(boxReceiver(s, side, idx, c).value, boxCarry(s, side, c));
++}
++
++/**
++ * T689 cv04-own experiment: the teammate of in-box carrier `idx` at `c` with the best `boxChance` —
++ * at least `boxShot.edge` m up and not past the offside line ahead of the ball — and that chance.
++ */
++function boxReceiver(
++  s: GridState,
++  side: 0 | 1,
++  idx: number,
++  c: Point,
++): { target: number | undefined; value: number } {
++  const BS = DECISION_CONFIG.candidate.boxShot;
++  const offside = Math.max(offsideLine(s, other(side)), c[0]);
++  let value = 0,
++    target: number | undefined;
++  for (const gp of s.players[side]) {
++    if (gp.idx === idx || !onPitch(gp) || gp.slot === 0) continue;
++    const p = attackFrame(side, gp.pos);
++    if (p[0] < BS.edge || p[0] > offside) continue;
++    const v = boxChance(s, side, p);
++    if (v > value) [value, target] = [v, gp.idx];
++  }
++  return { target, value };
++}
++
++/** T689 cv04-own experiment: the `boxChance` a carry `boxShot.carry` m straight at goal from `c` leads to. */
++function boxCarry(s: GridState, side: 0 | 1, c: Point): number {
++  const BS = DECISION_CONFIG.candidate.boxShot;
++  if (BS.carry <= 0) return 0;
++  const { atan2, cos, sin } = s.math;
++  const a = atan2(PITCH.width / 2 - c[1], PITCH.length - c[0]);
++  return boxChance(s, side, [c[0] + BS.carry * cos(a), c[1] + BS.carry * sin(a)]);
++}
++
++/** T689 cv04-clr experiment: a clear chance with the keeper's angle shut, the options worth more. */
++interface KeeperShut {
++  /** The share of the shot's weight it keeps: (shot / best)^e, 1 with nothing worth more. */
++  factor: number;
++  /** Each option's worth beyond the shot (0 when not worth more) and their sum. */
++  round: number;
++  pass: number;
++  carry: number;
++  total: number;
++  /** The pass's receiver: the square target or `boxReceiver`'s, whichever is worth more. */
++  target: number | undefined;
++}
++
++/**
++ * T689 cv04-clr experiment (`candidate.clear.keeper`, →MATCH-16 r58): for carrier `idx` at `c`
++ * (attack frame) in a clear chance near goal, undefined unless the keeper's narrowing where he
++ * stands leaves less than `clear.keeper` of the chance; else the shot as recorded (`boxShot.read`'s
++ * chance) against the round (`roundPoint`), the square (`squareTarget`) or `boxReceiver`'s pass, and
++ * the carry to an open angle (`openAngleEnds` at a box carry's mid length) or straight (`boxCarry`),
++ * each worth `boxChance` at its arrival.
++ */
++function keeperShut(
++  s: GridState,
++  side: 0 | 1,
++  idx: number,
++  c: Point,
++  tags: Tags,
++): KeeperShut | undefined {
++  const keeper = s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp));
++  if (!keeper) return undefined;
++  const narrow = keeperNarrowing(s, side, c, keeper);
++  if (narrow >= DECISION_CONFIG.candidate.clear.keeper) return undefined;
++  const { exp, log } = s.math;
++  const path = shotBlockers(s, side, c);
++  const open = unblocked(path);
++  const seen = open < 1 ? exp(log(open) / temperature(s, side, idx, tags)) : open;
++  let shot = chanceXg(c, { pressure: tags.pressure, candidate: true }, s.math) * seen * narrow;
++  if (modelAtLeast(s.setup, 7)) shot *= unblocked(closingBlockers(s, side, c, path));
++  const round = boxChance(s, side, roundPoint(c, attackFrame(side, keeper.pos)));
++  const square = squareTarget(s, side, idx, c);
++  const sq =
++    square === undefined ? 0 : boxChance(s, side, attackFrame(side, s.players[side][square]!.pos));
++  const receiver = boxReceiver(s, side, idx, c);
++  const [pass, target] =
++    square !== undefined && sq >= receiver.value ? [sq, square] : [receiver.value, receiver.target];
++  const K = DECISION_CONFIG.carry;
++  let carry = boxCarry(s, side, c);
++  for (const p of openAngleEnds(s, c, K.boxLength[0] + K.boxLength[1] / 2))
++    carry = Math.max(carry, boxChance(s, side, p));
++  const best = Math.max(round, pass, carry);
++  const worth = (v: number) => (v > shot ? v : 0);
++  const against = DECISION_CONFIG.candidate.boxShot.against;
++  const e = against > 0 ? against : 1;
++  return {
++    factor: best > shot ? (shot > 0 ? exp(e * log(shot / best)) : 0) : 1,
++    round: worth(round),
++    pass: worth(pass),
++    carry: worth(carry),
++    total: worth(round) + worth(pass) + worth(carry),
++    target,
++  };
++}
++
++/** T689 cv04-clr experiment: `keeperShut` for carrier `idx` in a clear chance near goal, if on. */
++function clearShut(s: GridState, side: 0 | 1, idx: number, tags: Tags): KeeperShut | undefined {
++  if (
++    DECISION_CONFIG.candidate.clear.keeper <= 0 ||
++    s.setup.model === undefined ||
++    !modelAtLeast(s.setup, 6)
++  )
++    return undefined;
++  const c = attackFrame(side, s.players[side][idx]!.pos);
++  const close =
++    inBox(c) || goalDistance(c, s.math) <= DECISION_CONFIG.candidate.revision6.clear.shootFrom;
++  if (!close || !takesClearChance(s, side, c, tags)) return undefined;
++  return keeperShut(s, side, idx, c, tags);
++}
++
+ /** Where a carry ends (engine frame): five headings scored by the xT they gain and the pressure they meet. */
+ export function chooseCarry(
+   s: GridState,
+@@ -1194,12 +1735,23 @@ export function chooseCarry(
+   // Into the goal area from outside it (candidate model, T437).
+   const goalAreaCarry =
+     s.setup.model !== undefined && !inGoalArea(c) ? DECISION_CONFIG.candidate.goalAreaCarry : 0;
++  // T689 cv04-box experiment (default off): into a set defence's box he does not carry it.
++  const setCarry = !onward && setDefence(s, side, c) ? DECISION_CONFIG.candidate.setDefence.carry : 0;
++  // T689 cv04-att experiment (default off): an entry is worth the chance it leads to.
++  const entryCarry = DECISION_CONFIG.candidate.entry.carry;
++  const gains = ends.map((p) => {
++    const chance = onward ? undefined : entryChance(s, side, c, p);
++    return chance === undefined
++      ? (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100
++      : (chance - xt0) * 100 * entryCarry;
++  });
+   const scores = ends.map(
+     (p, i) =>
+       (wing !== undefined && i === headings.length ? wing : 0) +
+-      (CELL_BASELINES[cellOf(p)]!.xT - xt0) * 100 -
++      gains[i]! -
+       K.pressure * pressureAt(s, side, p) -
+       (boxCarry && inBox(p) ? boxCarry : 0) -
++      (setCarry && inBox(p) ? setCarry : 0) -
+       (goalAreaCarry && inGoalArea(p) ? goalAreaCarry : 0),
+   );
+   const tau = temperature(s, side, idx, tags);
+@@ -1239,14 +1791,31 @@ export function keeperDistribution(
+       (lineOf(position) === 'FW' || ['LM', 'RM', 'LWB', 'RWB'].includes(position))
+     );
+   };
+-  const wantShort = r() < shortChance;
++  let wantShort = r() < shortChance;
++  // T689 experiment (default off): only a safe short ball, else long; only a safe long ball when one
++  // exists, else as before.
++  const safe = K.safe > 0 && s.setup.model !== undefined ? K.safe : 0;
++  const free = K.free > 0;
++  if (safe && wantShort && !passOptions(s, side, idx, tags, { filter: back, safe, free }).length)
++    wantShort = false;
+   let options = passOptions(
+     s,
+     side,
+     idx,
+     tags,
+-    wantShort ? { filter: back } : { filter: front, riskScale: K.longRisk },
++    wantShort
++      ? { filter: back, ...(safe ? { safe, free } : {}) }
++      : { filter: front, riskScale: K.longRisk },
+   );
++  if (safe && !wantShort) {
++    const safer = passOptions(s, side, idx, tags, {
++      filter: front,
++      riskScale: K.longRisk,
++      safe,
++      free,
++    });
++    if (safer.length) options = safer;
++  }
+   const kind: 'short' | 'long' = wantShort ? 'short' : 'long';
+   if (!options.length) options = passOptions(s, side, idx, tags);
+   if (!options.length) return { target: idx === 0 ? 1 : 0, kind };
+@@ -1300,6 +1869,32 @@ export function decide(
+     ACTIONS.map((a) => mix[a]),
+     r,
+   );
++  // T689 cv04-cha experiment (default off): the keeper out to a chased carrier in a clear chance.
++  if (
++    (action === 'pass' || action === 'takeOn' || action === 'carry') &&
++    chasedOutChance(s, side, attackFrame(side, me.pos), tags)
++  ) {
++    const c = attackFrame(side, me.pos);
++    if (action === 'takeOn') return { action, round: true };
++    if (action === 'pass') {
++      const target = squareTarget(s, side, idx, c);
++      if (target !== undefined) return { action, target, kind: 'short' };
++    }
++    if (action === 'carry') return { action, point: openAngle(s, side, idx, c, r) };
++  }
++  // T689 cv04-clr experiment (default off): the keeper's angle shut in a clear chance, each of the
++  // options worth more than the shot (→MATCH-16 r58).
++  const shut =
++    action === 'pass' || action === 'takeOn' || action === 'carry'
++      ? clearShut(s, side, idx, tags)
++      : undefined;
++  if (shut && shut.total > 0) {
++    if (action === 'takeOn' && shut.round > 0) return { action, round: true };
++    if (action === 'pass' && shut.pass > 0 && shut.target !== undefined)
++      return { action, target: shut.target, kind: 'short' };
++    if (action === 'carry' && shut.carry > 0)
++      return { action, point: openAngle(s, side, idx, attackFrame(side, me.pos), r) };
++  }
+   if ((action === 'cross' || action === 'cutBack') && s.setup.model !== undefined) {
+     // Into a zone a teammate attacks (T444); the mix leaves no cross or cut-back without one.
+     const delivery = chooseDelivery(s, side, idx, tags, action, r);
+diff --git a/packages/engine/src/grid/engine.ts b/packages/engine/src/grid/engine.ts
+index 740b5f92..639e9f92 100644
+--- a/packages/engine/src/grid/engine.ts
++++ b/packages/engine/src/grid/engine.ts
+@@ -45,7 +45,15 @@ import { deliveryPoint, type DeliveryAim, type DeliveryKind } from './box';
+ import { isLevel, modelAtLeast } from './rules';
+ import type { GridSetup } from './setup';
+ import { playShootout } from './shootout';
+-import { moveAll, newShapeCache, speedOf, startRuns, targetOf } from './shape';
++import {
++  keeperSetTarget,
++  moveAll,
++  newShapeCache,
++  SHAPE_CONFIG,
++  speedOf,
++  startRuns,
++  targetOf,
++} from './shape';
+ import {
+   attackZones,
+   carryTo,
+@@ -216,6 +224,7 @@ export function playGrid(setup: GridSetup): GridResult {
+    */
+   function setOwner(side: 0 | 1, idx: number, at?: [number, number], passer?: number) {
+     const gp = s.players[side][idx]!;
++    s.hands = undefined;
+     if (at && !candidate) gp.pos = [at[0], at[1]];
+     const where = at ?? gp.pos;
+     if (candidate) {
+@@ -290,8 +299,11 @@ export function playGrid(setup: GridSetup): GridResult {
+     }
+     if (o.result === 'save') tally.save(foe, o.by ?? 0);
+     const at = endOfPlay(side, o);
+-    if (o.then === 'hold') setOwner(foe, o.by ?? 0, s.players[foe][o.by ?? 0]!.pos);
+-    else if (o.then === 'corner') {
++    if (o.then === 'hold') {
++      setOwner(foe, o.by ?? 0, s.players[foe][o.by ?? 0]!.pos);
++      // T689 experiment (default off): he holds it in his hands.
++      if (candidate && DECISION_CONFIG.keeper.hold > 0) s.hands = foe;
++    } else if (o.then === 'corner') {
+       pending = classifyOut({ at, lastTouch: foe, over: 'byline', blockedOrSaved: true });
+       rest();
+     } else if (o.then === 'goalKick') {
+@@ -462,8 +474,11 @@ export function playGrid(setup: GridSetup): GridResult {
+         return;
+       }
+       case 'held':
+-        if (o.by !== undefined) setOwner(foe, o.by, s.players[foe][o.by]!.pos);
+-        else holdBias = true;
++        if (o.by !== undefined) {
++          setOwner(foe, o.by, s.players[foe][o.by]!.pos);
++          // T689 experiment (default off): the keeper's claim is in his hands.
++          if (candidate && DECISION_CONFIG.keeper.hold > 0) s.hands = foe;
++        } else holdBias = true;
+         return;
+       case 'shot':
+         applyShot(side, o);
+@@ -484,6 +499,9 @@ export function playGrid(setup: GridSetup): GridResult {
+    * (T596, →MATCH-12 r44) a shot is struck at once and flies at its own speed; the ball it leaves
+    * loose waits where it stops for its winner (`actionTiming`).
+    */
++  /** T689 cv04-kpr experiment: the action `motionOf` moves is an open-play pass (`flight` 2). */
++  let flightPass = false;
++
+   function motionOf(
+     actor: Ref,
+     from: readonly [number, number],
+@@ -548,6 +566,25 @@ export function playGrid(setup: GridSetup): GridResult {
+     // read him, until it is won; he plays no part in it (→MATCH-12).
+     if (shot && o.via && o.by !== undefined)
+       plan.push({ gp: s.players[other(actor[0])][o.by]!, holdUntil: dt });
++    // T689 cv04-kpr experiment (default off, →MATCH-35 r55): while the ball travels to its receiver
++    // the keeper holds his set place, coming out to him only once he has it.
++    const F = SHAPE_CONFIG.candidate.revision9.keeperOut.flight;
++    if (
++      (F === 1 || (F === 2 && flightPass)) &&
++      !own &&
++      !shot &&
++      flight > 0 &&
++      owner &&
++      owner.side === actor[0]
++    ) {
++      const keeper = s.players[other(actor[0])].find((p) => onPitch(p) && p.slot === 0);
++      if (keeper) {
++        const to = keeperSetTarget(s, keeper.side, keeper.idx);
++        const at = plan.findIndex((m) => m.gp === keeper);
++        if (at >= 0) plan[at] = { ...plan[at]!, to };
++        else plan.push({ gp: keeper, to });
++      }
++    }
+     const knots: MotionKnot[] = [];
+     if (carry)
+       knots.push(
+@@ -673,7 +710,13 @@ export function playGrid(setup: GridSetup): GridResult {
+     for (const gp of s.players[other(side)])
+       if (onPitch(gp))
+         reads.set(gp, {
+-          to: targetOf(s, gp.side, gp.idx, cache),
++          // T689 cv04-kpr experiment (default off): the keeper does not read the pass out to its receiver.
++          to:
++            gp.slot === 0 &&
++            (SHAPE_CONFIG.candidate.revision9.keeperOut.flight === 1 ||
++              (SHAPE_CONFIG.candidate.revision9.keeperOut.flight === 2 && d.action === 'pass'))
++              ? keeperSetTarget(s, gp.side, gp.idx, cache)
++              : targetOf(s, gp.side, gp.idx, cache),
+           at: readAt(s, gp, side, seconds),
+         });
+     everyone.forEach((gp, k) => {
+@@ -868,8 +911,8 @@ export function playGrid(setup: GridSetup): GridResult {
+       case 'takeOn': {
+         const from = attackFrame(side, s.players[side][idx]!.pos);
+         // With nobody in front to beat it is a carry, not a take-on (MATCH-13).
+-        const opposed = inFront(s, side, idx) !== undefined;
+-        const o = resolveTakeOn(s, side, idx, tags, r);
++        const opposed = d.round === true || inFront(s, side, idx) !== undefined;
++        const o = resolveTakeOn(s, side, idx, tags, r, d.round === true);
+         if (opposed) tally.takeOnAttempt(side, idx);
+         if (o.kind === 'complete') {
+           if (opposed) tally.dribble(side, idx, from);
+@@ -945,6 +988,7 @@ export function playGrid(setup: GridSetup): GridResult {
+         // a second ball's first-time shot.
+         finishing = undefined;
+         rebound = undefined;
++        s.hands = undefined;
+         const rs = pending;
+         pending = undefined;
+         // A dead ball interrupts every intention below leaving the pitch (→MATCH-17).
+@@ -1006,6 +1050,7 @@ export function playGrid(setup: GridSetup): GridResult {
+         // taker no carrier while it is in the air (T373).
+         const delivery = rs.kind === 'corner' || res.kind === 'cross';
+         if (candidate) updateIntentions(s, delivery && s.owner === kicked);
++        flightPass = false;
+         const motion = candidate
+           ? motionOf(
+               actor,
+@@ -1051,6 +1096,27 @@ export function playGrid(setup: GridSetup): GridResult {
+         justBeat = undefined;
+         // His next action is decided now, knowing he has just beaten his man (T542).
+         s.beat = prevBeat;
++        // T689 experiment (default off, `DECISION_CONFIG.keeper.hold`): a keeper with the ball in his
++        // hands holds it that many seconds while everyone moves on (the opponents leaving him), then
++        // chooses his ball by where they stand and plays it at once.
++        let held: Carry | undefined;
++        if (candidate && s.hands === owner[0] && DECISION_CONFIG.keeper.hold > 0) {
++          const gp = s.players[owner[0]][owner[1]]!;
++          const seconds = DECISION_CONFIG.keeper.hold;
++          held = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds };
++          advance(s, seconds, [{ gp, to: [gp.pos[0], gp.pos[1]] }]);
++          s.t += seconds;
++          s.elapsed += seconds;
++        } else if (
++          candidate &&
++          DECISION_CONFIG.keeper.quick > 0 &&
++          slotOf(s, s.players[owner[0]][owner[1]]!).position === 'GK'
++        ) {
++          // T689 experiment (default off): a keeper on the ball at his feet plays it as he chooses
++          // it, never standing on it while the man closing him arrives.
++          const gp = s.players[owner[0]][owner[1]]!;
++          held = { at: [gp.pos[0], gp.pos[1]], start: s.elapsed, seconds: 0 };
++        }
+         from = [...s.players[owner[0]][owner[1]]!.pos] as [number, number];
+         const tags = computeTags(s, owner[0], owner[1]);
+         tally.material?.touch(owner[0], owner[1], from, tags.phase);
+@@ -1094,7 +1160,8 @@ export function playGrid(setup: GridSetup): GridResult {
+           d.action === 'pass' &&
+           d.target !== undefined &&
+           !receiverTight(s, owner[0], d.target);
+-        const carry = candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined;
++        const carry =
++          held ?? (candidate && !firstTime ? inStride(owner[0], owner[1], d, jitter) : undefined);
+         if (carry && free)
+           d = rereadPass(s, owner[0], owner[1], d, free, computeTags(s, owner[0], owner[1]), r);
+         const carried = carry?.seconds ?? 0;
+@@ -1106,10 +1173,12 @@ export function playGrid(setup: GridSetup): GridResult {
+         // Where everyone heads before the kick: off the ball they keep on until they read it.
+         const before = candidate ? heading(s) : undefined;
+         const played = play(owner[0], owner[1], d, jitter, carry, finish);
++        if (held) s.hands = undefined;
+         // What is left of the action's time after the carry.
+         const least = candidate ? secondsOf(played.key) * jitter - carried : 0;
+         // Everyone reacts to the action as it is played — a pass, a carry, a turnover — before anyone moves.
+         if (candidate) updateIntentions(s);
++        flightPass = d.action === 'pass';
+         const motion = candidate
+           ? motionOf(
+               owner,
+diff --git a/packages/engine/src/grid/movement.ts b/packages/engine/src/grid/movement.ts
+index 61943c87..02f0850e 100644
+--- a/packages/engine/src/grid/movement.ts
++++ b/packages/engine/src/grid/movement.ts
+@@ -91,6 +91,13 @@ export const IN_STRIDE_CONFIG = {
+    * seconds (a stride or two), the rest of the action's time running after the kick.
+    */
+   revision9: { near: 5, windUp: 0.4 },
++  /**
++   * T689 cv04-kpr experiment, default off at `chased` 0 (→MATCH-16 r53): a carrier through on goal —
++   * no outfield opponent within `corridor` m of the line to the goal's middle and at least `ahead` m
++   * nearer it — strikes in the same stride or two (`revision9.windUp`) with a man chasing him as
++   * with nobody close, before the keeper is out to him.
++   */
++  candidate: { chased: 0, corridor: 6, ahead: 3 },
+ } as const;
+ 
+ /** The middle of the 1–99 attribute scale: the pace `IN_STRIDE_CONFIG.speed` is a stride of. */
+@@ -352,6 +359,8 @@ export function presserOf(s: GridState, gp: GridPlayer): GridPlayer | undefined
+ export function shotWindUp(s: GridState, gp: GridPlayer, seconds: number): number {
+   if (!modelAtLeast(s.setup, 9)) return seconds;
+   const { near, windUp } = IN_STRIDE_CONFIG.revision9;
++  const C = IN_STRIDE_CONFIG.candidate;
++  if (C.chased > 0 && throughOnGoal(s, gp, C.corridor, C.ahead)) return Math.min(seconds, windUp);
+   for (const o of s.players[gp.side === 0 ? 1 : 0])
+     if (
+       onPitch(o) &&
+@@ -362,6 +371,30 @@ export function shotWindUp(s: GridState, gp: GridPlayer, seconds: number): numbe
+   return Math.min(seconds, windUp);
+ }
+ 
++/**
++ * T689 cv04-kpr experiment: no outfield opponent of `gp` within `corridor` m of the line from him to
++ * the goal's middle he attacks and at least `ahead` m nearer it (the narrowing's `nobodyBetween`).
++ */
++function throughOnGoal(s: GridState, gp: GridPlayer, corridor: number, ahead: number): boolean {
++  const from = attackFrame(gp.side, gp.pos);
++  const gx = PITCH.length,
++    gy = PITCH.width / 2;
++  const dd = s.math.hypot(gx - from[0], gy - from[1]);
++  if (dd <= 0) return true;
++  for (const o of s.players[gp.side === 0 ? 1 : 0]) {
++    if (!onPitch(o) || o.slot === 0) continue;
++    const p = attackFrame(gp.side, o.pos);
++    const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
++    if (t <= 0 || t >= 1 || t * dd < ahead) continue;
++    if (
++      Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd <
++      corridor
++    )
++      return false;
++  }
++  return true;
++}
++
+ /**
+  * The player on the ball takes it in stride for `seconds` (whole steps) of the match before he
+  * plays it (→MATCH-12 r27, T426), at his stride pace (`strideSpeed`) within the movement rules and
+diff --git a/packages/engine/src/grid/resolve.ts b/packages/engine/src/grid/resolve.ts
+index ff653ddf..35b389de 100644
+--- a/packages/engine/src/grid/resolve.ts
++++ b/packages/engine/src/grid/resolve.ts
+@@ -78,6 +78,16 @@ export type ShotOutcome = Extract<Outcome, { kind: 'shot' }>;
+ /** Initial values; T215 and T216 tune them. */
+ export const DUEL_CONFIG = {
+   pass: {
++    /**
++     * T689 experiment (default off at 0): nobody reaches the first `keeperClear` m of a keeper's
++     * distribution, as a keeper releases the ball only once nobody stands on him.
++     */
++    keeperClear: 0,
++    /**
++     * T689 experiment (default off at 0): an opponent within `keeperLeave` m of a keeper as he
++     * distributes is not where his ball goes (he plays it past the man on him), so he does not reach it.
++     */
++    keeperLeave: 0,
+     /** Calibration offset on every cell's real completion rate (T215). */
+     base: 0.07,
+     passer: 1 / 250,
+@@ -202,6 +212,14 @@ export const DUEL_CONFIG = {
+      * interceptions a cross kept in play would add.
+      */
+     crossKeeper: 0.47,
++    /**
++     * T689 experiment (default off at 0, →MATCH-18/33): a cross neither delivered nor overhit is
++     * blocked behind for a corner by the defender at the crosser's foot this share of the time,
++     * scaled by the pressure on the crosser (at most 1).
++     */
++    crossBlockBehind: 0,
++    /** T689 experiment (default off at 0): a defender who wins a delivery's aerial duel heads it behind this share of the time. */
++    headBehind: 0,
+     /**
+      * The deepest a won take-on ends (T437, →MATCH-11, the attack frame's metres), though always
+      * a metre past the man he beat: a defender beaten in the box leaves the attacker a strike from
+@@ -210,6 +228,14 @@ export const DUEL_CONFIG = {
+      * carry would stay), with `DECISION_CONFIG.candidate.goalAreaCarry`.
+      */
+     takeOnDepth: 99,
++    /**
++     * T689 cv04-box experiment (default off at `stop` 0, →MATCH-11/16): a carry not under
++     * pressure at its start whose end is at least `from` m up (the attack frame) does not run
++     * through an opposing outfielder standing within `near` m of its path: it ends `stop` m short of
++     * the first such man, where he meets the carrier (at least 0.5 m on), so his next touch is a
++     * take-on, a pass or a shot under that man's pressure (`resolveCarry`).
++     */
++    carryPath: { stop: 0, near: 2, from: 0 },
+     /**
+      * Revision 9 (T580, →MATCH-31 r42): a failed pass is lost where it really is. Not cut out or
+      * deflected where an opponent reaches its path, it is lost at its receiver only against an
+@@ -257,8 +283,21 @@ export const SHOT_CONFIG = {
+   blockThen: { corner: 0.65 },
+   penalty: { base: 0.78, min: 0.6, max: 0.92, xg: 0.76 },
+   maxXg: 0.8,
+-  /** Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`. */
+-  candidate: { header: 0.42 },
++  /**
++   * Candidate model only (T278, →MATCH-23): a header's chance quality, in place of `header`.
++   * `setPieceHeader` (T689 cv04-sym experiment, default off at 0): a set piece's delivered header's
++   * chance quality, in place of `header`.
++   */
++  // `oneTake` (cv04-blk, default 0 off, →MATCH-35 r52): a foot shot's pressure reads only the
++  // opponents within the pressure radius who are neither in its path nor closing it, those acting
++  // through their block alone. `usual` (cv04-blk, default 0 off, an unsourced screen setting): with
++  // a body in the shot's path, the chance before the blocks is divided by `usual`, the share of a
++  // shot from its place that usually gets through, so the place's usual bodies keep its level.
++  // `touch` (cv04-sho, default 0 off, →MATCH-35 r54): a man closing a foot shot down who stands
++  // more than `level` m behind the ball along the line from it to the goal's middle blocks only
++  // within `touch` m of the shooter; level with it or goal-side he closes as before. A man it
++  // drops stays the chance's pressure, as he was.
++  candidate: { header: 0.42, setPieceHeader: 0, oneTake: 0, usual: 0, touch: 0, level: 0.75 },
+   /**
+    * Revision 9 (T579, →MATCH-35 r42, MATCH-11): the keeper narrows the angle. From the shot, he
+    * covers the goal mouth within `reach` m either side of him; a shot's chance scales by the share
+@@ -266,7 +305,35 @@ export const SHOT_CONFIG = {
+    * (`keeperNarrowing`), so a keeper off his line toward the ball takes chances away and one caught
+    * out of position gives them.
+    */
+-  revision9: { narrow: { reach: 1.5 } },
++  /**
++   * `set`, `corridor`: T689 experiment, default off at `set` 0: `reach` only against a shooter
++   * through on goal (no outfield opponent within `corridor` m of the line from him to the goal's
++   * middle, between them); `set` m against one with at least `crowd` defenders between.
++   */
++  // `ahead` (cv04-rec, default 0): a defender counts as between only `ahead` m or more nearer the goal along the line than the shooter.
++  // `ref` (cv04-chc, default 0, →MATCH-11/35 r51): the reference keeper stands `ref` m off his line toward the shot, on the line from his goal's middle, in place of one on his line's middle; with `ref` set the factor is at most `cap`; `floor` (0 off) the least it falls to (a keeper out to a carrier still beaten by a chip or a finish past him).
++  // `only` (cv04-sho, default 0 off, →MATCH-35 r51/r54): `ref`, `cap` and `floor` apply only to a keeper within `only` m of his line (still set); a keeper further out keeps the released narrowing.
++  revision9: {
++    /**
++     * `body`, `grow`, `speed`: T689 cv04-kpr experiment, default off at `body` 0 (→MATCH-35 r55):
++     * the keeper's reach is `body` m against a shot struck close to him, growing to `reach` as the
++     * ball takes `grow` s to reach him at the shot's `speed` m/s; the reference keeper by the same rule.
++     */
++    narrow: {
++      reach: 1.5,
++      set: 0,
++      corridor: 6,
++      crowd: 1,
++      ahead: 0,
++      ref: 0,
++      cap: 10,
++      floor: 0,
++      only: 0,
++      body: 0,
++      grow: 0.45,
++      speed: 30,
++    },
++  },
+ } as const;
+ 
+ const sigmoid = (z: number, math: MatchMath) => 1 / (1 + math.exp(-z));
+@@ -285,6 +352,7 @@ export function chanceXg(
+     pressure?: number;
+     freeKick?: boolean;
+     candidate?: boolean;
++    headerQuality?: number;
+   } = {},
+   math: MatchMath = PORTABLE_MATH,
+ ): number {
+@@ -292,7 +360,7 @@ export function chanceXg(
+   const z = C.a + C.b * goalDistance(p, math) + C.c * goalAngle(p, math);
+   return (
+     sigmoid(z, math) *
+-    (opts.header ? (opts.candidate ? C.candidate.header : C.header) : 1) *
++    (opts.header ? (opts.headerQuality ?? (opts.candidate ? C.candidate.header : C.header)) : 1) *
+     (opts.cutBack ? C.cutBack : 1) *
+     (opts.freeKick ? C.freeKickWall : 1) *
+     Math.max(C.pressureFloor, 1 - C.pressure * (opts.pressure ?? 0))
+@@ -439,12 +507,24 @@ export function closingBlockers(
+ ): ShotBlocker[] {
+   const K = BOX_CONFIG.shot.close;
+   const { hypot } = s.math;
++  // cv04-sho (default off): a man behind the ball along the shot's line closes it only from touch.
++  const { touch, level } = SHOT_CONFIG.candidate;
++  const gx = PITCH.length - from[0],
++    gy = PITCH.width / 2 - from[1];
++  const glen = hypot(gx, gy);
+   const found: (ShotBlocker & { d: number })[] = [];
+   for (const gp of s.players[other(side)]) {
+     if (!onPitch(gp) || gp.slot <= 0 || path.some((b) => b.gp === gp)) continue;
+     const o = attackFrame(side, gp.pos);
+     const d = hypot(o[0] - from[0], o[1] - from[1]);
+     if (d >= K.radius) continue;
++    if (
++      touch > 0 &&
++      d > touch &&
++      glen > 0 &&
++      ((o[0] - from[0]) * gx + (o[1] - from[1]) * gy) / glen < -level
++    )
++      continue;
+     const foe = other(side);
+     const read =
+       (skill(s, foe, gp.idx, 'tackling') + skill(s, foe, gp.idx, 'positioning')) / 2 / K.skill;
+@@ -696,7 +776,21 @@ export function resolvePass(
+       ? (skill(s, side, idx, 'passing') + skill(s, side, idx, 'vision')) / 2
+       : skill(s, side, idx, 'passing');
+   const lane = onCandidate(s)
+-    ? reachOnPath(s, side, s.players[side][idx]!.pos, at ?? receiver.pos, kickAt)
++    ? reachOnPath(
++        s,
++        side,
++        s.players[side][idx]!.pos,
++        at ?? receiver.pos,
++        kickAt,
++        keeper && P.keeperLeave > 0
++          ? (gp) => {
++              const k = s.players[side][idx]!.pos;
++              return s.math.hypot(gp.pos[0] - k[0], gp.pos[1] - k[1]) < P.keeperLeave;
++            }
++          : undefined,
++        undefined,
++        keeper && P.keeperClear > 0 ? P.keeperClear : undefined,
++      )
+     : undefined;
+   const first = lane?.first;
+   // The defender the pass plays against (→MATCH-11): on the candidate the one who reaches its
+@@ -835,7 +929,26 @@ export function keeperNarrowing(
+   const { atan2, hypot } = s.math;
+   const depth = PITCH.length - from[0];
+   if (depth <= 0) return 1;
+-  const reach = SHOT_CONFIG.revision9.narrow.reach;
++  const N = SHOT_CONFIG.revision9.narrow;
++  let reach: number = N.reach;
++  if (N.set > 0) {
++    const gx = PITCH.length,
++      gy = PITCH.width / 2;
++    const dd = hypot(gx - from[0], gy - from[1]);
++    let between = 0;
++    for (const gp of s.players[other(side)]) {
++      if (!onPitch(gp) || gp.slot === 0 || dd <= 0) continue;
++      const p = attackFrame(side, gp.pos);
++      const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
++      if (t <= 0 || t >= 1 || t * dd < N.ahead) continue;
++      if (
++        Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd <
++        N.corridor
++      )
++        between++;
++    }
++    if (between >= N.crowd) reach = N.set;
++  }
+   const lo = atan2(PITCH.width / 2 - BOX_CONFIG.post - from[1], depth),
+     hi = atan2(PITCH.width / 2 + BOX_CONFIG.post - from[1], depth);
+   /** The share of the mouth [lo, hi] open past a keeper at `k`. */
+@@ -843,14 +956,57 @@ export function keeperNarrowing(
+     const dx = k[0] - from[0],
+       dy = k[1] - from[1];
+     const d = hypot(dx, dy);
+-    if (d <= reach) return 0;
++    // cv04-kpr (default off): what he reaches before the ball passes him, his body from close.
++    const r =
++      N.body > 0 && reach > N.body
++        ? N.body + (reach - N.body) * Math.min(1, d / N.speed / N.grow)
++        : reach;
++    if (d <= r) return 0;
+     const at = atan2(dy, dx),
+-      half = atan2(reach, d);
++      half = atan2(r, d);
+     const covered = Math.max(0, Math.min(hi, at + half) - Math.max(lo, at - half));
+     return 1 - covered / (hi - lo);
+   };
+-  const line = open([PITCH.length, PITCH.width / 2]);
+-  return line > 0 ? open(attackFrame(side, keeper.pos)) / line : 1;
++  let ref: Point = [PITCH.length, PITCH.width / 2];
++  // cv04-sho (default off): the set reference only for a keeper still within `only` m of his line.
++  const kp = attackFrame(side, keeper.pos);
++  const setRef = N.ref > 0 && (N.only <= 0 || PITCH.length - kp[0] <= N.only);
++  if (setRef) {
++    const gd = hypot(PITCH.length - from[0], PITCH.width / 2 - from[1]);
++    const k = gd > 0 ? Math.min(N.ref, gd / 2) / gd : 0;
++    ref = [
++      PITCH.length - (PITCH.length - from[0]) * k,
++      PITCH.width / 2 - (PITCH.width / 2 - from[1]) * k,
++    ];
++  }
++  const line = open(ref);
++  if (line <= 0) return 1;
++  const f = Math.min(setRef ? N.cap : Infinity, open(kp) / line);
++  return N.floor > 0 && (N.only <= 0 || setRef) ? Math.max(N.floor, f) : f;
++}
++
++/**
++ * T689 cv04-cha experiment: no outfield opponent within the narrowing's `corridor` m of the line
++ * from `from` (`side`'s attack frame) to the goal's middle and at least its `ahead` m nearer the goal.
++ */
++function nobodyBetween(s: GridState, side: 0 | 1, from: Point): boolean {
++  const N = SHOT_CONFIG.revision9.narrow;
++  const gx = PITCH.length,
++    gy = PITCH.width / 2;
++  const dd = s.math.hypot(gx - from[0], gy - from[1]);
++  if (dd <= 0) return true;
++  for (const gp of s.players[other(side)]) {
++    if (!onPitch(gp) || gp.slot === 0) continue;
++    const p = attackFrame(side, gp.pos);
++    const t = ((p[0] - from[0]) * (gx - from[0]) + (p[1] - from[1]) * (gy - from[1])) / (dd * dd);
++    if (t <= 0 || t >= 1 || t * dd < N.ahead) continue;
++    if (
++      Math.abs((p[0] - from[0]) * (gy - from[1]) - (p[1] - from[1]) * (gx - from[0])) / dd <
++      N.corridor
++    )
++      return false;
++  }
++  return true;
+ }
+ 
+ /**
+@@ -871,7 +1027,13 @@ export function resolveShot(
+   tags: Pick<Tags, 'pressure'>,
+   ctx: ShotContext,
+   r: () => number,
+-  opts: { header?: boolean; cutBack?: boolean; freeKick?: boolean; kickAt?: number } = {},
++  opts: {
++    header?: boolean;
++    cutBack?: boolean;
++    freeKick?: boolean;
++    kickAt?: number;
++    headerQuality?: number;
++  } = {},
+ ): ShotOutcome {
+   const C = SHOT_CONFIG;
+   const { kickAt = 0, ...kind } = opts;
+@@ -879,16 +1041,56 @@ export function resolveShot(
+   const from = attackFrame(side, me.pos);
+   const keeper =
+     s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp)) ?? s.players[other(side)][0]!;
+-  const xg =
++  const CB = C.candidate;
++  // cv04-blk (default off): the blockers read before the chance, so a body counts once.
++  const pre =
++    onCandidate(s) && (CB.oneTake > 0 || CB.usual > 0)
++      ? (() => {
++          const path = shotBlockers(s, side, from, opts.header);
++          const blockers =
++            modelAtLeast(s.setup, 7) && !opts.header
++              ? [...closingBlockers(s, side, from, path), ...path]
++              : path;
++          return { path, blockers };
++        })()
++      : null;
++  let pressure = tags.pressure;
++  // cv04-cha (`oneTake` 2, →MATCH-35 r53): only a shot with nobody in its path, and the keeper,
++  // whose narrowing is his take, is no pressure either; `oneTake` 3: as 2 for a shot with no
++  // outfielder goal-side between him and the goal (`nobodyBetween`), a chaser in its path included.
++  if (
++    pre &&
++    CB.oneTake > 0 &&
++    !opts.header &&
++    modelAtLeast(s.setup, 7) &&
++    (CB.oneTake < 2 ||
++      (Number(CB.oneTake) === 2 ? pre.path.length === 0 : nobodyBetween(s, side, from)))
++  ) {
++    const { hypot } = s.math;
++    pressure = 0;
++    for (const gp of s.players[other(side)]) {
++      if (!onPitch(gp) || pre.blockers.some((b) => b.gp === gp)) continue;
++      if (CB.oneTake >= 2 && gp.slot === 0) continue;
++      const o = attackFrame(side, gp.pos);
++      if (hypot(o[0] - from[0], o[1] - from[1]) <= TAG_CONFIG.pressureRadius)
++        pressure += o[0] > from[0] ? 1 : 0.5;
++    }
++  }
++  const usual = pre && CB.usual > 0 && pre.path.length > 0 ? 1 / CB.usual : 1;
++  const xg = Math.min(
++    usual > 1 ? C.maxXg : Infinity,
+     chanceXg(
+       from,
+       {
+         ...kind,
+-        pressure: tags.pressure,
++        pressure,
+         candidate: onCandidate(s),
+       },
+       s.math,
+-    ) * (opts.freeKick ? 1 : keeperNarrowing(s, side, from, keeper));
++    ) *
++      (opts.freeKick ? 1 : keeperNarrowing(s, side, from, keeper)) *
++      usual,
++  );
+   const hard = tags.pressure >= 1 || xg >= 0.3;
+   const main = opts.header ? skill(s, side, idx, 'heading') : skill(s, side, idx, 'finishing');
+   const shooting =
+@@ -896,13 +1098,14 @@ export function resolveShot(
+   const goal = goalChance(xg, shooting, skill(s, other(side), keeper.idx, 'reflexes'), s.math);
+   const onTarget = targetChance(goal, shooting);
+   if (onCandidate(s)) {
+-    const path = shotBlockers(s, side, from, opts.header);
++    const path = pre?.path ?? shotBlockers(s, side, from, opts.header);
+     // Revision 7 (T548): the men closing a shot with the foot down come first. A header's marker
+     // is its aerial duel's (`headerPressure`), as for the path's `header` scale.
+     const blockers =
+-      modelAtLeast(s.setup, 7) && !opts.header
++      pre?.blockers ??
++      (modelAtLeast(s.setup, 7) && !opts.header
+         ? [...closingBlockers(s, side, from, path), ...path]
+-        : path;
++        : path);
+     const through = xg * unblocked(blockers);
+     const shot = {
+       kind: 'shot',
+@@ -1024,6 +1227,17 @@ export function resolveCross(
+   if (!delivered || !attacker) {
+     const over = crossOverhit(s, side, idx, r);
+     if (over) return over;
++    // T689 experiment (default off): blocked behind by the defender at the crosser's foot.
++    const BB = DUEL_CONFIG.candidate.crossBlockBehind;
++    if (BB > 0 && onCandidate(s) && tags.pressure > 0 && r() < BB * Math.min(1, tags.pressure)) {
++      const y = clamp(attackFrame(side, s.players[side][idx]!.pos)[1], 0, PITCH.width);
++      return {
++        kind: 'out',
++        at: toEngine(side, [PITCH.length, y]),
++        lastTouch: foe,
++        over: 'byline',
++      };
++    }
+     const spot: Point = attacker
+       ? attackFrame(side, attacker.pos)
+       : [PITCH.length - 10, PITCH.width / 2];
+@@ -1033,8 +1247,15 @@ export function resolveCross(
+   }
+   const won = aerialDelivery(s, side, attacker, tags, r, [attacker.pos[0], attacker.pos[1]]);
+   if (won.kind !== 'header') return won;
++  // T689 cv04-sym experiment (default off at 0): a set piece's header's own chance quality.
++  const SP = SHOT_CONFIG.candidate.setPieceHeader;
++  const quality =
++    SP > 0 && onCandidate(s) && tags.phase === 'setPiece' ? { headerQuality: SP } : {};
+   return {
+-    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, { header: true }),
++    ...resolveShot(s, side, attacker.idx, { pressure: won.pressure }, ctx, r, {
++      header: true,
++      ...quality,
++    }),
+     header: true,
+     ...(won.aerial === undefined ? {} : { aerial: won.aerial }),
+   };
+@@ -1119,8 +1340,18 @@ function aerialDelivery(
+     }, undefined)?.gp;
+   if (defender) {
+     const duel = resolveAerial(s, [side, attacker.idx], [foe, defender.idx], [88.5, at[1]], r);
+-    if (duel.kind === 'loose' && duel.winner[0] === foe)
++    if (duel.kind === 'loose' && duel.winner[0] === foe) {
++      // T689 experiment (default off at 0, →MATCH-18): a defender's header heads it behind.
++      const HB = DUEL_CONFIG.candidate.headBehind;
++      if (HB > 0 && onCandidate(s) && r() < HB)
++        return {
++          kind: 'out',
++          at: toEngine(side, [PITCH.length, clamp(at[1], 0, PITCH.width)]),
++          lastTouch: foe,
++          over: 'byline',
++        };
+       return { kind: 'loose', at: toEngine(side, [88.5, at[1]]), winner: duel.winner, aerial: foe };
++    }
+   }
+   const aerial = defender ? { aerial: side } : {};
+   if (r() < (tags.phase === 'setPiece' ? X.control.setPiece : X.control.open))
+@@ -1270,6 +1501,17 @@ export function inFront(s: GridState, side: 0 | 1, idx: number): GridPlayer | un
+   return best;
+ }
+ 
++/**
++ * T689 cv04-cha experiment: where going round keeper `k` takes a carrier at `c` (attack frame) — a
++ * metre past him and 2.5 m to the side he leaves open.
++ */
++export function roundPoint(c: Point, k: Point): Point {
++  return [
++    Math.min(PITCH.length - 0.5, k[0] + 1),
++    clamp(k[1] + (c[1] >= k[1] ? 2.5 : -2.5), 0.5, PITCH.width - 0.5),
++  ];
++}
++
+ /** A take-on. Draws: success; on failure the split; for a loose ball the winner. */
+ export function resolveTakeOn(
+   s: GridState,
+@@ -1277,21 +1519,30 @@ export function resolveTakeOn(
+   idx: number,
+   tags: Tags,
+   r: () => number,
++  round = false,
+ ): Outcome {
+   const T = DUEL_CONFIG.takeOn;
+   const me = s.players[side][idx]!;
+   const c = attackFrame(side, me.pos);
+-  const foe = inFront(s, side, idx);
++  // T689 cv04-cha experiment: going round the keeper out to him, a metre past him and 2.5 m to the
++  // side he leaves open (→MATCH-12, MATCH-16 r53).
++  const keeper = round
++    ? s.players[other(side)].find((gp) => gp.slot === 0 && onPitch(gp))
++    : undefined;
++  const foe = keeper ?? inFront(s, side, idx);
+   const beyond = foe ? attackFrame(side, foe.pos)[0] : c[0];
+-  const past: Point = [
+-    Math.min(
+-      PITCH.length - 0.5,
+-      beyond + T.past[0] + (T.past[1] - T.past[0]) / 2,
+-      // The candidate's depth, though always a metre past the man he beat.
+-      onCandidate(s) ? Math.max(DUEL_CONFIG.candidate.takeOnDepth, beyond + 1) : Infinity,
+-    ),
+-    c[1],
+-  ];
++  const k = keeper ? attackFrame(side, keeper.pos) : undefined;
++  const past: Point = k
++    ? roundPoint(c, k)
++    : [
++        Math.min(
++          PITCH.length - 0.5,
++          beyond + T.past[0] + (T.past[1] - T.past[0]) / 2,
++          // The candidate's depth, though always a metre past the man he beat.
++          onCandidate(s) ? Math.max(DUEL_CONFIG.candidate.takeOnDepth, beyond + 1) : Infinity,
++        ),
++        c[1],
++      ];
+   if (!foe) return { kind: 'complete', to: toEngine(side, past), receiver: idx };
+   const edge =
+     0.7 * skill(s, side, idx, 'dribbling') +
+@@ -1324,6 +1575,25 @@ export function resolveCarry(
+ ): Outcome {
+   const K = DUEL_CONFIG.carry;
+   const me = s.players[side][idx]!;
++  // T689 cv04-box experiment (default off at `stop` 0): no carry runs through a man on its path.
++  const CP = DUEL_CONFIG.candidate.carryPath;
++  if (CP.stop > 0 && onCandidate(s) && tags.pressure < 1) {
++    const a = attackFrame(side, me.pos);
++    const b = attackFrame(side, to);
++    const len = s.math.hypot(b[0] - a[0], b[1] - a[1]);
++    if (len > 0 && b[0] >= CP.from) {
++      let first = Infinity;
++      for (const gp of s.players[other(side)]) {
++        if (!onPitch(gp) || gp.slot === 0) continue;
++        const q = toSegment(attackFrame(side, gp.pos), a, b, s.math.hypot);
++        if (q.d <= CP.near && q.t > 0) first = Math.min(first, q.t * len);
++      }
++      if (first < Infinity) {
++        const keep = Math.min(len, Math.max(0.5, first - CP.stop)) / len;
++        to = toEngine(side, [a[0] + (b[0] - a[0]) * keep, a[1] + (b[1] - a[1]) * keep]);
++      }
++    }
++  }
+   const foe = nearestToSegment(s, side, attackFrame(side, me.pos), attackFrame(side, to));
+   if (tags.pressure >= 1 && foe) {
+     const lost = CELL_BASELINES[tags.cell]!.lostPer100 / 100;
+diff --git a/packages/engine/src/grid/shape.ts b/packages/engine/src/grid/shape.ts
+index 30c5ddf0..4cadd697 100644
+--- a/packages/engine/src/grid/shape.ts
++++ b/packages/engine/src/grid/shape.ts
+@@ -84,7 +84,16 @@ export const SHAPE_CONFIG = {
+      * goals a match): gap 4 3.22 / 3.60, gap 3 3.32 / 3.38, share 0.4 4.02 / 3.63, share 0.6
+      * 4.12 / –, `markRadius` 18 3.36 / 3.95.
+      */
+-    revision9: { keeperOut: { share: 0.5, gap: 3 }, markRadius: 14 },
++    revision9: {
++      /**
++       * `set`, `corridor`: T689 experiment, default off at `set` 0 (see `keeperOut`). `flight`: T689
++       * cv04-kpr experiment, default off at 0 (→MATCH-35 r55): while a pass is on its way to its
++       * receiver the keeper holds his set place (`keeperSetTarget`), coming out only once he has it;
++       * 1 for every ball played to a receiver, 2 for an open-play pass only (no cross, cut-back or restart).
++       */
++      keeperOut: { share: 0.5, gap: 3, set: 0, corridor: 6, crowd: 1, ahead: 0, flight: 0 as number },
++      markRadius: 14,
++    },
+     /**
+      * Revision 10 (T599, →MATCH-17/32/34): with the ball within `goalSide.near` m of his goal (his
+      * frame's depth), every attacker within `zone` m of its middle has one marker: the free
+@@ -151,6 +160,41 @@ export const SHAPE_CONFIG = {
+      * at 0.
+      */
+     secondStriker: { drop: 0, roles: ['targetMan'] as readonly RoleId[] },
++    /**
++     * T689 experiment (default off at 0): a presser of the keeper on the ball stands off at least
++     * `keeperOff` m goal-side of him instead of closing him, as opponents leave a keeper holding it.
++     */
++    keeperOff: 0,
++    /**
++     * T689 experiment (default off at 0): with the keeper holding the ball in his hands (`s.hands`),
++     * his presser stands off at least `handsOff` m goal-side of him, as nobody may challenge him.
++     */
++    handsOff: 0,
++    /**
++     * T689 experiment (default off, →MATCH-33's timed arrival): in possession a forward with no run
++     * waits no deeper than `out` m from the goal line (the attack frame) instead of on the offside
++     * line, so he reaches the goal area only on a run. Off at 0.
++     */
++    hold: { out: 0 },
++    /**
++     * T689 experiment (default off, →MATCH-17/33 support arriving): in possession with the ball
++     * from `from` m up (attack frame), an attacking midfielder, a winger or a box-run role waits at
++     * least as far up as `out` m from the goal line and `narrow` of the way in toward the centre,
++     * so the carrier finds several men in scoring positions, not the striker alone. Off at 0.
++     */
++    arrive: { from: 0, out: 14, narrow: 0.3 },
++    /** T689 experiment (default off at `seconds` 0): the back line's drop after a loss (`shapePlace`). */
++    drop: { seconds: 0, line: 35, free: 6 },
++    /**
++     * T689 cv04-box experiment (default off at `from` 0, →MATCH-32/34): out of possession, with the
++     * ball at most `from` m from his goal and at most `wide` m off the centre line, a back-line
++     * man's shape place is at most `edge` m out (the box's edge) and a midfielder's at most `mid` m
++     * (0: unchanged), rather than the back line standing `deepLine.behindBall` m goal-side of the
++     * ball upfield; the presser still steps out to the carrier (`shapePlace`).
++     */
++    block: { from: 0, wide: 20.2, edge: 16, mid: 0 },
++    /** T689 experiment (default off at 0): every keeper steps up behind a high line as a sweeper keeper does. */
++    sweepAll: 0,
+     /**
+      * The flank beside a back three (T399, →MATCH-8, MATCH-17): out of possession, with the ball
+      * at least `wide` m off the centre line and no further up the pitch than `upTo` m (the
+@@ -608,7 +652,10 @@ export function shapePlace(
+   if (own === 'GK') {
+     const out = keeperOut(s, side, bx, by);
+     if (out) return toEngine(side, out);
+-    const sweeper = slotOf(s, gp).role === 'sweeperKeeper';
++    // T689 experiment (default off at 0, →MATCH-11): every keeper sweeps behind a high line.
++    const sweeper =
++      slotOf(s, gp).role === 'sweeperKeeper' ||
++      (SHAPE_CONFIG.candidate.sweepAll > 0 && s.setup.model !== undefined);
+     const df = (cache.defence[side] ??= lineX(s, side, 'DF'));
+     const high = sweeper && df >= 40;
+     let x = 4 + (bx - MID) * SHAPE_CONFIG.keeperPull;
+@@ -671,6 +718,25 @@ export function shapePlace(
+       FORMATION_FACTS[tactic].twoForwards
+     )
+       x -= SS.drop;
++    const H = SHAPE_CONFIG.candidate.hold;
++    if (H.out > 0 && s.setup.model !== undefined && line === 'FW')
++      x = Math.min(x, PITCH.length - H.out);
++    const A = SHAPE_CONFIG.candidate.arrive;
++    const pos = jobSlot.position;
++    if (
++      A.from > 0 &&
++      s.setup.model !== undefined &&
++      bx >= A.from &&
++      pos !== 'ST' &&
++      (pos === 'AM' ||
++        pos === 'LW' ||
++        pos === 'RW' ||
++        BOX_ROLES.includes(jobSlot.role) ||
++        SHAPE_CONFIG.candidate.boxRun.extra.includes(jobSlot.role))
++    ) {
++      x = Math.max(x, PITCH.length - A.out);
++      y += (CENTRE - y) * A.narrow;
++    }
+     x = Math.min(x, (cache.offside[foe] ??= offsideLine(s, foe)) - 0.5);
+     return toEngine(side, [x, y]);
+   }
+@@ -731,6 +797,40 @@ export function shapePlace(
+   )
+     return toEngine(side, boxBackLine(s, side, y));
+   if (line === 'DF') x = clamp(x, lineFloor(bx, cfg.line[0]), cfg.line[1]);
++  // T689 experiment (default off at `seconds` 0, →MATCH-17/32): for `seconds` after losing the
++  // ball, with nobody of the side within `free` m of it, the back line drops to at most `line` m
++  // from its goal — no pressure on the ball, the line drops rather than holding high.
++  const D = SHAPE_CONFIG.candidate.drop;
++  if (
++    line === 'DF' &&
++    D.seconds > 0 &&
++    s.setup.model !== undefined &&
++    x > D.line &&
++    s.lastLoss?.side === side &&
++    s.elapsed - s.lastLoss.at < D.seconds
++  ) {
++    let pressed = false;
++    for (const mate of s.players[side]) {
++      if (!onPitch(mate) || mate.slot === 0) continue;
++      if (hypot(mate.pos[0] - s.ball[0], mate.pos[1] - s.ball[1]) < D.free) {
++        pressed = true;
++        break;
++      }
++    }
++    if (!pressed) x = D.line;
++  }
++  // T689 cv04-box experiment (default off at `from` 0, →MATCH-32/34): in front of a central ball
++  // near his goal the block holds the box's edge instead of following the ball out of it.
++  const E = SHAPE_CONFIG.candidate.block;
++  if (
++    E.from > 0 &&
++    s.setup.model !== undefined &&
++    bx <= E.from &&
++    Math.abs(by - CENTRE) <= E.wide
++  ) {
++    if (line === 'DF') x = Math.min(x, E.edge);
++    else if (line === 'MF' && E.mid > 0) x = Math.min(x, E.mid);
++  }
+   return toEngine(side, [x, y]);
+ }
+ 
+@@ -791,6 +891,17 @@ export function intentionTarget(s: GridState, gp: GridPlayer): [number, number]
+   const foe = i.opponent === undefined ? undefined : s.players[other(side)][i.opponent];
+   const mate = i.teammate === undefined ? undefined : s.players[side][i.teammate];
+   if (foe && onPitch(foe) && i.kind === 'press') {
++    const off =
++      s.setup.model !== undefined
++        ? Math.max(
++            SHAPE_CONFIG.candidate.keeperOff,
++            s.hands === foe.side ? SHAPE_CONFIG.candidate.handsOff : 0,
++          )
++        : 0;
++    if (off > 0 && lineOfSlot(s, foe) === 'GK') {
++      const at = attackFrame(side, foe.pos);
++      return toEngine(side, [Math.max(0, at[0] - off), at[1]]);
++    }
+     const urgent = i.priority === 'danger';
+     const option = urgent || i.shadow === undefined ? undefined : s.players[other(side)][i.shadow];
+     return pressPoint(
+@@ -907,18 +1018,55 @@ export function speedOf(s: GridState, gp: GridPlayer): number {
+  * `bx`, `by`: the ball in his side's attack frame (his goal at x 0).
+  */
+ function keeperOut(s: GridState, side: 0 | 1, bx: number, by: number): Point | undefined {
+-  if (!modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
++  if (holdSet || !modelAtLeast(s.setup, 7) || s.possession === side || !s.owner) return undefined;
+   const K = SHAPE_CONFIG.candidate.keeperOut;
+   if (!inBox(attackFrame(other(side), s.ball))) return undefined;
+   const d = s.math.hypot(bx, by - CENTRE);
+   if (d <= 0) return undefined;
+   const R9 = SHAPE_CONFIG.candidate.revision9.keeperOut;
++  // T689 experiment (default off at `set` 0): half of the way only to a carrier through on goal (no
++  // outfield teammate of the keeper within `corridor` m of the line from the ball to the goal's
++  // middle); `set` of the way to one with at least `crowd` defenders between him and the goal.
++  let share: number = R9.share;
++  if (R9.set > 0) {
++    let between = 0;
++    for (const gp of s.players[side]) {
++      if (!onPitch(gp) || gp.slot === 0) continue;
++      const p = attackFrame(side, gp.pos);
++      const t = ((p[0] - bx) * -bx + (p[1] - by) * (CENTRE - by)) / (d * d);
++      if (t <= 0 || t >= 1 || t * d < R9.ahead) continue;
++      if (Math.abs((p[0] - bx) * (CENTRE - by) - (p[1] - by) * -bx) / d < R9.corridor) between++;
++    }
++    if (between >= R9.crowd) share = R9.set;
++  }
+   const reach = modelAtLeast(s.setup, 9)
+-    ? Math.max(0, Math.min(K.most, d * R9.share, d - R9.gap))
++    ? Math.max(0, Math.min(K.most, d * share, d - R9.gap))
+     : Math.min(K.most, d * K.share);
+   return [(bx / d) * reach, CENTRE + ((by - CENTRE) / d) * reach];
+ }
+ 
++/** T689 cv04-kpr experiment: set while `keeperSetTarget` reads a keeper's target. */
++let holdSet = false;
++
++/**
++ * T689 cv04-kpr experiment (`revision9.keeperOut.flight`, →MATCH-35 r55): the target of the keeper
++ * `(side, idx)` as it is with nobody on the ball in his box — his set place, not out to a receiver
++ * the ball is still travelling to.
++ */
++export function keeperSetTarget(
++  s: GridState,
++  side: 0 | 1,
++  idx: number,
++  cache: ShapeCache = newShapeCache(),
++): [number, number] {
++  holdSet = true;
++  try {
++    return targetOf(s, side, idx, cache);
++  } finally {
++    holdSet = false;
++  }
++}
++
+ /** Every on-pitch player but the carrier takes a step toward his target. */
+ export function moveAll(s: GridState, dt: number): void {
+   const moves: [GridPlayer, [number, number]][] = [];
+diff --git a/packages/engine/src/grid/state.ts b/packages/engine/src/grid/state.ts
+index 76b689e0..dab234e4 100644
+--- a/packages/engine/src/grid/state.ts
++++ b/packages/engine/src/grid/state.ts
+@@ -75,6 +75,11 @@ export interface GridState {
+    * is decided (T542): on revision 6 he goes on rather than turning it back.
+    */
+   beat?: [0 | 1, number];
++  /**
++   * T689 experiment (default off, `DECISION_CONFIG.keeper.hold`): the side whose keeper holds the
++   * ball in his hands (a save he held, a delivery he claimed) until he releases it.
++   */
++  hands?: 0 | 1;
+   /** Match seconds when the possessing side got the ball. */
+   possessionSince: number;
+   /** Each side's substitutions and injuries so far (→MATCH-20, §8.1). */
+@@ -297,6 +302,7 @@ export function createState(setup: GridSetup): GridState {
+     lastPass: undefined,
+     received: undefined,
+     beat: undefined,
++    hands: undefined,
+   };
+ }
+ 

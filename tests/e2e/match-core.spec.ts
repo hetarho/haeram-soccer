@@ -26,7 +26,7 @@ import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
 import type { World } from '../../packages/contracts/src/types';
 import { expectViewFits, horizontalOverflow, settle } from './layout';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import {
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,

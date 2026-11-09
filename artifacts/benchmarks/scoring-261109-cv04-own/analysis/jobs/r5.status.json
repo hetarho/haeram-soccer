@@ -1,0 +1,25 @@
+{
+ "seconds": 1261,
+ "status": [
+  {
+   "name": "pc-Pb-calibration-2",
+   "code": 0,
+   "seconds": 617
+  },
+  {
+   "name": "pc-Pc9-calibration-2",
+   "code": 0,
+   "seconds": 617
+  },
+  {
+   "name": "pc-Pa-calibration-2",
+   "code": 0,
+   "seconds": 621
+  },
+  {
+   "name": "pc-Pbp-calibration-2",
+   "code": 0,
+   "seconds": 645
+  }
+ ]
+}

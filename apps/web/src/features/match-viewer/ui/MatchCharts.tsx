@@ -7,7 +7,7 @@ import { colourDistance, contrast, type Crest } from '../../../entities/club';
 import { KIT_ROLE_LABELS } from '../../../entities/match';
 import { KitSwatch } from '../../../entities/match';
 import { UNRECORDED_KIT, type MatchLook, type SideLook } from '../../../entities/match';
-import { goalFrame, recordedGoals } from '../../../entities/match';
+import { goalFrame, recordedGoals } from '../lib/moments';
 import t from './Pitch.module.css';
 
 type Chart = 'possession' | 'xg' | 'shots';

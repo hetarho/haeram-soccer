@@ -6,7 +6,7 @@ import { importResponsibilityCareer } from './responsibility-fixtures';
 import { configureResponsibilities } from './events';
 import { expectBallSideScoreboard, horizontalOverflow } from './layout';
 import { readPresentationBaselines } from '../fixtures/presentation';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/entities/match/lib/goalFeedback';
+import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import {
   deadBallBeats,
   presentationMs,
