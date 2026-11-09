@@ -880,6 +880,7 @@
 - T689: cv04-clr hand-off is complete; both candidates fail the unchanged screen. Read its final README before another bounded window; the remaining question is why the round/square alternatives add goal-area chances and box entries
 
 ## log
+- 261109 fi09 released both paused attempts before correcting unstarted test paths: .test.ts follows unit discovery, isolated seasonStats.unit.test.ts avoids the mixed integration file; preserved worker edits
 - 261109 create-task review/football-data-consistency-261109: T747-T752 approved by direct local invocation; finance-views and football-data lanes, no T689 ownership fi09
 - 261109 self-improve-local fi09 start: eight-hour finance, transfer and football-data UI consistency run; independent scouts, bounded adoption, isolated implementation and review; preserve T689 ownership
 - 261109 T689 cv04-clr hand-off complete: nine pinned-Node confirmation jobs, seven exact origin comparisons; both candidates fail the screen, all experimental engine source restored; T689 stays todo av11
@@ -899,4 +900,3 @@
 - 261109 create-task T744: unchanged portable/prepared generators must close the final economy and published monthly-owner fixture data together; wait for accepted source before regeneration ec10.
 - 261109 create-task T743: exact payroll observer must feed the canonical50-year reference report too; preserve sampled legacy inputs and the published T735 owner policy. Controlled baseline advances to released44a1069e before any economic run ec10.
 - 261109 T742 integrated
-- 261109 T741 integrated
