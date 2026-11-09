@@ -826,7 +826,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
@@ -852,12 +851,13 @@
 | club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
 | club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 4 | 3 | 1 | 1 | 0 | 0 | 2026-11-09T02:27:24.690Z | [history](work/economy-ec09.json) |
+| economy-ec09 | 2 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-11-09T02:29:42.398Z | [history](work/economy-ec09.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261109 T734 integrated
 - 261109 T732 integrated
 - 261109 T733 integrated
 - 261109 create-task T733 review/economy-transfers-261109 F4: independent review found zero-fee reporting omissions after T731 approval; correct shared measurement counter, re-review reports, preserve frozen cash evidence with a free-count limitation ec09.
@@ -877,4 +877,3 @@
 - 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
 - 261109 T721–T724 done (lane dev-cost, worker fs09-w2, reviewer fs09-r1 approved with P3 notes only): every CI job has a time limit and every browser two shards; host transcendental `Math.*` (log2 and hypot included) fails lint in engine/contracts source, the four kit-pattern hypots and both knockout log2s now portable/integer with the contract golden unchanged; typecheck and format:check reuse per-checkout caches (warm 2.7 s / 5.2 s from 27 s / 18 s). Integrated on main as c1aba11f..ffa2b7d2 (tree identical to the reviewed 009a49db); verify:batch and CI pending the run's single push fs09
 - 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720; ARCH r33 (CI shards and limits), F2–F4 adopted → T721–T723 (lane dev-cost), F5 rejected, F6 parked, F7 suggested
-- 261109 T714 done: the journey helper settles the office before clicking 오버뷰 (Playwright's retried pre-click scroll moved the view, not the app's focus); CI 42494165472 on 145635c3 green in every job, main green again since 11-04. mt08

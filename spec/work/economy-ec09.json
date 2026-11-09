@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-09T02:27:24.690Z",
-  "sourceCommit": "aae3d522d379cd814887dc7c7205f883af9123e6",
+  "snapshotAt": "2026-11-09T02:29:42.398Z",
+  "sourceCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
   "group": {
     "id": "economy-ec09",
     "branch": "main",
@@ -23,23 +23,14 @@
   },
   "summary": {
     "total": 4,
-    "completed": 3,
-    "remaining": 1,
-    "running": 1,
+    "completed": 4,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T734",
-      "title": "refresh the portable transfer-value observation",
-      "dep": [
-        "T731"
-      ],
-      "status": "doing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "43cfe9aa-0e48-4868-ad1c-c3ee73eefa6e",
@@ -126,6 +117,8 @@
       "submittedBase": "aae3d522d379cd814887dc7c7205f883af9123e6",
       "submissionId": "87cbaea9-2e78-43fc-8188-addc157987cd",
       "submittedAt": "2026-11-09T02:26:07.976Z",
+      "integratedCommit": "6d2c2f7a048baaf2a930f936d6255d59dbc0cfe4",
+      "integratedAt": "2026-11-09T02:27:25.363Z",
       "risk": null,
       "review": {
         "id": "f7f71286-a63a-44d7-8280-bd0ad0a6bcc2",
@@ -182,6 +175,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
           "startedAt": "2026-11-09T02:24:22.857Z",
           "finishedAt": "2026-11-09T02:26:07.647Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "git diff --check",
+          "startedAt": "2026-11-09T02:27:25.097Z",
+          "finishedAt": "2026-11-09T02:27:25.104Z"
         }
       ]
     },
@@ -262,9 +262,49 @@
       "contributors": [
         "ec09-transfer"
       ],
-      "status": "doing",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-09T02:22:49.021Z",
-      "startCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c"
+      "startCommit": "6c4954c2607a05233ebb166064d4c46cc96aeb5c",
+      "verifiedCommit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+      "submittedBase": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+      "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+      "submittedAt": "2026-11-09T02:28:28.245Z",
+      "risk": null,
+      "review": {
+        "id": "cd4273e2-a453-4349-a61d-ff1b8e4ded92",
+        "owner": "ec09-reviewer",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Reviewed exact T73490a7cd17: the generated fixture diff contains exactly four amount substitutions in modern-european-season owner-living events, from2534951893 to2843913976. No scenario input, engine/catalog version, generator, assertion or other expected fact changes; final club cash remains970129584. The attribution is supported by the unchanged code: marketValueAt feeds clubValue, tierFortune determines takeover.fortune, and livingCost reads that starting fortune. The task's preflight wording calls the first event a takeover event; the implementation receipt correctly identifies the four owner-living events and explains the repeated effect. This wording error does not invalidate the narrowly authorized generated observation update. No blocking findings. Root owns final portable replay and full gate on the integrated candidate.",
+        "findings": [],
+        "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+        "baseCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+        "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+        "createdAt": "2026-11-09T02:28:48.033Z",
+        "finishedAt": "2026-11-09T02:29:17.432Z"
+      },
+      "steps": [
+        {
+          "taskId": "T734",
+          "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+          "at": "2026-11-09T02:28:28.207Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+              "startedAt": "2026-11-09T02:27:48.394Z",
+              "finishedAt": "2026-11-09T02:28:27.930Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+          "startedAt": "2026-11-09T02:27:48.394Z",
+          "finishedAt": "2026-11-09T02:28:27.930Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -1068,6 +1108,154 @@
       "group": "economy-ec09",
       "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
       "taskId": "T732",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 857,
+      "at": "2026-11-09T02:27:25.262Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "git diff --check",
+            "startedAt": "2026-11-09T02:27:25.097Z",
+            "finishedAt": "2026-11-09T02:27:25.104Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 858,
+      "at": "2026-11-09T02:27:25.363Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "8a6fc573-d7c8-4a19-9748-3704643d4701",
+      "taskId": "T732",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "6d2c2f7a048baaf2a930f936d6255d59dbc0cfe4",
+        "integratedAt": "2026-11-09T02:27:25.363Z"
+      }
+    },
+    {
+      "sequence": 859,
+      "at": "2026-11-09T02:27:48.157Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 860,
+      "at": "2026-11-09T02:28:28.245Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "reason": null,
+        "verifiedCommit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+        "submittedBase": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+        "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+        "submittedAt": "2026-11-09T02:28:28.245Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T734",
+            "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+            "at": "2026-11-09T02:28:28.207Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+                "startedAt": "2026-11-09T02:27:48.394Z",
+                "finishedAt": "2026-11-09T02:28:27.930Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check",
+            "startedAt": "2026-11-09T02:27:48.394Z",
+            "finishedAt": "2026-11-09T02:28:27.930Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 861,
+      "at": "2026-11-09T02:28:48.033Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "cd4273e2-a453-4349-a61d-ff1b8e4ded92",
+          "owner": "ec09-reviewer",
+          "status": "reviewing",
+          "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+          "baseCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+          "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+          "createdAt": "2026-11-09T02:28:48.033Z"
+        }
+      }
+    },
+    {
+      "sequence": 862,
+      "at": "2026-11-09T02:29:17.433Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "cd4273e2-a453-4349-a61d-ff1b8e4ded92",
+          "owner": "ec09-reviewer",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Reviewed exact T73490a7cd17: the generated fixture diff contains exactly four amount substitutions in modern-european-season owner-living events, from2534951893 to2843913976. No scenario input, engine/catalog version, generator, assertion or other expected fact changes; final club cash remains970129584. The attribution is supported by the unchanged code: marketValueAt feeds clubValue, tierFortune determines takeover.fortune, and livingCost reads that starting fortune. The task's preflight wording calls the first event a takeover event; the implementation receipt correctly identifies the four owner-living events and explains the repeated effect. This wording error does not invalidate the narrowly authorized generated observation update. No blocking findings. Root owns final portable replay and full gate on the integrated candidate.",
+          "findings": [],
+          "commit": "90a7cd17438529a6c41ff3507c1b715bbe022f9d",
+          "baseCommit": "40e34af80cd31cd226adf4dee78c38173a20e9dc",
+          "submissionId": "c30ee3aa-c743-40d7-ab67-bd66b74cf81a",
+          "createdAt": "2026-11-09T02:28:48.033Z",
+          "finishedAt": "2026-11-09T02:29:17.432Z"
+        }
+      }
+    },
+    {
+      "sequence": 863,
+      "at": "2026-11-09T02:29:39.484Z",
+      "type": "attempt",
+      "group": "economy-ec09",
+      "attemptId": "7f322977-8984-484e-b84e-18efcc9cdf18",
+      "taskId": "T734",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
