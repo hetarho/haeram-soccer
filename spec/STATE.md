@@ -780,6 +780,7 @@
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
 - 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
+- 261109 decided MATCH-16 MATCH-35 MATCH-29 T689: cv04-own's planning question — when a clear chance in the box is still clear, since 92% of the carried box shots with nobody between are MATCH-16 clear chances decided with the keeper already out (struck at xG 0.008 while a free teammate had a better chance 61% of the time), and how MATCH-29 holds once counter's 1v1s behind press's line are not struck into the keeper → MATCH r58: a clear chance is read against the keeper where he stands as any carrier decides; once he is out with the angle shut, chased or not, the carrier goes round him, squares it to a teammate arriving free or carries to an open angle, weighed as r56's box shot outside a clear chance, striking into him only with none on (MATCH-16✎, r53's chased choice for every carrier); counter v press is held by how often counter's chances behind press's line arise, how they are taken and press's own chances against counter's deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `DECISION_CONFIG.candidate.clear.keeper` at 0.5/0.25 on `Pab`, then cv04-rec's existing frequency switches (`dr6l30`, `sw5m28`, `w0`) where `scoring-press-counter.ts` points, with the goal-area share no higher than `Perf`'s 16.0% added to the screen bar (alt: relieve the keeper's narrowing for a keeper out, which gave counter's 1v1s back without making them fewer, press v counter −0.36 | keep the clear-chance floor and accept the box's chance at about half real football's, leaving MATCH-23's box level unmet | hold MATCH-29 by suppressing counter's 1v1 conversion, which MATCH-16's "never by suppressing the shot" forbids) ev09
 
 ## ideation
 | id | st |
@@ -809,7 +810,7 @@
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 64 | 64 | - | 0 |
-| MATCH | 57 | 57 | - | 0 |
+| MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
 | ECON | 52 | 52 | - | 0 |
@@ -864,6 +865,7 @@
 
 ## next
 - implement-task T726, then T730
+- implement-task T689: its cv04-clr window on `Pab` (MATCH r58's clear chance read against the keeper where he stands, then MATCH-29 by how often counter gets in behind press's line)
 
 ## log
 - 261109 update-ssot ARCH r35 + create-task T726 refresh: code run outside the Vite build loads no stylesheet, asset or slice index and reaches other slices through `logic.ts` or `@x` (F13 adopted); T726 blocked → todo at ARCH@35 ev09
@@ -882,7 +884,7 @@
 - 261109 T740 integrated
 - 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
 - 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
-- 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
 - 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
 - 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
 - 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
+- 261109 update-ssot MATCH r58 + refresh T689: a clear chance is read against the keeper where he stands — once he is out with the angle shut, any carrier, chased or not, goes round him, squares it or carries to an open angle, weighed as r56's box shot (MATCH-16✎); counter v press is held by how often counter's 1v1s arise and press's own chances against the deep block, never by a strike into a keeper already out (MATCH-35✎); T689's cv04-clr window screens `clear.keeper` on `Pab` in the run's next unit ev09
