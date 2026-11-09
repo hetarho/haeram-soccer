@@ -812,7 +812,7 @@
 | MATCH | 57 | 57 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
-| ECON | 50 | 50 | - | 0 |
+| ECON | 51 | 51 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 23 | 23 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
@@ -872,6 +872,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
 - 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
 - 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
 - 261109 T737 integrated
@@ -891,4 +892,3 @@
 - 261109 T726–T728 done (lane fsd-phase-b, worker fs09-w4, reviewer fs09-r2: T726/T727 approved, T728 approved after its absolute-path fix): the match viewer owns its six playback modules (entity index 88→70 names, `@x` 7→6); cup calendars and knockout counts read from the `competition-keys` leaf (UI→orchestration exception keys 28→24, chunks 71/30 kept); a path-resolving layer rule replaces the pattern blocks and rejects sibling re-exports, deep/climbing paths, wrong `@x` consumers, dynamic `import()` of higher layers or indexes and side-effect-only imports (51/51 probes; the old patterns 29/47) fs09
 - 261109 fs09 gate on 9329121a (T725, T729) failed only `persistence.long-career.test.ts` by its 600 s timeout: T725's engine change re-keyed the cached ten-season world, re-simulated at load 38 beside the phase-B review; rerun as part of the final gate on a quiet machine fs09
 - 261109 T729 done (reviewer fs09-r1 approved): resource-skins waits for the hub's entrance animations before reading the venue contrast; local WebKit + Chromium 8 passed (local WebKit is GPU-rendered, so CI's software WebKit is the real check) fs09
-- 261109 T725 done (worker fs09-w3; reviewer fs09-r3 requested a test fix — the retain comparison shared one object — then approved): `recentClubResults`' fallback scan runs as indexed loops over the same sources; `ab.mjs` on M1 Max at load 16–26: first matchday ×0.952 [0.920, 0.984] (about 25–49 ms CPU), 60-day day/aggregate/grid no difference, every hash identical fs09
