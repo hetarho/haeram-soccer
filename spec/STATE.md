@@ -22,6 +22,7 @@
 | ow09 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T03:07Z | 2026-11-09T03:07Z | - |
 
 ## inbox
+- 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
 - 261109 decided OWNER-7 T735: how much a monthly settlement wins or loses once it settles eleven times a season at 60% → 5% of the staked share (about +10% a season at a full stake, +23% with 성공한 사업가; a 50% stake about +5%) (alt: the whole staked share each month, which shrinks a 50% stake by a third a season and ruins a full one | a third of it, the old season exposure, compounding ×2.6 a season with the trait) ow09
 - 261109 decided OWNER-5 OWNER-7 T735: 성공한 사업가 once the base is 60% → 70%, the same +10 points (alt: 65% | no business effect) ow09
 - 261109 decided OWNER-7 OWNER-8 T735: which days are monthly and what living costs do → the 1st of September–June and the close (eleven; the summer the close skips has none), living costs 0.8% a season split over them so the season total is unchanged (alt: twelve with a settlement on 1 August, which the day loop never processes | 0.2% a settlement, tripling living costs) ow09
@@ -800,7 +801,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 34 | 34 | - | 2 |
-| WEB | 212 | 212 | - | 0 |
+| WEB | 213 | 213 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -831,6 +832,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T738 | switch the season history between 순위 and 재정 | WEB OWNER ARCH | - | todo |
 | T734 | refresh the portable transfer-value observation | ARCH CLUB ECON | T731 | todo |
 | T733 | count zero-fee arrivals without paid transfer facts | ARCH | - | todo |
 | T732 | choose affordable sporting improvements before free status | CLUB ECON ARCH | - | todo |
@@ -869,6 +871,7 @@
 - F7: a host `view` workload for `scripts/perf/ab.mjs` before any viewPublisher/projection speed-up. Coordinators gate with verify:batch before any main push, and commit nothing in the gated checkout while it runs.
 
 ## log
+- 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
 - 261109 T736 done: 시즌별 기록 one newest-first table with the owner's record per season and a 구단 인수 rule above the seasons before the owner (ow09)
 - 261109 T735 done: monthly owner business (1 Sep–1 Jun + close) at 60%/70% with a 5% swing; living costs 0.8% a season in eleven exact shares (ow09)
 - 261109 update-ssot OWNER r6 WORLD r10 HIST r23 WEB r212 + create-task T735 T736: monthly owner business at 60% with a 5% swing; one season history table with a takeover rule (ow09)
@@ -888,4 +891,3 @@
 - 261109 fs09 gate: `vibe check --tier batch -- pnpm run verify:batch` passed on 5a6a840c (T720–T724) in 1954 s — typecheck, lint, format, unit, integration, contract, catalogs, presentation, i18n, build, Chromium 348 passed (23.0 min); pushed to main for CI's first run with six browser shards and job limits
 - 261109 T720 done (worker fs09-w1, reviewer fs09-r2 approved with P3 notes; full test:integration 149 files green on the moved tree): `apps/web/src/ui/` is gone — app, pages, widgets, features, entities, shared with documented indexes, entity `@x` files and ESLint layers; `scripts/move-modules.ts` moves modules and rewrites their imports; integrated on main as ba16abbc..(docs) with one mechanical ESLint merge beside T722's block fs09
 - 261109 T721–T724 done (lane dev-cost, worker fs09-w2, reviewer fs09-r1 approved with P3 notes only): every CI job has a time limit and every browser two shards; host transcendental `Math.*` (log2 and hypot included) fails lint in engine/contracts source, the four kit-pattern hypots and both knockout log2s now portable/integer with the contract golden unchanged; typecheck and format:check reuse per-checkout caches (warm 2.7 s / 5.2 s from 27 s / 18 s). Integrated on main as c1aba11f..ffa2b7d2 (tree identical to the reviewed 009a49db); verify:batch and CI pending the run's single push fs09
-- 261109 fs09 self-improve-local started (owner: until 07:00 KST, then push main): ARCH r32 (FSD layout and direction), review/self-improve-local-261109 F1 adopted → T720; ARCH r33 (CI shards and limits), F2–F4 adopted → T721–T723 (lane dev-cost), F5 rejected, F6 parked, F7 suggested
