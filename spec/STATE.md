@@ -18,9 +18,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T04:45Z | - |
+| ec10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-09T04:45Z | 2026-11-09T05:02Z | - |
 
 ## inbox
+- 261109 decided ECON-29 ARCH-30 T739 T740 T741: the owner bounds the remaining work to the current increment and every linked task/fix → finish wage/package implementation, calibrated measurements and full checks, push the complete unit to main, then end; no new counterparty-budget model or further economy cycle ec10
 - 261109 decided ECON-29 ARCH-30 review/economy-transfers-261109: the owner asks why work stopped with the original realistic-economy goal unfinished and expects main publication → resume wage/distribution calibration across reviewed increments, treat reports and pushes as checkpoints; the verified first increment96a6290f is now on origin/main. Preserve task-unit and pre-push E2E tiers, no automatic schedule ec10
 - 261109 decided ARCH-30 T737: economy-ec09 verified source731ed705 passes the combined gate (Chromium348 cases, including2 fresh management journeys); the owner authorizes origin publication → gather this batch on next while ow09 remains live, leave the main release to the last session. All5 adopted tasks are integrated; detailed evidence/report retained ec09
 - 261109 decided ARCH-30 T737: the owner authorizes origin publication in a suitable batch and reiterates unit tests per task, E2E at the push boundary → keep worker browser runs disabled, verify the combined batch before one code push; static checks remain basic checks and the final affected-file confirmation belongs to the coordinator ec09
@@ -807,11 +808,11 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 62 | 62 | - | 0 |
+| CLUB | 63 | 63 | - | 0 |
 | MATCH | 57 | 57 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
-| ECON | 49 | 49 | - | 0 |
+| ECON | 51 | 51 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 23 | 23 | - | 0 |
 | SAVE | 65 | 65 | - | 0 |
@@ -834,6 +835,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T739 | separate the player wage era scale and observe settled payroll | CLUB ECON LEAGUE ARCH | - | todo |
+| T740 | normalize the English top-flight central distribution package | ECON ARCH | - | todo |
+| T741 | align financial integration expectations with the normalized central package | ECON ARCH | T740 | todo |
+| T742 | use the normalized central package in club valuation | ECON OWNER ARCH | T740 | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T726 | move the match viewer's own modules out of the match entity | ARCH | - | blocked@261109 |
 | T730 | keep the 결재함 running-clock journey true on CI's slow WebKit | WEB ARCH | - | todo |
@@ -869,6 +874,10 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261109 create-task T742: independent review finds raw club-value distribution bypass; share canonical code/year/tier quote so valuation/takeover terms match cash income, required before this increment publishes ec10.
+- 261109 update-ssot ECON51/create-task refresh T740/T741: exact canonical money fixes the central-pot coefficient; old T740 attempt released before contract update. T739 base freshness only, wage contract unchanged ec10.
+- 261109 create-task T741: T740 scout reports legacy raw-broadcast equalities in finance.test.ts; keep its active touches immutable and update the integration contract in a separately reviewed follow-up ec10.
+- 261109 update-ssot CLUB63 ECON50/create-task T739 T740: owner-requested continuation adopts F6/F7 pilot wage/central-package rules and exact payroll observation; no production publication until joint measured gates pass ec10.
 - 261109 ow09 gate: verify:batch on d905f682 passed every stage but owner-sheet.spec.ts (odds 50%→60% expectation, fixed ca6b7f27, re-run 9/9); golden regenerated for monthly owner-living events only; push main
 - 261109 T738 done: 시즌별 기록 switches between 순위 and 재정 columns over the same rows (ow09)
 - 261109 update-ssot WEB r213 + create-task T738: 시즌별 기록 switches its columns between 순위 and 재정 (ow09)
@@ -885,7 +894,3 @@
 - 261109 freshness preflight ec09: T689 MATCH57/ARCH34 and the earlier review ARCH34 refreshed after checking path-only MATCH57, web-layer/import ARCH32/34 and CI ARCH33; no scoring/review scope or status changed. Required to unblock work integrate's warning-free spec gate.
 - 261109 update-ssot CLUB r62 and create-task T731 T732: explicit economic behavior changes, scout proposals F1/F2 adopted within the owner's self-improve-local scope; independent review and paired cash-flow evidence before integration ec09.
 - 261109 self-improve-local economy start ec09: owner delegates realistic club cash flow and transfer-fee calibration; scouts scout_cash/scout_transfer read only, base 60c5d4ba, current main integration, 60-minute cycle, independent review required.
-- 261109 fs09 CI 42519984966 re-run of `e2e (webkit 2/2)` failed progression-settings.spec.ts:287 again in all three attempts (passed on CI WebKit at d0180ee1, passes on local WebKit at ad51162): deterministic on CI's Linux WebKit for this tree, so T730 starts by bisecting T725/T727 on CI; main stays red until then fs09
-- 261109 fs09 gate passed on ad511620 in 1836 s (every stage, Chromium 348 passed, tree untouched); pushed ad511620 to main; CI 42519984966: checks, unit, integration 1–3/3, Chromium 1–2/2, Firefox 1–2/2, WebKit 1/2 green, WebKit 2/2 failed progression-settings.spec.ts:287 (→T730) with set-piece-defence.spec.ts:187 flaky; re-running the failed job fs09
-- 261109 fs09 final gate `vibe check --tier batch -- pnpm run verify:batch` on 61d6d6a2: every stage passed — typecheck, lint, format, unit, integration 318 s, contract, catalogs, presentation, i18n, build, Chromium 348 passed (25.6 min); the receipt reads stale because this session committed spec-only files during the run (no code after 61d6d6a2) fs09
-- 261109 T726 reverted (61d6d6a2) and blocked: its lib moves made every Playwright spec fail to load through a CSS-carrying entity index; T727/T728 stay fs09
