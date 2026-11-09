@@ -1,5 +1,8 @@
 /** Source-backed running statistics. Arrays hold season then career contributions. */
 import { z } from 'zod';
+
+export const CAREER_READS_FORMAT = 2;
+export const OBSOLETE_CAREER_READS_FORMAT = 1;
 const count = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
 const year = z.number().int().min(1901).max(4000);
 const pair = z.tuple([count, count]);
@@ -14,7 +17,7 @@ export const playerReadSchema = z.object({
 });
 export type PlayerRead = z.infer<typeof playerReadSchema>;
 export const careerReadsSchema = z.object({
-  format: z.literal(1),
+  format: z.literal(CAREER_READS_FORMAT),
   year,
   matches: count,
   events: count,

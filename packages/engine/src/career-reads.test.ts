@@ -12,7 +12,7 @@ import {
   tallies,
 } from '../../../apps/web/src/runtime/playerTallies';
 import { newsBefore, clubNews } from './news';
-import type { SeasonArchive } from '../../contracts/src/types';
+import type { MatchRecord, Player, SeasonArchive } from '../../contracts/src/types';
 
 function assertCounts(w: ReturnType<typeof facts>) {
   const legacy = structuredClone(w);
@@ -26,6 +26,93 @@ function assertCounts(w: ReturnType<typeof facts>) {
   expect(clubMilestones(w)).toEqual(clubMilestones(legacy));
 }
 describe('incremental career readers', () => {
+  it('attributes cards by recorded side across transfers, venues and season rollover', () => {
+    const w = facts();
+    w.players = ['scorer', 'incoming', 'departed', 'never-own'].map((id) => ({ id }) as Player);
+    const record = (
+      n: number,
+      year: number,
+      kind: MatchRecord['kind'],
+      ownSide: 0 | 1,
+      ownPlayer: string,
+      incidents: [string, 0 | 1, 'yellow' | 'secondYellow' | 'red'][],
+    ) => {
+      const m = result(w, n);
+      Object.assign(m, {
+        id: `${year}:${kind}:${n}`,
+        year,
+        kind,
+        home: ownSide === 0 ? 'own' : 'rival',
+        away: ownSide === 1 ? 'own' : 'rival',
+        players: [{ ...m.players[0], id: ownPlayer }],
+        incidents: incidents.map(([player, side, kind]) => ({ player, side, kind })),
+      });
+      return m;
+    };
+    const first = record(1, 1930, 'league', 0, 'scorer', [
+      ['scorer', 0, 'yellow'],
+      ['scorer', 0, 'secondYellow'],
+      ['departed', 0, 'red'],
+      ['incoming', 1, 'secondYellow'],
+      ['never-own', 1, 'yellow'],
+    ]);
+    const second = record(2, 1930, 'cup', 1, 'incoming', [
+      ['scorer', 0, 'red'],
+      ['incoming', 1, 'yellow'],
+      ['departed', 0, 'secondYellow'],
+    ]);
+    const nextSeason = record(1, 1931, 'league', 1, 'incoming', [
+      ['scorer', 0, 'secondYellow'],
+      ['incoming', 1, 'red'],
+      ['incoming', 1, 'yellow'],
+      ['departed', 0, 'red'],
+      ['never-own', 0, 'secondYellow'],
+    ]);
+    initializeReadModels(w);
+    for (const m of [first, second, nextSeason]) {
+      w.year = m.year;
+      w.ownMatches.push(m);
+      refreshReadModels(w);
+      assertCounts(w);
+      const summary = structuredClone(w.careerReads);
+      refreshReadModels(w);
+      initializeCareerReads(w);
+      expect(w.careerReads).toEqual(summary);
+    }
+    expect(cardCounts(w)).toEqual(
+      new Map([
+        ['scorer', { season: { yellow: 0, red: 0 }, career: { yellow: 2, red: 1 } }],
+        ['departed', { season: { yellow: 0, red: 0 }, career: { yellow: 0, red: 1 } }],
+        ['incoming', { season: { yellow: 1, red: 1 }, career: { yellow: 2, red: 1 } }],
+      ]),
+    );
+    expect(w.careerReads!.players.scorer).toMatchObject({
+      year: 1931,
+      yellow: [0, 2],
+      red: [0, 1],
+      leagueReds: 1,
+    });
+    expect(w.careerReads!.players['never-own']).toMatchObject({
+      year: 1931,
+      yellow: [0, 0],
+      red: [0, 0],
+      leagueReds: 1,
+    });
+    expect(leagueReds(w)).toEqual({ scorer: 1, incoming: 1, departed: 1, 'never-own': 1 });
+    // Rebuilding the complete history agrees with every incremental prefix/suffix.
+    const rebuilt = structuredClone(w);
+    delete rebuilt.careerReads;
+    initializeCareerReads(rebuilt);
+    expect(rebuilt.careerReads).toEqual(w.careerReads);
+    // Present squad membership never changes previously recorded contributions.
+    const afterDeparture = {
+      ...w,
+      players: w.players.filter((p) => p.id !== 'departed'),
+      ownMatches: [...w.ownMatches],
+    };
+    expect(cardCounts(afterDeparture).get('departed')!.career.red).toBe(1);
+    assertCounts(afterDeparture);
+  });
   it('preserves appearances, subs, cards, maxima and competition scopes across rollover and reload', () => {
     const w = facts();
     initializeReadModels(w);
@@ -33,9 +120,9 @@ describe('incremental career readers', () => {
       const m = result(w, n);
       m.kind = n % 2 ? 'league' : 'europe';
       m.incidents = [
-        { kind: 'sub', player: 'unused', other: 'scorer' },
-        { kind: 'secondYellow', player: 'scorer' },
-        { kind: 'red', player: 'rival-player' },
+        { kind: 'sub', side: 0, player: 'unused', other: 'scorer' },
+        { kind: 'secondYellow', side: 0, player: 'scorer' },
+        { kind: 'red', side: 1, player: 'rival-player' },
       ] as typeof m.incidents;
       m.players.push({ ...m.players[0], id: 'unused', metrics: Array<number>(12).fill(0) });
       w.ownMatches.push(m);

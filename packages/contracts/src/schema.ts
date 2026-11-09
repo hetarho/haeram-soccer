@@ -1,5 +1,10 @@
 import { message as sourceMessage } from './messages';
-import { careerReadsSchema } from './career-reads';
+import {
+  CAREER_READS_FORMAT,
+  careerReadsSchema,
+  OBSOLETE_CAREER_READS_FORMAT,
+} from './career-reads';
+import { SaveCompatibilityError } from './versions';
 import { newsJournalSchema } from './news';
 import { z } from 'zod';
 z.config({ jitless: true });
@@ -1197,7 +1202,16 @@ const worldSchema: z.ZodType<World> = z.object({
   designCommission: designCommissionSchema.optional(),
   ownMatches: z.array(match).max(100000),
   newsJournal: newsJournalSchema.optional(),
-  careerReads: careerReadsSchema.optional(),
+  careerReads: z.preprocess((value) => {
+    const format =
+      typeof value === 'object' && value !== null && !Array.isArray(value) && 'format' in value
+        ? value.format
+        : undefined;
+    // Only the known derived cache is retired; unknown formats retain SAVE-11 protection.
+    if (value === undefined || format === OBSOLETE_CAREER_READS_FORMAT) return undefined;
+    if (format !== CAREER_READS_FORMAT) throw new SaveCompatibilityError();
+    return value;
+  }, careerReadsSchema.optional()),
   matchModel: matchModelStateSchema.optional(),
   npcSeason: npcSeasonSchema.optional(),
   managerHistory: managerHistoryFactsSchema.optional(),
