@@ -20,6 +20,8 @@
 | bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
+- 261110 decided ARCH-21 review/test-gate-time-261110 review/test-value-261110 T788 T790: the owner extends tv10 to 22:00 (wrap up and push the target branch at 21:30) and approves the clone-wide world cache (F6; ARCH-21 r38) and shared season worlds for integration tests (C2) → T788, T790, plus T789 (the save packing's base64/varints like T780) (alt: keep per-worktree caches | keep each test's private season) tv10
+- 261110 decided ARCH-30 T775 T776 T777 T778: pf10 stopped its regate at its 18:00 deadline without pushing and handed its integrated speed-ups to tv10 → one locked gate on the synced main releases pf10's T775–T778, tq10/tv10's T779–T781 T786 T787 and origin/main's latest together (alt: leave pf10's work unpublished) tv10
 - 261110 decided ARCH-30: the owner asks ARCH-30 to follow haeram-spec-creator 0.12.0 → r37: planning alone goes to `next` (plan-push); finished work lands on SETTINGS `land` (`main`) by `vibe push` after one `pnpm run verify:batch` on the final candidate through `vibe check --tier batch`, whose host lock queues other sessions; no code waits on `next` for a release (alt: keep gathering code on `next` and set SETTINGS land to `next` | keep the quick batch before each landing, leaving browsers to CI after the deploy) bd10
 - 261110 decided PLAYER-27 CLUB-33 T783 T784 T785: the owner's three reports (one club's three on most Ballon d'Or podiums, a delegated club told to spend without limit never nearing the record fee, its signings bunched on one seller) → PLAYER r16 teammates split the votes at 1/0.55/0.35, chosen from a measured grid (0.53/0.55/0.57/0.60: two from one club 9/16/30/48%, real football 16–21%), implemented now as T783; CLUB r65 adds the seller-spread and record-fee targets for explore tasks T784 and T785, diagnosis first, no rule changed until measured (alt: raise production's weight, which hands the award to T689's inflated scorers | cap one club at one podium place, which real 1988/1989/2010 deny) bd10
 - 261110 decided T689 MATCH-16 MATCH-34: nx10's parked call below — whether MATCH-16's clear chance is real football's big chance — taken by the owner's delegation ("니가 진행해줘", after his 1967 export showed Terence Gill at 663 goals in 251 own matches: 2.69 a 90, 12.1 shots and xG 0.18 a shot a 90, 55–67% of the club's league goals 1955–61; export kept untracked at /home/deep/haeram/haeram-soccor/.tmp/saves/haeram-1967.haeram-save.json) → yes: MATCH-16's clear chance stays real football's big chance and MATCH-34 gains a cover rule keeping a man goal-side of a carrier or receiver entering the box in settled play, planned by update-ssot and measured as T689's next window under every existing gate (cv04-clr's screen, then held-out, season share and stress case); cv04-alt's second question (where a round of the keeper or a carry to an open angle ends) is answered in the same planning slice if the window needs it; while the owner's tv10/pf10 sessions share the host the window runs at most 4 measurement processes (alt: narrow MATCH-16's clear chance, which relabels chances without changing who stands goal-side | another settings window, which cv04-alt showed cannot reach the volume) gc10
@@ -850,7 +852,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 37 | 37 | - | 2 |
+| ARCH | 38 | 38 | - | 2 |
 | WEB | 214 | 214 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
@@ -886,6 +888,9 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T788 | share the test-world cache across a clone's worktrees | ARCH | - | todo |
+| T789 | base64 and variable-length integers in the save packing with integer operations | SAVE | - | todo |
+| T790 | integration tests apply their tweaks to shared season worlds | ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
@@ -920,6 +925,7 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
 - 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
@@ -939,4 +945,3 @@
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 T787 integrated (independent review approved 81aedca6, P3 notes only) tv10
-- 261110 pf10 end: gate 1 passed on 0e514e46, re-gate of the origin/main merge 251982ad stopped at the 18:00 deadline, no push; release handed to tv10 pf10
