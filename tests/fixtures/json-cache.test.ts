@@ -9,8 +9,8 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { cachedJson, cachedJsonAsync } from './json-cache';
+import { isAbsolute, join } from 'node:path';
+import { cacheBase, cachedJson, cachedJsonAsync, gitCommonDirectory } from './json-cache';
 
 const roots: string[] = [];
 afterEach(() => roots.splice(0).forEach((root) => rmSync(root, { recursive: true, force: true })));
@@ -19,6 +19,25 @@ function options() {
   roots.push(directory);
   return { directory, dependencies: ['tests/fixtures/json-cache.ts'] };
 }
+it('shares one store per clone locally, keeps the checkout path on CI and honours the override', () => {
+  const fallback = '/checkout/node_modules/.cache/haeram-worlds';
+  const asked: string[] = [];
+  const clone = () => (asked.push('git'), '/clone/.git');
+  expect(cacheBase({}, clone, fallback)).toBe('/clone/.git/haeram/worlds');
+  expect(asked).toHaveLength(1);
+  expect(cacheBase({ CI: 'true' }, clone, fallback)).toBe(fallback);
+  expect(cacheBase({ HAERAM_WORLD_CACHE: '/elsewhere' }, clone, fallback)).toBe('/elsewhere');
+  expect(cacheBase({ HAERAM_WORLD_CACHE: 'off', CI: 'true' }, clone, fallback)).toBe('off');
+  expect(asked).toHaveLength(1);
+  expect(cacheBase({}, () => undefined, fallback)).toBe(fallback);
+});
+it('asks Git for the absolute common directory and falls back when Git cannot answer', () => {
+  const common = gitCommonDirectory(process.cwd());
+  expect(common !== undefined && isAbsolute(common) && existsSync(join(common, 'HEAD'))).toBe(true);
+  expect(gitCommonDirectory(join(tmpdir(), 'haeram-json-cache-missing', 'checkout'))).toBe(
+    undefined,
+  );
+});
 it('expires unused source scopes while preserving recent data and live builders', () => {
   const config = options();
   const old = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);

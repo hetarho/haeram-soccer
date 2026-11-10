@@ -1,4 +1,5 @@
 /** Dependency-scoped, JSON-only setup cache. Importing it never imports the engine or a UI. */
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
   existsSync,
@@ -30,6 +31,42 @@ const FORMAT = 'dependency-json-cache-1';
 const KEEP_OTHER_SCOPES_MS = 2 * 24 * 60 * 60 * 1000;
 const usedDirectories = new Set<string>();
 const prunedBases = new Set<string>();
+/** The per-checkout store: CI restores it per job (verify.yml), and it is the fallback without Git. */
+const CHECKOUT_BASE = join(ROOT, 'node_modules/.cache/haeram-worlds');
+
+/** The clone's Git common directory, absolute, which every worktree shares; undefined without Git. */
+export function gitCommonDirectory(root: string): string | undefined {
+  try {
+    const common = execFileSync('git', ['rev-parse', '--git-common-dir'], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    return common ? resolve(root, common) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Where persisted entries live (ARCH-21): `HAERAM_WORLD_CACHE` overrides everything (`off` keeps
+ * them in memory); CI keeps the per-job checkout path; locally every worktree of the clone shares
+ * one store under the Git common directory, or the checkout path when Git cannot be asked.
+ */
+export function cacheBase(
+  env: Readonly<Record<string, string | undefined>>,
+  commonDirectory: () => string | undefined,
+  fallback: string,
+): string {
+  if (env.HAERAM_WORLD_CACHE !== undefined) return env.HAERAM_WORLD_CACHE;
+  if (env.CI) return fallback;
+  const common = commonDirectory();
+  return common ? join(common, 'haeram', 'worlds') : fallback;
+}
+
+let clone: { directory: string | undefined } | undefined;
+/** Asks Git once per process (module instance), and only when no override or CI decides first. */
+const cloneDirectory = () => (clone ??= { directory: gitCommonDirectory(ROOT) }).directory;
 
 /** Keep the previous two-day retention, protecting recently used scopes and live builders. */
 function maintainDirectory(directory: string) {
@@ -99,10 +136,7 @@ function identity(id: string, build: () => unknown, options: CacheOptions) {
   const key = createHash('sha256')
     .update(JSON.stringify([FORMAT, source, options.input, build.toString(), id]))
     .digest('hex');
-  const base =
-    options.directory ??
-    process.env.HAERAM_WORLD_CACHE ??
-    join(ROOT, 'node_modules/.cache/haeram-worlds');
+  const base = options.directory ?? cacheBase(process.env, cloneDirectory, CHECKOUT_BASE);
   const file =
     base === 'off'
       ? undefined
