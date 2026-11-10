@@ -379,26 +379,29 @@ export function ovrAt(attrs: Attributes, position: Position, role?: RoleId) {
   for (let i = 0; i < ATTRIBUTES.length; i++) sum += values[i]! * attrs[ATTRIBUTES[i]!];
   return sum / total;
 }
-/** The OVR of the role the last `bestRoleAt` chose; −Infinity when no role's OVR exceeded it. */
-let bestRoleOvr = -Infinity;
 export function bestRoleAt(attrs: Attributes, position: Position): RoleId {
   const roles = rolesAt(position);
-  let best = roles[0]!;
-  bestRoleOvr = -Infinity;
+  let best = roles[0]!,
+    value = -Infinity;
   for (const role of roles) {
     const ovr = ovrAt(attrs, position, role);
-    if (ovr > bestRoleOvr) {
+    if (ovr > value) {
       best = role;
-      bestRoleOvr = ovr;
+      value = ovr;
     }
   }
   return best;
 }
-/** His OVR at his main position in his best role there. */
-export const mainOvr = (p: { attrs: Attributes; position: Position }) => {
-  const role = bestRoleAt(p.attrs, p.position);
-  // The chosen role's OVR from the same pass; the first role's, read again, when none was chosen.
-  return bestRoleOvr > -Infinity ? bestRoleOvr : ovrAt(p.attrs, p.position, role);
+/** His OVR at his main position in his best role there: `bestRoleAt`'s pass, keeping the value. */
+export const mainOvr = ({ attrs, position }: { attrs: Attributes; position: Position }) => {
+  const roles = rolesAt(position);
+  let value = -Infinity;
+  for (const role of roles) {
+    const ovr = ovrAt(attrs, position, role);
+    if (ovr > value) value = ovr;
+  }
+  // No role above −Infinity: the first role's OVR, as `bestRoleAt` keeps the first role.
+  return value > -Infinity ? value : ovrAt(attrs, position, roles[0]);
 };
 
 /** Share of his ability a player brings to a position (→PLAYER-4). */

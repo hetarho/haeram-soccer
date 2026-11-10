@@ -6,6 +6,8 @@ import { MEANS_LEVEL, meansLevel, squadCostAt } from './dynamics';
 import { historyWorld } from './history';
 import { keepsBooks } from './books';
 import { random } from './primitives';
+import { npcSquad } from './world';
+import { ABILITY_FIT, marketWageAt } from './market-prices';
 
 /** A 1930 world nobody owns (→WORLD-13) whose clubs have not yet closed a season. */
 const fresh = () => historyWorld('means-level-probe');
@@ -139,6 +141,26 @@ describe("a club nobody owns keeps only the stars its book pays (LEAGUE-10's mea
     MEANS_LEVEL.inForce = false;
     evolveClubs(w, tiersOf(w));
     for (const c of w.clubs) expect(c.strength).toBe(released.get(c.id));
+  });
+
+  it("prices a squad at its players' market wages in the tier and season asked", () => {
+    const w = fresh();
+    const c = w.clubs.find((c) => c.country === 'ENG' && c.tier === 0)!;
+    // Another tier and season than the club's own; a strong squad low down, where ability fit
+    // changes the division its players are paid on.
+    const [strength, tier, year] = [84, 2, w.year + 5];
+    const kept = ABILITY_FIT.inForce;
+    try {
+      for (const inForce of [false, true]) {
+        ABILITY_FIT.inForce = inForce;
+        const squad = npcSquad(w.seed, year, { ...c, strength, tier });
+        expect(squadCostAt(w, c, strength, tier, year)).toBe(
+          squad.reduce((sum, p) => sum + BigInt(marketWageAt(c.country, year, tier, p)), 0n),
+        );
+      }
+    } finally {
+      ABILITY_FIT.inForce = kept;
+    }
   });
 });
 

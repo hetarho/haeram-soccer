@@ -1,8 +1,8 @@
 /**
  * Where a workload of the paired A/B bench (`ab.mjs`) spends its CPU, on this tree.
  *
- *   node scripts/perf/profile.mjs --workload grid|aggregate|day [--reps n] [--warm n] [--top n]
- *     [--lines <function>] [--seed s]
+ *   node scripts/perf/profile.mjs --workload grid|aggregate|day|view|history [--reps n] [--warm n]
+ *     [--top n] [--lines <function>] [--seed s]
  *
  * This tree's `workloads.ts` is bundled as `ab.mjs` bundles it (`bundle.mjs`; tsx's `__name`
  * wrappers would add 5–7%) and run in a child process under `--cpu-prof`: `--warm` reps, then
