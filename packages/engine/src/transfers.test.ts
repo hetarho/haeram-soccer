@@ -22,10 +22,11 @@ import {
   transferOffers,
   transferWindow,
 } from './index';
-import { holdRows, sellPlayer, unreadAttention } from './testing';
+import { holdRows, sellPlayer, staffAuthority, unreadAttention } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { CLOSED, incoming, on, world } from './transfers.testkit';
-import { CAREER_YEAR } from './career.testkit';
+import { CAREER_YEAR, careerWorld } from './career.testkit';
 import { clubById, squad } from './world';
 
 const share = (amount: string, percent: number) =>
@@ -46,9 +47,36 @@ const round45 = () =>
     return w;
   });
 
+/** `world`'s market seen from `club`, taken over instead of the lowest division's first club. */
+function clubMarket(club: string, seed = 'transfer-market') {
+  const w = cachedWorld(`founded:${seed}:${club}`, () =>
+    careerWorld({ seed, club }, DISABLED_RELEASE),
+  );
+  w.settings = staffAuthority(2);
+  w.cash = '999999999999';
+  return w;
+}
+
+/**
+ * A market whose scout lists at least six other clubs' players, so bids for every fee-bearing
+ * candidate are answered several at once: each division's first club, the lowest first, until one
+ * lists six. Since each club's own age ladder (→WORLD-6) spread the ages of the players clubs let
+ * go, top-flight free agents inside 영입 기조 표준's ages (→ECON-16) outrank a lowest-division
+ * club's candidates, and its list of eight holds one to four of other clubs' players on any seed.
+ */
+function biddingMarket() {
+  for (const club of ['ENG:3:0:0', 'ENG:2:0:0', 'ENG:1:0:0', 'ENG:0:0:0']) {
+    const w = clubMarket(club);
+    if (clubIndexes(w).length >= 6) return w;
+  }
+  throw new Error('no first club of a division whose scout lists six other clubs’ players');
+}
+
 /** Bids every fee-bearing candidate at a share of the asking fee and lets the clubs answer. */
 function bidAll(percent: number, seed?: string, fresh = false) {
-  const w = world(seed, fresh);
+  return bidEvery(world(seed, fresh), percent);
+}
+function bidEvery(w: World, percent: number) {
   const offers = transferOffers(w);
   for (const i of clubIndexes(w)) placeBid(w, i, share(offers[i].fee, percent));
   const cash = BigInt(w.cash);
@@ -235,7 +263,7 @@ describe('outgoing bids', () => {
   });
 
   it('completes generous bids like a recruitment, paying only at completion', () => {
-    const { w, offers, cash } = bidAll(500);
+    const { w, offers, cash } = bidEvery(biddingMarket(), 500);
     const completed = outBids(w).filter((b) => b.status === 'completed');
     expect(completed.length).toBeGreaterThanOrEqual(5);
     // No match is played in the first four days, so the fees are the only movement.
@@ -273,7 +301,7 @@ describe('outgoing bids', () => {
     expect(canonical(outBids(other.w))).not.toBe(canonical(outBids(first.w)));
     // Across both markets some modest bids are refused outright.
     expect([...statuses, ...outBids(other.w).map((b) => b.status)]).toContain('rejected');
-    const lowball = bidAll(1);
+    const lowball = bidEvery(biddingMarket(), 1);
     expect(outBids(lowball.w).filter((b) => b.status === 'rejected').length).toBeGreaterThanOrEqual(
       6,
     );
@@ -445,10 +473,20 @@ describe('outgoing bids', () => {
 
   it('gives a renewed bid on the same day its own ID', () => {
     const w = on(world(), 9, 1);
-    placeBid(w, clubIndex(w), '1');
+    // The window's last day answers a bid at once; a refused one lets the same player be bid for
+    // again that day. A club accepts a bid of 1 one time in twenty, its draw keyed on the bid's ID
+    // and so on the player's, which each club's own age ladder (→WORLD-6) renamed: the first of
+    // the scout's club candidates whose bid of 1 is refused.
+    const candidate = clubIndexes(w).find((i) => {
+      const trial = structuredClone(w);
+      placeBid(trial, i, '1');
+      return outBids(trial)[0]!.status === 'rejected';
+    });
+    if (candidate === undefined) throw new Error('every club candidate accepts a bid of 1');
+    placeBid(w, candidate, '1');
     const [first] = outBids(w);
     expect(first.status).toBe('rejected');
-    placeBid(w, clubIndex(w), '1');
+    placeBid(w, candidate, '1');
     const [, renewed] = outBids(w);
     expect(first.id).toBe(`out:${w.year}:${first.day}:0:${first.playerId}`);
     expect(renewed.id).toBe(`out:${w.year}:${first.day}:1:${first.playerId}`);

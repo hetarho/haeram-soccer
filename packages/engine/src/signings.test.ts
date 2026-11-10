@@ -312,7 +312,21 @@ describe("the shortlist and the manager's requests (→CLUB-33)", () => {
   });
 
   it('drops a listed player who joins us or leaves the market list', () => {
-    const w = owned();
+    // A shortlist none of whose players recruitment level 5's search (ages 26–33, →ECON-16) also
+    // finds, so changing the row takes every entry off the list. Since each club's own age ladder
+    // (→WORLD-6) spread the ages of the players clubs let go, a free agent aged 26–30 can sit in
+    // both searches (`shortlist` lists one): the first market where none does.
+    const seed = ['shortlist', ...Array.from({ length: 40 }, (_, i) => `shortlist-${i}`)].find(
+      (one) => {
+        const trial = owned(one);
+        drawShortlist(trial);
+        holdRows(trial, { policy: { recruitment: 5 } });
+        const listed = new Set(transferOffers(trial).map((offer) => offer.player.id));
+        return trial.shortlist!.entries.every((entry) => !listed.has(entry.playerId));
+      },
+    );
+    if (!seed) throw new Error('every shortlist in 41 markets holds a player recruitment 5 finds');
+    const w = owned(seed);
     drawShortlist(w);
     const [first] = shortlistOffers(w);
     operate(w, { type: 'recruit', candidate: first.index });
