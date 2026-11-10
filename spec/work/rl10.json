@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T17:50:19.774Z",
-  "sourceCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
+  "snapshotAt": "2026-11-10T17:57:31.917Z",
+  "sourceCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -119,24 +119,14 @@
   },
   "summary": {
     "total": 9,
-    "completed": 8,
-    "remaining": 1,
+    "completed": 9,
+    "remaining": 0,
     "running": 0,
     "review": 0,
     "blocked": 0,
-    "unassigned": 1
+    "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T812",
-      "title": "Prepared worlds regenerated from the committed tree",
-      "dep": [
-        "T810",
-        "T811"
-      ],
-      "status": "todo"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "e647d048-a7a8-44bb-9693-b2750ef2f856",
@@ -658,6 +648,8 @@
       "submittedBase": "f68203454a6574e1d8024a906648544fe879e681",
       "submissionId": "adebfd95-01d8-44e1-8f00-518628d8ac2d",
       "submittedAt": "2026-11-10T17:42:17.236Z",
+      "integratedCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+      "integratedAt": "2026-11-10T17:51:23.905Z",
       "risk": null,
       "dispatch": {
         "id": "64c79f68-5acf-4f6c-8542-7042a707f863",
@@ -715,6 +707,93 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T17:41:14.569Z",
           "finishedAt": "2026-11-10T17:42:15.922Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-10T17:50:20.112Z",
+          "finishedAt": "2026-11-10T17:51:23.604Z"
+        }
+      ]
+    },
+    {
+      "id": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "group": "rl10",
+      "taskId": "T812",
+      "tasks": [
+        "T812"
+      ],
+      "lane": null,
+      "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1",
+      "contributors": [
+        "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-10T17:51:24.286Z",
+      "startCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+      "verifiedCommit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+      "submittedBase": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+      "submissionId": "7ff2ec06-835a-469a-b0f5-7294cbd8acb6",
+      "submittedAt": "2026-11-10T17:55:36.056Z",
+      "risk": null,
+      "dispatch": {
+        "id": "9fcff06e-e51b-465f-9c6c-f37f1c668956",
+        "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-11-10T17:55:39.379Z",
+        "finishedAt": "2026-11-10T17:57:28.912Z",
+        "error": null,
+        "summary": "T812 meets its acceptance and ARCH-21. Approved with P3 notes only; I ran no tests in this review. Compared with base 148cfce0, the commit changes 3 lines in each prepared world: the `source` block now records `dirty: false`, `commit` 148cfce0 (the integrated tree after T810 and T811) and a new `computation` hash. The `sha256` and `gzip` payload fields are byte-identical to the base. This matches what `scripts/prepare-manager-fixtures.ts` writes: it reads git status and HEAD once, before writing. The diff is limited to provenance, and no generated person changed. The regeneration ran on a tree that already includes T804 (231d4919, signings.ts). The payload did not change, so it also settles the T804 re-check the squad-generation lane review raised as a P3 for the prepared worlds. Nothing that consumes the worlds can change: `decodePreparedWorld` never reads `source`, and the consumers are prepared-world.test.ts, manager-careers.ts, the design-system fixture and 6 e2e specs. I confirmed that the integration-tier tests/fixtures files (full-model-workload, identity-workload, worlds) do not read the prepared worlds, so running the unit prepared-world.test.ts in their place is sound. I did not re-derive the `computation` hash because this checkout has no node_modules, so that value comes from the worker's run."
+      },
+      "review": {
+        "id": "930436a9-5a39-4a4c-be41-bcc3de39b82a",
+        "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T812 meets its acceptance and ARCH-21. Approved with P3 notes only; I ran no tests in this review. Compared with base 148cfce0, the commit changes 3 lines in each prepared world: the `source` block now records `dirty: false`, `commit` 148cfce0 (the integrated tree after T810 and T811) and a new `computation` hash. The `sha256` and `gzip` payload fields are byte-identical to the base. This matches what `scripts/prepare-manager-fixtures.ts` writes: it reads git status and HEAD once, before writing. The diff is limited to provenance, and no generated person changed. The regeneration ran on a tree that already includes T804 (231d4919, signings.ts). The payload did not change, so it also settles the T804 re-check the squad-generation lane review raised as a P3 for the prepared worlds. Nothing that consumes the worlds can change: `decodePreparedWorld` never reads `source`, and the consumers are prepared-world.test.ts, manager-careers.ts, the design-system fixture and 6 e2e specs. I confirmed that the integration-tier tests/fixtures files (full-model-workload, identity-workload, worlds) do not read the prepared worlds, so running the unit prepared-world.test.ts in their place is sound. I did not re-derive the `computation` hash because this checkout has no node_modules, so that value comes from the worker's run.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T812.regenerate-prepared-worlds-committed.md:19 (T812 result, measured)",
+            "message": "The result says the computation hash changed because the builders' import graph includes sources that T810/T811 touched. That is wrong: T810 (b28bc08d) and T811 (4cc5f78f) changed only `*.test.ts` and spec files, which are not in the import graph of `prepare-manager-fixtures.ts` or `manager-career-builders.ts`. Fingerprinted sources changed since 39ac15ac in T804 (231d4919, packages/engine/src/signings.ts) and in T805–T807 (5eece8c9 / e5bbc5e0: npc-continuity.ts, fixture-copy.ts), which is why the hash moved. This is a wording error in the record only and does not affect the fixtures. If the result is touched again, correct the attribution."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T812.regenerate-prepared-worlds-committed.md:9-10 (T812 acceptance items 2 and 3)",
+            "message": "Items 2 and 3 are marked [v], but neither listed command was run. `pnpm exec vitest run --project integration tests/fixtures` was replaced by the unit prepared-world.test.ts, and `PREVIEW_BUILD=1 pnpm exec playwright test --list --project=chromium` was denied in the worker. The limits line discloses both. The coordinator's final batch must run the Playwright listing and the Chromium specs that load the prepared worlds (personnel, personnel-hubs, team-directory, resource-skins, beta-mark, manager-history). The result's consumer list also leaves out apps/web/src/design-system/fixture.ts, which loads `preparedWorld('manager-journey')`. The payload is byte-identical, so none of these can regress; this is about accurate evidence only."
+          }
+        ],
+        "commit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+        "baseCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+        "submissionId": "7ff2ec06-835a-469a-b0f5-7294cbd8acb6",
+        "createdAt": "2026-11-10T17:55:36.865Z",
+        "finishedAt": "2026-11-10T17:57:28.872Z"
+      },
+      "steps": [
+        {
+          "taskId": "T812",
+          "commit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+          "at": "2026-11-10T17:55:36.026Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-10T17:55:12.989Z",
+              "finishedAt": "2026-11-10T17:55:35.616Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-10T17:55:12.989Z",
+          "finishedAt": "2026-11-10T17:55:35.616Z"
         }
       ]
     }
@@ -4311,6 +4390,368 @@
       "group": "rl10",
       "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
       "taskId": "T811",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2624,
+      "at": "2026-11-10T17:51:23.804Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-10T17:50:20.112Z",
+            "finishedAt": "2026-11-10T17:51:23.604Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2625,
+      "at": "2026-11-10T17:51:23.905Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+        "integratedAt": "2026-11-10T17:51:23.905Z"
+      }
+    },
+    {
+      "sequence": 2626,
+      "at": "2026-11-10T17:51:24.286Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+        "group": "rl10",
+        "taskId": "T812",
+        "tasks": [
+          "T812"
+        ],
+        "lane": null,
+        "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1",
+        "contributors": [
+          "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-10T17:51:24.286Z",
+        "startCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2"
+      }
+    },
+    {
+      "sequence": 2627,
+      "at": "2026-11-10T17:51:25.825Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2628,
+      "at": "2026-11-10T17:51:26.618Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1bb647fe-3e8e-453c-93ba-b318acee4f85",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:51:26.618Z"
+        }
+      }
+    },
+    {
+      "sequence": 2629,
+      "at": "2026-11-10T17:51:26.860Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "1bb647fe-3e8e-453c-93ba-b318acee4f85",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:51:26.618Z"
+        }
+      }
+    },
+    {
+      "sequence": 2630,
+      "at": "2026-11-10T17:55:11.681Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2631,
+      "at": "2026-11-10T17:55:12.522Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2632,
+      "at": "2026-11-10T17:55:12.610Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2633,
+      "at": "2026-11-10T17:55:36.056Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+        "submittedBase": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+        "submissionId": "7ff2ec06-835a-469a-b0f5-7294cbd8acb6",
+        "submittedAt": "2026-11-10T17:55:36.056Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T812",
+            "commit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+            "at": "2026-11-10T17:55:36.026Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T17:55:12.989Z",
+                "finishedAt": "2026-11-10T17:55:35.616Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-10T17:55:12.989Z",
+            "finishedAt": "2026-11-10T17:55:35.616Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2634,
+      "at": "2026-11-10T17:55:36.100Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "1bb647fe-3e8e-453c-93ba-b318acee4f85",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:51:26.618Z",
+          "finishedAt": "2026-11-10T17:55:36.100Z",
+          "error": null,
+          "summary": "Both prepared worlds are regenerated on the clean committed tree. I ran `pnpm exec tsx scripts/prepare-manager-fixtures.ts --write` at HEAD 148cfce0, with T810 and T811 integrated and an empty `git status` beforehand. manager-journey.json and manager-activation.json now record `source.dirty: false`, commit 148cfce0ee2373a70f6e42e15a857d74f05961a2 and computation ab846914…. Before, they recorded `dirty: true` at 39ac15ac, which was T807's regeneration, not aa70afdb as the task says.\n\nThe world payloads did not change. sha256 and gzip are the same as at the base, so each file's diff is just the three source lines. T810 and T811 changed no generated person or fact in these worlds; only the computation fingerprint moved, because sources they touched are in the builders' import graph.\n\nChecks that passed:\n- the prepared-world unit test (2 tests: decode, checksum and schema validation)\n- typecheck, lint, format:check and validate:i18n\n- `pnpm run build`\n\nThe unit `--changed` run selected no tests, because the fixtures are read with `readFileSync` rather than imported.\n\nNot run, left to the coordinator's batch:\n- `PREVIEW_BUILD=1 pnpm exec playwright test --list --project=chromium` was denied here because of the environment prefix.\n- The integration tier under `tests/fixtures`. Its files don't read the prepared worlds.\n- The e2e specs that load them: personnel, personnel-hubs, team-directory, resource-skins, beta-mark and manager-history.\n\nThe acceptance checks and result are written in spec/tasks/T812. Nothing was committed."
+        }
+      }
+    },
+    {
+      "sequence": 2635,
+      "at": "2026-11-10T17:55:36.865Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "930436a9-5a39-4a4c-be41-bcc3de39b82a",
+          "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+          "status": "reviewing",
+          "commit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+          "baseCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+          "submissionId": "7ff2ec06-835a-469a-b0f5-7294cbd8acb6",
+          "createdAt": "2026-11-10T17:55:36.865Z"
+        }
+      }
+    },
+    {
+      "sequence": 2636,
+      "at": "2026-11-10T17:55:39.379Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9fcff06e-e51b-465f-9c6c-f37f1c668956",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:55:39.379Z"
+        }
+      }
+    },
+    {
+      "sequence": 2637,
+      "at": "2026-11-10T17:55:39.434Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "9fcff06e-e51b-465f-9c6c-f37f1c668956",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:55:39.379Z"
+        }
+      }
+    },
+    {
+      "sequence": 2638,
+      "at": "2026-11-10T17:57:28.872Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "930436a9-5a39-4a4c-be41-bcc3de39b82a",
+          "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T812 meets its acceptance and ARCH-21. Approved with P3 notes only; I ran no tests in this review. Compared with base 148cfce0, the commit changes 3 lines in each prepared world: the `source` block now records `dirty: false`, `commit` 148cfce0 (the integrated tree after T810 and T811) and a new `computation` hash. The `sha256` and `gzip` payload fields are byte-identical to the base. This matches what `scripts/prepare-manager-fixtures.ts` writes: it reads git status and HEAD once, before writing. The diff is limited to provenance, and no generated person changed. The regeneration ran on a tree that already includes T804 (231d4919, signings.ts). The payload did not change, so it also settles the T804 re-check the squad-generation lane review raised as a P3 for the prepared worlds. Nothing that consumes the worlds can change: `decodePreparedWorld` never reads `source`, and the consumers are prepared-world.test.ts, manager-careers.ts, the design-system fixture and 6 e2e specs. I confirmed that the integration-tier tests/fixtures files (full-model-workload, identity-workload, worlds) do not read the prepared worlds, so running the unit prepared-world.test.ts in their place is sound. I did not re-derive the `computation` hash because this checkout has no node_modules, so that value comes from the worker's run.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T812.regenerate-prepared-worlds-committed.md:19 (T812 result, measured)",
+              "message": "The result says the computation hash changed because the builders' import graph includes sources that T810/T811 touched. That is wrong: T810 (b28bc08d) and T811 (4cc5f78f) changed only `*.test.ts` and spec files, which are not in the import graph of `prepare-manager-fixtures.ts` or `manager-career-builders.ts`. Fingerprinted sources changed since 39ac15ac in T804 (231d4919, packages/engine/src/signings.ts) and in T805–T807 (5eece8c9 / e5bbc5e0: npc-continuity.ts, fixture-copy.ts), which is why the hash moved. This is a wording error in the record only and does not affect the fixtures. If the result is touched again, correct the attribution."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T812.regenerate-prepared-worlds-committed.md:9-10 (T812 acceptance items 2 and 3)",
+              "message": "Items 2 and 3 are marked [v], but neither listed command was run. `pnpm exec vitest run --project integration tests/fixtures` was replaced by the unit prepared-world.test.ts, and `PREVIEW_BUILD=1 pnpm exec playwright test --list --project=chromium` was denied in the worker. The limits line discloses both. The coordinator's final batch must run the Playwright listing and the Chromium specs that load the prepared worlds (personnel, personnel-hubs, team-directory, resource-skins, beta-mark, manager-history). The result's consumer list also leaves out apps/web/src/design-system/fixture.ts, which loads `preparedWorld('manager-journey')`. The payload is byte-identical, so none of these can regress; this is about accurate evidence only."
+            }
+          ],
+          "commit": "7b465c768521f895f6f0bcf76f6874a4366d84b5",
+          "baseCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+          "submissionId": "7ff2ec06-835a-469a-b0f5-7294cbd8acb6",
+          "createdAt": "2026-11-10T17:55:36.865Z",
+          "finishedAt": "2026-11-10T17:57:28.872Z"
+        }
+      }
+    },
+    {
+      "sequence": 2639,
+      "at": "2026-11-10T17:57:28.912Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "9fcff06e-e51b-465f-9c6c-f37f1c668956",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:55:39.379Z",
+          "finishedAt": "2026-11-10T17:57:28.912Z",
+          "error": null,
+          "summary": "T812 meets its acceptance and ARCH-21. Approved with P3 notes only; I ran no tests in this review. Compared with base 148cfce0, the commit changes 3 lines in each prepared world: the `source` block now records `dirty: false`, `commit` 148cfce0 (the integrated tree after T810 and T811) and a new `computation` hash. The `sha256` and `gzip` payload fields are byte-identical to the base. This matches what `scripts/prepare-manager-fixtures.ts` writes: it reads git status and HEAD once, before writing. The diff is limited to provenance, and no generated person changed. The regeneration ran on a tree that already includes T804 (231d4919, signings.ts). The payload did not change, so it also settles the T804 re-check the squad-generation lane review raised as a P3 for the prepared worlds. Nothing that consumes the worlds can change: `decodePreparedWorld` never reads `source`, and the consumers are prepared-world.test.ts, manager-careers.ts, the design-system fixture and 6 e2e specs. I confirmed that the integration-tier tests/fixtures files (full-model-workload, identity-workload, worlds) do not read the prepared worlds, so running the unit prepared-world.test.ts in their place is sound. I did not re-derive the `computation` hash because this checkout has no node_modules, so that value comes from the worker's run."
+        }
+      }
+    },
+    {
+      "sequence": 2640,
+      "at": "2026-11-10T17:57:29.005Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
