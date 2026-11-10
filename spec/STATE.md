@@ -917,6 +917,7 @@
 | T810 | gate fix: club news, shortlist and bid scenes after the generation changes | ARCH | - | todo |
 | T811 | gate fix: an aggregate cup tie and a grid corner path after the generation changes | ARCH | - | todo |
 | T812 | prepared worlds regenerated from the committed tree | ARCH | T810 T811 | todo |
+| T813 | gate fix: goal-replay scenes re-found by a seed scan | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -958,7 +959,6 @@
 - 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
 - 261110 T790 integrated (8 cases in 7 files on the shared finance last-round span; independent review approved 6c4e045e, P3 notes only) tv10
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
-- 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
@@ -969,3 +969,4 @@
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
 - 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10
 - 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
+- 261110 rl10: second verify:batch on f43330c4 passed unit/integration/contract and 328/333 Chromium; the 5 goal-replay scenes moved with T805 → create-task T813 rl10
