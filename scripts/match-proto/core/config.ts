@@ -58,6 +58,15 @@
 //             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
 //   limits:   the thresholds the staging metrics are judged by (check/metrics.ts)
+//   viewer:   the page that plays a playback (viewer/, build.ts): the metres shown around the
+//             pitch (`pad`), player and ball radii in metres with their pixel floors, how long a
+//             flash and the ball's trail last (s), the speeds offered, the seek step (s), the
+//             serving port, the widest canvas (px), the HUD bar's height and font sizes (px), the
+//             shirt number's size as a share of the player radius, the facing tick's length as a
+//             share of it, how far a lofted ball is drawn up-screen per metre of height and how
+//             much larger it grows, the stillness below which a player keeps his last facing (m)
+//             and how many frames back that facing is looked for, the longest frame step (s), the
+//             pitch markings (m) and the colours
 export const PROTO_CONFIG = {
   tick: 0.1,
   hz: 10,
@@ -496,5 +505,49 @@ export const PROTO_CONFIG = {
     /** A pressed pass is kicked with an opponent within `stage.pressVisible + pressedSlack` in `pressedShare` of them. */
     pressedShare: 0.9,
     pressedSlack: 0.5,
+  },
+  // The viewer (viewer/, build.ts): presentation only, never read by the script or the staging.
+  viewer: {
+    pad: 3,
+    playerRadius: 1.1,
+    ballRadius: 0.45,
+    minPlayerPx: 7,
+    minBallPx: 3,
+    flashSeconds: 1.8,
+    trailSeconds: 1.5,
+    speeds: [1, 2, 5],
+    seekStep: 5,
+    port: 4310,
+    maxWidth: 1180,
+    hud: 34,
+    hudFontPx: 15,
+    captionFontPx: 12,
+    roleFontPx: 9,
+    numberScale: 1.05,
+    facingTick: 0.55,
+    ballLift: 0.6,
+    ballGrow: 0.12,
+    still: 0.02,
+    lookBack: 30,
+    maxFrameSeconds: 0.1,
+    /** Centre circle radius, goal area depth and width, a goal's depth outside the line, a spot's radius. */
+    markings: { circle: 9.15, goalArea: [5.5, 18.32], goalDepth: 2, spot: 0.3 },
+    colours: {
+      grassA: '#2f7d3b',
+      grassB: '#2a7235',
+      line: '#e8f2e9',
+      home: '#d7263d',
+      away: '#1b4dd8',
+      keeperHome: '#f2c14e',
+      keeperAway: '#2ec4b6',
+      number: '#ffffff',
+      ball: '#ffffff',
+      ballEdge: '#111111',
+      shadow: 'rgba(0,0,0,0.35)',
+      owner: '#ffe066',
+      offside: '#ff3b30',
+      hud: 'rgba(0,0,0,0.6)',
+      hudText: '#ffffff',
+    },
   },
 } as const;

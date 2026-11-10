@@ -899,7 +899,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 
 ## work
@@ -934,6 +933,7 @@
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T799 done: `scripts/match-proto/viewer` and `build.ts` — one self-contained page (Canvas 2D pitch, 22 numbered players with facing ticks, the ball with shadow and height, score, clock, the beat's identifiers, offside lines, flashes; play/pause, 1×/2×/5×, seek, three toggles and keys); `build.ts --seed demo` writes `.tmp/match-proto/index.html` (2,326,400 bytes, `demo#0`, passed 16/21) and `--serve` answers `GET /` with 200; 135 unit cases in the folder, not opened in a browser, no production file touched mp11
 - 261111 T798 done: `scripts/match-proto/check` — 21 staging metrics (`computeMetrics`, thresholds in `PROTO_CONFIG.limits`) and the `report.ts` CLI; `demo#0` passes 16/21 (fails left to T800: `events.contest` 0.846, `events.stretchRate` 0.214, `shape.swarm` 0.103, `shape.spacing` 0.155, `role.poacher.shoulder` 4.639), 119 unit cases in the folder, no production file touched mp11
 - 261111 T797 done: `scripts/match-proto/stage` attack — through balls timed onside (runner 1.47 m behind the line at the kick, meets the ball 0.78 m away) or flagged offside (0.90 m beyond, whistle 0.9 s later), shots that score, are saved (keeper 0.19 m), parried for a corner, blocked or go wide, ordinary passes never played to a man offside (0 of 251 kicks over s0–s9), lofted deliveries from a run-up, corners with both sides set, `producePlayback` and the `produce.ts` CLI (`demo#0` meets every quota on its performed beats); 105 unit cases in the folder, no production file touched mp11
 - 261111 T796 done: `scripts/match-proto/stage` contests and dead balls — interceptions on the ball's path (`planCut`/`resolveCut` with recast, lunge and a slower ball), tackles and fouls after a jockey, take-ons, balls out, dead-ball scenes before every restart, cues one beat ahead and pressed passes waiting for the presser; scripts A–E staged (interceptor 0.42 m, tackler 1.17 m from the ball), 95 unit cases in the folder, no production file touched mp11
@@ -953,6 +953,3 @@
 - 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
-- 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
-- 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
-- 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10

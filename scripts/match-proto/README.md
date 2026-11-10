@@ -59,3 +59,29 @@ owner can watch whether staging a script reads as football. Nothing here is prod
   script statistics of the performed beats, one line per metric (`id value limit ok|FAIL`, then
   its detail) and `passed n/m`. `--json` writes `{ info, stats, metrics }`; `--strict` exits with
   code 1 when a metric fails (the default exit code is 0).
+- `pnpm exec tsx scripts/match-proto/build.ts [--seed <s>] [--no-showcase] [--duration <seconds>] [--out <dir>]`
+  stages a playback as `produce.ts` does, judges it by the metrics, bundles `viewer/main.ts` with
+  esbuild and writes one self-contained page, `<dir>/index.html` (playback and viewer inline), plus
+  `<dir>/playback.json` (default dir `.tmp/match-proto` under the repository root). It prints
+  `html=`, `json=`, `bytes=` (the page's size), `seed=` (the seed used) and `passed=<n>/<m>`.
+- `pnpm exec tsx scripts/match-proto/build.ts --seed demo --serve [port]` does the same, then serves
+  the page at `http://localhost:<port>/` (default `PROTO_CONFIG.viewer.port`, 4310) and prints
+  `url=`; stop it with Ctrl-C. Opening `index.html` directly works as well.
+
+## viewer
+
+The page draws the pitch from above with the 22 numbered players (a tick shows where each faces),
+the ball with its shadow and height, the score, the clock, the current beat's identifiers
+(`#index move · kind · outcome · reason  actor → receiver × opponent`) and flashes for goals,
+offsides, saves, blocks, tackles and interceptions. It only interpolates recorded frames (ARCH-7)
+and shows no authored prose. Buttons: `▶`/`❚❚` play, `1×` `2×` `5×` speed, the seek bar, and the
+toggles `⇥` offside lines, `#` role ids, `∿` the ball's trail.
+
+| key         | identifier                                      |
+| ----------- | ----------------------------------------------- |
+| `space`     | `play`                                          |
+| `1` `2` `3` | `speed`                                         |
+| `←` `→`     | `seek` (`PROTO_CONFIG.viewer.seekStep` seconds) |
+| `o`         | `offsideLines`                                  |
+| `r`         | `roles`                                         |
+| `t`         | `trail`                                         |
