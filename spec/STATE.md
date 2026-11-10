@@ -871,9 +871,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T769 | run the gate's static checks concurrently and its three vitest tiers as one run | ARCH | - | todo |
-| T771 | warm the ten-season career world beside the vitest phase | ARCH | T769 | todo |
-| T770 | order vitest files longest-first, also in a fresh worktree | ARCH | T771 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -904,6 +901,7 @@
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 T769 T771 T770 integrated (9feaa88f..108a3511; independent review CHANGES P2 fixed by 48e2542a/5c7b6d69, then approved) tq10
 - 261110 T772 T773 integrated (df7e4df7 d0ba5646; independent review approved 5f1e37be/d71c589b, P3 notes only) tq10
 - 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
@@ -923,4 +921,3 @@
 - 261109 T754 T756 T760 T766 T767 integrated
 - 261109 T755 integrated
 - 261109 T765 integrated
-- 261109 T761 T762 T763 integrated
