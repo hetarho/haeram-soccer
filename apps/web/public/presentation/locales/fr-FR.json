@@ -2326,6 +2326,7 @@
     "copy.CashAlarm.466cd5aa0d": "{p0} Solde {p1} ·{p2}{p3} Si vous ne revenez pas à l'excédent au cours du tour, vous ferez faillite.",
     "copy.CashAlarm.027b8b25f5": "crise de financement",
     "copy.CashAlarm.8773252530": "{p0} Dépenses d'exploitation : il reste environ des actions {p1} · Nous allons manquer et faire faillite après le tour {p2}",
+    "copy.CrisisAlert.paused": "La progression automatique a été mise en pause. Examinez la situation, puis relancez-la.",
     "copy.Celebration.23058c112d": "Appuyez pour fermer",
     "copy.Celebration.055f6cd644": "félicitations",
     "copy.Chart.b4b2b2c3fa": "Au fur et à mesure que la première saison se développe, le graphique {p0} commence.",

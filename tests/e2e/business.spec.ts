@@ -20,7 +20,7 @@ import type { World } from '../../packages/contracts/src/types';
 import { horizontalOverflow } from './layout';
 import { acknowledgeEvents, chooseLevel } from './events';
 import { startCareer, startFlow } from './start';
-import { clubhouseTab } from './competition-navigation';
+import { clubhouseTab, openClubRecords } from './competition-navigation';
 import {
   aroundOffice,
   OFFICE,
@@ -370,6 +370,11 @@ test('ends a bankrupt career on the game-over page and starts a new game from it
   await expect(over).toContainText('함께한 시즌');
   await expect(page.getByRole('region', { name: '시즌 진행', exact: true })).toHaveCount(0);
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  // Every other menu stays open to read the ended career; home keeps the game-over page (→WEB-56).
+  await openClubRecords(page);
+  await expect(over).toHaveCount(0);
+  await clubhouseTab(page).click();
+  await expect(over).toBeVisible();
   await over.getByRole('button', { name: '이 슬롯에서 새 게임', exact: true }).click();
   await expect(startFlow(page)).toContainText('슬롯 1 · 새 게임');
   await expect(startFlow(page).getByTestId('start-tiers')).toBeVisible();

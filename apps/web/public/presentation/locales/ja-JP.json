@@ -2048,6 +2048,7 @@
     "copy.CashAlarm.466cd5aa0d": "{p0} 残高 {p1} ・{p2}{p3}ラウンド内に黒字に戻らないと破産しますよ",
     "copy.CashAlarm.027b8b25f5": "資金危機",
     "copy.CashAlarm.8773252530": "{p0} 運営費 約{p1} 週分残り ・床が残ったまま{p2}ラウンドが過ぎると破産します",
+    "copy.CrisisAlert.paused": "自動進行を一時停止しました。状況を確認してから進行を再開してください。",
     "copy.Celebration.23058c112d": "押して閉じる",
     "copy.Celebration.055f6cd644": "おめでとうございます",
     "copy.Chart.b4b2b2c3fa": "最初のシーズンが積み重なると、{p0}グラフが始まります。",

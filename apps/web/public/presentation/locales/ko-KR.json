@@ -2310,6 +2310,7 @@
     "copy.CashAlarm.466cd5aa0d": "{p0} 잔고 {p1} ·{p2}{p3}라운드 안에 흑자로 돌아오지 못하면 파산해요",
     "copy.CashAlarm.027b8b25f5": "자금 위기",
     "copy.CashAlarm.8773252530": "{p0} 운영비 약 {p1}주분 남음 · 바닥난 채 {p2}라운드가 지나면 파산해요",
+    "copy.CrisisAlert.paused": "자동 진행을 일시정지했어요. 상황을 확인한 뒤 진행을 다시 시작하세요.",
     "copy.Celebration.23058c112d": "눌러서 닫기",
     "copy.Celebration.055f6cd644": "축하합니다",
     "copy.Chart.b4b2b2c3fa": "첫 시즌이 쌓이면 {p0} 그래프가 시작됩니다.",

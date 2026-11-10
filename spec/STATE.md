@@ -825,6 +825,7 @@
 - 261110 decided review/game-runtime-speed-261110 T775 T776 T777 T778: which pf10 scout proposals to adopt under the owner's self-improve-local delegation ("성능 개선해줘", until 18:00 KST) → F1–F8, the result-identical history-season and Host-view speed-ups with the two harness workloads that measure them, lanes perf-history and perf-view (alt: engine side only | Host side only | also trim view parts)
 - 261110 decided review/game-runtime-speed-261110: F9–F11 → F9 rejected (trimming view parts changes what the view holds: WEB, owner), F10 rejected (result identity of a career NPC-squad cache cannot be shown cheaply), F11 left open for a later run on F6's workload (alt: propose F9 to the owner now | measure F11 in this run)
 - 261110 decided T689 T775 T778: how pf10 coexists with sc10's live T689 calibration in .tmp/nx10 and tv10's self-improve-local run on this checkout → no pf10 task touches packages/engine/src/grid/**, every change keeps outputs byte-identical so sc10's reads stay comparable, and tv10 is told pf10's touches (alt: wait for sc10 | include grid hot paths)
+- 261110 decided ARCH-30 T779 T780 T781 T689: the gc10 loop, started for T689 only, claimed the owner's tv10 tasks T779–T781 instead (its `next` note did not bind the route while T689's call sat parked) → stopped it at 06:46Z and returned the three to todo; its local commits 8a5a1b01 (T779) and 3f03d861 (T780) stay unpushed on `work/gc10` for tv10 to reuse or drop, T781 was only begun; no code reached a remote (alt: let it finish beside tv10's own work) gc10
 
 ## ideation
 | id | st |
@@ -849,7 +850,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 37 | 37 | - | 2 |
-| WEB | 213 | 213 | - | 0 |
+| WEB | 214 | 214 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -857,11 +858,11 @@
 | MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
-| ECON | 52 | 52 | - | 0 |
+| ECON | 53 | 53 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 24 | 24 | - | 0 |
 | SAVE | 66 | 66 | - | 0 |
-| OWNER | 6 | 6 | - | 0 |
+| OWNER | 7 | 7 | - | 0 |
 | PLAYER | 16 | 16 | - | 0 |
 
 ## review
@@ -945,7 +946,3 @@
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
-- 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
-- 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
-- 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
-- 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
