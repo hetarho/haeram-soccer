@@ -1,0 +1,1494 @@
+{
+ "seeds": [
+  "podium-3"
+ ],
+ "seasons": 36,
+ "setting": "spread",
+ "summary": [
+  {
+   "variant": "released",
+   "seasons": 31,
+   "oneClubPct": 90.3,
+   "twoClubsPct": 9.7,
+   "threeClubsPct": 0,
+   "winnerEuropePct": 51.6,
+   "podiumWithoutTrophyPct": 0,
+   "winners": 24,
+   "mostWins": 3,
+   "longestRun": 2,
+   "ageMin": 20,
+   "ageMedian": 28,
+   "ageMax": 35,
+   "ageUnknown": 0,
+   "GK": 0,
+   "DF": 1,
+   "MF": 2,
+   "FW": 28,
+   "strongestClubPct": 29,
+   "ownClubWins": 0
+  }
+ ],
+ "rows": [
+  {
+   "seed": "podium-3",
+   "year": 1955,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Raffaele Guerra",
+     "club": "ITA:0:0:7",
+     "points": 398,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Dante Mancuso",
+     "club": "ITA:0:0:7",
+     "points": 395,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 20
+    },
+    {
+     "name": "Matteo Bertolini",
+     "club": "ITA:0:0:7",
+     "points": 389,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 21
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1955,
+    "id": "ITA:0:0:7:p:8:108",
+    "age": 29,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1956,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Peter French",
+     "club": "ENG:0:0:10",
+     "points": 511,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 27
+    },
+    {
+     "name": "Nicholas Parry",
+     "club": "ENG:0:0:10",
+     "points": 493,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 3
+    },
+    {
+     "name": "Roger Nicholls",
+     "club": "ENG:0:0:10",
+     "points": 491,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 25
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1956,
+    "id": "ENG:0:0:10:p:10:109",
+    "age": 29,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1957,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Jean-Claude Fernandez",
+     "club": "FRA:0:0:15",
+     "points": 400,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 12
+    },
+    {
+     "name": "Ludovic Le Gall",
+     "club": "FRA:0:0:15",
+     "points": 391,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Régis Philippe",
+     "club": "FRA:0:0:15",
+     "points": 386,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 16
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1957,
+    "id": "FRA:0:0:15:p:8:109",
+    "age": 30,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1958,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Roland Sander",
+     "club": "GER:0:0:12",
+     "points": 371,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 20
+    },
+    {
+     "name": "Walter Schwarz",
+     "club": "GER:0:0:12",
+     "points": 369,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Patrick Kramer",
+     "club": "GER:0:0:12",
+     "points": 365,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 15
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1958,
+    "id": "GER:0:0:12:p:10:109",
+    "age": 28,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1959,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Peter French",
+     "club": "ENG:0:0:10",
+     "points": 559,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 17
+    },
+    {
+     "name": "Roger Nicholls",
+     "club": "ENG:0:0:10",
+     "points": 554,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 35
+    },
+    {
+     "name": "Jonathan Coleman",
+     "club": "ENG:0:0:10",
+     "points": 553,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 36
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1959,
+    "id": "ENG:0:0:10:p:10:109",
+    "age": 32,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1960,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Peter French",
+     "club": "ENG:0:0:10",
+     "points": 369,
+     "honours": [
+      "europe"
+     ],
+     "goals": 14
+    },
+    {
+     "name": "Jonathan Coleman",
+     "club": "ENG:0:0:10",
+     "points": 369,
+     "honours": [
+      "europe"
+     ],
+     "goals": 33
+    },
+    {
+     "name": "Roger Nicholls",
+     "club": "ENG:0:0:10",
+     "points": 364,
+     "honours": [
+      "europe"
+     ],
+     "goals": 29
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1960,
+    "id": "ENG:0:0:10:p:10:109",
+    "age": 33,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1961,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Jonathan Coleman",
+     "club": "ENG:0:0:10",
+     "points": 360,
+     "honours": [
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Roger Nicholls",
+     "club": "ENG:0:0:10",
+     "points": 358,
+     "honours": [
+      "europe"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Gary Walters",
+     "club": "ENG:0:0:10",
+     "points": 351,
+     "honours": [
+      "europe"
+     ],
+     "goals": 11
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1961,
+    "id": "ENG:0:0:10:p:8:110",
+    "age": 20,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1962,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Archie Spencer",
+     "club": "ENG:0:0:7",
+     "points": 405,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Ted Turner",
+     "club": "ENG:0:0:7",
+     "points": 403,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Paul Hall",
+     "club": "ENG:0:0:7",
+     "points": 400,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 25
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1962,
+    "id": "ENG:0:0:7:p:10:110",
+    "age": 22,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1963,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Aníbal Carvalho",
+     "club": "POR:0:0:0",
+     "points": 510,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 24
+    },
+    {
+     "name": "Simão Fonseca",
+     "club": "POR:0:0:0",
+     "points": 491,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 16
+    },
+    {
+     "name": "Jorge Barreto",
+     "club": "POR:0:0:0",
+     "points": 487,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 20
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1963,
+    "id": "POR:0:0:0:p:8:110",
+    "age": 24,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1964,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Nicola Bonetti",
+     "club": "ITA:0:0:7",
+     "points": 415,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 24
+    },
+    {
+     "name": "Ottavio Nardi",
+     "club": "ITA:0:0:7",
+     "points": 411,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Gerardo Costa",
+     "club": "ITA:0:0:7",
+     "points": 396,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 2
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1964,
+    "id": "ITA:0:0:7:p:8:109",
+    "age": 20,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1965,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Huub Hofman",
+     "club": "NED:0:0:8",
+     "points": 509,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Fokke Bakker",
+     "club": "NED:0:0:8",
+     "points": 502,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 24
+    },
+    {
+     "name": "Ivo Westerhof",
+     "club": "NED:0:0:8",
+     "points": 497,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 25
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1965,
+    "id": "NED:0:0:8:p:10:110",
+    "age": 27,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1966,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Huub Hofman",
+     "club": "NED:0:0:8",
+     "points": 400,
+     "honours": [
+      "cup",
+      "europe"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Fokke Bakker",
+     "club": "NED:0:0:8",
+     "points": 386,
+     "honours": [
+      "cup",
+      "europe"
+     ],
+     "goals": 24
+    },
+    {
+     "name": "Ivo Westerhof",
+     "club": "NED:0:0:8",
+     "points": 383,
+     "honours": [
+      "cup",
+      "europe"
+     ],
+     "goals": 13
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1966,
+    "id": "NED:0:0:8:p:10:110",
+    "age": 28,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1967,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Aldo Mele",
+     "club": "ITA:0:0:13",
+     "points": 447,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 31
+    },
+    {
+     "name": "Teodoro Marchi",
+     "club": "ITA:0:0:13",
+     "points": 445,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 25
+    },
+    {
+     "name": "Sergio Giorgi",
+     "club": "ITA:0:0:13",
+     "points": 442,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 23
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1967,
+    "id": "ITA:0:0:13:p:10:110",
+    "age": 34,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1968,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Aldo Mele",
+     "club": "ITA:0:0:13",
+     "points": 508,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 30
+    },
+    {
+     "name": "Sergio Giorgi",
+     "club": "ITA:0:0:13",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 23
+    },
+    {
+     "name": "Teodoro Marchi",
+     "club": "ITA:0:0:13",
+     "points": 495,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 16
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1968,
+    "id": "ITA:0:0:13:p:10:110",
+    "age": 35,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1969,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Ian Roberts",
+     "club": "ENG:0:0:10",
+     "points": 382,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Archie Spencer",
+     "club": "ENG:0:0:7",
+     "points": 379,
+     "honours": [
+      "europe"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Paul Hall",
+     "club": "ENG:0:0:7",
+     "points": 365,
+     "honours": [
+      "europe"
+     ],
+     "goals": 23
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1969,
+    "id": "ENG:0:0:10:p:10:110",
+    "age": 24,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1970,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Jonathan Coleman",
+     "club": "ENG:0:0:10",
+     "points": 509,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 33
+    },
+    {
+     "name": "Ian Roberts",
+     "club": "ENG:0:0:10",
+     "points": 508,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 11
+    },
+    {
+     "name": "Andrew Ford",
+     "club": "ENG:0:0:10",
+     "points": 499,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 20
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1970,
+    "id": "ENG:0:0:10:p:8:110",
+    "age": 29,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1971,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Archie Spencer",
+     "club": "ENG:0:0:7",
+     "points": 431,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 39
+    },
+    {
+     "name": "Paul Hall",
+     "club": "ENG:0:0:7",
+     "points": 422,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 32
+    },
+    {
+     "name": "Ângelo Dias",
+     "club": "POR:0:0:14",
+     "points": 418,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 31
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1971,
+    "id": "ENG:0:0:7:p:10:110",
+    "age": 31,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1972,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Teodoro Marchi",
+     "club": "ITA:0:0:13",
+     "points": 461,
+     "honours": [
+      "league",
+      "cup",
+      "continental"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Sergio Giorgi",
+     "club": "ITA:0:0:13",
+     "points": 461,
+     "honours": [
+      "league",
+      "cup",
+      "continental"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Angelo Marra",
+     "club": "ITA:0:0:13",
+     "points": 460,
+     "honours": [
+      "league",
+      "cup",
+      "continental"
+     ],
+     "goals": 30
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1972,
+    "id": "ITA:0:0:13:p:8:110",
+    "age": 28,
+    "line": "MF",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1973,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Alberto Batista",
+     "club": "POR:0:0:0",
+     "points": 375,
+     "honours": [
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Jorge Barreto",
+     "club": "POR:0:0:0",
+     "points": 371,
+     "honours": [
+      "europe"
+     ],
+     "goals": 36
+    },
+    {
+     "name": "Len Yates",
+     "club": "POR:0:0:0",
+     "points": 353,
+     "honours": [
+      "europe"
+     ],
+     "goals": 26
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1973,
+    "id": "POR:0:0:0:p:10:110",
+    "age": 27,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1974,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Hidde Brink",
+     "club": "NED:0:0:17",
+     "points": 502,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 13
+    },
+    {
+     "name": "Bert de Boer",
+     "club": "NED:0:0:17",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 32
+    },
+    {
+     "name": "Thomas Gorter",
+     "club": "NED:0:0:17",
+     "points": 489,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 25
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1974,
+    "id": "NED:0:0:17:p:7:110",
+    "age": 24,
+    "line": "MF",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1975,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Brian Pugh",
+     "club": "ENG:0:0:7",
+     "points": 379,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Howard Collins",
+     "club": "ENG:0:0:7",
+     "points": 374,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 33
+    },
+    {
+     "name": "Thomas Willis",
+     "club": "ENG:0:0:7",
+     "points": 364,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 19
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1975,
+    "id": "ENG:0:0:7:vacancy:10:110",
+    "age": 35,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1976,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Ian Roberts",
+     "club": "ENG:0:0:10",
+     "points": 427,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Len Yates",
+     "club": "POR:0:0:0",
+     "points": 417,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 23
+    },
+    {
+     "name": "Mário Lourenço",
+     "club": "POR:0:0:0",
+     "points": 417,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 27
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1976,
+    "id": "ENG:0:0:10:p:10:110",
+    "age": 31,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1977,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Dino Sartori",
+     "club": "ITA:0:0:7",
+     "points": 494,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 7
+    },
+    {
+     "name": "Nicola Bonetti",
+     "club": "ITA:0:0:7",
+     "points": 491,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Tommaso Campana",
+     "club": "ITA:0:0:7",
+     "points": 486,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 22
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1977,
+    "id": "ITA:0:0:7:p:4:110",
+    "age": 25,
+    "line": "DF",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1978,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Eduardo Font",
+     "club": "NED:0:0:8",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 27
+    },
+    {
+     "name": "Jeroen Bulthuis",
+     "club": "NED:0:0:8",
+     "points": 489,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 15
+    },
+    {
+     "name": "Roel Groen",
+     "club": "NED:0:0:8",
+     "points": 485,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 4
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1978,
+    "id": "ESP:1:0:3:p:16:110",
+    "age": 29,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1979,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Len Yates",
+     "club": "POR:0:0:0",
+     "points": 556,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 25
+    },
+    {
+     "name": "Mário Lourenço",
+     "club": "POR:0:0:0",
+     "points": 554,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Germano Moura",
+     "club": "POR:0:0:0",
+     "points": 547,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 34
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1979,
+    "id": "ENG:0:0:17:p:17:111",
+    "age": 30,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1980,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Léon Close",
+     "club": "BEL:0:0:13",
+     "points": 417,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 16
+    },
+    {
+     "name": "Arthur Verlinden",
+     "club": "BEL:0:0:13",
+     "points": 408,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Albert D'Hondt",
+     "club": "BEL:0:0:13",
+     "points": 407,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 23
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1980,
+    "id": "BEL:0:0:13:p:10:111",
+    "age": 22,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1981,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Alfredo Velasco",
+     "club": "ESP:0:0:10",
+     "points": 511,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 14
+    },
+    {
+     "name": "Cristian Lozano",
+     "club": "ESP:0:0:10",
+     "points": 510,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Rafael Cruz",
+     "club": "ESP:0:0:10",
+     "points": 506,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 29
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1981,
+    "id": "ESP:0:0:10:p:8:111",
+    "age": 25,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1982,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Eduardo Caldeira",
+     "club": "POR:0:0:8",
+     "points": 415,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Filipe Castro",
+     "club": "POR:0:0:8",
+     "points": 405,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 18
+    },
+    {
+     "name": "Inácio Cunha",
+     "club": "POR:0:0:8",
+     "points": 401,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 6
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1982,
+    "id": "POR:0:0:8:p:9:111",
+    "age": 33,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1983,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Howard Collins",
+     "club": "ENG:0:0:7",
+     "points": 506,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Jonathan Richards",
+     "club": "ENG:0:0:7",
+     "points": 505,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Edward Heath",
+     "club": "ENG:0:0:7",
+     "points": 495,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 17
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1983,
+    "id": "ENG:0:0:7:p:9:111",
+    "age": 26,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1984,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Filipe Castro",
+     "club": "POR:0:0:8",
+     "points": 411,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 17
+    },
+    {
+     "name": "César Araújo",
+     "club": "POR:0:0:8",
+     "points": 409,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 20
+    },
+    {
+     "name": "Eduardo Caldeira",
+     "club": "POR:0:0:8",
+     "points": 407,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 19
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1984,
+    "id": "POR:0:0:8:p:10:111",
+    "age": 22,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-3",
+   "year": 1985,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Cyril Hawkins",
+     "club": "ENG:0:0:7",
+     "points": 455,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Jonathan Richards",
+     "club": "ENG:0:0:7",
+     "points": 452,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Howard Collins",
+     "club": "ENG:0:0:7",
+     "points": 447,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 28
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-3",
+    "year": 1985,
+    "id": "ENG:0:0:7:p:10:111",
+    "age": 27,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  }
+ ]
+}

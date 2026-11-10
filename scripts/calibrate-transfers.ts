@@ -15,7 +15,8 @@
  *
  *   pnpm exec tsx scripts/calibrate-transfers.ts                 4 ENG careers, 1950–2029
  *   options: --seeds N, --first-seed N, --seasons N, --countries ENG,ESP, --tiers midsize,
- *            --out careers.json (keep the careers), --in a.json,b.json (report kept careers only)
+ *            --out careers.json (keep the careers), --in a.json,b.json (report kept careers only),
+ *            --setting flat|spread (WORLD-6's squad spread for the run, T808; else the default)
  *
  * A career is a 1950 takeover (`careerWorld`: the lowest professional division's first club, one
  * year of fixed costs in cash) until T668 rebuilds the reference careers on generated worlds.
@@ -24,6 +25,7 @@ import type { CountryCode, Event, World } from '../packages/contracts/src/types'
 import { countZeroFeeArrivals } from './lib/transfer-flow';
 import type { WealthTier } from '../packages/contracts/src/owner';
 import { CAREER_FUNDS, careerFunds, careerWorld } from '../packages/engine/src/career.testkit';
+import { careerEnded } from '../packages/contracts/src/owner';
 import { currency, country } from '../packages/catalogs/src/index';
 import {
   advanceRound,
@@ -43,8 +45,11 @@ import {
   squad,
 } from '../packages/engine/src/index';
 import { readFileSync, writeFileSync } from 'node:fs';
+import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
+// T808: `--setting flat|spread` plays the careers on that squad spread (→WORLD-6).
+squadSpreadSetting(args);
 const option = (name: string, fallback: string) => {
   const index = args.indexOf(`--${name}`);
   return index >= 0 ? args[index + 1] : fallback;
@@ -169,6 +174,11 @@ interface Career {
   seasons: Season[];
   facts: Fact[];
   bankrupt?: number;
+  /**
+   * The season the career ended without a club bankruptcy (→OWNER-16: the owner's money, the fans
+   * or the club's settlement), and why; the run stops there (T808: it looped on such an end before).
+   */
+  ended?: { year: number; cause: string };
 }
 
 const pounds = (code: string, year: number, minor: string | number) =>
@@ -228,18 +238,22 @@ function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career
   delegateAll(w);
   const career: Career = { code, seed, tier: wealth, seasons: [], facts: [] };
   let factsSeen = 0;
-  for (let n = 0; n < SEASONS && !w.bankrupt; n++) {
+  for (let n = 0; n < SEASONS && !careerEnded(w); n++) {
     const year = w.year,
       tier = clubOf(w).tier,
       seasonCurrency = w.currency,
       summer = topFlightMarket(w),
       firstEvent = w.events.length;
-    while (w.round < 46 && !w.bankrupt) {
+    while (w.round < 46 && !careerEnded(w)) {
       buyFacilities(w);
       advanceRound(w, undefined, false);
     }
     if (w.bankrupt) {
       career.bankrupt = year;
+      break;
+    }
+    if (w.ended) {
+      career.ended = { year, cause: w.ended };
       break;
     }
     let turnover = 0;
@@ -285,6 +299,8 @@ function playCareer(code: CountryCode, seed: string, wealth: WealthTier): Career
     });
     w.revision++;
   }
+  // A career can also end at a close (the fans or the owner's money, →OWNER-16).
+  if (w.ended && !career.ended) career.ended = { year: w.year, cause: w.ended };
   return career;
 }
 
@@ -311,7 +327,7 @@ function arrivalCount(seasons: Season[], kind: 'zeroFeeMoves' | 'topUps') {
 function report(careers: Career[]) {
   const decades = [...new Set(careers.flatMap((c) => c.seasons.map((s) => decade(s.year))))];
   console.log(
-    `\n${careers.length} careers (${careers.map((c) => `${c.code}/${c.seed}${c.bankrupt ? ` bankrupt ${c.bankrupt}` : ''}`).join(', ')})`,
+    `\n${careers.length} careers (${careers.map((c) => `${c.code}/${c.seed}${c.bankrupt ? ` bankrupt ${c.bankrupt}` : ''}${c.ended ? ` ended ${c.ended.year} (${c.ended.cause})` : ''}`).join(', ')})`,
   );
   console.log(
     '\nTop-flight roster values each summer (decade means), with the British record for context',

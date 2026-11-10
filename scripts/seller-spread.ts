@@ -15,9 +15,11 @@
  *            --world-dir DIR (keep the generated world)   --prepare (only that)
  *            --out FILE (the career as JSON)   --in a.json,b.json (report kept careers only)
  *            --supply (the generated world's players at the top of the search band, by club)
- *            --setting line|list|starter|signed|kept, joined by + (named rules for the run:
+ *            --setting line|list|starter|signed|kept|flat|spread, joined by + (named rules for the run:
  *            LIST_SPREAD's list shapes, REFILL_SALE's `kept`, and UPGRADE_MEASURE's reading —
- *            `signed` is in force since T804, `starter` the released reading before it)
+ *            `signed` is in force since T804, `starter` the released reading before it);
+ *            `flat` or `spread` chooses WORLD-6's squad spread (`SQUAD_SPREAD`, T808), a world
+ *            kept with `--world-dir` on `spread` named `<seed>-<year>-spread.json`
  *
  * Over the kept careers it reports CLUB-33's seller targets: the most of a window's fee signings
  * one seller supplied, and the largest share of the fee signings over any five seasons.
@@ -36,7 +38,7 @@ import { advanceDays } from '../packages/engine/src/season';
 import { currentDay } from '../packages/engine/src/calendar';
 import { marketValueAt } from '../packages/engine/src/market-prices';
 import { lineOfPlayer, overall } from '../packages/engine/src/player-state';
-import { squad } from '../packages/engine/src/world';
+import { squad, SQUAD_SPREAD } from '../packages/engine/src/world';
 import { transferOffers } from '../packages/engine/src/scout-search';
 import {
   shortlistOffers,
@@ -49,6 +51,7 @@ import { transferWindowDays } from '../packages/engine/src/transfer-window';
 import { quote } from '../packages/engine/src/index';
 import { LIST_SPREAD } from '../packages/engine/src/scout-search';
 import { REFILL_SALE } from '../packages/engine/src/world-market';
+import { isSquadSpread } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
 const option = (name: string, fallback: string) => {
@@ -69,7 +72,9 @@ const SETTING = option('setting', '');
 const unitOf = (year: number) => Number(quote(CODE, year, 1_000_000)) / 1_000_000;
 
 function worldAt(): World {
-  const file = WORLD_DIR && `${WORLD_DIR}/${SEED}-${FROM}.json`;
+  // A world lived on spread squads is kept apart from the released draw's (T808).
+  const squads = SQUAD_SPREAD.inForce === 'spread' ? '-spread' : '';
+  const file = WORLD_DIR && `${WORLD_DIR}/${SEED}-${FROM}${squads}.json`;
   if (file && existsSync(file)) return JSON.parse(readFileSync(file, 'utf8')) as World;
   const t = performance.now();
   const w = generateHistory(SEED, FROM);
@@ -460,6 +465,13 @@ function supplyReport(w: World) {
 }
 
 function main() {
+  for (const part of SETTING ? SETTING.split('+') : []) {
+    if (part === 'line' || part === 'list') LIST_SPREAD.inForce = part;
+    else if (part === 'starter' || part === 'signed') UPGRADE_MEASURE.inForce = part;
+    else if (part === 'kept') REFILL_SALE.inForce = part;
+    else if (isSquadSpread(part)) SQUAD_SPREAD.inForce = part;
+    else throw new Error(`unknown setting ${part}`);
+  }
   if (args.includes('--supply')) {
     supplyReport(worldAt());
     return;
@@ -471,12 +483,6 @@ function main() {
         .map((f) => JSON.parse(readFileSync(f, 'utf8')) as Career),
     );
     return;
-  }
-  for (const part of SETTING ? SETTING.split('+') : []) {
-    if (part === 'line' || part === 'list') LIST_SPREAD.inForce = part;
-    else if (part === 'starter' || part === 'signed') UPGRADE_MEASURE.inForce = part;
-    else if (part === 'kept') REFILL_SALE.inForce = part;
-    else throw new Error(`unknown setting ${part}`);
   }
   const career = playCareer();
   if (!career) return;

@@ -1,0 +1,1503 @@
+{
+ "seeds": [
+  "podium-2"
+ ],
+ "seasons": 36,
+ "setting": "flat",
+ "summary": [
+  {
+   "variant": "released",
+   "seasons": 31,
+   "oneClubPct": 87.1,
+   "twoClubsPct": 12.9,
+   "threeClubsPct": 0,
+   "winnerEuropePct": 74.2,
+   "podiumWithoutTrophyPct": 0,
+   "winners": 23,
+   "mostWins": 3,
+   "longestRun": 2,
+   "ageMin": 19,
+   "ageMedian": 30,
+   "ageMax": 35,
+   "ageUnknown": 0,
+   "GK": 0,
+   "DF": 0,
+   "MF": 4,
+   "FW": 27,
+   "strongestClubPct": 32.3,
+   "ownClubWins": 0
+  }
+ ],
+ "rows": [
+  {
+   "seed": "podium-2",
+   "year": 1955,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Oriol Rosales",
+     "club": "ESP:0:0:10",
+     "points": 504,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 27
+    },
+    {
+     "name": "Genaro Trujillo",
+     "club": "ESP:0:0:10",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Asier Figueroa",
+     "club": "ESP:0:0:10",
+     "points": 497,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 14
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1955,
+    "id": "ESP:0:0:10:p:10:109",
+    "age": 28,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1956,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Alessandro Pagano",
+     "club": "ITA:0:0:4",
+     "points": 362,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Ottavio Ronchi",
+     "club": "ITA:0:0:4",
+     "points": 360,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 27
+    },
+    {
+     "name": "Tullio Masi",
+     "club": "ITA:0:0:4",
+     "points": 343,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 5
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1956,
+    "id": "ITA:0:0:4:p:10:110",
+    "age": 21,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1957,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Marcel Moreau",
+     "club": "FRA:0:0:14",
+     "points": 490,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 25
+    },
+    {
+     "name": "Giancarlo Pace",
+     "club": "FRA:0:0:14",
+     "points": 484,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 18
+    },
+    {
+     "name": "Lucien Meyer",
+     "club": "FRA:0:0:14",
+     "points": 480,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 18
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1957,
+    "id": "FRA:0:0:14:p:7:110",
+    "age": 25,
+    "line": "MF",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1958,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Patrick Schwab",
+     "club": "GER:0:0:1",
+     "points": 554,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Lothar Kühn",
+     "club": "GER:0:0:1",
+     "points": 550,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 32
+    },
+    {
+     "name": "Andreas Mayer",
+     "club": "GER:0:0:1",
+     "points": 547,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 29
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1958,
+    "id": "GER:0:0:1:p:10:109",
+    "age": 34,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1959,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Oriol Rosales",
+     "club": "ESP:0:0:10",
+     "points": 515,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 30
+    },
+    {
+     "name": "Telmo Serrano",
+     "club": "ESP:0:0:10",
+     "points": 508,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 28
+    },
+    {
+     "name": "Genaro Trujillo",
+     "club": "ESP:0:0:10",
+     "points": 508,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 25
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1959,
+    "id": "ESP:0:0:10:p:10:109",
+    "age": 32,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1960,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Ernst Westphal",
+     "club": "GER:1:0:13",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 19
+    },
+    {
+     "name": "Erwin Hofer",
+     "club": "GER:1:0:13",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 18
+    },
+    {
+     "name": "Siegfried Marx",
+     "club": "GER:1:0:13",
+     "points": 490,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 17
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1960,
+    "id": "GER:1:0:13:p:8:109",
+    "age": 32,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1961,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Sergio Ruggiero",
+     "club": "ITA:0:0:7",
+     "points": 507,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Renato Conti",
+     "club": "ITA:0:0:7",
+     "points": 505,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 32
+    },
+    {
+     "name": "Tullio Galli",
+     "club": "ITA:0:0:7",
+     "points": 489,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 12
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1961,
+    "id": "ITA:0:0:7:p:8:109",
+    "age": 30,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1962,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Siegfried Marx",
+     "club": "GER:1:0:13",
+     "points": 365,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Sergio Ruggiero",
+     "club": "ITA:0:0:7",
+     "points": 365,
+     "honours": [
+      "europe"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Erwin Hofer",
+     "club": "GER:1:0:13",
+     "points": 364,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 21
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1962,
+    "id": "GER:1:0:13:p:9:110",
+    "age": 23,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1963,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Graham Watts",
+     "club": "ENG:0:0:15",
+     "points": 503,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 32
+    },
+    {
+     "name": "Philip Wheeler",
+     "club": "ENG:0:0:15",
+     "points": 497,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Jacob Arnold",
+     "club": "ENG:0:0:15",
+     "points": 492,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 17
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1963,
+    "id": "ENG:0:0:15:vacancy:10:110",
+    "age": 33,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1964,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Sergio Ruggiero",
+     "club": "ITA:0:0:7",
+     "points": 510,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Oreste Piras",
+     "club": "ITA:0:0:7",
+     "points": 508,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 33
+    },
+    {
+     "name": "Pietro Bassi",
+     "club": "ITA:0:0:7",
+     "points": 503,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 23
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1964,
+    "id": "ITA:0:0:7:p:8:109",
+    "age": 33,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1965,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Sergio Ruggiero",
+     "club": "ITA:0:0:7",
+     "points": 562,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 30
+    },
+    {
+     "name": "Oreste Piras",
+     "club": "ITA:0:0:7",
+     "points": 553,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 35
+    },
+    {
+     "name": "Pietro Bassi",
+     "club": "ITA:0:0:7",
+     "points": 548,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 25
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1965,
+    "id": "ITA:0:0:7:p:8:109",
+    "age": 34,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1966,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Guillaume Lemercier",
+     "club": "FRA:0:0:15",
+     "points": 368,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Serge Chevalier",
+     "club": "FRA:0:0:15",
+     "points": 358,
+     "honours": [
+      "league",
+      "cup"
+     ],
+     "goals": 11
+    },
+    {
+     "name": "Sergio Ruggiero",
+     "club": "ITA:0:0:7",
+     "points": 356,
+     "honours": [
+      "europe"
+     ],
+     "goals": 26
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1966,
+    "id": "FRA:0:0:15:p:8:110",
+    "age": 22,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1967,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Alessandro Pagano",
+     "club": "ITA:0:0:4",
+     "points": 514,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 42
+    },
+    {
+     "name": "Ottavio Ronchi",
+     "club": "ITA:0:0:4",
+     "points": 504,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Remo Gallo",
+     "club": "ITA:0:0:4",
+     "points": 497,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 17
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1967,
+    "id": "ITA:0:0:4:p:10:110",
+    "age": 32,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1968,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Ottavio Ronchi",
+     "club": "ITA:0:0:4",
+     "points": 334,
+     "honours": [
+      "europe"
+     ],
+     "goals": 31
+    },
+    {
+     "name": "Alessandro Pagano",
+     "club": "ITA:0:0:4",
+     "points": 327,
+     "honours": [
+      "europe"
+     ],
+     "goals": 23
+    },
+    {
+     "name": "Lars Nieuwenhuis",
+     "club": "NED:0:0:8",
+     "points": 323,
+     "honours": [
+      "league"
+     ],
+     "goals": 26
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1968,
+    "id": "ITA:0:0:4:p:9:110",
+    "age": 32,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1969,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Simon Ellis",
+     "club": "ENG:0:0:7",
+     "points": 493,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Archie Newton",
+     "club": "ENG:0:0:7",
+     "points": 493,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Gerardo Pagani",
+     "club": "ENG:0:0:7",
+     "points": 485,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 8
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1969,
+    "id": "ENG:0:0:7:p:6:110",
+    "age": 29,
+    "line": "MF",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1970,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Eddy Op de Beeck",
+     "club": "FRA:0:0:15",
+     "points": 503,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 9
+    },
+    {
+     "name": "Serge Chevalier",
+     "club": "FRA:0:0:15",
+     "points": 492,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Frédéric Moulin",
+     "club": "FRA:0:0:15",
+     "points": 488,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 19
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1970,
+    "id": "BEL:0:0:15:p:10:110",
+    "age": 30,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1971,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Pau Soto",
+     "club": "ESP:0:0:8",
+     "points": 500,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 23
+    },
+    {
+     "name": "Valentín Contreras",
+     "club": "ESP:0:0:8",
+     "points": 496,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Marcos Robles",
+     "club": "ESP:0:0:8",
+     "points": 496,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 26
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1971,
+    "id": "ESP:0:0:8:p:6:110",
+    "age": 21,
+    "line": "MF",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1972,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Eddy Op de Beeck",
+     "club": "ITA:0:0:4",
+     "points": 410,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 24
+    },
+    {
+     "name": "Giacomo Grimaldi",
+     "club": "ITA:0:0:4",
+     "points": 408,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Dino Silvestri",
+     "club": "ITA:0:0:4",
+     "points": 408,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 22
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1972,
+    "id": "BEL:0:0:15:p:10:110",
+    "age": 32,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1973,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Bernd Fuchs",
+     "club": "GER:0:0:1",
+     "points": 505,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 21
+    },
+    {
+     "name": "Kevin Frey",
+     "club": "GER:0:0:1",
+     "points": 491,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 17
+    },
+    {
+     "name": "Marco Funke",
+     "club": "GER:0:0:1",
+     "points": 484,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 18
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1973,
+    "id": "GER:0:0:1:p:10:110",
+    "age": 31,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1974,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Giacomo Grimaldi",
+     "club": "ITA:0:0:4",
+     "points": 501,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 23
+    },
+    {
+     "name": "Emilio Palumbo",
+     "club": "ITA:0:0:4",
+     "points": 495,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 18
+    },
+    {
+     "name": "Dino Silvestri",
+     "club": "ITA:0:0:4",
+     "points": 494,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 18
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1974,
+    "id": "ITA:0:0:4:p:10:111",
+    "age": 21,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1975,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Rubén Costa",
+     "club": "ESP:0:0:8",
+     "points": 502,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 27
+    },
+    {
+     "name": "Cipriano Núñez",
+     "club": "ESP:0:0:8",
+     "points": 502,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 14
+    },
+    {
+     "name": "Pau Soto",
+     "club": "ESP:0:0:8",
+     "points": 499,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 27
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1975,
+    "id": "ESP:0:0:8:p:10:111",
+    "age": 19,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1976,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Frédéric Moulin",
+     "club": "FRA:0:0:15",
+     "points": 556,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Serge Chevalier",
+     "club": "FRA:0:0:15",
+     "points": 554,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Guillaume Lemercier",
+     "club": "FRA:0:0:15",
+     "points": 545,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 20
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1976,
+    "id": "FRA:0:0:15:p:9:110",
+    "age": 24,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1977,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Bernd Fuchs",
+     "club": "GER:0:0:1",
+     "points": 417,
+     "honours": [
+      "cup",
+      "europe"
+     ],
+     "goals": 14
+    },
+    {
+     "name": "Marco Hauser",
+     "club": "GER:0:0:15",
+     "points": 408,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 24
+    },
+    {
+     "name": "Kevin Frey",
+     "club": "GER:0:0:1",
+     "points": 408,
+     "honours": [
+      "cup",
+      "europe"
+     ],
+     "goals": 22
+    }
+   ],
+   "clubs": 2,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1977,
+    "id": "GER:0:0:1:p:10:110",
+    "age": 35,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1978,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Guillaume Lemercier",
+     "club": "FRA:0:0:15",
+     "points": 465,
+     "honours": [
+      "league",
+      "cup",
+      "continental"
+     ],
+     "goals": 29
+    },
+    {
+     "name": "Frédéric Moulin",
+     "club": "FRA:0:0:15",
+     "points": 459,
+     "honours": [
+      "league",
+      "cup",
+      "continental"
+     ],
+     "goals": 26
+    },
+    {
+     "name": "Serge Chevalier",
+     "club": "FRA:0:0:15",
+     "points": 450,
+     "honours": [
+      "league",
+      "cup",
+      "continental"
+     ],
+     "goals": 10
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1978,
+    "id": "FRA:0:0:15:p:8:110",
+    "age": 34,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1979,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Jörg Eichhorn",
+     "club": "GER:0:0:15",
+     "points": 398,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 27
+    },
+    {
+     "name": "Wilhelm Braun",
+     "club": "GER:0:0:15",
+     "points": 394,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 11
+    },
+    {
+     "name": "Carsten Winkler",
+     "club": "GER:0:0:15",
+     "points": 391,
+     "honours": [
+      "league",
+      "europe-final"
+     ],
+     "goals": 14
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1979,
+    "id": "GER:0:0:15:p:9:111",
+    "age": 30,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1980,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Paulo Farinha",
+     "club": "POR:0:0:4",
+     "points": 448,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 25
+    },
+    {
+     "name": "Gil Freitas",
+     "club": "POR:0:0:4",
+     "points": 424,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 16
+    },
+    {
+     "name": "Miguel Machado",
+     "club": "POR:0:0:4",
+     "points": 420,
+     "honours": [
+      "league",
+      "cup",
+      "europe-final"
+     ],
+     "goals": 18
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1980,
+    "id": "POR:0:0:4:p:8:110",
+    "age": 25,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1981,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Klaus Koch",
+     "club": "GER:0:0:15",
+     "points": 409,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 20
+    },
+    {
+     "name": "Ralf Schumacher",
+     "club": "GER:0:0:15",
+     "points": 407,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 18
+    },
+    {
+     "name": "Carsten Winkler",
+     "club": "GER:0:0:15",
+     "points": 406,
+     "honours": [
+      "league",
+      "continental"
+     ],
+     "goals": 12
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1981,
+    "id": "GER:1:0:17:p:16:111",
+    "age": 27,
+    "line": "MF",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1982,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Ralf Schumacher",
+     "club": "GER:0:0:15",
+     "points": 505,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 32
+    },
+    {
+     "name": "Klaus Koch",
+     "club": "GER:0:0:15",
+     "points": 499,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Carsten Winkler",
+     "club": "GER:0:0:15",
+     "points": 495,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 11
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1982,
+    "id": "GER:0:0:15:p:10:111",
+    "age": 20,
+    "line": "FW",
+    "strongest": false,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1983,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Kevin Carr",
+     "club": "ENG:0:0:15",
+     "points": 511,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 42
+    },
+    {
+     "name": "Arthur Gallagher",
+     "club": "ENG:0:0:15",
+     "points": 510,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 22
+    },
+    {
+     "name": "Luke Thomson",
+     "club": "ENG:0:0:15",
+     "points": 508,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 28
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1983,
+    "id": "ENG:0:0:15:p:10:111",
+    "age": 33,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1984,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Kevin Carr",
+     "club": "ENG:0:0:15",
+     "points": 512,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 41
+    },
+    {
+     "name": "Arthur Gallagher",
+     "club": "ENG:0:0:15",
+     "points": 509,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 16
+    },
+    {
+     "name": "Luke Thomson",
+     "club": "ENG:0:0:15",
+     "points": 509,
+     "honours": [
+      "league",
+      "europe"
+     ],
+     "goals": 35
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1984,
+    "id": "ENG:0:0:15:p:10:111",
+    "age": 34,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  },
+  {
+   "seed": "podium-2",
+   "year": 1985,
+   "variant": "released",
+   "podium": [
+    {
+     "name": "Luke Thomson",
+     "club": "ENG:0:0:15",
+     "points": 561,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 46
+    },
+    {
+     "name": "Arthur Gallagher",
+     "club": "ENG:0:0:15",
+     "points": 555,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 8
+    },
+    {
+     "name": "Ronald Gray",
+     "club": "ENG:0:0:15",
+     "points": 545,
+     "honours": [
+      "league",
+      "cup",
+      "europe"
+     ],
+     "goals": 13
+    }
+   ],
+   "clubs": 1,
+   "winner": {
+    "seed": "podium-2",
+    "year": 1985,
+    "id": "ENG:0:0:15:p:9:111",
+    "age": 34,
+    "line": "FW",
+    "strongest": true,
+    "own": false
+   }
+  }
+ ]
+}
