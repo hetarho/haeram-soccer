@@ -17,7 +17,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
-| pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
+| pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T06:30Z | - |
 | bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
@@ -889,10 +889,6 @@
 | T779 | shard CI browsers three/three/four ways and restore their world cache | ARCH | - | todo |
 | T780 | pack and unpack save columns with integer operations | SAVE ARCH | - | todo |
 | T781 | build each shared test set-up world once | ARCH | - | todo |
-| T775 | measure history seasons and read OVR without per-call keying | ARCH | - | todo |
-| T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
-| T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
-| T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
 
