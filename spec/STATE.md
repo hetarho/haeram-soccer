@@ -16,7 +16,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| rl10 | ihaelam-ui-MacBookPro | autopilot | 2026-11-10T14:35Z | 2026-11-10T14:35Z | - |
 
 ## inbox
 - 261110 suggest WORLD-6 CLUB-46 LEAGUE-10 T808 review/game-realism-261110: put generated squads' spread in force — T808 read four of WORLD-6's five gates holding on spread worlds, CLUB-46 unread (the reference careers end at the 1984/85 close, before the 1993–2025 anchors; `scripts/calibrate-transfers.ts` now stops on an ended career); next: a CLUB-46 read that reaches 2025 (careers kept past an ending, or values read from ownerless lived worlds) and the 19 placebo sets re-lived on today's tree, since the champions pass rests on T698's allowance of 6 and the spread's divergence (43.4%) sits above that placebo range (37.0–40.9%) rl10
@@ -940,6 +939,7 @@
 - owner: watch `artifacts/match-proto-261110/index.html` (open it directly; the README beside it lists the scenes to look at, the tuned values and why `shape.spacing`, `shape.swarm` and `role.poacher.shoulder` still fail) and decide whether the script→staging split (review/match-engine-split-261110 F1) goes on; the T791–T800 chain is done and touched no production source
 
 ## log
+- 261111 rl10 closed: T803–T813 released to main behind four verify:batch runs (final d0aa6338, Chromium 333/333); report reports/261110-rl10.md rl10
 - 261110 T808 done: squad spread measured flat v spread, stays flat (CLUB-46 unread; 4 of 5 gates hold); scripts gain --setting flat|spread; independent review approved 179a46e3, P3 notes only rl10
 - 261111 T800 done: the prototype tuned from 74/105 to 96/105 metric passes over demo–demo5 (demo 16→20, demo2 15→19, demo3 15→19, demo4 14→20, demo5 14→18) with 11 `PROTO_CONFIG` values, two new stage values (`boards`, `separation`) and twelve script/staging changes each pinned by a unit test that failed before it; `artifacts/match-proto-261110/index.html` (`demo#17`, 20/21) with `playback.json`, baseline/final reports and a README of scenes, values and findings; still failing: `shape.spacing` everywhere (0.083–0.124), `shape.swarm` on three seeds (0.023–0.035), `role.poacher.shoulder` on demo5 (3.949); not opened in a browser, no production file touched mp11
 - 261111 T799 done: `scripts/match-proto/viewer` and `build.ts` — one self-contained page (Canvas 2D pitch, 22 numbered players with facing ticks, the ball with shadow and height, score, clock, the beat's identifiers, offside lines, flashes; play/pause, 1×/2×/5×, seek, three toggles and keys); `build.ts --seed demo` writes `.tmp/match-proto/index.html` (2,326,400 bytes, `demo#0`, passed 16/21) and `--serve` answers `GET /` with 200; 135 unit cases in the folder, not opened in a browser, no production file touched mp11
@@ -959,4 +959,3 @@
 - 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
 - 261110 T805 T806 T807 integrated
 - 261110 T804 integrated
-- 261110 T809 integrated
