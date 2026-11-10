@@ -829,7 +829,7 @@
 - 261110 decided ARCH-30 T779 T780 T781 T689: the gc10 loop, started for T689 only, claimed the owner's tv10 tasks T779–T781 instead (its `next` note did not bind the route while T689's call sat parked) → stopped it at 06:46Z and returned the three to todo; its local commits 8a5a1b01 (T779) and 3f03d861 (T780) stay unpushed on `work/gc10` for tv10 to reuse or drop, T781 was only begun; no code reached a remote (alt: let it finish beside tv10's own work) gc10
 - 261110 decided ARCH-30 review/test-value-261110 T786 T787: the owner, asked which repeated checks the gate may drop, approves all eight → journeys: joint authority 4→2, full-model-continuity at one viewport, records room at 390 only, 390x844 twins of non-start screens (WEB-15/17/63 fits stay rules; 390x844 dominates 360x740); integration: progression ESP dropped, fast-path to a few rounds, cup-win milestone from forced scores, earlier match-model revisions trimmed (alt: keep every variant | move them to an on-demand tier) tv10
 - 261110 parked review/game-runtime-speed-261110 T775 T776 T777 T778: pf10's speed-ups are integrated on local main (verified at 0e514e46) but not pushed — origin/main moved during the gate and the re-gate of the merge did not finish by the owner's 18:00 deadline; tv10's sync, gate and push to main release them with T779–T787
-- 261110 decided review/match-engine-split-261110 T791: how the owner's adopted engine-redesign direction (facts from a probabilistic script, the picture staged from it) is planned → an isolated prototype chain T791–T800 under `scripts/match-proto/`, importing nothing from `packages/` or `apps/`, as review-sourced tasks detailed for a smaller model; no SSOT change until the owner has watched T800's ten minutes (alt: ideation → MATCH SSOT first, which would write a throwaway into the rules | a new workspace package, which changes ARCH-3 | prototyping inside `packages/engine/src/grid`, entangled with the revision gates) mp10
+- 261110 decided review/match-engine-split-261110 T791: how the owner's adopted engine-redesign direction (facts from a probabilistic script, the picture staged from it) is planned → an isolated prototype chain T791–T800 under `scripts/match-proto/`, importing nothing from `packages/` or `apps/`, as detailed review-sourced tasks; no SSOT change until the owner has watched T800's ten minutes (alt: ideation → MATCH SSOT first, which would write a throwaway into the rules | a new workspace package, which changes ARCH-3 | prototyping inside `packages/engine/src/grid`, entangled with the revision gates) mp10
 
 ## ideation
 | id | st |
@@ -929,12 +929,13 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, written for a smaller model (`vibe loop --model`); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
+- mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, run on Opus (`vibe loop --model opus`, the owner's 261110 call); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
 - rc10: T784 then T785 only, one unit each (the owner's 261110 call), then the closing gate and push to main; T689 and T791–T800 are not this loop's — a unit that finds neither T784 nor T785 runnable returns no_work
 - T689 (gc10's planning slice, then its window): held until the owner has watched T800 (inbox decided 261110 rc10); no loop takes it before then
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
 - 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
 - 261110 T801 integrated (independent review approved f28a9d02, P3 notes only) tv10
