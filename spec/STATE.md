@@ -887,9 +887,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T779 | shard CI browsers three/three/four ways and restore their world cache | ARCH | - | todo |
-| T780 | pack and unpack save columns with integer operations | SAVE ARCH | - | todo |
-| T781 | build each shared test set-up world once | ARCH | - | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
 | T786 | drop journey variants that exercise no distinct path | ARCH WEB | - | todo |
