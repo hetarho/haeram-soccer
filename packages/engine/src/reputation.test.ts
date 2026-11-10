@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { clubOf, finishCups, finishEurope, advanceRound, closeSeason } from './index';
+import { clubOf, finishCups, finishEurope, closeSeason } from './index';
 import { divisionLevel, finishTerm, settleReputation, awardReputation } from './reputation';
 import { leagueFinishes } from './season';
 import { tieFixtures } from './knockout';
 import type { KnockoutRound, EuropeTournament } from '../../contracts/src/types';
-import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 /** The club on the pre-feature path: reputation, not the match model, is the subject. */
 const world = () =>
@@ -88,13 +88,10 @@ describe('standing-based reputation for every club', () => {
     expect(representative.reputation).toBe(42.25);
   });
   it('settles every native club exactly once at the actual close using old finishes and new tiers', () => {
-    // The founding season's 46 rounds are built once; the close is lived here.
-    const w = cachedWorld('final-round', () => {
-      const w = world();
-      w.cash = '999999999999';
-      while (w.round < 46) advanceRound(w, undefined, false);
-      return w;
-    });
+    // A first season's 46 rounds, the shared span's, as rich as this suite's club; the close is
+    // lived here.
+    const w = lastRoundWorld();
+    w.cash = '999999999999';
     finishCups(w);
     finishEurope(w);
     const before = new Map(w.clubs.map((c) => [c.id, c.reputation])),

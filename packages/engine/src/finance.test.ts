@@ -37,6 +37,7 @@ import { holdRows, sellPlayer, staffAuthority, startWork } from './testing';
 import { addEvent } from './events';
 import { advanceEconomy } from './economy';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { world } from './finance.testkit';
 import { careerWorld } from './career.testkit';
@@ -229,34 +230,31 @@ describe('earned, auditable club finances', () => {
   });
 
   it('books renewals and hires the delegated staff make at the close to the new season', () => {
-    // The season's league rounds are played ahead; the close runs here.
-    const w = cachedWorld('delegated-staff-before-close', () => {
-      const w = world();
-      w.cash = '999999999';
-      w.settings = staffAuthority(4);
-      // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
-      // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
-      w.direction = { coaches: 'elite' };
-      w.staff = w.staff!.map((member) =>
-        member.role === 'attack'
+    // The season's league rounds are the shared span's; the staff's authority, the direction and the
+    // contracts below are read at the close, which runs here.
+    const w = lastRoundWorld();
+    w.cash = '999999999';
+    w.settings = staffAuthority(4);
+    // Paid coaches whose contracts end at this close: the ablest one the staff keep (no candidate
+    // is 3 better), the other no longer meets 코치 기조 최고 수준 and is replaced.
+    w.direction = { coaches: 'elite' };
+    w.staff = w.staff!.map((member) =>
+      member.role === 'attack'
+        ? {
+            ...member,
+            ability: 90,
+            wage: quote(clubOf(w).country, w.year, 90),
+            until: w.year + 1,
+          }
+        : member.role === 'defense'
           ? {
               ...member,
-              ability: 90,
-              wage: quote(clubOf(w).country, w.year, 90),
+              ability: 40,
+              wage: quote(clubOf(w).country, w.year, 15),
               until: w.year + 1,
             }
-          : member.role === 'defense'
-            ? {
-                ...member,
-                ability: 40,
-                wage: quote(clubOf(w).country, w.year, 15),
-                until: w.year + 1,
-              }
-            : member,
-      );
-      while (w.round < 46 && !w.bankrupt) advanceRound(w, undefined, false);
-      return w;
-    });
+          : member,
+    );
     simulateSeason(w);
     const renewal = w.events.find((event) => event.kind === 'staff-renew')!;
     expect(renewal.year).toBe(w.year);

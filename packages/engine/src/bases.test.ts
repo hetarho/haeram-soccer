@@ -20,6 +20,7 @@ import {
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { LINES } from '../../contracts/src/player';
 import { lineOfPlayer } from './player-state';
@@ -41,13 +42,15 @@ const fourRounds = () =>
     return w;
   });
 
-/** The same club at the end of its first season, before the close starts the next. */
-const seasonPlayed = () =>
-  cachedWorld('season-played', () => {
-    const w = fourRounds();
-    while (w.round < 46) advanceRound(w, undefined, false);
-    return w;
-  });
+/**
+ * A club that never invests at the end of its first season, before the close starts the next: the
+ * shared season, as rich as `world()` makes this club, since only the close reads it here.
+ */
+const seasonPlayed = () => {
+  const w = lastRoundWorld();
+  w.cash = '999999999';
+  return w;
+};
 
 describe('지역 기반 and 글로벌 인지도 (→ECON-34)', () => {
   it('stays absent and neutral for a club that never invests', () => {

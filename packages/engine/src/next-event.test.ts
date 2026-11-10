@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { canonical } from '../../contracts/src/index';
+import type { World } from '../../contracts/src/types';
 import {
   advanceDays,
-  advanceRound,
   prepareSeason,
   nextOwnFixture,
   daysUntilNextMatch,
@@ -15,10 +15,14 @@ import { pendingDecisions, stoppingReasons } from './stopping';
 import { currency, priceIndex } from '../../catalogs/src/index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { careerWorld } from './career.testkit';
 /** Founded on the pre-feature path: the calendar's next event, not the match model, is the subject. */
 function world() {
-  const w = careerWorld({ seed: 'next-event' }, DISABLED_RELEASE);
+  return manual(careerWorld({ seed: 'next-event' }, DISABLED_RELEASE));
+}
+/** `w` rich and played in manual mode, every responsibility delegated to the staff. */
+function manual(w: World) {
   w.cash = w.income = '999999999999';
   w.settings!.mode = 'manual';
   for (const key of RESPONSIBILITY_KEYS) w.settings!.responsibilities[key] = 'delegated';
@@ -109,12 +113,9 @@ describe('ordered manual next-event settlement', () => {
     expect(w.ownMatches).toHaveLength(0);
   });
   it('continues through season close and ordinary reports to the following fixture eve', () => {
-    // The season's rounds only lead to its end; the step through the close is the subject.
-    const w = cachedWorld('final-round', () => {
-      const w = world();
-      while (w.round < 46 && !w.critical && !w.bankrupt) advanceRound(w, undefined, false);
-      return w;
-    });
+    // The season's rounds only lead to its end, so the shared season stands in, set up as `world()`
+    // sets this club; the step through the close is the subject.
+    const w = manual(lastRoundWorld());
     expect(w.round).toBe(46);
     const year = w.year,
       count = w.ownMatches.length;

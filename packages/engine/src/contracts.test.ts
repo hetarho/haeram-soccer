@@ -74,6 +74,7 @@ import { askingMultiplier } from './world-market';
 import { locateOffer } from './scout-search';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 // The constants (MARKET_CONFIG) follow the career calibration (→ECON-29), so these tests hold the
@@ -95,13 +96,15 @@ const amount = (value: string) => Number(BigInt(value));
 /** Money in whole currency units, comparable across the 1971 decimalisation. */
 const major = (w: World, value: string) =>
   amount(value) / currency(clubOf(w).country, w.year).units;
-/** The club taken over in the lowest professional division, its first season's 46 rounds played. */
-const professionalSeason = () =>
-  cachedWorld('professional-season', () => {
-    const w = world();
-    while (w.round < 46) advanceRound(w, undefined, false);
-    return w;
-  });
+/**
+ * A club taken over in the lowest professional division, its first season's 46 rounds played: the
+ * shared span's, with this suite's contract policy for the close that runs on it.
+ */
+const professionalSeason = () => {
+  const w = lastRoundWorld();
+  w.settings = staffAuthority(2);
+  return w;
+};
 /** A third-division club's first season at its last round: the lowest division that relegates. */
 const thirdDivisionSeason = () =>
   cachedWorld('third-division-season', () => {
@@ -1252,14 +1255,9 @@ describe('ambition unhappiness (→CLUB-27)', () => {
     // Only meeting his floor or a sale ends the other kind.
     expect(declined!.unhappy).toMatchObject({ reason: 'renewal-declined' });
     // The season's close runs it.
-    // The owner's founding season's 46 rounds are built once; the close is lived here.
-    const { season, id } = cachedWorld('owner-season', () => {
-      const season = world();
-      handTo(season, 1);
-      const id = activePlayers(season)[0]!.id;
-      while (season.round < 46) advanceRound(season, undefined, false);
-      return { season, id };
-    });
+    // A first season's 46 rounds, the shared span's, handed to the owner; the close is lived here.
+    const season = handTo(lastRoundWorld(), 1),
+      id = activePlayers(season)[0]!.id;
     const p = season.players.find((player) => player.id === id)!;
     p.unhappy = { reason: 'ambition', year: season.year, day: 30 };
     closeSeason(season);

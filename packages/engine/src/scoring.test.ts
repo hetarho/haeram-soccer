@@ -14,6 +14,7 @@ import {
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { preFeatureTransferredScorer } from '../../../tests/fixtures/transferred-scorer';
 import { careerWorld, CAREER_YEAR } from './career.testkit';
 
@@ -162,13 +163,11 @@ describe('actual league scorer standings', () => {
   });
 
   it('resets standings and competition membership when the season or league changes', () => {
-    const previous = afterRounds(1).scorerSeason;
-    // The rest of the season is setup: only its close (simulateSeason's last step) runs here.
-    const w = cachedWorld('last-round', () => {
-      const w = afterRounds(1);
-      while (w.round < 46) advanceRound(w, undefined, false);
-      return w;
-    });
+    // The season is setup: only its close (simulateSeason's last step) runs here. Any pre-feature
+    // season resets alike, so the shared one stands in, as rich as `world()` makes this club.
+    const w = lastRoundWorld();
+    w.cash = '999999999999';
+    const previous = structuredClone(w.scorerSeason);
     simulateSeason(w);
     expect(w.scorerSeason!.year).toBe(CAREER_YEAR + 1);
     expect(w.scorerSeason!.players).toEqual([]);

@@ -8,7 +8,6 @@ import {
   respondBid,
   staffSignings,
   noteSigning,
-  advanceRound,
   closeSeason,
 } from './index';
 import { currentDay } from './calendar';
@@ -18,13 +17,18 @@ import { transferWindowDays } from './transfers';
 import { lineOf } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
+import { lastRoundWorld } from '../../../tests/fixtures/shared-seasons';
 import { careerWorld } from './career.testkit';
 const world = (count = 20) => cachedWorld(`world:${count}`, () => found(count));
 /** The club on the pre-feature path: replacement needs, not the match model, are the subject. */
 function found(count: number) {
   const w = careerWorld({ seed: 'replacement-needs' }, DISABLED_RELEASE);
-  w.cash = w.income = '999999999999';
   w.calendar = { day: 1 };
+  return equip(w, count);
+}
+/** `w` rich, its recruitment delegated and its squad filled to `count` active players. */
+function equip(w: World, count: number) {
+  w.cash = w.income = '999999999999';
   w.settings!.responsibilities.recruitment = 'delegated';
   while (activePlayers(w).length < count) {
     const p = makePlayer('ENG', w.seed, `bench:${w.players.length}`, w.year, 1, 'CM', 20);
@@ -106,13 +110,10 @@ describe('replacement needs', () => {
     expect(validateWorld(JSON.parse(canonical(w))).replacementNeeds).toEqual(w.replacementNeeds);
   });
   it('opens a summer need for an expiring starter after the close top-up', () => {
-    // Owner-held recruitment after 46 unobserved rounds, just before the close under test.
-    const w = cachedWorld('direct-round-46', () => {
-      const w = world();
-      w.settings!.responsibilities.recruitment = 'direct';
-      while (w.round < 46) advanceRound(w, undefined, false);
-      return w;
-    });
+    // Owner-held recruitment after 46 unobserved rounds, just before the close under test: the
+    // shared season, its money and squad as `world()` gives this club.
+    const w = equip(lastRoundWorld(), 20);
+    w.settings!.responsibilities.recruitment = 'direct';
     for (const p of activePlayers(w)) {
       p.until = w.year + 5;
       p.born = w.year - 22;
