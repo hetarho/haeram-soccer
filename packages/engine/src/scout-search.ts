@@ -8,8 +8,8 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Club, FreeAgent, Line, Player, ScoutOffer, World } from '../../contracts/src/types';
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { LINES } from '../../contracts/src/player';
-import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
-import { clubById, squad } from './world';
+import { activePlayers, clubOf, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
+import { clubById, ownStarters, squad } from './world';
 import { currentDay } from './calendar';
 import { compareIds } from './primitives';
 import { policyEffects, policyOf } from './policy';
@@ -49,6 +49,40 @@ export const SCOUT_CONFIG = {
   /** However the cards cut it, he lists at least this many per line. */
   minPerLine: 1,
 } as const;
+
+/**
+ * T784's candidate shapes of the list (→CLUB-51), a measurement setting off in play: `line` lists a
+ * club's second player of a line only once every club with a fitting player there has one listed,
+ * `list` the same over the whole list. `none` is the rule in force.
+ */
+export const LIST_SPREAD: { inForce: 'none' | 'line' | 'list' } = { inForce: 'none' };
+
+/**
+ * T785's candidate ceilings of the search (→CLUB-51, →ECON-16), a measurement setting off in play:
+ * `open` lifts 영입 기조's ability ceiling altogether; `xi` keeps it at least `xiMargin` above our
+ * starting XI's mean value at its slots — the margin at which the manager asks for a player
+ * (→CLUB-33) — so a club stronger than the band can still find a player who would improve it.
+ * `none` is the rule in force.
+ */
+export const SEARCH_CEILING: { inForce: 'none' | 'open' | 'xi'; xiMargin: number } = {
+  inForce: 'none',
+  xiMargin: 5,
+};
+/** Our starting XI's mean value at its formation slots (→CLUB-6), rounded. */
+function xiLevel(w: World) {
+  const slots = formationOf(w.tactic),
+    starters = ownStarters(w);
+  if (!starters.length) return 0;
+  return Math.round(
+    starters.reduce((sum, p, i) => sum + slotOvr(p, slots[i]!), 0) / starters.length,
+  );
+}
+function searchCeiling(w: World, top: number) {
+  if (SEARCH_CEILING.inForce === 'open') return 99;
+  if (SEARCH_CEILING.inForce === 'xi')
+    return Math.min(99, Math.max(top, xiLevel(w) + SEARCH_CEILING.xiMargin));
+  return top;
+}
 
 export type ScoutHome = (typeof SCOUT_CONFIG.reachBands)[number]['home'];
 export const SCOUT_HOME_LABEL: Readonly<Record<ScoutHome, string>> = {
@@ -103,7 +137,7 @@ export function scoutReach(w: World): ScoutReach {
     abroad: others.slice(0, countries),
     abroadPlaces: countries ? Math.min(perLine, SCOUT_CONFIG.abroadPlaces[level]!) : 0,
     age: [search.age[0], search.age[1]],
-    ability: [search.ability[0] + shift, search.ability[1] + shift],
+    ability: [search.ability[0] + shift, searchCeiling(w, search.ability[1] + shift)],
     potentialFirst:
       build.scoutNeverPotentialFirst > 0
         ? 'none'
@@ -217,11 +251,32 @@ function search(w: World, reach: ScoutReach): ScoutOffer[] {
       consider(agent, ovrs[i]!, undefined, country);
   });
   const multiplier = askingMultiplier(w),
-    graduates = graduateIds(w);
+    graduates = graduateIds(w),
+    spread = LIST_SPREAD.inForce,
+    listedClubs = new Set<string>();
   return LINES.flatMap((line) => {
     const ranked = found.filter((f) => f.line === line).sort(byRank);
-    const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
-    for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
+    if (spread === 'none') {
+      const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
+      for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
+      return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
+    }
+    const seen = spread === 'list' ? listedClubs : new Set<string>(),
+      kept = new Set<Found>();
+    // A club's first fitting player before anyone's second, then the rest by rank.
+    const take = (pool: Found[], limit: number) => {
+      for (const f of pool)
+        if (kept.size < limit && !kept.has(f) && !(f.club && seen.has(f.club.id))) {
+          kept.add(f);
+          if (f.club) seen.add(f.club.id);
+        }
+      for (const f of pool) if (kept.size < limit) kept.add(f);
+    };
+    take(
+      ranked.filter((f) => f.abroad),
+      reach.abroadPlaces,
+    );
+    take(ranked, reach.perLine);
     return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
   });
 }
@@ -250,6 +305,7 @@ function listKey(w: World, reach: ScoutReach) {
     director?.ability ?? '',
     director?.trait ?? '',
     askedFeeFactor(w),
+    LIST_SPREAD.inForce,
   ]);
 }
 const lists = new WeakMap<

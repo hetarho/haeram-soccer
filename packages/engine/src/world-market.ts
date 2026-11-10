@@ -37,9 +37,16 @@ export const graduateIds = (w: World) =>
 export const askingMultiplier = (w: World) =>
   staffEffects(w).feeMultiplier * synergyEffects(w).feeMultiplier * askedFeeFactor(w);
 
+/**
+ * T784's seller candidate (→CLUB-22, →WORLD-6), a measurement setting off in play: with `kept` a
+ * club nobody owns does not sell the player who fills a place a departure emptied (`vacancy`), as
+ * a club keeps the man it has just brought in to replace one it lost.
+ */
+export const REFILL_SALE: { inForce: 'sold' | 'kept' } = { inForce: 'sold' };
 /** A club player nobody can sign: retired or gone, on loan there, or announced to retire. */
 export function unavailableAtClub(w: World, player: Player) {
   return (
+    (REFILL_SALE.inForce === 'kept' && player.id.includes(':vacancy:')) ||
     player.status !== 'active' ||
     !!player.loanUntil ||
     !!player.retiring ||

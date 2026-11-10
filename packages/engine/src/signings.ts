@@ -504,20 +504,44 @@ function lineStarters(w: World) {
     value: slotOvr(p, slots[i]!) + unhappyPenalty(p),
   }));
 }
+/**
+ * T784's measure of an upgrade (→CLUB-33), a measurement setting off in play: `starter` measures a
+ * slot by its starter as the lineup has him; `signed` also counts a player who joined in this window
+ * and plays the slot's position, each such player once, so a signing still settling in (→PLAYER-11)
+ * does not leave the 단장 buying again for the slot he has just filled.
+ */
+export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'starter' };
 /** The upgrade needs (→CLUB-33): every outfield and keeper slot, the weakest starter there first. */
-function upgradeNeeds(w: World, margin: number): SigningNeed[] {
-  const slots = formationOf(w.tactic);
-  return lineStarters(w)
+export function upgradeNeeds(
+  w: World,
+  margin: number,
+  joined: readonly Player[] = [],
+): SigningNeed[] {
+  const slots = formationOf(w.tactic),
+    starters = lineStarters(w),
+    starting = new Set(starters.map((s) => s.p.id)),
+    fresh = UPGRADE_MEASURE.inForce === 'signed' ? joined.filter((p) => !starting.has(p.id)) : [],
+    counted = new Set<string>();
+  return starters
     .sort((a, b) => a.value - b.value || a.slot - b.slot)
-    .map((starter) => ({
-      kind: 'upgrade',
-      line: starter.line,
-      slot: starter.slot,
-      position: slots[starter.slot]!.position,
-      starter: starter.p,
-      level: starter.value,
-      margin,
-    }));
+    .map((starter) => {
+      const position = slots[starter.slot]!.position;
+      const arrival = fresh
+        .filter((p) => !counted.has(p.id) && playsAt(p, position))
+        .map((p) => ({ p, value: atSlot(w, p, starter.slot) }))
+        .sort((a, b) => b.value - a.value || compareIds(a.p.id, b.p.id))[0];
+      const level = arrival && arrival.value > starter.value ? arrival.value : starter.value;
+      if (arrival && level !== starter.value) counted.add(arrival.p.id);
+      return {
+        kind: 'upgrade',
+        line: starter.line,
+        slot: starter.slot,
+        position,
+        starter: starter.p,
+        level,
+        margin,
+      };
+    });
 }
 
 /** The 단장 signs a free agent: he leaves the pool at once on the offer's terms (→CLUB-49). */
@@ -650,6 +674,10 @@ export function staffSignings(w: World) {
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,
     tried = new Set(bids.map((bid) => bid.playerId));
+  const signed = new Set(
+      bids.filter((bid) => bid.status === 'completed').map((bid) => bid.playerId),
+    ),
+    joined = activePlayers(w).filter((p) => signed.has(p.id));
   const requests = signingRequests(w),
     short = shortLines(w),
     found: SigningNeed[] = [
@@ -658,7 +686,7 @@ export function staffSignings(w: World) {
       ...(stance.signing.margin !== undefined &&
       upgrades < stance.signing.upgrades &&
       squad <= SIGNING_CONFIG.upgradeSquad
-        ? upgradeNeeds(w, stance.signing.margin)
+        ? upgradeNeeds(w, stance.signing.margin, joined)
         : []),
     ];
   const needs = found
