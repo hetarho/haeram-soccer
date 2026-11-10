@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T18:45:32.703Z",
-  "sourceCommit": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
+  "snapshotAt": "2026-11-10T19:03:49.115Z",
+  "sourceCommit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -11,6 +11,31 @@
       "workers": 2,
       "reviewers": 1,
       "maxPending": 8
+    },
+    "verified": {
+      "commit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
+      "checks": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+          "startedAt": "2026-11-10T18:46:38.274Z",
+          "finishedAt": "2026-11-10T19:03:41.099Z"
+        }
+      ],
+      "at": "2026-11-10T19:03:41.270Z",
+      "excluded": [
+        "T689",
+        "T791",
+        "T792",
+        "T793",
+        "T794",
+        "T795",
+        "T796",
+        "T797",
+        "T798",
+        "T799",
+        "T800",
+        "T808"
+      ]
     },
     "push": null,
     "review": "all",
@@ -26,7 +51,7 @@
       "T812",
       "T813"
     ],
-    "runner": {
+    "lastRun": {
       "id": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
       "adapter": "builtin",
       "providers": {
@@ -49,42 +74,10 @@
         }
       ],
       "startedAt": "2026-11-10T18:41:01.632Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-11-10T18:18:29.209Z",
-      "stoppedAt": "2026-11-10T18:38:04.675Z",
-      "dispatched": 1,
-      "outcome": "needs-attention",
-      "failures": [
-        {
-          "attempt": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
-          "role": "worker",
-          "error": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
-        }
-      ],
+      "stoppedAt": "2026-11-10T19:03:46.673Z",
+      "dispatched": 2,
+      "outcome": "completed",
+      "failures": [],
       "autopilot": true,
       "decisionWaitMs": 900000
     }
@@ -802,6 +795,9 @@
       "submittedBase": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
       "submissionId": "befddb43-3731-4ad1-8912-74b4683c07a1",
       "submittedAt": "2026-11-10T18:41:38.730Z",
+      "integratedCommit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
+      "integratedAt": "2026-11-10T18:46:36.926Z",
+      "cleanedAt": "2026-11-10T19:03:46.622Z",
       "risk": null,
       "dispatch": {
         "id": "d02a578c-bb88-4616-8ae7-eea71aae1e8d",
@@ -864,6 +860,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T18:41:15.429Z",
           "finishedAt": "2026-11-10T18:41:38.279Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-10T18:45:32.884Z",
+          "finishedAt": "2026-11-10T18:46:36.632Z"
         }
       ]
     }
@@ -5595,6 +5598,143 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2788,
+      "at": "2026-11-10T18:46:36.840Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-10T18:45:32.884Z",
+            "finishedAt": "2026-11-10T18:46:36.632Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2789,
+      "at": "2026-11-10T18:46:36.926Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
+        "integratedAt": "2026-11-10T18:46:36.926Z"
+      }
+    },
+    {
+      "sequence": 2790,
+      "at": "2026-11-10T19:03:41.297Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "startedAt": "2026-11-10T18:46:38.274Z",
+              "finishedAt": "2026-11-10T19:03:41.099Z"
+            }
+          ],
+          "at": "2026-11-10T19:03:41.270Z",
+          "excluded": [
+            "T689",
+            "T791",
+            "T792",
+            "T793",
+            "T794",
+            "T795",
+            "T796",
+            "T797",
+            "T798",
+            "T799",
+            "T800",
+            "T808"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 2791,
+      "at": "2026-11-10T19:03:41.692Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2792,
+      "at": "2026-11-10T19:03:46.622Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-10T19:03:46.622Z"
+      }
+    },
+    {
+      "sequence": 2793,
+      "at": "2026-11-10T19:03:46.674Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-10T18:41:01.632Z",
+          "stoppedAt": "2026-11-10T19:03:46.673Z",
+          "dispatched": 2,
+          "outcome": "completed",
+          "failures": [],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
