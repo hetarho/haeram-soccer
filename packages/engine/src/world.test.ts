@@ -21,6 +21,45 @@ import { LINE_MINIMUM, lineOf, ovrAt } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
+import { ownStarters, readingOnce } from './world';
+import { effectLedger } from './effect-ledger';
+import { synergyStates } from './synergy';
+import { autoTrainingAdvice } from './staff';
+describe('read scope', () => {
+  it('a scoped read equals an unscoped one and the scope closes after an exception', () => {
+    const w = structuredClone(simulatedWorld(input)),
+      fixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
+    // Reads that choose the own XI several times, as the Host's view does.
+    const reads = () => canonical([effectLedger(w), synergyStates(w), autoTrainingAdvice(w)]);
+    const unscoped = { xi: ownStarters(w), forFixture: ownStarters(w, fixture), reads: reads() };
+    const first = readingOnce(w, () => {
+      const xi = ownStarters(w);
+      expect(ownStarters(w)).toBe(xi);
+      expect(Object.isFrozen(xi)).toBe(true);
+      expect(xi).toEqual(unscoped.xi);
+      expect(reads()).toBe(unscoped.reads);
+      // A fixture's XI, another world and a scope opened inside choose their own.
+      expect(ownStarters(w, fixture)).not.toBe(ownStarters(w, fixture));
+      expect(ownStarters(w, fixture)).toEqual(unscoped.forFixture);
+      expect(ownStarters(structuredClone(w))).not.toBe(xi);
+      expect(readingOnce(w, () => ownStarters(w))).not.toBe(xi);
+      expect(ownStarters(w)).toBe(xi);
+      return xi;
+    });
+    expect(ownStarters(w)).not.toBe(first);
+    expect(() =>
+      readingOnce(w, () => {
+        ownStarters(w);
+        throw new Error('read failed');
+      }),
+    ).toThrow('read failed');
+    // Closed: a starter who leaves afterwards is no longer chosen.
+    const xi = ownStarters(w);
+    expect(Object.isFrozen(xi)).toBe(false);
+    xi[0]!.status = 'retired';
+    expect(ownStarters(w).map((p) => p.id)).not.toContain(xi[0]!.id);
+  });
+});
 describe('world progression', () => {
   it('a taken-over career keeps every division whole and validates', () => {
     const w = simulatedWorld(input);

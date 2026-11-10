@@ -298,12 +298,15 @@ export function campaignEffectiveness(w: World, kind: string) {
 
 /** Own league games this season: 46 in a 24-club division, 38 in a 20-club one (→ECON-19). */
 export function ownLeagueGames(w: World) {
-  return Math.max(
-    1,
-    w.fixtures.filter(
-      (f) => f.kind === 'league' && (f.home === w.playerClub || f.away === w.playerClub),
-    ).length,
-  );
+  // Counted in place: a view reads it several times over every fixture of the season.
+  const fixtures = w.fixtures,
+    own = w.playerClub;
+  let games = 0;
+  for (let i = 0; i < fixtures.length; i++) {
+    const f = fixtures[i]!;
+    if (f.kind === 'league' && (f.home === own || f.away === own)) games++;
+  }
+  return Math.max(1, games);
 }
 /**
  * League match income is sized for a 46-game season, so a shorter league pays more per match

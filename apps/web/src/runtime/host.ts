@@ -9,7 +9,7 @@ import { personCareer } from './personCareer';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
 import { officeRead } from './officeRead';
 import { recentClubResults } from '../../../../packages/engine/src/recent-results';
-import { startingSquad } from '../../../../packages/engine/src/world';
+import { readingOnce, startingSquad } from '../../../../packages/engine/src/world';
 import { staffMarket } from '../../../../packages/engine/src/staff';
 import { clubManager } from '../../../../packages/engine/src/managerMarket';
 import { nextEventDays } from '../../../../packages/engine/src/next-event';
@@ -435,8 +435,15 @@ export class Host {
       this.preOwnerCache = { key, seasons: seasonsBeforeOwner(w) };
     return this.preOwnerCache.seasons;
   }
+  /**
+   * This world's view, projected inside one read scope (→ARCH-6): the projection is synchronous and
+   * changes nothing, so the parts that read the own XI share one choice of it.
+   */
   private view(w = this.world): View | undefined {
     if (!w) return;
+    return readingOnce(w, () => this.projection(w));
+  }
+  private projection(w: World): View {
     const own = w.clubs.find((c) => c.id === w.playerClub)!;
     const ownGroup = groupKey(own);
     const next = nextOwnFixture(w);

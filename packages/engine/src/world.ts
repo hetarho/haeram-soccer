@@ -430,7 +430,32 @@ export { injuryDaysLeft, isInjured } from './player-state';
  * injured player plays only when too few are fit to field eleven. A player banned for the
  * fixture's competition never plays it (→MATCH-19).
  */
-export function ownStarters(w: World, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
+export function ownStarters(w: World, f?: Pick<Fixture, 'kind' | 'groupKey'>): Player[] {
+  if (f || scope?.w !== w) return chooseStarters(w, f);
+  if (!scope.starters) scope.starters = Object.freeze(chooseStarters(w)) as Player[];
+  return scope.starters;
+}
+/**
+ * The open read scope (`readingOnce`): its world and, once chosen there, that world's XI without a
+ * fixture.
+ */
+let scope: { w: World; starters?: Player[] } | undefined;
+/**
+ * Runs `read`, a pure read of `w` that changes nothing in it (the Host's view, →ARCH-6), with
+ * `ownStarters(w)` without a fixture chosen once and the same frozen XI reused. The scope holds
+ * only this exact world and closes when `read` returns or throws, restoring any outer scope, so a
+ * read of another world, or a scope opened inside this one, chooses its own.
+ */
+export function readingOnce<T>(w: World, read: () => T): T {
+  const outer = scope;
+  scope = { w };
+  try {
+    return read();
+  } finally {
+    scope = outer;
+  }
+}
+function chooseStarters(w: World, f?: Pick<Fixture, 'kind' | 'groupKey'>) {
   const active = f ? activePlayers(w).filter((p) => !isBanned(w, p.id, f)) : activePlayers(w);
   const fit = active.filter((p) => !isInjured(w, p));
   const xi = lineup(fit, w.tactic, w.manager, w.year, ownMultiplier);
