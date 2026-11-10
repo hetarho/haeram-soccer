@@ -428,9 +428,11 @@ export const SQUAD_SPREAD: { inForce: 'flat' | 'spread' } = { inForce: 'flat' };
 /**
  * WORLD-6's spread terms. `class` and `bench` are chosen within WORLD-6's ranges (±6, 3–8) to keep a
  * squad's market cost, which the means level reads (`squadCostAt`, →LEAGUE-10), nearest the flat
- * draw's: spread squads cost less (the age term lowers the young and the old, and below a star pay
- * spread of 1 a starter lifted above OVR 80 earns little more), so the bench sits as near as WORLD-6
- * allows and the class takes its widest spread; T806's result lists the cost per strength and era.
+ * draw's over strengths 50–95 and the star pay spread's eras: spread squads cost less (the age term
+ * lowers the young and the old; below a star pay spread of 1 a starter lifted above OVR 80 earns
+ * little more; at 95 the ceiling holds the starters), so the bench sits as near as WORLD-6 allows and
+ * the class is the narrowest that still spreads the eleven to an OVR SD of 2.5 at every strength up
+ * to 90 (5 leaves 2.39 at 90); T806's result lists the cost per strength and era.
  */
 export const SQUAD_SPREAD_CONFIG = {
   /** A player's class: symmetric within ± this of his place's level, triangular so stars are rare. */
