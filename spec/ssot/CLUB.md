@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r65 | Define the browser-demo rules for squad and growth.
+> r66 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its generated squad becomes its own players, filled to 20 with players generated at its level (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -181,6 +181,7 @@
   - the close is judged the day after the window's last day, so a deadline-day signing counts; a loan joining counts as joining; a manager appointed after the opening is not judged on his predecessor's requests; a club's founding day is its first summer window's opening.
   - with player recruitment delegated the 단장 looks on the window's opening day and every 7th day after it, and every day while a replacement need is open (→CLUB-42); a look makes at most one move, and none while one of his bids is pending.
   - needs, first met first: a short line, then a replacement (→CLUB-42), then an upgrade: a candidate who beats a slot's starter at that slot (as a request does) by the margin of 재정 기조 (표준 5, 적극 3, 공격적 2), while the squad has 24 players or fewer; 안정적 and 신중 never upgrade. Requests come before the others.
+    - a player who joined in this window and plays the slot's position stands as its measure when he beats its starter there, each such player for one slot only, so a signing still settling in (→PLAYER-11) closes the slot he was bought for. ← measured on the starter alone the slot stayed open and the 단장 bought for it again in the same window (measured 261110: fee signings 20 → 16 and 11 → 10 on two reference careers)
   - upgrades per window: 표준 1, 적극 2, 공격적 3; a short line has no cap.
   - the candidate who fits the need: the manager's pick, then the rest of the shortlist, then the players within the scout's reach (→CLUB-51); within each band by ability, then potential, free agents first only when both tie, then id; never a player he bid for in this window before (a negotiator's raised bid excepted, →CLUB-41), never on loan. A candidate who fails the money checks is passed over for the next affordable fit. ← available cash buys a sporting improvement rather than automatically preferring every free player
   - for a request with an actual mediation decision, its support outcome in →CLUB-39 governs whether to defer or prioritize a qualifying alternative/the manager's pick. Ordinary recruitment timing, suitability, limits and money checks still apply.
@@ -341,6 +342,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r66 261110 CLUB-33✎ an upgrade measured against the slot's starter alone→a player who joined in this window and plays its position stands as its measure when he beats the starter, each for one slot
 - r65 261110 CLUB-33✎ delegated recruitment without targets→targets: one seller ≤2 of a window's signings and ≤¼ of fee signings over 5 seasons; a funded 공격적 top-flight club's dearest signing ≥0.5× the standing British record within 3 seasons; rules unchanged until measured
 - r64 261109 CLUB-25✎ initial wage-era pilot1992:1/2005:1.5/2025:2.5→withdrawn after lived-books hard failure; released quote curve and existing contracts retained, exact measurement tools remain
 - r63 261109 CLUB-25✎ player quotes on football index alone→independent estimated wage-era factor (1992:1,2005:1.5,2025:2.5), existing contracts and transfer values unchanged, joint financial calibration before publication

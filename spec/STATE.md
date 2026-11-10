@@ -17,8 +17,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| rl10 | ihaelam-ui-MacBookPro | autopilot | 2026-11-10T14:35Z | 2026-11-10T14:35Z | - |
 
 ## inbox
+- 261110 decided review/game-realism-261110 T784: the owner's self-improve-local call at 23:35 KST ("실제 축구와 가장 비슷하게 하고 나한테 물어보지 말고 … 7시까지") after T784's planning question (the 단장's list draws from 3–5 clubs because squads are drawn tightly at club strength and a sold place refills with a double) → rl10 orchestrates until 2026-11-11 07:00 KST (22:00Z) on its own branch `si/rl10` (the owner's mp10 session works in the main checkout): read-only scouts propose game-world realism problems (transfer market and squad supply; awards, careers and season outcomes), the orchestrator adopts by real football's closeness without asking, including the rule changes the skill would otherwise park for the owner (SSOT updates, measured gates kept, saves need no compatibility pre-release), implementation sessions in their own worktrees, a separate session reviews every submission, one `verify:batch` gate, then main is pushed; T784's follow-ups enter as findings — `signed` in force, squads drawn with real football's spread of stars and squad players, a sold place no longer refilled by a double — and its search-ceiling option waits for T785's verdict; rc10's T785 loop and T689/T791–T800 stay untouched (alt: plan T784's options only, leaving the run idle | wait for rc10 to finish before scouting) rl10
 - 261110 decided CLUB-33 T784: which careers T784 diagnoses without the owner's export (not in this worktree's `.tmp/saves/`) → ENG takeovers on 1 August 2000 of LEAGUE-13's reference club, every responsibility delegated, recruitment's 재정 기조 공격적 (three seeds) and 적극 (one) on 석유 재벌, 공격적 on 중견 사업가, a quarter of the fortune put in each season as an owner told to spend, 2000/01–2007/08; the five-season share read on every span and, beside it, on spans of four or more fee signings, where a quarter can hold (alt: 1950 takeovers as LEAGUE-13, outside the owner's 2000s–2020s era | 25 seasons a career, about four times the time for the same mechanism) rc10
 - 261110 decided CLUB-33 CLUB-51 T784: whether to spend the rest of the 2h box after the supply read → exit at about 35 minutes with the rules unchanged: the top of 영입 기조 표준's search sits in 3–5 clubs, so every list, seller or need rule measured either keeps ability and leaves 43–78% five-season shares or spreads the sellers at 2.0–3.8 OVR of mean ability, and the levers left (NPC squad spread, the refill rule, the search's ceiling, the target's counting) are planning (alt: more seeds of the same candidates, which the supply read shows cannot change the verdict | put `line` or `signed` in force alone, both short of the targets) rc10
 - 261110 suggest CLUB-33 CLUB-51 WORLD-6 PLAYER-1 ECON-16 T784: update-ssot + create-task on the seller spread's supply — the players a list ranked by ability takes first (OVR 83–85 at 표준) sit in 3–5 clubs because squads are drawn tightly at club strength and a sold place is refilled at the same strength, position and age; choose (a) NPC squads drawn with a spread of stars and squad players, so the band's top spreads over many clubs, (b) a sold place refilled below the club's strength until the next season (`REFILL_SALE` `kept`, the no-sale variant, measured), (c) the search's ceiling read against our own strength, (d) CLUB-33's five-season target restated for small counts (a span of 1–3 fee signings cannot hold 25%), or (e) accept `LIST_SPREAD` `list`'s cost (−2.0–3.8 OVR, still 36–40%); apart from these, `UPGRADE_MEASURE` `signed` (a signing still settling in counts at the slot he was bought for) is a CLUB-33 need fix that cut fee signings 20 → 16 and 11 → 10 without lowering mean ability rc10
@@ -861,9 +863,9 @@
 | ARCH | 38 | 38 | - | 2 |
 | WEB | 214 | 214 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
-| WORLD | 10 | 10 | - | 0 |
+| WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 65 | 65 | - | 0 |
+| CLUB | 66 | 66 | - | 0 |
 | MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
@@ -877,6 +879,7 @@
 ## review
 | id | st |
 |---|---|
+| game-realism-261110 | converted@261110 |
 | football-data-consistency-261109 | converted@261110 |
 | economy-transfers-261109 | converted@261109 |
 | automatic-play-hotspots-261103 | converted@261103 |
@@ -907,6 +910,12 @@
 | T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
+| T803 | realism reads: Ballon d'Or repeat winners and league title runs | ARCH | - | todo |
+| T804 | an upgrade need counts this window's signing at his slot | CLUB | - | todo |
+| T805 | each club its own age ladder | WORLD | - | todo |
+| T806 | squads with stars, regulars and a bench (behind a setting) | WORLD PLAYER LEAGUE | T805 | todo |
+| T807 | a sold place refilled by a lesser player who stays the same person | WORLD | T806 | todo |
+| T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -935,10 +944,12 @@
 ## next
 - mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, run on Opus (`vibe loop --model opus`, the owner's 261110 call); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
 - rc10: T784 then T785 only, one unit each (the owner's 261110 call), then the closing gate and push to main; T689 and T791–T800 are not this loop's — a unit that finds neither T784 nor T785 runnable returns no_work
+- rl10: T803–T807 as work group rl10 on `si/rl10` (lanes realism-reads, squad-generation, and T804 alone; review all), then T808 (explore 2h) in its own session, one `verify:batch` gate and the push to main by 2026-11-11 07:00 KST; review/game-realism-261110 F8 (an NPC-to-NPC market) and F9 (the search ceiling, with T785's verdict) stay open
 - T689 (gc10's planning slice, then its window): held until the owner has watched T800 (inbox decided 261110 rc10); no loop takes it before then
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 T784 done: seller targets unmet, rules unchanged — the top of the 표준 search band sits in 3–5 clubs, sold places refill at the seller's strength, and a settling signing leaves its slot open; three candidates stay off (`LIST_SPREAD`, `UPGRADE_MEASURE`, `REFILL_SALE`), 0 of 16 careers meet both targets (`artifacts/benchmarks/T784`) rc10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
@@ -958,7 +969,3 @@
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
-- 261110 T769 T771 T770 integrated (9feaa88f..108a3511; independent review CHANGES P2 fixed by 48e2542a/5c7b6d69, then approved) tq10
-- 261110 T772 T773 integrated (df7e4df7 d0ba5646; independent review approved 5f1e37be/d71c589b, P3 notes only) tq10
-- 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
-- 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
