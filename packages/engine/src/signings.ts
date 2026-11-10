@@ -63,8 +63,8 @@ export const SIGNING_CONFIG = {
 
 type Offer = ScoutOffer;
 /**
- * Why the 단장 wants a player: a short role, or an upgrade over a starter; `requested` when the
- * manager asked for the role (→CLUB-33).
+ * Why the 단장 wants a player: a short role, or an upgrade over a slot's measure; `requested` when
+ * the manager asked for the role (→CLUB-33).
  */
 export type SigningNeed = (
   | { kind: 'short'; line: Line; count: number; minimum: number; squad: number }
@@ -74,7 +74,9 @@ export type SigningNeed = (
       line: Line;
       slot: number;
       position: Position;
-      starter: Player;
+      /** Who stands as the slot's measure: its starter, or a signing still settling in there. */
+      measure: Player;
+      /** What the measure is worth at the slot. */
       level: number;
       margin: number;
     }
@@ -100,6 +102,19 @@ function windowBids(w: World, day: number) {
   return (w.bids || []).filter(
     (bid) => bid.direction === 'out' && bid.year === w.year && bid.day >= opening,
   );
+}
+/**
+ * Our players who joined in the window open on `day` and are still here, whoever signed them and
+ * however (a fee, a free signing or a loan, →CLUB-33): every arrival since its opening.
+ */
+export function joinedThisWindow(w: World, day = currentDay(w)): Player[] {
+  const opening = windowOpening(w, day),
+    arrived = new Set(
+      (w.recruitmentArrivals ?? [])
+        .filter(({ at }) => at.year === w.year && at.day >= opening && at.day <= day)
+        .map(({ player }) => player),
+    );
+  return activePlayers(w).filter((p) => arrived.has(p.id));
 }
 
 type ShortNeed = Extract<SigningNeed, { kind: 'short' }>;
@@ -224,7 +239,7 @@ export function needLine(w: World, need: SigningNeed) {
   return sourceMessage('copy.signings.c997ed1cf6', {
     p0: asked,
     p1: POSITION_LABEL[need.position],
-    p2: need.starter.name,
+    p2: need.measure.name,
     p3: Math.round(need.level),
     p4: need.margin,
     p5: financeOption(w, 'recruitment').name,
@@ -280,7 +295,7 @@ export function requestCandidates(w: World, request: SigningRequest) {
           line: request.line,
           slot: request.slot,
           position: request.position,
-          starter,
+          measure: starter,
           level: atSlot(w, starter, request.slot),
           margin: SIGNING_CONFIG.requestMargin,
           requested: request,
@@ -505,13 +520,17 @@ function lineStarters(w: World) {
   }));
 }
 /**
- * T784's measure of an upgrade (→CLUB-33), a measurement setting off in play: `starter` measures a
- * slot by its starter as the lineup has him; `signed` also counts a player who joined in this window
- * and plays the slot's position, each such player once, so a signing still settling in (→PLAYER-11)
- * does not leave the 단장 buying again for the slot he has just filled.
+ * How an upgrade is measured (→CLUB-33). `signed`, in force: a player who joined in this window and
+ * plays the slot's position stands as its measure when he beats its starter there, each such player
+ * for one slot only, so a signing still settling in (→PLAYER-11) closes the slot he was bought for.
+ * `starter`, the reading released before T804, measures a slot by its starter alone; it stays only
+ * for measurement scripts (`scripts/seller-spread.ts --setting starter`).
  */
-export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'starter' };
-/** The upgrade needs (→CLUB-33): every outfield and keeper slot, the weakest starter there first. */
+export const UPGRADE_MEASURE: { inForce: 'starter' | 'signed' } = { inForce: 'signed' };
+/**
+ * The upgrade needs (→CLUB-33): every outfield and keeper slot, the weakest starter there first,
+ * each measured by its starter or by one of `joined` (this window's arrivals) who beats him there.
+ */
 export function upgradeNeeds(
   w: World,
   margin: number,
@@ -530,15 +549,15 @@ export function upgradeNeeds(
         .filter((p) => !counted.has(p.id) && playsAt(p, position))
         .map((p) => ({ p, value: atSlot(w, p, starter.slot) }))
         .sort((a, b) => b.value - a.value || compareIds(a.p.id, b.p.id))[0];
-      const level = arrival && arrival.value > starter.value ? arrival.value : starter.value;
-      if (arrival && level !== starter.value) counted.add(arrival.p.id);
+      const settling = arrival && arrival.value > starter.value ? arrival : undefined;
+      if (settling) counted.add(settling.p.id);
       return {
         kind: 'upgrade',
         line: starter.line,
         slot: starter.slot,
         position,
-        starter: starter.p,
-        level,
+        measure: settling?.p ?? starter.p,
+        level: settling?.value ?? starter.value,
         margin,
       };
     });
@@ -673,11 +692,8 @@ export function staffSignings(w: World) {
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,
-    tried = new Set(bids.map((bid) => bid.playerId));
-  const signed = new Set(
-      bids.filter((bid) => bid.status === 'completed').map((bid) => bid.playerId),
-    ),
-    joined = activePlayers(w).filter((p) => signed.has(p.id));
+    tried = new Set(bids.map((bid) => bid.playerId)),
+    joined = joinedThisWindow(w, day);
   const requests = signingRequests(w),
     short = shortLines(w),
     found: SigningNeed[] = [
@@ -774,7 +790,7 @@ export function pursueRequest(
               line: request.line,
               slot: request.slot,
               position: request.position,
-              starter,
+              measure: starter,
               level: atSlot(w, starter, request.slot),
               margin: SIGNING_CONFIG.requestMargin,
               requested: request,

@@ -1,7 +1,14 @@
 import { ATTRIBUTES, POSITIONS } from '../../contracts/src/player';
 import { lineOf, POSITION_LABEL } from './player';
 import { describe, expect, it } from 'vitest';
-import type { Direction, Line, Player, TransferBid, World } from '../../contracts/src/types';
+import type {
+  Direction,
+  FreeAgent,
+  Line,
+  Player,
+  TransferBid,
+  World,
+} from '../../contracts/src/types';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import {
   activePlayers,
@@ -24,12 +31,15 @@ import {
   SEASON_ROUNDS,
   seasonDayOf,
   shortlistOffers,
+  joinedThisWindow,
   shortLines,
   signingRequests,
   signingVerdict,
   staffSignings,
   transferOffers,
   transferWindowDays,
+  UPGRADE_MEASURE,
+  upgradeNeeds,
 } from './index';
 import { holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
@@ -578,5 +588,176 @@ describe('requests by formation slot (→CLUB-33)', () => {
     w.calendar = { day: transferWindowDays(w.year).winterClose + 1 };
     judgeRequests(w);
     expect(w.inbox!.at(-1)!.detail).toContain(`${POSITION_LABEL.CB} 자리`);
+  });
+});
+
+describe('a signing still settling in closes the slot he was bought for (→CLUB-33)', () => {
+  const rate = (p: Player, level: number) => {
+    for (const a of ATTRIBUTES) p.attrs[a] = level;
+  };
+  /** A free-agent keeper rated `level` everywhere, built from a keeper the scout lists. */
+  function keeper(w: World, id: string, level: number): FreeAgent {
+    const base = transferOffers(w).find((offer) => offer.player.position === 'GK')!.player;
+    const p: FreeAgent = {
+      ...structuredClone(base),
+      id,
+      name: id,
+      positions: { GK: 3 },
+      freeSince: w.year,
+    };
+    rate(p, level);
+    p.potential = 99;
+    return p;
+  }
+  /**
+   * A 공격적 club (margin 2, three upgrades a window) on the winter opening whose keepers, rated
+   * `starter`, are its one upgrade need: every other player is rated 99. The free agents are the
+   * keepers given; other clubs' keepers on the list are passed by, so the moves are the test's.
+   */
+  function keeperNeed(starter: number, ...pool: [string, number][]) {
+    const w = club('aggressive');
+    for (const p of activePlayers(w)) {
+      const goal = p.position === 'GK';
+      rate(p, goal ? starter : 99);
+      p.fatigue = 0;
+      // A settled keeper: a newcomer, still settling in (→PLAYER-11), does not start ahead of him.
+      if (goal) p.adaptation = 1;
+    }
+    w.freeAgents = pool.map(([id, level]) => keeper(w, id, level));
+    return w;
+  }
+  /** Marks other clubs' keepers on the list as tried, then lets the 단장 look. */
+  function look(w: World) {
+    for (const offer of transferOffers(w))
+      if (offer.player.position === 'GK' && !offer.freeAgent) tried(w, offer.player.id);
+    staffSignings(w);
+  }
+  const upgradeBids = (w: World) => staffBids(w).filter((bid) => bid.staff === 'upgrade');
+  const nextLook = (w: World) => (w.calendar = { day: currentDay(w) + 7 });
+
+  it('a keeper bought for the keeper slot closes it: no second upgrade bid there while he settles', () => {
+    expect(UPGRADE_MEASURE.inForce).toBe('signed');
+    const w = keeperNeed(80, ['settling:a', 85], ['settling:b', 84]);
+    const slot = formationOf(w.tactic).findIndex((one) => one.position === 'GK');
+    look(w);
+    expect(upgradeBids(w)).toMatchObject([{ status: 'completed', playerId: 'settling:a' }]);
+    // He joined this window and does not start yet; he stands as the slot's measure.
+    expect(joinedThisWindow(w).map((p) => p.id)).toEqual(['settling:a']);
+    expect(ownStarters(w).map((p) => p.id)).not.toContain('settling:a');
+    const need = upgradeNeeds(w, 2, joinedThisWindow(w)).find(
+      (one) => one.kind === 'upgrade' && one.slot === slot,
+    )!;
+    expect(need).toMatchObject({ kind: 'upgrade', level: 85 });
+    expect(need.kind === 'upgrade' && need.measure.id).toBe('settling:a');
+    // A week later the second keeper, better than the starter but not than him, is left alone.
+    nextLook(w);
+    look(w);
+    expect(upgradeBids(w)).toHaveLength(1);
+    expect(w.players.some((p) => p.id === 'settling:b')).toBe(false);
+  });
+
+  it('the released `starter` reading, kept for measurement, bought for the same slot again', () => {
+    const w = keeperNeed(80, ['settling:a', 85], ['settling:b', 84]);
+    look(w);
+    nextLook(w);
+    try {
+      UPGRADE_MEASURE.inForce = 'starter';
+      look(w);
+    } finally {
+      UPGRADE_MEASURE.inForce = 'signed';
+    }
+    expect(upgradeBids(w).map((bid) => bid.playerId)).toEqual(['settling:a', 'settling:b']);
+  });
+
+  it('a keeper who beats the settling signing by the margin is still bought, named against him', () => {
+    const w = keeperNeed(80, ['settling:a', 82]);
+    look(w);
+    expect(upgradeBids(w)).toMatchObject([{ status: 'completed', playerId: 'settling:a' }]);
+    w.freeAgents = [...(w.freeAgents ?? []), keeper(w, 'settling:b', 85)];
+    nextLook(w);
+    look(w);
+    expect(upgradeBids(w).map((bid) => bid.playerId)).toEqual(['settling:a', 'settling:b']);
+    // The report names the measure behind the need: the settling signing at his value there.
+    expect(reports(w).at(-1)!.detail).toContain('settling:a(그 자리 OVR 82)');
+  });
+
+  it('a newcomer who plays another position does not close the slot', () => {
+    const w = keeperNeed(80, ['settling:a', 85]);
+    const base = transferOffers(w).find((offer) => lineOf(offer.player.position) === 'DF')!.player;
+    const defender: Player = {
+      ...structuredClone(base),
+      id: 'settling:df',
+      position: 'CB',
+      positions: { CB: 3 },
+    };
+    rate(defender, 99);
+    w.players.push(defender);
+    noteSigning(w, defender);
+    expect(joinedThisWindow(w).map((p) => p.id)).toEqual(['settling:df']);
+    look(w);
+    expect(upgradeBids(w)).toMatchObject([{ status: 'completed', playerId: 'settling:a' }]);
+  });
+
+  it('one newcomer closes at most one slot, the weakest he beats', () => {
+    const w = club('aggressive');
+    const needs = upgradeNeeds(w, 2);
+    const everywhere = (id: string): Player => {
+      const p = {
+        ...structuredClone(activePlayers(w)[0]!),
+        id,
+        positions: Object.fromEntries(
+          POSITIONS.map((position) => [position, 3]),
+        ) as Player['positions'],
+      };
+      rate(p, 99);
+      return p;
+    };
+    const closed = (joined: Player[]) =>
+      upgradeNeeds(w, 2, joined)
+        .filter((need) => need.kind === 'upgrade' && need.measure.id.startsWith('settling:'))
+        .map((need) => (need.kind === 'upgrade' ? need.slot : -1));
+    const slots = needs.map((need) => (need.kind === 'upgrade' ? need.slot : -1));
+    // He plays every position at its best and beats every starter, yet stands at one slot.
+    expect(closed([everywhere('settling:one')])).toEqual(slots.slice(0, 1));
+    expect(closed([everywhere('settling:one'), everywhere('settling:two')])).toEqual(
+      slots.slice(0, 2),
+    );
+  });
+
+  it('a short line and a replacement need are met as under the released reading', () => {
+    const moves = (open: (w: World) => void) =>
+      (['signed', 'starter'] as const).map((reading) => {
+        const w = keeperNeed(80, ['settling:a', 85], ['settling:b', 84]);
+        look(w);
+        open(w);
+        nextLook(w);
+        try {
+          UPGRADE_MEASURE.inForce = reading;
+          look(w);
+        } finally {
+          UPGRADE_MEASURE.inForce = 'signed';
+        }
+        return staffBids(w)
+          .slice(1)
+          .map((bid) => ({ staff: bid.staff, playerId: bid.playerId }));
+      });
+    const short = moves((w) => keep(w, 'FW', 3));
+    expect(short[0]).toEqual(short[1]);
+    expect(short[0]).toMatchObject([{ staff: 'short' }]);
+    // A forward's departure opened a replacement need for his line (→CLUB-42).
+    const replacement = moves(
+      (w) =>
+        (w.replacementNeeds = [
+          {
+            line: 'FW',
+            playerId: 'settling:gone',
+            year: w.year,
+            window: 'winter',
+            day: currentDay(w),
+          },
+        ]),
+    );
+    expect(replacement[0]).toEqual(replacement[1]);
+    expect(replacement[0]).toMatchObject([{ staff: 'replacement' }]);
   });
 });

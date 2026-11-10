@@ -15,8 +15,9 @@
  *            --world-dir DIR (keep the generated world)   --prepare (only that)
  *            --out FILE (the career as JSON)   --in a.json,b.json (report kept careers only)
  *            --supply (the generated world's players at the top of the search band, by club)
- *            --setting line|list|signed|kept, joined by + (T784's named candidate rules for the
- *            run: LIST_SPREAD's list shapes, UPGRADE_MEASURE's `signed`, REFILL_SALE's `kept`)
+ *            --setting line|list|starter|signed|kept, joined by + (named rules for the run:
+ *            LIST_SPREAD's list shapes, REFILL_SALE's `kept`, and UPGRADE_MEASURE's reading —
+ *            `signed` is in force since T804, `starter` the released reading before it)
  *
  * Over the kept careers it reports CLUB-33's seller targets: the most of a window's fee signings
  * one seller supplied, and the largest share of the fee signings over any five seasons.
@@ -473,7 +474,7 @@ function main() {
   }
   for (const part of SETTING ? SETTING.split('+') : []) {
     if (part === 'line' || part === 'list') LIST_SPREAD.inForce = part;
-    else if (part === 'signed') UPGRADE_MEASURE.inForce = part;
+    else if (part === 'starter' || part === 'signed') UPGRADE_MEASURE.inForce = part;
     else if (part === 'kept') REFILL_SALE.inForce = part;
     else throw new Error(`unknown setting ${part}`);
   }
