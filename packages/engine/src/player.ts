@@ -328,27 +328,42 @@ export function rolesAt(position: Position): readonly RoleId[] {
 }
 
 export type Weight = 0 | 1 | 2 | 3;
-/** Each (position, role)'s weights, built once: OVR is read for every slot of every match. */
-const weightCache = new Map<
-  string,
-  { record: Readonly<Record<Attribute, Weight>>; total: number }
->();
-function weightEntry(position: Position, role?: RoleId) {
-  const key = role ? `${position}|${role}` : position;
-  let entry = weightCache.get(key);
+interface WeightEntry {
+  record: Readonly<Record<Attribute, Weight>>;
+  /** `record`'s weights in `ATTRIBUTES` order. */
+  values: readonly Weight[];
+  total: number;
+}
+/**
+ * Each (position, role)'s weights, built once and found without building a key: OVR is read for
+ * every slot of every match.
+ */
+const weightCache = new Map<Position, { base?: WeightEntry; roles: Map<RoleId, WeightEntry> }>();
+function buildWeights(position: Position, role?: RoleId): WeightEntry {
+  const tiers = POSITION_WEIGHTS[position];
+  const weights = Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])) as Record<Attribute, Weight>;
+  for (const a of tiers.tertiary) weights[a] = 1;
+  for (const a of tiers.secondary) weights[a] = 2;
+  for (const a of tiers.primary) weights[a] = 3;
+  for (const a of role ? ROLES[role].promotes : [])
+    weights[a] = Math.min(3, weights[a] + 1) as Weight;
+  return {
+    record: Object.freeze(weights),
+    values: ATTRIBUTES.map((a) => weights[a]),
+    total: ATTRIBUTES.reduce((sum, a) => sum + weights[a], 0),
+  };
+}
+function weightEntry(position: Position, role?: RoleId): WeightEntry {
+  let atPosition = weightCache.get(position);
+  if (!atPosition) {
+    atPosition = { roles: new Map() };
+    weightCache.set(position, atPosition);
+  }
+  if (!role) return (atPosition.base ??= buildWeights(position));
+  let entry = atPosition.roles.get(role);
   if (!entry) {
-    const tiers = POSITION_WEIGHTS[position];
-    const weights = Object.fromEntries(ATTRIBUTES.map((a) => [a, 0])) as Record<Attribute, Weight>;
-    for (const a of tiers.tertiary) weights[a] = 1;
-    for (const a of tiers.secondary) weights[a] = 2;
-    for (const a of tiers.primary) weights[a] = 3;
-    for (const a of role ? ROLES[role].promotes : [])
-      weights[a] = Math.min(3, weights[a] + 1) as Weight;
-    entry = {
-      record: Object.freeze(weights),
-      total: ATTRIBUTES.reduce((sum, a) => sum + weights[a], 0),
-    };
-    weightCache.set(key, entry);
+    entry = buildWeights(position, role);
+    atPosition.roles.set(role, entry);
   }
   return entry;
 }
@@ -359,23 +374,32 @@ export function weightsFor(position: Position, role?: RoleId): Readonly<Record<A
 
 /** OVR at a position in a role: the weighted average of its attributes, one 1–99 scale (→PLAYER-6). */
 export function ovrAt(attrs: Attributes, position: Position, role?: RoleId) {
-  const { record, total } = weightEntry(position, role);
+  const { values, total } = weightEntry(position, role);
   let sum = 0;
-  for (const a of ATTRIBUTES) sum += record[a] * attrs[a];
+  for (let i = 0; i < ATTRIBUTES.length; i++) sum += values[i]! * attrs[ATTRIBUTES[i]!];
   return sum / total;
 }
+/** The OVR of the role the last `bestRoleAt` chose; −Infinity when no role's OVR exceeded it. */
+let bestRoleOvr = -Infinity;
 export function bestRoleAt(attrs: Attributes, position: Position): RoleId {
-  let best = rolesAt(position)[0]!,
-    value = -Infinity;
-  for (const role of rolesAt(position)) {
+  const roles = rolesAt(position);
+  let best = roles[0]!;
+  bestRoleOvr = -Infinity;
+  for (const role of roles) {
     const ovr = ovrAt(attrs, position, role);
-    if (ovr > value) [best, value] = [role, ovr];
+    if (ovr > bestRoleOvr) {
+      best = role;
+      bestRoleOvr = ovr;
+    }
   }
   return best;
 }
 /** His OVR at his main position in his best role there. */
-export const mainOvr = (p: { attrs: Attributes; position: Position }) =>
-  ovrAt(p.attrs, p.position, bestRoleAt(p.attrs, p.position));
+export const mainOvr = (p: { attrs: Attributes; position: Position }) => {
+  const role = bestRoleAt(p.attrs, p.position);
+  // The chosen role's OVR from the same pass; the first role's, read again, when none was chosen.
+  return bestRoleOvr > -Infinity ? bestRoleOvr : ovrAt(p.attrs, p.position, role);
+};
 
 /** Share of his ability a player brings to a position (→PLAYER-4). */
 export function levelFactor(positions: Positions, position: Position) {

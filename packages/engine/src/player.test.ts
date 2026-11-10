@@ -50,6 +50,33 @@ describe('player model', () => {
     expect(bestRoleAt(passer, 'CB')).toBe('ballPlayingDefender');
   });
 
+  it('ovr is the weighted sum in attribute order and the main ovr its best role', () => {
+    const rng = random('ovr:identity');
+    for (const position of POSITIONS)
+      for (let i = 0; i < 20; i++) {
+        const { attrs } = generateProfile(rng, position, 40 + i * 2.5);
+        let best = rolesAt(position)[0]!,
+          value = -Infinity;
+        for (const role of [undefined, ...rolesAt(position)]) {
+          const weights = weightsFor(position, role);
+          let sum = 0,
+            total = 0;
+          for (const a of ATTRIBUTES) {
+            sum += weights[a] * attrs[a];
+            total += weights[a];
+          }
+          expect(ovrAt(attrs, position, role)).toBe(sum / total);
+          if (role && sum / total > value) [best, value] = [role, sum / total];
+        }
+        expect(bestRoleAt(attrs, position)).toBe(best);
+        expect(mainOvr({ attrs, position })).toBe(value);
+      }
+    // No role above −Infinity: the first role, and its OVR read as before.
+    const unknown = flat(Number.NaN);
+    expect(bestRoleAt(unknown, 'CB')).toBe(rolesAt('CB')[0]);
+    expect(mainOvr({ attrs: unknown, position: 'CB' })).toBeNaN();
+  });
+
   it('adaptation multiplier', () => {
     expect(adaptationMultiplier(1)).toBeCloseTo(1.05);
     expect(adaptationMultiplier(0.9)).toBeCloseTo(1.025);
