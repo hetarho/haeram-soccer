@@ -889,7 +889,6 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
-| T786 | drop journey variants that exercise no distinct path | ARCH WEB | - | todo |
 | T787 | trim repeated progression and match-model revision checks | ARCH SAVE MATCH | - | todo |
 
 ## work
