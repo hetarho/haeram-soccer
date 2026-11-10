@@ -19,6 +19,7 @@
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 
 ## inbox
+- 261110 decided ARCH-21 review/test-value-261110 T801: whether the world-cache key's per-process TypeScript parse (1.1–2.7 s in each of 104 test processes) may be memoised → yes, by file path and content with a versioned header, keys byte-identical (alt: `ts.preProcessFile`, which changes the file set | leave it) tv10
 - 261110 decided ARCH-21 review/test-gate-time-261110 review/test-value-261110 T788 T790: the owner extends tv10 to 22:00 (wrap up and push the target branch at 21:30) and approves the clone-wide world cache (F6; ARCH-21 r38) and shared season worlds for integration tests (C2) → T788, T790, plus T789 (the save packing's base64/varints like T780) (alt: keep per-worktree caches | keep each test's private season) tv10
 - 261110 decided ARCH-30 T775 T776 T777 T778: pf10 stopped its regate at its 18:00 deadline without pushing and handed its integrated speed-ups to tv10 → one locked gate on the synced main releases pf10's T775–T778, tq10/tv10's T779–T781 T786 T787 and origin/main's latest together (alt: leave pf10's work unpublished) tv10
 - 261110 decided ARCH-30: the owner asks ARCH-30 to follow haeram-spec-creator 0.12.0 → r37: planning alone goes to `next` (plan-push); finished work lands on SETTINGS `land` (`main`) by `vibe push` after one `pnpm run verify:batch` on the final candidate through `vibe check --tier batch`, whose host lock queues other sessions; no code waits on `next` for a release (alt: keep gathering code on `next` and set SETTINGS land to `next` | keep the quick batch before each landing, leaving browsers to CI after the deploy) bd10
@@ -890,6 +891,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T801 | remember each file's import list for world-cache keys | ARCH | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
@@ -934,6 +936,7 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 create-task T801 from review/test-value-261110 F7 tv10
 - 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
 - 261110 T790 integrated (8 cases in 7 files on the shared finance last-round span; independent review approved 6c4e045e, P3 notes only) tv10
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
@@ -953,4 +956,3 @@
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
 - 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
 - 261110 create-task review/football-data-consistency-261109 F24: T768 required staff-holder fixture correction with fresh identity-cache coverage and unchanged cases/limits fi09
-- 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
