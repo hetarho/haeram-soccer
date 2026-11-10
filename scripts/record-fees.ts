@@ -9,13 +9,17 @@
  * players on the scout's list (→CLUB-51), the 단장's candidates, and the dearest players of every
  * playable top flight, each with his gap over our starter at his best slot and the first check that
  * passes him over. It records every fee signing and the dearest one per season against the British
- * record standing then (→CLUB-46). Read-only unless `--setting` names a candidate rule.
+ * record standing then (→CLUB-46), the 단장's completed upgrades each season and, on every day from
+ * the takeover to the first round played, the same reads, where the wage-bill ceiling may pass
+ * every candidate over. Read-only unless `--setting` names a reading other than the rules in force.
  *
  *   pnpm exec tsx scripts/record-fees.ts --seed spread-0 --tier oil --finance aggressive --inject 0.25
  *   options: --country ENG   --from 2000 (takeover)   --until 2002 (last season played)
  *            --world-dir DIR (keep the generated world)   --out FILE   --in a.json,b.json
- *            --setting revenue|open (T785's candidate rules, joined by +: REVENUE_SINCE_TAKEOVER's
- *            `books`, SEARCH_CEILING's `open` or `xi`)   --recruitment 1–5 (영입 기조, the owner's dial; 3)
+ *            --setting xi|fixed|open|books|released (joined by +: SEARCH_CEILING's `xi` (in force
+ *            since T809), `fixed` (released before it) or `open`; REVENUE_SINCE_TAKEOVER's `books`
+ *            (in force since T809; `revenue`, T785's name, too) or `released`)
+ *            --recruitment 1–5 (영입 기조, the owner's dial; 3)
  *            --abroad 1–5 (해외 스카우트망, the owner's dial; 1)   --brief (no per-look lines)
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
@@ -165,6 +169,11 @@ interface Career {
   finance: string;
   inject: number;
   setting: string;
+  /** The readings the career was played on (careers before T809 do not say: both released). */
+  rules?: {
+    ceiling: (typeof SEARCH_CEILING)['inForce'];
+    revenue: (typeof REVENUE_SINCE_TAKEOVER)['inForce'];
+  };
   recruitment?: number;
   abroad?: number;
   club: string;
@@ -173,8 +182,22 @@ interface Career {
   from: number;
   until: number;
   reads: Read[];
+  /**
+   * A read on the takeover day and on every day after it until the first league round is played,
+   * when the revenue over the last 12 months has no round of the owner's season to rest on
+   * (careers before T809 do not say).
+   */
+  opening?: Read[];
   signings: Signing[];
-  seasons: { year: number; tier: number; rank: number; cash: number; fortune: number }[];
+  seasons: {
+    year: number;
+    tier: number;
+    rank: number;
+    cash: number;
+    fortune: number;
+    /** The 단장's completed upgrade signings, fee or free (careers before T809 do not say). */
+    upgrades?: number;
+  }[];
 }
 
 /** The first of 재정 기조's checks a signing fails (→ECON-33), as `signingVerdict` orders them. */
@@ -312,6 +335,7 @@ function playCareer(): Career | undefined {
     finance: FINANCE,
     inject: INJECT,
     setting: SETTING,
+    rules: { ceiling: SEARCH_CEILING.inForce, revenue: REVENUE_SINCE_TAKEOVER.inForce },
     recruitment: RECRUITMENT,
     abroad: ABROAD,
     club: pick.club.id,
@@ -320,6 +344,7 @@ function playCareer(): Career | undefined {
     from: FROM,
     until: UNTIL,
     reads: [],
+    opening: [],
     signings: [],
     seasons: [],
   };
@@ -334,9 +359,18 @@ function playCareer(): Career | undefined {
     if (amount > 0n) ownerCommand(w, { type: 'owner-inject', amount: amount.toString() });
   };
   inject();
+  career.opening!.push(read(w));
   const started = performance.now();
+  // The 단장's upgrade bids completed, by season, read every day so a close's tidying loses none.
+  const upgrades = new Map<number, Set<string>>();
   while (w.year <= UNTIL && !careerEnded(w)) {
     advanceDays(w, 1, undefined, false);
+    if (w.year === FROM && w.round === 0) career.opening!.push(read(w));
+    for (const bid of w.bids ?? [])
+      if (bid.direction === 'out' && bid.staff === 'upgrade' && bid.status === 'completed') {
+        if (!upgrades.has(bid.year)) upgrades.set(bid.year, new Set());
+        upgrades.get(bid.year)!.add(bid.id);
+      }
     if (w.year !== season) {
       const own = w.clubs.find((c) => c.id === w.playerClub)!;
       const archive = w.history?.at(-1);
@@ -346,6 +380,7 @@ function playCareer(): Career | undefined {
         rank: archive?.rank ?? 0,
         cash: pounds(w.cash),
         fortune: pounds(w.owner?.fortune ?? '0'),
+        upgrades: upgrades.get(season)?.size ?? 0,
       });
       console.error(
         `${SEED} ${TIER} ${FINANCE} ${season} done in ${((performance.now() - started) / 1000).toFixed(0)} s`,
@@ -377,15 +412,60 @@ function playCareer(): Career | undefined {
   return career;
 }
 
+/** The readings a career was played on; a career before T809 names only its candidate settings. */
+function rulesOf(c: Career): NonNullable<Career['rules']> {
+  if (c.rules) return c.rules;
+  const parts = c.setting.split('+');
+  return {
+    ceiling: parts.includes('open') ? 'open' : parts.includes('xi') ? 'xi' : 'fixed',
+    revenue: parts.includes('revenue') || parts.includes('books') ? 'books' : 'released',
+  };
+}
+/** The best dearest fee signing against the standing record within the first three seasons. */
+const bestRatio = (c: Career) =>
+  Math.max(
+    0,
+    ...c.signings.filter((s) => s.year <= c.from + 2).map((s) => s.fee / standingRecord(s.year)),
+  );
+/** Upgrade bids made (pending, countered or completed) by each season's last look. */
+const upgradeBids = (c: Career) =>
+  c.seasons.map((s) =>
+    Math.max(0, ...c.reads.filter((r) => r.year === s.year).map((r) => r.upgradesUsed)),
+  );
+/** Over some reads: the list's five dearest the wage-bill ceiling passed over. */
+function wageBillOver(reads: readonly Read[]) {
+  const list = reads.flatMap((r) => r.list);
+  return {
+    reads: reads.length,
+    refused: list.filter((x) => x.check === 'wage bill').length,
+    read: list.length,
+    readsRefusing: reads.filter((r) => r.list.some((x) => x.check === 'wage bill')).length,
+    firstRevenue: reads[0]?.revenue ?? 0,
+  };
+}
+/** The first season: from the takeover day to the first round, and the regular looks. */
+const firstSeasonWageBill = (c: Career) => ({
+  opening: c.opening && wageBillOver(c.opening),
+  looks: wageBillOver(c.reads.filter((r) => r.year === c.from)),
+});
+const wageBillLabel = (c: Career) => {
+  const { opening, looks } = firstSeasonWageBill(c);
+  return `${opening ? `${opening.refused} of ${opening.read} on ${opening.readsRefusing} of ${opening.reads} days to round 1 (revenue on the takeover day ${m(opening.firstRevenue)})` : 'days to round 1 not recorded'}; ${looks.refused} of ${looks.read} in ${looks.readsRefusing} of ${looks.reads} looks`;
+};
+
 function report(careers: Career[]) {
   for (const c of careers) {
+    const rules = rulesOf(c);
     console.log(
-      `\n## ${c.seed} ${c.tier} ${c.finance} inject ${c.inject}${c.setting ? ` setting ${c.setting}` : ''} recruitment ${c.recruitment ?? 3} abroad ${c.abroad ?? 1} — ${c.club} (tier ${c.clubTier}, strength ${c.clubStrength}), ${c.from}–${c.until}`,
+      `\n## ${c.seed} ${c.tier} ${c.finance} inject ${c.inject}${c.setting ? ` setting ${c.setting}` : ''} (ceiling ${rules.ceiling}, revenue ${rules.revenue}) recruitment ${c.recruitment ?? 3} abroad ${c.abroad ?? 1} — ${c.club} (tier ${c.clubTier}, strength ${c.clubStrength}), ${c.from}–${c.until}`,
     );
     for (const s of c.seasons)
       console.log(
-        `season ${s.year}: tier ${s.tier} rank ${s.rank}, cash at close ${m(s.cash)}, fortune ${m(s.fortune)}`,
+        `season ${s.year}: tier ${s.tier} rank ${s.rank}, cash at close ${m(s.cash)}, fortune ${m(s.fortune)}${s.upgrades !== undefined ? `, upgrades completed ${s.upgrades}` : ''}`,
       );
+    console.log(
+      `upgrade bids by each season's last look ${upgradeBids(c).join(' / ')}; first season, the list's five dearest passed over by the wage bill: ${wageBillLabel(c)}`,
+    );
     const years = [...new Set(c.signings.map((s) => s.year))];
     for (let year = c.from; year <= c.until; year++) {
       const fees = c.signings.filter((s) => s.year === year).sort((a, b) => b.fee - a.fee);
@@ -395,10 +475,7 @@ function report(careers: Career[]) {
       );
     }
     void years;
-    const best = Math.max(
-      0,
-      ...c.signings.filter((s) => s.year <= c.from + 2).map((s) => s.fee / standingRecord(s.year)),
-    );
+    const best = bestRatio(c);
     console.log(
       `target: dearest ≥ 0.5× record within the first three seasons — best ${best.toFixed(2)} ${best >= 0.5 ? 'MET' : 'unmet'}`,
     );
@@ -428,15 +505,29 @@ function report(careers: Career[]) {
       console.log(`    world: ${r.world.slice(0, 5).map(line).join(' | ') || '-'}`);
     }
   }
-  const results = careers.map((c) =>
-    Math.max(
-      0,
-      ...c.signings.filter((s) => s.year <= c.from + 2).map((s) => s.fee / standingRecord(s.year)),
-    ),
-  );
+  const results = careers.map(bestRatio);
   console.log(
     `\nall careers: best dearest/record in the first three seasons ${results.map((r) => r.toFixed(2)).join(' ')}; meeting 0.5× ${results.filter((r) => r >= 0.5).length}/${results.length}`,
   );
+  // One row a career, for a benchmark README.
+  console.log(
+    '\n| career | ceiling · revenue | dearest a season (×record) | best | upgrade bids a season | upgrades completed | first season: wage bill passed over |',
+  );
+  console.log('|---|---|---|---|---|---|---|');
+  for (const c of careers) {
+    const rules = rulesOf(c),
+      seasons = [];
+    for (let year = c.from; year <= c.until; year++) {
+      const dearest = c.signings.filter((s) => s.year === year).sort((a, b) => b.fee - a.fee)[0];
+      seasons.push(dearest ? (dearest.fee / standingRecord(year)).toFixed(2) : '-');
+    }
+    const completed = c.seasons.every((s) => s.upgrades !== undefined)
+      ? c.seasons.map((s) => s.upgrades).join(' / ')
+      : 'not recorded';
+    console.log(
+      `| ${c.seed} ${c.tier}${c.recruitment && c.recruitment !== 3 ? ` rec${c.recruitment}` : ''}${c.abroad && c.abroad !== 1 ? ` abroad${c.abroad}` : ''} | ${rules.ceiling} · ${rules.revenue} | ${seasons.join(' / ')} | ${bestRatio(c).toFixed(2)} | ${upgradeBids(c).join(' / ')} | ${completed} | ${wageBillLabel(c)} |`,
+    );
+  }
 }
 
 function main() {
@@ -449,8 +540,9 @@ function main() {
     return;
   }
   for (const part of SETTING ? SETTING.split('+') : []) {
-    if (part === 'revenue') REVENUE_SINCE_TAKEOVER.inForce = 'books';
-    else if (part === 'open' || part === 'xi') SEARCH_CEILING.inForce = part;
+    if (part === 'revenue' || part === 'books') REVENUE_SINCE_TAKEOVER.inForce = 'books';
+    else if (part === 'released') REVENUE_SINCE_TAKEOVER.inForce = 'released';
+    else if (part === 'open' || part === 'xi' || part === 'fixed') SEARCH_CEILING.inForce = part;
     else throw new Error(`unknown setting ${part}`);
   }
   const career = playCareer();
