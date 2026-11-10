@@ -7,7 +7,8 @@
  *   node pair.mjs <base bundle> <cand bundle> <workload> <seed> <reps> <warm> <AB|BA>
  *
  * Prints one JSON line: per pair the label and each side's main-thread CPU and wall milliseconds,
- * and each side's output hash.
+ * and each side's output hash. A rep that returns a promise (`view`) is timed until it settles; a
+ * synchronous rep is timed as it returns, without an await.
  */
 import { pathToFileURL } from 'node:url';
 
@@ -27,14 +28,18 @@ function time(side, record) {
   const w0 = performance.now(),
     c0 = cpuMs();
   const label = sides[side].rep(record);
-  return { label, cpu: cpuMs() - c0, wall: performance.now() - w0 };
+  const done = (label) => ({ label, cpu: cpuMs() - c0, wall: performance.now() - w0 });
+  return typeof label?.then === 'function' ? label.then(done) : done(label);
 }
 
 const pairs = [];
 for (let i = 0; i < warm + reps; i++) {
   const order = (i % 2 === 0) === (first === 'AB') ? [0, 1] : [1, 0];
   const out = [];
-  for (const side of order) out[side] = time(side, i >= warm && i < warm + sides[side].cycle);
+  for (const side of order) {
+    const timed = time(side, i >= warm && i < warm + sides[side].cycle);
+    out[side] = timed instanceof Promise ? await timed : timed;
+  }
   if (out[0].label !== out[1].label)
     throw new Error(`pair ${i}: ${out[0].label} vs ${out[1].label}`);
   if (i >= warm)

@@ -11,6 +11,8 @@
  * function of that name's hottest bundle lines with their text. V8 keeps line ticks per function
  * for the whole run, so the lines also count the warm-up. The profile and bundle paths are printed
  * so a profile can be reread.
+ *
+ * `--workload view` profiles a day as the Host plays it (`workloads.ts`): its reps are awaited.
  */
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync } from 'node:fs';
@@ -29,6 +31,7 @@ const DEFAULTS = {
   grid: { reps: 18, warm: 6 },
   aggregate: { reps: 20, warm: 4 },
   day: { reps: 60, warm: 0 },
+  view: { reps: 60, warm: 6 },
 };
 const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);
@@ -47,9 +50,16 @@ const CHILD = `
 import { pathToFileURL } from 'node:url';
 const { file, workload, seed, reps, warm } = JSON.parse(process.argv.at(-1));
 const w = (await import(pathToFileURL(file).href)).workloadOf(workload, seed);
-for (let i = 0; i < warm; i++) w.rep(false);
+// A rep that returns a promise (\`view\`) is awaited; a synchronous one runs without an await.
+for (let i = 0; i < warm; i++) {
+  const out = w.rep(false);
+  if (typeof out?.then === 'function') await out;
+}
 const from = process.hrtime.bigint() / 1000n;
-for (let i = 0; i < reps; i++) w.rep(i < w.cycle);
+for (let i = 0; i < reps; i++) {
+  const out = w.rep(i < w.cycle);
+  if (typeof out?.then === 'function') await out;
+}
 const to = process.hrtime.bigint() / 1000n;
 console.log(JSON.stringify({ from: String(from), to: String(to), digest: w.digest() }));
 `;

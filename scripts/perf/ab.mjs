@@ -16,6 +16,10 @@
  * measure; wall time beside it); over processes, their trimmed mean with a 95% bootstrap interval. The call
  * is "faster" when the whole interval is below 1. The `day` workload reports own match days and
  * other days separately. Output hashes are compared: a result-identical change keeps them equal.
+ *
+ * The `view` workload (`--workload view`) times a day as the Host plays it: the day, its view's
+ * projection and publication and the posting clone, own match days and other days apart, hashing
+ * every posted reply and the world. Each side's `apps/web/src` is bundled beside its `packages/`.
  */
 import { execFileSync, spawnSync } from 'node:child_process';
 import { cpSync, mkdirSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -37,6 +41,7 @@ const DEFAULTS = {
   grid: { procs: 16, reps: 18, warm: 6 },
   aggregate: { procs: 16, reps: 20, warm: 4 },
   day: { procs: 4, reps: 60, warm: 0 },
+  view: { procs: 4, reps: 60, warm: 6 },
 };
 const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);
@@ -47,8 +52,11 @@ const procs = Number(arg('--procs', d.procs)),
 const scratch = join(tmpdir(), 'haeram-perf-ab');
 mkdirSync(scratch, { recursive: true });
 
+/** The parts of a tree the workloads import: the engine's packages and the Host's web source. */
+const PARTS = ['packages', 'apps/web/src'];
+
 /**
- * A scratch copy of a side's `packages/` (a git ref through `git archive`, a directory copied as it
+ * A scratch copy of a side's `PARTS` (a git ref through `git archive`, a directory copied as it
  * stands) with this harness's `workloads.ts` placed in it. Both sides are built the same way from
  * their own root, so identical sources give byte-identical bundles (measured 261028: bundles that
  * differed only in their path comments read about 0.6% apart).
@@ -59,13 +67,15 @@ function treeOf(spec, name) {
     dir = join(scratch, `tree-${name}-${process.pid}`);
     rmSync(dir, { recursive: true, force: true });
     mkdirSync(dir, { recursive: true });
-    cpSync(join(spec, 'packages'), join(dir, 'packages'), { recursive: true });
+    for (const part of PARTS) cpSync(join(spec, part), join(dir, part), { recursive: true });
   } else {
     const sha = execFileSync('git', ['-C', repo, 'rev-parse', spec], { encoding: 'utf8' }).trim();
     dir = join(scratch, `tree-${sha.slice(0, 12)}`);
-    if (!existsSync(join(dir, 'packages'))) {
+    // A tree an earlier harness exported holds `packages/` alone: export only what it lacks.
+    const missing = PARTS.filter((part) => !existsSync(join(dir, part)));
+    if (missing.length) {
       mkdirSync(dir, { recursive: true });
-      const tar = execFileSync('git', ['-C', repo, 'archive', sha, 'packages'], {
+      const tar = execFileSync('git', ['-C', repo, 'archive', sha, ...missing], {
         maxBuffer: 1 << 30,
       });
       execFileSync('tar', ['-x', '-C', dir], { input: tar });

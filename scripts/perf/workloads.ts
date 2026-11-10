@@ -9,9 +9,12 @@
  * - `aggregate`: `simulateAggregate` on the first `AGGREGATE_FIXTURES` fixtures without the own club;
  * - `day`: one automatic-play day of a career (`advanceDays(w, 1)`); its reps are successive days,
  *   which the two sides step in lockstep so a pair is the same day on both.
+ * - `view`: the same career's day as the Host plays it without helpers: one `advance-days 1`
+ *   command with `viewBase` (the day, its view and its publication) and the posting clone; its reps
+ *   are successive days as in `day`, and a rep returns a promise that `pair.mjs` awaits.
  *
- * `digest()` hashes the recorded outputs (the world itself for `day`), which a result-identical
- * candidate must share with its baseline.
+ * `digest()` hashes the recorded outputs (the world itself for `day`; every posted reply and then
+ * the world for `view`), which a result-identical candidate must share with its baseline.
  */
 import { createHash } from 'node:crypto';
 import * as engine from '../../packages/engine/src/index';
@@ -23,13 +26,19 @@ import { simulateAggregate } from '../../packages/engine/src/aggregate/engine';
 import { canonical } from '../../packages/contracts/src/index';
 import { currentDay } from '../../packages/engine/src/calendar';
 import type { Fixture, World } from '../../packages/contracts/src/types';
+import { Host } from '../../apps/web/src/runtime/host';
+import { forPosting } from '../../apps/web/src/runtime/viewPublisher';
+import type { Reply } from '../../apps/web/src/runtime/protocol';
 
 const GRID_FIXTURES = 3;
 const AGGREGATE_FIXTURES = 150;
 
 export interface Workload {
-  /** One rep; `record` adds its outputs to the digest. Returns a label of what the rep was. */
-  rep(record: boolean): string;
+  /**
+   * One rep; `record` adds its outputs to the digest. Returns a label of what the rep was, or a
+   * promise of it when the rep waits as the Host does.
+   */
+  rep(record: boolean): string | Promise<string>;
   digest(): string;
   /** Reps before the inputs repeat: the first `cycle` measured reps are recorded. */
   cycle: number;
@@ -106,6 +115,48 @@ export function workloadOf(name: string, seed: string): Workload {
         engine.advanceDays(w, 1, undefined, false);
         if (w.bankrupt || (year === w.year && before === currentDay(w)))
           throw new Error('Day benchmark did not advance a complete day');
+        return w.ownMatches.length > own ? 'own' : 'other';
+      },
+    };
+  }
+  if (name === 'view') {
+    w.cash = '99999999999';
+    const host = new Host();
+    host.world = w;
+    // The view the client holds before the first day, as a fresh activation publishes it.
+    let base = (host as unknown as { publish(): Reply }).publish().viewSeq,
+      serial = 0;
+    // Hashed in `digest()`, so the hashing stays out of every timed rep.
+    const posted: Reply[] = [];
+    return {
+      digest: () => {
+        for (const reply of posted) hash.update(JSON.stringify(reply));
+        return hash.update(canonical(w)).digest('hex').slice(0, 16);
+      },
+      cycle: 0,
+      async rep() {
+        if (w.critical) {
+          delete w.critical;
+          w.revision++;
+        }
+        const own = w.ownMatches.length,
+          year = w.year,
+          before = currentDay(w);
+        const reply = await host.handle({
+          protocol: 1,
+          session: 'perf',
+          requestId: `day-${serial++}`,
+          expectedRevision: w.revision,
+          generation: 1,
+          parentGeneration: 0,
+          viewBase: base,
+          body: { type: 'command', command: { type: 'advance-days', days: 1, stop: [] } },
+        });
+        if (!reply.ok) throw new Error(`View benchmark day failed: ${reply.error}`);
+        posted.push(structuredClone(forPosting(reply)));
+        base = reply.viewSeq;
+        if (w.bankrupt || (year === w.year && before === currentDay(w)))
+          throw new Error('View benchmark did not advance a complete day');
         return w.ownMatches.length > own ? 'own' : 'other';
       },
     };
