@@ -17,6 +17,7 @@ import { pendingWorkPreview } from './pending-work-preview';
 import { initializeCoaching } from './coaching-entry';
 import { coachWage, coachMatches, staffMember } from './staff';
 import { ratio } from './primitives';
+import { marketWage } from './market-prices';
 import { careerWorld } from './career.testkit';
 function world({ seed = 'playing-coach', fieldPlayer = false, atTakeover = false } = {}) {
   const w = careerWorld({ seed });
@@ -28,6 +29,9 @@ function world({ seed = 'playing-coach', fieldPlayer = false, atTakeover = false
   const p = fieldPlayer ? w.players.find((p) => p.position !== 'GK')! : w.players[0];
   const person = w.people![p.id];
   p.born = w.year - 36;
+  // On a 36-year-old's market wage: the wage he was drawn with follows his age on his club's
+  // ladder (T805), which a renewal capped at 110% of the market (재계약 기조 표준) can refuse.
+  p.wage = marketWage(w, p);
   p.retiring = w.year;
   p.personality.professionalism = 5;
   p.qualities = { understanding: 5, teaching: 5, judgement: 5 };

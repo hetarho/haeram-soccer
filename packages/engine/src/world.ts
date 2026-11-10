@@ -334,6 +334,40 @@ export function refillPlace(
   return options[held(line) % options.length].position;
 }
 export const refillPosition = (w: World) => refillPlace(w.tactic, activePlayers(w));
+/** A generated squad's places: one player of each age from 18 to 35 (→WORLD-6). */
+export const SQUAD_AGES = 18;
+/**
+ * A club's age ladder (→WORLD-6): where it starts (`start`, 0–17) and the order of its places
+ * (`order`, a permutation of the 18), drawn once from a stream of the seed and the club, so clubs
+ * of one tactic do not field the same ages in the same places.
+ */
+export function ageLadder(seed: string, club: string) {
+  const r = random(`${seed}:${club}:age-ladder`);
+  const start = integer(r, 0, SQUAD_AGES - 1);
+  // Fisher–Yates, so every engine shuffles alike.
+  const order = Array.from({ length: SQUAD_AGES }, (_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = integer(r, 0, i);
+    [order[i], order[j]] = [order[j]!, order[i]!];
+  }
+  return { start, order };
+}
+/**
+ * Generated place `place`'s (0–17, `squadPlaces` order) age in `year` and its birth cohort on its
+ * club's ladder: the place holds one person through the 18 seasons of a cohort, a year older each
+ * season, then the next cohort's 18-year-old. `ladder` is the club's `ageLadder`, for callers
+ * placing a whole squad.
+ */
+export function squadPlaceAge(
+  seed: string,
+  club: string,
+  year: number,
+  place: number,
+  ladder = ageLadder(seed, club),
+) {
+  const step = year + ladder.order[place]! + ladder.start;
+  return { age: 18 + (step % SQUAD_AGES), cohort: Math.floor(step / SQUAD_AGES) };
+}
 /**
  * The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6); `style`
  * builds them for another tactic's formation (measurement of forced tactics, T321).
@@ -346,10 +380,11 @@ export function npcSquad(
 ): Player[] {
   const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
   const fatigue = style === 'press' ? PRESS_LOAD_FATIGUE : 0;
+  const ladder = ageLadder(seed, c.id);
   return squadPlaces(style).map((place, i) => {
-    const age = 18 + ((year + i) % 18),
-      cohort = Math.floor((year + i) / 18);
-    // His join year keeps his surname through his cohort; a season's 18 hold 18 consecutive ones.
+    const { age, cohort } = squadPlaceAge(seed, c.id, year, i, ladder);
+    // The year he turned 18 keeps his surname through his cohort; a season's 18 hold 18
+    // consecutive ones.
     const player = makePlayer(
       code,
       seed,
@@ -360,7 +395,7 @@ export function npcSquad(
       age,
       c.tier,
       place.role,
-      squadSurname(seed, c.id, 18 * cohort - i),
+      squadSurname(seed, c.id, year + 18 - age),
     );
     player.fatigue = fatigue;
     return player;

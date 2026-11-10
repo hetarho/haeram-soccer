@@ -609,8 +609,9 @@ describe('stable-identity approaches', () => {
     const bid = w.bids![0];
     expect(bid).toMatchObject({ club: 'foreign', playerId: offer.player.id });
     bid.status = 'countered';
-    // A setting changed meanwhile keeps the bid's player and terms (→ECON-16).
-    w.policy = { ...w.policy, recruitment: 1 };
+    // A setting changed meanwhile keeps the bid's player and terms (→ECON-16): the scout no
+    // longer looks abroad, whatever the player's age on his club's ladder (T805).
+    w.policy = { ...w.policy, globalScouting: 1 };
     expect(transferOffers(w).some((o) => o.player.id === offer.player.id)).toBe(false);
     respondBid(w, bid.id, true);
     expect(w.players.some((p) => p.id === offer.player.id)).toBe(true);

@@ -111,7 +111,12 @@ describe('the results-only path before the takeover (→MATCH-22)', () => {
 });
 
 describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
-  /** Released main ff685c33's first scores and goal lines, before adding the override. */
+  /**
+   * Released main ff685c33's first scores and goal lines, before adding the override. T805's age
+   * ladder per club (other generated players in the scorers' places) moved two goals of the fifth
+   * and sixth fixtures to teammates, the scores unchanged: their lines were
+   * 0000001100100000010100 and 0000000000000100001100.
+   */
   const RELEASED = {
     scores: ['5-0', '3-1', '1-1', '1-3', '3-2', '0-3', '3-0', '1-1'],
     goals: [
@@ -119,8 +124,8 @@ describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
       '0100001010000000000001',
       '0000000010000000001000',
       '0100000000000000020010',
-      '0000001100100000010100',
-      '0000000000000100001100',
+      '0000001100100000010010',
+      '0000000000000100002000',
       '0000000102000000000000',
       '0000001000000000010000',
     ],

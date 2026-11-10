@@ -10,7 +10,7 @@ import {
   playingFor,
   retainPerson,
 } from './person-careers';
-import { invalidateNpcSquads, makePlayer, npcSquad, squadPlaces } from './world';
+import { invalidateNpcSquads, makePlayer, npcSquad, squadPlaceAge, squadPlaces } from './world';
 import { clubStyle } from './tactics';
 import { lineOf } from './player';
 import { hasOwner } from './owner';
@@ -94,7 +94,7 @@ function replacement(w: World, c: Club, p: Player, slot: number) {
     w.year,
     c.strength,
     p.position,
-    18 + ((w.year + slot) % 18),
+    squadPlaceAge(w.seed, c.id, w.year, slot).age,
     c.tier,
     squadPlaces(clubStyle(c))[slot]?.role,
   );
