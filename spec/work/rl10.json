@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T18:16:08.945Z",
-  "sourceCommit": "f43330c484a7b9bab6e23929f57961a0c9e21ee2",
+  "snapshotAt": "2026-11-10T18:38:06.427Z",
+  "sourceCommit": "9143142a23e675609383e85f06f2ee280f9fc89e",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -23,10 +23,11 @@
       "T809",
       "T810",
       "T811",
-      "T812"
+      "T812",
+      "T813"
     ],
     "lastRun": {
-      "id": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+      "id": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
       "adapter": "builtin",
       "providers": {
         "worker": {
@@ -47,22 +48,15 @@
           "version": "2.1.316 (Claude Code)"
         }
       ],
-      "startedAt": "2026-11-10T17:14:28.991Z",
-      "stoppedAt": "2026-11-10T18:16:06.509Z",
-      "dispatched": 7,
+      "startedAt": "2026-11-10T18:18:29.209Z",
+      "stoppedAt": "2026-11-10T18:38:04.675Z",
+      "dispatched": 1,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+          "attempt": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
           "role": "worker",
-          "error": "T811: 태스크 result에 verified 기록이 필요합니다."
-        },
-        {
-          "role": "finish",
-          "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
-          "details": [
-            "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/design-system/server.ts:1:42). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/catalog.ts:1:42). Add the file extension\n  - import \"./source-messages\" without a file extension (packages/contracts/src/messages.ts:1:32). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/influences.ts:1:42). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n(node:84114) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:84644) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n(node:85062) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85099) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85234) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85245) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85285) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85397) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
-          ]
+          "error": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
         }
       ],
       "autopilot": true,
@@ -70,15 +64,22 @@
     }
   },
   "summary": {
-    "total": 9,
+    "total": 10,
     "completed": 9,
-    "remaining": 0,
+    "remaining": 1,
     "running": 0,
     "review": 0,
-    "blocked": 0,
+    "blocked": 1,
     "unassigned": 0
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "T813",
+      "title": "Gate fix: goal-replay scenes re-found by a seed scan",
+      "dep": [],
+      "status": "blocked"
+    }
+  ],
   "attempts": [
     {
       "id": "e647d048-a7a8-44bb-9693-b2750ef2f856",
@@ -760,6 +761,36 @@
           "finishedAt": "2026-11-10T17:58:35.164Z"
         }
       ]
+    },
+    {
+      "id": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "group": "rl10",
+      "taskId": "T813",
+      "tasks": [
+        "T813"
+      ],
+      "lane": null,
+      "owner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1",
+      "contributors": [
+        "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1"
+      ],
+      "status": "blocked",
+      "reason": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "createdAt": "2026-11-10T18:18:29.612Z",
+      "startCommit": "9143142a23e675609383e85f06f2ee280f9fc89e",
+      "dispatch": {
+        "id": "f9f5b5fb-5d05-497f-b10b-dfd4b6dce743",
+        "runner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
+        "role": "worker",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-11-10T18:18:31.362Z",
+        "finishedAt": "2026-11-10T18:38:03.607Z",
+        "error": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+        "summary": "T813 is done, with one check denied (see below). I added `scripts/find-goal-seeds.ts`. It scans `goal-feedback-N` seeds with `careerWorld`, `advanceToNextMatch`, `goalInstants`, `replayGoals` and the presentation clock, and prints the first seed for each scene. `--check` reads the seed each spec names, plus the minutes and seek sample `match-core.spec.ts` asserts, and exits 1 when a scene no longer fits.\n\n**New seeds:**\n- **`goalWorld` in `goal-replay.spec.ts` and `mobile-match-presentation.spec.ts`:** `goal-feedback-61`. The match opens with a 2′ home goal, its cue 7.5 s after kick-off at 2x. More home goals follow at 18′, 24′, 26′ and 35′, then away goals at 45′ and 86′.\n- **`match-core.spec.ts` revision-1 replay:** `goal-feedback-389`. It has a 2′ home goal and away goals at 18′ and 31′. The spec now asserts `[2, 18, 31]` and seeks back to sample 16 instead of 2. The score literals stay because the shape is still 1 : 0, 1 : 1, 1 : 2.\n\nThe comments name the new seeds and minutes and say \"found by scripts/find-goal-seeds.ts\". No assertion was loosened, skipped or deleted.\n\n**Criteria beyond the brief:** besides the specs' own pre-browser assertions, the scan rejects a seed that would break the browser steps:\n- every highlight must be a goal shown on the clock;\n- the paused seek must land between the first two goals;\n- the first goal's cue must come at least one clock minute after kick-off. `goal-feedback-56`'s 1′ goal was rejected because its 1 s cue could vanish before the spec waits for it;\n- goal 2 must come at least 15 s after goal 1 at 4x;\n- in the replay, goal 1 must come within two clock minutes, goal 2 within one minute of the seek sample, and every goal before sample 80.\n\nA full scan from seed 1 took 389 seeds and 250 s. `--check` fails on the old seeds, reproducing the gate (`goal-feedback-25` now opens at 38′), and passes on the new ones.\n\n**Checks run and passed:** typecheck, lint, format:check, validate:i18n, build, the scan and `--check`. The affected unit run selected no test files.\n\n**Not run:** `PREVIEW_BUILD=1 pnpm exec playwright test --list --project=chromium` was denied by the headless allow list, so acceptance item 4 is left unchecked. No unit test covers the script, because each scene check builds a whole world; the script is checked by running it.\n\n**Left for the coordinator's Chromium batch:** `goal-replay.spec.ts:81`, the `mobile-match-presentation.spec.ts` goal-cue (360/390/1280) and theme-tab cases, and `match-core.spec.ts:348`. If T808's `SQUAD_SPREAD` moves the matches again, rerun the scan and update the three seeds, match-core's minutes and seek sample, and the comments."
+      }
     }
   ],
   "history": [
@@ -4884,6 +4915,246 @@
               "details": [
                 "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/design-system/server.ts:1:42). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/catalog.ts:1:42). Add the file extension\n  - import \"./source-messages\" without a file extension (packages/contracts/src/messages.ts:1:32). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/influences.ts:1:42). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n(node:84114) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:84644) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n(node:85062) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85099) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85234) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85245) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85285) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85397) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
               ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 2762,
+      "at": "2026-11-10T18:18:20.531Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T803",
+          "T804",
+          "T805",
+          "T806",
+          "T807",
+          "T809",
+          "T810",
+          "T811",
+          "T812",
+          "T813"
+        ]
+      }
+    },
+    {
+      "sequence": 2763,
+      "at": "2026-11-10T18:18:29.235Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-10T18:18:29.209Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 2764,
+      "at": "2026-11-10T18:18:29.612Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+        "group": "rl10",
+        "taskId": "T813",
+        "tasks": [
+          "T813"
+        ],
+        "lane": null,
+        "owner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1",
+        "contributors": [
+          "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-10T18:18:29.612Z",
+        "startCommit": "9143142a23e675609383e85f06f2ee280f9fc89e"
+      }
+    },
+    {
+      "sequence": 2765,
+      "at": "2026-11-10T18:18:31.171Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2766,
+      "at": "2026-11-10T18:18:31.362Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f9f5b5fb-5d05-497f-b10b-dfd4b6dce743",
+          "runner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T18:18:31.362Z"
+        }
+      }
+    },
+    {
+      "sequence": 2767,
+      "at": "2026-11-10T18:18:31.601Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "f9f5b5fb-5d05-497f-b10b-dfd4b6dce743",
+          "runner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T18:18:31.362Z"
+        }
+      }
+    },
+    {
+      "sequence": 2768,
+      "at": "2026-11-10T18:38:03.254Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2769,
+      "at": "2026-11-10T18:38:03.531Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
+      }
+    },
+    {
+      "sequence": 2770,
+      "at": "2026-11-10T18:38:03.607Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "f9f5b5fb-5d05-497f-b10b-dfd4b6dce743",
+          "runner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T18:18:31.362Z",
+          "finishedAt": "2026-11-10T18:38:03.607Z",
+          "error": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+          "summary": "T813 is done, with one check denied (see below). I added `scripts/find-goal-seeds.ts`. It scans `goal-feedback-N` seeds with `careerWorld`, `advanceToNextMatch`, `goalInstants`, `replayGoals` and the presentation clock, and prints the first seed for each scene. `--check` reads the seed each spec names, plus the minutes and seek sample `match-core.spec.ts` asserts, and exits 1 when a scene no longer fits.\n\n**New seeds:**\n- **`goalWorld` in `goal-replay.spec.ts` and `mobile-match-presentation.spec.ts`:** `goal-feedback-61`. The match opens with a 2′ home goal, its cue 7.5 s after kick-off at 2x. More home goals follow at 18′, 24′, 26′ and 35′, then away goals at 45′ and 86′.\n- **`match-core.spec.ts` revision-1 replay:** `goal-feedback-389`. It has a 2′ home goal and away goals at 18′ and 31′. The spec now asserts `[2, 18, 31]` and seeks back to sample 16 instead of 2. The score literals stay because the shape is still 1 : 0, 1 : 1, 1 : 2.\n\nThe comments name the new seeds and minutes and say \"found by scripts/find-goal-seeds.ts\". No assertion was loosened, skipped or deleted.\n\n**Criteria beyond the brief:** besides the specs' own pre-browser assertions, the scan rejects a seed that would break the browser steps:\n- every highlight must be a goal shown on the clock;\n- the paused seek must land between the first two goals;\n- the first goal's cue must come at least one clock minute after kick-off. `goal-feedback-56`'s 1′ goal was rejected because its 1 s cue could vanish before the spec waits for it;\n- goal 2 must come at least 15 s after goal 1 at 4x;\n- in the replay, goal 1 must come within two clock minutes, goal 2 within one minute of the seek sample, and every goal before sample 80.\n\nA full scan from seed 1 took 389 seeds and 250 s. `--check` fails on the old seeds, reproducing the gate (`goal-feedback-25` now opens at 38′), and passes on the new ones.\n\n**Checks run and passed:** typecheck, lint, format:check, validate:i18n, build, the scan and `--check`. The affected unit run selected no test files.\n\n**Not run:** `PREVIEW_BUILD=1 pnpm exec playwright test --list --project=chromium` was denied by the headless allow list, so acceptance item 4 is left unchecked. No unit test covers the script, because each scene check builds a whole world; the script is checked by running it.\n\n**Left for the coordinator's Chromium batch:** `goal-replay.spec.ts:81`, the `mobile-match-presentation.spec.ts` goal-cue (360/390/1280) and theme-tab cases, and `match-core.spec.ts:348`. If T808's `SQUAD_SPREAD` moves the matches again, rerun the scan and update the three seeds, match-core's minutes and seek sample, and the comments."
+        }
+      }
+    },
+    {
+      "sequence": 2771,
+      "at": "2026-11-10T18:38:04.675Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-10T18:18:29.209Z",
+          "stoppedAt": "2026-11-10T18:38:04.675Z",
+          "dispatched": 1,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+              "role": "worker",
+              "error": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
             }
           ],
           "autopilot": true,
