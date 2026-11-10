@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r213 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r214 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -297,7 +297,9 @@
 - WEB-55 [o] Players are judged by their overall rating (OVR), the number football games lead with: a rating-card chip (the five presentation tiers in →!WEB-91, his main position under the number, one scale for every position →PLAYER-6) leads roster cards, academy rows and transfer candidates; the full roster table has an OVR column and the "OVR 높은 순" order. ← owners compare and recruit by OVR first
   - 포지션 filters by any of the 14 positions or by line (→PLAYER-3), a player counting under every position he plays at 준수 or better.
   - roster view settings (지표 범위, 포지션, 정렬, 최소 표본) sit behind one icon button in the roster panel header, with the number of active choices on it: a popover under the button on wide screens, the bottom sheet on phones; chips apply at once and 초기화 restores the defaults. Search stays visible, and the active choices are listed under it.
-- WEB-56 [o] Trouble is shown, not stopped for (→!OWNER-15): below 13 weeks of runway or in debt the HUD cash turns warning/red and a red band on every view states the weeks left or, in debt, the rounds left before bankruptcy (→ECON-24); 구단주 파산 위기 (to the season close) and 퇴진 압박 (rounds left) show as their own statuses beside it. The end of a career (→OWNER-16) replaces every view with the game-over page naming its cause — 구단 파산, 구단주 파산 or 구단주 퇴진 — with the club, the season, seasons played, best finish, titles and peak supporters, with 기록 내보내기, 이 슬롯에서 새 게임 and 게임 슬롯 (→WEB-62).
+- WEB-56 [o] Trouble is shown; only the start of a 파산 위기 stops the clock (→!OWNER-15): below 13 weeks of runway or in debt the HUD cash turns warning/red and a red band on every view states the weeks left or, in debt, the rounds left before bankruptcy (→ECON-24); 구단주 파산 위기 (to the season close) and 퇴진 압박 (rounds left) show as their own statuses beside it. ← unattended automatic play reached a bankruptcy before the owner saw its crisis
+  - with the automatic clock running, the day a 파산 위기 begins — the club's first round in debt (→ECON-24) or the owner's 구단주 파산 위기 (→OWNER-14) — stops the clock once it is shown and opens a warning dialog naming the crisis and what remains of its count; closing it leaves the clock stopped until the owner starts it again. The same crisis never stops it twice; a new one after a recovery does. 퇴진 압박 and manual mode never stop for or open it.
+  - The end of a career (→OWNER-16) shows the game-over page on home naming its cause — 구단 파산, 구단주 파산 or 구단주 퇴진 — with the club, the season, seasons played, best finish, titles and peak supporters, with 기록 내보내기, 이 슬롯에서 새 게임 and 게임 슬롯 (→WEB-62). Every other menu stays open to read the ended career; progression controls and event cards are gone and any command sent is refused (→OWNER-16).
 - WEB-57 [o] A manager's departure (→STAFF) leaves the interim in charge and asks one choice: 감독 선임하러 가기 (사람's 감독 with the manager market open) or 임시 감독으로 계속. Other blocking alerts keep one acknowledge button.
   - Runtime errors and blocking club warnings appear in a persistent floating alert panel above the current page, outside its content layout. Keep their recovery/acknowledgement actions and underlying blockers; a warning never pushes the HUD, clock or content down. The panel stays within short/phone viewports, above mobile navigation, and may scroll internally. Ordinary dialogs retain their higher layer and focus handling.
 - WEB-58 [o] Every club name or crest opens its team sheet from one global host.
@@ -608,6 +610,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r214 261110 WEB-56✎ trouble never stops the clock→the start of a 파산 위기 (club's first round in debt or 구단주 파산 위기) stops a running automatic clock once behind a warning dialog; the career's end replaces every view with the game-over page→game-over on home, every other menu readable
 - r213 261109 WEB-54✎ the owner's record beside the club's figures on each owned row→a 순위/재정 switch between the two column groups over the same rows
 - r212 261109 WEB-54✎ 시즌별 기록 list then 구단주 시즌 and 구단주 이전 panels→one newest-first table with the owner's record on each owned season and a takeover rule above the seasons before the owner
 - r211 261105 WEB-90✎ extracted shell-only translations→all interface/feature/generated copy in every registered pack; display-time translation of recognized stored prose without changing saves; whole-sentence rich parameters

@@ -844,7 +844,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 36 | 36 | - | 2 |
-| WEB | 213 | 213 | - | 0 |
+| WEB | 214 | 214 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -852,11 +852,11 @@
 | MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
-| ECON | 52 | 52 | - | 0 |
+| ECON | 53 | 53 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 24 | 24 | - | 0 |
 | SAVE | 66 | 66 | - | 0 |
-| OWNER | 6 | 6 | - | 0 |
+| OWNER | 7 | 7 | - | 0 |
 | PLAYER | 15 | 15 | - | 0 |
 
 ## review
@@ -887,6 +887,7 @@
 | T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
 | T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
 | T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
+| T782 | stop the automatic clock once when a 파산 위기 begins, and keep every menu readable after a career ends | WEB OWNER ECON | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -917,6 +918,7 @@
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 update-ssot WEB r214 OWNER r7 ECON r53 (the start of a 파산 위기 stops a running automatic clock once behind a warning; an ended career keeps every menu readable); create-task T782 bk10
 - 261110 update-ssot ARCH r36 (ARCH-23 browser shards 3/3/4, world cache in browser jobs); create-task T779-T781 from review/test-value-261110 F1-F3 tv10
 - 261110 create-task T775-T778 from review/game-runtime-speed-261110 F1-F8 (lanes perf-history, perf-view) pf10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
@@ -936,4 +938,3 @@
 - 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
-- 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09

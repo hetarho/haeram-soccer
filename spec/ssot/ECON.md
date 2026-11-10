@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r52 | Define the browser-demo rules for historical club economy.
+> r53 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -137,8 +137,8 @@
 - ECON-23 [o] Supporters follow reputation, not the stadium: each league round they move 3% toward the following the reputation commands (800 × 1.085^reputation: about 2,000 at 12, 47,000 at 50, 1.2 million at 90), a win adds 0.4% × the build's win-fans effect, a defeat costs 0.1%, 해외 마케팅 and a campaign started before rules 1.19 add theirs, and 글로벌 인지도 multiplies the following the reputation commands (→ECON-34); there is no ceiling, never below 200. ← a fixed cap and compounding wins both broke the long game
   - the following itself pays nothing: local supporters and the stadium decide the gate (→ECON-9), and the following raises sponsor offers with diminishing returns (→ECON-8).
 - ECON-24 [o] Bankruptcy ends a career: each league round settled with negative cash counts one, getting back to zero or above resets the count; at 8 in a row, or at once when the debt passes half a season's fixed costs, the club goes bankrupt. ← debt used to freeze play behind an alert instead of ending it
-  - the first round in debt posts a "파산 위기" inbox item (a status, not a stop); the HUD cash and a red band count the rounds left (→WEB-56)
-  - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page (→WEB-56)
+  - the first round in debt posts a "파산 위기" inbox item; play goes on, except that a running automatic clock stops once on it behind a warning (→WEB-56); the HUD cash and a red band count the rounds left (→WEB-56)
+  - a bankrupt club advances nothing and refuses every command but reading the inbox; the app shows the game-over page on home and keeps the other views readable (→WEB-56)
   - the owner's bankruptcy (→OWNER-14) and 구단주 퇴진 (→OWNER-13) end a career too; all three share the end of →OWNER-16 and the game-over page (→WEB-56).
 - ECON-25 [o] Direction areas group the club's direction rows by the decisions they steer (→ECON-22, →ECON-16, →ECON-17, →ECON-33): every row is a choice of named options of one kind, defaulted at a new takeover, preserved from existing saves and changed afterwards only by the owner (→WEB-14, →WEB-79), never by a staff rule; the delegated staff decide by them:
   | area | card row | other rows | the delegated staff decide by them |
@@ -223,6 +223,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r53 261110 ECON-24✎ first round in debt a status, not a stop→also stops a running automatic clock once behind a warning; game-over page in place of every view→on home, other views readable
 - r52 261109 ECON-28✎ provisional ENG package normalization→withdrawn after standalone lived-books gate failure; original distribution/valuation/parachute retained. ECON-29 exact payroll and unchanged acceptance criteria remain
 - r51 261109 ECON-28✎ 2024 factor0.6580853431019185 from rounded unit price→0.6580851783905154 from exact canonical GBP165,608,676.45 base; official whole-pot target unchanged
 - r50 261109 ECON-28✎ ENG top-flight raw broadcast-index package→official-total normalization (1992:1,2018:0.8520865440307794,2024:0.6580853431019185), lost-share parachute follows; ECON-29+ exact payroll components, joint wage/income screening and lived-world holdouts without weakening reference gates
