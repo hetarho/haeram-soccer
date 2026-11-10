@@ -3,7 +3,7 @@
 // it; nothing here draws a random number.
 import { PROTO_CONFIG } from '../core/config.ts';
 import type { Vec } from '../core/types.ts';
-import { clamp, dist, lerp } from '../core/vec.ts';
+import { approach, clamp, dist, lerp } from '../core/vec.ts';
 import type { Flight, StageState } from './world.ts';
 
 const BALL = PROTO_CONFIG.ball;
@@ -22,12 +22,37 @@ export function startFlight(state: StageState, to: Vec, speed: number, loft: boo
     to: [to[0], to[1]],
     t0: state.t,
     t1: state.t + flightTime(from, to, speed),
-    apex: loft ? clamp(d * BALL.loftPerMetre, BALL.loftMin, BALL.loftMax) : 0,
+    apex: apexFor(d, loft),
   };
   state.ball.mode = 'flight';
   state.ball.owner = -1;
   state.ball.flight = flight;
   return flight;
+}
+
+/** Kicks the ball from where it is now to `to` in `seconds`, rising to `apex`; nobody owns it. */
+export function startFlightTimed(
+  state: StageState,
+  to: Vec,
+  seconds: number,
+  apex: number,
+): Flight {
+  const flight: Flight = {
+    from: [state.ball.pos[0], state.ball.pos[1]],
+    to: [to[0], to[1]],
+    t0: state.t,
+    t1: state.t + Math.max(0, seconds),
+    apex,
+  };
+  state.ball.mode = 'flight';
+  state.ball.owner = -1;
+  state.ball.flight = flight;
+  return flight;
+}
+
+/** The apex `startFlight` gives a kick over `d` metres. */
+export function apexFor(d: number, loft: boolean): number {
+  return loft ? clamp(d * BALL.loftPerMetre, BALL.loftMin, BALL.loftMax) : 0;
 }
 
 /** Player `index` has the ball at his feet at once. */
@@ -63,6 +88,10 @@ export function updateBall(state: StageState): void {
     ball.pos = [p[0], p[1]];
     ball.z = 4 * f.apex * s * (1 - s);
     return;
+  }
+  if (ball.mode === 'dead' && state.retrieve) {
+    const p = approach(ball.pos, state.retrieve, BALL.retrieval * PROTO_CONFIG.tick);
+    ball.pos = [p[0], p[1]];
   }
   ball.z = 0;
 }

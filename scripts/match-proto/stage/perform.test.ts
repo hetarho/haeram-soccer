@@ -2,49 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { PROTO_CONFIG } from '../core/config.ts';
 import { CENTRE, HALFWAY } from '../core/pitch.ts';
 import { demoFixture } from '../core/squads.ts';
-import type { Beat, BeatKind, BeatOutcome, Frame, Script, Vec } from '../core/types.ts';
 import { dist } from '../core/vec.ts';
 import { handlerKey, performScript } from './perform.ts';
+import { posOf, type BeatSpec, scriptOf as buildScript } from './script.testkit.ts';
 
 const fixture = demoFixture();
 const MOTION = PROTO_CONFIG.motion;
 const TICK = PROTO_CONFIG.tick;
 
-interface BeatSpec {
-  kind: BeatKind;
-  actor: number;
-  receiver?: number;
-  to: Vec;
-  loft?: boolean;
-  outcome?: BeatOutcome;
-}
-
 /** A hand-written home script: each beat starts where the previous one aimed. */
-const scriptOf = (specs: readonly BeatSpec[]): Script => {
-  let from: Vec = CENTRE;
-  const beats = specs.map((s, index): Beat => {
-    const beat: Beat = {
-      index,
-      possession: 1,
-      team: 0,
-      phase: 'buildUp',
-      move: 'test',
-      kind: s.kind,
-      actor: s.actor,
-      ...(s.receiver !== undefined ? { receiver: s.receiver } : {}),
-      from,
-      to: s.to,
-      loft: s.loft ?? false,
-      through: false,
-      header: false,
-      outcome: s.outcome ?? 'complete',
-      hold: 1,
-    };
-    from = s.to;
-    return beat;
-  });
-  return { seed: 'hand', fixture, beats, times: beats.map((_, i) => i), nominalSeconds: 0 };
-};
+const scriptOf = (specs: readonly BeatSpec[]) => buildScript(fixture, specs);
 
 const HAND = scriptOf([
   { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] },
@@ -54,7 +21,6 @@ const HAND = scriptOf([
   { kind: 'pass', actor: 1, receiver: 10, to: [62, 60], loft: true },
 ]);
 const playback = performScript(HAND, { duration: 40 });
-const posOf = (frame: Frame, index: number): Vec => [frame.p[index * 2], frame.p[index * 2 + 1]];
 
 describe('stage performance', () => {
   it('performs every beat of the hand-written script', () => {

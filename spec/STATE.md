@@ -899,7 +899,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T796 | match-proto stage contests and dead balls: interceptions, tackles, take-ons, balls out, restarts | ARCH | T795 | todo |
 | T797 | match-proto stage attack: timed runs and offside, shots and keepers, crosses and corners, the pipeline | ARCH | T796 | todo |
 | T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
@@ -937,6 +936,7 @@
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T796 done: `scripts/match-proto/stage` contests and dead balls — interceptions on the ball's path (`planCut`/`resolveCut` with recast, lunge and a slower ball), tackles and fouls after a jockey, take-ons, balls out, dead-ball scenes before every restart, cues one beat ahead and pressed passes waiting for the presser; scripts A–E staged (interceptor 0.42 m, tackler 1.17 m from the ball), 95 unit cases in the folder, no production file touched mp11
 - 261111 T795 done: `scripts/match-proto/stage` core — bounded movement, ball held/flight/loose, frames per tick, shape/press/mark targets, completed passes and carries, `performScript`; the hand-written script stages in 11.9 s with receivers 0.11–1.10 m from their points, 19 unit cases, no production file touched mp11
 - 261111 T794 done: `scripts/match-proto/script` move catalogue (20 moves), shared follow-ups (shots and their aftermath, long balls, lay-offs, clearances, keeper distribution, through balls with offside by `decisions`), long goal kicks, corner deliveries, direct free kicks, the showcase search (`demo#0` meets every quota on the first attempt) and the `print.ts` CLI; seeds c0–c59 validate, 64 unit cases in the folder, no production file touched mp11
 - 261111 T793 done: `scripts/match-proto/script` state, casting, emit, restarts, four basic moves, `generateScript`, the 8-rule continuity validator and script stats with `PROTO_CONFIG.grammar`; seeds t0–t29 validate, 24 unit cases, no production file touched mp11
@@ -956,4 +956,3 @@
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
 - 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
 - 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
-- 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10

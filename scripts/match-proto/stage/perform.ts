@@ -4,8 +4,10 @@
 import { PROTO_CONFIG } from '../core/config.ts';
 import type { Beat, Playback, Script, Vec } from '../core/types.ts';
 import { PASS_KINDS, isShotLike } from '../core/types.ts';
-import { performCarry } from './carry.ts';
-import { performPass } from './pass.ts';
+import { performCarry, performCarryLost } from './carry.ts';
+import { performPass, performPassIntercepted, performPassOut } from './pass.ts';
+import { withRestart } from './scenes.ts';
+import { performTakeOn } from './takeon.ts';
 import { createStage, step, type StageState } from './world.ts';
 
 export { ensureOwner, setPossession } from './world.ts';
@@ -22,9 +24,20 @@ export function handlerKey(beat: Beat): string {
   return `${kind}:${beat.outcome}`;
 }
 
+// Every `pass:*` and `clearance:*` handler plays a dead-ball scene first for a restart kind.
 export const HANDLERS: Record<string, Handler> = {
-  'pass:complete': performPass,
+  'pass:complete': withRestart(performPass),
+  'pass:intercepted': withRestart(performPassIntercepted),
+  'pass:out': withRestart(performPassOut),
+  'clearance:complete': withRestart(performPass),
+  'clearance:intercepted': withRestart(performPassIntercepted),
+  'clearance:out': withRestart(performPassOut),
   'carry:complete': performCarry,
+  'carry:tackled': performCarryLost,
+  'carry:foul': performCarryLost,
+  'takeOn:complete': performTakeOn,
+  'takeOn:tackled': performCarryLost,
+  'takeOn:foul': performCarryLost,
 };
 
 export function performScript(script: Script, options?: { duration?: number }): Playback {

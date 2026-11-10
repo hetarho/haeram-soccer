@@ -31,10 +31,21 @@
 //             and when a presser sprints (farther than `pressSprintBeyond` metres)
 //   ball:     ball flight (stage/ball.ts): ground and lofted speeds and the slowest kick (m/s), the
 //             shortest flight (s), a lofted ball's apex per metre within `loftMin`-`loftMax`, how far
-//             ahead of the owner's feet a held ball sits and how fast a loose ball rolls to a player
+//             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
+//             and how fast a dead ball is brought back to its restart spot (`retrieval`, m/s)
 //   stage:    performing beats (stage/): the passer's drift while holding, extra hold, receiving
 //             slack, control range, settling time limit, dribbling speed, arrival distance and the
-//             kick-off's half and centre-circle margins
+//             kick-off's half and centre-circle margins; contests (stage/contest.ts): the shadow
+//             point on a pass lane (`shadowAt` along it, `shadowOff` goal-side), the share of a
+//             path an interceptor may meet it on (`cutMin`-`cutMax`, a keeper from `keeperCutMin`),
+//             how late he may be (`cutSlack`, s) and the lunge (m/s); tackles: the jockey distance,
+//             the share of the carry before the tackle, its range, the extra seconds before and
+//             after a nearer man takes it over and the foul's freeze; take-ons: the side step, the
+//             attacker's and the beaten defender's speed caps and time; `pressVisible`, how near
+//             the presser is before a pressed pass is kicked; restarts (stage/scenes.ts): the dead
+//             time per kind, its extra allowance, the distance the other team keeps, how near the
+//             taker and receiver must be, the taker's offset from the spot and how far past the line
+//             a ball out runs
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
 //             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
@@ -112,6 +123,7 @@ export const PROTO_CONFIG = {
     loftMax: 8,
     carryOffset: 0.6,
     roll: 3,
+    retrieval: 8,
   },
   stage: {
     holdDrift: 2.5,
@@ -122,6 +134,31 @@ export const PROTO_CONFIG = {
     dribbleSpeed: 5,
     arrive: 0.6,
     kickOff: { halfMargin: 1, circle: 9.65 },
+    // Where on the lane the scripted interceptor waits, and how far goal-side of it.
+    shadowAt: 0.7,
+    shadowOff: 1.5,
+    cutMin: 0.5,
+    cutMax: 0.92,
+    keeperCutMin: 0.8,
+    cutSlack: 0.15,
+    lunge: 2,
+    jockey: 2.5,
+    tackleAfter: 0.3,
+    tackleRange: 1.2,
+    tackleGrace: 2.5,
+    tackleExtra: 2,
+    foulFreeze: 1,
+    takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9 },
+    pressVisible: 3,
+    restart: {
+      delay: { kickOff: 14, throwIn: 5, goalKick: 8, corner: 12, freeKick: 7 },
+      maxExtra: 8,
+      distance: { kickOff: 9.15, freeKick: 9.15, corner: 9.15, goalKick: 0, throwIn: 2 },
+      takerReady: 0.8,
+      receiverReady: 2,
+      takerOffset: 0.7,
+      outRun: 1.5,
+    },
   },
   // The probabilistic script (script/): nominal clock, casting, carries, restarts and outcome chances.
   grammar: {

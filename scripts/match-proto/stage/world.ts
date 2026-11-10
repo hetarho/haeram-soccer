@@ -18,7 +18,7 @@ import type {
   Vec,
 } from '../core/types.ts';
 import { lineOf } from '../core/types.ts';
-import { add, approach, dist, lerp, norm, scale, sub } from '../core/vec.ts';
+import { add, approach, dist, len, lerp, norm, scale, sub } from '../core/vec.ts';
 import { giveBall, updateBall } from './ball.ts';
 import { advanceBody, paceSpeed, type Body, type Pace } from './motion.ts';
 
@@ -61,7 +61,13 @@ export interface StageState {
   tight: boolean;
   /** Dead-ball scenes: shapes read this point instead of the ball. */
   shapeBall?: Vec;
+  /** Dead-ball scenes: a dead ball is brought toward this point at `ball.retrieval` m/s. */
+  retrieve?: Vec;
+  /** Dead-ball scenes: targets of `team`'s players inside this circle are moved out to its edge. */
+  keepOut?: { centre: Vec; radius: number; team: TeamId };
   orders: Map<number, Order>;
+  /** Orders set one beat ahead by `cueNext`; they outlive `orders.clear()` until the next beat starts. */
+  cues: Map<number, Order>;
   score: [number, number];
   frames: Frame[];
   events: StageEvent[];
@@ -96,25 +102,28 @@ const recordFrame = (state: StageState): void => {
   });
 };
 
+/**
+ * Player `index`'s kick-off place (world frame) when `kicking` kicks off through `kicker`: his
+ * build-up place in his own half, the other side outside the centre circle, the kicker on the spot.
+ */
+export function kickOffSpot(fixture: Fixture, index: number, kicking: TeamId, kicker: number): Vec {
+  const team = fixture.players[index].team;
+  const nominal = nominalSpot({ fixture, ball: CENTRE, team: kicking, phase: 'buildUp' }, index);
+  let a: [number, number] = [...toAttack(team, nominal)] as [number, number];
+  a[0] = Math.min(a[0], HALFWAY - KICK_OFF.halfMargin);
+  if (team !== kicking && dist(a, CENTRE) < KICK_OFF.circle) a[0] = HALFWAY - KICK_OFF.circle;
+  if (index === kicker) a = [HALFWAY - 0.3, CENTRE[1]];
+  return toAttack(team, a);
+}
+
 /** The stage before the first beat: everyone at his kick-off place, the kicker on the ball, frame 0 recorded. */
 export function createStage(script: Script): StageState {
   const fixture = script.fixture;
   const first = script.beats[0];
   if (!first) throw new Error('empty script');
-  const kicking = first.team;
-  const bodies = fixture.players.map((player): Body => {
-    const team = player.team;
-    const nominal = nominalSpot(
-      { fixture, ball: CENTRE, team: kicking, phase: 'buildUp' },
-      player.index,
-    );
-    let a: [number, number] = [...toAttack(team, nominal)] as [number, number];
-    a[0] = Math.min(a[0], HALFWAY - KICK_OFF.halfMargin);
-    if (team !== kicking && dist(a, CENTRE) < KICK_OFF.circle) a[0] = HALFWAY - KICK_OFF.circle;
-    if (player.index === first.actor) a = [HALFWAY - 0.3, CENTRE[1]];
-    const world = toAttack(team, a);
-    return standing(world, oppGoal(team));
-  });
+  const bodies = fixture.players.map((player): Body =>
+    standing(kickOffSpot(fixture, player.index, first.team, first.actor), oppGoal(player.team)),
+  );
   const state: StageState = {
     fixture,
     beats: script.beats,
@@ -129,6 +138,7 @@ export function createStage(script: Script): StageState {
     turnedAt: -Infinity,
     tight: false,
     orders: new Map(),
+    cues: new Map(),
     score: [0, 0],
     frames: [],
     events: [],
@@ -164,7 +174,7 @@ const pressRoles = (
   const cached = byTeam.get(d);
   if (cached) return cached;
   const free = state.fixture.teams[d].players
-    .filter((p) => p.slot !== 0 && !state.orders.has(p.index))
+    .filter((p) => p.slot !== 0 && !state.orders.has(p.index) && !state.cues.has(p.index))
     .map((p) => ({ index: p.index, d: dist(snapshot[p.index], ref) }))
     .sort((a, b) => a.d - b.d || a.index - b.index);
   const roles = { presser: free[0]?.index ?? -1, cover: free[1]?.index ?? -1 };
@@ -235,11 +245,20 @@ export function defaultTarget(
   return { target, pace: generalPace(target) };
 }
 
+/** `target` moved radially out to the keep-out circle's edge when it lies inside it. */
+const keptOut = (keep: NonNullable<StageState['keepOut']>, target: Vec): Vec => {
+  const off = sub(target, keep.centre);
+  const d = len(off);
+  if (d >= keep.radius) return target;
+  const dir = d > 1e-9 ? norm(off) : norm(sub(ownGoal(keep.team), keep.centre));
+  return clampToPitch(add(keep.centre, scale(dir, keep.radius)), -2);
+};
+
 /** One tick: targets for all 22 from one snapshot, then everybody moves, the ball updates, a frame is recorded. */
 export function step(state: StageState): void {
   const snapshot = positionsOf(state);
   const moves: { target: Vec; speed: number }[] = state.fixture.players.map((spec) => {
-    const order = state.orders.get(spec.index);
+    const order = state.orders.get(spec.index) ?? state.cues.get(spec.index);
     if (order) {
       const target = typeof order.target === 'function' ? order.target() : order.target;
       const speed = Math.min(
@@ -251,6 +270,12 @@ export function step(state: StageState): void {
     const own = defaultTarget(state, spec.index, snapshot);
     return { target: clampToPitch(own.target, -2), speed: paceSpeed(own.pace, spec) };
   });
+  const keep = state.keepOut;
+  if (keep) {
+    moves.forEach((move, i) => {
+      if (state.fixture.players[i].team === keep.team) move.target = keptOut(keep, move.target);
+    });
+  }
   const tick = PROTO_CONFIG.tick;
   moves.forEach((move, i) => advanceBody(state.bodies[i], move.target, move.speed, tick));
   state.tickCount += 1;
@@ -275,8 +300,13 @@ export function pushEvent(
 // The two beat-opening helpers live here, below the handlers, so `pass.ts` and `carry.ts` never
 // import `perform.ts` (which imports them); `perform.ts` re-exports both.
 
-/** Starts performing `beat`: its team, phase and index; a change of sides starts the transition clock. */
+/**
+ * Starts performing `beat`: its team, phase and index; a change of sides starts the transition
+ * clock. The cues set for this beat end here: the handler that follows sets its own orders in the
+ * same tick, so a cued player keeps moving.
+ */
 export function setPossession(state: StageState, beat: Beat): void {
+  state.cues.clear();
   if (beat.team !== state.team) state.turnedAt = state.t;
   state.team = beat.team;
   state.phase = beat.phase;
