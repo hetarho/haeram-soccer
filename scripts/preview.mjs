@@ -39,6 +39,17 @@ const mime = {
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };
+// A journey run asks for the same bundles thousands of times; gzip each file once per version
+// (its path, size and modification time), so a rebuilt file is compressed and served afresh.
+const gzipped = new Map();
+const gzipOnce = async (file) => {
+  const { size, mtimeMs } = await stat(file);
+  const memo = gzipped.get(file);
+  if (memo?.size === size && memo.mtimeMs === mtimeMs) return memo.body;
+  const body = gzipSync(await readFile(file));
+  gzipped.set(file, { size, mtimeMs, body });
+  return body;
+};
 http
   .createServer(async (req, res) => {
     try {
@@ -56,11 +67,10 @@ http
         file = path.join(root, '404.html');
         status = 404;
       }
-      let body = await readFile(file);
       const compressed =
         /\b(?:gzip)\b/.test(req.headers['accept-encoding'] || '') &&
         /\.(html|css|js|json|svg)$/.test(file);
-      if (compressed) body = gzipSync(body);
+      const body = compressed ? await gzipOnce(file) : await readFile(file);
       res.writeHead(status, {
         ...declaredHeaders(name),
         'Content-Type': mime[path.extname(file)] || 'application/octet-stream',
