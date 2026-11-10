@@ -17,7 +17,6 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
-| pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T06:30Z | - |
 | bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
@@ -827,6 +826,7 @@
 - 261110 decided T689 T775 T778: how pf10 coexists with sc10's live T689 calibration in .tmp/nx10 and tv10's self-improve-local run on this checkout → no pf10 task touches packages/engine/src/grid/**, every change keeps outputs byte-identical so sc10's reads stay comparable, and tv10 is told pf10's touches (alt: wait for sc10 | include grid hot paths)
 - 261110 decided ARCH-30 T779 T780 T781 T689: the gc10 loop, started for T689 only, claimed the owner's tv10 tasks T779–T781 instead (its `next` note did not bind the route while T689's call sat parked) → stopped it at 06:46Z and returned the three to todo; its local commits 8a5a1b01 (T779) and 3f03d861 (T780) stay unpushed on `work/gc10` for tv10 to reuse or drop, T781 was only begun; no code reached a remote (alt: let it finish beside tv10's own work) gc10
 - 261110 decided ARCH-30 review/test-value-261110 T786 T787: the owner, asked which repeated checks the gate may drop, approves all eight → journeys: joint authority 4→2, full-model-continuity at one viewport, records room at 390 only, 390x844 twins of non-start screens (WEB-15/17/63 fits stay rules; 390x844 dominates 360x740); integration: progression ESP dropped, fast-path to a few rounds, cup-win milestone from forced scores, earlier match-model revisions trimmed (alt: keep every variant | move them to an on-demand tier) tv10
+- 261110 parked review/game-runtime-speed-261110 T775 T776 T777 T778: pf10's speed-ups are integrated on local main (verified at 0e514e46) but not pushed — origin/main moved during the gate and the re-gate of the merge did not finish by the owner's 18:00 deadline; tv10's sync, gate and push to main release them with T779–T787
 
 ## ideation
 | id | st |
@@ -938,5 +938,5 @@
 - 261110 create-task review/football-data-consistency-261109 F24: T768 required staff-holder fixture correction with fresh identity-cache coverage and unchanged cases/limits fi09
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
-- 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
 - 261110 T787 integrated (independent review approved 81aedca6, P3 notes only) tv10
+- 261110 pf10 end: gate 1 passed on 0e514e46, re-gate of the origin/main merge 251982ad stopped at the 18:00 deadline, no push; release handed to tv10 pf10
