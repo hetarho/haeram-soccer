@@ -1,0 +1,4 @@
+{
+  "c50mg5": ["c50", { "shape": { "markGoalSide": 5 } }],
+  "c50mg3dr": ["c50mg3", { "shape": { "candidate": { "drop": { "seconds": 6, "line": 30, "free": 6 } } } }]
+}

@@ -1,0 +1,9 @@
+[
+ { "name": "entries-c50mg3-0-400", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3.json", "script": "scripts/scoring-box-entries.ts", "args": ["--start", "0", "--matches", "400", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/entries/entries-c50mg3-0-400.json"] },
+ { "name": "origins-c50mg3-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3.json", "script": "scripts/scoring-shot-origins.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/origins/origins-c50mg3-0-300.json"] },
+ { "name": "origins-c50mg3-300-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3.json", "script": "scripts/scoring-shot-origins.ts", "args": ["--start", "300", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/origins/origins-c50mg3-300-300.json"] },
+ { "name": "clear-c50mg5-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg5.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50mg5-0-300.json"] },
+ { "name": "clear-c50mg3dr-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3dr.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50mg3dr-0-300.json"] },
+ { "name": "bands-c50mg5-400", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg5.json", "script": "scripts/grid-bands.ts", "args": ["--candidate", "--matches", "400"] },
+ { "name": "bands-c50mg3dr-400", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3dr.json", "script": "scripts/grid-bands.ts", "args": ["--candidate", "--matches", "400"] }
+]

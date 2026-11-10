@@ -1,0 +1,8 @@
+[
+ { "name": "clear-c50mg3-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50mg3-0-300.json"] },
+ { "name": "clear-c50gl5-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50gl5.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50gl5-0-300.json"] },
+ { "name": "clear-c50mg3gl5-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3gl5.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50mg3gl5-0-300.json"] },
+ { "name": "bands-c50mg3-400", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3.json", "script": "scripts/grid-bands.ts", "args": ["--candidate", "--matches", "400"] },
+ { "name": "bands-c50gl5-400", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50gl5.json", "script": "scripts/grid-bands.ts", "args": ["--candidate", "--matches", "400"] },
+ { "name": "bands-c50mg3gl5-400", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50mg3gl5.json", "script": "scripts/grid-bands.ts", "args": ["--candidate", "--matches", "400"] }
+]

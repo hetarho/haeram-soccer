@@ -1,0 +1,5 @@
+{
+  "c50mg3": ["c50", { "shape": { "markGoalSide": 3 } }],
+  "c50gl5": ["c50", { "shape": { "candidate": { "revision10": { "goalSide": { "line": 5 } } } } }],
+  "c50mg3gl5": ["c50", { "shape": { "markGoalSide": 3, "candidate": { "revision10": { "goalSide": { "line": 5 } } } } }]
+}

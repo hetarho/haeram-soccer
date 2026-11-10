@@ -1,0 +1,42 @@
+{
+ "start": "2026-11-10T05:04:18.003Z",
+ "seconds": 225,
+ "status": [
+  {
+   "name": "bands-c50gl5-400",
+   "code": 0,
+   "seconds": 204,
+   "end": "2026-11-10T05:07:42.307Z"
+  },
+  {
+   "name": "bands-c50mg3-400",
+   "code": 0,
+   "seconds": 208,
+   "end": "2026-11-10T05:07:46.133Z"
+  },
+  {
+   "name": "bands-c50mg3gl5-400",
+   "code": 0,
+   "seconds": 208,
+   "end": "2026-11-10T05:07:46.504Z"
+  },
+  {
+   "name": "clear-c50gl5-0-300",
+   "code": 0,
+   "seconds": 220,
+   "end": "2026-11-10T05:07:58.481Z"
+  },
+  {
+   "name": "clear-c50mg3-0-300",
+   "code": 0,
+   "seconds": 224,
+   "end": "2026-11-10T05:08:01.755Z"
+  },
+  {
+   "name": "clear-c50mg3gl5-0-300",
+   "code": 0,
+   "seconds": 225,
+   "end": "2026-11-10T05:08:02.946Z"
+  }
+ ]
+}
