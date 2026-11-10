@@ -131,6 +131,14 @@ export function seasonResult(w: World): string {
   return readSeasonResult(w);
 }
 /**
+ * T785's candidate reading of a bought club's first season (→CLUB-26, →ECON-36), a measurement
+ * setting off in play: `books` counts the bought club's last season before the takeover, its books'
+ * income kept with the takeover's facts, as last season's turnover until the owner's own first
+ * season closes, so 재정 기조's wage-bill ceiling (→ECON-33) is not read against no revenue at all
+ * on the takeover's first day. `none` is the rule in force.
+ */
+export const REVENUE_SINCE_TAKEOVER: { inForce: 'none' | 'books' } = { inForce: 'none' };
+/**
  * The club's revenue over the last 12 months, the income a wage bill can rest on (→CLUB-26): this
  * season's turnover so far and last season's share for the league rounds not yet played, in
  * today's money. A club without a completed season counts its season so far at its pace over a
@@ -140,7 +148,12 @@ export function recentRevenue(w: World): string {
   const rounds = BigInt(SEASON_ROUNDS),
     played = BigInt(Math.min(w.round, SEASON_ROUNDS)),
     season = seasonTurnover(w),
-    earlier = lastSeasonTurnover(w);
+    takeover = w.owner?.takeover,
+    earlier =
+      lastSeasonTurnover(w) ??
+      (REVENUE_SINCE_TAKEOVER.inForce === 'books' && takeover?.year === w.year
+        ? takeover.lastIncome
+        : undefined);
   if (earlier === undefined) return played === 0n ? '0' : ((season * rounds) / played).toString();
   return (season + (BigInt(earlier) * (rounds - played)) / rounds).toString();
 }

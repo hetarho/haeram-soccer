@@ -1,5 +1,5 @@
 # REVIEW self-improve-local-261109
-> st:open@261109 | scope:apps/web/src scripts tests .github spec process | at:8cb15f1 | base:ARCH@35
+> st:open@261109 | scope:apps/web/src scripts tests .github spec process | at:8cb15f1 | base:ARCH@38
 
 ## summary
 - The owner invoked self-improve-local on 261109 at 01:04 KST with the scope "until 07:00, then push main": code performance, how development can spend fewer tokens and less time while staying robust, and modern architecture — Feature-Sliced Design applied across the web app for high cohesion and low coupling. Session fs09 orchestrates: read-only scouts propose, the orchestrator adopts within that delegation, implementation sessions work in their own worktrees, a separate session reviews each submission, and the orchestrator merges into main behind one `verify:batch` gate.
@@ -26,6 +26,7 @@
 - F13 [o] P2 apps/web/src/entities/*/index.ts, tests/e2e, tests/fixtures: a slice index re-exports components that import CSS modules beside its pure logic, so any consumer outside Vite (Playwright specs, tsx scripts, Node fixtures) that needs the logic through the public API loads CSS and fails; T726 hit it (all 68 spec files failed to load) and was reverted. Decide how Node-side consumers reach pure logic — e.g. a CSS-free `model`/`lib` public entry per slice beside `index.ts`, or e2e specs reading constants from their own fixtures. ← until then any FSD move that makes a lib cross a slice boundary can break the e2e harness, which only the release gate runs; `playwright test --list` loads every spec in seconds and catches it. ARCH-4 ARCH-21 →T726
 
 ## notes
+- Freshness 261110 (rl10): ARCH r36–r38 (CI browser shards, landing on main through `vibe push`, the clone-wide world cache) leave this review's open findings (F6, F7, F11 and the parked items) as written.
 - F13 adopted 261109 (ev09, autopilot) as ARCH-4 r35: a CSS-free `logic.ts` slice entry and a closure test for code run outside the Vite build; T726 carries it with the F9 move. r35 is F13's own adoption and changes no other finding, so the base moves to ARCH@35.
 - Freshness check 261109 (ec09, integration preflight): ARCH r34 formalizes the import-side-effect constraint already covered by F12 and implemented by T728; it changes no remaining finding or adoption decision. Original source evidence and scope stay at 8cb15f1.
 - Delegation: the owner's 261109 invocation authorises adopting behaviour-preserving improvements in its scope, local integration on main and one push to main at the end after the coordinator's `verify:batch` (cfg push main). Owner-judgment items (verification tiers, CI matrix, save format, product rules) are parked, not adopted.

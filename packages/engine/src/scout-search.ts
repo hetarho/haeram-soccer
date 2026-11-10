@@ -8,8 +8,8 @@ import { message as sourceMessage } from '../../contracts/src/messages';
 import type { Club, FreeAgent, Line, Player, ScoutOffer, World } from '../../contracts/src/types';
 import { BUILD_SLOTS } from '../../contracts/src/build';
 import { LINES } from '../../contracts/src/player';
-import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
-import { clubById, squad } from './world';
+import { activePlayers, clubOf, formationOf, lineOfPlayer, overall, slotOvr } from './player-state';
+import { clubById, ownStarters, squad } from './world';
 import { currentDay } from './calendar';
 import { compareIds } from './primitives';
 import { policyEffects, policyOf } from './policy';
@@ -56,6 +56,33 @@ export const SCOUT_CONFIG = {
  * `list` the same over the whole list. `none` is the rule in force.
  */
 export const LIST_SPREAD: { inForce: 'none' | 'line' | 'list' } = { inForce: 'none' };
+
+/**
+ * T785's candidate ceilings of the search (→CLUB-51, →ECON-16), a measurement setting off in play:
+ * `open` lifts 영입 기조's ability ceiling altogether; `xi` keeps it at least `xiMargin` above our
+ * starting XI's mean value at its slots — the margin at which the manager asks for a player
+ * (→CLUB-33) — so a club stronger than the band can still find a player who would improve it.
+ * `none` is the rule in force.
+ */
+export const SEARCH_CEILING: { inForce: 'none' | 'open' | 'xi'; xiMargin: number } = {
+  inForce: 'none',
+  xiMargin: 5,
+};
+/** Our starting XI's mean value at its formation slots (→CLUB-6), rounded. */
+function xiLevel(w: World) {
+  const slots = formationOf(w.tactic),
+    starters = ownStarters(w);
+  if (!starters.length) return 0;
+  return Math.round(
+    starters.reduce((sum, p, i) => sum + slotOvr(p, slots[i]!), 0) / starters.length,
+  );
+}
+function searchCeiling(w: World, top: number) {
+  if (SEARCH_CEILING.inForce === 'open') return 99;
+  if (SEARCH_CEILING.inForce === 'xi')
+    return Math.min(99, Math.max(top, xiLevel(w) + SEARCH_CEILING.xiMargin));
+  return top;
+}
 
 export type ScoutHome = (typeof SCOUT_CONFIG.reachBands)[number]['home'];
 export const SCOUT_HOME_LABEL: Readonly<Record<ScoutHome, string>> = {
@@ -110,7 +137,7 @@ export function scoutReach(w: World): ScoutReach {
     abroad: others.slice(0, countries),
     abroadPlaces: countries ? Math.min(perLine, SCOUT_CONFIG.abroadPlaces[level]!) : 0,
     age: [search.age[0], search.age[1]],
-    ability: [search.ability[0] + shift, search.ability[1] + shift],
+    ability: [search.ability[0] + shift, searchCeiling(w, search.ability[1] + shift)],
     potentialFirst:
       build.scoutNeverPotentialFirst > 0
         ? 'none'
