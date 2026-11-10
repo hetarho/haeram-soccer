@@ -1,5 +1,8 @@
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { BaseSequencer, type TestSpecification, type Vitest } from 'vitest/node';
+import { WARMED } from './cold-costs';
 import { LongestFirstSequencer } from './sequencer';
 
 const ROOT = '/repo';
@@ -29,8 +32,9 @@ async function order(
   durations: Record<string, number>,
   coldCosts: Record<string, number>,
   sizes: Record<string, number> = {},
+  warmed: string[] = [],
 ) {
-  const sorted = await new LongestFirstSequencer(context(durations, sizes), coldCosts).sort(
+  const sorted = await new LongestFirstSequencer(context(durations, sizes), coldCosts, warmed).sort(
     keys.map(spec),
   );
   return sorted.map((file) => `${file.project.name}:${file.moduleId.slice(ROOT.length + 1)}`);
@@ -84,6 +88,34 @@ describe('longest-first sequencer', () => {
       await order(['unit:y.test.ts', 'unit:x.test.ts', ...unknown], durations, {}, sizes),
     ).toEqual(['unit:y.test.ts', 'unit:x.test.ts', ...base]);
     expect(base).toEqual(['contract:r.contract.test.ts', 'unit:q.test.ts', 'unit:p.test.ts']);
+  });
+
+  it('starts a warmed file with a 551 s recorded duration after the costed files', async () => {
+    expect(
+      await order(
+        [
+          'integration:warmed.test.ts',
+          'contract:c.contract.test.ts',
+          'unit:u.test.ts',
+          'integration:a.test.ts',
+        ],
+        { 'integration:warmed.test.ts': 551000, 'unit:u.test.ts': 5000 },
+        { 'a.test.ts': 30, 'warmed.test.ts': 600 },
+        {},
+        ['warmed.test.ts'],
+      ),
+    ).toEqual([
+      'integration:a.test.ts',
+      'unit:u.test.ts',
+      'contract:c.contract.test.ts',
+      'integration:warmed.test.ts',
+    ]);
+  });
+
+  it('names warmed files that exist, so a rename cannot drop their place', () => {
+    const root = fileURLToPath(new URL('../../', import.meta.url));
+    expect(WARMED).toContain('apps/web/src/adapters/persistence.long-career.test.ts');
+    expect(WARMED.filter((file) => !existsSync(root + file))).toEqual([]);
   });
 
   it("shards with vitest's own split, so every shard keeps its files", () => {

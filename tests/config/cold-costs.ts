@@ -2,9 +2,14 @@
  * Seconds the costliest test files took in a cold gate (fresh worktree and world cache, 11 workers:
  * nx10's `verify:batch` on 60538381, 261110), so a run without vitest's own duration history still
  * starts them first (`sequencer.ts`). Plain data: a missing or renamed file is ignored.
- * `persistence.long-career.test.ts` is left out: the gate warms its world (`scripts/warm-worlds.ts`).
  * Refresh: each file's `endTime - startTime` of 30 s or more in a cold gate's tier reports.
  */
+export const WARMED: readonly string[] = [
+  // Files whose worlds the gate builds beside the tests (`scripts/warm-worlds.ts`): they start after
+  // every costed file whatever their recorded duration, so the warm-up runs ahead of their timers.
+  'apps/web/src/adapters/persistence.long-career.test.ts',
+];
+
 export const COLD_COSTS: Readonly<Record<string, number>> = {
   'apps/web/src/runtime/host.test.ts': 345,
   'apps/web/src/adapters/persistence.test.ts': 298,
