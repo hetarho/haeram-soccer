@@ -176,8 +176,10 @@ test('coach-only dismissal preserves the playing contract through reload', async
   expect((await exportedCareer(page)).people![player.id]).toEqual(after.people![player.id]);
 });
 
+// The mixed pairs are covered in the engine (`playing-coach.test.ts`); the journey keeps one
+// direct and one delegated pair (T786).
 for (const contracts of ['direct', 'delegated'] as const)
-  for (const staff of ['direct', 'delegated'] as const)
+  for (const staff of [contracts] as const)
     test(`joint contract authority ${contracts}/${staff} remains atomic`, async ({ page }) => {
       // The career is 35 rounds on before the page opens; with the own league on the grid engine
       // (T218) those rounds alone take about 23 s on CI when the world cache is cold, so slow CI

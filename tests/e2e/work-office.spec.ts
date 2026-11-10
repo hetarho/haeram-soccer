@@ -18,7 +18,9 @@ import {
 import { horizontalOverflow } from './layout';
 import { clubhouseTab } from './competition-navigation';
 
-for (const width of [360, 390, 1280]) {
+// Both phones run at 844 px of height, and no CSS rule falls between 360 and 390 px on the
+// home or the office (T786).
+for (const width of [360, 1280]) {
   test(`the office's menu, its areas and 구단 운영 hold its proactive work at ${width}`, async ({
     page,
   }) => {

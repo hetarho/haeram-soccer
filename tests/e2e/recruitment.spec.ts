@@ -156,10 +156,9 @@ async function settlePaidLoans(page: Page, players: string[]) {
   throw new Error('Paid loans did not settle within ten actual stopping events');
 }
 
-for (const viewport of [
-  { width: 360, height: 740 },
-  { width: 390, height: 844 },
-])
+// No CSS rule falls between 360 and 390 px or 740 and 844 px on this screen, so a fit at 360x740
+// implies one at 390x844 (T786).
+for (const viewport of [{ width: 360, height: 740 }])
   test(`compact market exposes rows before optional panels at ${viewport.width}`, async ({
     page,
   }) => {

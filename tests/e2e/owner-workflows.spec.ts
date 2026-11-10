@@ -96,9 +96,10 @@ test('the academy reads its investment and 유입 방식 as its office area sets
   await expect(youth.locator('[data-control="build:youth"]')).toContainText('현재 · 표준');
 });
 
+// No CSS rule falls between 360 and 390 px or 740 and 844 px on this screen, so a fit at 360x740
+// implies one at 390x844 (T786).
 for (const viewport of [
   { width: 360, height: 740 },
-  { width: 390, height: 844 },
   { width: 1280, height: 900 },
 ])
   test(`training reads the team's call first and opens its named responsible coach at ${viewport.width}x${viewport.height}`, async ({

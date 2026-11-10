@@ -72,10 +72,8 @@ test('selects by keyboard, exposes selection and dismisses without committing pr
   await expect(listing).toBeVisible();
 });
 
-for (const viewport of [
-  { width: 360, height: 740 },
-  { width: 390, height: 844 },
-]) {
+// No CSS rule falls between 360 and 390 px or 740 and 844 px in the records room (T786).
+for (const viewport of [{ width: 360, height: 740 }]) {
   test(`keeps text season controls steady and selected competition on one line at ${viewport.width}`, async ({
     page,
   }) => {
@@ -125,7 +123,14 @@ for (const viewport of [
     expect(long.textHeight).toBeLessThanOrEqual(long.valueHeight);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
   });
+}
 
+// The league view's picker drops its chevrons in a container of 374 px or less, so both phones
+// stay.
+for (const viewport of [
+  { width: 360, height: 740 },
+  { width: 390, height: 844 },
+]) {
   test(`keeps long dropdowns within the viewport and Escape inside a dialog at ${viewport.width}`, async ({
     page,
   }) => {

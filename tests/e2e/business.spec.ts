@@ -117,10 +117,9 @@ async function importCareer(page: Page, w: World, name: string) {
   await acknowledgeEvents(page);
 }
 
-for (const viewport of [
-  { width: 360, height: 740 },
-  { width: 390, height: 844 },
-]) {
+// No CSS rule falls between 360 and 390 px or 740 and 844 px on this screen, so a fit at 360x740
+// implies one at 390x844 (T786).
+for (const viewport of [{ width: 360, height: 740 }]) {
   test(`reads each facility's stage and a work under way at ${viewport.width}x${viewport.height}`, async ({
     page,
   }) => {

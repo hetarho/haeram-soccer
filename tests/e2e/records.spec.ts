@@ -72,6 +72,12 @@ for (const [label, viewport] of [
         ),
       ).toBe(0);
     });
+  });
+
+// Desktop navigation to the records room stays covered by the case above (T786).
+for (const [label, viewport] of [['390x844', { width: 390, height: 844 }]] as const)
+  test.describe(`records room at ${label}`, () => {
+    test.use({ viewport });
 
     test('reads the records room in seven tabs with Elo context, chart bubbles and player sheets', async ({
       page,

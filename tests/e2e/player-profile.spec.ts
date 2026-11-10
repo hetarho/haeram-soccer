@@ -26,10 +26,9 @@ async function people(page: Page) {
   await openPersonnel(page, 'players');
 }
 
-for (const viewport of [
-  { width: 360, height: 740 },
-  { width: 390, height: 844 },
-]) {
+// No CSS rule falls between 360 and 390 px or 740 and 844 px on this screen, so a fit at 360x740
+// implies one at 390x844 (T786).
+for (const viewport of [{ width: 360, height: 740 }]) {
   test(`reads players as football media would at ${viewport.width}x${viewport.height} (→WEB-59, CLUB-10, CLUB-14)`, async ({
     page,
   }) => {

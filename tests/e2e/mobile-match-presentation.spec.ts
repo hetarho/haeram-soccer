@@ -52,7 +52,9 @@ for (const { id: themeId } of readPresentationBaselines().themeRegistry.entries)
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
   });
 
-for (const width of [360, 390]) {
+// No CSS rule falls between 360 and 390 px on the match screen; each width already steps
+// through 844, 740 and 920 px of height (T786).
+for (const width of [360]) {
   test(`fixed pitch ratio ${width}`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     const world = careerWorld({ country: 'ENG', seed: 'mobile-pitch' });

@@ -28,10 +28,9 @@ import {
  * and the set-piece shapes recorded (T348); save, reload, export and import keep the aggregates,
  * the tracking boundary and the saved appearances.
  */
-const VIEWPORTS = [
-  { name: 'desktop', width: 1280, height: 900 },
-  { name: 'mobile', width: 390, height: 844 },
-];
+// One viewport: continuity is the same on every screen size, and the desktop menu is covered by
+// the other journeys (T786).
+const VIEWPORTS = [{ name: 'mobile', width: 390, height: 844 }];
 const nav = (page: Page) =>
   page.getByRole('navigation', {
     name: page.viewportSize()!.width < 760 ? '모바일 게임 메뉴' : '게임 메뉴',

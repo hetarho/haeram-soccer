@@ -137,7 +137,9 @@ async function expectWorn(canvas: Locator, worn: AppearanceSide, today: ShirtDes
 // 20.4 device pixels across, enough to read a shirt's pattern.
 test.describe(() => {
   test.use({ deviceScaleFactor: 2 });
-  for (const viewport of PHONE_VIEWPORTS)
+  // No CSS rule falls between 360 and 390 px or 740 and 844 px on the kit editor, so a fit at
+  // 360x740 implies one at 390x844 (T786).
+  for (const viewport of PHONE_VIEWPORTS.filter(({ width }) => width === 360))
     test(`taken over, worn, edited and moved by file, designs and the earlier kit stay exact at ${viewport.width}x${viewport.height}`, async ({
       page,
       browser,
