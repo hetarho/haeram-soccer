@@ -65,8 +65,17 @@
  *     --champions-released r.extra.json,...                               the noise and the allowance
  *   pnpm exec tsx scripts/era-wage-spread.ts --champions-placebo p.extra.json,... \
  *     --champions-released r.extra.json,... --champions-candidate c.extra.json,...  a candidate
+ *
+ * T803: `--champions-runs` reads archived extras (every value after it, shell-expanded or
+ * comma-separated) and prints, per country and world, the longest run of consecutive titles, the
+ * runs of five or more and the most titles of one club in any ten seasons, for 1955–2009 and
+ * 1980–2009, pooled per kind of world beside; `--out FILE` writes the whole report there.
+ *
+ *   pnpm exec tsx scripts/era-wage-spread.ts --champions-runs dir/*.extra.json --out runs.md
  */
-import { readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
+import { longestRuns, median, mostInWindow, runsOfAtLeast, within } from './lib/title-runs';
 import type { Club, World } from '../packages/contracts/src/types';
 import { historyWorld } from '../packages/engine/src/history';
 import { advanceDays } from '../packages/engine/src/season';
@@ -401,11 +410,6 @@ function starAt(star: Star, s: number, t693 = false) {
 const wagesAt = (row: Row, s: number, t693 = false) =>
   row.base + row.stars.reduce((sum, star) => sum + starAt(star, s, t693), 0);
 
-function median(values: number[]) {
-  const sorted = [...values].sort((a, b) => a - b),
-    mid = sorted.length >> 1;
-  return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
-}
 const pct = (x: number) => (Number.isFinite(x) ? `${(x * 100).toFixed(1)}%` : '-');
 const keyOf = (r: Row) => `${r.seed}|${r.year}|${r.code}`;
 
@@ -950,6 +954,146 @@ function screenReport(extras: Extra[]) {
   );
 }
 
+/**
+ * T803: who keeps winning each league, on archived extras' champions lists: per country and world
+ * the longest run of consecutive titles, the runs of `RUNS.length` or more and the most titles of
+ * one club in any `RUNS.span` seasons (`scripts/lib/title-runs.ts`), in each of `RUNS.windows`.
+ */
+const RUNS = {
+  windows: [
+    [1955, 2009],
+    [1980, 2009],
+  ] as [number, number][],
+  length: 5,
+  span: 10,
+};
+const seasonLabel = (year: number) => `${year}/${String((year + 1) % 100).padStart(2, '0')}`;
+/** What a world lived: the released rules, a placebo set of them, or a candidate's switches. */
+const kindOf = (e: Extra) =>
+  e.placebo
+    ? 'placebo'
+    : [e.table && 'table', e.means && 'means', e.cups && 'cups'].filter(Boolean).join('+') ||
+      'released';
+function countryRuns(e: Extra, code: string, [from, to]: [number, number]) {
+  const list = within(
+    e.champions.filter((ch) => ch.code === code).map((ch) => ({ year: ch.year, who: ch.club })),
+    from,
+    to,
+  );
+  return {
+    seasons: list.length,
+    longest: longestRuns(list),
+    runs: runsOfAtLeast(list, RUNS.length),
+    most: mostInWindow(list, RUNS.span).titles,
+  };
+}
+/** The inputs' names below the folder they all share, so each names the archive it came from. */
+function inputNames(paths: string[]) {
+  const folders = paths.map((path) => path.split('/').slice(0, -1));
+  let shared = 0;
+  while (
+    folders.every((folder) => shared < folder.length && folder[shared] === folders[0]![shared])
+  )
+    shared++;
+  return paths.map((path) => path.split('/').slice(shared).join('/'));
+}
+
+/**
+ * The runs read: a pooled table per kind of world and country (every distinct world counted once:
+ * an archive can hold one world twice, lived to different years), then one table per country with
+ * every world. Returns the pooled part and the whole report.
+ */
+function championsRunsReport(paths: string[]) {
+  const names = inputNames(paths);
+  const worlds = paths.flatMap((path, i) =>
+    (JSON.parse(readFileSync(path, 'utf8')) as Extra[]).map((extra) => ({
+      input: names[i]!,
+      extra,
+    })),
+  );
+  const first = Math.min(...RUNS.windows.map(([from]) => from)),
+    last = Math.max(...RUNS.windows.map(([, to]) => to));
+  const codes = codesOf(worlds.map((w) => w.extra));
+  const windows = RUNS.windows.map(([from, to]) => `${seasonLabel(from)}–${seasonLabel(to)}`);
+  const head: string[] = [
+    `## League title runs per country (T803)`,
+    '',
+    `Inputs: ${paths.length} files, ${worlds.length} worlds — ${names.join(', ')}.`,
+    '',
+    `Each world's top-flight champions (\`champions\` of its extra), per country, in ${windows.join(' and ')}. Longest: the longest run of consecutive titles of one club, with its seasons (every run of that length); ${RUNS.length}+: the runs of ${RUNS.length} or more titles; ${RUNS.span}: the most titles of one club in any ${RUNS.span} consecutive seasons. A list holds the seasons played only, so a gap season breaks no run.`,
+    '',
+  ];
+  const pooled: string[] = [
+    `### Pooled per kind of world and country`,
+    '',
+    `Kind: released (s = 1, no means level, no competition money), placebo (released with 1930/31's results drawn afresh, T698), or a candidate's switches (table, means, cups). Worlds: distinct worlds of that kind (a seed whose champions ${seasonLabel(first)}–${seasonLabel(last)} are read twice counts once). Cells: median (min–max) of the longest run; worlds with a run of ${RUNS.length}+ / its mean count; median (max) of the most in ${RUNS.span}.`,
+    '',
+    `| kind | country | worlds | ${windows.map((w) => `${w} longest | ${RUNS.length}+ | ${RUNS.span}`).join(' | ')} |`,
+    `|---|---|---:|${windows.map(() => '---|---|---|').join('')}`,
+  ];
+  const kinds = [...new Set(worlds.map((w) => kindOf(w.extra)))];
+  for (const kind of kinds) {
+    const distinct = new Map<string, Extra>();
+    for (const { extra } of worlds)
+      if (kindOf(extra) === kind) {
+        const read = extra.champions.filter((ch) => ch.year >= first && ch.year <= last);
+        distinct.set(`${extra.seed}|${JSON.stringify(read)}`, extra);
+      }
+    const extras = [...distinct.values()];
+    for (const code of codes) {
+      const cells = RUNS.windows.map((window) => {
+        const reads = extras.map((e) => countryRuns(e, code, window));
+        const longest = reads.map((r) => r.longest.titles),
+          most = reads.map((r) => r.most);
+        const withRun = reads.filter((r) => r.runs > 0).length;
+        const mean = reads.reduce((s, r) => s + r.runs, 0) / Math.max(1, reads.length);
+        return `${median(longest)} (${Math.min(...longest)}–${Math.max(...longest)}) | ${withRun} / ${mean.toFixed(2)} | ${median(most)} (${Math.max(...most)})`;
+      });
+      pooled.push(`| ${kind} | ${code} | ${extras.length} | ${cells.join(' | ')} |`);
+    }
+  }
+  pooled.push(
+    '',
+    'Real (recalled, not read against the lists): the longest league runs to 2009/10 in the eight playable leagues — Lyon 7 (2001/02–2007/08), Real Madrid 5 (twice), Porto 5, Anderlecht 5; later Bayern 11, Juventus 9.',
+    '',
+  );
+  const detail: string[] = [];
+  for (const code of codes) {
+    detail.push(
+      `### ${code} per world`,
+      '',
+      `| input | seed | kind | ${windows.map((w) => `${w} longest | ${RUNS.length}+ | ${RUNS.span}`).join(' | ')} |`,
+      `|---|---|---|${windows.map(() => '---|---:|---:|').join('')}`,
+    );
+    for (const { input, extra } of worlds) {
+      const cells = RUNS.windows.map((window) => {
+        const r = countryRuns(extra, code, window);
+        const short = r.seasons < window[1] - window[0] + 1 ? ` [${r.seasons} seasons]` : '';
+        const seasons = r.longest.runs
+          .map((run) => `${seasonLabel(run.from)}–${seasonLabel(run.to)}`)
+          .join('; ');
+        return `${r.longest.titles} (${seasons})${short} | ${r.runs} | ${r.most}`;
+      });
+      detail.push(
+        `| ${input} | ${extra.placebo ? `${extra.placebo}/` : ''}${extra.seed} | ${kindOf(extra)} | ${cells.join(' | ')} |`,
+      );
+    }
+    detail.push('');
+  }
+  return { pooled, report: [...head, ...pooled, ...detail] };
+}
+
+/** Every value after `--name` up to the next option, each split on commas (a shell glob or a list). */
+function values(name: string) {
+  const index = args.indexOf(`--${name}`);
+  if (index < 0) return [];
+  const end = args.findIndex((arg, i) => i > index && arg.startsWith('--'));
+  return args
+    .slice(index + 1, end < 0 ? undefined : end)
+    .flatMap((value) => value.split(','))
+    .filter(Boolean);
+}
+
 const readExtras = (paths: string) =>
   paths
     .split(',')
@@ -965,6 +1109,15 @@ if (input) {
   if (args.includes('--fit')) fitReport(rows, table);
   if (args.includes('--lived')) livedReport(rows, readExtras(option('extra', '')));
   else if (table) tableReport(rows, table, option('label', 'Candidate'));
+} else if (values('champions-runs').length) {
+  const { pooled, report } = championsRunsReport(values('champions-runs'));
+  const out = option('out', '');
+  if (out) {
+    mkdirSync(dirname(out), { recursive: true });
+    writeFileSync(out, report.join('\n'));
+    console.log(pooled.join('\n'));
+    console.error(`written to ${out}`);
+  } else console.log(report.join('\n'));
 } else if (option('screen', '')) {
   screenReport(readExtras(option('screen', '')));
 } else if (option('champions-placebo', '') || option('champions-candidate', '')) {
