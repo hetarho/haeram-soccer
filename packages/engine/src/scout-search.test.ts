@@ -16,9 +16,24 @@ import { associationAccessOrder } from './europe-access';
 import { dailyMarket, operate, placeBid } from './index';
 import { holdRows } from './testing';
 import { world } from './transfers.testkit';
-import { isForeignCandidate, SCOUT_CONFIG, scoutReach, transferOffers } from './scout-search';
+import {
+  isForeignCandidate,
+  LIST_SPREAD,
+  SCOUT_CONFIG,
+  scoutReach,
+  transferOffers,
+} from './scout-search';
+import { REFILL_SALE, unavailableAtClub } from './world-market';
 import * as scoutSearch from './scout-search';
-import { requestCandidates, signingVerdict, staffSignings } from './signings';
+import {
+  requestCandidates,
+  type SigningNeed,
+  signingVerdict,
+  staffSignings,
+  UPGRADE_MEASURE,
+  upgradeNeeds,
+} from './signings';
+import { formationOf, slotOvr } from './player-state';
 import { staffAuthority } from './testing';
 import { seasonDayOf } from './calendar';
 
@@ -406,5 +421,90 @@ describe('found players (CLUB-50)', () => {
     expect(w.cash).toBe(cash);
     expect(w.inbox?.filter((item) => item.ref === 'out:ghost')).toHaveLength(1);
     expect(activePlayers(w).some((p) => p.id === ghost.id)).toBe(false);
+  });
+});
+
+describe("T784's seller candidates (measurement settings off in play)", () => {
+  const clubsOf = (offers: readonly ScoutOffer[]) =>
+    offers.flatMap((offer) => (offer.source.kind === 'club' ? [offer.source.club] : []));
+
+  it('LIST_SPREAD lists a club once per line (`line`) or once per list (`list`) before twice', () => {
+    expect(LIST_SPREAD.inForce).toBe('none');
+    const w = scoutAt(world(), 85),
+      plain = transferOffers(w);
+    try {
+      for (const shape of ['line', 'list'] as const) {
+        LIST_SPREAD.inForce = shape;
+        const offers = transferOffers(w);
+        // The same count per line, each club once where the reach holds enough clubs.
+        expect(perLine(offers)).toEqual(perLine(plain));
+        if (shape === 'line')
+          for (const line of LINES) {
+            const listed = clubsOf(offers.filter((offer) => lineOfOffer(offer) === line));
+            expect(new Set(listed).size, line).toBe(listed.length);
+          }
+        else expect(new Set(clubsOf(offers)).size).toBe(clubsOf(offers).length);
+      }
+    } finally {
+      LIST_SPREAD.inForce = 'none';
+    }
+    // Off, the list is the released one.
+    expect(ids(w)).toEqual(plain.map((offer) => offer.player.id));
+  });
+
+  it("REFILL_SALE `kept`: a club does not sell the player filling a departure's place", () => {
+    expect(REFILL_SALE.inForce).toBe('sold');
+    const w = world(),
+      listed = transferOffers(w).find((offer) => offer.source.kind === 'club')!,
+      refill = {
+        ...listed.player,
+        id: `${listed.source.kind === 'club' ? listed.source.club : ''}:vacancy:0:${w.year}`,
+      };
+    expect(unavailableAtClub(w, refill)).toBe(false);
+    try {
+      REFILL_SALE.inForce = 'kept';
+      expect(unavailableAtClub(w, refill)).toBe(true);
+      expect(unavailableAtClub(w, listed.player)).toBe(false);
+    } finally {
+      REFILL_SALE.inForce = 'sold';
+    }
+  });
+
+  it('UPGRADE_MEASURE measures a slot by its starter; `signed` counts who joined this window', () => {
+    expect(UPGRADE_MEASURE.inForce).toBe('starter');
+    const w = world(),
+      slots = formationOf(w.tactic),
+      needs = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
+    // The weakest slot a listed player beats there, and that player.
+    const [weakest, fit] = needs
+      .map((need) => {
+        const p = transferOffers(w)
+          .map((offer) => offer.player)
+          .find(
+            (one) =>
+              (one.positions[need.position] ?? 0) >= 2 &&
+              slotOvr(one, slots[need.slot]!) > need.level,
+          );
+        return [need, p] as const;
+      })
+      .find(([, p]) => p)!;
+    // He joined in this window and does not start yet (still settling in, →PLAYER-11).
+    const joined = [{ ...fit!, id: 'scout-search:joined' }];
+    expect(upgradeNeeds(w, 2, joined)).toEqual(needs);
+    try {
+      UPGRADE_MEASURE.inForce = 'signed';
+      const counted = upgradeNeeds(w, 2, joined) as typeof needs;
+      const changed = counted.filter(
+        (need) => need.level !== needs.find((one) => one.slot === need.slot)!.level,
+      );
+      // He counts once, at the weakest slot he plays; every other slot keeps its starter's measure.
+      expect(changed).toHaveLength(1);
+      expect(changed[0]!.level).toBe(slotOvr(fit!, slots[changed[0]!.slot]!));
+      expect(
+        needs.indexOf(needs.find((one) => one.slot === changed[0]!.slot)!),
+      ).toBeLessThanOrEqual(needs.indexOf(weakest));
+    } finally {
+      UPGRADE_MEASURE.inForce = 'starter';
+    }
   });
 });

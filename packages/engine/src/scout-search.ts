@@ -50,6 +50,13 @@ export const SCOUT_CONFIG = {
   minPerLine: 1,
 } as const;
 
+/**
+ * T784's candidate shapes of the list (→CLUB-51), a measurement setting off in play: `line` lists a
+ * club's second player of a line only once every club with a fitting player there has one listed,
+ * `list` the same over the whole list. `none` is the rule in force.
+ */
+export const LIST_SPREAD: { inForce: 'none' | 'line' | 'list' } = { inForce: 'none' };
+
 export type ScoutHome = (typeof SCOUT_CONFIG.reachBands)[number]['home'];
 export const SCOUT_HOME_LABEL: Readonly<Record<ScoutHome, string>> = {
   adjacent: sourceMessage('copy.scout_search.f7c215bd95'),
@@ -217,11 +224,32 @@ function search(w: World, reach: ScoutReach): ScoutOffer[] {
       consider(agent, ovrs[i]!, undefined, country);
   });
   const multiplier = askingMultiplier(w),
-    graduates = graduateIds(w);
+    graduates = graduateIds(w),
+    spread = LIST_SPREAD.inForce,
+    listedClubs = new Set<string>();
   return LINES.flatMap((line) => {
     const ranked = found.filter((f) => f.line === line).sort(byRank);
-    const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
-    for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
+    if (spread === 'none') {
+      const kept = new Set(ranked.filter((f) => f.abroad).slice(0, reach.abroadPlaces));
+      for (const f of ranked) if (kept.size < reach.perLine) kept.add(f);
+      return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
+    }
+    const seen = spread === 'list' ? listedClubs : new Set<string>(),
+      kept = new Set<Found>();
+    // A club's first fitting player before anyone's second, then the rest by rank.
+    const take = (pool: Found[], limit: number) => {
+      for (const f of pool)
+        if (kept.size < limit && !kept.has(f) && !(f.club && seen.has(f.club.id))) {
+          kept.add(f);
+          if (f.club) seen.add(f.club.id);
+        }
+      for (const f of pool) if (kept.size < limit) kept.add(f);
+    };
+    take(
+      ranked.filter((f) => f.abroad),
+      reach.abroadPlaces,
+    );
+    take(ranked, reach.perLine);
     return ranked.filter((f) => kept.has(f)).map((f) => offerOf(w, f, multiplier, graduates));
   });
 }
@@ -250,6 +278,7 @@ function listKey(w: World, reach: ScoutReach) {
     director?.ability ?? '',
     director?.trait ?? '',
     askedFeeFactor(w),
+    LIST_SPREAD.inForce,
   ]);
 }
 const lists = new WeakMap<
