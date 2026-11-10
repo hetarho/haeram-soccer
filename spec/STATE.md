@@ -874,8 +874,6 @@
 | T769 | run the gate's static checks concurrently and its three vitest tiers as one run | ARCH | - | todo |
 | T771 | warm the ten-season career world beside the vitest phase | ARCH | T769 | todo |
 | T770 | order vitest files longest-first, also in a fresh worktree | ARCH | T771 | todo |
-| T772 | run local Chromium journeys on five workers, scheduled per case | ARCH | - | todo |
-| T773 | take the journeys' Node-side set-up worlds from the world cache | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -906,6 +904,7 @@
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 T772 T773 integrated (df7e4df7 d0ba5646; independent review approved 5f1e37be/d71c589b, P3 notes only) tq10
 - 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
 - 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
@@ -925,4 +924,3 @@
 - 261109 T755 integrated
 - 261109 T765 integrated
 - 261109 T761 T762 T763 integrated
-- 261109 T764 integrated
