@@ -42,6 +42,7 @@ describe('read scope', () => {
       expect(ownStarters(w, fixture)).not.toBe(ownStarters(w, fixture));
       expect(ownStarters(w, fixture)).toEqual(unscoped.forFixture);
       expect(ownStarters(structuredClone(w))).not.toBe(xi);
+      expect(ownStarters({ ...w })).not.toBe(xi);
       expect(readingOnce(w, () => ownStarters(w))).not.toBe(xi);
       expect(ownStarters(w)).toBe(xi);
       return xi;

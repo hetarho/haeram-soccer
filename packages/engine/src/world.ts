@@ -444,7 +444,10 @@ let scope: { w: World; starters?: Player[] } | undefined;
  * Runs `read`, a pure read of `w` that changes nothing in it (the Host's view, →ARCH-6), with
  * `ownStarters(w)` without a fixture chosen once and the same frozen XI reused. The scope holds
  * only this exact world and closes when `read` returns or throws, restoring any outer scope, so a
- * read of another world, or a scope opened inside this one, chooses its own.
+ * read of another world, or a scope opened inside this one, chooses its own. A read inside it must
+ * not try a what-if on `w` in place (as `signingVerdict` and `seasonEndWithWage` do before
+ * restoring it) but on a `{ ...w }` copy with the changed fields replaced, as `officeRead` does,
+ * which the scope never matches.
  */
 export function readingOnce<T>(w: World, read: () => T): T {
   const outer = scope;
