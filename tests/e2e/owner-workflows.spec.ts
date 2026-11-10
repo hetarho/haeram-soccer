@@ -6,8 +6,7 @@ import { advanceOneRound } from './season-progression';
 import { chooseOption } from './select';
 
 import { expect, test, type Page } from '@playwright/test';
-import { simulateSeason } from '../../packages/engine/src/index';
-import { careerWorld } from '../../packages/engine/src/career.testkit';
+import { simulatedWorld } from '../fixtures/worlds';
 import { continueSlot, seedSlot } from './slots';
 import { startCareer } from './start';
 import { officeDialog, officeMenu, TEAM_WORK, teamEntry, teamReturn } from './office';
@@ -287,11 +286,10 @@ test('chooses a cup once and keeps its archived season through competition and c
   // The journey reads two archived seasons. Simulating them here instead of through some two
   // hundred next-event clicks keeps it off WebKit's stalled web process on CI, which a journey
   // that long met in every attempt. On the released model the two seasons ran past the slow
-  // 90 s budget on CI Chromium (run 40243569140).
+  // 90 s budget on CI Chromium (run 40243569140). The two seasons come from the world cache
+  // (→ARCH-21), lived once per engine source.
   test.setTimeout(180_000);
-  const w = careerWorld({ country: 'ENG', seed: 'owner-workflow-regression' });
-  simulateSeason(w);
-  simulateSeason(w);
+  const w = simulatedWorld({ country: 'ENG', seed: 'owner-workflow-regression' }, { seasons: 2 });
   await page.setViewportSize({ width: 390, height: 844 });
   await seedSlot(page, w);
   await page.goto('/');

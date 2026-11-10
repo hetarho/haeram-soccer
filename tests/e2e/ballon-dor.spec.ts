@@ -1,7 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { BallonDorPlace } from '../../packages/contracts/src/types';
-import { simulateSeason } from '../../packages/engine/src/index';
-import { careerWorld } from '../../packages/engine/src/career.testkit';
+import { simulatedWorld } from '../fixtures/worlds';
 import { openClubRecords } from './competition-navigation';
 import { horizontalOverflow } from './layout';
 import { continueSlot, seedSlot } from './slots';
@@ -9,10 +8,10 @@ import { continueSlot, seedSlot } from './slots';
 test('browses the Ballon d’Or podium with our player marked and on his sheet (→WEB-111)', async ({
   page,
 }) => {
-  // One simulated season carries the podium; the award itself is the engine's from 1955/56.
+  // One simulated season carries the podium; the award itself is the engine's from 1955/56. The
+  // season comes from the world cache (→ARCH-21), lived once per engine source.
   test.setTimeout(120_000);
-  const w = careerWorld({ country: 'ENG', seed: 'ballon-dor-journey' });
-  simulateSeason(w);
+  const w = simulatedWorld({ country: 'ENG', seed: 'ballon-dor-journey' }, { seasons: 1 });
   const star = w.players.find((p) => p.status === 'active')!;
   const rival = w.clubs.find((club) => club.id !== w.playerClub && club.tier === 0)!;
   const place = (id: string, name: string, club: string, points: number): BallonDorPlace => ({

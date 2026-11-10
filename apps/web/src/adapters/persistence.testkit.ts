@@ -1,5 +1,7 @@
 import type { World } from '../../../../packages/contracts/src/types';
 import type { CareerInput } from '../../../../packages/engine/src/career.testkit';
+import { simulateSeason } from '../../../../packages/engine/src/index';
+import { cachedWorld } from '../../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { writeCheckpoint } from './checkpointWriter';
 import { decode, encode } from './persistence';
@@ -12,6 +14,23 @@ import {
 
 export const CAREER: CareerInput = { country: 'ENG', seed: 'save-test' };
 export const world = () => simulatedWorld(CAREER);
+
+function buildTenRichSeasons() {
+  const w = world();
+  for (let season = 0; season < 10; season++) {
+    w.cash = '999999999999999';
+    simulateSeason(w);
+  }
+  return w;
+}
+/**
+ * `world()` after ten closed seasons with unlimited cash, for the long-career codec case. The
+ * release gate builds it beside the tests (`scripts/warm-worlds.ts`). The builder is passed bound,
+ * so its cache key is the same under vitest's and tsx's transforms, which print its source
+ * differently; this module's source fingerprint already covers the builder.
+ */
+export const tenRichSeasons = () =>
+  cachedWorld('ten rich seasons', buildTenRichSeasons.bind(undefined));
 // The original compact1 unsigned stream, used to exercise historical save compatibility.
 export function legacyIntegers(values: number[], width: number) {
   const count = values.length / width;

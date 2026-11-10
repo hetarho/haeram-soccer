@@ -21,7 +21,12 @@
 | nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 
 ## inbox
-- 261110 decided T689 ARCH-30: when to run T689's two-hour scoring exploration now that the owner's self-improve-local run tq10 (test-gate time, primary checkout, until about 05:30Z) is live on this host → after tq10 ends, so neither its gate-time measurements nor T689's multi-seed reads share the 12-core host; the primary checkout is not fast-forwarded to the released main while tq10's edits are uncommitted there (alt: run T689 now beside tq10, which skews both measurements | bound T689's workers, which still adds noise to tq10's wall-time reads) nx10
+- 261110 decided ARCH-30 review/test-gate-time-261110 T774: whether local traces may drop the screencast once Chromium is CPU-bound at five workers → yes, locally only: an interleaved A/B on 53 cases cut process-tree CPU 445/452 → 264/261 s with every case passing; DOM snapshots, network, console and sources stay, CI keeps full traces (alt: keep the filmstrip and stay CPU-bound | turn local traces off entirely) tq10
+- 261110 decided ARCH-30 review/test-gate-time-261110: whether Chromium should start beside the vitest phase (F7) → rejected: at five workers the stage already ran at load median 14.4 on 12 CPUs, so overlapping would only contend (alt: overlap at three workers) tq10
+- 261110 decided ARCH-21 ARCH-30 review/test-gate-time-261110: the owner invokes self-improve-local for about four hours to check whether every gate test is needed and cut the gate from about 35 min to the 10-something range with the same stability → adopt F1–F5 (longest-first vitest order, the long-career world warmed beside the tests, concurrent static checks and one vitest run, five per-case local Chromium workers, cached journey set-ups and preview gzip memo), all keeping every case, assertion, timeout and retry; integrate on the calling `main` behind one fresh-worktree `verify:batch` (alt: overlap Chromium with the vitest phase now | narrow the gate's journeys or integration checks). F6–F11 wait for the owner tq10
+- 261110 decided ARCH-30 T769 T770 T771 T772 T773: where this run integrates while origin/next holds fi09's unverified 148 commits and nx10 is live → the calling checkout's `main` only, no `vibe plan-sync`/`plan-push` (both would merge next's code into main), touched files checked against origin/next for a clean later release merge; no remote code push without the owner (alt: work on top of next | publish planning through plan-push) tq10
+- 261110 parked review/test-gate-time-261110 ARCH-30: F8/F9 — whether the release gate may drop repeated journeys (viewport/theme/locale instances 33% of Chromium case-seconds; second-career authority ×4 already covered by the engine test) and move progression-equivalence and statistical realism checks (about 1,850 core-seconds) to an on-demand tier; recommended: keep one instance per distinct path and run the realism checks in CI only, decided by the owner case by case tq10
+- 261110 parked review/test-gate-time-261110 ARCH-21: F6/F10 — a clone-wide world cache for local gates (ARCH-21 names the per-worktree location; measured: the vitest phase 822 s cold → 531 s warm, and the 551 s warm-up disappears) and prepared checkpoints for the heaviest journey set-ups; recommended: F6 as an ARCH-21 wording change plus one `verify.mjs` default, since every rerun on the same engine source would start warm tq10
 - 261110 decided ARCH-30 T726 T730: the owner's 자동모드 found origin/next 147 commits ahead of main (ev09's T726/T730, fi09's 22 integrations with a failed/unfinished gate) while a main-based loop vb10 began cherry-picking ev09's code → stop vb10 before any push and resume fi09's canonical gate on next: `verify:batch` on 60538381 (code b8ae7732, quiet 12-core host, unchanged limits/assertions/selection) passed — unit 2562, integration 1181 + the 4 declared skips, contract 46, catalogs/presentation/i18n, build, Chromium 348/348 with no retries (61 min); fi09's timeouts did not recur → fast-forward main to next and push (the release), then T689 from there (alt: keep vb10 on main, a second copy of next's work that collides when they meet | rerun fi09's per-file diagnostics first, which the green canonical run makes moot) nx10
 - 261110 decided ARCH-21 ARCH-30: how the owner supersedes the additional two-hour run → publish the complete fi09 source/history and retained evidence to remote next plus handoff/fi09-261110/current for another session (alt: keep implementing here | present failed verification as a release). This explicit handoff authorizes remote work-in-progress publication; mandatory verification remains failed/unfulfilled and the old local-only eight-hour report stays historical fi09
 - 261110 decided ARCH-21 ARCH-30 review/football-data-consistency-261109 T768: how F24 addresses an observed required-unit30s failure without changing its meaning → one independent deep comparison snapshot plus fresh World root/people registry/clubs array per original comparison (alt: repeated240 full-world copies | warm identity caches | larger limits or fewer assertions). All240 combinations/480 calls and original12 cases remain; pure-read source/base immutability is required. This bounded necessary verification correction is the only scope addition after the source freeze; original full/browser failures remain unfulfilled fi09
@@ -809,6 +814,7 @@
 - 261107 decided ARCH-30 T689: the owner explicitly requires an actual push and asks to learn from the previous deadline failure → publish the completed 7a3a4f82 snapshot from isolated codex/cv07-publish after the full release gate, with automatic failure repairs; ongoing T689 experiments remain owned by cv07 in codex/cv04 and are excluded from this candidate. Record pushed SHA and CI, preserve every required check and all unrelated work (alt: postpone every completed fix until the final experiment). pv07
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
 - 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
+- 261110 decided T689 ARCH-30: when to run T689's two-hour scoring exploration now that the owner's self-improve-local run tq10 (test-gate time, primary checkout, until about 05:30Z) is live on this host → after tq10 ends, so neither its gate-time measurements nor T689's multi-seed reads share the 12-core host; the primary checkout is not fast-forwarded to the released main while tq10's edits are uncommitted there (alt: run T689 now beside tq10, which skews both measurements | bound T689's workers, which still adds noise to tq10's wall-time reads) nx10
 
 ## ideation
 | id | st |
@@ -861,6 +867,7 @@
 | ui-engine-boundary-261027 | converted@261027 |
 | engine-architecture-261030 | converted@261031 |
 | self-improve-local-261109 | open@261109 |
+| test-gate-time-261110 | converted@261110 |
 
 ## tasks
 | id | title | ssot | dep | st |
@@ -896,12 +903,15 @@
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
+- 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
+- 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
+- 261110 T769 T771 T770 integrated (9feaa88f..108a3511; independent review CHANGES P2 fixed by 48e2542a/5c7b6d69, then approved) tq10
+- 261110 T772 T773 integrated (df7e4df7 d0ba5646; independent review approved 5f1e37be/d71c589b, P3 notes only) tq10
 - 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
 - 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
-- 261109 T768 integrated
 - 261110 create-task review/football-data-consistency-261109 F24: T768 required staff-holder fixture correction with fresh identity-cache coverage and unchanged cases/limits fi09
-- 261109 T754 T756 T760 T766 T767 integrated
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
@@ -911,8 +921,5 @@
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
-- 261109 T755 integrated
-- 261109 T765 integrated
-- 261109 T761 T762 T763 integrated
-- 261109 T764 integrated
-- 261109 T759 integrated
+- 261110 create-task T769-T773 from review/test-gate-time-261110 F1-F5 (lanes gate-vitest, gate-e2e) tq10
+- 261109 T768 integrated

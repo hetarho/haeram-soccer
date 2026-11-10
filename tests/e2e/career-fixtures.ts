@@ -1,10 +1,16 @@
+import { fileURLToPath } from 'node:url';
 import { openPersonnel } from './personnel-navigation';
 import { expect, type Page } from '@playwright/test';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { careerDate } from '../../packages/engine/src/person-careers';
+import { advanceRound, operate, simulateSeason } from '../../packages/engine/src/index';
+import { stagePlayingCoach } from '../../packages/engine/src/testing';
+import { cachedWorld } from '../fixtures/worlds';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { dismissMatchReport } from './events';
 import { aroundOffice } from './office';
+
+const SELF = fileURLToPath(import.meta.url);
 /** Marked synthetic career uses the ordinary portable checkpoint/worker boundary. */
 export function secondCareerFixture() {
   const w = careerWorld({ country: 'ENG', seed: 'synthetic-second-career' });
@@ -27,6 +33,23 @@ export function secondCareerFixture() {
   w.settings!.responsibilities.staff = 'direct';
   w.cash = '999999999';
   return { w, player };
+}
+/**
+ * `secondCareerFixture` 35 rounds on, unobserved: the joint-authority journeys' common start. The
+ * rounds take tens of seconds, so the world comes from the world cache (→ARCH-21), built once per
+ * engine source; every call returns its own copy, holding the veteran as the world does.
+ */
+export function secondCareerRoundsOn() {
+  const { w, id } = cachedWorld(
+    'e2e-second-career-35-rounds',
+    () => {
+      const { w, player } = secondCareerFixture();
+      for (let round = 0; round < 35; round++) advanceRound(w, undefined, false);
+      return { w, id: player.id };
+    },
+    { dependencies: [SELF] },
+  );
+  return { w, player: w.players.find((p) => p.id === id)! };
 }
 export async function importSecondCareer(page: Page) {
   const fixture = secondCareerFixture();
@@ -106,7 +129,9 @@ export async function exportedCareer(page: Page) {
  * (→STAFF-32), waiting in the 결재함 while contracts and staff are direct.
  */
 export async function proposedCareerFixture() {
-  const { stagePlayingCoach } = await import('../../packages/engine/src/testing');
+  return proposedCareer();
+}
+function proposedCareer() {
   const fixture = secondCareerFixture();
   const proposal = stagePlayingCoach(fixture.w, fixture.player.id, 2, 5);
   return { ...fixture, proposal };
@@ -114,12 +139,34 @@ export async function proposedCareerFixture() {
 
 /** Synthetic accepted agreement: staff's proposal answered by the same command the 결재함 sends. */
 export async function combinedCareerFixture() {
-  const { operate } = await import('../../packages/engine/src/index');
-  const { w, player } = await proposedCareerFixture();
+  return combinedCareer();
+}
+function combinedCareer() {
+  const { w, player } = proposedCareer();
   operate(w, { type: 'answer-playing-coach', player: player.id, accept: true });
   return {
     w,
     player: w.players.find((p) => p.id === player.id)!,
     proposal: w.playingCoachProposals![player.id],
   };
+}
+
+/**
+ * The accepted agreement two seasons and 45 rounds on, real lifecycle code throughout, as the
+ * playing retirement reaches its season close. The player and the proposal are the agreement's
+ * own records as the rounds left them. Nearly three seasons take about 30 s, so the world comes
+ * from the world cache (→ARCH-21), built once per engine source; every call returns its own copy.
+ */
+export function retiringCombinedCareer() {
+  return cachedWorld(
+    'e2e-combined-career-two-seasons-45-rounds',
+    () => {
+      const { w, player, proposal } = combinedCareer();
+      simulateSeason(w);
+      simulateSeason(w);
+      for (let round = 0; round < 45; round++) advanceRound(w, undefined, false);
+      return { w, player, proposal };
+    },
+    { dependencies: [SELF] },
+  );
 }

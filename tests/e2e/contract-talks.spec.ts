@@ -4,17 +4,13 @@ import { openPersonnel } from './personnel-navigation';
 import { advanceOneRound } from './season-progression';
 import { expect, test, type Page } from '@playwright/test';
 import {
-  activePlayers,
-  advanceDays,
   currentDay,
-  operate,
   ROUND_INTERVAL_DAYS,
-  seasonDayOf,
   talksRound,
   UNHAPPY_CONFIG,
 } from '../../packages/engine/src/index';
-import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { encode } from '../../apps/web/src/adapters/persistence';
+import { contractTalkCareer } from './responsibility-fixtures';
 import { eventCard, reviewInOffice } from './events';
 import { openClubhouse } from './competition-navigation';
 import { continueSlot } from './slots';
@@ -26,42 +22,9 @@ import { importLegacyDirection } from './legacy-direction';
  * season has just asked to renew, and the manager would fail to talk him round (→CLUB-27).
  */
 async function talking() {
-  const w = careerWorld({ country: 'ENG', seed: 'contract-talks-journey' });
-  // Isolate contract decisions; ordinary unhappiness and transfer-request reports do not stop time.
-  operate(w, {
-    type: 'settings',
-    settings: {
-      ...w.settings!,
-      mode: 'manual',
-      responsibilities: {
-        ...w.settings!.responsibilities,
-        contracts: 'direct',
-        sales: 'delegated',
-        recruitment: 'delegated',
-      },
-      observations: { matchEve: false, windowOpen: false },
-    },
-  });
-  const newYear = seasonDayOf(w.year, 1, 1);
-  advanceDays(w, newYear - 1 - currentDay(w), undefined, false);
-  // The journey finds his roster card by name, so it must be the only one with that name.
-  let player = activePlayers(w).find(
-    (p) =>
-      !p.talk &&
-      !p.unhappy &&
-      !p.loanUntil &&
-      p.retiring === undefined &&
-      activePlayers(w).filter((q) => q.name === p.name).length === 1 &&
-      !talksRound(w, p, { kind: 'renew', demand: '0', floor: '0', year: w.year, day: newYear }),
-  )!;
-  // This marked synthetic fixture isolates one final-season contract from other January talks.
-  for (const other of activePlayers(w))
-    if (other.id !== player.id && !other.loanUntil) other.until = w.year + 4;
-  player.until = w.year + 1;
-  const playerId = player.id;
-  advanceDays(w, 1, undefined, false);
+  const { w, playerId, newYear } = contractTalkCareer();
   // Atomic delegated decisions can replace the world objects while the day settles.
-  player = w.players.find((candidate) => candidate.id === playerId)!;
+  const player = w.players.find((candidate) => candidate.id === playerId)!;
   expect(player.talk).toMatchObject({ kind: 'renew', day: newYear });
   expect(talksRound(w, player, player.talk!)).toBe(false);
   // Routine notifications are marked read; the one canonical contract decision remains pending.
