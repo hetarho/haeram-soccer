@@ -37,6 +37,7 @@ const report = {
 
 const TIERS = ['unit', 'integration', 'contract'];
 const combined = `${directory}/vitest-results.json`;
+const tierReport = (tier) => `${directory}/${tier}-results.json`;
 const checks = [
   'typecheck',
   'lint',
@@ -48,7 +49,8 @@ const checks = [
 ].map((stage) => ({ stage, args: ['run', stage] }));
 /**
  * One pool for every tier: each project keeps its own include and `testTimeout`. Beside it the
- * world warm-up builds the worlds cases only read, outside their timers (T771).
+ * world warm-up builds the worlds cases only read, outside their timers (T771); it is a background
+ * stage, ended when the tests fail, and skipped when the world cache is off (it would be discarded).
  */
 const tests = [
   {
@@ -63,8 +65,18 @@ const tests = [
       `--outputFile=${combined}`,
     ],
     inherit: true,
+    after: splitTiers,
   },
-  { stage: 'warm-worlds', args: ['exec', 'tsx', 'scripts/warm-worlds.ts'] },
+  ...(process.env.HAERAM_WORLD_CACHE === 'off'
+    ? []
+    : [
+        {
+          stage: 'warm-worlds',
+          command: 'node',
+          args: ['--import', 'tsx', 'scripts/warm-worlds.ts'],
+          background: true,
+        },
+      ]),
 ];
 const browsers = [
   {
@@ -87,35 +99,40 @@ function record(entry) {
   );
 }
 
-/** One stage as `pnpm <args>`; a stage sharing its phase replays its own output when it ends. */
-function run({ stage, args, inherit = false }) {
-  return new Promise((resolve) => {
-    const started = new Date().toISOString();
-    const start = performance.now();
-    const output = [];
-    const child = spawn('pnpm', args, {
-      stdio: inherit ? 'inherit' : ['ignore', 'pipe', 'pipe'],
-      env: process.env,
-    });
-    child.stdout?.on('data', (chunk) => output.push([process.stdout, chunk]));
-    child.stderr?.on('data', (chunk) => output.push([process.stderr, chunk]));
-    let error;
-    child.on('error', (failure) => (error = failure));
-    child.on('close', (code) => {
+/**
+ * One stage as `<command> <args>` (pnpm unless named); a piped stage replays its own output when it
+ * ends, and `after` may fail a stage whose command passed.
+ */
+function run({ stage, command = 'pnpm', args, inherit = false, after = (entry) => entry }) {
+  const started = new Date().toISOString();
+  const start = performance.now();
+  const output = [];
+  const child = spawn(command, args, {
+    stdio: inherit ? 'inherit' : ['ignore', 'pipe', 'pipe'],
+    env: process.env,
+  });
+  child.stdout?.on('data', (chunk) => output.push([process.stdout, chunk]));
+  child.stderr?.on('data', (chunk) => output.push([process.stderr, chunk]));
+  let error;
+  child.on('error', (failure) => (error = failure));
+  const done = new Promise((resolve) =>
+    child.on('close', (code, signal) => {
       for (const [stream, chunk] of output) stream.write(chunk);
-      const entry = {
+      const entry = after({
         stage,
-        command: ['pnpm', ...args].join(' '),
+        command: [command, ...args].join(' '),
         started,
         finished: new Date().toISOString(),
         elapsedMs: Math.round(performance.now() - start),
         exitCode: code ?? 1,
+        signal: signal ?? undefined,
         error: error?.message,
-      };
+      });
       record(entry);
       resolve(entry);
-    });
-  });
+    }),
+  );
+  return { child, done };
 }
 
 /** Counts as vitest's JSON reporter derives them, for one tier's share of the combined run. */
@@ -146,26 +163,39 @@ function counts(testResults) {
   };
 }
 
-/** `{unit,integration,contract}-results.json`, as the separate tier runs wrote them. */
-function splitTiers() {
-  if (!existsSync(combined)) return;
-  const all = JSON.parse(readFileSync(combined, 'utf8'));
+/**
+ * `{unit,integration,contract}-results.json`, as the separate tier runs wrote them. A tier without
+ * files fails the stage, as its own `vitest run --project <tier>` would.
+ */
+function splitTiers(entry) {
+  const all = existsSync(combined) ? JSON.parse(readFileSync(combined, 'utf8')) : undefined;
+  const emptyTiers = [];
   for (const tier of TIERS) {
-    const testResults = all.testResults.filter(
+    const testResults = (all?.testResults ?? []).filter(
       (file) => testTier(relative(process.cwd(), file.name)) === tier,
     );
-    writeFileSync(
-      `${directory}/${tier}-results.json`,
-      JSON.stringify({ ...all, ...counts(testResults), testResults }),
-    );
+    if (!testResults.length) emptyTiers.push(tier);
+    if (all)
+      writeFileSync(
+        tierReport(tier),
+        JSON.stringify({ ...all, ...counts(testResults), testResults }),
+      );
   }
+  return emptyTiers.length ? { ...entry, exitCode: entry.exitCode || 1, emptyTiers } : entry;
 }
 
 // A phase's stages run together; the gate stops after a phase with its first failed stage's code.
-rmSync(combined, { force: true });
-for (const [stages, after] of [[checks], [tests, splitTiers], [browsers]]) {
-  const entries = await Promise.all(stages.map(run));
-  after?.();
+// When a phase's other stages have ended and one failed, its background stages are ended too.
+for (const report of [combined, ...TIERS.map(tierReport)]) rmSync(report, { force: true });
+for (const stages of [checks, tests, browsers]) {
+  const running = stages.map(run);
+  const foreground = running.filter((_, index) => !stages[index].background);
+  Promise.all(foreground.map(({ done }) => done)).then((entries) => {
+    if (entries.some((entry) => entry.exitCode))
+      for (const [index, { child }] of running.entries())
+        if (stages[index].background) child.kill();
+  });
+  const entries = await Promise.all(running.map(({ done }) => done));
   const failed = entries.find((entry) => entry.exitCode);
   if (failed) {
     process.exitCode = failed.exitCode;
