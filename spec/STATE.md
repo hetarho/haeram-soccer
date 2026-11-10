@@ -17,6 +17,7 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
+| pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
 
 ## inbox
 - 261110 decided T689 MATCH-16 MATCH-30: what T689's next two-hour window measures after cv04-clr fixed the keeper-out strikes but overshot goals (3.07), goal-area shots (22.7%) and box entries (27.1), with its limit asking where the round/square alternatives add them → cv04-alt, a diagnosis-first window on `c50`: a committed clear-chance diagnostic (how each clear chance arises, what it becomes), then default-off switches only on how often clear chances arise and how the alternatives resolve as the defence recovers, under cv04-clr's unchanged gate; no SSOT change since MATCH-16 r58 already holds volume by chance frequency and MATCH-30 bands big chances (alt: tune `clear.keeper` or the round/square weights directly, which trades chance quality against volume and risks the forced poor strike r58 forbids | update-ssot first, with no rule gap to fill | a 1-hour window, too short for the diagnostic plus screens) sc10
@@ -814,6 +815,9 @@
 - 261107 parked ARCH-30: main bd8dc7ab CI run 42263174217 failed only the checks job's `pnpm run test:contract` (unit, integration 1–3/3 and webkit passed; chromium/firefox still running at the 40-minute wait), with no failure text, and this unit cannot read the job log (gh is outside the unit allow list, the CLI log store is outside the checkout, `vibe ci wait` now returns no-run-within-grace). Locally at bd8dc7ab the contract project passes 46/46 under every CI condition reproducible here: cold world cache, TZ=UTC, CI/GITHUB_ACTIONS set with C.UTF-8 locale, host Math.* swapped for fdlibm (linux-x64 bits) or nudged ±1 ulp, and 7.2 M inexact `**` results nudged ±1 ulp; all 214 runtime dependencies are tracked with exact case and no ignored source shadows them. Contract code is identical to main's f7c7eb41, so the failure predates this snapshot; since the last green run (420ea7a5) only portable-v1.json and the engine changed. Untested here: Node 24.22.1 (local 26.8.1) on linux-x64. Host: capture `gh run view 42263174217 --job 128048135744 --log-failed` as the next recovery unit's failure text, or rerun that job once to separate flake from a deterministic failure. pv07
 - 261109 decided WEB-54 T738: where the owner's six season columns go in the one season table (owner: split by 순위/재정) → a segment switch above the table changing the column group over the same rows, the seasons before the owner showing dashes under 재정 (alt: hide pre-owner rows under 재정, breaking the one timeline | a second header row grouping twelve columns) ow09
 - 261110 decided T689 ARCH-30: when to run T689's two-hour scoring exploration now that the owner's self-improve-local run tq10 (test-gate time, primary checkout, until about 05:30Z) is live on this host → after tq10 ends, so neither its gate-time measurements nor T689's multi-seed reads share the 12-core host; the primary checkout is not fast-forwarded to the released main while tq10's edits are uncommitted there (alt: run T689 now beside tq10, which skews both measurements | bound T689's workers, which still adds noise to tq10's wall-time reads) nx10
+- 261110 decided review/game-runtime-speed-261110 T775 T776 T777 T778: which pf10 scout proposals to adopt under the owner's self-improve-local delegation ("성능 개선해줘", until 18:00 KST) → F1–F8, the result-identical history-season and Host-view speed-ups with the two harness workloads that measure them, lanes perf-history and perf-view (alt: engine side only | Host side only | also trim view parts)
+- 261110 decided review/game-runtime-speed-261110: F9–F11 → F9 rejected (trimming view parts changes what the view holds: WEB, owner), F10 rejected (result identity of a career NPC-squad cache cannot be shown cheaply), F11 left open for a later run on F6's workload (alt: propose F9 to the owner now | measure F11 in this run)
+- 261110 decided T689 T775 T778: how pf10 coexists with sc10's live T689 calibration in .tmp/nx10 and tv10's self-improve-local run on this checkout → no pf10 task touches packages/engine/src/grid/**, every change keeps outputs byte-identical so sc10's reads stay comparable, and tv10 is told pf10's touches (alt: wait for sc10 | include grid hot paths)
 
 ## ideation
 | id | st |
@@ -867,11 +871,16 @@
 | engine-architecture-261030 | converted@261031 |
 | self-improve-local-261109 | open@261109 |
 | test-gate-time-261110 | converted@261110 |
+| game-runtime-speed-261110 | converted@261110 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T775 | measure history seasons and read OVR without per-call keying | ARCH | - | todo |
+| T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
+| T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
+| T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -902,6 +911,7 @@
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 create-task T775-T778 from review/game-runtime-speed-261110 F1-F8 (lanes perf-history, perf-view) pf10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
@@ -921,4 +931,3 @@
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
-- 261110 create-task T769-T773 from review/test-gate-time-261110 F1-F5 (lanes gate-vitest, gate-e2e) tq10
