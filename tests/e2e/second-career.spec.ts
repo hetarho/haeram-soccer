@@ -179,17 +179,16 @@ test('coach-only dismissal preserves the playing contract through reload', async
 for (const contracts of ['direct', 'delegated'] as const)
   for (const staff of ['direct', 'delegated'] as const)
     test(`joint contract authority ${contracts}/${staff} remains atomic`, async ({ page }) => {
-      // 35 rounds are simulated here before the page opens; with the own league on the grid
-      // engine (T218) that alone takes about 23 s on CI, so slow CI browsers need longer.
+      // The career is 35 rounds on before the page opens; with the own league on the grid engine
+      // (T218) those rounds alone take about 23 s on CI when the world cache is cold, so slow CI
+      // browsers need longer.
       test.slow();
-      const { secondCareerFixture, exportedCareer } = await import('./career-fixtures');
+      const { secondCareerRoundsOn, exportedCareer } = await import('./career-fixtures');
       const { importResponsibilityCareer } = await import('./responsibility-fixtures');
-      const { advanceRound } = await import('../../packages/engine/src/index');
       const { stagePlayingCoach } = await import('../../packages/engine/src/testing');
       const { configureResponsibilities } = await import('./events');
       const { playerWorth } = await import('../../packages/engine/src/contracts');
-      const { w, player } = secondCareerFixture();
-      for (let round = 0; round < 35; round++) advanceRound(w, undefined, false);
+      const { w, player } = secondCareerRoundsOn();
       player.qualities = { understanding: 5, teaching: 5, judgement: 5 };
       player.personality.professionalism = 5;
       Object.assign(w.people![player.id], {
@@ -277,18 +276,14 @@ test('synthetic two playing-coach years plus full-time service excludes unemploy
 test('playing retirement retains the unexpired coach job at the real season close', async ({
   page,
 }) => {
-  // Nearly three seasons are simulated here first; with the own league on the grid engine (T218)
-  // they take about 30 s before the page opens.
+  // Nearly three seasons are lived first; with the own league on the grid engine (T218) they take
+  // about 30 s before the page opens when the world cache is cold.
   test.setTimeout(180000);
-  const { combinedCareerFixture, exportedCareer } = await import('./career-fixtures');
+  const { retiringCombinedCareer, exportedCareer } = await import('./career-fixtures');
   const { importResponsibilityCareer } = await import('./responsibility-fixtures');
-  const { simulateSeason, advanceRound } = await import('../../packages/engine/src/index');
   const { finishSeason } = await import('./season-progression');
-  const { w, player, proposal } = await combinedCareerFixture();
   // Synthetic announced candidate; the following seasons and retirement use real lifecycle code.
-  simulateSeason(w);
-  simulateSeason(w);
-  for (let round = 0; round < 45; round++) advanceRound(w, undefined, false);
+  const { w, player, proposal } = retiringCombinedCareer();
   await importResponsibilityCareer(page, w);
   await finishSeason(page);
   const after = await exportedCareer(page);

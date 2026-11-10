@@ -2,14 +2,9 @@ import { settle } from './layout';
 import { staffAuthority } from '../../packages/engine/src/testing';
 import { managerCard, openPersonnel } from './personnel-navigation';
 import { marketInfo } from './market';
-import {
-  advanceRound,
-  managerOffers,
-  operate,
-  simulateSeason,
-} from '../../packages/engine/src/index';
+import { advanceRound } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { importResponsibilityCareer } from './responsibility-fixtures';
+import { importResponsibilityCareer, unrenewedFirefighterCareer } from './responsibility-fixtures';
 import { test, expect, type Locator, type Page } from '@playwright/test';
 import {
   approvalTray,
@@ -227,15 +222,11 @@ test.describe('사람 at 360x740', () => {
 test('an unrenewed firefighter leaves at the close and the alert opens the market', async ({
   page,
 }) => {
-  // Plays a whole season; slow CI browsers need longer.
+  // A whole season is played first when the world cache is cold; slow CI browsers need longer.
   test.slow();
-  // Build an actual closed-season direct-manager career. Its unanswered renewal is a real
-  // decision; archive-only helpers must not delegate it or acknowledge it away.
-  const w = careerWorld({ country: 'ENG', seed: 'short-contract' });
-  w.settings = staffAuthority(2);
-  const offer = managerOffers(w).find((offer) => offer.style === 'firefighter')!;
-  operate(w, { type: 'hire', id: offer.id });
-  simulateSeason(w);
+  // An actual closed-season direct-manager career. Its unanswered renewal is a real decision;
+  // archive-only helpers must not delegate it or acknowledge it away.
+  const w = unrenewedFirefighterCareer();
   await importResponsibilityCareer(page, w);
   await expect(page.getByTestId('calendar')).toHaveAttribute('data-season', '1951');
   await expect(page.getByTestId('game-round')).toHaveText('0');

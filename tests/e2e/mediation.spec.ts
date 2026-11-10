@@ -9,35 +9,19 @@ import {
   prepareSeason,
   transferWindowDays,
 } from '../../packages/engine/src/index';
-import { careerWorld } from '../../packages/engine/src/career.testkit';
 import type { World } from '../../packages/contracts/src/types';
-import { detectMediations, resolveMediation } from '../../packages/engine/src/mediation';
+import { resolveMediation } from '../../packages/engine/src/mediation';
 import { judgePromises } from '../../packages/engine/src/promises';
 import { worldMarketPage } from '../../packages/engine/src/world-market';
 import { DEFAULT_MARKET_QUERY } from '../../apps/web/src/pages/club/lib/worldMarket';
 import { lineOf } from '../../packages/engine/src/player';
-import { importResponsibilityCareer } from './responsibility-fixtures';
+import {
+  askForSigning as ask,
+  importResponsibilityCareer,
+  mediationCareer as fixture,
+  promiseDeadlineCareer,
+} from './responsibility-fixtures';
 import { horizontalOverflow, settle } from './layout';
-function fixture() {
-  const w = careerWorld({ country: 'ENG', seed: 'synthetic-mediation' });
-  w.settings!.responsibilities.recruitment = 'direct';
-  w.settings!.mode = 'manual';
-  w.settings!.observations.matchEve = true;
-  w.cash = '0';
-  ask(w, 'MF');
-  return w;
-}
-function ask(w: World, line: 'MF' | 'GK') {
-  const offer = transferOffers(w).find((o) => o.available && lineOf(o.player.position) === line)!;
-  w.shortlist = {
-    year: w.year,
-    day: w.calendar!.day,
-    entries: [{ playerId: offer.player.id, line }],
-    requests: [{ kind: 'short', line, pick: offer.player.id }],
-  };
-  detectMediations(w);
-  return w.mediations!.at(-1)!;
-}
 async function market(page: Page, w: World) {
   await importResponsibilityCareer(page, w);
   await dismissMatchReport(page);
@@ -260,64 +244,15 @@ for (const arrival of ['none', 'loan', 'free'] as const)
     page,
     browser,
   }) => {
-    // Half a season is simulated here before the page opens; with the own league on the grid
-    // engine (T218) that alone takes about 22 s on CI, so slow CI browsers need longer.
+    // Half a season is lived before the page opens; with the own league on the grid engine
+    // (T218) that alone takes about 22 s on CI when the world cache is cold, so slow CI browsers
+    // need longer.
     test.slow();
     const { exportedCareer } = await import('./career-fixtures');
     const { advanceToNextEvent } = await import('../../packages/engine/src/next-event');
-    const w = fixture();
-    if (arrival === 'free') {
-      w.mediations = [];
-      ask(w, 'GK');
-    }
-    resolveMediation(w, w.mediations![0].id, 'manager', 'delegated');
-    const promise = w.promises![0];
-    w.cash = '999999999999';
-    // This journey advances to a promise deadline; pre-match reporting is covered separately.
-    w.settings!.observations.matchEve = false;
-    const { advanceDays } = await import('../../packages/engine/src/index');
-    w.settings!.responsibilities.contracts = 'delegated';
-    w.settings!.responsibilities.sales = 'delegated';
-    // A paid loan must be offered before the deadline and answered through the real bid flow.
-    // Prepare a counter awaiting the owner's final signature on deadline day; its eventual
-    // acceptance, cost and promise fulfilment still happen through the public browser control.
-    advanceDays(w, promise.deadline.day - (arrival === 'loan' ? 4 : 0), undefined, false);
-    let loan: { id: string; player: string; name: string; fee: string } | undefined;
-    if (arrival === 'loan') {
-      for (const offer of worldMarketPage(w, {
-        world: w.id,
-        line: promise.target.line,
-        sort: 'fee',
-        direction: 'asc',
-      }).items.filter(
-        (one) =>
-          one.available &&
-          !one.freeAgent &&
-          BigInt(one.loanFee) >= 2n &&
-          lineOf(one.player.position) === promise.target.line &&
-          one.player.id !== promise.target.pick,
-      )) {
-        const copy = structuredClone(w);
-        operate(copy, {
-          type: 'bid',
-          target: offer.target,
-          loan: true,
-          fee: ((BigInt(offer.loanFee) * 80n) / 100n).toString(),
-        });
-        advanceDays(copy, 4, undefined, false);
-        const bid = copy.bids?.find(
-          (bid) => bid.playerId === offer.player.id && bid.loan && bid.status === 'countered',
-        );
-        if (!bid) continue;
-        Object.assign(w, copy);
-        loan = { id: bid.id, player: bid.playerId, name: offer.player.name, fee: bid.counterFee! };
-        break;
-      }
+    const { w, promise, loan } = promiseDeadlineCareer(arrival);
+    if (arrival === 'loan')
       expect(loan, 'seeded paid loan counter on the unchanged promise deadline').toBeDefined();
-    }
-    // Other real winter-window conflicts are explicitly postponed; the original promise stays.
-    for (const record of w.mediations!.filter((m) => m.status === 'pending'))
-      operate(w, { type: 'resolve-mediation', id: record.id, support: 'director' });
     await market(page, w);
     let free: ReturnType<typeof transferOffers>[number] | undefined;
     if (loan) {
