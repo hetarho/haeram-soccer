@@ -5,7 +5,14 @@ import { nominalSpot } from '../core/shape.ts';
 import { demoFixture } from '../core/squads.ts';
 import type { Beat, Phase, TeamId, Vec } from '../core/types.ts';
 import { add, dist, lerp, norm, scale, sub } from '../core/vec.ts';
-import { createStage, defaultTarget, positionsOf, type StageState } from './world.ts';
+import {
+  createStage,
+  defaultTarget,
+  positionsOf,
+  separated,
+  step,
+  type StageState,
+} from './world.ts';
 
 const fixture = demoFixture();
 const PRESS = PROTO_CONFIG.shape.press;
@@ -155,6 +162,75 @@ describe('stage world', () => {
     place(mid, 8, [5, 40]);
     snapshot = positionsOf(mid);
     expect(defaultTarget(mid, 17, snapshot).target).toEqual(baseOf(mid, 17, snapshot));
+  });
+
+  it('a ball flying out of play is pressed at the line, never beyond it', () => {
+    // T800 (demo3): a cross out over the byline drew the presser to its landing point outside the
+    // pitch, and braking from that sprint carried him 2.6 m past the line once play stopped.
+    const state = stageWith(0, [86, 55], 'finalThird');
+    state.ball.mode = 'flight';
+    state.ball.flight = { from: [86, 55], to: [106.5, 28], t0: 0, t1: 2, apex: 3 };
+    sendAway(state, 1, 90);
+    const snapshot = positionsOf(state);
+    for (let i = 12; i < 22; i++) {
+      const target = defaultTarget(state, i, snapshot).target;
+      expect(target[0], String(i)).toBeLessThanOrEqual(105);
+    }
+  });
+
+  it('a player running at the line stops at the boards however fast he comes', () => {
+    // T800 (demo): a defender sprinting after a shot into his own net braked past the line when
+    // play stopped and his target flipped behind him, 2.5 m outside.
+    const state = stageWith(0, [60, 34]);
+    state.live = false;
+    const body = state.bodies[14];
+    body.pos = [104, 34];
+    body.vel = [9, 0];
+    state.orders.set(14, { target: [90, 34], pace: 'run' });
+    for (let i = 0; i < 20; i++) {
+      step(state);
+      expect(body.pos[0]).toBeLessThanOrEqual(105 + PROTO_CONFIG.stage.boards + 1e-9);
+    }
+  });
+
+  it('the shoulder role never jogs while his side has the ball', () => {
+    // T800: jogging inside `motion.jogWithin` the poacher lagged a moving line by about 4 m.
+    const state = stageWith(1, [50, 34], 'progression');
+    state.t = 30;
+    state.turnedAt = 0;
+    const poacher = 20;
+    expect(fixture.players[poacher].role).toBe('poacher');
+    let snapshot = positionsOf(state);
+    const spot = baseOf(state, poacher, snapshot);
+    place(state, poacher, [spot[0] + 3, spot[1]]);
+    snapshot = positionsOf(state);
+    expect(defaultTarget(state, poacher, snapshot).pace).toBe('run');
+    // Anyone else that close to his place jogs.
+    const other = 18;
+    const near = baseOf(state, other, snapshot);
+    place(state, other, [near[0] + 3, near[1]]);
+    snapshot = positionsOf(state);
+    expect(defaultTarget(state, other, snapshot).pace).toBe('jog');
+  });
+
+  it('two free markers never walk onto each other', () => {
+    // T800: markers picking the same attacker stood on top of each other (shape.spacing).
+    const state = stageWith(1, [50, 34], 'progression');
+    place(state, 6, [40, 30]);
+    place(state, 7, [40.5, 30]);
+    const snapshot = positionsOf(state);
+    for (const [me, mate] of [
+      [6, 7],
+      [7, 6],
+    ] as const) {
+      const target = separated(state, me, snapshot[mate], snapshot);
+      expect(dist(target, snapshot[mate])).toBeGreaterThanOrEqual(
+        PROTO_CONFIG.stage.separation - 1e-9,
+      );
+    }
+    // The ball's owner keeps his target.
+    state.ball.owner = 6;
+    expect(separated(state, 6, snapshot[7], snapshot)).toEqual(snapshot[7]);
   });
 
   it('nobody presses or marks while the ball is dead', () => {

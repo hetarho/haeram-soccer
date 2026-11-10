@@ -1,0 +1,424 @@
+{
+  "info": {
+    "seed": "demo3#4",
+    "attempts": 5,
+    "staged": 1,
+    "check": {
+      "counts": {
+        "goals": 3,
+        "shots": 12,
+        "lowIqOffside": 2,
+        "highIqThrough": 3,
+        "crosses": 3,
+        "corners": 1,
+        "switchPlay": 5,
+        "dropLinkFalseNine": 3,
+        "invertedFullBackReceives": 8,
+        "counters": 7,
+        "recycles": 11,
+        "takeOns": 7,
+        "share": 45.1
+      },
+      "met": [
+        "goals",
+        "shots",
+        "lowIqOffside",
+        "highIqThrough",
+        "crosses",
+        "corners",
+        "switchPlay",
+        "dropLinkFalseNine",
+        "invertedFullBackReceives",
+        "counters",
+        "recycles",
+        "takeOns",
+        "share"
+      ],
+      "missing": []
+    }
+  },
+  "stats": {
+    "teams": [
+      {
+        "beats": 90,
+        "passes": 63,
+        "completed": 56,
+        "shots": 7,
+        "onTarget": 2,
+        "goals": 1,
+        "offsides": 0,
+        "crosses": 2,
+        "corners": 0,
+        "throwIns": 1,
+        "goalKicks": 1,
+        "freeKicks": 2,
+        "tackles": 2,
+        "interceptions": 9,
+        "fouls": 0,
+        "throughBalls": 4,
+        "takeOns": 2,
+        "possessions": 18,
+        "counters": 2
+      },
+      {
+        "beats": 74,
+        "passes": 50,
+        "completed": 42,
+        "shots": 5,
+        "onTarget": 2,
+        "goals": 2,
+        "offsides": 2,
+        "crosses": 1,
+        "corners": 1,
+        "throwIns": 0,
+        "goalKicks": 4,
+        "freeKicks": 0,
+        "tackles": 1,
+        "interceptions": 10,
+        "fouls": 0,
+        "throughBalls": 5,
+        "takeOns": 5,
+        "possessions": 19,
+        "counters": 5
+      }
+    ],
+    "moves": {
+      "kickOff": 3,
+      "throughEarly": 7,
+      "oneOnOne": 10,
+      "gkLong": 1,
+      "layOff": 8,
+      "outlet": 5,
+      "throughBall": 2,
+      "freeKick": 2,
+      "circulate": 10,
+      "carryForward": 19,
+      "pressedBack": 2,
+      "wideOut": 3,
+      "interior": 10,
+      "wideRelease": 8,
+      "dropLink": 6,
+      "cross": 3,
+      "defensiveClear": 8,
+      "recycle": 11,
+      "switchPlay": 5,
+      "combine": 6,
+      "boxShot": 1,
+      "edgeShot": 4,
+      "goalKick": 5,
+      "intoPivot": 10,
+      "takeOn": 7,
+      "cutBack": 1,
+      "firstTime": 1,
+      "longBall": 2,
+      "throwIn": 1,
+      "corner": 1,
+      "header": 1,
+      "gkShort": 1
+    },
+    "offsideBy": [
+      20,
+      20
+    ],
+    "throughTo": [
+      8,
+      8,
+      16,
+      8,
+      20
+    ],
+    "receivedBy": {
+      "kickOff": [
+        7,
+        18,
+        5
+      ],
+      "throughEarly": [
+        8,
+        8,
+        16,
+        8,
+        20
+      ],
+      "gkLong": [
+        20
+      ],
+      "layOff": [
+        15,
+        5,
+        7,
+        7,
+        7,
+        18,
+        17
+      ],
+      "outlet": [
+        19,
+        16,
+        21,
+        9,
+        21
+      ],
+      "freeKick": [
+        3,
+        0
+      ],
+      "circulate": [
+        5,
+        5,
+        15,
+        14,
+        3,
+        1,
+        2,
+        4,
+        3,
+        12
+      ],
+      "pressedBack": [
+        3,
+        2
+      ],
+      "wideOut": [
+        10,
+        8,
+        8
+      ],
+      "interior": [
+        7,
+        9,
+        6,
+        6,
+        19,
+        18,
+        18,
+        19,
+        18,
+        19
+      ],
+      "dropLink": [
+        6,
+        9,
+        9,
+        9,
+        21,
+        20
+      ],
+      "wideRelease": [
+        10,
+        15,
+        10,
+        16,
+        16,
+        10,
+        4
+      ],
+      "recycle": [
+        1,
+        13,
+        14,
+        1,
+        1,
+        14,
+        1,
+        2,
+        5,
+        1
+      ],
+      "switchPlay": [
+        8,
+        16,
+        19,
+        4,
+        12
+      ],
+      "combine": [
+        7,
+        8,
+        21,
+        20,
+        16,
+        9
+      ],
+      "goalKick": [
+        12,
+        21,
+        1
+      ],
+      "intoPivot": [
+        17,
+        18,
+        17,
+        1,
+        6,
+        5,
+        1,
+        17,
+        1
+      ],
+      "cutBack": [
+        17
+      ],
+      "throwIn": [
+        6
+      ],
+      "cross": [
+        21
+      ],
+      "gkShort": [
+        3
+      ]
+    },
+    "score": [
+      1,
+      2
+    ]
+  },
+  "metrics": [
+    {
+      "id": "duration",
+      "value": 600,
+      "limit": ">= 599.5",
+      "pass": true
+    },
+    {
+      "id": "kinematics.maxStep",
+      "value": 8.529,
+      "limit": "<= 11",
+      "pass": true,
+      "detail": "frame=5942 player=A9"
+    },
+    {
+      "id": "kinematics.outside",
+      "value": 0,
+      "limit": "= 0",
+      "pass": true
+    },
+    {
+      "id": "ball.maxSpeed",
+      "value": 0,
+      "limit": "= 0",
+      "pass": true,
+      "detail": "max=28.08"
+    },
+    {
+      "id": "ball.ownerDistance",
+      "value": 1,
+      "limit": ">= 0.99",
+      "pass": true,
+      "detail": "n=3472/3472"
+    },
+    {
+      "id": "events.reception",
+      "value": 1,
+      "limit": ">= 0.98",
+      "pass": true,
+      "detail": "n=98/98"
+    },
+    {
+      "id": "events.contest",
+      "value": 1,
+      "limit": ">= 0.95",
+      "pass": true,
+      "detail": "n=27/27"
+    },
+    {
+      "id": "events.recastRate",
+      "value": 0.077,
+      "limit": "<= 0.25",
+      "pass": true,
+      "detail": "n=2/26"
+    },
+    {
+      "id": "events.stretchRate",
+      "value": 0.038,
+      "limit": "<= 0.1",
+      "pass": true,
+      "detail": "n=1/26"
+    },
+    {
+      "id": "offside.consistency",
+      "value": 0,
+      "limit": "= 0",
+      "pass": true,
+      "detail": "kicks=113 onsideCalls=0 missedCalls=0"
+    },
+    {
+      "id": "shape.swarm",
+      "value": 0.035,
+      "limit": "<= 0.02",
+      "pass": false,
+      "detail": "n=143/4108"
+    },
+    {
+      "id": "shape.teamLength.H",
+      "value": 31.62,
+      "limit": "22..52",
+      "pass": true,
+      "detail": "frames=5001"
+    },
+    {
+      "id": "shape.teamLength.A",
+      "value": 28.59,
+      "limit": "22..52",
+      "pass": true,
+      "detail": "frames=5001"
+    },
+    {
+      "id": "shape.spacing",
+      "value": 0.097,
+      "limit": "<= 0.03",
+      "pass": false,
+      "detail": "n=480/4973"
+    },
+    {
+      "id": "role.invertedFullBack.inside",
+      "value": 16.32,
+      "limit": ">= 8",
+      "pass": true,
+      "detail": "frames=1876"
+    },
+    {
+      "id": "role.invertedFullBack.pivot",
+      "value": 4.082,
+      "limit": "<= 8",
+      "pass": true,
+      "detail": "frames=1876"
+    },
+    {
+      "id": "role.falseNine.drop",
+      "value": 11.602,
+      "limit": ">= 5",
+      "pass": true,
+      "detail": "frames=1088"
+    },
+    {
+      "id": "role.poacher.shoulder",
+      "value": 3.27,
+      "limit": "<= 3.5",
+      "pass": true,
+      "detail": "frames=1410"
+    },
+    {
+      "id": "script.backPassReason",
+      "value": 0,
+      "limit": "= 0",
+      "pass": true,
+      "detail": "backward=4"
+    },
+    {
+      "id": "stage.pressVisible",
+      "value": 1,
+      "limit": ">= 0.9",
+      "pass": true,
+      "detail": "n=2/2"
+    },
+    {
+      "id": "score.consistent",
+      "value": 2,
+      "limit": "= score",
+      "pass": true,
+      "detail": "score=1-1 last=1-1 goalBeats=2/3"
+    }
+  ]
+}

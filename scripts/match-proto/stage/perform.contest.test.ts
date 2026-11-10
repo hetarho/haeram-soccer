@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { PROTO_CONFIG } from '../core/config.ts';
+import { offsideLineX } from '../core/shape.ts';
 import { demoFixture } from '../core/squads.ts';
 import type { Frame, Playback, StageEvent, Vec } from '../core/types.ts';
 import { dist } from '../core/vec.ts';
@@ -139,6 +140,27 @@ describe('stage contests and dead balls', () => {
     expect(dist(posOf(last, 12), to)).toBeGreaterThan(dist(actor, to));
   });
 
+  it('a far interceptor collects the ball himself: it never jumps to his feet', () => {
+    // T800: away 12 stands far from this cross's path even with the lunge and the slowest ball; the
+    // ball used to land on the path and jump 6 m to his feet in one frame (54.6 m/s).
+    const far: BeatSpec = { ...A_CUT, to: [90, 60], loft: true, opponent: 12 };
+    const p = stage([K, TO_6, far, { ...AWAY_ON, actor: 12 }]);
+    const cut = one(p, 'intercept');
+    expect(cut.other).toBe(12);
+    expect(dist(posOf(frameAt(p, cut.t), 12), cut.at)).toBeLessThanOrEqual(
+      PROTO_CONFIG.limits.contest,
+    );
+    for (let i = 1; i < p.frames.length; i++) {
+      const [prev, cur] = [p.frames[i - 1], p.frames[i]];
+      expect(dist([prev.ball[0], prev.ball[1]], [cur.ball[0], cur.ball[1]]), `frame ${i}`).toBe(
+        Math.min(
+          dist([prev.ball[0], prev.ball[1]], [cur.ball[0], cur.ball[1]]),
+          PROTO_CONFIG.limits.ballSpeed * TICK,
+        ),
+      );
+    }
+  });
+
   it('a pressed pass waits for its presser', () => {
     const pressed: BeatSpec = { ...A_CUT, reason: 'pressed', hold: 0.6 };
     const p = stage([K, TO_6, pressed, AWAY_ON]);
@@ -151,6 +173,116 @@ describe('stage contests and dead balls', () => {
       ...Array.from({ length: 10 }, (_, k) => dist(posOf(frame, 12 + k), actor)),
     );
     expect(nearest).toBeLessThanOrEqual(STAGE.pressVisible + 0.5);
+  });
+
+  it('a pressed pass is pressed even where the counter side would not press', () => {
+    // T800: the away side (counter) presses only from its own 62 m; a pressed pass deep in the home
+    // half used to be kicked with nobody near after the longest extra hold.
+    const back: BeatSpec = { kind: 'pass', actor: 5, receiver: 2, to: [25, 20] };
+    const pressed: BeatSpec = {
+      kind: 'pass',
+      actor: 2,
+      receiver: 3,
+      to: [22, 44],
+      reason: 'pressed',
+      hold: 0.6,
+    };
+    const p = stage([K, back, pressed, { kind: 'pass', actor: 3, receiver: 4, to: [30, 60] }]);
+    const kick = p.events.find((e) => e.kind === 'kick' && e.beat === 2);
+    expect(kick).toBeDefined();
+    if (!kick) return;
+    const frame = frameAt(p, kick.t);
+    const actor = posOf(frame, 2);
+    const nearest = Math.min(
+      ...Array.from({ length: 10 }, (_, k) => dist(posOf(frame, 12 + k), actor)),
+    );
+    expect(nearest).toBeLessThanOrEqual(STAGE.pressVisible + PROTO_CONFIG.limits.pressedSlack);
+  });
+
+  it('a shot blocked far out goes behind for a corner no faster than a deflection', () => {
+    // T800 (demo): the block's deflection behind the line took the parry's fixed time, so a shot
+    // blocked 25 m out crossed to the goal line at 56 m/s.
+    const list: BeatSpec[] = [
+      K,
+      TO_6,
+      { kind: 'pass', actor: 6, receiver: 9, to: [66, 32] },
+      { kind: 'carry', actor: 9, to: [78, 34] },
+      { kind: 'shot', actor: 9, to: [105, 36], outcome: 'blocked', opponent: 14 },
+      { kind: 'corner', actor: 10, receiver: 9, to: [99, 36] },
+    ];
+    const p = performScript(scriptOf(fixture, list), { duration: 90 });
+    expect(p.events.some((e) => e.kind === 'block')).toBe(true);
+    for (let i = 1; i < p.frames.length; i++) {
+      const [prev, cur] = [p.frames[i - 1], p.frames[i]];
+      const step = dist([prev.ball[0], prev.ball[1]], [cur.ball[0], cur.ball[1]]);
+      expect(step, `frame ${i}`).toBeLessThanOrEqual(PROTO_CONFIG.limits.ballSpeed * TICK);
+    }
+  });
+
+  it('a restart pass is cut out by its scripted man without a lunge', () => {
+    // T800 (demo2): the dead-ball scene left the goal kick's interceptor where he stood, so he had
+    // to lunge (or a teammate took his place).
+    const out: BeatSpec = { kind: 'pass', actor: 5, receiver: 9, to: [106.5, 30], outcome: 'out' };
+    const goalKick: BeatSpec = {
+      team: 1,
+      kind: 'goalKick',
+      actor: 11,
+      receiver: 20,
+      to: [75, 50],
+      outcome: 'intercepted',
+      opponent: 5,
+      possession: 2,
+      loft: true,
+    };
+    const on: BeatSpec = { kind: 'pass', actor: 5, receiver: 6, to: [60, 30], possession: 3 };
+    const p = performScript(scriptOf(fixture, [K, { ...out, loft: true }, goalKick, on]), {
+      duration: 80,
+    });
+    const cut = one(p, 'intercept');
+    expect(cut.other).toBe(5);
+    expect(cut.recast ?? false).toBe(false);
+    expect(cut.stretch ?? false).toBe(false);
+  });
+
+  it('the back line holds for an offside runner who starts far behind it', () => {
+    // T800 (demo2): after a turnover deep in the home half the away line dropped as fast as the
+    // early runner ran, and the offside ball was kicked with him 8 m onside.
+    const runner = 1;
+    const list: BeatSpec[] = [
+      K,
+      TO_6,
+      A_CUT,
+      { team: 1, kind: 'carry', actor: 17, to: [30, 34], possession: 2 },
+      {
+        team: 1,
+        kind: 'pass',
+        actor: 17,
+        receiver: 20,
+        to: [22, 36],
+        possession: 2,
+        outcome: 'intercepted',
+        opponent: 3,
+      },
+      {
+        kind: 'pass',
+        actor: 3,
+        receiver: runner,
+        to: [75, 30],
+        outcome: 'offside',
+        through: true,
+        possession: 3,
+        hold: 1.2,
+      },
+    ];
+    const p = performScript(scriptOf(fixture, list), { duration: 90 });
+    const kick = p.events.find((e) => e.kind === 'kick' && e.beat === 5);
+    expect(kick).toBeDefined();
+    if (!kick) return;
+    const frame = frameAt(p, kick.t);
+    const all = Array.from({ length: 22 }, (_, i) => posOf(frame, i));
+    expect(posOf(frame, runner)[0] - offsideLineX(fixture, all, 0)).toBeGreaterThanOrEqual(
+      STAGE.through.offsideGap - 0.05,
+    );
   });
 
   it('no player exceeds a sprint plus the lunge', () => {

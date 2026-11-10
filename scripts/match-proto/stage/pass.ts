@@ -9,7 +9,7 @@ import { HALFWAY, clampToPitch, inBox, inPitch, toAttack } from '../core/pitch.t
 import { offsideLineX } from '../core/shape.ts';
 import type { Beat, TeamId, Vec } from '../core/types.ts';
 import { add, approach, dist, norm, scale, sub } from '../core/vec.ts';
-import { apexFor, flightTime, giveBall, startFlight, startFlightTimed } from './ball.ts';
+import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, cutRange, nearestOpponent, planCut, resolveCut, shadowPoint } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
 import type { BeatContext } from './perform.ts';
@@ -80,6 +80,14 @@ export function holdUntil(
   const start = state.t;
   runUntil(state, () => state.t - start >= hold - 1e-9 && ready(), hold + STAGE.maxExtraHold);
 }
+
+/**
+ * After the hold and its extra allowance, an ordinary pass is still not played to a receiver in an
+ * offside position: the passer keeps it, up to `stage.through.maxWait` more, while the receiver
+ * (sprinting while beyond the line) gets back onside.
+ */
+const untilOnside = (state: StageState, held: { onside: () => boolean }): void =>
+  runUntil(state, held.onside, STAGE.through.maxWait);
 
 /**
  * `holdUntil` the receiver is in reach of `to` (and `wait()`, when given). True when the receiver
@@ -208,6 +216,7 @@ export function performPass(state: StageState, ctx: BeatContext): void {
   const held = receiverHold(state, beat, receiver, to);
   const wait = (): boolean => press() && held.onside();
   holdForPass(state, beat.actor, receiver, to, speed, beat.hold, wait, held.order);
+  untilOnside(state, held);
   to = kickAim(state, beat, to);
   if (!canReceive(state, receiver, to, speed)) {
     to = reachablePoint(state, receiver, to, speed);
@@ -218,8 +227,13 @@ export function performPass(state: StageState, ctx: BeatContext): void {
   state.orders.set(receiver, { target: to, pace: 'sprint' });
   cueNext(state, ctx, to);
   runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + PROTO_CONFIG.tick);
-  giveBall(state, receiver);
-  pushEvent(state, { kind: 'receive', actor: beat.actor, other: receiver, at: to });
+  ensureOwner(state, receiver);
+  pushEvent(state, {
+    kind: 'receive',
+    actor: beat.actor,
+    other: receiver,
+    at: [state.ball.pos[0], state.ball.pos[1]],
+  });
   state.orders.clear();
 }
 
@@ -256,6 +270,7 @@ export function performPassIntercepted(state: StageState, ctx: BeatContext): voi
     },
     held.order,
   );
+  untilOnside(state, held);
   R = kickAim(state, beat, R);
   const from: Vec = [state.ball.pos[0], state.ball.pos[1]];
   const r = resolveCut(state, scripted, from, R, flightTime(from, R, speed));
@@ -271,12 +286,13 @@ export function performPassIntercepted(state: StageState, ctx: BeatContext): voi
   });
   if (receiver !== undefined) state.orders.set(receiver, { target: R, pace: 'sprint' });
   runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + PROTO_CONFIG.tick);
-  giveBall(state, opponent);
+  // A late interceptor collects the ball where it lies rather than it jumping to his feet.
+  ensureOwner(state, opponent);
   pushEvent(state, {
     kind: 'intercept',
     actor: beat.actor,
     other: opponent,
-    at: r.plan.point,
+    at: [state.ball.pos[0], state.ball.pos[1]],
     recast: r.recast,
     stretch: r.stretch,
   });
@@ -296,6 +312,7 @@ export function performPassOut(state: StageState, ctx: BeatContext): void {
   const held = receiverHold(state, beat, receiver, R);
   const wait = (): boolean => press() && held.onside();
   holdForPass(state, beat.actor, receiver, R, speed, beat.hold, wait, held.order);
+  untilOnside(state, held);
   const ballPos: Vec = [state.ball.pos[0], state.ball.pos[1]];
   const E: Vec = !inPitch(beat.to, -0.1)
     ? beat.to

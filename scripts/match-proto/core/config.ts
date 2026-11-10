@@ -43,7 +43,9 @@
 //             the share of the carry before the tackle, its range, the extra seconds before and
 //             after a nearer man takes it over and the foul's freeze; take-ons: the side step, the
 //             attacker's and the beaten defender's speed caps and time; `pressVisible`, how near
-//             the presser is before a pressed pass is kicked; restarts (stage/scenes.ts): the dead
+//             the presser is before a pressed pass is kicked; `boards`, how far outside the lines a
+//             target may lie and where a player stops; `separation`, how far a free outfield player
+//             keeps his target from his outfield teammates; restarts (stage/scenes.ts): the dead
 //             time per kind, its extra allowance, the distance the other team keeps, how near the
 //             taker and receiver must be, the taker's offset from the spot and how far past the line
 //             a ball out runs; through balls (stage/through.ts): where the runner waits behind the
@@ -93,8 +95,8 @@ export const PROTO_CONFIG = {
       lineMax: 50,
       lineBias: { possession: 3, counter: -3 },
       depth: { possession: 29, counter: 26 },
-      width: 0.75,
-      lateral: 0.5,
+      width: 0.9,
+      lateral: 0.2,
       behindBall: 1.5,
     },
     keeper: {
@@ -110,11 +112,11 @@ export const PROTO_CONFIG = {
       maxOut: 7,
     },
     onsideGap: 0.5,
-    shoulderGap: 0.7,
+    shoulderGap: 0.5,
     poacherLean: 0.25,
     poacherMaxLean: 10,
-    press: { from: { possession: 105, counter: 62 }, standoff: 3, tight: 1.2, coverGap: 8 },
-    mark: { radius: 9, blend: 0.45, goalSide: 1.5 },
+    press: { from: { possession: 105, counter: 62 }, standoff: 3.5, tight: 1.2, coverGap: 14 },
+    mark: { radius: 7, blend: 0.2, goalSide: 1.5 },
   },
   motion: {
     walk: 1.8,
@@ -148,8 +150,8 @@ export const PROTO_CONFIG = {
     headerApex: 0.6,
   },
   stage: {
-    holdDrift: 2.5,
-    maxExtraHold: 2,
+    holdDrift: 1.5,
+    maxExtraHold: 1.5,
     receiveSlack: 0.1,
     controlRange: 1,
     settleMax: 6,
@@ -162,7 +164,7 @@ export const PROTO_CONFIG = {
     cutMin: 0.5,
     cutMax: 0.92,
     keeperCutMin: 0.8,
-    cutSlack: 0.15,
+    cutSlack: 0.35,
     lunge: 2,
     jockey: 2.5,
     tackleAfter: 0.3,
@@ -172,6 +174,10 @@ export const PROTO_CONFIG = {
     foulFreeze: 1,
     takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9 },
     pressVisible: 3,
+    /** How far outside the lines a target may lie, and where the boards stop a player. */
+    boards: 2,
+    /** How far a free outfield player keeps his target from every outfield teammate (0 = off). */
+    separation: 2.5,
     restart: {
       delay: { kickOff: 14, throwIn: 5, goalKick: 8, corner: 12, freeKick: 7 },
       maxExtra: 8,
@@ -189,7 +195,7 @@ export const PROTO_CONFIG = {
       window: 1.6,
       offsideGap: 0.6,
       flagDelay: 0.9,
-      maxWait: 3,
+      maxWait: 5,
     },
     shot: {
       setStep: 1,

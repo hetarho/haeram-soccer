@@ -27,6 +27,7 @@ import {
   defensiveClear,
   finish,
   gkDistribute,
+  hasThroughRoom,
   layOff,
   playLongBall,
   playThrough,
@@ -565,12 +566,14 @@ export const throughEarly: MoveDef = {
   id: 'throughEarly',
   phases: ['progression', 'counter'],
   weight: (state) =>
-    castable(
-      state,
-      RUNNER_RULES,
-      runnerExtra(state),
-      state.phase === 'counter' ? W.counter.throughEarly : W.progression.throughEarly,
-    ),
+    hasThroughRoom(state)
+      ? castable(
+          state,
+          RUNNER_RULES,
+          runnerExtra(state),
+          state.phase === 'counter' ? W.counter.throughEarly : W.progression.throughEarly,
+        )
+      : 0,
   run(state) {
     takeFlags(state);
     playThrough(state, 'throughEarly');
@@ -581,12 +584,14 @@ export const throughBall: MoveDef = {
   id: 'throughBall',
   phases: ['finalThird'],
   weight: (state) =>
-    castable(
-      state,
-      RUNNER_RULES,
-      runnerExtra(state),
-      W.finalThird.throughBall * (state.flags.counterBoost ? BOOST.counterThrough : 1),
-    ),
+    hasThroughRoom(state)
+      ? castable(
+          state,
+          RUNNER_RULES,
+          runnerExtra(state),
+          W.finalThird.throughBall * (state.flags.counterBoost ? BOOST.counterThrough : 1),
+        )
+      : 0,
   run(state) {
     takeFlags(state);
     playThrough(state, 'throughBall');

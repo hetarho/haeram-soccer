@@ -19,6 +19,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261111 decided T800 review/match-engine-split-261110: when to stop tuning inside the 2 h box once the sum reached 96/105 at 34 min and further single-value screens and staging rules gave nothing more → stop and deliver, recording why each remaining failure stays (`shape.spacing` from scripted teammate pairs, `shape.swarm` at wide final-third overloads, `role.poacher.shoulder` averaging his on-ball frames) for the owner; values the unit tests pin (`shape.oop.depth`, width, lateral, press standoff, `cutSlack`, `shoulderGap`) were not pushed past them (alt: spend the rest of the box on more screens of the same levers | edit the pinned tests or `PROTO_CONFIG.limits`, the owner's call) mp11
 - 261110 decided T689 T784 T785 review/match-engine-split-261110: which of the todo tasks before T791 are worth running while the T791–T800 prototype's verdict is open → T689 waits for T800's verdict, since its windows tune `grid/decide.ts`/`resolve.ts`, the files the script→staging split replaces (if the split is adopted T689 is closed or rewritten as the new result script's scoring calibration, its MATCH-23 concentration targets and scoring scripts reused as that script's gate; if not, it resumes from gc10's MATCH-34 cover rule); T784 and T785 read only CLUB recruitment, independent of the match engine, and run now as rc10's loop, one unit each, the closing gate then pushing main (alt: T689's next window now, likely spent on code the split replaces | hold the CLUB tasks for T800 too, which nothing in them needs) rc10
 - 261110 decided ARCH-21 review/test-value-261110 T801: whether the world-cache key's per-process TypeScript parse (1.1–2.7 s in each of 104 test processes) may be memoised → yes, by file path and content with a versioned header, keys byte-identical (alt: `ts.preProcessFile`, which changes the file set | leave it) tv10
 - 261110 decided ARCH-21 review/test-gate-time-261110 review/test-value-261110 T788 T790: the owner extends tv10 to 22:00 (wrap up and push the target branch at 21:30) and approves the clone-wide world cache (F6; ARCH-21 r38) and shared season worlds for integration tests (C2) → T788, T790, plus T789 (the save packing's base64/varints like T780) (alt: keep per-worktree caches | keep each test's private season) tv10
@@ -899,7 +900,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -926,13 +926,14 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, run on Opus (`vibe loop --model opus`, the owner's 261110 call); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
+- owner: watch `artifacts/match-proto-261110/index.html` (open it directly; the README beside it lists the scenes to look at, the tuned values and why `shape.spacing`, `shape.swarm` and `role.poacher.shoulder` still fail) and decide whether the script→staging split (review/match-engine-split-261110 F1) goes on; the T791–T800 chain is done and touched no production source
 - T689 (gc10's planning slice, then its window): held until the owner has watched T800 (inbox decided 261110 rc10); no loop takes it before then
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 - rc10: T784 and T785 done (both targets unmet, rules unchanged, candidates off); the closing gate and push to main remain; T689 and T791–T800 are not this loop's — a unit that finds neither T784 nor T785 runnable returns no_work
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T800 done: the prototype tuned from 74/105 to 96/105 metric passes over demo–demo5 (demo 16→20, demo2 15→19, demo3 15→19, demo4 14→20, demo5 14→18) with 11 `PROTO_CONFIG` values, two new stage values (`boards`, `separation`) and twelve script/staging changes each pinned by a unit test that failed before it; `artifacts/match-proto-261110/index.html` (`demo#17`, 20/21) with `playback.json`, baseline/final reports and a README of scenes, values and findings; still failing: `shape.spacing` everywhere (0.083–0.124), `shape.swarm` on three seeds (0.023–0.035), `role.poacher.shoulder` on demo5 (3.949); not opened in a browser, no production file touched mp11
 - 261111 T799 done: `scripts/match-proto/viewer` and `build.ts` — one self-contained page (Canvas 2D pitch, 22 numbered players with facing ticks, the ball with shadow and height, score, clock, the beat's identifiers, offside lines, flashes; play/pause, 1×/2×/5×, seek, three toggles and keys); `build.ts --seed demo` writes `.tmp/match-proto/index.html` (2,326,400 bytes, `demo#0`, passed 16/21) and `--serve` answers `GET /` with 200; 135 unit cases in the folder, not opened in a browser, no production file touched mp11
 - 261111 T798 done: `scripts/match-proto/check` — 21 staging metrics (`computeMetrics`, thresholds in `PROTO_CONFIG.limits`) and the `report.ts` CLI; `demo#0` passes 16/21 (fails left to T800: `events.contest` 0.846, `events.stretchRate` 0.214, `shape.swarm` 0.103, `shape.spacing` 0.155, `role.poacher.shoulder` 4.639), 119 unit cases in the folder, no production file touched mp11
 - 261111 T797 done: `scripts/match-proto/stage` attack — through balls timed onside (runner 1.47 m behind the line at the kick, meets the ball 0.78 m away) or flagged offside (0.90 m beyond, whistle 0.9 s later), shots that score, are saved (keeper 0.19 m), parried for a corner, blocked or go wide, ordinary passes never played to a man offside (0 of 251 kicks over s0–s9), lofted deliveries from a run-up, corners with both sides set, `producePlayback` and the `produce.ts` CLI (`demo#0` meets every quota on its performed beats); 105 unit cases in the folder, no production file touched mp11
@@ -952,4 +953,3 @@
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
 - 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
-- 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10

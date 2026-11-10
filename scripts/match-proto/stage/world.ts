@@ -5,7 +5,7 @@
 // and movement only presents beats already settled (ARCH-7).
 import { PROTO_CONFIG } from '../core/config.ts';
 import { CENTRE, HALFWAY, clampToPitch, oppGoal, ownGoal, toAttack } from '../core/pitch.ts';
-import { nominalSpot } from '../core/shape.ts';
+import { ROLE_SHAPE, nominalSpot } from '../core/shape.ts';
 import type {
   BallMode,
   Beat,
@@ -182,11 +182,14 @@ const pressRoles = (
   return roles;
 };
 
-/** The point the shapes read: the dead-ball scene's point, a flight's landing point or the ball. */
+/**
+ * The point the shapes read: the dead-ball scene's point, a flight's landing point (on the line
+ * when the ball is going out, so nobody presses beyond it) or the ball.
+ */
 const shapeRef = (state: StageState): Vec => {
   if (state.shapeBall) return state.shapeBall;
   const ball = state.ball;
-  return ball.mode === 'flight' && ball.flight ? ball.flight.to : ball.pos;
+  return ball.mode === 'flight' && ball.flight ? clampToPitch(ball.flight.to, 0) : ball.pos;
 };
 
 /** Where player `index` goes without an order this tick. `snapshot` = `positionsOf(state)` taken once per tick. */
@@ -207,12 +210,18 @@ export function defaultTarget(
       ? 'run'
       : 'jog';
   const player = fixture.players[index];
+  if (player.team === state.team && state.live && ROLE_SHAPE[player.role]?.onShoulder) {
+    // The last-shoulder role keeps pace with a moving line: he never jogs.
+    const pace = generalPace(base);
+    return { target: base, pace: pace === 'jog' ? 'run' : pace };
+  }
   if (player.team === state.team || player.slot === 0 || !state.live) {
     return { target: base, pace: generalPace(base) };
   }
   const d = player.team;
   const goal = ownGoal(d);
-  const pressing = toAttack(d, ref)[0] <= SHAPE.press.from[fixture.teams[d].style];
+  // A beat the script calls pressed is pressed wherever the ball is, whatever the side's style.
+  const pressing = state.tight || toAttack(d, ref)[0] <= SHAPE.press.from[fixture.teams[d].style];
   if (pressing) {
     const roles = pressRoles(state, d, ref, snapshot);
     const g = norm(sub(goal, ref));
@@ -254,6 +263,46 @@ const keptOut = (keep: NonNullable<StageState['keepOut']>, target: Vec): Vec => 
   return clampToPitch(add(keep.centre, scale(dir, keep.radius)), -2);
 };
 
+const BOARDS = PROTO_CONFIG.stage.boards;
+
+/**
+ * A free outfield player's `target` moved out to `stage.separation` from every outfield teammate
+ * standing within it, so two markers never pick the same man and nobody in the shape walks onto a
+ * teammate. Players with an order or cue (the beat's actors) and the ball's owner are not moved;
+ * the free man makes room for them.
+ */
+export function separated(
+  state: StageState,
+  index: number,
+  target: Vec,
+  snapshot: readonly Vec[],
+): Vec {
+  const sep = PROTO_CONFIG.stage.separation;
+  const spec = state.fixture.players[index];
+  if (sep <= 0 || spec.slot === 0 || state.ball.owner === index || !state.live) return target;
+  let out = target;
+  for (const mate of state.fixture.teams[spec.team].players) {
+    if (mate.index === index || mate.slot === 0) continue;
+    const at = snapshot[mate.index];
+    const off = sub(out, at);
+    if (len(off) >= sep) continue;
+    const away = len(off) > 1e-9 ? norm(off) : norm(sub(snapshot[index], at));
+    out = add(at, scale(len(away) > 0 ? away : [0, 1], sep));
+  }
+  return out;
+}
+
+/**
+ * The boards stop a player `stage.boards` outside the lines: braking from a sprint after his
+ * target flips at a dead ball must not carry him on, so the outward part of his velocity ends there.
+ */
+const atBoards = (body: Body): void => {
+  const [x, y] = clampToPitch(body.pos, -BOARDS);
+  if (x !== body.pos[0]) body.vel = [0, body.vel[1]];
+  if (y !== body.pos[1]) body.vel = [body.vel[0], 0];
+  body.pos = [x, y];
+};
+
 /** One tick: targets for all 22 from one snapshot, then everybody moves, the ball updates, a frame is recorded. */
 export function step(state: StageState): void {
   const snapshot = positionsOf(state);
@@ -265,10 +314,11 @@ export function step(state: StageState): void {
         paceSpeed(order.pace, spec) + (order.boost ?? 0),
         order.speedCap ?? Infinity,
       );
-      return { target: clampToPitch(target, -2), speed };
+      return { target: clampToPitch(target, -BOARDS), speed };
     }
     const own = defaultTarget(state, spec.index, snapshot);
-    return { target: clampToPitch(own.target, -2), speed: paceSpeed(own.pace, spec) };
+    const target = separated(state, spec.index, own.target, snapshot);
+    return { target: clampToPitch(target, -BOARDS), speed: paceSpeed(own.pace, spec) };
   });
   const keep = state.keepOut;
   if (keep) {
@@ -277,7 +327,11 @@ export function step(state: StageState): void {
     });
   }
   const tick = PROTO_CONFIG.tick;
-  moves.forEach((move, i) => advanceBody(state.bodies[i], move.target, move.speed, tick));
+  moves.forEach((move, i) => {
+    const body = state.bodies[i];
+    advanceBody(body, move.target, move.speed, tick);
+    atBoards(body);
+  });
   state.tickCount += 1;
   state.t = Math.round(state.tickCount * tick * 1000) / 1000;
   updateBall(state);

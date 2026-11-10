@@ -6,9 +6,9 @@
 import { PROTO_CONFIG } from '../core/config.ts';
 import { clampToPitch, toAttack } from '../core/pitch.ts';
 import { offsideLineX } from '../core/shape.ts';
-import type { Vec } from '../core/types.ts';
+import type { TeamId, Vec } from '../core/types.ts';
 import { add, clamp, dist, norm, scale, sub } from '../core/vec.ts';
-import { apexFor, flightTime, giveBall, startFlight, startFlightTimed } from './ball.ts';
+import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, resolveCut } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
 import type { BeatContext } from './perform.ts';
@@ -73,7 +73,13 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
     const x = rx();
     return offside ? x >= l + THROUGH.offsideGap : x >= l - THROUGH.window && x < l - 0.05;
   };
-  runUntil(state, kickReady, beat.hold + THROUGH.maxWait);
+  if (offside) {
+    // The trap: once the runner goes early, the back line holds where it stands instead of
+    // dropping with the ball, so a runner starting far behind it is still beyond it at the kick.
+    runUntil(state, () => left() <= lead, beat.hold);
+    holdLine(state, T, line(), runner);
+  }
+  runUntil(state, kickReady, beat.hold + THROUGH.maxWait - (state.t - start));
 
   const ballPos: Vec = [state.ball.pos[0], state.ball.pos[1]];
   pushEvent(state, { kind: 'kick', actor, other: runner, at: ballPos });
@@ -95,7 +101,9 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
     BALL.through,
   );
   state.orders.delete(actor);
-  state.orders.set(runner, { target: Rw, pace: 'sprint' });
+  // He chases a ball running out only as far as the line: braking from a sprint past a target
+  // beyond it carried runners 4 m off the pitch.
+  state.orders.set(runner, { target: clampToPitch(Rw, 0.5), pace: 'sprint' });
   const untilLanded = (flight: { t1: number }): void =>
     runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + TICK);
 
@@ -112,12 +120,12 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
       boost: r.stretch ? STAGE.lunge : 0,
     });
     untilLanded(flight);
-    giveBall(state, opponent);
+    ensureOwner(state, opponent);
     pushEvent(state, {
       kind: 'intercept',
       actor,
       other: opponent,
-      at: r.plan.point,
+      at: [state.ball.pos[0], state.ball.pos[1]],
       recast: r.recast,
       stretch: r.stretch,
     });
@@ -140,10 +148,30 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
     const flight = startFlight(state, Rw, speed, beat.loft);
     cueNext(state, ctx, Rw);
     untilLanded(flight);
-    giveBall(state, runner);
-    pushEvent(state, { kind: 'receive', actor, other: runner, at: Rw });
+    ensureOwner(state, runner);
+    pushEvent(state, {
+      kind: 'receive',
+      actor,
+      other: runner,
+      at: [state.ball.pos[0], state.ball.pos[1]],
+    });
   }
   state.orders.clear();
+}
+
+/**
+ * The free outfield defenders against `attacking` hold the offside line `lineX` (attack frame of
+ * `attacking`): one behind it steps up to it, one ahead of it (still in the attackers' half, the
+ * line on halfway) stays where he is, so the line cannot drop away from the runner.
+ */
+function holdLine(state: StageState, attacking: TeamId, lineX: number, runner: number): void {
+  const D: TeamId = attacking === 0 ? 1 : 0;
+  for (const p of state.fixture.teams[D].players) {
+    if (p.slot === 0 || state.orders.has(p.index) || p.index === runner) continue;
+    const at = toAttack(attacking, state.bodies[p.index].pos);
+    const target = toAttack(attacking, [Math.min(at[0], lineX), at[1]]);
+    state.orders.set(p.index, { target, pace: 'run' });
+  }
 }
 
 /** The ball lies dead where it is and play stops. */

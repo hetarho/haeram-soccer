@@ -8,6 +8,7 @@ import type { Beat, StageEvent, TeamId, Vec } from '../core/types.ts';
 import { RESTART_KINDS } from '../core/types.ts';
 import { add, clamp, dist, norm, scale, sub } from '../core/vec.ts';
 import { giveBall } from './ball.ts';
+import { shadowPoint } from './contest.ts';
 import type { BeatContext, Handler } from './perform.ts';
 import {
   kickOffSpot,
@@ -164,6 +165,22 @@ export function runDeadBall(state: StageState, ctx: BeatContext): void {
     cornerScene(state, beat, spot, order);
   } else if (beat.receiver !== undefined) {
     order(beat.receiver, clampToPitch(beat.to, 0.5), 'jog', RESTART.receiverReady);
+  }
+  // The restart pass's scripted interceptor waits on its lane, as `cueNext` sends one in open play,
+  // outside the distance his side keeps.
+  const cutter = beat.outcome === 'intercepted' ? beat.opponent : undefined;
+  if (
+    cutter !== undefined &&
+    kind !== 'kickOff' &&
+    kind !== 'corner' &&
+    state.fixture.players[cutter].slot !== 0
+  ) {
+    let place = shadowPoint(other, spot, clampToPitch(beat.to, 0.5));
+    const off = sub(place, spot);
+    if (radius > 0 && dist(place, spot) < radius) {
+      place = clampToPitch(add(spot, scale(norm(off), radius + 0.5)), 0.5);
+    }
+    order(cutter, place, 'jog', RESTART.receiverReady);
   }
   const start = state.t;
   const delay = RESTART.delay[kind];

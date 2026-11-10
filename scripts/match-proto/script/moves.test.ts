@@ -122,6 +122,10 @@ describe('the move catalogue', () => {
     expect(carryForward.weight(keeper)).toBe(0);
     expect(takeOn.weight(keeper)).toBe(0);
     expect(takeOn.weight(build('g', { team: 0, holder: 2, ball: [80, 34] }))).toBe(0);
+    // A through ball needs room behind the line: none from the byline (demo5's offside at x 98.8).
+    const byline = build('g', { team: 0, holder: 6, ball: [98, 34] });
+    expect(moveById('throughBall').weight(byline)).toBe(0);
+    expect(moveById('throughBall').weight(build('g', SETUPS.throughBall))).toBeGreaterThan(0);
 
     // Right after a won take-on the attack does not recycle.
     let won: ScriptState | undefined;

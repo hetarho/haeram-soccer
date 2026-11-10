@@ -5,6 +5,7 @@ import { offsideLineX } from '../core/shape.ts';
 import { demoFixture } from '../core/squads.ts';
 import type { Frame, Playback, StageEvent, Vec } from '../core/types.ts';
 import { dist } from '../core/vec.ts';
+import { generateScript } from '../script/generate.ts';
 import { performScript } from './perform.ts';
 import { offsideKicks, posOf, scriptOf, type BeatSpec } from './script.testkit.ts';
 
@@ -151,6 +152,36 @@ describe('stage attack', () => {
     expect(offside).toBe(0);
   });
 
+  it('a through ball running out is chased only to the line', () => {
+    // T800 (demo): the runner sprinted at the ball's landing point beyond the byline and braked
+    // 4 m off the pitch.
+    const list: BeatSpec[] = [
+      K,
+      P,
+      { kind: 'pass', actor: 6, receiver: 9, to: [107, 30], outcome: 'out', through: true },
+      { team: 1, kind: 'goalKick', actor: 11, receiver: 13, to: [93, 16], possession: 2 },
+    ];
+    const p = performScript(scriptOf(fixture, list), { duration: 60 });
+    const furthest = Math.max(...p.frames.map((f) => posOf(f, 9)[0]));
+    expect(furthest).toBeLessThanOrEqual(105 + 1);
+  });
+
+  it('an ordinary pass waits for its receiver to be onside, however short the extra hold', () => {
+    // T800: with `stage.maxExtraHold` 1.25 (and no separation) the script demo5#4's switch of play
+    // (beat 144) was kicked when the extra hold ran out, to a receiver 0.5 m beyond a line that
+    // had stepped up.
+    const stage = PROTO_CONFIG.stage as { maxExtraHold: number; separation: number };
+    const saved = { ...stage };
+    stage.maxExtraHold = 1.25;
+    stage.separation = 0;
+    try {
+      expect(offsideKicks(performScript(generateScript('demo5#4'))).offside).toBe(0);
+    } finally {
+      stage.maxExtraHold = saved.maxExtraHold;
+      stage.separation = saved.separation;
+    }
+  });
+
   it('G: a runner who goes early is flagged', () => {
     const p = PLAYED.G;
     const flag = one(p, 'offside');
@@ -183,7 +214,8 @@ describe('stage attack', () => {
     const frame = frameAt(p, restart.t);
     for (let i = 0; i < 11; i++) expect(posOf(frame, i)[0]).toBeLessThanOrEqual(53);
     for (let i = 11; i < 22; i++) expect(posOf(frame, i)[0]).toBeGreaterThanOrEqual(52);
-    expect(restart.t - goal.t).toBeGreaterThanOrEqual(STAGE.restart.delay.kickOff);
+    // Event times are rounded to the millisecond; their difference carries float error (T800).
+    expect(restart.t - goal.t).toBeGreaterThanOrEqual(STAGE.restart.delay.kickOff - 1e-9);
   });
 
   it('I: the keeper gets to a save and holds it', () => {

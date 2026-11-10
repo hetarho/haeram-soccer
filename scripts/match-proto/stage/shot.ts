@@ -50,7 +50,9 @@ const behindForCorner = (state: StageState, T: TeamId, from: Vec, actor: number)
   const y = toAttack(T, from)[1];
   const side = y >= 34 ? 1 : -1;
   const target = toAttack(T, [105.8, clamp(y + side * SHOT.parryWide, 2, 66)]);
-  untilLanded(state, startFlightTimed(state, target, SHOT.parryTime, 0.5));
+  // A parry beside the post takes `parryTime`; a block far out runs there at deflection speed.
+  const time = Math.max(SHOT.parryTime, dist(from, target) / SHOT.deflectSpeed);
+  untilLanded(state, startFlightTimed(state, target, time, 0.5));
   deadBall(state);
   pushEvent(state, { kind: 'out', actor, at: clampToPitch(target, 0) });
 };

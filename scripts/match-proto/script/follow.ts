@@ -419,6 +419,15 @@ export const runnerExtra = (state: ScriptState): ((i: number) => number) => {
   return (i) => (attackSpot(state, i)[0] >= line - G.through.nearLine ? 1 : 0);
 };
 
+/**
+ * True when a through ball has room to land behind the defending line: at least the nearest of
+ * `through.behind` before `through.maxX`. A line already deep at the byline leaves none, and a
+ * runner there can never be staged beyond it.
+ */
+export const hasThroughRoom = (state: ScriptState): boolean =>
+  G.through.maxX - nominalLineX({ fixture: state.fixture, ball: state.ball }, state.team) >=
+  G.through.behind[0];
+
 /** A ball in behind the defending line for a runner: offside, through on goal, cut out or out. */
 export function playThrough(state: ScriptState, moveId: string): void {
   const actor = state.holder;
