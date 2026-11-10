@@ -18,6 +18,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 
 ## inbox
 - 261110 decided ARCH-21 ARCH-30: how the owner supersedes the additional two-hour run → publish the complete fi09 source/history and retained evidence to remote next plus handoff/fi09-261110/current for another session (alt: keep implementing here | present failed verification as a release). This explicit handoff authorizes remote work-in-progress publication; mandatory verification remains failed/unfulfilled and the old local-only eight-hour report stays historical fi09
