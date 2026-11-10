@@ -19,7 +19,7 @@
 | nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 | pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
-| gc10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T06:21Z | 2026-11-10T06:21Z | T779 |
+| gc10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T06:21Z | 2026-11-10T06:24Z | T780 |
 
 ## inbox
 - 261110 decided ARCH-23 ARCH-21 SAVE-3 review/test-value-261110: what a ground-up review of the gate can change without narrowing it, after main's CI ran 40.5 min → adopt F1 (CI browsers in 3/3/4 shards with the world cache restored; ARCH-23 r36), F2 (byte-identical integer bit-packing in the save codec) and F3 (shared set-up builders); the vitest tiers have almost no other behaviour-preserving room (about 35 core-seconds), so the rest needs the owner (alt: rewrite `canonical()`, measured slower | an engine A/B pass, beyond the budget and beside pf10's engine work) tv10
@@ -882,7 +882,7 @@
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T779 | shard CI browsers three/three/four ways and restore their world cache | ARCH | - | doing@261110.gc10 |
-| T780 | pack and unpack save columns with integer operations | SAVE ARCH | - | todo |
+| T780 | pack and unpack save columns with integer operations | SAVE ARCH | - | doing@261110.gc10 |
 | T781 | build each shared test set-up world once | ARCH | - | todo |
 | T775 | measure history seasons and read OVR without per-call keying | ARCH | - | todo |
 | T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
