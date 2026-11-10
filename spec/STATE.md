@@ -18,7 +18,6 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 | pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
-| bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
 - 261110 decided ARCH-30: the owner asks ARCH-30 to follow haeram-spec-creator 0.12.0 → r37: planning alone goes to `next` (plan-push); finished work lands on SETTINGS `land` (`main`) by `vibe push` after one `pnpm run verify:batch` on the final candidate through `vibe check --tier batch`, whose host lock queues other sessions; no code waits on `next` for a release (alt: keep gathering code on `next` and set SETTINGS land to `next` | keep the quick batch before each landing, leaving browsers to CI after the deploy) bd10
@@ -921,11 +920,11 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- ARCH r37: code gathered on `next` before r37 (T689's cv04-alt diagnostics, bd10's staff fix and T783) lands on `main` with the next `vibe push` after its locked verify:batch
 - gc10: T689 only — first a planning slice (update-ssot MATCH-34's cover rule per inbox decided 261110 gc10, then T689's next window in its impl notes), then that window; T775–T781 belong to the owner's live pf10/tv10 sessions and stay untouched by this loop
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 bd10 landed b1757937 on main (vibe push) after verify:batch on it (437 vitest files, 3801 tests; Chromium 348 passed in 22.8 min): staff close fix, T783, T689 cv04-alt diagnostics, ARCH r37; bd10 closed
 - 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
