@@ -19,6 +19,7 @@
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 
 ## inbox
+- 261110 decided ARCH-21 review/test-value-261110 T801: whether the world-cache key's per-process TypeScript parse (1.1–2.7 s in each of 104 test processes) may be memoised → yes, by file path and content with a versioned header, keys byte-identical (alt: `ts.preProcessFile`, which changes the file set | leave it) tv10
 - 261110 decided ARCH-21 review/test-gate-time-261110 review/test-value-261110 T788 T790: the owner extends tv10 to 22:00 (wrap up and push the target branch at 21:30) and approves the clone-wide world cache (F6; ARCH-21 r38) and shared season worlds for integration tests (C2) → T788, T790, plus T789 (the save packing's base64/varints like T780) (alt: keep per-worktree caches | keep each test's private season) tv10
 - 261110 decided ARCH-30 T775 T776 T777 T778: pf10 stopped its regate at its 18:00 deadline without pushing and handed its integrated speed-ups to tv10 → one locked gate on the synced main releases pf10's T775–T778, tq10/tv10's T779–T781 T786 T787 and origin/main's latest together (alt: leave pf10's work unpublished) tv10
 - 261110 decided ARCH-30: the owner asks ARCH-30 to follow haeram-spec-creator 0.12.0 → r37: planning alone goes to `next` (plan-push); finished work lands on SETTINGS `land` (`main`) by `vibe push` after one `pnpm run verify:batch` on the final candidate through `vibe check --tier batch`, whose host lock queues other sessions; no code waits on `next` for a release (alt: keep gathering code on `next` and set SETTINGS land to `next` | keep the quick batch before each landing, leaving browsers to CI after the deploy) bd10
@@ -906,6 +907,7 @@
 | T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
+| T801 | remember each file's import list for world-cache keys | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -954,6 +956,6 @@
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
 - 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
 - 261110 create-task review/football-data-consistency-261109 F24: T768 required staff-holder fixture correction with fresh identity-cache coverage and unchanged cases/limits fi09
-- 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 T787 integrated (independent review approved 81aedca6, P3 notes only) tv10
+- 261110 create-task T801 from review/test-value-261110 F7 tv10
