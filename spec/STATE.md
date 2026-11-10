@@ -18,8 +18,10 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 | pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
+| bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:25Z | T783 |
 
 ## inbox
+- 261110 decided PLAYER-27 CLUB-33 T783 T784 T785: the owner's three reports (one club's three on most Ballon d'Or podiums, a delegated club told to spend without limit never nearing the record fee, its signings bunched on one seller) → PLAYER r16 teammates split the votes at 1/0.55/0.35, chosen from a measured grid (0.53/0.55/0.57/0.60: two from one club 9/16/30/48%, real football 16–21%), implemented now as T783; CLUB r65 adds the seller-spread and record-fee targets for explore tasks T784 and T785, diagnosis first, no rule changed until measured (alt: raise production's weight, which hands the award to T689's inflated scorers | cap one club at one podium place, which real 1988/1989/2010 deny) bd10
 - 261110 decided T689 MATCH-16 MATCH-34: nx10's parked call below — whether MATCH-16's clear chance is real football's big chance — taken by the owner's delegation ("니가 진행해줘", after his 1967 export showed Terence Gill at 663 goals in 251 own matches: 2.69 a 90, 12.1 shots and xG 0.18 a shot a 90, 55–67% of the club's league goals 1955–61; export kept untracked at /home/deep/haeram/haeram-soccor/.tmp/saves/haeram-1967.haeram-save.json) → yes: MATCH-16's clear chance stays real football's big chance and MATCH-34 gains a cover rule keeping a man goal-side of a carrier or receiver entering the box in settled play, planned by update-ssot and measured as T689's next window under every existing gate (cv04-clr's screen, then held-out, season share and stress case); cv04-alt's second question (where a round of the keeper or a carry to an open angle ends) is answered in the same planning slice if the window needs it; while the owner's tv10/pf10 sessions share the host the window runs at most 4 measurement processes (alt: narrow MATCH-16's clear chance, which relabels chances without changing who stands goal-side | another settings window, which cv04-alt showed cannot reach the volume) gc10
 - 261110 parked T689 MATCH-16 MATCH-34 ideation/calibration-pass: after cv04-alt (about eight clear-chance possessions a team on every base, 77–80% of those decisions with nobody goal-side, no existing setting bringing goals, goal-area share and box entries into band together) the next step is a football-model planning call, not another settings window — whether MATCH-16's clear chance is real football's big chance (then MATCH-34 needs a cover rule keeping a man goal-side of a carrier or receiver entering the box in settled play) or MATCH-16 narrows its clear chance; recommended the cover rule, measured under every existing gate. Parked for the owner because it shapes the same football as the owner's open calibration-pass and T689 has run windows since 261103; no scoring source committed nx10
 - 261110 decided ARCH-30 T689: sc10's final gate on 49cfbbe0 failed five Chromium journeys (three 30 s test timeouts, two 5 s waits: analysis, business ×2, competition-hubs, entry) while the owner's pair sessions tv10/pf10 shared the host (load 12.6–15.4 on 12 CPUs); T689 committed no production code (one diagnostic script, unit/integration/contract 3795 passed) and CI passed the same specs on c5605f0c → withdraw the loop's generated fix task (its number also collided with the published T775) and gather on next, leaving the release gate to the last session still working (alt: rerun the 40-min gate now beside the owner's perf sessions, skewing their measurements | push main without a passing gate) nx10
@@ -850,7 +852,7 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 64 | 64 | - | 0 |
+| CLUB | 65 | 65 | - | 0 |
 | MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
@@ -859,7 +861,7 @@
 | HIST | 24 | 24 | - | 0 |
 | SAVE | 66 | 66 | - | 0 |
 | OWNER | 6 | 6 | - | 0 |
-| PLAYER | 15 | 15 | - | 0 |
+| PLAYER | 16 | 16 | - | 0 |
 
 ## review
 | id | st |
@@ -889,6 +891,9 @@
 | T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
 | T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
 | T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
+| T783 | teammates split the Ballon d'Or votes | PLAYER | - | doing@261110.bd10 |
+| T784 | spread delegated signings over sellers | CLUB | - | todo |
+| T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -920,6 +925,7 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
 - 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
 - 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10

@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r64 | Define the browser-demo rules for squad and growth.
+> r65 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its generated squad becomes its own players, filled to 20 with players generated at its level (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -187,6 +187,7 @@
   - he signs a free agent at once and bids for anyone else as his trait bids (→CLUB-41).
   - money: the fee is at most the 재정 기조 share of the cash above its runway, and with his wage the runway, the wage bill ceiling and the season's cash projection still hold, as for a raise (→ECON-33).
   - each move and each answer reaches the inbox as a 단장 report naming the need, the manager's request when it is one, the row behind it and the money check.
+  - targets for delegated recruitment, measured on reference careers: one selling club supplies at most two of a window's signings and at most a quarter of the club's fee signings over any five seasons; a top-flight club recruiting under 공격적 with the cash to pay (owner funding included, →OWNER-3) pays at least 0.5× the British record then standing (→CLUB-46) for its dearest signing within its first three such seasons, as Chelsea (2003–06) and Manchester City (2008) did. ← the owner's 2000s–2020s career, told to spend without limit, took 5 of its 10 dearest signings from one club (four in 2025/26) and 3 from another in 2008/09, and its dearest stayed near a quarter of the record (£7.7m in 2006/07, £32.3m in 2026/27)
 
 - CLUB-34 [o] Actual financial opposition by the director to an unmet manager reinforcement request produces a mediation event under →CLUB-38, with each person's actual explanation.
   - mediation belongs to player recruitment (→WEB-45): owner-held recruitment waits in the 결재함 for mediation without stopping either progression mode (→STAFF-48); delegated recruitment resolves it under →STAFF-26 and reports the result.
@@ -340,6 +341,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r65 261110 CLUB-33✎ delegated recruitment without targets→targets: one seller ≤2 of a window's signings and ≤¼ of fee signings over 5 seasons; a funded 공격적 top-flight club's dearest signing ≥0.5× the standing British record within 3 seasons; rules unchanged until measured
 - r64 261109 CLUB-25✎ initial wage-era pilot1992:1/2005:1.5/2025:2.5→withdrawn after lived-books hard failure; released quote curve and existing contracts retained, exact measurement tools remain
 - r63 261109 CLUB-25✎ player quotes on football index alone→independent estimated wage-era factor (1992:1,2005:1.5,2025:2.5), existing contracts and transfer values unchanged, joint financial calibration before publication
 - r62 261109 CLUB-33✎ free agents ahead of sporting quality→configured sporting measures first, free status only breaking ties, manager-pick/list bands and money checks kept; CLUB-46✎ age-adjusted reach for every era→ability plus youth promise before age discounts when premium exceeds one, earlier compression unchanged

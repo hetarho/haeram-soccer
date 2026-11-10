@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r15 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r16 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -187,6 +187,8 @@
   - individual production comes from the complete settled aggregates over all competitions (→!HIST-17): raw = goals × 4 + assists × 3; production points = round(120 × raw / (80 + raw)), plus class (his OVR at the close − 70) × 2 when above 70. Production has diminishing returns and cannot exceed 120 points. ← an inflated goal count must not overwhelm the season's team achievements
   - team honours add points, each only when he played for the winning club in that competition: the European Cup (and its successor) won +180, lost in its final +75; another continental competition won +90; a top-flight league title +120; a domestic cup +45.
   - the final top-flight league place adds 80/60/45/30/20/10 points for first through sixth, zero below. Use the settled table before promotion/relegation and credit only a club for which he made a top-flight league appearance; after a move, use his best eligible finish once. A club with no settled league appearance gives no finish points.
+  - teammates split the votes: a club's honours and its league-place points count in full for its eligible player with the most individual points (production and class), ×0.55 for the next and ×0.35 for each other; a player credited by two clubs takes each honour once, at his better share. ← with every teammate earning the same up to 380 team points, one club's three players took 10 of the 12 podiums in the owner's 1967 save, where real football had three such podiums (1988, 1989, 2010) in 67
+  - measured 261110 (scripts/ballon-dor-podiums.ts, 4 career worlds, 1955/56–1965/66, 44 podiums, the same seasons read by both rules): one club's three 90.9% → 0%, two from one club 9.1% → 15.9%, three clubs 0% → 84.1%; the winner unchanged in all 44. Real football: two from one club in about 16–21% of podiums.
   - only players with at least 15 top-flight league appearances that season are eligible; nationality is not modelled, so every such player counts. Ties: more points, then higher OVR, then stable ID.
   - a season not tracked whole from its first day awards nothing; no award is back-filled for seasons before the career or before 1955/56. Archived podiums and points remain facts of their original close; revised weights apply only to future closes.
   - the award is a fact of the season, not a rating: it changes no attribute, OVR, morale or match strength. Its effects are the contract premium and bonus clause (→CLUB-26/29), news (→HIST-11) and its views (→WEB-111).
@@ -196,6 +198,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r16 261110 PLAYER-27✎ team honours and league place in full for every teammate→in full for a club's best player by individual points, ×0.55 the next, ×0.35 each other; existing podiums retained
 - r15 261103 PLAYER-18✎ scout ranges by the chief scout's ability→+halved on whole grades with 원석 감별사 (±2→±1, ±1→exact); reconciled with the independent r14 award change
 - r14 261103 PLAYER-27✎ unbounded goals×4+assists×3→production round(120×raw/(80+raw)); honours 40/15/15/25/10→180/75/90/120/45; +top-six league finish 80/60/45/30/20/10; existing podiums retained
 - r13 261103 PLAYER-19✎ nothing changes by difficulty level (→WEB-3)→by the start (→OWNER-2)
