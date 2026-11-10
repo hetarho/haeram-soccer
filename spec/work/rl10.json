@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T19:20:44.581Z",
-  "sourceCommit": "35308ba8c2dd54d44be6209d92b4260bcd491b0f",
+  "snapshotAt": "2026-11-10T19:37:26.513Z",
+  "sourceCommit": "d0aa6338531d87854148d445e1851b91b80c1bff",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -13,18 +13,17 @@
       "maxPending": 8
     },
     "verified": {
-      "commit": "35308ba8c2dd54d44be6209d92b4260bcd491b0f",
+      "commit": "d0aa6338531d87854148d445e1851b91b80c1bff",
       "checks": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
-          "startedAt": "2026-11-10T19:04:35.099Z",
-          "finishedAt": "2026-11-10T19:20:42.086Z"
+          "startedAt": "2026-11-10T19:22:26.833Z",
+          "finishedAt": "2026-11-10T19:37:24.071Z"
         }
       ],
-      "at": "2026-11-10T19:20:42.219Z",
+      "at": "2026-11-10T19:37:24.192Z",
       "excluded": [
-        "T689",
-        "T808"
+        "T689"
       ]
     },
     "push": null,
@@ -5748,6 +5747,30 @@
           "excluded": [
             "T689",
             "T808"
+          ]
+        }
+      }
+    },
+    {
+      "sequence": 2795,
+      "at": "2026-11-10T19:37:24.219Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "d0aa6338531d87854148d445e1851b91b80c1bff",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "startedAt": "2026-11-10T19:22:26.833Z",
+              "finishedAt": "2026-11-10T19:37:24.071Z"
+            }
+          ],
+          "at": "2026-11-10T19:37:24.192Z",
+          "excluded": [
+            "T689"
           ]
         }
       }
