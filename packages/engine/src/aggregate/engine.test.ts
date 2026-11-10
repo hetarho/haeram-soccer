@@ -236,36 +236,47 @@ describe('aggregate match (→MATCH-22, MATCH-26, MATCH-27)', () => {
     // (T284: index 1209 of 3,000; T323's retune: 296; T369's box flows: 1408, the first of three in
     // 12,000 with 2370 and 3292; T400's score state and levels: 2431, with 2450 and 2596; revision
     // 3's named-manager context: 231; the free agents' refilled squads: 711, the only one in
-    // 6,000), searched for here since retuning or the squads move the draws.
+    // 6,000; T805's age ladder: 711 again), searched for here since retuning or the squads move the
+    // draws. The search checks both plans: an exhausted tie whose second plan leaves two answers
+    // settles its first by fewer answers, not as the earlier of tied plans (T805 made index 483 one).
     const { w, fixtures } = others(12_000, 2024);
     const tight = { rebalanceSearches: 2, rebalanceRetries: 0 };
-    const exhausted = (f: Fixture) => {
+    const setUp = (f: Fixture) => {
       const prepared = prepareMatch(w, f);
       const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
-      const match = playAggregate(w, f, prepared, rosters, CUP, tight);
-      return match.facts.length === 120 && match.unreconciled?.length === 1;
+      return { prepared, rosters, match: playAggregate(w, f, prepared, rosters, CUP, tight) };
     };
-    const f = fixtures.map((x): Fixture => ({ ...x, kind: 'cup' })).find(exhausted)!;
+    // The two plans the search reaches: the 90's answers, then the earliest reached answer flipped.
+    const searched = (f: Fixture, { prepared, rosters }: ReturnType<typeof setUp>) => {
+      const base = buildAggregateInput(prepared, UNREAD, rosters);
+      const plan = aggregatePlan(w, prepared, rosters, eraRules(f.year));
+      const access = (p: AggregateParticipation) => aggregateSkillAccess(prepared, rosters, p);
+      const streams = aggregateStreams(w.seed, f.id);
+      const last = { searches: tight.rebalanceSearches, settle: true };
+      const ninety = settleParticipation(base, plan, streams, 90, access, undefined, last)!;
+      const one = { searches: 1, settle: true };
+      const first = settleParticipation(base, plan, streams, 120, access, ninety.decisions, one)!;
+      const [earliest] = [...first.participation.rebalances!].sort((a, b) => a.minute - b.minute);
+      const flipped = new Map(first.decisions).set(earliest!.key, !earliest!.made);
+      const second = settleParticipation(base, plan, streams, 120, access, flipped, one)!;
+      return { first, second };
+    };
+    const tied = (f: Fixture) => {
+      const played = setUp(f);
+      if (played.match.facts.length !== 120 || played.match.unreconciled?.length !== 1)
+        return false;
+      const { first, second } = searched(f, played);
+      return first.unreconciled?.length === 1 && second.unreconciled?.length === 1;
+    };
+    const f = fixtures.map((x): Fixture => ({ ...x, kind: 'cup' })).find(tied)!;
     expect(f).toBeDefined();
-    const prepared = prepareMatch(w, f);
-    const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
-    const match = playAggregate(w, f, prepared, rosters, CUP, tight);
+    const played = setUp(f);
+    const { prepared, rosters, match } = played;
     expect(match.facts.length).toBe(120);
     expect(match.retry).toBe(0);
     expect(match.unreconciled).toHaveLength(1);
     expect(match.unreconciled).toEqual(rebalanceIssues(match.participation, match.facts));
-    // The two plans the search reached: the 90's answers, then the earliest reached answer flipped.
-    const base = buildAggregateInput(prepared, UNREAD, rosters);
-    const plan = aggregatePlan(w, prepared, rosters, eraRules(f.year));
-    const access = (p: AggregateParticipation) => aggregateSkillAccess(prepared, rosters, p);
-    const streams = aggregateStreams(w.seed, f.id);
-    const last = { searches: tight.rebalanceSearches, settle: true };
-    const ninety = settleParticipation(base, plan, streams, 90, access, undefined, last)!;
-    const one = { searches: 1, settle: true };
-    const first = settleParticipation(base, plan, streams, 120, access, ninety.decisions, one)!;
-    const [earliest] = [...first.participation.rebalances!].sort((a, b) => a.minute - b.minute);
-    const flipped = new Map(first.decisions).set(earliest!.key, !earliest!.made);
-    const second = settleParticipation(base, plan, streams, 120, access, flipped, one)!;
+    const { first, second } = searched(f, played);
     expect(second.unreconciled).toHaveLength(first.unreconciled!.length);
     expect(second.decisions).not.toEqual(first.decisions);
     expect(match.decisions).toEqual(first.decisions);
