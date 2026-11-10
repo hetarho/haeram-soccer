@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { canonical } from '../../contracts/src/index';
+import { canonical, validateWorld } from '../../contracts/src/index';
 import type { Fixture, OwnerTrait, World } from '../../contracts/src/types';
 import { OWNER_TRAITS } from './owner-config';
 import {
@@ -20,7 +20,7 @@ import { findClub, ratingOf, squad } from './world';
 import { talkTerms } from './contracts';
 import { transferOffers } from './scout-search';
 import { worldMarketOffer } from './world-market';
-import { managerCandidates, refreshManagerMarket } from './managerMarket';
+import { FREE_AGENTS, managerCandidates, refreshManagerMarket } from './managerMarket';
 import { staffCandidates } from './staff';
 import { academyIntakeDay, academyPlayers, runAcademyIntake } from './academy';
 import { personalityRange } from './player';
@@ -233,6 +233,18 @@ describe('마당발', () => {
       expect(m.ability).toBe(boosted(same.ability));
     }
     expect(shared).toBeGreaterThan(0);
+  });
+
+  it('saves a manager market holding its full 마당발 pool', () => {
+    const wide = networked();
+    refreshManagerMarket(wide);
+    const m = wide.managerMarket!,
+      [first] = m.free;
+    m.free = Array.from({ length: FREE_AGENTS.max + candidates }, (_, i) => ({
+      ...first!,
+      id: `${first!.id}-full-${i}`,
+    }));
+    expect(() => validateWorld(wide)).not.toThrow();
   });
 
   it('opens each staff pool with one more free agent, each abler at the same price (→STAFF-49)', () => {
