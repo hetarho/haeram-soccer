@@ -17,11 +17,21 @@ import {
 } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { computationFingerprint, sourceGraph } from '../../scripts/lib/source-graph';
+import {
+  computationFingerprint,
+  importMemo,
+  saveImportMemo,
+  sourceGraph,
+  type SourceGraph,
+} from '../../scripts/lib/source-graph';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const SELF = fileURLToPath(import.meta.url);
-const graph = sourceGraph(ROOT);
+/**
+ * Import lists per file content, beside the persisted scopes, so keys skip most parsing. The prune
+ * loop only removes scope directories, never this file.
+ */
+const IMPORT_MEMO = 'runtime-imports-v1.json';
 const memory = new Map<string, string>();
 const pending = new Map<string, Promise<string>>();
 const sources = new Map<string, string>();
@@ -67,6 +77,17 @@ export function cacheBase(
 let clone: { directory: string | undefined } | undefined;
 /** Asks Git once per process (module instance), and only when no override or CI decides first. */
 const cloneDirectory = () => (clone ??= { directory: gitCommonDirectory(ROOT) }).directory;
+
+let processGraph: SourceGraph | undefined;
+/** One graph per process; its memo lives in the process's cache base and not at all when off. */
+function sharedGraph() {
+  if (processGraph) return processGraph;
+  const base = cacheBase(process.env, cloneDirectory, CHECKOUT_BASE);
+  return (processGraph = sourceGraph(
+    ROOT,
+    base === 'off' ? undefined : importMemo(join(base, IMPORT_MEMO)),
+  ));
+}
 
 /** Keep the previous two-day retention, protecting recently used scopes and live builders. */
 function maintainDirectory(directory: string) {
@@ -125,12 +146,18 @@ function identity(id: string, build: () => unknown, options: CacheOptions) {
   const scope = JSON.stringify(entries);
   let source = sources.get(scope);
   if (!source) {
+    const graph = sharedGraph();
     source = computationFingerprint(graph, entries, [
       'packages/catalogs/data',
       'package.json',
       'pnpm-lock.yaml',
       'tsconfig.json',
     ]).sha256;
+    try {
+      if (graph.memo) saveImportMemo(graph.memo);
+    } catch {
+      // The memo only saves parsing; an unwritable store leaves the key correct.
+    }
     sources.set(scope, source);
   }
   const key = createHash('sha256')

@@ -1,22 +1,116 @@
 /** Runtime dependency identities for Node-only fixtures and measurement tools. */
-import { createHash } from 'node:crypto';
-import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { createHash, randomUUID } from 'node:crypto';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  renameSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, extname, isAbsolute, join, relative, resolve } from 'node:path';
-import ts from 'typescript';
+import { fileURLToPath } from 'node:url';
+import type ts from 'typescript';
+
+/**
+ * Import lists remembered across processes, keyed by sha256 of (root-relative path, NUL, file
+ * bytes). Only the parse is remembered: every run still resolves the names on the live file system.
+ */
+export interface ImportMemo {
+  file: string;
+  entries: Map<string, readonly string[]>;
+  /** Keys this process looked up; past the cap only these are written back. */
+  used: Set<string>;
+  /** Entries parsed since the last save. */
+  misses: number;
+}
 
 export interface SourceGraph {
   root: string;
   files: Map<string, string[]>;
+  memo?: ImportMemo;
 }
 
 const sourceExtension = /\.[cm]?[jt]sx?$/;
+const requireHere = createRequire(import.meta.url);
+let compiler: typeof ts | undefined;
+/** Loading TypeScript costs about 0.3 s, so only a parse (a memo miss) loads it. */
+const typescript = () => (compiler ??= requireHere('typescript') as typeof ts);
+/** The installed compiler's `ts.version`, read without loading the compiler. */
+export const typescriptVersion = (requireHere('typescript/package.json') as { version: string })
+  .version;
+const MEMO_FORMAT = 'runtime-imports-v1';
+const MEMO_CAP = 10_000;
+let memoHeader: { format: string; typescript: string; sourceGraph: string } | undefined;
+/** A new format, compiler or edge rule in this file invalidates every remembered list. */
+const header = () =>
+  (memoHeader ??= {
+    format: MEMO_FORMAT,
+    typescript: typescriptVersion,
+    sourceGraph: createHash('sha256')
+      .update(readFileSync(fileURLToPath(import.meta.url)))
+      .digest('hex'),
+  });
 
-export function sourceGraph(root: string): SourceGraph {
-  return { root: resolve(root), files: new Map() };
+export function sourceGraph(root: string, memo?: ImportMemo): SourceGraph {
+  return { root: resolve(root), files: new Map(), ...(memo ? { memo } : {}) };
+}
+
+/** A missing, corrupt or differently headed memo file is an empty memo. */
+function readMemo(file: string): Map<string, readonly string[]> {
+  try {
+    const stored = JSON.parse(readFileSync(file, 'utf8')) as Record<string, unknown>;
+    const expected = header();
+    const entries = stored.entries;
+    if (
+      stored.format === expected.format &&
+      stored.typescript === expected.typescript &&
+      stored.sourceGraph === expected.sourceGraph &&
+      entries &&
+      typeof entries === 'object' &&
+      !Array.isArray(entries)
+    )
+      return new Map(
+        Object.entries(entries).filter(
+          (entry): entry is [string, string[]] =>
+            Array.isArray(entry[1]) && entry[1].every((name) => typeof name === 'string'),
+        ),
+      );
+  } catch {
+    // Missing or unreadable: parse again.
+  }
+  return new Map();
+}
+
+export function importMemo(file: string): ImportMemo {
+  return { file, entries: readMemo(file), used: new Set(), misses: 0 };
+}
+
+/**
+ * After misses, merges with the current file and replaces it atomically; past the cap it keeps
+ * only the entries this process used. Returns whether it wrote.
+ */
+export function saveImportMemo(memo: ImportMemo, cap = MEMO_CAP): boolean {
+  if (!memo.misses) return false;
+  const merged = readMemo(memo.file);
+  for (const [key, names] of memo.entries) merged.set(key, names);
+  const kept =
+    merged.size > cap
+      ? [...memo.used].map((key) => [key, memo.entries.get(key)!] as const)
+      : merged;
+  mkdirSync(dirname(memo.file), { recursive: true });
+  const temp = `${memo.file}.${process.pid}.${randomUUID()}.tmp`;
+  writeFileSync(temp, JSON.stringify({ ...header(), entries: Object.fromEntries(kept) }));
+  renameSync(temp, memo.file);
+  memo.misses = 0;
+  return true;
 }
 
 /** Type-only edges do not execute code; literal dynamic imports do. */
 export function runtimeImports(text: string, file = 'source.ts'): string[] {
+  const ts = typescript();
   const tree = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
   const imports: string[] = [];
   const add = (node: ts.Node) => {
@@ -74,6 +168,26 @@ function resolveImport(from: string, name: string): string | undefined {
   throw new Error(`Unresolved local runtime import ${name} in ${from}`);
 }
 
+/** The file's runtime import names, from the memo when its path and bytes were parsed before. */
+function importNames(graph: SourceGraph, file: string): readonly string[] {
+  const memo = graph.memo;
+  if (!memo) return runtimeImports(readFileSync(file, 'utf8'), file);
+  const bytes = readFileSync(file);
+  const key = createHash('sha256')
+    .update(relative(graph.root, file))
+    .update('\0')
+    .update(bytes)
+    .digest('hex');
+  memo.used.add(key);
+  let names = memo.entries.get(key);
+  if (!names) {
+    names = runtimeImports(bytes.toString('utf8'), file);
+    memo.entries.set(key, names);
+    memo.misses++;
+  }
+  return names;
+}
+
 /** Resolves local source edges without importing or executing application code. */
 export function dependencies(graph: SourceGraph, entries: readonly string[]): string[] {
   const seen = new Set<string>();
@@ -85,7 +199,7 @@ export function dependencies(graph: SourceGraph, entries: readonly string[]): st
     let edges = graph.files.get(file);
     if (!edges) {
       edges = sourceExtension.test(file)
-        ? runtimeImports(readFileSync(file, 'utf8'), file)
+        ? importNames(graph, file)
             .map((name) => resolveImport(file, name))
             .filter((path): path is string => !!path)
         : [];
@@ -114,7 +228,7 @@ export function fingerprintFiles(root: string, files: readonly string[]) {
   const hash = createHash('sha256')
     .update('runtime-dependencies-v1')
     .update(process.version)
-    .update(ts.version);
+    .update(typescriptVersion);
   for (const file of [...new Set(files)].sort())
     hash.update(relative(root, file)).update('\0').update(readFileSync(file));
   return { algorithm: 'sha256' as const, sha256: hash.digest('hex'), files: new Set(files).size };
