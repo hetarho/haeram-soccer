@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T19:03:49.115Z",
-  "sourceCommit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
+  "snapshotAt": "2026-11-10T19:20:44.581Z",
+  "sourceCommit": "35308ba8c2dd54d44be6209d92b4260bcd491b0f",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -13,27 +13,17 @@
       "maxPending": 8
     },
     "verified": {
-      "commit": "c0c170ea40224954661d9ef973faf602efcbdc7d",
+      "commit": "35308ba8c2dd54d44be6209d92b4260bcd491b0f",
       "checks": [
         {
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
-          "startedAt": "2026-11-10T18:46:38.274Z",
-          "finishedAt": "2026-11-10T19:03:41.099Z"
+          "startedAt": "2026-11-10T19:04:35.099Z",
+          "finishedAt": "2026-11-10T19:20:42.086Z"
         }
       ],
-      "at": "2026-11-10T19:03:41.270Z",
+      "at": "2026-11-10T19:20:42.219Z",
       "excluded": [
         "T689",
-        "T791",
-        "T792",
-        "T793",
-        "T794",
-        "T795",
-        "T796",
-        "T797",
-        "T798",
-        "T799",
-        "T800",
         "T808"
       ]
     },
@@ -5734,6 +5724,31 @@
           "failures": [],
           "autopilot": true,
           "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 2794,
+      "at": "2026-11-10T19:20:42.246Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "verified": {
+          "commit": "35308ba8c2dd54d44be6209d92b4260bcd491b0f",
+          "checks": [
+            {
+              "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "startedAt": "2026-11-10T19:04:35.099Z",
+              "finishedAt": "2026-11-10T19:20:42.086Z"
+            }
+          ],
+          "at": "2026-11-10T19:20:42.219Z",
+          "excluded": [
+            "T689",
+            "T808"
+          ]
         }
       }
     }
