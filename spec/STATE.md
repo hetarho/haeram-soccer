@@ -889,7 +889,6 @@
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
-| T787 | trim repeated progression and match-model revision checks | ARCH SAVE MATCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -940,4 +939,4 @@
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
-- 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
+- 261110 T787 integrated (independent review approved 81aedca6, P3 notes only) tv10
