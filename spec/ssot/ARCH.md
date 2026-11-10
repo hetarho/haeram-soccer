@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r37 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r38 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -149,7 +149,7 @@
   - Playwright: start and takeover → watch/advance → compare metrics → recruit → save/reload → export/import; include quota, corruption, duplicate-tab, and worker-recovery cases.
   - Fixture data is synthetic and explicitly marked; tests do not claim the real catalogs are complete merely because a mock world runs.
   - A fast unit test isolates a function or component with minimal prepared data; whole-world progression, host/codec round trips and multi-match statistical checks belong to the integration tier. Every existing case remains in exactly one of unit, integration or contract.
-  - A test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per dependency fingerprint and shared across files and runs (`node_modules/.cache/haeram-worlds`, cached in CI). Cache identities include local transitive runtime imports, builder inputs and relevant toolchain/configuration; unrelated UI/assets/tests do not invalidate engine-only worlds. Generic JSON caching and release constants have no simulation imports. UI-only browser journeys may load versioned validated prepared checkpoints; separate live-engine integration cases retain writer coverage. ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
+  - A test simulates only the step it verifies: a world it merely needs in some state (after a season close, some rounds in, a long career) comes from `tests/fixtures/worlds.ts` (`simulatedWorld` for a founding plus seasons and rounds, `cachedWorld` for any other builder), built once per dependency fingerprint and shared across files and runs — locally in one clone-wide store under the Git common directory (`haeram/worlds`), shared by every worktree; on CI in `node_modules/.cache/haeram-worlds`, restored per job; `HAERAM_WORLD_CACHE` overrides both. Cache identities include local transitive runtime imports, builder inputs and relevant toolchain/configuration; unrelated UI/assets/tests do not invalidate engine-only worlds. Generic JSON caching and release constants have no simulation imports. UI-only browser journeys may load versioned validated prepared checkpoints; separate live-engine integration cases retain writer coverage. ← after own-league matches played the grid engine a season cost about 10 s and tests rebuilt the same seasons, so the unit suite took 30–40 minutes
 - ARCH-22 [o] Scaffolding must provide these executable verification scripts.
   - `pnpm run typecheck`
   - `pnpm run lint`
@@ -264,6 +264,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r38 261110 ARCH-21✎ world cache `node_modules/.cache/haeram-worlds` per worktree→one clone-wide store under the Git common directory locally (CI keeps the per-job path); a fresh worktree's gate or task check reuses worlds of the same fingerprint (warm vitest phase 531 s against 822 s cold)
 - r37 261110 ARCH-30✎ code gathered on `next`, quick batch per push, the last session releasing `next` into `main` after verify:batch→planning only on `next` (plan-push), finished work landed on SETTINGS `land` (`main`) by `vibe push` after one locked `pnpm run verify:batch` on the final candidate (haeram-spec-creator 0.12.0)
 - r36 261110 ARCH-23✎ every browser in two shards→Chromium and Firefox in three, WebKit in four; +browser jobs restore the simulated test worlds like the integration jobs (CI 42756627200: WebKit shards 39–41 min against Chromium 22–28 min)
 - r35 261109 ARCH-4✎ code outside a slice imports only its `index.ts`→its `index.ts` or `logic.ts`; +code run outside the Vite build loads no stylesheet, asset or slice index, reaching other slices only through their `logic.ts` (own `lib/` re-exports, re-exported whole by the index) or `@x` files, checked by an architecture closure test and ESLint

@@ -825,6 +825,8 @@
 - 261110 decided review/game-runtime-speed-261110: F9–F11 → F9 rejected (trimming view parts changes what the view holds: WEB, owner), F10 rejected (result identity of a career NPC-squad cache cannot be shown cheaply), F11 left open for a later run on F6's workload (alt: propose F9 to the owner now | measure F11 in this run)
 - 261110 decided T689 T775 T778: how pf10 coexists with sc10's live T689 calibration in .tmp/nx10 and tv10's self-improve-local run on this checkout → no pf10 task touches packages/engine/src/grid/**, every change keeps outputs byte-identical so sc10's reads stay comparable, and tv10 is told pf10's touches (alt: wait for sc10 | include grid hot paths)
 - 261110 decided ARCH-30 T779 T780 T781 T689: the gc10 loop, started for T689 only, claimed the owner's tv10 tasks T779–T781 instead (its `next` note did not bind the route while T689's call sat parked) → stopped it at 06:46Z and returned the three to todo; its local commits 8a5a1b01 (T779) and 3f03d861 (T780) stay unpushed on `work/gc10` for tv10 to reuse or drop, T781 was only begun; no code reached a remote (alt: let it finish beside tv10's own work) gc10
+- 261110 decided ARCH-21 review/test-gate-time-261110 review/test-value-261110 T788 T790: the owner extends tv10 to 22:00 (wrap up and push the target branch at 21:30) and approves the clone-wide world cache (F6; ARCH-21 r38) and shared season worlds for integration tests (C2) → T788, T790, plus T789 (the save packing's base64/varints like T780) (alt: keep per-worktree caches | keep each test's private season) tv10
+- 261110 decided ARCH-30 T775 T776 T777 T778: pf10 stopped its regate at its 18:00 deadline without pushing and handed its integrated speed-ups to tv10 → one locked gate on the synced main releases pf10's T775–T778, tq10/tv10's T779–T781 T786 T787 and origin/main's latest together (alt: leave pf10's work unpublished) tv10
 
 ## ideation
 | id | st |
@@ -848,7 +850,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 37 | 37 | - | 2 |
+| ARCH | 38 | 38 | - | 2 |
 | WEB | 214 | 214 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
@@ -894,6 +896,9 @@
 | T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
+| T788 | share the test-world cache across a clone's worktrees | ARCH | - | todo |
+| T789 | base64 and variable-length integers in the save packing with integer operations | SAVE | - | todo |
+| T790 | integration tests apply their tweaks to shared season worlds | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -944,4 +949,3 @@
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
 - 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
 - 261110 create-task review/football-data-consistency-261109 F22: T766 unchanged canonical mood projection for capital previews; capped injection/event evidence and interpretation recorded fi09
-- 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
