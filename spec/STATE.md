@@ -913,9 +913,6 @@
 | T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
-| T805 | each club its own age ladder | WORLD | - | todo |
-| T806 | squads with stars, regulars and a bench (behind a setting) | WORLD PLAYER LEAGUE | T805 | todo |
-| T807 | a sold place refilled by a lesser player who stays the same person | WORLD | T806 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
 
 ## work
@@ -941,12 +938,13 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
-| rl10 | 2 | 6 | 3 | 3 | 3 | 0 | 0 | 2026-11-10T16:25:11.015Z | [history](work/rl10.json) |
+| rl10 | 2 | 6 | 6 | 0 | 0 | 0 | 0 | 2026-11-10T17:04:35.116Z | [history](work/rl10.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261110 T805 T806 T807 integrated
 - 261110 T804 integrated
 - 261110 T809 integrated
 - 261110 T803 integrated
@@ -966,4 +964,3 @@
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
 - 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
-- 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10

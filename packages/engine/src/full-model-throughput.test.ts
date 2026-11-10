@@ -155,11 +155,22 @@ const facts = (w: World) => ({
  * generated place while he is free) changed both through the squads that play them;
  * 4eb52d8d3132ffc5 and 725b7e23284728b6 before. The one filling a free agent's place drawn in its
  * formation role and with its club's press load, as the generated place is, changed both again;
- * c08fdd8bfa8a7687 and e4d4268c6d018c7b before.
+ * c08fdd8bfa8a7687 and e4d4268c6d018c7b before. T805's age ladder per club (each club's places at
+ * its own start and order, →WORLD-6) changed both through the generated people who play them:
+ * their IDs (the cohort), names and ages, and with the ages the 판단력 and 침착성 of those aged 21
+ * or younger (→PLAYER-2) and the draws keyed on their identities; no club's strength moved. Their
+ * scores alone digest fd7a7c95790e2172 and 123071ef16e58636 before, c8e059d9e75fa136 and
+ * 999bd4de4b51e06a after; 424bee91d603d000 and 7bbd43c2f81636e6 before. T807's refill (→WORLD-6)
+ * changed both through the ones filling free agents' places: keyed on the place's cohort, not the
+ * year, the cohort's ID moved them alone (e08d9a6ea742c715 and 4cec18b14c80eb68), and each at an
+ * age up to 4 from the place's gave these digests; the level below strength, only for a place a
+ * sale emptied this season, changes neither, and with the released refill restored both read as
+ * before. Their scores alone digest 5a3cce9f595e74bc and 7edad9a4bcf5e622 after; the own club's
+ * scores and squad did not move. e192354fec4079d4 and 1b00aca71876ec62 before.
  */
 const BEFORE = {
-  aggregateRecords: '424bee91d603d000',
-  candidateRounds: '7bbd43c2f81636e6',
+  aggregateRecords: '1777e46a55e11535',
+  candidateRounds: 'c1dae39d1b1fc9a9',
 };
 
 describe('complete-result throughput (T285)', () => {

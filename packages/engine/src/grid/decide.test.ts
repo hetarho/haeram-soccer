@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { fileURLToPath } from 'node:url';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
-import { careerWorld } from '../career.testkit';
+import { CAREER_YEAR, careerWorld } from '../career.testkit';
 import {
   MATCH_MODEL_REVISION,
   MATCH_MODEL_REVISIONS,
@@ -153,8 +153,17 @@ describe('grid decisions', () => {
   });
 
   it('shoots far more in the central box than in front of the box and never from the own half', () => {
-    const inBox = mixAt(ST, centre(6, 2));
-    const front = mixAt(ST, centre(5, 2));
+    // A settled striker: each club's own age ladder (T805) can stand this one at 21 or younger,
+    // whose 판단력 and 침착성 sit 5 below an older player's (→PLAYER-2) and flatten his choice.
+    const shotMix = (at: Point) => {
+      const sc = scene(ST, at);
+      const { born, attrs } = sc.me.player;
+      if (CAREER_YEAR - born <= 21)
+        setSkills(sc.s, ST, { decisions: attrs.decisions + 5, composure: attrs.composure + 5 });
+      return actionMix(sc.s, 0, ST, sc.tags());
+    };
+    const inBox = shotMix(centre(6, 2));
+    const front = shotMix(centre(5, 2));
     expect(inBox.shot).toBeGreaterThan(3 * front.shot);
     for (let band = 0; band <= 3; band++)
       for (let lane = 0; lane < 5; lane++)

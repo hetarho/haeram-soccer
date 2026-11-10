@@ -700,6 +700,8 @@ const OFFSET: Record<Weight, number> = { 3: 4, 2: 1, 1: -3, 0: -10 };
 
 /** How far 판단력 and 침착성 start below an older player's for those aged 21 or younger (→PLAYER-2). */
 const YOUNG_MENTAL_GAP = 5;
+/** Where a generated player's shifted attributes stop, so the OVR a rating can reach. */
+export const GENERATED_ATTRIBUTES = { floor: 15, ceiling: 95 } as const;
 function generateAttributes(
   rng: Rng,
   position: Position,
@@ -730,7 +732,11 @@ function generateAttributes(
   for (let pass = 0; pass < 2; pass++) {
     const ovr = role ? ovrAt(attrs, position, role) : mainOvr({ attrs, position });
     const shift = rating - ovr;
-    for (const a of shifted) attrs[a] = Math.min(95, Math.max(15, attrs[a] + shift));
+    for (const a of shifted)
+      attrs[a] = Math.min(
+        GENERATED_ATTRIBUTES.ceiling,
+        Math.max(GENERATED_ATTRIBUTES.floor, attrs[a] + shift),
+      );
   }
   for (const a of shifted) attrs[a] = Math.round(attrs[a]);
   return attrs;

@@ -1,4 +1,4 @@
-import type { PersonCareer, World } from '../../contracts/src/types';
+import type { CareerEmployment, PersonCareer, World } from '../../contracts/src/types';
 
 /**
  * The read-only inputs an unowned fixture consumes (ARCH-6); no campaign execution imports.
@@ -18,7 +18,10 @@ export const FIXTURE_READ_KEYS = [
   'year',
 ] as const satisfies readonly (keyof World)[];
 export type FixtureReadKey = (typeof FIXTURE_READ_KEYS)[number];
-/** Active roster identities need these fields; inactive people only reserve their IDs. */
+/**
+ * Active roster identities need these fields and their player jobs of the season
+ * (`seasonPlayerJobs`); inactive people only reserve their IDs.
+ */
 export const FIXTURE_PERSON_READ_KEYS = [
   'id',
   'name',
@@ -37,6 +40,20 @@ export type FixtureReadCopy = Omit<Pick<World, FixtureReadKey>, 'people' | 'free
   freeAgents?: { id: string }[];
 };
 
+/**
+ * An active person's player jobs that began or ended in season `year`: all a refill reads of his
+ * career (whether a sale or a loan emptied his old place this season, →WORLD-6), and all a
+ * fixture's copy carries of it.
+ */
+export function seasonPlayerJobs(
+  person: { employment?: readonly CareerEmployment[] },
+  year: number,
+): CareerEmployment[] {
+  return (person.employment ?? []).filter(
+    (job) => job.role === 'player' && (job.from.year === year || job.to?.year === year),
+  );
+}
+
 export function readCopy(w: World): FixtureReadCopy {
   const copy: Partial<Record<FixtureReadKey, unknown>> = {};
   for (const key of FIXTURE_READ_KEYS)
@@ -46,9 +63,12 @@ export function readCopy(w: World): FixtureReadCopy {
     copy.people = Object.fromEntries(
       Object.entries(w.people).map(([id, person]) => {
         const row: FixtureReadPerson = { id: person.id, playing: person.playing };
-        if (person.playing === 'active')
+        if (person.playing === 'active') {
           for (const key of FIXTURE_PERSON_READ_KEYS)
             if (key in person) Object.assign(row, { [key]: person[key] });
+          const jobs = seasonPlayerJobs(person, w.year);
+          if (jobs.length) row.employment = jobs;
+        }
         return [id, row];
       }),
     );
@@ -66,7 +86,9 @@ export function fixtureRosterKey(copy: FixtureReadCopy): string {
     copy.year,
     copy.clubs.map((c) => [c.id, c.country, c.strength, c.tier]),
     Object.values(copy.people ?? {}).map((p) =>
-      p.playing === 'active' ? FIXTURE_PERSON_READ_KEYS.map((key) => p[key]) : [p.id, p.playing],
+      p.playing === 'active'
+        ? [...FIXTURE_PERSON_READ_KEYS.map((key) => p[key]), p.employment]
+        : [p.id, p.playing],
     ),
     (copy.freeAgents ?? []).map((p) => p.id),
   ]);

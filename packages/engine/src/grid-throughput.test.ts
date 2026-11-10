@@ -111,12 +111,13 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's 2/16, 2/0 and 5/1,
  * T443's 1/2, 0/1 and 6/3, T444's 5/2, 0/3 and 13/1, T445's 1/0, 7/4 and 2/0, T437's 1/0, 3/8
  * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's). An earlier revision's ties
- * were last replayed under it before T787; its observed league fixture still is.
+ * were last replayed under it before T787; its observed league fixture still is. T805's age
+ * ladder per club rescanned them; before it they were 4/15, 15/8 and 4/7.
  */
 const CASES = {
-  1975: { extraTime: 4, shootout: 15 },
-  1995: { extraTime: 15, shootout: 8 },
-  2024: { extraTime: 4, shootout: 7 },
+  1975: { extraTime: 10, shootout: 3 },
+  1995: { extraTime: 14, shootout: 0 },
+  2024: { extraTime: 2, shootout: 0 },
 } as const;
 type Year = keyof typeof CASES;
 
@@ -393,31 +394,36 @@ interface EarlierDigests {
  * tenth of `holders`, as the samples drawn at it record him, WEB-95) moved positions only: 2024's
  * observed shoot-out (f20390c8de1b92de before) and most of revisions 1–9's (the earlier values are
  * this file's at c1b9eef6). No facts moved.
+ * T805's age ladder per club (each club's places at its own start and order, →WORLD-6) put other
+ * generated people in the own club's founding squad and its opponents': their IDs, names and ages,
+ * and with the ages the 판단력 and 침착성 of those aged 21 or younger (→PLAYER-2). Every value of
+ * every revision, the pre-feature facts and the knockout ties moved (rescanned above); no club's
+ * strength and no match model changed. The earlier values are this file's at aa70afdb.
  */
 const CANDIDATE: Record<Year, CandidateDigests> = {
   1975: {
     facts: {
-      league: '4dcbab256a5bb953',
-      extraTime: 'cd72eb6bd6ba7bc6',
-      shootout: 'cdbd82c547218106',
+      league: 'd0cadfd65bb2213c',
+      extraTime: '558cd02466025b13',
+      shootout: '541ff3bb4c1f0a2f',
     },
-    positions: { observed: 'e77ce1ab06262909', shootout: '5e3a9e2da4b9506f' },
+    positions: { observed: 'e9beab2fa05939f0', shootout: 'b5107a549095455e' },
   },
   1995: {
     facts: {
-      league: '46b9d28b8ed9ddae',
-      extraTime: 'ec92748084a64943',
-      shootout: '7a24d16d6eeb7fcd',
+      league: '0745020d8d3fe3d7',
+      extraTime: '5cca16652323ce01',
+      shootout: '5ab8434d15c0bc71',
     },
-    positions: { observed: '4792dbb01ac52137', shootout: '563cee4ca8b51d96' },
+    positions: { observed: '4608ef489a745f8d', shootout: 'b27cec83a6484a19' },
   },
   2024: {
     facts: {
-      league: 'a3364cef5188bc82',
-      extraTime: '61bc816d03070579',
-      shootout: '8dd1ff03e691e5e5',
+      league: '1896c99a24bd2ccf',
+      extraTime: 'dea84b013978c166',
+      shootout: 'a8929a5f6aa873ab',
     },
-    positions: { observed: '0dae5431ba6ec37f', shootout: 'a05c6a4db1233c90' },
+    positions: { observed: 'fa0960b2b47743bc', shootout: '88dd772013c1e926' },
   },
 };
 
@@ -428,16 +434,16 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
  */
 const REVISION_9: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: '1eb67684590d5d49' },
-    positions: { observed: 'd3f3950fc64e2c23' },
+    facts: { league: 'b7715cda5029e271' },
+    positions: { observed: '2cadce8f57c8e89d' },
   },
   1995: {
-    facts: { league: 'dec0d99095de25af' },
-    positions: { observed: '1b4a1c8bd36dfa15' },
+    facts: { league: '8ee8751652066160' },
+    positions: { observed: '3dc0615f65b839f4' },
   },
   2024: {
-    facts: { league: 'c7155d4537968f94' },
-    positions: { observed: '2e56c1e5dcfd89ce' },
+    facts: { league: 'c0215e30cd970739' },
+    positions: { observed: '063cd0c65ee38939' },
   },
 };
 
@@ -448,16 +454,16 @@ const REVISION_9: Record<Year, EarlierDigests> = {
  */
 const REVISION_8: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: '57b70b8a3eea17aa' },
-    positions: { observed: '0ff2369f8e321659' },
+    facts: { league: '8e1060359df5eb1d' },
+    positions: { observed: '7fa1287dfb41a159' },
   },
   1995: {
-    facts: { league: '5e0fcb183682e55c' },
-    positions: { observed: 'e9b9a109aadd7909' },
+    facts: { league: 'c55eb3d6e3c0ea98' },
+    positions: { observed: 'e3b82fe647418df6' },
   },
   2024: {
-    facts: { league: '512b11a670880c69' },
-    positions: { observed: '15db30f6a47d6888' },
+    facts: { league: '62a45e456b167edb' },
+    positions: { observed: '52fcd9783b30cf9f' },
   },
 };
 
@@ -468,16 +474,16 @@ const REVISION_8: Record<Year, EarlierDigests> = {
  */
 const REVISION_7: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: '83561f6cfcd7f062' },
-    positions: { observed: '9419310467bb78c1' },
+    facts: { league: '75d11394ae4110d1' },
+    positions: { observed: '5f53070f8235cc46' },
   },
   1995: {
-    facts: { league: '08e6c36534f2df81' },
-    positions: { observed: '7628caf26edb11eb' },
+    facts: { league: '0e14fe5e7317e0af' },
+    positions: { observed: '974bef836c0d326a' },
   },
   2024: {
-    facts: { league: '60a80a823634b129' },
-    positions: { observed: '5041e6906f01518f' },
+    facts: { league: 'e36550f44eac3b58' },
+    positions: { observed: '89470ef0dfedf199' },
   },
 };
 
@@ -488,16 +494,16 @@ const REVISION_7: Record<Year, EarlierDigests> = {
  */
 const REVISION_6: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: 'b920b70f68ff6a12' },
-    positions: { observed: '35ee5966bf9b9ef9' },
+    facts: { league: '965d3c30bf101c29' },
+    positions: { observed: 'bdc7a66c73214fe0' },
   },
   1995: {
-    facts: { league: '30faa7020f4c71c4' },
-    positions: { observed: 'f8b014d80e9b87b7' },
+    facts: { league: '55d621e959eb8319' },
+    positions: { observed: 'b5a3f1b331c46a48' },
   },
   2024: {
-    facts: { league: '8303ddd3320a16d8' },
-    positions: { observed: '2c8fc0190a734d55' },
+    facts: { league: '0ec6ff926e9d963d' },
+    positions: { observed: '5715185adfc6f220' },
   },
 };
 
@@ -508,16 +514,16 @@ const REVISION_6: Record<Year, EarlierDigests> = {
  */
 const REVISION_5: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: 'f67bebd14334126d' },
-    positions: { observed: 'dd2716f7e7357a4f' },
+    facts: { league: 'e95ad0c91de77b53' },
+    positions: { observed: '9ddf77e591c1bad4' },
   },
   1995: {
-    facts: { league: 'd9ff923856bdc88b' },
-    positions: { observed: '5542b462c2423587' },
+    facts: { league: 'db800442589b36d9' },
+    positions: { observed: 'bd63d8fbe67caef5' },
   },
   2024: {
-    facts: { league: 'b8ddf3da3860234a' },
-    positions: { observed: '868c2ab1284fd854' },
+    facts: { league: 'dc519982f2ac9b6d' },
+    positions: { observed: '99409de30e0ca1e6' },
   },
 };
 
@@ -528,16 +534,16 @@ const REVISION_5: Record<Year, EarlierDigests> = {
  */
 const REVISION_4: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: 'b06a20bfa5944f8d' },
-    positions: { observed: 'd8ea31f3b32a07af' },
+    facts: { league: 'b71d2ebcc4cf62d4' },
+    positions: { observed: '752d9fb97f32f061' },
   },
   1995: {
-    facts: { league: '0ffd80d41e329bea' },
-    positions: { observed: '1f883ba0abbcf411' },
+    facts: { league: '72f2e7a1a2aad3dd' },
+    positions: { observed: 'e915ffda9449aaaa' },
   },
   2024: {
-    facts: { league: '90acbbb320c92886' },
-    positions: { observed: 'f78ccc577484c80e' },
+    facts: { league: 'dd4b4500d6079923' },
+    positions: { observed: '85aaf73a0063a576' },
   },
 };
 
@@ -548,16 +554,16 @@ const REVISION_4: Record<Year, EarlierDigests> = {
  */
 const REVISION_3: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: '16769656fcf1ef99' },
-    positions: { observed: '5d23c22c7de4a3b6' },
+    facts: { league: 'e22f44459d77e6be' },
+    positions: { observed: '64fc6580a51171cc' },
   },
   1995: {
-    facts: { league: '1b9c5022cce86e37' },
-    positions: { observed: '53c528d990f771b6' },
+    facts: { league: '62705f5218c1039b' },
+    positions: { observed: '30f59945cef233dc' },
   },
   2024: {
-    facts: { league: '98e7994f1ffed8ad' },
-    positions: { observed: '7cced00ebdbe7369' },
+    facts: { league: '0a462a18a8ac6a28' },
+    positions: { observed: '246f4e54c5c73b10' },
   },
 };
 
@@ -568,16 +574,16 @@ const REVISION_3: Record<Year, EarlierDigests> = {
  */
 const REVISION_2: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: 'bade6e9917955ca4' },
-    positions: { observed: '0fc216c1835250f0' },
+    facts: { league: '4f2cebf2c7ef0c5b' },
+    positions: { observed: '4003d8afc43027b4' },
   },
   1995: {
-    facts: { league: 'd74974b7d25ac546' },
-    positions: { observed: '04c6e82db6e3fdc6' },
+    facts: { league: '9a034dca2793514c' },
+    positions: { observed: 'c26b7a4b6da87366' },
   },
   2024: {
-    facts: { league: '0d5db55abfd4267a' },
-    positions: { observed: 'd8015538945995c0' },
+    facts: { league: '191e12e1aa3bf42b' },
+    positions: { observed: 'd85d666cd433b9be' },
   },
 };
 
@@ -589,28 +595,29 @@ const REVISION_2: Record<Year, EarlierDigests> = {
  */
 const REVISION_1: Record<Year, EarlierDigests> = {
   1975: {
-    facts: { league: 'c7c2cac527564514' },
-    positions: { observed: 'd2b8a825bc8f38a2' },
+    facts: { league: 'b026acf19e4bbaab' },
+    positions: { observed: 'fbc5217898f49f2d' },
   },
   1995: {
-    facts: { league: 'e817cd255a212e18' },
-    positions: { observed: 'e61508ad0ec869da' },
+    facts: { league: '33b352ac66286a0a' },
+    positions: { observed: '5acaadd5022d3610' },
   },
   2024: {
-    facts: { league: '3bcaeb0ed8cb4542' },
-    positions: { observed: '427fab694535eee6' },
+    facts: { league: 'fd180e9e28becf29' },
+    positions: { observed: '5317aa01b40875d7' },
   },
 };
 
 /**
  * The pre-feature league fixture's facts, the same on every host since T713 bound its grid to the
  * portable table: recorded on linux-x64 (Node v24.22.1) at T670's start, when it still played the
- * host's `Math.*`, and given bit for bit by darwin-arm64 on the portable functions.
+ * host's `Math.*`, and given bit for bit by darwin-arm64 on the portable functions; re-recorded
+ * on darwin-arm64 for T805's age ladder per club.
  */
 const PRE_FEATURE: Record<Year, string> = {
-  1975: '679b865a0cbebf03',
-  1995: '9fb02e0c8a6f35af',
-  2024: 'c44e75bee2cc4a7f',
+  1975: '460c238e8f6aac92',
+  1995: '7e6183c50272338d',
+  2024: '6eae6afc5399faf0',
 };
 
 describe('detailed engine throughput (T325)', () => {

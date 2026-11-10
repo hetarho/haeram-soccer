@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T16:25:11.015Z",
-  "sourceCommit": "f70d1edaebefd83ff1f6f6f8a8374afcd549dc4f",
+  "snapshotAt": "2026-11-10T17:04:35.116Z",
+  "sourceCommit": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -51,40 +51,14 @@
   },
   "summary": {
     "total": 6,
-    "completed": 3,
-    "remaining": 3,
-    "running": 3,
+    "completed": 6,
+    "remaining": 0,
+    "running": 0,
     "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T805",
-      "title": "Each club its own age ladder",
-      "dep": [],
-      "lane": "squad-generation",
-      "status": "doing"
-    },
-    {
-      "id": "T806",
-      "title": "Squads with stars, regulars and a bench (behind a setting)",
-      "dep": [
-        "T805"
-      ],
-      "lane": "squad-generation",
-      "status": "doing"
-    },
-    {
-      "id": "T807",
-      "title": "A sold place refilled by a lesser player who stays the same person",
-      "dep": [
-        "T806"
-      ],
-      "lane": "squad-generation",
-      "status": "doing"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "e647d048-a7a8-44bb-9693-b2750ef2f856",
@@ -195,6 +169,8 @@
       "submittedBase": "f70d1edaebefd83ff1f6f6f8a8374afcd549dc4f",
       "submissionId": "df6fbfb7-7f23-4fca-bcd7-de20391e3063",
       "submittedAt": "2026-11-10T16:19:25.539Z",
+      "integratedCommit": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+      "integratedAt": "2026-11-10T16:27:18.983Z",
       "risk": null,
       "dispatch": {
         "id": "c789a61d-60d1-436f-bffc-c3bc326d8d3a",
@@ -253,12 +229,19 @@
           "startedAt": "2026-11-10T16:17:50.491Z",
           "finishedAt": "2026-11-10T16:19:25.024Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-10T16:25:11.802Z",
+          "finishedAt": "2026-11-10T16:27:18.451Z"
+        }
       ]
     },
     {
       "id": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
       "group": "rl10",
-      "taskId": "T806",
+      "taskId": "T807",
       "tasks": [
         "T805",
         "T806",
@@ -269,19 +252,61 @@
       "contributors": [
         "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/worker-2"
       ],
-      "status": "doing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-10T15:01:17.729Z",
       "startCommit": "aa70afdba6a24e026081b04afaf1010b185bde9e",
+      "verifiedCommit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+      "submittedBase": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+      "submissionId": "2c998ffe-839c-485b-9055-c1e6235a60f4",
+      "submittedAt": "2026-11-10T16:56:28.242Z",
+      "risk": null,
       "dispatch": {
-        "id": "3fe6fc8e-cf8e-4384-9b64-0bcdbc0d01d7",
+        "id": "2e12da04-7c1b-4572-97a8-f00dbbe4a63b",
         "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
-        "role": "worker",
-        "slot": 2,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-11-10T16:19:26.255Z"
+        "status": "finished",
+        "startedAt": "2026-11-10T16:56:31.932Z",
+        "finishedAt": "2026-11-10T17:04:32.574Z",
+        "error": null,
+        "summary": "Lane squad-generation (T805, T806, T807) meets its acceptance items and WORLD-6/WORLD-11. Approved with P3 notes only; no tests were run in this review. T805: `ageLadder` and `squadPlaceAge` follow the task's formula, with a Fisher–Yates order and a start of 0–17 from `${seed}:${club}:age-ladder`. `npcSquad` and `replacement` both use them, and no copy of the old formula remains in packages, apps or scripts. The surname key `year+18−age` is the old `18*cohort−i` restated, so a season's 18 keys stay consecutive and distinct. T806: `SQUAD_SPREAD` follows the `REFILL_SALE` setting pattern. Under `flat`, `generatedPlayer` is `makePlayer`'s single draw with the released 10–35 headroom, and the unit test checks squads and a refill byte for byte. The age anchors, the triangular ±6 class keyed on the person id, the headroom table and the re-centring on places 0–10 (`startingSquad` takes `ps.slice(0, formation length)`, which `ratingOf` reads) all match WORLD-6. The bench of 3 and the cost ratios follow the coordinator's 261110 decision and are listed. T807: the refill is keyed on the place's cohort, keeps the departed check and the serial rule, and draws k and d from its own stream. `soldThisSeason` matches what `noteSigning` records (the seller's job closes on the day the buyer's opens), and the read copy now carries the season's player jobs so helper fixtures match the main thread, as the new fixture-copy case shows. The worker test records cover typecheck, lint, format, i18n, the unit tier from `--changed`, the day-loop equivalence trio, `npc-continuity`, `grid-throughput` and `test:contract`. Re-recorded digests, goal lines and changed test premises are each explained in their files. The P3 notes cover a spec conflict to hand back, a gap in spread mode for T808 to read, and re-running the gate on the merged tree with T804."
+      },
+      "review": {
+        "id": "fa35ab81-df97-4b09-8548-cd39c770affb",
+        "owner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "Lane squad-generation (T805, T806, T807) meets its acceptance items and WORLD-6/WORLD-11. Approved with P3 notes only; no tests were run in this review. T805: `ageLadder` and `squadPlaceAge` follow the task's formula, with a Fisher–Yates order and a start of 0–17 from `${seed}:${club}:age-ladder`. `npcSquad` and `replacement` both use them, and no copy of the old formula remains in packages, apps or scripts. The surname key `year+18−age` is the old `18*cohort−i` restated, so a season's 18 keys stay consecutive and distinct. T806: `SQUAD_SPREAD` follows the `REFILL_SALE` setting pattern. Under `flat`, `generatedPlayer` is `makePlayer`'s single draw with the released 10–35 headroom, and the unit test checks squads and a refill byte for byte. The age anchors, the triangular ±6 class keyed on the person id, the headroom table and the re-centring on places 0–10 (`startingSquad` takes `ps.slice(0, formation length)`, which `ratingOf` reads) all match WORLD-6. The bench of 3 and the cost ratios follow the coordinator's 261110 decision and are listed. T807: the refill is keyed on the place's cohort, keeps the departed check and the serial rule, and draws k and d from its own stream. `soldThisSeason` matches what `noteSigning` records (the seller's job closes on the day the buyer's opens), and the read copy now carries the season's player jobs so helper fixtures match the main thread, as the new fixture-copy case shows. The worker test records cover typecheck, lint, format, i18n, the unit tier from `--changed`, the day-loop equivalence trio, `npc-continuity`, `grid-throughput` and `test:contract`. Re-recorded digests, goal lines and changed test premises are each explained in their files. The P3 notes cover a spec conflict to hand back, a gap in spread mode for T808 to read, and re-running the gate on the merged tree with T804.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/npc-continuity.ts:139 (T807)",
+            "message": "Two T807 acceptance items conflict. Item 1 asks for the place's age plus d clamped to 17–35; item 2 asks for the same refill (id, name, birth year) a year older each season. In the seasons where the clamp applies (d ≤ −2 early in a cohort, d ≥ 1 late in one, about 10% of a refill's seasons), he stays 17 or 35 and his birth year moves by a year each season. Example: the owner buys a 19-year-old, d = −3, and the refill shows as 17 two seasons running. The unit test only checks place ages 21–30, so it skips those seasons. No fixed birth year can stay inside 17–35 for a whole cohort unless d is −1 or 0, so this needs a planning decision rather than a worker fix. Hand to the planner as an inbox item: allow ages above 35 (or under 17), narrow d near the ends of a cohort, or accept the moving birth year."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/npc-continuity.ts:149 (T806/T807, spread only)",
+            "message": "Under `SQUAD_SPREAD` `spread`, a refill takes strength − k + class + age term but neither the squad's re-centring shift (about +2, since the age term averages −2 over 18–35) nor the bench offset of −3. A refilled starter therefore sits about 2 lower than its place's level, also after the next summer when he plays 'at strength', and a bench refill sits about 1 higher. This matches the acceptance wording and `flat` is unaffected, but T808 should read refilled squads when it judges the gate, or pass `spreadLevels`' shift and bench offset to the refill."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/fixtures/portable-v1.json, tests/fixtures/prepared/*.json, full-model-throughput/grid-throughput/results-only recorded values (T805, T807)",
+            "message": "The lane last merged si/rl10 at f70d1eda. baseCommit 8d70ca7a adds T804, which flips `UPGRADE_MEASURE` to `signed` and changes `staffSignings`' `joined` to `joinedThisWindow`. No file overlaps, but every recorded fact here was regenerated without T804. On the new age ladder the delegated 단장's window signings can differ: the golden already lost one recruitment arrival in financial-mediation. The coordinator gate on the merged tree should run `test:contract`, `tests/fixtures/prepared-world.test.ts` and the integration digests, and re-record with their scripts if they move. If T804 changes their content, regenerate the prepared worlds too, since nothing compares them to a fresh run."
+          },
+          {
+            "priority": "P3",
+            "where": "tests/fixtures/prepared/manager-journey.json:6, manager-activation.json:6 (T805, T807)",
+            "message": "Both prepared worlds now record `source.dirty: true` at 39ac15ac (base: dirty false). They were regenerated on an uncommitted tree; the content should match 5eece8c9. If clean provenance is wanted, rerun `pnpm exec tsx scripts/prepare-manager-fixtures.ts --write` on the integrated committed tree, together with the T804 re-check above."
+          }
+        ],
+        "commit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+        "baseCommit": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+        "submissionId": "2c998ffe-839c-485b-9055-c1e6235a60f4",
+        "createdAt": "2026-11-10T16:56:29.056Z",
+        "finishedAt": "2026-11-10T17:04:32.537Z"
       },
       "steps": [
         {
@@ -295,6 +320,37 @@
               "finishedAt": "2026-11-10T15:27:23.575Z"
             }
           ]
+        },
+        {
+          "taskId": "T806",
+          "commit": "39ac15ac9deeb02cc210b9102d203783d3848afa",
+          "at": "2026-11-10T16:30:10.797Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-10T16:27:21.302Z",
+              "finishedAt": "2026-11-10T16:30:09.935Z"
+            }
+          ]
+        },
+        {
+          "taskId": "T807",
+          "commit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+          "at": "2026-11-10T16:56:28.215Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-10T16:55:20.416Z",
+              "finishedAt": "2026-11-10T16:56:27.709Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-10T16:55:20.416Z",
+          "finishedAt": "2026-11-10T16:56:27.709Z"
         }
       ]
     },
@@ -2331,6 +2387,556 @@
       "group": "rl10",
       "attemptId": "b4eb075f-5703-4fb9-9008-63b4ca0e1b86",
       "taskId": "T804",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2553,
+      "at": "2026-11-10T16:27:18.840Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "b4eb075f-5703-4fb9-9008-63b4ca0e1b86",
+      "taskId": "T804",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-10T16:25:11.802Z",
+            "finishedAt": "2026-11-10T16:27:18.451Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2554,
+      "at": "2026-11-10T16:27:18.983Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "b4eb075f-5703-4fb9-9008-63b4ca0e1b86",
+      "taskId": "T804",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+        "integratedAt": "2026-11-10T16:27:18.983Z"
+      }
+    },
+    {
+      "sequence": 2555,
+      "at": "2026-11-10T16:27:19.124Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T806",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2556,
+      "at": "2026-11-10T16:27:20.497Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T806",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2557,
+      "at": "2026-11-10T16:27:20.582Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T806",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2558,
+      "at": "2026-11-10T16:30:10.821Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "verifying",
+      "status": "doing",
+      "changes": {
+        "taskId": "T807",
+        "status": "doing",
+        "steps": [
+          {
+            "taskId": "T805",
+            "commit": "0de9806066c436fdf9195ff5ff4ddd694f541e27",
+            "at": "2026-11-10T15:27:24.281Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T15:25:35.034Z",
+                "finishedAt": "2026-11-10T15:27:23.575Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T806",
+            "commit": "39ac15ac9deeb02cc210b9102d203783d3848afa",
+            "at": "2026-11-10T16:30:10.797Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T16:27:21.302Z",
+                "finishedAt": "2026-11-10T16:30:09.935Z"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2559,
+      "at": "2026-11-10T16:30:10.881Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "3fe6fc8e-cf8e-4384-9b64-0bcdbc0d01d7",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T16:19:26.255Z",
+          "finishedAt": "2026-11-10T16:30:10.881Z",
+          "error": null,
+          "summary": "T806 is done: the cost item is checked under the coordinator's restated wording, and the squad cost ratio is recorded per strength and era. The values stay at bench 3 and a triangular class of ±6.\n\n**Measurement.** Spread squad cost ÷ flat squad cost (`squadCostAt`), 40 clubs × ENG and ESP at tier 0. The four years cover the star-spread eras:\n\n| strength | 1950 | 1980 | 1995 | 2015 |\n|---|---|---|---|---|\n| 50 | 0.957 | 0.960 | 0.965 | 0.968 |\n| 60 | 0.957 | 0.960 | 0.965 | 0.968 |\n| 70 | 0.961 | 0.965 | 0.970 | 0.972 |\n| 80 | 0.883 | 0.913 | 0.956 | 1.005 |\n| 85 | 0.971 | 0.977 | 0.999 | 1.031 |\n| 90 | 0.967 | 0.962 | 0.965 | 0.980 |\n| 95 | 0.959 | 0.946 | 0.921 | 0.901 |\n\nThe largest deviation is 0.117, at strength 80 in 1950.\n\n**Why bench 3 and class ±6.**\n- Any bench above 3 pulls every ratio further down.\n- A uniform class does worse than a triangular one (worst cell 0.126).\n- Narrower classes cut the worst cell only slightly: ±3 gives 0.105, ±4 0.109, ±5 0.113. But they drop the fielded eleven's OVR SD below acceptance 5's 2.5 at strength 90. I tried ±5 in code: the unit case failed with 2.39 for a possession side. So ±6 is the narrowest class that keeps both items.\n- The remaining ~10% gap comes from the rules themselves, not the chosen values:\n  - The age term lowers young and old players.\n  - Before 2008, starters lifted above OVR 80 earn little more under CLUB-48's star pay spread.\n  - At 95 the attribute ceiling holds the starters while the bench must still sit 3 below.\n\n**Code:** the class value is unchanged; only the comment on `SQUAD_SPREAD_CONFIG` in `world.ts` now explains these reasons.\n\n**Checks**, all passing on the merged lane tree (c58950c5):\n- typecheck, lint, format:check and validate:i18n.\n- Changed unit tests since 0de98060: 149 files, 1414 tests. I wrote the base commit out in the command because this session blocks `$HAERAM_DIFF_BASE`.\n- `squad-spread.test.ts`: 7 tests.\n- The equivalence trio (`calendar.progression-eng`, `season`, `full-model-throughput`): 10 tests.\n\n**Not done here:** no other integration suites and no career or world runs; those belong to the batch gate and T808. T807 is untouched and is left for the runner's next dispatch."
+        }
+      }
+    },
+    {
+      "sequence": 2560,
+      "at": "2026-11-10T16:30:11.638Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ccf1ed8e-2890-4fd0-8685-9101c0001b5b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T16:30:11.638Z"
+        }
+      }
+    },
+    {
+      "sequence": 2561,
+      "at": "2026-11-10T16:30:12.047Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "ccf1ed8e-2890-4fd0-8685-9101c0001b5b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T16:30:11.638Z"
+        }
+      }
+    },
+    {
+      "sequence": 2562,
+      "at": "2026-11-10T16:55:18.758Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2563,
+      "at": "2026-11-10T16:55:19.796Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2564,
+      "at": "2026-11-10T16:55:19.864Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2565,
+      "at": "2026-11-10T16:56:28.242Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "steps": [
+          {
+            "taskId": "T805",
+            "commit": "0de9806066c436fdf9195ff5ff4ddd694f541e27",
+            "at": "2026-11-10T15:27:24.281Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T15:25:35.034Z",
+                "finishedAt": "2026-11-10T15:27:23.575Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T806",
+            "commit": "39ac15ac9deeb02cc210b9102d203783d3848afa",
+            "at": "2026-11-10T16:30:10.797Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T16:27:21.302Z",
+                "finishedAt": "2026-11-10T16:30:09.935Z"
+              }
+            ]
+          },
+          {
+            "taskId": "T807",
+            "commit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+            "at": "2026-11-10T16:56:28.215Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T16:55:20.416Z",
+                "finishedAt": "2026-11-10T16:56:27.709Z"
+              }
+            ]
+          }
+        ],
+        "verifiedCommit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+        "submittedBase": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+        "submissionId": "2c998ffe-839c-485b-9055-c1e6235a60f4",
+        "submittedAt": "2026-11-10T16:56:28.242Z",
+        "risk": null,
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-10T16:55:20.416Z",
+            "finishedAt": "2026-11-10T16:56:27.709Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2566,
+      "at": "2026-11-10T16:56:28.285Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "ccf1ed8e-2890-4fd0-8685-9101c0001b5b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T16:30:11.638Z",
+          "finishedAt": "2026-11-10T16:56:28.285Z",
+          "error": null,
+          "summary": "I finished T807; every check it requires passes. A sold place's refill is now one person keyed on the place's cohort (`${club}:vacancy:${slot}:${cohort}`), not the year. The `:serial` rule and the departed check are unchanged, so a signed refill's place gets the next serial and nobody appears twice. From his own stream he draws a level gap k (2–6) and an age offset d (−4 to +4); his age is the place's age plus d, clamped to 17–35, and goes up a year each season. He plays k below the club's strength only in the season a sale or loan emptied the place, and at strength from the next summer. A place emptied by a retirement or by letting a player go to the free agents is refilled at strength. In `spread` mode his class and age term go on top, using the same helper `npcSquad` uses. `REFILL_SALE` is unchanged and still selectable.\n\nOne change is outside the touch list: `fixture-copy.ts`. The helper workers that play other clubs' fixtures rebuild squads from a read copy that carried no dates, so it now also ships an active person's player jobs from this season, and its roster key includes them. Inactive careers are still never read. A new fixture-copy case plays a sale through the copy, and the existing parity test (`round-jobs.test.ts`) passes.\n\nMeasured on 288 refills of places sold this season: OVR sits 1.3–6.7 below strength, about 4 on average (a generated player's OVR lands within about ±1 of his level). Every age offset from −4 to +4 occurred.\n\nMoved recorded data and refreshed fixtures:\n- **Proof it is the refill alone:** with the old refill code temporarily restored, the throughput digests, the portable golden and the people in both prepared worlds came back exactly as at the base commit.\n- **`full-model-throughput` digests:** re-recorded with a note. The cohort id alone moves them; the age offset accounts for the rest; the below-strength level changes neither because those rounds have no sale.\n- **`results-only` goal lines:** three fixtures' goals moved to teammates with scores unchanged; re-recorded.\n- **`grid-throughput` digests:** unchanged.\n- **Portable golden:** refreshed with `update-golden.ts`.\n- **Prepared manager fixtures:** refreshed with `prepare-manager-fixtures.ts`. Registered people differ only by refills; results, the 1950/51 archive and the summer strengths of 10–12 of 611 clubs follow from those squads playing. `manager-journey`'s stored shortlist also picks up T809's scout-search change, which was merged without a fixture refresh.\n\nChecks run: typecheck, lint, format:check, validate:i18n; changed unit tests against 39ac15ac (137 files, 1330 passed); the contract tier (46 passed); integration for the equivalence trio plus `npc-continuity` and `round-jobs` (22 passed) and `grid-throughput` (4 passed).\n\nLimits:\n- **Age at the edges of a cohort:** the age is clamped each season, so where the place's age plus d falls outside 17–35 he stays at 17 or 35 and his birth year shifts there. A retained refill keeps his stored birth year.\n- **Sold then released or retired in the same season:** the refill stays at strength, because inactive careers are not read.\n- **Test placement:** `npc-continuity.test.ts` is an integration-tier file, so the new cases run in that project.\n- **Other out-of-touch test edits:** `results-only.test.ts` and `full-model-throughput.test.ts` (re-recorded values) and `squad-spread.test.ts` (T806's flat refill case updated to the new rule).\n- **Left to others:** the browser journeys that use the prepared checkpoints are left to the batch run, and there is no career measurement (T808's job)."
+        }
+      }
+    },
+    {
+      "sequence": 2567,
+      "at": "2026-11-10T16:56:29.056Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "fa35ab81-df97-4b09-8548-cd39c770affb",
+          "owner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/reviewer-1",
+          "status": "reviewing",
+          "commit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+          "baseCommit": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+          "submissionId": "2c998ffe-839c-485b-9055-c1e6235a60f4",
+          "createdAt": "2026-11-10T16:56:29.056Z"
+        }
+      }
+    },
+    {
+      "sequence": 2568,
+      "at": "2026-11-10T16:56:31.932Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "2e12da04-7c1b-4572-97a8-f00dbbe4a63b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T16:56:31.932Z"
+        }
+      }
+    },
+    {
+      "sequence": 2569,
+      "at": "2026-11-10T16:56:31.973Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "2e12da04-7c1b-4572-97a8-f00dbbe4a63b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T16:56:31.932Z"
+        }
+      }
+    },
+    {
+      "sequence": 2570,
+      "at": "2026-11-10T17:04:32.537Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "fa35ab81-df97-4b09-8548-cd39c770affb",
+          "owner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "Lane squad-generation (T805, T806, T807) meets its acceptance items and WORLD-6/WORLD-11. Approved with P3 notes only; no tests were run in this review. T805: `ageLadder` and `squadPlaceAge` follow the task's formula, with a Fisher–Yates order and a start of 0–17 from `${seed}:${club}:age-ladder`. `npcSquad` and `replacement` both use them, and no copy of the old formula remains in packages, apps or scripts. The surname key `year+18−age` is the old `18*cohort−i` restated, so a season's 18 keys stay consecutive and distinct. T806: `SQUAD_SPREAD` follows the `REFILL_SALE` setting pattern. Under `flat`, `generatedPlayer` is `makePlayer`'s single draw with the released 10–35 headroom, and the unit test checks squads and a refill byte for byte. The age anchors, the triangular ±6 class keyed on the person id, the headroom table and the re-centring on places 0–10 (`startingSquad` takes `ps.slice(0, formation length)`, which `ratingOf` reads) all match WORLD-6. The bench of 3 and the cost ratios follow the coordinator's 261110 decision and are listed. T807: the refill is keyed on the place's cohort, keeps the departed check and the serial rule, and draws k and d from its own stream. `soldThisSeason` matches what `noteSigning` records (the seller's job closes on the day the buyer's opens), and the read copy now carries the season's player jobs so helper fixtures match the main thread, as the new fixture-copy case shows. The worker test records cover typecheck, lint, format, i18n, the unit tier from `--changed`, the day-loop equivalence trio, `npc-continuity`, `grid-throughput` and `test:contract`. Re-recorded digests, goal lines and changed test premises are each explained in their files. The P3 notes cover a spec conflict to hand back, a gap in spread mode for T808 to read, and re-running the gate on the merged tree with T804.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/npc-continuity.ts:139 (T807)",
+              "message": "Two T807 acceptance items conflict. Item 1 asks for the place's age plus d clamped to 17–35; item 2 asks for the same refill (id, name, birth year) a year older each season. In the seasons where the clamp applies (d ≤ −2 early in a cohort, d ≥ 1 late in one, about 10% of a refill's seasons), he stays 17 or 35 and his birth year moves by a year each season. Example: the owner buys a 19-year-old, d = −3, and the refill shows as 17 two seasons running. The unit test only checks place ages 21–30, so it skips those seasons. No fixed birth year can stay inside 17–35 for a whole cohort unless d is −1 or 0, so this needs a planning decision rather than a worker fix. Hand to the planner as an inbox item: allow ages above 35 (or under 17), narrow d near the ends of a cohort, or accept the moving birth year."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/npc-continuity.ts:149 (T806/T807, spread only)",
+              "message": "Under `SQUAD_SPREAD` `spread`, a refill takes strength − k + class + age term but neither the squad's re-centring shift (about +2, since the age term averages −2 over 18–35) nor the bench offset of −3. A refilled starter therefore sits about 2 lower than its place's level, also after the next summer when he plays 'at strength', and a bench refill sits about 1 higher. This matches the acceptance wording and `flat` is unaffected, but T808 should read refilled squads when it judges the gate, or pass `spreadLevels`' shift and bench offset to the refill."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/portable-v1.json, tests/fixtures/prepared/*.json, full-model-throughput/grid-throughput/results-only recorded values (T805, T807)",
+              "message": "The lane last merged si/rl10 at f70d1eda. baseCommit 8d70ca7a adds T804, which flips `UPGRADE_MEASURE` to `signed` and changes `staffSignings`' `joined` to `joinedThisWindow`. No file overlaps, but every recorded fact here was regenerated without T804. On the new age ladder the delegated 단장's window signings can differ: the golden already lost one recruitment arrival in financial-mediation. The coordinator gate on the merged tree should run `test:contract`, `tests/fixtures/prepared-world.test.ts` and the integration digests, and re-record with their scripts if they move. If T804 changes their content, regenerate the prepared worlds too, since nothing compares them to a fresh run."
+            },
+            {
+              "priority": "P3",
+              "where": "tests/fixtures/prepared/manager-journey.json:6, manager-activation.json:6 (T805, T807)",
+              "message": "Both prepared worlds now record `source.dirty: true` at 39ac15ac (base: dirty false). They were regenerated on an uncommitted tree; the content should match 5eece8c9. If clean provenance is wanted, rerun `pnpm exec tsx scripts/prepare-manager-fixtures.ts --write` on the integrated committed tree, together with the T804 re-check above."
+            }
+          ],
+          "commit": "5eece8c963c5b66d222c99a697260abc3fa7deb0",
+          "baseCommit": "8d70ca7afcb6de432d8e8c46bd11e2201c4c8e8c",
+          "submissionId": "2c998ffe-839c-485b-9055-c1e6235a60f4",
+          "createdAt": "2026-11-10T16:56:29.056Z",
+          "finishedAt": "2026-11-10T17:04:32.537Z"
+        }
+      }
+    },
+    {
+      "sequence": 2571,
+      "at": "2026-11-10T17:04:32.574Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "2e12da04-7c1b-4572-97a8-f00dbbe4a63b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T16:56:31.932Z",
+          "finishedAt": "2026-11-10T17:04:32.574Z",
+          "error": null,
+          "summary": "Lane squad-generation (T805, T806, T807) meets its acceptance items and WORLD-6/WORLD-11. Approved with P3 notes only; no tests were run in this review. T805: `ageLadder` and `squadPlaceAge` follow the task's formula, with a Fisher–Yates order and a start of 0–17 from `${seed}:${club}:age-ladder`. `npcSquad` and `replacement` both use them, and no copy of the old formula remains in packages, apps or scripts. The surname key `year+18−age` is the old `18*cohort−i` restated, so a season's 18 keys stay consecutive and distinct. T806: `SQUAD_SPREAD` follows the `REFILL_SALE` setting pattern. Under `flat`, `generatedPlayer` is `makePlayer`'s single draw with the released 10–35 headroom, and the unit test checks squads and a refill byte for byte. The age anchors, the triangular ±6 class keyed on the person id, the headroom table and the re-centring on places 0–10 (`startingSquad` takes `ps.slice(0, formation length)`, which `ratingOf` reads) all match WORLD-6. The bench of 3 and the cost ratios follow the coordinator's 261110 decision and are listed. T807: the refill is keyed on the place's cohort, keeps the departed check and the serial rule, and draws k and d from its own stream. `soldThisSeason` matches what `noteSigning` records (the seller's job closes on the day the buyer's opens), and the read copy now carries the season's player jobs so helper fixtures match the main thread, as the new fixture-copy case shows. The worker test records cover typecheck, lint, format, i18n, the unit tier from `--changed`, the day-loop equivalence trio, `npc-continuity`, `grid-throughput` and `test:contract`. Re-recorded digests, goal lines and changed test premises are each explained in their files. The P3 notes cover a spec conflict to hand back, a gap in spread mode for T808 to read, and re-running the gate on the merged tree with T804."
+        }
+      }
+    },
+    {
+      "sequence": 2572,
+      "at": "2026-11-10T17:04:32.716Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
+      "taskId": "T807",
+      "tasks": [
+        "T805",
+        "T806",
+        "T807"
+      ],
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

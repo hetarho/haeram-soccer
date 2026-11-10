@@ -6,7 +6,9 @@ import { requestCandidates, signingVerdict } from './signings';
 import { canonical, validateWorld } from '../../contracts/src/index';
 import { careerWorld } from './career.testkit';
 function fixture() {
-  const w = careerWorld({ seed: 'resolution' });
+  // A seed whose scout lists a dearer midfielder and a cheaper one: on each club's own age ladder
+  // (T805) 'resolution' lists two of one club at the same fee and wage.
+  const w = careerWorld({ seed: 'resolution-1' });
   const offers = transferOffers(w)
     .filter((o) => o.available && lineOf(o.player.position) === 'MF')
     .sort((a, b) => (BigInt(a.fee) > BigInt(b.fee) ? -1 : 1));
