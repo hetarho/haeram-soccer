@@ -914,7 +914,6 @@
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
-| T811 | gate fix: an aggregate cup tie and a grid corner path after the generation changes | ARCH | - | todo |
 | T812 | prepared worlds regenerated from the committed tree | ARCH | T810 T811 | todo |
 
 ## work
@@ -940,12 +939,13 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
-| rl10 | 2 | 9 | 7 | 2 | 0 | 1 | 0 | 2026-11-10T17:44:22.580Z | [history](work/rl10.json) |
+| rl10 | 2 | 9 | 8 | 1 | 0 | 0 | 0 | 2026-11-10T17:50:19.774Z | [history](work/rl10.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261110 T811 integrated
 - 261110 T810 integrated
 - 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
 - 261110 T805 T806 T807 integrated
@@ -965,4 +965,3 @@
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
 - 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
-- 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T17:44:22.580Z",
-  "sourceCommit": "f68203454a6574e1d8024a906648544fe879e681",
+  "snapshotAt": "2026-11-10T17:50:19.774Z",
+  "sourceCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -119,21 +119,14 @@
   },
   "summary": {
     "total": 9,
-    "completed": 7,
-    "remaining": 2,
+    "completed": 8,
+    "remaining": 1,
     "running": 0,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 1
   },
   "tasks": [
-    {
-      "id": "T811",
-      "title": "Gate fix: an aggregate cup tie and a grid corner path after the generation changes",
-      "dep": [],
-      "lane": "gate-fix-match",
-      "status": "ready"
-    },
     {
       "id": "T812",
       "title": "Prepared worlds regenerated from the committed tree",
@@ -566,6 +559,8 @@
       "submittedBase": "f68203454a6574e1d8024a906648544fe879e681",
       "submissionId": "7f685f4d-5e28-4910-922d-6772f4828a47",
       "submittedAt": "2026-11-10T17:40:50.935Z",
+      "integratedCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
+      "integratedAt": "2026-11-10T17:47:17.421Z",
       "risk": null,
       "dispatch": {
         "id": "1bd9d5bd-94e6-49b4-8922-b58d6c1f554a",
@@ -634,6 +629,13 @@
           "startedAt": "2026-11-10T17:40:07.917Z",
           "finishedAt": "2026-11-10T17:40:49.769Z"
         }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-10T17:46:12.002Z",
+          "finishedAt": "2026-11-10T17:47:16.963Z"
+        }
       ]
     },
     {
@@ -648,7 +650,7 @@
       "contributors": [
         "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-2"
       ],
-      "status": "ready",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-10T17:14:32.182Z",
       "startCommit": "f68203454a6574e1d8024a906648544fe879e681",
@@ -658,17 +660,41 @@
       "submittedAt": "2026-11-10T17:42:17.236Z",
       "risk": null,
       "dispatch": {
-        "id": "e8a62e8e-4bc6-4752-920e-2cf3ca82ac75",
+        "id": "64c79f68-5acf-4f6c-8542-7042a707f863",
         "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
-        "role": "worker",
-        "slot": 2,
+        "role": "reviewer",
+        "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-11-10T17:40:52.369Z",
-        "finishedAt": "2026-11-10T17:42:17.352Z",
+        "startedAt": "2026-11-10T17:47:21.425Z",
+        "finishedAt": "2026-11-10T17:50:17.162Z",
         "error": null,
-        "summary": "T811 is ready to submit as is: the coordinator committed it as 4cc5f78f and the worktree is clean. I made no further changes this round.\n\nBoth gate cases pass again with no engine change; each had been passing on generated people that T805's per-club age ladder replaced.\n\n- **Cup tie** (`aggregate/engine.test.ts`): the case's search checked only the settled result. After T805 that search first stops at index 483, where the first plan leaves one answer and the second leaves two, so the engine correctly keeps the first because it has fewer answers, not because it is the earlier of tied plans. The search now applies the case's own criterion: both plans leave exactly one answer. That finds 711 again, the fixture the case's history records, and every assertion is unchanged.\n- **Corner path** (`grid/movement.test.ts`): the failing check was the zone-guard bound of 4.5 m from the guard's spot, not the step bound. That bound predates revision 6 (T542 and MATCH-32 r38), which moves a zonal guard sideways toward the line between the ball and his goal, further the better his 위치선정. After T805 a guard with in-match 위치선정 97.3 was moved the full 4.885 m onto that line. The guard who held that zone before T805 moved 4.29 m, so the case had passed by 0.21 m. With the pre-T805 age formula temporarily restored, the case passes unchanged.\n  - The case now keeps T348's 4.5 m limit unchanged on the guard's own point (his spot, or goal-side of a nearby runner) and checks MATCH-32's move exactly: same depth, toward the line, never past it.\n  - The position limit is 4.5 m plus that move, so it is unchanged for any guard who isn't moved.\n\nChecks I ran:\n- The two test files in the integration project: 46 of 46 pass.\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check` and `pnpm run validate:i18n` all pass.\n- The unit `--changed` run selected no files, because both edited files are integration-tier, so it is not evidence.\n\nAcceptance 4's day-loop equivalence and digest run was not triggered, since no engine code changed, and was not run. The full integration suite and batch stay with the coordinator's gate."
+        "summary": "T811 approved. It changes only test files: two integration tests plus the task's result section. No engine source changed. The three-dot diff touches no file that T810 changed, and T810 has meanwhile been integrated onto the base.\n\nCup tie (aggregate/engine.test.ts): the engine's fallback works as written at aggregate/engine.ts:349 and :397. It settles on the searched plan with the fewest disagreeing answers, and on a tie takes the earliest. Index 483, which T805 introduced, is not a tie: its first plan leaves 1 answer and its second leaves 2. The old fixture search checked only the settled result, so it picked 483 wrongly. The search now runs the same two-plan check as the test body and finds index 711 again. The body's assertions are unchanged, and the key check, match.decisions == first.decisions, still tests the earlier-of-tied-plans rule.\n\nCorner path (grid/movement.test.ts): the 4.88-vs-4.5 failure was the zone-guard bound (setPiece.zone 3 + markGoalSide 1.5), not MATCH-12's step bound. Screening set-piece zone guards is in force and matches the SSOT: shape.ts:809 applies the screen to set-piece zone guards. T542's approved acceptance says the screen applies to 'covering a zone (not a box zone)', where box zones are T443's open-play zones, and MATCH-32 r38, written in the same commit bcf29355, describes the screen the same way.\n\nThe new corner check keeps T348's 4.5 m bound on guardPoint unchanged. It adds that targetOf stays at the guard's depth, between the guard point and the ball–goal line. The position bound is widened only by that screen move, so it is unchanged for any guard who is not screened. The test's line formula matches the engine's: the same line, evaluated at the same depth.\n\nThe worker's evidence is consistent: 46/46 on the two integration files, plus typecheck, lint, format:check and validate:i18n. The unit --changed run selected no files, and the result says so rather than counting it as evidence. The day-loop run was not triggered because no engine code changed. Both integration files and the full suite are left for the coordinator's gate."
+      },
+      "review": {
+        "id": "94f29a7b-5449-48ab-b3ab-199180dadf83",
+        "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T811 approved. It changes only test files: two integration tests plus the task's result section. No engine source changed. The three-dot diff touches no file that T810 changed, and T810 has meanwhile been integrated onto the base.\n\nCup tie (aggregate/engine.test.ts): the engine's fallback works as written at aggregate/engine.ts:349 and :397. It settles on the searched plan with the fewest disagreeing answers, and on a tie takes the earliest. Index 483, which T805 introduced, is not a tie: its first plan leaves 1 answer and its second leaves 2. The old fixture search checked only the settled result, so it picked 483 wrongly. The search now runs the same two-plan check as the test body and finds index 711 again. The body's assertions are unchanged, and the key check, match.decisions == first.decisions, still tests the earlier-of-tied-plans rule.\n\nCorner path (grid/movement.test.ts): the 4.88-vs-4.5 failure was the zone-guard bound (setPiece.zone 3 + markGoalSide 1.5), not MATCH-12's step bound. Screening set-piece zone guards is in force and matches the SSOT: shape.ts:809 applies the screen to set-piece zone guards. T542's approved acceptance says the screen applies to 'covering a zone (not a box zone)', where box zones are T443's open-play zones, and MATCH-32 r38, written in the same commit bcf29355, describes the screen the same way.\n\nThe new corner check keeps T348's 4.5 m bound on guardPoint unchanged. It adds that targetOf stays at the guard's depth, between the guard point and the ball–goal line. The position bound is widened only by that screen move, so it is unchanged for any guard who is not screened. The test's line formula matches the engine's: the same line, evaluated at the same depth.\n\nThe worker's evidence is consistent: 46/46 on the two integration files, plus typecheck, lint, format:check and validate:i18n. The unit --changed run selected no files, and the result says so rather than counting it as evidence. The day-loop run was not triggered because no engine code changed. Both integration files and the full suite are left for the coordinator's gate.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/movement.test.ts:612-623 (T811)",
+            "message": "The new screen checks only keep the target between the guard point and the ball–goal line, at the same depth. They don't check when the screen should apply: a central ball at least screen.from m up, within screen.reach, and the pull following 위치선정. The position bound is widened by gap(target, held), so a guard screened wrongly, for example with the ball wide, would now pass this case where the old 4.5 m bound might have caught it. shape.test.ts (T542) covers the screen's rules, so this is optional. If you want to tighten it, assert target == held when the ball is outside the screen's lane or depth."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/grid/movement.test.ts:603-604 (T811)",
+            "message": "The comment says a screened guard stands further from his spot 'by exactly the screen's move'. The assertion is an upper bound (zone + markGoalSide + the screen move). 'By at most' would match what is checked."
+          }
+        ],
+        "commit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+        "baseCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
+        "submissionId": "adebfd95-01d8-44e1-8f00-518628d8ac2d",
+        "createdAt": "2026-11-10T17:47:18.248Z",
+        "finishedAt": "2026-11-10T17:50:17.125Z"
       },
       "steps": [
         {
@@ -4110,6 +4136,181 @@
       "group": "rl10",
       "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
       "taskId": "T810",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2616,
+      "at": "2026-11-10T17:47:17.281Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-10T17:46:12.002Z",
+            "finishedAt": "2026-11-10T17:47:16.963Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2617,
+      "at": "2026-11-10T17:47:17.421Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
+        "integratedAt": "2026-11-10T17:47:17.421Z"
+      }
+    },
+    {
+      "sequence": 2618,
+      "at": "2026-11-10T17:47:18.248Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "94f29a7b-5449-48ab-b3ab-199180dadf83",
+          "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+          "status": "reviewing",
+          "commit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+          "baseCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
+          "submissionId": "adebfd95-01d8-44e1-8f00-518628d8ac2d",
+          "createdAt": "2026-11-10T17:47:18.248Z"
+        }
+      }
+    },
+    {
+      "sequence": 2619,
+      "at": "2026-11-10T17:47:21.425Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "64c79f68-5acf-4f6c-8542-7042a707f863",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:47:21.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 2620,
+      "at": "2026-11-10T17:47:21.477Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "64c79f68-5acf-4f6c-8542-7042a707f863",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:47:21.425Z"
+        }
+      }
+    },
+    {
+      "sequence": 2621,
+      "at": "2026-11-10T17:50:17.125Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "94f29a7b-5449-48ab-b3ab-199180dadf83",
+          "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T811 approved. It changes only test files: two integration tests plus the task's result section. No engine source changed. The three-dot diff touches no file that T810 changed, and T810 has meanwhile been integrated onto the base.\n\nCup tie (aggregate/engine.test.ts): the engine's fallback works as written at aggregate/engine.ts:349 and :397. It settles on the searched plan with the fewest disagreeing answers, and on a tie takes the earliest. Index 483, which T805 introduced, is not a tie: its first plan leaves 1 answer and its second leaves 2. The old fixture search checked only the settled result, so it picked 483 wrongly. The search now runs the same two-plan check as the test body and finds index 711 again. The body's assertions are unchanged, and the key check, match.decisions == first.decisions, still tests the earlier-of-tied-plans rule.\n\nCorner path (grid/movement.test.ts): the 4.88-vs-4.5 failure was the zone-guard bound (setPiece.zone 3 + markGoalSide 1.5), not MATCH-12's step bound. Screening set-piece zone guards is in force and matches the SSOT: shape.ts:809 applies the screen to set-piece zone guards. T542's approved acceptance says the screen applies to 'covering a zone (not a box zone)', where box zones are T443's open-play zones, and MATCH-32 r38, written in the same commit bcf29355, describes the screen the same way.\n\nThe new corner check keeps T348's 4.5 m bound on guardPoint unchanged. It adds that targetOf stays at the guard's depth, between the guard point and the ball–goal line. The position bound is widened only by that screen move, so it is unchanged for any guard who is not screened. The test's line formula matches the engine's: the same line, evaluated at the same depth.\n\nThe worker's evidence is consistent: 46/46 on the two integration files, plus typecheck, lint, format:check and validate:i18n. The unit --changed run selected no files, and the result says so rather than counting it as evidence. The day-loop run was not triggered because no engine code changed. Both integration files and the full suite are left for the coordinator's gate.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/movement.test.ts:612-623 (T811)",
+              "message": "The new screen checks only keep the target between the guard point and the ball–goal line, at the same depth. They don't check when the screen should apply: a central ball at least screen.from m up, within screen.reach, and the pull following 위치선정. The position bound is widened by gap(target, held), so a guard screened wrongly, for example with the ball wide, would now pass this case where the old 4.5 m bound might have caught it. shape.test.ts (T542) covers the screen's rules, so this is optional. If you want to tighten it, assert target == held when the ball is outside the screen's lane or depth."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/grid/movement.test.ts:603-604 (T811)",
+              "message": "The comment says a screened guard stands further from his spot 'by exactly the screen's move'. The assertion is an upper bound (zone + markGoalSide + the screen move). 'By at most' would match what is checked."
+            }
+          ],
+          "commit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+          "baseCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
+          "submissionId": "adebfd95-01d8-44e1-8f00-518628d8ac2d",
+          "createdAt": "2026-11-10T17:47:18.248Z",
+          "finishedAt": "2026-11-10T17:50:17.125Z"
+        }
+      }
+    },
+    {
+      "sequence": 2622,
+      "at": "2026-11-10T17:50:17.162Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "64c79f68-5acf-4f6c-8542-7042a707f863",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:47:21.425Z",
+          "finishedAt": "2026-11-10T17:50:17.162Z",
+          "error": null,
+          "summary": "T811 approved. It changes only test files: two integration tests plus the task's result section. No engine source changed. The three-dot diff touches no file that T810 changed, and T810 has meanwhile been integrated onto the base.\n\nCup tie (aggregate/engine.test.ts): the engine's fallback works as written at aggregate/engine.ts:349 and :397. It settles on the searched plan with the fewest disagreeing answers, and on a tie takes the earliest. Index 483, which T805 introduced, is not a tie: its first plan leaves 1 answer and its second leaves 2. The old fixture search checked only the settled result, so it picked 483 wrongly. The search now runs the same two-plan check as the test body and finds index 711 again. The body's assertions are unchanged, and the key check, match.decisions == first.decisions, still tests the earlier-of-tied-plans rule.\n\nCorner path (grid/movement.test.ts): the 4.88-vs-4.5 failure was the zone-guard bound (setPiece.zone 3 + markGoalSide 1.5), not MATCH-12's step bound. Screening set-piece zone guards is in force and matches the SSOT: shape.ts:809 applies the screen to set-piece zone guards. T542's approved acceptance says the screen applies to 'covering a zone (not a box zone)', where box zones are T443's open-play zones, and MATCH-32 r38, written in the same commit bcf29355, describes the screen the same way.\n\nThe new corner check keeps T348's 4.5 m bound on guardPoint unchanged. It adds that targetOf stays at the guard's depth, between the guard point and the ball–goal line. The position bound is widened only by that screen move, so it is unchanged for any guard who is not screened. The test's line formula matches the engine's: the same line, evaluated at the same depth.\n\nThe worker's evidence is consistent: 46/46 on the two integration files, plus typecheck, lint, format:check and validate:i18n. The unit --changed run selected no files, and the result says so rather than counting it as evidence. The day-loop run was not triggered because no engine code changed. Both integration files and the full suite are left for the coordinator's gate."
+        }
+      }
+    },
+    {
+      "sequence": 2623,
+      "at": "2026-11-10T17:50:17.257Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {

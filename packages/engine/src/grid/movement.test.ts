@@ -34,11 +34,18 @@ import {
   type Mover,
 } from './movement';
 import { SAMPLING } from './observation';
-import { attackFrame, cellOf } from './pitch';
+import { attackFrame, cellOf, PITCH, toEngine } from './pitch';
 import { playRestart, RESTART_CONFIG, type Restart } from './restarts';
 import { shotContext } from './resolve';
 import { buildGridSetup } from './setup';
-import { SHAPE_CONFIG, setPieceTargets, speedOf, targetOf, type SetPieceScene } from './shape';
+import {
+  guardPoint,
+  SHAPE_CONFIG,
+  setPieceTargets,
+  speedOf,
+  targetOf,
+  type SetPieceScene,
+} from './shape';
 import { createState, onPitch, skill, slotOf, type GridPlayer, type GridState } from './state';
 import { Tracer, type TraceEntry } from './trace';
 import { gridKit } from './testkit';
@@ -466,10 +473,17 @@ describe('grid movement', () => {
   ];
   type Job = Pick<Intention, 'kind' | 'priority' | 'since' | 'opponent' | 'run'> | null;
   /**
+   * A guard's zone job at a stage: the point T348 gives him (`guardPoint`: his spot, or goal-side
+   * of the runner nearest it within `setPiece.zone` m) and where his job takes him (`targetOf`),
+   * which MATCH-32's screen (revision 6, T542) may move across from it.
+   */
+  type Guard = { held: [number, number]; target: [number, number] } | null;
+  /**
    * A delivered set piece on the candidate model in stages, as `playGrid` plays it (T348): from
    * where everyone stood when the ball went dead, through the candidate preparation to the kick,
    * the delivery to the first man up, the second ball laid off to the man at the edge and the
-   * defenders winning it. Each stage records the clock, everyone's position and job, and the ball.
+   * defenders winning it. Each stage records the clock, everyone's position, job and zone job, and
+   * the ball.
    */
   function deliveredSetPiece(rs: Restart) {
     const s = createState({ ...kit.setup, model: MATCH_MODEL_REVISION });
@@ -478,8 +492,13 @@ describe('grid movement', () => {
     const rest: [number, number] = corner ? [rs.spot[0], rs.spot[1] < 34 ? 20 : 48] : rs.spot;
     s.ball = [rest[0], rest[1]];
     const all = s.players.flat();
-    const stages: { at: number; pos: [number, number][]; jobs: Job[]; ball: [number, number] }[] =
-      [];
+    const stages: {
+      at: number;
+      pos: [number, number][];
+      jobs: Job[];
+      guards: Guard[];
+      ball: [number, number];
+    }[] = [];
     const snap = () =>
       stages.push({
         at: s.elapsed,
@@ -494,6 +513,12 @@ describe('grid movement', () => {
                 ...(i.opponent === undefined ? {} : { opponent: i.opponent }),
                 ...(i.run ? { run: i.run } : {}),
               }
+            : null;
+        }),
+        guards: all.map((gp) => {
+          const i = gp.intention;
+          return i?.kind === 'cover' && i.zone
+            ? { held: guardPoint(s, gp, i.zone), target: targetOf(s, gp.side, gp.idx) }
             : null;
         }),
         ball: [s.ball[0], s.ball[1]],
@@ -571,15 +596,30 @@ describe('grid movement', () => {
             SHAPE_CONFIG.markGoalSide + EPS,
           );
         }
-        // Each zone and the goal stay guarded, unless a guard went out to press the ball.
+        // Each zone and the goal stay guarded, unless a guard went out to press the ball. T348 holds
+        // a guard on his spot or goal-side of a runner within `zone` m of it; from there MATCH-32's
+        // screen (revision 6, T542: a defender covering a zone, not a box zone) moves him across, at
+        // that depth, toward the line between the ball and his goal and never past it, the further
+        // the better his 위치선정. So a sharp guard whose spot is off that line stands more than
+        // `zone` + `markGoalSide` m from it by exactly the screen's move (T811: 4.88 m for the wide
+        // free kick's guard at 위치선정 97 once T805's age ladder put him on that spot).
         for (const { gp, to } of scene.marks.filter((m) => !m.opponent)) {
           const mine = job(stage, gp);
           if (mine?.kind === 'press')
             expect(mine).toMatchObject({ priority: 'danger', opponent: carrier?.idx });
           else {
             expect(mine, label).toMatchObject({ kind: 'cover', since });
-            expect(gap(stage.pos[at(gp)]!, to)).toBeLessThanOrEqual(
-              P.zone + SHAPE_CONFIG.markGoalSide,
+            const { held, target } = stage.guards[at(gp)]!;
+            expect(gap(held, to), label).toBeLessThanOrEqual(P.zone + SHAPE_CONFIG.markGoalSide);
+            const goal = toEngine(gp.side, [0, PITCH.width / 2]);
+            const line =
+              goal[1] +
+              ((stage.ball[1] - goal[1]) * (held[0] - goal[0])) / (stage.ball[0] - goal[0]);
+            expect(Math.abs(target[0] - held[0]), label).toBeLessThanOrEqual(EPS);
+            expect(target[1], label).toBeGreaterThanOrEqual(Math.min(held[1], line) - EPS);
+            expect(target[1], label).toBeLessThanOrEqual(Math.max(held[1], line) + EPS);
+            expect(gap(stage.pos[at(gp)]!, to), label).toBeLessThanOrEqual(
+              P.zone + SHAPE_CONFIG.markGoalSide + gap(target, held),
             );
           }
         }
