@@ -23,6 +23,7 @@ import { divisionFor, drawAgent, marketWageAt } from './contracts';
 import { quote } from './quotes';
 import {
   adaptationStart,
+  GENERATED_ATTRIBUTES,
   generateProfile,
   LINE_MINIMUM,
   lineOf,
@@ -90,6 +91,8 @@ export const SURNAME_STRIDE = 97;
  */
 export const squadSurname = (seed: string, club: string, key: number) =>
   hash(`${seed}:${club}:surnames`) + key * SURNAME_STRIDE;
+/** A generated player's potential headroom above his rating as released: 10–35 at every age. */
+const RELEASED_HEADROOM: readonly [number, number] = [10, 35];
 /**
  * A generated player at his market wage (→CLUB-25) in `division`, the tier of the club he plays
  * for; without one, the division his ability suits. His agent (→CLUB-30) is the last draw of his
@@ -107,6 +110,53 @@ export function makePlayer(
   division?: number,
   role?: RoleId,
   surname?: number,
+): Player {
+  return drawPlayer(
+    code,
+    seed,
+    id,
+    year,
+    rating,
+    position,
+    age,
+    division,
+    role,
+    surname,
+    RELEASED_HEADROOM,
+  );
+}
+/**
+ * A generated squad member or a refill of his place at `level` (→WORLD-6): `makePlayer` as
+ * released, or with `SQUAD_SPREAD` at `spread` his potential headroom narrowing with his age
+ * (`spreadHeadroom`), drawn with the same one draw so his agent stays as it was.
+ */
+export function generatedPlayer(
+  code: string,
+  seed: string,
+  id: string,
+  year: number,
+  level: number,
+  position: Position,
+  age: number,
+  division: number,
+  role?: RoleId,
+  surname?: number,
+): Player {
+  const headroom = SQUAD_SPREAD.inForce === 'spread' ? spreadHeadroom(age) : RELEASED_HEADROOM;
+  return drawPlayer(code, seed, id, year, level, position, age, division, role, surname, headroom);
+}
+function drawPlayer(
+  code: string,
+  seed: string,
+  id: string,
+  year: number,
+  rating: number,
+  position: Position,
+  age: number,
+  division: number | undefined,
+  role: RoleId | undefined,
+  surname: number | undefined,
+  headroom: readonly [number, number],
 ): Player {
   const r = random(`${seed}:${id}`);
   // The profile has a stream of its own, so the name, potential and agent stay as they were drawn.
@@ -128,7 +178,7 @@ export function makePlayer(
     qualities: generateQualities(seed, id),
     traits: profile.traits,
     adaptation: 0.8,
-    potential: clamp(rating + integer(r, 10, 35), 50, 95),
+    potential: clamp(rating + integer(r, headroom[0], headroom[1]), 50, 95),
     reputation: clamp(rating - 15),
     wage: '0',
     until: year + 3,
@@ -369,8 +419,123 @@ export function squadPlaceAge(
   return { age: 18 + (step % SQUAD_AGES), cohort: Math.floor(step / SQUAD_AGES) };
 }
 /**
+ * T806's squad spread (→WORLD-6), a setting held at `flat` until T808 reads its gate: `flat` draws
+ * every generated place at the club's strength, as released; `spread` gives each generated player
+ * his own class and an age term, sits the bench below the starters, re-centres the starters on the
+ * club's strength and narrows a player's potential headroom with his age (`SQUAD_SPREAD_CONFIG`).
+ */
+export const SQUAD_SPREAD: { inForce: 'flat' | 'spread' } = { inForce: 'flat' };
+/**
+ * WORLD-6's spread terms. `class` and `bench` are chosen within WORLD-6's ranges (±6, 3–8) to keep a
+ * squad's market cost, which the means level reads (`squadCostAt`, →LEAGUE-10), nearest the flat
+ * draw's: spread squads cost less (the age term lowers the young and the old, and below a star pay
+ * spread of 1 a starter lifted above OVR 80 earns little more), so the bench sits as near as WORLD-6
+ * allows and the class takes its widest spread; T806's result lists the cost per strength and era.
+ */
+export const SQUAD_SPREAD_CONFIG = {
+  /** A player's class: symmetric within ± this of his place's level, triangular so stars are rare. */
+  class: 6,
+  /** How far the bench sits below the starters' mean. */
+  bench: 3,
+  /** [age, term] anchors, linear between them and flat outside. */
+  age: [
+    [18, -7],
+    [20, -4],
+    [22, -1],
+    [24, 0],
+    [29, 0],
+    [31, -1],
+    [33, -3],
+    [35, -5],
+  ] as [number, number][],
+  /** Potential headroom: `young` at `from` years or younger, narrowing linearly to `old` from `to`. */
+  headroom: { from: 20, young: [10, 35], to: 27, old: [0, 4] } as {
+    from: number;
+    young: readonly [number, number];
+    to: number;
+    old: readonly [number, number];
+  },
+  /** Levels stay within what generated attributes reach. */
+  ...GENERATED_ATTRIBUTES,
+};
+/** WORLD-6's age term: a young or ageing player stands below his place's level. */
+export function spreadAgeTerm(age: number) {
+  const anchors = SQUAD_SPREAD_CONFIG.age;
+  if (age <= anchors[0]![0]) return anchors[0]![1];
+  for (let i = 1; i < anchors.length; i++) {
+    const [from, low] = anchors[i - 1]!,
+      [to, high] = anchors[i]!;
+    if (age <= to) return low + ((high - low) * (age - from)) / (to - from);
+  }
+  return anchors[anchors.length - 1]![1];
+}
+/** A generated person's class: drawn once from his own stream, so the same every season he plays. */
+export function spreadClass(seed: string, id: string) {
+  const r = random(`${seed}:${id}:class`);
+  return SQUAD_SPREAD_CONFIG.class * (r() + r() - 1);
+}
+/**
+ * What a generated person's class and age put on his place's level (→WORLD-6), the one term a
+ * squad's member and a refill of his place take alike; nothing while `SQUAD_SPREAD` is `flat`.
+ */
+export function spreadTerm(seed: string, id: string, age: number) {
+  return SQUAD_SPREAD.inForce === 'spread' ? spreadClass(seed, id) + spreadAgeTerm(age) : 0;
+}
+/** WORLD-6's potential headroom at `age`, rounded to whole points. */
+export function spreadHeadroom(age: number): readonly [number, number] {
+  const { from, young, to, old } = SQUAD_SPREAD_CONFIG.headroom;
+  const t = clamp((age - from) / (to - from), 0, 1);
+  return [
+    Math.round(young[0] + (old[0] - young[0]) * t),
+    Math.round(young[1] + (old[1] - young[1]) * t),
+  ];
+}
+/**
+ * The whole-point levels of a squad whose places' terms are `terms` (`spreadTerm`), the first
+ * `starters` the eleven a club nobody owns fields (`startingSquad`): the bench sits
+ * `SQUAD_SPREAD_CONFIG.bench` lower, the squad moves together until the starters' mean is
+ * `strength`, then the starters alone move further as far as the ceiling takes what some of them
+ * cannot reach, so the bench stays below them; whole points keep the starters' sum where it fell.
+ */
+export function spreadLevels(strength: number, terms: readonly number[], starters: number) {
+  const { bench, floor, ceiling } = SQUAD_SPREAD_CONFIG;
+  const raw = terms.map((term, i) => strength + term - (i < starters ? 0 : bench));
+  const fit = (level: number) => clamp(level, floor, ceiling);
+  const mean = (shift: number) =>
+    raw.slice(0, starters).reduce((sum, level) => sum + fit(level + shift), 0) / starters;
+  const shift = strength - raw.slice(0, starters).reduce((sum, level) => sum + level, 0) / starters;
+  // The starters' own shift: the squad's, raised while the ceiling holds some of them back.
+  let low = shift,
+    high = shift + (ceiling - floor);
+  if (mean(low) < strength)
+    for (let step = 0; step < 60; step++) {
+      const mid = (low + high) / 2;
+      if (mean(mid) < strength) low = mid;
+      else high = mid;
+    }
+  const lift = mean(low) < strength ? high : low;
+  const levels = raw.map((level, i) => fit(level + (i < starters ? lift : shift)));
+  return [...wholeLevels(levels.slice(0, starters)), ...levels.slice(starters).map(Math.round)];
+}
+/** Whole points with the same sum, rounded to the nearest whole, the largest remainders first. */
+function wholeLevels(levels: readonly number[]) {
+  const floors = levels.map(Math.floor);
+  let left =
+    Math.round(levels.reduce((sum, level) => sum + level, 0)) - floors.reduce((a, b) => a + b, 0);
+  const order = levels
+    .map((level, i) => ({ i, rest: level - floors[i]! }))
+    .sort((a, b) => b.rest - a.rest || a.i - b.i);
+  for (const { i } of order) {
+    if (left <= 0) break;
+    floors[i]!++;
+    left--;
+  }
+  return floors;
+}
+/**
  * The 18 generated players of a club nobody owns, renewed by cohort each year (→WORLD-6); `style`
- * builds them for another tactic's formation (measurement of forced tactics, T321).
+ * builds them for another tactic's formation (measurement of forced tactics, T321). With
+ * `SQUAD_SPREAD` at `spread` each takes his level from `spreadLevels`, else the club's strength.
  */
 export function npcSquad(
   seed: string,
@@ -381,21 +546,32 @@ export function npcSquad(
   const code = COUNTRIES.some((p) => p.code === c.country) ? c.country : 'ENG';
   const fatigue = style === 'press' ? PRESS_LOAD_FATIGUE : 0;
   const ladder = ageLadder(seed, c.id);
-  return squadPlaces(style).map((place, i) => {
+  const places = squadPlaces(style).map((place, i) => {
     const { age, cohort } = squadPlaceAge(seed, c.id, year, i, ladder);
+    return { ...place, age, id: `${c.id}:p:${i}:${cohort}` };
+  });
+  const levels =
+    SQUAD_SPREAD.inForce === 'spread'
+      ? spreadLevels(
+          c.strength,
+          places.map((place) => spreadTerm(seed, place.id, place.age)),
+          formationOf(style).length,
+        )
+      : undefined;
+  return places.map((place, i) => {
     // The year he turned 18 keeps his surname through his cohort; a season's 18 hold 18
     // consecutive ones.
-    const player = makePlayer(
+    const player = generatedPlayer(
       code,
       seed,
-      `${c.id}:p:${i}:${cohort}`,
+      place.id,
       year,
-      c.strength,
+      levels?.[i] ?? c.strength,
       place.position,
-      age,
+      place.age,
       c.tier,
       place.role,
-      squadSurname(seed, c.id, year + 18 - age),
+      squadSurname(seed, c.id, year + 18 - place.age),
     );
     player.fatigue = fatigue;
     return player;
