@@ -21,6 +21,7 @@
 | nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 
 ## inbox
+- 261110 decided T689 MATCH-16 MATCH-30: what T689's next two-hour window measures after cv04-clr fixed the keeper-out strikes but overshot goals (3.07), goal-area shots (22.7%) and box entries (27.1), with its limit asking where the round/square alternatives add them → cv04-alt, a diagnosis-first window on `c50`: a committed clear-chance diagnostic (how each clear chance arises, what it becomes), then default-off switches only on how often clear chances arise and how the alternatives resolve as the defence recovers, under cv04-clr's unchanged gate; no SSOT change since MATCH-16 r58 already holds volume by chance frequency and MATCH-30 bands big chances (alt: tune `clear.keeper` or the round/square weights directly, which trades chance quality against volume and risks the forced poor strike r58 forbids | update-ssot first, with no rule gap to fill | a 1-hour window, too short for the diagnostic plus screens) sc10
 - 261110 decided ARCH-30 review/test-gate-time-261110 T774: whether local traces may drop the screencast once Chromium is CPU-bound at five workers → yes, locally only: an interleaved A/B on 53 cases cut process-tree CPU 445/452 → 264/261 s with every case passing; DOM snapshots, network, console and sources stay, CI keeps full traces (alt: keep the filmstrip and stay CPU-bound | turn local traces off entirely) tq10
 - 261110 decided ARCH-30 review/test-gate-time-261110: whether Chromium should start beside the vitest phase (F7) → rejected: at five workers the stage already ran at load median 14.4 on 12 CPUs, so overlapping would only contend (alt: overlap at three workers) tq10
 - 261110 decided ARCH-21 ARCH-30 review/test-gate-time-261110: the owner invokes self-improve-local for about four hours to check whether every gate test is needed and cut the gate from about 35 min to the 10-something range with the same stability → adopt F1–F5 (longest-first vitest order, the long-career world warmed beside the tests, concurrent static checks and one vitest run, five per-case local Chromium workers, cached journey set-ups and preview gzip memo), all keeping every case, assertion, timeout and retry; integrate on the calling `main` behind one fresh-worktree `verify:batch` (alt: overlap Chromium with the vitest phase now | narrow the gate's journeys or integration checks). F6–F11 wait for the owner tq10
@@ -899,10 +900,11 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- nx10: fi09's gate passed and main was released at next's tip (374e47c4); T689 (explore 2h) is the only task left, through a vibe loop from `.tmp/nx10` with `--verify "pnpm run verify:batch"`, started once the owner's tq10 run (self-improve-local on the primary checkout, until about 05:30Z) has ended
+- sc10: T689's cv04-alt window (defined in its impl notes 261110) is the next unit — diagnosis-first on how clear chances arise and how the round/square alternatives resolve, `c50` as base, cv04-clr's gate unchanged; the loop's final gate is `pnpm run verify:batch` before any main push
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
@@ -922,4 +924,3 @@
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
 - 261110 create-task T769-T773 from review/test-gate-time-261110 F1-F5 (lanes gate-vitest, gate-e2e) tq10
-- 261109 T768 integrated
