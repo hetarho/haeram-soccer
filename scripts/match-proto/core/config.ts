@@ -57,6 +57,7 @@
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
 //             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
+//   limits:   the thresholds the staging metrics are judged by (check/metrics.ts)
 export const PROTO_CONFIG = {
   tick: 0.1,
   hz: 10,
@@ -458,5 +459,42 @@ export const PROTO_CONFIG = {
     /** `generateScript` writes this many times `PROTO_CONFIG.duration` nominal seconds, so staging never runs out of beats. */
     nominalFactor: 1.5,
     maxBeats: 2000,
+  },
+  // Thresholds of the staging metrics (check/metrics.ts); distances in metres, speeds in m/s.
+  limits: {
+    /** Staged seconds a playback covers at least. */
+    duration: 599.5,
+    /** The fastest ball step between frames, and how far outside the pitch a player may stand. */
+    ballSpeed: 45,
+    outside: 2.5,
+    /** A held ball within `ownerDistance` of its owner in at least `ownerShare` of held frames. */
+    ownerDistance: 1.2,
+    ownerShare: 0.99,
+    /** The receiver within `reception` of the ball at a reception, in `receptionShare` of them. */
+    reception: 1.6,
+    receptionShare: 0.98,
+    /** The opponent within `contest` of the ball at an interception, tackle, save or block. */
+    contest: 1.6,
+    contestShare: 0.95,
+    /** Contested events whose opponent was replaced, or needed the lunge, at most these shares. */
+    recastRate: 0.25,
+    stretchRate: 0.1,
+    /** A swarm: `count` outfield players within `radius` of the ball, in at most `share` of frames. */
+    swarm: { radius: 10, count: 7, share: 0.02 },
+    /** The median attack-x spread of a team's outfield players lies in this range. */
+    teamLength: [22, 52],
+    /** Two outfield teammates closer than `distance`, in at most `share` of frames. */
+    spacing: { distance: 1.5, share: 0.03 },
+    /** The inverted full-back at least `ifbInside` nearer the long axis than the other full-back, within `ifbPivotGap` of the pivot in attack x. */
+    ifbInside: 8,
+    ifbPivotGap: 8,
+    /** The false nine at least `falseNineDrop` short of the offside line; the poacher within `poacherGap` of it. */
+    falseNineDrop: 5,
+    poacherGap: 3.5,
+    /** A pass from attack x `fromX` played at least `back` metres backward needs a reason. */
+    backPass: { fromX: 80, back: 8 },
+    /** A pressed pass is kicked with an opponent within `stage.pressVisible + pressedSlack` in `pressedShare` of them. */
+    pressedShare: 0.9,
+    pressedSlack: 0.5,
   },
 } as const;

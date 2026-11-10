@@ -53,3 +53,9 @@ owner can watch whether staging a script reads as football. Nothing here is prod
   `--no-showcase` the script of seed `<s>`) and prints `key=value` lines: the seed used, script
   attempts, staged candidates, each quota with its count, `duration`, `score`, the event counts by
   kind and the numbers of `recast` and `stretch` events. `--out` writes the playback as JSON.
+- `pnpm exec tsx scripts/match-proto/check/report.ts [--seed <s>] [--no-showcase] [--duration <seconds>] [--json <file>] [--strict]`
+  stages a playback as `produce.ts` does and judges it by the staging metrics
+  (`check/metrics.ts`, thresholds in `PROTO_CONFIG.limits`): it prints the produce info, the
+  script statistics of the performed beats, one line per metric (`id value limit ok|FAIL`, then
+  its detail) and `passed n/m`. `--json` writes `{ info, stats, metrics }`; `--strict` exits with
+  code 1 when a metric fails (the default exit code is 0).

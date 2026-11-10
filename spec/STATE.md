@@ -899,7 +899,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 
@@ -935,6 +934,7 @@
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T798 done: `scripts/match-proto/check` — 21 staging metrics (`computeMetrics`, thresholds in `PROTO_CONFIG.limits`) and the `report.ts` CLI; `demo#0` passes 16/21 (fails left to T800: `events.contest` 0.846, `events.stretchRate` 0.214, `shape.swarm` 0.103, `shape.spacing` 0.155, `role.poacher.shoulder` 4.639), 119 unit cases in the folder, no production file touched mp11
 - 261111 T797 done: `scripts/match-proto/stage` attack — through balls timed onside (runner 1.47 m behind the line at the kick, meets the ball 0.78 m away) or flagged offside (0.90 m beyond, whistle 0.9 s later), shots that score, are saved (keeper 0.19 m), parried for a corner, blocked or go wide, ordinary passes never played to a man offside (0 of 251 kicks over s0–s9), lofted deliveries from a run-up, corners with both sides set, `producePlayback` and the `produce.ts` CLI (`demo#0` meets every quota on its performed beats); 105 unit cases in the folder, no production file touched mp11
 - 261111 T796 done: `scripts/match-proto/stage` contests and dead balls — interceptions on the ball's path (`planCut`/`resolveCut` with recast, lunge and a slower ball), tackles and fouls after a jockey, take-ons, balls out, dead-ball scenes before every restart, cues one beat ahead and pressed passes waiting for the presser; scripts A–E staged (interceptor 0.42 m, tackler 1.17 m from the ball), 95 unit cases in the folder, no production file touched mp11
 - 261111 T795 done: `scripts/match-proto/stage` core — bounded movement, ball held/flight/loose, frames per tick, shape/press/mark targets, completed passes and carries, `performScript`; the hand-written script stages in 11.9 s with receivers 0.11–1.10 m from their points, 19 unit cases, no production file touched mp11
