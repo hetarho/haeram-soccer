@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "packageName": "haeram-spec-creator",
-  "packageVersion": "0.12.0",
-  "installedAt": "2026-11-10T04:56:21.457Z",
+  "packageVersion": "0.12.1",
+  "installedAt": "2026-11-10T14:32:53.854Z",
   "agents": [
     "claude",
     "codex"
@@ -135,7 +135,7 @@
       "sha256": "ecab7822a620ad81b400fcece3de8b7843c22a5e6e038d482b21d8a1ae45b4a7"
     },
     ".claude/skills/start-vibe/references/loop-control.md": {
-      "sha256": "ea3fdbe5f5e3738a4a5958c031e67e853bbc819b1c717d1efc24904742255b1e"
+      "sha256": "e74cb0d56e439e8a419d0c1a1f3f3db60085d63da7d9a9e233cf41d8d0050916"
     },
     ".claude/skills/start-vibe/references/session.md": {
       "sha256": "a5fea9df33d97ed1c28c222e9f088abff50b1b079b28571f4a3b3f108431c2dc"
@@ -144,7 +144,7 @@
       "sha256": "8ef00d59e4d98d46f1fb0b0b0589b84565501338b0387f385cc4683670707f15"
     },
     ".claude/skills/start-vibe/SKILL.md": {
-      "sha256": "3e31b0f2109c85e185e8875dd426db002842fa719a25c2855f735870adc9fe99"
+      "sha256": "712c2fe1674bd12076c391e59631f733c83e0a142d3d8eddc2f3a2f20c67b635"
     },
     ".claude/skills/update-haeram-spec-creator/SKILL.md": {
       "sha256": "c714f77a707cafeaef9f43799a8079f20443ab658ed10b486aadc4216d33d2f0"
@@ -333,7 +333,7 @@
       "sha256": "ecab7822a620ad81b400fcece3de8b7843c22a5e6e038d482b21d8a1ae45b4a7"
     },
     ".codex/skills/start-vibe/references/loop-control.md": {
-      "sha256": "ea3fdbe5f5e3738a4a5958c031e67e853bbc819b1c717d1efc24904742255b1e"
+      "sha256": "e74cb0d56e439e8a419d0c1a1f3f3db60085d63da7d9a9e233cf41d8d0050916"
     },
     ".codex/skills/start-vibe/references/session.md": {
       "sha256": "a5fea9df33d97ed1c28c222e9f088abff50b1b079b28571f4a3b3f108431c2dc"
@@ -342,7 +342,7 @@
       "sha256": "8ef00d59e4d98d46f1fb0b0b0589b84565501338b0387f385cc4683670707f15"
     },
     ".codex/skills/start-vibe/SKILL.md": {
-      "sha256": "3e31b0f2109c85e185e8875dd426db002842fa719a25c2855f735870adc9fe99"
+      "sha256": "712c2fe1674bd12076c391e59631f733c83e0a142d3d8eddc2f3a2f20c67b635"
     },
     ".codex/skills/update-haeram-spec-creator/agents/openai.yaml": {
       "sha256": "63ae34b82e4aff1d9e72d143a92f276d987fcdd90e12db5d5bdbdf9cb02d35a1"
