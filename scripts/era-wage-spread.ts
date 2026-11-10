@@ -72,10 +72,18 @@
  * 1980–2009, pooled per kind of world beside; `--out FILE` writes the whole report there.
  *
  *   pnpm exec tsx scripts/era-wage-spread.ts --champions-runs dir/*.extra.json --out runs.md
+ *
+ * T808: `--setting flat|spread` lives the world on WORLD-6's squad spread (`SQUAD_SPREAD`, a
+ * measurement override) and records it in the extra as `squads`; without it the released default.
+ * `--allowance N` gives the champions part a recorded allowance instead of `--champions-placebo`.
+ *
+ *   pnpm exec tsx scripts/era-wage-spread.ts --champions-released flat-0.extra.json,... \
+ *     --champions-candidate spread-0.extra.json,... --allowance 6
  */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { longestRuns, median, mostInWindow, runsOfAtLeast, within } from './lib/title-runs';
+import { squadSpreadSetting } from './lib/squad-spread-setting';
 import type { Club, World } from '../packages/contracts/src/types';
 import { historyWorld } from '../packages/engine/src/history';
 import { advanceDays } from '../packages/engine/src/season';
@@ -104,6 +112,8 @@ const option = (name: string, fallback: string) => {
   return index >= 0 ? args[index + 1]! : fallback;
 };
 const list = (name: string, fallback: string) => option(name, fallback).split(',').filter(Boolean);
+/** T808: `--setting flat|spread` lives the worlds on that squad spread (→WORLD-6). */
+const SQUADS = squadSpreadSetting(args)[1];
 
 /** CLUB-48's band: the median of the three strongest top-flight clubs, and every club without a project. */
 const BAND = { strongest: 0.7, every: 1 };
@@ -150,6 +160,8 @@ interface Extra {
   cups?: boolean;
   /** T698: the placebo salt 1930/31's results were drawn afresh with (`--placebo`). */
   placebo?: string;
+  /** T808: the squad spread the world was lived on (`--setting`), absent on the default. */
+  squads?: string;
   table?: Table;
   champions: { year: number; code: string; club: string }[];
   /**
@@ -387,6 +399,7 @@ function live(seed: string, years: number[], codes: string[], table?: Table, unt
     means: MEANS,
     ...(CUPS ? { cups: true } : {}),
     ...(PLACEBO ? { placebo: PLACEBO } : {}),
+    ...(SQUADS ? { squads: SQUADS } : {}),
     ...(table ? { table } : {}),
     champions: w.history.flatMap((h) =>
       h.champions.map((ch) => ({ year: h.year, code: ch.country, club: ch.club })),
@@ -968,12 +981,15 @@ const RUNS = {
   span: 10,
 };
 const seasonLabel = (year: number) => `${year}/${String((year + 1) % 100).padStart(2, '0')}`;
-/** What a world lived: the released rules, a placebo set of them, or a candidate's switches. */
+/**
+ * What a world lived: the released rules, a placebo set of them, or a candidate's switches; a world
+ * lived with `--setting` names its squad spread too (T808).
+ */
 const kindOf = (e: Extra) =>
-  e.placebo
+  (e.placebo
     ? 'placebo'
     : [e.table && 'table', e.means && 'means', e.cups && 'cups'].filter(Boolean).join('+') ||
-      'released';
+      'released') + (e.squads ? ` (${e.squads} squads)` : '');
 function countryRuns(e: Extra, code: string, [from, to]: [number, number]) {
   const list = within(
     e.champions.filter((ch) => ch.code === code).map((ch) => ({ year: ch.year, who: ch.club })),
@@ -1124,7 +1140,11 @@ if (input) {
   const from = Number(option('from', '1980')),
     to = Number(option('to', '2009'));
   const released = readExtras(option('champions-released', ''));
-  let allowance: number | undefined;
+  // T808: `--allowance N` reads a candidate on a recorded allowance (T698's `noise.md`) when the
+  // placebo sets are not lived again on this tree.
+  let allowance: number | undefined = option('allowance', '')
+    ? Number(option('allowance', ''))
+    : undefined;
   if (option('champions-placebo', '')) {
     const noise = placeboReport(released, readExtras(option('champions-placebo', '')), from, to);
     const sets = Number(option('sets', '19'));

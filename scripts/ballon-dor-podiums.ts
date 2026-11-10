@@ -10,6 +10,7 @@
  * `--variants` (default every one) limits the variants played.
  *
  *   pnpm exec tsx scripts/ballon-dor-podiums.ts --seeds a,b --seasons N --variants released --out FILE
+ *     [--setting flat|spread]   WORLD-6's squad spread for the run (T808), else the released default
  */
 import { writeFileSync } from 'node:fs';
 import type { BallonDorPlace, World } from '../packages/contracts/src/types';
@@ -22,8 +23,11 @@ import { careerEnded } from '../packages/engine/src/owner';
 import { lineOf } from '../packages/engine/src/player';
 import { squad } from '../packages/engine/src/world';
 import { type Winner, winnerSummary } from './lib/ballon-dor-winners';
+import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
+// T808: `--setting flat|spread` lives the careers on that squad spread (→WORLD-6).
+const SETTING = squadSpreadSetting(args)[1] ?? '';
 const opt = (name: string, fallback: string) => {
   const i = args.indexOf(`--${name}`);
   return i >= 0 ? args[i + 1]! : fallback;
@@ -145,4 +149,12 @@ console.table(summary);
 console.log(
   "Real (recalled, not read against the lists): Ballon d'Or 1956–2025, 69 awards (none in 2020), about 47 winners, most wins 8 (Messi), longest run 4 (Messi 2009–12); winners mostly aged 23–31 and forwards or attacking midfielders, defenders 4, a keeper once (Yashin); the winner's club also European champion in about 30% of years.",
 );
-if (out) writeFileSync(out, JSON.stringify({ seeds, seasons, summary, rows }, null, 1));
+if (out)
+  writeFileSync(
+    out,
+    JSON.stringify(
+      { seeds, seasons, ...(SETTING ? { setting: SETTING } : {}), summary, rows },
+      null,
+      1,
+    ),
+  );

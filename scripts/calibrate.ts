@@ -10,7 +10,8 @@
  *   pnpm exec tsx scripts/calibrate.ts --quick    smaller samples
  *   options: --engine grid|summary (default both), --matches N (gap sample per path),
  *            --tier N (sample per tier), --seasons N (summary and Elo rows),
- *            --grid-seasons N (grid rows), --own-seasons N, --only curves|tiers|seasons|own
+ *            --grid-seasons N (grid rows), --own-seasons N, --only curves|tiers|seasons|own,
+ *            --setting flat|spread (WORLD-6's squad spread for the run, T808; else the default)
  */
 import { ATTRIBUTES } from '../packages/contracts/src/player';
 import { weightsFor } from '../packages/engine/src/player';
@@ -35,8 +36,11 @@ import {
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { playGrid } from '../packages/engine/src/grid/engine';
 import { buildGridSetup } from '../packages/engine/src/grid/setup';
+import { squadSpreadSetting } from './lib/squad-spread-setting';
 
 const args = process.argv.slice(2);
+// T808: `--setting flat|spread` draws the generated squads on that squad spread (→WORLD-6).
+squadSpreadSetting(args);
 const option = (name: string, fallback: number) => {
   const index = args.indexOf(`--${name}`);
   return index >= 0 ? Number(args[index + 1]) : fallback;

@@ -9,7 +9,7 @@ import { measurementIdentity } from './lib/measurement-identity';
  *     [--round N] [--scale S] [--only core,tactics,gap,tier,fatigue,era,knockout,rare]
  *     [--conditions id,…] [--reference id,…] [--reference-scale S] [--rare-scale S]
  *     [--seasons N] [--jobs N] [--out FILE] [--patch JSON] [--reference-cache DIR]
- *     [--sizes id=N,…]
+ *     [--sizes id=N,…] [--setting flat|spread]
  *   default: calibration partition, round 0, scale 1, every match family, output
  *   artifacts/benchmarks/aggregate-model-calibration.json; `--reference` also plays the named
  *   conditions on the candidate detailed engine (same fixtures) for the MATCH-28 equivalence
@@ -72,6 +72,7 @@ import { validateFullMatchRecord } from '../packages/engine/src/match-model';
 import { lineOf } from '../packages/engine/src/player';
 import { withCandidateModel } from '../tests/fixtures/worlds';
 import { applyBehaviour, behaviourOf } from './t328-counter-roles-variants';
+import { squadSpreadSetting } from './lib/squad-spread-setting';
 import {
   conditionClubs,
   conditionFixture,
@@ -1011,6 +1012,9 @@ function sourceFingerprint() {
 }
 
 const args = process.argv.slice(2);
+// T808: `--setting flat|spread` draws every generated squad on that squad spread (→WORLD-6), here and
+// in every worker.
+const squadSetting = squadSpreadSetting(args);
 // A measurement's config overrides (`--patch <json>`, as t328-counter-roles.ts takes them): the
 // candidate configs patched in this process and in every worker it forks, never in the source.
 const patchAt = args.indexOf('--patch');
@@ -1129,6 +1133,7 @@ async function runReport() {
         [
           '--aggregate-worker',
           ...(patch ? ['--patch', patch] : []),
+          ...squadSetting,
           ...(text('reference-cache', '')
             ? ['--reference-cache', text('reference-cache', '')]
             : []),
