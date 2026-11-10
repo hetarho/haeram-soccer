@@ -22,15 +22,49 @@ import type {
   MatchMaterial,
 } from '../../../../packages/contracts/src/types';
 // Lossless archive encoding. Statistics use unsigned LEB128, never a fixed-width truncation.
+const BASE64_CODES = Uint8Array.from(
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+  (char) => char.charCodeAt(0),
+);
+const BASE64_PAD = '='.charCodeAt(0);
+const ascii = new TextDecoder();
+/**
+ * Values below this are written with 32-bit shifts and masks. Larger ones (money, ids up to 53 bits)
+ * stay on exact floating-point arithmetic, which `<<`/`>>>` would truncate.
+ */
+const INTEGER_LIMIT = 2 ** 31;
+/** Bytes the widest safe integer takes in LEB128 (53 bits, 7 per byte). */
+const MAX_VARINT_BYTES = 8;
+
+/** Padded standard base64, the same text `btoa` gives, written as ASCII codes (as bitpacking.ts). */
 export function base64(bytes: Uint8Array) {
-  let s = '';
-  for (let i = 0; i < bytes.length; i += 32768)
-    s += String.fromCharCode(...bytes.subarray(i, i + 32768));
-  return btoa(s);
+  const length = bytes.length,
+    text = new Uint8Array(Math.ceil(length / 3) * 4);
+  let at = 0,
+    i = 0;
+  for (; i + 2 < length; i += 3) {
+    const triple = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+    text[at++] = BASE64_CODES[triple >>> 18];
+    text[at++] = BASE64_CODES[(triple >>> 12) & 63];
+    text[at++] = BASE64_CODES[(triple >>> 6) & 63];
+    text[at++] = BASE64_CODES[triple & 63];
+  }
+  if (i < length) {
+    const pair = i + 1 < length;
+    const triple = (bytes[i] << 16) | (pair ? bytes[i + 1] << 8 : 0);
+    text[at++] = BASE64_CODES[triple >>> 18];
+    text[at++] = BASE64_CODES[(triple >>> 12) & 63];
+    text[at++] = pair ? BASE64_CODES[(triple >>> 6) & 63] : BASE64_PAD;
+    text[at] = BASE64_PAD;
+  }
+  return ascii.decode(text);
 }
 export function unbase64(s: string) {
   if (!/^[A-Za-z0-9+/]*={0,2}$/.test(s)) throw new Error(sourceMessage('copy.packing.0e84000039'));
-  return Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+  const binary = atob(s),
+    bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
 }
 /** A season archive without its heat map, which has its own stream. */
 function withoutHeat<T extends { heat?: unknown }>(season: T): T {
@@ -38,48 +72,69 @@ function withoutHeat<T extends { heat?: unknown }>(season: T): T {
   delete copy.heat;
   return copy;
 }
-function integers(values: number[], width: number) {
-  const count = values.length / width;
-  values = Array.from(
-    { length: values.length },
-    (_, i) => values[(i % count) * width + Math.floor(i / count)],
-  );
-  const out: number[] = [];
-  for (let n of values) {
+/**
+ * Rows of `width` values, column by column, as unsigned LEB128 in base64. Exported for the
+ * frozen-codec equivalence test (packing.equivalence.test.ts).
+ */
+export function integers(values: number[], width: number) {
+  const length = values.length,
+    count = length / width;
+  let bytes = new Uint8Array(length * 2 + MAX_VARINT_BYTES),
+    at = 0;
+  for (let i = 0; i < length; i++) {
+    let n = values[(i % count) * width + Math.floor(i / count)];
     if (!Number.isSafeInteger(n) || n < 0)
       throw new Error(sourceMessage('copy.packing.2ca992465a'));
-    do {
-      const b = n % 128;
-      n = Math.floor(n / 128);
-      out.push(b + (n ? 128 : 0));
-    } while (n);
+    if (at + MAX_VARINT_BYTES > bytes.length) {
+      const grown = new Uint8Array(bytes.length * 2);
+      grown.set(bytes);
+      bytes = grown;
+    }
+    if (n < INTEGER_LIMIT) {
+      for (; n >= 128; n >>>= 7) bytes[at++] = (n & 127) | 128;
+      bytes[at++] = n;
+    } else
+      do {
+        const b = n % 128;
+        n = Math.floor(n / 128);
+        bytes[at++] = b + (n ? 128 : 0);
+      } while (n);
   }
-  return base64(Uint8Array.from(out));
+  return base64(bytes.subarray(0, at));
 }
-function reader(s: string, width: number) {
-  const a = unbase64(s);
-  let i = 0;
-  const columns: number[] = [];
-  while (i < a.length) {
-    let n = 0,
-      scale = 1,
-      b: number;
-    do {
-      if (i >= a.length || scale > 2 ** 49)
-        throw new Error(sourceMessage('copy.packing.7b93217a0a'));
+/** Reads an `integers` stream back; exported for the frozen-codec equivalence test. */
+export function reader(s: string, width: number) {
+  const a = unbase64(s),
+    length = a.length,
+    columns: number[] = [];
+  for (let i = 0; i < length;) {
+    let b = a[i++],
+      n = b & 127;
+    for (let shift = 7; b >= 128; shift += 7) {
+      if (i >= length) throw new Error(sourceMessage('copy.packing.7b93217a0a'));
       b = a[i++];
-      n += (b % 128) * scale;
-      scale *= 128;
-    } while (b >= 128);
-    if (!Number.isSafeInteger(n)) throw new Error(sourceMessage('copy.packing.cbfdbb8ee5'));
+      if (shift === 28 && b >= 8) {
+        // A fifth byte above 7 means 2^31 or more (INTEGER_LIMIT): exact floating-point
+        // arithmetic from here, up to eight bytes.
+        n += (b & 127) * 2 ** 28;
+        for (let scale = 2 ** 35; b >= 128; scale *= 128) {
+          if (i >= length || scale > 2 ** 49)
+            throw new Error(sourceMessage('copy.packing.7b93217a0a'));
+          b = a[i++];
+          n += (b & 127) * scale;
+        }
+        if (!Number.isSafeInteger(n)) throw new Error(sourceMessage('copy.packing.cbfdbb8ee5'));
+        break;
+      }
+      n |= (b & 127) << shift;
+    }
     columns.push(n);
   }
   if (columns.length % width) throw new Error(sourceMessage('copy.packing.ff69a7bc0c'));
-  const count = columns.length / width;
-  const values = Array.from(
-    { length: columns.length },
-    (_, j) => columns[(j % width) * count + Math.floor(j / width)],
-  );
+  const count = columns.length / width,
+    values = new Array<number>(columns.length);
+  for (let j = 0; j < columns.length; j++)
+    values[j] = columns[(j % width) * count + Math.floor(j / width)];
   let offset = 0;
   return {
     /** Rows in the stream, for streams whose row counts are declared elsewhere. */
