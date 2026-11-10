@@ -16,6 +16,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| rl10 | ihaelam-ui-MacBookPro | autopilot | 2026-11-10T14:35Z | 2026-11-10T14:35Z | - |
 
 ## inbox
 - 261110 decided T689 T784 T785 review/match-engine-split-261110: which of the todo tasks before T791 are worth running while the T791–T800 prototype's verdict is open → T689 waits for T800's verdict, since its windows tune `grid/decide.ts`/`resolve.ts`, the files the script→staging split replaces (if the split is adopted T689 is closed or rewritten as the new result script's scoring calibration, its MATCH-23 concentration targets and scoring scripts reused as that script's gate; if not, it resumes from gc10's MATCH-34 cover rule); T784 and T785 read only CLUB recruitment, independent of the match engine, and run now as rc10's loop, one unit each, the closing gate then pushing main (alt: T689's next window now, likely spent on code the split replaces | hold the CLUB tasks for T800 too, which nothing in them needs) rc10
@@ -830,6 +831,7 @@
 - 261110 decided ARCH-30 review/test-value-261110 T786 T787: the owner, asked which repeated checks the gate may drop, approves all eight → journeys: joint authority 4→2, full-model-continuity at one viewport, records room at 390 only, 390x844 twins of non-start screens (WEB-15/17/63 fits stay rules; 390x844 dominates 360x740); integration: progression ESP dropped, fast-path to a few rounds, cup-win milestone from forced scores, earlier match-model revisions trimmed (alt: keep every variant | move them to an on-demand tier) tv10
 - 261110 parked review/game-runtime-speed-261110 T775 T776 T777 T778: pf10's speed-ups are integrated on local main (verified at 0e514e46) but not pushed — origin/main moved during the gate and the re-gate of the merge did not finish by the owner's 18:00 deadline; tv10's sync, gate and push to main release them with T779–T787
 - 261110 decided review/match-engine-split-261110 T791: how the owner's adopted engine-redesign direction (facts from a probabilistic script, the picture staged from it) is planned → an isolated prototype chain T791–T800 under `scripts/match-proto/`, importing nothing from `packages/` or `apps/`, as detailed review-sourced tasks; no SSOT change until the owner has watched T800's ten minutes (alt: ideation → MATCH SSOT first, which would write a throwaway into the rules | a new workspace package, which changes ARCH-3 | prototyping inside `packages/engine/src/grid`, entangled with the revision gates) mp10
+- 261110 decided review/game-realism-261110 T784: the owner's self-improve-local call at 23:35 KST ("실제 축구와 가장 비슷하게 하고 나한테 물어보지 말고 … 7시까지") after T784's planning question (the 단장's list draws from 3–5 clubs because squads are drawn tightly at club strength and a sold place refills with a double) → rl10 orchestrates until 2026-11-11 07:00 KST (22:00Z) on its own branch `si/rl10` (the owner's mp10 session works in the main checkout): read-only scouts propose game-world realism problems (transfer market and squad supply; awards, careers and season outcomes), the orchestrator adopts by real football's closeness without asking, including the rule changes the skill would otherwise park for the owner (SSOT updates, measured gates kept, saves need no compatibility pre-release), implementation sessions in their own worktrees, a separate session reviews every submission, one `verify:batch` gate, then main is pushed; T784's follow-ups enter as findings — `signed` in force, squads drawn with real football's spread of stars and squad players, a sold place no longer refilled by a double — and its search-ceiling option waits for T785's verdict; rc10's T785 loop and T689/T791–T800 stay untouched (alt: plan T784's options only, leaving the run idle | wait for rc10 to finish before scouting) rl10
 
 ## ideation
 | id | st |
@@ -856,9 +858,9 @@
 | ARCH | 38 | 38 | - | 2 |
 | WEB | 214 | 214 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
-| WORLD | 10 | 10 | - | 0 |
+| WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 65 | 65 | - | 0 |
+| CLUB | 66 | 66 | - | 0 |
 | MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
@@ -872,6 +874,7 @@
 ## review
 | id | st |
 |---|---|
+| game-realism-261110 | converted@261110 |
 | football-data-consistency-261109 | converted@261110 |
 | economy-transfers-261109 | converted@261109 |
 | automatic-play-hotspots-261103 | converted@261103 |
@@ -903,6 +906,12 @@
 | T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
+| T803 | realism reads: Ballon d'Or repeat winners and league title runs | ARCH | - | todo |
+| T804 | an upgrade need counts this window's signing at his slot | CLUB | - | todo |
+| T805 | each club its own age ladder | WORLD | - | todo |
+| T806 | squads with stars, regulars and a bench (behind a setting) | WORLD PLAYER LEAGUE | T805 | todo |
+| T807 | a sold place refilled by a lesser player who stays the same person | WORLD | T806 | todo |
+| T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -931,6 +940,7 @@
 ## next
 - mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, run on Opus (`vibe loop --model opus`, the owner's 261110 call); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
 - rc10: T784 then T785 only, one unit each (the owner's 261110 call), then the closing gate and push to main; T689 and T791–T800 are not this loop's — a unit that finds neither T784 nor T785 runnable returns no_work
+- rl10: T803–T807 as work group rl10 on `si/rl10` (lanes realism-reads, squad-generation, and T804 alone; review all), then T808 (explore 2h) in its own session, one `verify:batch` gate and the push to main by 2026-11-11 07:00 KST; review/game-realism-261110 F8 (an NPC-to-NPC market) and F9 (the search ceiling, with T785's verdict) stay open
 - T689 (gc10's planning slice, then its window): held until the owner has watched T800 (inbox decided 261110 rc10); no loop takes it before then
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
@@ -953,7 +963,4 @@
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
-- 261110 T769 T771 T770 integrated (9feaa88f..108a3511; independent review CHANGES P2 fixed by 48e2542a/5c7b6d69, then approved) tq10
-- 261110 T772 T773 integrated (df7e4df7 d0ba5646; independent review approved 5f1e37be/d71c589b, P3 notes only) tq10
-- 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
-- 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
+- 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10

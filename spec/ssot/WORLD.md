@@ -1,5 +1,5 @@
 # WORLD Fictional world and catalogs
-> r10 | Define the browser-demo rules for fictional world and catalogs.
+> r11 | Define the browser-demo rules for fictional world and catalogs.
 
 ## decisions
 - WORLD-1 [o] Playable associations: ENG ESP GER ITA FRA POR NED BEL. Other UEFA associations appear as representative clubs only.
@@ -9,6 +9,16 @@
 - WORLD-5 [o] The owner's club is an existing professional club he buys (→!ECON-38); no club is added for him and every professional group keeps its full capacity. ← the owner joins football as it stands
 - WORLD-6 [o] Club and player identities are stable. NPC match squads remain reproducible from club/seed/birth cohorts; the active player squad and its mutations are persisted. Cross-role person continuity follows →WORLD-10/11.
   - an NPC squad carries the player model (→PLAYER-1) and fills the formation of its club's tactic (→STAFF-22) with a player at 최상 in every slot and a bench covering each line.
+  - a squad holds one player of each age from 18 to 35 as birth cohorts; each club's age ladder starts at its own point and orders its places its own way, both fixed by the seed and the club, so clubs of one tactic do not field the same ages in the same places. ← one shared ladder turned every 4-3-3 club's striker 27 in the same season and stood keepers only at 24 and 35
+  - a place a sale emptied is refilled until the next summer by a player 2–6 below the club's strength at an age within 4 of the departed's, drawn from the place's own stream, the same person until his cohort ends; the next summer's squad is drawn at strength again. ← a refill at the seller's strength and the departed's age let a club sell the owner the same player four times in a season, and a refill drawn per year became a new person every season
+  - a squad holds stars, regulars and a bench as real squads do: each generated player carries his own class, drawn once from his own stream, and an age term, and his potential headroom narrows with age; the starters' mean is the club's strength (→!LEAGUE-10) and the bench sits below them. Starting values, estimated (real XIs span about 8–12 OVR points, outfielders peak at about 25–29): ← flat squads put each ability band inside 3–5 clubs (measured 261110: players aged 18–30 at OVR 83–85 in 3–5 clubs, none at the four strongest), so a delegated club's signings bunched on one seller and the strongest club's eleven were the world's best
+    | term | value |
+    |---|---|
+    | class | symmetric, within ±6 of the place's level |
+    | bench | 3–8 below the starters' mean |
+    | age | −7 at 18, −4 at 20, −1 at 22, 0 at 24–29, −1 at 31, −3 at 33, −5 at 35, linear between |
+    | potential headroom | 10–35 at 20 or younger, narrowing linearly to 0–4 at 27 and older |
+    - it enters production only when worlds lived with it hold MATCH-2's curve, MATCH-23's season scoring rows on the aggregate path, CLUB-46's value targets, CLUB-48's books and LEAGUE-10's champions (→!MATCH-2, →!MATCH-23, →!CLUB-46, →!CLUB-48); until then every place is drawn at the club's strength. A loaded save's generated players not yet retained (→WORLD-11) follow the rules in force, as new name pools did (→SAVE-10).
 
 - WORLD-7 [o] Generation seed, catalog version and PRNG contract are saved. Reopening does not regenerate a different world.
 - WORLD-8 [o] The world's background before the takeover is the seasons it actually played since 1930 (→WORLD-13); no season, honour or European record beyond them is fabricated.
@@ -43,6 +53,7 @@
 - Person continuity: generated/retained player → qualifying retirement/coaching choice → the same person in staff/manager candidacy → linked actual career facts.
 
 ## chg
+- r11 261110 WORLD-6✎ one shared age ladder (18 + (year + place) mod 18)→each club's own start and order; a sold place refilled at the club's strength and the departed's age, a new person each season→2–6 below at an age within 4, the same person to his cohort's end; every place drawn at the club's strength→players carry their own class and an age term, starters' mean at the club's strength, bench below, headroom narrowing with age, in production on its MATCH-2/23 CLUB-46/48 LEAGUE-10 gate
 - r10 261109 WORLD-14✎ the owner's business settles through the war gap each quarter→on its monthly dates (→OWNER-7)
 - r9 261103 WORLD-13✎ fixtures before the takeover on the path clubs nobody owns use→the results-only path (→MATCH-22)
 - r8 261103 WORLD-5✎ the owner's club founded in the amateur league→an existing professional club he buys; WORLD-8✎ no fabricated pre-start background→the background is the seasons played since 1930; WORLD-9- amateur clubs and league removed; WORLD-13+ the world is made in 1930 and lives to the chosen decade; WORLD-14+ wartime stop 1939/40–1945/46; WORLD-15+ generated strength by tier and stature (from WORLD-9, amateur level dropped)
