@@ -68,6 +68,66 @@ const takerPlace = (kind: RestartKind, team: TeamId, spot: Vec): Vec => {
   return add(spot, scale(norm(away), RESTART.takerOffset));
 };
 
+type PlaceOrder = (index: number, place: Vec, pace: Order['pace'], within: number) => void;
+
+/**
+ * Both sides' places at a corner. The taking side: the receiver at his run-up point, the others
+ * (strongest in the air first) on `corner.attack`, four in the box, two at its edge, two back. The
+ * defending side: the keeper on his line, the scripted opponent goal-side of the receiver, two
+ * zonal, two left up and the rest goal-side of the attackers in order.
+ */
+function cornerScene(state: StageState, beat: Beat, spot: Vec, order: PlaceOrder): void {
+  const CORNER = PROTO_CONFIG.stage.corner;
+  const T = beat.team;
+  const s = toAttack(T, spot)[1] > 34 ? 1 : -1;
+  const C = (x: number, off: number): Vec => toAttack(T, [x, 34 + s * off]);
+  const fixture = state.fixture;
+  const taker = beat.actor;
+  const receiver = beat.receiver;
+  let runUp: Vec | undefined;
+  if (receiver !== undefined) {
+    const aim = toAttack(T, clampToPitch(beat.to, 0.5));
+    runUp = clampToPitch(toAttack(T, [aim[0] - PROTO_CONFIG.stage.cross.runUp, aim[1]]), 0.5);
+    order(receiver, runUp, 'run', RESTART.receiverReady);
+  }
+  const attackers = fixture.teams[T].players
+    .filter((p) => p.slot !== 0 && p.index !== taker && p.index !== receiver)
+    .sort((a, b) => b.attrs.heading - a.attrs.heading || a.index - b.index);
+  const places: Vec[] = [];
+  attackers.forEach((p, i) => {
+    const at = CORNER.attack[i];
+    if (!at) return;
+    places.push([at[0], at[1]]);
+    state.orders.set(p.index, { target: C(at[0], at[1]), pace: 'run' });
+  });
+  const D: TeamId = T === 0 ? 1 : 0;
+  const keeper = fixture.teams[D].players[0].index;
+  state.orders.set(keeper, { target: C(CORNER.keeper[0], CORNER.keeper[1]), pace: 'run' });
+  const scripted = beat.opponent;
+  if (scripted !== undefined && fixture.players[scripted].slot !== 0 && runUp) {
+    const r = toAttack(T, runUp);
+    state.orders.set(scripted, {
+      target: toAttack(T, [r[0] + CORNER.goalSide, r[1]]),
+      pace: 'run',
+    });
+  }
+  const rest = fixture.teams[D].players
+    .filter((p) => p.slot !== 0 && p.index !== scripted)
+    .map((p) => p.index);
+  rest.forEach((index, i) => {
+    let target: Vec | undefined;
+    if (i < 2) target = C(CORNER.zonal[i][0], CORNER.zonal[i][1]);
+    else if (i >= rest.length - 2) {
+      const up = CORNER.up[i - (rest.length - 2)];
+      target = C(up[0], up[1]);
+    } else {
+      const man = places[i - 2];
+      if (man) target = C(man[0] + CORNER.goalSide, man[1]);
+    }
+    if (target) state.orders.set(index, { target, pace: 'run' });
+  });
+}
+
 /** Dead time before a restart beat: the ball goes to the spot, players take their places, then the taker has it. */
 export function runDeadBall(state: StageState, ctx: BeatContext): void {
   if (state.tickCount === 0) return;
@@ -90,7 +150,7 @@ export function runDeadBall(state: StageState, ctx: BeatContext): void {
 
   state.orders.clear();
   const places = new Map<number, { place: Vec; within: number }>();
-  const order = (index: number, place: Vec, pace: Order['pace'], within: number): void => {
+  const order: PlaceOrder = (index, place, pace, within) => {
     state.orders.set(index, { target: place, pace });
     places.set(index, { place, within });
   };
@@ -100,6 +160,8 @@ export function runDeadBall(state: StageState, ctx: BeatContext): void {
       if (p.index === taker) continue;
       order(p.index, kickOffSpot(state.fixture, p.index, beat.team, taker), 'jog', 1);
     }
+  } else if (kind === 'corner') {
+    cornerScene(state, beat, spot, order);
   } else if (beat.receiver !== undefined) {
     order(beat.receiver, clampToPitch(beat.to, 0.5), 'jog', RESTART.receiverReady);
   }
@@ -119,7 +181,8 @@ export function runDeadBall(state: StageState, ctx: BeatContext): void {
   delete state.retrieve;
   delete state.shapeBall;
   delete state.keepOut;
-  state.orders.clear();
+  // A corner's places hold through the delivery; the pass handler releases them.
+  if (kind !== 'corner') state.orders.clear();
   state.live = true;
   giveBall(state, taker);
   pushEvent(state, { kind: 'restart', actor: taker, at: spot });

@@ -32,7 +32,8 @@
 //   ball:     ball flight (stage/ball.ts): ground and lofted speeds and the slowest kick (m/s), the
 //             shortest flight (s), a lofted ball's apex per metre within `loftMin`-`loftMax`, how far
 //             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
-//             and how fast a dead ball is brought back to its restart spot (`retrieval`, m/s)
+//             and how fast a dead ball is brought back to its restart spot (`retrieval`, m/s); a
+//             through ball's top speed, a shot's and a header's speed and a header's apex
 //   stage:    performing beats (stage/): the passer's drift while holding, extra hold, receiving
 //             slack, control range, settling time limit, dribbling speed, arrival distance and the
 //             kick-off's half and centre-circle margins; contests (stage/contest.ts): the shadow
@@ -45,7 +46,14 @@
 //             the presser is before a pressed pass is kicked; restarts (stage/scenes.ts): the dead
 //             time per kind, its extra allowance, the distance the other team keeps, how near the
 //             taker and receiver must be, the taker's offset from the spot and how far past the line
-//             a ball out runs
+//             a ball out runs; through balls (stage/through.ts): where the runner waits behind the
+//             line (`setBack`), when he goes (`runLead` s before the kick, `earlyBy` earlier when he
+//             is caught offside), the onside window he is kicked in, how far beyond the line an
+//             offside runner is, the flag's delay and the longest extra wait; shots (stage/shot.ts):
+//             the shooter's set step, the blocker's place and range, the net's depth, a beaten
+//             keeper's speed, the save's share of the path and nudge, a parry's width and time, a
+//             wide ball's run, a blocked ball's roll and deflection speed; crosses: the receiver's
+//             run-up; corners (stage/scenes.ts): both sides' places
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
 //             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
@@ -124,6 +132,10 @@ export const PROTO_CONFIG = {
     carryOffset: 0.6,
     roll: 3,
     retrieval: 8,
+    through: 22,
+    shot: 28,
+    header: 18,
+    headerApex: 0.6,
   },
   stage: {
     holdDrift: 2.5,
@@ -158,6 +170,56 @@ export const PROTO_CONFIG = {
       receiverReady: 2,
       takerOffset: 0.7,
       outRun: 1.5,
+    },
+    through: {
+      setBack: 2.5,
+      runLead: 0.8,
+      earlyBy: 0.3,
+      onsideGap: 0.3,
+      window: 1.6,
+      offsideGap: 0.6,
+      flagDelay: 0.9,
+      maxWait: 3,
+    },
+    shot: {
+      setStep: 1,
+      blockDist: 2.5,
+      blockMin: 1.5,
+      blockMax: 8,
+      netDepth: 1.5,
+      beatenKeeper: 3.5,
+      saveMin: 0.75,
+      saveNudge: 0.25,
+      parryWide: 7,
+      parryTime: 0.5,
+      wideRun: 2,
+      looseRoll: 3,
+      looseTime: 0.4,
+      deflectSpeed: 12,
+    },
+    cross: { runUp: 6 },
+    /** Corner places as [attack x, y offset]; the offset is multiplied by the corner's side (+1 when the corner is at attack y = 68). */
+    corner: {
+      attack: [
+        [99.5, 4.5],
+        [97, 0],
+        [98.5, -5.5],
+        [93.5, -1.5],
+        [86, 7],
+        [84.5, -8],
+        [62, -8],
+        [56, 8],
+      ],
+      keeper: [104, 1],
+      zonal: [
+        [103.5, 3.5],
+        [100.5, 0],
+      ],
+      up: [
+        [64, -9],
+        [60, 9],
+      ],
+      goalSide: 1.2,
     },
   },
   // The probabilistic script (script/): nominal clock, casting, carries, restarts and outcome chances.
@@ -353,6 +415,8 @@ export const PROTO_CONFIG = {
       lowIq: 50,
       highIq: 70,
       minShare: 0.3,
+      /** `producePlayback` (stage/pipeline.ts) stages at most this many showcase candidates. */
+      maxStaged: 20,
       quotas: {
         goals: 1,
         shots: 3,

@@ -7,7 +7,9 @@ import { PASS_KINDS, isShotLike } from '../core/types.ts';
 import { performCarry, performCarryLost } from './carry.ts';
 import { performPass, performPassIntercepted, performPassOut } from './pass.ts';
 import { withRestart } from './scenes.ts';
+import { performShot } from './shot.ts';
 import { performTakeOn } from './takeon.ts';
+import { performThrough } from './through.ts';
 import { createStage, step, type StageState } from './world.ts';
 
 export { ensureOwner, setPossession } from './world.ts';
@@ -24,7 +26,8 @@ export function handlerKey(beat: Beat): string {
   return `${kind}:${beat.outcome}`;
 }
 
-// Every `pass:*` and `clearance:*` handler plays a dead-ball scene first for a restart kind.
+// Every `pass:*`, `clearance:*` and `shot:*` handler plays a dead-ball scene first for a restart
+// kind (a free kick struck at goal is a `shot`); a through ball of any outcome is `performThrough`'s.
 export const HANDLERS: Record<string, Handler> = {
   'pass:complete': withRestart(performPass),
   'pass:intercepted': withRestart(performPassIntercepted),
@@ -32,6 +35,11 @@ export const HANDLERS: Record<string, Handler> = {
   'clearance:complete': withRestart(performPass),
   'clearance:intercepted': withRestart(performPassIntercepted),
   'clearance:out': withRestart(performPassOut),
+  'pass:offside': withRestart(performThrough),
+  'shot:goal': withRestart(performShot),
+  'shot:saved': withRestart(performShot),
+  'shot:blocked': withRestart(performShot),
+  'shot:wide': withRestart(performShot),
   'carry:complete': performCarry,
   'carry:tackled': performCarryLost,
   'carry:foul': performCarryLost,

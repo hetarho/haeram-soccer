@@ -47,3 +47,9 @@ owner can watch whether staging a script reads as football. Nothing here is prod
   count, both teams' `TeamStats` and the first beats (default 40), one per line. `--seed`
   (default `demo`) is the seed, or with `--showcase` the base of the showcase search
   (`script/showcase.ts`: seeds `<s>#0`, `<s>#1`, … until one meets every quota).
+- `pnpm exec tsx scripts/match-proto/stage/produce.ts [--seed <s>] [--no-showcase] [--duration <seconds>] [--out <file>]`
+  stages a playback (`stage/pipeline.ts`: the showcase scripts of base `<s>`, default `demo`, staged
+  until one meets every quota on its performed beats, at most `grammar.showcase.maxStaged`; with
+  `--no-showcase` the script of seed `<s>`) and prints `key=value` lines: the seed used, script
+  attempts, staged candidates, each quota with its count, `duration`, `score`, the event counts by
+  kind and the numbers of `recast` and `stretch` events. `--out` writes the playback as JSON.

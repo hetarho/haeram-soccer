@@ -5,15 +5,26 @@
 // the line and leaves the ball dead. A pressed pass also waits for its presser to be visibly close.
 // `holdForPass`, `reachablePoint` and `kickTo` are the steps T797 reuses for its own beats.
 import { PROTO_CONFIG } from '../core/config.ts';
-import { clampToPitch, inPitch } from '../core/pitch.ts';
-import type { Beat, Vec } from '../core/types.ts';
+import { HALFWAY, clampToPitch, inBox, inPitch, toAttack } from '../core/pitch.ts';
+import { offsideLineX } from '../core/shape.ts';
+import type { Beat, TeamId, Vec } from '../core/types.ts';
 import { add, approach, dist, norm, scale, sub } from '../core/vec.ts';
 import { apexFor, flightTime, giveBall, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, cutRange, nearestOpponent, planCut, resolveCut, shadowPoint } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
 import type { BeatContext } from './perform.ts';
-import { ensureOwner, pushEvent, runUntil, setPossession, type StageState } from './world.ts';
+import { performThrough } from './through.ts';
+import {
+  ensureOwner,
+  positionsOf,
+  pushEvent,
+  runUntil,
+  setPossession,
+  type Order,
+  type StageState,
+} from './world.ts';
 
+const SHAPE = PROTO_CONFIG.shape;
 const STAGE = PROTO_CONFIG.stage;
 const MOTION = PROTO_CONFIG.motion;
 const BALL = PROTO_CONFIG.ball;
@@ -54,6 +65,7 @@ export function holdUntil(
   to: Vec,
   hold: number,
   ready: () => boolean,
+  receiverOrder?: Order,
 ): void {
   state.orders.set(actor, {
     target: () => {
@@ -62,7 +74,9 @@ export function holdUntil(
     },
     pace: 'walk',
   });
-  if (receiver !== undefined) state.orders.set(receiver, { target: to, pace: 'run' });
+  if (receiver !== undefined) {
+    state.orders.set(receiver, receiverOrder ?? { target: to, pace: 'run' });
+  }
   const start = state.t;
   runUntil(state, () => state.t - start >= hold - 1e-9 && ready(), hold + STAGE.maxExtraHold);
 }
@@ -79,6 +93,7 @@ export function holdForPass(
   speed: number,
   hold: number,
   wait?: () => boolean,
+  receiverOrder?: Order,
 ): boolean {
   holdUntil(
     state,
@@ -87,9 +102,59 @@ export function holdForPass(
     to,
     hold,
     () => canReceive(state, receiver, to, speed) && (wait ? wait() : true),
+    receiverOrder,
   );
   return canReceive(state, receiver, to, speed);
 }
+
+/** The offside line of `team`'s attack now, as an attack-frame x. */
+const lineNow = (state: StageState, team: TeamId): number =>
+  offsideLineX(state.fixture, positionsOf(state), team);
+
+/** `p` (world) with its attack x capped `shape.onsideGap` inside `team`'s offside line. */
+const onsideCap = (state: StageState, team: TeamId, p: Vec): Vec => {
+  const a = toAttack(team, p);
+  const cap = lineNow(state, team) - SHAPE.onsideGap;
+  return a[0] > cap ? toAttack(team, [cap, a[1]]) : p;
+};
+
+/** An ordinary pass (kind `pass`, not a through ball) is never played to a man offside. */
+const guarded = (beat: Beat): boolean => beat.kind === 'pass' && !beat.through;
+
+/**
+ * How the receiver holds while the ball is not yet played, and what else the kick waits for: a
+ * lofted delivery into the box has him wait at his run-up point; an ordinary pass keeps him onside
+ * (sprinting back while he stands beyond the line) and waits until he is onside or not ahead of the ball.
+ */
+export function receiverHold(
+  state: StageState,
+  beat: Beat,
+  receiver: number | undefined,
+  R: Vec,
+): { order?: Order; onside: () => boolean } {
+  if (receiver === undefined) return { onside: () => true };
+  const team = beat.team;
+  const aim = toAttack(team, R);
+  const base: Vec =
+    beat.loft && inBox(toAttack(team, beat.to))
+      ? clampToPitch(toAttack(team, [aim[0] - PROTO_CONFIG.stage.cross.runUp, aim[1]]), 0.5)
+      : R;
+  if (!guarded(beat)) return { order: { target: base, pace: 'run' }, onside: () => true };
+  const rx = (): number => toAttack(team, state.bodies[receiver].pos)[0];
+  return {
+    order: {
+      target: () => onsideCap(state, team, base),
+      get pace() {
+        return rx() > lineNow(state, team) ? 'sprint' : 'run';
+      },
+    },
+    onside: () => rx() <= lineNow(state, team) - 0.05 || rx() <= toAttack(team, state.ball.pos)[0],
+  };
+}
+
+/** At the kick an ordinary pass's aim in the opponents' half is kept onside too. */
+const kickAim = (state: StageState, beat: Beat, R: Vec): Vec =>
+  guarded(beat) && toAttack(beat.team, R)[0] > HALFWAY ? onsideCap(state, beat.team, R) : R;
 
 /** The point on the way from the receiver to `to` he can sprint to while the ball travels there. */
 export function reachablePoint(state: StageState, receiver: number, to: Vec, speed: number): Vec {
@@ -131,6 +196,7 @@ export function kickTo(
 
 /** `pass:complete` and `clearance:complete`. */
 export function performPass(state: StageState, ctx: BeatContext): void {
+  if (ctx.beat.through) return performThrough(state, ctx);
   const beat = ctx.beat;
   const receiver = beat.receiver;
   if (receiver === undefined) throw new Error('pass without receiver ' + beat.index);
@@ -138,7 +204,12 @@ export function performPass(state: StageState, ctx: BeatContext): void {
   ensureOwner(state, beat.actor);
   let to = clampToPitch(beat.to, 0.5);
   const speed = speedOf(beat);
-  if (!holdForPass(state, beat.actor, receiver, to, speed, beat.hold, pressWait(state, beat))) {
+  const press = pressWait(state, beat);
+  const held = receiverHold(state, beat, receiver, to);
+  const wait = (): boolean => press() && held.onside();
+  holdForPass(state, beat.actor, receiver, to, speed, beat.hold, wait, held.order);
+  to = kickAim(state, beat, to);
+  if (!canReceive(state, receiver, to, speed)) {
     to = reachablePoint(state, receiver, to, speed);
   }
   kickEvent(state, beat.actor, receiver);
@@ -154,26 +225,38 @@ export function performPass(state: StageState, ctx: BeatContext): void {
 
 /** `pass:intercepted` and `clearance:intercepted`: the ball ends at the interceptor's feet on its path. */
 export function performPassIntercepted(state: StageState, ctx: BeatContext): void {
+  if (ctx.beat.through) return performThrough(state, ctx);
   const beat = ctx.beat;
   const scripted = beat.opponent;
   if (scripted === undefined) throw new Error('interception without opponent ' + beat.index);
   setPossession(state, beat);
   ensureOwner(state, beat.actor);
   const receiver = beat.receiver;
-  const R = clampToPitch(beat.to, 0.5);
+  let R = clampToPitch(beat.to, 0.5);
   const speed = speedOf(beat);
   const team = state.fixture.players[scripted].team;
   const range = cutRange(state, scripted);
+  const aimed = R;
   state.orders.set(scripted, {
-    target: () => shadowPoint(team, state.ball.pos, R),
+    target: () => shadowPoint(team, state.ball.pos, aimed),
     pace: 'run',
   });
   const press = pressWait(state, beat);
-  holdUntil(state, beat.actor, receiver, R, beat.hold, () => {
-    const from: Vec = [state.ball.pos[0], state.ball.pos[1]];
-    const cut = planCut(state, scripted, from, R, flightTime(from, R, speed), range);
-    return cut.margin <= STAGE.cutSlack && press();
-  });
+  const held = receiverHold(state, beat, receiver, R);
+  holdUntil(
+    state,
+    beat.actor,
+    receiver,
+    R,
+    beat.hold,
+    () => {
+      const from: Vec = [state.ball.pos[0], state.ball.pos[1]];
+      const cut = planCut(state, scripted, from, aimed, flightTime(from, aimed, speed), range);
+      return cut.margin <= STAGE.cutSlack && press() && held.onside();
+    },
+    held.order,
+  );
+  R = kickAim(state, beat, R);
   const from: Vec = [state.ball.pos[0], state.ball.pos[1]];
   const r = resolveCut(state, scripted, from, R, flightTime(from, R, speed));
   kickEvent(state, beat.actor, receiver);
@@ -202,13 +285,17 @@ export function performPassIntercepted(state: StageState, ctx: BeatContext): voi
 
 /** `pass:out` and `clearance:out`: the ball runs out of play and lies dead where it left. */
 export function performPassOut(state: StageState, ctx: BeatContext): void {
+  if (ctx.beat.through) return performThrough(state, ctx);
   const beat = ctx.beat;
   setPossession(state, beat);
   ensureOwner(state, beat.actor);
   const receiver = beat.receiver;
   const R = clampToPitch(beat.to, 0.5);
   const speed = speedOf(beat);
-  holdForPass(state, beat.actor, receiver, R, speed, beat.hold, pressWait(state, beat));
+  const press = pressWait(state, beat);
+  const held = receiverHold(state, beat, receiver, R);
+  const wait = (): boolean => press() && held.onside();
+  holdForPass(state, beat.actor, receiver, R, speed, beat.hold, wait, held.order);
   const ballPos: Vec = [state.ball.pos[0], state.ball.pos[1]];
   const E: Vec = !inPitch(beat.to, -0.1)
     ? beat.to
