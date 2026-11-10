@@ -1,7 +1,8 @@
 /**
  * Ordinary verification, with retained stage durations; no benchmark workload. The static stages
  * run side by side, then unit, integration and contract as one vitest run (its report split back
- * per tier by `testTier`), then the browser specs; each phase starts only after the last passed.
+ * per tier by `testTier`) beside the world warm-up, then the browser specs; each phase starts only
+ * after every stage of the last one passed.
  */
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -45,7 +46,10 @@ const checks = [
   'validate:i18n',
   'build',
 ].map((stage) => ({ stage, args: ['run', stage] }));
-/** One pool for every tier: each project keeps its own include and `testTimeout`. */
+/**
+ * One pool for every tier: each project keeps its own include and `testTimeout`. Beside it the
+ * world warm-up builds the worlds cases only read, outside their timers (T771).
+ */
 const tests = [
   {
     stage: `test:${TIERS.join('+')}`,
@@ -60,6 +64,7 @@ const tests = [
     ],
     inherit: true,
   },
+  { stage: 'warm-worlds', args: ['exec', 'tsx', 'scripts/warm-worlds.ts'] },
 ];
 const browsers = [
   {
