@@ -1,9 +1,11 @@
 import { configDefaults, defineConfig } from 'vitest/config';
+import { LongestFirstSequencer } from './tests/config/sequencer.ts';
 import { INTEGRATION_FILES, TEST_GLOBS } from './tests/config/test-tiers.ts';
 
 export default defineConfig({
   test: {
     environment: 'node',
+    sequence: { sequencer: LongestFirstSequencer },
     projects: [
       {
         extends: true,
