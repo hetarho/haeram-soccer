@@ -826,6 +826,7 @@
 - 261110 decided review/game-runtime-speed-261110: F9–F11 → F9 rejected (trimming view parts changes what the view holds: WEB, owner), F10 rejected (result identity of a career NPC-squad cache cannot be shown cheaply), F11 left open for a later run on F6's workload (alt: propose F9 to the owner now | measure F11 in this run)
 - 261110 decided T689 T775 T778: how pf10 coexists with sc10's live T689 calibration in .tmp/nx10 and tv10's self-improve-local run on this checkout → no pf10 task touches packages/engine/src/grid/**, every change keeps outputs byte-identical so sc10's reads stay comparable, and tv10 is told pf10's touches (alt: wait for sc10 | include grid hot paths)
 - 261110 decided ARCH-30 T779 T780 T781 T689: the gc10 loop, started for T689 only, claimed the owner's tv10 tasks T779–T781 instead (its `next` note did not bind the route while T689's call sat parked) → stopped it at 06:46Z and returned the three to todo; its local commits 8a5a1b01 (T779) and 3f03d861 (T780) stay unpushed on `work/gc10` for tv10 to reuse or drop, T781 was only begun; no code reached a remote (alt: let it finish beside tv10's own work) gc10
+- 261110 decided ARCH-30 review/test-value-261110 T786 T787: the owner, asked which repeated checks the gate may drop, approves all eight → journeys: joint authority 4→2, full-model-continuity at one viewport, records room at 390 only, 390x844 twins of non-start screens (WEB-15/17/63 fits stay rules; 390x844 dominates 360x740); integration: progression ESP dropped, fast-path to a few rounds, cup-win milestone from forced scores, earlier match-model revisions trimmed (alt: keep every variant | move them to an on-demand tier) tv10
 
 ## ideation
 | id | st |
@@ -891,6 +892,8 @@
 | T781 | build each shared test set-up world once | ARCH | - | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
+| T786 | drop journey variants that exercise no distinct path | ARCH WEB | - | todo |
+| T787 | trim repeated progression and match-model revision checks | ARCH SAVE MATCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
