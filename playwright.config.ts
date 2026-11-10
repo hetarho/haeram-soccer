@@ -33,7 +33,13 @@ export default defineConfig({
     ...(CI ? ([['github'], ['dot']] as const) : ([['list']] as const)),
     ['json', { outputFile: '.tmp/verification/e2e-results.json' }],
   ],
-  use: { baseURL, trace: 'retain-on-failure' },
+  // A local trace keeps DOM snapshots, network, console and sources but no screencast: filming
+  // every case cost about 41% of the journeys' CPU (53 cases, 445 s against 264 s; 261110), and
+  // the filmstrip is read only when a case fails. CI traces keep their screenshots.
+  use: {
+    baseURL,
+    trace: CI ? 'retain-on-failure' : { mode: 'retain-on-failure', screenshots: false },
+  },
   webServer: {
     command: process.env.PREVIEW_BUILD ? 'pnpm run preview' : `pnpm run dev --port ${port}`,
     env: { PORT: String(port) },
