@@ -356,15 +356,16 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await page.setViewportSize({ width: 390, height: 844 });
   // A settled revision-1 match keeps its recorded facts after a writer upgrades the career.
   // The archived replay exercises those historical goals, independent of the current model. The
-  // club taken over from goal-feedback-207 scores at 2′, then concedes at 4′ and 40′ (T687, found
-  // by a scan in Node: goal-feedback-221's founded career had the same shape at 2′, 13′ and 32′).
+  // club taken over from goal-feedback-389 scores at 2′, then concedes at 18′ and 31′ (found by
+  // scripts/find-goal-seeds.ts once T805's per-club age ladder moved goal-feedback-207's 2′, 4′
+  // and 40′ of T687; goal-feedback-221's founded career had the same shape at 2′, 13′ and 32′).
   const world = careerWorld(
-    { country: 'ENG', seed: 'goal-feedback-207' },
+    { country: 'ENG', seed: 'goal-feedback-389' },
     { revision: 'continuous-aggregate-1', enabled: true },
   );
   world.settings!.responsibilities.sales = 'delegated';
   const played = advanceToNextMatch(world)!.record;
-  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 4, 40]);
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 18, 31]);
   await importResponsibilityCareer(page, world);
   const replay = await openRecordedMatch(page);
   const cue = replay.getByTestId('goal-cue');
@@ -401,9 +402,9 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(score).toHaveText('1 : 2');
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
-  // Going back before the 4′ goal lets playback cross it again: one sample a minute, the one
-  // before its minute's (as 11 stood before a 13′ goal).
-  await scrubber.fill('2');
+  // Going back before the 18′ goal lets playback cross it again: one sample a minute, the one
+  // before its minute's (16; 2 stood before goal-feedback-207's 4′ goal, 11 before a 13′ one).
+  await scrubber.fill('16');
   await expect(score).toHaveText('1 : 0');
   await closeMatchDetails(page);
   await replay.getByRole('button', { name: '재생', exact: true }).click();

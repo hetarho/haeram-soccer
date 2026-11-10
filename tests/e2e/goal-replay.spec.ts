@@ -23,11 +23,12 @@ import {
 
 /** The mobile presentation journey's fixture: an early home goal, then more on the current model. */
 function goalWorld() {
-  // As tests/e2e/mobile-match-presentation.spec.ts: on match-model revision 10 the club taken over
-  // from goal-feedback-25 opens 4′ home, then 16′ away and 22′ home (T687; goal-feedback-2 opened
-  // 1′ home on a founded career and its takeover opens 40′ away). The second goal stays minutes
-  // after the clip below returns, so the cue count it reads is the clip's own.
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-25' });
+  // As tests/e2e/mobile-match-presentation.spec.ts: the club taken over from goal-feedback-61 opens
+  // 2′ home, then scores at 18′, 24′, 26′ and 35′ and concedes at 45′ and 86′ (found by
+  // scripts/find-goal-seeds.ts once T805's per-club age ladder moved goal-feedback-25's opener,
+  // 4′ home in T687, to 38′). The second goal stays minutes after the clip below returns, so the
+  // cue count it reads is the clip's own.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-61' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }

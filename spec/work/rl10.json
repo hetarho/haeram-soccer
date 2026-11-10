@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T18:38:06.427Z",
-  "sourceCommit": "9143142a23e675609383e85f06f2ee280f9fc89e",
+  "snapshotAt": "2026-11-10T18:45:32.703Z",
+  "sourceCommit": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -26,6 +26,32 @@
       "T812",
       "T813"
     ],
+    "runner": {
+      "id": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-11-10T18:41:01.632Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
       "adapter": "builtin",
@@ -65,21 +91,14 @@
   },
   "summary": {
     "total": 10,
-    "completed": 9,
-    "remaining": 1,
+    "completed": 10,
+    "remaining": 0,
     "running": 0,
     "review": 0,
-    "blocked": 1,
+    "blocked": 0,
     "unassigned": 0
   },
-  "tasks": [
-    {
-      "id": "T813",
-      "title": "Gate fix: goal-replay scenes re-found by a seed scan",
-      "dep": [],
-      "status": "blocked"
-    }
-  ],
+  "tasks": [],
   "attempts": [
     {
       "id": "e647d048-a7a8-44bb-9693-b2750ef2f856",
@@ -770,27 +789,83 @@
         "T813"
       ],
       "lane": null,
-      "owner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1",
+      "owner": "ac508b12-bebd-4fef-97e7-450dd22d1f11/worker-1",
       "contributors": [
-        "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1"
+        "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1",
+        "ac508b12-bebd-4fef-97e7-450dd22d1f11/worker-1"
       ],
-      "status": "blocked",
-      "reason": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
+      "status": "integrated",
+      "reason": null,
       "createdAt": "2026-11-10T18:18:29.612Z",
       "startCommit": "9143142a23e675609383e85f06f2ee280f9fc89e",
+      "verifiedCommit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+      "submittedBase": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
+      "submissionId": "befddb43-3731-4ad1-8912-74b4683c07a1",
+      "submittedAt": "2026-11-10T18:41:38.730Z",
+      "risk": null,
       "dispatch": {
-        "id": "f9f5b5fb-5d05-497f-b10b-dfd4b6dce743",
-        "runner": "5e136f96-cf4b-4917-8900-ebc160d0f1bf",
-        "role": "worker",
+        "id": "d02a578c-bb88-4616-8ae7-eea71aae1e8d",
+        "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+        "role": "reviewer",
         "slot": 1,
         "provider": "claude",
         "model": null,
         "status": "finished",
-        "startedAt": "2026-11-10T18:18:31.362Z",
-        "finishedAt": "2026-11-10T18:38:03.607Z",
-        "error": "T813: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요.",
-        "summary": "T813 is done, with one check denied (see below). I added `scripts/find-goal-seeds.ts`. It scans `goal-feedback-N` seeds with `careerWorld`, `advanceToNextMatch`, `goalInstants`, `replayGoals` and the presentation clock, and prints the first seed for each scene. `--check` reads the seed each spec names, plus the minutes and seek sample `match-core.spec.ts` asserts, and exits 1 when a scene no longer fits.\n\n**New seeds:**\n- **`goalWorld` in `goal-replay.spec.ts` and `mobile-match-presentation.spec.ts`:** `goal-feedback-61`. The match opens with a 2′ home goal, its cue 7.5 s after kick-off at 2x. More home goals follow at 18′, 24′, 26′ and 35′, then away goals at 45′ and 86′.\n- **`match-core.spec.ts` revision-1 replay:** `goal-feedback-389`. It has a 2′ home goal and away goals at 18′ and 31′. The spec now asserts `[2, 18, 31]` and seeks back to sample 16 instead of 2. The score literals stay because the shape is still 1 : 0, 1 : 1, 1 : 2.\n\nThe comments name the new seeds and minutes and say \"found by scripts/find-goal-seeds.ts\". No assertion was loosened, skipped or deleted.\n\n**Criteria beyond the brief:** besides the specs' own pre-browser assertions, the scan rejects a seed that would break the browser steps:\n- every highlight must be a goal shown on the clock;\n- the paused seek must land between the first two goals;\n- the first goal's cue must come at least one clock minute after kick-off. `goal-feedback-56`'s 1′ goal was rejected because its 1 s cue could vanish before the spec waits for it;\n- goal 2 must come at least 15 s after goal 1 at 4x;\n- in the replay, goal 1 must come within two clock minutes, goal 2 within one minute of the seek sample, and every goal before sample 80.\n\nA full scan from seed 1 took 389 seeds and 250 s. `--check` fails on the old seeds, reproducing the gate (`goal-feedback-25` now opens at 38′), and passes on the new ones.\n\n**Checks run and passed:** typecheck, lint, format:check, validate:i18n, build, the scan and `--check`. The affected unit run selected no test files.\n\n**Not run:** `PREVIEW_BUILD=1 pnpm exec playwright test --list --project=chromium` was denied by the headless allow list, so acceptance item 4 is left unchecked. No unit test covers the script, because each scene check builds a whole world; the script is checked by running it.\n\n**Left for the coordinator's Chromium batch:** `goal-replay.spec.ts:81`, the `mobile-match-presentation.spec.ts` goal-cue (360/390/1280) and theme-tab cases, and `match-core.spec.ts:348`. If T808's `SQUAD_SPREAD` moves the matches again, rerun the scan and update the three seeds, match-core's minutes and seek sample, and the comments."
-      }
+        "startedAt": "2026-11-10T18:41:42.666Z",
+        "finishedAt": "2026-11-10T18:45:29.760Z",
+        "error": null,
+        "summary": "T813 (c3e45d26 against 9d33688e) meets its acceptance. The merge only brings in the base's spec/STATE.md and spec/work/rl10.json runtime state; every other change is inside the task's touches.\n\n`scripts/find-goal-seeds.ts` builds each scene with the specs' own fixture helpers and readers: careerWorld, advanceToNextMatch, goalInstants, replayGoals and presentationSamples. For the archived scene it also uses archivePlayback, which is what RecordsRoom.tsx renders for openRecordedMatch.\n\n- Opening scene: the script applies every pre-browser assertion from goal-replay and mobile-match-presentation. Those are: first highlight a home goal at 5′ or earlier, at least 3 highlights and goals, goals[0] at 1 : 0, and every pick with footage. It adds safe extras the browser steps depend on: all highlights are goals and each has a goal on the clock (the 360 cue count), a sample between the first two goals (the paused seek), the opening cue at least one clock minute after kick-off, and at least 15 s at 4x before the second goal (the clip's cue count).\n- Archived scene: the script reproduces match-core's timing. Scores must run 1 : 0, 1 : 1, 1 : 2; the cue must name the first scorer; the first goal must come within 2 clock minutes and the second within 1 clock minute of the seek sample; and every goal must come before sample 80. It derives the seek sample as at−1, which with archive frames comes to minute−2. That matches the old literal 2 for the 4′ goal and the new 16 for the 18′ goal.\n- `--check` reads each spec's single `seed:` value and match-core's minutes and seek sample, and sets exitCode 1 when a named seed or literal no longer fits.\n\nThe spec edits are literals and comments only: seeds goal-feedback-61 and goal-feedback-389, `[2, 18, 31]`, and `fill('16')`. The comments carry \"found by scripts/find-goal-seeds.ts\" with the new minutes. No assertion was loosened, skipped or deleted, and the remaining `goalWorld` user (the theme-tabs test) does not depend on the goal shape.\n\nEvidence: I did not rerun the scan or `--check`, because the review checkout has no node_modules and must not be changed. I relied on the recorded worker runs (scan, `--check` exit 0 on the new seeds and exit 1 on the old ones, typecheck, lint, format, i18n, unit `--changed`, build). The coordinator's `--list` and its targeted Chromium run of the three files (13 passed, including the 5 gate failures) support the result. Approval does not rest on that run: the static match between the script's criteria and the specs' assertions is the basis.\n\nRemaining findings are P3 only: a garbled result line, and `--check` being brittle in two places."
+      },
+      "review": {
+        "id": "9955ee5f-415e-40d2-ac36-6d137e9d6c88",
+        "owner": "ac508b12-bebd-4fef-97e7-450dd22d1f11/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T813 (c3e45d26 against 9d33688e) meets its acceptance. The merge only brings in the base's spec/STATE.md and spec/work/rl10.json runtime state; every other change is inside the task's touches.\n\n`scripts/find-goal-seeds.ts` builds each scene with the specs' own fixture helpers and readers: careerWorld, advanceToNextMatch, goalInstants, replayGoals and presentationSamples. For the archived scene it also uses archivePlayback, which is what RecordsRoom.tsx renders for openRecordedMatch.\n\n- Opening scene: the script applies every pre-browser assertion from goal-replay and mobile-match-presentation. Those are: first highlight a home goal at 5′ or earlier, at least 3 highlights and goals, goals[0] at 1 : 0, and every pick with footage. It adds safe extras the browser steps depend on: all highlights are goals and each has a goal on the clock (the 360 cue count), a sample between the first two goals (the paused seek), the opening cue at least one clock minute after kick-off, and at least 15 s at 4x before the second goal (the clip's cue count).\n- Archived scene: the script reproduces match-core's timing. Scores must run 1 : 0, 1 : 1, 1 : 2; the cue must name the first scorer; the first goal must come within 2 clock minutes and the second within 1 clock minute of the seek sample; and every goal must come before sample 80. It derives the seek sample as at−1, which with archive frames comes to minute−2. That matches the old literal 2 for the 4′ goal and the new 16 for the 18′ goal.\n- `--check` reads each spec's single `seed:` value and match-core's minutes and seek sample, and sets exitCode 1 when a named seed or literal no longer fits.\n\nThe spec edits are literals and comments only: seeds goal-feedback-61 and goal-feedback-389, `[2, 18, 31]`, and `fill('16')`. The comments carry \"found by scripts/find-goal-seeds.ts\" with the new minutes. No assertion was loosened, skipped or deleted, and the remaining `goalWorld` user (the theme-tabs test) does not depend on the goal shape.\n\nEvidence: I did not rerun the scan or `--check`, because the review checkout has no node_modules and must not be changed. I relied on the recorded worker runs (scan, `--check` exit 0 on the new seeds and exit 1 on the old ones, typecheck, lint, format, i18n, unit `--changed`, build). The coordinator's `--list` and its targeted Chromium run of the three files (13 passed, including the 5 gate failures) support the result. Approval does not rest on that run: the static match between the script's criteria and the specs' assertions is the basis.\n\nRemaining findings are P3 only: a garbled result line, and `--check` being brittle in two places.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T813.gate-fix-goal-replay-scenes.md:24 (T813 result, limits)",
+            "message": "The limits line is garbled and contradicts the checklist. It says \"Worker's note:, so acceptance item 4 is unchecked: listing not run\", yet item 4 is marked [v] and the verified line says the coordinator ran the listing. The verified line also mixes in commands the coordinator ran, while ARCH-30 says a task's verified line lists only commands the task itself ran and names in limits the specs left to the batch. Fix this when the coordinator closes T813: drop the stale sentence and move the coordinator's build, --list and targeted Chromium run into a clearly attributed note."
+          },
+          {
+            "priority": "P3",
+            "where": "scripts/find-goal-seeds.ts:240 (T813)",
+            "message": "`named()` finds match-core's seek sample by searching for the comment text \"Going back before\" and then the next `scrubber.fill('N')`. If someone rewords that comment, `--check` reports \"spec seeks to sample undefined\" and fails. It fails safely rather than passing silently, but the cause will be confusing. Optional: anchor the match on code, for example the `fill('N')` that follows `scrubber.fill('80')`."
+          },
+          {
+            "priority": "P3",
+            "where": "scripts/find-goal-seeds.ts:54-64 (T813)",
+            "message": "The opening bounds (latestMinute 5, goals 3) are copied into the script as constants instead of being read from the specs. If a later edit tightens the specs, for example to an opening goal at 4′ or earlier, `--check` would still pass on its own limits. Optional: note beside the spec literals that the script holds the same values, or have `named()` read them the way it already reads match-core's minutes."
+          }
+        ],
+        "commit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+        "baseCommit": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
+        "submissionId": "befddb43-3731-4ad1-8912-74b4683c07a1",
+        "createdAt": "2026-11-10T18:41:39.511Z",
+        "finishedAt": "2026-11-10T18:45:29.718Z"
+      },
+      "steps": [
+        {
+          "taskId": "T813",
+          "commit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+          "at": "2026-11-10T18:41:38.701Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-10T18:41:15.429Z",
+              "finishedAt": "2026-11-10T18:41:38.279Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-10T18:41:15.429Z",
+          "finishedAt": "2026-11-10T18:41:38.279Z"
+        }
+      ]
     }
   ],
   "history": [
@@ -5160,6 +5235,366 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 2772,
+      "at": "2026-11-10T18:40:51.479Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2773,
+      "at": "2026-11-10T18:41:01.658Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-10T18:41:01.632Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 2774,
+      "at": "2026-11-10T18:41:01.729Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "owner": "ac508b12-bebd-4fef-97e7-450dd22d1f11/worker-1",
+        "contributors": [
+          "5e136f96-cf4b-4917-8900-ebc160d0f1bf/worker-1",
+          "ac508b12-bebd-4fef-97e7-450dd22d1f11/worker-1"
+        ]
+      }
+    },
+    {
+      "sequence": 2775,
+      "at": "2026-11-10T18:41:01.933Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c7b66aa0-f950-4f03-9d95-2602489c75a6",
+          "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T18:41:01.933Z"
+        }
+      }
+    },
+    {
+      "sequence": 2776,
+      "at": "2026-11-10T18:41:02.180Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "c7b66aa0-f950-4f03-9d95-2602489c75a6",
+          "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T18:41:01.933Z"
+        }
+      }
+    },
+    {
+      "sequence": 2777,
+      "at": "2026-11-10T18:41:14.326Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2778,
+      "at": "2026-11-10T18:41:15.000Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2779,
+      "at": "2026-11-10T18:41:15.075Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2780,
+      "at": "2026-11-10T18:41:38.730Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+        "submittedBase": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
+        "submissionId": "befddb43-3731-4ad1-8912-74b4683c07a1",
+        "submittedAt": "2026-11-10T18:41:38.730Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T813",
+            "commit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+            "at": "2026-11-10T18:41:38.701Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T18:41:15.429Z",
+                "finishedAt": "2026-11-10T18:41:38.279Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-10T18:41:15.429Z",
+            "finishedAt": "2026-11-10T18:41:38.279Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2781,
+      "at": "2026-11-10T18:41:38.773Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "c7b66aa0-f950-4f03-9d95-2602489c75a6",
+          "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T18:41:01.933Z",
+          "finishedAt": "2026-11-10T18:41:38.773Z",
+          "error": null,
+          "summary": "I'm submitting T813 as is, as the coordinator asked. The work is committed (179293ba, merged with si/rl10 as c3e45d26) and the workspace has no uncommitted changes; I edited nothing in this pass.\n\nThe coordinator reports running `playwright --list` and the three changed specs: 13 passed. That run is the browser check I couldn't do myself, since `--list` was denied by the allow list last time.\n\nWhat the task delivered:\n- **Scan script:** `scripts/find-goal-seeds.ts` finds a seed for each goal scene. It also has a `--check` mode that exits 1 when a seed a spec names no longer fits.\n- **New seeds in the specs:**\n  - `goal-feedback-61` in `goal-replay.spec.ts` and `mobile-match-presentation.spec.ts`: home goal at 2′, then 18′, 24′, 26′, 35′ home and 45′, 86′ away.\n  - `goal-feedback-389` in `match-core.spec.ts`: 2′ home, then 18′ and 31′ away. The spec now asserts `[2, 18, 31]` and seeks back to sample 16 instead of 2.\n- **Comments and assertions:** each spec's comment says the seed was \"found by scripts/find-goal-seeds.ts\". No assertion was loosened, skipped or deleted.\n- **Run time:** a full scan took 389 seeds and 250 s.\n\nIf T808's `SQUAD_SPREAD` change moves the matches again, rerun the scan and update the seeds, match-core's minutes and seek sample, and the comments."
+        }
+      }
+    },
+    {
+      "sequence": 2782,
+      "at": "2026-11-10T18:41:39.511Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "9955ee5f-415e-40d2-ac36-6d137e9d6c88",
+          "owner": "ac508b12-bebd-4fef-97e7-450dd22d1f11/reviewer-1",
+          "status": "reviewing",
+          "commit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+          "baseCommit": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
+          "submissionId": "befddb43-3731-4ad1-8912-74b4683c07a1",
+          "createdAt": "2026-11-10T18:41:39.511Z"
+        }
+      }
+    },
+    {
+      "sequence": 2783,
+      "at": "2026-11-10T18:41:42.666Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "d02a578c-bb88-4616-8ae7-eea71aae1e8d",
+          "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T18:41:42.666Z"
+        }
+      }
+    },
+    {
+      "sequence": 2784,
+      "at": "2026-11-10T18:41:42.713Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "d02a578c-bb88-4616-8ae7-eea71aae1e8d",
+          "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T18:41:42.666Z"
+        }
+      }
+    },
+    {
+      "sequence": 2785,
+      "at": "2026-11-10T18:45:29.718Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "9955ee5f-415e-40d2-ac36-6d137e9d6c88",
+          "owner": "ac508b12-bebd-4fef-97e7-450dd22d1f11/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T813 (c3e45d26 against 9d33688e) meets its acceptance. The merge only brings in the base's spec/STATE.md and spec/work/rl10.json runtime state; every other change is inside the task's touches.\n\n`scripts/find-goal-seeds.ts` builds each scene with the specs' own fixture helpers and readers: careerWorld, advanceToNextMatch, goalInstants, replayGoals and presentationSamples. For the archived scene it also uses archivePlayback, which is what RecordsRoom.tsx renders for openRecordedMatch.\n\n- Opening scene: the script applies every pre-browser assertion from goal-replay and mobile-match-presentation. Those are: first highlight a home goal at 5′ or earlier, at least 3 highlights and goals, goals[0] at 1 : 0, and every pick with footage. It adds safe extras the browser steps depend on: all highlights are goals and each has a goal on the clock (the 360 cue count), a sample between the first two goals (the paused seek), the opening cue at least one clock minute after kick-off, and at least 15 s at 4x before the second goal (the clip's cue count).\n- Archived scene: the script reproduces match-core's timing. Scores must run 1 : 0, 1 : 1, 1 : 2; the cue must name the first scorer; the first goal must come within 2 clock minutes and the second within 1 clock minute of the seek sample; and every goal must come before sample 80. It derives the seek sample as at−1, which with archive frames comes to minute−2. That matches the old literal 2 for the 4′ goal and the new 16 for the 18′ goal.\n- `--check` reads each spec's single `seed:` value and match-core's minutes and seek sample, and sets exitCode 1 when a named seed or literal no longer fits.\n\nThe spec edits are literals and comments only: seeds goal-feedback-61 and goal-feedback-389, `[2, 18, 31]`, and `fill('16')`. The comments carry \"found by scripts/find-goal-seeds.ts\" with the new minutes. No assertion was loosened, skipped or deleted, and the remaining `goalWorld` user (the theme-tabs test) does not depend on the goal shape.\n\nEvidence: I did not rerun the scan or `--check`, because the review checkout has no node_modules and must not be changed. I relied on the recorded worker runs (scan, `--check` exit 0 on the new seeds and exit 1 on the old ones, typecheck, lint, format, i18n, unit `--changed`, build). The coordinator's `--list` and its targeted Chromium run of the three files (13 passed, including the 5 gate failures) support the result. Approval does not rest on that run: the static match between the script's criteria and the specs' assertions is the basis.\n\nRemaining findings are P3 only: a garbled result line, and `--check` being brittle in two places.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T813.gate-fix-goal-replay-scenes.md:24 (T813 result, limits)",
+              "message": "The limits line is garbled and contradicts the checklist. It says \"Worker's note:, so acceptance item 4 is unchecked: listing not run\", yet item 4 is marked [v] and the verified line says the coordinator ran the listing. The verified line also mixes in commands the coordinator ran, while ARCH-30 says a task's verified line lists only commands the task itself ran and names in limits the specs left to the batch. Fix this when the coordinator closes T813: drop the stale sentence and move the coordinator's build, --list and targeted Chromium run into a clearly attributed note."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/find-goal-seeds.ts:240 (T813)",
+              "message": "`named()` finds match-core's seek sample by searching for the comment text \"Going back before\" and then the next `scrubber.fill('N')`. If someone rewords that comment, `--check` reports \"spec seeks to sample undefined\" and fails. It fails safely rather than passing silently, but the cause will be confusing. Optional: anchor the match on code, for example the `fill('N')` that follows `scrubber.fill('80')`."
+            },
+            {
+              "priority": "P3",
+              "where": "scripts/find-goal-seeds.ts:54-64 (T813)",
+              "message": "The opening bounds (latestMinute 5, goals 3) are copied into the script as constants instead of being read from the specs. If a later edit tightens the specs, for example to an opening goal at 4′ or earlier, `--check` would still pass on its own limits. Optional: note beside the spec literals that the script holds the same values, or have `named()` read them the way it already reads match-core's minutes."
+            }
+          ],
+          "commit": "c3e45d269ebf98987c924b42d68723ca43a1f6d9",
+          "baseCommit": "9d33688ee0b84603d550881ed02b31dbfb1dfd28",
+          "submissionId": "befddb43-3731-4ad1-8912-74b4683c07a1",
+          "createdAt": "2026-11-10T18:41:39.511Z",
+          "finishedAt": "2026-11-10T18:45:29.718Z"
+        }
+      }
+    },
+    {
+      "sequence": 2786,
+      "at": "2026-11-10T18:45:29.760Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "d02a578c-bb88-4616-8ae7-eea71aae1e8d",
+          "runner": "ac508b12-bebd-4fef-97e7-450dd22d1f11",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T18:41:42.666Z",
+          "finishedAt": "2026-11-10T18:45:29.760Z",
+          "error": null,
+          "summary": "T813 (c3e45d26 against 9d33688e) meets its acceptance. The merge only brings in the base's spec/STATE.md and spec/work/rl10.json runtime state; every other change is inside the task's touches.\n\n`scripts/find-goal-seeds.ts` builds each scene with the specs' own fixture helpers and readers: careerWorld, advanceToNextMatch, goalInstants, replayGoals and presentationSamples. For the archived scene it also uses archivePlayback, which is what RecordsRoom.tsx renders for openRecordedMatch.\n\n- Opening scene: the script applies every pre-browser assertion from goal-replay and mobile-match-presentation. Those are: first highlight a home goal at 5′ or earlier, at least 3 highlights and goals, goals[0] at 1 : 0, and every pick with footage. It adds safe extras the browser steps depend on: all highlights are goals and each has a goal on the clock (the 360 cue count), a sample between the first two goals (the paused seek), the opening cue at least one clock minute after kick-off, and at least 15 s at 4x before the second goal (the clip's cue count).\n- Archived scene: the script reproduces match-core's timing. Scores must run 1 : 0, 1 : 1, 1 : 2; the cue must name the first scorer; the first goal must come within 2 clock minutes and the second within 1 clock minute of the seek sample; and every goal must come before sample 80. It derives the seek sample as at−1, which with archive frames comes to minute−2. That matches the old literal 2 for the 4′ goal and the new 16 for the 18′ goal.\n- `--check` reads each spec's single `seed:` value and match-core's minutes and seek sample, and sets exitCode 1 when a named seed or literal no longer fits.\n\nThe spec edits are literals and comments only: seeds goal-feedback-61 and goal-feedback-389, `[2, 18, 31]`, and `fill('16')`. The comments carry \"found by scripts/find-goal-seeds.ts\" with the new minutes. No assertion was loosened, skipped or deleted, and the remaining `goalWorld` user (the theme-tabs test) does not depend on the goal shape.\n\nEvidence: I did not rerun the scan or `--check`, because the review checkout has no node_modules and must not be changed. I relied on the recorded worker runs (scan, `--check` exit 0 on the new seeds and exit 1 on the old ones, typecheck, lint, format, i18n, unit `--changed`, build). The coordinator's `--list` and its targeted Chromium run of the three files (13 passed, including the 5 gate failures) support the result. Approval does not rest on that run: the static match between the script's criteria and the specs' assertions is the basis.\n\nRemaining findings are P3 only: a garbled result line, and `--check` being brittle in two places."
+        }
+      }
+    },
+    {
+      "sequence": 2787,
+      "at": "2026-11-10T18:45:29.850Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "78b19bbd-0ea4-4af1-aa7c-bfefd0047f88",
+      "taskId": "T813",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

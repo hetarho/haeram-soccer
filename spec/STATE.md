@@ -914,7 +914,6 @@
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
-| T813 | gate fix: goal-replay scenes re-found by a seed scan | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -939,12 +938,13 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
-| rl10 | 2 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-11-10T18:38:06.427Z | [history](work/rl10.json) |
+| rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T18:45:32.703Z | [history](work/rl10.json) |
 
 ## next
 - inspect work board for remaining tasks
 
 ## log
+- 261110 T813 integrated
 - 261110 rl10: second verify:batch on f43330c4 passed unit/integration/contract and 328/333 Chromium; the 5 goal-replay scenes moved with T805 → create-task T813 rl10
 - 261110 T812 integrated
 - 261110 T811 integrated
@@ -964,4 +964,3 @@
 - 261110 create-task T801 from review/test-value-261110 F7 tv10
 - 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
 - 261110 T790 integrated (8 cases in 7 files on the shared finance last-round span; independent review approved 6c4e045e, P3 notes only) tv10
-- 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
