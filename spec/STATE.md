@@ -890,8 +890,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T788 | share the test-world cache across a clone's worktrees | ARCH | - | todo |
-| T789 | base64 and variable-length integers in the save packing with integer operations | SAVE | - | todo |
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
@@ -936,6 +934,7 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
 - 261110 T790 integrated (8 cases in 7 files on the shared finance last-round span; independent review approved 6c4e045e, P3 notes only) tv10
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
 - 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
@@ -955,4 +954,3 @@
 - 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
 - 261110 create-task review/football-data-consistency-261109 F24: T768 required staff-holder fixture correction with fresh identity-cache coverage and unchanged cases/limits fi09
 - 261110 create-task final-data-consistency reassign five clean source checkpoints without scope/coverage changes fi09
-- 261110 create-task review/football-data-consistency-261109 F23: T767 inherited report-observation gate repair, same scenarios/assertions/timeouts; final browser execution remains coordinator-owned fi09
