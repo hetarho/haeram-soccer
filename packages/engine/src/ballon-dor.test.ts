@@ -201,6 +201,25 @@ describe('the Ballon d’Or podium (→PLAYER-27)', () => {
     w.npcSeason!.trackedFrom = { year: 1960, day: 40, round: 6 };
     expect(ballonDorPodium(w, champions(top[0]!.id))).toBeUndefined();
   });
+
+  it('splits a club’s team credit among its players by individual points', () => {
+    const { w, top } = season();
+    finish(w, top);
+    const [star, second, third, rival] = [85, 85, 85, 85].map((ability, i) => rated(w, i, ability));
+    played(w, LEAGUE, star!, top[0]!.id, 38, 30, 10);
+    played(w, LEAGUE, second!, top[0]!.id, 38, 20, 10);
+    played(w, LEAGUE, third!, top[0]!.id, 38, 15, 10);
+    played(w, LEAGUE, rival!, top[1]!.id, 38, 28, 10);
+    const podium = ballonDorPodium(w, champions(top[0]!.id))!;
+    // Individual points (production + class 30): 108, 99, 94, 107. The champions' title and first
+    // place (200) count in full, ×0.55 and ×0.35; the runner-up's second place (60) in full.
+    expect(podium.map((place) => [place.id, place.points])).toEqual([
+      [star!.id, 308],
+      [second!.id, 209],
+      [rival!.id, 167],
+    ]);
+    expect(podium[1]!.honours).toEqual(['league']);
+  });
 });
 
 const place = (id: string): BallonDorPlace => ({

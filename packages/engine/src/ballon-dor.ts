@@ -26,6 +26,12 @@ export const BALLON_DOR_CONFIG = {
   } satisfies Record<BallonDorHonour, number>,
   /** The best final top-flight place he contributed to, first through sixth. */
   leaguePlaces: [80, 60, 45, 30, 20, 10] as readonly number[],
+  /**
+   * Teammates split the votes a club's season earns: its honours and league place count in full
+   * for its best eligible player by individual points (production and class), then at these
+   * shares for the next; the last share holds for the rest.
+   */
+  shares: [1, 0.55, 0.35] as readonly number[],
   /** Top-flight league appearances a candidate needs that season. */
   appearances: 15,
   places: 3,

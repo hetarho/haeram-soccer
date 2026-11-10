@@ -131,6 +131,32 @@ function leaguePlacePoints(w: World): Map<string, number> {
   return points;
 }
 
+/**
+ * Each club's eligible players in order of individual points (then OVR, then ID): the share of the
+ * club's honours and place that each receives (→PLAYER-27), teammates splitting the votes.
+ */
+function clubShares(
+  eligible: readonly { candidate: Candidate; ovr: number; individual: number }[],
+): (club: string, id: string) => number {
+  const shares = BALLON_DOR_CONFIG.shares;
+  const order = [...eligible].sort(
+    (a, b) =>
+      b.individual - a.individual || b.ovr - a.ovr || compareIds(a.candidate.id, b.candidate.id),
+  );
+  const rank = new Map<string, number>();
+  const seen = new Map<string, number>();
+  for (const { candidate } of order)
+    for (const club of new Set([...candidate.played].map((key) => key.split('|')[2]!))) {
+      const index = seen.get(club) ?? 0;
+      seen.set(club, index + 1);
+      rank.set(`${club}|${candidate.id}`, index);
+    }
+  return (club, id) => {
+    const index = rank.get(`${club}|${id}`) ?? 0;
+    return shares[Math.min(index, shares.length - 1)] ?? 1;
+  };
+}
+
 /** His OVR at the close: our player's, else his club's squad's; none when he is found nowhere. */
 function closingOvr(w: World, candidate: Candidate) {
   const own = w.players.find((p) => p.id === candidate.id);
@@ -154,25 +180,34 @@ export function ballonDorPodium(
   if (stats.trackedFrom.day !== 1 || stats.trackedFrom.round !== 1) return undefined;
   const won = seasonHonours(w, champions);
   const finishes = leaguePlacePoints(w);
-  const ranked = candidates(w)
+  const eligible = candidates(w)
     .filter((candidate) => candidate.top >= config.appearances)
     .map((candidate) => {
-      const honours = [
-        ...new Set(
-          won
-            .filter((entry) =>
-              candidate.played.has(`${entry.kind}|${entry.groupKey ?? ''}|${entry.club}`),
-            )
-            .map((entry) => entry.honour),
-        ),
-      ];
       const ovr = closingOvr(w, candidate) ?? 0;
-      const points =
+      const individual =
         ballonDorProduction(candidate.goals, candidate.assists) +
-        Math.max(0, ovr - config.classFrom) * config.classWeight +
-        Math.max(0, ...[...candidate.leagueClubs].map((id) => finishes.get(id) ?? 0)) +
-        honours.reduce((sum, honour) => sum + config.honours[honour], 0);
-      return { candidate, honours, ovr, points };
+        Math.max(0, ovr - config.classFrom) * config.classWeight;
+      return { candidate, ovr, individual };
+    });
+  const share = clubShares(eligible);
+  const ranked = eligible
+    .map(({ candidate, ovr, individual }) => {
+      // Each honour once, at his share of the club that won it with him.
+      const credit = new Map<BallonDorHonour, number>();
+      for (const entry of won) {
+        if (!candidate.played.has(`${entry.kind}|${entry.groupKey ?? ''}|${entry.club}`)) continue;
+        const value = config.honours[entry.honour] * share(entry.club, candidate.id);
+        credit.set(entry.honour, Math.max(credit.get(entry.honour) ?? 0, value));
+      }
+      const place = Math.max(
+        0,
+        ...[...candidate.leagueClubs].map(
+          (id) => (finishes.get(id) ?? 0) * share(id, candidate.id),
+        ),
+      );
+      const team = [...credit.values()].reduce((sum, value) => sum + value, place);
+      const points = Math.round(individual + team);
+      return { candidate, honours: [...credit.keys()], ovr, points };
     })
     .sort(
       (a, b) => b.points - a.points || b.ovr - a.ovr || compareIds(a.candidate.id, b.candidate.id),

@@ -18,7 +18,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 | pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
-| bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:25Z | T783 |
+| bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
 - 261110 decided PLAYER-27 CLUB-33 T783 T784 T785: the owner's three reports (one club's three on most Ballon d'Or podiums, a delegated club told to spend without limit never nearing the record fee, its signings bunched on one seller) → PLAYER r16 teammates split the votes at 1/0.55/0.35, chosen from a measured grid (0.53/0.55/0.57/0.60: two from one club 9/16/30/48%, real football 16–21%), implemented now as T783; CLUB r65 adds the seller-spread and record-fee targets for explore tasks T784 and T785, diagnosis first, no rule changed until measured (alt: raise production's weight, which hands the award to T689's inflated scorers | cap one club at one podium place, which real 1988/1989/2010 deny) bd10
@@ -891,7 +891,6 @@
 | T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
 | T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
 | T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
-| T783 | teammates split the Ballon d'Or votes | PLAYER | - | doing@261110.bd10 |
 | T784 | spread delegated signings over sellers | CLUB | - | todo |
 | T785 | let a funded delegated club reach record fees | CLUB ECON OWNER | - | todo |
 
@@ -925,6 +924,7 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
 - 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
