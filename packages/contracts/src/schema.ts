@@ -1162,11 +1162,12 @@ const worldSchema: z.ZodType<World> = z.object({
       name: z.string().trim().min(1).max(STRATEGY_NAME_LIMIT).optional(),
     })
     .optional(),
+  // The free agents hold at most 8, 마당발's 9 (→STAFF-17, OWNER-5).
   managerMarket: z
     .strictObject({
       year: z.number().int().min(1901).max(4000),
       round: z.number().int().min(0).max(46),
-      free: z.array(manager).max(8),
+      free: z.array(manager).max(9),
       clubs: z.record(id, z.tuple([z.number().int().min(0).max(10000), z.number().int()])),
       serial: z.number().int().min(0),
     })
