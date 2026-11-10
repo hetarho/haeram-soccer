@@ -899,7 +899,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T793 | match-proto script infrastructure: state, casting, beats, restarts, validation | ARCH | T792 | todo |
 | T794 | match-proto move catalogue: the possession grammar, shots, set pieces and the showcase search | ARCH | T793 | todo |
 | T795 | match-proto stage core: bounded movement, the ball, frames, completed passes and carries | ARCH | T794 | todo |
 | T796 | match-proto stage contests and dead balls: interceptions, tackles, take-ons, balls out, restarts | ARCH | T795 | todo |
@@ -940,6 +939,7 @@
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T793 done: `scripts/match-proto/script` state, casting, emit, restarts, four basic moves, `generateScript`, the 8-rule continuity validator and script stats with `PROTO_CONFIG.grammar`; seeds t0–t29 validate, 24 unit cases, no production file touched mp11
 - 261111 T792 done: `scripts/match-proto/core/shape.ts` nominal places by phase (formation anchors, role overrides, offside line from positions or the nominal block, keepers) with `PROTO_CONFIG.shape`; every reference value reproduced, 11 unit cases, a leaf, no production file touched mp11
 - 261111 T791 done: `scripts/match-proto/core` contracts (types, vec, pitch, rng, config, synthetic squads) and README; every rng reference vector reproduced, 13 unit cases, no production file touched mp11
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
@@ -959,5 +959,3 @@
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
-- 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
-- 261110 T769 T771 T770 integrated (9feaa88f..108a3511; independent review CHANGES P2 fixed by 48e2542a/5c7b6d69, then approved) tq10
