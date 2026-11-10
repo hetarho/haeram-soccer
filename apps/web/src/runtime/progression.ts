@@ -19,6 +19,8 @@ import {
 } from '../../../../packages/engine/src/approvals';
 import { settingsOf } from '../../../../packages/engine/src/responsibilities';
 import { currentLeagueRank } from '../../../../packages/engine/src/projection';
+import { BANKRUPTCY_ROUNDS } from '../../../../packages/engine/src/settlement';
+import { moneyLabel } from '../../../../packages/engine/src/finance';
 import type { GameClient } from './client';
 import { gameStore } from './store';
 import { unfinishedPlayback, useMatchView } from './matchView';
@@ -38,6 +40,34 @@ function endedReason(w: Pick<World, 'bankrupt' | 'ended'>) {
     : w.ended === 'fans'
       ? sourceMessage('copy.progression.39653c135b')
       : sourceMessage('copy.progression.6330ef3bc3');
+}
+/** A 파산 위기 the automatic clock stops for once (→WEB-56, OWNER-15): the club's or the owner's. */
+export type Crisis = 'club' | 'owner';
+/**
+ * The 파산 위기 a step from `before` to `after` began, if any: the club's first round in debt
+ * (→ECON-24) or the owner's 구단주 파산 위기 (→OWNER-14). A crisis already under way begins nothing,
+ * so the same one never stops the clock twice.
+ */
+export function crisisBegan(before: World, after: World): Crisis | undefined {
+  if (careerEnded(after)) return undefined;
+  if (!before.insolvent && (after.insolvent ?? 0) > 0) return 'club';
+  if (!before.owner?.ownerCrisis && after.owner?.ownerCrisis) return 'owner';
+  return undefined;
+}
+/** The name a crisis stop gives the stopped clock, as the money band names it (→WEB-56). */
+export function crisisTitle(w: World, crisis: Crisis) {
+  return crisis === 'owner'
+    ? sourceMessage('copy.ownerFigures.f20b1ae1c7')
+    : w.owner
+      ? sourceMessage('copy.CashAlarm.7c6b2c4fa1')
+      : sourceMessage('copy.CashAlarm.be03d028d1');
+}
+/** What the club's 파산 위기 warning states, in its inbox item's words (→ECON-24, WEB-56). */
+export function clubCrisisDetail(w: World) {
+  return sourceMessage('copy.settlement.c67c099969', {
+    p0: moneyLabel(w, w.cash),
+    p1: BANKRUPTCY_ROUNDS,
+  });
 }
 /** How long the 경기 결과 알림 notice stays once our fixture's day is shown (→WEB-18). */
 export const RESULT_NOTICE_MS = 4000;
@@ -105,6 +135,8 @@ export interface ProgressionState {
   away?: ClockMark;
   /** The own match record a shown fixture day announces while 경기 결과 알림 is on. */
   resultNotice?: { matchId: string };
+  /** A 파산 위기 that began in automatic play, warned of until the owner closes it (→WEB-56). */
+  crisis?: Crisis;
 }
 const WATCH_REASON = sourceMessage('copy.progression.98ae0905a7');
 const STOP_REASON = sourceMessage('copy.progression.3dd176ecc2');
@@ -295,7 +327,7 @@ export class ProgressionController {
         this.resumeAfterEvents = false;
         this.resumeAfterOffice = false;
         this.passedMatch = undefined;
-        this.store.setState({ matchEve: undefined, away: undefined });
+        this.store.setState({ matchEve: undefined, away: undefined, crisis: undefined });
         this.writeClock(true);
       }
       if (this.worldId !== id) {
@@ -304,7 +336,7 @@ export class ProgressionController {
         this.worldId = id;
         this.resumeAfterOffice = false;
         this.seenMark = undefined;
-        this.store.setState({ away: undefined });
+        this.store.setState({ away: undefined, crisis: undefined });
         // A clock this world left running resumes once the game is on screen (→WEB-64).
         this.armed = id ? this.recordToResume(id) : undefined;
       }
@@ -417,6 +449,10 @@ export class ProgressionController {
   /** The owner read the summary. */
   clearAway() {
     this.store.setState({ away: undefined });
+  }
+  /** The owner closed the crisis warning; the clock stays stopped until the owner starts it (→WEB-56). */
+  clearCrisis() {
+    this.store.setState({ crisis: undefined });
   }
   /** The owner opened or dismissed the result notice. */
   clearResultNotice() {
@@ -881,10 +917,17 @@ export class ProgressionController {
   }
   /**
    * Whether a computed day stops the clock once shown: a new stopping event or pending decision,
-   * a critical alert, the career's end or a match eve that stops for observation.
+   * a critical alert, the career's end, the start of a 파산 위기 or a match eve that stops for
+   * observation.
    */
   private stopsAt(before: World, after: World) {
-    if (after.critical || careerEnded(after) || freshEvent(before, after)) return true;
+    if (
+      after.critical ||
+      careerEnded(after) ||
+      freshEvent(before, after) ||
+      crisisBegan(before, after)
+    )
+      return true;
     const eve = pendingMatchReport(after);
     return !!eve && eve.id !== this.passedMatch;
   }
@@ -922,7 +965,22 @@ export class ProgressionController {
     // The client state stops the clock for these (constructor).
     if (after.critical || careerEnded(after)) return;
     const running = this.store.getState().running,
-      fresh = freshEvent(before, after);
+      fresh = freshEvent(before, after),
+      crisis = crisisBegan(before, after);
+    // Only automatic play shows computed days, so a crisis that begins in one stops the clock once
+    // behind its warning, and nothing but the owner's start resumes it (→WEB-56).
+    if (crisis) {
+      if (running || this.draining) this.stop(crisisTitle(after, crisis));
+      else this.store.setState({ reason: crisisTitle(after, crisis) });
+      this.resumeAfterEvents = false;
+      this.resumeAfterOffice = false;
+      this.resumeAfterWatch = false;
+      this.store.setState({
+        crisis,
+        ...(fresh?.kind === 'match' ? { matchEve: fresh.ref } : {}),
+      });
+      return;
+    }
     if (fresh) {
       if (running) {
         this.stop(fresh.title);

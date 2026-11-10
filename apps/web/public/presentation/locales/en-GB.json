@@ -2181,6 +2181,7 @@
     "copy.CashAlarm.466cd5aa0d": "{p0} Balance {p1} ·{p2}{p3} If you do not return to surplus within the round, you will go bankrupt.",
     "copy.CashAlarm.027b8b25f5": "funding crisis",
     "copy.CashAlarm.8773252530": "{p0} Operating expenses: Approximately {p1} shares left · We will run out and go bankrupt after {p2} round",
+    "copy.CrisisAlert.paused": "Automatic play has been paused. Check the situation, then start play again.",
     "copy.Celebration.23058c112d": "Tap to close",
     "copy.Celebration.055f6cd644": "congratulations",
     "copy.Chart.b4b2b2c3fa": "As the first season builds up, the {p0} graph begins.",

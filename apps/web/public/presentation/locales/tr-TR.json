@@ -2413,6 +2413,7 @@
     "copy.CashAlarm.466cd5aa0d": "{p0} Bakiye {p1} ·{p2}{p3} Turda fazlaya dönmezseniz iflas edersiniz.",
     "copy.CashAlarm.027b8b25f5": "finansman krizi",
     "copy.CashAlarm.8773252530": "{p0} İşletme giderleri: Yaklaşık {p1} hissesi kaldı · {p2} turundan sonra tükeneceğiz ve iflas edeceğiz",
+    "copy.CrisisAlert.paused": "Otomatik ilerleme duraklatıldı. Durumu inceleyip ilerlemeyi yeniden başlatın.",
     "copy.Celebration.23058c112d": "Kapatmak için dokunun",
     "copy.Celebration.055f6cd644": "tebrikler",
     "copy.Chart.b4b2b2c3fa": "İlk sezon ilerledikçe {p0} grafiği başlıyor.",

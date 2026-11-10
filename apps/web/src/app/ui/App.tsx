@@ -8,7 +8,7 @@ import {
   ClubOverviewHost,
   OfficeOverviewHost,
 } from '../office/OfficeOverviewHost';
-import { CashAlarm } from '../../widgets/cash-alarm';
+import { CashAlarm, CrisisAlert } from '../../widgets/cash-alarm';
 import { FeedbackOverlay } from './FeedbackOverlay';
 import {
   activateTaskWorld,
@@ -868,6 +868,14 @@ export function App() {
   useEffect(() => {
     if (page === 'match' && client && w && !hasPlayback) replacePage('dashboard');
   }, [page, client, w, hasPlayback, replacePage]);
+  // The career's end opens home, where the game-over page names its cause; every other menu stays
+  // open to read the ended career (→WEB-56).
+  const ended = !!w && careerOver(w);
+  const wasEnded = useRef(ended);
+  useEffect(() => {
+    if (ended && !wasEnded.current) replacePage('dashboard');
+    wasEnded.current = ended;
+  }, [ended, replacePage]);
   // Local personnel tabs create meaningful history entries too, while keeping the same page.
   const [taskLocation, setTaskLocation] = useState(taskAddress);
   const lastTaskAddress = useRef(taskLocation);
@@ -1060,13 +1068,6 @@ export function App() {
                     replacePage('dashboard');
                   }}
                 />
-              ) : careerOver(w) ? (
-                <GameOver
-                  w={w}
-                  onExport={() => void download()}
-                  onNew={() => void startNew(slots?.read().active ?? 0)}
-                  onSlots={openSlots}
-                />
               ) : (
                 <>
                   {localizeValue(
@@ -1078,13 +1079,26 @@ export function App() {
                   )}
                   <div className={s.views} aria-busy={changingView}>
                     <ClubNavigation page={page} />
-                    <div
-                      className={s.coreContent}
-                      hidden={contentPage !== 'dashboard'}
-                      inert={changingView}
-                    >
-                      <ConnectedDashboard client={client} />
-                    </div>
+                    {localizeValue(
+                      ended ? (
+                        contentPage === 'dashboard' && (
+                          <GameOver
+                            w={w}
+                            onExport={() => void download()}
+                            onNew={() => void startNew(slots?.read().active ?? 0)}
+                            onSlots={openSlots}
+                          />
+                        )
+                      ) : (
+                        <div
+                          className={s.coreContent}
+                          hidden={contentPage !== 'dashboard'}
+                          inert={changingView}
+                        >
+                          <ConnectedDashboard client={client} />
+                        </div>
+                      ),
+                    )}
                     <div id="competition-hub-panel" className={s.views} inert={changingView}>
                       <LiveSeason
                         key={worldId}
@@ -1211,6 +1225,7 @@ export function App() {
       )}
       {localizeValue(playing && <CelebrationHost />)}
       {localizeValue(playing && controller && <AwayHost controller={controller} />)}
+      {localizeValue(playing && controller && <CrisisAlert controller={controller} />)}
       {localizeValue(
         pendingImport && (
           <Dialog

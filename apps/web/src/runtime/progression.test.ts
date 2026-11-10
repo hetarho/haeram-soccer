@@ -4,7 +4,14 @@ import type { MatchPlayback } from '../../../../packages/contracts/src/types';
 import type { GameClient } from './client';
 import { gameStore, initialClientState } from './store';
 import { nextOwnFixture } from '../../../../packages/engine/src/calendar';
-import { PACE_MS, ProgressionController, RESULT_NOTICE_MS } from './progression';
+import {
+  clubCrisisDetail,
+  crisisBegan,
+  crisisTitle,
+  PACE_MS,
+  ProgressionController,
+  RESULT_NOTICE_MS,
+} from './progression';
 import { useMatchView } from './matchView';
 import type { Reply, View } from './protocol';
 
@@ -294,6 +301,84 @@ describe('the global progression clock', () => {
     controller.start();
     await vi.advanceTimersByTimeAsync(1000);
     expect(controller.store.getState().running).toBe(true);
+  });
+  it('names the 파산 위기 a step begins and nothing for one under way or an ended career (→WEB-56)', () => {
+    const debt = structuredClone(w);
+    debt.cash = '-1';
+    debt.insolvent = 1;
+    expect(crisisBegan(w, debt)).toBe('club');
+    expect(crisisBegan(debt, { ...debt, insolvent: 2 })).toBeUndefined();
+    const broke = structuredClone(w);
+    broke.owner!.ownerCrisis = { since: { year: w.year, day: 1 } };
+    expect(crisisBegan(w, broke)).toBe('owner');
+    expect(crisisBegan(broke, broke)).toBeUndefined();
+    expect(
+      crisisBegan(w, { ...debt, bankrupt: { year: w.year, round: 1, day: 1 } }),
+    ).toBeUndefined();
+    expect(crisisTitle(broke, 'owner')).toBe('구단주 파산 위기');
+    expect(crisisTitle(debt, 'club')).toBe(debt.owner ? '구단 파산 위기' : '파산 위기');
+    // The warning states the club's crisis in its inbox item's words: eight rounds in debt end it.
+    expect(clubCrisisDetail(debt)).toMatch(/^잔고가 .+예요\. 적자인 채로 8라운드가 정산되거나/);
+  });
+  it('stops a running clock once behind a warning when a 파산 위기 begins, and only the owner restarts it (→WEB-56)', async () => {
+    const s = setup();
+    controller = s.controller;
+    const debt = structuredClone(w);
+    debt.cash = '-1';
+    debt.insolvent = 1;
+    s.command.mockImplementation(async () => ({
+      ok: true,
+      requestId: 'test',
+      view: { world: debt } as View,
+    }));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState()).toMatchObject({
+      running: false,
+      crisis: 'club',
+      reason: crisisTitle(debt, 'club'),
+    });
+    expect(s.saveSoon).toHaveBeenCalled();
+    // Closing the warning leaves the clock stopped.
+    controller.clearCrisis();
+    const sent = s.command.mock.calls.length;
+    await vi.advanceTimersByTimeAsync(5000);
+    expect(controller.store.getState()).toMatchObject({ running: false, crisis: undefined });
+    expect(s.command.mock.calls.length).toBe(sent);
+    // The same crisis going on never stops the clock again.
+    const deeper = structuredClone(debt);
+    deeper.insolvent = 2;
+    s.command.mockImplementation(async () => ({
+      ok: true,
+      requestId: 'test',
+      view: { world: deeper } as View,
+    }));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(controller.store.getState()).toMatchObject({ running: true, crisis: undefined });
+  });
+  it("stops for the owner's 구단주 파산 위기 too, and leaving a match or the office never resumes it", async () => {
+    const s = setup();
+    controller = s.controller;
+    const broke = structuredClone(w);
+    broke.owner!.ownerCrisis = { since: { year: w.year, day: 1 } };
+    s.command.mockImplementation(async () => ({
+      ok: true,
+      requestId: 'test',
+      view: { world: broke } as View,
+    }));
+    controller.start();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(controller.store.getState()).toMatchObject({
+      running: false,
+      crisis: 'owner',
+      reason: '구단주 파산 위기',
+    });
+    controller.clearCrisis();
+    controller.endWatch();
+    controller.leaveOffice();
+    await vi.advanceTimersByTimeAsync(3000);
+    expect(controller.store.getState().running).toBe(false);
   });
   it('plays on once the owner decides the last event that stopped a running clock (→WEB-42)', async () => {
     const s = setup();

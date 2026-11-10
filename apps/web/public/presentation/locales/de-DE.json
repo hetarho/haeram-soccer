@@ -2651,6 +2651,7 @@
     "copy.CashAlarm.466cd5aa0d": "{p0} Kontostand {p1} ·{p2}{p3} Wenn Sie innerhalb der Runde nicht wieder einen Überschuss haben, gehen Sie bankrott.",
     "copy.CashAlarm.027b8b25f5": "Finanzierungskrise",
     "copy.CashAlarm.8773252530": "{p0} Betriebskosten: Ungefähr noch {p1}-Aktien · Wir werden nach der {p2}-Runde keine Aktien mehr haben und bankrott gehen",
+    "copy.CrisisAlert.paused": "Der automatische Spielablauf wurde angehalten. Prüfen Sie die Lage und setzen Sie das Spiel dann fort.",
     "copy.Celebration.23058c112d": "Zum Schließen tippen",
     "copy.Celebration.055f6cd644": "Herzlichen Glückwunsch",
     "copy.Chart.b4b2b2c3fa": "Während sich die erste Staffel aufbaut, beginnt die {p0}-Grafik.",

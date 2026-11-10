@@ -887,7 +887,6 @@
 | T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
 | T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
 | T778 | choose the own XI once per view and count own league games in a loop | ARCH | T777 | todo |
-| T782 | stop the automatic clock once when a 파산 위기 begins, and keep every menu readable after a career ends | WEB OWNER ECON | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -918,6 +917,7 @@
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 T782 done: a 파산 위기 starting in automatic play stops the clock once behind a warning dialog; an ended career shows game-over on home with every other menu readable bk10
 - 261110 update-ssot WEB r214 OWNER r7 ECON r53 (the start of a 파산 위기 stops a running automatic clock once behind a warning; an ended career keeps every menu readable); create-task T782 bk10
 - 261110 update-ssot ARCH r36 (ARCH-23 browser shards 3/3/4, world cache in browser jobs); create-task T779-T781 from review/test-value-261110 F1-F3 tv10
 - 261110 create-task T775-T778 from review/game-runtime-speed-261110 F1-F8 (lanes perf-history, perf-view) pf10
@@ -937,4 +937,3 @@
 - 261110 create-task review/football-data-consistency-261109 F21: T765 UI-only snapshot monetary context, after integrated T753; original diagnostic receipt gap explicit, failing mounted proof required fi09
 - 261110 create-task HIST r24/SAVE r66 + F17: T764 atomic recorded-side/current-cache unit; owner waived backwardcompat, no extra migration policy; pending consumed fi09
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
-- 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
