@@ -32,6 +32,7 @@ const DEFAULTS = {
   aggregate: { reps: 20, warm: 4 },
   day: { reps: 60, warm: 0 },
   view: { reps: 60, warm: 6 },
+  history: { reps: 10, warm: 1 },
 };
 const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);

@@ -12,9 +12,13 @@
  * - `view`: the same career's day as the Host plays it without helpers: one `advance-days 1`
  *   command with `viewBase` (the day, its view and its publication) and the posting clone; its reps
  *   are successive days as in `day`, and a rep returns a promise that `pair.mjs` awaits.
+ * - `history`: one season of the world before the takeover, lived to its close as `liveHistory`
+ *   lives it (→WORLD-13) on a world `historyWorld(seed)` builds once outside the timed reps; its
+ *   reps are successive seasons from 1930, stepped in lockstep as `day` steps its days.
  *
- * `digest()` hashes the recorded outputs (the world itself for `day`; every posted reply and then
- * the world for `view`), which a result-identical candidate must share with its baseline.
+ * `digest()` hashes the recorded outputs (the world itself for `day` and `history`; every posted
+ * reply and then the world for `view`), which a result-identical candidate must share with its
+ * baseline.
  */
 import { createHash } from 'node:crypto';
 import * as engine from '../../packages/engine/src/index';
@@ -25,6 +29,7 @@ import { playGrid } from '../../packages/engine/src/grid/engine';
 import { simulateAggregate } from '../../packages/engine/src/aggregate/engine';
 import { canonical } from '../../packages/contracts/src/index';
 import { currentDay } from '../../packages/engine/src/calendar';
+import { historyWorld, liveHistory } from '../../packages/engine/src/history';
 import type { Fixture, World } from '../../packages/contracts/src/types';
 import { Host } from '../../apps/web/src/runtime/host';
 import { forPosting } from '../../apps/web/src/runtime/viewPublisher';
@@ -62,6 +67,20 @@ function otherFixtures(w: World, count: number, filter: (f: Fixture) => boolean)
 
 export function workloadOf(name: string, seed: string): Workload {
   const hash = createHash('sha256');
+  if (name === 'history') {
+    // A new game's history: no career world is built for it.
+    const h = historyWorld(seed);
+    return {
+      digest: () => hash.update(canonical(h)).digest('hex').slice(0, 16),
+      cycle: 0,
+      rep() {
+        const year = h.year;
+        liveHistory(h, year + 1);
+        if (h.year <= year) throw new Error('History benchmark did not close a season');
+        return 'season';
+      },
+    };
+  }
   const w = world(seed);
   const digest = () => hash.digest('hex').slice(0, 16);
   if (name === 'grid') {

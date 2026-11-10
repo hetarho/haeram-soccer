@@ -42,6 +42,8 @@ const DEFAULTS = {
   aggregate: { procs: 16, reps: 20, warm: 4 },
   day: { procs: 4, reps: 60, warm: 0 },
   view: { procs: 4, reps: 60, warm: 6 },
+  // About 1.2 s a season (pf10 scout, 261110): 1930/31 warms up, the measured reps end in 1947/48.
+  history: { procs: 4, reps: 10, warm: 1 },
 };
 const d = DEFAULTS[workload];
 if (!d) throw new Error(`unknown workload ${workload}`);
