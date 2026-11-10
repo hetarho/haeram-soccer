@@ -83,13 +83,11 @@ class Memory implements StoragePort {
     this.data.delete(k);
   }
 }
-/** The founded world after `rounds` observed rounds (`advanceRound(w)`), built once. */
-const observed = (rounds: number): World =>
-  cachedWorld(`observed:${rounds}`, () => {
-    const w = rounds > 1 ? observed(rounds - 1) : world();
-    advanceRound(w);
-    return w;
-  });
+/**
+ * The founded world after `rounds` played rounds. Watching a round (`advanceRound(w)`) leaves the
+ * same world as playing it unobserved, so this is the shared simulated span.
+ */
+const observed = (rounds: 1 | 2): World => simulatedWorld(CAREER, { rounds });
 /**
  * `observed(rounds)` as a career saved before the full match model (→SAVE-23), as every container
  * 1 and 2 checkpoint was: founded and played with the release off.

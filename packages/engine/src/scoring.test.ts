@@ -14,7 +14,7 @@ import {
 } from './index';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
-import { transferredScorerWorld } from '../../../tests/fixtures/transferred-scorer';
+import { preFeatureTransferredScorer } from '../../../tests/fixtures/transferred-scorer';
 import { careerWorld, CAREER_YEAR } from './career.testkit';
 
 /** The scorer race's club on the pre-feature path: the league's scorer ledger is the subject. */
@@ -201,8 +201,7 @@ describe('actual league scorer standings', () => {
 
 describe('retained scorer transfers', () => {
   it('keeps one identity and exact per-club contributions through a real in-league sale', async () => {
-    const transferred = () =>
-      cachedWorld('transferred', () => transferredScorerWorld(undefined, DISABLED_RELEASE));
+    const transferred = preFeatureTransferredScorer;
     const fixture = transferred(),
       { playerId, buyer } = fixture;
     let w = fixture.w;

@@ -28,6 +28,13 @@ import { simulatedWorld } from '../../../tests/fixtures/worlds';
 
 const founding = (seed = 'news') => ({ country: 'ENG', seed }) as const;
 const world = (seed = 'news') => simulatedWorld(founding(seed));
+/** A season's last round, played but not closed: one cached world for every case that closes it. */
+const lastRound = () =>
+  cachedWorld('last-round', () => {
+    const w = simulatedWorld(founding(), { rounds: 30 });
+    while (w.round < 46) advanceRound(w, undefined, false);
+    return w;
+  });
 const results = (w: World) =>
   w.ownMatches
     .filter((m) => m.year === w.year)
@@ -85,11 +92,7 @@ describe('club news', () => {
 
   it('turns a won league into a celebrated honour at the start of the next season', () => {
     // Any season's last round will do: the league table is forced below.
-    const champion = cachedWorld('last-round', () => {
-      const w = simulatedWorld(founding(), { rounds: 30 });
-      while (w.round < 46) advanceRound(w, undefined, false);
-      return w;
-    });
+    const champion = lastRound();
     for (const id of Object.keys(champion.tables))
       if (id !== champion.playerClub) champion.tables[id].points = 0;
     champion.tables[champion.playerClub].points = 999;
@@ -100,11 +103,7 @@ describe('club news', () => {
   });
 
   it('reports the closed season’s Ballon d’Or, celebrating only our own winner (→HIST-11)', () => {
-    const w = cachedWorld('last-round', () => {
-      const world = simulatedWorld(founding(), { rounds: 30 });
-      while (world.round < 46) advanceRound(world, undefined, false);
-      return world;
-    });
+    const w = lastRound();
     closeSeason(w);
     const last = w.history.at(-1)!,
       other = w.clubs.find((club) => club.id !== w.playerClub)!;

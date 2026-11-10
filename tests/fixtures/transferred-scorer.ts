@@ -10,6 +10,12 @@ import {
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { ATTRIBUTES } from '../../packages/contracts/src/player';
 import type { World } from '../../packages/contracts/src/types';
+import { fileURLToPath } from 'node:url';
+import { cachedWorld } from './cached-world';
+import { DISABLED_RELEASE } from './releases';
+
+const SELF = fileURLToPath(import.meta.url);
+
 /**
  * `prepare` sets the taken-over world up before anything is played, as a match model's activation;
  * `release` takes it over (default the switch as it stands).
@@ -46,4 +52,16 @@ export function transferredScorerWorld(
   respondBid(w, 'in:scorer-transfer', true);
   advanceRound(w, undefined, false);
   return { w, playerId: player.id, buyer: buyer.id };
+}
+
+/**
+ * The sale on the pre-feature path, unprepared: built once for every file whose subject is the
+ * transferred scorer's ledger rather than the match model.
+ */
+export function preFeatureTransferredScorer() {
+  return cachedWorld(
+    'transferred scorer',
+    () => transferredScorerWorld(undefined, DISABLED_RELEASE),
+    { dependencies: [SELF] },
+  );
 }
