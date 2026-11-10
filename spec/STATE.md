@@ -16,7 +16,6 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 
 ## inbox
 - 261110 decided ARCH-21 review/test-value-261110 T801: whether the world-cache key's per-process TypeScript parse (1.1–2.7 s in each of 104 test processes) may be memoised → yes, by file path and content with a versioned header, keys byte-identical (alt: `ts.preProcessFile`, which changes the file set | leave it) tv10
@@ -935,6 +934,7 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
 - 261110 T801 integrated (independent review approved f28a9d02, P3 notes only) tv10
 - 261110 create-task T801 from review/test-value-261110 F7 tv10
 - 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
@@ -954,4 +954,3 @@
 - 261110 T772 T773 integrated (df7e4df7 d0ba5646; independent review approved 5f1e37be/d71c589b, P3 notes only) tq10
 - 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
-- 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
