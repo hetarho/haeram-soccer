@@ -62,9 +62,15 @@ const buildBeat = (state: ScriptState, input: BeatInput): Beat => {
   };
   if (input.receiver !== undefined) beat.receiver = input.receiver;
   if (input.opponent !== undefined) beat.opponent = input.opponent;
-  if (input.reason !== undefined) beat.reason = input.reason;
+  const reason = input.reason ?? (isBackward(state, input) ? 'reset' : undefined);
+  if (reason !== undefined) beat.reason = reason;
   return beat;
 };
+
+/** A pass aimed more than `resetBehind` metres behind the ball: a staging cue even when the move names no reason. */
+const isBackward = (state: ScriptState, input: BeatInput): boolean =>
+  input.kind === 'pass' &&
+  toAttack(state.team, input.to)[0] < toAttack(state.team, state.ball)[0] - GRAMMAR.resetBehind;
 
 const needOpponent = (input: BeatInput): number => {
   if (input.opponent === undefined) {

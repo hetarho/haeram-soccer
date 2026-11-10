@@ -97,7 +97,21 @@ export const PROTO_CONFIG = {
       freeKickComplete: 0.97,
       cornerShortComplete: 0.95,
     },
-    hold: { build: [1.2, 2.6], restart: [0.8, 1.2], carry: [0.3, 0.8] },
+    hold: {
+      build: [1.2, 2.6],
+      restart: [0.8, 1.2],
+      carry: [0.3, 0.8],
+      pressed: [0.6, 1.0],
+      recycle: [1.4, 2.4],
+      through: [1.0, 1.8],
+      cross: [0.8, 1.6],
+      quick: [0.5, 1.0],
+      combine: [0.8, 1.5],
+      shot: [0.4, 0.9],
+      edgeShot: [0.6, 1.2],
+      firstTime: [0.2, 0.3],
+      keeper: [2, 4],
+    },
     carry: {
       buildUp: [6, 10],
       progression: [8, 14],
@@ -114,14 +128,154 @@ export const PROTO_CONFIG = {
       /** A carry's tackle chance never falls below this. */
       tackledMin: 0.01,
       carry: { buildUp: 0.95, progression: 0.9, finalThird: 0.8, counter: 0.85, setPiece: 0.85 },
+      // The catalogue's (script/moves.ts, script/follow.ts): a number is a completion chance before
+      // the attribute term; a list is the chances of its outcomes in the order the move draws them.
+      intoPivot: 0.93,
+      wideOut: [0.92, 0.05],
+      longWin: 0.45,
+      longLose: 0.45,
+      pressedBack: 0.97,
+      interior: 0.9,
+      dropLink: 0.85,
+      layOffAfterLink: 0.6,
+      layOff: 0.95,
+      turn: 0.75,
+      switchPlay: [0.8, 0.1],
+      wideRelease: [0.9, 0.07],
+      recycle: 0.96,
+      through: 0.55,
+      throughCut: 0.35,
+      throughKeeper: 0.5,
+      /** Cross: complete, cleared, claimed; the rest goes out. */
+      cross: [0.28, 0.42, 0.15],
+      crossOutGoalKick: 0.6,
+      cutBack: [0.45, 0.45],
+      takeOn: 0.5,
+      takeOnFoul: 0.12,
+      combine: 0.85,
+      outlet: 0.8,
+      /** Shot outcome chances by kind before the finishing term; wide takes the rest (at least 0.05). */
+      shot: {
+        oneOnOne: { goal: 0.36, saved: 0.38, blocked: 0 },
+        header: { goal: 0.12, saved: 0.3, blocked: 0.13 },
+        firstTime: { goal: 0.22, saved: 0.33, blocked: 0.25 },
+        box: { goal: 0.14, saved: 0.36, blocked: 0.28 },
+        edge: { goal: 0.05, saved: 0.35, blocked: 0.3 },
+        freeKick: { goal: 0.07, saved: 0.38, blocked: 0.2 },
+      },
+      /** The `k` of the goal chance's finishing (heading for a header) term, per shot kind. */
+      shotAttr: {
+        oneOnOne: 0.004,
+        header: 0.002,
+        firstTime: 0.003,
+        box: 0.003,
+        edge: 0.0015,
+        freeKick: 0.002,
+      },
+      /** After a save: the keeper holds it; otherwise a corner. */
+      saveHold: 0.6,
+      /** After a block: a corner, the blocker's ball, else the attack keeps it. */
+      blockedCorner: 0.45,
+      blockedDefender: 0.25,
+      /** A defensive clearance: into touch, to a teammate; else the attack wins it back. */
+      clearOut: 0.35,
+      clearKeep: 0.3,
+      /** Corner delivery: complete, cleared, claimed; the rest goes out. */
+      cornerDelivery: [0.3, 0.45, 0.15],
+      /** A keeper's long distribution, by style. */
+      gkLong: { possession: 0.1, counter: 0.6 },
     },
     /** `prob(base, attr, k)`: `clamp(base + (attr - pivot) * k, min, max)`; `k` per attribute use. */
     prob: { pivot: 60, min: 0.02, max: 0.98, passK: 0.001, dribbleK: 0.002 },
-    /** Weights of the basic moves (T794 replaces the catalogue). */
+    /** Move weights by phase (script/moves.ts); `boost` multiplies a move while its flag is set. */
     weights: {
       safe: 1,
-      circulate: 3,
-      carry: { buildUp: 1.2, progression: 2, finalThird: 1, counter: 2.5 },
+      buildUp: {
+        circulate: 3,
+        intoPivot: 3,
+        wideOut: 2,
+        longBall: { possession: 0.6, counter: 2.5 },
+        pressedBack: 0.8,
+        carryForward: 1.2,
+      },
+      progression: {
+        interior: 2,
+        dropLink: 3,
+        dropLinkNoLink: 1,
+        switchPlay: 1.5,
+        wideRelease: 2.5,
+        recycle: 1.2,
+        carryForward: 2,
+        throughEarly: 0.5,
+      },
+      finalThird: {
+        throughBall: 1.2,
+        cross: 2.5,
+        crossNarrow: 0.3,
+        cutBack: 2.5,
+        edgeShot: 1.2,
+        edgeShotWide: 0.2,
+        boxShot: 6,
+        takeOn: 1.5,
+        takeOnWide: 1.5,
+        combine: 2,
+        recycle: 1,
+        carryForward: 1,
+      },
+      counter: { outlet: 3, carryForward: 2.5, throughEarly: 2.5 },
+      boost: { long: 3, switch: 2, counterThrough: 2, counterShot: 1.5, beatManCombine: 0.5 },
+    },
+    /** Offside chance of a through ball's runner: `clamp(base * exp(-(decisions - pivot) / spread), min, max)`. */
+    offside: { base: 0.22, pivot: 60, spread: 25, min: 0.04, max: 0.6 },
+    /**
+     * Through balls: a runner within `nearLine` of the line is preferred; the ball lands `behind`
+     * metres past the line (at least 8 ahead of the runner), at most at `maxX`, drawn `narrow` toward
+     * the long axis; lofted beyond `loftFrom` metres; a runner through carries up to `oneOnOneCarry`.
+     */
+    through: {
+      nearLine: 8,
+      behind: [9, 15],
+      maxX: 100,
+      narrow: 0.3,
+      loftFrom: 28,
+      oneOnOneCarry: 8,
+    },
+    /** A ball this far off the long axis is wide (crosses, take-ons). */
+    wideFrom: 18,
+    /** A cut-back needs the ball at least at this attack x and this far off the long axis. */
+    cutBackFromX: 88,
+    cutBackWide: 12,
+    /** A switch finds a receiver at least this far across. */
+    switchMin: 28,
+    /** An edge shot is central within this many metres of the long axis. */
+    edgeHalfWidth: 16,
+    /** A blocker stands this far from the shooter toward goal. */
+    blockAhead: 3,
+    /** A free kick from this attack x, within `halfWidth` of the long axis, is struck at goal. */
+    directFreeKick: { fromX: 75, halfWidth: 18 },
+    /** Box zones as [attack x, y offset]; the offset is multiplied by the ball's side (+ = the ball's side of goal). */
+    box: { near: [99, 4.5], far: [98, -6], spot: [94, -1], edge: [86.5, -3] },
+    /** The showcase search (script/showcase.ts): what ten eventful minutes must show within `withinSeconds`. */
+    showcase: {
+      withinSeconds: 420,
+      maxAttempts: 3000,
+      lowIq: 50,
+      highIq: 70,
+      minShare: 0.3,
+      quotas: {
+        goals: 1,
+        shots: 3,
+        lowIqOffside: 1,
+        highIqThrough: 1,
+        crosses: 2,
+        corners: 1,
+        switchPlay: 1,
+        dropLinkFalseNine: 2,
+        invertedFullBackReceives: 3,
+        counters: 1,
+        recycles: 1,
+        takeOns: 1,
+      },
     },
     /** A pass this far behind the ball in attack x reads as a reset. */
     resetBehind: 6,

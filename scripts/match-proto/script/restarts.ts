@@ -1,13 +1,29 @@
 // Restarts: where a dead ball is put back into play and the one beat that plays it. Spot helpers
 // name the restart; out helpers give a beat's `to` over a line with the restart that follows;
-// `playRestart` turns `state.pending` into its beat.
+// `playRestart` turns `state.pending` into its beat: a corner is delivered into the box, a goal kick
+// may go long and a free kick near goal is struck at it, each with the follow-ups of follow.ts.
 import { PROTO_CONFIG } from '../core/config.ts';
 import { PITCH, clampToPitch, toAttack } from '../core/pitch.ts';
 import { FORMATIONS } from '../core/shape.ts';
 import type { Position, TeamId, Vec } from '../core/types.ts';
 import { add, clamp, dist, norm, scale, sub } from '../core/vec.ts';
-import { castOpponentNear, castReceiver, feetPoint, keeperOf, type CastRule } from './cast.ts';
+import {
+  castOpponentNear,
+  castReceiver,
+  drawOutcome,
+  feetPoint,
+  keeperOf,
+  type CastRule,
+} from './cast.ts';
 import { emit } from './emit.ts';
+import {
+  boxPoint,
+  defensiveClear,
+  finish,
+  gkDistribute,
+  playLongBall,
+  takeFlags,
+} from './follow.ts';
 import {
   KICK_OFF_SLOT,
   attackBall,
@@ -159,7 +175,15 @@ const freeKick = (state: ScriptState, r: Restart): Played => {
   return { actor, receiver, to, complete };
 };
 
-const corner = (state: ScriptState): Played => {
+const CORNER_RULES: readonly CastRule[] = [
+  { role: 'targetMan', w: 4 },
+  { position: 'CB', w: 3 },
+  { position: 'ST', w: 2 },
+  { role: 'boxToBox', w: 1.5 },
+];
+
+/** A corner delivered into the box: met with a header, cleared, claimed by the keeper or out. */
+const cornerDelivery = (state: ScriptState): void => {
   let actor = -1;
   let best = -Infinity;
   for (const p of teamPlayers(state)) {
@@ -169,13 +193,60 @@ const corner = (state: ScriptState): Played => {
     }
   }
   state.holder = actor;
-  const receiver = nearestMate(state, actor, false);
-  const to = feetPoint(state, receiver);
-  const complete = completeOr(state, GRAMMAR.restart.cornerShortComplete);
-  return { actor, receiver, to, complete };
+  const receiver =
+    castReceiver(state, CORNER_RULES, (i) => state.fixture.players[i].attrs.heading / 60) ??
+    nearestMate(state, actor, true);
+  const aim = boxPoint(state, state.rng.pick(['near', 'far', 'spot'] as const, [1, 1.2, 0.8]));
+  const hold = state.rng.range(...GRAMMAR.hold.restart);
+  const d = GRAMMAR.p.cornerDelivery;
+  const outcome = drawOutcome(state.rng, [
+    ['complete', d[0]],
+    ['cleared', d[1]],
+    ['claimed', d[2]],
+    ['out', Math.max(0, 1 - d[0] - d[1] - d[2])],
+  ] as const);
+  const base = { move: 'corner', kind: 'corner', actor, receiver, hold, loft: true } as const;
+  if (outcome === 'complete') {
+    emit(state, { ...base, to: aim, outcome });
+    finish(state, 'header');
+  } else if (outcome === 'cleared') {
+    const opponent = castOpponentNear(state, aim, { lines: ['DF'] });
+    emit(state, { ...base, to: aim, outcome: 'intercepted', opponent });
+    defensiveClear(state);
+  } else if (outcome === 'claimed') {
+    emit(state, {
+      ...base,
+      to: aim,
+      outcome: 'intercepted',
+      opponent: keeperOf(state, other(state.team)),
+    });
+    gkDistribute(state);
+  } else {
+    const out = outOverByline(state, toAttack(state.team, aim)[1]);
+    emit(state, { ...base, to: out.to, outcome: 'out', then: out.then });
+  }
 };
 
-/** Plays `state.pending` as one beat. */
+/** A free kick close enough is struck at goal by the side's best finisher. */
+const directFreeKick = (state: ScriptState, r: Restart): boolean => {
+  const [x, y] = toAttack(state.team, r.spot);
+  const dfk = GRAMMAR.directFreeKick;
+  return x >= dfk.fromX && Math.abs(y - AXIS) <= dfk.halfWidth;
+};
+
+const bestFinisher = (state: ScriptState): number => {
+  let taker = -1;
+  let best = -Infinity;
+  for (const p of teamPlayers(state)) {
+    if (p.slot !== 0 && p.attrs.finishing > best) {
+      taker = p.index;
+      best = p.attrs.finishing;
+    }
+  }
+  return taker;
+};
+
+/** Plays `state.pending`: one beat, or a delivery, a long goal kick or a free kick at goal with what follows. */
 export function playRestart(state: ScriptState): void {
   const r = state.pending;
   if (r === undefined) throw new Error('playRestart: nothing pending');
@@ -186,6 +257,22 @@ export function playRestart(state: ScriptState): void {
   state.phase = r.kind === 'corner' ? 'setPiece' : phaseAt(r.team, r.spot);
   state.flags = freshFlags();
   state.clock += GRAMMAR.dead[r.kind];
+  if (r.kind === 'corner') {
+    cornerDelivery(state);
+    return;
+  }
+  if (r.kind === 'goalKick') {
+    state.holder = keeperOf(state, state.team);
+    if (state.rng.chance(GRAMMAR.p.gkLong[state.fixture.teams[state.team].style])) {
+      playLongBall(state, 'goalKick', 'goalKick', takeFlags(state));
+      return;
+    }
+  }
+  if (r.kind === 'freeKick' && directFreeKick(state, r)) {
+    state.holder = bestFinisher(state);
+    finish(state, 'freeKick', 'freeKick');
+    return;
+  }
   const hold = state.rng.range(...GRAMMAR.hold.restart);
   const played =
     r.kind === 'kickOff'
@@ -194,9 +281,7 @@ export function playRestart(state: ScriptState): void {
         ? throwIn(state, r)
         : r.kind === 'goalKick'
           ? goalKick(state)
-          : r.kind === 'freeKick'
-            ? freeKick(state, r)
-            : corner(state);
+          : freeKick(state, r);
   const { actor, receiver, complete } = played;
   const to = clampToPitch(played.to, PROTO_CONFIG.margin);
   const opponent = complete

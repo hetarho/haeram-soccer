@@ -42,3 +42,8 @@ owner can watch whether staging a script reads as football. Nothing here is prod
 ## commands
 
 - `pnpm exec vitest run --project unit scripts/match-proto` runs the prototype's unit tests.
+- `pnpm exec tsx scripts/match-proto/script/print.ts [--seed <s>] [--showcase] [--beats <n>]` prints
+  a script as identifiers and numbers: the seed used, the attempts, each showcase quota with its
+  count, both teams' `TeamStats` and the first beats (default 40), one per line. `--seed`
+  (default `demo`) is the seed, or with `--showcase` the base of the showcase search
+  (`script/showcase.ts`: seeds `<s>#0`, `<s>#1`, … until one meets every quota).
