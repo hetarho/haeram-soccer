@@ -17,7 +17,6 @@
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
-| bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
 - 261110 decided ARCH-21 review/test-gate-time-261110 review/test-value-261110 T788 T790: the owner extends tv10 to 22:00 (wrap up and push the target branch at 21:30) and approves the clone-wide world cache (F6; ARCH-21 r38) and shared season worlds for integration tests (C2) → T788, T790, plus T789 (the save packing's base64/varints like T780) (alt: keep per-worktree caches | keep each test's private season) tv10
@@ -920,7 +919,6 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- ARCH r37: code gathered on `next` before r37 (T689's cv04-alt diagnostics, bd10's staff fix and T783) lands on `main` with the next `vibe push` after its locked verify:batch
 - gc10: T689 only — first a planning slice (update-ssot MATCH-34's cover rule per inbox decided 261110 gc10, then T689's next window in its impl notes), then that window; T775–T781 belong to the owner's live pf10/tv10 sessions and stay untouched by this loop
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
