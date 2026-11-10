@@ -5,15 +5,26 @@ import { coachingGrade } from './aptitude';
 import {
   careerDate,
   closeEmployment,
+  compareCareerDates,
   openEmployment,
   playingChanged,
   playingFor,
   retainPerson,
 } from './person-careers';
-import { invalidateNpcSquads, makePlayer, npcSquad, squadPlaceAge, squadPlaces } from './world';
+import {
+  generatedPlayer,
+  invalidateNpcSquads,
+  makePlayer,
+  npcSquad,
+  spreadTerm,
+  squadPlaceAge,
+  squadPlaces,
+} from './world';
 import { clubStyle } from './tactics';
 import { lineOf } from './player';
 import { hasOwner } from './owner';
+import { clamp, integer, random } from './primitives';
+import { seasonPlayerJobs } from './fixture-copy';
 
 /**
  * A club's generated squad of the season (`npcSquad`), drawn once a season in a world nobody owns
@@ -79,22 +90,64 @@ export function materializePeople(w: World) {
   invalidateNpcSquads(w);
 }
 /**
- * A new person for generated place `slot`, whose identity `p` is accounted for elsewhere: drawn as
- * the place is (`npcSquad`), at its position and age, in its formation role and carrying the
- * club's press load, so a refilled squad plays as its generated one does.
+ * WORLD-6's refill of a place a sale emptied: `below` how far under the club's strength he plays
+ * until the next summer, `age` his age's offset from the place's, `ages` the ages he is drawn within.
+ */
+export const REFILL = {
+  below: [2, 6] as const,
+  age: [-4, 4] as const,
+  ages: [17, 35] as const,
+};
+/**
+ * Whether `id`, the holder a place at `club` lost, left it this season for another club, by a sale
+ * or a loan (→WORLD-6): his player job there ended the day his next one began. Only an active
+ * person's jobs of the season are read (`seasonPlayerJobs`), all a fixture's read copy carries.
+ */
+function soldThisSeason(w: World, club: string, id: string) {
+  const person = w.people?.[id];
+  if (person?.playing !== 'active') return false;
+  const jobs = seasonPlayerJobs(person, w.year);
+  return jobs.some((job) => {
+    const left = job.to;
+    return (
+      job.club === club &&
+      left?.year === w.year &&
+      jobs.some((next) => next.club !== club && compareCareerDates(next.from, left) === 0)
+    );
+  });
+}
+/**
+ * A new person for generated place `slot`, whose identity `p` is accounted for elsewhere (→WORLD-6,
+ * WORLD-11): at its position, in its formation role and carrying the club's press load. He is the
+ * same person through the place's cohort (`${club}:vacancy:${slot}:${cohort}`), the next `:serial`
+ * once he too is accounted for elsewhere. From his own stream he is up to `REFILL.age` years from
+ * the place's age, so a year older each season (held at `REFILL.ages`' ends where the place's age
+ * and his offset would leave them), and, while a sale or a loan emptied the place this season,
+ * `REFILL.below` under the club's strength; from the next summer he plays at it. With
+ * `SQUAD_SPREAD` at `spread` his class and age term (`spreadTerm`) go on top, as a squad member's.
  */
 function replacement(w: World, c: Club, p: Player, slot: number) {
-  let serial = 0;
-  let id = `${c.id}:vacancy:${slot}:${w.year}`;
-  while (departed(w, id)) id = `${c.id}:vacancy:${slot}:${w.year}:${++serial}`;
-  const player = makePlayer(
+  const place = squadPlaceAge(w.seed, c.id, w.year, slot),
+    base = `${c.id}:vacancy:${slot}:${place.cohort}`;
+  let serial = 0,
+    id = base,
+    left = p.id;
+  while (departed(w, id)) {
+    left = id;
+    id = `${base}:${++serial}`;
+  }
+  const r = random(`${w.seed}:${id}:refill`),
+    below = integer(r, ...REFILL.below),
+    age = clamp(place.age + integer(r, ...REFILL.age), ...REFILL.ages),
+    level = c.strength - (soldThisSeason(w, c.id, left) ? below : 0);
+  const player = generatedPlayer(
     COUNTRIES.some((country) => country.code === c.country) ? c.country : 'ENG',
     w.seed,
     id,
     w.year,
-    c.strength,
+    Math.round(level + spreadTerm(w.seed, id, age)),
     p.position,
-    squadPlaceAge(w.seed, c.id, w.year, slot).age,
+    age,
     c.tier,
     squadPlaces(clubStyle(c))[slot]?.role,
   );

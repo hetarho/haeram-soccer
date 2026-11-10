@@ -115,18 +115,21 @@ describe("T698's placebo draw (RESULTS_LUCK, a measurement override)", () => {
    * Released main ff685c33's first scores and goal lines, before adding the override. T805's age
    * ladder per club (other generated players in the scorers' places) moved two goals of the fifth
    * and sixth fixtures to teammates, the scores unchanged: their lines were
-   * 0000001100100000010100 and 0000000000000100001100.
+   * 0000001100100000010100 and 0000000000000100001100. T807's refill (→WORLD-6: the one filling a
+   * free agent's place keyed on the place's cohort, at an age up to 4 from the place's) moved goals
+   * of the first, fourth and seventh fixtures to teammates, the scores unchanged: their lines were
+   * 0000000022100000000000, 0100000000000000020010 and 0000000102000000000000.
    */
   const RELEASED = {
     scores: ['5-0', '3-1', '1-1', '1-3', '3-2', '0-3', '3-0', '1-1'],
     goals: [
-      '0000000022100000000000',
+      '0000000030200000000000',
       '0100001010000000000001',
       '0000000010000000001000',
-      '0100000000000000020010',
+      '0100000000000000011010',
       '0000001100100000010010',
       '0000000000000100002000',
-      '0000000102000000000000',
+      '0000000101100000000000',
       '0000001000000000010000',
     ],
   };

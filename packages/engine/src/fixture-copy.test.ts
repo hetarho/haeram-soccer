@@ -2,9 +2,15 @@ import { describe, expect, it } from 'vitest';
 import type { Club, PersonCareer, Player, World } from '../../contracts/src/types';
 import { fixtureRosterKey, readCopy } from './fixture-copy';
 import { continuousSquad } from './npc-continuity';
-import { npcSquad } from './world';
+import { npcSquad, squadPlaceAge } from './world';
 
 const club = { id: 'ENG:test', country: 'ENG', strength: 60, tier: 1 } as Club;
+/**
+ * The refill of generated place `slot` in 2000. Keyed on the place's cohort, not the year (T807,
+ * →WORLD-6), so the man who fills a sold player's place stays one person through the cohort.
+ */
+const vacancy = (slot: number) =>
+  `${club.id}:vacancy:${slot}:${squadPlaceAge('read-copy', club.id, 2000, slot).cohort}`;
 const retained = (p: Player): PersonCareer => ({
   id: p.id,
   name: p.name,
@@ -25,7 +31,7 @@ describe('fixture roster read copy', () => {
       retired = { ...retained(raw[1]), playing: 'retired' as const },
       reserved = {
         ...retained(raw[2]),
-        id: `${club.id}:vacancy:1:2000`,
+        id: vacancy(1),
         playing: 'released' as const,
       },
       w = {
@@ -49,7 +55,7 @@ describe('fixture roster read copy', () => {
     expect(remote.people![reserved.id]).toEqual({ id: reserved.id, playing: 'released' });
     expect(remote.people![active.id]).not.toHaveProperty('employment');
     expect(remote.people![active.id]).not.toHaveProperty('mentors');
-    expect(expected[1].id).toBe(`${club.id}:vacancy:1:2000:1`);
+    expect(expected[1].id).toBe(`${vacancy(1)}:1`);
     expect(w.people![retired.id]).toBe(retired);
     expect(w.people![active.id]).toBe(active);
   });
@@ -97,10 +103,44 @@ describe('fixture roster read copy', () => {
       remote = JSON.parse(JSON.stringify(copy)) as World;
     expect(copy.freeAgents).toEqual([{ id: raw[3].id }]);
     expect(expected.some((p) => p.id === raw[3].id)).toBe(false);
-    expect(expected[3].id).toBe(`${club.id}:vacancy:3:2000`);
+    expect(expected[3].id).toBe(vacancy(3));
     expect(continuousSquad(remote, club)).toEqual(expected);
     const key = fixtureRosterKey(copy);
     w.freeAgents = [];
     expect(fixtureRosterKey(readCopy(w))).not.toBe(key);
+  });
+
+  it("carries the season's sales, so a helper refills a sold place below strength as well", () => {
+    const raw = npcSquad('read-copy', 2000, club),
+      sale = { year: 2000, day: 40 },
+      sold: PersonCareer = {
+        ...retained(raw[5]),
+        club: 'own',
+        employment: [
+          { role: 'player', club: club.id, from: sale, to: sale },
+          { role: 'player', club: 'own', from: sale },
+        ],
+      },
+      w = {
+        seed: 'read-copy',
+        year: 2000,
+        playerClub: 'own',
+        clubs: [club],
+        people: { [sold.id]: sold },
+      } as unknown as World,
+      expected = continuousSquad(w, club),
+      copy = readCopy(w),
+      remote = JSON.parse(JSON.stringify(copy)) as World;
+    expect(expected[5].id).toBe(vacancy(5));
+    expect(remote.people![sold.id].employment).toEqual(sold.employment);
+    expect(continuousSquad(remote, club)).toEqual(expected);
+    // The next season the copy carries none of it, and the refill plays at strength again.
+    const next = { ...w, year: 2001 },
+      later = readCopy(next);
+    expect(later.people![sold.id]).not.toHaveProperty('employment');
+    expect(fixtureRosterKey(later)).not.toBe(fixtureRosterKey(copy));
+    expect(continuousSquad(JSON.parse(JSON.stringify(later)) as World, club)).toEqual(
+      continuousSquad(next, club),
+    );
   });
 });

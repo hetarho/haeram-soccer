@@ -81,15 +81,18 @@ const sd = (xs: readonly number[]) => {
 };
 
 describe('SQUAD_SPREAD `flat` (the default)', () => {
-  it('draws every generated squad, refill and potential as released', () => {
+  it('draws every generated squad and potential as released, and a refill as `makePlayer` does', () => {
     expect(SQUAD_SPREAD.inForce).toBe('flat');
     for (const seed of ['spread-a', 'spread-b'])
       for (const year of [1930, 1966, 2004])
         for (const c of [...clubs('ENG', 4, 70), ...clubs('ITA', 2, 85), ...clubs('euro', 1, 55)])
           expect(npcSquad(seed, year, c)).toEqual(released(seed, year, c));
-    // A refill of a place someone left (→WORLD-11) is drawn as released.
+    // A refill of a place someone left (→WORLD-11) is `makePlayer`'s draw at T807's level and age:
+    // at the club's strength, since a retirement and not a sale emptied it, within 4 of the
+    // place's age.
     const c = clubs('ESP', 1, 66)[0]!,
       gone = npcSquad('spread-a', 1977, c)[4]!,
+      place = squadPlaceAge('spread-a', c.id, 1977, 4),
       w = {
         seed: 'spread-a',
         year: 1977,
@@ -98,7 +101,8 @@ describe('SQUAD_SPREAD `flat` (the default)', () => {
         people: { [gone.id]: { id: gone.id, playing: 'retired' } as PersonCareer },
       } as unknown as World;
     const refill = continuousSquad(w, c)[4]!;
-    expect(refill.id).toBe(`${c.id}:vacancy:4:1977`);
+    expect(refill.id).toBe(`${c.id}:vacancy:4:${place.cohort}`);
+    expect(Math.abs(1977 - refill.born - place.age)).toBeLessThanOrEqual(4);
     expect(refill).toEqual({
       ...makePlayer(
         'ESP',
@@ -107,7 +111,7 @@ describe('SQUAD_SPREAD `flat` (the default)', () => {
         1977,
         66,
         gone.position,
-        1977 - gone.born,
+        1977 - refill.born,
         c.tier,
         squadPlaces(clubStyle(c))[4]!.role,
       ),
