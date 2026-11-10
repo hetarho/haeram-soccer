@@ -107,6 +107,28 @@ describe('retained club results', () => {
     expect(previous.at(-1)!.year).toBe(1959);
   });
 
+  it('stores what sorting the previous results with the new one gives, in date order or not', () => {
+    const w = source();
+    const byDate = (a: Fixture, b: Fixture) =>
+      a.year - b.year || fixtureDay(a) - fixtureDay(b) || compareIds(a.id, b.id);
+    const kinds = ['league', 'cup', 'europe', 'playoff'] as const;
+    let s = 7;
+    for (let i = 0; i < 80; i++) {
+      s = (s * 37 + 11) % 101;
+      // Mostly forward in time; every fifth result settles late or is settled again.
+      const round = i % 5 === 4 ? Math.max(1, (i >> 1) - (s % 6)) : (i >> 1) + 1;
+      const f = fixture(1959, round, kinds[s % kinds.length]);
+      const before = { a: w.recentResults?.a ?? [], b: w.recentResults?.b ?? [] };
+      recordRecentResult(w, f);
+      for (const club of ['a', 'b'] as const)
+        expect(w.recentResults![club]).toEqual(
+          [...before[club].filter((x) => x.id !== f.id), f]
+            .sort(byDate)
+            .slice(-RECENT_RESULT_LIMIT),
+        );
+    }
+  });
+
   it('seeds an older save from actual known results without filling gaps with invented matches', () => {
     const w = source();
     w.fixtures = Array.from({ length: 8 }, (_, i) => fixture(1959, i + 1));

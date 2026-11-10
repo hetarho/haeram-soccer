@@ -66,10 +66,9 @@ export function legsOf(
   t: number,
   year = w.year,
 ) {
-  const id = tieId(w, key, index, t, year);
-  return fixtures
-    .filter((f) => f.id === id || f.id === `${id}:2`)
-    .sort((a, b) => a.round - b.round);
+  const id = tieId(w, key, index, t, year),
+    second = `${id}:2`;
+  return fixtures.filter((f) => f.id === id || f.id === second).sort((a, b) => a.round - b.round);
 }
 
 /** Continental competitions: their format by season (eras) and their calendar in league rounds. */

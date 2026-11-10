@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { COUNTRIES } from '../../catalogs/src/index';
 import { clearDebt } from './books';
 import { cohesionAfterSummer } from './adaptation';
 import type { Club, World } from '../../contracts/src/types';
@@ -62,8 +63,12 @@ export function meansOf(c: Club) {
  * price a squad (→ECON-36): each player's market wage in `tier` and `year` (→CLUB-25, CLUB-48).
  */
 export function squadCostAt(w: World, c: Club, strength: number, tier: number, year: number) {
+  // `npcSquad` has stored exactly this wage as each player's `wage` (`makePlayer`: same country,
+  // year, tier and overall), unless it priced him in ENG money, as for a club of another
+  // association (`euro:*`).
+  const priced = COUNTRIES.some((country) => country.code === c.country);
   return npcSquad(w.seed, year, { ...c, strength, tier }).reduce(
-    (sum, p) => sum + BigInt(marketWageAt(c.country, year, tier, p)),
+    (sum, p) => sum + BigInt(priced ? p.wage : marketWageAt(c.country, year, tier, p)),
     0n,
   );
 }

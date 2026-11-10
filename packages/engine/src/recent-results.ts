@@ -88,7 +88,12 @@ export function recordRecentResult(w: World, fixture: Fixture) {
   if (w.recentResults === undefined) retainRecentResults(w);
   w.recentResults ??= {};
   for (const club of [result.home, result.away]) {
-    const previous = recentClubResults(w, club).filter((f) => f.id !== result.id);
-    w.recentResults[club] = [...previous, result].sort(byDate).slice(-RECENT_RESULT_LIMIT);
+    const results = recentClubResults(w, club).filter((f) => f.id !== result.id);
+    // Every list is kept in date order, so a result dated at or after its last entry is appended
+    // where the sort would leave it; an earlier one sorts the list as before.
+    const last = results[results.length - 1];
+    results.push(result);
+    if (last && byDate(last, result) > 0) results.sort(byDate);
+    w.recentResults[club] = results.slice(-RECENT_RESULT_LIMIT);
   }
 }
