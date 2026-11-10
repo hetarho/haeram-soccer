@@ -19,6 +19,22 @@
 //     onsideGap:      how far inside the offside line the team in possession keeps its players
 //     shoulderGap:    how far inside it a role on the last shoulder stands
 //     poacherLean:    how far that role leans across with the ball, as a share, up to `poacherMaxLean`
+//     press:    staging only (stage/world.ts): a defending side presses while the ball's x in its
+//               own attack frame is at most `from` (per style); the presser stands `standoff`
+//               metres goal-side of the ball (`tight` during a pressed beat), the cover `coverGap`
+//     mark:     staging only: a defender leans by `blend` toward a point `goalSide` metres goal-side
+//               of the nearest outfield opponent within `radius` of his place
+//   motion:   bounded movement (stage/motion.ts): pace speeds in m/s (sprint = `sprintBase` +
+//             `sprintPerPace` * pace / 100), acceleration and braking in m/s², the arrival ramp
+//             (`arriveTime` seconds, still within `arriveRadius` metres), reaction time, when a
+//             player jogs (target within `jogWithin` metres, `transitionSeconds` after a turnover)
+//             and when a presser sprints (farther than `pressSprintBeyond` metres)
+//   ball:     ball flight (stage/ball.ts): ground and lofted speeds and the slowest kick (m/s), the
+//             shortest flight (s), a lofted ball's apex per metre within `loftMin`-`loftMax`, how far
+//             ahead of the owner's feet a held ball sits and how fast a loose ball rolls to a player
+//   stage:    performing beats (stage/): the passer's drift while holding, extra hold, receiving
+//             slack, control range, settling time limit, dribbling speed, arrival distance and the
+//             kick-off's half and centre-circle margins
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
 //             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
@@ -68,6 +84,44 @@ export const PROTO_CONFIG = {
     shoulderGap: 0.7,
     poacherLean: 0.25,
     poacherMaxLean: 10,
+    press: { from: { possession: 105, counter: 62 }, standoff: 3, tight: 1.2, coverGap: 8 },
+    mark: { radius: 9, blend: 0.45, goalSide: 1.5 },
+  },
+  motion: {
+    walk: 1.8,
+    jog: 3.8,
+    run: 6,
+    sprintBase: 6.4,
+    sprintPerPace: 2.4,
+    accel: 5.5,
+    decel: 8,
+    arriveTime: 0.35,
+    arriveRadius: 0.15,
+    reactTime: 0.35,
+    jogWithin: 10,
+    transitionSeconds: 3,
+    pressSprintBeyond: 6,
+  },
+  ball: {
+    ground: 16,
+    loft: 19,
+    minSpeed: 8,
+    minFlight: 0.25,
+    loftPerMetre: 0.12,
+    loftMin: 1.5,
+    loftMax: 8,
+    carryOffset: 0.6,
+    roll: 3,
+  },
+  stage: {
+    holdDrift: 2.5,
+    maxExtraHold: 2,
+    receiveSlack: 0.1,
+    controlRange: 1,
+    settleMax: 6,
+    dribbleSpeed: 5,
+    arrive: 0.6,
+    kickOff: { halfMargin: 1, circle: 9.65 },
   },
   // The probabilistic script (script/): nominal clock, casting, carries, restarts and outcome chances.
   grammar: {
