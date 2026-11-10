@@ -8,8 +8,6 @@
 - level: mid
 - lang: ko   # user's language — interviews, confirmations, reports
 - docs: en  # doc language
-- push: main
-- plan: next   # planning is numbered and published on next too
 
 ## active
 | tag | host | mode | since | at | doing |
