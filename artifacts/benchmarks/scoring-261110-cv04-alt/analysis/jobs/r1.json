@@ -1,0 +1,5 @@
+[
+ { "name": "clear-c50-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50-0-300.json"] },
+ { "name": "clear-Pab-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/Pab.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-Pab-0-300.json"] },
+ { "name": "clear-Bid-0-300", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/Bid.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "300", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-Bid-0-300.json"] }
+]

@@ -1,0 +1,5 @@
+{
+  "c50dr6l30": ["c50", { "shape": { "candidate": { "drop": { "seconds": 6, "line": 30, "free": 6 } } } }],
+  "c50sw5m28": ["c50", { "shape": { "candidate": { "sweepAll": 1 }, "sweeperStep": 0.5, "keeperMax": { "sweeperKeeper": 28 } } }],
+  "c50cp1n3": ["c50", { "duel": { "candidate": { "carryPath": { "stop": 1, "near": 3, "from": 0 } } } }]
+}

@@ -1,0 +1,3 @@
+[
+ { "name": "smoke-clear-c50-0-4", "patch": "artifacts/benchmarks/scoring-261110-cv04-alt/candidates/c50.json", "script": "scripts/scoring-clear-chances.ts", "args": ["--start", "0", "--matches", "4", "--out", "artifacts/benchmarks/scoring-261110-cv04-alt/clear/clear-c50-0-4.json"] }
+]
