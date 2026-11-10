@@ -21,6 +21,7 @@
 | bd10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T06:50Z | 2026-11-10T07:35Z | - |
 
 ## inbox
+- 261110 decided ARCH-30: the owner asks ARCH-30 to follow haeram-spec-creator 0.12.0 → r37: planning alone goes to `next` (plan-push); finished work lands on SETTINGS `land` (`main`) by `vibe push` after one `pnpm run verify:batch` on the final candidate through `vibe check --tier batch`, whose host lock queues other sessions; no code waits on `next` for a release (alt: keep gathering code on `next` and set SETTINGS land to `next` | keep the quick batch before each landing, leaving browsers to CI after the deploy) bd10
 - 261110 decided PLAYER-27 CLUB-33 T783 T784 T785: the owner's three reports (one club's three on most Ballon d'Or podiums, a delegated club told to spend without limit never nearing the record fee, its signings bunched on one seller) → PLAYER r16 teammates split the votes at 1/0.55/0.35, chosen from a measured grid (0.53/0.55/0.57/0.60: two from one club 9/16/30/48%, real football 16–21%), implemented now as T783; CLUB r65 adds the seller-spread and record-fee targets for explore tasks T784 and T785, diagnosis first, no rule changed until measured (alt: raise production's weight, which hands the award to T689's inflated scorers | cap one club at one podium place, which real 1988/1989/2010 deny) bd10
 - 261110 decided T689 MATCH-16 MATCH-34: nx10's parked call below — whether MATCH-16's clear chance is real football's big chance — taken by the owner's delegation ("니가 진행해줘", after his 1967 export showed Terence Gill at 663 goals in 251 own matches: 2.69 a 90, 12.1 shots and xG 0.18 a shot a 90, 55–67% of the club's league goals 1955–61; export kept untracked at /home/deep/haeram/haeram-soccor/.tmp/saves/haeram-1967.haeram-save.json) → yes: MATCH-16's clear chance stays real football's big chance and MATCH-34 gains a cover rule keeping a man goal-side of a carrier or receiver entering the box in settled play, planned by update-ssot and measured as T689's next window under every existing gate (cv04-clr's screen, then held-out, season share and stress case); cv04-alt's second question (where a round of the keeper or a carry to an open angle ends) is answered in the same planning slice if the window needs it; while the owner's tv10/pf10 sessions share the host the window runs at most 4 measurement processes (alt: narrow MATCH-16's clear chance, which relabels chances without changing who stands goal-side | another settings window, which cv04-alt showed cannot reach the volume) gc10
 - 261110 parked T689 MATCH-16 MATCH-34 ideation/calibration-pass: after cv04-alt (about eight clear-chance possessions a team on every base, 77–80% of those decisions with nobody goal-side, no existing setting bringing goals, goal-area share and box entries into band together) the next step is a football-model planning call, not another settings window — whether MATCH-16's clear chance is real football's big chance (then MATCH-34 needs a cover rule keeping a man goal-side of a carrier or receiver entering the box in settled play) or MATCH-16 narrows its clear chance; recommended the cover rule, measured under every existing gate. Parked for the owner because it shapes the same football as the owner's open calibration-pass and T689 has run windows since 261103; no scoring source committed nx10
@@ -847,7 +848,7 @@
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 36 | 36 | - | 2 |
+| ARCH | 37 | 37 | - | 2 |
 | WEB | 213 | 213 | - | 0 |
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 10 | 10 | - | 0 |
@@ -919,11 +920,12 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- nx10/sc10 gathered on next: T689's cv04-alt evidence and `scripts/scoring-clear-chances.ts` (no production code); the release (verify:batch, then main) belongs to the last session still working
+- ARCH r37: code gathered on `next` before r37 (T689's cv04-alt diagnostics, bd10's staff fix and T783) lands on `main` with the next `vibe push` after its locked verify:batch
 - gc10: T689 only — first a planning slice (update-ssot MATCH-34's cover rule per inbox decided 261110 gc10, then T689's next window in its impl notes), then that window; T775–T781 belong to the owner's live pf10/tv10 sessions and stay untouched by this loop
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
