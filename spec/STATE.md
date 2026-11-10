@@ -19,6 +19,7 @@
 | rl10 | ihaelam-ui-MacBookPro | autopilot | 2026-11-10T14:35Z | 2026-11-10T14:35Z | - |
 
 ## inbox
+- 261110 decided ECON-16 CLUB-26 T785 T809 review/game-realism-261110: which of T785's options (the band's ceiling against our eleven, the order among equally able candidates, "spend without limit" widening the dials, the target read with the widest dials) goes in force under the owner's "as close to real football" call → the ceiling never below our starting eleven's mean + 5 (ECON r54) and a bought club's takeover-season revenue read from its books (CLUB r67), as T809 before T808's reads: a real director looks at players better than his own XI and a bought club has books; the list's order and young players' low values stay open as review F10, since prime-age-first or dearer youngsters change CLUB-33/CLUB-46 beyond tonight's measured evidence (alt: `open`, no ceiling at all, which lists 18-year-olds before stars | the owner's widest dials as the target's reading, which changes the target rather than the club) rl10
 - 261110 decided review/game-realism-261110 T784: the owner's self-improve-local call at 23:35 KST ("실제 축구와 가장 비슷하게 하고 나한테 물어보지 말고 … 7시까지") after T784's planning question (the 단장's list draws from 3–5 clubs because squads are drawn tightly at club strength and a sold place refills with a double) → rl10 orchestrates until 2026-11-11 07:00 KST (22:00Z) on its own branch `si/rl10` (the owner's mp10 session works in the main checkout): read-only scouts propose game-world realism problems (transfer market and squad supply; awards, careers and season outcomes), the orchestrator adopts by real football's closeness without asking, including the rule changes the skill would otherwise park for the owner (SSOT updates, measured gates kept, saves need no compatibility pre-release), implementation sessions in their own worktrees, a separate session reviews every submission, one `verify:batch` gate, then main is pushed; T784's follow-ups enter as findings — `signed` in force, squads drawn with real football's spread of stars and squad players, a sold place no longer refilled by a double — and its search-ceiling option waits for T785's verdict; rc10's T785 loop and T689/T791–T800 stay untouched (alt: plan T784's options only, leaving the run idle | wait for rc10 to finish before scouting) rl10
 - 261110 decided CLUB-33 CLUB-46 OWNER-3 T785: which careers T785 reads without the owner's export (not in this worktree's `.tmp/saves/`) → T784's ENG grid cut to the target's window: takeovers on 1 August 2000 of LEAGUE-13's reference club, every responsibility delegated, recruitment's 재정 기조 공격적, a quarter of the fortune put in each season, 2000/01–2002/03; 석유 재벌 on spread-0/1/2, 재벌 총수 and 산업 자본가 on spread-0; the record read from `scripts/calibrate-transfers.ts`' progression (£22.5m/£28.1m/£29.1m) (alt: T784's eight seasons, five past the target's window | 1950 takeovers, outside the owner's era) rc10
 - 261110 decided CLUB-33 CLUB-51 ECON-16 T785: whether a candidate goes in force and whether to spend the rest of the 2h box → none goes in force and the unit exits at about 20 minutes: `SEARCH_CEILING` `xi` 0 of 3, `open` 1 of 4, `REVENUE_SINCE_TAKEOVER` `books` 0 of 1 (no signing changed), and only the owner's own widest dials (영입 기조 5 + 해외 스카우트망 5) meet 0.5× in 3 of 4, each at 0.50–0.57; what is left (the band's ceiling against our XI, the list's order among equally able players, what "spend without limit" sets, how the target is read) is planning, which more seeds of the same arms cannot settle (alt: put `open` in force at 1 of 4 and a change to ECON-16's bands | run more seeds of the owner-dial arm, a rate for a rule nobody changed) rc10
@@ -867,11 +868,11 @@
 | LAB | 7 | 7 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
-| CLUB | 66 | 66 | - | 0 |
+| CLUB | 67 | 67 | - | 0 |
 | MATCH | 58 | 58 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 40 | 40 | - | 0 |
-| ECON | 53 | 53 | - | 0 |
+| ECON | 54 | 54 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
 | HIST | 24 | 24 | - | 0 |
 | SAVE | 66 | 66 | - | 0 |
@@ -916,7 +917,8 @@
 | T805 | each club its own age ladder | WORLD | - | todo |
 | T806 | squads with stars, regulars and a bench (behind a setting) | WORLD PLAYER LEAGUE | T805 | todo |
 | T807 | a sold place refilled by a lesser player who stays the same person | WORLD | T806 | todo |
-| T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 | todo |
+| T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
+| T809 | the scout looks above our own eleven; a bought club reads its books' revenue | ECON CLUB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -945,8 +947,7 @@
 ## next
 - mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, run on Opus (`vibe loop --model opus`, the owner's 261110 call); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
 - rc10: T784 and T785 done (both targets unmet, rules unchanged, candidates off); the closing gate and push to main remain; T689 and T791–T800 are not this loop's — a unit that finds neither T784 nor T785 runnable returns no_work
-- rl10: T803–T807 as work group rl10 on `si/rl10` (lanes realism-reads, squad-generation, and T804 alone; review all), then T808 (explore 2h) in its own session, one `verify:batch` gate and the push to main by 2026-11-11 07:00 KST; review/game-realism-261110 F8 (an NPC-to-NPC market) and F9 (the search ceiling, with T785's verdict) stay open
-- CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
+- rl10: T803–T807 and T809 as work group rl10 on `si/rl10` (lanes realism-reads, squad-generation, and T804 alone; review all), then T808 (explore 2h) in its own session, one `verify:batch` gate and the push to main by 2026-11-11 07:00 KST; review/game-realism-261110 F8 (an NPC-to-NPC market) and F10 (the list's order and young players' values) stay open
 - T689 (gc10's planning slice, then its window): held until the owner has watched T800 (inbox decided 261110 rc10); no loop takes it before then
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
