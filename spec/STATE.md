@@ -913,13 +913,11 @@
 | T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
-| T803 | realism reads: Ballon d'Or repeat winners and league title runs | ARCH | - | todo |
 | T804 | an upgrade need counts this window's signing at his slot | CLUB | - | todo |
 | T805 | each club its own age ladder | WORLD | - | todo |
 | T806 | squads with stars, regulars and a bench (behind a setting) | WORLD PLAYER LEAGUE | T805 | todo |
 | T807 | a sold place refilled by a lesser player who stays the same person | WORLD | T806 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
-| T809 | the scout looks above our own eleven; a bought club reads its books' revenue | ECON CLUB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -944,15 +942,14 @@
 | av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
 | economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
+| rl10 | 2 | 6 | 2 | 4 | 4 | 0 | 0 | 2026-11-10T16:16:27.773Z | [history](work/rl10.json) |
 
 ## next
-- mp10: T791→T800 in order (one chain, each depends on the one before): the script→staging match prototype under `scripts/match-proto/` from review/match-engine-split-261110 F1, run on Opus (`vibe loop --model opus`, the owner's 261110 call); T800 (explore 2h) ends with `artifacts/match-proto-261110/index.html` for the owner to watch. Production sources stay untouched by the whole chain
-- rc10: T784 and T785 done (both targets unmet, rules unchanged, candidates off); the closing gate and push to main remain; T689 and T791–T800 are not this loop's — a unit that finds neither T784 nor T785 runnable returns no_work
-- rl10: T803–T807 and T809 as work group rl10 on `si/rl10` (lanes realism-reads, squad-generation, and T804 alone; review all), then T808 (explore 2h) in its own session, one `verify:batch` gate and the push to main by 2026-11-11 07:00 KST; review/game-realism-261110 F8 (an NPC-to-NPC market) and F10 (the list's order and young players' values) stay open
-- T689 (gc10's planning slice, then its window): held until the owner has watched T800 (inbox decided 261110 rc10); no loop takes it before then
-- owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
+- inspect work board for remaining tasks
 
 ## log
+- 261110 T809 integrated
+- 261110 T803 integrated
 - 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 T785 done: record target unmet, rules unchanged — the dearest signing stays at 0.13–0.16× the record because 영입 기조 표준's band (40–85) holds none of the stars every money check would pass and a strong XI leaves no upgrade in reach; candidates stay off (`SEARCH_CEILING` `open`/`xi`, `REVENUE_SINCE_TAKEOVER`), 4 of 20 careers meet it, 3 of them on the owner's widest dials (`artifacts/benchmarks/T785`) rc10
@@ -971,5 +968,3 @@
 - 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
 - 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
-- 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
-- 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10

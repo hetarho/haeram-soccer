@@ -11,7 +11,7 @@ import { LINES } from '../../contracts/src/player';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { ClubBuild } from '../../contracts/src/build';
 import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
-import { clubById, squad } from './world';
+import { clubById, ownStarters, squad } from './world';
 import { associationAccessOrder } from './europe-access';
 import { dailyMarket, operate, placeBid } from './index';
 import { holdRows } from './testing';
@@ -52,6 +52,27 @@ const lineOfOffer = (offer: ScoutOffer): Line => lineOfPlayer(offer.player);
 const perLine = (offers: readonly ScoutOffer[]) =>
   LINES.map((line) => offers.filter((offer) => lineOfOffer(offer) === line).length);
 const ids = (w: World) => transferOffers(w).map((offer) => offer.player.id);
+
+/** Each line in rank order: sporting measures, free status, stable id. */
+function expectRanked(w: World, potentialFirst: (offer: ScoutOffer) => boolean) {
+  const key = (offer: ScoutOffer) => {
+    const first = potentialFirst(offer);
+    return [
+      first ? offer.player.potential : overall(offer.player),
+      first ? overall(offer.player) : offer.player.potential,
+      offer.freeAgent ? 1 : 0,
+    ];
+  };
+  for (const line of LINES) {
+    const listed = transferOffers(w).filter((offer) => lineOfOffer(offer) === line);
+    expect(listed.length).toBeLessThanOrEqual(scoutReach(w).perLine);
+    for (let i = 1; i < listed.length; i++) {
+      const [a, b] = [key(listed[i - 1]!), key(listed[i]!)];
+      const order = a[0]! - b[0]! || a[1]! - b[1]! || a[2]! - b[2]!;
+      expect(order >= 0, `${line} ${i}`).toBe(true);
+    }
+  }
+}
 
 describe('the chief scout reach (CLUB-51)', () => {
   it('reads home reach and per-line count from his ability: vacant/<60, 60–79, 80+', () => {
@@ -267,27 +288,6 @@ describe('ranking (CLUB-33, ECON-16)', () => {
     }
   });
 
-  /** Each line in rank order: sporting measures, free status, stable id. */
-  function expectRanked(w: World, potentialFirst: (offer: ScoutOffer) => boolean) {
-    const key = (offer: ScoutOffer) => {
-      const first = potentialFirst(offer);
-      return [
-        first ? offer.player.potential : overall(offer.player),
-        first ? overall(offer.player) : offer.player.potential,
-        offer.freeAgent ? 1 : 0,
-      ];
-    };
-    for (const line of LINES) {
-      const listed = transferOffers(w).filter((offer) => lineOfOffer(offer) === line);
-      expect(listed.length).toBeLessThanOrEqual(scoutReach(w).perLine);
-      for (let i = 1; i < listed.length; i++) {
-        const [a, b] = [key(listed[i - 1]!), key(listed[i]!)];
-        const order = a[0]! - b[0]! || a[1]! - b[1]! || a[2]! - b[2]!;
-        expect(order >= 0, `${line} ${i}`).toBe(true);
-      }
-    }
-  }
-
   it('ranks ability and potential before free status at the balanced level', () => {
     const w = scoutAt(world(), 85);
     expect(scoutReach(w).potentialFirst).toBe('none');
@@ -425,6 +425,106 @@ describe('found players (CLUB-50)', () => {
   });
 });
 
+describe('the ceiling above our eleven (ECON-16, T809)', () => {
+  /**
+   * Our club with every player rated `ovr` at every attribute and 최상 at every slot of its
+   * formation, so the XI the manager picks averages exactly `ovr` at its slots.
+   */
+  function elevenAt(w: World, ovr: number) {
+    const slots = formationOf(w.tactic);
+    for (const p of activePlayers(w)) {
+      for (const attribute of ATTRIBUTES) p.attrs[attribute] = ovr;
+      for (const slot of slots) p.positions[slot.position] = 3;
+      p.potential = Math.max(p.potential, ovr);
+    }
+    return w;
+  }
+  const xiMean = (w: World) => {
+    const slots = formationOf(w.tactic),
+      xi = ownStarters(w);
+    return xi.reduce((sum, p, i) => sum + slotOvr(p, slots[i]!), 0) / xi.length;
+  };
+  /** Free agents of ours rated `ovr` at every attribute, potential 99 so each leads his ability. */
+  function freeAgentsAt(w: World, ...ovrs: number[]) {
+    const model = transferOffers(w).find((offer) => offer.source.kind === 'club')!.player;
+    w.freeAgents = ovrs.map((ovr) => {
+      const p = { ...structuredClone(model), id: `ceiling:${ovr}`, freeSince: w.year };
+      for (const attribute of ATTRIBUTES) p.attrs[attribute] = ovr;
+      p.potential = 99;
+      return p;
+    });
+    return w;
+  }
+  const listed = (w: World) => transferOffers(w).map((offer) => overall(offer.player));
+  /** The reach on the level's own ceiling, as released before ECON r54. */
+  const fixedReach = (w: World) => {
+    SEARCH_CEILING.inForce = 'fixed';
+    try {
+      return scoutReach(w);
+    } finally {
+      SEARCH_CEILING.inForce = 'xi';
+    }
+  };
+
+  it('lists players up to 93 and none above for an XI averaging 88 at 표준', () => {
+    expect(SEARCH_CEILING.inForce).toBe('xi');
+    const w = freeAgentsAt(elevenAt(scoutAt(world(), 85), 88), 93, 94);
+    expect(xiMean(w)).toBe(88);
+    expect(scoutReach(w).ability).toEqual([40, 93]);
+    expect(Math.max(...listed(w))).toBe(93);
+    expect(ids(w)).toContain('ceiling:93');
+    expect(ids(w)).not.toContain('ceiling:94');
+    // The level's own ceiling, as released, would have listed none above 85.
+    expect(fixedReach(w).ability).toEqual([40, 85]);
+    try {
+      SEARCH_CEILING.inForce = 'fixed';
+      expect(Math.max(...listed(w))).toBeLessThanOrEqual(85);
+    } finally {
+      SEARCH_CEILING.inForce = 'xi';
+    }
+  });
+
+  it('keeps the level’s own ceiling, 85 at 표준, for an XI averaging 70', () => {
+    const w = freeAgentsAt(elevenAt(scoutAt(world(), 85), 70), 85, 86);
+    expect(xiMean(w)).toBe(70);
+    expect(scoutReach(w).ability).toEqual([40, 85]);
+    expect(Math.max(...listed(w))).toBe(85);
+    expect(ids(w)).toContain('ceiling:85');
+    expect(ids(w)).not.toContain('ceiling:86');
+  });
+
+  it('lifts the ceiling at every level and leaves its floor, ages and ranking as the level sets them', () => {
+    const tops = { 70: [75, 75, 85, 88, 92], 88: [93, 93, 93, 93, 93] } as const;
+    for (const ovr of [70, 88] as const) {
+      const w = elevenAt(scoutAt(world(), 85), ovr);
+      for (const recruitment of [1, 2, 3, 4, 5] as const) {
+        holdRows(w, { policy: { recruitment } });
+        const reach = scoutReach(w),
+          fixed = fixedReach(w);
+        // ECON-16's bands: the level's own ceiling, or our XI + 5 when that is higher.
+        expect(reach.ability, `${ovr} ${recruitment}`).toEqual([
+          fixed.ability[0],
+          tops[ovr][recruitment - 1],
+        ]);
+        expect(fixed.ability[1]).toBe([65, 75, 85, 88, 92][recruitment - 1]);
+        expect(reach.age).toEqual(fixed.age);
+        expect(reach.potentialFirst).toBe(fixed.potentialFirst);
+        expectRanked(w, () => reach.potentialFirst === 'all');
+      }
+    }
+  });
+
+  it('finds the same players after switching the dial away and back (CLUB-14)', () => {
+    const w = elevenAt(scoutAt(world(), 85), 88),
+      before = structuredClone(transferOffers(w));
+    expect(Math.max(...before.map((offer) => overall(offer.player)))).toBeGreaterThan(85);
+    holdRows(w, { policy: { recruitment: 1 } });
+    expect(ids(w)).not.toEqual(before.map((offer) => offer.player.id));
+    holdRows(w, { policy: { recruitment: 3 } });
+    expect(transferOffers(w)).toEqual(before);
+  });
+});
+
 describe("T784's seller candidates (measurement settings off in play)", () => {
   const clubsOf = (offers: readonly ScoutOffer[]) =>
     offers.flatMap((offer) => (offer.source.kind === 'club' ? [offer.source.club] : []));
@@ -454,7 +554,7 @@ describe("T784's seller candidates (measurement settings off in play)", () => {
   });
 
   it('SEARCH_CEILING `open` lifts the ability ceiling, the floor and ages as they were (T785)', () => {
-    expect(SEARCH_CEILING.inForce).toBe('none');
+    expect(SEARCH_CEILING.inForce).toBe('xi');
     const w = scoutAt(world(), 85),
       plain = scoutReach(w),
       offers = transferOffers(w);
@@ -472,7 +572,7 @@ describe("T784's seller candidates (measurement settings off in play)", () => {
         expect(best(lifted), line).toBeGreaterThanOrEqual(best(offers));
       }
     } finally {
-      SEARCH_CEILING.inForce = 'none';
+      SEARCH_CEILING.inForce = 'xi';
     }
     expect(ids(w)).toEqual(offers.map((offer) => offer.player.id));
   });
