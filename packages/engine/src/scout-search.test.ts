@@ -11,7 +11,7 @@ import { LINES } from '../../contracts/src/player';
 import { ATTRIBUTES } from '../../contracts/src/player';
 import type { ClubBuild } from '../../contracts/src/build';
 import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
-import { clubById, squad } from './world';
+import { clubById, ownStarters, squad } from './world';
 import { associationAccessOrder } from './europe-access';
 import { dailyMarket, operate, placeBid } from './index';
 import { holdRows } from './testing';
@@ -470,11 +470,13 @@ describe("T784's seller candidates (measurement settings off in play)", () => {
     }
   });
 
-  it('UPGRADE_MEASURE measures a slot by its starter; `signed` counts who joined this window', () => {
-    expect(UPGRADE_MEASURE.inForce).toBe('starter');
+  it('UPGRADE_MEASURE `signed` (in force) counts who joined this window; `starter` only the XI', () => {
+    expect(UPGRADE_MEASURE.inForce).toBe('signed');
     const w = world(),
       slots = formationOf(w.tactic),
       needs = upgradeNeeds(w, 2) as Extract<SigningNeed, { kind: 'upgrade' }>[];
+    // Nobody joined: every slot is measured by its starter.
+    for (const need of needs) expect(need.measure.id).toBe(ownStarters(w)[need.slot]!.id);
     // The weakest slot a listed player beats there, and that player.
     const [weakest, fit] = needs
       .map((need) => {
@@ -490,21 +492,23 @@ describe("T784's seller candidates (measurement settings off in play)", () => {
       .find(([, p]) => p)!;
     // He joined in this window and does not start yet (still settling in, →PLAYER-11).
     const joined = [{ ...fit!, id: 'scout-search:joined' }];
-    expect(upgradeNeeds(w, 2, joined)).toEqual(needs);
+    const counted = upgradeNeeds(w, 2, joined) as typeof needs;
+    const changed = counted.filter(
+      (need) => need.level !== needs.find((one) => one.slot === need.slot)!.level,
+    );
+    // He counts once, at the weakest slot he plays; every other slot keeps its starter's measure.
+    expect(changed).toHaveLength(1);
+    expect(changed[0]!.measure.id).toBe(joined[0]!.id);
+    expect(changed[0]!.level).toBe(slotOvr(fit!, slots[changed[0]!.slot]!));
+    expect(needs.indexOf(needs.find((one) => one.slot === changed[0]!.slot)!)).toBeLessThanOrEqual(
+      needs.indexOf(weakest),
+    );
+    // The released reading, kept for measurement scripts, measures by the starter alone.
     try {
-      UPGRADE_MEASURE.inForce = 'signed';
-      const counted = upgradeNeeds(w, 2, joined) as typeof needs;
-      const changed = counted.filter(
-        (need) => need.level !== needs.find((one) => one.slot === need.slot)!.level,
-      );
-      // He counts once, at the weakest slot he plays; every other slot keeps its starter's measure.
-      expect(changed).toHaveLength(1);
-      expect(changed[0]!.level).toBe(slotOvr(fit!, slots[changed[0]!.slot]!));
-      expect(
-        needs.indexOf(needs.find((one) => one.slot === changed[0]!.slot)!),
-      ).toBeLessThanOrEqual(needs.indexOf(weakest));
-    } finally {
       UPGRADE_MEASURE.inForce = 'starter';
+      expect(upgradeNeeds(w, 2, joined)).toEqual(needs);
+    } finally {
+      UPGRADE_MEASURE.inForce = 'signed';
     }
   });
 });
