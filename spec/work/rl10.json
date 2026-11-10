@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T17:57:31.917Z",
-  "sourceCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
+  "snapshotAt": "2026-11-10T18:16:08.945Z",
+  "sourceCommit": "f43330c484a7b9bab6e23929f57961a0c9e21ee2",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -25,7 +25,7 @@
       "T811",
       "T812"
     ],
-    "runner": {
+    "lastRun": {
       "id": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
       "adapter": "builtin",
       "providers": {
@@ -48,68 +48,20 @@
         }
       ],
       "startedAt": "2026-11-10T17:14:28.991Z",
-      "autopilot": true,
-      "decisionWaitMs": 900000
-    },
-    "lastRun": {
-      "id": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
-      "adapter": "builtin",
-      "providers": {
-        "worker": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        },
-        "reviewer": {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        }
-      },
-      "workers": [
-        {
-          "provider": "claude",
-          "model": null,
-          "version": "2.1.316 (Claude Code)"
-        }
-      ],
-      "startedAt": "2026-11-10T14:47:38.547Z",
-      "stoppedAt": "2026-11-10T17:11:36.537Z",
-      "dispatched": 14,
+      "stoppedAt": "2026-11-10T18:16:06.509Z",
+      "dispatched": 7,
       "outcome": "needs-attention",
       "failures": [
         {
-          "attempt": "b4eb075f-5703-4fb9-9008-63b4ca0e1b86",
+          "attempt": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
           "role": "worker",
-          "error": "T804: 태스크 acceptance를 실제로 확인하고 모두 [v]로 기록하세요."
-        },
-        {
-          "attempt": "e647d048-a7a8-44bb-9693-b2750ef2f856",
-          "role": "worker",
-          "error": "T803: 태스크 계약이 상위 브랜치와 다릅니다. 기획 변경을 확인하고 작업을 동기화하세요."
-        },
-        {
-          "attempt": "e647d048-a7a8-44bb-9693-b2750ef2f856",
-          "submissionId": "136c793b-5062-473e-af3b-c2bb5e282fc9",
-          "commit": "658e9edb910e3143d583eca7ea1e3e6410a8239a",
-          "role": "integration",
-          "error": "통합을 완료하지 못했습니다. 후보 작업 공간을 보존했습니다. work status/recover로 확인하세요."
-        },
-        {
-          "attempt": "b4eb075f-5703-4fb9-9008-63b4ca0e1b86",
-          "role": "worker",
-          "error": "T804: CLUB@66가 현재 SSOT와 다릅니다. 기획 공간에서 신선도를 확인하고 태스크를 갱신하세요."
-        },
-        {
-          "attempt": "f9332a51-a500-4df4-ad38-289dcbc4cb95",
-          "role": "worker",
-          "error": "기획 브랜치를 워커 공간에 합치지 못했습니다: ation-f9332a51 -c core.attributesFile=/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/state.gitattributes -c merge.haeram-state.name=haeram STATE sections -c merge.haeram-state.driver=\"/Users/ihaelam/.hermes/node/bin/node\" \"/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs\" vibe merge-state %O %A %B merge --no-edit --quiet refs/heads/si/rl10"
+          "error": "T811: 태스크 result에 verified 기록이 필요합니다."
         },
         {
           "role": "finish",
           "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
           "details": [
-            "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/design-system/server.ts:1:42). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/catalog.ts:1:42). Add the file extension\n  - import \"./source-messages\" without a file extension (packages/contracts/src/messages.ts:1:32). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/influences.ts:1:42). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n(node:18241) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18242) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n(node:18391) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18428) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18429) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18442) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18478) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:18644) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  |integration| packages/engine/src/news.test.ts > club news > celebrates the first win and reports streaks when they reach a milestone\nAssertionError: expected 0 to be greater than 0\n ❯ packages/engine/src/news.test.ts:83:24\n     81|       else expect(extras.length, `unbeaten-${run} at ${row.m.id}`).toB…\n     82|     }\n     83|     expect(milestones).toBeGreaterThan(0);\n       |                        ^\n     84|     expect(shown).toBeGreaterThan(0);\n     85|   });\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯\n\n FAIL  |integration| packages/engine/src/signings.test.ts > the shortlist and the manager's requests (→CLUB-33) > drops a listed player who joins us or leaves the market list\nAssertionError: expected [ { offer: { …(7) }, index: 2 } ] to deeply equal []\n\n- Expected\n+ Received\n\n- []\n+ [\n+   {\n+     \"index\": 2,\n+     \"offer\": {\n+       \"available\": true,\n+       \"fee\": \"0\",\n+       \"foreign\": false,\n+       \"freeAgent\": true,\n+       \"loanFee\": \"0\",\n+       \"player\": {\n+         \"adaptation\": 0.8,\n+         \"agent\": 5,\n+         \"attrs\": {\n+           \"composure\": 66,\n+           \"crossing\": 79,\n+           \"decisions\": 73,\n+           \"distribution\": 9,\n+           \"dribbling\": 76,\n+           \"finishing\": 66,\n+           \"handling\": 10,\n+           \"heading\": 69,\n+           \"pace\": 75,\n+           \"passing\": 72,\n+           \"positioning\": 82,\n+           \"reflexes\": 20,\n+           \"stamina\": 77,\n+           \"strength\": 62,\n+           \"tackling\": 85,\n+           \"vision\": 60,\n+         },\n+         \"born\": 1924,\n+         \"career\": [\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+         ],\n+         \"fatigue\": 0,\n+         \"id\": \"ENG:0:0:5:p:12:109\",\n+         \"name\": \"William Watkins\",\n+         \"personality\": {\n+           \"adaptability\": 4,\n+           \"ambition\": 3,\n+           \"professionalism\": 3,\n+         },\n+         \"position\": \"LB\",\n+         \"positions\": {\n+           \"LB\": 3,\n+         },\n+         \"potential\": 95,\n+         \"qualities\": {\n+           \"judgement\": 2,\n+           \"teaching\": 2,\n+           \"understanding\": 2,\n+         },\n+         \"reputation\": 64,\n+         \"season\": [\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+           0,\n+         ],\n+         \"status\": \"active\",\n+         \"traits\": [\n+           \"tackler\",\n+           \"crosser\",\n+           \"workrate\",\n+         ],\n+         \"until\": 1953,\n+         \"wage\": \"89349\",\n+       },\n+       \"source\": {\n+         \"kind\": \"free\",\n+       },\n+     },\n+   },\n+ ]\n\n ❯ packages/engine/src/signings.test.ts:327:32\n    325|     // Another recruitment row draws another list: none of the shortli…\n    326|     holdRows(w, { policy: { recruitment: 5 } });\n    327|     expect(shortlistOffers(w)).toEqual([]);\n       |                                ^\n    328|     // Last season's shortlist reads as empty.\n    329|     const old = owned();\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯\n\n FAIL  |integration| packages/engine/src/transfers.incoming.test.ts > incoming bids > arrive only inside windows, at most three at a time, and lapse after their due day\nAssertionError: expected false to be true // Object.is equality\n\n- Expected\n+ Received\n\n- true\n+ false\n\n ❯ packages/engine/src/transfers.incoming.test.ts:62:59\n     60|     expect(seen.size).toBeGreaterThan(0);\n     61|     expect(inBids(w).some((b) => b.status === 'expired')).toBe(true);\n     62|     expect(w.players.every((p) => p.status === 'active')).toBe(true);\n       |                                                           ^\n     63|     expect(validateWorld(w).id).toBe(w.id);\n     64|   });\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯\n\n FAIL  |integration| packages/engine/src/transfers.test.ts > outgoing bids > completes generous bids like a recruitment, paying only at completion\nAssertionError: expected 3 to be greater than or equal to 5\n ❯ packages/engine/src/transfers.test.ts:240:30\n    238|     const { w, offers, cash } = bidAll(500);\n    239|     const completed = outBids(w).filter((b) => b.status === 'completed…\n    240|     expect(completed.length).toBeGreaterThanOrEqual(5);\n       |                              ^\n    241|     // No match is played in the first four days, so the fees are the …\n    242|     const paid = completed.reduce((sum, b) => sum + BigInt(b.fee), 0n);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯\n\n FAIL  |integration| packages/engine/src/transfers.test.ts > outgoing bids > answers modest bids with counters or refusals and is deterministic per seed\nAssertionError: expected 3 to be greater than or equal to 6\n ❯ packages/engine/src/transfers.test.ts:277:78\n    275|     expect([...statuses, ...outBids(other.w).map((b) => b.status)]).to…\n    276|     const lowball = bidAll(1);\n    277|     expect(outBids(lowball.w).filter((b) => b.status === 'rejected').l…\n       |                                                                              ^\n    278|       6,\n    279|     );\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯\n\n FAIL  |integration| packages/engine/src/transfers.test.ts > outgoing bids > gives a renewed bid on the same day its own ID\nAssertionError: expected 'completed' to be 'rejected' // Object.is equality\n\nExpected: \"rejected\"\nReceived: \"completed\"\n\n ❯ packages/engine/src/transfers.test.ts:450:26\n    448|     placeBid(w, clubIndex(w), '1');\n    449|     const [first] = outBids(w);\n    450|     expect(first.status).toBe('rejected');\n       |                          ^\n    451|     placeBid(w, clubIndex(w), '1');\n    452|     const [, renewed] = outBids(w);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯\n\n FAIL  |integration| packages/engine/src/aggregate/engine.test.ts > aggregate match (→MATCH-22, MATCH-26, MATCH-27) > settles an exhausted cup tie at 120 minutes on the earliest of tied plans\nAssertionError: expected [ '0:1', '0:2' ] to have a length of 1 but got 2\n\n- Expected\n+ Received\n\n- 1\n+ 2\n\n ❯ packages/engine/src/aggregate/engine.test.ts:269:33\n    267|     const flipped = new Map(first.decisions).set(earliest!.key, !earli…\n    268|     const second = settleParticipation(base, plan, streams, 120, acces…\n    269|     expect(second.unreconciled).toHaveLength(first.unreconciled!.lengt…\n       |                                 ^\n    270|     expect(second.decisions).not.toEqual(first.decisions);\n    271|     expect(match.decisions).toEqual(first.decisions);\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯\n\n FAIL  |integration| packages/engine/src/grid/movement.test.ts > grid movement > both sides retain continuous recorded paths through a corner\nAssertionError: expected 4.884615384615387 to be less than or equal to 4.5\n ❯ packages/engine/src/grid/movement.test.ts:581:49\n    579|           else {\n    580|             expect(mine, label).toMatchObject({ kind: 'cover', since }…\n    581|             expect(gap(stage.pos[at(gp)]!, to)).toBeLessThanOrEqual(\n       |                                                 ^\n    582|               P.zone + SHAPE_CONFIG.markGoalSide,\n    583|             );\n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯\n\n"
+            "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/design-system/server.ts:1:42). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/catalog.ts:1:42). Add the file extension\n  - import \"./source-messages\" without a file extension (packages/contracts/src/messages.ts:1:32). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/influences.ts:1:42). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n(node:84114) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:84644) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n(node:85062) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85099) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85234) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85245) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85285) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85397) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
           ]
         }
       ],
@@ -551,6 +503,7 @@
       "submittedAt": "2026-11-10T17:40:50.935Z",
       "integratedCommit": "cb06561e08c9b265e034b0b0942920351706caa5",
       "integratedAt": "2026-11-10T17:47:17.421Z",
+      "cleanedAt": "2026-11-10T18:08:11.632Z",
       "risk": null,
       "dispatch": {
         "id": "1bd9d5bd-94e6-49b4-8922-b58d6c1f554a",
@@ -650,6 +603,7 @@
       "submittedAt": "2026-11-10T17:42:17.236Z",
       "integratedCommit": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
       "integratedAt": "2026-11-10T17:51:23.905Z",
+      "cleanedAt": "2026-11-10T18:08:20.799Z",
       "risk": null,
       "dispatch": {
         "id": "64c79f68-5acf-4f6c-8542-7042a707f863",
@@ -737,6 +691,9 @@
       "submittedBase": "148cfce0ee2373a70f6e42e15a857d74f05961a2",
       "submissionId": "7ff2ec06-835a-469a-b0f5-7294cbd8acb6",
       "submittedAt": "2026-11-10T17:55:36.056Z",
+      "integratedCommit": "f43330c484a7b9bab6e23929f57961a0c9e21ee2",
+      "integratedAt": "2026-11-10T17:58:35.475Z",
+      "cleanedAt": "2026-11-10T18:08:27.373Z",
       "risk": null,
       "dispatch": {
         "id": "9fcff06e-e51b-465f-9c6c-f37f1c668956",
@@ -794,6 +751,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T17:55:12.989Z",
           "finishedAt": "2026-11-10T17:55:35.616Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-10T17:57:32.079Z",
+          "finishedAt": "2026-11-10T17:58:35.164Z"
         }
       ]
     }
@@ -4756,6 +4720,175 @@
       "status": "integrating",
       "changes": {
         "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2641,
+      "at": "2026-11-10T17:58:35.364Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-10T17:57:32.079Z",
+            "finishedAt": "2026-11-10T17:58:35.164Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2642,
+      "at": "2026-11-10T17:58:35.475Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "integratedCommit": "f43330c484a7b9bab6e23929f57961a0c9e21ee2",
+        "integratedAt": "2026-11-10T17:58:35.475Z"
+      }
+    },
+    {
+      "sequence": 2755,
+      "at": "2026-11-10T18:07:49.169Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2756,
+      "at": "2026-11-10T18:08:11.632Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-10T18:08:11.632Z"
+      }
+    },
+    {
+      "sequence": 2757,
+      "at": "2026-11-10T18:08:11.850Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2758,
+      "at": "2026-11-10T18:08:20.799Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-10T18:08:20.799Z"
+      }
+    },
+    {
+      "sequence": 2759,
+      "at": "2026-11-10T18:08:20.984Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "integrated",
+      "status": "cleaning",
+      "changes": {
+        "status": "cleaning"
+      }
+    },
+    {
+      "sequence": 2760,
+      "at": "2026-11-10T18:08:27.373Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "fc2f97bb-fba9-413c-8dbc-503da2c32f5b",
+      "taskId": "T812",
+      "previousStatus": "cleaning",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "cleanedAt": "2026-11-10T18:08:27.373Z"
+      }
+    },
+    {
+      "sequence": 2761,
+      "at": "2026-11-10T18:16:06.509Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": null,
+        "lastRun": {
+          "id": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-10T17:14:28.991Z",
+          "stoppedAt": "2026-11-10T18:16:06.509Z",
+          "dispatched": 7,
+          "outcome": "needs-attention",
+          "failures": [
+            {
+              "attempt": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+              "role": "worker",
+              "error": "T811: 태스크 result에 verified 기록이 필요합니다."
+            },
+            {
+              "role": "finish",
+              "error": "검증 실패: pnpm install --frozen-lockfile --prefer-offline && pnpm run verify:batch",
+              "details": [
+                "(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/design-system/server.ts:1:42). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/catalog.ts:1:42). Add the file extension\n  - import \"./source-messages\" without a file extension (packages/contracts/src/messages.ts:1:32). Add the file extension\n  - import \"../../../../packages/contracts/src/messages\" without a file extension (apps/web/src/constants/influences.ts:1:42). Add the file extension\nSet `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.\n\nA PostCSS plugin did not pass the `from` option to `postcss.parse`. This may cause imported assets to be incorrectly transformed. If you've recently added a PostCSS plugin that raised this warning, please contact the package author to fix the issue.\n[plugin builtin:vite-reporter] \n(!) Some chunks are larger than 500 kB after minification. Consider:\n- Using dynamic import() to code-split the application\n- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting\n- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.\n(node:84114) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:84644) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\nstderr | apps/web/src/presentation/controller.test.ts > one presentation controller > restores a registered selection and installs resources before readiness\n[presentation:locale] Missing message \"navigation.league\" (en-US); using the registered default (ko-KR). {\n  code: 'missing-message',\n  locale: 'en-US',\n  messageId: 'navigation.league',\n  message: 'Missing message \"navigation.league\" (en-US); using the registered default (ko-KR).'\n}\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 11\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\nstderr | apps/web/src/pages/club/ui/RecruitmentDesk.test.ts > retained comparison money and first-frame safety > keeps independently captured comparison contexts for reply revision 12\nEncountered two children with the same key, `external`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.\n\n(node:85062) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85099) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85234) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85245) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85285) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n(node:85397) ExperimentalWarning: localStorage is not available because --localstorage-file was not provided.\n(Use `node --trace-warnings ...` to show where the warning was created)\n"
+              ]
+            }
+          ],
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
       }
     }
   ]
