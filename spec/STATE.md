@@ -841,6 +841,7 @@
 - 261110 decided ARCH-30 review/test-value-261110 T786 T787: the owner, asked which repeated checks the gate may drop, approves all eight → journeys: joint authority 4→2, full-model-continuity at one viewport, records room at 390 only, 390x844 twins of non-start screens (WEB-15/17/63 fits stay rules; 390x844 dominates 360x740); integration: progression ESP dropped, fast-path to a few rounds, cup-win milestone from forced scores, earlier match-model revisions trimmed (alt: keep every variant | move them to an on-demand tier) tv10
 - 261110 parked review/game-runtime-speed-261110 T775 T776 T777 T778: pf10's speed-ups are integrated on local main (verified at 0e514e46) but not pushed — origin/main moved during the gate and the re-gate of the merge did not finish by the owner's 18:00 deadline; tv10's sync, gate and push to main release them with T779–T787
 - 261110 decided review/match-engine-split-261110 T791: how the owner's adopted engine-redesign direction (facts from a probabilistic script, the picture staged from it) is planned → an isolated prototype chain T791–T800 under `scripts/match-proto/`, importing nothing from `packages/` or `apps/`, as detailed review-sourced tasks; no SSOT change until the owner has watched T800's ten minutes (alt: ideation → MATCH SSOT first, which would write a throwaway into the rules | a new workspace package, which changes ARCH-3 | prototyping inside `packages/engine/src/grid`, entangled with the revision gates) mp10
+- 261111 decided T800 review/match-engine-split-261110: when to stop tuning inside the 2 h box once the sum reached 96/105 at 34 min and further single-value screens and staging rules gave nothing more → stop and deliver, recording why each remaining failure stays (`shape.spacing` from scripted teammate pairs, `shape.swarm` at wide final-third overloads, `role.poacher.shoulder` averaging his on-ball frames) for the owner; values the unit tests pin (`shape.oop.depth`, width, lateral, press standoff, `cutSlack`, `shoulderGap`) were not pushed past them (alt: spend the rest of the box on more screens of the same levers | edit the pinned tests or `PROTO_CONFIG.limits`, the owner's call) mp11
 
 ## ideation
 | id | st |
@@ -903,16 +904,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T791 | match-proto foundation: types, geometry, seeded random, demo squads | ARCH | - | todo |
-| T792 | match-proto shape model: where each role stands by phase | ARCH | T791 | todo |
-| T793 | match-proto script infrastructure: state, casting, beats, restarts, validation | ARCH | T792 | todo |
-| T794 | match-proto move catalogue: the possession grammar, shots, set pieces and the showcase search | ARCH | T793 | todo |
-| T795 | match-proto stage core: bounded movement, the ball, frames, completed passes and carries | ARCH | T794 | todo |
-| T796 | match-proto stage contests and dead balls: interceptions, tackles, take-ons, balls out, restarts | ARCH | T795 | todo |
-| T797 | match-proto stage attack: timed runs and offside, shots and keepers, crosses and corners, the pipeline | ARCH | T796 | todo |
-| T798 | match-proto metrics: machine-checked staging invariants and a report CLI | ARCH | T797 | todo |
-| T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
-| T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
 
 ## work
@@ -942,8 +933,19 @@
 
 ## next
 - inspect work board for remaining tasks
+- owner: watch `artifacts/match-proto-261110/index.html` (open it directly; the README beside it lists the scenes to look at, the tuned values and why `shape.spacing`, `shape.swarm` and `role.poacher.shoulder` still fail) and decide whether the script→staging split (review/match-engine-split-261110 F1) goes on; the T791–T800 chain is done and touched no production source
 
 ## log
+- 261111 T800 done: the prototype tuned from 74/105 to 96/105 metric passes over demo–demo5 (demo 16→20, demo2 15→19, demo3 15→19, demo4 14→20, demo5 14→18) with 11 `PROTO_CONFIG` values, two new stage values (`boards`, `separation`) and twelve script/staging changes each pinned by a unit test that failed before it; `artifacts/match-proto-261110/index.html` (`demo#17`, 20/21) with `playback.json`, baseline/final reports and a README of scenes, values and findings; still failing: `shape.spacing` everywhere (0.083–0.124), `shape.swarm` on three seeds (0.023–0.035), `role.poacher.shoulder` on demo5 (3.949); not opened in a browser, no production file touched mp11
+- 261111 T799 done: `scripts/match-proto/viewer` and `build.ts` — one self-contained page (Canvas 2D pitch, 22 numbered players with facing ticks, the ball with shadow and height, score, clock, the beat's identifiers, offside lines, flashes; play/pause, 1×/2×/5×, seek, three toggles and keys); `build.ts --seed demo` writes `.tmp/match-proto/index.html` (2,326,400 bytes, `demo#0`, passed 16/21) and `--serve` answers `GET /` with 200; 135 unit cases in the folder, not opened in a browser, no production file touched mp11
+- 261111 T798 done: `scripts/match-proto/check` — 21 staging metrics (`computeMetrics`, thresholds in `PROTO_CONFIG.limits`) and the `report.ts` CLI; `demo#0` passes 16/21 (fails left to T800: `events.contest` 0.846, `events.stretchRate` 0.214, `shape.swarm` 0.103, `shape.spacing` 0.155, `role.poacher.shoulder` 4.639), 119 unit cases in the folder, no production file touched mp11
+- 261111 T797 done: `scripts/match-proto/stage` attack — through balls timed onside (runner 1.47 m behind the line at the kick, meets the ball 0.78 m away) or flagged offside (0.90 m beyond, whistle 0.9 s later), shots that score, are saved (keeper 0.19 m), parried for a corner, blocked or go wide, ordinary passes never played to a man offside (0 of 251 kicks over s0–s9), lofted deliveries from a run-up, corners with both sides set, `producePlayback` and the `produce.ts` CLI (`demo#0` meets every quota on its performed beats); 105 unit cases in the folder, no production file touched mp11
+- 261111 T796 done: `scripts/match-proto/stage` contests and dead balls — interceptions on the ball's path (`planCut`/`resolveCut` with recast, lunge and a slower ball), tackles and fouls after a jockey, take-ons, balls out, dead-ball scenes before every restart, cues one beat ahead and pressed passes waiting for the presser; scripts A–E staged (interceptor 0.42 m, tackler 1.17 m from the ball), 95 unit cases in the folder, no production file touched mp11
+- 261111 T795 done: `scripts/match-proto/stage` core — bounded movement, ball held/flight/loose, frames per tick, shape/press/mark targets, completed passes and carries, `performScript`; the hand-written script stages in 11.9 s with receivers 0.11–1.10 m from their points, 19 unit cases, no production file touched mp11
+- 261111 T794 done: `scripts/match-proto/script` move catalogue (20 moves), shared follow-ups (shots and their aftermath, long balls, lay-offs, clearances, keeper distribution, through balls with offside by `decisions`), long goal kicks, corner deliveries, direct free kicks, the showcase search (`demo#0` meets every quota on the first attempt) and the `print.ts` CLI; seeds c0–c59 validate, 64 unit cases in the folder, no production file touched mp11
+- 261111 T793 done: `scripts/match-proto/script` state, casting, emit, restarts, four basic moves, `generateScript`, the 8-rule continuity validator and script stats with `PROTO_CONFIG.grammar`; seeds t0–t29 validate, 24 unit cases, no production file touched mp11
+- 261111 T792 done: `scripts/match-proto/core/shape.ts` nominal places by phase (formation anchors, role overrides, offside line from positions or the nominal block, keepers) with `PROTO_CONFIG.shape`; every reference value reproduced, 11 unit cases, a leaf, no production file touched mp11
+- 261111 T791 done: `scripts/match-proto/core` contracts (types, vec, pitch, rng, config, synthetic squads) and README; every rng reference vector reproduced, 13 unit cases, no production file touched mp11
 - 261110 T813 integrated
 - 261110 rl10: second verify:batch on f43330c4 passed unit/integration/contract and 328/333 Chromium; the 5 goal-replay scenes moved with T805 → create-task T813 rl10
 - 261110 T812 integrated
@@ -954,13 +956,3 @@
 - 261110 T804 integrated
 - 261110 T809 integrated
 - 261110 T803 integrated
-- 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10
-- 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
-- 261110 T785 done: record target unmet, rules unchanged — the dearest signing stays at 0.13–0.16× the record because 영입 기조 표준's band (40–85) holds none of the stars every money check would pass and a strong XI leaves no upgrade in reach; candidates stay off (`SEARCH_CEILING` `open`/`xi`, `REVENUE_SINCE_TAKEOVER`), 4 of 20 careers meet it, 3 of them on the owner's widest dials (`artifacts/benchmarks/T785`) rc10
-- 261110 T784 done: seller targets unmet, rules unchanged — the top of the 표준 search band sits in 3–5 clubs, sold places refill at the seller's strength, and a settling signing leaves its slot open; three candidates stay off (`LIST_SPREAD`, `UPGRADE_MEASURE`, `REFILL_SALE`), 0 of 16 careers meet both targets (`artifacts/benchmarks/T784`) rc10
-- 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
-- 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
-- 261110 T801 integrated (independent review approved f28a9d02, P3 notes only) tv10
-- 261110 create-task T801 from review/test-value-261110 F7 tv10
-- 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
-- 261110 T790 integrated (8 cases in 7 files on the shared finance last-round span; independent review approved 6c4e045e, P3 notes only) tv10
