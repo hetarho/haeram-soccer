@@ -59,7 +59,6 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/business.test.ts',
   'packages/engine/src/calendar.fast-path.test.ts',
   'packages/engine/src/calendar.progression-eng.test.ts',
-  'packages/engine/src/calendar.progression-esp.test.ts',
   'packages/engine/src/calendar.test.ts',
   'packages/engine/src/calibration.grid-equal.test.ts',
   'packages/engine/src/calibration.grid-favourite.test.ts',

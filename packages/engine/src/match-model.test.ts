@@ -393,15 +393,7 @@ describe('match-model revision 2 (→SAVE-23, T435)', () => {
 
 describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
   const founding = { country: 'ENG' as const, seed: 'match-model-3' };
-  const [first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth] =
-    MATCH_MODEL_REVISIONS;
-  const REVISION_2: MatchModelRelease = { revision: second, enabled: true };
-  const REVISION_3: MatchModelRelease = { revision: third, enabled: true };
-  const REVISION_4: MatchModelRelease = { revision: fourth, enabled: true };
-  const REVISION_5: MatchModelRelease = { revision: fifth, enabled: true };
-  const REVISION_6: MatchModelRelease = { revision: sixth, enabled: true };
-  const REVISION_7: MatchModelRelease = { revision: seventh, enabled: true };
-  const REVISION_8: MatchModelRelease = { revision: eighth, enabled: true };
+  const [first, second, third, , , , , , ninth, tenth] = MATCH_MODEL_REVISIONS;
   const REVISION_9: MatchModelRelease = { revision: ninth, enabled: true };
   const w = careerWorld({ seed: founding.seed });
   const ability = (club: string) => clubManager(w, findClub(w, club)).ability;
@@ -479,133 +471,8 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
     }
   });
 
-  it('a revision-2 world moves to revision 3 at the safe boundary', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_2));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === second)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_3)).toBe(true);
-    // Only the revision moves: its activation, tracking boundary and coverage stay.
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: third });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: third });
-    expect(activateMatchModel(career, REVISION_2)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 2; only the fixtures played since take revision 3.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === third)).toBe(true);
-  });
-
-  it('a revision-3 world moves to revision 4 at the safe boundary (T479)', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_3));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === third)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_4)).toBe(true);
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: fourth });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: fourth });
-    expect(activateMatchModel(career, REVISION_3)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 3; only the fixtures played since take revision 4.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === fourth)).toBe(true);
-  });
-
-  it('a revision-4 world moves to revision 5 at the safe boundary (T538)', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_4));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === fourth)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_5)).toBe(true);
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: fifth });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: fifth });
-    expect(activateMatchModel(career, REVISION_4)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 4; only the fixtures played since take revision 5.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === fifth)).toBe(true);
-  });
-
-  it('a revision-5 world moves to revision 6 at the safe boundary (T542)', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_5));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === fifth)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_6)).toBe(true);
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: sixth });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: sixth });
-    expect(activateMatchModel(career, REVISION_5)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 5; only the fixtures played since take revision 6.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === sixth)).toBe(true);
-  });
-
-  it('a revision-6 world moves to revision 7 at the safe boundary (T548)', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_6));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === sixth)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_7)).toBe(true);
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: seventh });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: seventh });
-    expect(activateMatchModel(career, REVISION_6)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 6; only the fixtures played since take revision 7.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === seventh)).toBe(true);
-  });
-
-  it('a revision-7 world moves to revision 8 at the safe boundary (T561)', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_7));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === seventh)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_8)).toBe(true);
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: eighth });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: eighth });
-    expect(activateMatchModel(career, REVISION_7)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 7; only the fixtures played since take revision 8.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === eighth)).toBe(true);
-  });
-
-  it('a revision-8 world moves to revision 9 at the safe boundary (T579)', () => {
-    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_8));
-    const settled = structuredClone(career.ownMatches);
-    expect(settled.length).toBeGreaterThan(0);
-    expect(settled.every((m) => m.model === eighth)).toBe(true);
-    const before = structuredClone(career);
-    expect(activateMatchModel(career, REVISION_9)).toBe(true);
-    expect(career.matchModel).toEqual({ ...before.matchModel!, revision: ninth });
-    expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: ninth });
-    expect(activateMatchModel(career, REVISION_8)).toBe(false);
-    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
-    // Settled records keep revision 8; only the fixtures played since take revision 9.
-    expect(canonical(career.ownMatches.slice(0, settled.length))).toBe(canonical(settled));
-    const added = career.ownMatches.slice(settled.length);
-    expect(added.length).toBeGreaterThan(0);
-    expect(added.every((m) => m.model === ninth)).toBe(true);
-  });
-
+  // Every revision moves at the safe boundary by the same rule: the first move (1→2, above) and the
+  // latest are replayed here, the ones between them are not (T787).
   it('a revision-9 world moves to revision 10 at the safe boundary (T596)', () => {
     const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_9));
     const settled = structuredClone(career.ownMatches);

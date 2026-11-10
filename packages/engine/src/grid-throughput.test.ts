@@ -95,23 +95,23 @@ const positionsOf = ({ result: { trace }, frames }: Played) => digest({ trace, f
  * 6, for T548's revision 7, for T561's revision 8, for T579's revision 9, for T580's pass side
  * of it and for revision 10 (T596's shots and second balls, T599's goal-side marks, T600's pass
  * read again at the kick), the first tie of each kind. T580's were 2/47, 3/5 and 17/1 (revision
- * 9's, `REVISION_9_CASES`). T579's were 6/28, 9/19
- * and 5/7, T561's were 3/34, 15/8 and 28/4 (revision 8's,
- * `REVISION_8_CASES`), T548's were
- * 11/30, 18/7 and 14/13 (revision 7's, `REVISION_7_CASES`), T542's were 7/20, 5/3 and 12/7
- * (revision 6's, `REVISION_6_CASES`), T538's were 3/2, 6/1 and 23/0 (revision 5's, `REVISION_5_CASES`),
- * T482's were 6/31, 5/29 and 7/11 (revision 4's, `REVISION_4_CASES`), T481's were
+ * 9's). T579's were 6/28, 9/19
+ * and 5/7, T561's were 3/34, 15/8 and 28/4 (revision 8's), T548's were
+ * 11/30, 18/7 and 14/13 (revision 7's), T542's were 7/20, 5/3 and 12/7
+ * (revision 6's), T538's were 3/2, 6/1 and 23/0 (revision 5's),
+ * T482's were 6/31, 5/29 and 7/11 (revision 4's), T481's were
  * 10/19, 3/11 and 0/6, T480's were 14/6, 8/4 and 9/0, T479's
  * were 7/4, 7/6 and 0/1, T466's were 9/2, 7/5 and 4/3
- * (revision 3's, `REVISION_3_CASES`), T433's were 3/0,
- * 3/1 and 0/4 (revision 2's, `REVISION_2_CASES`), T432's were 1/5, 36/3 and 3/0,
+ * (revision 3's), T433's were 3/0,
+ * 3/1 and 0/4 (revision 2's), T432's were 1/5, 36/3 and 3/0,
  * T345's were 20/4,
  * 1/16 and 9/5, T348's 7/10,
  * 16/3 and 9/0, T365's 2/8, 1/5 and 15/0, T370's 5/3, 34/0 and 18/3, T371's 26/6, 1/17 and 0/19,
  * T384's 1/11, 7/9 and 3/1, T397's 0/1, 1/2 and 34/0, T398's 20/8, 7/3 and 3/0, T399's 5/16, 7/2
  * and 3/1, T426's 7/2, 10/3 and 5/12, T441's 13/8, 3/0 and 18/0, T442's 2/16, 2/0 and 5/1,
  * T443's 1/2, 0/1 and 6/3, T444's 5/2, 0/3 and 13/1, T445's 1/0, 7/4 and 2/0, T437's 1/0, 3/8
- * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's, `REVISION_1_CASES`).
+ * and 5/15, T446's 0/1, 0/3 and 2/0, T447's 4/2, 2/5 and 16/0 — revision 1's). An earlier revision's ties
+ * were last replayed under it before T787; its observed league fixture still is.
  */
 const CASES = {
   1975: { extraTime: 4, shootout: 15 },
@@ -125,6 +125,11 @@ interface CandidateDigests {
   facts: Record<'league' | 'extraTime' | 'shootout', string>;
   /** Positions of the observed fixtures. */
   positions: Record<'observed' | 'shootout', string>;
+}
+/** An earlier revision's observed league fixture: its facts and its positions (→SAVE-23). */
+interface EarlierDigests {
+  facts: Pick<CandidateDigests['facts'], 'league'>;
+  positions: Pick<CandidateDigests['positions'], 'observed'>;
 }
 
 /**
@@ -417,336 +422,183 @@ const CANDIDATE: Record<Year, CandidateDigests> = {
 };
 
 /**
- * Revision 9's knockout ties and digests (T596): T580's values, the football revision 9 plays
+ * Revision 9's observed league digests (T596): T580's values, the football revision 9 plays
  * before revision 10. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions.
  */
-const REVISION_9_CASES = {
-  1975: { extraTime: 16, shootout: 7 },
-  1995: { extraTime: 32, shootout: 3 },
-  2024: { extraTime: 25, shootout: 1 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_9: Record<Year, CandidateDigests> = {
+const REVISION_9: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: '1eb67684590d5d49',
-      extraTime: 'dbd9c01b27a396a9',
-      shootout: 'b0821162a5fa891b',
-    },
-    positions: { observed: 'd3f3950fc64e2c23', shootout: '7710d56d30a16fd6' },
+    facts: { league: '1eb67684590d5d49' },
+    positions: { observed: 'd3f3950fc64e2c23' },
   },
   1995: {
-    facts: {
-      league: 'dec0d99095de25af',
-      extraTime: '8eb387043ab377f8',
-      shootout: 'dee779ce7db05c09',
-    },
-    positions: { observed: '1b4a1c8bd36dfa15', shootout: '3222caa2c1443ff3' },
+    facts: { league: 'dec0d99095de25af' },
+    positions: { observed: '1b4a1c8bd36dfa15' },
   },
   2024: {
-    facts: {
-      league: 'c7155d4537968f94',
-      extraTime: 'aee3de74090b4247',
-      shootout: 'd687b9185a701032',
-    },
-    positions: { observed: '2e56c1e5dcfd89ce', shootout: '3b1daefde742a14a' },
+    facts: { league: 'c7155d4537968f94' },
+    positions: { observed: '2e56c1e5dcfd89ce' },
   },
 };
 
 /**
- * Revision 8's knockout ties and digests (T579): T561's values, the football revision 8 plays
+ * Revision 8's observed league digests (T579): T561's values, the football revision 8 plays
  * before revision 9. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions.
  */
-const REVISION_8_CASES = {
-  1975: { extraTime: 2, shootout: 1 },
-  1995: { extraTime: 4, shootout: 13 },
-  2024: { extraTime: 32, shootout: 5 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_8: Record<Year, CandidateDigests> = {
+const REVISION_8: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: '57b70b8a3eea17aa',
-      extraTime: 'aeb858c65552c363',
-      shootout: '04f028abf662963e',
-    },
-    positions: { observed: '0ff2369f8e321659', shootout: '5162931d32d63810' },
+    facts: { league: '57b70b8a3eea17aa' },
+    positions: { observed: '0ff2369f8e321659' },
   },
   1995: {
-    facts: {
-      league: '5e0fcb183682e55c',
-      extraTime: '283152ad7a0cb41c',
-      shootout: '42533b4c026ef7d5',
-    },
-    positions: { observed: 'e9b9a109aadd7909', shootout: 'fe8681c6b26871ae' },
+    facts: { league: '5e0fcb183682e55c' },
+    positions: { observed: 'e9b9a109aadd7909' },
   },
   2024: {
-    facts: {
-      league: '512b11a670880c69',
-      extraTime: 'e85b364a48d3fe17',
-      shootout: 'a40958837b813794',
-    },
-    positions: { observed: '15db30f6a47d6888', shootout: 'd048f42a4077a6ae' },
+    facts: { league: '512b11a670880c69' },
+    positions: { observed: '15db30f6a47d6888' },
   },
 };
 
 /**
- * Revision 7's knockout ties and digests (T561): T548's values, the football revision 7 plays
+ * Revision 7's observed league digests (T561): T548's values, the football revision 7 plays
  * before revision 8. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions.
  */
-const REVISION_7_CASES = {
-  1975: { extraTime: 3, shootout: 5 },
-  1995: { extraTime: 4, shootout: 3 },
-  2024: { extraTime: 6, shootout: 3 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_7: Record<Year, CandidateDigests> = {
+const REVISION_7: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: '83561f6cfcd7f062',
-      extraTime: 'b2ce71037c759f35',
-      shootout: '8aad1ad3c232742d',
-    },
-    positions: { observed: '9419310467bb78c1', shootout: '11d910836e304ee3' },
+    facts: { league: '83561f6cfcd7f062' },
+    positions: { observed: '9419310467bb78c1' },
   },
   1995: {
-    facts: {
-      league: '08e6c36534f2df81',
-      extraTime: 'ef29a82672383af8',
-      shootout: '09ff633b3b6a9852',
-    },
-    positions: { observed: '7628caf26edb11eb', shootout: '77bcd1d76304ca98' },
+    facts: { league: '08e6c36534f2df81' },
+    positions: { observed: '7628caf26edb11eb' },
   },
   2024: {
-    facts: {
-      league: '60a80a823634b129',
-      extraTime: '0928b6712c88a0ee',
-      shootout: '5abc7f202635d11c',
-    },
-    positions: { observed: '5041e6906f01518f', shootout: '51feeca9d275b34c' },
+    facts: { league: '60a80a823634b129' },
+    positions: { observed: '5041e6906f01518f' },
   },
 };
 
 /**
- * Revision 6's knockout ties and digests (T548): T542's values, the football revision 6 plays
+ * Revision 6's observed league digests (T548): T542's values, the football revision 6 plays
  * before revision 7. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions.
  */
-const REVISION_6_CASES = {
-  1975: { extraTime: 9, shootout: 12 },
-  1995: { extraTime: 8, shootout: 16 },
-  2024: { extraTime: 6, shootout: 18 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_6: Record<Year, CandidateDigests> = {
+const REVISION_6: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: 'b920b70f68ff6a12',
-      extraTime: '4efa93a2eecf23ef',
-      shootout: '9d4ab3f057b9bd27',
-    },
-    positions: { observed: '35ee5966bf9b9ef9', shootout: 'fe1ddf6d62303575' },
+    facts: { league: 'b920b70f68ff6a12' },
+    positions: { observed: '35ee5966bf9b9ef9' },
   },
   1995: {
-    facts: {
-      league: '30faa7020f4c71c4',
-      extraTime: '963af65e57090be0',
-      shootout: 'a56a461ab655773f',
-    },
-    positions: { observed: 'f8b014d80e9b87b7', shootout: 'b8acaea842cae247' },
+    facts: { league: '30faa7020f4c71c4' },
+    positions: { observed: 'f8b014d80e9b87b7' },
   },
   2024: {
-    facts: {
-      league: '8303ddd3320a16d8',
-      extraTime: 'ef327fc1d7a1603e',
-      shootout: '1382344a8a075aec',
-    },
-    positions: { observed: '2c8fc0190a734d55', shootout: 'b56d91e2cc94e8f7' },
+    facts: { league: '8303ddd3320a16d8' },
+    positions: { observed: '2c8fc0190a734d55' },
   },
 };
 
 /**
- * Revision 5's knockout ties and digests (T542): T538's facts with T541's positions, the football
+ * Revision 5's observed league digests (T542): T538's facts with T541's positions, the football
  * revision 5 plays before revision 6. Their facts never move again (→SAVE-23); a
  * presentation-only change re-records their positions.
  */
-const REVISION_5_CASES = {
-  1975: { extraTime: 15, shootout: 7 },
-  1995: { extraTime: 3, shootout: 5 },
-  2024: { extraTime: 10, shootout: 17 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_5: Record<Year, CandidateDigests> = {
+const REVISION_5: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: 'f67bebd14334126d',
-      extraTime: '22ec06b5ffeb10b1',
-      shootout: '1af64ad40719a6ae',
-    },
-    positions: { observed: 'dd2716f7e7357a4f', shootout: '0c8bb0457d2eb16e' },
+    facts: { league: 'f67bebd14334126d' },
+    positions: { observed: 'dd2716f7e7357a4f' },
   },
   1995: {
-    facts: {
-      league: 'd9ff923856bdc88b',
-      extraTime: '94fd7e745923e713',
-      shootout: '2ba85998b2a8d2b7',
-    },
-    positions: { observed: '5542b462c2423587', shootout: '988cc98486e007cc' },
+    facts: { league: 'd9ff923856bdc88b' },
+    positions: { observed: '5542b462c2423587' },
   },
   2024: {
-    facts: {
-      league: 'b8ddf3da3860234a',
-      extraTime: 'e5b92a048a6f024d',
-      shootout: '9d377d1fe66fa680',
-    },
-    positions: { observed: '868c2ab1284fd854', shootout: '78385783b0041985' },
+    facts: { league: 'b8ddf3da3860234a' },
+    positions: { observed: '868c2ab1284fd854' },
   },
 };
 
 /**
- * Revision 4's knockout ties and digests (T538): T482's facts with T541's positions, the football
+ * Revision 4's observed league digests (T538): T482's facts with T541's positions, the football
  * revision 4 plays before revision 5. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions.
  */
-const REVISION_4_CASES = {
-  1975: { extraTime: 3, shootout: 2 },
-  1995: { extraTime: 6, shootout: 3 },
-  2024: { extraTime: 4, shootout: 0 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_4: Record<Year, CandidateDigests> = {
+const REVISION_4: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: 'b06a20bfa5944f8d',
-      extraTime: 'faf2c3f37fa8746f',
-      shootout: '96d634c31f1ec39f',
-    },
-    positions: { observed: 'd8ea31f3b32a07af', shootout: 'd4218c7ec234430d' },
+    facts: { league: 'b06a20bfa5944f8d' },
+    positions: { observed: 'd8ea31f3b32a07af' },
   },
   1995: {
-    facts: {
-      league: '0ffd80d41e329bea',
-      extraTime: '56bc9369d6cd6169',
-      shootout: '48c01c6004fb63c3',
-    },
-    positions: { observed: '1f883ba0abbcf411', shootout: '5d8ebe13bd570ac9' },
+    facts: { league: '0ffd80d41e329bea' },
+    positions: { observed: '1f883ba0abbcf411' },
   },
   2024: {
-    facts: {
-      league: '90acbbb320c92886',
-      extraTime: '95473a355830b109',
-      shootout: '843ebaa6ec286406',
-    },
-    positions: { observed: 'f78ccc577484c80e', shootout: '2998d646a64ddcb5' },
+    facts: { league: '90acbbb320c92886' },
+    positions: { observed: 'f78ccc577484c80e' },
   },
 };
 
 /**
- * Revision 3's knockout ties and digests (T479): T466's values with T477's positions, the football
+ * Revision 3's observed league digests (T479): T466's values with T477's positions, the football
  * revision 3 plays before revision 4. Their facts never move again (→SAVE-23); a presentation-only
  * change re-records their positions.
  */
-const REVISION_3_CASES = {
-  1975: { extraTime: 24, shootout: 2 },
-  1995: { extraTime: 0, shootout: 4 },
-  2024: { extraTime: 6, shootout: 0 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_3: Record<Year, CandidateDigests> = {
+const REVISION_3: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: '16769656fcf1ef99',
-      extraTime: '38c0547a03bc57d0',
-      shootout: '68228dfccaba8dc7',
-    },
-    positions: { observed: '5d23c22c7de4a3b6', shootout: 'e78fbedb1b3dae92' },
+    facts: { league: '16769656fcf1ef99' },
+    positions: { observed: '5d23c22c7de4a3b6' },
   },
   1995: {
-    facts: {
-      league: '1b9c5022cce86e37',
-      extraTime: '3a334113e67f46df',
-      shootout: 'a61f91e023fd96fc',
-    },
-    positions: { observed: '53c528d990f771b6', shootout: '9e6bc762346a898d' },
+    facts: { league: '1b9c5022cce86e37' },
+    positions: { observed: '53c528d990f771b6' },
   },
   2024: {
-    facts: {
-      league: '98e7994f1ffed8ad',
-      extraTime: '992cc09ebfc3e073',
-      shootout: 'd13c73b7197beb0c',
-    },
-    positions: { observed: '7cced00ebdbe7369', shootout: 'bf130f73db79d841' },
+    facts: { league: '98e7994f1ffed8ad' },
+    positions: { observed: '7cced00ebdbe7369' },
   },
 };
 
 /**
- * Revision 2's knockout ties and digests (T466): T433's values, the football revision 2 plays
+ * Revision 2's observed league digests (T466): T433's values, the football revision 2 plays
  * before revision 3's context. Their facts never move again (→SAVE-23); a presentation-only
  * change re-records their positions (T477).
  */
-const REVISION_2_CASES = {
-  1975: { extraTime: 3, shootout: 18 },
-  1995: { extraTime: 9, shootout: 0 },
-  2024: { extraTime: 5, shootout: 0 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_2: Record<Year, CandidateDigests> = {
+const REVISION_2: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: 'bade6e9917955ca4',
-      extraTime: '164c0fa9dea81cb4',
-      shootout: 'dd5ccd5d8c67e2e0',
-    },
-    positions: { observed: '0fc216c1835250f0', shootout: 'a1e01e0858bec0c3' },
+    facts: { league: 'bade6e9917955ca4' },
+    positions: { observed: '0fc216c1835250f0' },
   },
   1995: {
-    facts: {
-      league: 'd74974b7d25ac546',
-      extraTime: '205f34a93b5fc573',
-      shootout: 'fca3f786558b6bc4',
-    },
-    positions: { observed: '04c6e82db6e3fdc6', shootout: 'ba38cb42224b4e37' },
+    facts: { league: 'd74974b7d25ac546' },
+    positions: { observed: '04c6e82db6e3fdc6' },
   },
   2024: {
-    facts: {
-      league: '0d5db55abfd4267a',
-      extraTime: '011d2723c74ca405',
-      shootout: 'b4cc9518df303a6f',
-    },
-    positions: { observed: 'd8015538945995c0', shootout: '8fc292ebf1d45b40' },
+    facts: { league: '0d5db55abfd4267a' },
+    positions: { observed: 'd8015538945995c0' },
   },
 };
 
 /**
- * Revision 1's knockout ties and digests (T432): the football revision 2 played until T432 moved
+ * Revision 1's observed league digests (T432): the football revision 2 played until T432 moved
  * it, its facts labelled continuous-aggregate-1 (T435's values before its label) and its positions
  * as T447 recorded them. Their facts never move again (→SAVE-23); a presentation-only change
  * re-records their positions (T477).
  */
-const REVISION_1_CASES = {
-  1975: { extraTime: 5, shootout: 3 },
-  1995: { extraTime: 1, shootout: 13 },
-  2024: { extraTime: 12, shootout: 0 },
-} as const satisfies Record<Year, { extraTime: number; shootout: number }>;
-const REVISION_1: Record<Year, CandidateDigests> = {
+const REVISION_1: Record<Year, EarlierDigests> = {
   1975: {
-    facts: {
-      league: 'c7c2cac527564514',
-      extraTime: '2af4b0610145090c',
-      shootout: '03e602ae0322013f',
-    },
-    positions: { observed: 'd2b8a825bc8f38a2', shootout: '01976edd1c9fdb7f' },
+    facts: { league: 'c7c2cac527564514' },
+    positions: { observed: 'd2b8a825bc8f38a2' },
   },
   1995: {
-    facts: {
-      league: 'e817cd255a212e18',
-      extraTime: '81c696855db7fc8a',
-      shootout: '9b2035aabae96f49',
-    },
-    positions: { observed: 'e61508ad0ec869da', shootout: '570769d4fdceffd0' },
+    facts: { league: 'e817cd255a212e18' },
+    positions: { observed: 'e61508ad0ec869da' },
   },
   2024: {
-    facts: {
-      league: '3bcaeb0ed8cb4542',
-      extraTime: '5a255b2a59af8c8f',
-      shootout: '63a1e2cd5650bbba',
-    },
-    positions: { observed: '427fab694535eee6', shootout: '177bcce8ac25effe' },
+    facts: { league: '3bcaeb0ed8cb4542' },
+    positions: { observed: '427fab694535eee6' },
   },
 };
 
@@ -791,52 +643,25 @@ describe('detailed engine throughput (T325)', () => {
         positions: { observed: positionsOf(watched), shootout: positionsOf(pens) },
       };
       expect(got, `${year} candidate digests on ${HOST}`).toEqual(CANDIDATE[year]);
-      // Revisions 1–9 play as they did before later revisions moved (→SAVE-23): their matches
-      // replay under them.
-      const earlier = (
-        revision: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8,
-        cases: { extraTime: number; shootout: number },
-      ) => {
-        const on = (id: string, opts: Parameters<typeof play>[2] = {}) =>
-          play(kit, id, { ...opts, model: MATCH_MODEL_REVISIONS[revision] });
-        const pens = on(`knockout-${year}-${cases.shootout}`, { decide: LEVEL, observe: true });
-        const league = on(`league-${year}`, { observe: true });
-        return {
-          facts: {
-            league: factsOf(league),
-            extraTime: factsOf(on(`knockout-${year}-${cases.extraTime}`, { decide: LEVEL })),
-            shootout: factsOf(pens),
-          },
-          positions: { observed: positionsOf(league), shootout: positionsOf(pens) },
-        };
+      // Revisions 1–9 play as they did before later revisions moved (→SAVE-23): each one's observed
+      // league fixture replays under it. Their knockout ties are no longer replayed (T787); the
+      // candidate's are, above.
+      const earlier = (revision: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8): EarlierDigests => {
+        const league = play(kit, `league-${year}`, {
+          observe: true,
+          model: MATCH_MODEL_REVISIONS[revision],
+        });
+        return { facts: { league: factsOf(league) }, positions: { observed: positionsOf(league) } };
       };
-      expect(earlier(0, REVISION_1_CASES[year]), `${year} revision-1 digests`).toEqual(
-        REVISION_1[year],
-      );
-      expect(earlier(1, REVISION_2_CASES[year]), `${year} revision-2 digests`).toEqual(
-        REVISION_2[year],
-      );
-      expect(earlier(2, REVISION_3_CASES[year]), `${year} revision-3 digests`).toEqual(
-        REVISION_3[year],
-      );
-      expect(earlier(3, REVISION_4_CASES[year]), `${year} revision-4 digests`).toEqual(
-        REVISION_4[year],
-      );
-      expect(earlier(4, REVISION_5_CASES[year]), `${year} revision-5 digests`).toEqual(
-        REVISION_5[year],
-      );
-      expect(earlier(5, REVISION_6_CASES[year]), `${year} revision-6 digests`).toEqual(
-        REVISION_6[year],
-      );
-      expect(earlier(6, REVISION_7_CASES[year]), `${year} revision-7 digests`).toEqual(
-        REVISION_7[year],
-      );
-      expect(earlier(7, REVISION_8_CASES[year]), `${year} revision-8 digests`).toEqual(
-        REVISION_8[year],
-      );
-      expect(earlier(8, REVISION_9_CASES[year]), `${year} revision-9 digests`).toEqual(
-        REVISION_9[year],
-      );
+      expect(earlier(0), `${year} revision-1 digests`).toEqual(REVISION_1[year]);
+      expect(earlier(1), `${year} revision-2 digests`).toEqual(REVISION_2[year]);
+      expect(earlier(2), `${year} revision-3 digests`).toEqual(REVISION_3[year]);
+      expect(earlier(3), `${year} revision-4 digests`).toEqual(REVISION_4[year]);
+      expect(earlier(4), `${year} revision-5 digests`).toEqual(REVISION_5[year]);
+      expect(earlier(5), `${year} revision-6 digests`).toEqual(REVISION_6[year]);
+      expect(earlier(6), `${year} revision-7 digests`).toEqual(REVISION_7[year]);
+      expect(earlier(7), `${year} revision-8 digests`).toEqual(REVISION_8[year]);
+      expect(earlier(8), `${year} revision-9 digests`).toEqual(REVISION_9[year]);
       expect(factsOf(old), `${year} pre-feature facts on ${HOST}`).toBe(PRE_FEATURE[year]);
     });
   }

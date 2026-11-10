@@ -536,40 +536,41 @@ describe('supported-career identity adoption (→SAVE-21, KIT-15)', () => {
 describe('durable milestone projection', () => {
   it('keeps a cup win when recent UI records no longer contain it', async () => {
     const { host } = await startedHost();
-    // A cup win, then thirty cup matches without one: built once and cached.
+    // A cup win, then thirty cup matches without one: one real cup match recorded as played, its
+    // score forced to a win, then thirty copies of its record with a forced defeat. Built once and
+    // cached.
     const {
       world: played,
       won,
       losses,
-    } = cachedWorld('cup-win-then-losses-takeover', () => {
+    } = cachedWorld('cup-win-then-forced-losses-takeover', () => {
       const world = startedWorld();
       const fixture = nextOwnFixture(world)!;
-      let won = false,
-        losses = 0;
-      for (let i = 0; i < 400 && losses < 30; i++) {
-        const playback = simulateMatch(
-          world,
-          { ...fixture, id: `milestone-cup-${i}`, kind: 'cup' },
-          false,
-          true,
-        );
-        const own =
-          playback.record.home === world.playerClub
-            ? playback.record.score.home
-            : playback.record.score.away;
-        const other =
-          playback.record.home === world.playerClub
-            ? playback.record.score.away
-            : playback.record.score.home;
-        if (!won && own > other) {
-          recordMatch(world, playback);
-          won = true;
-        } else if (won && own <= other) {
-          recordMatch(world, playback);
-          losses++;
-        }
-      }
-      return { world, won, losses };
+      recordMatch(
+        world,
+        simulateMatch(world, { ...fixture, id: 'milestone-cup-0', kind: 'cup' }, false, true),
+      );
+      const recorded = world.ownMatches.at(-1)!;
+      const home = recorded.home === world.playerClub;
+      const forced = (own: number, other: number) =>
+        home ? { home: own, away: other } : { home: other, away: own };
+      recorded.score = forced(1, 0);
+      for (let i = 1; i <= 30; i++)
+        world.ownMatches.push({
+          ...structuredClone(recorded),
+          id: `milestone-cup-${i}`,
+          score: forced(0, 1),
+        });
+      const margins = world.ownMatches.map((match) =>
+        match.home === world.playerClub
+          ? match.score.home - match.score.away
+          : match.score.away - match.score.home,
+      );
+      return {
+        world,
+        won: margins[0]! > 0,
+        losses: margins.slice(1).filter((margin) => margin <= 0).length,
+      };
     });
     playOn(host, played);
     const world = host.world!;

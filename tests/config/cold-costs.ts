@@ -14,7 +14,6 @@ export const COLD_COSTS: Readonly<Record<string, number>> = {
   'apps/web/src/runtime/host.test.ts': 345,
   'apps/web/src/adapters/persistence.test.ts': 298,
   'packages/engine/src/calendar.progression-eng.test.ts': 234,
-  'packages/engine/src/calendar.progression-esp.test.ts': 228,
   'packages/engine/src/grid-throughput.test.ts': 209,
   'apps/web/src/runtime/fixtureHelpers.integration.test.ts': 201,
   'apps/web/src/runtime/host.archive.test.ts': 193,
