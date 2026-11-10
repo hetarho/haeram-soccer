@@ -874,6 +874,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T775 | Fix final gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -900,8 +901,7 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- sc10: T689 cv04-alt closed with no candidate passing (artifacts/benchmarks/scoring-261110-cv04-alt/README.md); next is a planning slice on its two questions — whether MATCH-16's clear chance (about 8 a team, 8× MATCH-30's big chances, mostly entries behind the back line in settled play with nobody goal-side) is real football's big chance (MATCH-34 cover rule vs a narrower MATCH-16), and where a round or open-angle carry takes the carrier and how it is challenged (MATCH-12/16 r58/35); the loop's final gate is `pnpm run verify:batch` before any main push
-- owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
+- implement-task T775
 
 ## log
 - 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
