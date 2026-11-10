@@ -5,15 +5,18 @@ import type { Club, PersonCareer, Staff, StaffRole, World } from '../../contract
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import {
   clubStaffMember,
+  nameNextHolder,
   poachStaff,
   refreshStaffMarket,
   STAFF_MARKET_CONFIG,
   staffMarketOf,
+  takeStaff,
 } from './club-staff';
+import { SEASON_END_DAY } from './calendar';
 import { refreshCoachingMarket } from './coaching-market';
 import { initializeCoaching } from './coaching-entry';
 import { retirePerson } from './careers';
-import { careerDate, closeEmployment } from './person-careers';
+import { atCareerDate, careerDate, closeEmployment } from './person-careers';
 import { historyWorld } from './history';
 import { careerWorld } from './career.testkit';
 import { financeStance } from './direction';
@@ -361,6 +364,29 @@ describe('staff careers recorded only on a move (→STAFF-50)', () => {
     });
     expect(pool(w, 'attack').some((m) => m.id === offer.id)).toBe(false);
     validateWorld(JSON.parse(JSON.stringify(w)));
+  });
+
+  it('a holder his club named at the close can be hired at the same close', () => {
+    const w = fresh(),
+      offer = staffCandidates(w, 'attack').find((o) => o.source === 'club')!,
+      closed = w.year;
+    // The close turns the year before it settles staff on the closing season's last day.
+    w.year = closed + 1;
+    const settled = { year: closed, day: SEASON_END_DAY + 1 };
+    atCareerDate(w, settled, () => {
+      nameNextHolder(w, offer.club!, 'attack');
+      const club = w.clubs.find((c) => c.id === offer.club)!,
+        next = clubStaffMember(w, club, 'attack');
+      expect(next.id).not.toBe(offer.id);
+      expect(next.since).toBe(closed + 1);
+      takeStaff(w, { ...next, born: next.born!, source: 'club', club: club.id });
+      expect(w.people![next.id]!.employment[0]).toEqual({
+        role: 'attack',
+        club: offer.club,
+        from: settled,
+        to: settled,
+      });
+    });
   });
 
   it('a free agent signed gets a record from his hire; a volunteer leaving gets none', () => {

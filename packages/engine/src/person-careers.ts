@@ -167,7 +167,20 @@ export function retainStaffPerson(
   };
   (w.people ??= {})[person.id] = person;
   enrolled(w.people, person);
-  if (held) openEmployment(w, person.id, member.role, held, { year: member.since, day: 0 }, false);
+  if (held) {
+    // A holder his club named at the close counts from the season ahead, while the close settles on
+    // the closing season's last day: his time there starts no later than the move ending it.
+    const since = { year: member.since, day: 0 },
+      now = careerDate(w);
+    openEmployment(
+      w,
+      person.id,
+      member.role,
+      held,
+      compareCareerDates(since, now) > 0 ? now : since,
+      false,
+    );
+  }
   return person;
 }
 function personOf(w: World, id: string) {
