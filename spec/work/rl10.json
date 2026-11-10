@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T16:13:00.740Z",
-  "sourceCommit": "aad88f818d405a26827415d1e89cefdaa9bd5150",
+  "snapshotAt": "2026-11-10T16:16:27.773Z",
+  "sourceCommit": "8caa5ea4cfeae55fba159cd497abb1cd144e9104",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -51,10 +51,10 @@
   },
   "summary": {
     "total": 6,
-    "completed": 1,
-    "remaining": 5,
+    "completed": 2,
+    "remaining": 4,
     "running": 4,
-    "review": 1,
+    "review": 0,
     "blocked": 0,
     "unassigned": 0
   },
@@ -89,12 +89,6 @@
       ],
       "lane": "squad-generation",
       "status": "doing"
-    },
-    {
-      "id": "T809",
-      "title": "The scout looks above our own eleven; a bought club reads its books' revenue",
-      "dep": [],
-      "status": "reviewing"
     }
   ],
   "attempts": [
@@ -118,6 +112,8 @@
       "submittedBase": "2bf914406419096877d901c933453770440ad747",
       "submissionId": "136c793b-5062-473e-af3b-c2bb5e282fc9",
       "submittedAt": "2026-11-10T15:28:33.236Z",
+      "integratedCommit": "8caa5ea4cfeae55fba159cd497abb1cd144e9104",
+      "integratedAt": "2026-11-10T16:14:27.636Z",
       "risk": null,
       "dispatch": {
         "id": "25e1deb5-d43e-483c-b654-0a64b17b3a40",
@@ -175,6 +171,13 @@
           "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
           "startedAt": "2026-11-10T15:27:42.418Z",
           "finishedAt": "2026-11-10T15:28:32.684Z"
+        }
+      ],
+      "integrationVerification": [
+        {
+          "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+          "startedAt": "2026-11-10T16:13:01.536Z",
+          "finishedAt": "2026-11-10T16:14:27.245Z"
         }
       ]
     },
@@ -266,7 +269,7 @@
       "contributors": [
         "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/worker-1"
       ],
-      "status": "reviewing",
+      "status": "integrated",
       "reason": null,
       "createdAt": "2026-11-10T15:28:33.718Z",
       "startCommit": "2bf914406419096877d901c933453770440ad747",
@@ -282,17 +285,40 @@
         "slot": 1,
         "provider": "claude",
         "model": null,
-        "status": "running",
-        "startedAt": "2026-11-10T16:10:42.561Z"
+        "status": "finished",
+        "startedAt": "2026-11-10T16:10:42.561Z",
+        "finishedAt": "2026-11-10T16:16:24.556Z",
+        "error": null,
+        "summary": "T809 turns both of T785's settings on by default. `SEARCH_CEILING` now defaults to `xi`, so the search ceiling is max(the level's own ceiling + card shift, XI mean slot value + 5), capped at 99. `REVENUE_SINCE_TAKEOVER` now defaults to `books`, so a club bought this season reads `takeover.lastIncome` as last season, converted into this season's money. The released readings (`fixed`, `released`) and `open` can still be chosen through `scripts/record-fees.ts --setting`. Both changes match ECON-16 r54 and CLUB-26 r67. No money check, cap, margin or owner-bid path changed (`signings.ts`, `direction.ts` and `contracts.ts` are untouched), and the diff stays within the task's touches. The new unit tests cover every case the acceptance names: an XI of 88 lists up to 93 and none above; an XI of 70 keeps 85; floor, ages and ranking hold at all five levels; turning the dial away and back finds the same players (CLUB-14); the takeover's first day reads the books' 2,600,000 against £0 on the released reading; a completed owned season reads the same as released. The cache key of `transferOffers` includes the reach, so the list refreshes when the ceiling moves. Regression risk to fixtures looks low: `careerWorld` takes over a bottom-division club in 1950 with no lived seasons, so there is no `lastIncome` and the XI stays below 80, and no contract or golden fixture uses lived books. The benchmark README covers all the measurements the acceptance asks for. Worker evidence: the unit run (`--changed`, 132 files, 1261 passed), typecheck, lint, format and i18n. The integration and contract suites were not run and are left to the coordinator's gate. Three optional findings for follow-up."
       },
       "review": {
         "id": "49e9a0dc-a4d3-49f1-b80b-3bf3f70b954f",
         "owner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/reviewer-1",
-        "status": "reviewing",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T809 turns both of T785's settings on by default. `SEARCH_CEILING` now defaults to `xi`, so the search ceiling is max(the level's own ceiling + card shift, XI mean slot value + 5), capped at 99. `REVENUE_SINCE_TAKEOVER` now defaults to `books`, so a club bought this season reads `takeover.lastIncome` as last season, converted into this season's money. The released readings (`fixed`, `released`) and `open` can still be chosen through `scripts/record-fees.ts --setting`. Both changes match ECON-16 r54 and CLUB-26 r67. No money check, cap, margin or owner-bid path changed (`signings.ts`, `direction.ts` and `contracts.ts` are untouched), and the diff stays within the task's touches. The new unit tests cover every case the acceptance names: an XI of 88 lists up to 93 and none above; an XI of 70 keeps 85; floor, ages and ranking hold at all five levels; turning the dial away and back finds the same players (CLUB-14); the takeover's first day reads the books' 2,600,000 against £0 on the released reading; a completed owned season reads the same as released. The cache key of `transferOffers` includes the reach, so the list refreshes when the ceiling moves. Regression risk to fixtures looks low: `careerWorld` takes over a bottom-division club in 1950 with no lived seasons, so there is no `lastIncome` and the XI stays below 80, and no contract or golden fixture uses lived books. The benchmark README covers all the measurements the acceptance asks for. Worker evidence: the unit run (`--changed`, 132 files, 1261 passed), typecheck, lint, format and i18n. The integration and contract suites were not run and are left to the coordinator's gate. Three optional findings for follow-up.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T809.search-ceiling-above-our-eleven-and-takeover-revenue.md:12 (T809 acceptance 5)",
+            "message": "This acceptance line is ticked [v], but its command (`pnpm exec vitest run --project integration packages/engine/src/signings.test.ts packages/engine/src/replacements.test.ts`) was not run; the result's limits line says so. Before T809 is marked done, the coordinator's batch gate must run that command plus the integration and contract tiers (takeover.season, golden digests). Risk looks low because the test careers are 1950 bottom-division takeovers with no lived books, but nothing has measured it yet."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/policy.ts:79 (copy.policy.556322e8cc and the other recruitment summaries); apps/web/src/pages/club/ui/InvestmentTotals.tsx:145-152 (T809)",
+            "message": "Planning hand-off, not fixable inside T809's touches. The 영입 기조 dial still says '능력 40–85' (and the matching bands at the other levels). For a club whose XI is 81 or higher, the scout now searches above that, and the scouting area shows the lifted band (e.g. 40–93) as a fact without naming our XI as its source. That conflicts with the traceable-values intent of WEB-116/117. A planner should decide the dial copy and whether the office lists the XI as a factor or fact behind the shortlist ceiling."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/scout-search.ts:72-84 (T809)",
+            "message": "`xiLevel` reads `ownStarters` on whatever day the list is read. That XI leaves out injured players and subtracts unhappiness from slot values. `shortlistOffers` keeps only entries still on today's list, so one starter's injury can lower the ceiling by a point and drop the top shortlisted players, including the manager's pick, until he is back. This follows the ECON-16 wording, but a planner may want the ceiling tied to the shortlist draw or to the full-strength XI. A follow-up for CLUB-33/ECON-16, not a blocker."
+          }
+        ],
         "commit": "f38a115d72f2a3a911ef995f16b8c632be9fb1b8",
         "baseCommit": "c7f5346c98d2d02e329cfcdc971a9ec870805dc7",
         "submissionId": "99eb3e49-7766-4a63-adb1-28aa197e8e2d",
-        "createdAt": "2026-11-10T16:10:38.148Z"
+        "createdAt": "2026-11-10T16:10:38.148Z",
+        "finishedAt": "2026-11-10T16:16:24.520Z"
       },
       "steps": [
         {
@@ -1764,6 +1790,121 @@
       "group": "rl10",
       "attemptId": "e647d048-a7a8-44bb-9693-b2750ef2f856",
       "taskId": "T803",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
+      }
+    },
+    {
+      "sequence": 2531,
+      "at": "2026-11-10T16:14:27.525Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "e647d048-a7a8-44bb-9693-b2750ef2f856",
+      "taskId": "T803",
+      "previousStatus": "integrating",
+      "status": "integrating",
+      "changes": {
+        "integrationVerification": [
+          {
+            "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
+            "startedAt": "2026-11-10T16:13:01.536Z",
+            "finishedAt": "2026-11-10T16:14:27.245Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2532,
+      "at": "2026-11-10T16:14:27.636Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "e647d048-a7a8-44bb-9693-b2750ef2f856",
+      "taskId": "T803",
+      "previousStatus": "integrating",
+      "status": "integrated",
+      "changes": {
+        "status": "integrated",
+        "reason": null,
+        "integratedCommit": "8caa5ea4cfeae55fba159cd497abb1cd144e9104",
+        "integratedAt": "2026-11-10T16:14:27.636Z"
+      }
+    },
+    {
+      "sequence": 2533,
+      "at": "2026-11-10T16:16:24.520Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "a81bb81a-661f-4846-8637-ba6cd5c632ef",
+      "taskId": "T809",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "49e9a0dc-a4d3-49f1-b80b-3bf3f70b954f",
+          "owner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T809 turns both of T785's settings on by default. `SEARCH_CEILING` now defaults to `xi`, so the search ceiling is max(the level's own ceiling + card shift, XI mean slot value + 5), capped at 99. `REVENUE_SINCE_TAKEOVER` now defaults to `books`, so a club bought this season reads `takeover.lastIncome` as last season, converted into this season's money. The released readings (`fixed`, `released`) and `open` can still be chosen through `scripts/record-fees.ts --setting`. Both changes match ECON-16 r54 and CLUB-26 r67. No money check, cap, margin or owner-bid path changed (`signings.ts`, `direction.ts` and `contracts.ts` are untouched), and the diff stays within the task's touches. The new unit tests cover every case the acceptance names: an XI of 88 lists up to 93 and none above; an XI of 70 keeps 85; floor, ages and ranking hold at all five levels; turning the dial away and back finds the same players (CLUB-14); the takeover's first day reads the books' 2,600,000 against £0 on the released reading; a completed owned season reads the same as released. The cache key of `transferOffers` includes the reach, so the list refreshes when the ceiling moves. Regression risk to fixtures looks low: `careerWorld` takes over a bottom-division club in 1950 with no lived seasons, so there is no `lastIncome` and the XI stays below 80, and no contract or golden fixture uses lived books. The benchmark README covers all the measurements the acceptance asks for. Worker evidence: the unit run (`--changed`, 132 files, 1261 passed), typecheck, lint, format and i18n. The integration and contract suites were not run and are left to the coordinator's gate. Three optional findings for follow-up.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T809.search-ceiling-above-our-eleven-and-takeover-revenue.md:12 (T809 acceptance 5)",
+              "message": "This acceptance line is ticked [v], but its command (`pnpm exec vitest run --project integration packages/engine/src/signings.test.ts packages/engine/src/replacements.test.ts`) was not run; the result's limits line says so. Before T809 is marked done, the coordinator's batch gate must run that command plus the integration and contract tiers (takeover.season, golden digests). Risk looks low because the test careers are 1950 bottom-division takeovers with no lived books, but nothing has measured it yet."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/policy.ts:79 (copy.policy.556322e8cc and the other recruitment summaries); apps/web/src/pages/club/ui/InvestmentTotals.tsx:145-152 (T809)",
+              "message": "Planning hand-off, not fixable inside T809's touches. The 영입 기조 dial still says '능력 40–85' (and the matching bands at the other levels). For a club whose XI is 81 or higher, the scout now searches above that, and the scouting area shows the lifted band (e.g. 40–93) as a fact without naming our XI as its source. That conflicts with the traceable-values intent of WEB-116/117. A planner should decide the dial copy and whether the office lists the XI as a factor or fact behind the shortlist ceiling."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/scout-search.ts:72-84 (T809)",
+              "message": "`xiLevel` reads `ownStarters` on whatever day the list is read. That XI leaves out injured players and subtracts unhappiness from slot values. `shortlistOffers` keeps only entries still on today's list, so one starter's injury can lower the ceiling by a point and drop the top shortlisted players, including the manager's pick, until he is back. This follows the ECON-16 wording, but a planner may want the ceiling tied to the shortlist draw or to the full-strength XI. A follow-up for CLUB-33/ECON-16, not a blocker."
+            }
+          ],
+          "commit": "f38a115d72f2a3a911ef995f16b8c632be9fb1b8",
+          "baseCommit": "c7f5346c98d2d02e329cfcdc971a9ec870805dc7",
+          "submissionId": "99eb3e49-7766-4a63-adb1-28aa197e8e2d",
+          "createdAt": "2026-11-10T16:10:38.148Z",
+          "finishedAt": "2026-11-10T16:16:24.520Z"
+        }
+      }
+    },
+    {
+      "sequence": 2534,
+      "at": "2026-11-10T16:16:24.556Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "a81bb81a-661f-4846-8637-ba6cd5c632ef",
+      "taskId": "T809",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "73ac599a-dfd8-4db2-99dc-e1ca1cc24a9b",
+          "runner": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T16:10:42.561Z",
+          "finishedAt": "2026-11-10T16:16:24.556Z",
+          "error": null,
+          "summary": "T809 turns both of T785's settings on by default. `SEARCH_CEILING` now defaults to `xi`, so the search ceiling is max(the level's own ceiling + card shift, XI mean slot value + 5), capped at 99. `REVENUE_SINCE_TAKEOVER` now defaults to `books`, so a club bought this season reads `takeover.lastIncome` as last season, converted into this season's money. The released readings (`fixed`, `released`) and `open` can still be chosen through `scripts/record-fees.ts --setting`. Both changes match ECON-16 r54 and CLUB-26 r67. No money check, cap, margin or owner-bid path changed (`signings.ts`, `direction.ts` and `contracts.ts` are untouched), and the diff stays within the task's touches. The new unit tests cover every case the acceptance names: an XI of 88 lists up to 93 and none above; an XI of 70 keeps 85; floor, ages and ranking hold at all five levels; turning the dial away and back finds the same players (CLUB-14); the takeover's first day reads the books' 2,600,000 against £0 on the released reading; a completed owned season reads the same as released. The cache key of `transferOffers` includes the reach, so the list refreshes when the ceiling moves. Regression risk to fixtures looks low: `careerWorld` takes over a bottom-division club in 1950 with no lived seasons, so there is no `lastIncome` and the XI stays below 80, and no contract or golden fixture uses lived books. The benchmark README covers all the measurements the acceptance asks for. Worker evidence: the unit run (`--changed`, 132 files, 1261 passed), typecheck, lint, format and i18n. The integration and contract suites were not run and are left to the coordinator's gate. Three optional findings for follow-up."
+        }
+      }
+    },
+    {
+      "sequence": 2535,
+      "at": "2026-11-10T16:16:24.641Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "a81bb81a-661f-4846-8637-ba6cd5c632ef",
+      "taskId": "T809",
       "previousStatus": "approved",
       "status": "integrating",
       "changes": {
