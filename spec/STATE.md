@@ -914,6 +914,9 @@
 | T807 | a sold place refilled by a lesser player who stays the same person | WORLD | T806 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
 | T809 | the scout looks above our own eleven; a bought club reads its books' revenue | ECON CLUB | - | todo |
+| T810 | gate fix: club news, shortlist and bid scenes after the generation changes | ARCH | - | todo |
+| T811 | gate fix: an aggregate cup tie and a grid corner path after the generation changes | ARCH | - | todo |
+| T812 | prepared worlds regenerated from the committed tree | ARCH | T810 T811 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -959,10 +962,10 @@
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
-- 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
 - 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
 - 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10
+- 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
