@@ -131,18 +131,20 @@ export function seasonResult(w: World): string {
   return readSeasonResult(w);
 }
 /**
- * T785's candidate reading of a bought club's first season (→CLUB-26, →ECON-36), a measurement
- * setting off in play: `books` counts the bought club's last season before the takeover, its books'
- * income kept with the takeover's facts, as last season's turnover until the owner's own first
+ * How a club bought this season reads last season (→CLUB-26, →ECON-38): `books`, the rule in
+ * force, counts the bought club's last season before the takeover — its books' income, kept in the
+ * takeover's facts in this season's money — as last season's turnover until the owner's own first
  * season closes, so 재정 기조's wage-bill ceiling (→ECON-33) is not read against no revenue at all
- * on the takeover's first day. `none` is the rule in force.
+ * on the takeover's first day. `released`, the reading before CLUB r67 (no season before the
+ * owner's), stays for measurement scripts only.
  */
-export const REVENUE_SINCE_TAKEOVER: { inForce: 'none' | 'books' } = { inForce: 'none' };
+export const REVENUE_SINCE_TAKEOVER: { inForce: 'books' | 'released' } = { inForce: 'books' };
 /**
  * The club's revenue over the last 12 months, the income a wage bill can rest on (→CLUB-26): this
  * season's turnover so far and last season's share for the league rounds not yet played, in
- * today's money. A club without a completed season counts its season so far at its pace over a
- * whole season; before its first round it has earned nothing yet.
+ * today's money; in the season of a takeover last season is the bought club's books'. A club
+ * without a completed season counts its season so far at its pace over a whole season; before its
+ * first round it has earned nothing yet.
  */
 export function recentRevenue(w: World): string {
   const rounds = BigInt(SEASON_ROUNDS),

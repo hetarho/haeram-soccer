@@ -434,7 +434,9 @@ describe('the world’s seasons before the takeover (→HIST-2, WORLD-13)', () =
   it('keeps no turnover, finish, honours or milestones of the world’s season (→ECON-30, ECON-8)', () => {
     const { w, club } = takenOver('own-reads', false);
     expect(lastSeasonTurnover(w)).toBeUndefined();
-    expect(recentRevenue(w)).toBe('0');
+    // The revenue over the last 12 months reads the books it was bought with, not the world's
+    // season (→CLUB-26); a club without books has none to read.
+    expect(recentRevenue(w)).toBe(w.owner!.takeover.lastIncome ?? '0');
     expect(assessOperatingExpenses(w)).toBe(operatingExpensesAt('ENG', w.year, club.tier));
     // The finish factor stays neutral: the value is the one without any archive.
     const value = commercialValue(w);
@@ -448,26 +450,67 @@ describe('the world’s seasons before the takeover (→HIST-2, WORLD-13)', () =
     const season = clubMilestones(w).goals.find((goal) => goal.id === 'season')!;
     expect(season.current).toBe(0);
   });
+});
 
-  it('REVENUE_SINCE_TAKEOVER `books` reads the bought club’s last income in its first season (T785)', () => {
-    expect(REVENUE_SINCE_TAKEOVER.inForce).toBe('none');
-    const { w } = takenOver('own-revenue', false);
-    w.owner!.takeover.lastIncome = '4600000';
-    expect(recentRevenue(w)).toBe('0');
+describe('the revenue over the last 12 months in the season of a takeover (→CLUB-26, T809)', () => {
+  /** `setup`'s club with its books' last season, bought on the season's first day. */
+  function bought(seed: string) {
+    const { w, club } = setup(seed);
+    takeOver(w, club.id, choice('industrial'), undefined, DISABLED_RELEASE);
+    return { w, club };
+  }
+
+  it('reads the books it was bought with as last season from the first owned day', () => {
+    expect(REVENUE_SINCE_TAKEOVER.inForce).toBe('books');
+    const { w } = bought('takeover-revenue');
+    const books = w.owner!.takeover.lastIncome!;
+    expect(books).toBe('2600000');
+    // The first owned day: no round played, the books' last season over the whole year.
+    expect(w.round).toBe(0);
+    expect(recentRevenue(w)).toBe(books);
+    // A round in: this season's turnover so far and 45/46 of the books' season.
+    w.round = 1;
+    w.income = '200000';
+    expect(recentRevenue(w)).toBe((200000n + (2600000n * 45n) / 46n).toString());
+    // The released reading, kept for measurement scripts, had no season before the owner's: the
+    // season so far at its pace, and nothing at all before the first round.
     try {
-      REVENUE_SINCE_TAKEOVER.inForce = 'books';
-      // Before its first round: last season's income for the whole year.
-      expect(recentRevenue(w)).toBe('4600000');
-      // A round in: this season's turnover so far and 45/46 of last season's.
-      w.round = 1;
-      w.income = '200000';
-      expect(recentRevenue(w)).toBe((200000n + (4600000n * 45n) / 46n).toString());
-      // From the next season the owner's own closed season is read, never the takeover's facts.
-      w.year += 1;
+      REVENUE_SINCE_TAKEOVER.inForce = 'released';
+      expect(recentRevenue(w)).toBe((200000n * 46n).toString());
       w.round = 0;
+      w.income = '0';
       expect(recentRevenue(w)).toBe('0');
     } finally {
-      REVENUE_SINCE_TAKEOVER.inForce = 'none';
+      REVENUE_SINCE_TAKEOVER.inForce = 'books';
+    }
+  });
+
+  it('reads its own closed season once it has one, as released, never the books again', () => {
+    const { w, club } = bought('takeover-revenue-own');
+    // The owner's first season closes with its own turnover; the next season starts.
+    w.history.push({
+      ...worldArchive(w, w.year, (c) => c.tier, club.id),
+      income: '3000000',
+      currency: w.currency,
+    });
+    w.year += 1;
+    w.round = 0;
+    w.income = '0';
+    expect(lastSeasonTurnover(w)).toBe('3000000');
+    const inForce = recentRevenue(w);
+    expect(inForce).toBe('3000000');
+    w.round = 10;
+    w.income = '700000';
+    const later = recentRevenue(w);
+    expect(later).toBe((700000n + (3000000n * 36n) / 46n).toString());
+    try {
+      REVENUE_SINCE_TAKEOVER.inForce = 'released';
+      expect(recentRevenue(w)).toBe(later);
+      w.round = 0;
+      w.income = '0';
+      expect(recentRevenue(w)).toBe(inForce);
+    } finally {
+      REVENUE_SINCE_TAKEOVER.inForce = 'books';
     }
   });
 });

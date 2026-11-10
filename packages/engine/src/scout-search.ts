@@ -58,14 +58,14 @@ export const SCOUT_CONFIG = {
 export const LIST_SPREAD: { inForce: 'none' | 'line' | 'list' } = { inForce: 'none' };
 
 /**
- * T785's candidate ceilings of the search (→CLUB-51, →ECON-16), a measurement setting off in play:
- * `open` lifts 영입 기조's ability ceiling altogether; `xi` keeps it at least `xiMargin` above our
- * starting XI's mean value at its slots — the margin at which the manager asks for a player
- * (→CLUB-33) — so a club stronger than the band can still find a player who would improve it.
- * `none` is the rule in force.
+ * 영입 기조's ability ceiling (→ECON-16, →CLUB-51): `xi`, the rule in force, keeps it at least
+ * `xiMargin` above our starting XI's mean value at its slots — the margin at which the manager asks
+ * for a player (→CLUB-33) — at every level, so a club stronger than the level's band still finds
+ * players who would improve it. T785's other readings stay for measurement scripts only: `fixed`,
+ * the level's own ceiling as released before ECON r54, and `open`, no ceiling at all.
  */
-export const SEARCH_CEILING: { inForce: 'none' | 'open' | 'xi'; xiMargin: number } = {
-  inForce: 'none',
+export const SEARCH_CEILING: { inForce: 'xi' | 'fixed' | 'open'; xiMargin: number } = {
+  inForce: 'xi',
   xiMargin: 5,
 };
 /** Our starting XI's mean value at its formation slots (→CLUB-6), rounded. */
