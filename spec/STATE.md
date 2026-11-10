@@ -18,9 +18,10 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 
 ## inbox
+- 261110 parked T689 MATCH-16 MATCH-34 ideation/calibration-pass: after cv04-alt (about eight clear-chance possessions a team on every base, 77–80% of those decisions with nobody goal-side, no existing setting bringing goals, goal-area share and box entries into band together) the next step is a football-model planning call, not another settings window — whether MATCH-16's clear chance is real football's big chance (then MATCH-34 needs a cover rule keeping a man goal-side of a carrier or receiver entering the box in settled play) or MATCH-16 narrows its clear chance; recommended the cover rule, measured under every existing gate. Parked for the owner because it shapes the same football as the owner's open calibration-pass and T689 has run windows since 261103; no scoring source committed nx10
+- 261110 decided ARCH-30 T689: sc10's final gate on 49cfbbe0 failed five Chromium journeys (three 30 s test timeouts, two 5 s waits: analysis, business ×2, competition-hubs, entry) while the owner's pair sessions tv10/pf10 shared the host (load 12.6–15.4 on 12 CPUs); T689 committed no production code (one diagnostic script, unit/integration/contract 3795 passed) and CI passed the same specs on c5605f0c → withdraw the loop's generated fix task (its number also collided with the published T775) and gather on next, leaving the release gate to the last session still working (alt: rerun the 40-min gate now beside the owner's perf sessions, skewing their measurements | push main without a passing gate) nx10
 - 261110 decided T689 MATCH-16 MATCH-30: what T689's next two-hour window measures after cv04-clr fixed the keeper-out strikes but overshot goals (3.07), goal-area shots (22.7%) and box entries (27.1), with its limit asking where the round/square alternatives add them → cv04-alt, a diagnosis-first window on `c50`: a committed clear-chance diagnostic (how each clear chance arises, what it becomes), then default-off switches only on how often clear chances arise and how the alternatives resolve as the defence recovers, under cv04-clr's unchanged gate; no SSOT change since MATCH-16 r58 already holds volume by chance frequency and MATCH-30 bands big chances (alt: tune `clear.keeper` or the round/square weights directly, which trades chance quality against volume and risks the forced poor strike r58 forbids | update-ssot first, with no rule gap to fill | a 1-hour window, too short for the diagnostic plus screens) sc10
 - 261110 decided ARCH-30 review/test-gate-time-261110 T774: whether local traces may drop the screencast once Chromium is CPU-bound at five workers → yes, locally only: an interleaved A/B on 53 cases cut process-tree CPU 445/452 → 264/261 s with every case passing; DOM snapshots, network, console and sources stay, CI keeps full traces (alt: keep the filmstrip and stay CPU-bound | turn local traces off entirely) tq10
 - 261110 decided ARCH-30 review/test-gate-time-261110: whether Chromium should start beside the vitest phase (F7) → rejected: at five workers the stage already ran at load median 14.4 on 12 CPUs, so overlapping would only contend (alt: overlap at three workers) tq10
@@ -874,7 +875,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T775 | Fix final gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -901,9 +901,11 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- implement-task T775
+- nx10/sc10 gathered on next: T689's cv04-alt evidence and `scripts/scoring-clear-chances.ts` (no production code); the release (verify:batch, then main) belongs to the last session still working
+- T689 waits for the owner's planning call on MATCH-16's clear chance (inbox parked 261110); owner calls also: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 
 ## log
+- 261110 nx10 closed: main released at 374e47c4 (CI 42736697802 green); T689 cv04-alt gathered on next; gate failure at 49cfbbe0 was host-load timing, fix task withdrawn; T689 next step parked for the owner
 - 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
@@ -923,4 +925,3 @@
 - 261110 update-ssot HIST r24/SAVE r66: recorded-side cards and explicit obsolete-cache exception; active T753/T759 and ready T758 are unrelated, no task-contract changes fi09
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
-- 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
