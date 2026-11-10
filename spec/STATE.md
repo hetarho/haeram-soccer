@@ -899,7 +899,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T792 | match-proto shape model: where each role stands by phase | ARCH | T791 | todo |
 | T793 | match-proto script infrastructure: state, casting, beats, restarts, validation | ARCH | T792 | todo |
 | T794 | match-proto move catalogue: the possession grammar, shots, set pieces and the showcase search | ARCH | T793 | todo |
 | T795 | match-proto stage core: bounded movement, the ball, frames, completed passes and carries | ARCH | T794 | todo |
@@ -941,6 +940,7 @@
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T792 done: `scripts/match-proto/core/shape.ts` nominal places by phase (formation anchors, role overrides, offside line from positions or the nominal block, keepers) with `PROTO_CONFIG.shape`; every reference value reproduced, 11 unit cases, a leaf, no production file touched mp11
 - 261111 T791 done: `scripts/match-proto/core` contracts (types, vec, pitch, rng, config, synthetic squads) and README; every rng reference vector reproduced, 13 unit cases, no production file touched mp11
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
