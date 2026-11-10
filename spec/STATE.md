@@ -19,9 +19,9 @@
 | nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 | tv10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:03Z | 2026-11-10T05:03Z | - |
 | pf10 | hq-dev1-pve2-vm2 | pair | 2026-11-10T05:00Z | 2026-11-10T05:35Z | - |
-| gc10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T06:21Z | 2026-11-10T06:39Z | T781 |
 
 ## inbox
+- 261110 decided ARCH-30 T779 T780 T781 T689: the gc10 loop, started for T689 only, claimed the owner's tv10 tasks T779–T781 instead (its `next` note did not bind the route while T689's call sat parked) → stopped it at 06:46Z and returned the three to todo; its local commits 8a5a1b01 (T779) and 3f03d861 (T780) stay unpushed on `work/gc10` for tv10 to reuse or drop, T781 was only begun; no code reached a remote (alt: let it finish beside tv10's own work) gc10
 - 261110 decided ARCH-23 ARCH-21 SAVE-3 review/test-value-261110: what a ground-up review of the gate can change without narrowing it, after main's CI ran 40.5 min → adopt F1 (CI browsers in 3/3/4 shards with the world cache restored; ARCH-23 r36), F2 (byte-identical integer bit-packing in the save codec) and F3 (shared set-up builders); the vitest tiers have almost no other behaviour-preserving room (about 35 core-seconds), so the rest needs the owner (alt: rewrite `canonical()`, measured slower | an engine A/B pass, beyond the budget and beside pf10's engine work) tv10
 - 261110 decided T689 MATCH-16 MATCH-30: what T689's next two-hour window measures after cv04-clr fixed the keeper-out strikes but overshot goals (3.07), goal-area shots (22.7%) and box entries (27.1), with its limit asking where the round/square alternatives add them → cv04-alt, a diagnosis-first window on `c50`: a committed clear-chance diagnostic (how each clear chance arises, what it becomes), then default-off switches only on how often clear chances arise and how the alternatives resolve as the defence recovers, under cv04-clr's unchanged gate; no SSOT change since MATCH-16 r58 already holds volume by chance frequency and MATCH-30 bands big chances (alt: tune `clear.keeper` or the round/square weights directly, which trades chance quality against volume and risks the forced poor strike r58 forbids | update-ssot first, with no rule gap to fill | a 1-hour window, too short for the diagnostic plus screens) sc10
 - 261110 decided ARCH-30 review/test-gate-time-261110 T774: whether local traces may drop the screencast once Chromium is CPU-bound at five workers → yes, locally only: an interleaved A/B on 53 cases cut process-tree CPU 445/452 → 264/261 s with every case passing; DOM snapshots, network, console and sources stay, CI keeps full traces (alt: keep the filmstrip and stay CPU-bound | turn local traces off entirely) tq10
@@ -881,9 +881,9 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T779 | shard CI browsers three/three/four ways and restore their world cache | ARCH | - | doing@261110.gc10 |
-| T780 | pack and unpack save columns with integer operations | SAVE ARCH | - | doing@261110.gc10 |
-| T781 | build each shared test set-up world once | ARCH | - | doing@261110.gc10 |
+| T779 | shard CI browsers three/three/four ways and restore their world cache | ARCH | - | todo |
+| T780 | pack and unpack save columns with integer operations | SAVE ARCH | - | todo |
+| T781 | build each shared test set-up world once | ARCH | - | todo |
 | T775 | measure history seasons and read OVR without per-call keying | ARCH | - | todo |
 | T776 | cut repeated work in season-close bookkeeping | ARCH | T775 | todo |
 | T777 | measure the Host's daily view in the A/B harness | ARCH | - | todo |
