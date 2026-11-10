@@ -21,6 +21,7 @@
 | nx10 | hq-dev1-pve2-vm2 | autopilot | 2026-11-10T00:31Z | 2026-11-10T00:31Z | - |
 
 ## inbox
+- 261110 decided ARCH-30 T726 T730: the owner's 자동모드 found origin/next 147 commits ahead of main (ev09's T726/T730, fi09's 22 integrations with a failed/unfinished gate) while a main-based loop vb10 began cherry-picking ev09's code → stop vb10 before any push and resume fi09's canonical gate on next: `verify:batch` on 60538381 (code b8ae7732, quiet 12-core host, unchanged limits/assertions/selection) passed — unit 2562, integration 1181 + the 4 declared skips, contract 46, catalogs/presentation/i18n, build, Chromium 348/348 with no retries (61 min); fi09's timeouts did not recur → fast-forward main to next and push (the release), then T689 from there (alt: keep vb10 on main, a second copy of next's work that collides when they meet | rerun fi09's per-file diagnostics first, which the green canonical run makes moot) nx10
 - 261110 decided ARCH-21 ARCH-30: how the owner supersedes the additional two-hour run → publish the complete fi09 source/history and retained evidence to remote next plus handoff/fi09-261110/current for another session (alt: keep implementing here | present failed verification as a release). This explicit handoff authorizes remote work-in-progress publication; mandatory verification remains failed/unfulfilled and the old local-only eight-hour report stays historical fi09
 - 261110 decided ARCH-21 ARCH-30 review/football-data-consistency-261109 T768: how F24 addresses an observed required-unit30s failure without changing its meaning → one independent deep comparison snapshot plus fresh World root/people registry/clubs array per original comparison (alt: repeated240 full-world copies | warm identity caches | larger limits or fewer assertions). All240 combinations/480 calls and original12 cases remain; pure-read source/base immutability is required. This bounded necessary verification correction is the only scope addition after the source freeze; original full/browser failures remain unfulfilled fi09
 - 261110 decided ARCH-30 T754 T756 T760 T766 T767: how to finish task evidence after the original one-hour broad guard fails under observed contention → preserve that failure and actual static prefix, then run all cases in six modified unit files with the original --changed base plus build under the existing affected-file task path (alt: count the incomplete broad run as passed | raise case limits | remove failed cases from final coverage). Actual85/85 and build passed on unchanged ee2b958f; independent review9fcc8a75 and strict source-equivalence checks preceded local integration3b4affd0. Whole canonical unit including decide:1137 and all Chromium cases remain required fi09
@@ -890,9 +891,11 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- read artifacts/handoffs/261110-fi09/README.md on remote next and resume fi09 mandatory whole-batch verification; retain timing failures and original T689 backlog
+- nx10: fi09's gate passed and main was released at next's tip; T689 (explore 2h) is the only task left, through a vibe loop from a worktree on main with `--verify "pnpm run verify:batch"`
+- owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 nx10 release gate: verify:batch on 60538381 passed (unit 2562, integration 1181+4 declared skips, contract 46, build, Chromium 348/348, 61 min); main fast-forwarded to next
 - 261110 fi09 owner-requested remote handoff: preserve source,26 checkpoint/worker refs, partial-work patch and portable verification evidence; no additional implementation
 - 261110 fi09 handoff:22 local integrations (19 product/3 verification), mandatory full verification failed/unfulfilled, no code push; T689 preserved
 - 261109 T768 integrated
@@ -912,4 +915,3 @@
 - 261109 T761 T762 T763 integrated
 - 261109 T764 integrated
 - 261109 T759 integrated
-- 261109 T758 integrated
