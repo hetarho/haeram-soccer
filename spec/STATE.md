@@ -901,10 +901,11 @@
 | fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
 
 ## next
-- sc10: T689's cv04-alt window (defined in its impl notes 261110) is the next unit — diagnosis-first on how clear chances arise and how the round/square alternatives resolve, `c50` as base, cv04-clr's gate unchanged; the loop's final gate is `pnpm run verify:batch` before any main push
+- sc10: T689 cv04-alt closed with no candidate passing (artifacts/benchmarks/scoring-261110-cv04-alt/README.md); next is a planning slice on its two questions — whether MATCH-16's clear chance (about 8 a team, 8× MATCH-30's big chances, mostly entries behind the back line in settled play with nobody goal-side) is real football's big chance (MATCH-34 cover rule vs a narrower MATCH-16), and where a round or open-angle carry takes the carrier and how it is challenged (MATCH-12/16 r58/35); the loop's final gate is `pnpm run verify:batch` before any main push
 - owner calls: F18 staff FX policy, F20 club chronology, F6 inbox size, F11 records page, the 14 legacy ready ideations' coverage audit, calibration-pass
 
 ## log
+- 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
 - 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
@@ -924,4 +925,3 @@
 - 261110 update-ssot HIST SAVE start: owner permits career-card summary format change without backward compatibility; current-format save/reload and source-fact retention remain required fi09
 - 261110 create-task review/football-data-consistency-261109 F16/F19: T762/T763; unassigned T761-T763 compose league-record-views, no new stored facts fi09
 - 261110 create-task review/football-data-consistency-261109 F12-F15: T758-T761; keep F16-F18 outside implementation pending compatibility/policy evidence fi09
-- 261110 create-task T769-T773 from review/test-gate-time-261110 F1-F5 (lanes gate-vitest, gate-e2e) tq10
