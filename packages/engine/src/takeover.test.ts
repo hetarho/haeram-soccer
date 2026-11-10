@@ -30,6 +30,7 @@ import {
   operatingExpensesAt,
   parachutePayment,
   recentRevenue,
+  REVENUE_SINCE_TAKEOVER,
 } from './finance';
 import { commercialValue } from './sponsors';
 import { clubNews } from './news';
@@ -446,5 +447,27 @@ describe('the world’s seasons before the takeover (→HIST-2, WORLD-13)', () =
     ).toBeGreaterThan(0);
     const season = clubMilestones(w).goals.find((goal) => goal.id === 'season')!;
     expect(season.current).toBe(0);
+  });
+
+  it('REVENUE_SINCE_TAKEOVER `books` reads the bought club’s last income in its first season (T785)', () => {
+    expect(REVENUE_SINCE_TAKEOVER.inForce).toBe('none');
+    const { w } = takenOver('own-revenue', false);
+    w.owner!.takeover.lastIncome = '4600000';
+    expect(recentRevenue(w)).toBe('0');
+    try {
+      REVENUE_SINCE_TAKEOVER.inForce = 'books';
+      // Before its first round: last season's income for the whole year.
+      expect(recentRevenue(w)).toBe('4600000');
+      // A round in: this season's turnover so far and 45/46 of last season's.
+      w.round = 1;
+      w.income = '200000';
+      expect(recentRevenue(w)).toBe((200000n + (4600000n * 45n) / 46n).toString());
+      // From the next season the owner's own closed season is read, never the takeover's facts.
+      w.year += 1;
+      w.round = 0;
+      expect(recentRevenue(w)).toBe('0');
+    } finally {
+      REVENUE_SINCE_TAKEOVER.inForce = 'none';
+    }
   });
 });

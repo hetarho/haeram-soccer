@@ -20,6 +20,7 @@ import {
   isForeignCandidate,
   LIST_SPREAD,
   SCOUT_CONFIG,
+  SEARCH_CEILING,
   scoutReach,
   transferOffers,
 } from './scout-search';
@@ -450,6 +451,30 @@ describe("T784's seller candidates (measurement settings off in play)", () => {
     }
     // Off, the list is the released one.
     expect(ids(w)).toEqual(plain.map((offer) => offer.player.id));
+  });
+
+  it('SEARCH_CEILING `open` lifts the ability ceiling, the floor and ages as they were (T785)', () => {
+    expect(SEARCH_CEILING.inForce).toBe('none');
+    const w = scoutAt(world(), 85),
+      plain = scoutReach(w),
+      offers = transferOffers(w);
+    try {
+      SEARCH_CEILING.inForce = 'open';
+      const open = scoutReach(w);
+      expect(open.ability).toEqual([plain.ability[0], 99]);
+      expect(open.age).toEqual(plain.age);
+      // The list per line is as long, and its ablest player is at least as able.
+      const lifted = transferOffers(w);
+      expect(perLine(lifted)).toEqual(perLine(offers));
+      for (const line of LINES) {
+        const best = (list: readonly ScoutOffer[]) =>
+          Math.max(0, ...list.filter((o) => lineOfOffer(o) === line).map((o) => overall(o.player)));
+        expect(best(lifted), line).toBeGreaterThanOrEqual(best(offers));
+      }
+    } finally {
+      SEARCH_CEILING.inForce = 'none';
+    }
+    expect(ids(w)).toEqual(offers.map((offer) => offer.player.id));
   });
 
   it("REFILL_SALE `kept`: a club does not sell the player filling a departure's place", () => {
