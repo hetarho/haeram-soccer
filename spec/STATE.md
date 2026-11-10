@@ -899,7 +899,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T791 | match-proto foundation: types, geometry, seeded random, demo squads | ARCH | - | todo |
 | T792 | match-proto shape model: where each role stands by phase | ARCH | T791 | todo |
 | T793 | match-proto script infrastructure: state, casting, beats, restarts, validation | ARCH | T792 | todo |
 | T794 | match-proto move catalogue: the possession grammar, shots, set pieces and the showcase search | ARCH | T793 | todo |
@@ -942,6 +941,7 @@
 - CLUB-33's two planning suggests (T784's seller-spread supply, T785's record-fee reach) wait for an update-ssot slice; each names its options and measured candidates
 
 ## log
+- 261111 T791 done: `scripts/match-proto/core` contracts (types, vec, pitch, rng, config, synthetic squads) and README; every rng reference vector reproduced, 13 unit cases, no production file touched mp11
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
 - 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
@@ -961,4 +961,3 @@
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
 - 261110 T769 T771 T770 integrated (9feaa88f..108a3511; independent review CHANGES P2 fixed by 48e2542a/5c7b6d69, then approved) tq10
-- 261110 T785 done: record target unmet, rules unchanged — the dearest signing stays at 0.13–0.16× the record because 영입 기조 표준's band (40–85) holds none of the stars every money check would pass and a strong XI leaves no upgrade in reach; candidates stay off (`SEARCH_CEILING` `open`/`xi`, `REVENUE_SINCE_TAKEOVER`), 4 of 20 careers meet it, 3 of them on the owner's widest dials (`artifacts/benchmarks/T785`) rc10
