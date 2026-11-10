@@ -13,11 +13,11 @@ concurrency:
   # main keeps a started run so every code push to main gets a result while parallel sessions push;
   # GitHub still replaces older pending runs with the newest one.
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
-# The checks, fast units, three integration shards and two shards per browser (Chromium, Firefox, WebKit)
-# run as parallel jobs: the run takes as long as its slowest job instead of the sum of every step. Every
-# job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min), so a hung run
-# fails instead of holding main's run queue for the platform's six hours. The benchmarks run on demand in
-# benchmark.yml.
+# The checks, fast units, three integration shards and the browser shards (Chromium and Firefox in three,
+# WebKit in four) run as parallel jobs: the run takes as long as its slowest job instead of the sum of every
+# step. Every job has a time limit (checks and unit 20 min, integration 45 min, browser shards 120 min), so a
+# hung run fails instead of holding main's run queue for the platform's six hours. The benchmarks run on
+# demand in benchmark.yml.
 jobs:
   checks:
     runs-on: ubuntu-latest
@@ -101,14 +101,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Two shards per browser: Playwright splits the journeys by file, so each shard runs about
-          # half of them with the same retries.
-          - { browser: chromium, shard: 1/2, slug: chromium-1 }
-          - { browser: chromium, shard: 2/2, slug: chromium-2 }
-          - { browser: firefox, shard: 1/2, slug: firefox-1 }
-          - { browser: firefox, shard: 2/2, slug: firefox-2 }
-          - { browser: webkit, shard: 1/2, slug: webkit-1 }
-          - { browser: webkit, shard: 2/2, slug: webkit-2 }
+          # Playwright splits the journeys by file, so each shard runs its share of them with the same
+          # retries: three shards for Chromium and Firefox, four for the slower WebKit.
+          - { browser: chromium, shard: 1/3, slug: chromium-1 }
+          - { browser: chromium, shard: 2/3, slug: chromium-2 }
+          - { browser: chromium, shard: 3/3, slug: chromium-3 }
+          - { browser: firefox, shard: 1/3, slug: firefox-1 }
+          - { browser: firefox, shard: 2/3, slug: firefox-2 }
+          - { browser: firefox, shard: 3/3, slug: firefox-3 }
+          - { browser: webkit, shard: 1/4, slug: webkit-1 }
+          - { browser: webkit, shard: 2/4, slug: webkit-2 }
+          - { browser: webkit, shard: 3/4, slug: webkit-3 }
+          - { browser: webkit, shard: 4/4, slug: webkit-4 }
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -119,6 +123,12 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
       - run: pnpm run build
+      # The simulated worlds the journeys set up (tests/fixtures/worlds.ts), as in the integration jobs.
+      - uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/haeram-worlds
+          key: haeram-worlds-e2e-${{ matrix.slug }}-${{ github.sha }}
+          restore-keys: haeram-worlds-e2e-${{ matrix.slug }}-
       - run: pnpm exec playwright test --project=${{ matrix.browser }} --shard=${{ matrix.shard }}
         env:
           PREVIEW_BUILD: '1'
