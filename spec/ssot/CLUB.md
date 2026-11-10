@@ -1,5 +1,5 @@
 # CLUB Squad and growth
-> r66 | Define the browser-demo rules for squad and growth.
+> r67 | Define the browser-demo rules for squad and growth.
 
 ## decisions
 - CLUB-1 [o] The owner's club starts as it stands at the takeover (→ECON-38): its generated squad becomes its own players, filled to 20 with players generated at its level (→CLUB-40); its manager stays; the other staff posts are filled as a new club's; its facilities stand at the stage its division and stature set (CLUB_TAKEOVER.facilities); its supporters follow its reputation (→ECON-23). ← the owner buys a club, not a blank page
@@ -126,7 +126,7 @@
   - goodwill: squad investment (→ECON-16) −5/0/+5/+10/+15%; the completed training ground +1 to +5% by level (→ECON-32); the 라커룸 문화 card: 가족 같은 클럽 +5, 스타 대우 +10 for players rated 70+, 철저한 경쟁 −5; 긴축 재정 −5; (morale − 60)/4 %; within −10 to +30%.
   - the owner offers the floor or more with a term, or declines; the talk shows demand, floor, the contract's clauses (→CLUB-29), yearly cost and runway before the choice (→WEB-68).
   - delegated (→STAFF-13): the 단장 (→STAFF-20) offers the floor for 2 seasons past this one (1 from age 32), never ending before the running contract, when 재계약 기조 keeps the player at that floor and 재정 기조 allows the raise (→ECON-33): cash after it keeps the runway, the wage bill after it stays at or below the ceiling of the club's revenue over the last 12 months, and the season's cash projection with it still ends the season keeping the runway; otherwise he declines and says why (→CLUB-27). ← the cash checks alone let a promoted club's staff agree raises its income could not carry
-  - revenue over the last 12 months: this season's turnover so far (competition, matchday and commercial income; player trading and owner capital excluded, →ECON-30) plus last season's for the league rounds not yet played; a club without a completed season counts its season so far at its pace over a whole season.
+  - revenue over the last 12 months: this season's turnover so far (competition, matchday and commercial income; player trading and owner capital excluded, →ECON-30) plus last season's for the league rounds not yet played; a club bought this season reads last season from the books it was bought with (→ECON-38); a club without a completed season counts its season so far at its pace over a whole season. ← a 2000 takeover read £0 over the last 12 months on its first owned day, so the wage-bill ceiling refused every signing of its first season (measured 261110)
   - 재계약 기조, whose area is defined in →ECON-25, says whom the staff keep and how far they go:
     | option | keeps | floor at most |
     |---|---|---|
@@ -342,6 +342,7 @@
 - Mediation: actual recruitment conflict → direct/automatic handling under recruitment responsibility → support choice and any recorded promise → deadline judgement → retained result.
 
 ## chg
+- r67 261110 CLUB-26✎ revenue over the last 12 months of a club bought this season read from this season's turnover alone (£0 on its first owned day)→last season from the books it was bought with
 - r66 261110 CLUB-33✎ an upgrade measured against the slot's starter alone→a player who joined in this window and plays its position stands as its measure when he beats the starter, each for one slot
 - r65 261110 CLUB-33✎ delegated recruitment without targets→targets: one seller ≤2 of a window's signings and ≤¼ of fee signings over 5 seasons; a funded 공격적 top-flight club's dearest signing ≥0.5× the standing British record within 3 seasons; rules unchanged until measured
 - r64 261109 CLUB-25✎ initial wage-era pilot1992:1/2005:1.5/2025:2.5→withdrawn after lived-books hard failure; released quote curve and existing contracts retained, exact measurement tools remain

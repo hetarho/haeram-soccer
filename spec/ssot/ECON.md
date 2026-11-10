@@ -1,5 +1,5 @@
 # ECON Historical club economy
-> r53 | Define the browser-demo rules for historical club economy.
+> r54 | Define the browser-demo rules for historical club economy.
 
 ## decisions
 - ECON-1 [o] Money uses exact integer minor units in decimal-string DTOs. Debits are validated first; positive costs cannot create money.
@@ -70,7 +70,7 @@
   | key | default | effect by level 1→5 |
   |---|---|---|
   | support | 3 | contract talks: goodwill −5/0/+5/+10/+15% (→CLUB-26) · round development ×0.8/0.9/1/1.12/1.25 · round fatigue recovery −2/−1/0/+1/+2 · operating expenses ×0.9/0.95/1/1.1/1.2 (→ECON-30) |
-  | recruitment | 3 | the scout searches ages 17–21/18–25/18–30/23–31/26–33 · ability 35–65/38–75/40–85/50–88/60–92 (→CLUB-51) · levels 1–2 rank potential before ability; transfer fees are the same at every level |
+  | recruitment | 3 | the scout searches ages 17–21/18–25/18–30/23–31/26–33 · ability 35–65/38–75/40–85/50–88/60–92, the ceiling never below our starting eleven's mean slot value + 5 (→CLUB-51) · levels 1–2 rank potential before ability; transfer fees are the same at every level |
   | academy | 1 | per-round spend 0/1/2.5/4.5/7 units · intake +0/0/1/1/2 prospects · intake potential +0/3/5/8/11 · academy growth ×1/1.1/1.2/1.3/1.45 |
   | localInvest (주변 투자) | 1 | per-round spend 0/1/2.5/4.5/7 units (1901 prices, billed with operating costs) · gate demand +0/2/4/6/8% · 지역 기반 aims at 0/20/40/65/100 (→ECON-34) |
   | globalMarketing (해외 마케팅) | 1 | per-round spend 0/1/2.5/4.5/7 units · fans +0/0.4/0.8/1.3/2% per settled round · 글로벌 인지도 aims at 0/20/40/65/100 |
@@ -223,6 +223,7 @@
   - the price leaves the owner's fortune at the takeover; the club's cash is not part of the payment.
 
 ## chg
+- r54 261110 ECON-16✎ recruitment's ability ceiling fixed per level (65/75/85/88/92)→never below our starting eleven's mean slot value + 5 (a strong club's 단장 listed nobody who could upgrade it)
 - r53 261110 ECON-24✎ first round in debt a status, not a stop→also stops a running automatic clock once behind a warning; game-over page in place of every view→on home, other views readable
 - r52 261109 ECON-28✎ provisional ENG package normalization→withdrawn after standalone lived-books gate failure; original distribution/valuation/parachute retained. ECON-29 exact payroll and unchanged acceptance criteria remain
 - r51 261109 ECON-28✎ 2024 factor0.6580853431019185 from rounded unit price→0.6580851783905154 from exact canonical GBP165,608,676.45 base; official whole-pot target unchanged
