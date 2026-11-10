@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "snapshotAt": "2026-11-10T17:11:38.737Z",
-  "sourceCommit": "e5bbc5e0ca9a3b8f56b2363c554465437792ae9a",
+  "snapshotAt": "2026-11-10T17:44:22.580Z",
+  "sourceCommit": "f68203454a6574e1d8024a906648544fe879e681",
   "group": {
     "id": "rl10",
     "branch": "si/rl10",
@@ -20,8 +20,37 @@
       "T805",
       "T806",
       "T807",
-      "T809"
+      "T809",
+      "T810",
+      "T811",
+      "T812"
     ],
+    "runner": {
+      "id": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+      "adapter": "builtin",
+      "providers": {
+        "worker": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        },
+        "reviewer": {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        }
+      },
+      "workers": [
+        {
+          "provider": "claude",
+          "model": null,
+          "version": "2.1.316 (Claude Code)"
+        }
+      ],
+      "startedAt": "2026-11-10T17:14:28.991Z",
+      "autopilot": true,
+      "decisionWaitMs": 900000
+    },
     "lastRun": {
       "id": "1d2108e7-5a7b-4f7f-80d1-2df6e6259b47",
       "adapter": "builtin",
@@ -89,15 +118,32 @@
     }
   },
   "summary": {
-    "total": 6,
-    "completed": 6,
-    "remaining": 0,
+    "total": 9,
+    "completed": 7,
+    "remaining": 2,
     "running": 0,
-    "review": 0,
+    "review": 1,
     "blocked": 0,
-    "unassigned": 0
+    "unassigned": 1
   },
-  "tasks": [],
+  "tasks": [
+    {
+      "id": "T811",
+      "title": "Gate fix: an aggregate cup tie and a grid corner path after the generation changes",
+      "dep": [],
+      "lane": "gate-fix-match",
+      "status": "ready"
+    },
+    {
+      "id": "T812",
+      "title": "Prepared worlds regenerated from the committed tree",
+      "dep": [
+        "T810",
+        "T811"
+      ],
+      "status": "todo"
+    }
+  ],
   "attempts": [
     {
       "id": "e647d048-a7a8-44bb-9693-b2750ef2f856",
@@ -497,6 +543,152 @@
           "command": "pnpm install --frozen-lockfile --prefer-offline && pnpm run typecheck && pnpm run lint && pnpm run validate:i18n && pnpm run format:check",
           "startedAt": "2026-11-10T16:16:28.115Z",
           "finishedAt": "2026-11-10T16:17:31.923Z"
+        }
+      ]
+    },
+    {
+      "id": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "group": "rl10",
+      "taskId": "T810",
+      "tasks": [
+        "T810"
+      ],
+      "lane": "gate-fix-club",
+      "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1",
+      "contributors": [
+        "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1"
+      ],
+      "status": "integrated",
+      "reason": null,
+      "createdAt": "2026-11-10T17:14:29.380Z",
+      "startCommit": "f68203454a6574e1d8024a906648544fe879e681",
+      "verifiedCommit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+      "submittedBase": "f68203454a6574e1d8024a906648544fe879e681",
+      "submissionId": "7f685f4d-5e28-4910-922d-6772f4828a47",
+      "submittedAt": "2026-11-10T17:40:50.935Z",
+      "risk": null,
+      "dispatch": {
+        "id": "1bd9d5bd-94e6-49b4-8922-b58d6c1f554a",
+        "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+        "role": "reviewer",
+        "slot": 1,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-11-10T17:41:02.471Z",
+        "finishedAt": "2026-11-10T17:44:14.412Z",
+        "error": null,
+        "summary": "T810 approved. The commit changes only four integration test files and the task file. No engine code, assertion, threshold or case name changed. All six failing cases now run on a scene found by search, which is how these files' other cases already pick their scenes, so nothing they protect is loosened.\n\nHow each case changed:\n- **News milestone:** the case searches cached `simulatedWorld` seasons for one with a win and an unbeaten run of at least 5.\n- **Shortlist drop:** the case searches cached `founded` markets for a shortlist with no entry on the recruitment-5 list. The assertion `shortlistOffers` → [] stays, and it still checks `shortlistOffers` against `transferOffers`.\n- **Incoming bids:** the case searches, cached per engine source, for a season with no `retirement-announce`, so `every active` still catches any sale.\n- **Generous and lowball bids:** both run on `biddingMarket()`, which takes over each division's first club, lowest first, until the scout lists 6 other clubs' players. The thresholds 5 and 6 are unchanged.\n- **Renewed bid:** the case tries bids on copies and uses the first club candidate whose bid of 1 is refused (the 0.05 acceptance floor in `acceptanceChance` confirms the 1-in-20 reasoning).\n\nThe cause is named with evidence for every case: a temporary edit restoring the released age ladder brought every scene back while T807 and T809 stayed in force. The search worlds come from `simulatedWorld`/`cachedWorld` as ARCH-21 requires, and the new code adds no new engine logic.\n\nVerification: I did not run anything, per the review rules. The worker reports the five-file integration run passing (74 tests) plus typecheck, lint, format:check, validate:i18n, and an empty `--changed` unit selection, because all four changed files are integration-tier. The final integration gate is left to the coordinator.\n\nFour optional (P3) notes follow; none blocks approval."
+      },
+      "review": {
+        "id": "c1b20735-ebc4-4aff-ae66-46f8d42d8023",
+        "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+        "status": "approved",
+        "verdict": "approved",
+        "summary": "T810 approved. The commit changes only four integration test files and the task file. No engine code, assertion, threshold or case name changed. All six failing cases now run on a scene found by search, which is how these files' other cases already pick their scenes, so nothing they protect is loosened.\n\nHow each case changed:\n- **News milestone:** the case searches cached `simulatedWorld` seasons for one with a win and an unbeaten run of at least 5.\n- **Shortlist drop:** the case searches cached `founded` markets for a shortlist with no entry on the recruitment-5 list. The assertion `shortlistOffers` → [] stays, and it still checks `shortlistOffers` against `transferOffers`.\n- **Incoming bids:** the case searches, cached per engine source, for a season with no `retirement-announce`, so `every active` still catches any sale.\n- **Generous and lowball bids:** both run on `biddingMarket()`, which takes over each division's first club, lowest first, until the scout lists 6 other clubs' players. The thresholds 5 and 6 are unchanged.\n- **Renewed bid:** the case tries bids on copies and uses the first club candidate whose bid of 1 is refused (the 0.05 acceptance floor in `acceptanceChance` confirms the 1-in-20 reasoning).\n\nThe cause is named with evidence for every case: a temporary edit restoring the released age ladder brought every scene back while T807 and T809 stayed in force. The search worlds come from `simulatedWorld`/`cachedWorld` as ARCH-21 requires, and the new code adds no new engine logic.\n\nVerification: I did not run anything, per the review rules. The worker reports the five-file integration run passing (74 tests) plus typecheck, lint, format:check, validate:i18n, and an empty `--changed` unit selection, because all four changed files are integration-tier. The final integration gate is left to the coordinator.\n\nFour optional (P3) notes follow; none blocks approval.",
+        "findings": [
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/transfers.test.ts:50-58 (T810)",
+            "message": "`clubMarket` repeats the setup of `transfers.testkit.ts` `world()` (`staffAuthority(2)`, the cash of 999999999999, `careerWorld` with DISABLED_RELEASE in a `founded:*` cache) for a different club. The worker did this because the testkit is outside the task's touches, and documented it under limits. A follow-up could add an optional `club` input to the testkit's `world()` so the two setups cannot drift apart. Separately, the `biddingMarket` doc comment says the lowest-division list holds 'one to four of other clubs' players on any seed', but only about 16 seeds were measured; 'on the seeds tried' would be accurate."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/transfers.incoming.test.ts:34-47 (T810)",
+            "message": "With a cold cache, `quietSeason` plays out up to four whole seasons day by day (`transfer-market`, then `incoming-bids-0..2`; the worker measured 33–73 s) before the test plays its own season. Its cache key follows the test file's engine import graph, so this cost comes back in the integration tier after every engine change. It follows the file's existing search convention and is cached as ARCH-21 requires, so it does not block. If integration time becomes a concern, trying the known-quiet seed first would bring the cold cost down to one extra season."
+          },
+          {
+            "priority": "P3",
+            "where": "packages/engine/src/signings.test.ts:319-327 (T810)",
+            "message": "The seed search checks overlap with the level-5 list on a world that has not yet made the 'recruit' step, but the assertion runs after `operate(recruit first)`. Both pass on `shortlist-5` and the result is deterministic. To match the scene exactly, the search could run the recruit before `holdRows`."
+          },
+          {
+            "priority": "P3",
+            "where": "spec/tasks/T810.gate-fix-club-and-transfer-scenes.md result/limits (T810 → planning)",
+            "message": "Handoff, not a code defect in T810's scope. The worker found that a lowest-division English club (strength about 42) now has 4–7 top-flight free agents rated 75–85 on its 8-place scout list, so its scout rarely lists another club's player. This follows CLUB-49 (the 200-player pool, where each unowned club releases its two least able players aged 21+) combined with ECON-16's 표준 ceiling of 85, once T805 spread the released players' ages. The rules settle no willingness or level limit for free agents, so this needs a planning decision (ties to inbox suggest 261105 T702). The coordinator should carry it to the STATE inbox instead of leaving it only in the task result."
+          }
+        ],
+        "commit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+        "baseCommit": "f68203454a6574e1d8024a906648544fe879e681",
+        "submissionId": "7f685f4d-5e28-4910-922d-6772f4828a47",
+        "createdAt": "2026-11-10T17:40:53.124Z",
+        "finishedAt": "2026-11-10T17:44:14.350Z"
+      },
+      "steps": [
+        {
+          "taskId": "T810",
+          "commit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+          "at": "2026-11-10T17:40:50.900Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-10T17:40:07.917Z",
+              "finishedAt": "2026-11-10T17:40:49.769Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-10T17:40:07.917Z",
+          "finishedAt": "2026-11-10T17:40:49.769Z"
+        }
+      ]
+    },
+    {
+      "id": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "group": "rl10",
+      "taskId": "T811",
+      "tasks": [
+        "T811"
+      ],
+      "lane": "gate-fix-match",
+      "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-2",
+      "contributors": [
+        "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-2"
+      ],
+      "status": "ready",
+      "reason": null,
+      "createdAt": "2026-11-10T17:14:32.182Z",
+      "startCommit": "f68203454a6574e1d8024a906648544fe879e681",
+      "verifiedCommit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+      "submittedBase": "f68203454a6574e1d8024a906648544fe879e681",
+      "submissionId": "adebfd95-01d8-44e1-8f00-518628d8ac2d",
+      "submittedAt": "2026-11-10T17:42:17.236Z",
+      "risk": null,
+      "dispatch": {
+        "id": "e8a62e8e-4bc6-4752-920e-2cf3ca82ac75",
+        "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+        "role": "worker",
+        "slot": 2,
+        "provider": "claude",
+        "model": null,
+        "status": "finished",
+        "startedAt": "2026-11-10T17:40:52.369Z",
+        "finishedAt": "2026-11-10T17:42:17.352Z",
+        "error": null,
+        "summary": "T811 is ready to submit as is: the coordinator committed it as 4cc5f78f and the worktree is clean. I made no further changes this round.\n\nBoth gate cases pass again with no engine change; each had been passing on generated people that T805's per-club age ladder replaced.\n\n- **Cup tie** (`aggregate/engine.test.ts`): the case's search checked only the settled result. After T805 that search first stops at index 483, where the first plan leaves one answer and the second leaves two, so the engine correctly keeps the first because it has fewer answers, not because it is the earlier of tied plans. The search now applies the case's own criterion: both plans leave exactly one answer. That finds 711 again, the fixture the case's history records, and every assertion is unchanged.\n- **Corner path** (`grid/movement.test.ts`): the failing check was the zone-guard bound of 4.5 m from the guard's spot, not the step bound. That bound predates revision 6 (T542 and MATCH-32 r38), which moves a zonal guard sideways toward the line between the ball and his goal, further the better his 위치선정. After T805 a guard with in-match 위치선정 97.3 was moved the full 4.885 m onto that line. The guard who held that zone before T805 moved 4.29 m, so the case had passed by 0.21 m. With the pre-T805 age formula temporarily restored, the case passes unchanged.\n  - The case now keeps T348's 4.5 m limit unchanged on the guard's own point (his spot, or goal-side of a nearby runner) and checks MATCH-32's move exactly: same depth, toward the line, never past it.\n  - The position limit is 4.5 m plus that move, so it is unchanged for any guard who isn't moved.\n\nChecks I ran:\n- The two test files in the integration project: 46 of 46 pass.\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check` and `pnpm run validate:i18n` all pass.\n- The unit `--changed` run selected no files, because both edited files are integration-tier, so it is not evidence.\n\nAcceptance 4's day-loop equivalence and digest run was not triggered, since no engine code changed, and was not run. The full integration suite and batch stay with the coordinator's gate."
+      },
+      "steps": [
+        {
+          "taskId": "T811",
+          "commit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+          "at": "2026-11-10T17:42:17.044Z",
+          "verification": [
+            {
+              "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+              "startedAt": "2026-11-10T17:41:14.569Z",
+              "finishedAt": "2026-11-10T17:42:15.922Z"
+            }
+          ]
+        }
+      ],
+      "verification": [
+        {
+          "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+          "startedAt": "2026-11-10T17:41:14.569Z",
+          "finishedAt": "2026-11-10T17:42:15.922Z"
         }
       ]
     }
@@ -3231,6 +3423,697 @@
           "autopilot": true,
           "decisionWaitMs": 900000
         }
+      }
+    },
+    {
+      "sequence": 2584,
+      "at": "2026-11-10T17:13:47.259Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "taskScope": [
+          "T803",
+          "T804",
+          "T805",
+          "T806",
+          "T807",
+          "T809",
+          "T810",
+          "T811",
+          "T812"
+        ]
+      }
+    },
+    {
+      "sequence": 2585,
+      "at": "2026-11-10T17:14:29.016Z",
+      "type": "group",
+      "group": "rl10",
+      "previousStatus": "active",
+      "status": "active",
+      "changes": {
+        "runner": {
+          "id": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "adapter": "builtin",
+          "providers": {
+            "worker": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            },
+            "reviewer": {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          },
+          "workers": [
+            {
+              "provider": "claude",
+              "model": null,
+              "version": "2.1.316 (Claude Code)"
+            }
+          ],
+          "startedAt": "2026-11-10T17:14:28.991Z",
+          "autopilot": true,
+          "decisionWaitMs": 900000
+        }
+      }
+    },
+    {
+      "sequence": 2586,
+      "at": "2026-11-10T17:14:29.380Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+        "group": "rl10",
+        "taskId": "T810",
+        "tasks": [
+          "T810"
+        ],
+        "lane": "gate-fix-club",
+        "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1",
+        "contributors": [
+          "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-1"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-10T17:14:29.380Z",
+        "startCommit": "f68203454a6574e1d8024a906648544fe879e681"
+      }
+    },
+    {
+      "sequence": 2587,
+      "at": "2026-11-10T17:14:30.779Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2588,
+      "at": "2026-11-10T17:14:31.591Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5c0b86b7-e6cf-4849-84f9-ec8b91bf9f40",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:14:31.591Z"
+        }
+      }
+    },
+    {
+      "sequence": 2589,
+      "at": "2026-11-10T17:14:31.804Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "5c0b86b7-e6cf-4849-84f9-ec8b91bf9f40",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:14:31.591Z"
+        }
+      }
+    },
+    {
+      "sequence": 2590,
+      "at": "2026-11-10T17:14:32.182Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": null,
+      "status": "preparing",
+      "changes": {
+        "id": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+        "group": "rl10",
+        "taskId": "T811",
+        "tasks": [
+          "T811"
+        ],
+        "lane": "gate-fix-match",
+        "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-2",
+        "contributors": [
+          "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/worker-2"
+        ],
+        "status": "preparing",
+        "createdAt": "2026-11-10T17:14:32.182Z",
+        "startCommit": "f68203454a6574e1d8024a906648544fe879e681"
+      }
+    },
+    {
+      "sequence": 2591,
+      "at": "2026-11-10T17:14:33.648Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "preparing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2592,
+      "at": "2026-11-10T17:14:34.320Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "4713ea9d-2e7f-4d44-b597-3e5515429ff9",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:14:34.320Z"
+        }
+      }
+    },
+    {
+      "sequence": 2593,
+      "at": "2026-11-10T17:14:34.526Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "4713ea9d-2e7f-4d44-b597-3e5515429ff9",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:14:34.320Z"
+        }
+      }
+    },
+    {
+      "sequence": 2594,
+      "at": "2026-11-10T17:28:46.073Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2595,
+      "at": "2026-11-10T17:28:46.651Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "committing",
+      "status": "blocked",
+      "changes": {
+        "status": "blocked",
+        "reason": "T811: 태스크 result에 verified 기록이 필요합니다."
+      }
+    },
+    {
+      "sequence": 2596,
+      "at": "2026-11-10T17:28:46.783Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "blocked",
+      "status": "blocked",
+      "changes": {
+        "dispatch": {
+          "id": "4713ea9d-2e7f-4d44-b597-3e5515429ff9",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:14:34.320Z",
+          "finishedAt": "2026-11-10T17:28:46.783Z",
+          "error": "T811: 태스크 result에 verified 기록이 필요합니다.",
+          "summary": "T811 is done: both gate failures pass again (46/46 in the two files), with no engine change. Neither was an engine defect; each case had been passing on generated people that T805's per-club age ladder replaced.\n\n1. Cup tie (aggregate/engine.test.ts). The case says its fixture is a 120-minute tie whose two searched plans each leave one answer against the score, but its search only checked the final result. After T805 that search stopped at index 483, where the first plan leaves one answer and the second leaves two. The engine correctly settles that by fewer answers, not as the earlier of tied plans, so the check at line 269 failed. With the old age formula put back temporarily, the first such fixture is 711, a real tie and the one the case's history records. The search now checks both plans by the case's own rule and finds 711 again; every assertion in the body is unchanged.\n\n2. Corner path (grid/movement.test.ts). The failing check was not the step bound: every delivery's travel check passed first. It was the zone-guard bound of 4.5 m from the guard's spot, which dates from T348. Since revision 6 (T542), and as MATCH-32 r38 states, a defender covering a zone moves across onto the ball–goal line, further the better his 위치선정. On the wide free kick from (13,62), T805 put a different player on the zone at (3.5,31), with in-match 위치선정 97.3. He moved the full 4.885 m onto that line. The guard who held that zone before T805 (83.9) moved 4.29 m, so the case had passed by only 0.21 m. With the old formula back, it passes unchanged.\n\n   The case now records each zone guard's spot-based point and target per stage. It keeps T348's 4.5 m limit unchanged on that point and checks the sideways move against MATCH-32: same depth, never past the line. The position limit is 4.5 m plus exactly that move, so it is unchanged for any guard who isn't moved. All other checks are untouched.\n\nChecks passed: typecheck, lint, format:check, validate:i18n. The unit `--changed f6820345` run selected no files, because both edited files are integration-tier, so it is not evidence; the integration run of the two files is. Since engine code didn't change, acceptance 4's day-loop equivalence and digest run was not triggered and not run. The old-formula evidence came from a one-line edit to world.ts (reverted) and a scratch test file (deleted); neither is in the diff. The full integration suite and batch stay with the coordinator's gate. Only the two test files and the T811 acceptance and result changed. A few of my convenience shell commands (heredoc, `echo $?`, pipelines) were blocked by the sandbox; I reran them in allowed forms and nothing was skipped."
+        }
+      }
+    },
+    {
+      "sequence": 2597,
+      "at": "2026-11-10T17:29:59.058Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "blocked",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2598,
+      "at": "2026-11-10T17:40:05.692Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2599,
+      "at": "2026-11-10T17:40:06.954Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing",
+        "reason": null
+      }
+    },
+    {
+      "sequence": 2600,
+      "at": "2026-11-10T17:40:07.255Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2601,
+      "at": "2026-11-10T17:40:50.935Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+        "submittedBase": "f68203454a6574e1d8024a906648544fe879e681",
+        "submissionId": "7f685f4d-5e28-4910-922d-6772f4828a47",
+        "submittedAt": "2026-11-10T17:40:50.935Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T810",
+            "commit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+            "at": "2026-11-10T17:40:50.900Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T17:40:07.917Z",
+                "finishedAt": "2026-11-10T17:40:49.769Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-10T17:40:07.917Z",
+            "finishedAt": "2026-11-10T17:40:49.769Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2602,
+      "at": "2026-11-10T17:40:50.990Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "5c0b86b7-e6cf-4849-84f9-ec8b91bf9f40",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:14:31.591Z",
+          "finishedAt": "2026-11-10T17:40:50.990Z",
+          "error": null,
+          "summary": "All six failing cases now pass, and each fix rests on a stated cause. No engine code changed. No assertion, threshold or case name was weakened, skipped or deleted.\n\nAll six scenes were moved by T805's per-club age ladder. To prove it, I temporarily changed `ageLadder` to return the old shared ladder (start 0, identity order), ran probes, then reverted the edit; `world.ts` is not in the diff. With the old ladder alone, every scene came back as the tests expected, with T807's refill and T809's ceiling still in force. None of the six is a production defect.\n\nPer case:\n- **news milestone:** with `news-first-win`, the longest unbeaten run is now 3 (on the old ladder it reached 5). The case now searches seeds for 30 rounds with a win and an unbeaten run of 5, and finds `news-first-win-0`.\n- **signings drop:** the `shortlist` market lists free agent ENG:0:0:5:p:12:109 (age 26, OVR 79). He sits inside both recruitment searches, so he stays listed after the row change. The case now searches for a shortlist none of whose players the level-5 search also finds, and finds `shortlist-5`. The `[]` assertion is unchanged.\n- **incoming bids:** on `transfer-market`, three veterans now retire at the close (Harrison, Hart, Nelson); no player is sold. The case now uses the first seed whose season has no retirement announcement (`incoming-bids-2`). That search is cached once per engine source.\n- **generous (3 ≥ 5) and lowball (3 ≥ 6) bids:** the lowest-division club's 8-place scout list now holds 5 top-flight free agents and only 3 other clubs' players (6 on the old ladder). No seed fixes this (1–4 club players across 16 seeds). Both counts now bid through `biddingMarket()`, which takes over each English division's first club, lowest first, until the list holds six club players. It finds ENG:1:0:0: 6 of 7 bids completed at 500%, 7 of 7 refused at 1%.\n- **renewed bid:** a bid's random draw is keyed on the player's ID, which T805 changed, so the first club candidate now accepts a bid of 1 (a 5% chance). The case now picks the first candidate whose bid of 1 is refused, tried on a copy.\n\nChecks run:\n- The acceptance's integration command on the five files: 74 of 74 passed.\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check` and `pnpm run validate:i18n` all passed.\n- `pnpm exec vitest run --project unit --changed` selected no files, because all four changed files are integration-tier. The integration run is the behaviour evidence.\n\nLimits:\n- `transfers.test.ts` gets a small `clubMarket` helper that repeats the testkit's settings for a different club, because `transfers.testkit.ts` is outside touches.\n- On a new engine source, the incoming case's seed search lives up to four seasons once (about 33 s on a quiet host, 73 s on this loaded one).\n- The probes left extra entries in the clone-wide test-world cache.\n- A finding for planning, left unchanged: a lowest-division English club's scout list is now 4–7 of 8 top-flight free agents (OVR 75–85) against its strength of about 42.\n\nFull details are in the task result."
+        }
+      }
+    },
+    {
+      "sequence": 2603,
+      "at": "2026-11-10T17:40:52.369Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e8a62e8e-4bc6-4752-920e-2cf3ca82ac75",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:40:52.369Z"
+        }
+      }
+    },
+    {
+      "sequence": 2604,
+      "at": "2026-11-10T17:40:52.900Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "doing",
+      "changes": {
+        "dispatch": {
+          "id": "e8a62e8e-4bc6-4752-920e-2cf3ca82ac75",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:40:52.369Z"
+        }
+      }
+    },
+    {
+      "sequence": 2605,
+      "at": "2026-11-10T17:40:53.124Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "ready",
+      "status": "reviewing",
+      "changes": {
+        "status": "reviewing",
+        "review": {
+          "id": "c1b20735-ebc4-4aff-ae66-46f8d42d8023",
+          "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+          "status": "reviewing",
+          "commit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+          "baseCommit": "f68203454a6574e1d8024a906648544fe879e681",
+          "submissionId": "7f685f4d-5e28-4910-922d-6772f4828a47",
+          "createdAt": "2026-11-10T17:40:53.124Z"
+        }
+      }
+    },
+    {
+      "sequence": 2606,
+      "at": "2026-11-10T17:41:02.471Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1bd9d5bd-94e6-49b4-8922-b58d6c1f554a",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "starting",
+          "startedAt": "2026-11-10T17:41:02.471Z"
+        }
+      }
+    },
+    {
+      "sequence": 2607,
+      "at": "2026-11-10T17:41:02.526Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "reviewing",
+      "status": "reviewing",
+      "changes": {
+        "dispatch": {
+          "id": "1bd9d5bd-94e6-49b4-8922-b58d6c1f554a",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "running",
+          "startedAt": "2026-11-10T17:41:02.471Z"
+        }
+      }
+    },
+    {
+      "sequence": 2608,
+      "at": "2026-11-10T17:41:11.582Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "committing",
+      "changes": {
+        "status": "committing"
+      }
+    },
+    {
+      "sequence": 2609,
+      "at": "2026-11-10T17:41:13.483Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "committing",
+      "status": "doing",
+      "changes": {
+        "status": "doing"
+      }
+    },
+    {
+      "sequence": 2610,
+      "at": "2026-11-10T17:41:13.631Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "doing",
+      "status": "verifying",
+      "changes": {
+        "status": "verifying"
+      }
+    },
+    {
+      "sequence": 2611,
+      "at": "2026-11-10T17:42:17.236Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "verifying",
+      "status": "ready",
+      "changes": {
+        "status": "ready",
+        "verifiedCommit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+        "submittedBase": "f68203454a6574e1d8024a906648544fe879e681",
+        "submissionId": "adebfd95-01d8-44e1-8f00-518628d8ac2d",
+        "submittedAt": "2026-11-10T17:42:17.236Z",
+        "risk": null,
+        "steps": [
+          {
+            "taskId": "T811",
+            "commit": "4cc5f78fc97556eef4308b9c21c8afcf09a512f8",
+            "at": "2026-11-10T17:42:17.044Z",
+            "verification": [
+              {
+                "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+                "startedAt": "2026-11-10T17:41:14.569Z",
+                "finishedAt": "2026-11-10T17:42:15.922Z"
+              }
+            ]
+          }
+        ],
+        "verification": [
+          {
+            "command": "pnpm run typecheck && pnpm run lint && pnpm run format:check && pnpm run validate:i18n && pnpm exec vitest run --project unit --changed \"$HAERAM_DIFF_BASE\" --passWithNoTests --maxWorkers 4",
+            "startedAt": "2026-11-10T17:41:14.569Z",
+            "finishedAt": "2026-11-10T17:42:15.922Z"
+          }
+        ]
+      }
+    },
+    {
+      "sequence": 2612,
+      "at": "2026-11-10T17:42:17.352Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "53ae668a-0a8c-4cb5-b82f-d3bd9a5c3901",
+      "taskId": "T811",
+      "previousStatus": "ready",
+      "status": "ready",
+      "changes": {
+        "dispatch": {
+          "id": "e8a62e8e-4bc6-4752-920e-2cf3ca82ac75",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "worker",
+          "slot": 2,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:40:52.369Z",
+          "finishedAt": "2026-11-10T17:42:17.352Z",
+          "error": null,
+          "summary": "T811 is ready to submit as is: the coordinator committed it as 4cc5f78f and the worktree is clean. I made no further changes this round.\n\nBoth gate cases pass again with no engine change; each had been passing on generated people that T805's per-club age ladder replaced.\n\n- **Cup tie** (`aggregate/engine.test.ts`): the case's search checked only the settled result. After T805 that search first stops at index 483, where the first plan leaves one answer and the second leaves two, so the engine correctly keeps the first because it has fewer answers, not because it is the earlier of tied plans. The search now applies the case's own criterion: both plans leave exactly one answer. That finds 711 again, the fixture the case's history records, and every assertion is unchanged.\n- **Corner path** (`grid/movement.test.ts`): the failing check was the zone-guard bound of 4.5 m from the guard's spot, not the step bound. That bound predates revision 6 (T542 and MATCH-32 r38), which moves a zonal guard sideways toward the line between the ball and his goal, further the better his 위치선정. After T805 a guard with in-match 위치선정 97.3 was moved the full 4.885 m onto that line. The guard who held that zone before T805 moved 4.29 m, so the case had passed by 0.21 m. With the pre-T805 age formula temporarily restored, the case passes unchanged.\n  - The case now keeps T348's 4.5 m limit unchanged on the guard's own point (his spot, or goal-side of a nearby runner) and checks MATCH-32's move exactly: same depth, toward the line, never past it.\n  - The position limit is 4.5 m plus that move, so it is unchanged for any guard who isn't moved.\n\nChecks I ran:\n- The two test files in the integration project: 46 of 46 pass.\n- `pnpm run typecheck`, `pnpm run lint`, `pnpm run format:check` and `pnpm run validate:i18n` all pass.\n- The unit `--changed` run selected no files, because both edited files are integration-tier, so it is not evidence.\n\nAcceptance 4's day-loop equivalence and digest run was not triggered, since no engine code changed, and was not run. The full integration suite and batch stay with the coordinator's gate."
+        }
+      }
+    },
+    {
+      "sequence": 2613,
+      "at": "2026-11-10T17:44:14.350Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "reviewing",
+      "status": "approved",
+      "changes": {
+        "status": "approved",
+        "review": {
+          "id": "c1b20735-ebc4-4aff-ae66-46f8d42d8023",
+          "owner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731/reviewer-1",
+          "status": "approved",
+          "verdict": "approved",
+          "summary": "T810 approved. The commit changes only four integration test files and the task file. No engine code, assertion, threshold or case name changed. All six failing cases now run on a scene found by search, which is how these files' other cases already pick their scenes, so nothing they protect is loosened.\n\nHow each case changed:\n- **News milestone:** the case searches cached `simulatedWorld` seasons for one with a win and an unbeaten run of at least 5.\n- **Shortlist drop:** the case searches cached `founded` markets for a shortlist with no entry on the recruitment-5 list. The assertion `shortlistOffers` → [] stays, and it still checks `shortlistOffers` against `transferOffers`.\n- **Incoming bids:** the case searches, cached per engine source, for a season with no `retirement-announce`, so `every active` still catches any sale.\n- **Generous and lowball bids:** both run on `biddingMarket()`, which takes over each division's first club, lowest first, until the scout lists 6 other clubs' players. The thresholds 5 and 6 are unchanged.\n- **Renewed bid:** the case tries bids on copies and uses the first club candidate whose bid of 1 is refused (the 0.05 acceptance floor in `acceptanceChance` confirms the 1-in-20 reasoning).\n\nThe cause is named with evidence for every case: a temporary edit restoring the released age ladder brought every scene back while T807 and T809 stayed in force. The search worlds come from `simulatedWorld`/`cachedWorld` as ARCH-21 requires, and the new code adds no new engine logic.\n\nVerification: I did not run anything, per the review rules. The worker reports the five-file integration run passing (74 tests) plus typecheck, lint, format:check, validate:i18n, and an empty `--changed` unit selection, because all four changed files are integration-tier. The final integration gate is left to the coordinator.\n\nFour optional (P3) notes follow; none blocks approval.",
+          "findings": [
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/transfers.test.ts:50-58 (T810)",
+              "message": "`clubMarket` repeats the setup of `transfers.testkit.ts` `world()` (`staffAuthority(2)`, the cash of 999999999999, `careerWorld` with DISABLED_RELEASE in a `founded:*` cache) for a different club. The worker did this because the testkit is outside the task's touches, and documented it under limits. A follow-up could add an optional `club` input to the testkit's `world()` so the two setups cannot drift apart. Separately, the `biddingMarket` doc comment says the lowest-division list holds 'one to four of other clubs' players on any seed', but only about 16 seeds were measured; 'on the seeds tried' would be accurate."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/transfers.incoming.test.ts:34-47 (T810)",
+              "message": "With a cold cache, `quietSeason` plays out up to four whole seasons day by day (`transfer-market`, then `incoming-bids-0..2`; the worker measured 33–73 s) before the test plays its own season. Its cache key follows the test file's engine import graph, so this cost comes back in the integration tier after every engine change. It follows the file's existing search convention and is cached as ARCH-21 requires, so it does not block. If integration time becomes a concern, trying the known-quiet seed first would bring the cold cost down to one extra season."
+            },
+            {
+              "priority": "P3",
+              "where": "packages/engine/src/signings.test.ts:319-327 (T810)",
+              "message": "The seed search checks overlap with the level-5 list on a world that has not yet made the 'recruit' step, but the assertion runs after `operate(recruit first)`. Both pass on `shortlist-5` and the result is deterministic. To match the scene exactly, the search could run the recruit before `holdRows`."
+            },
+            {
+              "priority": "P3",
+              "where": "spec/tasks/T810.gate-fix-club-and-transfer-scenes.md result/limits (T810 → planning)",
+              "message": "Handoff, not a code defect in T810's scope. The worker found that a lowest-division English club (strength about 42) now has 4–7 top-flight free agents rated 75–85 on its 8-place scout list, so its scout rarely lists another club's player. This follows CLUB-49 (the 200-player pool, where each unowned club releases its two least able players aged 21+) combined with ECON-16's 표준 ceiling of 85, once T805 spread the released players' ages. The rules settle no willingness or level limit for free agents, so this needs a planning decision (ties to inbox suggest 261105 T702). The coordinator should carry it to the STATE inbox instead of leaving it only in the task result."
+            }
+          ],
+          "commit": "b28bc08d0906c1e97708a46153bd359a9c880fb6",
+          "baseCommit": "f68203454a6574e1d8024a906648544fe879e681",
+          "submissionId": "7f685f4d-5e28-4910-922d-6772f4828a47",
+          "createdAt": "2026-11-10T17:40:53.124Z",
+          "finishedAt": "2026-11-10T17:44:14.350Z"
+        }
+      }
+    },
+    {
+      "sequence": 2614,
+      "at": "2026-11-10T17:44:14.412Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "approved",
+      "status": "approved",
+      "changes": {
+        "dispatch": {
+          "id": "1bd9d5bd-94e6-49b4-8922-b58d6c1f554a",
+          "runner": "f1dfc4f2-14e7-4ea7-a3b1-0468a8eb0731",
+          "role": "reviewer",
+          "slot": 1,
+          "provider": "claude",
+          "model": null,
+          "status": "finished",
+          "startedAt": "2026-11-10T17:41:02.471Z",
+          "finishedAt": "2026-11-10T17:44:14.412Z",
+          "error": null,
+          "summary": "T810 approved. The commit changes only four integration test files and the task file. No engine code, assertion, threshold or case name changed. All six failing cases now run on a scene found by search, which is how these files' other cases already pick their scenes, so nothing they protect is loosened.\n\nHow each case changed:\n- **News milestone:** the case searches cached `simulatedWorld` seasons for one with a win and an unbeaten run of at least 5.\n- **Shortlist drop:** the case searches cached `founded` markets for a shortlist with no entry on the recruitment-5 list. The assertion `shortlistOffers` → [] stays, and it still checks `shortlistOffers` against `transferOffers`.\n- **Incoming bids:** the case searches, cached per engine source, for a season with no `retirement-announce`, so `every active` still catches any sale.\n- **Generous and lowball bids:** both run on `biddingMarket()`, which takes over each division's first club, lowest first, until the scout lists 6 other clubs' players. The thresholds 5 and 6 are unchanged.\n- **Renewed bid:** the case tries bids on copies and uses the first club candidate whose bid of 1 is refused (the 0.05 acceptance floor in `acceptanceChance` confirms the 1-in-20 reasoning).\n\nThe cause is named with evidence for every case: a temporary edit restoring the released age ladder brought every scene back while T807 and T809 stayed in force. The search worlds come from `simulatedWorld`/`cachedWorld` as ARCH-21 requires, and the new code adds no new engine logic.\n\nVerification: I did not run anything, per the review rules. The worker reports the five-file integration run passing (74 tests) plus typecheck, lint, format:check, validate:i18n, and an empty `--changed` unit selection, because all four changed files are integration-tier. The final integration gate is left to the coordinator.\n\nFour optional (P3) notes follow; none blocks approval."
+        }
+      }
+    },
+    {
+      "sequence": 2615,
+      "at": "2026-11-10T17:44:14.526Z",
+      "type": "attempt",
+      "group": "rl10",
+      "attemptId": "baecfa93-4fa1-4dfb-9b91-165fc13d4449",
+      "taskId": "T810",
+      "previousStatus": "approved",
+      "status": "integrating",
+      "changes": {
+        "status": "integrating"
       }
     }
   ]

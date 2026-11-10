@@ -60,6 +60,29 @@ describe('club news', () => {
   });
 
   it('celebrates the first win and reports streaks when they reach a milestone', () => {
+    // 30 rounds holding a win and an unbeaten run of five, the first milestone. Each club's own age
+    // ladder (→WORLD-6) moved who plays for whom and so the results (`news-first-win`'s longest
+    // unbeaten run is now three): the first such season by search.
+    const longestUnbeaten = (season: World) => {
+      let run = 0,
+        most = 0;
+      for (const row of results(season)) {
+        run = row.result === 'L' ? 0 : run + 1;
+        most = Math.max(most, run);
+      }
+      return most;
+    };
+    const seeds = [
+      'news-first-win',
+      ...Array.from({ length: 12 }, (_, i) => `news-first-win-${i}`),
+    ];
+    const seed = seeds.find((one) => {
+      const season = simulatedWorld(founding(one), { rounds: 30 });
+      return results(season).some((row) => row.result === 'W') && longestUnbeaten(season) >= 5;
+    });
+    if (!seed) throw new Error(`no season of 30 rounds unbeaten in five in ${seeds.length} seeds`);
+    const w = simulatedWorld(founding(seed), { rounds: 30 });
+    const news = clubNews(w);
     const first = results(w).find((row) => row.result === 'W')!;
     expect(first, 'the current-model fixture must include a win').toBeDefined();
     const item = news.find((n) => n.id === `${w.year}:${first.m.id}:first-win`)!;
