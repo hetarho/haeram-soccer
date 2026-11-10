@@ -914,6 +914,7 @@
 | T799 | match-proto viewer: a single HTML page that plays the ten staged minutes | ARCH | T798 | todo |
 | T800 | match-proto: measure, tune and deliver the ten-minute prototype | ARCH | T799 | todo |
 | T808 | measure the squad spread's gate and put it in force | WORLD MATCH CLUB LEAGUE PLAYER | T803 T804 T806 T807 T809 | todo |
+| T813 | gate fix: goal-replay scenes re-found by a seed scan | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -944,6 +945,7 @@
 - inspect work board for remaining tasks
 
 ## log
+- 261110 rl10: second verify:batch on f43330c4 passed unit/integration/contract and 328/333 Chromium; the 5 goal-replay scenes moved with T805 → create-task T813 rl10
 - 261110 T812 integrated
 - 261110 T811 integrated
 - 261110 T810 integrated
@@ -963,4 +965,3 @@
 - 261110 T788 T789 integrated (independent review approved 33df2b5e/abc5506c, P3 notes only) tv10
 - 261110 T790 integrated (8 cases in 7 files on the shared finance last-round span; independent review approved 6c4e045e, P3 notes only) tv10
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
-- 261110 ARCH r37: ARCH-30 follows haeram-spec-creator 0.12.0 (planning on `next`, landing on `main` after one locked verify:batch); no task, verification process only bd10
