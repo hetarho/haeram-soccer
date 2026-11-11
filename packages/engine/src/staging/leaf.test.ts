@@ -42,4 +42,29 @@ describe('staging leaf', () => {
       }
     expect(outside).toEqual([]);
   });
+
+  // The script writer takes plain inputs too (→ARCH-33, T825): from `grid/` only the pitch, the
+  // record's counters and the rules, and no season, world or match orchestration.
+  it('the script imports no grid engine, season, world or match orchestration', () => {
+    const script = resolve(engine, 'script');
+    const grid = resolve(engine, 'grid');
+    const allowedGrid = ['pitch.ts', 'record.ts', 'rules.ts'].map((name) => resolve(grid, name));
+    const forbidden = ['season.ts', 'world.ts', 'match.ts'].map((name) => resolve(engine, name));
+    const files = readdirSync(script)
+      .filter((name) => /\.[cm]?tsx?$/.test(name) && !isTest(name))
+      .map((name) => join(script, name));
+    expect(files.map((file) => relative(script, file)).sort()).toEqual(['build.ts', 'detail.ts']);
+    const outside: string[] = [];
+    for (const file of files)
+      for (const name of runtimeImports(readFileSync(file, 'utf8'), file)) {
+        if (!name.startsWith('.')) {
+          outside.push(`${relative(engine, file)} → ${name}`);
+          continue;
+        }
+        const target = resolveLocal(file, name);
+        if ((inside(target, grid) && !allowedGrid.includes(target)) || forbidden.includes(target))
+          outside.push(`${relative(engine, file)} → ${relative(engine, target)}`);
+      }
+    expect(outside).toEqual([]);
+  });
 });

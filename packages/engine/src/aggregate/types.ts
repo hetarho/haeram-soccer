@@ -345,6 +345,14 @@ export interface AggregateAttributionTrace {
   moves: [AggregateTraceMove[], AggregateTraceMove[]];
   /** Per side (the fouled side), per index of its ledger's `fouled`. */
   fouls: [AggregateTraceFouls[], AggregateTraceFouls[]];
+  /** A shoot-out's kicks in kicking order (T825): `aggregateShootout` fills it when given. */
+  shootout?: AggregateShootoutKick[];
+}
+/** One shoot-out kick: the kicking side, its taker's line (index into the side's `lines`) and whether it went in. */
+export interface AggregateShootoutKick {
+  side: AggregateSide;
+  line: number;
+  scored: boolean;
 }
 export interface AggregateTraceMove {
   /** This side's lines. */
@@ -369,4 +377,6 @@ export interface AggregateTraceFouls {
   /** The other fouls of the row: this side's lines fouled and the opponent's lines that fouled. */
   fouled: number[];
   fouler: number[];
+  /** A box row's penalty kicks, indexes into the fouled side's ledger `shots` (T825, ledger.ts `penaltyShotsByFoul`). */
+  penalties?: number[];
 }

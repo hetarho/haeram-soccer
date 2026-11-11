@@ -24,6 +24,7 @@ import {
   type AggregateMoveKind,
   type AggregateSide,
   type AggregateSideFacts,
+  type AggregateSideLedger,
   type AggregateTeamFacts,
 } from './types';
 
@@ -79,6 +80,31 @@ const pullBackFrom = (cell: number) => cellBand(cell) >= 6 && cellLane(cell) !==
  * or take-on is never loose: its failures are tackles.
  */
 export const looseBalls = (m: AggregateMove) => (isPassKind(m.kind) ? m.recovered : 0);
+/**
+ * Which shots are each foul row's penalties (T825): per row of `fouled`, the indexes into `shots`
+ * of its penalty kicks. The generator takes a period's penalties after its open-play shots, row by
+ * row in `fouled` order and each row's in turn (team.ts `setPieceShots`), so a side's penalty
+ * shots of a period, in list order, are its box rows' fouls of that period in row order.
+ */
+export function penaltyShotsByFoul(side: AggregateSideLedger): number[][] {
+  const out = side.fouled.map((): number[] => []);
+  for (const period of ['regulation', 'extra'] as const) {
+    const kicks = side.shots.flatMap((s, i) =>
+      s.period === period && s.kind === 'penalty' ? [i] : [],
+    );
+    let at = 0;
+    side.fouled.forEach((f, row) => {
+      if (f.period !== period) return;
+      for (let k = 0; k < f.penalties; k++) {
+        const shot = kicks[at++];
+        if (shot === undefined) throw new Error(`${period}: more penalties than penalty shots`);
+        out[row]!.push(shot);
+      }
+    });
+    if (at !== kicks.length) throw new Error(`${period}: penalty shots without their fouls`);
+  }
+  return out;
+}
 /** Kinds that always go forward; a short pass may go any way. */
 const isForwardKind = (kind: AggregateMoveKind) => kind === 'long' || kind === 'through';
 

@@ -16,7 +16,6 @@ import type {
   Club,
   Fixture,
   Highlight,
-  Incident,
   MatchPlayback,
   MatchRecord,
   Player,
@@ -25,8 +24,6 @@ import type {
 } from '../../../contracts/src/types';
 import { injuryChance } from '../careers';
 import { subPolicyFor } from '../grid/changes';
-import { ADDED_CONFIG } from '../grid/engine';
-import { SHOT_CONFIG } from '../grid/resolve';
 import {
   DEFAULT_SUB_POLICY,
   eraRules,
@@ -35,7 +32,6 @@ import {
   type DecideRule,
   type EraRules,
 } from '../grid/setup';
-import { STRENGTH_CONFIG } from '../grid/state';
 import {
   actionWeight,
   drainPerMinute,
@@ -46,12 +42,12 @@ import {
   type Prepared,
 } from '../match';
 import { FORMATIONS, levelFactor, lineOf } from '../player';
-import { clamp } from '../primitives';
 import { slotOvr } from '../player-state';
 import type { ShapeSide } from '../staging/shape';
 import { buildAggregateInput } from './input';
-import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
-import { onPitchAt, planParticipation, rebalanceIssues, slotAt } from './participation';
+import { AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
+import { aggregateAddedTime, aggregateShootout } from './finish';
+import { planParticipation, rebalanceIssues } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
 import type {
@@ -69,6 +65,8 @@ import type {
   AggregateStreams,
   AggregateTeamFacts,
 } from './types';
+
+export { aggregateAddedTime, aggregateShootout };
 
 /** The keeping attributes, told by comparison instead of a set on every skill read (T612). */
 const isKeeping = (attribute: AggregateAttribute) =>
@@ -212,93 +210,6 @@ export function aggregatePlan(
     placed: isScriptedModel(activeMatchModel(w)),
     shape: [shape(0), shape(1)],
   };
-}
-
-/**
- * A level tie's shoot-out (→MATCH-6), the detailed engine's rule (grid/shootout.ts): the players
- * on the pitch at the end kick, best 0.6 슈팅 + 0.4 침착성 first and the keeper last, the home side
- * first, five each until one side cannot be caught, then sudden death in pairs with the takers
- * coming round again; each kick goes in at the in-match penalty chance against the keeper's 선방.
- */
-export function aggregateShootout(
-  input: AggregateInput,
-  participation: AggregateParticipation,
-  streams: AggregateStreams,
-): Score {
-  const end = participation.length;
-  const minute = end - 0.5;
-  const skill = (side: AggregateSide, line: number, a: AggregateAttribute) =>
-    input.access.skill(side, line, a, minute);
-  const kicker = (side: AggregateSide, line: number) =>
-    0.6 * skill(side, line, 'finishing') + 0.4 * skill(side, line, 'composure');
-  const present = (side: AggregateSide) =>
-    input.sides[side].lines
-      .map((_, line) => line)
-      .filter((line) => onPitchAt(participation, side, line, end));
-  const keeperOf = (side: AggregateSide) =>
-    present(side).find((line) => slotAt(participation, side, line, end) === 0) ?? present(side)[0]!;
-  const order = ([0, 1] as const).map((side) => {
-    const keeper = keeperOf(side);
-    const outfield = present(side)
-      .filter((line) => line !== keeper)
-      .sort((a, b) => kicker(side, b) - kicker(side, a) || a - b);
-    return [...outfield, keeper];
-  });
-  const P = SHOT_CONFIG.penalty;
-  const chance = (side: AggregateSide, line: number) => {
-    const foe: AggregateSide = side === 0 ? 1 : 0;
-    const margin =
-      (kicker(side, line) - skill(foe, keeperOf(foe), 'reflexes')) * STRENGTH_CONFIG.skillScale;
-    return clamp(P.base + margin / 300, P.min, P.max);
-  };
-  const r = streams.draw('shootout');
-  const scored = [0, 0],
-    taken = [0, 0];
-  const kick = (side: AggregateSide) => {
-    const list = order[side]!;
-    if (r() < chance(side, list[taken[side]! % list.length]!)) scored[side]!++;
-    taken[side]!++;
-  };
-  const score = (): Score => ({ home: scored[0]!, away: scored[1]! });
-  for (let round = 0; round < 5; round++)
-    for (const side of [0, 1] as const) {
-      kick(side);
-      const left = (who: AggregateSide) => 5 - taken[who]!;
-      if (scored[0]! + left(0) < scored[1]! || scored[1]! + left(1) < scored[0]!) return score();
-    }
-  while (scored[0] === scored[1]) {
-    kick(0);
-    kick(1);
-  }
-  return score();
-}
-
-/**
- * Added minutes of each period played (→MATCH-1): the time its goals, substitutions, injuries,
- * cards and penalties took, at the detailed engine's credits and bounds (grid/engine.ts).
- */
-export function aggregateAddedTime(
-  facts: AggregateTeamFacts,
-  incidents: readonly Incident[],
-): number[] {
-  const periods = facts.length === 120 ? 4 : 2;
-  const periodOf = (minute: number) =>
-    minute <= 45 ? 0 : minute <= 90 ? 1 : minute <= 105 ? 2 : 3;
-  const credits = [0, 0, 0, 0];
-  const K = ADDED_CONFIG.credits;
-  for (const side of facts.ledger.sides)
-    for (const shot of side.shots) {
-      if (shot.outcome === 'goal') credits[periodOf(shot.minute)]! += K.goal;
-      if (shot.kind === 'penalty') credits[periodOf(shot.minute)]! += K.penalty;
-    }
-  for (const x of incidents)
-    credits[periodOf(x.minute)]! +=
-      x.kind === 'sub' ? K.sub : x.kind === 'injury' ? K.injury : K.card;
-  return credits.slice(0, periods).map((credited, i) => {
-    const seconds = credited + AGGREGATE_CONFIG.addedSeconds[i]!;
-    const [lo, hi] = ADDED_CONFIG.bounds[i]!;
-    return Math.min(hi, Math.max(lo, Math.ceil(seconds / 60)));
-  });
 }
 
 /** Everything one aggregate match produced before it becomes a record. */

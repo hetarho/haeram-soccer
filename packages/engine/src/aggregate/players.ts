@@ -24,7 +24,14 @@ import { exp } from '../portable-math';
 import { cellCentre, placeFor, type ShapeSide } from '../staging/shape';
 import { dist } from '../staging/vec';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
-import { inBoxCell, isPassKind, looseBalls, moveKindIndex, xtGain } from './ledger';
+import {
+  inBoxCell,
+  isPassKind,
+  looseBalls,
+  moveKindIndex,
+  penaltyShotsByFoul,
+  xtGain,
+} from './ledger';
 import {
   binomialDraw,
   exposures,
@@ -196,10 +203,62 @@ const TAKER: Record<TakerKey, readonly (readonly [AggregateAttribute, number])[]
   corner: [['crossing', 1]],
 };
 
-interface Row {
+/** One line's counters while a match is attributed or counted back (script/build.ts `recordOf`). */
+export interface AttributionRow {
   metrics: number[];
   detail: number[];
 }
+type Row = AttributionRow;
+/** An empty line row in the record's units. */
+export const emptyRow = (): AttributionRow => ({
+  metrics: zeroMetrics(),
+  detail: Array<number>(PLAYER_DETAIL_SIZE).fill(0),
+});
+
+/**
+ * Counters one shot earns (→MATCH-13): its shooter's shot, on target, goal and xG; its key passer's
+ * key pass, xA, big chance created and assist; a save to the keeper who made it.
+ */
+export function creditShot(
+  shot: AggregateShot,
+  shooter: AttributionRow,
+  passer: AttributionRow | undefined,
+  keeper: AttributionRow | undefined,
+) {
+  const goal = shot.outcome === 'goal';
+  const m = shooter.metrics;
+  m[M.shots]!++;
+  if (goal || shot.outcome === 'save') m[M.onTarget]!++;
+  if (goal) m[M.goals]!++;
+  shooter.detail[PD.xg]! += shot.xg;
+  if (passer) {
+    passer.detail[PD.keyPasses]!++;
+    passer.detail[PD.xa]! += shot.xg;
+    if (shot.xg >= BIG_CHANCE) passer.detail[PD.bigChancesCreated]!++;
+    if (goal) passer.metrics[M.assists]!++;
+  }
+  if (keeper && shot.outcome === 'save') keeper.metrics[M.saves]!++;
+}
+
+/**
+ * Counters `k` balls won from one group earn its winner (→MATCH-13): interceptions of a pass where
+ * it was played to, tackles of a carry or take-on where it started (`at`, the band in the losing
+ * side's frame), each a high turnover in the winner's zone.
+ */
+export function creditWon(row: AttributionRow, pass: boolean, at: number, k: number) {
+  row.metrics[pass ? M.interceptions : M.tackles]! += k;
+  if (mirrorBand(at) >= COUNTER_ZONES.highTurnover) row.detail[PD.highTurnovers]! += k;
+}
+
+/** A card's counters on its player's row: a second yellow counts one of each. */
+export function creditCard(row: AttributionRow, kind: string) {
+  if (kind === 'yellow' || kind === 'secondYellow') row.detail[PD.yellowCards]!++;
+  if (kind === 'red' || kind === 'secondYellow') row.detail[PD.redCards]!++;
+}
+
+/** The keeper among the lines present in a minute (in line order): slot 0, else the first. */
+export const keeperAmong = (here: readonly { line: number; slot: number }[]) =>
+  (here.find((p) => p.slot === 0) ?? here[0]!).line;
 
 /** Revision 11's place rule (→MATCH-16, T824). */
 const PLACE = AC.place;
@@ -335,10 +394,7 @@ class SideLines {
         PLACE_TERMS.set(key, (terms = new Float64Array(2 * 2 * SLOT_LIMIT * CELL_COUNT).fill(NaN)));
       this.placeTerms = terms;
     }
-    this.rows = input.sides[side].lines.map(() => ({
-      metrics: zeroMetrics(),
-      detail: Array<number>(PLAYER_DETAIL_SIZE).fill(0),
-    }));
+    this.rows = input.sides[side].lines.map(emptyRow);
     this.slotCount = input.sides[side].slots.length;
     this.slotLines = input.sides[side].slots.map((s) => LINE_INDEX[s.line]);
     const n = this.rows.length;
@@ -519,8 +575,7 @@ class SideLines {
 
   /** The keeper in goal in a minute; anyone present if nobody keeps it. */
   keeperAt(minute: number): number {
-    const here = this.present(minute);
-    return (here.find((p) => p.slot === 0) ?? here[0]!).line;
+    return keeperAmong(this.present(minute));
   }
 
   /** A slot's place term for an action in `cell` (this side's attack frame; placed plans only). */
@@ -712,6 +767,16 @@ function creditMove(row: Row, move: MoveTraits, attempts: number, done: number, 
   if (toBand === FINAL_THIRD_BAND && fromBand < FINAL_THIRD_BAND) d[PD.frontOfBoxEntries]! += done;
   d[PD.xtAdded]! += done * move.xt;
 }
+/** `creditMove` for a group's own cells and kind: a line's attempts, completions and line breaks of it. */
+export function creditMoveGroup(
+  row: AttributionRow,
+  move: AggregateMove,
+  attempts: number,
+  done: number,
+  broke: number,
+) {
+  creditMove(row, moveTraits(move), attempts, done, broke);
+}
 
 /**
  * Player lines of one match from its team facts and participation (→MATCH-26/27): shots and their
@@ -754,11 +819,13 @@ export function attributePlayerFacts(
         credits,
         trace,
       );
-  for (const x of participation.incidents) {
-    const d = sides[x.side].rows[sides[x.side].lineOf(x.player)]!.detail;
-    if (x.kind === 'yellow' || x.kind === 'secondYellow') d[PD.yellowCards]!++;
-    if (x.kind === 'red' || x.kind === 'secondYellow') d[PD.redCards]!++;
-  }
+  for (const x of participation.incidents)
+    creditCard(sides[x.side].rows[sides[x.side].lineOf(x.player)]!, x.kind);
+  if (trace)
+    for (const side of [0, 1] as const)
+      penaltyShotsByFoul(facts.ledger.sides[side]).forEach(
+        (shots, i) => (trace.fouls[side][i]!.penalties = shots),
+      );
   const out: [AggregateLine[], AggregateLine[]] = [[], []];
   for (const side of [0, 1] as const) {
     const minutes = playedMinutes(participation, side);
@@ -803,20 +870,12 @@ function creditShots(
       const actor = passer ?? shooter;
       pinned.set(shot.source, [...(pinned.get(shot.source) ?? []), actor]);
     }
-    const goal = shot.outcome === 'goal';
-    const m = own.rows[shooter]!.metrics;
-    m[M.shots]!++;
-    if (goal || shot.outcome === 'save') m[M.onTarget]!++;
-    if (goal) m[M.goals]!++;
-    own.rows[shooter]!.detail[PD.xg]! += shot.xg;
-    if (passer !== undefined) {
-      const p = own.rows[passer]!;
-      p.detail[PD.keyPasses]!++;
-      p.detail[PD.xa]! += shot.xg;
-      if (shot.xg >= BIG_CHANCE) p.detail[PD.bigChancesCreated]!++;
-      if (goal) p.metrics[M.assists]!++;
-    }
-    if (shot.outcome === 'save') opp.rows[opp.keeperAt(shot.minute)]!.metrics[M.saves]!++;
+    creditShot(
+      shot,
+      own.rows[shooter]!,
+      passer === undefined ? undefined : own.rows[passer]!,
+      shot.outcome === 'save' ? opp.rows[opp.keeperAt(shot.minute)]! : undefined,
+    );
     credits.push({
       side,
       shot: index,
@@ -906,13 +965,8 @@ function attributeSide(
       const role = ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling');
       const split = multinomialInto(r, won, opp.weights(period, role), opp.split);
       if (traced) traced.won = split.slice();
-      for (let line = 0; line < split.length; line++) {
-        const k = split[line]!;
-        if (k === 0) continue;
-        opp.rows[line]!.metrics[pass ? M.interceptions : M.tackles]! += k;
-        if (mirrorBand(at) >= COUNTER_ZONES.highTurnover)
-          opp.rows[line]!.detail[PD.highTurnovers]! += k;
-      }
+      for (let line = 0; line < split.length; line++)
+        if (split[line]! > 0) creditWon(opp.rows[line]!, pass, at, split[line]!);
     }
   }
   // Fouls the opponent committed on this side: a booked foul is his, then the rest by weight.
@@ -1083,13 +1137,8 @@ function attributePlaced(
       const at = pass ? traits.toBand : traits.fromBand;
       const split = multinomialInto(r, won.n, won.u, opp.split);
       if (traced) traced.won = split.slice();
-      for (let line = 0; line < split.length; line++) {
-        const k = split[line]!;
-        if (k === 0) continue;
-        opp.rows[line]!.metrics[pass ? M.interceptions : M.tackles]! += k;
-        if (mirrorBand(at) >= COUNTER_ZONES.highTurnover)
-          opp.rows[line]!.detail[PD.highTurnovers]! += k;
-      }
+      for (let line = 0; line < split.length; line++)
+        if (split[line]! > 0) creditWon(opp.rows[line]!, pass, at, split[line]!);
     }
   }
   // Fouls the opponent committed on this side, at their cell: the fouled man in possession there,
