@@ -901,12 +901,17 @@
 | test-gate-time-261110 | converted@261110 |
 | test-value-261110 | converted@261110 |
 | game-runtime-speed-261110 | converted@261110 |
-| match-engine-split-261110 | converted@261110 |
+| match-engine-split-261110 | converted@261111 |
 
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T814 | match-proto naturalness metrics: sticking pairs, moving in unison, turning in unison | ARCH | T800 | todo |
+| T815 | match-proto room on the ball: no passes between players standing on each other | ARCH | T814 | todo |
+| T816 | match-proto own moment, own pace: free players stop moving and stopping as one | ARCH | T815 | todo |
+| T817 | match-proto turnovers and marking: players read their man and the kind of turnover, not only the ball | ARCH | T816 | todo |
+| T818 | match-proto: tune the three naturalness complaints and deliver a second page | ARCH | T817 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -936,9 +941,11 @@
 ## next
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
-- owner: watch `artifacts/match-proto-261110/index.html` (open it directly; the README beside it lists the scenes to look at, the tuned values and why `shape.spacing`, `shape.swarm` and `role.poacher.shoulder` still fail) and decide whether the script→staging split (review/match-engine-split-261110 F1) goes on; the T791–T800 chain is done and touched no production source
+- implement-task T814 (then T815 → T816 → T817 → T818, one chain under `scripts/match-proto/`): the owner watched `artifacts/match-proto-261110/index.html` on 261111 and named three scenes that read wrong (review/match-engine-split-261110 F2–F4); T818 delivers `artifacts/match-proto-261111/index.html` to watch beside it, and the verdict on the script→staging split (F1) waits for that page
 
 ## log
+- 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
+- 261111 create-task review/match-engine-split-261110 start
 - 261111 rl10 closed: T803–T813 released to main behind four verify:batch runs (final d0aa6338, Chromium 333/333); report reports/261110-rl10.md rl10
 - 261110 T808 done: squad spread measured flat v spread, stays flat (CLUB-46 unread; 4 of 5 gates hold); scripts gain --setting flat|spread; independent review approved 179a46e3, P3 notes only rl10
 - 261111 T800 done: the prototype tuned from 74/105 to 96/105 metric passes over demo–demo5 (demo 16→20, demo2 15→19, demo3 15→19, demo4 14→20, demo5 14→18) with 11 `PROTO_CONFIG` values, two new stage values (`boards`, `separation`) and twelve script/staging changes each pinned by a unit test that failed before it; `artifacts/match-proto-261110/index.html` (`demo#17`, 20/21) with `playback.json`, baseline/final reports and a README of scenes, values and findings; still failing: `shape.spacing` everywhere (0.083–0.124), `shape.swarm` on three seeds (0.023–0.035), `role.poacher.shoulder` on demo5 (3.949); not opened in a browser, no production file touched mp11
@@ -957,5 +964,3 @@
 - 261110 T811 integrated
 - 261110 T810 integrated
 - 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
-- 261110 T805 T806 T807 integrated
-- 261110 T804 integrated
