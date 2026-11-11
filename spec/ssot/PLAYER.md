@@ -1,5 +1,5 @@
 # PLAYER Player model
-> r16 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
+> r17 | What a player is and how he grows: attributes, positions and roles, traits, OVR, adaptation to his club and manager, development and ageing.
 
 ## decisions
 - PLAYER-1 [o] Every player in the world — the own club's, the academy's and other clubs' — carries the same model: 16 attributes, positions with levels, personality and play traits, potential. Other clubs' match squads use seasonal generation from club strength (→WORLD-6, →LEAGUE-10); cross-role person continuity and retirement eligibility are →WORLD-10/11. Development, adaptation and attribute ageing below continue to apply to the own club's players and academy; this does not apply own-club development to every NPC squad. ← one model means one OVR scale and one match engine for both sides (→MATCH-2)
@@ -35,7 +35,7 @@
   | 미숙 | 60% | any position not listed (a striker at CB) |
   - his main position is always 최상; generated players hold 1 (25%), 2 (35%), 3 (22%), 4 (10%), 5 (5%) or 6 (3%) positions; a side position's mirror is listed 최상 15%, 준수 35%, 어색 50% of the time; other listed positions are 최상 15%, 준수 50%, 어색 35%.
   - starts at a position raise its level: 미숙 → 어색 after 20 starts there, 어색 → 준수 after 40, 준수 → 최상 after 60 (counted from the last change). ← managers retrain players, as full backs became centre backs and midfielders full backs
-- PLAYER-5 [o] Each position is played in a role named as Korean football media name it; a manager's formation asks a role of every slot (→STAFF). A player's fit for a role is read from his attributes and play traits, never stored. A role also sets where its player stands and moves in each phase and which actions he favours (→MATCH-16, →MATCH-17), as football media describe it. Role definitions and fit are implemented in `packages/engine/src/player.ts`; phase movement and role tendencies are implemented in `grid/shape.ts` and `grid/tendencies.ts` under that source directory.
+- PLAYER-5 [o] Each position is played in a role named as Korean football media name it; a manager's formation asks a role of every slot (→STAFF). A player's fit for a role is read from his attributes and play traits, never stored. A role also sets where its player stands and moves in each phase and which actions he favours (→MATCH-16, →MATCH-17), as football media describe it. Role definitions and fit are implemented in `packages/engine/src/player.ts`; a role's place in each phase is the staging's shape (→MATCH-17) and its action weights the result path's (→MATCH-16).
   | position | roles |
   |---|---|
   | GK | 스위퍼 키퍼, 슈팅 스토퍼 |
@@ -198,6 +198,7 @@
 - in a match: slot position and role → OVR (PLAYER-6) × level (PLAYER-4) × adaptation multiplier (PLAYER-10) = 실효 OVR; role and play traits shape his choices and runs (PLAYER-5, PLAYER-9); each choice and action reads its attributes (PLAYER-2)
 
 ## chg
+- r17 261111 PLAYER-5✎ phase movement and role tendencies implemented in `grid/shape.ts` and `grid/tendencies.ts`→a role's place is the staging's shape, its action weights the result path's
 - r16 261110 PLAYER-27✎ team honours and league place in full for every teammate→in full for a club's best player by individual points, ×0.55 the next, ×0.35 each other; existing podiums retained
 - r15 261103 PLAYER-18✎ scout ranges by the chief scout's ability→+halved on whole grades with 원석 감별사 (±2→±1, ±1→exact); reconciled with the independent r14 award change
 - r14 261103 PLAYER-27✎ unbounded goals×4+assists×3→production round(120×raw/(80+raw)); honours 40/15/15/25/10→180/75/90/120/45; +top-six league finish 80/60/45/30/20/10; existing podiums retained

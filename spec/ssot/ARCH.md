@@ -1,5 +1,5 @@
 # ARCH Web-first game architecture
-> r38 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
+> r39 | Deliver a stable, deployable browser demo with recoverable local saves and a planned Flutter migration.
 
 ## decisions
 - ARCH-1 [o] Delivery order: complete the playable web demo before optional Supabase hall-of-fame work and Flutter commercial-release work.
@@ -29,7 +29,7 @@
   | `apps/web/src/adapters` | browser storage repositories, checkpoint commit, save codec and packing, preference stores, resource loaders |
   | `apps/web/src/presentation` | locale/theme registry and controller, shared presentation labels and assets (→ARCH-32) |
   | `packages/contracts` | commands, events, projections, save/catalog DTOs, boundary schemas |
-  | `packages/engine` | framework-independent simulation and domain state; `grid/` and `aggregate/` compute matches |
+  | `packages/engine` | framework-independent simulation and domain state; `aggregate/` settles matches, `script/` and `staging/` write and stage an own match's picture |
   | `packages/catalogs` | versioned countries, names, competition eras, prices, currencies |
   | `tests/fixtures` | shared simulated test worlds and workloads (→ARCH-21) |
   | `fixtures/portable` | planned: seeds, commands, catalogs, expected facts, save migration cases (→ARCH-20) |
@@ -41,7 +41,7 @@
   - Engine imports DTO types and injected catalogs; it does not import React, Zustand, DOM, browser storage, HTTP clients, or rendering.
   - Catalogs are data; schema validation occurs before they enter the engine.
   - React may display projections and submit commands; it does not directly modify canonical game state.
-  - UI code imports engine values only from read leaves: modules whose runtime import closure reaches no world generation, season, match or grid-execution orchestration. Constants, labels and pure reads the UI needs live in such leaves beside their data. ← a label or read pulled through an orchestration module ties the screen and its tests to every engine change
+  - UI code imports engine values only from read leaves: modules whose runtime import closure reaches no world generation, season or match orchestration (settlement, script writing or staging). Constants, labels and pure reads the UI needs live in such leaves beside their data. ← a label or read pulled through an orchestration module ties the screen and its tests to every engine change
   - Existing UI imports of orchestration modules are listed exceptions guarded by an architecture test: a new UI→orchestration import fails, and so does a listed import that no longer exists, so the list only shrinks. Moving domain reads into the published view instead is a separate measured decision.
   - Web UI source follows Feature-Sliced Design, highest first: app → pages → widgets → features → entities → shared. A layer imports only lower layers; slices of one layer never import each other, except an entity naming another through that entity's `@x/<consumer>.ts` cross-import file; code outside a slice imports only its `index.ts`, which opens with what the slice is for, or the `logic.ts` entry below. A dynamic `import()` names the module file instead of the index, and the build treats layer modules as free of import side effects (a module joins a chunk only when the chunk uses one of its exports), so lazy chunks stay split; a layer module therefore never relies on being imported only for its side effects. `runtime`, `adapters` and `presentation` sit below every layer and never import one, keeping the Worker free of React (→ARCH-6). ESLint enforces the direction; no legacy flat UI folder remains. ← a change and its reading stay inside one cohesive folder behind one public API, and a slice's consumers are visible from its index
   - Code run outside the Vite build (Playwright specs, test fixtures, scripts) loads only script and JSON modules, never a stylesheet, another asset or a slice index: a module such code reaches imports another slice only through an entity's `@x` file or that slice's `logic.ts`, a second public entry that re-exports only the slice's own `lib/` modules and that its `index.ts` re-exports whole. ← Playwright's Node loader cannot load CSS and an index re-exports components beside its logic, so one import through an index stops every browser spec from loading, and only the release gate loads them
@@ -61,6 +61,7 @@
   - Publish bounded UI projections/deltas, not the complete world on every simulation step.
   - On a day with our league fixture, the day's other league fixtures may be computed on helper workers from a read-only copy of what those fixtures read, while the engine worker plays our match; the engine worker stays the sole writer and records every result in fixture order. Without helpers (creation failure or too few cores) it computes them itself. Both paths give identical worlds, checked by a test comparing a season played each way. ← other clubs' fixtures are about 40% of an own match day (measured 261027)
   - Read-only requests (head-to-head) are validated like commands but answered between simulation steps, without the revision check, receipt or view, so a read never waits behind a season command or flickers the busy state.
+  - A watched match is staged off the UI thread by a worker of its own from the script the engine worker sent: it reads no world, writes nothing and delivers frames in bounded steps ahead of the presentation (→MATCH-39).
   - A worker failure restores the last committed checkpoint and reports any uncommitted progress; it does not silently invent a continuation.
   - Vite provides worker bundling: [Vite worker support](https://vite.dev/guide/features.html#web-workers).
 - ARCH-7 [o] Render match snapshots with Canvas 2D and interpolation; animation is presentation only.
@@ -77,6 +78,7 @@
   - Money: currency-period ID plus decimal-string integer minor units; domain arithmetic uses BigInt and rational conversion factors.
   - Rounding and currency-unit precision are explicit ECON policies; floating-point arithmetic must not silently settle ledger values.
   - Outcome-critical probabilities, counters, and coordinates use specified integer/fixed-point representations where needed for cross-language replay.
+  - An own match's script is outcome-critical, since post-match material is read from it (→MATCH-25/38): its writer uses only integers, the engine's seeded generator and double arithmetic that rounds the same on every platform (+ − × ÷ and square root). The staging's positions are presentation and exempt (→MATCH-39).
   - JSON contains neither BigInt primitives nor NaN/Infinity; encode exact integers as decimal strings where required.
   - Birth dates, game dates, season labels, and effective dates use the game calendar; device timezone and current real date do not age players.
 - ARCH-10 [o] All game catalogs are versioned, source-attributed build inputs.
@@ -215,12 +217,13 @@
   - a work group collecting local commits maps task → `--task-verify`, quick checks → `--verify`, and the complete batch → `--group-verify`; task commits and WIP checkpoints do not trigger the batch. A group explicitly pushing each integration runs the batch before that push. Reuse successful verification of identical source, command and scope.
   - `pnpm run verify` is the one-go local equivalent of CI, every browser spec included, so no task runs it: it stands in for the batch run when CI is unavailable, and a storage or release gate task that needs local raw reports alongside the benchmarks takes the browser-spec reports from that batch run (→ARCH-22).
 
-- ARCH-31 [o] The continuous-match and full probabilistic-result release has a capacity gate (→SAVE-23); its throughput (→!ARCH-34) and accuracy (→MATCH-28) are measured and reported with the release, not gates. ← the model ships first and its football is calibrated on the released model
+- ARCH-31 [o] A match-model release has a capacity gate (→SAVE-23); its throughput (→!ARCH-34) and accuracy (→MATCH-28) are measured and reported with the release, not gates. ← the model ships first and its football is calibrated on the released model
   - record a pre-change baseline and final source fingerprint on the same pinned toolchain, machine and fixed worlds. Measure isolated fixture processing, complete season engine time, record settlement, codecs and observation separately; record warm-up, repetitions, medians, samples and memory.
   - throughput has no absolute budget in milliseconds or seconds. Isolated fixture processing and complete-season engine time are compared with the previous release on one machine (→!ARCH-34) and reported as ratios naming that machine; do not skip clubs, competitions, calendar effects, player records or business actions to improve them.
   - the ratio to the baseline summary path is reported as context; measurements from another machine are context only. Keep the existing entry, initialization, control and rendering budgets (→ARCH-28) and the unchanged lossless century limits (→SAVE-4/13).
   - version executable metric/condition registries and calibration reports, retain a separate validation corpus, and report unsupported, insufficient and failing cases explicitly. Accuracy work uses timeboxed exploration with recorded residual errors; a timebox ending never reports a failing metric as passing.
-  - the final combined movement, intention and aggregate model passes the capacity gate and reports its throughput ratios together. Reusing a measurement taken before a relevant change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
+  - an own match is measured as its settlement — record, script and post-match material — and, apart from it, as watched: the time to the first staged minute and the staging time of a match minute. Each is reported against the previous release on one machine (→!ARCH-34).
+  - the released result, script and staging model passes the capacity gate and reports its throughput ratios together. Reusing a measurement taken before a relevant change, a successful cosmetic benchmark, or an unexecuted planned check is not release evidence. Verification tiers remain →ARCH-30.
 
 - ARCH-32 [o] Locale and theme packs are data loaded through browser presentation adapters, independently of simulation and game checkpoints (→WEB-90/91).
   - `apps/web/public/presentation/locales/index.json` is the sole list of available locales; `apps/web/public/presentation/themes/index.json` is the sole list of available themes. Each registry declares its default and entries with stable IDs, display labels and relative resource URLs. Shared consumers derive choices and loaders from these registries; supported-ID unions, component-specific lists and per-ID branches are not additional registries.
@@ -235,14 +238,14 @@
   - Theme-transition snapshots and animation belong to a progressive browser adapter (→WEB-93). Resource preparation stays asynchronous; installation and presentation publication share one synchronous callback, with a freshness check inside it. Animation failure must not prevent a valid selection.
 
 - ARCH-33 [o] Verification and measurement dependencies follow computation boundaries.
-  - Match rules, action/skill primitives and fixture reconstruction are leaf modules: the grid kernel does not import campaign lifecycle/orchestration, and the save codec rebuilds fixtures without importing the season orchestrator. Existing entry points may re-export leaves for compatibility.
+  - Match rules, action/skill primitives and fixture reconstruction are leaf modules: the script writer and the staging take plain inputs and import no campaign lifecycle or orchestration, and the save codec rebuilds fixtures without importing the season orchestrator. Existing entry points may re-export leaves for compatibility.
   - Expensive measurement reuse is keyed by the runner/workload and its transitive runtime dependencies, catalog inputs, codec and toolchain. Preserve a separate full-source/build provenance fingerprint; unrelated visual assets or test edits do not invalidate simulation-only phases. A relevant source change always invalidates reuse.
   - Keep historical measurements immutable and label later values by source, command, environment, selected checks and cache state; structural dependency/selection checks do not imply runtime speedups.
 
 - ARCH-34 [o] A speed-up succeeds when the candidate is faster than its baseline on the machine it is measured on, beyond the measurement noise; no speed target is set in milliseconds or seconds. ← phones, desktops and CPUs differ too much for one absolute time to mean anything
   - `scripts/perf/ab.mjs` measures it: both sides are bundled the same way from their own trees (identical sources give byte-identical bundles), each process loads both and alternates their reps, and the side loaded first alternates across processes. Main-thread CPU time is the primary measure; wall time is reported beside it.
   - the call: per process the median log-ratio of its pairs, over processes a trimmed mean with a 95% bootstrap interval; faster means the whole interval lies below 1. A small gain that clears the noise counts; a gain inside the noise is not claimed.
-  - a result-identical speed-up keeps every workload's output hash (grid, aggregate, day) equal to its baseline's; changing results makes it a model change (→SAVE-23), not a speed-up.
+  - a result-identical speed-up keeps every workload's output hash (own match, aggregate, staging, day) equal to its baseline's; changing results makes it a model change (→SAVE-23), not a speed-up.
   - a result names the machine, its load, the interval and the hashes; a figure from another machine is context only.
 
 ## flow
@@ -264,6 +267,7 @@
 - Current product rules live in `spec/ssot/`; product background is `spec/ideation/club-history-reboot.md`, and the human-readable project overview is `spec/NARRATIVE.md` (repository-relative paths).
 
 ## chg
+- r39 261111 ARCH-3✎ `grid/` and `aggregate/` compute matches→`aggregate/` settles, `script/` and `staging/` write and stage an own match · ARCH-4✎ grid-execution orchestration→match orchestration (settlement, script writing, staging) · ARCH-6✎ +a watched match staged by a worker of its own in bounded steps · ARCH-9✎ +the script writer's platform-stable arithmetic, the staging exempt · ARCH-31✎ the continuous-match and full probabilistic-result release→a match-model release; +own-match settlement and watched cost measured apart · ARCH-33✎ the grid kernel→the script writer and the staging as leaves · ARCH-34✎ workload hashes grid, aggregate, day→own match, aggregate, staging, day
 - r38 261110 ARCH-21✎ world cache `node_modules/.cache/haeram-worlds` per worktree→one clone-wide store under the Git common directory locally (CI keeps the per-job path); a fresh worktree's gate or task check reuses worlds of the same fingerprint (warm vitest phase 531 s against 822 s cold)
 - r37 261110 ARCH-30✎ code gathered on `next`, quick batch per push, the last session releasing `next` into `main` after verify:batch→planning only on `next` (plan-push), finished work landed on SETTINGS `land` (`main`) by `vibe push` after one locked `pnpm run verify:batch` on the final candidate (haeram-spec-creator 0.12.0)
 - r36 261110 ARCH-23✎ every browser in two shards→Chromium and Firefox in three, WebKit in four; +browser jobs restore the simulated test worlds like the integration jobs (CI 42756627200: WebKit shards 39–41 min against Chromium 22–28 min)

@@ -18,6 +18,14 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261111 decided MATCH-38 MATCH-25 ideation/match-script-and-staging: the owner said a script only for a watched match, with the maps' numbers drawn by probability; a pair's passes must be the passes the script plays or the map and the match seen disagree, and a skipped own match needs the same map → every own match is scripted at settlement (about a quarter of a second, measured 261111, against about 0.7 s for a skipped detailed match), staged only when watched; no other fixture has a script (alt: pairs drawn apart from the script and honoured by it — an unproven constraint on the writer | the script written lazily when the map is opened — needs the match's rows kept in the save)
+- 261111 decided MATCH-20: the aggregate path draws a match's participation before its goals, so on it the own club's manager makes no score-led substitution (protecting a lead, chasing a deficit), as no other club's does → accepted with the one result path; his style still shows in timing, fatigue and youth changes (alt: make participation read the score — a result-model change with recalibration)
+- 261111 decided MATCH-17 STAFF-46 PLAYER-26: positional freedom, 규율, 압박 성향 and 예측력 moved results only in the detailed engine → on the one result path they shape the picture only (the staging reads them, T829); the record does not (alt: give the result path terms for them and recalibrate)
+- 261111 decided MATCH-16 T824: T822 measured recorded actors a median 21 m from their role's place → from revision 11 passes, carries, take-ons, ball wins, fouls and offsides are credited with the player's place in mind, each player's expected totals kept; shooters and key passers stay unplaced so the scorer concentration (→MATCH-23) does not move (alt: place shooters too and re-read the concentration | leave attribution as it is and accept winners out of reach)
+- 261111 decided SAVE-23 T838: how the new model reaches existing careers → the existing prospective activation at the next safe boundary, settled matches keeping their records; no incompatible rules boundary (alt: a new boundary refusing earlier careers, which the owner's no-compatibility rule would also allow)
+- 261111 decided MATCH-12 T831: a script's staged seconds run about 3–18% longer than the match clock (T822) → the minute shown is the record's and the picture's seconds are fitted to the clock at one rate between two fixed moments, so the game's 60-second frames and presentation stay as they are (alt: minutes of varying length on the presentation clock | frames cut by picture time with repeated minute labels)
+- 261111 decided LAB-3 LAB-4 T836: the lab tuned the detailed engine's numbers → it moves to the result path's, the script writer's and the staging's numbers and watches a scripted, staged match (alt: retire the lab with the detailed engine)
+- 261111 suggest MATCH-22 T840: T822 found the script's linking carries sit at the record's own flows (wing cells release more rows than reach them); if T840 still reads the invention as too high on the placed attribution, drawing the aggregate path's flows as chains is the next lever — a result-model change with recalibration, for the owner to order
 - 261110 suggest WORLD-6 CLUB-46 LEAGUE-10 T808 review/game-realism-261110: put generated squads' spread in force — T808 read four of WORLD-6's five gates holding on spread worlds, CLUB-46 unread (the reference careers end at the 1984/85 close, before the 1993–2025 anchors; `scripts/calibrate-transfers.ts` now stops on an ended career); next: a CLUB-46 read that reaches 2025 (careers kept past an ending, or values read from ownerless lived worlds) and the 19 placebo sets re-lived on today's tree, since the champions pass rests on T698's allowance of 6 and the spread's divergence (43.4%) sits above that placebo range (37.0–40.9%) rl10
 - 261110 suggest PLAYER-27 review/game-realism-261110: F11 — one club's three still hold 86–91% of Ballon d'Or podiums on T808's worlds because team honours (up to 380 points) outweigh a player's class (at most 58) and production (at most 120); rebalance toward the player's own season and measure with T803's repeat-winner columns rl10
 - 261110 suggest LEAGUE-10 review/game-realism-261110: F12 — lived worlds give league title runs of up to 18–19 seasons (real to 2009: 7); read whether LEAGUE-10's success bonus compounds over consecutive titles and gate any change with T698's champions recipe rl10
@@ -864,26 +872,27 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
-| match-script-and-staging | open@261111 |
+| other-clubs-match-maps | open@261111 |
+| kick-off-fresh-seed | open@261111 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
-| ARCH | 38 | 38 | - | 2 |
-| WEB | 214 | 214 | - | 0 |
-| LAB | 7 | 7 | - | 0 |
+| ARCH | 39 | 39 | - | 2 |
+| WEB | 215 | 215 | - | 0 |
+| LAB | 8 | 8 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 67 | 67 | - | 0 |
-| MATCH | 58 | 58 | - | 0 |
+| MATCH | 59 | 59 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
-| STAFF | 40 | 40 | - | 0 |
+| STAFF | 41 | 41 | - | 0 |
 | ECON | 54 | 54 | - | 0 |
 | EURO | 4 | 4 | - | 0 |
-| HIST | 24 | 24 | - | 0 |
-| SAVE | 66 | 66 | - | 0 |
+| HIST | 25 | 25 | - | 0 |
+| SAVE | 67 | 67 | - | 0 |
 | OWNER | 7 | 7 | - | 0 |
-| PLAYER | 16 | 16 | - | 0 |
+| PLAYER | 17 | 17 | - | 0 |
 
 ## review
 | id | st |
@@ -912,6 +921,29 @@
 | T820 | match-proto fitted script: a script written from a settled result, exact by construction | ARCH | T819 | todo |
 | T821 | match-proto stage a fitted match: ninety minutes performed to the last beat, the record intact | ARCH | T820 | todo |
 | T822 | match-proto fit verdict: make a fitted match read as football, measure what it costs, deliver a full match | ARCH | T821 | todo |
+| T823 | staging shape leaf: every formation's and role's place on the pitch, in the engine | MATCH STAFF PLAYER ARCH | T822 | todo |
+| T824 | revision 11 declared, and attribution with the pitch in mind | MATCH SAVE ARCH | T823 | todo |
+| T825 | the own match's detail: every recorded action as a row | MATCH ARCH | T824 | todo |
+| T826 | the script writer in the engine: a detail written as an order of play, exact by construction | MATCH ARCH | T825 | todo |
+| T827 | the script's incidents and special scenes: substitutions, dismissals, injuries, penalties, extra time, the shoot-out | MATCH | T826 | todo |
+| T828 | the staging in the engine: a script performed to its last beat, with its measures | MATCH ARCH | T827 | todo |
+| T829 | staging for every tactic: four formations, their roles, and the players' tendencies | MATCH STAFF PLAYER | T828 | todo |
+| T830 | staging the incidents: substitutions, a side a man short, injuries, penalties, extra time, the shoot-out, the change of ends | MATCH WEB | T829 | todo |
+| T831 | the staged match in the game's frame contract | MATCH WEB ARCH | T830 | todo |
+| T832 | post-match material from the script | MATCH HIST SAVE ARCH | T831 | todo |
+| T833 | the own match on the one result path: settled, scripted and given its material under revision 11 | MATCH OWNER STAFF SAVE ARCH | T832 | todo |
+| T834 | web: a watched match staged ahead of its presentation | MATCH WEB ARCH | T833 | todo |
+| T835 | the pass network drawn as football media draw it | WEB MATCH ARCH | T834 | todo |
+| T836 | the match lab on the match model: results, script and staging, with their numbers | LAB MATCH ARCH | T835 | todo |
+| T837 | throughput of an own match: writing the script and staging the picture | MATCH ARCH | T836 | todo |
+| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | todo |
+| T839 | web on the scripted model: browser journeys, goal scenes, the influence map and the glossary | MATCH WEB LAB PLAYER ARCH | T838 | todo |
+| T840 | the released model's verdict: the own club on the same curve, the script's invention, the picture's limits | MATCH ARCH | T839 | todo |
+| T841 | remove the match prototype | ARCH | T840 | todo |
+| T842 | shared match leaves out of `grid/` | ARCH | T841 | todo |
+| T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
+| T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
+| T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -941,11 +973,15 @@
 ## next
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
-- owner: open `artifacts/match-proto-261111/index.html` beside `artifacts/match-proto-261110/index.html` (a different ten minutes: T815's `grammar.minPass` changed the script, so the second page plays `demo#0` 2-3 where the first played `demo#17` 1-2; compare the overall impression) and compare the three complaints (review/match-engine-split-261110 F2–F4): (1) passes to a man standing on the passer and teammates sticking together — e.g. 07:11 H8→H3 2.4 m, the huddles at 01:13 H6+H8, 07:06 H2+H7, 08:35 A8+A9; (2) both teams wheeling round at a turnover — settled turnovers at 01:02, 03:56, 03:58, counters at 00:08, 02:49 — and how near defenders stay to attackers; (3) everyone starting and stopping together, anywhere in open play. The artifacts README holds the scene list, both 31-metric tables and what still fails (huddles ~1–2 a minute, restarts 4.2–5.0, mark.near ~0.3; summed passes 101 → 115 → 117 of 155); then the verdict on the script→staging split (F1), and whether the huddle and marking limits become staging rules (planning)
-- ideation match-script-and-staging (open, not to be converted before T822 is done): the owner's order of 261111 — T814–T818, then T819–T822 (a script fitted to a settled result, on ten real aggregate results), then update-ssot MATCH WEB HIST SAVE ARCH from the ideation and create-task for phase B (preparation and change-over of the game) and phase C (removal of the prototype, the detailed engine's replaced modules and the older model revisions' branches); T689 closes at that conversion
-- implement-task T814 (then T815 → T816 → T817 → T818 → T819 → T820 → T821 → T822, one chain; T819 alone touches `packages/`, behaviour unchanged): T818 delivers `artifacts/match-proto-261111/index.html` to watch beside the first page, T822 `artifacts/match-proto-fit/index.html`, one full match beside its record
+- implement-task T823 once fv11 has landed T819–T822 and the owner's two prototype fixes (a man who takes the ball in stride, an opponent beside him engaging) are on main: one chain T823 → … → T845 — phase B T823–T840 (everything behind revision 11 until T838 releases it; T839 moves the browser journeys; T840 is the released model's verdict), phase C T841–T845 (the prototype first, the detailed engine last). T837 (2 h) and T840 (3 h) are explore tasks: give the loop a unit timeout above them (`--timeout-ms 19800000`)
+- T689 is superseded, never run it (leave it out of every task list): MATCH r59 retired the detailed engine's rules it measures and T840 reads the own club's scoring on the released model. Its file could not be closed in this planning commit — `next`'s copy differs from main's, so the replay conflicts — close it by its exit (done, no scoring commit) in a spec-only commit on main once no loop is landing
+- owner: seven calls taken at the conversion of ideation match-script-and-staging are in the inbox (261111 decided) to confirm or overturn before T833 — every own match is scripted at settlement even when skipped; score-led substitutions and the tendencies no longer move results; attribution places players, shots left as they are; prospective activation; the record's minute on the clock; the lab moves to the new model
 
 ## log
+- 261111 create-task MATCH ARCH WEB LAB HIST SAVE STAFF PLAYER: T823–T845 — phase B: the shape leaf (T823), revision 11 with attribution by place (T824), the own match's detail rows (T825), the script writer and its incidents (T826, T827), the staging, its tactics and tendencies and its incident scenes (T828–T830), frames in the game's contract (T831), material from the script (T832), the own match on the result path (T833), the web staging ahead (T834), the pass network's look (T835), the lab (T836), throughput (T837, explore 2 h), the release (T838), the browser journeys (T839), the verdict (T840, explore 3 h); phase C: the prototype (T841), shared leaves out of `grid/` (T842), tests and scripts off the earlier models (T843, T844), the detailed engine (T845)
+- 261111 ideation match-script-and-staging converted; its two undecided items moved to ideation/other-clubs-match-maps and ideation/kick-off-fresh-seed
+- 261111 update-ssot MATCH r59 (one result path for every match; an own match's script MATCH-38 and staging MATCH-39; MATCH-11/12/15/16/17/18/20/22/24/25/28/37 revised, MATCH-31–35 retired), ARCH r39, WEB r215, LAB r8, HIST r25, SAVE r67, STAFF r41, PLAYER r17; seven calls in the inbox for the owner
+- 261111 update-ssot MATCH WEB HIST SAVE ARCH start: ideation match-script-and-staging taken to planning (ready) on the owner's order after T822's page and result
 - 261111 fix T818 record: the second page is a different ten minutes from the first (`demo#0` 2-3 against `demo#17` 1-2, T815's `grammar.minPass` changed the script), not the same ones; the tuning box ran about 20 minutes (reports 03:01Z–03:17Z, commit ba01761c 03:23Z), not the two hours its README log records; corrections noted in `artifacts/match-proto-261111/README.md` and the owner's next line
 - 261111 T818 done: `stage.separation` 2.5 → 3, `motion.own.hold` 0.6 → 0.2, `motion.turn.delayPerMetre` 0.02 → 0.026; demo–demo5 passed 23/25/23/23/21 → 24/26/24/22/21 of 31 (115 → 117), the six gate metrics and every showcase quota holding; `arrive.far` 6 and a `stage.roomSpeed` rule read 126 but failed T817's fixed-script turn test and were reverted; second page `artifacts/match-proto-261111/` (index.html, playback.json, baseline/final reports, README) nt11
 - 261111 T817 done: `state.turn` and `turnOf` (window 6 s): a settled turnover believed 0.02 s a metre later and re-formed with a lag of at least 2 s, a counter followed at most 0.5 s and run to once seen; `stage/mark.ts` assigns each free defender one man (radius 10, kept 3 beyond, back line across only) and attackers step off a marker within 4 m; demo–demo5 summed turned movers 470 → 378, mark.near hits 2803 → 3391, passed 23/25/23/23/21 of 31, the six gate metrics holding; swarm/spacing/huddle rose (T818) nt11
@@ -962,7 +998,3 @@
 - 261111 T796 done: `scripts/match-proto/stage` contests and dead balls — interceptions on the ball's path (`planCut`/`resolveCut` with recast, lunge and a slower ball), tackles and fouls after a jockey, take-ons, balls out, dead-ball scenes before every restart, cues one beat ahead and pressed passes waiting for the presser; scripts A–E staged (interceptor 0.42 m, tackler 1.17 m from the ball), 95 unit cases in the folder, no production file touched mp11
 - 261111 T795 done: `scripts/match-proto/stage` core — bounded movement, ball held/flight/loose, frames per tick, shape/press/mark targets, completed passes and carries, `performScript`; the hand-written script stages in 11.9 s with receivers 0.11–1.10 m from their points, 19 unit cases, no production file touched mp11
 - 261111 T794 done: `scripts/match-proto/script` move catalogue (20 moves), shared follow-ups (shots and their aftermath, long balls, lay-offs, clearances, keeper distribution, through balls with offside by `decisions`), long goal kicks, corner deliveries, direct free kicks, the showcase search (`demo#0` meets every quota on the first attempt) and the `print.ts` CLI; seeds c0–c59 validate, 64 unit cases in the folder, no production file touched mp11
-- 261111 T793 done: `scripts/match-proto/script` state, casting, emit, restarts, four basic moves, `generateScript`, the 8-rule continuity validator and script stats with `PROTO_CONFIG.grammar`; seeds t0–t29 validate, 24 unit cases, no production file touched mp11
-- 261111 T792 done: `scripts/match-proto/core/shape.ts` nominal places by phase (formation anchors, role overrides, offside line from positions or the nominal block, keepers) with `PROTO_CONFIG.shape`; every reference value reproduced, 11 unit cases, a leaf, no production file touched mp11
-- 261111 T791 done: `scripts/match-proto/core` contracts (types, vec, pitch, rng, config, synthetic squads) and README; every rng reference vector reproduced, 13 unit cases, no production file touched mp11
-- 261111 ideation match-script-and-staging start: the owner's calls of the day taken down (split adopted, aggregate result for every match, scripts for watched matches only, maps drawn by probability, pass network own matches only); open

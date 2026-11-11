@@ -1,5 +1,5 @@
 # LAB Match lab
-> r7 | Let the owner watch generated sides play in the game's own match view, change the detailed engine's numbers and see by eye — and by the numbers — what each change does to the football.
+> r8 | Let the owner watch generated sides play in the game's own match view, change the match model's numbers and see by eye — and by the numbers — what each change does to the football.
 
 ## decisions
 - LAB-1 [o] The match lab is an owner's tool outside the game. ← tuning needs quick what-if runs without a career, a save or a script
@@ -13,13 +13,13 @@
   - a player keeps his generated name, attributes and traits as the game would create them at that OVR, position and role; only OVR is edited, not single attributes.
   - every generation takes a seed shown with the side; the same seed and inputs give the same players.
   - both sides start as a club nobody owns would: no injury, full adaptation, no manager, morale or 조직력 term and no club style or synergy bend; fatigue 0, except that a pressing side carries the press load such a club carries (→MATCH-23's measurements play the same).
-- LAB-3 [o] The tunable numbers are every numeric value of the detailed engine's configuration objects (the grid engine's `*_CONFIG` exports) as the latest release revision reads them.
+- LAB-3 [o] The tunable numbers are every numeric value of the match model's configuration objects — the result path's, the script writer's and the staging's `*_CONFIG` exports — as the released model reads them.
   - grouped by configuration object, each value shows its code path, a Korean description of what it controls — its unit, and what raising or lowering it does in play — written from the code that reads it, its default and the current value; changed values are marked. The code comment stays available beside it. Every value and every group has a description; a value added to the engine without one fails the lab's tests.
   - the search also matches the Korean descriptions.
   - a search filters values by path or comment; a value resets alone, a group resets, everything resets.
   - only finite numbers are editable; non-numeric settings are not shown.
   - the changed values export as JSON (path → value) for copying and import from the same JSON; an unknown path or non-number is reported and skipped. Adopting a value into the game is an ordinary planning/task change, never a lab action.
-- LAB-4 [o] 시뮬레이션 plays the current sides and values through the latest release revision of the detailed engine, the same code the own club's matches use (→MATCH-22).
+- LAB-4 [o] 시뮬레이션 plays the current sides and values through the released match model, the same code the own club's matches use (→MATCH-22): the result path settles every match of a run.
   - a run plays N matches, N one of 1, 20, 100, 300 or 600 (default 100); left is home in odd matches and right in even ones, so home advantage cancels over a run. Era rules are the current season's (2024).
   - each match takes its own seed derived from the run seed; the same run seed, sides and values reproduce the same results.
   - runs execute off the page's main thread with visible progress and can be cancelled; a cancelled run keeps nothing.
@@ -35,9 +35,10 @@
   - the result table shows the baseline's value and the difference beside the current run, marking a difference beyond both runs' intervals.
   - a kept run's settings can be loaded back into the editors.
 - LAB-7 [o] The lab's sides, values and kept runs persist in this browser between visits and can be cleared; they are never shared across devices or exported with game saves.
-- LAB-8 [o] The lab does not tune the aggregate path (→MATCH-22), economy, progression or any other system; it does not edit single attributes, managers, traits or club context.
+- LAB-8 [o] The lab does not tune economy, progression or any system other than the match model; it does not edit single attributes, managers, traits or club context.
 - LAB-9 [o] 관전 is the lab's main use: one match between the current sides with the current values, watched in the game's own match observation component — the same pitch, figures, ball, speeds, pause, events, scoreboard and match details the game shows (→WEB-32, →MATCH-12/37) — so what looks awkward in the lab looks the same in the game. ← the purpose is to spot play that feels unnatural by eye; a look-alike view would hide or invent faults
   - the lab never forks, restyles or simplifies that component; a change to the game's match view shows in the lab without lab work. It is drawn in the theme the game uses in this browser.
+  - the watched match is settled, scripted and staged as an own match is (→MATCH-38/39).
   - the watched match is match 0 of its 관전 seed: 좌측 팀 at home on the left of the scoreboard, the latest release revision, era rules of LAB-4.
   - 다시 보기 plays the same seed again with the values as they are now, so a value change shows on the same match; 새 경기 draws a new seed. A playback under way never changes with later edits.
   - the sides and values panels stay usable while watching; the playback starts once its match is played (in the lab worker, with visible progress).
@@ -61,6 +62,7 @@
 - Value overrides exist only inside the lab's worker for the duration of its runs; the game's worker and module state never see them.
 
 ## chg
+- r8 261111 LAB-3✎ the detailed (grid) engine's `*_CONFIG` values→the result path's, the script writer's and the staging's · LAB-4✎ runs through the detailed engine→the released match model, the result path settling every match · LAB-8✎ does not tune the aggregate path→tunes no system other than the match model · LAB-9✎ +the watched match settled, scripted and staged as an own match
 - r7 261104 LAB-11✎ raw source-constant inventory→outcome/factor/causal-effect hierarchy with action links, current/automatic/legacy distinctions and verified missing connections
 - r6 261104 LAB-11+ read-only gameplay constant inventory of source constants, inline numeric rules and catalog data with search, categories and source locations
 - r1 261029 initial
