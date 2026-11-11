@@ -8,6 +8,7 @@ import { clampToPitch } from '../core/pitch.ts';
 import type { Vec } from '../core/types.ts';
 import { add, approach, dist, norm, scale, sub } from '../core/vec.ts';
 import { giveBall } from './ball.ts';
+import { holdMove } from './pass.ts';
 import { cueNext, jockeyPoint, nearestOpponent } from './contest.ts';
 import type { BeatContext } from './perform.ts';
 import { ensureOwner, pushEvent, runUntil, setPossession, step, type StageState } from './world.ts';
@@ -20,10 +21,10 @@ export function performCarry(state: StageState, ctx: BeatContext): void {
   const actor = beat.actor;
   setPossession(state, beat);
   ensureOwner(state, actor);
-  state.orders.set(actor, { target: () => state.bodies[actor].pos, pace: 'walk' });
+  const end = clampToPitch(beat.to, 0.5);
+  state.orders.set(actor, holdMove(state, actor, end, true));
   const start = state.t;
   runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
-  const end = clampToPitch(beat.to, 0.5);
   const d = dist(state.bodies[actor].pos, end);
   state.orders.set(actor, { target: end, pace: 'sprint', speedCap: STAGE.dribbleSpeed });
   cueNext(state, ctx, end);
@@ -45,7 +46,7 @@ export function performCarryLost(state: StageState, ctx: BeatContext): void {
   ensureOwner(state, actor);
   const team = state.fixture.players[scripted].team;
   const actorPos = (): Vec => state.bodies[actor].pos;
-  state.orders.set(actor, { target: actorPos, pace: 'walk' });
+  state.orders.set(actor, holdMove(state, actor, clampToPitch(beat.to, 0.5), true));
   state.orders.set(scripted, { target: () => jockeyPoint(team, actorPos()), pace: 'run' });
   const holdStart = state.t;
   runUntil(state, () => state.t - holdStart >= beat.hold - 1e-9, beat.hold);
@@ -140,7 +141,7 @@ export function performMiscontrol(state: StageState, ctx: BeatContext): void {
   const opponent = beat.opponent;
   setPossession(state, beat);
   ensureOwner(state, actor);
-  state.orders.set(actor, { target: () => state.bodies[actor].pos, pace: 'walk' });
+  state.orders.set(actor, holdMove(state, actor, clampToPitch(beat.to, 0.5)));
   if (opponent !== undefined) {
     state.orders.set(opponent, { target: () => state.ball.pos, pace: 'run' });
   }

@@ -21,8 +21,12 @@
 //     poacherLean:    how far that role leans across with the ball, as a share, up to `poacherMaxLean`
 //     press:    staging only (stage/world.ts): a defending side presses while the ball's x in its
 //               own attack frame is at most `from` (per style); the presser stands `standoff`
-//               metres goal-side of the ball (`tight` during a pressed beat), the cover `coverGap`
-//     mark:     staging only (stage/mark.ts): each free defender marks one man, one to one, nearest
+//               metres goal-side of the ball (`tight` during a pressed beat), the cover `coverGap`;
+//               the nearest free defender within `engage` metres of the man on the ball presses
+//               him wherever the ball is; once engaged he closes from `standoff` to `close` over
+//               `closeIn` seconds, then every `pokeEvery` seconds lunges for `pokeFor` seconds to
+//               `poke` metres (a tackle that the script does not let win)
+//     mark:    staging only (stage/mark.ts): each free defender marks one man, one to one, nearest
 //               first: a man within `radius` metres of his zone place, kept up to `keep` metres
 //               beyond it; he stands by `blend` (per line) toward a point `goalSide` metres goal-side
 //               of his man (the back line only across) and his place follows with a lag of at most
@@ -53,9 +57,9 @@
 //             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
 //             and how fast a dead ball is brought back to its restart spot (`retrieval`, m/s); a
 //             through ball's top speed, a shot's and a header's speed and a header's apex
-//   stage:    performing beats (stage/): the length of the passer's one touch while holding, at
-//             most (`holdDrift`), the least distance between the ball and an ordinary pass's
-//             reception point, which his touch never closes (`kickGap`), extra hold, receiving
+//   stage:    performing beats (stage/): how the man on the ball keeps it moving while he holds
+//             (`holdMove`), the least distance between the ball and an ordinary pass's
+//             reception point, which his carry never closes (`kickGap`), extra hold, receiving
 //             slack, control range, settling time limit, dribbling speed, arrival distance and the
 //             kick-off's half and centre-circle margins; contests (stage/contest.ts): the shadow
 //             point on a pass lane (`shadowAt` along it, `shadowOff` goal-side), the share of a
@@ -155,7 +159,18 @@ export const PROTO_CONFIG = {
     shoulderGap: 0.5,
     poacherLean: 0.25,
     poacherMaxLean: 10,
-    press: { from: { possession: 105, counter: 62 }, standoff: 3.5, tight: 1.2, coverGap: 14 },
+    press: {
+      from: { possession: 105, counter: 62 },
+      standoff: 3.5,
+      tight: 1.2,
+      coverGap: 14,
+      engage: 4,
+      close: 2,
+      closeIn: 1.2,
+      pokeEvery: 1.6,
+      pokeFor: 0.6,
+      poke: 0.7,
+    },
     mark: { radius: 10, keep: 3, goalSide: 1.5, blend: { DF: 0.6, MF: 0.6, FW: 0.3 }, lag: 0.3 },
     unmark: { radius: 4, step: 2.5 },
   },
@@ -219,8 +234,29 @@ export const PROTO_CONFIG = {
     headerApex: 0.6,
   },
   stage: {
-    /** The length of the passer's one touch while holding, at most. */
-    holdDrift: 1.5,
+    /**
+     * The man on the ball keeps it moving while he holds (`holdMove` in stage/pass.ts): m/s for his
+     * first `carry` metres, then `slow`; `pressed` with an opponent within `press` metres; he bends
+     * away from an opponent within `avoid` metres (by up to `shy` of his heading) and from a
+     * teammate within `mates` metres (the huddle distance and a little more), keeps `room`
+     * metres beyond `kickGap` from a pass's reception point and `edge` metres off the lines, and
+     * turns from the line he arrived on toward the attack, a half turn taking `turn` seconds; in a
+     * pressed beat he shields at `pressed` and keeps his line; `lead` is how far ahead his target sits.
+     */
+    holdMove: {
+      speed: 2.6,
+      carry: 7,
+      slow: 1.3,
+      pressed: 1.5,
+      press: 3,
+      avoid: 7,
+      shy: 1.2,
+      mates: 5,
+      room: 1.5,
+      edge: 3,
+      turn: 2.2,
+      lead: 2,
+    },
     /** The least distance between the ball and the point an ordinary pass is received at, and how near to that point the passer's touch may take him. */
     kickGap: 5.5,
     maxExtraHold: 1.5,

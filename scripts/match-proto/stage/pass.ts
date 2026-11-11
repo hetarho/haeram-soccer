@@ -5,10 +5,10 @@
 // the line and leaves the ball dead. A pressed pass also waits for its presser to be visibly close.
 // `holdForPass`, `reachablePoint` and `kickTo` are the steps T797 reuses for its own beats.
 import { PROTO_CONFIG } from '../core/config.ts';
-import { CENTRE, HALFWAY, clampToPitch, inBox, inPitch, toAttack } from '../core/pitch.ts';
+import { CENTRE, HALFWAY, PITCH, clampToPitch, inBox, inPitch, toAttack } from '../core/pitch.ts';
 import { offsideLineX } from '../core/shape.ts';
 import type { Beat, TeamId, Vec } from '../core/types.ts';
-import { add, approach, dist, norm, scale, sub } from '../core/vec.ts';
+import { add, approach, dist, dot, len, norm, perp, scale, sub } from '../core/vec.ts';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, cutRange, nearestOpponent, planCut, resolveCut, shadowPoint } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
@@ -56,12 +56,100 @@ export function pressWait(state: StageState, beat: Beat): () => boolean {
     beat.reason !== 'pressed' || nearestOpponent(state, beat.actor).distance <= STAGE.pressVisible;
 }
 
-/** The passer's order while he holds: one touch of at most `stage.holdDrift` toward `to`, never nearer to `to` than `stage.kickGap`; the point is fixed when the hold starts. */
-export function holdTouch(state: StageState, actor: number, to: Vec): Order {
-  const pos = state.bodies[actor].pos;
-  const start: Vec = [pos[0], pos[1]];
-  const step = Math.min(STAGE.holdDrift, Math.max(0, dist(start, to) - STAGE.kickGap));
-  return { target: step > 0 ? add(start, scale(norm(sub(to, start)), step)) : start, pace: 'walk' };
+/** Unit `h` turned toward unit `w` by at most `maxAngle` radians. */
+function turnToward(h: Vec, w: Vec, maxAngle: number): Vec {
+  const angle = Math.atan2(h[0] * w[1] - h[1] * w[0], dot(h, w));
+  const step = Math.max(-maxAngle, Math.min(maxAngle, angle));
+  const c = Math.cos(step);
+  const s = Math.sin(step);
+  return [h[0] * c - h[1] * s, h[0] * s + h[1] * c];
+}
+
+/** `dir` without the parts that would take a man at `pos` within `edge` metres of a touchline or goal line. */
+function offTheLines(pos: Vec, dir: Vec, edge: number): Vec {
+  let [x, y] = dir;
+  if ((pos[0] < edge && x < 0) || (pos[0] > PITCH.length - edge && x > 0)) x = 0;
+  if ((pos[1] < edge && y < 0) || (pos[1] > PITCH.width - edge && y > 0)) y = 0;
+  return [x, y];
+}
+
+/**
+ * The order of the man on the ball while he holds it (`stage.holdMove`): he never stands still.
+ * He carries on in the line he arrived on, turning toward the attack over `turn` seconds, bends away
+ * from a near opponent and keeps off the lines; with a pass to come he never closes on its reception
+ * point `to` inside `kickGap` + `room` (the complaint of passes between men standing on each other),
+ * while a carry's holder (`toward`) heads for `to`. His speed is `speed` for the first `carry`
+ * metres and `slow` after, `pressed` with an opponent within `press` metres.
+ */
+export function holdMove(state: StageState, actor: number, to: Vec, toward = false): Order {
+  const HM = STAGE.holdMove;
+  const body = state.bodies[actor];
+  const team = state.fixture.players[actor].team;
+  const forward: Vec = [team === 0 ? 1 : -1, 0];
+  const arrived =
+    len(body.vel) > 0.5 ? norm(body.vel) : len(body.face) > 0 ? norm(body.face) : forward;
+  let heading: Vec = arrived;
+  let last: Vec = [body.pos[0], body.pos[1]];
+  let lastT = state.t;
+  let carried = 0;
+  let cap: number = HM.speed;
+  return {
+    pace: 'jog',
+    get speedCap() {
+      return cap;
+    },
+    target: (): Vec => {
+      const pos = body.pos;
+      carried += dist(last, pos);
+      last = [pos[0], pos[1]];
+      const dt = Math.max(0, state.t - lastT);
+      lastT = state.t;
+      const opp = nearestOpponent(state, actor);
+      // A pressed beat (`state.tight`): he shields at the pressed speed, moving across the presser's
+      // line on the side nearer his heading, so the presser stays on him.
+      const shielding = state.tight;
+      let want: Vec;
+      if (toward) {
+        want = norm(sub(to, pos));
+      } else if (shielding && opp.index >= 0) {
+        const side = perp(norm(sub(state.bodies[opp.index].pos, pos)));
+        want = dot(side, heading) >= 0 ? side : scale(side, -1);
+      } else {
+        want = forward;
+        if (!shielding && opp.index >= 0 && opp.distance < HM.avoid) {
+          const away = norm(sub(pos, state.bodies[opp.index].pos));
+          want = add(want, scale(away, ((HM.avoid - opp.distance) / HM.avoid) * HM.shy));
+        }
+      }
+      // He never carries onto a teammate: one within `mates` metres pushes his line away.
+      for (const mate of state.fixture.teams[team].players) {
+        if (mate.index === actor) continue;
+        const gap = dist(pos, state.bodies[mate.index].pos);
+        if (gap >= HM.mates || gap < 1e-6) continue;
+        const away = norm(sub(pos, state.bodies[mate.index].pos));
+        want = add(want, scale(away, ((HM.mates - gap) / HM.mates) * 2));
+      }
+      if (len(want) > 1e-3) heading = turnToward(heading, norm(want), (Math.PI * dt) / HM.turn);
+      let dir: Vec = heading;
+      if (!toward) {
+        const u = norm(sub(to, pos));
+        const closing = dot(dir, u);
+        if (dist(pos, to) < STAGE.kickGap + HM.room && closing > 0)
+          dir = sub(dir, scale(u, closing));
+      }
+      dir = offTheLines(pos, dir, HM.edge);
+      if (len(dir) < 1e-3) dir = offTheLines(pos, perp(norm(sub(to, pos))), HM.edge);
+      if (len(dir) < 1e-3) dir = offTheLines(pos, forward, HM.edge);
+      if (len(dir) < 1e-3) dir = scale(forward, -1);
+      cap =
+        shielding || opp.distance <= HM.press
+          ? HM.pressed
+          : carried < HM.carry
+            ? HM.speed
+            : HM.slow;
+      return add(pos, scale(norm(dir), HM.lead));
+    },
+  };
 }
 
 /** `to` moved straight away from the ball until it is `stage.kickGap` from it; unchanged when it is already that far. */
@@ -81,7 +169,7 @@ const roomy = (state: StageState, beat: Beat, to: Vec): Vec =>
   beat.kind === 'pass' && !beat.through ? roomyAim(state, beat.receiver ?? beat.actor, to) : to;
 
 /**
- * The passer holds the ball at least `hold` seconds, taking one touch toward `to` (`holdTouch`),
+ * The passer holds the ball at least `hold` seconds, keeping it moving (`holdMove`),
  * while the receiver (if any) runs there; then he waits up to `stage.maxExtraHold` more until `ready()`.
  */
 export function holdUntil(
@@ -93,7 +181,7 @@ export function holdUntil(
   ready: () => boolean,
   receiverOrder?: Order,
 ): void {
-  state.orders.set(actor, holdTouch(state, actor, to));
+  state.orders.set(actor, holdMove(state, actor, to));
   if (receiver !== undefined) {
     state.orders.set(receiver, receiverOrder ?? { target: to, pace: 'run' });
   }

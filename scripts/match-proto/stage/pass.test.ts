@@ -61,15 +61,67 @@ const driftBeforeKick = (p: Playback, beat: number, index: number): number => {
   return most;
 };
 
+/** The share of frames from `from` seconds after beat `beat` starts until its kick in which `index` moves at `speed` m/s at least. */
+const movingShare = (
+  p: Playback,
+  beat: number,
+  index: number,
+  from: number,
+  speed: number,
+): number => {
+  const start = firstFrameOf(p, beat).t + from;
+  const kick = eventOf(p, beat, 'kick').t;
+  let moving = 0;
+  let all = 0;
+  for (let k = 1; k < p.frames.length; k++) {
+    const f = p.frames[k];
+    if (f.t < start || f.t > kick) continue;
+    const prev = p.frames[k - 1];
+    all += 1;
+    if (dist(posOf(prev, index), posOf(f, index)) / (f.t - prev.t) >= speed) moving += 1;
+  }
+  return all === 0 ? 0 : moving / all;
+};
+
 describe('pass staging', () => {
-  it('the passer takes one touch and stops', () => {
+  it('the passer keeps the ball moving while he holds', () => {
     const p = performScript(
       scriptOf([KICK_OFF, { kind: 'pass', actor: PASSER, receiver: 2, to: [26, 22], hold: 3 }]),
       { duration: 30 },
     );
     const start = firstFrameOf(p, 1);
     expect(eventOf(p, 1, 'kick').t - start.t).toBeGreaterThan(2.5);
-    expect(driftBeforeKick(p, 1, PASSER)).toBeLessThanOrEqual(STAGE.holdDrift + 0.3);
+    expect(movingShare(p, 1, PASSER, 0.6, 1)).toBeGreaterThanOrEqual(0.9);
+  });
+
+  it('the nearest opponent closes on a man holding the ball, keeps moving and lunges', () => {
+    const p = performScript(
+      scriptOf([KICK_OFF, { kind: 'pass', actor: PASSER, receiver: 2, to: [26, 22], hold: 4 }]),
+      { duration: 30 },
+    );
+    const start = firstFrameOf(p, 1).t + 1;
+    const kick = eventOf(p, 1, 'kick').t;
+    const opponents = fixture.teams[1].players.filter((q) => q.slot !== 0).map((q) => q.index);
+    let near = 0;
+    let moving = 0;
+    let closest = Infinity;
+    for (let k = 1; k < p.frames.length; k++) {
+      const f = p.frames[k];
+      if (f.t < start || f.t > kick) continue;
+      const me = posOf(f, PASSER);
+      const nearest = opponents.reduce((a, b) =>
+        dist(posOf(f, a), me) <= dist(posOf(f, b), me) ? a : b,
+      );
+      const gap = dist(posOf(f, nearest), me);
+      closest = Math.min(closest, gap);
+      if (gap > PROTO_CONFIG.shape.press.standoff + 0.5) continue;
+      near += 1;
+      const prev = p.frames[k - 1];
+      if (dist(posOf(prev, nearest), posOf(f, nearest)) / (f.t - prev.t) >= 0.5) moving += 1;
+    }
+    expect(near).toBeGreaterThan(10);
+    expect(moving / near).toBeGreaterThanOrEqual(0.7);
+    expect(closest).toBeLessThanOrEqual(PROTO_CONFIG.shape.press.poke + 0.6);
   });
 
   it('a short pass is kicked when its hold ends', () => {
@@ -113,14 +165,19 @@ describe('pass staging', () => {
     );
   });
 
-  it('a through ball’s passer does not walk after his pass’s aim', () => {
+  it('a through ball’s passer carries the ball while he waits, never onto his pass’s aim', () => {
+    const aim: Vec = [72, 30];
     const p = performScript(
       scriptOf([
         KICK_OFF,
-        { kind: 'pass', actor: PASSER, receiver: 9, to: [72, 30], through: true, hold: 2 },
+        { kind: 'pass', actor: PASSER, receiver: 9, to: aim, through: true, hold: 2 },
       ]),
       { duration: 30 },
     );
-    expect(driftBeforeKick(p, 1, PASSER)).toBeLessThanOrEqual(STAGE.holdDrift + 0.3);
+    expect(driftBeforeKick(p, 1, PASSER)).toBeGreaterThanOrEqual(1.5);
+    expect(driftBeforeKick(p, 1, PASSER)).toBeLessThanOrEqual(
+      STAGE.holdMove.carry + STAGE.holdMove.slow * STAGE.maxExtraHold + 1,
+    );
+    expect(dist(eventOf(p, 1, 'kick').at, aim)).toBeGreaterThanOrEqual(STAGE.kickGap);
   });
 });

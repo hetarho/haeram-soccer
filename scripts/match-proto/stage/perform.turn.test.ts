@@ -13,12 +13,22 @@ const TICK = PROTO_CONFIG.tick;
 const TURN = PROTO_CONFIG.limits.turn;
 const JOG = PROTO_CONFIG.motion.jog;
 
-// Settled circulation across midfield, then a pass inside cut out in the centre circle's edge.
+// Settled circulation across midfield, then a pass inside cut out in the centre circle's edge. The
+// passes are played almost at once (hold 0.3 s): the man on the ball carries it while he holds
+// (`stage.holdMove`), and longer carries would set the players moving before the turnover.
 const BUILD_UP: BeatSpec[] = [
   { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] },
-  { kind: 'pass', actor: 5, receiver: 6, to: [52, 22] },
-  { kind: 'pass', actor: 6, receiver: 7, to: [54, 42] },
-  { kind: 'pass', actor: 7, receiver: 9, to: [56, 34], outcome: 'intercepted', opponent: 17 },
+  { kind: 'pass', actor: 5, receiver: 6, to: [52, 22], hold: 0.3 },
+  { kind: 'pass', actor: 6, receiver: 7, to: [54, 42], hold: 0.3 },
+  {
+    kind: 'pass',
+    actor: 7,
+    receiver: 9,
+    to: [56, 34],
+    outcome: 'intercepted',
+    opponent: 17,
+    hold: 0.3,
+  },
 ];
 const S: BeatSpec[] = [
   ...BUILD_UP,

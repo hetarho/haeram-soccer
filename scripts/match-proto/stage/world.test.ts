@@ -293,10 +293,12 @@ describe('stage world', () => {
 
   describe('after a long pass across the pitch (T816)', () => {
     // Kick-off, then the anchor switches play 33 m to the right-back in his own half, where the
-    // counter side does not press, so every outfield player but the two in the pass is free.
+    // counter side does not press, so every outfield player but the two in the pass is free. The
+    // anchor plays it almost at once (hold 0.3 s): the man on the ball carries it while he holds
+    // (`stage.holdMove`), and a longer carry would set the players near him moving before the kick.
     const LONG = scriptOf(fixture, [
       { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] },
-      { kind: 'pass', actor: 5, receiver: 4, to: [38, 62], loft: true },
+      { kind: 'pass', actor: 5, receiver: 4, to: [38, 62], loft: true, hold: 0.3 },
       { kind: 'carry', actor: 4, to: [44, 62], hold: 3 },
     ]);
     const long = performScript(LONG, { duration: 20 });
