@@ -12,7 +12,18 @@ import type { MatchScript, ScriptBeat } from '../../../contracts/src/match-scrip
 import { M } from '../grid/record';
 import { recordOf } from './build';
 import { cellAt, metres } from './cells';
-import { EV, FO, R, SET_PIECES, SH, SHOT_KINDS, type MatchDetail } from './detail';
+import {
+  CARD_REASONS,
+  EV,
+  FO,
+  IN,
+  INCIDENT_KINDS,
+  R,
+  SET_PIECES,
+  SH,
+  SHOT_KINDS,
+  type MatchDetail,
+} from './detail';
 import { buildTouches, dealFixed } from './touches';
 import { isPassLike, isRestart, minuteTimes } from './write';
 
@@ -47,8 +58,12 @@ function resultOf(b: ScriptBeat, next: ScriptBeat | undefined, recorded: number)
 /** The line a shot's passer is read as: the completed recorded pass its shooter received, his own carries between. */
 function passerOf(beats: readonly ScriptBeat[], i: number): number {
   const b = beats[i]!;
+  // A penalty has no assist (→MATCH-11), nor a free kick struck after its foul.
+  if (b.kind === 'penalty') return -1;
   for (let k = i - 1; k >= 0; k--) {
     const a = beats[k]!;
+    if (a.kind === 'stoppage') continue;
+    if (a.outcome === 'foul') return -1;
     if (a.side !== b.side) return -1;
     if (a.actor === b.actor && (a.kind === 'carry' || a.kind === 'takeOn')) continue;
     return a.event !== undefined &&
@@ -61,13 +76,35 @@ function passerOf(beats: readonly ScriptBeat[], i: number): number {
   return -1;
 }
 
-/** The record's team and player values counted from a script, in `recordOf`'s layout. */
+const PENALTY = SHOT_KINDS.indexOf('penalty');
+const OPEN = SHOT_KINDS.indexOf('open');
+
+/**
+ * The record's team and player values counted from a script, in `recordOf`'s layout: cards,
+ * substitutions and injuries from the beats' incidents (each in its beat's minute), penalties from
+ * the `penalty` beats and the shoot-out from its kicks (T827).
+ */
 export function countScript(script: MatchScript, detail: MatchDetail): Counted {
   const beats = script.beats;
   const events: [number, number[]][] = [];
   const shots: [number, number[]][] = [];
   const fouls: [number, number[]][] = [];
+  const incidents: [number, number[]][] = [];
+  const shootout: number[][] = [];
+  /** The next beat after `i` that is not a stoppage. */
+  const after = (i: number) => beats.slice(i + 1).find((x) => x.kind !== 'stoppage');
   beats.forEach((b, i) => {
+    for (const x of b.incidents ?? []) {
+      const row = [...(detail.incidents[x.incident] ?? [0, 0, 0, 0, -1, -1, -1])];
+      row[IN.minute] = Math.floor(b.clock / 60) + 1;
+      row[IN.side] = x.side;
+      row[IN.kind] = INCIDENT_KINDS.indexOf(x.kind);
+      row[IN.line] = x.line;
+      row[IN.other] = x.other ?? -1;
+      row[IN.reason] = x.reason === undefined ? -1 : CARD_REASONS.indexOf(x.reason);
+      incidents.push([x.incident, row]);
+    }
+    if (b.kind === 'shootoutKick') shootout.push([b.side, b.actor, b.outcome === 'goal' ? 1 : 0]);
     if (b.event !== undefined && detail.events[b.event]) {
       const e = [...detail.events[b.event]!];
       e[EV.side] = b.side;
@@ -88,7 +125,9 @@ export function countScript(script: MatchScript, detail: MatchDetail): Counted {
       const s = [...detail.shots[b.shot]!];
       s[SH.side] = b.side;
       s[SH.shooter] = b.actor;
-      if (b.kind !== 'freeKick') s[SH.cell] = cellAt(b.side, b.from);
+      if (b.kind !== 'freeKick' && b.kind !== 'penalty') s[SH.cell] = cellAt(b.side, b.from);
+      if (b.kind === 'penalty') s[SH.kind] = PENALTY;
+      else if (s[SH.kind] === PENALTY) s[SH.kind] = OPEN;
       s[SH.outcome] = { goal: 0, saved: 1, blocked: 2, wide: 3 }[b.outcome as 'goal'] ?? -1;
       s[SH.header] = b.header ? 1 : 0;
       if (b.outcome === 'saved') s[SH.keeper] = b.opponent ?? -1;
@@ -101,6 +140,7 @@ export function countScript(script: MatchScript, detail: MatchDetail): Counted {
       f[FO.fouled] = b.actor;
       f[FO.fouler] = b.opponent ?? -1;
       f[FO.cell] = cellAt(b.side, b.from);
+      f[FO.penalty] = after(i)?.kind === 'penalty' ? 1 : 0;
       fouls.push([b.foul, f]);
     }
   });
@@ -109,6 +149,7 @@ export function countScript(script: MatchScript, detail: MatchDetail): Counted {
   byId(events);
   byId(shots);
   byId(fouls);
+  byId(incidents);
   const position = new Map<number, number>();
   events.forEach(([id], k) => {
     if (!position.has(id)) position.set(id, k);
@@ -122,6 +163,8 @@ export function countScript(script: MatchScript, detail: MatchDetail): Counted {
     events: events.map(([, e]) => e),
     shots: shots.map(([, s]) => s),
     fouls: fouls.map(([, f]) => f),
+    incidents: incidents.map(([, x]) => x),
+    shootout,
   });
 }
 
@@ -159,6 +202,17 @@ export function compareRecord(detail: MatchDetail, counted: Counted): string[] {
     if (counted.xg?.[side] !== want.xg?.[side])
       out.push(`xg:${side}=${counted.xg?.[side]}/${want.xg?.[side]}`);
   });
+  // Cards, substitutions and injuries with their minutes, the regulation score and the shoot-out.
+  const json = (v: unknown) => JSON.stringify(v ?? null);
+  const got = counted.incidents ?? [];
+  const recorded = want.incidents ?? [];
+  for (let i = 0; i < Math.max(got.length, recorded.length); i++)
+    if (json(got[i]) !== json(recorded[i]))
+      out.push(`incident:${i}=${json(got[i])}/${json(recorded[i])}`);
+  if (json(counted.regulation) !== json(want.regulation))
+    out.push(`regulation=${json(counted.regulation)}/${json(want.regulation)}`);
+  if (json(counted.shootout) !== json(want.shootout))
+    out.push(`shootout=${json(counted.shootout)}/${json(want.shootout)}`);
   let k = 0;
   ([0, 1] as const).forEach((side) =>
     detail.sides[side].lines.forEach((_, line) => {
@@ -189,7 +243,7 @@ export interface ScriptCost {
 
 /** What the joins cost: connective beats, orphaned set pieces, moved carries and the clock's largest overrun (the prototype's `fitCost`). */
 export function scriptCost(script: MatchScript, detail: MatchDetail): ScriptCost {
-  const b = script.beats;
+  const b = script.beats.filter((x) => x.kind !== 'shootoutKick');
   const restart = (k: ScriptBeat['kind']) => k !== 'pass' && isPassLike(k);
   // A floating carry "moves" when it joins a release fixed to a minute.
   const dealt = dealFixed(detail);
@@ -197,7 +251,7 @@ export function scriptCost(script: MatchScript, detail: MatchDetail): ScriptCost
   buildTouches(detail, moved);
   const FREE_KICK = SHOT_KINDS.indexOf('freeKick');
   let maxOverrun = 0;
-  for (let m = 0; m < 90; m++) {
+  for (let m = 0; m < detail.length; m++) {
     const list = b.filter((x) => Math.floor(x.clock / 60) === m);
     if (list.length > 0) maxOverrun = Math.max(maxOverrun, minuteTimes(list, m).need - 60);
   }

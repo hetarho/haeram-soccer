@@ -146,8 +146,11 @@ describe('script writer on the ten matches (T822, T826)', () => {
 
   it('every fixture is written exactly', () => {
     // Rows the record gives no minute float to wherever the order of play reaches them; a restart
-    // owed as a half ends is delivered and its pass received before the kick-off.
-    for (const [id, detail, script] of ten) {
+    // owed as a half ends is delivered and its pass received before the kick-off. The ten are read
+    // with their cards without a foul (T827), which the cost line below leaves out.
+    for (const id of FIXTURE_IDS) {
+      const detail = loadDetail(id, true);
+      const script = scriptOf(detail);
       expect(validateScript(detail, script), id).toEqual([]);
       expect(compareRecord(detail, countScript(script, detail)), id).toEqual([]);
     }

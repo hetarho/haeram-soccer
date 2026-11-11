@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { MatchScript } from '../../../contracts/src/match-script';
-import { EV, ST, type MatchDetail } from './detail';
+import { EV, INCIDENT_KINDS, ST, type MatchDetail } from './detail';
 import { smallDetail } from './script.testkit';
 import { buildTouches, dealFixed } from './touches';
 import { validateScript } from './validate';
 import { touchWindows, writeScript } from './write';
 
-// Hand-built details (T826): the small match with a man leaving and another coming on, written
-// with no substitution incident (the writer refuses those until T827), so only the stints move.
+// Hand-built details (T826, T827): the small match with a man leaving and another coming on, his
+// substitution recorded at the stamp after the minute he leaves.
 
 /** `detail` with line `line` of `side` off after `minute` and a new line in his slot on from it. */
 function substituted(detail: MatchDetail, side: 0 | 1, line: number, minute: number): MatchDetail {
@@ -19,6 +19,7 @@ function substituted(detail: MatchDetail, side: 0 | 1, line: number, minute: num
     s[ST.side] === side && s[ST.line] === line ? [side, line, off.slot, 0, minute] : s,
   );
   d.stints.push([side, on, off.slot, minute, 90]);
+  d.incidents.push([minute + 1, side, INCIDENT_KINDS.indexOf('sub'), line, on, -1, -1]);
   return d;
 }
 const written = (detail: MatchDetail, seed = 'fit'): MatchScript => {
@@ -86,13 +87,16 @@ describe('script windows (T826)', () => {
   });
 
   it('extra-time rows are played after the ninetieth minute', () => {
-    // A detail with extra time is refused until T827 stages it; its extra-time rows have no minute
-    // before the ninety-first, and its regulation rows none after the ninetieth.
+    // Its extra-time rows have no minute before the ninety-first, and its regulation rows none
+    // after the ninetieth (T827 writes it).
     const d: MatchDetail = structuredClone(smallDetail());
     d.length = 120;
     d.stints = d.stints.map((s) => [s[ST.side]!, s[ST.line]!, s[ST.slot]!, 0, 120]);
     d.events.push([...row(0, 6).slice(0, EV.period), 1]);
-    expect(writeScript(d, 'fit')).toEqual({ problems: ['unsupported:extraTime'] });
+    const script = written(d);
+    const beat = script.beats.find((b) => b.event === d.events.length - 1)!;
+    expect(beat.clock).toBeGreaterThanOrEqual(90 * 60);
+    expect(beat.period).toBeGreaterThanOrEqual(3);
     const touches = buildTouches(d, dealFixed(d));
     const windows = touchWindows(d, touches);
     const extra = touches.findIndex(
@@ -127,29 +131,17 @@ describe('script windows (T826)', () => {
     expect('script' in r).toBe(false);
   });
 
-  it('a detail the writer cannot play yet is refused by name', () => {
+  it('writes every incident and special scene, refusing none by name (T827)', () => {
     const base = smallDetail();
-    const sub: MatchDetail = structuredClone(base);
-    sub.incidents.push([60, 0, 3, 9, 0, -1, -1]);
-    sub.stints = substituted(base, 0, 9, 60).stints;
-    sub.sides = substituted(base, 0, 9, 60).sides;
-    sub.incidents[sub.incidents.length - 1] = [60, 0, 3, 9, 11, -1, -1];
-    expect(writeScript(sub, 'fit')).toEqual({ problems: ['unsupported:substitution'] });
     const dissent: MatchDetail = structuredClone(base);
     dissent.incidents.push([70, 1, 0, 2, -1, 2, -1]);
-    expect(writeScript(dissent, 'fit')).toEqual({ problems: ['unsupported:card'] });
-    const injury: MatchDetail = structuredClone(base);
-    injury.incidents.push([70, 1, 4, 2, -1, -1, -1]);
-    expect(writeScript(injury, 'fit')).toEqual({ problems: ['unsupported:injury'] });
     const penalty: MatchDetail = structuredClone(base);
     const [kick, foul] = [penalty.shots.length, penalty.fouls.length];
-    penalty.fouls.push([0, 37, 3, 9, -1, 1, 0, kick, -1]);
-    penalty.shots.push([0, 50, 37, 3, 0, 76, 0, 0, 9, -1, -1, 0, foul]);
-    expect(writeScript(penalty, 'fit')).toEqual({ problems: ['unsupported:penalty'] });
-    const shootout: MatchDetail = structuredClone(base);
-    shootout.shootout.push([0, 9, 1]);
-    expect(writeScript(shootout, 'fit')).toMatchObject({
-      problems: expect.arrayContaining(['unsupported:shootout']),
-    });
+    penalty.fouls.push([0, 32, 3, 9, -1, 1, 0, kick, -1]);
+    penalty.shots.push([0, 50, 32, 3, 0, 76, 0, 0, 9, -1, -1, 0, foul]);
+    for (const d of [substituted(base, 0, 9, 60), dissent, penalty]) {
+      const r = writeScript(d, 'fit');
+      expect('problems' in r ? r.problems : []).toEqual([]);
+    }
   });
 });

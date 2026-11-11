@@ -7,8 +7,23 @@
 export const SCRIPT_CONFIG = {
   /** Seconds a touch takes at least and at most; a minute's time is shared out between its beats within these. */
   hold: [0.4, 5],
-  /** Nominal seconds a restart takes off the minute, by kind. */
-  dead: { kickOff: 40, throwIn: 12, goalKick: 20, corner: 25, freeKick: 20 },
+  /** Nominal seconds a restart takes off the minute, by kind; a stoppage's are its incidents' (T827). */
+  dead: {
+    kickOff: 40,
+    throwIn: 12,
+    goalKick: 20,
+    corner: 25,
+    freeKick: 20,
+    penalty: 30,
+    stoppage: 20,
+  },
+  /**
+   * The shoot-out (T827): a kick not scored is `saved` with this chance on the script's stream,
+   * else `wide` (the record holds only scored or not), and the seconds between two kicks.
+   */
+  shootout: { saved: 0.7, gap: 60 },
+  /** Where a penalty is kicked from, in the kicking side's attack frame (m). */
+  penaltySpot: [94, 34],
   /** A carry with a minute of its own is moved at most this many minutes to find a release of its player. */
   carryWindow: 3,
   /** A floating carry joins its player's release only when it ends within this many metres (cell centre to cell centre) of where that touch starts; else it is a touch of its own. */

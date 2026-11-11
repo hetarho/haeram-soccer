@@ -48,6 +48,8 @@ import {
   periodOfMinute,
   R,
   SET_PIECES,
+  settlePairs,
+  settlePenaltyFouls,
   SH,
   SHOT_KINDS,
   SHOT_OUTCOMES,
@@ -260,7 +262,7 @@ export function matchDetail(
     if (!trace.shootout) throw new Error('the shoot-out is not traced');
     shootout = trace.shootout.map((k) => [k.side, rec(k.side, k.line), k.scored ? 1 : 0]);
   }
-  return {
+  const detail: MatchDetail = {
     version: 1,
     id: input.fixture,
     length: facts.length,
@@ -274,6 +276,9 @@ export function matchDetail(
     incidents,
     shootout,
   };
+  settlePenaltyFouls(detail);
+  settlePairs(detail, () => JSON.stringify(recordOf(detail)));
+  return detail;
 }
 
 /** The record the rows count back to: team and player rows in the record's own layout. */

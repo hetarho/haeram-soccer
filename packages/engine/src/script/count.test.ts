@@ -70,11 +70,19 @@ describe('script count (T820, T826)', () => {
   });
 });
 
-describe('script count of the ten (T826)', () => {
-  it('a fixture with its cards without a foul is refused, not miscounted', () => {
-    // s03 holds two yellow cards no foul was booked for: until T827 the writer refuses it.
-    expect(writeScript(loadDetail('s03', true), 'fit')).toEqual({
-      problems: ['unsupported:card'],
-    });
+describe('script count of the ten (T826, T827)', () => {
+  it('cards without a foul are counted from the beats that show them', () => {
+    // s03 holds two yellow cards no foul was booked for: each is shown on a stoppage of its minute.
+    const d = loadDetail('s03', true);
+    const r = writeScript(d, 'fit');
+    if ('problems' in r) throw new Error(r.problems.join(', '));
+    expect(compareRecord(d, countScript(r.script, d))).toEqual([]);
+    const shown = r.script.beats.filter((b) => b.kind === 'stoppage');
+    expect(shown.flatMap((b) => b.incidents!.map((x) => x.kind))).toEqual(['yellow', 'yellow']);
+    // Without them the count misses both.
+    const bare = { ...r.script, beats: r.script.beats.filter((b) => b.kind !== 'stoppage') };
+    expect(compareRecord(d, countScript(bare, d)).some((p) => p.startsWith('incident:'))).toBe(
+      true,
+    );
   });
 });

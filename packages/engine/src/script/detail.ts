@@ -19,6 +19,8 @@ import type { Tactic } from '../../../contracts/src/types';
 import { AGGREGATE_MOVE_KINDS } from '../aggregate/types';
 import type { AggregateMove, AggregateTraceMove } from '../aggregate/types';
 import { isPassKind } from '../aggregate/ledger';
+import { cellBand } from '../grid/pitch';
+import { COUNTER_ZONES, mirrorBand } from '../grid/record';
 
 export const EVENT_KINDS = AGGREGATE_MOVE_KINDS;
 export const SET_PIECES = ['none', 'corner', 'freeKick'] as const;
@@ -296,6 +298,187 @@ export function swapOffsides(events: number[][]): number {
   return fallbacks;
 }
 
+/** Whether `side`'s `line` is on the pitch in record minute `minute` (the stretch `(minute − 1, minute]`). */
+const onIn = (detail: MatchDetail, side: number, line: number, minute: number) =>
+  detail.stints.some(
+    (s) =>
+      s[ST.side] === side && s[ST.line] === line && s[ST.from]! < minute && s[ST.to]! >= minute,
+  );
+
+/**
+ * A penalty is its foul and the kick at once (T827), so its foul's two men are on the pitch in the
+ * kick's minute and a booked one's card is shown in it. A penalty foul that is not trades its
+ * fouler, fouled man and card with an unbooked foul of the same side and period in a row without a
+ * penalty, the first in the detail's order whose two men are on the pitch in the kick's minute:
+ * every man keeps his fouls, fouls won and card, every cell its fouls and penalties, the card its
+ * minute; only which of the side's fouls stood in the box changes, which the record does not
+ * state. Returns how many could find no such foul (they stay, and `detailIssues` names them).
+ */
+export function settlePenaltyFouls(detail: MatchDetail): number {
+  let left = 0;
+  const on = (side: number, line: number, minute: number) => onIn(detail, side, line, minute);
+  for (const f of detail.fouls) {
+    const shot = f[FO.shot]!;
+    if (f[FO.penalty] !== 1 || shot < 0) continue;
+    const minute = detail.shots[shot]![SH.minute]!;
+    const side = f[FO.fouledSide]!;
+    const card = f[FO.cardMinute]!;
+    if (
+      card >= 0
+        ? card === minute
+        : on(side, f[FO.fouled]!, minute) && on(1 - side, f[FO.fouler]!, minute)
+    )
+      continue;
+    const g = detail.fouls.find(
+      (x) =>
+        x !== f &&
+        x[FO.fouledSide] === side &&
+        x[FO.period] === f[FO.period] &&
+        x[FO.penalty] === 0 &&
+        x[FO.cardMinute]! < 0 &&
+        on(side, x[FO.fouled]!, minute) &&
+        on(1 - side, x[FO.fouler]!, minute),
+    );
+    if (!g) {
+      left++;
+      continue;
+    }
+    for (const k of [FO.fouler, FO.fouled, FO.cardMinute, FO.card]) [f[k], g[k]] = [g[k]!, f[k]!];
+  }
+  return left;
+}
+
+/**
+ * Every row is played while all its men are on the pitch (→MATCH-38), so each row's actor and the
+ * man it names (who won the ball, who was caught offside, who fouled) are on it together at some
+ * minute of its period (T827). `expandGroup` pairs a group's failed attempts with its winners in
+ * line order, and a foul row its fouled and fouling men, without the minutes; a pair that never
+ * met trades: first its named man with another row of the group with the same result, else its
+ * result and named man with another failed row of the group; a foul its fouler with another
+ * unbooked, non-penalty foul of the same side and period, its own cell's first. Every man keeps
+ * his attempts, completions, balls won, offsides, fouls and fouls won, every group and cell its
+ * results; only who lost the ball to whom changes, which the record does not state. Returns how
+ * many pairs found no such trade (`detailIssues` names them).
+ */
+export function settlePairs(detail: MatchDetail, keep?: () => string): number {
+  const windows = detail.sides.map((s, side) =>
+    s.lines.map((_, line) =>
+      Array.from({ length: detail.length }, (_, m) => onIn(detail, side, line, m + 1)),
+    ),
+  );
+  const meet = (sa: number, a: number, sb: number, b: number, period: number) => {
+    const [from, to] = PERIOD_MINUTES[period] ?? [0, 0];
+    for (let m = from; m < Math.min(to, detail.length); m++)
+      if (windows[sa]?.[a]?.[m] && windows[sb]?.[b]?.[m]) return true;
+    return false;
+  };
+  let left = 0;
+  const eventOk = (e: number[]) => {
+    const o = e[EV.other]!;
+    if (o < 0) return true;
+    const offside = e[EV.result] === R.offside;
+    if (offside && o === e[EV.actor]) return false;
+    const side = e[EV.side]!;
+    return meet(side, e[EV.actor]!, offside ? side : 1 - side, o, e[EV.period]!);
+  };
+  const groups = new Map<string, number[][]>();
+  for (const e of detail.events) {
+    const key = `${e[EV.side]}:${e[EV.group]}`;
+    groups.set(key, [...(groups.get(key) ?? []), e]);
+  }
+  const trade = (r: number[], s: number[], keys: number[], ok: (x: number[]) => boolean) => {
+    for (const k of keys) [r[k], s[k]] = [s[k]!, r[k]!];
+    if (ok(r) && ok(s)) return true;
+    for (const k of keys) [r[k], s[k]] = [s[k]!, r[k]!];
+    return false;
+  };
+  /**
+   * The last resort: `r`'s result and named man traded with any other failed row of its side,
+   * period and kind of play whose men then meet, kept only when the record (`keep`) stays the same.
+   */
+  const tradeKept = (r: number[]) => {
+    const pass = isPassKind(EVENT_KINDS[r[EV.kind]!]!);
+    const was = keep!();
+    const keys = [EV.other, EV.result];
+    for (const s of detail.events) {
+      if (
+        s === r ||
+        s[EV.side] !== r[EV.side] ||
+        s[EV.period] !== r[EV.period] ||
+        s[EV.result] === R.complete ||
+        isPassKind(EVENT_KINDS[s[EV.kind]!]!) !== pass ||
+        !trade(r, s, keys, eventOk)
+      )
+        continue;
+      let kept = false;
+      try {
+        kept = keep!() === was;
+      } catch {
+        // A trade the ledger refuses (an offside on a ball not played forward) is no trade.
+      }
+      if (kept) return true;
+      for (const k of keys) [r[k], s[k]] = [s[k]!, r[k]!];
+    }
+    return false;
+  };
+  /** Three rows' named men moved round, `r`'s to `s`, `s`'s to `t` and `t`'s to `r`, when all three then meet. */
+  const rotate = (r: number[], pool: number[][]) => {
+    for (const s of pool)
+      for (const t of pool) {
+        if (s === t) continue;
+        const [a, b, c] = [r[EV.other]!, s[EV.other]!, t[EV.other]!];
+        [r[EV.other], s[EV.other], t[EV.other]] = [b, c, a];
+        if (eventOk(r) && eventOk(s) && eventOk(t)) return true;
+        [r[EV.other], s[EV.other], t[EV.other]] = [a, b, c];
+      }
+    return false;
+  };
+  /** What a row's named man is credited with: its result, and for a ball won whether it is a high turnover (players.ts `creditWon`). */
+  const credit = (e: number[]) => {
+    const pass = isPassKind(EVENT_KINDS[e[EV.kind]!]!);
+    const high =
+      e[EV.result] === R.offside || e[EV.result] === R.looseRecovered
+        ? -1
+        : mirrorBand(cellBand(e[pass ? EV.to : EV.from]!)) >= COUNTER_ZONES.highTurnover;
+    return `${e[EV.side]}:${e[EV.period]}:${e[EV.result]}:${pass}:${high}`;
+  };
+  for (const rows of groups.values())
+    for (const r of rows) {
+      if (eventOk(r)) continue;
+      const same = (s: number[]) => s !== r && s[EV.other]! >= 0 && credit(s) === credit(r);
+      const fixed =
+        rows.some((s) => same(s) && trade(r, s, [EV.other], eventOk)) ||
+        rows.some(
+          (s) =>
+            s !== r && s[EV.result] !== R.complete && trade(r, s, [EV.result, EV.other], eventOk),
+        ) ||
+        detail.events.some((s) => same(s) && trade(r, s, [EV.other], eventOk)) ||
+        rotate(r, detail.events.filter(same)) ||
+        (keep !== undefined && tradeKept(r));
+      if (!fixed) left++;
+    }
+  const foulOk = (f: number[]) =>
+    f[FO.cardMinute]! >= 0 ||
+    meet(f[FO.fouledSide]!, f[FO.fouled]!, 1 - f[FO.fouledSide]!, f[FO.fouler]!, f[FO.period]!);
+  const free = (f: number[]) => f[FO.cardMinute]! < 0 && f[FO.penalty] === 0;
+  for (const f of detail.fouls) {
+    if (foulOk(f) || !free(f)) continue;
+    const peers = detail.fouls.filter(
+      (g) =>
+        g !== f &&
+        free(g) &&
+        g[FO.fouledSide] === f[FO.fouledSide] &&
+        g[FO.period] === f[FO.period],
+    );
+    const ordered = [
+      ...peers.filter((g) => g[FO.cell] === f[FO.cell]),
+      ...peers.filter((g) => g[FO.cell] !== f[FO.cell]),
+    ];
+    if (!ordered.some((g) => trade(f, g, [FO.fouler], foulOk))) left++;
+  }
+  return left;
+}
+
 const PERIOD_MINUTES = [
   [0, 90],
   [90, 120],
@@ -392,6 +575,10 @@ export function detailIssues(detail: MatchDetail): string[] {
     } else if (shot !== -1) out.push(`${at}: kick ${shot} without a penalty`);
     const minute = f[FO.cardMinute]!,
       card = f[FO.card]!;
+    if (minute >= 0 && f[FO.penalty] === 1 && shot >= 0) {
+      const kick = detail.shots[shot]?.[SH.minute];
+      if (kick !== minute) out.push(`${at}: booked at ${minute}, its kick at ${kick}`);
+    }
     if (minute >= 0) {
       const x = detail.incidents[card];
       if (

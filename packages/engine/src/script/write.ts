@@ -1,15 +1,24 @@
 /**
- * The script writer (→MATCH-38, MATCH-15, ARCH-5, ARCH-9; T826): a detail laid out as an order of
- * play that performs every recorded row exactly once, by its recorded player, in its recorded cell,
- * ported from the match prototype's fit/write.ts as T822 left it. The record is the fact; the writer
- * chooses only the order (greedy over the whole match: the cheapest touch by `touchCost`), the
- * minutes of the rows the record gives none, the receivers, the points inside the cells, the clock
- * and the connective beats MATCH-38 allows (link carries, heavy touches, restart deliveries no
- * recorded pass makes).
+ * The script writer (→MATCH-38, MATCH-15, ARCH-5, ARCH-9; T826, T827): a detail laid out as an
+ * order of play that performs every recorded row exactly once, by its recorded player, in its
+ * recorded cell, ported from the match prototype's fit/write.ts as T822 left it. The record is the
+ * fact; the writer chooses only the order (greedy over the whole match: the cheapest touch by
+ * `touchCost`), the minutes of the rows the record gives none, the receivers, the points inside the
+ * cells, the clock and the connective beats MATCH-38 allows (link carries, heavy touches, restart
+ * deliveries no recorded pass makes).
  *
  * Windows: a floating row is played only in a minute of its period in which its actor and the man
  * who wins it are on the pitch (`detail.stints`); a row whose last such minute comes is played in it,
  * as a fixed row is. A detail whose rows cannot all be placed gives problems, never a partial script.
+ *
+ * Incidents (T827) are played in their record minute: a booked foul's card on the foul's beat; an
+ * incident stamped at a period's first minute (a half-time substitution: 46, 91, 106) on that
+ * period's kick-off; every other one of a minute and side on one `stoppage` in the record's order,
+ * opened at the minute's first dead ball (a restart owed) or when a keeper has the ball, else once
+ * the minute's share of touches is played (play then resumes with the man who had the ball). A man
+ * is on the pitch from kick-off or his entry beat to his exit beat. A penalty is its foul in the box
+ * and then a `penalty` beat; extra time's periods 3 and 4 are written like halves; the shoot-out's
+ * kicks follow the last whistle in the recorded order.
  *
  * Platform-stable (→ARCH-9): costs are integer centimetres, ties go to the stream's order, points
  * come from `+ − × ÷`, square root, min and max; the one random stream is `${seed}:script`.
@@ -19,6 +28,7 @@ import type {
   ScriptBeat,
   ScriptBeatKind,
   ScriptBeatOutcome,
+  ScriptIncident,
   ScriptPhase,
 } from '../../../contracts/src/match-script';
 import { attackFrame, PITCH } from '../grid/pitch';
@@ -38,25 +48,37 @@ import {
   metres,
   pointAway,
   restartSpot,
+  spot,
   type Side,
 } from './cells';
 import { SCRIPT_CONFIG } from './config';
 import {
+  CARD_REASONS,
   detailIssues,
   EV,
   EVENT_KINDS,
   FO,
   IN,
   INCIDENT_KINDS,
+  periodOfMinute,
   R,
   SET_PIECES,
   SH,
-  SHOT_KINDS,
   SHOT_OUTCOMES,
+  SO,
   ST,
   type MatchDetail,
 } from './detail';
-import { buildTouches, dealFixed, FLOATING, firstCell, type Touch } from './touches';
+import {
+  buildTouches,
+  dealFixed,
+  FLOATING,
+  firstCell,
+  minuteIndex,
+  PERIOD_STARTS,
+  periodAt,
+  type Touch,
+} from './touches';
 
 const C = SCRIPT_CONFIG;
 /** Centimetres of the costs the config states in metres. */
@@ -85,18 +107,23 @@ const RESTARTS: readonly ScriptBeatKind[] = [
   'goalKick',
   'corner',
   'freeKick',
+  'penalty',
 ];
 export const isRestart = (k: ScriptBeatKind) => RESTARTS.includes(k);
 export const isPassLike = (k: ScriptBeatKind) => PASS_LIKE.includes(k);
 const isLofted = (k: number) => KIND(k) === 'long' || KIND(k) === 'cross';
-/** Minutes of regulation a script plays; extra time waits for T827. */
-const MINUTES = 90;
+/** The side that kicks off a period: side 0 the first half and extra time's first, side 1 the others. */
+export const kickOffSide = (period: number): Side => (period % 2 === 1 ? 0 : 1);
+/** Where `side` kicks a penalty or a shoot-out kick from. */
+export const penaltySpot = (side: Side): Vec => spot(attackFrame(side, C.penaltySpot));
+/** The kinds of incident that take their man off the pitch. */
+const OFF_KINDS = new Set(['secondYellow', 'red', 'injury', 'sub']);
 
 interface Owed {
   kind: ScriptBeatKind;
   side: Side;
   spot: Vec;
-  /** A touch that must deliver it (a direct free-kick shot after its foul). */
+  /** A touch that must deliver it (a direct free-kick shot or a penalty after its foul). */
   via?: number;
 }
 interface Pending {
@@ -117,27 +144,6 @@ const phaseOf = (side: Side, ball: Vec): ScriptPhase => {
       : 'finalThird';
 };
 
-/**
- * What the writer cannot play yet: `unsupported:<kind>` for a substitution, a card without a foul,
- * an injury, a penalty, extra time or a shoot-out (T827 plays them).
- */
-export function unsupported(detail: MatchDetail): string[] {
-  const out = new Set<string>();
-  const booked = new Set(detail.fouls.map((f) => f[FO.card]!).filter((c) => c >= 0));
-  detail.incidents.forEach((x, i) => {
-    const kind = INCIDENT_KINDS[x[IN.kind]!];
-    if (kind === 'sub') out.add('unsupported:substitution');
-    else if (kind === 'injury') out.add('unsupported:injury');
-    else if (!booked.has(i)) out.add('unsupported:card');
-  });
-  const PENALTY = SHOT_KINDS.indexOf('penalty');
-  if (detail.shots.some((s) => s[SH.kind] === PENALTY) || detail.fouls.some((f) => f[FO.penalty]))
-    out.add('unsupported:penalty');
-  if (detail.length !== 90) out.add('unsupported:extraTime');
-  if (detail.shootout.length > 0) out.add('unsupported:shootout');
-  return [...out];
-}
-
 /** On the pitch by side, line and minute index (0 to the detail's length): its stints, minutes (from, to]. */
 export function pitchWindows(detail: MatchDetail): boolean[][][] {
   const out = ([0, 1] as const).map((side) =>
@@ -150,6 +156,69 @@ export function pitchWindows(detail: MatchDetail): boolean[][][] {
       if (s[ST.from]! < m + 1 && s[ST.to]! >= m + 1) row[m] = true;
   }
   return out;
+}
+
+/** Each line's slot by side, line and minute index: the stint covering the minute's, else his first. */
+export function slotWindows(detail: MatchDetail): number[][][] {
+  const out = ([0, 1] as const).map((side) =>
+    detail.sides[side].lines.map((l) => Array<number>(detail.length).fill(l.slot)),
+  );
+  for (const s of detail.stints) {
+    const row = out[s[ST.side]!]?.[s[ST.line]!];
+    if (!row) continue;
+    for (let m = 0; m < detail.length; m++)
+      if (s[ST.from]! < m + 1 && s[ST.to]! >= m + 1) row[m] = s[ST.slot]!;
+  }
+  return out;
+}
+
+/** An incident row as a beat carries it. */
+export function scriptIncident(detail: MatchDetail, i: number): ScriptIncident {
+  const x = detail.incidents[i]!;
+  const kind = INCIDENT_KINDS[x[IN.kind]!]!;
+  return {
+    kind,
+    side: x[IN.side] as Side,
+    line: x[IN.line]!,
+    ...(x[IN.other]! >= 0 && { other: x[IN.other]! }),
+    ...(x[IN.reason]! >= 0 && { reason: CARD_REASONS[x[IN.reason]!]! }),
+    incident: i,
+  };
+}
+
+/** Who is on the pitch after `x`: a substitution's man off and `other` on, a sending-off or an injury his man off. */
+export function applyIncident(present: boolean[][], x: ScriptIncident): void {
+  if (!OFF_KINDS.has(x.kind)) return;
+  present[x.side]![x.line] = false;
+  if (x.kind === 'sub' && x.other !== undefined) present[x.side]![x.other] = true;
+}
+
+/** The lines on the pitch at kick-off: every stint from 0. */
+export function startingPresence(detail: MatchDetail): boolean[][] {
+  const out = detail.sides.map((s) => s.lines.map(() => false));
+  for (const s of detail.stints) if (s[ST.from] === 0) out[s[ST.side]!]![s[ST.line]!] = true;
+  return out;
+}
+
+/**
+ * Where each incident is shown: `foul` the booked foul it rides, else `kickOff` for one stamped at a
+ * period's first minute, else `stoppage`; with its minute index.
+ */
+export function incidentPlaces(
+  detail: MatchDetail,
+): { at: 'foul' | 'kickOff' | 'stoppage'; minute: number }[] {
+  const booked = new Set(detail.fouls.map((f) => f[FO.card]!).filter((c) => c >= 0));
+  return detail.incidents.map((x, i) => {
+    const minute = minuteIndex(x[IN.minute]!, detail.length);
+    return {
+      at: booked.has(i)
+        ? 'foul'
+        : (PERIOD_STARTS as readonly number[]).includes(minute)
+          ? 'kickOff'
+          : 'stoppage',
+      minute,
+    };
+  });
 }
 
 /** The men a touch's rows name, each with his side: its actor and every winner or man caught offside. */
@@ -174,6 +243,7 @@ function periodOf(detail: MatchDetail, t: Touch): number {
   const id = t.carries[0] ?? (r !== undefined && 'event' in r ? r.event : -1);
   if (id >= 0) return detail.events[id]![EV.period]!;
   if (r !== undefined && 'foul' in r) return detail.fouls[r.foul]![FO.period]!;
+  if (r !== undefined && 'shot' in r) return periodOfMinute(detail.shots[r.shot]![SH.minute]!);
   return 0;
 }
 
@@ -194,34 +264,30 @@ export function touchWindows(detail: MatchDetail, touches: readonly Touch[]): bo
   });
 }
 
-/** The shape's two sides in a minute: each slot's role, present while a line holding it is on the pitch. */
-function shapeSides(
-  detail: MatchDetail,
-  onPitch: boolean[][][],
-  m: number,
-): [ShapeSide, ShapeSide] {
+/** The shape's two sides in a minute: each slot's role, present while a stint holds it. */
+function shapeSides(detail: MatchDetail, m: number): [ShapeSide, ShapeSide] {
   return ([0, 1] as const).map((side): ShapeSide => {
     const s = detail.sides[side];
     const roles: ShapeSide['roles'][number][] = [];
     const present: boolean[] = [];
-    s.lines.forEach((l, line) => {
+    s.lines.forEach((l) => {
       roles[l.slot] ??= l.role as ShapeSide['roles'][number];
-      present[l.slot] = (present[l.slot] ?? false) || onPitch[side]![line]![m]!;
+      present[l.slot] ??= false;
     });
+    for (const st of detail.stints)
+      if (st[ST.side] === side && st[ST.from]! < m + 1 && st[ST.to]! >= m + 1)
+        present[st[ST.slot]!] = true;
     for (let k = 0; k < roles.length; k++) present[k] ??= false;
     return { tactic: s.tactic, roles, present };
   }) as [ShapeSide, ShapeSide];
 }
 
-/**
- * The script of `detail`, or the problems that keep it from being written: the detail's own
- * (`detailIssues`), `unsupported:<kind>` and `unplaced:<row>` for a row no minute could take.
- */
+/** The script of `detail`, or the problems that keep it from being written: the detail's own (`detailIssues`) and `unplaced:<row>` for a row no minute could take. */
 export function writeScript(
   detail: MatchDetail,
   seed: string,
 ): { script: MatchScript } | { problems: string[] } {
-  const issues = [...detailIssues(detail), ...unsupported(detail)];
+  const issues = detailIssues(detail);
   if (issues.length > 0) return { problems: issues };
   return write(detail, seed);
 }
@@ -230,12 +296,16 @@ function write(
   detail: MatchDetail,
   seed: string,
 ): { script: MatchScript } | { problems: string[] } {
+  const LENGTH = detail.length;
   const onPitch = pitchWindows(detail);
-  const shapes = Array.from({ length: MINUTES }, (_, m) => shapeSides(detail, onPitch, m));
+  const slots = slotWindows(detail);
+  const shapes = Array.from({ length: LENGTH }, (_, m) => shapeSides(detail, m));
   const lines = detail.sides.map((s) => s.lines);
   const touches = buildTouches(detail, dealFixed(detail));
   const played = touches.map(() => false);
   const startCell = touches.map((t) => firstCell(detail, t));
+  const touchMen = touches.map((t) => menOf(detail, t));
+  const codeOf = touches.map((t) => periodOf(detail, t));
   // The stream's order of the touches: ties of `touchCost` go to the earlier.
   const rng = random(`${seed}:script`);
   const order = touches.map((_, i) => i);
@@ -245,7 +315,7 @@ function write(
   }
 
   // Windows: the minutes each touch may be played in (its rows' players on the pitch, its period).
-  const window = touchWindows(detail, touches).map((w) => w.slice(0, MINUTES));
+  const window = touchWindows(detail, touches);
   /** The last minute a floating touch may be played in; −1 for none. */
   const last = window.map((w) => w.lastIndexOf(true));
   const never = touches.flatMap((t, i) =>
@@ -253,10 +323,43 @@ function write(
   );
   if (never.length > 0) return { problems: never };
 
-  const total = [0, 0];
-  const done = [0, 0];
-  const endsTotal = [0, 0];
-  const endsDone = [0, 0];
+  // Incidents: who is on the pitch, and the stoppages each minute owes.
+  const present = startingPresence(detail);
+  const places = incidentPlaces(detail);
+  /** Stoppage groups by minute index: the incidents of one side, in the record's order. */
+  const stops: number[][][] = Array.from({ length: LENGTH }, () => []);
+  places.forEach((p, i) => {
+    if (p.at !== 'stoppage') return;
+    const side = detail.incidents[i]![IN.side]!;
+    const group = stops[p.minute]!.find((g) => detail.incidents[g[0]!]![IN.side] === side);
+    if (group) group.push(i);
+    else stops[p.minute]!.push([i]);
+  });
+  /** Incidents riding each period's kick-off, by minute index. */
+  const riding = new Map<number, number[]>();
+  places.forEach((p, i) => {
+    if (p.at === 'kickOff') riding.set(p.minute, [...(riding.get(p.minute) ?? []), i]);
+  });
+  /** Incidents to show on the next beat written (a kick-off's). */
+  let carrying: ScriptIncident[] | null = null;
+
+  /** Touches by period code (0 regulation, 1 extra time) and side. */
+  const total = [
+    [0, 0],
+    [0, 0],
+  ];
+  const done = [
+    [0, 0],
+    [0, 0],
+  ];
+  const endsTotal = [
+    [0, 0],
+    [0, 0],
+  ];
+  const endsDone = [
+    [0, 0],
+    [0, 0],
+  ];
   /** Whether touch `i` ends its side's possession when played (a failed release, a shot, a lost carry). */
   const ends = touches.map((t) => {
     const r = t.release;
@@ -271,9 +374,11 @@ function write(
     return res !== R.complete && res !== R.looseKept && res !== R.cornerWon;
   });
   touches.forEach((t, i) => {
-    total[t.side]!++;
-    if (ends[i]) endsTotal[t.side]!++;
+    total[codeOf[i]!]![t.side]!++;
+    if (ends[i]) endsTotal[codeOf[i]!]![t.side]!++;
   });
+  const regulationTouches = total[0]![0]! + total[0]![1]!;
+  const extraTouches = total[1]![0]! + total[1]![1]!;
   /** The line of the other side a touch's record names as winning the ball from it, or −1. */
   const winnerOf = touches.map((t) => {
     const r = t.release;
@@ -299,6 +404,8 @@ function write(
   const beats: ScriptBeat[] = [];
   const minuteOf: number[] = [];
   let possession = 0;
+  /** The last beat written that is not a stoppage. */
+  let live: ScriptBeat | undefined;
   let side: Side = 0;
   let ball: Vec = CENTRE;
   let holder = -1;
@@ -310,20 +417,26 @@ function write(
   let minute = 0;
   /** Touches played before the minute being written. */
   let minuteStart = 0;
+  const doneAll = () => done[0]![0]! + done[0]![1]! + done[1]![0]! + done[1]![1]!;
+  const code = () => (minute < 90 ? 0 : 1);
 
-  const slotOf = (s: Side, line: number) => lines[s]![line]!.slot;
+  const slotOf = (s: Side, line: number) => slots[s]![line]![Math.min(minute, LENGTH - 1)]!;
   /** Line `line` of `s`'s place for a ball at `at`, `team` in possession. */
   const spotOf = (s: Side, line: number, at: Vec = ball, team: Side = side): Vec =>
     nominalSpot(
-      { sides: shapes[minute]!, ball: at, team, phase: phaseOf(team, at) },
+      { sides: shapes[Math.min(minute, LENGTH - 1)]!, ball: at, team, phase: phaseOf(team, at) },
       s,
       slotOf(s, line),
     );
-  /** The lines of `team` on the pitch this minute, the keeper last. */
+  /** The lines of `team` on the pitch now (this minute's stints, and in by the beats so far), the keeper last. */
   const onNow = (team: Side): number[] =>
-    lines[team]!.flatMap((_, line) => (onPitch[team]![line]![minute] ? [line] : []));
-  const keeperOf = (team: Side): number =>
-    onNow(team).find((line) => slotOf(team, line) === 0) ?? onNow(team)[0]!;
+    lines[team]!.flatMap((_, line) =>
+      onPitch[team]![line]![Math.min(minute, LENGTH - 1)] && present[team]![line] ? [line] : [],
+    );
+  const keeperOf = (team: Side): number => {
+    const now = onNow(team);
+    return now.find((line) => slotOf(team, line) === 0) ?? now[0] ?? 0;
+  };
   const nearestBy = (team: Side, at: Vec, exclude: number[] = [], keeper = false): number => {
     let best = -1;
     let bestD = Infinity;
@@ -338,8 +451,9 @@ function write(
     b: Pick<ScriptBeat, 'side' | 'move' | 'kind' | 'actor' | 'from' | 'to' | 'outcome'> &
       Partial<ScriptBeat>,
   ): ScriptBeat => {
-    const prev = beats[beats.length - 1];
-    if (prev !== undefined && (prev.side !== b.side || isRestart(b.kind))) possession++;
+    const stoppage = b.kind === 'stoppage';
+    if (!stoppage && live !== undefined && (live.side !== b.side || isRestart(b.kind)))
+      possession++;
     const beat: ScriptBeat = {
       loft: false,
       through: false,
@@ -349,11 +463,18 @@ function write(
       ...b,
       index: beats.length,
       possession,
-      phase: isRestart(b.kind) ? 'setPiece' : phaseOf(b.side, b.from),
-      period: minute < 90 ? 0 : 1,
+      phase: isRestart(b.kind) || stoppage ? 'setPiece' : phaseOf(b.side, b.from),
+      period: periodAt(minute),
     };
+    if (carrying !== null) {
+      beat.incidents = [...(beat.incidents ?? []), ...carrying];
+      carrying = null;
+    }
     beats.push(beat);
     minuteOf.push(minute);
+    if (!stoppage) live = beat;
+    // A booked foul's card is shown as it is played, and a sending-off takes its man off.
+    if (b.incidents) for (const x of b.incidents) applyIncident(present, x);
     return beat;
   };
 
@@ -387,6 +508,8 @@ function write(
   touches.forEach((t, i) => {
     if (t.next !== undefined) after[t.next] = i;
   });
+  /** Whether every man touch `i` names is on the pitch now. */
+  const menHere = (i: number) => touchMen[i]!.every((p) => present[p.side]![p.line] === true);
   /** Touch `i` must be played in this minute: fixed to it, or a floating one whose window closes in it. */
   const fixedNow = (i: number) =>
     touches[i]!.minute === minute || (touches[i]!.minute === FLOATING && last[i] === minute);
@@ -398,14 +521,18 @@ function write(
         !played[i] &&
         t.side === team &&
         (t.minute === minute || (t.minute === FLOATING && window[i]![minute] === true)) &&
-        (after[i]! < 0 || played[after[i]!])
+        (after[i]! < 0 || played[after[i]!]) &&
+        menHere(i)
       );
     });
   const fixedLeft = (team?: Side) =>
     touches.some((t, i) => !played[i] && fixedNow(i) && (team === undefined || t.side === team));
-  /** The touches played by the end of minute `m`: an even share of all of them. */
-  const quota = (m: number) => Math.round(((m + 1) * touches.length) / MINUTES);
-  const quotaMet = () => done[0]! + done[1]! >= quota(minute);
+  /** The touches played by the end of minute `m`: an even share of each period's. */
+  const quota = (m: number) =>
+    m < 90
+      ? Math.round(((m + 1) * regulationTouches) / Math.min(90, LENGTH))
+      : regulationTouches + Math.round(((m - 89) * extraTouches) / (LENGTH - 90));
+  const quotaMet = () => doneAll() >= quota(minute);
   /**
    * The price in centimetres of `team` playing touch `i` with the ball in `cell`: the distance to
    * where it starts, less `fixedPull` for a touch this minute must hold; a touch ending the
@@ -417,10 +544,7 @@ function write(
     let cost = cellGap(startCell[i]!, cell);
     const met = quotaMet();
     // The pull grows as the minute fills, so its fixed touches come before its share runs out.
-    const fill = Math.min(
-      1,
-      (done[0]! + done[1]! - minuteStart) / Math.max(1, quota(minute) - minuteStart),
-    );
+    const fill = Math.min(1, (doneAll() - minuteStart) / Math.max(1, quota(minute) - minuteStart));
     if (fixedNow(i)) cost -= met ? CM.fixedPush : CM.fixedPull + Math.round(fill * CM.fixedRamp);
     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
     if (setPiece[i]) cost += CM.setPieceWait;
@@ -430,9 +554,10 @@ function write(
     if (ends[i]) {
       // Ahead of the other side, or behind in spending its own possession-ending touches, a side
       // ends its possession sooner; so neither side runs out of touches, nor of ways to lose the ball.
-      const share = done[team]! / total[team]!;
-      const lead = share - done[other(team)]! / total[other(team)]!;
-      const endsLead = endsDone[team]! / Math.max(1, endsTotal[team]!) - share;
+      const p = code();
+      const share = done[p]![team]! / Math.max(1, total[p]![team]!);
+      const lead = share - done[p]![other(team)]! / Math.max(1, total[p]![other(team)]!);
+      const endsLead = endsDone[p]![team]! / Math.max(1, endsTotal[p]![team]!) - share;
       cost -= Math.round(Math.min(Math.max((lead - endsLead) / C.paceSlack, -1), 1) * CM.paceBias);
       if (met && fixedLeft(other(team))) cost -= CM.fixedPush;
     }
@@ -462,6 +587,7 @@ function write(
   const fed = (): boolean => {
     for (let k = beats.length - 1; k >= 0; k--) {
       const b = beats[k]!;
+      if (b.kind === 'stoppage') continue;
       if (b.side !== side) return false;
       if (b.actor === holder && (b.kind === 'carry' || b.kind === 'takeOn')) continue;
       return (
@@ -631,7 +757,7 @@ function write(
       out === 'goal' ? 'goal' : out === 'save' ? 'saved' : out === 'block' ? 'blocked' : 'wide';
     push({
       side,
-      move: kind === 'freeKick' ? 'freeKick' : 'shot',
+      move: kind === 'freeKick' ? 'freeKick' : kind === 'penalty' ? 'penalty' : 'shot',
       kind,
       actor: shooter,
       ...(opponent !== undefined && { opponent }),
@@ -669,8 +795,8 @@ function write(
     played[i] = true;
     const t = touches[i]!;
     touchesLeft[t.side]![t.actor]!--;
-    done[t.side]!++;
-    if (ends[i]) endsDone[t.side]!++;
+    done[codeOf[i]!]![t.side]!++;
+    if (ends[i]) endsDone[codeOf[i]!]![t.side]!++;
     nextOwed = t.next ?? -1;
     for (const c of t.carries) {
       const e = detail.events[c]!;
@@ -719,6 +845,7 @@ function write(
     } else {
       const f = detail.fouls[r.foul]!;
       linkTo(f[FO.cell]!);
+      const card = f[FO.card]!;
       push({
         side,
         move: 'foul',
@@ -729,13 +856,17 @@ function write(
         to: ball,
         outcome: 'foul',
         foul: r.foul,
+        ...(card >= 0 && { incidents: [scriptIncident(detail, card)] }),
       });
-      owed = {
-        kind: 'freeKick',
-        side,
-        spot: restartSpot('freeKick', side, ball),
-        ...(t.next !== undefined && { via: t.next }),
-      };
+      owed =
+        f[FO.penalty] === 1
+          ? { kind: 'penalty', side, spot: penaltySpot(side), via: t.next! }
+          : {
+              kind: 'freeKick',
+              side,
+              spot: restartSpot('freeKick', side, ball),
+              ...(t.next !== undefined && { via: t.next }),
+            };
       nextOwed = -1;
       holder = -1;
     }
@@ -747,7 +878,11 @@ function write(
     owed = null;
     side = o.side;
     ball = o.spot;
-    if (o.via !== undefined && !played[o.via] && touches[o.via]!.minute === minute) {
+    if (
+      o.via !== undefined &&
+      !played[o.via] &&
+      (o.kind === 'penalty' || touches[o.via]!.minute === minute)
+    ) {
       holder = touches[o.via]!.actor;
       playTouch(o.via, o);
       return;
@@ -801,6 +936,48 @@ function write(
     ball = to;
   };
 
+  /** The stoppage groups of this minute still to be written. */
+  let stopsDone = 0;
+  const stopsLeft = () => stops[minute]!.length - stopsDone;
+  /** The men the next stoppage takes off the pitch. */
+  const leaversOf = (group: readonly number[]) =>
+    group.flatMap((i) => {
+      const x = scriptIncident(detail, i);
+      return OFF_KINDS.has(x.kind) ? [{ side: x.side, line: x.line }] : [];
+    });
+  /**
+   * Whether the next stoppage may be opened now: no pass in flight, the ball dead or with a man who
+   * stays on, and no touch this minute holds still to be played by a man it takes off.
+   */
+  const canStop = (group: readonly number[]): boolean => {
+    // Nor between a pass and the shot it sets up.
+    if (pending !== null || nextOwed >= 0) return false;
+    const leavers = leaversOf(group);
+    const leaves = (s: Side, line: number) => leavers.some((l) => l.side === s && l.line === line);
+    if (owed === null && (holder < 0 || leaves(side, holder))) return false;
+    return !touches.some(
+      (_, i) => !played[i] && fixedNow(i) && touchMen[i]!.some((p) => leaves(p.side, p.line)),
+    );
+  };
+  /** Opens the next stoppage: its incidents shown, its men off and on; the ball stays where it is. */
+  const openStoppage = () => {
+    const group = stops[minute]![stopsDone++]!;
+    const incidents = group.map((i) => scriptIncident(detail, i));
+    const at = owed !== null ? owed.spot : ball;
+    push({
+      side: incidents[0]!.side,
+      move: 'stoppage',
+      kind: 'stoppage',
+      actor: incidents[0]!.line,
+      from: at,
+      to: at,
+      outcome: 'complete',
+      incidents,
+    });
+  };
+  const keeperHolds = () =>
+    owed === null && pending === null && holder >= 0 && slotOf(side, holder) === 0;
+
   /** Beats written before the minute being written. */
   let minuteBeats = 0;
   /** Whether a beat from `from` on plays a recorded row. */
@@ -816,15 +993,34 @@ function write(
   const settledMinute = (): boolean => {
     for (;;) {
       if (beats.length > BEAT_LIMIT) return false;
+      const mine = unplayed(side);
+      const theirs = unplayed(other(side));
+      // A stoppage the minute owes: at a dead ball or a keeper's ball, else once the minute has
+      // played its share, or nothing else can be played (a touch waits for a man it brings on).
+      if (stopsLeft() > 0 && pending === null) {
+        const group = stops[minute]![stopsDone]!;
+        const forced =
+          quotaMet() ||
+          mine.length + theirs.length === 0 ||
+          touches.some((_, i) => !played[i] && fixedNow(i) && !menHere(i));
+        if (canStop(group) && (owed !== null || keeperHolds() || forced)) {
+          openStoppage();
+          continue;
+        }
+        const holderLeaves = leaversOf(group).some((l) => l.side === side && l.line === holder);
+        if (forced && owed === null && holderLeaves && mine.length + theirs.length === 0) {
+          // The man on the ball leaves at the stoppage: he loses it first.
+          miscontrol(nearestBy(other(side), ball));
+          continue;
+        }
+      }
       // The minute ends with its share of touches played, nothing it must hold left and a recorded
       // row played in it: a minute after one that ran past its share, or whose only touch was a
       // restart a recorded pass delivered and still in flight, would otherwise stand empty.
-      if (quotaMet() && !fixedLeft() && recordedSince(minuteBeats)) break;
-      const mine = unplayed(side);
-      const theirs = unplayed(other(side));
+      if (quotaMet() && !fixedLeft() && recordedSince(minuteBeats) && stopsLeft() === 0) break;
       if (owed !== null) {
         // With nothing left in the minute the restart waits for the next one.
-        if (mine.length + theirs.length === 0) break;
+        if (mine.length + theirs.length === 0 && stopsLeft() === 0) break;
         deliver();
         continue;
       }
@@ -838,7 +1034,7 @@ function write(
           intended = i;
           continue;
         }
-        if (i < 0 && theirs.length === 0) break;
+        if (i < 0 && theirs.length === 0 && stopsLeft() === 0) break;
         // Nobody else of his side is left: a nominal receiver loses it.
         resolve(nearestBy(p.side, ball, [p.actor]));
         continue;
@@ -854,9 +1050,11 @@ function write(
       // another (measured on the ten: 249 heavy touches handing it to every lone chance, 188 to
       // those the holder's side could spare, 176 to none); its shooter gets the ball as any man
       // does, never straight off a completed pass (`fed`).
+      // A side with a touch of its own the minute must hold plays it first, so two sides that both
+      // wait never hand the ball to each other for ever (a minute where men leave, T827).
       if (quotaMet() && fixedLeft(other(side))) {
         const waiting = theirs.filter(fixedNow);
-        if (waiting.length > 0 && !mine.some((i) => ends[i])) {
+        if (waiting.length > 0 && !mine.some((i) => ends[i] || fixedNow(i))) {
           miscontrol(touches[cheapest(other(side), waiting, cellAt(other(side), ball))]!.actor);
           continue;
         }
@@ -876,7 +1074,8 @@ function write(
       // Possessions alternate, so a side that has fewer possession-ending rows than the other must
       // lose the ball connectively that many times: it does so where it is spending its ending
       // rows faster than the other side spends its own, never on a touch the minute must hold.
-      const endsShare = (t: Side) => endsDone[t]! / Math.max(1, endsTotal[t]!);
+      const p = code();
+      const endsShare = (t: Side) => endsDone[p]![t]! / Math.max(1, endsTotal[p]![t]!);
       const spread =
         ends[pickOwn] &&
         !fixedNow(pickOwn) &&
@@ -897,20 +1096,33 @@ function write(
     return true;
   };
 
-  for (minute = 0; minute < MINUTES; minute++) {
-    minuteStart = done[0]! + done[1]!;
+  const periodEnds = (m: number) =>
+    m === LENGTH - 1 || (PERIOD_STARTS as readonly number[]).includes(m + 1);
+  for (minute = 0; minute < LENGTH; minute++) {
+    minuteStart = doneAll();
     minuteBeats = beats.length;
-    if (minute === 0 || minute === 45) {
+    stopsDone = 0;
+    if ((PERIOD_STARTS as readonly number[]).includes(minute)) {
       pending = null;
-      owed = { kind: 'kickOff', side: minute === 0 ? 0 : 1, spot: CENTRE };
-      // A half starts on its minute, whether or not the minute holds a touch.
+      // A half-time substitution comes on before the kick-off and is shown on it.
+      const ride = (riding.get(minute) ?? []).map((i) => scriptIncident(detail, i));
+      for (const x of ride) applyIncident(present, x);
+      if (ride.length > 0) carrying = ride;
+      owed = { kind: 'kickOff', side: kickOffSide(periodAt(minute)), spot: CENTRE };
+      // A period starts on its minute, whether or not the minute holds a touch.
       deliver();
     }
     if (!settledMinute()) return { problems: [`stuck:minute:${minute}`] };
+    if (stopsLeft() > 0)
+      return {
+        problems: stops[minute]!.slice(stopsDone).flatMap((g) =>
+          g.map((i) => `stuck:incident:${i}`),
+        ),
+      };
     // A man whose stint ends with this minute leaves nothing in it: his pass in flight is received
     // and a ball he holds is lost by a heavy touch before he goes.
     const leaving = (s: Side, line: number) =>
-      line >= 0 && minute + 1 < MINUTES && !onPitch[s]![line]![minute + 1];
+      line >= 0 && minute + 1 < LENGTH && !onPitch[s]![line]![minute + 1];
     if (pending !== null && leaving((pending as Pending).side, (pending as Pending).actor)) {
       const p: Pending = pending;
       const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
@@ -921,9 +1133,9 @@ function write(
     }
     if (pending === null && owed === null && leaving(side, holder))
       miscontrol(nearestBy(other(side), ball));
-    if (minute === 44 || minute === 89) {
+    if (periodEnds(minute)) {
       // A restart owed at the whistle is still taken, and a pass in flight, its delivery's
-      // included, is received before the half ends.
+      // included, is received before the period ends.
       const o = owed as Owed | null;
       if (o !== null && o.kind !== 'kickOff') deliver();
       if (pending !== null)
@@ -937,7 +1149,7 @@ function write(
 
   // A minute whose beats need more than its sixty seconds is pressed into them, every part alike,
   // so each beat keeps its record minute; `minuteTimes` gives what each minute needed.
-  for (let m = 0; m < MINUTES; m++) {
+  for (let m = 0; m < LENGTH; m++) {
     const list = beats.filter((_, i) => minuteOf[i] === m);
     if (list.length === 0) continue;
     const { holds, need } = minuteTimes(list, m);
@@ -950,6 +1162,38 @@ function write(
       t += (holds[k]! + travel(b)) * press;
     }
   }
+
+  // The shoot-out after the last whistle: its kicks in the recorded order, each against the keeper
+  // in goal at the end; a kick not scored is saved or wide by the stream (the record holds neither).
+  minute = LENGTH - 1;
+  detail.shootout.forEach((k, j) => {
+    const s = k[SO.side] as Side;
+    const from = penaltySpot(s);
+    const scored = k[SO.scored] === 1;
+    const saved = !scored && rng() < C.shootout.saved;
+    const keeper = keeperOf(other(s));
+    possession++;
+    beats.push({
+      index: beats.length,
+      possession,
+      side: s,
+      phase: 'setPiece',
+      move: 'shootoutKick',
+      kind: 'shootoutKick',
+      actor: k[SO.line]!,
+      ...(saved && { opponent: keeper }),
+      from,
+      to: scored ? goalAim(s, 0) : saved ? keeperHold(other(s)) : goalAim(s, C.missWide * 2),
+      loft: false,
+      through: false,
+      header: false,
+      outcome: scored ? 'goal' : saved ? 'saved' : 'wide',
+      hold: 0,
+      kick: j,
+      clock: LENGTH * 60 + C.shootout.gap * (j + 1),
+      period: 5,
+    });
+  });
   return { script: { version: 1, seed, beats, bound: true } };
 }
 
@@ -963,21 +1207,22 @@ function rowName(t: Touch): string {
   return `foul:${r.foul}`;
 }
 
-/** Nominal seconds a beat's ball travels (`speeds`); a foul has none. */
+/** Nominal seconds a beat's ball travels (`speeds`); a foul and a stoppage have none. */
 export const travel = (b: ScriptBeat): number =>
-  b.outcome === 'foul'
+  b.outcome === 'foul' || b.kind === 'stoppage'
     ? 0
     : metres(b.from, b.to) /
-      (b.shot !== undefined
+      (b.shot !== undefined || b.kind === 'shootoutKick'
         ? C.speeds.shot
         : b.kind === 'carry' || b.kind === 'takeOn'
           ? C.speeds.carry
           : b.loft
             ? C.speeds.loft
             : C.speeds.ground);
-/** Seconds the restart beat `b` (the `k`th of minute `m`) takes off its minute; a half's opening kick-off none. */
+/** Seconds the restart or stoppage `b` (the `k`th of minute `m`) takes off its minute; a period's opening kick-off none. */
 const deadOf = (b: ScriptBeat, k: number, m: number): number =>
-  isRestart(b.kind) && !(k === 0 && b.kind === 'kickOff' && (m === 0 || m === 45))
+  (isRestart(b.kind) || b.kind === 'stoppage') &&
+  !(k === 0 && b.kind === 'kickOff' && (PERIOD_STARTS as readonly number[]).includes(m))
     ? C.dead[b.kind as keyof typeof C.dead]
     : 0;
 /**

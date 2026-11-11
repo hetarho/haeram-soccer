@@ -7,7 +7,7 @@
  */
 import { SCRIPT_CONFIG } from './config';
 import { cellGap } from './cells';
-import { EV, EVENT_KINDS, FO, R, SH, SHOT_KINDS, type MatchDetail } from './detail';
+import { EV, EVENT_KINDS, FO, R, SH, SHOT_KINDS, ST, type MatchDetail } from './detail';
 
 /** One player's spell on the ball: his carries and take-ons in order, then at most one release. */
 export interface Touch {
@@ -27,14 +27,27 @@ export interface Touch {
 const CARRY = EVENT_KINDS.indexOf('carry');
 const TAKE_ON = EVENT_KINDS.indexOf('takeOn');
 const FREE_KICK_SHOT = SHOT_KINDS.indexOf('freeKick');
+const PENALTY_SHOT = SHOT_KINDS.indexOf('penalty');
 /** Centimetres a floating carry may end from the start of a release of his and still join it. */
 const JOIN_CM = SCRIPT_CONFIG.carryJoin * 100;
 export const isCarryEvent = (row: readonly number[]): boolean =>
   row[EV.kind] === CARRY || row[EV.kind] === TAKE_ON;
 
-/** The record's minute `m` (1–90, added time in 45 and 90 or beyond) as an index 0–89. */
-export const minuteIndex = (m: number, half: 0 | 1 = m > 45 ? 1 : 0): number =>
-  half === 0 ? Math.min(Math.max(m - 1, 0), 44) : Math.min(Math.max(m - 1, 45), 89);
+/**
+ * The record's minute `m` as a minute index of a match of `length` minutes: 1–90 (added time in 45
+ * and 90 or beyond) as 0–89, and with extra time 91–120 as 90–119.
+ */
+export const minuteIndex = (m: number, length = 90): number =>
+  length === 120
+    ? Math.min(Math.max(m - 1, 0), 119)
+    : m > 45
+      ? Math.min(Math.max(m - 1, 45), 89)
+      : Math.min(Math.max(m - 1, 0), 44);
+
+/** The first minute index of each period: the halves, then extra time's. */
+export const PERIOD_STARTS = [0, 45, 90, 105] as const;
+/** The period (1–4) a minute index falls in. */
+export const periodAt = (m: number): 1 | 2 | 3 | 4 => (m < 45 ? 1 : m < 90 ? 2 : m < 105 ? 3 : 4);
 
 /** Minute index of a row the record gives no minute: the writer deals it as it plays it. */
 export const FLOATING = -1;
@@ -48,11 +61,15 @@ export function dealFixed(detail: MatchDetail): { events: number[]; fouls: numbe
   const fouls = Array<number>(detail.fouls.length).fill(FLOATING);
   for (const shot of detail.shots) {
     const source = shot[SH.source]!;
-    if (source >= 0) events[source] = minuteIndex(shot[SH.minute]!);
+    if (source >= 0) events[source] = minuteIndex(shot[SH.minute]!, detail.length);
   }
   detail.fouls.forEach((f, i) => {
-    if (f[FO.cardMinute]! >= 0) fouls[i] = minuteIndex(f[FO.cardMinute]!);
+    if (f[FO.cardMinute]! >= 0) fouls[i] = minuteIndex(f[FO.cardMinute]!, detail.length);
   });
+  // A penalty's foul is in its kick's minute (a booked one's card is, detail.ts `settlePenaltyFouls`).
+  for (const shot of detail.shots)
+    if (shot[SH.kind] === PENALTY_SHOT && shot[SH.foul]! >= 0)
+      fouls[shot[SH.foul]!] = minuteIndex(shot[SH.minute]!, detail.length);
   return { events, fouls };
 }
 
@@ -100,7 +117,7 @@ export function buildTouches(
     const touch: Touch = {
       side: s[SH.side] as 0 | 1,
       actor: s[SH.shooter]!,
-      minute: minuteIndex(s[SH.minute]!),
+      minute: minuteIndex(s[SH.minute]!, detail.length),
       carries: [],
       release: { shot: id },
     };
@@ -142,14 +159,22 @@ export function buildTouches(
   // A direct free-kick shot is the delivery of a foul of its side: in its minute, else moved to it.
   const used = new Set<number>();
   const direct = new Set<number>();
+  // A penalty is the kick its foul names, in the kick's minute (`dealFixed`).
+  detail.shots.forEach((s, id) => {
+    const foul = s[SH.foul]!;
+    if (s[SH.kind] !== PENALTY_SHOT || foul < 0) return;
+    direct.add(shotTouch[id]!);
+    used.add(foul);
+    touches[foulTouch[foul]!]!.next = shotTouch[id];
+  });
   detail.shots.forEach((s, id) => {
     // Direct: a free-kick shot without a source (a free kick's header has its delivery as source).
     if (s[SH.kind] !== FREE_KICK_SHOT || s[SH.source]! >= 0) return;
     direct.add(shotTouch[id]!);
     const side = s[SH.side]!;
-    const minute = minuteIndex(s[SH.minute]!);
+    const minute = minuteIndex(s[SH.minute]!, detail.length);
     const free = detail.fouls.flatMap((f, i) =>
-      f[FO.fouledSide] === side && !used.has(i) ? [i] : [],
+      f[FO.fouledSide] === side && !used.has(i) && f[FO.penalty] !== 1 ? [i] : [],
     );
     const near = (list: number[]) =>
       list.reduce<number>(
@@ -162,8 +187,25 @@ export function buildTouches(
         -1,
       );
     let foul = near(free.filter((i) => minutes.fouls[i] === minute));
-    // A booked foul keeps its card's minute, so only an unbooked one is moved.
-    if (foul < 0) foul = near(free.filter((i) => detail.fouls[i]![FO.cardMinute]! < 0));
+    // A booked foul keeps its card's minute, so only an unbooked one is moved, and only one whose
+    // two men are on the pitch in the shot's minute (T827).
+    const here = (side: number, line: number) =>
+      detail.stints.some(
+        (st) =>
+          st[ST.side] === side &&
+          st[ST.line] === line &&
+          st[ST.from]! <= minute &&
+          st[ST.to]! > minute,
+      );
+    if (foul < 0)
+      foul = near(
+        free.filter(
+          (i) =>
+            detail.fouls[i]![FO.cardMinute]! < 0 &&
+            here(side, detail.fouls[i]![FO.fouled]!) &&
+            here(1 - side, detail.fouls[i]![FO.fouler]!),
+        ),
+      );
     if (foul < 0) return;
     used.add(foul);
     minutes.fouls[foul] = minute;
@@ -176,8 +218,13 @@ export function buildTouches(
     if (!isCarryEvent(e) || carryOwned.has(id)) return;
     const actor = e[EV.actor]!;
     const side = e[EV.side] as 0 | 1;
+    // A carry joins a release of his in its own period only (regulation or extra time).
     const mine = (t: Touch, i: number) =>
-      t.side === side && t.actor === actor && t.release !== undefined && !direct.has(i);
+      t.side === side &&
+      t.actor === actor &&
+      t.release !== undefined &&
+      !direct.has(i) &&
+      releasePeriod(detail, t) === e[EV.period];
     if (e[EV.result] !== R.complete) {
       touches.push({ side, actor, minute: minutes.events[id]!, carries: [id] });
       return;
@@ -214,7 +261,7 @@ export function buildTouches(
     let found = pick(own(minute));
     for (let k = 1; found < 0 && k <= window; k++) {
       for (const m of [minute - k, minute + k]) {
-        if (found >= 0 || m < 0 || m > 89 || m < 45 !== minute < 45) continue;
+        if (found >= 0 || m < 0 || m >= detail.length || periodAt(m) !== periodAt(minute)) continue;
         found = pick(own(m));
         if (found >= 0) minutes.events[id] = m;
       }
@@ -245,6 +292,15 @@ export function buildTouches(
     t.carries = chain;
   }
   return touches;
+}
+
+/** The detail's period code (0 regulation, 1 extra time) of a touch's release. */
+function releasePeriod(detail: MatchDetail, touch: Touch): number {
+  const r = touch.release;
+  if (r === undefined) return -1;
+  if ('event' in r) return detail.events[r.event]![EV.period]!;
+  if ('shot' in r) return detail.shots[r.shot]![SH.minute]! > 90 ? 1 : 0;
+  return detail.fouls[r.foul]![FO.period]!;
 }
 
 /** The cell a touch's release starts in, its first cell when it has none. */
