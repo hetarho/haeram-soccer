@@ -1,3 +1,5 @@
+import type { RoleId, Tactic } from './types';
+
 /** Portable script facts crossing the worker boundary (MATCH-38). */
 export type ScriptSide = 0 | 1;
 /** Pitch metres: side 0 attacks x=105, side 1 x=0; staging handles changes of ends. */
@@ -97,4 +99,20 @@ export interface MatchScript {
   seed: string;
   beats: ScriptBeat[];
   bound: true;
+}
+
+/** Presentation inputs in record line order, independent of world and roster objects. */
+export interface StagingPlayer {
+  line: number;
+  slot: number;
+  role: RoleId;
+  pace: number;
+  anticipation: number;
+  discipline: number;
+  pressing: number;
+  freedom: number;
+}
+export interface StagingSide {
+  tactic: Tactic;
+  players: StagingPlayer[];
 }

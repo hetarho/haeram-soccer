@@ -28,6 +28,8 @@ export interface ShapeContext {
   /** Side in possession. */
   team: 0 | 1;
   phase: StagingPhase;
+  /** Actual second-last defender, in each attacking side's frame, when staging bodies. */
+  offside?: readonly [number, number];
 }
 
 /** Depth within the block (0 = back, 1 = front), metres across from its long axis. */
@@ -266,7 +268,7 @@ const outfieldSpot = (ctx: ShapeContext, side: 0 | 1, slot: number, role: RoleId
   const fullDepth = clamp(ip.depthBase + ip.depthSlope * bx, ip.depthMin, ip.depthMax);
   const [ax0, ay0] = FORMATION_SHAPE[spec.tactic].ip[slot] as Anchor;
   const shape = ROLE_SHAPE[role];
-  const line = nominalLineX(ctx, side);
+  const line = ctx.offside?.[side] ?? nominalLineX(ctx, side);
   // The new 4-2-3-1 has two central attacking slots. Fit its block before placing their
   // anchors, so the onside cap cannot collapse the shadow striker onto the striker.
   const depth =

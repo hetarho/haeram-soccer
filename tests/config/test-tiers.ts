@@ -51,6 +51,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/aggregate/team.test.ts',
   'packages/engine/src/script/build.test.ts',
   'packages/engine/src/script/sample.test.ts',
+  'packages/engine/src/staging/perform.fixtures.test.ts',
   'scripts/export-settled.test.ts',
   'packages/engine/src/approvals.days.test.ts',
   'packages/engine/src/bases.test.ts',
