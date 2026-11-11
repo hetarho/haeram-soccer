@@ -1,9 +1,8 @@
 /** Nominal, portable match seconds; presentation staging owns its separate motion clock. */
 import { SCRIPT_CONFIG as FIT, SCRIPT_CONFIG as GRAMMAR } from './config';
 import { dist } from './cells';
-import type { Beat, BeatKind } from './types';
-const isRestartKind = (k: BeatKind) =>
-  k === 'kickOff' || k === 'throwIn' || k === 'goalKick' || k === 'corner' || k === 'freeKick';
+import type { Beat } from './types';
+import { isRestartKind } from './types';
 /** Nominal seconds a beat's ball travels (`grammar.speeds`); a foul has none. */
 export const travel = (b: Beat): number => {
   const speeds = GRAMMAR.speeds;
@@ -20,7 +19,7 @@ export const travel = (b: Beat): number => {
 };
 /** Seconds the restart beat `b` (the `k`th of minute `m`) takes off its minute; a half's opening kick-off none. */
 export const deadOf = (b: Beat, k: number, m: number): number =>
-  isRestartKind(b.kind) &&
+  (isRestartKind(b.kind) || b.kind === 'stoppage') &&
   !(k === 0 && b.kind === 'kickOff' && (m === 0 || m === 45 || m === 90 || m === 105))
     ? FIT.dead[b.kind as keyof typeof FIT.dead]
     : 0;

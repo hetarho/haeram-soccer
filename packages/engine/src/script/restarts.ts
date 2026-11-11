@@ -15,6 +15,10 @@ export function planRestarts(settled: MatchDetail, fixed: { events: number[]; fo
   };
   need(0, 'kickOff', [0, 0]);
   need(1, 'kickOff', [0, 0]);
+  if (settled.length === 120) {
+    need(0, 'kickOff', [0, 0]);
+    need(1, 'kickOff', [0, 0]);
+  }
   for (const e of settled.events) {
     const team = e[EV.side] as TeamId,
       at = cellCentre(team, e[EV.to]!);
@@ -30,12 +34,14 @@ export function planRestarts(settled: MatchDetail, fixed: { events: number[]; fo
     else if (s[SH.corner]) need(team, 'corner', at);
     else if (SHOT_OUTCOMES[s[SH.outcome]!] === 'miss') need(other(team), 'goalKick', at);
   }
-  for (const f of settled.fouls)
+  for (const f of settled.fouls) {
+    if (f[FO.penalty]) continue;
     need(
       f[FO.fouledSide] as TeamId,
       'freeKick',
       cellCentre(f[FO.fouledSide] as TeamId, f[FO.cell]!),
     );
+  }
   // A corner's side is not recorded by the shot/out row. Its recorded delivery can choose it.
   for (const team of [0, 1] as const) {
     demand[team]![35]! += cornerDemand[team]!;

@@ -1,7 +1,16 @@
 /** The prototype writer's values; costs below are converted to integer centimetres. */
 export const SCRIPT_CONFIG = {
   hold: [0.4, 5],
-  dead: { kickOff: 40, throwIn: 12, goalKick: 20, corner: 25, freeKick: 20 },
+  dead: {
+    kickOff: 40,
+    throwIn: 12,
+    goalKick: 20,
+    corner: 25,
+    freeKick: 20,
+    penalty: 30,
+    stoppage: 20,
+  },
+  shootout: { saved: 0.7, seconds: 30 },
   carryWindow: 3,
   carryJoin: 1000,
   cellMargin: 1.5,

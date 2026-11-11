@@ -41,7 +41,7 @@ describe('script placement windows', () => {
     expect(row.actor).toBe(11);
     expect(row.clock).toBeGreaterThanOrEqual(30 * 60);
     expect(script.beats.find((b) => b.event === 1)!.clock).toBeLessThan(30 * 60);
-    expect(writeScript(d, 'public')).toEqual({ problems: ['unsupported:substitution'] });
+    expect('script' in writeScript(d, 'public')).toBe(true);
   });
   it('a row waits for the man who wins it to be on the pitch', () => {
     const d = smallDetail([event(0, 0, 5, 17, 22, 2, 11), event(1, 0, 11, 22, 17)]);
@@ -64,10 +64,10 @@ describe('script placement windows', () => {
     expect(script.beats.find((b) => b.event === 0)!.clock).toBeLessThan(5400);
     for (const id of [1, 2]) {
       const b = script.beats.find((b) => b.event === id)!;
-      expect(b.period).toBe(1);
+      expect([3, 4]).toContain(b.period);
       expect(b.clock).toBeGreaterThanOrEqual(5400);
     }
-    expect(writeScript(d, 'public')).toEqual({ problems: ['unsupported:extraTime'] });
+    expect('script' in writeScript(d, 'public')).toBe(true);
   });
   it('a period ends with its own rows played', () => {
     const d = smallDetail(

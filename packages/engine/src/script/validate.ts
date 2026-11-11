@@ -8,6 +8,8 @@ import type { Beat, BeatKind, Script, TeamId, Vec } from './types';
 import { isRestartKind as isRestart, isPassLike } from './types';
 import { dealFixed, minuteIndex } from './touches';
 import { present, periodOf } from './windows';
+import { scriptPeriod } from './incidents';
+import { incidentProblems } from './validate-incidents';
 
 /** Inside its record minute: a fitted minute is pressed into its sixty seconds (write.ts). */
 const inMinute = (clock: number, m: number) => clock >= m * 60 && clock < (m + 1) * 60;
@@ -79,7 +81,17 @@ function rowProblems(settled: Settled, b: Beat): string[] {
       b.keyPass !== (s[SH.passer]! < 0 ? -1 : s[SH.source]!)
     )
       out.push(`${at}:qualifier`);
-    if (!(b.kind === 'shot' || (direct && b.kind === 'freeKick'))) out.push(`${at}:kind`);
+    if (!(
+      b.kind === 'shot' ||
+      (direct && b.kind === 'freeKick') ||
+      (b.shotKind === 'penalty' && b.kind === 'penalty')
+    ))
+      out.push(`${at}:kind`);
+    if (
+      b.shotKind === 'penalty' &&
+      (b.kind !== 'penalty' || !same(b.from, restartSpot('penalty', b.side, b.from)))
+    )
+      out.push(`${at}:penalty`);
     // A direct free kick is struck from its foul's spot; any other shot from its own cell.
     if (cellAt(b.side, b.from) !== s[SH.cell]) out.push(`${at}:from`);
     const outcome = { goal: 'goal', save: 'saved', block: 'blocked', miss: 'wide' }[
@@ -112,19 +124,24 @@ function rowProblems(settled: Settled, b: Beat): string[] {
         b.kind === 'carry' &&
         b.outcome === 'loose' &&
         b.opponent !== undefined) ||
-      (b.move === 'restart' && isRestart(b.kind));
+      (b.move === 'restart' && isRestart(b.kind)) ||
+      (b.kind === 'stoppage' &&
+        b.move === 'incident' &&
+        !!b.incidents?.length &&
+        same(b.from, b.to)) ||
+      (b.kind === 'shootoutKick' && b.move === 'shootout');
     if (!ok) out.push(`${at}:connective`);
   }
   return out;
 }
 
 /** Where beat `b` must start and who must play it after `p`, or the restart it must be. */
-function handOn(p: Beat, b: Beat): string[] {
+function handOn(p: Beat, b: Beat, penalty = false): string[] {
   const at = `beat:${b.index}`;
   const out: string[] = [];
   const restart = (kind: BeatKind, side: TeamId, spot: Vec) => {
-    if (b.kind !== kind || b.side !== side) out.push(`${at}:restart`);
-    else if (
+    if ((b.kind !== kind && b.kind !== 'stoppage') || b.side !== side) out.push(`${at}:restart`);
+    if (
       !same(b.from, spot) &&
       !(
         kind === 'corner' &&
@@ -142,7 +159,17 @@ function handOn(p: Beat, b: Beat): string[] {
   };
   switch (p.outcome) {
     case 'complete':
-      return (live(p.to, p.kind === 'carry' || p.kind === 'takeOn' ? p.actor : p.receiver), out);
+      return (
+        live(
+          p.to,
+          p.kind === 'stoppage'
+            ? (p.receiver ?? p.actor)
+            : p.kind === 'carry' || p.kind === 'takeOn'
+              ? p.actor
+              : p.receiver,
+        ),
+        out
+      );
     case 'loose':
       return (
         live(p.to, p.opponent ?? p.receiver, p.opponent === undefined ? p.side : other(p.side)),
@@ -153,7 +180,14 @@ function handOn(p: Beat, b: Beat): string[] {
     case 'tackled':
       return (live(p.from, p.opponent, other(p.side)), out);
     case 'foul':
-      return (restart('freeKick', p.side, restartSpot('freeKick', p.side, p.from)), out);
+      return (
+        restart(
+          penalty ? 'penalty' : 'freeKick',
+          p.side,
+          restartSpot(penalty ? 'penalty' : 'freeKick', p.side, p.from),
+        ),
+        out
+      );
     case 'offside':
       return (
         restart('freeKick', other(p.side), restartSpot('freeKick', other(p.side), p.to)),
@@ -182,7 +216,7 @@ function handOn(p: Beat, b: Beat): string[] {
 
 /** Problems of a fitted script against its settled match; empty = valid. */
 export function validateScript(settled: Settled, script: Script): string[] {
-  const problems: string[] = [];
+  const problems: string[] = incidentProblems(settled, script);
   if (script.version !== 1 || script.bound !== true || typeof script.seed !== 'string')
     problems.push('script:header');
   const seen = {
@@ -191,6 +225,9 @@ export function validateScript(settled: Settled, script: Script): string[] {
     foul: Array<number>(settled.fouls.length).fill(0),
   };
   const beats = script.beats;
+  for (const period of settled.length === 120 ? [1, 2, 3, 4] : [1, 2])
+    if (!beats.some((b) => b.period === period && b.kind === 'kickOff'))
+      problems.push(`period:${period}:missing`);
   const fixed = dealFixed(settled);
   beats.forEach((b, i) => {
     if (b.event !== undefined && b.event < seen.event.length) seen.event[b.event]!++;
@@ -220,22 +257,47 @@ export function validateScript(settled: Settled, script: Script): string[] {
       problems.push(`beat:${i}:minute`);
     if (b.receiver === b.actor && b.receiver !== undefined) problems.push(`beat:${i}:selfPass`);
     if (b.index !== i) problems.push(`beat:${i}:index`);
-    if (b.period !== periodOf(Math.floor(b.clock / 60))) problems.push(`beat:${i}:period`);
+    if (b.period !== (b.kind === 'shootoutKick' ? 5 : scriptPeriod(Math.floor(b.clock / 60))))
+      problems.push(`beat:${i}:period`);
     const minute = Math.floor(b.clock / 60);
+    const dismissedFouler =
+      b.foul !== undefined &&
+      b.incidents?.some(
+        (x) =>
+          x.side === other(b.side) &&
+          x.line === b.opponent &&
+          ['red', 'secondYellow'].includes(x.kind),
+      );
+    const onPitch = (side: TeamId, line: number) =>
+      present(settled, side, line, minute) ||
+      (b.event === undefined &&
+        b.shot === undefined &&
+        b.foul === undefined &&
+        settled.stints.some((s) => s[0] === side && s[1] === line && s[4] === minute) &&
+        settled.incidents.some(
+          (x) => x[0] === minute + 1 && x[1] === side && x[3] === line && x[2]! >= 1,
+        ));
     if (
-      !present(settled, b.side, b.actor, minute) ||
-      (b.receiver !== undefined && !present(settled, b.side, b.receiver, minute)) ||
-      (b.opponent !== undefined && !present(settled, other(b.side), b.opponent, minute))
+      b.kind !== 'shootoutKick' &&
+      b.kind !== 'stoppage' &&
+      (!onPitch(b.side, b.actor) ||
+        (b.receiver !== undefined && !onPitch(b.side, b.receiver)) ||
+        (b.opponent !== undefined && !dismissedFouler && !onPitch(other(b.side), b.opponent)))
     )
       problems.push(`beat:${i}:stint`);
-    if (b.event !== undefined && b.period !== settled.events[b.event]?.[EV.period])
+    if (b.event !== undefined && periodOf(minute) !== settled.events[b.event]?.[EV.period])
       problems.push(`beat:${i}:period`);
-    if (b.foul !== undefined && b.period !== settled.fouls[b.foul]?.[FO.period])
+    if (b.foul !== undefined && periodOf(minute) !== settled.fouls[b.foul]?.[FO.period])
       problems.push(`beat:${i}:period`);
-    if (!Number.isFinite(b.clock) || b.clock < 0 || b.clock >= settled.length * 60)
+    if (
+      !Number.isFinite(b.clock) ||
+      b.clock < 0 ||
+      (b.kind !== 'shootoutKick' && b.clock >= settled.length * 60)
+    )
       problems.push(`beat:${i}:clock`);
     const p = beats[i - 1];
     if (p !== undefined && b.clock! < p.clock!) problems.push(`beat:${i}:clock`);
+    if (b.kind === 'shootoutKick') return;
     // Each half opens with a kick-off from the centre: home's, then away's at 2700.
     const halfOf = (clock: number) => (clock < 2700 ? 0 : clock < 5400 ? 1 : clock < 6300 ? 2 : 3);
     const half = p === undefined ? 0 : halfOf(p.clock) !== halfOf(b.clock) ? halfOf(b.clock) : -1;
@@ -249,7 +311,21 @@ export function validateScript(settled: Settled, script: Script): string[] {
         problems.push(`beat:${i}:half`);
       return;
     }
-    problems.push(...handOn(p!, b));
+    let previous = p!;
+    // A stoppage at an owed restart neither takes nor replaces that restart.
+    for (let k = i - 1; previous.kind === 'stoppage' && k > 0; k--) {
+      const prior = beats[k - 1]!;
+      if (['foul', 'out', 'offside', 'goal', 'wide'].includes(prior.outcome) || prior.corner)
+        previous = prior;
+      else break;
+    }
+    problems.push(
+      ...handOn(
+        previous,
+        b,
+        previous.foul !== undefined && settled.fouls[previous.foul]?.[FO.penalty] === 1,
+      ),
+    );
   });
   for (const [what, counts] of Object.entries(seen))
     counts.forEach((n, id) => {

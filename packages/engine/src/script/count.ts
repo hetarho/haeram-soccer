@@ -9,6 +9,7 @@ import { cellAt, dist } from './cells';
 import { buildTouches, dealFixed } from './touches';
 import { minuteTimes } from './clock';
 import { planRestarts } from './restarts';
+import { incidentRows } from './incidents';
 
 export type Counted = ReturnType<typeof recordOf>;
 const shotOutcome = (b: Beat) =>
@@ -31,7 +32,7 @@ const setPiece = (b: Beat) => b.setPiece ?? 'none';
 
 /** Beat IDs mark recorded actions; coordinates/outcomes/credits supply their counted facts.
  * Only xG, line-breaking and source qualifiers are carried verbatim, since the picture cannot infer them.
- * Participation and bookings remain in the detail until incident beats arrive in T827. */
+ * Participation minutes remain the record's; incidents and knockout kicks are read from beats. */
 export function countScript(script: Script, detail: MatchDetail): Counted {
   const events: number[][] = [],
     shots: number[][] = [],
@@ -51,7 +52,7 @@ export function countScript(script: Script, detail: MatchDetail): Counted {
       EVENT_RESULTS.indexOf(eventResult(b) as (typeof EVENT_RESULTS)[number]),
       b.lineBreaking ? 1 : 0,
       b.outcome === 'offside' ? b.receiver! : b.creditedOpponent ? (b.opponent ?? -1) : -1,
-      b.period,
+      b.period <= 2 ? 0 : 1,
     ]);
   }
   for (const [i, b] of script.beats.entries()) {
@@ -59,7 +60,7 @@ export function countScript(script: Script, detail: MatchDetail): Counted {
       let passer = -1;
       // A goal's assist is read from its actual delivery. On other shots the recorded chance
       // source states whether a pass created it or the shooter made it from his own carry.
-      if (b.outcome === 'goal' || (b.keyPass !== undefined && b.keyPass >= 0)) {
+      if (b.source! >= 0 && (b.outcome === 'goal' || (b.keyPass !== undefined && b.keyPass >= 0))) {
         for (let k = i - 1; k >= 0; k--) {
           const prev = script.beats[k]!;
           if (prev.side !== b.side) break;
@@ -89,10 +90,29 @@ export function countScript(script: Script, detail: MatchDetail): Counted {
         b.outcome === 'saved' ? b.opponent! : b.keeper!,
       ]);
     }
-    if (b.foul !== undefined)
-      fouls.push([b.side, cellAt(b.side, b.from), b.opponent!, b.actor, -1, 0, b.period]);
+    if (b.foul !== undefined) {
+      const next = script.beats.slice(i + 1).find((x) => x.kind !== 'stoppage');
+      fouls.push([
+        b.side,
+        cellAt(b.side, b.from),
+        b.opponent!,
+        b.actor,
+        b.incidents?.length ? Math.floor(b.clock / 60) + 1 : -1,
+        next?.kind === 'penalty' ? 1 : 0,
+        b.period <= 2 ? 0 : 1,
+      ]);
+    }
   }
-  const counted = recordOf({ ...detail, events, shots, fouls });
+  const counted = recordOf({
+    ...detail,
+    events,
+    shots,
+    fouls,
+    incidents: incidentRows(script.beats),
+    shootout: script.beats
+      .filter((b) => b.kind === 'shootoutKick')
+      .map((b) => [b.side, b.actor, b.outcome === 'goal' ? 1 : 0]),
+  });
   // A restart is a script event, including one with no recorded delivery. Count it directly.
   const restarts = {
     corner: TD.corners,
@@ -135,6 +155,10 @@ export function compareRecord(detail: MatchDetail, counted: Counted): string[] {
     rows(`player:${i}:M`, got?.metrics, p.metrics);
     rows(`player:${i}:PD`, got?.detail, p.detail);
   });
+  if (JSON.stringify(counted.shootout) !== JSON.stringify(expected.shootout)) out.push('shootout');
+  const incidents = (r: Counted) => r.incidents?.map((x) => JSON.stringify(x)).sort();
+  if (JSON.stringify(incidents(counted)) !== JSON.stringify(incidents(expected)))
+    out.push('incidents');
   return out;
 }
 
