@@ -1,5 +1,5 @@
 # HIST Durable metrics and history
-> r24 | Define the browser-demo rules for durable metrics and history.
+> r25 | Define the browser-demo rules for durable metrics and history.
 
 ## decisions
 - HIST-1 [o] Always retain own-club season/career metrics, own settled match scores/player contributions/highlights, personnel tenures and meaningful commercial decisions.
@@ -54,7 +54,7 @@
   - per-match shot maps, heat maps, pass networks and tactical reports live for the current season only; at the season close they become one season heat map per own player, kept with the season (→MATCH-5).
   - other leagues' discipline tables are current-season facts (→LEAGUE-15); a closed season keeps none for players of clubs nobody owns.
 
-- HIST-17 [o] Complete numerical results on either engine path (→MATCH-26/27) enter the same world records and current-season comparison system.
+- HIST-17 [o] Every settled match's complete numerical result (→MATCH-26/27) enters the same world records and current-season comparison system.
   - accumulate basic and advanced counters for every club and its named participating players under their stable identities (→WORLD-6/11), separated by competition. A transfer retains actual per-club contributions; retired or departed players' recorded contributions still reconcile with their club's totals.
   - keep each aggregate's tracking boundary and actual appearances/minutes. Earlier supported careers start new counters at activation; absent historical values remain absent and never become synthetic zeros, replayed fixtures or invented past seasons.
   - NPC per-frame/per-action traces and full individual match archives remain excluded (→HIST-2). Current-season aggregates replace transient full match records after settlement; older NPC retention remains →HIST-3/13/14, and own-match material and career retention remain →HIST-1/16.
@@ -93,6 +93,7 @@
 
 
 ## chg
+- r25 261111 HIST-17✎ results on either engine path→every settled match's result (one result path, →MATCH-22)
 - r24 261110 HIST-16✎ implicit own-card contribution scope→recorded match-side attribution; HIST-22✎ missing-only reconstruction→missing or recognized obsolete summaries once, current reloads stay incremental
 - r23 261109 HIST-21✎ pre-owner seasons kept apart from the owner's era→marked off from it by the takeover (one season list, →WEB-54)
 - r22 261103 HIST-11✎ regenerate on read and never store→record source-linked news once and retain across seasons with bounded publication; HIST-13✎ appearance counts derived on read→incremental retained-participation totals; HIST-22+ incremental season/career read summaries with reconstruction and duplicate protection

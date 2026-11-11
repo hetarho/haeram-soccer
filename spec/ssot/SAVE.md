@@ -1,5 +1,5 @@
 # SAVE Browser persistence and protocol
-> r66 | Define the browser-demo rules for browser persistence and protocol.
+> r67 | Define the browser-demo rules for browser persistence and protocol.
 
 ## decisions
 - SAVE-1 [o] Protocol and save schema start at version 1; engine/catalog versions and world revision are explicit and checked.
@@ -77,8 +77,8 @@
   - Identity edits never rewrite a recorded appearance, including the currently observed settled match.
   - Playback without historical identity information retains that absence and displays the unrecorded status; never backfill an invented historical kit from today's design.
 
-- SAVE-23 [o] The continuous-match and complete aggregate-result model (→MATCH-12/17/22/26/28) activates prospectively in supported rules-4.0.0 careers without resetting retained gameplay.
-  - a later match-model revision activates the same way: a career on an earlier revision moves to the new one prospectively at the next safe boundary, every settled match keeps the revision that settled it (its replay plays under that revision), and no match is resimulated. ← one football for every career going forward
+- SAVE-23 [o] A match model (→MATCH-1/22/26/38/39) activates prospectively in supported rules-4.0.0 careers without resetting retained gameplay.
+  - a later match-model revision activates the same way: a career on an earlier revision moves to the new one prospectively at the next safe boundary, every settled match keeps the revision that settled it as a label on its record, replays from that record alone (→WEB-23), and no match is resimulated; an earlier revision's match code is therefore not kept. ← one football for every career going forward
   - persist a declared match-model revision and the first tracked boundary of newly available counters. New careers start with full coverage; supported older careers preserve settled scores, contributions, designs, money, dates, personnel and history, and use the new model only for future unsettled fixtures. No backfill or resimulation of settled matches is allowed.
   - model activation is one validated writer upgrade through →SAVE-3/6/10. A queued or already revealed own-match playback completes under its settled model; activation waits for that safe boundary. Read-only views do not write or switch a career's persisted model.
   - checkpoints carrying the new aggregates/model metadata declare a container version that an older reader must refuse instead of silently dropping fields. Preserve supported older container readers, future-version protection and failed-write/export recovery (→SAVE-5/11/13).
@@ -109,6 +109,7 @@
   - IndexedDB checkpoints retain generation ordering, verified previous-copy recovery, unsupported-save protection and explicit deletion (→!SAVE-3/5/6/11). This policy supersedes historical release-reset clauses, without changing simulation rules or pruning career facts.
 
 ## chg
+- r67 261111 SAVE-23✎ the continuous-match and complete aggregate-result model→a match model; a settled match replays under its revision→keeps the revision as a label and replays from its record alone, earlier revisions' match code not kept
 - r66 261110 SAVE-28✎ every unsupported summary refused→recognized obsolete career-card cache omitted and reconstructed once; obsolete-content compatibility not required, current validation and unknown/future rejection preserved
 - r65 261103 SAVE-2/3/4/5/10/11/14/16/18/19/25/26✎ retire localStorage checkpoint compatibility, fallback and startup cleanup; SAVE-29+ beta IndexedDB-only checkpoints, current device metadata retained
 - r64 261103 SAVE-2✎ gzip threshold only then maximum Brotli→also accept budget-verified gzip for IndexedDB/export; SAVE-4✎ all stores 3 MiB UTF-16→IndexedDB 6 MiB, fallback 3 MiB with unchanged 3.5 MiB total; portable file 8 MiB and decompressed 32 MiB unchanged

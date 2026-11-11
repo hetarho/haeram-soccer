@@ -1,5 +1,5 @@
 # WEB Browser game delivery
-> r214 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
+> r215 | Validate football-enthusiast depth and repeat play in a responsive browser prototype before a paid mobile app.
 
 ## decisions
 - WEB-1 [o] First release is a static, account-free web game with Korean as its default locale (→WEB-90); Supabase and Flutter are deferred.
@@ -102,6 +102,7 @@
   - Final analysis stays hidden until live playback reaches the end or the user explicitly selects the result; absent samples display an unavailable value.
 
 - WEB-23 [o] After a live result has been revealed, or while viewing an archived match, explicit detail offers touchable kickoff, halftime, final-whistle, recorded-goal, red-card and substitution navigation, with added time shown as 45+n and 90+n. Seeking pauses presentation and preserves settled results and the game date. Goal buttons show recorded running scores in chronological order; historical playback never fabricates minute-level action statistics.
+  - a moment whose picture is not staged yet (→MATCH-39) is reached after a short preparing state, never by showing another instant; the result itself — score, scorers and the final analysis — shows at once.
 
 - WEB-24 [o] Own-roster analysis supports position or line, name and minimum-minute filters and sorting by ability, minutes, fatigue and goals per 90.
   - Player details follow the selected current-season or own-club career scope, expose totals and 90-minute rates with real minute denominators, and mark samples below 180 minutes.
@@ -265,7 +266,7 @@
   - the commentary line reads the latest notable event with its minute as spatial commentary (→MATCH-24): the opening kick-off, whistles, shots, corners and penalties, offsides, cards, injuries and substitutions; the build-up between them (passes, carries, take-ons, clearances, throw-ins) goes unsaid. 해설 열기/닫기 shows every such line so far, newest first.
   - charts switch between rolling 10-minute possession share, cumulative xG with goal marks and cumulative shots; they reveal data only up to the presented minute.
   - actions: preparation and the primary action, which reads "결과 보기" while the match plays and "홈으로" after it ends. The completed-match action never advances to another fixture.
-  - details (moments, report, scrubber, stats) open as a dialog from the chart header's 상세 or the 경기 상세 action; tapping a player on the pitch opens his current decision and traits in a dialog. Either dialog holds the match still while open and lets it play on as it was once closed. Recorded goal-scene replay has a reachable shortcut under →!WEB-105.
+  - details (moments, report, scrubber, stats) open as a dialog from the chart header's 상세 or the 경기 상세 action; tapping a player on the pitch opens what he is doing, his traits and his tendencies in a dialog. Either dialog holds the match still while open and lets it play on as it was once closed. Recorded goal-scene replay has a reachable shortcut under →!WEB-105.
   - once the match ends, our league's overview and the table after it (six rows) show below the theatre.
   - New live observation starts only from the next own fixture's match-eve dialog, with exactly one day remaining; other controls never advance the calendar to manufacture a watch entry. Home may resume an unfinished existing playback without starting another fixture. Archived replay remains available in records. Preserve busy/read-only/error/critical protections.
 
@@ -280,7 +281,7 @@
   - On phones it is one line across the lower play area — at most 44 CSS px tall, the headline cut with an ellipsis, no detail line — with a light confetti burst that falls once.
   - "뉴스 표시 안 함" (in the inbox and the news sheet, kept per browser) turns banners off: achievements then only collect behind the news button.
   - Reduced motion shows the banner without confetti.
-- WEB-53 [o] A metrics glossary explains every advanced term with the industry definition (Opta, StatsBomb, FBref), this engine's exact count and how to read it, with typical ranges; it also maps the pitch's 40 named cells (→MATCH-14) and the per-touch tags (→MATCH-15) in the words the commentary uses. Metric names in reports, player details and the season review open their entry; the HUD menu opens the whole glossary.
+- WEB-53 [o] A metrics glossary explains every advanced term with the industry definition (Opta, StatsBomb, FBref), this engine's exact count and how to read it, with typical ranges; it also maps the pitch's 40 named cells (→MATCH-14) and what an action is recorded with (→MATCH-15) in the words the commentary uses. Metric names in reports, player details and the season review open their entry; the HUD menu opens the whole glossary.
 - WEB-54 [o] History › 클럽 기록실 opens on 시즌별 기록, followed by 구단 성장, 명예·최고기록, 선수 통산, 이적 기록, 감독 이력 and 발롱도르 (→WEB-111); one focused view at a time. The generic 요약 gate and competing season-list/detail categories are removed.
   - 시즌별 기록 starts with the current season distinguished by a subtle background and leading accent rule, then closed seasons newest first. Keep current and closed seasons as compact single-line rows; the current status is accessible without a separate visible 진행 중 label. A row opens our selected season's review as a records sub-screen, with 분석, 경기 and 결정 views and the existing competition filter governing analysis/export/matches.
   - 시즌별 기록 is one table for the whole club history, newest first: the owner's seasons, then a full-width rule naming the takeover season (구단 인수), then the bought club's seasons before the owner (→HIST-21), which open no review; the honours before the owner sit in the table's note. A club bought in the world's first season has no rule and no earlier rows. ← one timeline reads the club's past and the owner's era together; separate panels split one history
@@ -429,6 +430,7 @@
   - approvals waiting never hold the next advance. Resolving the group leaves manual progression stopped until another explicit progression action (→WEB-5/42).
 
 - WEB-84 [o] An own match of the current season opens its post-match material (→MATCH-25) from the final analysis and from the fixture lists: shot map, heat maps by player and side, pass network and tactical report, each on the 1.9:1 pitch with the cells' names on touch. After the season close those matches say their maps are not kept and point to the players' season heat maps. ← grounds for manager and signing decisions without filling the save
+  - the pass network shows one side at a time as football media draw it: a numbered circle for each player at his average position, sized by his passes; a line between two players as wide as the passes played between them, with an arrowhead for each direction played; touching a circle or a line names the players and the counts.
 - WEB-99 [o] Every heat map — a match's by player or side and a player's season map (→WEB-59) — reads as a broadcast heat map: the 40-cell shares (→MATCH-14) drawn as smooth overlapping blobs over the pitch lines, coloured on one continuous cold-to-hot ramp (transparent where nothing happened, blue through green and yellow to red at the most touched area) and scaled to the map's own maximum. ← separate shaded cells read as a spreadsheet, not as where a player lived
   - drawn by the browser's own 2D canvas inside the lazily loaded screens that show it (→ARCH-28), with no new runtime dependency; the same input always draws the same picture.
   - cell names on touch, the pitch's 1.9:1 ratio, a text summary for assistive technology and every theme's pitch colours stay (→WEB-17/38/91); reduced motion draws without animation.
@@ -610,6 +612,7 @@
 - Presentation: shared preferences → registry-derived locale/theme choice → validated resources → current session presentation, independently of game saves.
 
 ## chg
+- r215 261111 WEB-23✎ +a moment not staged yet waits on a preparing state, the result shows at once · WEB-50✎ a tapped player's current decision and traits→what he is doing, his traits and tendencies · WEB-53✎ the per-touch tags→what an action is recorded with · WEB-84✎ +the pass network's look: circles at average positions sized by passes, lines as wide as the pair's passes with direction arrows
 - r214 261110 WEB-56✎ trouble never stops the clock→the start of a 파산 위기 (club's first round in debt or 구단주 파산 위기) stops a running automatic clock once behind a warning dialog; the career's end replaces every view with the game-over page→game-over on home, every other menu readable
 - r213 261109 WEB-54✎ the owner's record beside the club's figures on each owned row→a 순위/재정 switch between the two column groups over the same rows
 - r212 261109 WEB-54✎ 시즌별 기록 list then 구단주 시즌 and 구단주 이전 panels→one newest-first table with the owner's record on each owned season and a takeover rule above the seasons before the owner
