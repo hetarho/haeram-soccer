@@ -30,6 +30,7 @@ import {
   type AggregateExposure,
 } from './participation';
 import { creditMove, creditShot, creditWin, creditCard, moveTraits } from './count';
+import { commonSpan, pairParticipants, playingSpan } from './timeline';
 import type {
   AggregateAttribute,
   AggregateAttributionTrace,
@@ -270,6 +271,16 @@ class SideLines {
     return this.input.sides[this.side].lines.findIndex((l) => l.id === id);
   }
 
+  spans(period: AggregatePeriod) {
+    const bounds = AGGREGATE_CONFIG.periods[period];
+    return this.rows.map((_, line) =>
+      commonSpan(
+        bounds,
+        playingSpan(this.participation.stints[this.side].filter((s) => s.line === line)),
+      ),
+    );
+  }
+
   /**
    * A line's share of a role over one exposure of `minutes` around `mid`. `terms[at]`, when
    * given, keeps the exposure's skill factor for the role's attribute: roles that read the same
@@ -447,12 +458,13 @@ class SideLines {
     role: Role,
     except: readonly number[] = [],
     cell?: number,
+    inPossession = true,
   ): number {
     const here = this.present(minute).filter((p) => !except.includes(p.line));
     const weights = here.map(
       (p) =>
         this.share(p.line, p.slot, 1, minute - 0.5, role) *
-        (this.plan.placed && cell !== undefined ? this.place(p.slot, cell, true) : 1),
+        (this.plan.placed && cell !== undefined ? this.place(p.slot, cell, inPossession) : 1),
     );
     let i = weightedIndex(r, weights);
     if (i < 0) i = Math.floor(r() * here.length);
@@ -593,6 +605,7 @@ export function attributePlayerFacts(
         credits,
         trace,
         plan.placed,
+        plan.placed ? sideDraw(streams, 'fouls', side, period) : undefined,
       );
   for (const x of participation.incidents) {
     const d = sides[x.side].rows[sides[x.side].lineOf(x.player)]!.detail;
@@ -644,10 +657,111 @@ function attributeSide(
   credits: AggregateShotCredit[],
   trace: AggregateAttributionTrace | undefined,
   placed: boolean,
+  causalDraw?: Rng,
 ) {
   const own = sides[side],
     opp = sides[side === 0 ? 1 : 0];
   const ledger = facts.ledger.sides[side];
+  // A penalty's cause fixes its clock before the kick's participants are drawn. Other
+  // fixtures retain the shots-first stream order, including the unplaced revisions.
+  const earlyFouls =
+    placed && ledger.shots.some((s) => s.period === period && s.kind === 'penalty');
+  function attributeFouls(draw: Rng = r) {
+    // Fouls the opponent committed on this side: a booked foul is his, then the rest by weight.
+    const { from, to } = AGGREGATE_CONFIG.periods[period];
+    const fouls = ledger.fouled.filter((f) => f.period === period);
+    const left = fouls.map((f) => f.n);
+    const bookedCounts = fouls.map(() => 0);
+    const kicks = ledger.shots.filter((s) => s.period === period && s.kind === 'penalty');
+    let kickAt = 0;
+    const penaltyShots = fouls.map((f) => {
+      const shots = kicks.slice(kickAt, kickAt + f.penalties);
+      kickAt += f.penalties;
+      return shots;
+    });
+    /** With a trace, each row's entry, found by its index in the ledger's `fouled`. */
+    const foulTrace: AggregateTraceFouls[] | undefined =
+      trace && fouls.map((f) => trace.fouls[side][ledger.fouled.indexOf(f)]!);
+    const booked = participation.incidents.filter(
+      (x) =>
+        x.side !== side &&
+        x.kind !== 'sub' &&
+        x.kind !== 'injury' &&
+        x.reason !== 'dissent' &&
+        x.minute > from &&
+        x.minute <= to,
+    );
+    for (const card of booked) {
+      const i = weightedIndex(draw, left);
+      if (i < 0) break;
+      left[i]!--;
+      const f = fouls[i]!;
+      const kick = penaltyShots[i]![bookedCounts[i]!];
+      if (placed && kick) kick.minute = card.minute;
+      bookedCounts[i]!++;
+      opp.rows[opp.lineOf(card.player)]!.detail[PD.fouls]!++;
+      const fouled = own.pickAt(draw, card.minute, ROLES.carry(cellBand(f.cell)), [], f.cell);
+      own.rows[fouled]!.detail[PD.foulsWon]!++;
+      foulTrace?.[i]!.booked.push({
+        fouler: opp.lineOf(card.player),
+        fouled,
+        incident: participation.incidents.indexOf(card),
+      });
+    }
+    fouls.forEach((f, i) => {
+      const k = left[i]!;
+      if (k === 0) return;
+      const band = cellBand(f.cell);
+      const role = ROLES.defend(LAST_BAND - band, 'tackling');
+      if (placed && f.penalties) {
+        const fouledLines = own.rows.map(() => 0),
+          foulerLines = opp.rows.map(() => 0);
+        const pairs: { actor: number; other: number }[] = [];
+        for (const kick of penaltyShots[i]!.slice(bookedCounts[i])) {
+          const actor = own.pickAt(draw, kick.minute, ROLES.carry(band), [], f.cell);
+          const other = opp.pickAt(draw, kick.minute, role, [], opposingCell(f.cell), false);
+          fouledLines[actor]!++;
+          foulerLines[other]!++;
+          pairs.push({ actor, other });
+        }
+        fouledLines.forEach((x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x));
+        foulerLines.forEach((x, line) => (opp.rows[line]!.detail[PD.fouls]! += x));
+        if (foulTrace)
+          Object.assign(foulTrace[i]!, { fouled: fouledLines, fouler: foulerLines, pairs });
+        return;
+      }
+      const fouledLines = multinomialDraw(
+        draw,
+        k,
+        own.weightsAt(period, ROLES.carry(band), f.cell, true),
+      );
+      const foulerLines = multinomialDraw(
+        draw,
+        k,
+        opp.weightsAt(period, role, opposingCell(f.cell), false),
+      );
+      if (placed) {
+        const pairs = pairParticipants(
+          fouledLines,
+          foulerLines,
+          own.spans(period),
+          opp.spans(period),
+          opp.weightsAt(period, role, opposingCell(f.cell), false),
+          (weights) => weightedIndex(draw, weights),
+        );
+        foulerLines.fill(0);
+        for (const pair of pairs) foulerLines[pair.other]!++;
+        if (foulTrace) foulTrace[i]!.pairs = pairs;
+      }
+      fouledLines.forEach((x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x));
+      foulerLines.forEach((x, line) => (opp.rows[line]!.detail[PD.fouls]! += x));
+      if (foulTrace) {
+        foulTrace[i]!.fouled = fouledLines.slice();
+        foulTrace[i]!.fouler = foulerLines.slice();
+      }
+    });
+  }
+  if (earlyFouls) attributeFouls(causalDraw);
   // Shots first: their minute fixes who could take them and who could have made them.
   const pinned = new Map<number, number[]>();
   ledger.shots.forEach((shot, index) => {
@@ -687,6 +801,9 @@ function attributeSide(
   const loose: number[] = [];
   /** With a trace, the move index of each pushed loose entry, beside `loose`. */
   const looseMoves: number[] | undefined = trace && [];
+  const looseActors: number[][] = [];
+  const ownSpans = placed ? own.spans(period) : [];
+  const oppSpans = placed ? opp.spans(period) : [];
   const moveTrace = trace?.moves[side];
   const actorWeights = own.fitMoves(period, ledger.moves, pinned);
   const winnerWeights = opp.fitMoves(period, ledger.moves, pinned, true);
@@ -711,7 +828,8 @@ function attributeSide(
     for (let line = 0; line < n; line++)
       if (attempts[line]! > 0)
         creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
-    const traced: AggregateTraceMove | undefined = moveTrace?.[index];
+    const traced: AggregateTraceMove | undefined =
+      moveTrace?.[index] ?? (placed ? emptyTraceMove() : undefined);
     if (traced) {
       traced.attempts = attempts.slice();
       traced.completed = completed.slice();
@@ -727,7 +845,10 @@ function attributeSide(
         for (let k = 0; k < move.offside; k++) {
           const actor = weightedIndex(r, failed);
           failed[actor]!--;
-          const eligible = receivers.map((w, line) => (line === actor ? 0 : w));
+          const eligible = receivers.map((w, line) => {
+            const span = commonSpan(ownSpans[actor]!, ownSpans[line]!);
+            return line !== actor && span.to > span.from ? w : 0;
+          });
           const receiver = weightedIndex(r, eligible);
           offside[receiver]!++;
           traced?.offsidePairs!.push({ actor, receiver });
@@ -739,6 +860,15 @@ function attributeSide(
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
       if (traced) traced.offside = offside.slice();
     }
+    // This is the same failed-attempt order the detail expands, after its explicit offsides.
+    const failures = placed ? attempts.map((a, line) => a - completed[line]!) : [];
+    for (const pair of traced?.offsidePairs ?? []) failures[pair.actor]!--;
+    const failedLines = failures.flatMap((k, line) => Array<number>(k).fill(line));
+    const actorCounts = (offset: number, count: number) => {
+      const counts = own.rows.map(() => 0);
+      for (const line of failedLines.slice(offset, offset + count)) counts[line]!++;
+      return counts;
+    };
     // The ball won from this group: interceptions where the pass was played to, tackles on a
     // failed carry or take-on where it started; in the winner's high-turnover zone (MATCH-13) each
     // starts a high turnover, as does a loose ball recovered there (ledger.ts `looseBalls`).
@@ -748,6 +878,8 @@ function attributeSide(
       if (k > 0) {
         loose.push(traits.toBand, k);
         looseMoves?.push(index);
+        if (placed)
+          looseActors.push(actorCounts(move.intercepted + move.outTouch + move.outByline, k));
       }
     }
     const won = pass ? move.intercepted : move.attempts - move.completed;
@@ -760,6 +892,19 @@ function attributeSide(
         winnerWeights.get(index) ?? opp.weights(period, role),
         opp.split,
       );
+      if (placed) {
+        const pairs = pairParticipants(
+          actorCounts(0, won),
+          split,
+          ownSpans,
+          oppSpans,
+          winnerWeights.get(index) ?? opp.weights(period, role),
+          (weights) => weightedIndex(r, weights),
+        );
+        split.fill(0);
+        for (const pair of pairs) split[pair.other]!++;
+        traced!.wins = pairs;
+      }
       if (traced) traced.won = split.slice();
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
@@ -768,62 +913,24 @@ function attributeSide(
       }
     }
   }
-  // Fouls the opponent committed on this side: a booked foul is his, then the rest by weight.
-  const { from, to } = AGGREGATE_CONFIG.periods[period];
-  const fouls = ledger.fouled.filter((f) => f.period === period);
-  const left = fouls.map((f) => f.n);
-  /** With a trace, each row's entry, found by its index in the ledger's `fouled`. */
-  const foulTrace: AggregateTraceFouls[] | undefined =
-    trace && fouls.map((f) => trace.fouls[side][ledger.fouled.indexOf(f)]!);
-  const booked = participation.incidents.filter(
-    (x) =>
-      x.side !== side &&
-      x.kind !== 'sub' &&
-      x.kind !== 'injury' &&
-      x.reason !== 'dissent' &&
-      x.minute > from &&
-      x.minute <= to,
-  );
-  for (const card of booked) {
-    const i = weightedIndex(r, left);
-    if (i < 0) break;
-    left[i]!--;
-    const f = fouls[i]!;
-    opp.rows[opp.lineOf(card.player)]!.detail[PD.fouls]!++;
-    const fouled = own.pickAt(r, card.minute, ROLES.carry(cellBand(f.cell)), [], f.cell);
-    own.rows[fouled]!.detail[PD.foulsWon]!++;
-    foulTrace?.[i]!.booked.push({
-      fouler: opp.lineOf(card.player),
-      fouled,
-      incident: participation.incidents.indexOf(card),
-    });
-  }
-  fouls.forEach((f, i) => {
-    const k = left[i]!;
-    if (k === 0) return;
-    const band = cellBand(f.cell);
-    const fouledLines = multinomialDraw(
-      r,
-      k,
-      own.weightsAt(period, ROLES.carry(band), f.cell, true),
-    );
-    fouledLines.forEach((x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x));
-    const role = ROLES.defend(LAST_BAND - band, 'tackling');
-    const foulerLines = multinomialDraw(
-      r,
-      k,
-      opp.weightsAt(period, role, opposingCell(f.cell), false),
-    );
-    foulerLines.forEach((x, line) => (opp.rows[line]!.detail[PD.fouls]! += x));
-    if (foulTrace) {
-      foulTrace[i]!.fouled = fouledLines.slice();
-      foulTrace[i]!.fouler = foulerLines.slice();
-    }
-  });
+  if (!earlyFouls) attributeFouls();
   // Who recovered the loose balls, drawn last so every split above keeps its draws (T327).
   for (let i = 0; i < loose.length; i += 2) {
     const role = ROLES.defend(LAST_BAND - loose[i]!, 'positioning');
     const recovered = multinomialDraw(r, loose[i + 1]!, opp.weights(period, role));
+    if (placed) {
+      const pairs = pairParticipants(
+        looseActors[i / 2]!,
+        recovered,
+        ownSpans,
+        oppSpans,
+        opp.weights(period, role),
+        (weights) => weightedIndex(r, weights),
+      );
+      recovered.fill(0);
+      for (const pair of pairs) recovered[pair.other]!++;
+      if (looseMoves) moveTrace![looseMoves[i / 2]!]!.recoveries = pairs;
+    }
     recovered.forEach((x, line) => (opp.rows[line]!.detail[PD.highTurnovers]! += x));
     if (looseMoves) moveTrace![looseMoves[i / 2]!]!.recovered = recovered.slice();
   }

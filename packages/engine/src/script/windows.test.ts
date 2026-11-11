@@ -95,4 +95,40 @@ describe('script placement windows', () => {
     expect(t.find((x) => x.side === 0)!.carries).toEqual([]);
     expect(t.find((x) => x.side === 1)!.carries).toEqual([1]);
   });
+  it('a foul waits until its credited opponent has entered at the substitution stop', () => {
+    const d = smallDetail([], [], [[0, 22, 11, 6, -1, 0, 0]]);
+    sub(d, 1, 9, 75);
+    const script = write(d);
+    const foul = script.beats.find((b) => b.foul === 0)!;
+    const entry = script.beats.find((b) => b.incidents?.some((x) => x.kind === 'sub'))!;
+    expect(entry.index).toBeLessThan(foul.index);
+    expect(foul.clock).toBeGreaterThanOrEqual(75 * 60);
+  });
+  it.each(['carry', 'offside', 'foul', 'source', 'penalty'] as const)(
+    'rejects impossible hand-authored %s participants or clocks',
+    (kind) => {
+      const d = smallDetail();
+      if (kind === 'foul') {
+        d.fouls.push([0, 22, 11, 1, -1, 0, 0]);
+        sub(d, 0, 1, 62);
+        sub(d, 1, 1, 87);
+      } else if (kind === 'source') {
+        d.events.push(event(0, 0, 1, 22, 32));
+        d.shots.push([0, 75, 32, 0, 0, 20, 3, 0, 9, 1, 0, 0]);
+        sub(d, 0, 1, 62);
+      } else if (kind === 'penalty') {
+        d.fouls.push([0, 32, 1, 9, 25, 1, 0]);
+        d.incidents.push([25, 1, 0, 1, -1, 0]);
+        d.shots.push([0, 75, 32, 3, 0, 76, 3, 0, 9, -1, -1, 0]);
+        d.penalties.push([0, 0]);
+      } else {
+        d.events.push(
+          kind === 'offside' ? event(0, 0, 1, 25, 30, 1, 11) : [0, 0, 6, 0, 23, 23, 1, 8, 0, 11, 0],
+        );
+        sub(d, 0, 1, kind === 'offside' ? 75 : 62);
+        if (kind === 'carry') sub(d, 1, 1, 87);
+      }
+      expect('problems' in writeScript(d, 'impossible-unit')).toBe(true);
+    },
+  );
 });

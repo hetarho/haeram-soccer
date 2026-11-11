@@ -1,0 +1,543 @@
+{
+  "command": "pnpm exec tsx artifacts/benchmarks/T833/settlement.ts",
+  "at": "2026-11-11T15:27:09.451Z",
+  "node": "v26.8.1",
+  "head": "b5399b87d13e40e3497470abd16a55416a285ab8",
+  "patchSha256": "08612ccc973bca0dcbe2e8721d078c1a3e1865c539e2b8e4676b65162bf2359f",
+  "machine": {
+    "platform": "darwin",
+    "release": "25.5.0",
+    "arch": "arm64",
+    "cpu": "Apple M1 Max",
+    "cores": 10,
+    "loadBefore": [
+      4.36279296875,
+      6.2705078125,
+      6.02734375
+    ],
+    "loadAfter": [
+      4.25341796875,
+      6.2158203125,
+      6.00927734375
+    ],
+    "totalMemory": 34359738368,
+    "freeMemory": 2129756160
+  },
+  "methodology": "One immutable 2024 BEL takeover, same own fixture inputs on revisions 10/11, unobserved. Two warmup pairs then 20 measured pairs, order alternating. Includes record/detail/script/recount/material on revision 11; no staging or calendar progression. Wall time and process CPU are descriptive, not a speed-up claim.",
+  "seed": "settlement-833",
+  "summaries": [
+    {
+      "revision": 10,
+      "fixtures": 20,
+      "medianMilliseconds": 139.06262500000003,
+      "medianCpuMilliseconds": 217.5795,
+      "material": 20,
+      "scriptFailures": 0,
+      "invalidRecords": 0
+    },
+    {
+      "revision": 11,
+      "fixtures": 20,
+      "medianMilliseconds": 178.23160399999983,
+      "medianCpuMilliseconds": 217.679,
+      "material": 19,
+      "scriptFailures": 1,
+      "invalidRecords": 0
+    }
+  ],
+  "rows": [
+    {
+      "10": {
+        "milliseconds": 249.82720800000004,
+        "cpuMilliseconds": 563.046,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 273.96458299999983,
+        "cpuMilliseconds": 506.335,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:1:0",
+      "warmup": true
+    },
+    {
+      "10": {
+        "milliseconds": 192.69941700000004,
+        "cpuMilliseconds": 406.083,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 242.64412500000003,
+        "cpuMilliseconds": 387.766,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:2:0",
+      "warmup": true
+    },
+    {
+      "10": {
+        "milliseconds": 154.57070799999997,
+        "cpuMilliseconds": 314.661,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 199.95425,
+        "cpuMilliseconds": 303.229,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:3:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 156.25641700000006,
+        "cpuMilliseconds": 309.531,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 252.4356250000003,
+        "cpuMilliseconds": 353.841,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:4:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 129.27754200000027,
+        "cpuMilliseconds": 223.186,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 194.45683400000007,
+        "cpuMilliseconds": 253.475,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:5:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 141.63287500000024,
+        "cpuMilliseconds": 157.282,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 143.39879199999996,
+        "cpuMilliseconds": 175.942,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:6:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 153.60795800000005,
+        "cpuMilliseconds": 221.125,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 180.41037499999993,
+        "cpuMilliseconds": 204.488,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:7:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 158.763958,
+        "cpuMilliseconds": 292.113,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 244.03479199999992,
+        "cpuMilliseconds": 356.927,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:8:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 136.41416700000036,
+        "cpuMilliseconds": 214.034,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 194.1614999999997,
+        "cpuMilliseconds": 286.109,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:9:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 151.93875000000025,
+        "cpuMilliseconds": 206.573,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 171.20924999999988,
+        "cpuMilliseconds": 201.966,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:10:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 177.63016599999992,
+        "cpuMilliseconds": 325.657,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 252.4312920000002,
+        "cpuMilliseconds": 291.109,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:11:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 145.70166700000027,
+        "cpuMilliseconds": 246.363,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 167.49424999999974,
+        "cpuMilliseconds": 218.604,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:12:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 135.04749999999967,
+        "cpuMilliseconds": 166.092,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 228.26533300000028,
+        "cpuMilliseconds": 287.843,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:13:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 129.41625000000022,
+        "cpuMilliseconds": 171.85,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 135.9545420000004,
+        "cpuMilliseconds": 144.844,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:14:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 117.99162500000057,
+        "cpuMilliseconds": 135.232,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 161.0193330000002,
+        "cpuMilliseconds": 175.931,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:16:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 135.17224999999962,
+        "cpuMilliseconds": 280.972,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 182.15049999999974,
+        "cpuMilliseconds": 194.384,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:17:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 145.53779199999917,
+        "cpuMilliseconds": 257.214,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 158.07024999999976,
+        "cpuMilliseconds": 162.338,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:18:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 136.4923749999998,
+        "cpuMilliseconds": 231.207,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 146.49512500000037,
+        "cpuMilliseconds": 158.989,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:19:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 123.52233399999932,
+        "cpuMilliseconds": 160.373,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 187.29316600000038,
+        "cpuMilliseconds": 226.616,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:20:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 128.9706669999996,
+        "cpuMilliseconds": 137.259,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 168.1432909999994,
+        "cpuMilliseconds": 217.871,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:21:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 141.91783299999952,
+        "cpuMilliseconds": 179.396,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 145.9449999999997,
+        "cpuMilliseconds": 165.78,
+        "model": "scripted-aggregate-11",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:22:0",
+      "warmup": false
+    },
+    {
+      "10": {
+        "milliseconds": 133.66404199999943,
+        "cpuMilliseconds": 145.016,
+        "model": "continuous-aggregate-10",
+        "problems": [],
+        "recordIssues": [],
+        "material": true,
+        "frames": 0
+      },
+      "11": {
+        "milliseconds": 176.05283299999974,
+        "cpuMilliseconds": 217.487,
+        "model": "scripted-aggregate-11",
+        "problems": [
+          "beat:1413:lineup"
+        ],
+        "recordIssues": [],
+        "material": false,
+        "frames": 0
+      },
+      "fixture": "2024:BEL:1:0:23:0",
+      "warmup": false
+    }
+  ],
+  "memory": {
+    "rss": 360693760,
+    "heapTotal": 182763520,
+    "heapUsed": 116839952,
+    "external": 4464190,
+    "arrayBuffers": 1905749
+  }
+}

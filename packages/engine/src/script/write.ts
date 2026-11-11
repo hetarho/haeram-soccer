@@ -336,6 +336,11 @@ function writeFitted(settled: Settled, seed: string): Script {
           'shot' in t.release &&
           awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
         ) &&
+        !(
+          t.release &&
+          'foul' in t.release &&
+          awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
+        ) &&
         (after[i]! < 0 || played[after[i]!])
       );
     });

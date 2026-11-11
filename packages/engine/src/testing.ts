@@ -28,6 +28,7 @@ import { coachDelegated } from './hiring';
 import { fillDelegatedPost, STAFF_ROLES } from './staff';
 import { footballQuote } from './quotes';
 import { FAN_MOOD, OWNER_BUSINESS, OWNER_DIVIDEND } from './owner-config';
+import { stageAll } from './staging/frames';
 
 /**
  * Puts direction rows in force on a test world, as a founded or saved club holds them: cards,
@@ -177,6 +178,16 @@ export function advanceToNextMatch(
     if (w.ownMatches.length > matchCount) break;
   }
   return playback;
+}
+
+/** Node journeys stage explicitly; ordinary engine progression never stages a watched match. */
+export function stagedPlayback(playback: MatchPlayback): MatchPlayback {
+  return playback.script && playback.staging
+    ? {
+        ...playback,
+        frames: stageAll(playback.script, playback.staging, playback.record, playback.squads),
+      }
+    : playback;
 }
 
 /**

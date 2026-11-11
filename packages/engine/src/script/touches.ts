@@ -8,6 +8,7 @@ import type { MatchDetail as Settled } from './detail';
 import type { TeamId } from './types';
 import { cellDistance } from './cells';
 import { touchWindow, minuteIndex } from './windows';
+import { invalidDetail } from './failure';
 export { minuteIndex } from './windows';
 
 /** One player's spell on the ball: his carries and take-ons in order, then at most one release. */
@@ -174,6 +175,8 @@ export function buildTouches(
   const direct = new Set<number>();
   for (const [foul, shot] of settled.penalties) {
     const minute = minuteIndex(settled.shots[shot!]![SH.minute]!);
+    if (settled.fouls[foul!]![FO.cardMinute]! >= 0 && minutes.fouls[foul!] !== minute)
+      throw invalidDetail('penalty-card-minute');
     used.add(foul!);
     direct.add(shotTouch[shot!]!);
     minutes.fouls[foul!] = minute;

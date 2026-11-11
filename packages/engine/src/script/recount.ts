@@ -406,6 +406,7 @@ export function detailIssues(d: MatchDetail): string[] {
       shot[SH.kind] !== SHOT_KINDS.indexOf('penalty') ||
       foul[FO.fouledSide] !== shot[SH.side] ||
       foul[FO.period] !== (shot[SH.minute]! > 90 ? 1 : 0) ||
+      (foul[FO.cardMinute]! >= 0 && foul[FO.cardMinute] !== shot[SH.minute]) ||
       penaltyFouls.has(f!) ||
       penaltyShots.has(s!)
     )

@@ -44,16 +44,25 @@ import { injuryChance } from './careers';
 import { exp, PORTABLE_MATH, type MatchMath } from './portable-math';
 import {
   activeMatchModel,
+  isScriptedModel,
   matchModelNumber,
   type MatchModelRevision,
 } from '../../contracts/src/match-model';
 import { clubManager } from './managerMarket';
-import { simulateAggregate } from './aggregate/engine';
+import {
+  aggregateRecord,
+  matchdayRosters,
+  playAggregate,
+  simulateAggregate,
+} from './aggregate/engine';
+import type { AggregateAttributionTrace } from './aggregate/types';
+import { ownMatchPlayback } from './script/playback';
+import { matchDetail } from './script/detail';
 import { resultsOnlyMatch } from './results-only';
 import { hasOwner } from './owner';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
-import { buildGridSetup, isLevel, type DecideRule } from './grid/setup';
+import { buildGridSetup, eraRules, isLevel, type DecideRule } from './grid/setup';
 export { MATCH_MOTION_CONFIG, teamMotionProfile } from './grid/playback';
 export { matchdayRole, playerTendencies } from './grid/tendencies';
 
@@ -450,10 +459,10 @@ export function simulateMatch(
 }
 
 /**
- * The recognized candidate model's dispatch (→MATCH-22, MATCH-26, SAVE-23): every own-club fixture
- * plays the detailed engine with all named lines, and every other one — its league, a cup, a
- * playoff or Europe — the complete aggregate path with the competition's knockout `decide`.
- * Observing adds the own match's frames only; `keepPlayers` and the measurement-only
+ * The recognized model's dispatch (→MATCH-22, MATCH-26, SAVE-23): from revision 11 an own fixture
+ * takes the aggregate path too, with transient action detail for its script and material. Earlier
+ * own fixtures retain the grid. Other clubs take the aggregate path without script or material.
+ * Observing adds only presentation inputs; `keepPlayers` and the measurement-only
  * `setOwnLeagueEngine` never reach this choice. Both results pass the shared full record check
  * once, in `recordMatch`, before anything settles them (→MATCH-27).
  */
@@ -465,6 +474,23 @@ function candidateMatch(
   decide?: DecideRule,
 ): MatchPlayback {
   if (!own) return simulateAggregate(w, f, decide);
+  const model = activeMatchModel(w)!;
+  if (isScriptedModel(model)) {
+    const prepared = prepareMatch(w, f);
+    const rosters = matchdayRosters(w, f, prepared, eraRules(f.year));
+    const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+    const match = playAggregate(w, f, prepared, rosters, decide, undefined, trace);
+    const record = aggregateRecord(f, rosters, match, model);
+    const managers = prepared.teams.map((club) =>
+      club.id === w.playerClub ? w.manager : clubManager(w, club),
+    );
+    return ownMatchPlayback(record, rosters, () => matchDetail(match, rosters, trace), {
+      managers,
+      seed: `${w.seed}:${f.id}`,
+      own: f.home === w.playerClub ? 0 : 1,
+      observe,
+    });
+  }
   const setup = buildGridSetup(w, f, { observe, recordPlayers: true, ...(decide && { decide }) });
   const result = playGrid(setup);
   return {

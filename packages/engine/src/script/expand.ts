@@ -90,7 +90,21 @@ export function expandGroup(
   const won = spread(t.won);
   const winners = out.filter((a) => a.result === R.intercepted || a.result === R.tackled);
   if (won.length !== winners.length) throw invalidDetail(`wins:${won.length}/${winners.length}`);
-  winners.forEach((a, i) => (a.other = won[i]!));
+  const assignPairs = (
+    attempts: Attempt[],
+    pairs: { actor: number; other: number }[] | undefined,
+    fallback: number[],
+  ) => {
+    if (!pairs) return attempts.forEach((a, i) => (a.other = fallback[i] ?? -1));
+    if (pairs.length !== attempts.length) throw invalidDetail('participant-pairs');
+    const free = [...attempts];
+    for (const pair of pairs) {
+      const at = free.findIndex((a) => a.actor === pair.actor);
+      if (at < 0) throw invalidDetail('participant-actor');
+      free.splice(at, 1)[0]!.other = pair.other;
+    }
+  };
+  assignPairs(winners, t.wins, won);
   const caught = spread(t.offside);
   const offside = out.filter((a) => a.result === R.offside);
   if (caught.length !== offside.length) throw invalidDetail('offside-lines');
@@ -119,9 +133,11 @@ export function expandGroup(
       } else if (outfield) a.other = outfield.find((line) => line !== a.actor) ?? -1;
     });
   const recovered = spread(t.recovered);
-  out
-    .filter((a) => a.result === R.looseRecovered)
-    .forEach((a, i) => (a.other = recovered[i] ?? -1));
+  assignPairs(
+    out.filter((a) => a.result === R.looseRecovered),
+    t.recoveries,
+    recovered,
+  );
   return out;
 }
 

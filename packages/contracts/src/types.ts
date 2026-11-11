@@ -13,6 +13,7 @@ import type {
 import type { ManagerHistoryFacts } from './manager-history';
 import type { ClubBooks, DividendShare, EndCause, OwnerState, TakeoverLoan } from './owner';
 import type { RecentResults } from './recent-results';
+import type { MatchScript, StagingSide } from './match-script';
 import type {
   IntentionObservation,
   MatchModelRevision,
@@ -859,6 +860,11 @@ export interface MatchFrame {
 export interface MatchPlayback {
   record: MatchRecord;
   frames: MatchFrame[];
+  /** Watched revision-11 matches hand their script to a presentation-only staging consumer. */
+  script?: MatchScript;
+  staging?: [StagingSide, StagingSide];
+  /** A failed script keeps its settled record and is never handed to the consumer (MATCH-38). */
+  problems?: string[];
   /** Whole matchday rosters: the starters in slot order, then the bench. */
   squads: [Player[], Player[]];
 }
