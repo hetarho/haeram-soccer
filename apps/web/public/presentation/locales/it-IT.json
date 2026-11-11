@@ -6655,6 +6655,7 @@
     "tool.payroll.legacyScopeMismatch": "ambiti diversi: monte ingaggi storico totale e soli stipendi dei giocatori NPC",
     "tool.payroll.accountingLine": "Contabilità degli stipendi: {summary}.",
     "tool.payroll.modeledRatio": "monte ingaggi modellato di giocatori + allenatore/staff tecnico / ricavi, prime 50 stagioni",
-    "tool.payroll.npcComparison": "soli stipendi dei giocatori / ultimi stipendi dei giocatori nel libro contabile (contabilità)"
+    "tool.payroll.npcComparison": "soli stipendi dei giocatori / ultimi stipendi dei giocatori nel libro contabile (contabilità)",
+    "match.preparing": "Preparazione della scena…"
   }
 }

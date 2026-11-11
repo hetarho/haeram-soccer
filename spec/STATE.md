@@ -942,7 +942,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T834 | web: a watched match staged ahead of its presentation | MATCH WEB ARCH | T833 | todo |
 | T835 | the pass network drawn as football media draw it | WEB MATCH ARCH | T834 | todo |
 | T836 | the match lab on the match model: results, script and staging, with their numbers | LAB MATCH ARCH | T835 | todo |
 | T837 | throughput of an own match: writing the script and staging the picture | MATCH ARCH | T836 | todo |
@@ -982,10 +981,11 @@
 
 ## next
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
-- cc12: T823–T833 are complete; continue with T834 after its MATCH r60 / WEB r216 freshness review, then the T835–T845 dependency chain. Keep the same tag/report, 24-hour run limit and 19800000 ms unit timeout; T837 (2 h) and T840 (3 h) retain their explore timeboxes. Integration acceptance and the single final batch/push remain the host's; T833 records 98 isolated tests and 20/20 measured fixtures with valid script/material. See reports/261111-cc12.md.
+- cc12: T823–T834 are complete; continue with T835, then the T836–T845 dependency chain. Keep the same tag/report, 24-hour run limit and 19800000 ms unit timeout; T837 (2 h) and T840 (3 h) retain their explore timeboxes. Integration/browser acceptance and the single final batch/push remain the host's; T834 records 183 isolated affected tests, final component/static checks, the prepared revision-11 eve and the authored scripted-match browser journey. See reports/261111-cc12.md.
 - owner: seven calls taken at the conversion of ideation match-script-and-staging remain in the inbox (261111 decided) for optional review; the current explicit autopilot delegation applies those recorded reversible choices without another pause before T833 — every own match is scripted at settlement even when skipped; score-led substitutions and the tendencies no longer move results; attribution places players, shots left as they are; prospective activation; the record's minute on the clock; the lab moves to the new model
 
 ## log
+- 261112 T834 done: independent two-minute staging worker/timer fallback, immutable ordered frames, lifecycle cancellation, frontier wait, immediate result/analysis and staged moment/clip guards; 183 affected unit tests, final component/static/i18n/build checks pass; prepared revision-11 eve and scripted-match.spec.ts written, browser assertions deferred to host batch, no push cc12
 - 261112 T833 done: joint temporal attribution, causal penalty clocks and own aggregate/script/material path; 98 isolated tests and fast checks pass, 20/20 measured fixtures valid; integration acceptance remains open for the host gate cc12
 - 261112 create-task MATCH r60: refreshed T833 at MATCH@60, same T832 dependency and original acceptance; joint action participation and penalty cause clocks precede own dispatch; todo and runnable, source sketch withdrawn, one planning slice cc12
 - 261112 update-ssot MATCH r60: MATCH-27 common participation and one penalty/foul/card minute; T833 is the sole affected in-flight task, its uncommitted dispatch sketch withdrawn before create-task refresh cc12
@@ -1005,4 +1005,3 @@
 - 261111 update-ssot WEB r216 (WEB-10✎ a detail a home area card opened leads back home; flow Office✎)
 - 261111 T689 discarded on the owner's order (done by its exit, no scoring commit): MATCH r59 retired the detailed engine's rules it measured; T840 reads the own club's scoring on the released model
 - 261111 create-task MATCH ARCH WEB LAB HIST SAVE STAFF PLAYER: T823–T845 — phase B: the shape leaf (T823), revision 11 with attribution by place (T824), the own match's detail rows (T825), the script writer and its incidents (T826, T827), the staging, its tactics and tendencies and its incident scenes (T828–T830), frames in the game's contract (T831), material from the script (T832), the own match on the result path (T833), the web staging ahead (T834), the pass network's look (T835), the lab (T836), throughput (T837, explore 2 h), the release (T838), the browser journeys (T839), the verdict (T840, explore 3 h); phase C: the prototype (T841), shared leaves out of `grid/` (T842), tests and scripts off the earlier models (T843, T844), the detailed engine (T845)
-- 261111 ideation match-script-and-staging converted; its two undecided items moved to ideation/other-clubs-match-maps and ideation/kick-off-fresh-seed

@@ -863,6 +863,8 @@ export interface MatchPlayback {
   /** Watched revision-11 matches hand their script to a presentation-only staging consumer. */
   script?: MatchScript;
   staging?: [StagingSide, StagingSide];
+  /** Transient presentation progress only; never a world/save fact. */
+  staged?: { done: boolean; error?: boolean };
   /** A failed script keeps its settled record and is never handed to the consumer (MATCH-38). */
   problems?: string[];
   /** Whole matchday rosters: the starters in slot order, then the bench. */

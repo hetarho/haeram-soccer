@@ -6655,6 +6655,7 @@
     "tool.payroll.legacyScopeMismatch": "périmètres incompatibles : masse salariale historique totale et salaires des joueurs des PNJ",
     "tool.payroll.accountingLine": "Comptabilité des salaires : {summary}.",
     "tool.payroll.modeledRatio": "masse salariale modélisée des joueurs + entraîneur/encadrement / recettes, 50 premières saisons",
-    "tool.payroll.npcComparison": "salaires des joueurs / derniers salaires des joueurs au grand livre (comptabilité)"
+    "tool.payroll.npcComparison": "salaires des joueurs / derniers salaires des joueurs au grand livre (comptabilité)",
+    "match.preparing": "Préparation de la scène…"
   }
 }

@@ -134,7 +134,7 @@ export function MatchCharts({
   const [focus, setFocus] = useState<number>();
   const series = useMemo(
     () => chartSeries(playback, presented, chart),
-    [playback, presented, chart],
+    [playback.frames, presented, chart],
   );
   const lines = useMemo(() => chartLines(look, groundColor), [look, groundColor]);
   const colours = lines.map((line) => line.colour);

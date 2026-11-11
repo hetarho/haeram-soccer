@@ -5,6 +5,7 @@ import type { MatchFrame, MatchRecord } from '../../../../../../packages/contrac
 import {
   goalFrame,
   incidentFrame,
+  momentReady,
   recordedGoals,
   recordedIncidents,
   type Moment,
@@ -23,6 +24,7 @@ export function MatchMoments({
   names,
   onSeek,
   live = false,
+  complete = true,
 }: {
   record: MatchRecord;
   /** The playback's frames: they give each moment its minute label (`45+2`). */
@@ -31,6 +33,7 @@ export function MatchMoments({
   names?: Map<string, string>;
   onSeek: (moment: Moment) => void;
   live?: boolean;
+  complete?: boolean;
 }) {
   useTextLocale();
   const name = (id?: string) => (id && names?.get(id)) || id || sourceMessage('team.column.player');
@@ -44,33 +47,50 @@ export function MatchMoments({
       return { at, goal, incident: undefined, label, seek: label };
     }),
     ...recordedIncidents(record).map((incident) => {
-      const at = incidentFrame(frames, incident);
+      const at = incidentFrame(frames, incident, complete);
       const seek = frames[at]?.label ?? incident.label;
       return { at, goal: undefined, incident, label: incident.label, seek };
     }),
-  ].sort((a, b) => a.at - b.at);
+  ].sort((a, b) => (a.goal?.minute ?? a.incident!.minute) - (b.goal?.minute ?? b.incident!.minute));
+  const preparing = (ready: boolean) => !ready && <span>{richMessage('match.preparing')}</span>;
   return (
     <details data-ui="disclosure" className={s.disclosure}>
       <summary>{richMessage('copy.MatchMoments.00d5ac8ed5')}</summary>
       <section className={s.content} aria-label={displayMessage('copy.MatchMoments.00d5ac8ed5')}>
         <div className={s.controls}>
-          <button onClick={() => onSeek('kickoff')}>
+          <button
+            disabled={!momentReady(frames, 'kickoff', complete)}
+            onClick={() => onSeek('kickoff')}
+          >
             {richMessage('copy.MatchMoments.97fe972721')}
+            {preparing(momentReady(frames, 'kickoff', complete))}
           </button>
-          <button onClick={() => onSeek('halfTime')}>
+          <button
+            disabled={!momentReady(frames, 'halfTime', complete)}
+            onClick={() => onSeek('halfTime')}
+          >
             {richMessage('copy.MatchMoments.3956ba3c7a')}
+            {preparing(momentReady(frames, 'halfTime', complete))}
           </button>
-          <button onClick={() => onSeek('fullTime')}>
+          <button
+            disabled={!momentReady(frames, 'fullTime', complete)}
+            onClick={() => onSeek('fullTime')}
+          >
             {richMessage('copy.MatchMoments.b29ac15161')}
+            {preparing(momentReady(frames, 'fullTime', complete))}
           </button>
         </div>
         <ol className={s.momentList}>
           {localizeValue(
-            moments.map(({ goal, incident, label, seek }, i) => (
+            moments.map(({ at, goal, incident, label, seek }, i) => (
               <li key={i}>
                 {localizeValue(
                   goal ? (
-                    <button data-testid="recorded-goal" onClick={() => onSeek(seek)}>
+                    <button
+                      data-testid="recorded-goal"
+                      disabled={at < 0}
+                      onClick={() => onSeek(seek)}
+                    >
                       <b>
                         {localizeValue(label)}′ · {localizeValue(goal.player)}
                       </b>
@@ -84,10 +104,15 @@ export function MatchMoments({
                           p2: goal.away,
                         })}
                       </span>
+                      {preparing(at >= 0)}
                     </button>
                   ) : (
                     incident && (
-                      <button data-testid="recorded-incident" onClick={() => onSeek(seek)}>
+                      <button
+                        data-testid="recorded-incident"
+                        disabled={at < 0}
+                        onClick={() => onSeek(seek)}
+                      >
                         <b>
                           {localizeValue(label)}′ ·{localizeValue(' ')}
                           {localizeValue(
@@ -104,6 +129,7 @@ export function MatchMoments({
                           )}{' '}
                           {localizeValue(incidentText[incident.kind])}
                         </span>
+                        {preparing(at >= 0)}
                       </button>
                     )
                   ),

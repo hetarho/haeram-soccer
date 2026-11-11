@@ -6652,6 +6652,7 @@
     "tool.payroll.legacyScopeMismatch": "verschillende reikwijdte: historische totale salarissen en alleen NPC-spelersalarissen",
     "tool.payroll.accountingLine": "Salarisboekhouding: {summary}.",
     "tool.payroll.modeledRatio": "gemodelleerde salarissen van spelers + trainer/begeleiders / inkomsten, eerste 50 seizoenen",
-    "tool.payroll.npcComparison": "alleen spelersalarissen / laatste spelersalarissen in het grootboek (boekhouding)"
+    "tool.payroll.npcComparison": "alleen spelersalarissen / laatste spelersalarissen in het grootboek (boekhouding)",
+    "match.preparing": "Spelscène voorbereiden…"
   }
 }

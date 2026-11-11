@@ -4,6 +4,12 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { validateWorld } from '../packages/contracts/src/schema';
+import { message as sourceMessage } from '../packages/contracts/src/messages';
+import { careerWorld } from '../packages/engine/src/career.testkit';
+import { advanceDays } from '../packages/engine/src/season';
+import { daysUntilNextMatch } from '../packages/engine/src/calendar';
+import { SCRIPTED_RELEASE } from '../packages/engine/src/match-model-release';
+import { advanceToNextMatch } from '../packages/engine/src/testing';
 import {
   buildManagerActivationWorld,
   buildManagerJourneyWorld,
@@ -22,10 +28,28 @@ const source = {
   ).sha256,
 };
 mkdirSync('tests/fixtures/prepared', { recursive: true });
+/** A small lived setup, not a full season: the first own match is tomorrow and has a goal clip. */
+function buildScriptedJourneyWorld() {
+  for (let seed = 0; seed < 8; seed++) {
+    const world = careerWorld(
+      { country: 'ENG', year: 2024, seed: `scripted-journey-${seed}` },
+      SCRIPTED_RELEASE,
+    );
+    world.settings!.mode = 'manual';
+    world.settings!.observations.matchEve = true;
+    advanceDays(world, daysUntilNextMatch(world)! - 1, undefined, false);
+    const probe = advanceToNextMatch(structuredClone(world));
+    if (probe?.script && probe.record.score.home + probe.record.score.away > 0) return world;
+  }
+  throw new Error(sourceMessage('copy.fixture.a74e657053'));
+}
+const only = process.argv.find((arg) => arg.startsWith('--only='))?.slice('--only='.length);
 for (const [name, build] of [
   ['manager-journey', buildManagerJourneyWorld],
   ['manager-activation', buildManagerActivationWorld],
+  ['scripted-journey', buildScriptedJourneyWorld],
 ] as const) {
+  if (only && only !== name) continue;
   console.log(`Preparing ${name} once for all browser projects and viewports`);
   const json = JSON.stringify(validateWorld(build()));
   const fixture: PreparedWorld = {

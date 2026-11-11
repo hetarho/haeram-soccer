@@ -34,23 +34,36 @@ export function incidentLabel(incident: Incident) {
  * frame of that minute (an archived replay has no added-time frames), otherwise the first frame of
  * its minute; else the last frame.
  */
-export function incidentFrame(frames: MatchFrame[], incident: Incident) {
+export function incidentFrame(frames: MatchFrame[], incident: Incident, complete = true) {
   const label = incidentLabel(incident);
   const exact = frames.findIndex((f) => f.label === label);
   if (exact >= 0) return exact;
+  if (incident.added && !complete) return -1;
   const minute = incident.added
     ? frames.findLastIndex((f) => f.minute === incident.minute)
     : frames.findIndex((f) => f.minute >= incident.minute);
-  return minute >= 0 ? minute : frames.length - 1;
+  return minute >= 0 ? minute : complete ? frames.length - 1 : -1;
+}
+
+/** An unfinished picture never substitutes its current last instant for a later moment. */
+export function momentReady(frames: MatchFrame[], moment: Moment, complete: boolean) {
+  if (complete) return frames.length > 0;
+  if (moment === 'fullTime') return false;
+  if (moment === 'kickoff') return frames.length > 0;
+  if (moment === 'halfTime') return frames.some((frame) => frame.period >= 2);
+  return frames.some((frame) =>
+    typeof moment === 'number' ? frame.minute >= moment : frame.label === moment,
+  );
 }
 
 /** Red cards (a second yellow included) per side, shown up to frame `shown` (→WEB-50). */
-export function sentOff(record: MatchRecord, frames: MatchFrame[], shown: number) {
+export function sentOff(record: MatchRecord, frames: MatchFrame[], shown: number, complete = true) {
   const reds: [number, number] = [0, 0];
   for (const incident of record.incidents ?? [])
     if (
       (incident.kind === 'red' || incident.kind === 'secondYellow') &&
-      incidentFrame(frames, incident) <= shown
+      incidentFrame(frames, incident, complete) >= 0 &&
+      incidentFrame(frames, incident, complete) <= shown
     )
       reds[incident.side]++;
   return reds;

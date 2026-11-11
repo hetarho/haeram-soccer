@@ -25,7 +25,9 @@ export function decodePreparedWorld(fixture: PreparedWorld): World {
   return validateWorld(JSON.parse(json));
 }
 
-export function preparedWorld(name: 'manager-journey' | 'manager-activation'): World {
+export function preparedWorld(
+  name: 'manager-journey' | 'manager-activation' | 'scripted-journey',
+): World {
   let json = loaded.get(name);
   if (json === undefined) {
     const fixture = JSON.parse(

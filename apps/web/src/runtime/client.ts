@@ -23,6 +23,7 @@ import {
 } from './protocol';
 import { NOTIFICATIONS_KEY, notificationStore, shareValue, shareView } from './store';
 import { HELPER_CONFIG } from './helperPool';
+import { PlaybackStaging } from './staging';
 /** Bound the engine snapshot RPC separately from expensive background compression. */
 const CHECKPOINT_TIMEOUT_MS = 60000;
 // Large lossless careers compress in the separate codec worker; engine RPC stays bounded below.
@@ -118,6 +119,17 @@ export class GameClient {
     savedRevision: -1,
     progress: 0,
   };
+  private staging = new PlaybackStaging(
+    (playback) => {
+      this.state.playback = playback;
+      this.emit();
+    },
+    () => notificationStore.add(sourceMessage('copy.client.aa2516a9e3')),
+  );
+  /** Presentation work stops when its theatre is left; the world worker is independent. */
+  setWatching(watching: boolean) {
+    this.staging.watching(watching);
+  }
   private worker = new Worker(new URL('./worker.ts', import.meta.url), { type: 'module' });
   /** Builds and validates every checkpoint from the engine worker's snapshots (→ARCH-13). */
   private codec = new Worker(new URL('./codec.ts', import.meta.url), { type: 'module' });
@@ -396,12 +408,15 @@ export class GameClient {
       // A revealed playback of this career whose match the checkpoint holds finishes under the
       // model it was settled with, even when this load activates a newer one (→SAVE-23).
       const world = this.state.view?.world;
-      this.state.playback =
+      this.staging.replace(
         playback &&
-        world?.id === career &&
-        world?.ownMatches.some((match) => match.id === playback.record.id)
-          ? playback
-          : undefined;
+          world?.id === career &&
+          world?.ownMatches.some((match) => match.id === playback.record.id)
+          ? playback.script
+            ? { ...playback, frames: [] }
+            : playback
+          : undefined,
+      );
       this.state.savedRevision = result.world.revision;
       this.savedCheckpoint = {
         raw: result.raw,
@@ -459,6 +474,7 @@ export class GameClient {
   /** Takes a view as `taking` says; held days share structure with the day before (→WEB-18). */
   private take(view: View, taking: Taking) {
     const same = this.head?.world.id === view.world.id;
+    if (!same) this.staging.replace();
     if (taking === 'hold' && same) this.held.push(view);
     else if (taking === 'head' && same && this.held.length) {
       // Notices read during play read on the day shown and every day held too (→WEB-97).
@@ -559,12 +575,12 @@ export class GameClient {
     const starts = body.type === 'take-over';
     if (starts) {
       this.state.savedRevision = -1;
-      this.state.playback = undefined;
+      this.staging.replace();
     }
     const reply = await this.rpc(body, undefined, undefined, automatic);
     if (starts && body.replace && this.saves.incompatibleCheckpoint)
       this.replacingIncompatible = true;
-    if (reply.playback) this.state.playback = reply.playback;
+    if (reply.playback) this.staging.replace(reply.playback);
     this.emit();
     // The engine answered without encoding; the caller asks for the background save.
     return reply;
@@ -1008,7 +1024,7 @@ export class GameClient {
     await this.rpc({ type: 'inspect', raw, activate: true, upgrade: true });
     this.replacingIncompatible = this.saves.incompatibleCheckpoint;
     this.state.savedRevision = -1;
-    this.state.playback = undefined;
+    this.staging.replace();
     await this.save();
   }
   importFile(raw: string) {
@@ -1050,7 +1066,7 @@ export class GameClient {
       delete this.state.start;
       this.held = [];
       this.views.clear();
-      this.state.playback = undefined;
+      this.staging.replace();
       this.emit();
     });
   }
@@ -1058,6 +1074,7 @@ export class GameClient {
     return this.enqueue(() => this.save());
   }
   dispose() {
+    this.staging.stop();
     window.removeEventListener('storage', this.storageListener);
     clearTimeout(this.autosaveTimer);
     this.failed = true;
