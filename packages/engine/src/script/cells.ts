@@ -71,6 +71,8 @@ export function restartSpot(kind: BeatKind, team: TeamId, at: Vec): Vec {
   switch (kind) {
     case 'kickOff':
       return CENTRE;
+    case 'penalty':
+      return toAttack(team, [PITCH.length - 11, PITCH.width / 2]);
     case 'throwIn':
       return spot([clamp(at[0], 1, PITCH.length - 1), at[1] < PITCH.width / 2 ? 0 : PITCH.width]);
     case 'goalKick':

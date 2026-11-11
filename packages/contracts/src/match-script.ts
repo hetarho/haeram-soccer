@@ -1,3 +1,5 @@
+import type { RoleId, Tactic } from './types';
+
 /** Portable script facts crossing the worker boundary (MATCH-38). */
 export type ScriptSide = 0 | 1;
 /** Pitch metres: side 0 attacks x=105, side 1 x=0; staging handles changes of ends. */
@@ -14,7 +16,17 @@ export type ScriptBeatKind =
   | 'throwIn'
   | 'goalKick'
   | 'corner'
-  | 'freeKick';
+  | 'freeKick'
+  | 'penalty'
+  | 'stoppage'
+  | 'shootoutKick';
+export interface ScriptIncident {
+  kind: 'yellow' | 'secondYellow' | 'red' | 'sub' | 'injury';
+  side: ScriptSide;
+  line: number;
+  other?: number;
+  reason?: 'reckless' | 'tactical' | 'dissent' | 'dogso' | 'serious' | 'violent';
+}
 export type ScriptBeatOutcome =
   | 'complete'
   | 'intercepted'
@@ -65,8 +77,9 @@ export interface ScriptBeat {
   foul?: number;
   /** Match seconds when the beat starts (0 = kick-off, 2700 = the second half's). */
   clock: number;
-  /** 0 regulation, 1 extra time. */
-  period: 0 | 1;
+  /** The four halves, then 5 for kicks after the final whistle. */
+  period: 1 | 2 | 3 | 4 | 5;
+  incidents?: ScriptIncident[];
   /** Recorded qualifiers that cannot be inferred from the order or geometry. */
   lineBreaking?: boolean;
   xg?: number;
@@ -86,4 +99,20 @@ export interface MatchScript {
   seed: string;
   beats: ScriptBeat[];
   bound: true;
+}
+
+/** Presentation inputs in record line order, independent of world and roster objects. */
+export interface StagingPlayer {
+  line: number;
+  slot: number;
+  role: RoleId;
+  pace: number;
+  anticipation: number;
+  discipline: number;
+  pressing: number;
+  freedom: number;
+}
+export interface StagingSide {
+  tactic: Tactic;
+  players: StagingPlayer[];
 }

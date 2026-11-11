@@ -15,7 +15,7 @@ import { validateScript as validateFitted } from './validate';
 import { writePeriods, writeScript } from './write';
 const writeFitted = (detail: Settled, seed: string): Script => {
   const result = writePeriods(detail, seed);
-  if ('problems' in result) throw new Error(result.problems.join(';'));
+  if ('problems' in result) throw new Error(`${detail.id}: ${result.problems.join(';')}`);
   return result.script;
 };
 
@@ -208,54 +208,6 @@ describe('match-proto fitted order of play (T822)', () => {
 });
 
 describe('script public boundary', () => {
-  it.each([
-    [
-      'substitution',
-      (d: Settled) => {
-        d.incidents = [[46, 0, 3, 1, 2, -1]];
-      },
-    ],
-    [
-      'card',
-      (d: Settled) => {
-        d.incidents = [[15, 0, 0, 1, -1, 2]];
-      },
-    ],
-    [
-      'dismissal',
-      (d: Settled) => {
-        d.incidents = [[15, 0, 2, 1, -1, 4]];
-      },
-    ],
-    [
-      'injury',
-      (d: Settled) => {
-        d.incidents = [[15, 0, 4, 1, -1, -1]];
-      },
-    ],
-    [
-      'penalty',
-      (d: Settled) => {
-        d.penalties = [[0, 0]];
-      },
-    ],
-    [
-      'extraTime',
-      (d: Settled) => {
-        d.length = 120;
-      },
-    ],
-    [
-      'shootout',
-      (d: Settled) => {
-        d.shootout = [[0, 1, 1]];
-      },
-    ],
-  ] as const)('refuses unsupported %s', (kind, edit) => {
-    const d = smallSettled();
-    edit(d);
-    expect(writeScript(d, 'unsupported')).toEqual({ problems: [`unsupported:${kind}`] });
-  });
   it('accepts the supported regular match with a booked foul', () => {
     const d = smallSettled();
     const r = writeScript(d, 'ordinary');

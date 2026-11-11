@@ -1,4 +1,4 @@
-// The fitted writer (T820, its order T822): a ninety-minute script that performs every settled
+// The fitted writer (T820, its order T822): a full-match script that performs every settled
 // attempt, shot and foul exactly once. The record is the fact; the writer chooses only the order
 // (greedy over the whole match: the cheapest touch by `touchCost`), the minutes of the rows the
 // record gives none, the receivers, the points inside the cells, the clock and the connective
@@ -18,15 +18,16 @@ import {
   pointAway,
   restartSpot,
 } from './cells';
-import { EV, EVENT_KINDS, EVENT_RESULTS, FO, SET_PIECES, SH, SHOT_OUTCOMES } from './codes';
+import { EV, EVENT_KINDS, EVENT_RESULTS, FO, IN, SET_PIECES, SH, SHOT_OUTCOMES } from './codes';
 import type { MatchDetail as Settled } from './detail';
 import { detailIssues } from './recount';
 import { nominalSpot } from '../staging/shape';
 import { random } from '../primitives';
 import type { Beat, BeatKind, BeatOutcome, Phase, Script, TeamId, Vec } from './types';
-import { isPassLike } from './types';
+import { isPassLike, isRestartKind as isRestart } from './types';
 import { FLOATING, buildTouches, dealFixed, firstCell } from './touches';
-import { present, periodOf, unsupportedProblems } from './windows';
+import { present, periodOf } from './windows';
+import { beatIncident, foulCards, incidentIndex, scriptPeriod } from './incidents';
 import { validateScript } from './validate';
 import { compareRecord, countScript } from './count';
 import { planRestarts } from './restarts';
@@ -65,17 +66,15 @@ const phaseOf = (side: TeamId, ball: Vec): Phase => {
 
 const cellGap = (a: number, b: number) => cellDistance(Math.max(a, 0), Math.max(b, 0));
 
-/** Public boundary: unsupported scenes and any failed placement/recount return no script. */
+/** Public boundary: any failed placement/recount returns no script. */
 export function writeScript(
   detail: Settled,
   seed: string,
 ): { script: Script } | { problems: string[] } {
-  const unsupported = unsupportedProblems(detail);
-  if (unsupported.length) return { problems: unsupported };
   return writePeriods(detail, seed);
 }
 
-/** Placement core shared with incident orchestration: accepts stints/periods without inventing scenes. */
+/** Pure placement core, also used directly by the placement regression cases. */
 export function writePeriods(
   detail: Settled,
   seed: string,
@@ -96,6 +95,8 @@ export function writePeriods(
  */
 function writeFitted(settled: Settled, seed: string): Script {
   const rng = random(`${seed}:script`);
+  const cards = foulCards(settled);
+  const booked = new Set(cards.values());
   const fixed = dealFixed(settled);
   const { demand, reserve } = planRestarts(settled, fixed);
   const touches = buildTouches(settled, fixed, reserve);
@@ -172,6 +173,9 @@ function writeFitted(settled: Settled, seed: string): Script {
   let minute = 0;
   /** Touches played before the minute being written. */
   let minuteStart = 0;
+  let waitingIncidents: NonNullable<Beat['incidents']> = [];
+  const awaitingEntry = (team: TeamId, line: number) =>
+    waitingIncidents.some((x) => x.side === team && x.kind === 'sub' && x.other === line);
 
   const roles = settled.sides.map((s) => ({
     tactic: s.tactic,
@@ -179,13 +183,18 @@ function writeFitted(settled: Settled, seed: string): Script {
   })) as unknown as Parameters<typeof nominalSpot>[0]['sides'];
   const spotOf = (index: number, at: Vec = ball, team: TeamId = side): Vec => {
     const line = settled.sides[team].lines[index]!;
-    return nominalSpot({ sides: roles, ball: at, team, phase: phaseOf(team, at) }, team, line.slot);
+    const slot =
+      settled.stints.find(
+        (s) => s[0] === team && s[1] === index && s[3]! <= minute && s[4]! > minute,
+      )?.[2] ?? line.slot;
+    return nominalSpot({ sides: roles, ball: at, team, phase: phaseOf(team, at) }, team, slot);
   };
   const nearestBy = (team: TeamId, at: Vec, exclude: number[] = [], keeper = false): number => {
     let best = -1;
     for (const [index, p] of settled.sides[team].lines.entries()) {
       if (
         !present(settled, team, index, minute) ||
+        awaitingEntry(team, index) ||
         exclude.includes(index) ||
         (p.slot === 0 && !keeper)
       )
@@ -208,10 +217,29 @@ function writeFitted(settled: Settled, seed: string): Script {
     }
     return best;
   };
-  const keeperOf = (team: TeamId) =>
-    settled.stints.find(
-      (s) => s[0] === team && s[2] === 0 && s[3]! <= minute && s[4]! > minute,
-    )?.[1] ?? nearestBy(team, ball, [], true);
+  const keeperOf = (team: TeamId) => {
+    const departing = settled.stints.find(
+      (s) =>
+        s[0] === team &&
+        s[2] === 0 &&
+        s[4] === minute &&
+        waitingIncidents.some(
+          (x) => x.side === team && x.line === s[1] && ['sub', 'injury'].includes(x.kind),
+        ),
+    );
+    return (
+      departing?.[1] ??
+      settled.stints.find(
+        (s) =>
+          s[0] === team &&
+          s[2] === 0 &&
+          s[3]! <= minute &&
+          s[4]! > minute &&
+          !awaitingEntry(team, s[1]!),
+      )?.[1] ??
+      nearestBy(team, ball, [], true)
+    );
+  };
   const push = (
     b: Pick<Beat, 'side' | 'move' | 'kind' | 'actor' | 'from' | 'to' | 'outcome'> & Partial<Beat>,
   ): Beat => {
@@ -224,7 +252,7 @@ function writeFitted(settled: Settled, seed: string): Script {
       header: false,
       hold: 0,
       clock: 0,
-      period: periodOf(minute),
+      period: scriptPeriod(minute),
       ...b,
       index: beats.length,
       possession,
@@ -234,9 +262,6 @@ function writeFitted(settled: Settled, seed: string): Script {
     minuteOf.push(minute);
     return beat;
   };
-  const isRestart = (k: BeatKind) =>
-    k === 'kickOff' || k === 'throwIn' || k === 'goalKick' || k === 'corner' || k === 'freeKick';
-
   /** A link carry by the holder to a point in `cell` of his side, when the ball is not there. */
   const linkTo = (cell: number) => {
     if (cellAt(side, ball) === cell) return;
@@ -290,6 +315,27 @@ function writeFitted(settled: Settled, seed: string): Script {
         t.period === periodOf(minute) &&
         minute >= t.from &&
         minute < t.until &&
+        !awaitingEntry(team, t.actor) &&
+        !t.carries.some((id) => {
+          const e = settled.events[id]!;
+          return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
+        }) &&
+        !(
+          t.release &&
+          'event' in t.release &&
+          (() => {
+            const e = settled.events[t.release.event]!;
+            return (
+              e[EV.other]! >= 0 &&
+              awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
+            );
+          })()
+        ) &&
+        !(
+          t.release &&
+          'shot' in t.release &&
+          awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
+        ) &&
         (after[i]! < 0 || played[after[i]!])
       );
     });
@@ -316,6 +362,18 @@ function writeFitted(settled: Settled, seed: string): Script {
    */
   const touchCost = (team: TeamId, i: number, cell: number): number => {
     let cost = cellGap(startCell[i]!, cell);
+    const release = touches[i]!.release;
+    // Prefer the minute's existing dead ball for its incidents over opening a keeper stoppage.
+    if (
+      waitingIncidents.length &&
+      release &&
+      ('foul' in release ||
+        'shot' in release ||
+        ['offside', 'outTouch', 'outByline', 'cornerWon'].includes(
+          EVENT_RESULTS[settled.events[release.event]![EV.result]!]!,
+        ))
+    )
+      cost -= FIT.fixedPull * 100;
     const met = quotaMet();
     const actor = touches[i]!.actor;
     if (actorLeft[team]![actor]! <= winsLeft[team]![actor]!) cost += FIT.winnerPull * 100;
@@ -332,7 +390,6 @@ function writeFitted(settled: Settled, seed: string): Script {
     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
     if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
     if (setPiece[i]) cost += FIT.setPieceWait * 100;
-    const release = touches[i]!.release;
     if (
       release &&
       'event' in release &&
@@ -663,15 +720,53 @@ function writeFitted(settled: Settled, seed: string): Script {
         to: ball,
         outcome: 'foul',
         foul: r.foul,
+        ...(cards.has(r.foul) && {
+          incidents: [beatIncident(settled.incidents[cards.get(r.foul)!]!)],
+        }),
       });
       owed = {
-        kind: 'freeKick',
+        kind: f[FO.penalty] ? 'penalty' : 'freeKick',
         side: side,
-        spot: restartSpot('freeKick', side, ball),
+        spot: restartSpot(f[FO.penalty] ? 'penalty' : 'freeKick', side, ball),
         via: t.next,
       };
       nextOwed = -1;
       holder = -1;
+    }
+  };
+
+  /** A minute's standalone incidents wait for a dead ball; keeper possession supplies one
+   * when the minute contains none. The owed restart survives this non-playing beat. */
+  const stopFor = (incidents: NonNullable<Beat['incidents']>) => {
+    if (!owed && holder !== keeperOf(side)) miscontrol(keeperOf(other(side)));
+    const team = owed?.side ?? side;
+    const at = owed?.spot ?? ball;
+    const actor = owed ? nearestBy(team, at, [], true) : holder;
+    push({
+      side: team,
+      move: 'incident',
+      kind: 'stoppage',
+      actor,
+      from: at,
+      to: at,
+      outcome: 'complete',
+      incidents,
+    });
+  };
+  const finishIncidents = () => {
+    if (pending) resolve(nearestBy(pending.side, ball, [pending.actor]));
+    const incidents = waitingIncidents;
+    const last = beats.at(-1);
+    if (owed && minuteOf.at(-1) === minute && last) {
+      last.incidents = [...(last.incidents ?? []), ...incidents].sort(
+        (a, b) => incidentIndex(settled, minute + 1, a) - incidentIndex(settled, minute + 1, b),
+      );
+    } else stopFor(incidents);
+    waitingIncidents = [];
+    if (!owed && holder >= 0 && !present(settled, side, holder, minute)) {
+      // A dead ball in the departing keeper's hands belongs to his recorded successor.
+      holder = keeperOf(side);
+      beats.at(-1)!.receiver = holder;
     }
   };
 
@@ -764,6 +859,9 @@ function writeFitted(settled: Settled, seed: string): Script {
   const settledMinute = () => {
     // Corrupt/incompatible chains cannot make a partial writer spin forever.
     for (let steps = 0; steps < (touches.length + 1) * FIT.maxStepsPerTouch; steps++) {
+      if (waitingIncidents.length && (owed || (pending === null && holder === keeperOf(side)))) {
+        finishIncidents();
+      }
       // The minute ends with its share of touches played and nothing fixed to it left.
       if (
         quotaMet() &&
@@ -772,8 +870,10 @@ function writeFitted(settled: Settled, seed: string): Script {
         !touches.some(
           (t, i) => !played[i] && t.period === periodOf(minute) && t.until === minute + 1,
         )
-      )
+      ) {
+        if (waitingIncidents.length) finishIncidents();
         break;
+      }
       const mine = unplayed(side);
       const theirs = unplayed(other(side));
       if (owed !== null) {
@@ -796,7 +896,13 @@ function writeFitted(settled: Settled, seed: string): Script {
         resolve(nearestBy(p.side, ball, [p.actor]));
         continue;
       }
-      if (mine.length + theirs.length === 0) break;
+      if (mine.length + theirs.length === 0) {
+        if (waitingIncidents.length) {
+          finishIncidents();
+          continue;
+        }
+        break;
+      }
       if (mine.length === 0) {
         miscontrol(touches[choose(other(side), cellAt(other(side), ball))]!.actor);
         continue;
@@ -850,7 +956,12 @@ function writeFitted(settled: Settled, seed: string): Script {
 
   for (minute = 0; minute < settled.length; minute++) {
     minuteStart = done[0]! + done[1]!;
+    waitingIncidents = settled.incidents.flatMap((row, i) =>
+      row[IN.minute] === minute + 1 && !booked.has(i) ? [beatIncident(row)] : [],
+    );
     if (minute === 0 || minute === 45 || minute === 90 || minute === 105) {
+      const incidents = waitingIncidents;
+      waitingIncidents = [];
       pending = null;
       owed = {
         kind: 'kickOff',
@@ -859,6 +970,7 @@ function writeFitted(settled: Settled, seed: string): Script {
       };
       // A half starts on its minute, whether or not the minute holds a touch.
       deliver();
+      if (incidents.length) beats[minuteOf.indexOf(minute)]!.incidents = incidents;
       // Even an empty opening minute contains its kick-off, including a recorded delivery.
       if (pending !== null) {
         const p: Pending = pending;
@@ -916,6 +1028,35 @@ function writeFitted(settled: Settled, seed: string): Script {
       b.clock = Math.floor(t * 100) / 100;
       t += (holds[k]! + travel(b)) * press;
     }
+  }
+  const shootoutRng = random(`${seed}:script:shootout`);
+  for (const [i, kick] of settled.shootout.entries()) {
+    const team = kick[0] as TeamId;
+    const from = restartSpot('penalty', team, ball);
+    const scored = kick[2] === 1;
+    const saved = !scored && shootoutRng() < FIT.shootout.saved;
+    const keeper = settled.stints.find(
+      (s) => s[0] === other(team) && s[2] === 0 && s[4] === settled.length,
+    )?.[1];
+    beats.push({
+      index: beats.length,
+      possession: ++possession,
+      side: team,
+      phase: 'setPiece',
+      move: 'shootout',
+      kind: 'shootoutKick',
+      actor: kick[1]!,
+      opponent: saved ? keeper : undefined,
+      from,
+      to: saved ? keeperHold(other(team)) : goalAim(team, scored ? 0 : 5),
+      loft: false,
+      through: false,
+      header: false,
+      hold: FIT.hold[1],
+      outcome: scored ? 'goal' : saved ? 'saved' : 'wide',
+      period: 5,
+      clock: settled.length * 60 + i * FIT.shootout.seconds,
+    });
   }
   return { version: 1, seed, beats, bound: true };
 }

@@ -1,5 +1,5 @@
 import type { MatchDetail } from './detail';
-import { EV, EVENT_RESULTS, FO, SH, IN, INCIDENT_KINDS, SHOT_KINDS } from './codes';
+import { EV, EVENT_RESULTS, FO, SH } from './codes';
 import type { TeamId } from './types';
 
 export const periodOf = (minute: number): 0 | 1 => (minute >= 90 ? 1 : 0);
@@ -30,10 +30,15 @@ export function touchWindow(d: MatchDetail, carries: number[], release?: Release
   ) as 0 | 1;
   let from = period === 0 ? 0 : 90,
     until = period === 0 ? 90 : 120;
+  const span = (side: number, line: number) => {
+    const stints = d.stints.filter((s) => s[0] === side && s[1] === line);
+    // Moving to another slot splits a continuous spell; it never takes the man off the pitch.
+    return [Math.min(...stints.map((s) => s[3]!)), Math.max(...stints.map((s) => s[4]!))];
+  };
   const add = (side: number, line: number) => {
-    const stint = d.stints.find((s) => s[0] === side && s[1] === line);
-    from = Math.max(from, stint?.[3] ?? Infinity);
-    until = Math.min(until, stint?.[4] ?? -Infinity);
+    const [start, end] = span(side, line);
+    from = Math.max(from, start!);
+    until = Math.min(until, end!);
   };
   for (const id of events) {
     const e = d.events[id]!,
@@ -50,43 +55,12 @@ export function touchWindow(d: MatchDetail, carries: number[], release?: Release
   }
   if (foul) {
     add(foul[FO.fouledSide]!, foul[FO.fouled]!);
-    add(1 - foul[FO.fouledSide]!, foul[FO.fouler]!);
+    const side = 1 - foul[FO.fouledSide]!;
+    const line = foul[FO.fouler]!;
+    // A sending-off foul is the departing man's last act at that minute's boundary.
+    const [start, end] = span(side, line);
+    from = Math.max(from, start!);
+    until = Math.min(until, end! + (foul[FO.cardMinute] === end! + 1 ? 1 : 0));
   }
   return { period, from, until };
-}
-
-/** T827 supplies scene beats; the public writer refuses these until then. */
-export function unsupportedProblems(d: MatchDetail): string[] {
-  const problems = new Set<string>();
-  for (const row of d.incidents) {
-    const kind = INCIDENT_KINDS[row[IN.kind]!];
-    if (kind === 'sub') problems.add('unsupported:substitution');
-    else if (kind === 'injury') problems.add('unsupported:injury');
-    else if (kind === 'red' || kind === 'secondYellow') problems.add('unsupported:dismissal');
-    else if (
-      kind === 'yellow' &&
-      !d.fouls.some(
-        (f) =>
-          f[FO.cardMinute] === row[IN.minute] &&
-          1 - f[FO.fouledSide]! === row[IN.side] &&
-          f[FO.fouler] === row[IN.line],
-      )
-    )
-      problems.add('unsupported:card');
-  }
-  if (
-    d.penalties.length ||
-    d.fouls.some((f) => f[FO.penalty] === 1) ||
-    d.shots.some((s) => SHOT_KINDS[s[SH.kind]!] === 'penalty')
-  )
-    problems.add('unsupported:penalty');
-  if (
-    d.length === 120 ||
-    d.events.some((e) => e[EV.period] === 1) ||
-    d.fouls.some((f) => f[FO.period] === 1) ||
-    d.shots.some((s) => s[SH.minute]! > 90)
-  )
-    problems.add('unsupported:extraTime');
-  if (d.shootout.length) problems.add('unsupported:shootout');
-  return [...problems];
 }

@@ -13,13 +13,19 @@ it('the staging imports no world, season or match orchestration', () => {
   const root = process.cwd();
   const staging = 'packages/engine/src/staging/';
   const files = sourceFiles(root, [staging]).filter(
-    (file) => isSource(file) && !/\.test\.[cm]?[jt]sx?$/.test(file),
+    (file) => isSource(file) && !/\.(?:test|testkit)\.[cm]?[jt]sx?$/.test(file),
   );
   expect(files.length).toBeGreaterThan(0);
   const graph = sourceGraph(root);
   for (const file of files) {
     // Resolve imports without executing them; inspect each staging file, including nested ones.
-    dependencies(graph, [file]);
+    for (const imported of dependencies(graph, [file])) {
+      expect(
+        !/^packages\/engine\/src\/(season(?:\.|\/)|world(?:\.|\/)|match\.ts$)/.test(
+          relative(root, imported),
+        ),
+      ).toBe(true);
+    }
     expect(
       runtimeImports(readFileSync(file, 'utf8'), file).filter((name) => !name.startsWith('.')),
       relative(root, file),
@@ -30,7 +36,11 @@ it('the staging imports no world, season or match orchestration', () => {
         path.startsWith(staging) ||
           path.startsWith('packages/contracts/') ||
           path === 'packages/engine/src/grid/pitch.ts' ||
-          path === 'packages/engine/src/primitives.ts',
+          path === 'packages/engine/src/primitives.ts' ||
+          path === 'packages/engine/src/script/count.ts' ||
+          path === 'packages/engine/src/script/failure.ts' ||
+          path === 'packages/engine/src/formations.ts' ||
+          path === 'packages/engine/src/portable-math.ts',
         `${relative(root, file)} imports ${path}`,
       ).toBe(true);
     }
@@ -41,7 +51,7 @@ it('the script imports only leaves, with pitch, record and rules as its grid bou
   const root = process.cwd();
   const script = 'packages/engine/src/script/';
   const files = sourceFiles(root, [script]).filter(
-    (file) => isSource(file) && !/\.test\.[cm]?[jt]sx?$/.test(file),
+    (file) => isSource(file) && !/\.(?:test|testkit)\.[cm]?[jt]sx?$/.test(file),
   );
   expect(files.length).toBeGreaterThan(0);
   const graph = sourceGraph(root);

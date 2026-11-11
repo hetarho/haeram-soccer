@@ -169,9 +169,18 @@ export function buildTouches(
       release: { foul: id },
     });
   });
-  // A direct free-kick shot is the delivery of a foul of its side: in its minute, else moved to it.
+  // A penalty's kick is the delivery of its explicitly linked foul, in the shot's minute.
   const used = new Set<number>();
   const direct = new Set<number>();
+  for (const [foul, shot] of settled.penalties) {
+    const minute = minuteIndex(settled.shots[shot!]![SH.minute]!);
+    used.add(foul!);
+    direct.add(shotTouch[shot!]!);
+    minutes.fouls[foul!] = minute;
+    touches[foulTouch[foul!]!]!.minute = minute;
+    touches[foulTouch[foul!]!]!.next = shotTouch[shot!];
+  }
+  // A direct free-kick shot is the delivery of a foul of its side: in its minute, else moved to it.
   settled.shots.forEach((s, id) => {
     // Direct: a free-kick shot without a source (a free kick's header has its delivery as source).
     if (s[SH.kind] !== FREE_KICK_SHOT || s[SH.source]! >= 0) return;
@@ -180,6 +189,7 @@ export function buildTouches(
     const minute = minuteIndex(s[SH.minute]!);
     const free = settled.fouls.flatMap((f, i) =>
       f[FO.fouledSide] === side &&
+      !f[FO.penalty] &&
       !used.has(i) &&
       f[FO.period] === (s[SH.minute]! > 90 ? 1 : 0) &&
       f[FO.cell] === s[SH.cell] &&
