@@ -8,6 +8,7 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  */
 import {
   activeMatchModel,
+  isScriptedModel,
   MATCH_MODEL_REVISION,
   type MatchModelRevision,
 } from '../../../contracts/src/match-model';
@@ -192,6 +193,7 @@ export function aggregatePlan(
       traits: p.traits,
     }));
     return {
+      shape: { tactic: prepared.tactics[s], roles: slots.map((slot) => slot.role) },
       candidates,
       policy: s === prepared.ownSide ? subPolicyFor(w.manager) : { ...DEFAULT_SUB_POLICY },
       pressing,
@@ -200,7 +202,7 @@ export function aggregatePlan(
         actionWeight(slots[slot]!.role, candidates[line]!.traits, action),
     };
   };
-  return { era, sides: [side(0), side(1)] };
+  return { era, placed: isScriptedModel(activeMatchModel(w)), sides: [side(0), side(1)] };
 }
 
 /**

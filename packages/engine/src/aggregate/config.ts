@@ -333,6 +333,12 @@ export const AGGREGATE_PARTICIPATION_CONFIG = {
  * raised to `attributePower`. Only shares come from these; the counts are the ledger's.
  */
 export const AGGREGATE_ATTRIBUTION_CONFIG = {
+  place: {
+    reach: 12,
+    floor: 0.02,
+    iterations: 8,
+    target: { median: 13, far: 0.2, winnersFar: 0.25 },
+  },
   attributeScale: 70,
   attributePower: 2,
   /**

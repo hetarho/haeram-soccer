@@ -8,6 +8,7 @@ import type { Incident, Metrics, Tactic } from '../../../contracts/src/types';
 import type { Line, PlayTrait } from '../../../contracts/src/player';
 import type { EraRules, SubPolicy } from '../grid/setup';
 import type { MatchAction } from '../match';
+import type { ShapeSide } from '../staging/shape';
 
 export type AggregateSide = 0 | 1;
 /** Regulation is minutes 0–90; extra time (→MATCH-6) extends the same match by 90–120. */
@@ -291,6 +292,7 @@ export interface AggregateCandidate {
   traits: readonly PlayTrait[];
 }
 export interface AggregateSidePlan {
+  shape: ShapeSide;
   /** Aligned with `AggregateSideInput.lines`: the XI in slot order, then the named bench. */
   candidates: readonly AggregateCandidate[];
   policy: SubPolicy;
@@ -306,6 +308,7 @@ export interface AggregateSidePlan {
 /** What the participation plan is conditioned on beyond the kernel input. */
 export interface AggregatePlan {
   era: EraRules;
+  placed: boolean;
   sides: readonly [AggregateSidePlan, AggregateSidePlan];
 }
 
@@ -345,6 +348,8 @@ export interface AggregateTraceMove {
   broke: number[];
   /** This side's lines caught offside on the group's offside passes. */
   offside: number[];
+  /** Revision 11 only: each failed pass's actor and its caught receiver, never the same line. */
+  offsidePairs?: { actor: number; receiver: number }[];
   /** The opponent's lines that won the ball: interceptions of a pass group, tackles of a carry or take-on group. */
   won: number[];
   /** The opponent's lines that recovered the group's loose balls in their high-turnover zone (empty elsewhere). */

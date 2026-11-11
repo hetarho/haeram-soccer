@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TD } from '../../../contracts/src/detail';
+import { FORMATIONS } from '../player';
 import type { Incident } from '../../../contracts/src/types';
 import type { Line } from '../../../contracts/src/player';
 import { DEFAULT_SUB_POLICY, eraRules } from '../grid/setup';
@@ -50,7 +51,9 @@ function syntheticMatch(
     { skill: () => 70, finishing, targetChance },
     [roster(0), roster(1)],
   );
+  const tactics = ['balanced', 'press'] as const;
   const side = (s: AggregateSide) => ({
+    shape: { tactic: tactics[s], roles: FORMATIONS[tactics[s]].slots.map((slot) => slot.role) },
     candidates: input.sides[s].lines.map((l, i) => ({
       id: l.id,
       line: i < 11 ? input.sides[s].slots[i]!.line : BENCH_LINES[i - 11]!,
@@ -69,7 +72,7 @@ function syntheticMatch(
     drain: 1,
     actionWeight: () => 1,
   });
-  return { input, plan: { era, sides: [side(0), side(1)] } };
+  return { input, plan: { era, placed: false, sides: [side(0), side(1)] } };
 }
 const planned = (year: number, fixture: string, length: 90 | 120 = 90, injury?: number) => {
   const { input, plan } = syntheticMatch(year, injury);

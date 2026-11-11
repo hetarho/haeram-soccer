@@ -17,6 +17,7 @@ import { zeroMetrics } from '../primitives';
 import { exp } from '../portable-math';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
 import { inBoxCell, isPassKind, looseBalls, moveKindIndex, xtGain } from './ledger';
+import { fitPlaceWeights, opposingCell, placeDistance, placeTerm, type PlaceGroup } from './place';
 import {
   binomialDraw,
   exposures,
@@ -211,6 +212,8 @@ class SideLines {
   private readonly slotLines: number[];
   /** Lines present in each minute asked for, in line order (T326): the stints are fixed here. */
   private readonly presence = new Map<number, readonly { line: number; slot: number }[]>();
+  /** Place terms by cell and possession, then slot; shared by all action roles. */
+  private readonly places = new Map<number, number[]>();
   /** One split's buffers of the side's line count, reused by every move group (T326). */
   readonly attempts: number[];
   readonly completed: number[];
@@ -341,6 +344,90 @@ class SideLines {
     return out;
   }
 
+  private place(slot: number, cell: number, inPossession: boolean): number {
+    const key = cell * 2 + Number(inPossession);
+    let terms = this.places.get(key);
+    if (!terms) {
+      const shapes = [this.plan.sides[0].shape, this.plan.sides[1].shape] as const;
+      terms = this.input.sides[this.side].slots.map((_, slot) =>
+        placeTerm(placeDistance(shapes, this.side, slot, cell, inPossession)),
+      );
+      this.places.set(key, terms);
+    }
+    return terms[slot]!;
+  }
+
+  /** The same exposure weights, bent by the role's place in this cell. */
+  weightsAt(period: AggregatePeriod, role: Role, cell: number, inPossession: boolean): number[] {
+    const base = this.weights(period, role);
+    if (!this.plan.placed) return base;
+    const list = this.exposuresOf(period);
+    const terms = this.termsOf(
+      period,
+      role.call ? `${role.attribute}:call` : role.attribute,
+      list.length,
+    );
+    const out = Array<number>(this.rows.length).fill(0);
+    let total = 0;
+    for (let at = 0; at < list.length; at++) {
+      const e = list[at]!;
+      const w = this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at);
+      total += w;
+      out[e.line]! += w * this.place(e.slot, cell, inPossession);
+    }
+    // Preserve `weights`' minutes-only fallback when none of the role's lines played.
+    if (!(total > 0))
+      for (const e of list) out[e.line]! += e.minutes * this.place(e.slot, cell, inPossession);
+    return out;
+  }
+
+  /** Fits one class at a time; set-piece actors keep their taker, pinned feeds their passer. */
+  fitMoves(
+    period: AggregatePeriod,
+    moves: readonly AggregateMove[],
+    pinned: ReadonlyMap<number, readonly number[]>,
+    winning = false,
+  ): Map<number, number[]> {
+    const fitted = new Map<number, number[]>();
+    if (!this.plan.placed) return fitted;
+    const classes = new Map<string, { index: number; group: PlaceGroup }[]>();
+    moves.forEach((move, index) => {
+      if (move.period !== period || (!winning && move.setPiece)) return;
+      const pass = isPassKind(move.kind);
+      const count = winning
+        ? pass
+          ? move.intercepted
+          : move.attempts - move.completed
+        : move.attempts - (pinned.get(index)?.length ?? 0);
+      if (count <= 0) return;
+      const at = pass ? cellBand(move.to) : cellBand(move.from);
+      const role = winning
+        ? ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling')
+        : moveRole(move);
+      const key = winning
+        ? pass
+          ? 'interception'
+          : 'tackle'
+        : move.kind === 'cutBack'
+          ? 'cross'
+          : move.kind;
+      const cell = winning ? opposingCell(move.to) : move.from;
+      const group = {
+        count,
+        weights: this.weights(period, role),
+        placed: this.weightsAt(period, role, cell, !winning),
+      };
+      const list = classes.get(key) ?? [];
+      list.push({ index, group });
+      classes.set(key, list);
+    });
+    for (const list of classes.values()) {
+      const weights = fitPlaceWeights(list.map((g) => g.group));
+      list.forEach((g, i) => fitted.set(g.index, weights[i]!));
+    }
+    return fitted;
+  }
+
   /** Lines present in a minute, with their slot. */
   present(minute: number): readonly { line: number; slot: number }[] {
     let out = this.presence.get(minute);
@@ -355,9 +442,19 @@ class SideLines {
   }
 
   /** A line present in `minute` drawn by a role, never one of `except`. */
-  pickAt(r: Rng, minute: number, role: Role, except: readonly number[] = []): number {
+  pickAt(
+    r: Rng,
+    minute: number,
+    role: Role,
+    except: readonly number[] = [],
+    cell?: number,
+  ): number {
     const here = this.present(minute).filter((p) => !except.includes(p.line));
-    const weights = here.map((p) => this.share(p.line, p.slot, 1, minute - 0.5, role));
+    const weights = here.map(
+      (p) =>
+        this.share(p.line, p.slot, 1, minute - 0.5, role) *
+        (this.plan.placed && cell !== undefined ? this.place(p.slot, cell, true) : 1),
+    );
     let i = weightedIndex(r, weights);
     if (i < 0) i = Math.floor(r() * here.length);
     return here[i]!.line;
@@ -569,6 +666,7 @@ export function attributePlayerFacts(
         participation,
         credits,
         trace,
+        plan.placed,
       );
   for (const x of participation.incidents) {
     const d = sides[x.side].rows[sides[x.side].lineOf(x.player)]!.detail;
@@ -596,6 +694,7 @@ function attributeSide(
   participation: AggregateParticipation,
   credits: AggregateShotCredit[],
   trace: AggregateAttributionTrace | undefined,
+  placed: boolean,
 ) {
   const own = sides[side],
     opp = sides[side === 0 ? 1 : 0];
@@ -648,14 +747,18 @@ function attributeSide(
   /** With a trace, the move index of each pushed loose entry, beside `loose`. */
   const looseMoves: number[] | undefined = trace && [];
   const moveTrace = trace?.moves[side];
-  // Plain loops and per-group constants (T285): the same draws in the same order as before.
+  const actorWeights = own.fitMoves(period, ledger.moves, pinned);
+  const winnerWeights = opp.fitMoves(period, ledger.moves, pinned, true);
+  // Revisions through 10 retain the original draws and order (T285).
   for (let index = 0; index < ledger.moves.length; index++) {
     const move = ledger.moves[index]!;
     if (move.period !== period) continue;
     const pins = pinned.get(index) ?? NO_PINS;
-    const weights = move.setPiece
-      ? own.takerWeights(period, move.setPiece === 'corner' ? 'corner' : 'freeKick')
-      : own.weights(period, moveRole(move));
+    const weights =
+      actorWeights.get(index) ??
+      (move.setPiece
+        ? own.takerWeights(period, move.setPiece === 'corner' ? 'corner' : 'freeKick')
+        : own.weights(period, moveRole(move)));
     const attempts = multinomialInto(r, move.attempts - pins.length, weights, own.attempts);
     const completed = within(r, move.completed - pins.length, attempts, own.completed);
     for (const line of pins) {
@@ -674,12 +777,23 @@ function attributeSide(
       traced.broke = broke.slice();
     }
     if (move.offside > 0) {
-      const offside = multinomialInto(
-        r,
-        move.offside,
-        own.weights(period, ROLES.offside),
-        own.split,
-      );
+      let offside: number[];
+      if (placed) {
+        offside = own.split.fill(0);
+        const failed = attempts.map((a, line) => a - completed[line]!);
+        const receivers = own.weightsAt(period, ROLES.offside, move.to, true);
+        if (traced) traced.offsidePairs = [];
+        for (let k = 0; k < move.offside; k++) {
+          const actor = weightedIndex(r, failed);
+          failed[actor]!--;
+          const eligible = receivers.map((w, line) => (line === actor ? 0 : w));
+          const receiver = weightedIndex(r, eligible);
+          offside[receiver]!++;
+          traced?.offsidePairs!.push({ actor, receiver });
+        }
+      } else {
+        offside = multinomialInto(r, move.offside, own.weights(period, ROLES.offside), own.split);
+      }
       for (let line = 0; line < offside.length; line++)
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
       if (traced) traced.offside = offside.slice();
@@ -699,7 +813,12 @@ function attributeSide(
     if (won > 0) {
       const at = pass ? traits.toBand : traits.fromBand;
       const role = ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling');
-      const split = multinomialInto(r, won, opp.weights(period, role), opp.split);
+      const split = multinomialInto(
+        r,
+        won,
+        winnerWeights.get(index) ?? opp.weights(period, role),
+        opp.split,
+      );
       if (traced) traced.won = split.slice();
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
@@ -732,7 +851,7 @@ function attributeSide(
     left[i]!--;
     const f = fouls[i]!;
     opp.rows[opp.lineOf(card.player)]!.detail[PD.fouls]!++;
-    const fouled = own.pickAt(r, card.minute, ROLES.carry(cellBand(f.cell)));
+    const fouled = own.pickAt(r, card.minute, ROLES.carry(cellBand(f.cell)), [], f.cell);
     own.rows[fouled]!.detail[PD.foulsWon]!++;
     foulTrace?.[i]!.booked.push({
       fouler: opp.lineOf(card.player),
@@ -744,10 +863,18 @@ function attributeSide(
     const k = left[i]!;
     if (k === 0) return;
     const band = cellBand(f.cell);
-    const fouledLines = multinomialDraw(r, k, own.weights(period, ROLES.carry(band)));
+    const fouledLines = multinomialDraw(
+      r,
+      k,
+      own.weightsAt(period, ROLES.carry(band), f.cell, true),
+    );
     fouledLines.forEach((x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x));
     const role = ROLES.defend(LAST_BAND - band, 'tackling');
-    const foulerLines = multinomialDraw(r, k, opp.weights(period, role));
+    const foulerLines = multinomialDraw(
+      r,
+      k,
+      opp.weightsAt(period, role, opposingCell(f.cell), false),
+    );
     foulerLines.forEach((x, line) => (opp.rows[line]!.detail[PD.fouls]! += x));
     if (foulTrace) {
       foulTrace[i]!.fouled = fouledLines.slice();

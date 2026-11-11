@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { PD, TD } from '../../../contracts/src/detail';
+import { isScriptedModel } from '../../../contracts/src/match-model';
 import type { Line } from '../../../contracts/src/player';
 import { DEFAULT_SUB_POLICY, eraRules } from '../grid/setup';
 import { M } from '../grid/record';
+import { FORMATIONS } from '../player';
 import { finishing, targetChance } from '../match';
 import { buildAggregateInput } from './input';
 import { isPassKind } from './ledger';
@@ -43,7 +45,9 @@ function match(
     { skill: (side, line) => 60 + ((line * 7 + side * 3) % 25), own, finishing, targetChance },
     [roster(0), roster(1)],
   );
+  const tactics = ['counter', 'possession'] as const;
   const side = (s: AggregateSide) => ({
+    shape: { tactic: tactics[s], roles: FORMATIONS[tactics[s]].slots.map((slot) => slot.role) },
     candidates: input.sides[s].lines.map((l, i) => ({
       id: l.id,
       line: i < 11 ? input.sides[s].slots[i]!.line : BENCH_LINES[i - 11]!,
@@ -60,7 +64,7 @@ function match(
     drain: 1,
     actionWeight: () => 1,
   });
-  const plan: AggregatePlan = { era, sides: [side(0), side(1)] };
+  const plan: AggregatePlan = { era, placed: false, sides: [side(0), side(1)] };
   const streams = aggregateStreams('synthetic', fixture);
   const participation = planParticipation(input, plan, streams, length);
   const facts = generateTeamFacts(input, streams, participation);
@@ -183,6 +187,23 @@ describe('aggregate player attribution (→MATCH-11, MATCH-13, MATCH-27)', () =>
     return { ...m, traced: players, trace };
   };
   const total = (xs: readonly number[]) => xs.reduce((n, x) => n + x, 0);
+
+  it('revision 10 attribution is untouched by the place rule', () => {
+    for (const fixture of fixtures(6, 'revision-10-place')) {
+      const m = traced(fixture);
+      const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+      const players = attributePlayerFacts(
+        m.input,
+        { ...m.plan, placed: isScriptedModel('continuous-aggregate-10') },
+        m.participation,
+        m.facts,
+        aggregateStreams('synthetic', fixture),
+        trace,
+      );
+      expect(players).toEqual(m.players);
+      expect(trace).toEqual(m.trace);
+    }
+  });
 
   it('a trace changes no fact', () => {
     for (const fixture of fixtures(8, 'trace-same')) {

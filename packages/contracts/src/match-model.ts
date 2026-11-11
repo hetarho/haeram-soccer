@@ -66,6 +66,7 @@ export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-8',
   'continuous-aggregate-9',
   'continuous-aggregate-10',
+  'scripted-aggregate-11',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
@@ -75,6 +76,9 @@ export const isMatchModelRevision = (value: unknown): value is MatchModelRevisio
 /** A revision's number: 1 for the first. */
 export const matchModelNumber = (revision: MatchModelRevision) =>
   MATCH_MODEL_REVISIONS.indexOf(revision) + 1;
+/** The result-and-script model, declared before it activates in careers (T824, T838). */
+export const isScriptedModel = (revision: MatchModelRevision | undefined) =>
+  revision !== undefined && matchModelNumber(revision) >= 11;
 
 /** The first fixture day and round a set of newly available counters covers (→HIST-17). */
 export interface TrackingBoundary {

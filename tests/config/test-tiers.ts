@@ -47,6 +47,7 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/aggregate/ledger.test.ts',
   'packages/engine/src/aggregate/participation.test.ts',
   'packages/engine/src/aggregate/players.test.ts',
+  'packages/engine/src/aggregate/players.place.test.ts',
   'packages/engine/src/aggregate/team.test.ts',
   'packages/engine/src/approvals.days.test.ts',
   'packages/engine/src/bases.test.ts',
