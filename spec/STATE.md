@@ -864,6 +864,7 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
+| match-script-and-staging | open@261111 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -907,6 +908,10 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T819 | settled results for the prototype: an attribution trace and ten exported matches | ARCH | T818 | todo |
+| T820 | match-proto fitted script: a script written from a settled result, exact by construction | ARCH | T819 | todo |
+| T821 | match-proto stage a fitted match: ninety minutes performed to the last beat, the record intact | ARCH | T820 | todo |
+| T822 | match-proto fit verdict: make a fitted match read as football, measure what it costs, deliver a full match | ARCH | T821 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -937,6 +942,8 @@
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
 - owner: open `artifacts/match-proto-261111/index.html` beside `artifacts/match-proto-261110/index.html` (a different ten minutes: T815's `grammar.minPass` changed the script, so the second page plays `demo#0` 2-3 where the first played `demo#17` 1-2; compare the overall impression) and compare the three complaints (review/match-engine-split-261110 F2–F4): (1) passes to a man standing on the passer and teammates sticking together — e.g. 07:11 H8→H3 2.4 m, the huddles at 01:13 H6+H8, 07:06 H2+H7, 08:35 A8+A9; (2) both teams wheeling round at a turnover — settled turnovers at 01:02, 03:56, 03:58, counters at 00:08, 02:49 — and how near defenders stay to attackers; (3) everyone starting and stopping together, anywhere in open play. The artifacts README holds the scene list, both 31-metric tables and what still fails (huddles ~1–2 a minute, restarts 4.2–5.0, mark.near ~0.3; summed passes 101 → 115 → 117 of 155); then the verdict on the script→staging split (F1), and whether the huddle and marking limits become staging rules (planning)
+- ideation match-script-and-staging (open, not to be converted before T822 is done): the owner's order of 261111 — T814–T818, then T819–T822 (a script fitted to a settled result, on ten real aggregate results), then update-ssot MATCH WEB HIST SAVE ARCH from the ideation and create-task for phase B (preparation and change-over of the game) and phase C (removal of the prototype, the detailed engine's replaced modules and the older model revisions' branches); T689 closes at that conversion
+- implement-task T814 (then T815 → T816 → T817 → T818 → T819 → T820 → T821 → T822, one chain; T819 alone touches `packages/`, behaviour unchanged): T818 delivers `artifacts/match-proto-261111/index.html` to watch beside the first page, T822 `artifacts/match-proto-fit/index.html`, one full match beside its record
 
 ## log
 - 261111 fix T818 record: the second page is a different ten minutes from the first (`demo#0` 2-3 against `demo#17` 1-2, T815's `grammar.minPass` changed the script), not the same ones; the tuning box ran about 20 minutes (reports 03:01Z–03:17Z, commit ba01761c 03:23Z), not the two hours its README log records; corrections noted in `artifacts/match-proto-261111/README.md` and the owner's next line
@@ -958,8 +965,4 @@
 - 261111 T793 done: `scripts/match-proto/script` state, casting, emit, restarts, four basic moves, `generateScript`, the 8-rule continuity validator and script stats with `PROTO_CONFIG.grammar`; seeds t0–t29 validate, 24 unit cases, no production file touched mp11
 - 261111 T792 done: `scripts/match-proto/core/shape.ts` nominal places by phase (formation anchors, role overrides, offside line from positions or the nominal block, keepers) with `PROTO_CONFIG.shape`; every reference value reproduced, 11 unit cases, a leaf, no production file touched mp11
 - 261111 T791 done: `scripts/match-proto/core` contracts (types, vec, pitch, rng, config, synthetic squads) and README; every rng reference vector reproduced, 13 unit cases, no production file touched mp11
-- 261110 T813 integrated
-- 261110 T812 integrated
-- 261110 T811 integrated
-- 261110 T810 integrated
-- 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
+- 261111 ideation match-script-and-staging start: the owner's calls of the day taken down (split adopted, aggregate result for every match, scripts for watched matches only, maps drawn by probability, pass network own matches only); open
