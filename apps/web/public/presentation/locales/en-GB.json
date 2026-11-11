@@ -3284,7 +3284,7 @@
     "copy.MatchMaterial.3acc063cd8": " · Opponent also attacks to the right",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Touch {p1} · There are more touches from blue to red {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Passing network: {p0} of our players, {p1} of connections",
-    "copy.MatchMaterial.e86b9ed7bd": "Point = Average position (size is touch) · Line thickness = Successful passes between two players (more than 2 times)",
+    "copy.MatchMaterial.e86b9ed7bd": "Circles mark average positions and grow with completed passes. Line width shows completed passes between the players; arrows show their direction. Only pairs with at least {minPasses} completed passes are shown.",
     "copy.MatchMaterial.f7e6dbe02f": "There was no tactical commentary recorded for this match.",
     "copy.MatchMaterial.ff24187b5b": "tactical commentary team",
     "copy.MatchMaterial.bd972e8fc6": "Final third entry by lane: {p0}",
@@ -4472,8 +4472,8 @@
     "copy.materialView.96252d8ea3": " · Header",
     "copy.materialView.2724192be5": "{p0} · Touch {p1} ({p2}%)",
     "copy.materialView.921afb8470": "{p0}th player",
-    "copy.materialView.38aeab08e9": "{p0} · Average position {p1} · Touch {p2} times",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Pass {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Shirt {number} · Completed passes: {passes} · Touches: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} completed passes · {to} → {from}: {backward} completed passes",
     "copy.materialView.f4f68247d7": "I entered {p0} {p1}.",
     "copy.materialView.e67b3e201d": "All entries into the final third are {p0}.",
     "copy.materialView.606b44fd42": "There were no scenes in the final third.",
@@ -6653,6 +6653,7 @@
     "tool.payroll.accountingLine": "Payroll accounting: {summary}.",
     "tool.payroll.modeledRatio": "modeled player + manager/coaching wage bill / revenue, first 50 seasons",
     "tool.payroll.npcComparison": "player-only wages / books' last player wages (accounting)",
-    "match.preparing": "Preparing the scene…"
+    "match.preparing": "Preparing the scene…",
+    "match.network.busiest": "Busiest passing pairs (up to 5)"
   }
 }

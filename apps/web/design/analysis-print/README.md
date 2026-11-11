@@ -30,3 +30,10 @@ accessible group context. The existing PositionMap retains its separate portable
 
 Manual inspection covers all four formations, chart keyboard/pointer selection, cell feedback,
 full formation selection, and desktop/mobile bounds. Captures belong under ignored `.tmp/`.
+
+Implemented working pass-network treatment (T835, 2026-11-12): the existing paper and pitch-line
+resources remain the ground. Completed-pass circles use the recorded shirt base with the same
+contrast ink as the scoreboard; lines and directional arrowheads use the shared chart-primary
+token. The geometry and numbers remain live SVG, requiring no new artwork or regeneration.
+The shared interaction/locale unit cases are recorded in the task; phone geometry and browser
+interaction assertions in `match-material.spec.ts` await the coordinator's batch.

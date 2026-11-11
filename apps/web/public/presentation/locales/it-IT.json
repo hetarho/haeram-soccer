@@ -3165,7 +3165,7 @@
     "copy.MatchMaterial.3acc063cd8": " · Anche l'avversario attacca a destra",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Touch {p1} · Ci sono più tocchi dal blu al rosso {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Rete di passaggio: {p0} dei nostri giocatori, {p1} delle connessioni",
-    "copy.MatchMaterial.e86b9ed7bd": "Punto = Posizione media (la dimensione è il tocco) · Spessore della linea = Passaggi riusciti tra due giocatori (più di 2 volte)",
+    "copy.MatchMaterial.e86b9ed7bd": "I cerchi indicano le posizioni medie e crescono con i passaggi riusciti. Lo spessore delle linee indica i passaggi riusciti tra i giocatori; le frecce ne mostrano la direzione. Sono mostrate solo le coppie con almeno {minPasses} passaggi riusciti in totale.",
     "copy.MatchMaterial.f7e6dbe02f": "Non è stato registrato alcun commento tattico per questa partita.",
     "copy.MatchMaterial.ff24187b5b": "squadra di telecronaca tattica",
     "copy.MatchMaterial.bd972e8fc6": "Terzo ingresso finale per corsia: {p0}",
@@ -4599,8 +4599,8 @@
     "copy.materialView.96252d8ea3": " · Intestazione",
     "copy.materialView.2724192be5": "{p0} · Tocca {p1} ({p2}%)",
     "copy.materialView.921afb8470": "{p0}esimo giocatore",
-    "copy.materialView.38aeab08e9": "{p0} · Posizione media {p1} · Tocca {p2} volte",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Passa {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Maglia {number} · Passaggi riusciti: {passes} · Tocchi: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} passaggi riusciti · {to} → {from}: {backward} passaggi riusciti",
     "copy.materialView.f4f68247d7": "Ho inserito {p0} {p1}.",
     "copy.materialView.e67b3e201d": "Tutte le voci nel terzo finale sono {p0}.",
     "copy.materialView.606b44fd42": "Non c'erano scene nell'ultimo terzo.",
@@ -6656,6 +6656,7 @@
     "tool.payroll.accountingLine": "Contabilità degli stipendi: {summary}.",
     "tool.payroll.modeledRatio": "monte ingaggi modellato di giocatori + allenatore/staff tecnico / ricavi, prime 50 stagioni",
     "tool.payroll.npcComparison": "soli stipendi dei giocatori / ultimi stipendi dei giocatori nel libro contabile (contabilità)",
-    "match.preparing": "Preparazione della scena…"
+    "match.preparing": "Preparazione della scena…",
+    "match.network.busiest": "Coppie con più passaggi riusciti (fino a 5)"
   }
 }

@@ -3426,7 +3426,7 @@
     "copy.MatchMaterial.3acc063cd8": " · Rakip de sağa saldırıyor",
     "copy.MatchMaterial.4ea1afd010": "{p0} · {p1}'ye dokunun · Maviden kırmızıya daha fazla dokunuş var {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Geçiş ağı: Oyuncularımızın {p0}'si, bağlantıların {p1}'si",
-    "copy.MatchMaterial.e86b9ed7bd": "Puan = Ortalama konum (boyut temastır) · Çizgi kalınlığı = İki oyuncu arasında başarılı paslar (2 kereden fazla)",
+    "copy.MatchMaterial.e86b9ed7bd": "Daireler ortalama konumları gösterir ve isabetli pas sayısıyla büyür. Çizgi kalınlığı oyuncular arasındaki isabetli pasları, oklar yönünü gösterir. Yalnızca toplam en az {minPasses} isabetli pası olan ikililer gösterilir.",
     "copy.MatchMaterial.f7e6dbe02f": "Bu maç için herhangi bir taktik yorumu kaydedilmedi.",
     "copy.MatchMaterial.ff24187b5b": "taktik yorum ekibi",
     "copy.MatchMaterial.bd972e8fc6": "Kulvar bazında son üçüncü giriş: {p0}",
@@ -4595,8 +4595,8 @@
     "copy.materialView.96252d8ea3": " · Başlık",
     "copy.materialView.2724192be5": "{p0} · {p1}'ye ({p2}%) dokunun",
     "copy.materialView.921afb8470": "{p0}'inci oyuncu",
-    "copy.materialView.38aeab08e9": "{p0} · Ortalama konum {p1} · {p2} kez dokunun",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · {p2}'yi geçti",
+    "copy.materialView.38aeab08e9": "{player} · Forma {number} · İsabetli pas: {passes} · Topla buluşma: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} isabetli pas · {to} → {from}: {backward} isabetli pas",
     "copy.materialView.f4f68247d7": "{p0} {p1}'yi girdim.",
     "copy.materialView.e67b3e201d": "Son üçte birlik kısımdaki tüm katılımlar {p0}'dir.",
     "copy.materialView.606b44fd42": "Son üçte bir sahne yoktu.",
@@ -6653,6 +6653,7 @@
     "tool.payroll.accountingLine": "Maaş muhasebesi: {summary}.",
     "tool.payroll.modeledRatio": "modellenen oyuncu + teknik direktör/teknik ekip maaşları / gelir, ilk 50 sezon",
     "tool.payroll.npcComparison": "yalnızca oyuncu maaşları / defterdeki son oyuncu maaşları (muhasebe)",
-    "match.preparing": "Sahne hazırlanıyor…"
+    "match.preparing": "Sahne hazırlanıyor…",
+    "match.network.busiest": "En çok paslaşan ikililer (en fazla 5)"
   }
 }

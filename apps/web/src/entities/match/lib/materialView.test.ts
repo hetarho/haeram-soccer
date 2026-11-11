@@ -6,6 +6,9 @@ import {
   dotRadius,
   heatCells,
   heatOf,
+  networkView,
+  NETWORK_VIEW,
+  VIEW,
   px,
   py,
   reportView,
@@ -58,6 +61,102 @@ const w = {
   ],
   history: [],
 } as unknown as World;
+
+/** Only the integer material rows this view reads; no world generation or match simulation. */
+function networkRecord(touches: number[], pairs: number[]) {
+  const record = savedRecord();
+  record.players = touches.map((_, i) => ({ id: `p${i + 1}`, metrics: [] }));
+  record.lineCounts = [0, touches.length];
+  record.material = {
+    shots: [],
+    report: [],
+    heat: Array((touches.length + 2) * 40).fill(0),
+    network: [...touches.flatMap((touches, i) => [100 + i * 80, 100 + i * 30, touches]), ...pairs],
+  };
+  return record;
+}
+
+describe('pass network circles and lines', () => {
+  it("a circle grows with a player's passes", () => {
+    const view = networkView(networkRecord([200, 20, 30], [0, 1, 2, 1, 0, 4, 1, 2, 9]), w)!;
+    const [a, b, c] = view.nodes;
+    expect(a).toMatchObject({ passes: 2, touches: 200, number: 1, name: 'Jack Smith' });
+    expect(b).toMatchObject({ passes: 13, touches: 20, number: 2, name: 'Tom Brown' });
+    expect(b!.r).toBeGreaterThan(a!.r);
+    const width = VIEW.width - VIEW.pad * 2;
+    expect(c!.r).toBeCloseTo(NETWORK_VIEW.radius.min * width);
+    expect(b!.r).toBeCloseTo(NETWORK_VIEW.radius.max * width);
+    expect(
+      view.nodes.every(
+        (n) => n.r >= width * NETWORK_VIEW.radius.min && n.r <= width * NETWORK_VIEW.radius.max,
+      ),
+    ).toBe(true);
+  });
+
+  it("a line is as wide as the pair's passes in both directions", () => {
+    const view = networkView(networkRecord([20, 20, 20], [1, 0, 4, 0, 1, 2, 1, 2, 9]), w)!;
+    expect(view.links.map((l) => l.passes)).toEqual([6, 9]);
+    const scale = VIEW.width / NETWORK_VIEW.referenceWidth;
+    expect(view.links[0]!.width / scale).toBeCloseTo(1 + (8 * 6) / 9);
+    expect(view.links[1]!.width / scale).toBe(NETWORK_VIEW.line.max);
+    expect(view.links[0]).toMatchObject({ from: 0, to: 1, forward: 2, backward: 4 });
+    const link = view.links[0]!,
+      from = view.nodes[0]!,
+      to = view.nodes[1]!;
+    expect(Math.hypot(link.x1 - from.cx, link.y1 - from.cy)).toBeCloseTo(from.r);
+    expect(Math.hypot(link.x2 - to.cx, link.y2 - to.cy)).toBeCloseTo(to.r);
+  });
+
+  it('an arrowhead marks only a direction played', () => {
+    const view = networkView(networkRecord([20, 20, 20], [1, 0, 3, 0, 2, 4, 1, 2, 2, 2, 1, 3]), w)!;
+    expect(view.links.find((l) => l.key === '0-1')).toMatchObject({
+      arrowStart: true,
+      arrowEnd: false,
+    });
+    expect(view.links.find((l) => l.key === '0-2')).toMatchObject({
+      arrowStart: false,
+      arrowEnd: true,
+    });
+    expect(view.links.find((l) => l.key === '1-2')).toMatchObject({
+      arrowStart: true,
+      arrowEnd: true,
+    });
+  });
+
+  it('pairs under the least count are left out', () => {
+    const view = networkView(
+      networkRecord([20, 20, 20, 0], [0, 1, 2, 0, 2, 1, 2, 0, 2, 0, 3, 9]),
+      w,
+    )!;
+    expect(view.links.map((l) => l.key)).toEqual(['0-2']);
+    expect(view.links[0]!.passes).toBe(NETWORK_VIEW.minPasses);
+    // Quiet pairs still count towards a circle's passes; an absent node has no visible edge.
+    expect(view.nodes[0]!.passes).toBe(3);
+  });
+
+  it('a side with a man sent off still draws ten circles', () => {
+    const record = networkRecord([10, 10, 0, ...Array(8).fill(10)], [0, 1, 4]);
+    record.incidents = [{ kind: 'red', side: 1, player: 'p3', minute: 1 }];
+    const view = networkView(record, w)!;
+    expect(view.nodes).toHaveLength(10);
+    expect(view.nodes.map((n) => n.number)).toEqual([1, 2, 4, 5, 6, 7, 8, 9, 10, 11]);
+    expect(view.nodes[2]!.cx).toBe(px(34));
+  });
+
+  it('summarises the five busiest pairs and handles empty material without inventing passes', () => {
+    const record = networkRecord(
+      Array(5).fill(20),
+      [0, 1, 3, 0, 2, 4, 0, 3, 5, 0, 4, 6, 1, 2, 7, 1, 3, 8],
+    );
+    const before = JSON.stringify(record);
+    expect(networkView(record, w)!.busiest.map((l) => l.passes)).toEqual([8, 7, 6, 5, 4]);
+    expect(JSON.stringify(record)).toBe(before);
+    expect(networkView(networkRecord([10, 10], []), w)).toMatchObject({ links: [], busiest: [] });
+    expect(networkView(networkRecord([], []), w)!.nodes).toHaveLength(0);
+    delete record.material;
+    expect(networkView(record, w)).toBeUndefined();
+  });
+});
 
 describe('post-match material views', () => {
   it('scales shot dots by xG', () => {

@@ -3509,7 +3509,7 @@
     "copy.MatchMaterial.3acc063cd8": " ・相手も右に攻撃",
     "copy.MatchMaterial.4ea1afd010": "{p0}・タッチ{p1}番・青から赤へ行くほどタッチが多いです{p2}",
     "copy.MatchMaterial.2a1cc2e03e": "パス接続ネットワーク：私たちのプレーヤー{p0}名、接続{p1}",
-    "copy.MatchMaterial.e86b9ed7bd": "点＝平均位置（サイズはタッチ）・線太さ＝２選手間成功パス（２回以上）",
+    "copy.MatchMaterial.e86b9ed7bd": "円は平均位置を示し、成功パス数に応じて大きくなります。線の太さは2選手間の成功パス数、矢印はパスの方向を示します。合計{minPasses}本以上の組み合わせだけを表示します。",
     "copy.MatchMaterial.f7e6dbe02f": "この試合は戦術解説を記録しませんでした。",
     "copy.MatchMaterial.ff24187b5b": "戦術解説チーム",
     "copy.MatchMaterial.bd972e8fc6": "レーン別ファイナルサードエントリー：{p0}",
@@ -5019,8 +5019,8 @@
     "copy.materialView.96252d8ea3": " ・ヘッダー",
     "copy.materialView.2724192be5": "{p0} · {p1} ({p2}%) をタッチ",
     "copy.materialView.921afb8470": "{p0} 番目のプレイヤー",
-    "copy.materialView.38aeab08e9": "{p0} · 平均位置 {p1} · タッチ {p2} 回",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · {p2} を通過",
+    "copy.materialView.38aeab08e9": "{player} · 背番号{number} · 成功パス{passes}本 · タッチ{touches}回",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}：成功パス{forward}本 · {to} → {from}：成功パス{backward}本",
     "copy.materialView.f4f68247d7": "{p0} {p1} と入力しました。",
     "copy.materialView.e67b3e201d": "ファイナル 3 位へのエントリーはすべて {p0} です。",
     "copy.materialView.606b44fd42": "ファイナルサードにはシーンがなかった。",
@@ -6650,6 +6650,7 @@
     "tool.payroll.accountingLine": "給与会計: {summary}。",
     "tool.payroll.modeledRatio": "モデル内の選手・監督・コーチ給与 / 収入、最初の50シーズン",
     "tool.payroll.npcComparison": "選手給与のみ / 帳簿上の直前の選手給与 (会計方式)",
-    "match.preparing": "シーンを準備中…"
+    "match.preparing": "シーンを準備中…",
+    "match.network.busiest": "成功パスが多い組み合わせ（最大5組）"
   }
 }

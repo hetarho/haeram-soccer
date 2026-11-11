@@ -3792,7 +3792,7 @@
     "copy.MatchMaterial.3acc063cd8": " · Tegenstander valt ook rechts aan",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Touch {p1} · Er zijn meer accenten van blauw naar rood {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Passend netwerk: {p0} van onze spelers, {p1} van verbindingen",
-    "copy.MatchMaterial.e86b9ed7bd": "Punt = Gemiddelde positie (grootte is aanraking) · Lijndikte = Succesvolle passes tussen twee spelers (meer dan 2 keer)",
+    "copy.MatchMaterial.e86b9ed7bd": "De cirkels tonen de gemiddelde posities en groeien met de aangekomen passes. De lijndikte toont aangekomen passes tussen de spelers; pijlen geven de richting aan. Alleen paren met in totaal minstens {minPasses} aangekomen passes worden getoond.",
     "copy.MatchMaterial.f7e6dbe02f": "Er is geen tactisch commentaar opgenomen voor deze wedstrijd.",
     "copy.MatchMaterial.ff24187b5b": "tactisch commentaarteam",
     "copy.MatchMaterial.bd972e8fc6": "Laatste derde inzending per rijstrook: {p0}",
@@ -4710,8 +4710,8 @@
     "copy.materialView.96252d8ea3": " · Koptekst",
     "copy.materialView.2724192be5": "{p0} · Raak {p1} aan ({p2}%)",
     "copy.materialView.921afb8470": "{p0}e speler",
-    "copy.materialView.38aeab08e9": "{p0} · Gemiddelde positie {p1} · Raak {p2} keer aan",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · geslaagd voor {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Rugnummer {number} · Aangekomen passes: {passes} · Balcontacten: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} aangekomen passes · {to} → {from}: {backward} aangekomen passes",
     "copy.materialView.f4f68247d7": "Ik heb {p0} {p1} ingevoerd.",
     "copy.materialView.e67b3e201d": "Alle inzendingen voor het laatste derde deel zijn {p0}.",
     "copy.materialView.606b44fd42": "Er waren geen scènes in het laatste derde deel.",
@@ -6653,6 +6653,7 @@
     "tool.payroll.accountingLine": "Salarisboekhouding: {summary}.",
     "tool.payroll.modeledRatio": "gemodelleerde salarissen van spelers + trainer/begeleiders / inkomsten, eerste 50 seizoenen",
     "tool.payroll.npcComparison": "alleen spelersalarissen / laatste spelersalarissen in het grootboek (boekhouding)",
-    "match.preparing": "Spelscène voorbereiden…"
+    "match.preparing": "Spelscène voorbereiden…",
+    "match.network.busiest": "Drukste passverbindingen (maximaal 5)"
   }
 }

@@ -3262,7 +3262,7 @@
     "copy.MatchMaterial.3acc063cd8": " · O oponente também ataca pela direita",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Toque {p1} · Há mais toques do azul ao vermelho {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Rede de passagem: {p0} de nossos jogadores, {p1} de conexões",
-    "copy.MatchMaterial.e86b9ed7bd": "Ponto = Posição média (tamanho é toque) · Espessura da linha = Passes bem-sucedidos entre dois jogadores (mais de 2 vezes)",
+    "copy.MatchMaterial.e86b9ed7bd": "Os círculos marcam as posições médias e crescem conforme os passes certos. A espessura das linhas indica os passes certos entre os jogadores; as setas mostram a direção. Só aparecem duplas com pelo menos {minPasses} passes certos.",
     "copy.MatchMaterial.f7e6dbe02f": "Não houve comentários táticos registrados para esta partida.",
     "copy.MatchMaterial.ff24187b5b": "equipe de comentários táticos",
     "copy.MatchMaterial.bd972e8fc6": "Terceira entrada final por pista: {p0}",
@@ -4560,8 +4560,8 @@
     "copy.materialView.96252d8ea3": " · Cabeçalho",
     "copy.materialView.2724192be5": "{p0} · Toque em {p1} ({p2}%)",
     "copy.materialView.921afb8470": "{p0}º jogador",
-    "copy.materialView.38aeab08e9": "{p0} · Posição média {p1} · Toque {p2} vezes",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Passar {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Camisa {number} · Passes certos: {passes} · Toques: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} passes certos · {to} → {from}: {backward} passes certos",
     "copy.materialView.f4f68247d7": "Digitei {p0} {p1}.",
     "copy.materialView.e67b3e201d": "Todas as entradas no terço final são {p0}.",
     "copy.materialView.606b44fd42": "Não houve cenas no terço final.",
@@ -6656,6 +6656,7 @@
     "tool.payroll.accountingLine": "Contabilidade salarial: {summary}.",
     "tool.payroll.modeledRatio": "folha modelada de jogadores + treinador/comissão técnica / receita, primeiras 50 temporadas",
     "tool.payroll.npcComparison": "salários de jogadores / últimos salários de jogadores do livro (contabilidade)",
-    "match.preparing": "Preparando a cena…"
+    "match.preparing": "Preparando a cena…",
+    "match.network.busiest": "Duplas com mais passes certos (até 5)"
   }
 }

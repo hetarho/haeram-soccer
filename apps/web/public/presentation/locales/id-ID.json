@@ -3703,7 +3703,7 @@
     "copy.MatchMaterial.3acc063cd8": " · Lawan juga menyerang ke kanan",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Sentuh {p1} · Masih ada sentuhan lagi dari biru ke merah {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Jaringan yang lewat: {p0} pemain kami, {p1} koneksi",
-    "copy.MatchMaterial.e86b9ed7bd": "Poin = Rata-rata posisi (ukurannya adalah sentuhan) · Ketebalan garis = Keberhasilan operan antara dua pemain (lebih dari 2 kali)",
+    "copy.MatchMaterial.e86b9ed7bd": "Lingkaran menandai posisi rata-rata dan membesar sesuai jumlah operan sukses. Ketebalan garis menunjukkan operan sukses antara pemain; panah menunjukkan arahnya. Hanya pasangan dengan total sedikitnya {minPasses} operan sukses yang ditampilkan.",
     "copy.MatchMaterial.f7e6dbe02f": "Tidak ada komentar taktis yang dicatat untuk pertandingan ini.",
     "copy.MatchMaterial.ff24187b5b": "tim komentar taktis",
     "copy.MatchMaterial.bd972e8fc6": "Entri ketiga terakhir berdasarkan jalur: {p0}",
@@ -4462,8 +4462,8 @@
     "copy.materialView.96252d8ea3": " · Tajuk",
     "copy.materialView.2724192be5": "{p0} · Sentuh {p1} ({p2}%)",
     "copy.materialView.921afb8470": "Pemain ke-{p0}",
-    "copy.materialView.38aeab08e9": "{p0} · Posisi rata-rata {p1} · Sentuh {p2} kali",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Lulus {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Nomor punggung {number} · Operan sukses: {passes} · Sentuhan: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} operan sukses · {to} → {from}: {backward} operan sukses",
     "copy.materialView.f4f68247d7": "Saya memasukkan {p0} {p1}.",
     "copy.materialView.e67b3e201d": "Semua entri ke sepertiga akhir adalah {p0}.",
     "copy.materialView.606b44fd42": "Tidak ada adegan di sepertiga akhir.",
@@ -6650,6 +6650,7 @@
     "tool.payroll.accountingLine": "Akuntansi gaji: {summary}.",
     "tool.payroll.modeledRatio": "gaji pemain + manajer/staf pelatih dalam model / pendapatan, 50 musim pertama",
     "tool.payroll.npcComparison": "gaji pemain saja / gaji pemain terakhir dalam buku besar (akuntansi)",
-    "match.preparing": "Menyiapkan adegan…"
+    "match.preparing": "Menyiapkan adegan…",
+    "match.network.busiest": "Pasangan dengan operan terbanyak (hingga 5)"
   }
 }

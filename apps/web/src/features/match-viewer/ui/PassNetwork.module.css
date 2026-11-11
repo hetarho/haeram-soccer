@@ -1,0 +1,43 @@
+/* Live data over the shared analytical ground; kit colours come from the recorded scoreboard. */
+.network {
+  color: var(--chart-primary, var(--accent));
+}
+.link,
+.node {
+  cursor: pointer;
+  outline: none;
+}
+.link line {
+  stroke: currentColor;
+  stroke-linecap: round;
+}
+.arrowhead {
+  fill: var(--chart-primary, var(--accent));
+}
+.node circle:not(.hit) {
+  fill: var(--network-shirt);
+  stroke: var(--pitch-marker-outline, var(--text));
+  stroke-width: 0.6;
+}
+.node text {
+  fill: var(--network-ink);
+  stroke: var(--network-shirt);
+  stroke-width: 0.35;
+  paint-order: stroke;
+  font-family: var(--display);
+  font-size: 8px;
+  font-weight: 700;
+  text-anchor: middle;
+  pointer-events: none;
+}
+.node .hit,
+.link .hit {
+  fill: none;
+  stroke: transparent;
+  pointer-events: stroke;
+}
+.link:focus-visible line:first-of-type,
+.node:focus-visible circle:not(.hit) {
+  stroke: var(--focus, var(--text));
+  stroke-dasharray: 1 1;
+}

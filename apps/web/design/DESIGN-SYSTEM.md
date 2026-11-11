@@ -492,6 +492,14 @@ Small circular player marks should show a position and short name, with full fac
 outside the field. Check all formations at the narrowest supported size for label collisions.
 The current source art and interaction choices are in [analysis-print](analysis-print/README.md).
 
+Pass networks retain the shared analytical ground but use the recorded side's shirt base and
+the scoreboard's contrast ink for their numbered circles (WEB-84). Keep this distinct from a
+generic formation marker's primary colour. Circle size reads outgoing completed passes; link
+width reads the two directions together, and an arrow appears only for a direction recorded.
+Clip links at the circles, paint thin links before thick ones and circles last. SVG buttons expose
+the same facts on touch and keyboard; a textual roster and busiest-five list keep those facts
+available outside the diagram. Selection labels resolve again when the locale changes.
+
 ## Applying the system throughout the app
 
 See the [UI coverage inventory](UI-COVERAGE.md) for the module and preview audit. Reuse the

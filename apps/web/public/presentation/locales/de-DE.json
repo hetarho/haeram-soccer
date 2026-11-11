@@ -3615,7 +3615,7 @@
     "copy.MatchMaterial.3acc063cd8": " · Der Gegner greift auch nach rechts an",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Touch {p1} · Es gibt mehr Touches von Blau bis Rot {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Passing-Netzwerk: {p0} unserer Spieler, {p1} der Verbindungen",
-    "copy.MatchMaterial.e86b9ed7bd": "Punkt = durchschnittliche Position (Größe ist Berührung) · Linienstärke = erfolgreiche Pässe zwischen zwei Spielern (mehr als 2 Mal)",
+    "copy.MatchMaterial.e86b9ed7bd": "Die Kreise zeigen die durchschnittlichen Positionen und wachsen mit den angekommenen Pässen. Die Linienstärke zeigt angekommene Pässe zwischen den Spielern; Pfeile zeigen die Richtung. Nur Paare mit insgesamt mindestens {minPasses} angekommenen Pässen werden angezeigt.",
     "copy.MatchMaterial.f7e6dbe02f": "Für dieses Spiel wurde kein taktischer Kommentar aufgezeichnet.",
     "copy.MatchMaterial.ff24187b5b": "taktisches Kommentatorenteam",
     "copy.MatchMaterial.bd972e8fc6": "Letzter dritter Eintrag nach Spur: {p0}",
@@ -4496,8 +4496,8 @@
     "copy.materialView.96252d8ea3": " · Kopfzeile",
     "copy.materialView.2724192be5": "{p0} · Berühren Sie {p1} ({p2}%)",
     "copy.materialView.921afb8470": "{p0}ter Spieler",
-    "copy.materialView.38aeab08e9": "{p0} · Durchschnittliche Position {p1} · Berühren Sie {p2} mehrmals",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Bestehen Sie {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Rückennummer {number} · Angekommene Pässe: {passes} · Ballkontakte: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} angekommene Pässe · {to} → {from}: {backward} angekommene Pässe",
     "copy.materialView.f4f68247d7": "Ich habe {p0} {p1} eingegeben.",
     "copy.materialView.e67b3e201d": "Alle Einträge im letzten Drittel sind {p0}.",
     "copy.materialView.606b44fd42": "Im letzten Drittel gab es keine Szenen.",
@@ -6653,6 +6653,7 @@
     "tool.payroll.accountingLine": "Gehaltsbuchhaltung: {summary}.",
     "tool.payroll.modeledRatio": "modellierte Gehälter für Spieler + Trainer/Betreuer / Einnahmen, erste 50 Saisons",
     "tool.payroll.npcComparison": "reine Spielergehälter / letzte Spielergehälter im Hauptbuch (Buchhaltung)",
-    "match.preparing": "Spielszene wird vorbereitet…"
+    "match.preparing": "Spielszene wird vorbereitet…",
+    "match.network.busiest": "Häufigste Passverbindungen (bis zu 5)"
   }
 }

@@ -3200,7 +3200,7 @@
     "copy.MatchMaterial.3acc063cd8": " · El rival también ataca por la derecha",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Toque {p1} · Hay más toques del azul al rojo {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Red de paso: {p0} de nuestros reproductores, {p1} de conexiones",
-    "copy.MatchMaterial.e86b9ed7bd": "Punto = Posición media (el tamaño es toque) · Grosor de la línea = Pases exitosos entre dos jugadores (más de 2 veces)",
+    "copy.MatchMaterial.e86b9ed7bd": "Los círculos marcan las posiciones medias y crecen con los pases completados. El grosor de las líneas indica los pases completados entre los jugadores; las flechas, su dirección. Solo se muestran parejas con al menos {minPasses} pases completados.",
     "copy.MatchMaterial.f7e6dbe02f": "No se grabaron comentarios tácticos para este partido.",
     "copy.MatchMaterial.ff24187b5b": "equipo de comentaristas tácticos",
     "copy.MatchMaterial.bd972e8fc6": "Tercera última entrada por carril: {p0}",
@@ -4505,8 +4505,8 @@
     "copy.materialView.96252d8ea3": " · Encabezado",
     "copy.materialView.2724192be5": "{p0} · Toque {p1} ({p2}%)",
     "copy.materialView.921afb8470": "{p0}ésimo jugador",
-    "copy.materialView.38aeab08e9": "{p0} · Posición media {p1} · Toque {p2} veces",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Pase {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Dorsal {number} · Pases completados: {passes} · Toques: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} pases completados · {to} → {from}: {backward} pases completados",
     "copy.materialView.f4f68247d7": "Entré {p0} {p1}.",
     "copy.materialView.e67b3e201d": "Todas las entradas al último tercio son {p0}.",
     "copy.materialView.606b44fd42": "No hubo escenas en el último tercio.",
@@ -6656,6 +6656,7 @@
     "tool.payroll.accountingLine": "Contabilidad salarial: {summary}.",
     "tool.payroll.modeledRatio": "nómina modelada de jugadores + entrenador/cuerpo técnico / ingresos, primeras 50 temporadas",
     "tool.payroll.npcComparison": "salarios de jugadores / últimos salarios de jugadores del libro (contabilidad)",
-    "match.preparing": "Preparando la escena…"
+    "match.preparing": "Preparando la escena…",
+    "match.network.busiest": "Parejas con más pases completados (hasta 5)"
   }
 }

@@ -3471,7 +3471,8 @@ export const sourceMessages = {
     '{p0} · 터치 {p1}번 · 파랑에서 빨강으로 갈수록 터치가 많아요{p2}',
   'copy.MatchMaterial.2a1cc2e03e': '패스 연결망: 우리 선수 {p0}명, 연결 {p1}개',
   'copy.MatchMaterial.e86b9ed7bd':
-    '점 = 평균 위치(크기는 터치) · 선 굵기 = 두 선수 사이 성공 패스(2번 이상)',
+    '원은 평균 위치에 놓이며 크기는 성공 패스 수를 나타내요. 선 굵기 = 두 선수 사이 성공 패스, 화살표 = 패스 방향이에요. 합계 {minPasses}번 이상인 연결만 보여요.',
+  'match.network.busiest': '성공 패스가 가장 많은 연결 (최대 5개)',
   'copy.MatchMaterial.f7e6dbe02f': '이 경기는 전술 해설을 기록하지 않았어요.',
   'copy.MatchMaterial.ff24187b5b': '전술 해설 팀',
   'copy.MatchMaterial.bd972e8fc6': '레인별 파이널 서드 진입: {p0}',
@@ -4999,8 +5000,10 @@ export const sourceMessages = {
   'copy.materialView.96252d8ea3': ' · 헤더',
   'copy.materialView.2724192be5': '{p0} · 터치 {p1}번 ({p2}%)',
   'copy.materialView.921afb8470': '{p0}번째 선수',
-  'copy.materialView.38aeab08e9': '{p0} · 평균 위치 {p1} · 터치 {p2}번',
-  'copy.materialView.9e20aac524': '{p0} ↔ {p1} · 패스 {p2}번',
+  'copy.materialView.38aeab08e9':
+    '{player} · 등번호 {number} · 성공 패스 {passes}번 · 터치 {touches}번',
+  'copy.materialView.9e20aac524':
+    '{from} ↔ {to} · {from} → {to}: 성공 패스 {forward}번 · {to} → {from}: 성공 패스 {backward}번',
   'copy.materialView.f4f68247d7': '{p0} {p1}번 진입했어요',
   'copy.materialView.e67b3e201d': '파이널 서드 진입은 모두 {p0}번이에요',
   'copy.materialView.606b44fd42': '파이널 서드에 들어간 장면이 없었어요',

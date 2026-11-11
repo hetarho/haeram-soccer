@@ -3352,7 +3352,7 @@
     "copy.MatchMaterial.3acc063cd8": " · يهاجم الخصم أيضًا جهة اليمين",
     "copy.MatchMaterial.4ea1afd010": "{p0} · المس {p1} · هناك المزيد من اللمسات من الأزرق إلى الأحمر {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "شبكة المرور: {p0} للاعبينا، {p1} للاتصالات",
-    "copy.MatchMaterial.e86b9ed7bd": "النقطة = متوسط المركز (الحجم هو اللمس) · سمك الخط = التمريرات الناجحة بين لاعبين (أكثر من مرتين)",
+    "copy.MatchMaterial.e86b9ed7bd": "تُظهر الدوائر متوسط المواقع ويزداد حجمها مع التمريرات المكتملة. يُظهر سُمك الخط عدد التمريرات المكتملة بين اللاعبين، وتُظهر الأسهم اتجاهها. تظهر فقط الثنائيات التي أكملت ما مجموعه {minPasses} تمريرات على الأقل.",
     "copy.MatchMaterial.f7e6dbe02f": "لم يتم تسجيل أي تعليق تكتيكي لهذه المباراة.",
     "copy.MatchMaterial.ff24187b5b": "فريق التعليق التكتيكي",
     "copy.MatchMaterial.bd972e8fc6": "الإدخال الثالث الأخير عن طريق المسار: {p0}",
@@ -4742,8 +4742,8 @@
     "copy.materialView.96252d8ea3": " · الرأس",
     "copy.materialView.2724192be5": "{p0} · المس {p1} ({p2}%)",
     "copy.materialView.921afb8470": "اللاعب رقم {p0}",
-    "copy.materialView.38aeab08e9": "{p0} · متوسط المركز {p1} · المس مرات {p2}",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · تمرير {p2}",
+    "copy.materialView.38aeab08e9": "{player} · القميص {number} · التمريرات المكتملة: {passes} · اللمسات: {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to}: {forward} تمريرات مكتملة · {to} → {from}: {backward} تمريرات مكتملة",
     "copy.materialView.f4f68247d7": "لقد دخلت {p0} {p1}.",
     "copy.materialView.e67b3e201d": "جميع الإدخالات في الثلث الأخير هي {p0}.",
     "copy.materialView.606b44fd42": "لم تكن هناك مشاهد في الثلث الأخير.",
@@ -6665,6 +6665,7 @@
     "tool.payroll.accountingLine": "محاسبة الرواتب: {summary}.",
     "tool.payroll.modeledRatio": "رواتب اللاعبين + المدرب/الجهاز الفني المشمولة في النموذج / الإيرادات، أول 50 موسمًا",
     "tool.payroll.npcComparison": "رواتب اللاعبين فقط / آخر رواتب للاعبين في الدفتر (المحاسبة)",
-    "match.preparing": "جارٍ تجهيز المشهد…"
+    "match.preparing": "جارٍ تجهيز المشهد…",
+    "match.network.busiest": "الثنائيات الأكثر تبادلًا للتمريرات (حتى 5)"
   }
 }

@@ -28,6 +28,7 @@ export {
   heatChoices,
   heatOf,
   networkView,
+  NETWORK_VIEW,
   ownSide,
   px,
   py,

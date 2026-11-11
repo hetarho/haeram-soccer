@@ -3181,7 +3181,7 @@
     "copy.MatchMaterial.3acc063cd8": " · L'adversaire attaque également à droite",
     "copy.MatchMaterial.4ea1afd010": "{p0} · Touchez {p1} · Il y a plus de touches du bleu au rouge {p2}",
     "copy.MatchMaterial.2a1cc2e03e": "Réseau de passage : {p0} de nos joueurs, {p1} de connexions",
-    "copy.MatchMaterial.e86b9ed7bd": "Point = Position moyenne (la taille est au toucher) · Épaisseur de la ligne = Passes réussies entre deux joueurs (plus de 2 fois)",
+    "copy.MatchMaterial.e86b9ed7bd": "Les cercles indiquent les positions moyennes et grandissent avec les passes réussies. L’épaisseur des lignes représente les passes réussies entre les joueurs ; les flèches en indiquent le sens. Seules les paires totalisant au moins {minPasses} passes réussies sont affichées.",
     "copy.MatchMaterial.f7e6dbe02f": "Aucun commentaire tactique n’a été enregistré pour ce match.",
     "copy.MatchMaterial.ff24187b5b": "équipe de commentaires tactiques",
     "copy.MatchMaterial.bd972e8fc6": "Troisième entrée finale par voie : {p0}",
@@ -5016,8 +5016,8 @@
     "copy.careers.955985f96c": "{p0} Âge · Retraité après cette saison · {p1}",
     "copy.careers.18b4e2fb19": "{p0} prend sa retraite à la fin de cette saison",
     "copy.careers.619c47459d": "{p0} · {p1} · {p2}. Jouez jusqu’à la fin de la saison puis partez. Préparer les joueurs de remplacement sur le marché des transferts.",
-    "copy.materialView.38aeab08e9": "{p0} · Position moyenne {p1} · Touchez {p2} fois",
-    "copy.materialView.9e20aac524": "{p0} ↔ {p1} · Réussir {p2}",
+    "copy.materialView.38aeab08e9": "{player} · Maillot {number} · Passes réussies : {passes} · Touches : {touches}",
+    "copy.materialView.9e20aac524": "{from} ↔ {to} · {from} → {to} : {forward} passes réussies · {to} → {from} : {backward} passes réussies",
     "copy.materialView.f4f68247d7": "J'ai entré les heures {p0} {p1}.",
     "copy.materialView.e67b3e201d": "Toutes les entrées dans le dernier tiers sont {p0}.",
     "copy.materialView.606b44fd42": "Il n'y a eu aucune scène dans le dernier tiers.",
@@ -6656,6 +6656,7 @@
     "tool.payroll.accountingLine": "Comptabilité des salaires : {summary}.",
     "tool.payroll.modeledRatio": "masse salariale modélisée des joueurs + entraîneur/encadrement / recettes, 50 premières saisons",
     "tool.payroll.npcComparison": "salaires des joueurs / derniers salaires des joueurs au grand livre (comptabilité)",
-    "match.preparing": "Préparation de la scène…"
+    "match.preparing": "Préparation de la scène…",
+    "match.network.busiest": "Paires échangeant le plus de passes (jusqu’à 5)"
   }
 }
