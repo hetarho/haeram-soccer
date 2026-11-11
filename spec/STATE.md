@@ -964,4 +964,3 @@
 - 261110 T812 integrated
 - 261110 T811 integrated
 - 261110 T810 integrated
-- 261110 rl10: first verify:batch on si/rl10 e5bbc5e0 failed 8 integration cases (club news, a shortlist drop, four bid scenes, an aggregate cup tie, a grid corner path); create-task T810–T812, T808 started in its own session rl10
