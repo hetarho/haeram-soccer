@@ -4,11 +4,12 @@ import { invalidDetail } from '../script/failure';
 // the caller can bound its work; script and side inputs alone determine every frame (ARCH-5).
 import { STAGING_CONFIG } from './config';
 import type { Beat } from './types';
-import { PASS_KINDS, isShotLike } from './types';
+import { PASS_KINDS, RESTART_KINDS, isShotLike } from './types';
 import { performCarry, performCarryLost, performMiscontrol } from './carry';
 import { performPass, performPassIntercepted, performPassLoose, performPassOut } from './pass';
 import { withRestart } from './scenes';
 import { performShot } from './shot';
+import { runIncidents, holdScene, stopPlay } from './participants';
 import { performTakeOn } from './takeon';
 import { performThrough } from './through';
 import { createStage, pushEvent, runUntil, nextTick, type StageState } from './world';
@@ -52,29 +53,13 @@ export const HANDLERS: Record<string, Handler> = {
   'clearance:loose': withRestart(performPassLoose),
 };
 
-/** A plain dead ball for incident scenes implemented by T830; no invented action or score. */
-function* plainDeadBall(state: StageState, ctx: BeatContext): Generator<void, void> {
-  const beat = ctx.beat;
-  state.beat = beat.index;
-  state.team = beat.team;
-  state.phase = beat.phase;
-  state.live = false;
-  state.orders.clear();
-  state.cues.clear();
-  state.ball.mode = 'dead';
-  state.ball.owner = -1;
-  delete state.ball.flight;
-  const start = state.t;
-  yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
-}
-
 /** Each period ends in a whistle, with a dead-ball hold. */
 function* endPeriod(state: StageState): Generator<void, void> {
   state.ball.mode = 'dead';
   state.ball.owner = -1;
   delete state.ball.flight;
   state.live = false;
-  state.orders.clear();
+  if (state.fixture.period !== 5) state.orders.clear();
   state.cues.clear();
   pushEvent(state, { kind: 'whistle', actor: -1, at: [...state.ball.pos] });
   const start = state.t;
@@ -92,23 +77,29 @@ export function* performance(state: StageState): Generator<void, void> {
       (beat.original?.period ?? (beat.clock! < 2700 ? 1 : 2)) !==
         (next.original?.period ?? (next.clock! < 2700 ? 1 : 2));
     state.clock = Math.max(state.clock ?? 0, beat.clock ?? 0);
+    state.fixture.period = beat.original?.period ?? ((beat.clock ?? 0) < 2700 ? 1 : 2);
     state.clockCap = periodEnds
-      ? Math.max(state.clock, (Math.floor((beat.clock ?? 0) / 2700) + 1) * 2700)
+      ? Math.max(state.clock, next.clock ?? state.clock)
       : (next?.clock ?? Infinity);
     const before = state.tickCount;
-    // T828 carries these beats intact; T830 adds their participants and scenes.
-    const plain =
-      beat.kind === 'penalty' ||
-      beat.kind === 'stoppage' ||
-      beat.kind === 'shootoutKick' ||
-      !!beat.original?.incidents?.length;
-    if (plain) yield* plainDeadBall(state, { beat, next });
-    else {
+    const ctx = { beat, next };
+    const beforeAction = beat.kind === 'stoppage' || RESTART_KINDS.includes(beat.kind);
+    if (beforeAction) {
+      state.beat = beat.index;
+      state.team = beat.team;
+      state.phase = beat.phase;
+      yield* runIncidents(state, ctx);
+    }
+    if (beat.kind === 'stoppage') {
+      stopPlay(state);
+      yield* holdScene(state, beat.hold);
+    } else {
       state.live = true;
       const handler = HANDLERS[handlerKey(beat)];
       if (!handler) throw invalidDetail('staging:input');
       yield* handler(state, { beat, next });
     }
+    if (!beforeAction) yield* runIncidents(state, ctx);
     if (state.tickCount === before) yield* nextTick(state);
     state.performed.push(beat);
     pushEvent(state, { kind: 'performed', actor: beat.actor, at: [...state.ball.pos] });

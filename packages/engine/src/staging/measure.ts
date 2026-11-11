@@ -32,6 +32,22 @@ function playback(
   const performed = new Set(events.filter((e) => e.kind === 'performed').map((e) => e.beat));
   let score: readonly [number, number] = [0, 0];
   for (const e of events) if (e.kind === 'goal' && e.score) score = e.score;
+  const last = fixture.players.map(
+    () => [...STAGING_CONFIG.stage.scene.gate] as readonly [number, number],
+  );
+  const pictures = frames.map((f) => {
+    for (const p of f.p) last[index(p.player)] = p.at;
+    return {
+      ...f,
+      owner: index(f.owner),
+      p: last.flatMap((p) => [...p]),
+      present: f.p.map((p) => index(p.player)),
+      slots: fixture.players.map(
+        (p) =>
+          f.p.find((q) => q.player.side === p.team && q.player.line === p.line)?.slot ?? p.slot,
+      ),
+    };
+  });
   return {
     version: 1,
     seed: script.seed,
@@ -40,14 +56,7 @@ function playback(
     duration: frames.at(-1)?.t ?? 0,
     beats: dense.beats.filter((b) => performed.has(b.index)),
     score,
-    frames: frames.map((f) => ({
-      ...f,
-      owner: index(f.owner),
-      p: fixture.players.flatMap(
-        (p) =>
-          f.p.find((q) => q.player.side === p.team && q.player.line === p.line)?.at ?? [NaN, NaN],
-      ),
-    })),
+    frames: pictures,
     events: events.map((e): InternalEvent => {
       const { actor, other, ...rest } = e;
       return {
@@ -73,8 +82,8 @@ const round = (n: number, places: number): number => Math.round(n * 10 ** places
 const WINNERS = ['intercept', 'tackle', 'loose'] as const;
 const CONTESTS = ['intercept', 'tackle', 'foul', 'loose', 'block', 'save'];
 
-/** Recount performed beats, substituting only a winner explicitly named by a staged event.
- * Incident and penalty scenes remain plain dead balls in T828, with their script facts intact. */
+/** Recount performed actions and incident/kick events. A missing picture never inherits an
+ * incident, penalty or shoot-out kick simply because the script requested it. */
 export function fitLines(
   frames: readonly StageFrame[],
   events: readonly StageEvent[],
@@ -87,16 +96,94 @@ export function fitLines(
       .filter((e) => WINNERS.some((k) => e.kind === k) && e.other)
       .map((e) => [e.beat, e.other!]),
   );
+  const byBeat = new Map<number, StageEvent[]>();
+  for (const e of events) {
+    const group = byBeat.get(e.beat) ?? [];
+    group.push(e);
+    byBeat.set(e.beat, group);
+  }
   const staged: MatchScript = {
     ...script,
     beats: script.beats
       .filter((b) => performed.has(b.index))
-      .map((b) => {
+      .flatMap((b) => {
+        const actual = byBeat.get(b.index) ?? [];
+        const shot = actual.find(
+          (e) =>
+            e.kind === 'shot' &&
+            !!e.shootout === (b.kind === 'shootoutKick') &&
+            !!e.penalty === (b.kind === 'penalty'),
+        );
+        const result = actual.find(
+          (e) =>
+            ['goal', 'save', 'block', 'wide'].includes(e.kind) &&
+            !!e.shootout === (b.kind === 'shootoutKick') &&
+            !!e.penalty === (b.kind === 'penalty'),
+        );
+        if (b.kind === 'shootoutKick' && (!shot || !result)) return [];
+        const incidents = actual.flatMap((e): NonNullable<typeof b.incidents> => {
+          if (!e.actor || !['card', 'sub', 'injury'].includes(e.kind)) return [];
+          return [
+            {
+              kind: e.kind === 'card' ? e.card! : (e.kind as 'sub' | 'injury'),
+              side: e.actor.side,
+              line: e.actor.line,
+              ...(e.other ? { other: e.other.line } : {}),
+              ...(e.reason ? { reason: e.reason } : {}),
+            },
+          ];
+        });
         const won = winners.get(b.index);
-        return won && b.opponent !== undefined ? { ...b, opponent: won.line } : b;
+        const copy = {
+          ...b,
+          incidents,
+          ...(won && b.opponent !== undefined ? { opponent: won.line } : {}),
+        };
+        if (b.shot !== undefined || b.kind === 'shootoutKick') {
+          if (!shot || !result) {
+            delete copy.shot;
+            if (b.kind === 'penalty') copy.kind = 'stoppage';
+          } else {
+            copy.actor = shot.actor?.line ?? -1;
+            copy.side = shot.actor?.side ?? b.side;
+            copy.outcome =
+              result.kind === 'save'
+                ? 'saved'
+                : result.kind === 'block'
+                  ? 'blocked'
+                  : (result.kind as 'goal' | 'wide');
+            if (result.other) copy.opponent = result.other.line;
+          }
+        }
+        return [copy];
       }),
   };
-  const differs = compareRecord(detail, countScript(staged, detail));
+  const differs = (() => {
+    try {
+      return compareRecord(detail, countScript(staged, detail));
+    } catch {
+      // A missing/altered kick may itself violate the ledger (e.g. a penalty foul without
+      // its shot). It is a failed fit, rather than an apparently exact inherited script.
+      return ['stagedRecord:invalid'];
+    }
+  })();
+  for (const b of script.beats.filter((b) => b.kind === 'penalty' || b.kind === 'shootoutKick')) {
+    const actual = byBeat.get(b.index) ?? [];
+    const kicks = actual.filter(
+      (e) =>
+        e.kind === 'shot' &&
+        !!e.penalty === (b.kind === 'penalty') &&
+        !!e.shootout === (b.kind === 'shootoutKick'),
+    );
+    const results = actual.filter((e) => ['goal', 'save', 'wide', 'block'].includes(e.kind));
+    if (
+      kicks.length !== 1 ||
+      results.length !== 1 ||
+      kicks[0].actor?.side !== results[0].actor?.side ||
+      kicks[0].actor?.line !== results[0].actor?.line
+    )
+      differs.push(`spotKick:${b.index}:events`);
+  }
   const contests = events.filter((e) => CONTESTS.includes(e.kind));
   const recast = contests.filter((e) => e.recast);
   const stretch = contests.filter((e) => e.stretch);

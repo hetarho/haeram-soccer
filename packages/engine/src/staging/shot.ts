@@ -9,6 +9,7 @@ import type { TeamId, Vec } from './types';
 import { add, approach, clamp, closestOnSegment, dist, lerp, norm, scale, sub } from './vec';
 import { flightTime, giveBall, startFlightTimed } from './ball';
 import { resolveCut } from './contest';
+import { keeperOf } from './participants';
 import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
 import { ensureOwner, pushEvent, runUntil, setPossession, type StageState } from './world';
@@ -48,9 +49,13 @@ const behindForCorner = function* (
   from: Vec,
   actor: number,
 ): Generator<void, void> {
-  const y = toAttack(T, from)[1];
+  const y = toAttack(T, from, state.fixture.period)[1];
   const side = y >= 34 ? 1 : -1;
-  const target = toAttack(T, [105.8, clamp(y + side * SHOT.parryWide, 2, 66)]);
+  const target = toAttack(
+    T,
+    [105.8, clamp(y + side * SHOT.parryWide, 2, 66)],
+    state.fixture.period,
+  );
   // A parry beside the post takes `parryTime`; a block far out runs there at deflection speed.
   const time = Math.max(SHOT.parryTime, dist(from, target) / SHOT.deflectSpeed);
   yield* untilLanded(state, startFlightTimed(state, target, time, 0.5));
@@ -64,24 +69,30 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
   const T = beat.team;
   const actor = beat.actor;
   setPossession(state, beat);
-  yield* ensureOwner(state, actor);
+  const spotKick = beat.kind === 'penalty' || beat.kind === 'shootoutKick';
+  const shootout = beat.kind === 'shootoutKick';
+  const flags = shootout ? { shootout: true } : beat.kind === 'penalty' ? { penalty: true } : {};
+  if (!spotKick) yield* ensureOwner(state, actor);
   const other: TeamId = T === 0 ? 1 : 0;
-  const K = state.fixture.teams[other].players[0].index;
-  let G: Vec = beat.to;
+  const K =
+    beat.original?.keeper === undefined
+      ? keeperOf(state, other)
+      : state.fixture.teams[other].players.find((p) => p.line === beat.original!.keeper)!.index;
+  let G: Vec = spotKick && beat.outcome === 'saved' ? [...state.bodies[K].pos] : beat.to;
   const speed = beat.header ? BALL.header : BALL.shot;
   const apex = beat.header ? BALL.headerApex : 0;
   const actorPos = (): Vec => state.bodies[actor].pos;
   const towardGoal = (d: number) => (): Vec => add(actorPos(), scale(norm(sub(G, actorPos())), d));
-  state.orders.set(actor, { target: towardGoal(SHOT.setStep), pace: 'walk' });
+  if (!spotKick) state.orders.set(actor, { target: towardGoal(SHOT.setStep), pace: 'walk' });
   if (beat.outcome === 'blocked' && beat.opponent !== undefined) {
     state.orders.set(beat.opponent, { target: towardGoal(SHOT.blockDist), pace: 'sprint' });
   }
   const start = state.t;
-  yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
+  if (!spotKick) yield* runUntil(state, () => state.t - start >= beat.hold - 1e-9, beat.hold);
 
   const from: Vec = [state.ball.pos[0], state.ball.pos[1]];
-  pushEvent(state, { kind: 'shot', actor, at: from });
-  state.orders.clear();
+  pushEvent(state, { kind: 'shot', actor, at: from, ...flags });
+  if (!shootout) state.orders.clear();
 
   if (beat.outcome === 'goal') {
     const E = add(G, scale(norm(sub(G, from)), SHOT.netDepth));
@@ -89,8 +100,14 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     const flight = startFlightTimed(state, E, total, apex);
     state.orders.set(K, { target: G, pace: 'sprint', speedCap: SHOT.beatenKeeper });
     yield* untilShare(state, dist(from, G) / dist(from, E), total);
-    state.score[T] += 1;
-    pushEvent(state, { kind: 'goal', actor, at: G, score: [state.score[0], state.score[1]] });
+    if (!shootout) state.score[T] += 1;
+    pushEvent(state, {
+      kind: 'goal',
+      actor,
+      at: G,
+      score: [state.score[0], state.score[1]],
+      ...flags,
+    });
     state.live = false;
     yield* untilLanded(state, flight);
     deadBall(state);
@@ -99,7 +116,7 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     const reach = speedAt(state, K, 'sprint', Infinity, STAGE.lunge);
     const plan = (): { point: Vec; time: number } => {
       const c = closestOnSegment(from, G, keeper.pos);
-      const param = clamp(c.t, SHOT.saveMin, 1);
+      const param = spotKick ? 1 : clamp(c.t, SHOT.saveMin, 1);
       return { point: lerp(from, G, param), time: param * flightTime(from, G, speed) };
     };
     let save = plan();
@@ -111,7 +128,7 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     const flight = startFlightTimed(state, save.point, save.time, apex);
     state.orders.set(K, { target: save.point, pace: 'sprint', boost: STAGE.lunge });
     yield* untilLanded(state, flight);
-    pushEvent(state, { kind: 'save', actor, other: K, at: save.point });
+    pushEvent(state, { kind: 'save', actor, other: K, at: save.point, ...flags });
     if (ctx.next?.kind === 'corner') yield* behindForCorner(state, T, save.point, actor);
     else giveBall(state, K);
   } else if (beat.outcome === 'blocked') {
@@ -141,9 +158,9 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     if (next?.kind === 'corner') {
       yield* behindForCorner(state, T, at, actor);
     } else if (next?.kind === 'throwIn') {
-      const a = toAttack(T, at);
+      const a = toAttack(T, at, state.fixture.period);
       const y = a[1] < 34 ? -SHOT.wideRun : 68 + SHOT.wideRun;
-      const target = toAttack(T, [a[0], y]);
+      const target = toAttack(T, [a[0], y], state.fixture.period);
       yield* untilLanded(
         state,
         startFlightTimed(state, target, dist(at, target) / SHOT.deflectSpeed, 0),
@@ -167,9 +184,9 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     const total = flightTime(from, E, speed);
     const flight = startFlightTimed(state, E, total, apex);
     yield* untilShare(state, dist(from, G) / dist(from, E), total);
-    pushEvent(state, { kind: 'wide', actor, at: G });
+    pushEvent(state, { kind: 'wide', actor, at: G, ...flags });
     yield* untilLanded(state, flight);
     deadBall(state);
   }
-  state.orders.clear();
+  if (!shootout) state.orders.clear();
 }

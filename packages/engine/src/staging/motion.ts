@@ -22,10 +22,9 @@ export function paceSpeed(pace: Pace, spec: PlayerSpec): number {
   return MOTION[pace];
 }
 
-/** Staging starters' minutes on the record clock (synthetic scripts use staged seconds).
- * Incident staging can supply each participant's own minutes here when his interval changes. */
+/** Each participant's elapsed on-pitch minutes; a substitute arrives fresh. */
 export function speedAt(
-  state: Pick<StageState, 'fixture' | 'clock' | 't'>,
+  state: Pick<StageState, 'fixture' | 'clock' | 't' | 'enteredAt'>,
   index: number,
   pace: Pace,
   cap = Infinity,
@@ -33,7 +32,7 @@ export function speedAt(
 ): number {
   const spec = state.fixture.players[index];
   const tendency = MOTION.tendency;
-  const minutes = Math.max(0, state.clock ?? state.t) / 60;
+  const minutes = Math.max(0, (state.clock ?? state.t) - (state.enteredAt?.[index] ?? 0)) / 60;
   const fatigue = 1 - tendency.fatigue * Math.min(1, minutes / tendency.fullMatchMinutes);
   // Preserve the prototype's absolute kinematic bound, including its short contest lunge.
   const maximum = MOTION.sprintBase + MOTION.sprintPerPace + STAGING_CONFIG.stage.lunge;

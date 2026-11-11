@@ -5,7 +5,8 @@
 // opponent on his way one beat ahead, so nobody has to teleport when his beat starts.
 import { STAGING_CONFIG } from './config';
 import { ownGoal } from './pitch';
-import type { TeamId, Vec } from './types';
+import type { Fixture, TeamId, Vec } from './types';
+import { onPitch, presentPlayers } from './types';
 import { add, clamp, dist, dot, lerp, norm, scale, sub } from './vec';
 import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
@@ -96,7 +97,7 @@ export function nearestOpponent(
   const other: TeamId = state.fixture.players[index].team === 0 ? 1 : 0;
   const pos = state.bodies[index].pos;
   let found = { index: -1, distance: Infinity };
-  for (const p of state.fixture.teams[other].players) {
+  for (const p of presentPlayers(state.fixture, other)) {
     if (p.slot === 0) continue;
     const d = dist(state.bodies[p.index].pos, pos);
     if (d < found.distance) found = { index: p.index, distance: d };
@@ -105,14 +106,14 @@ export function nearestOpponent(
 }
 
 /** The point on the lane from `from` to `to` where an interceptor of `team` waits. */
-export function shadowPoint(team: TeamId, from: Vec, to: Vec): Vec {
+export function shadowPoint(team: TeamId, from: Vec, to: Vec, period?: Fixture['period']): Vec {
   const lane = lerp(from, to, STAGE.shadowAt);
-  return add(lane, scale(norm(sub(ownGoal(team), lane)), STAGE.shadowOff));
+  return add(lane, scale(norm(sub(ownGoal(team, period), lane)), STAGE.shadowOff));
 }
 
 /** The point goal-side of `at` where a defender of `team` jockeys. */
-export function jockeyPoint(team: TeamId, at: Vec): Vec {
-  return add(at, scale(norm(sub(ownGoal(team), at)), STAGE.jockey));
+export function jockeyPoint(team: TeamId, at: Vec, period?: Fixture['period']): Vec {
+  return add(at, scale(norm(sub(ownGoal(team, period), at)), STAGE.jockey));
 }
 
 /**
@@ -125,10 +126,19 @@ export function cueNext(state: StageState, ctx: BeatContext, at: Vec): void {
   if (!next || next.team !== ctx.beat.team) return;
   if (next.reason === 'pressed') state.tight = true;
   const opponent = next.opponent;
-  if (opponent === undefined || isKeeper(state, opponent)) return;
+  if (
+    opponent === undefined ||
+    !onPitch(state.fixture, opponent) ||
+    isKeeper(state, opponent) ||
+    next.original?.period !== ctx.beat.original?.period
+  )
+    return;
   const team = state.fixture.players[opponent].team;
   if (next.outcome === 'intercepted') {
-    state.cues.set(opponent, { target: shadowPoint(team, at, next.to), pace: 'run' });
+    state.cues.set(opponent, {
+      target: shadowPoint(team, at, next.to, state.fixture.period),
+      pace: 'run',
+    });
     return;
   }
   const jockeys =
@@ -136,5 +146,6 @@ export function cueNext(state: StageState, ctx: BeatContext, at: Vec): void {
     next.outcome === 'tackled' ||
     next.outcome === 'foul' ||
     next.outcome === 'blocked';
-  if (jockeys) state.cues.set(opponent, { target: jockeyPoint(team, at), pace: 'run' });
+  if (jockeys)
+    state.cues.set(opponent, { target: jockeyPoint(team, at, state.fixture.period), pace: 'run' });
 }

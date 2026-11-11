@@ -4,7 +4,8 @@
 // presents beats already settled (ARCH-7). `world.ts` says who may mark and where his zone is.
 import { STAGING_CONFIG } from './config';
 import { ownGoal } from './pitch';
-import type { Line, TeamId, Vec } from './types';
+import type { Fixture, Line, TeamId, Vec } from './types';
+import { presentPlayers } from './types';
 import { add, dist, lerp, norm, scale, sub } from './vec';
 import type { StageState } from './world';
 
@@ -38,10 +39,10 @@ export function assignMarks(
   }
   const fixture = state.fixture;
   const defending: TeamId = state.team === 0 ? 1 : 0;
-  const defenders = fixture.teams[defending].players
+  const defenders = presentPlayers(fixture, defending)
     .filter((p) => p.slot !== 0 && canMark(p.index))
     .map((p) => p.index);
-  const men = fixture.teams[state.team].players
+  const men = presentPlayers(fixture, state.team)
     .filter((p) => p.slot !== 0 && p.index !== state.ball.owner)
     .map((p) => p.index);
   const zones = new Map(defenders.map((i) => [i, zoneOf(i)] as const));
@@ -79,9 +80,15 @@ export function assignMarks(
  * point `shape.mark.goalSide` metres goal-side of the man by the line's blend; the back line moves
  * only across (world y), keeping its depth, so the offside line and the trap stay as they are.
  */
-export function markSpot(team: TeamId, line: Line, zone: Vec, man: Vec): Vec {
+export function markSpot(
+  team: TeamId,
+  line: Line,
+  zone: Vec,
+  man: Vec,
+  period?: Fixture['period'],
+): Vec {
   if (line === 'GK') return zone;
-  const m = add(man, scale(norm(sub(ownGoal(team), man)), MARK.goalSide));
+  const m = add(man, scale(norm(sub(ownGoal(team, period), man)), MARK.goalSide));
   if (line === 'DF') return [zone[0], zone[1] + (m[1] - zone[1]) * MARK.blend.DF];
   return lerp(zone, m, MARK.blend[line]);
 }

@@ -2,6 +2,7 @@ import { invalidDetail } from '../script/failure';
 import type { MatchScript, StagingSide } from '../../../contracts/src/match-script';
 import { FORMATIONS } from '../formations';
 import { STAGING_CONFIG } from './config';
+import { toAttack } from './pitch';
 import type { Beat, Fixture, PlayerSpec, Script, TeamId, TeamSpec } from './types';
 
 export function stageFixture(sides: readonly [StagingSide, StagingSide]): Fixture {
@@ -42,6 +43,14 @@ export function stageScript(script: MatchScript, fixture: Fixture): Script {
     ...b,
     team: b.side,
     actor: player(b.side, b.actor),
+    from:
+      b.kind === 'shootoutKick'
+        ? toAttack(0, toAttack(b.side, b.from), 4)
+        : toAttack(0, b.from, b.period),
+    to:
+      b.kind === 'shootoutKick'
+        ? toAttack(0, toAttack(b.side, b.to), 4)
+        : toAttack(0, b.to, b.period),
     ...(b.receiver === undefined ? {} : { receiver: player(b.side, b.receiver) }),
     ...(b.opponent === undefined ? {} : { opponent: player(b.side === 0 ? 1 : 0, b.opponent) }),
     original: b,

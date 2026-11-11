@@ -10,10 +10,10 @@ export interface StagingId {
   side: ScriptSide;
   line: number;
 }
-export interface StageFrame extends Omit<Frame, 'owner' | 'p'> {
+export interface StageFrame extends Omit<Frame, 'owner' | 'p' | 'present' | 'slots'> {
   owner: StagingId | null;
   /** Positions in record line order; identity never depends on a shirt number or current slot. */
-  p: { player: StagingId; at: Vec }[];
+  p: { player: StagingId; at: Vec; slot: number }[];
 }
 export interface StageEvent extends Omit<InternalEvent, 'actor' | 'other'> {
   actor: StagingId | null;
@@ -57,14 +57,20 @@ export function advance(
   ) {
     staging.done = program.next().done === true;
   }
-  const frames = state.frames.map((f): StageFrame => ({
-    ...f,
-    owner: identity(state, f.owner),
-    p: state.fixture.players.map((p) => ({
-      player: identity(state, p.index)!,
-      at: [f.p[p.index * 2], f.p[p.index * 2 + 1]],
-    })),
-  }));
+  const frames = state.frames.map((f): StageFrame => {
+    const { present, slots, ...rest } = f;
+    return {
+      ...rest,
+      owner: identity(state, f.owner),
+      p: state.fixture.players
+        .filter((p) => !present || present.includes(p.index))
+        .map((p) => ({
+          player: identity(state, p.index)!,
+          at: [f.p[p.index * 2], f.p[p.index * 2 + 1]],
+          slot: slots?.[p.index] ?? p.slot,
+        })),
+    };
+  });
   const events = state.events.slice(staging.eventCursor).map((e): StageEvent => {
     const { actor, other, ...rest } = e;
     return {

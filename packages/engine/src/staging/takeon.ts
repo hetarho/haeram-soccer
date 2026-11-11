@@ -25,7 +25,10 @@ export function* performTakeOn(state: StageState, ctx: BeatContext): Generator<v
   const team = state.fixture.players[defender].team;
   const actorPos = (): Vec => state.bodies[actor].pos;
   state.orders.set(actor, { target: actorPos, pace: 'walk' });
-  state.orders.set(defender, { target: () => jockeyPoint(team, actorPos()), pace: 'run' });
+  state.orders.set(defender, {
+    target: () => jockeyPoint(team, actorPos(), state.fixture.period),
+    pace: 'run',
+  });
   const holdStart = state.t;
   yield* runUntil(state, () => state.t - holdStart >= beat.hold - 1e-9, beat.hold);
 

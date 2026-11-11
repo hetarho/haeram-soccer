@@ -1,4 +1,4 @@
-import type { TeamId, Vec } from './types';
+import type { Fixture, TeamId, Vec } from './types';
 import { clamp } from './vec';
 import { PITCH, attackFrame } from '../grid/pitch';
 export { PITCH } from '../grid/pitch';
@@ -13,7 +13,8 @@ export const BOX_Y: readonly [number, number] = [13.84, 54.16];
 export const PENALTY_X = 94;
 
 /** World to the team's attack frame; its own inverse, so it also converts back to world. */
-export const toAttack = attackFrame;
+export const toAttack = (team: TeamId, p: Vec, period: Fixture['period'] = 1): Vec =>
+  attackFrame(period === 2 || period === 4 || period === 5 ? ((1 - team) as TeamId) : team, p);
 
 /** Inside the penalty area the attack frame's team shoots at. */
 export const inBox = (pAttack: Vec): boolean =>
@@ -30,7 +31,9 @@ export const clampToPitch = (p: Vec, margin = 0): Vec => [
 ];
 
 /** Centre of the goal a team defends (world frame). */
-export const ownGoal = (team: TeamId): Vec => (team === 0 ? [0, GOAL_Y] : [PITCH.length, GOAL_Y]);
+export const ownGoal = (team: TeamId, period: Fixture['period'] = 1): Vec =>
+  toAttack(team, [0, GOAL_Y], period);
 
 /** Centre of the goal a team attacks (world frame). */
-export const oppGoal = (team: TeamId): Vec => ownGoal(team === 0 ? 1 : 0);
+export const oppGoal = (team: TeamId, period: Fixture['period'] = 1): Vec =>
+  toAttack(team, [PITCH.length, GOAL_Y], period);

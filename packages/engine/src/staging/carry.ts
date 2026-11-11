@@ -56,7 +56,10 @@ export function* performCarryLost(state: StageState, ctx: BeatContext): Generato
   const team = state.fixture.players[scripted].team;
   const actorPos = (): Vec => state.bodies[actor].pos;
   state.orders.set(actor, holdMove(state, actor, clampToPitch(beat.to, 0.5), true));
-  state.orders.set(scripted, { target: () => jockeyPoint(team, actorPos()), pace: 'run' });
+  state.orders.set(scripted, {
+    target: () => jockeyPoint(team, actorPos(), state.fixture.period),
+    pace: 'run',
+  });
   const holdStart = state.t;
   yield* runUntil(state, () => state.t - holdStart >= beat.hold - 1e-9, beat.hold);
 

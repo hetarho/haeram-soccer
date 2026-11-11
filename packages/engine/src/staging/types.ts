@@ -24,7 +24,14 @@ export interface Fixture {
   teams: readonly [TeamSpec, TeamSpec];
   players: PlayerSpec[];
   sides: readonly [StagingSide, StagingSide];
+  /** Current on-pitch bodies; absent on older synthetic fixtures means everyone. */
+  present?: boolean[];
+  period?: 1 | 2 | 3 | 4 | 5;
 }
+export const onPitch = (fixture: Fixture, index: number): boolean =>
+  fixture.present?.[index] ?? true;
+export const presentPlayers = (fixture: Fixture, team: TeamId): PlayerSpec[] =>
+  fixture.teams[team].players.filter((p) => onPitch(fixture, p.index));
 export type Phase = 'buildUp' | 'progression' | 'finalThird' | 'counter' | 'setPiece';
 export type BeatKind =
   | 'kickOff'
@@ -120,8 +127,12 @@ export interface Frame {
   beat: number;
   /** Match seconds of the record's clock (a fitted script's frames only, T821). */
   clock?: number;
-  /** 44 numbers: x0, y0, x1, y1, … by player index (world frame). */
+  /** Dense participant bodies: x0, y0, x1, y1, …; `present` selects the visible XI. */
   p: number[];
+  /** Per-frame membership and slots, retained before the mutable stage moves on. */
+  present?: number[];
+  slots?: number[];
+  period?: 1 | 2 | 3 | 4 | 5;
 }
 export type StageEventKind =
   | 'performed'
@@ -139,6 +150,11 @@ export type StageEventKind =
   | 'wide'
   | 'restart'
   | 'whistle'
+  | 'card'
+  | 'sub'
+  | 'injury'
+  /** Presentation boundary: a departing body has reached the touchline. No new match fact. */
+  | 'exit'
   /** A heavy touch or a loose pass: the ball runs to `other` (or lies for the side when absent). */
   | 'loose';
 export interface StageEvent {
@@ -162,6 +178,11 @@ export interface StageEvent {
   late?: boolean;
   /** Goal events: the score after the goal. */
   score?: readonly [number, number];
+  card?: 'yellow' | 'secondYellow' | 'red';
+  reason?: import('../../../contracts/src/match-script').ScriptIncident['reason'];
+  /** Penalty attempts and kicks after the final whistle are counted independently. */
+  penalty?: boolean;
+  shootout?: boolean;
 }
 export interface Playback {
   version: 1;
@@ -193,10 +214,14 @@ export const RESTART_KINDS: readonly BeatKind[] = [
   'goalKick',
   'corner',
   'freeKick',
+  'penalty',
 ];
-/** A shot, or a free kick struck at goal. */
+/** A shot, including a spot kick or a free kick struck at goal. */
 export const isShotLike = (b: Pick<Beat, 'kind' | 'outcome'>): boolean =>
-  b.kind === 'shot' || (b.kind === 'freeKick' && SHOT_OUTCOMES.includes(b.outcome));
+  b.kind === 'shot' ||
+  b.kind === 'penalty' ||
+  b.kind === 'shootoutKick' ||
+  (b.kind === 'freeKick' && SHOT_OUTCOMES.includes(b.outcome));
 export const lineOf = (position: Position): Line =>
   position === 'GK'
     ? 'GK'

@@ -166,6 +166,18 @@ interface Context {
   vx: (f: number, i: number) => number;
 }
 
+const present = (frame: Frame, index: number): boolean =>
+  !frame.present || frame.present.includes(index);
+const outfieldAt = (c: Context, frame: Frame, team?: TeamId): number[] =>
+  (team === undefined ? c.all : c.outfield[team]).filter(
+    (i) => present(frame, i) && (frame.slots?.[i] ?? c.pb.fixture.players[i].slot) !== 0,
+  );
+const fixtureAt = (c: Context, frame: Frame): Playback['fixture'] => ({
+  ...c.pb.fixture,
+  period: frame.period,
+  present: c.pb.fixture.players.map((p) => present(frame, p.index)),
+});
+
 function contextOf(pb: Playback): Context {
   const { frames } = pb;
   const last = frames.length - 1;
@@ -224,11 +236,12 @@ function kinematics(c: Context): Metric[] {
   for (let f = 0; f < frames.length; f++) {
     const frame = frames[f];
     for (let i = 0; i < frame.p.length / 2; i++) {
-      if (!inPitch(pos(frame, i), -L.outside)) outside += 1;
+      if (present(frame, i) && !inPitch(pos(frame, i), -L.outside)) outside += 1;
     }
     if (f === 0) continue;
     const prev = frames[f - 1];
     for (let i = 0; i < frame.p.length / 2; i++) {
+      if (!present(frame, i) && !present(prev, i)) continue;
       const speed = dist(pos(prev, i), pos(frame, i)) / tick;
       if (speed > best) {
         best = speed;
@@ -289,9 +302,9 @@ function events(c: Context): Metric[] {
 
 /** True when `receiver` is beyond halfway, the ball and the offside line `team` plays against. */
 function inOffsidePosition(c: Context, frame: Frame, team: TeamId, receiver: number): boolean {
-  const rx = toAttack(team, pos(frame, receiver))[0];
-  const bx = toAttack(team, ballOf(frame))[0];
-  const line = offsideLineX(c.pb.fixture, positions(frame), team);
+  const rx = toAttack(team, pos(frame, receiver), frame.period)[0];
+  const bx = toAttack(team, ballOf(frame), frame.period)[0];
+  const line = offsideLineX(fixtureAt(c, frame), positions(frame), team);
   return rx > HALFWAY + OFFSIDE_EPS && rx > bx + OFFSIDE_EPS && rx > line + OFFSIDE_EPS;
 }
 
@@ -324,7 +337,6 @@ const inEitherBox = (b: Vec): boolean =>
   (b[0] <= PITCH.length - BOX_X || b[0] >= BOX_X) && b[1] >= BOX_Y[0] && b[1] <= BOX_Y[1];
 
 function shape(c: Context): Metric[] {
-  const all = [...c.outfield[0], ...c.outfield[1]];
   let open = 0;
   let swarms = 0;
   let spaced = 0;
@@ -332,16 +344,20 @@ function shape(c: Context): Metric[] {
   const spreads: [number[], number[]] = [[], []];
   for (const frame of c.live) {
     for (const team of [0, 1] as const) {
-      const xs = c.outfield[team].map((i) => toAttack(team, pos(frame, i))[0]);
+      const xs = outfieldAt(c, frame, team).map(
+        (i) => toAttack(team, pos(frame, i), frame.period)[0],
+      );
       spreads[team].push(Math.max(...xs) - Math.min(...xs));
     }
     if (frame.phase === 'setPiece') continue;
     spaced += 1;
-    if (tooClose(frame, c.outfield)) crowded += 1;
+    if (tooClose(frame, [outfieldAt(c, frame, 0), outfieldAt(c, frame, 1)])) crowded += 1;
     const ball = ballOf(frame);
     if (inEitherBox(ball)) continue;
     open += 1;
-    const near = all.filter((i) => dist(pos(frame, i), ball) <= L.swarm.radius).length;
+    const near = outfieldAt(c, frame).filter(
+      (i) => dist(pos(frame, i), ball) <= L.swarm.radius,
+    ).length;
     if (near >= L.swarm.count) swarms += 1;
   }
   const [lo, hi] = L.teamLength;
@@ -387,7 +403,12 @@ function roles(c: Context): Metric[] {
       team.find((p) => p.slot === (ifb.slot === 1 ? 4 : 1) && p.index !== ifb.index) ??
       team.find((p) => (p.position === 'LB' || p.position === 'RB') && p.index !== ifb.index);
     const pivot = team.find((p) => p.slot === 5);
-    const frames = possessed(c, ifb.team, ['buildUp', 'progression']);
+    const frames = possessed(c, ifb.team, ['buildUp', 'progression']).filter(
+      (f) =>
+        outfieldAt(c, f, ifb.team).includes(ifb.index) &&
+        (!otherBack || present(f, otherBack.index)) &&
+        (!pivot || present(f, pivot.index)),
+    );
     const inside = otherBack
       ? frames.map(
           (f) =>
@@ -397,7 +418,8 @@ function roles(c: Context): Metric[] {
     const gap = pivot
       ? frames.map((f) =>
           Math.abs(
-            toAttack(ifb.team, pos(f, ifb.index))[0] - toAttack(ifb.team, pos(f, pivot.index))[0],
+            toAttack(ifb.team, pos(f, ifb.index), f.period)[0] -
+              toAttack(ifb.team, pos(f, pivot.index), f.period)[0],
           ),
         )
       : [];
@@ -405,11 +427,13 @@ function roles(c: Context): Metric[] {
     out.push(mean('role.invertedFullBack.pivot', gap, L.ifbPivotGap, 'max'));
   }
   const shoulderGap = (player: PlayerSpec, phases: readonly Frame['phase'][]): number[] =>
-    possessed(c, player.team, phases).map(
-      (f) =>
-        offsideLineX(c.pb.fixture, positions(f), player.team) -
-        toAttack(player.team, pos(f, player.index))[0],
-    );
+    possessed(c, player.team, phases)
+      .filter((f) => outfieldAt(c, f, player.team).includes(player.index))
+      .map(
+        (f) =>
+          offsideLineX(fixtureAt(c, f), positions(f), player.team) -
+          toAttack(player.team, pos(f, player.index), f.period)[0],
+      );
   const nine = holder(c, 'falseNine');
   if (nine)
     out.push(
@@ -435,8 +459,8 @@ function backPassReason(c: Context): Metric {
   let unreasoned = 0;
   for (const b of c.pb.beats) {
     if (b.kind !== 'pass') continue;
-    const from = toAttack(b.team, b.from)[0];
-    const to = toAttack(b.team, b.to)[0];
+    const from = toAttack(b.team, b.from, b.original?.period)[0];
+    const to = toAttack(b.team, b.to, b.original?.period)[0];
     if (from < fromX || to > from - back) continue;
     backward += 1;
     if (b.reason === undefined) unreasoned += 1;
@@ -454,18 +478,23 @@ function pressVisible(c: Context): Metric {
     const frame = c.frameAt(e);
     const actor = pos(frame, e.actor);
     const team = c.pb.fixture.players[e.actor]?.team ?? e.team;
-    if (c.outfield[other(team)].some((i) => dist(pos(frame, i), actor) <= range)) pressed += 1;
+    if (outfieldAt(c, frame, other(team)).some((i) => dist(pos(frame, i), actor) <= range))
+      pressed += 1;
   }
   return share('stage.pressVisible', pressed, kicks, L.pressedShare, 'min');
 }
 
 function scoreConsistent(c: Context): Metric {
-  const goals = c.pb.events.filter((e) => e.kind === 'goal');
+  const goals = c.pb.events.filter((e) => e.kind === 'goal' && !e.shootout);
   const last = goals.at(-1)?.score ?? [0, 0];
   const scoreOk = c.pb.score[0] === last[0] && c.pb.score[1] === last[1];
   const goalBeats = new Set(goals.map((e) => e.beat));
-  const withEvent = c.pb.beats.filter((b) => b.outcome === 'goal' && goalBeats.has(b.index)).length;
-  const beatsTotal = c.pb.beats.filter((b) => b.outcome === 'goal').length;
+  const withEvent = c.pb.beats.filter(
+    (b) => b.kind !== 'shootoutKick' && b.outcome === 'goal' && goalBeats.has(b.index),
+  ).length;
+  const beatsTotal = c.pb.beats.filter(
+    (b) => b.kind !== 'shootoutKick' && b.outcome === 'goal',
+  ).length;
   return metric(
     'score.consistent',
     goals.length,
@@ -507,7 +536,8 @@ function huddle(c: Context): Metric[] {
   const episodes: Episode[] = [];
   for (const f of c.open) {
     const frame = frames[f];
-    for (const team of c.outfield) {
+    for (const side of [0, 1] as const) {
+      const team = outfieldAt(c, frame, side);
       for (let x = 0; x < team.length; x++) {
         for (let y = x + 1; y < team.length; y++) {
           const a = pos(frame, team[x]);
@@ -583,10 +613,16 @@ function unison(c: Context): Metric[] {
   const { rest, go } = L.motion;
   const startsAt = new Array<number>(c.pb.frames.length).fill(0);
   const starts: number[] = [];
-  const series = c.all.map((i) => c.open.map((f) => c.speed(f, i)));
+  const series = c.all.map((i) =>
+    c.open.map((f) => (outfieldAt(c, c.pb.frames[f]).includes(i) ? c.speed(f, i) : NaN)),
+  );
   series.forEach((speeds) => {
     let resting = false;
     speeds.forEach((s, k) => {
+      if (!Number.isFinite(s)) {
+        resting = false;
+        return;
+      }
       if (s < rest) {
         resting = true;
       } else if (resting && s > go) {
@@ -596,7 +632,10 @@ function unison(c: Context): Metric[] {
       }
     });
   });
-  const playerMinutes = c.all.length * c.openMinutes;
+  const playerMinutes = c.open.reduce(
+    (sum, f) => sum + (outfieldAt(c, c.pb.frames[f]).length * tick) / 60,
+    0,
+  );
   const restarts = atMost(
     'motion.restarts',
     playerMinutes === 0 ? 0 : starts.length / playerMinutes,
@@ -614,16 +653,22 @@ function unison(c: Context): Metric[] {
 
   let sync = 0;
   if (c.open.length >= 2 && series.length >= 2) {
-    const all = series.map(centred);
     let sum = 0;
     let pairs = 0;
-    for (let a = 0; a < all.length; a++) {
-      for (let b = a + 1; b < all.length; b++) {
-        sum += correlation(all[a], all[b]);
+    for (let a = 0; a < series.length; a++) {
+      for (let b = a + 1; b < series.length; b++) {
+        const common = c.open
+          .map((_, k) => k)
+          .filter((k) => Number.isFinite(series[a][k]) && Number.isFinite(series[b][k]));
+        if (common.length < 2) continue;
+        sum += correlation(
+          centred(common.map((k) => series[a][k])),
+          centred(common.map((k) => series[b][k])),
+        );
         pairs += 1;
       }
     }
-    sync = sum / pairs;
+    sync = pairs ? sum / pairs : 0;
   }
   const tops = [
     L.motion.rest,
@@ -635,6 +680,7 @@ function unison(c: Context): Metric[] {
   let samples = 0;
   for (const speeds of series) {
     for (const s of speeds) {
+      if (!Number.isFinite(s)) continue;
       const band = s < tops[0] ? 0 : s < tops[1] ? 1 : s < tops[2] ? 2 : s <= tops[3] ? 3 : 4;
       bands[band] += 1;
       samples += 1;
@@ -658,7 +704,7 @@ function turns(c: Context): Metric[] {
   let movers = 0;
   let turned = 0;
   for (const { f } of settled) {
-    for (const i of c.all) {
+    for (const i of outfieldAt(c, c.pb.frames[f])) {
       let sum = 0;
       for (let g = f - before; g < f; g++) sum += c.vx(g, i);
       const v = sum / before;
@@ -678,7 +724,9 @@ function turns(c: Context): Metric[] {
     median(
       list.map(
         ({ f }) =>
-          c.all.filter((i) => c.speed(f + runAt, i) > L.turn.runSpeed).length / c.all.length,
+          outfieldAt(c, c.pb.frames[f + runAt]).filter(
+            (i) => c.speed(f + runAt, i) > L.turn.runSpeed,
+          ).length / Math.max(1, outfieldAt(c, c.pb.frames[f + runAt]).length),
       ),
     );
   return [
@@ -709,12 +757,14 @@ function markNear(c: Context): Metric {
     if (f % MARK_EVERY !== 0) continue;
     const frame = frames[f];
     const team = frame.team;
-    for (const i of c.outfield[team]) {
+    for (const i of outfieldAt(c, frame, team)) {
       if (i === frame.owner) continue;
       const p = pos(frame, i);
-      if (toAttack(team, p)[0] < L.mark.fromX) continue;
+      if (toAttack(team, p, frame.period)[0] < L.mark.fromX) continue;
       samples += 1;
-      const near = c.outfield[other(team)].some((j) => dist(pos(frame, j), p) <= L.mark.distance);
+      const near = outfieldAt(c, frame, other(team)).some(
+        (j) => dist(pos(frame, j), p) <= L.mark.distance,
+      );
       if (near) marked += 1;
     }
   }

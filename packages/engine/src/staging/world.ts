@@ -20,7 +20,7 @@ import type {
   TeamId,
   Vec,
 } from './types';
-import { lineOf } from './types';
+import { lineOf, onPitch, presentPlayers } from './types';
 import { add, approach, clamp, dist, len, norm, scale, sub } from './vec';
 import { giveBall, updateBall } from './ball';
 import { assignMarks, markSpot } from './mark';
@@ -107,6 +107,8 @@ export interface StageState {
   /** The record's match clock (a bound script's frames): it runs in live play up to `clockCap`. */
   clock?: number;
   clockCap: number;
+  /** Record-clock seconds when each participant entered; starters start at zero. */
+  enteredAt?: number[];
 }
 
 const SHAPE = STAGING_CONFIG.shape;
@@ -137,8 +139,19 @@ const recordFrame = (state: StageState): void => {
     beat: state.beat,
     ...(state.clock === undefined ? {} : { clock: round2(state.clock) }),
     p,
+    present: state.fixture.players
+      .filter((p) => onPitch(state.fixture, p.index))
+      .map((p) => p.index),
+    slots: state.fixture.players.map((p) => p.slot),
+    period: state.fixture.period ?? 1,
   });
 };
+
+/** Membership changes at this tick, before its frame can leave the bounded program. */
+export function refreshFrame(state: StageState): void {
+  if (state.frames.at(-1)?.t === state.t) state.frames.pop();
+  recordFrame(state);
+}
 
 /**
  * Player `index`'s kick-off place (world frame) when `kicking` kicks off through `kicker`: his
@@ -147,20 +160,43 @@ const recordFrame = (state: StageState): void => {
 export function kickOffSpot(fixture: Fixture, index: number, kicking: TeamId, kicker: number): Vec {
   const team = fixture.players[index].team;
   const nominal = nominalSpot({ fixture, ball: CENTRE, team: kicking, phase: 'buildUp' }, index);
-  let a: [number, number] = [...toAttack(team, nominal)] as [number, number];
+  let a: [number, number] = [...toAttack(team, nominal, fixture.period)] as [number, number];
   a[0] = Math.min(a[0], HALFWAY - KICK_OFF.halfMargin);
   if (team !== kicking && dist(a, CENTRE) < KICK_OFF.circle) a[0] = HALFWAY - KICK_OFF.circle;
   if (index === kicker) a = [HALFWAY - 0.3, CENTRE[1]];
-  return toAttack(team, a);
+  return toAttack(team, a, fixture.period);
 }
 
 /** The stage before the first beat: everyone at his kick-off place, the kicker on the ball, frame 0 recorded. */
 export function createStage(script: Script): StageState {
-  const fixture = script.fixture;
+  // Each performance owns its changing XI/slots; caller inputs remain immutable.
+  const fixture: Fixture = {
+    ...script.fixture,
+    teams: script.fixture.teams.map((t) => ({
+      ...t,
+      players: t.players.map((p) => ({ ...p })),
+    })) as unknown as Fixture['teams'],
+    players: [],
+    period: script.beats[0]?.original?.period ?? 1,
+  };
+  fixture.players = fixture.teams.flatMap((t) => t.players);
+  const incoming = new Set(
+    script.beats.flatMap((b) =>
+      (b.original?.incidents ?? [])
+        .filter((x) => x.kind === 'sub' && x.other !== undefined)
+        .map((x) => fixture.teams[x.side].players.find((p) => p.line === x.other)!.index),
+    ),
+  );
+  fixture.present = fixture.players.map((p) => !incoming.has(p.index));
   const first = script.beats[0];
   if (!first) throw invalidDetail('staging:empty');
   const bodies = fixture.players.map((player): Body =>
-    standing(kickOffSpot(fixture, player.index, first.team, first.actor), oppGoal(player.team)),
+    standing(
+      onPitch(fixture, player.index)
+        ? kickOffSpot(fixture, player.index, first.team, first.actor)
+        : STAGING_CONFIG.stage.scene.gate,
+      oppGoal(player.team, fixture.period),
+    ),
   );
   const state: StageState = {
     fixture,
@@ -187,6 +223,7 @@ export function createStage(script: Script): StageState {
     events: [],
     bound: script.bound === true,
     clockCap: Infinity,
+    enteredAt: fixture.players.map((p) => (incoming.has(p.index) ? Infinity : 0)),
   };
   if (state.bound && first.clock !== undefined) state.clock = first.clock;
   giveBall(state, first.actor);
@@ -220,7 +257,7 @@ const pressRoles = (
   }
   const cached = byTeam.get(d);
   if (cached) return cached;
-  const free = state.fixture.teams[d].players
+  const free = presentPlayers(state.fixture, d)
     .filter((p) => p.slot !== 0 && !state.orders.has(p.index) && !state.cues.has(p.index))
     .map((p) => ({ index: p.index, d: dist(snapshot[p.index], ref) }))
     .filter(({ index, d: metres }) => {
@@ -286,7 +323,7 @@ export function defaultTarget(
     index === state.ball.owner ? free(base) : free(unmarked(state, index, base, snapshot));
   if (player.team === state.team) return view.team === player.team ? open() : free(base);
   const d = player.team;
-  const goal = ownGoal(d);
+  const goal = ownGoal(d, fixture.period);
   if (isPressRole(state, d, index, snapshot)) {
     const g = norm(sub(goal, ref));
     const roles = pressRoles(state, d, ref, snapshot);
@@ -305,7 +342,7 @@ export function defaultTarget(
   if (view.team === d) return open();
   const man = state.marks.get(index);
   if (man === undefined) return free(base);
-  return free(markSpot(d, lineOf(player.position), base, snapshot[man]));
+  return free(markSpot(d, lineOf(player.position), base, snapshot[man], fixture.period));
 }
 
 /**
@@ -324,7 +361,7 @@ export function isPressRole(
   const pressing =
     state.tight ||
     counterPressing(state, d) ||
-    toAttack(d, ref)[0] <= SHAPE.press.from[state.fixture.teams[d].style];
+    toAttack(d, ref, state.fixture.period)[0] <= SHAPE.press.from[state.fixture.teams[d].style];
   const roles = pressRoles(state, d, ref, snapshot);
   if (pressing) return index === roles.presser || index === roles.cover;
   // Outside its pressing zone a side still engages a man on the ball its nearest free defender is near.
@@ -410,7 +447,7 @@ export function unmarked(
   const team = fixture.players[index].team;
   let nearest: Vec | undefined;
   let nearestD = Infinity;
-  for (const opp of fixture.teams[team === 0 ? 1 : 0].players) {
+  for (const opp of presentPlayers(fixture, team === 0 ? 1 : 0)) {
     if (opp.slot === 0) continue;
     const od = dist(snapshot[opp.index], base);
     if (od < nearestD) {
@@ -426,11 +463,15 @@ export function unmarked(
 }
 
 /** `target` moved radially out to the keep-out circle's edge when it lies inside it. */
-const keptOut = (keep: NonNullable<StageState['keepOut']>, target: Vec): Vec => {
+const keptOut = (
+  keep: NonNullable<StageState['keepOut']>,
+  target: Vec,
+  period: Fixture['period'],
+): Vec => {
   const off = sub(target, keep.centre);
   const d = len(off);
   if (d >= keep.radius) return target;
-  const dir = d > 1e-9 ? norm(off) : norm(sub(ownGoal(keep.team), keep.centre));
+  const dir = d > 1e-9 ? norm(off) : norm(sub(ownGoal(keep.team, period), keep.centre));
   return clampToPitch(add(keep.centre, scale(dir, keep.radius)), -2);
 };
 
@@ -455,7 +496,7 @@ export function separated(
   if (sep <= 0 || spec.slot === 0 || state.ball.owner === index || !state.live) return target;
   const attacking = spec.team === state.team;
   let out = target;
-  for (const mate of state.fixture.teams[spec.team].players) {
+  for (const mate of presentPlayers(state.fixture, spec.team)) {
     if (mate.index === index || mate.slot === 0) continue;
     const at = snapshot[mate.index];
     const off = sub(out, at);
@@ -517,12 +558,13 @@ export function step(state: StageState): void {
   const turn = turnOf(state);
   // Defenders by slot line share a lag even in a back three/five; their hold radii remain personal.
   const lineDiscipline = fixture.teams.map((team) => {
-    const line = team.players.filter((p) => lineOf(p.position) === 'DF');
+    const line = presentPlayers(fixture, team.id).filter((p) => lineOf(p.position) === 'DF');
     return line.length ? line.reduce((sum, p) => sum + p.discipline, 0) / line.length : 50;
   });
   const onBody: boolean[] = [];
   const moves: { target: Vec; speed: number }[] = state.fixture.players.map((spec) => {
     const i = spec.index;
+    if (!onPitch(fixture, i)) return { target: snapshot[i], speed: 0 };
     const order = state.orders.get(i) ?? state.cues.get(i);
     if (order) {
       onBody[i] = true;
@@ -553,12 +595,14 @@ export function step(state: StageState): void {
   const keep = state.keepOut;
   if (keep) {
     moves.forEach((move, i) => {
-      if (state.fixture.players[i].team === keep.team) move.target = keptOut(keep, move.target);
+      if (state.fixture.players[i].team === keep.team)
+        move.target = keptOut(keep, move.target, fixture.period);
     });
   }
   const tick = STAGING_CONFIG.tick;
   moves.forEach((move, i) => {
     const body = state.bodies[i];
+    if (!onPitch(fixture, i)) return;
     advanceBody(body, move.target, move.speed, tick);
     atBoards(body);
     // He eases back into the shape from where he stands when his order or direct role ends.

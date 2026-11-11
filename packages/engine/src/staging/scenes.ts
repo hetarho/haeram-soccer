@@ -5,7 +5,10 @@
 import { STAGING_CONFIG } from './config';
 import { CENTRE, clampToPitch, ownGoal, toAttack } from './pitch';
 import type { Beat, StageEvent, TeamId, Vec } from './types';
-import { RESTART_KINDS } from './types';
+import { RESTART_KINDS, presentPlayers } from './types';
+import { keeperOf } from './participants';
+import { invalidDetail } from '../script/failure';
+import { runSpotScene } from './spot-kick';
 import { add, clamp, dist, norm, scale, sub } from './vec';
 import { giveBall } from './ball';
 import { shadowPoint } from './contest';
@@ -45,13 +48,17 @@ export function restartSpot(state: StageState, beat: Beat): Vec {
       return out ? [clamp(out.at[0], 1, 104), out.at[1] < 34 ? 0 : 68] : fallback;
     }
     case 'goalKick': {
-      const side = toAttack(team, beat.to)[1] < 34 ? -1 : 1;
-      return toAttack(team, [5.5, 34 + 6 * side]);
+      const side = toAttack(team, beat.to, state.fixture.period)[1] < 34 ? -1 : 1;
+      return toAttack(team, [5.5, 34 + 6 * side], state.fixture.period);
     }
     case 'corner': {
       const out = lastEvent(state, ['out']);
       if (!out) return fallback;
-      return toAttack(team, [104.5, toAttack(team, out.at)[1] < 34 ? 0.5 : 67.5]);
+      return toAttack(
+        team,
+        [104.5, toAttack(team, out.at, state.fixture.period)[1] < 34 ? 0.5 : 67.5],
+        state.fixture.period,
+      );
     }
     case 'freeKick': {
       const foul = lastEvent(state, ['foul', 'offside']);
@@ -63,9 +70,11 @@ export function restartSpot(state: StageState, beat: Beat): Vec {
 }
 
 /** Where the taker stands: off the touchline or corner away from the centre, else goal-side of the spot. */
-const takerPlace = (kind: RestartKind, team: TeamId, spot: Vec): Vec => {
+const takerPlace = (state: StageState, kind: RestartKind, team: TeamId, spot: Vec): Vec => {
   const away =
-    kind === 'throwIn' || kind === 'corner' ? sub(spot, CENTRE) : sub(ownGoal(team), spot);
+    kind === 'throwIn' || kind === 'corner'
+      ? sub(spot, CENTRE)
+      : sub(ownGoal(team, state.fixture.period), spot);
   return add(spot, scale(norm(away), RESTART.takerOffset));
 };
 
@@ -73,64 +82,79 @@ type PlaceOrder = (index: number, place: Vec, pace: Order['pace'], within: numbe
 
 /**
  * Both sides' places at a corner. The taking side: the receiver at his run-up point, the others
- * (record line order; the receiver is already scripted) on `corner.attack`, four in the box, two at its edge, two back. The
+ * (record line order; the receiver is already scripted) on `corner.attack`, with two or three back. The
  * defending side: the keeper on his line, the scripted opponent goal-side of the receiver, two
- * zonal, two left up and the rest goal-side of the attackers in order.
+ * zonal, one or two left up and the rest protecting the box goal-side of the attackers.
  */
 function cornerScene(state: StageState, beat: Beat, spot: Vec, order: PlaceOrder): void {
   const CORNER = STAGING_CONFIG.stage.corner;
   const T = beat.team;
-  const s = toAttack(T, spot)[1] > 34 ? 1 : -1;
-  const C = (x: number, off: number): Vec => toAttack(T, [x, 34 + s * off]);
+  const s = toAttack(T, spot, state.fixture.period)[1] > 34 ? 1 : -1;
+  const C = (x: number, off: number): Vec => toAttack(T, [x, 34 + s * off], state.fixture.period);
   const fixture = state.fixture;
   const taker = beat.actor;
   const receiver = beat.receiver;
   let runUp: Vec | undefined;
   if (receiver !== undefined) {
-    const aim = toAttack(T, clampToPitch(beat.to, 0.5));
-    runUp = clampToPitch(toAttack(T, [aim[0] - STAGING_CONFIG.stage.cross.runUp, aim[1]]), 0.5);
+    const aim = toAttack(T, clampToPitch(beat.to, 0.5), state.fixture.period);
+    runUp = clampToPitch(
+      toAttack(T, [aim[0] - STAGING_CONFIG.stage.cross.runUp, aim[1]], state.fixture.period),
+      0.5,
+    );
     order(receiver, runUp, 'run', RESTART.receiverReady);
   }
-  const attackers = fixture.teams[T].players
+  const attackers = presentPlayers(fixture, T)
     .filter((p) => p.slot !== 0 && p.index !== taker && p.index !== receiver)
     .sort((a, b) => a.index - b.index);
+  const counts = STAGING_CONFIG.stage.scene.corner;
+  const draw = (range: readonly [number, number]) =>
+    range[0] + Math.floor(state.motion() * (range[1] - range[0] + 1));
+  const back = Math.min(attackers.length, draw(counts.back));
+  const up = draw(counts.up);
   const places: Vec[] = [];
   attackers.forEach((p, i) => {
-    const at = CORNER.attack[i];
+    const at =
+      i >= attackers.length - back
+        ? counts.backPlaces[i - (attackers.length - back)]
+        : CORNER.attack[i];
     if (!at) return;
     places.push([at[0], at[1]]);
-    state.orders.set(p.index, { target: C(at[0], at[1]), pace: 'run' });
+    order(p.index, C(at[0], at[1]), 'run', RESTART.receiverReady);
   });
   const D: TeamId = T === 0 ? 1 : 0;
-  const keeper = fixture.teams[D].players[0].index;
-  state.orders.set(keeper, { target: C(CORNER.keeper[0], CORNER.keeper[1]), pace: 'run' });
+  const keeper = keeperOf(state, D);
+  order(keeper, C(CORNER.keeper[0], CORNER.keeper[1]), 'run', RESTART.takerReady);
   const scripted = beat.opponent;
   if (scripted !== undefined && fixture.players[scripted].slot !== 0 && runUp) {
-    const r = toAttack(T, runUp);
-    state.orders.set(scripted, {
-      target: toAttack(T, [r[0] + CORNER.goalSide, r[1]]),
-      pace: 'run',
-    });
+    const r = toAttack(T, runUp, state.fixture.period);
+    order(
+      scripted,
+      toAttack(T, [r[0] + CORNER.goalSide, r[1]], state.fixture.period),
+      'run',
+      RESTART.receiverReady,
+    );
   }
-  const rest = fixture.teams[D].players
+  const rest = presentPlayers(fixture, D)
     .filter((p) => p.slot !== 0 && p.index !== scripted)
     .map((p) => p.index);
   rest.forEach((index, i) => {
     let target: Vec | undefined;
     if (i < 2) target = C(CORNER.zonal[i][0], CORNER.zonal[i][1]);
-    else if (i >= rest.length - 2) {
-      const up = CORNER.up[i - (rest.length - 2)];
-      target = C(up[0], up[1]);
+    else if (i >= rest.length - up) {
+      const outlet = CORNER.up[i - (rest.length - up)];
+      target = C(outlet[0], outlet[1]);
     } else {
       const man = places[i - 2];
-      if (man) target = C(man[0] + CORNER.goalSide, man[1]);
+      if (man) target = C(Math.max(counts.defendX, man[0]) + CORNER.goalSide, man[1]);
     }
-    if (target) state.orders.set(index, { target, pace: 'run' });
+    if (target) order(index, target, 'run', RESTART.receiverReady);
   });
 }
 
 /** Dead time before a restart beat: the ball goes to the spot, players take their places, then the taker has it. */
 export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<void, void> {
+  if (ctx.beat.kind === 'penalty' || ctx.beat.kind === 'shootoutKick')
+    return yield* runSpotScene(state, ctx);
   if (state.tickCount === 0) return;
   const beat = ctx.beat;
   const kind = beat.kind as RestartKind;
@@ -155,9 +179,9 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
     state.orders.set(index, { target: place, pace });
     places.set(index, { place, within });
   };
-  order(taker, takerPlace(kind, beat.team, spot), 'run', RESTART.takerReady);
+  order(taker, takerPlace(state, kind, beat.team, spot), 'run', RESTART.takerReady);
   if (kind === 'kickOff') {
-    for (const p of state.fixture.players) {
+    for (const p of presentPlayers(state.fixture, 0).concat(presentPlayers(state.fixture, 1))) {
       if (p.index === taker) continue;
       order(p.index, kickOffSpot(state.fixture, p.index, beat.team, taker), 'jog', 1);
     }
@@ -175,7 +199,7 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
     kind !== 'corner' &&
     state.fixture.players[cutter].slot !== 0
   ) {
-    let place = shadowPoint(other, spot, clampToPitch(beat.to, 0.5));
+    let place = shadowPoint(other, spot, clampToPitch(beat.to, 0.5), state.fixture.period);
     const off = sub(place, spot);
     if (radius > 0 && dist(place, spot) < radius) {
       place = clampToPitch(add(spot, scale(norm(off), radius + 0.5)), 0.5);
@@ -193,6 +217,9 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
     return true;
   };
   yield* runUntil(state, ready, delay + RESTART.maxExtra);
+  // A late participant finishes his bounded route rather than being placed at a timeout.
+  if (!ready()) yield* runUntil(state, ready, STAGING_CONFIG.stage.scene.maxTravel);
+  if (!ready()) throw invalidDetail('staging:input');
 
   ball.pos = [spot[0], spot[1]];
   delete state.retrieve;
@@ -208,7 +235,8 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
 /** `handler`, after a dead-ball scene when the beat's kind is a restart. */
 export function withRestart(handler: Handler): Handler {
   return function* (state, ctx) {
-    if (RESTART_KINDS.includes(ctx.beat.kind)) yield* runDeadBall(state, ctx);
+    if (RESTART_KINDS.includes(ctx.beat.kind) || ctx.beat.kind === 'shootoutKick')
+      yield* runDeadBall(state, ctx);
     yield* handler(state, ctx);
   };
 }

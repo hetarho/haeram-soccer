@@ -131,8 +131,8 @@ describe('bound scripts (T821)', () => {
     const at = p.frames.find((f) => Math.abs(f.t - restart.t) < 1e-9)!;
     for (const player of fixture.players) {
       const x = posOf(at, player.index)[0];
-      if (player.team === 0) expect(x).toBeLessThanOrEqual(HALFWAY + 1.5);
-      else expect(x).toBeGreaterThanOrEqual(HALFWAY - 1.5);
+      if (player.team === 0) expect(x).toBeGreaterThanOrEqual(HALFWAY - 1.5);
+      else expect(x).toBeLessThanOrEqual(HALFWAY + 1.5);
     }
     expect(p.duration).toBe(p.frames[p.frames.length - 1].t);
   });

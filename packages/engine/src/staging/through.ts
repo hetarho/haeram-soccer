@@ -1,3 +1,4 @@
+import { presentPlayers } from './types';
 import { invalidDetail } from '../script/failure';
 // Through balls. The runner waits a couple of metres short of the offside line while the passer
 // holds, sets off as the hold runs out and is kicked to while he is onside, so ball and runner meet
@@ -41,8 +42,8 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
   const fixture = state.fixture;
   const line = (): number => offsideLineX(fixture, positionsOf(state), T);
   const runnerPos = (): Vec => state.bodies[runner].pos;
-  const rx = (): number => toAttack(T, runnerPos())[0];
-  const [ax, ay] = toAttack(T, beat.to);
+  const rx = (): number => toAttack(T, runnerPos(), state.fixture.period)[0];
+  const [ax, ay] = toAttack(T, beat.to, state.fixture.period);
   const offside = beat.outcome === 'offside';
   const lead = THROUGH.runLead + (offside ? THROUGH.earlyBy : 0);
   const start = state.t;
@@ -51,10 +52,15 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
   state.orders.set(actor, holdMove(state, actor, beat.to));
   const runOrder: Order = {
     target: (): Vec => {
-      const me = toAttack(T, runnerPos());
-      if (left() > lead) return toAttack(T, [line() - THROUGH.setBack, me[1]]);
+      const me = toAttack(T, runnerPos(), state.fixture.period);
+      if (left() > lead)
+        return toAttack(T, [line() - THROUGH.setBack, me[1]], state.fixture.period);
       if (!offside) {
-        return toAttack(T, [Math.min(ax, line() - THROUGH.onsideGap), me[1] + (ay - me[1]) * 0.5]);
+        return toAttack(
+          T,
+          [Math.min(ax, line() - THROUGH.onsideGap), me[1] + (ay - me[1]) * 0.5],
+          state.fixture.period,
+        );
       }
       return beat.to;
     },
@@ -64,7 +70,7 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
   };
   state.orders.set(runner, runOrder);
   // The ball's attack x: a runner level with or behind the ball is onside whatever the line says.
-  const bx = (): number => toAttack(T, state.ball.pos)[0];
+  const bx = (): number => toAttack(T, state.ball.pos, state.fixture.period)[0];
   const kickReady = (): boolean => {
     if (left() > 1e-9) return false;
     const l = line();
@@ -89,7 +95,7 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
       actor,
       other: runner,
       at: [runnerPos()[0], runnerPos()[1]],
-      line: toAttack(T, [line(), 0])[0],
+      line: toAttack(T, [line(), 0], state.fixture.period)[0],
     });
   }
   const sprint = speedAt(state, runner, 'sprint');
@@ -177,10 +183,10 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
  */
 function holdLine(state: StageState, attacking: TeamId, lineX: number, runner: number): void {
   const D: TeamId = attacking === 0 ? 1 : 0;
-  for (const p of state.fixture.teams[D].players) {
+  for (const p of presentPlayers(state.fixture, D)) {
     if (p.slot === 0 || state.orders.has(p.index) || p.index === runner) continue;
-    const at = toAttack(attacking, state.bodies[p.index].pos);
-    const target = toAttack(attacking, [Math.min(at[0], lineX), at[1]]);
+    const at = toAttack(attacking, state.bodies[p.index].pos, state.fixture.period);
+    const target = toAttack(attacking, [Math.min(at[0], lineX), at[1]], state.fixture.period);
     state.orders.set(p.index, { target, pace: 'run' });
   }
 }

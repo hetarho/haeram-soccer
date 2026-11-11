@@ -1,3 +1,4 @@
+import { presentPlayers } from './types';
 import { PORTABLE_MATH } from '../portable-math';
 import { invalidDetail } from '../script/failure';
 // Pass-like beats. A completed pass: the passer holds and takes a touch toward his pass while the
@@ -86,7 +87,7 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
   const HM = STAGE.holdMove;
   const body = state.bodies[actor];
   const team = state.fixture.players[actor].team;
-  const forward: Vec = [team === 0 ? 1 : -1, 0];
+  const forward: Vec = [toAttack(team, [105, 34], state.fixture.period)[0] === 105 ? 1 : -1, 0];
   const arrived =
     len(body.vel) > 0.5 ? norm(body.vel) : len(body.face) > 0 ? norm(body.face) : forward;
   let heading: Vec = arrived;
@@ -123,7 +124,7 @@ export function holdMove(state: StageState, actor: number, to: Vec, toward = fal
         }
       }
       // He never carries onto a teammate: one within `mates` metres pushes his line away.
-      for (const mate of state.fixture.teams[team].players) {
+      for (const mate of presentPlayers(state.fixture, team)) {
         if (mate.index === actor) continue;
         const gap = dist(pos, state.bodies[mate.index].pos);
         if (gap >= HM.mates || gap < 1e-6) continue;
@@ -238,9 +239,9 @@ const lineNow = (state: StageState, team: TeamId): number =>
 
 /** `p` (world) with its attack x capped `shape.onsideGap` inside `team`'s offside line. */
 const onsideCap = (state: StageState, team: TeamId, p: Vec): Vec => {
-  const a = toAttack(team, p);
+  const a = toAttack(team, p, state.fixture.period);
   const cap = lineNow(state, team) - SHAPE.onsideGap;
-  return a[0] > cap ? toAttack(team, [cap, a[1]]) : p;
+  return a[0] > cap ? toAttack(team, [cap, a[1]], state.fixture.period) : p;
 };
 
 /** An ordinary pass (kind `pass`, not a through ball) is never played to a man offside. */
@@ -259,13 +260,16 @@ export function receiverHold(
 ): { order?: Order; onside: () => boolean } {
   if (receiver === undefined) return { onside: () => true };
   const team = beat.team;
-  const aim = toAttack(team, R);
+  const aim = toAttack(team, R, state.fixture.period);
   const base: Vec =
-    beat.loft && inBox(toAttack(team, beat.to))
-      ? clampToPitch(toAttack(team, [aim[0] - STAGING_CONFIG.stage.cross.runUp, aim[1]]), 0.5)
+    beat.loft && inBox(toAttack(team, beat.to, state.fixture.period))
+      ? clampToPitch(
+          toAttack(team, [aim[0] - STAGING_CONFIG.stage.cross.runUp, aim[1]], state.fixture.period),
+          0.5,
+        )
       : R;
   if (!guarded(beat)) return { order: { target: base, pace: 'run' }, onside: () => true };
-  const rx = (): number => toAttack(team, state.bodies[receiver].pos)[0];
+  const rx = (): number => toAttack(team, state.bodies[receiver].pos, state.fixture.period)[0];
   return {
     order: {
       target: () => onsideCap(state, team, base),
@@ -273,13 +277,17 @@ export function receiverHold(
         return rx() > lineNow(state, team) ? 'sprint' : 'run';
       },
     },
-    onside: () => rx() <= lineNow(state, team) - 0.05 || rx() <= toAttack(team, state.ball.pos)[0],
+    onside: () =>
+      rx() <= lineNow(state, team) - 0.05 ||
+      rx() <= toAttack(team, state.ball.pos, state.fixture.period)[0],
   };
 }
 
 /** At the kick an ordinary pass's aim in the opponents' half is kept onside too. */
 const kickAim = (state: StageState, beat: Beat, R: Vec): Vec =>
-  guarded(beat) && toAttack(beat.team, R)[0] > HALFWAY ? onsideCap(state, beat.team, R) : R;
+  guarded(beat) && toAttack(beat.team, R, state.fixture.period)[0] > HALFWAY
+    ? onsideCap(state, beat.team, R)
+    : R;
 
 /** The point on the way from the receiver to `to` he can sprint to while the ball travels there. */
 export function reachablePoint(state: StageState, receiver: number, to: Vec, speed: number): Vec {
@@ -431,7 +439,7 @@ function* winOnPath(
   const range = cutRange(state, scripted);
   const aimed = R;
   state.orders.set(scripted, {
-    target: () => shadowPoint(team, state.ball.pos, aimed),
+    target: () => shadowPoint(team, state.ball.pos, aimed, state.fixture.period),
     pace: 'run',
   });
   const press = pressWait(state, beat);
