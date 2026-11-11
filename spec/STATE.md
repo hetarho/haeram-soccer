@@ -18,6 +18,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261111 decided WEB-10 T847: where does an area detail opened from a home card keep its origin for the back link → a task-memory value set by the home card and cleared by every other opener; a reload falls back to the office (alt: a `from=home` address parameter, which survives reload but changes the address every journey asserts | a WEB-74 detour, which adds the 돌아가기 banner beside the menu)
 - 261111 decided MATCH-38 MATCH-25 ideation/match-script-and-staging: the owner said a script only for a watched match, with the maps' numbers drawn by probability; a pair's passes must be the passes the script plays or the map and the match seen disagree, and a skipped own match needs the same map → every own match is scripted at settlement (about a quarter of a second, measured 261111, against about 0.7 s for a skipped detailed match), staged only when watched; no other fixture has a script (alt: pairs drawn apart from the script and honoured by it — an unproven constraint on the writer | the script written lazily when the map is opened — needs the match's rows kept in the save)
 - 261111 decided MATCH-20: the aggregate path draws a match's participation before its goals, so on it the own club's manager makes no score-led substitution (protecting a lead, chasing a deficit), as no other club's does → accepted with the one result path; his style still shows in timing, fatigue and youth changes (alt: make participation read the score — a result-model change with recalibration)
 - 261111 decided MATCH-17 STAFF-46 PLAYER-26: positional freedom, 규율, 압박 성향 and 예측력 moved results only in the detailed engine → on the one result path they shape the picture only (the staging reads them, T829); the record does not (alt: give the result path terms for them and recalibrate)
@@ -888,7 +889,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 39 | 39 | - | 2 |
-| WEB | 215 | 215 | - | 0 |
+| WEB | 216 | 216 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -948,6 +949,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
+| T847 | a home area card's detail leads back home | WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -975,12 +977,15 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
+- implement-task T847 (owner request 261111: a home area card's detail — 유소년, 경기장, … — leads back home, not to the office)
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
 - implement-task T823 once the owner's two prototype fixes (a man who takes the ball in stride, an opponent beside him engaging) are on main (fv11 landed T819–T822 261111): one chain T823 → … → T845 — phase B T823–T840 (everything behind revision 11 until T838 releases it; T839 moves the browser journeys; T840 is the released model's verdict), phase C T841–T845 (the prototype first, the detailed engine last). T837 (2 h) and T840 (3 h) are explore tasks: give the loop a unit timeout above them (`--timeout-ms 19800000`)
 - owner: seven calls taken at the conversion of ideation match-script-and-staging are in the inbox (261111 decided) to confirm or overturn before T833 — every own match is scripted at settlement even when skipped; score-led substitutions and the tendencies no longer move results; attribution places players, shots left as they are; prospective activation; the record's minute on the clock; the lab moves to the new model
 
 ## log
+- 261111 create-task WEB: T847 (a home area card's detail leads back home; the origin in task memory, no new copy)
+- 261111 update-ssot WEB r216 (WEB-10✎ a detail a home area card opened leads back home; flow Office✎)
 - 261111 T689 discarded on the owner's order (done by its exit, no scoring commit): MATCH r59 retired the detailed engine's rules it measured; T840 reads the own club's scoring on the released model
 - 261111 create-task MATCH ARCH WEB LAB HIST SAVE STAFF PLAYER: T823–T845 — phase B: the shape leaf (T823), revision 11 with attribution by place (T824), the own match's detail rows (T825), the script writer and its incidents (T826, T827), the staging, its tactics and tendencies and its incident scenes (T828–T830), frames in the game's contract (T831), material from the script (T832), the own match on the result path (T833), the web staging ahead (T834), the pass network's look (T835), the lab (T836), throughput (T837, explore 2 h), the release (T838), the browser journeys (T839), the verdict (T840, explore 3 h); phase C: the prototype (T841), shared leaves out of `grid/` (T842), tests and scripts off the earlier models (T843, T844), the detailed engine (T845)
 - 261111 ideation match-script-and-staging converted; its two undecided items moved to ideation/other-clubs-match-maps and ideation/kick-off-fresh-seed
@@ -999,5 +1004,3 @@
 - 261111 T814 done: ten naturalness metrics in `scripts/match-proto/check/metrics.ts` (31 ids) with `limits.shortKick/huddle/motion/turn/mark`; baseline demo–demo5 passed 21/20/20/21/19 of 31, nine new metrics failing on every seed (shortKick 0.139–0.204, huddle 2.136–2.926 a minute, longest 5–11.4 s, restarts 9.06–9.67, startSync 0.565–0.669, speedSync 0.456–0.542, reverse 0.444–0.591, run 0.7–0.825, mark 0.28–0.314), counterRun 0.8–0.875 passing; no production file touched nt11
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
 - 261111 create-task review/match-engine-split-261110 start
-- 261111 rl10 closed: T803–T813 released to main behind four verify:batch runs (final d0aa6338, Chromium 333/333); report reports/261110-rl10.md rl10
-- 261111 T800 done: the prototype tuned from 74/105 to 96/105 metric passes over demo–demo5 (demo 16→20, demo2 15→19, demo3 15→19, demo4 14→20, demo5 14→18) with 11 `PROTO_CONFIG` values, two new stage values (`boards`, `separation`) and twelve script/staging changes each pinned by a unit test that failed before it; `artifacts/match-proto-261110/index.html` (`demo#17`, 20/21) with `playback.json`, baseline/final reports and a README of scenes, values and findings; still failing: `shape.spacing` everywhere (0.083–0.124), `shape.swarm` on three seeds (0.023–0.035), `role.poacher.shoulder` on demo5 (3.949); not opened in a browser, no production file touched mp11
