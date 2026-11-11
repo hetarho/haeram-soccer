@@ -1,0 +1,921 @@
+// The fitted writer (T820, its order T822): a ninety-minute script that performs every settled
+// attempt, shot and foul exactly once. The record is the fact; the writer chooses only the order
+// (greedy over the whole match: the cheapest touch by `touchCost`), the minutes of the rows the
+// record gives none, the receivers, the points inside the cells, the clock and the connective
+// tissue (link carries, miscontrols, restart deliveries no recorded pass makes). A pure function of
+// the settled match and the seed (-> ARCH-5).
+import { SCRIPT_CONFIG } from './config';
+import {
+  PITCH,
+  toAttack,
+  dist,
+  cellAt,
+  cellCentre,
+  cellDistance,
+  goalAim,
+  intoCell,
+  keeperHold,
+  pointAway,
+  restartSpot,
+} from './cells';
+import { EV, EVENT_KINDS, EVENT_RESULTS, FO, SET_PIECES, SH, SHOT_OUTCOMES } from './codes';
+import type { MatchDetail as Settled } from './detail';
+import { detailIssues } from './recount';
+import { nominalSpot } from '../staging/shape';
+import { random } from '../primitives';
+import type { Beat, BeatKind, BeatOutcome, Phase, Script, TeamId, Vec } from './types';
+import { isPassLike } from './types';
+import { FLOATING, buildTouches, dealFixed, firstCell } from './touches';
+import { present, periodOf, unsupportedProblems } from './windows';
+import { validateScript } from './validate';
+import { compareRecord, countScript } from './count';
+import { planRestarts } from './restarts';
+import { minuteTimes, travel, deadOf } from './clock';
+const FIT = SCRIPT_CONFIG;
+const GRAMMAR = SCRIPT_CONFIG;
+const R = (name: (typeof EVENT_RESULTS)[number]) => EVENT_RESULTS.indexOf(name);
+const KIND = (code: number) => EVENT_KINDS[code]!;
+const other = (t: TeamId): TeamId => (t === 0 ? 1 : 0);
+
+interface Owed {
+  kind: BeatKind;
+  side: TeamId;
+  spot: Vec;
+  /** A touch that must deliver it (a direct free-kick shot after its foul). */
+  via?: number;
+}
+interface Pending {
+  event: number;
+  actor: number;
+  side: TeamId;
+  from: Vec;
+  kind: BeatKind;
+  outcome: BeatOutcome;
+  minute: number;
+}
+
+const phaseOf = (side: TeamId, ball: Vec): Phase => {
+  const x = toAttack(side, ball)[0];
+  return x < GRAMMAR.phaseX.progression
+    ? 'buildUp'
+    : x < GRAMMAR.phaseX.finalThird
+      ? 'progression'
+      : 'finalThird';
+};
+
+const cellGap = (a: number, b: number) => cellDistance(Math.max(a, 0), Math.max(b, 0));
+
+/** Public boundary: unsupported scenes and any failed placement/recount return no script. */
+export function writeScript(
+  detail: Settled,
+  seed: string,
+): { script: Script } | { problems: string[] } {
+  const unsupported = unsupportedProblems(detail);
+  if (unsupported.length) return { problems: unsupported };
+  return writePeriods(detail, seed);
+}
+
+/** Placement core shared with incident orchestration: accepts stints/periods without inventing scenes. */
+export function writePeriods(
+  detail: Settled,
+  seed: string,
+): { script: Script } | { problems: string[] } {
+  const issues = detailIssues(detail);
+  if (issues.length) return { problems: issues };
+  const script = writeFitted(detail, seed);
+  const problems = validateScript(detail, script);
+  if (!problems.length) problems.push(...compareRecord(detail, countScript(script, detail)));
+  return problems.length ? { problems } : { script };
+}
+
+/**
+ * A script performing every row of `settled`. Rows the record gives a minute (shots, their sources,
+ * booked fouls) are played in it; every other row floats and is played in whichever minute the
+ * order of play reaches it, each minute taking its even share of all touches (T822). The order is
+ * greedy: the next touch is the one starting nearest the ball (`touchCost`), ties broken by row id.
+ */
+function writeFitted(settled: Settled, seed: string): Script {
+  const rng = random(`${seed}:script`);
+  const fixed = dealFixed(settled);
+  const { demand, reserve } = planRestarts(settled, fixed);
+  const touches = buildTouches(settled, fixed, reserve);
+  const played = touches.map(() => false);
+  const startCell = touches.map((t) => firstCell(settled, t));
+  // Costs tie by row id, independent of host sort order and random draw counts.
+  const rowId = (i: number): number => {
+    const t = touches[i]!,
+      r = t.release;
+    if (t.carries.length) return t.carries[0]!;
+    if (r && 'event' in r) return r.event;
+    if (r && 'shot' in r) return settled.events.length + r.shot;
+    return settled.events.length + settled.shots.length + (r && 'foul' in r ? r.foul : 0);
+  };
+  const order = touches.map((_, i) => i).sort((a, b) => rowId(a) - rowId(b));
+  const total = [0, 0];
+  const done = [0, 0];
+  const endsTotal = [0, 0];
+  const endsDone = [0, 0];
+  /** Whether touch `i` ends its side's possession when played (a failed release, a shot, a lost carry). */
+  const ends = touches.map((t) => {
+    const r = t.release;
+    if (r === undefined) {
+      const last = t.carries[t.carries.length - 1];
+      return last !== undefined && settled.events[last]![EV.result] !== R('complete');
+    }
+    // A shot that wins a corner and a pass out for a corner keep the ball for the side.
+    if ('shot' in r) return settled.shots[r.shot]![SH.corner] !== 1;
+    if ('foul' in r) return false;
+    const res = settled.events[r.event]![EV.result]!;
+    return res !== R('complete') && res !== R('looseKept') && res !== R('cornerWon');
+  });
+  touches.forEach((t, i) => {
+    total[t.side]!++;
+    if (ends[i]) endsTotal[t.side]!++;
+  });
+  const actorLeft = settled.sides.map((s) => s.lines.map(() => 0));
+  const winsLeft = settled.sides.map((s) => s.lines.map(() => 0));
+  const winner = touches.map((t) => {
+    const r = t.release;
+    if (r && 'shot' in r) {
+      const s = settled.shots[r.shot]!;
+      return s[SH.outcome] === 1 && !s[SH.corner] ? s[SH.keeper]! : -1;
+    }
+    const id = r && 'event' in r ? r.event : r === undefined ? t.carries.at(-1) : undefined;
+    if (id === undefined) return -1;
+    const e = settled.events[id]!;
+    return [R('intercepted'), R('tackled'), R('looseRecovered')].includes(e[EV.result]!)
+      ? e[EV.other]!
+      : -1;
+  });
+  touches.forEach((t, i) => {
+    actorLeft[t.side]![t.actor]!++;
+    if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!++;
+  });
+  /** Whether touch `i` releases a pass the record flags as a corner's or free kick's delivery. */
+  const setPiece = touches.map(
+    (t) =>
+      t.release !== undefined &&
+      'event' in t.release &&
+      SET_PIECES[settled.events[t.release.event]![EV.setPiece]!] !== 'none',
+  );
+  const beats: Beat[] = [];
+  const minuteOf: number[] = [];
+  let possession = 0;
+  let side: TeamId = 0;
+  let ball: Vec = [PITCH.length / 2, PITCH.width / 2];
+  let holder = -1;
+  let owed: Owed | null = null;
+  let pending: Pending | null = null;
+  let nextOwed = -1;
+  /** The touch a pass's receiver was chosen for (T822). */
+  let intended = -1;
+  let minute = 0;
+  /** Touches played before the minute being written. */
+  let minuteStart = 0;
+
+  const roles = settled.sides.map((s) => ({
+    tactic: s.tactic,
+    roles: Array.from({ length: 11 }, (_, slot) => s.lines.find((l) => l.slot === slot)!.role),
+  })) as unknown as Parameters<typeof nominalSpot>[0]['sides'];
+  const spotOf = (index: number, at: Vec = ball, team: TeamId = side): Vec => {
+    const line = settled.sides[team].lines[index]!;
+    return nominalSpot({ sides: roles, ball: at, team, phase: phaseOf(team, at) }, team, line.slot);
+  };
+  const nearestBy = (team: TeamId, at: Vec, exclude: number[] = [], keeper = false): number => {
+    let best = -1;
+    for (const [index, p] of settled.sides[team].lines.entries()) {
+      if (
+        !present(settled, team, index, minute) ||
+        exclude.includes(index) ||
+        (p.slot === 0 && !keeper)
+      )
+        continue;
+      const hasTurn = (line: number) =>
+        touches.some(
+          (t, i) =>
+            !played[i] &&
+            t.side === team &&
+            t.actor === line &&
+            t.period === periodOf(minute) &&
+            (t.minute === FLOATING || t.minute === minute) &&
+            t.from <= minute &&
+            t.until > minute,
+        );
+      const rank = (line: number) =>
+        (hasTurn(line) ? 0 : FIT.restartPull * 100) +
+        Math.round(dist(spotOf(line, at, team), at) * 100);
+      if (best < 0 || rank(index) < rank(best)) best = index;
+    }
+    return best;
+  };
+  const keeperOf = (team: TeamId) =>
+    settled.stints.find(
+      (s) => s[0] === team && s[2] === 0 && s[3]! <= minute && s[4]! > minute,
+    )?.[1] ?? nearestBy(team, ball, [], true);
+  const push = (
+    b: Pick<Beat, 'side' | 'move' | 'kind' | 'actor' | 'from' | 'to' | 'outcome'> & Partial<Beat>,
+  ): Beat => {
+    const prev = beats[beats.length - 1];
+    if (prev !== undefined && (prev.side !== b.side || b.kind === 'kickOff' || isRestart(b.kind)))
+      possession++;
+    const beat: Beat = {
+      loft: false,
+      through: false,
+      header: false,
+      hold: 0,
+      clock: 0,
+      period: periodOf(minute),
+      ...b,
+      index: beats.length,
+      possession,
+      phase: isRestart(b.kind) ? 'setPiece' : phaseOf(b.side, b.from),
+    };
+    beats.push(beat);
+    minuteOf.push(minute);
+    return beat;
+  };
+  const isRestart = (k: BeatKind) =>
+    k === 'kickOff' || k === 'throwIn' || k === 'goalKick' || k === 'corner' || k === 'freeKick';
+
+  /** A link carry by the holder to a point in `cell` of his side, when the ball is not there. */
+  const linkTo = (cell: number) => {
+    if (cellAt(side, ball) === cell) return;
+    const wanted = ball;
+    const to = intoCell(side, cell, [
+      wanted[0] + (rng() - 0.5) * FIT.cellJitter,
+      wanted[1] + (rng() - 0.5) * FIT.cellJitter,
+    ]);
+    push({
+      side: side,
+      move: 'link',
+      kind: 'carry',
+      actor: holder,
+      from: ball,
+      to,
+      outcome: 'complete',
+    });
+    ball = to;
+  };
+  /** The holder's heavy touch: the ball runs to `to` of the other side. */
+  const miscontrol = (to: number) => {
+    const at = spotOf(to, ball, other(side));
+    push({
+      side: side,
+      move: 'miscontrol',
+      kind: 'carry',
+      actor: holder,
+      opponent: to,
+      from: ball,
+      to: at,
+      outcome: 'loose',
+    });
+    side = other(side);
+    holder = to;
+    ball = at;
+    pending = null;
+  };
+  // A touch that must follow another (a shot after its source pass) waits until that one is played.
+  const after = touches.map(() => -1);
+  touches.forEach((t, i) => {
+    if (t.next !== undefined) after[t.next] = i;
+  });
+  /** Touches `team` may play now, in row-id order: this minute's fixed ones and every floating one. */
+  const unplayed = (team: TeamId) =>
+    order.filter((i) => {
+      const t = touches[i]!;
+      return (
+        !played[i] &&
+        t.side === team &&
+        (t.minute === minute || t.minute === FLOATING) &&
+        t.period === periodOf(minute) &&
+        minute >= t.from &&
+        minute < t.until &&
+        (after[i]! < 0 || played[after[i]!])
+      );
+    });
+  const fixedLeft = (team?: TeamId) =>
+    touches.some(
+      (t, i) => !played[i] && t.minute === minute && (team === undefined || t.side === team),
+    );
+  /** The touches played by the end of minute `m`: an even share of all of them. */
+  const periodCounts = [0, 0];
+  for (const t of touches) periodCounts[t.period]!++;
+  const quotas = Array.from({ length: settled.length }, (_, m) =>
+    m < 90
+      ? Math.round(((m + 1) * periodCounts[0]!) / 90)
+      : periodCounts[0]! + Math.round(((m - 89) * periodCounts[1]!) / 30),
+  );
+  const quota = (m: number) => quotas[m]!;
+  const quotaMet = () => done[0]! + done[1]! >= quota(minute);
+  /**
+   * The price of `team` playing touch `i` with the ball in `cell`: the metres to where it starts,
+   * less `fit.fixedPull` for a touch fixed to this minute; a touch ending the possession is cheaper
+   * by up to `fit.paceBias` the further `team` is ahead of the other side in its share of touches
+   * played (dearer when behind), and by `fit.fixedPull` once the minute's share is met while the
+   * other side still has a fixed touch in it.
+   */
+  const touchCost = (team: TeamId, i: number, cell: number): number => {
+    let cost = cellGap(startCell[i]!, cell);
+    const met = quotaMet();
+    const actor = touches[i]!.actor;
+    if (actorLeft[team]![actor]! <= winsLeft[team]![actor]!) cost += FIT.winnerPull * 100;
+    const by = winner[i]!;
+    if (by >= 0 && actorLeft[other(team)]![by]! <= winsLeft[other(team)]![by]!)
+      cost -= FIT.winnerPull * 100;
+    // The pull grows as the minute fills, so its fixed touches come before its share runs out.
+    const fill = Math.min(
+      1,
+      (done[0]! + done[1]! - minuteStart) / Math.max(1, quota(minute) - minuteStart),
+    );
+    if (touches[i]!.minute === minute)
+      cost -= met ? FIT.fixedPush * 100 : Math.round((FIT.fixedPull + fill * FIT.fixedRamp) * 100);
+    // A corner's or free kick's delivery waits for its restart rather than be played in open play.
+    if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
+    if (setPiece[i]) cost += FIT.setPieceWait * 100;
+    const release = touches[i]!.release;
+    if (
+      release &&
+      'event' in release &&
+      reserve.has(release.event) &&
+      demand[team]![startCell[i]!]! > 0
+    )
+      cost += FIT.restartPull * 100;
+    if (ends[i]) {
+      // Ahead of the other side, or behind in spending its own possession-ending touches, a side
+      // ends its possession sooner; so neither side runs out of touches, nor of ways to lose the ball.
+      const share = done[team]! / Math.max(1, total[team]!);
+      const lead = share - done[other(team)]! / Math.max(1, total[other(team)]!);
+      const endsLead = endsDone[team]! / Math.max(1, endsTotal[team]!) - share;
+      cost -= Math.round(
+        Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100,
+      );
+      if (met && fixedLeft(other(team))) cost -= FIT.fixedPush * 100;
+    }
+    return cost;
+  };
+  /** A touch whose release is a goal the record credits to no passer. */
+  const unassisted = (i: number): boolean => {
+    const r = touches[i]!.release;
+    if (r === undefined || !('shot' in r)) return false;
+    const s = settled.shots[r.shot]!;
+    return SHOT_OUTCOMES[s[SH.outcome]!] === 'goal' && s[SH.passer]! < 0;
+  };
+  /** The holder has the ball from a recorded completed pass, his own carries since (as count.ts reads an assist). */
+  const fed = (): boolean => {
+    for (let k = beats.length - 1; k >= 0; k--) {
+      const b = beats[k]!;
+      if (b.side !== side) return false;
+      if (b.actor === holder && (b.kind === 'carry' || b.kind === 'takeOn')) continue;
+      return (
+        b.event !== undefined &&
+        isPassLike(b.kind) &&
+        b.outcome === 'complete' &&
+        b.receiver === holder
+      );
+    }
+    return false;
+  };
+  /**
+   * The touch `team` plays next with the ball in `cell`, skipping `skip`'s while another is left.
+   * For a pass landing at `at`, a touch also costs `fit.placeWeight` times the metres from its
+   * player's place (`nominalSpot`) to `at`: the man the pass is played to stands near it (T822).
+   */
+  const choose = (team: TeamId, cell: number, skip = -1, at?: Vec): number => {
+    const all = unplayed(team);
+    if (nextOwed >= 0 && all.includes(nextOwed)) return nextOwed;
+    const fresh = all.filter((i) => !(skip >= 0 && unassisted(i)));
+    const left = fresh.length > 0 ? fresh : all;
+    const open = left.filter((i) => touches[i]!.actor !== skip);
+    const pool = open.length > 0 ? open : left;
+    const place = new Map<number, number>();
+    if (at !== undefined)
+      for (const [index] of settled.sides[team].lines.entries())
+        place.set(index, Math.round(FIT.placeWeight * dist(spotOf(index, at, team), at) * 100));
+    return cheapest(team, pool, cell, place);
+  };
+  const cheapest = (
+    team: TeamId,
+    pool: readonly number[],
+    cell: number,
+    place?: ReadonlyMap<number, number>,
+  ): number => {
+    let best = -1;
+    let bestCost = Infinity;
+    for (const i of pool) {
+      const cost = touchCost(team, i, cell) + (place?.get(touches[i]!.actor) ?? 0);
+      if (cost < bestCost) [best, bestCost] = [i, cost];
+    }
+    return best;
+  };
+
+  /** Writes a pending pass to `receiver`, who then has the ball in its `to` cell. */
+  const resolve = (receiver: number) => {
+    const p = pending!;
+    pending = null;
+    const e = settled.events[p.event]!;
+    const to = pointAway(
+      p.side,
+      e[EV.to]!,
+      spotOf(receiver, p.from, p.side),
+      p.from,
+      GRAMMAR.minPass,
+    );
+    push({
+      side: p.side,
+      move: KIND(e[EV.kind]!),
+      kind: p.kind,
+      actor: p.actor,
+      receiver,
+      from: p.from,
+      to,
+      outcome: p.outcome,
+      loft: isLofted(e[EV.kind]!),
+      through: KIND(e[EV.kind]!) === 'through',
+      reason: KIND(e[EV.kind]!) === 'cutBack' ? 'cutBack' : undefined,
+      event: p.event,
+      lineBreaking: e[EV.lineBreaking] === 1,
+      creditedOpponent: e[EV.other]! >= 0,
+      setPiece: SET_PIECES[e[EV.setPiece]!]!,
+      outKind:
+        e[EV.result] === R('outTouch')
+          ? ('outTouch' as const)
+          : e[EV.result] === R('outByline')
+            ? ('outByline' as const)
+            : e[EV.result] === R('cornerWon')
+              ? ('cornerWon' as const)
+              : undefined,
+    });
+    side = p.side;
+    holder = receiver;
+    ball = to;
+  };
+  const isLofted = (k: number) => KIND(k) === 'long' || KIND(k) === 'cross';
+
+  /** Plays a pass event from the ball's point, `kind` the restart it delivers or `pass`. */
+  const playPass = (id: number, kind: BeatKind) => {
+    const e = settled.events[id]!;
+    const actor = e[EV.actor]!;
+    const res = e[EV.result]!;
+    const toCell = e[EV.to]!;
+    const base = {
+      side: side,
+      move: KIND(e[EV.kind]!),
+      kind,
+      actor,
+      from: ball,
+      loft: isLofted(e[EV.kind]!),
+      through: KIND(e[EV.kind]!) === 'through',
+      reason: KIND(e[EV.kind]!) === 'cutBack' ? ('cutBack' as const) : undefined,
+      event: id,
+      lineBreaking: e[EV.lineBreaking] === 1,
+      creditedOpponent: e[EV.other]! >= 0,
+      setPiece: SET_PIECES[e[EV.setPiece]!]!,
+      outKind:
+        e[EV.result] === R('outTouch')
+          ? ('outTouch' as const)
+          : e[EV.result] === R('outByline')
+            ? ('outByline' as const)
+            : e[EV.result] === R('cornerWon')
+              ? ('cornerWon' as const)
+              : undefined,
+    };
+    if (res === R('complete') || res === R('looseKept')) {
+      pending = {
+        event: id,
+        actor,
+        side,
+        from: ball,
+        kind,
+        outcome: res === R('complete') ? 'complete' : 'loose',
+        minute,
+      };
+      ball = intoCell(side, toCell, cellCentre(side, toCell));
+      holder = -1;
+      return actor;
+    }
+    const to = intoCell(side, toCell, spotOf(actor));
+    if (res === R('intercepted') || res === R('looseRecovered') || res === R('tackled')) {
+      const at = res === R('tackled') ? ball : to;
+      const by = e[EV.other]! >= 0 ? e[EV.other]! : nearestBy(other(side), at);
+      push({
+        ...base,
+        to,
+        opponent: by,
+        outcome:
+          res === R('intercepted') ? 'intercepted' : res === R('tackled') ? 'tackled' : 'loose',
+      });
+      side = other(side);
+      holder = by;
+      ball = at;
+      return actor;
+    }
+    if (res === R('offside')) {
+      push({ ...base, to, receiver: e[EV.other]!, through: true, outcome: 'offside' });
+      owed = {
+        kind: 'freeKick',
+        side: other(side),
+        spot: restartSpot('freeKick', other(side), to),
+      };
+    } else {
+      push({ ...base, to, outcome: 'out' });
+      owed =
+        res === R('outTouch')
+          ? { kind: 'throwIn', side: other(side), spot: restartSpot('throwIn', other(side), to) }
+          : res === R('outByline')
+            ? {
+                kind: 'goalKick',
+                side: other(side),
+                spot: restartSpot('goalKick', other(side), to),
+              }
+            : { kind: 'corner', side: side, spot: restartSpot('corner', side, to) };
+    }
+    holder = -1;
+    return actor;
+  };
+
+  const playShot = (id: number, kind: BeatKind) => {
+    const s = settled.shots[id]!;
+    const out = SHOT_OUTCOMES[s[SH.outcome]!]!;
+    const keeper = s[SH.keeper]!;
+    const shooter = s[SH.shooter]!;
+    const from = ball;
+    const to =
+      out === 'save'
+        ? keeperHold(other(side))
+        : out === 'block'
+          ? from
+          : goalAim(
+              side,
+              out === 'miss' ? (toAttack(side, from)[1] < PITCH.width / 2 ? -5 : 5) : 0,
+            );
+    const opponent =
+      out === 'save' ? keeper : out === 'block' ? nearestBy(other(side), from) : undefined;
+    const outcome: BeatOutcome =
+      out === 'goal' ? 'goal' : out === 'save' ? 'saved' : out === 'block' ? 'blocked' : 'wide';
+    push({
+      side: side,
+      move: kind === 'freeKick' ? 'freeKick' : 'shot',
+      kind,
+      actor: shooter,
+      opponent,
+      from,
+      to,
+      outcome,
+      header: s[SH.header] === 1,
+      shot: id,
+      xg: s[SH.xg]!,
+      shotKind: ['open', 'corner', 'freeKick', 'penalty'][s[SH.kind]!] as Beat['shotKind'],
+      source: s[SH.source]!,
+      keyPass: s[SH.passer]! < 0 ? -1 : s[SH.source]!,
+      keeper,
+      corner: s[SH.corner] === 1,
+    });
+    const corner = s[SH.corner] === 1;
+    if (out === 'goal')
+      owed = {
+        kind: 'kickOff',
+        side: other(side),
+        spot: restartSpot('kickOff', other(side), from),
+      };
+    else if (corner) owed = { kind: 'corner', side: side, spot: restartSpot('corner', side, from) };
+    else if (out === 'miss')
+      owed = {
+        kind: 'goalKick',
+        side: other(side),
+        spot: restartSpot('goalKick', other(side), from),
+      };
+    else {
+      side = other(side);
+      holder = opponent!;
+      ball = to;
+      return;
+    }
+    holder = -1;
+  };
+
+  /** Plays touch `i` by its actor, who has the ball. */
+  const playTouch = (i: number, delivering?: Owed) => {
+    played[i] = true;
+    const t = touches[i]!;
+    actorLeft[t.side]![t.actor]!--;
+    if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
+    done[t.side]!++;
+    if (ends[i]) endsDone[t.side]!++;
+    nextOwed = t.next ?? -1;
+    for (const c of t.carries) {
+      const e = settled.events[c]!;
+      linkTo(e[EV.from]!);
+      const to = intoCell(side, e[EV.to]!, spotOf(holder));
+      const takeOn = KIND(e[EV.kind]!) === 'takeOn';
+      if (e[EV.result] === R('complete')) {
+        push({
+          side: side,
+          move: KIND(e[EV.kind]!),
+          kind: takeOn ? 'takeOn' : 'carry',
+          actor: holder,
+          opponent: takeOn ? nearestBy(other(side), ball) : undefined,
+          from: ball,
+          to,
+          outcome: 'complete',
+          event: c,
+          creditedOpponent: e[EV.other]! >= 0,
+          setPiece: SET_PIECES[e[EV.setPiece]!]!,
+        });
+        ball = to;
+        continue;
+      }
+      const by = e[EV.other]! >= 0 ? e[EV.other]! : nearestBy(other(side), ball);
+      push({
+        side: side,
+        move: KIND(e[EV.kind]!),
+        kind: takeOn ? 'takeOn' : 'carry',
+        actor: holder,
+        opponent: by,
+        from: ball,
+        to,
+        outcome: 'tackled',
+        event: c,
+        creditedOpponent: e[EV.other]! >= 0,
+        setPiece: SET_PIECES[e[EV.setPiece]!]!,
+      });
+      side = other(side);
+      holder = by;
+      return;
+    }
+    const r = t.release;
+    if (r === undefined) return;
+    if ('event' in r) {
+      if (delivering === undefined) linkTo(settled.events[r.event]![EV.from]!);
+      playPass(r.event, delivering?.kind ?? 'pass');
+    } else if ('shot' in r) {
+      if (delivering === undefined) linkTo(settled.shots[r.shot]![SH.cell]!);
+      playShot(r.shot, delivering?.kind ?? 'shot');
+    } else {
+      const f = settled.fouls[r.foul]!;
+      linkTo(f[FO.cell]!);
+      push({
+        side: side,
+        move: 'foul',
+        kind: 'carry',
+        actor: holder,
+        opponent: f[FO.fouler]!,
+        from: ball,
+        to: ball,
+        outcome: 'foul',
+        foul: r.foul,
+      });
+      owed = {
+        kind: 'freeKick',
+        side: side,
+        spot: restartSpot('freeKick', side, ball),
+        via: t.next,
+      };
+      nextOwed = -1;
+      holder = -1;
+    }
+  };
+
+  /** Delivers the owed restart: by a recorded pass from its spot when one is left, else connectively. */
+  const deliver = () => {
+    const o = owed!;
+    owed = null;
+    side = o.side;
+    ball = o.spot;
+    if (o.kind === 'corner')
+      for (const c of [35, 39]) demand[side]![c] = Math.max(0, demand[side]![c]! - 1);
+    else {
+      const bucket = cellAt(side, ball);
+      demand[side]![bucket] = Math.max(0, demand[side]![bucket]! - 1);
+    }
+    if (o.via !== undefined && !played[o.via] && touches[o.via]!.minute === minute) {
+      holder = touches[o.via]!.actor;
+      playTouch(o.via, o);
+      return;
+    }
+    if (o.kind === 'corner') {
+      const deliveries = unplayed(side).filter((i) => {
+        const t = touches[i]!,
+          r = t.release;
+        return (
+          !t.carries.length &&
+          r &&
+          'event' in r &&
+          [35, 39].includes(settled.events[r.event]![EV.from]!)
+        );
+      });
+      const i =
+        deliveries.find(
+          (i) =>
+            SET_PIECES[
+              settled.events[(touches[i]!.release as { event: number }).event]![EV.setPiece]!
+            ] === 'corner',
+        ) ?? deliveries[0];
+      if (i !== undefined) {
+        const cell = settled.events[(touches[i]!.release as { event: number }).event]![EV.from]!;
+        ball = restartSpot('corner', side, cellCentre(side, cell));
+      }
+    }
+    const spotCell = cellAt(side, ball);
+    const want = o.kind === 'corner' ? 'corner' : o.kind === 'freeKick' ? 'freeKick' : 'none';
+    let best = -1;
+    let bestScore = Infinity;
+    for (const i of unplayed(side)) {
+      const t = touches[i]!;
+      if (t.carries.length > 0 || t.release === undefined || !('event' in t.release)) continue;
+      const e = settled.events[t.release.event]!;
+      if (e[EV.from] !== spotCell) continue;
+      const score =
+        (SET_PIECES[e[EV.setPiece]!] === want ? 0 : 100000) + cellDistance(e[EV.from]!, spotCell);
+      if (score < bestScore) [best, bestScore] = [i, score];
+    }
+    if (best >= 0) {
+      holder = touches[best]!.actor;
+      playTouch(best, o);
+      return;
+    }
+    // A goal kick is the keeper's, so the touch it is delivered to is another man's (T822: s09's
+    // keeper kicked to himself when his own touch started nearest).
+    const nextTouch = choose(side, spotCell, o.kind === 'goalKick' ? keeperOf(side) : -1);
+    const taker =
+      o.kind === 'goalKick'
+        ? keeperOf(side)
+        : nearestBy(side, ball, nextTouch >= 0 ? [touches[nextTouch]!.actor] : []);
+    const receiver =
+      nextTouch >= 0 && touches[nextTouch]!.actor !== taker
+        ? touches[nextTouch]!.actor
+        : nearestBy(side, ball, [taker]);
+    const cell =
+      nextTouch >= 0 ? firstCell(settled, touches[nextTouch]!) : cellAt(side, spotOf(receiver));
+    const to = pointAway(side, cell, spotOf(receiver), ball, GRAMMAR.minPass);
+    push({
+      side: side,
+      move: 'restart',
+      kind: o.kind,
+      actor: taker,
+      receiver,
+      from: ball,
+      to,
+      outcome: 'complete',
+    });
+    holder = receiver;
+    ball = to;
+  };
+
+  const settledMinute = () => {
+    // Corrupt/incompatible chains cannot make a partial writer spin forever.
+    for (let steps = 0; steps < (touches.length + 1) * FIT.maxStepsPerTouch; steps++) {
+      // The minute ends with its share of touches played and nothing fixed to it left.
+      if (
+        quotaMet() &&
+        done[0]! + done[1]! > minuteStart &&
+        !fixedLeft() &&
+        !touches.some(
+          (t, i) => !played[i] && t.period === periodOf(minute) && t.until === minute + 1,
+        )
+      )
+        break;
+      const mine = unplayed(side);
+      const theirs = unplayed(other(side));
+      if (owed !== null) {
+        // With nothing left in the minute the restart waits for the next one.
+        if (mine.length + theirs.length === 0) break;
+        deliver();
+        continue;
+      }
+      if (pending !== null) {
+        const p: Pending = pending;
+        const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
+        if (i >= 0 && touches[i]!.actor !== p.actor) {
+          resolve(touches[i]!.actor);
+          // He was chosen for that touch: it is the one he plays.
+          intended = i;
+          continue;
+        }
+        if (i < 0 && theirs.length === 0) break;
+        // Nobody else of his side is left: a nominal receiver loses it.
+        resolve(nearestBy(p.side, ball, [p.actor]));
+        continue;
+      }
+      if (mine.length + theirs.length === 0) break;
+      if (mine.length === 0) {
+        miscontrol(touches[choose(other(side), cellAt(other(side), ball))]!.actor);
+        continue;
+      }
+      // The minute waits only on the other side's fixed touch: with no touch left that ends this
+      // possession, or with that touch a goal nobody's pass made, the holder loses the ball to it.
+      if (quotaMet() && fixedLeft(other(side))) {
+        const waiting = theirs.filter((i) => touches[i]!.minute === minute);
+        const lone = waiting.find((i) => unassisted(i));
+        if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
+          miscontrol(
+            touches[lone ?? cheapest(other(side), waiting, cellAt(other(side), ball))]!.actor,
+          );
+          continue;
+        }
+      }
+      // The holder plays on with a touch of his own; another man's touch needs the ball first.
+      const here = cellAt(side, ball);
+      const own = mine.filter((i) => touches[i]!.actor === holder);
+      const pickOwn =
+        nextOwed >= 0 && mine.includes(nextOwed)
+          ? nextOwed
+          : own.includes(intended)
+            ? intended
+            : own.length > 0
+              ? cheapest(side, own, here)
+              : choose(side, here);
+      intended = -1;
+      // Possessions alternate, so a side that has fewer possession-ending rows than the other must
+      // lose the ball connectively that many times: it does so where it is spending its ending
+      // rows faster than the other side spends its own, never on a touch fixed to the minute (T822).
+      const endsShare = (t: TeamId) => endsDone[t]! / Math.max(1, endsTotal[t]!);
+      const spread =
+        ends[pickOwn] &&
+        touches[pickOwn]!.minute === FLOATING &&
+        touches[pickOwn]!.actor === holder &&
+        endsShare(side) - endsShare(other(side)) > FIT.endsSlack &&
+        theirs.length > 0;
+      // A goal the record credits to nobody's pass is not scored straight off a pass to the scorer.
+      if (spread || touches[pickOwn]!.actor !== holder || (unassisted(pickOwn) && fed())) {
+        const them =
+          theirs.length > 0
+            ? touches[choose(other(side), cellAt(other(side), ball))]!.actor
+            : nearestBy(other(side), ball);
+        miscontrol(them);
+        continue;
+      }
+      playTouch(pickOwn);
+    }
+  };
+
+  for (minute = 0; minute < settled.length; minute++) {
+    minuteStart = done[0]! + done[1]!;
+    if (minute === 0 || minute === 45 || minute === 90 || minute === 105) {
+      pending = null;
+      owed = {
+        kind: 'kickOff',
+        side: minute === 0 || minute === 90 ? 0 : 1,
+        spot: restartSpot('kickOff', 0, ball),
+      };
+      // A half starts on its minute, whether or not the minute holds a touch.
+      deliver();
+      // Even an empty opening minute contains its kick-off, including a recorded delivery.
+      if (pending !== null) {
+        const p: Pending = pending;
+        const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
+        const receiver =
+          i >= 0 && touches[i]!.actor !== p.actor
+            ? touches[i]!.actor
+            : nearestBy(p.side, ball, [p.actor]);
+        resolve(receiver);
+        if (i >= 0 && receiver === touches[i]!.actor) intended = i;
+      }
+    }
+    settledMinute();
+    // A recorded delivery is received in the minute it was played; a departing holder leaves
+    // the ball to a still-present opponent before his stint ends, never after it.
+    if (pending !== null) {
+      const p: Pending = pending;
+      resolve(nearestBy(p.side, ball, [p.actor]));
+    }
+    if (
+      minute + 1 < settled.length &&
+      ![44, 89, 104, 119].includes(minute) &&
+      holder >= 0 &&
+      !present(settled, side, holder, minute + 1)
+    ) {
+      const team = other(side);
+      const leaving = settled.sides[team].lines.flatMap((_, i) =>
+        present(settled, team, i, minute + 1) ? [] : [i],
+      );
+      const receiver = nearestBy(team, ball, leaving, true);
+      if (receiver >= 0) miscontrol(receiver);
+    }
+    if (minute === 44 || minute === 89 || minute === 104 || minute === 119) {
+      // A restart owed at the whistle is still taken, and a pass in flight, its delivery's
+      // included, is received before the half ends.
+      while (owed !== null && (owed as Owed).kind !== 'kickOff') deliver();
+      if (pending !== null)
+        resolve(nearestBy((pending as Pending).side, ball, [(pending as Pending).actor]));
+      owed = null;
+      nextOwed = -1;
+    }
+  }
+
+  // A minute whose beats need more than its sixty seconds is pressed into them, every part alike,
+  // so each beat keeps its record minute; `minuteTimes` gives what each minute needed.
+  for (let m = 0; m < settled.length; m++) {
+    const list = beats.filter((_, i) => minuteOf[i] === m);
+    if (list.length === 0) continue;
+    const { holds, need } = minuteTimes(list, m);
+    const press = need > 60 ? 60 / need : 1;
+    let t = m * 60;
+    for (const [k, b] of list.entries()) {
+      t += deadOf(b, k, m) * press;
+      b.hold = Math.floor(holds[k]! * press * 100) / 100;
+      b.clock = Math.floor(t * 100) / 100;
+      t += (holds[k]! + travel(b)) * press;
+    }
+  }
+  return { version: 1, seed, beats, bound: true };
+}

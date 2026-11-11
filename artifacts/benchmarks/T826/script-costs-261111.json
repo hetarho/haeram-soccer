@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-11-11",
+  "task": "T826",
+  "base": "ab79286150097eb608c24f319f7af685e3e4a274",
+  "toolchain": {
+    "actualNode": "v26.8.1",
+    "pinnedNode": "24.22.1",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "prototype": {
+    "seed": "fit",
+    "source": "unchanged task-base prototype",
+    "rows": [
+      {
+        "id": "s01",
+        "links": 368,
+        "linkMetres": 5080,
+        "miscontrols": 20,
+        "connectiveRestarts": 10,
+        "orphanSetPieces": 11,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s02",
+        "links": 383,
+        "linkMetres": 5037,
+        "miscontrols": 24,
+        "connectiveRestarts": 12,
+        "orphanSetPieces": 9,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s03",
+        "links": 340,
+        "linkMetres": 5017,
+        "miscontrols": 11,
+        "connectiveRestarts": 8,
+        "orphanSetPieces": 12,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s04",
+        "links": 319,
+        "linkMetres": 4821,
+        "miscontrols": 5,
+        "connectiveRestarts": 14,
+        "orphanSetPieces": 8,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s05",
+        "links": 355,
+        "linkMetres": 5015,
+        "miscontrols": 19,
+        "connectiveRestarts": 17,
+        "orphanSetPieces": 15,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s06",
+        "links": 350,
+        "linkMetres": 4796,
+        "miscontrols": 34,
+        "connectiveRestarts": 9,
+        "orphanSetPieces": 7,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s07",
+        "links": 425,
+        "linkMetres": 6209,
+        "miscontrols": 27,
+        "connectiveRestarts": 9,
+        "orphanSetPieces": 10,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s08",
+        "links": 474,
+        "linkMetres": 6743,
+        "miscontrols": 7,
+        "connectiveRestarts": 12,
+        "orphanSetPieces": 12,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s09",
+        "links": 402,
+        "linkMetres": 5575,
+        "miscontrols": 13,
+        "connectiveRestarts": 9,
+        "orphanSetPieces": 7,
+        "orphanFreeKickShots": 0
+      },
+      {
+        "id": "s10",
+        "links": 394,
+        "linkMetres": 5721,
+        "miscontrols": 12,
+        "connectiveRestarts": 14,
+        "orphanSetPieces": 14,
+        "orphanFreeKickShots": 0
+      }
+    ],
+    "total": {
+      "linkMetres": 54014,
+      "miscontrols": 172,
+      "connectiveRestarts": 114,
+      "links": 3810
+    },
+    "commands": [
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s01 --json .tmp/T826/s01-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s02 --json .tmp/T826/s02-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s03 --json .tmp/T826/s03-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s04 --json .tmp/T826/s04-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s05 --json .tmp/T826/s05-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s06 --json .tmp/T826/s06-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s07 --json .tmp/T826/s07-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s08 --json .tmp/T826/s08-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s09 --json .tmp/T826/s09-prototype.json",
+      "pnpm exec tsx scripts/match-proto/check/report.ts --match s10 --json .tmp/T826/s10-prototype.json"
+    ]
+  },
+  "candidate": {
+    "command": "pnpm exec tsx .tmp/T826/measure.ts",
+    "fingerprint": {
+      "algorithm": "sha256",
+      "sha256": "76e664261a4acd631036a3aa2658746f238072d251fb46158e029c1a494178b9",
+      "files": 48
+    },
+    "rows": [
+      {
+        "id": "s01",
+        "seed": "grid-bands-1",
+        "beats": 1649,
+        "counted": 1220,
+        "links": 399,
+        "linkMetres": 4844,
+        "miscontrols": 21,
+        "connectiveRestarts": 9,
+        "countedRestarts": 73,
+        "orphanSetPieces": 7,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 11,
+        "maxOverrun": 115.1
+      },
+      {
+        "id": "s02",
+        "seed": "grid-bands-1",
+        "beats": 1521,
+        "counted": 1108,
+        "links": 384,
+        "linkMetres": 4779,
+        "miscontrols": 19,
+        "connectiveRestarts": 10,
+        "countedRestarts": 57,
+        "orphanSetPieces": 6,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 3,
+        "maxOverrun": 141.7
+      },
+      {
+        "id": "s03",
+        "seed": "grid-bands-1",
+        "beats": 1419,
+        "counted": 1032,
+        "links": 365,
+        "linkMetres": 4538,
+        "miscontrols": 10,
+        "connectiveRestarts": 12,
+        "countedRestarts": 74,
+        "orphanSetPieces": 7,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 10,
+        "maxOverrun": 53.3
+      },
+      {
+        "id": "s04",
+        "seed": "grid-bands-1",
+        "beats": 1475,
+        "counted": 1095,
+        "links": 360,
+        "linkMetres": 4598,
+        "miscontrols": 7,
+        "connectiveRestarts": 13,
+        "countedRestarts": 69,
+        "orphanSetPieces": 9,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 4,
+        "maxOverrun": 178.3
+      },
+      {
+        "id": "s05",
+        "seed": "grid-bands-1",
+        "beats": 1587,
+        "counted": 1177,
+        "links": 380,
+        "linkMetres": 4429,
+        "miscontrols": 17,
+        "connectiveRestarts": 13,
+        "countedRestarts": 68,
+        "orphanSetPieces": 12,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 15,
+        "maxOverrun": 60.6
+      },
+      {
+        "id": "s06",
+        "seed": "grid-bands-1",
+        "beats": 1653,
+        "counted": 1225,
+        "links": 385,
+        "linkMetres": 4222,
+        "miscontrols": 32,
+        "connectiveRestarts": 11,
+        "countedRestarts": 60,
+        "orphanSetPieces": 7,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 4,
+        "maxOverrun": 117.6
+      },
+      {
+        "id": "s07",
+        "seed": "grid-bands-1",
+        "beats": 1731,
+        "counted": 1252,
+        "links": 441,
+        "linkMetres": 5386,
+        "miscontrols": 21,
+        "connectiveRestarts": 17,
+        "countedRestarts": 86,
+        "orphanSetPieces": 11,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 11,
+        "maxOverrun": 90.8
+      },
+      {
+        "id": "s08",
+        "seed": "grid-bands-1",
+        "beats": 1840,
+        "counted": 1342,
+        "links": 484,
+        "linkMetres": 6446,
+        "miscontrols": 6,
+        "connectiveRestarts": 8,
+        "countedRestarts": 76,
+        "orphanSetPieces": 12,
+        "orphanFreeKickShots": 0,
+        "movedCarries": 10,
+        "maxOverrun": 78.6
+      },
+      {
+        "id": "s09",
+        "seed": "grid-bands-1",
+        "beats": 1813,
+        "counted": 1355,
+        "links": 434,
+        "linkMetres": 5241,
+        "miscontrols": 17,
+        "connectiveRestarts": 7,
+        "countedRestarts": 85,
+        "orphanSetPieces": 8,
+        "orphanFreeKickShots": 1,
+        "movedCarries": 9,
+        "maxOverrun": 105.3
+      },
+      {
+        "id": "s10",
+        "seed": "grid-bands-1",
+        "beats": 1732,
+        "counted": 1273,
+        "links": 434,
+        "linkMetres": 5143,
+        "miscontrols": 12,
+        "connectiveRestarts": 13,
+        "countedRestarts": 93,
+        "orphanSetPieces": 9,
+        "orphanFreeKickShots": 1,
+        "movedCarries": 6,
+        "maxOverrun": 187.5
+      }
+    ],
+    "total": {
+      "linkMetres": 49626,
+      "miscontrols": 162,
+      "connectiveRestarts": 113,
+      "links": 4066
+    },
+    "verificationTree": "37a78beaf810c53821546fcff82ac7d100f833fe"
+  },
+  "limits": [
+    "Pure placement kernel only. Public unsupported-scene rejection remains until T827.",
+    "No browser, integration, full-suite, capacity or throughput-equivalence gate ran.",
+    "Local checks and measurements ran on Node 26.8.1; cross-host/runtime evidence remains with the host gate."
+  ]
+}

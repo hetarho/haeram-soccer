@@ -1,0 +1,27 @@
+/** The prototype writer's values; costs below are converted to integer centimetres. */
+export const SCRIPT_CONFIG = {
+  hold: [0.4, 5],
+  dead: { kickOff: 40, throwIn: 12, goalKick: 20, corner: 25, freeKick: 20 },
+  carryWindow: 3,
+  carryJoin: 1000,
+  cellMargin: 1.5,
+  fixedPull: 20,
+  fixedPush: 300,
+  fixedRamp: 0,
+  paceBias: 15,
+  paceSlack: 0.02,
+  endsSlack: 0.03,
+  setPieceWait: 0,
+  placeWeight: 0,
+  phaseX: { progression: 38, finalThird: 72 },
+  speeds: { ground: 16, loft: 19, carry: 5, shot: 28 },
+  minPass: 7,
+  /** Reserve a recorded delivery rather than spending the last usable release in open play. */
+  restartPull: 300,
+  /** Keep a release available for a player whose recorded ball wins are still ahead of him. */
+  winnerPull: 20,
+  /** Seeded point variation in metres; costs still read only integer cell distances. */
+  cellJitter: 0.01,
+  /** A broken touch chain returns problems instead of keeping a worker busy forever. */
+  maxStepsPerTouch: 20,
+} as const;
