@@ -8,6 +8,7 @@ import { PORTABLE_MATH } from '../portable-math';
 // later the farther a player is from the ball and the shape re-forms slowly; after a counter
 // everyone turns at once and runs.
 import { STAGING_CONFIG } from './config';
+import { disciplineScale } from './tendency';
 import { clampToPitch } from './pitch';
 import type { Phase, PlayerSpec, TeamId, Vec } from './types';
 import { lineOf } from './types';
@@ -68,17 +69,19 @@ export function turnOf(state: StageState): Turn | undefined {
  * Time constant (s) his place follows the wanted place with; the back line shares one. Inside a
  * settled turnover's window it is at least `turn.lag.settled`, inside a counter's at most
  * `turn.lag.counter`; a man marking (`marking`) uses at most `shape.mark.lag` whatever the window.
+ * Discipline scales that lag; defenders share their line's mean discipline.
  */
 export function placeLag(
   spec: PlayerSpec,
   ballMetres: number,
   turn?: Turn,
   marking = false,
+  lineDiscipline = spec.discipline,
 ): number {
-  if (isLine(spec)) return OWN.lag.line;
+  if (isLine(spec)) return OWN.lag.line * disciplineScale(lineDiscipline);
   let lag = OWN.lag.base + OWN.lag.perMetre * Math.min(ballMetres, OWN.farCap);
   if (turn) lag = turn.counter ? Math.min(lag, TURN.lag.counter) : Math.max(lag, TURN.lag.settled);
-  return marking ? Math.min(lag, MARK_LAG) : lag;
+  return (marking ? Math.min(lag, MARK_LAG) : lag) * disciplineScale(spec.discipline);
 }
 
 /** Appends this tick's true inputs to `state.seen`, keeping `own.memory` seconds of them, newest last. */
@@ -120,12 +123,19 @@ export function followPlace(mind: Mind, want: Vec, lag: number): void {
 
 /**
  * His speed toward a place `d` metres away when he is `ballMetres` from the ball: still within
- * `own.hold`, else the distance over the seconds he gives himself (`own.arrive`, briskest at the
+ * `own.hold` scaled by discipline (a disciplined player settles closer), else the distance over
+ * the seconds he gives himself (`own.arrive`, briskest at the
  * ball), at least `own.minSpeed` and at most `cap`. Inside a counter's window a place farther than
  * `turn.runBeyond` is gone to at `cap` (the caller passes the sprint beyond `turn.sprintBeyond`).
  */
-export function freeSpeed(d: number, ballMetres: number, cap: number, turn?: Turn): number {
-  if (d <= OWN.hold) return 0;
+export function freeSpeed(
+  d: number,
+  ballMetres: number,
+  cap: number,
+  turn?: Turn,
+  discipline = 50,
+): number {
+  if (d <= OWN.hold * disciplineScale(discipline)) return 0;
   if (turn?.counter && d > TURN.runBeyond) return cap;
   const a = OWN.arrive;
   const arriveIn = a.near + (a.far - a.near) * Math.min(1, ballMetres / a.farAt);

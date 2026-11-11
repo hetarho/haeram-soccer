@@ -35,7 +35,8 @@ import {
   type Mind,
   type Seen,
 } from './mind';
-import { advanceBody, paceSpeed, type Body, type Pace } from './motion';
+import { advanceBody, speedAt, type Body, type Pace } from './motion';
+import { pressingReach } from './tendency';
 
 export interface Order {
   target: Vec | (() => Vec);
@@ -80,6 +81,7 @@ export interface StageState {
   live: boolean;
   /** When possession last changed sides. */
   turnedAt: number;
+  lostBy?: TeamId;
   /** The last change of sides in live play and whether the new side's phase is a counter (stage/mind.ts). */
   turn?: { at: number; counter: boolean };
   /** Who marks whom (defender index → attacker index), set every tick by `assignMarks` (stage/mark.ts). */
@@ -221,6 +223,15 @@ const pressRoles = (
   const free = state.fixture.teams[d].players
     .filter((p) => p.slot !== 0 && !state.orders.has(p.index) && !state.cues.has(p.index))
     .map((p) => ({ index: p.index, d: dist(snapshot[p.index], ref) }))
+    .filter(({ index, d: metres }) => {
+      const spec = state.fixture.players[index];
+      return (
+        state.tight ||
+        metres <=
+          STAGING_CONFIG.stage.press[state.fixture.teams[d].style].reach *
+            pressingReach(spec.pressing)
+      );
+    })
     .sort((a, b) => a.d - b.d || a.index - b.index);
   const roles = { presser: free[0]?.index ?? -1, cover: free[1]?.index ?? -1 };
   byTeam.set(d, roles);
@@ -311,11 +322,22 @@ export function isPressRole(
   const ref = shapeRef(state);
   // A beat the script calls pressed is pressed wherever the ball is, whatever the side's style.
   const pressing =
-    state.tight || toAttack(d, ref)[0] <= SHAPE.press.from[state.fixture.teams[d].style];
+    state.tight ||
+    counterPressing(state, d) ||
+    toAttack(d, ref)[0] <= SHAPE.press.from[state.fixture.teams[d].style];
   const roles = pressRoles(state, d, ref, snapshot);
   if (pressing) return index === roles.presser || index === roles.cover;
   // Outside its pressing zone a side still engages a man on the ball its nearest free defender is near.
   return index === roles.presser && engages(state, index, snapshot);
+}
+
+/** The losing side alone counter-presses, for a bounded window after a live turnover. */
+function counterPressing(state: StageState, d: TeamId): boolean {
+  return (
+    state.lostBy === d &&
+    state.t - state.turnedAt < STAGING_CONFIG.stage.counterPress.seconds &&
+    STAGING_CONFIG.stage.press[state.fixture.teams[d].style].counterPress
+  );
 }
 
 /** Whether defender `presser` stands within `shape.press.engage` of the man holding the ball. */
@@ -359,7 +381,8 @@ function trackPress(state: StageState, snapshot: readonly Vec[]): void {
  */
 function pressReach(state: StageState, index: number): { reach: number; poke: boolean } {
   const P = SHAPE.press;
-  const base = state.tight ? P.tight : P.standoff;
+  const d = state.fixture.players[index].team;
+  const base = state.tight || counterPressing(state, d) ? P.tight : P.standoff;
   const p = state.pressing;
   if (!p || p.index !== index) return { reach: base, poke: false };
   const held = state.t - p.since;
@@ -492,6 +515,11 @@ export function step(state: StageState): void {
   assignMarks(state, snapshot, zoneOf, canMark);
   trackPress(state, snapshot);
   const turn = turnOf(state);
+  // Defenders by slot line share a lag even in a back three/five; their hold radii remain personal.
+  const lineDiscipline = fixture.teams.map((team) => {
+    const line = team.players.filter((p) => lineOf(p.position) === 'DF');
+    return line.length ? line.reduce((sum, p) => sum + p.discipline, 0) / line.length : 50;
+  });
   const onBody: boolean[] = [];
   const moves: { target: Vec; speed: number }[] = state.fixture.players.map((spec) => {
     const i = spec.index;
@@ -499,10 +527,7 @@ export function step(state: StageState): void {
     if (order) {
       onBody[i] = true;
       const target = typeof order.target === 'function' ? order.target() : order.target;
-      const speed = Math.min(
-        paceSpeed(order.pace, spec) + (order.boost ?? 0),
-        order.speedCap ?? Infinity,
-      );
+      const speed = speedAt(state, i, order.pace, order.speedCap, order.boost);
       return { target: clampToPitch(target, -BOARDS), speed };
     }
     const metres = ballMetres[i];
@@ -510,16 +535,20 @@ export function step(state: StageState): void {
     if (want.direct) {
       onBody[i] = true;
       const target = separated(state, i, want.target, snapshot);
-      return { target: clampToPitch(target, -BOARDS), speed: paceSpeed(want.pace, spec) };
+      return { target: clampToPitch(target, -BOARDS), speed: speedAt(state, i, want.pace) };
     }
     const mind = state.minds[i];
-    followPlace(mind, want.target, placeLag(spec, metres, turn, state.marks.has(i)));
+    followPlace(
+      mind,
+      want.target,
+      placeLag(spec, metres, turn, state.marks.has(i), lineDiscipline[spec.team]),
+    );
     const target = clampToPitch(separated(state, i, mind.place, snapshot), -BOARDS);
     const d = dist(snapshot[i], target);
     // He runs for a counter once he has seen it: before that his place is the old one.
     const run = turn?.counter && seens[i].team === state.team ? turn : undefined;
-    const cap = paceSpeed(run && d > TURN.sprintBeyond ? 'sprint' : 'run', spec);
-    return { target, speed: freeSpeed(d, metres, cap, run) };
+    const cap = speedAt(state, i, run && d > TURN.sprintBeyond ? 'sprint' : 'run');
+    return { target, speed: freeSpeed(d, metres, cap, run, spec.discipline) };
   });
   const keep = state.keepOut;
   if (keep) {
@@ -574,6 +603,7 @@ export function setPossession(state: StageState, beat: Beat): void {
   state.cues.clear();
   if (beat.team !== state.team) {
     state.turnedAt = state.t;
+    state.lostBy = state.live ? state.team : undefined;
     if (state.live) state.turn = { at: state.t, counter: beat.phase === 'counter' };
   }
   state.team = beat.team;

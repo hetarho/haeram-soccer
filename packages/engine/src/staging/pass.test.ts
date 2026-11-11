@@ -7,6 +7,8 @@ import { performScript } from './script.testkit';
 import { posOf, type BeatSpec, scriptOf as buildScript } from './script.testkit';
 
 const fixture = demoFixture();
+// Isolate the approach/hold mechanics at neutral relative pace; T829 tests pace differences.
+fixture.players.forEach((p) => (p.paceScale = 1));
 const STAGE = STAGING_CONFIG.stage;
 
 const scriptOf = (specs: readonly BeatSpec[]) => buildScript(fixture, specs);

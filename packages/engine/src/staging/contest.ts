@@ -7,7 +7,7 @@ import { STAGING_CONFIG } from './config';
 import { ownGoal } from './pitch';
 import type { TeamId, Vec } from './types';
 import { add, clamp, dist, dot, lerp, norm, scale, sub } from './vec';
-import { paceSpeed, timeToReach } from './motion';
+import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
 import type { StageState } from './world';
 
@@ -48,7 +48,7 @@ export function planCut(
   const param = clamp(raw, range[0], range[1]);
   const point = lerp(from, to, param);
   const time = param * flight;
-  const speed = paceSpeed('sprint', state.fixture.players[opponent]) + (boost ?? 0);
+  const speed = speedAt(state, opponent, 'sprint', Infinity, boost);
   return { opponent, point, param, time, margin: timeToReach(body, point, speed) - time };
 }
 

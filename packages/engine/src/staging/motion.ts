@@ -5,6 +5,7 @@
 import { STAGING_CONFIG } from './config';
 import type { PlayerSpec, Vec } from './types';
 import { dist, len, norm, sub } from './vec';
+import type { StageState } from './world';
 
 export type Pace = 'walk' | 'jog' | 'run' | 'sprint';
 export interface Body {
@@ -19,6 +20,24 @@ const MOTION = STAGING_CONFIG.motion;
 export function paceSpeed(pace: Pace, spec: PlayerSpec): number {
   if (pace === 'sprint') return MOTION.sprintBase + (MOTION.sprintPerPace * spec.attrs.pace) / 100;
   return MOTION[pace];
+}
+
+/** Staging starters' minutes on the record clock (synthetic scripts use staged seconds).
+ * Incident staging can supply each participant's own minutes here when his interval changes. */
+export function speedAt(
+  state: Pick<StageState, 'fixture' | 'clock' | 't'>,
+  index: number,
+  pace: Pace,
+  cap = Infinity,
+  boost = 0,
+): number {
+  const spec = state.fixture.players[index];
+  const tendency = MOTION.tendency;
+  const minutes = Math.max(0, state.clock ?? state.t) / 60;
+  const fatigue = 1 - tendency.fatigue * Math.min(1, minutes / tendency.fullMatchMinutes);
+  // Preserve the prototype's absolute kinematic bound, including its short contest lunge.
+  const maximum = MOTION.sprintBase + MOTION.sprintPerPace + STAGING_CONFIG.stage.lunge;
+  return Math.min(maximum, Math.min(paceSpeed(pace, spec) + boost, cap) * spec.paceScale * fatigue);
 }
 
 /** One tick toward `target` at up to `speed` m/s; mutates `body`. */

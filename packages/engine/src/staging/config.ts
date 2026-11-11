@@ -76,6 +76,15 @@ export const STAGING_CONFIG = {
     jogWithin: 10,
     transitionSeconds: 3,
     pressSprintBeyond: 6,
+    /** Piecewise-linear around 50: neutral keeps the prototype's coefficients. */
+    tendency: {
+      discipline: { min: 0.6, max: 1.5 },
+      pressing: { reach: { min: 0.7, max: 1.3 } },
+      freedom: { over: 1.3 },
+      pace: { min: 0.85, max: 1.15 },
+      fatigue: 0.08,
+      fullMatchMinutes: 90,
+    },
     /** Free players (stage/mind.ts). */
     own: {
       /** Seconds before he acts on a change: `base + perAnticipation * (100 - anticipation) / 100 + perMetre * metres to the ball`; a back-line player: `line`. */
@@ -124,6 +133,14 @@ export const STAGING_CONFIG = {
     headerApex: 0.6,
   },
   stage: {
+    /** Metres a free presser/cover comes from; zone height remains shape.press.from. */
+    press: {
+      possession: { reach: 24, counterPress: true },
+      press: { reach: 30, counterPress: true },
+      counter: { reach: 16, counterPress: false },
+      balanced: { reach: 20, counterPress: false },
+    },
+    counterPress: { seconds: 5 },
     /**
      * The man on the ball keeps it moving while he holds (`holdMove` in stage/pass.ts): m/s for his
      * first `carry` metres, then `slow`; `pressed` with an opponent within `press` metres; he bends

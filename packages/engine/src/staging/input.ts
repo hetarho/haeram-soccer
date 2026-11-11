@@ -1,9 +1,14 @@
 import { invalidDetail } from '../script/failure';
 import type { MatchScript, StagingSide } from '../../../contracts/src/match-script';
 import { FORMATIONS } from '../formations';
+import { STAGING_CONFIG } from './config';
 import type { Beat, Fixture, PlayerSpec, Script, TeamId, TeamSpec } from './types';
 
 export function stageFixture(sides: readonly [StagingSide, StagingSide]): Fixture {
+  const paces = sides.flatMap((s) => s.players.filter((p) => p.slot !== 0).map((p) => p.pace));
+  const slow = Math.min(...paces);
+  const fast = Math.max(...paces);
+  const scale = STAGING_CONFIG.motion.tendency.pace;
   let index = 0;
   const teams = sides.map((side, team): TeamSpec => ({
     id: team as TeamId,
@@ -16,6 +21,10 @@ export function stageFixture(sides: readonly [StagingSide, StagingSide]): Fixtur
       number: p.line + 1,
       position: FORMATIONS[side.tactic].slots[p.slot].position,
       attrs: { pace: p.pace, anticipation: p.anticipation },
+      paceScale:
+        p.slot === 0 || fast === slow
+          ? 1
+          : scale.min + ((p.pace - slow) / (fast - slow)) * (scale.max - scale.min),
     })),
   })) as [TeamSpec, TeamSpec];
   return { teams, players: teams.flatMap((t) => t.players), sides };

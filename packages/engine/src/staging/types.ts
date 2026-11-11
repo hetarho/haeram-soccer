@@ -11,6 +11,8 @@ export interface PlayerSpec extends StagingPlayer {
   number: number;
   position: Position;
   attrs: { pace: number; anticipation: number };
+  /** Relative to the match's outfield pace range; 1 when every outfielder has the same pace. */
+  paceScale: number;
 }
 export interface TeamSpec {
   id: TeamId;

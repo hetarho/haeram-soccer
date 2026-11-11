@@ -9,7 +9,7 @@ import type { TeamId, Vec } from './types';
 import { add, approach, clamp, closestOnSegment, dist, lerp, norm, scale, sub } from './vec';
 import { flightTime, giveBall, startFlightTimed } from './ball';
 import { resolveCut } from './contest';
-import { paceSpeed, timeToReach } from './motion';
+import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
 import { ensureOwner, pushEvent, runUntil, setPossession, type StageState } from './world';
 
@@ -96,7 +96,7 @@ export function* performShot(state: StageState, ctx: BeatContext): Generator<voi
     deadBall(state);
   } else if (beat.outcome === 'saved') {
     const keeper = state.bodies[K];
-    const reach = paceSpeed('sprint', state.fixture.players[K]) + STAGE.lunge;
+    const reach = speedAt(state, K, 'sprint', Infinity, STAGE.lunge);
     const plan = (): { point: Vec; time: number } => {
       const c = closestOnSegment(from, G, keeper.pos);
       const param = clamp(c.t, SHOT.saveMin, 1);

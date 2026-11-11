@@ -13,7 +13,7 @@ import type { Beat, TeamId, Vec } from './types';
 import { add, approach, dist, dot, len, norm, perp, scale, sub } from './vec';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball';
 import { cueNext, cutRange, nearestOpponent, planCut, resolveCut, shadowPoint } from './contest';
-import { paceSpeed, timeToReach } from './motion';
+import { speedAt, timeToReach } from './motion';
 import type { BeatContext } from './perform';
 import { performThrough } from './through';
 import {
@@ -32,8 +32,7 @@ const STAGE = STAGING_CONFIG.stage;
 const MOTION = STAGING_CONFIG.motion;
 const BALL = STAGING_CONFIG.ball;
 
-const sprintOf = (state: StageState, index: number): number =>
-  paceSpeed('sprint', state.fixture.players[index]);
+const sprintOf = (state: StageState, index: number): number => speedAt(state, index, 'sprint');
 
 const speedOf = (beat: Beat): number => (beat.loft ? BALL.loft : BALL.ground);
 

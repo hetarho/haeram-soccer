@@ -4,11 +4,11 @@ import { CENTRE, HALFWAY } from './pitch';
 import { demoFixture } from './squads.testkit';
 import { dist } from './vec';
 import { handlerKey } from './perform';
+import { speedAt } from './motion';
 import { performScript } from './script.testkit';
 import { posOf, type BeatSpec, scriptOf as buildScript } from './script.testkit';
 
 const fixture = demoFixture();
-const MOTION = STAGING_CONFIG.motion;
 const TICK = STAGING_CONFIG.tick;
 
 /** A hand-written home script: each beat starts where the previous one aimed. */
@@ -35,9 +35,9 @@ describe('stage performance', () => {
   });
 
   it('no player ever moves faster than a sprint', () => {
-    const bound = (MOTION.sprintBase + MOTION.sprintPerPace) * TICK + 0.02;
     for (let f = 1; f < playback.frames.length; f++) {
       for (let i = 0; i < 22; i++) {
+        const bound = speedAt({ fixture, t: playback.frames[f - 1].t }, i, 'sprint') * TICK + 0.02;
         expect(dist(posOf(playback.frames[f - 1], i), posOf(playback.frames[f], i))).toBeLessThan(
           bound,
         );

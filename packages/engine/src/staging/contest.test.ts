@@ -4,7 +4,7 @@ import { demoFixture } from './squads.testkit';
 import type { Vec } from './types';
 import { dist, lerp } from './vec';
 import { cueNext, jockeyPoint, planCut, resolveCut, shadowPoint } from './contest';
-import { paceSpeed, timeToReach } from './motion';
+import { speedAt, timeToReach } from './motion';
 import { beats, scriptOf } from './script.testkit';
 import { createStage, setPossession, type StageState } from './world';
 
@@ -36,7 +36,7 @@ describe('contests', () => {
     expect(early.param).toBe(STAGE.cutMin);
     expect(early.point).toEqual(lerp(FROM, TO, STAGE.cutMin));
     expect(early.time).toBeCloseTo(STAGE.cutMin * FLIGHT, 9);
-    const sprint = paceSpeed('sprint', fixture.players[17]);
+    const sprint = speedAt(state, 17, 'sprint');
     expect(early.margin).toBeCloseTo(
       timeToReach(state.bodies[17], early.point, sprint) - early.time,
       9,
@@ -49,7 +49,11 @@ describe('contests', () => {
     const mid = planCut(state, 17, FROM, TO, FLIGHT, RANGE, STAGE.lunge);
     expect(mid.param).toBeCloseTo(0.6, 9);
     expect(mid.margin).toBeCloseTo(
-      timeToReach(state.bodies[17], mid.point, sprint + STAGE.lunge) - mid.time,
+      timeToReach(
+        state.bodies[17],
+        mid.point,
+        speedAt(state, 17, 'sprint', Infinity, STAGE.lunge),
+      ) - mid.time,
       9,
     );
   });

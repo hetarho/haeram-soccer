@@ -9,6 +9,7 @@ import { clampToPitch } from './pitch';
 import type { Vec } from './types';
 import { add, approach, dist, norm, scale, sub } from './vec';
 import { giveBall } from './ball';
+import { speedAt } from './motion';
 import { holdMove } from './pass';
 import { cueNext, jockeyPoint } from './contest';
 import type { BeatContext } from './perform';
@@ -39,7 +40,7 @@ export function* performCarry(state: StageState, ctx: BeatContext): Generator<vo
   yield* runUntil(
     state,
     () => dist(state.bodies[actor].pos, end) <= STAGE.arrive,
-    (d / STAGE.dribbleSpeed) * 1.5 + 2,
+    (d / speedAt(state, actor, 'sprint', STAGE.dribbleSpeed)) * 1.5 + 2,
   );
   state.orders.clear();
 }
@@ -79,7 +80,7 @@ export function* performCarryLost(state: StageState, ctx: BeatContext): Generato
   yield* runUntil(
     state,
     () => progress() >= STAGE.tackleAfter && inRange(),
-    length / STAGE.dribbleSpeed + STAGE.tackleGrace,
+    length / speedAt(state, actor, 'sprint', STAGE.dribbleSpeed) + STAGE.tackleGrace,
   );
   const recast = false;
   let stretch = false;

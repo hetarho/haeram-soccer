@@ -11,7 +11,7 @@ import type { TeamId, Vec } from './types';
 import { clamp, dist, len } from './vec';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball';
 import { cueNext, resolveCut } from './contest';
-import { paceSpeed, timeToReach } from './motion';
+import { speedAt, timeToReach } from './motion';
 import { holdMove } from './pass';
 import type { BeatContext } from './perform';
 import {
@@ -92,7 +92,7 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
       line: toAttack(T, [line(), 0])[0],
     });
   }
-  const sprint = paceSpeed('sprint', fixture.players[runner]);
+  const sprint = speedAt(state, runner, 'sprint');
   const Rw = beat.outcome === 'out' ? beat.to : clampToPitch(beat.to, 0.5);
   const eta = timeToReach(state.bodies[runner], Rw, sprint);
   const speed = clamp(

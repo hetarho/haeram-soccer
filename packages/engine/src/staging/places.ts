@@ -16,6 +16,10 @@ export function nominalSpot(
           { length: 11 },
           (_, slot) => side.players.find((p) => p.slot === slot)!.role,
         ),
+        freedom: Array.from(
+          { length: 11 },
+          (_, slot) => side.players.find((p) => p.slot === slot)!.freedom,
+        ),
       })) as unknown as Parameters<typeof slotSpot>[0]['sides'],
       ball: ctx.ball,
       team: ctx.team,

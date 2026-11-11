@@ -9,6 +9,7 @@ import {
   toEngine,
 } from '../grid/pitch';
 import { STAGING_CONFIG } from './config';
+import { roleFreedom } from './tendency';
 import { clamp, dist, type Vec } from './vec';
 
 export type StagingPhase = 'buildUp' | 'progression' | 'finalThird' | 'counter' | 'setPiece';
@@ -19,6 +20,8 @@ export interface ShapeSide {
   roles: readonly RoleId[];
   /** By slot; omitted means everyone is present. */
   present?: readonly boolean[];
+  /** Presentation-only role blend by slot; omitted is neutral (50). */
+  freedom?: readonly number[];
 }
 
 export interface ShapeContext {
@@ -273,20 +276,35 @@ const outfieldSpot = (ctx: ShapeContext, side: 0 | 1, slot: number, role: RoleId
   // anchors, so the onside cap cannot collapse the shadow striker onto the striker.
   const depth =
     spec.tactic === 'press' ? Math.min(fullDepth, line - SHAPE.onsideGap - lineX) : fullDepth;
+  const freedom = roleFreedom(spec.freedom?.[slot] ?? 50);
+  const anchor: Vec = [
+    Math.min(lineX + ax0 * depth, line - SHAPE.onsideGap),
+    AXIS + ay0 + (by - AXIS) * ip.lateral,
+  ];
+  const blend = (habit: Vec): Vec =>
+    freedom === 1
+      ? habit
+      : [
+          anchor[0] + (habit[0] - anchor[0]) * freedom,
+          anchor[1] + (habit[1] - anchor[1]) * freedom,
+        ];
   if (shape?.onShoulder) {
     const lean = clamp(
       (by - AXIS) * SHAPE.poacherLean,
       -SHAPE.poacherMaxLean,
       SHAPE.poacherMaxLean,
     );
-    return [line - SHAPE.shoulderGap, AXIS + ay0 + lean];
+    return blend([line - SHAPE.shoulderGap, AXIS + ay0 + lean]);
   }
   const o: Override = shape?.[phaseKey(ctx.phase)] ?? {};
   const ax = o.ax ?? ax0;
   const ayAbs = o.ayAbs ?? Math.abs(ay0);
   const flank = ay0 !== 0 ? Math.sign(ay0) : o.ayAbs !== undefined ? (by >= AXIS ? 1 : -1) : 0;
   const x = lineX + ax * depth;
-  return [Math.min(x, line - SHAPE.onsideGap), AXIS + flank * ayAbs + (by - AXIS) * ip.lateral];
+  return blend([
+    Math.min(x, line - SHAPE.onsideGap),
+    AXIS + flank * ayAbs + (by - AXIS) * ip.lateral,
+  ]);
 };
 
 /** A present slot's nominal position in the engine frame. */
