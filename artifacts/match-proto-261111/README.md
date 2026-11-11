@@ -1,8 +1,12 @@
 # match-proto 261111 — second page
 
 The second staged page of the match-engine split prototype (review/match-engine-split-261110
-F2–F4, task T818). It plays the same ten minutes as the first page (`demo#0`, the same script and
-showcase), staged on the tuned values below, so the two can be watched side by side.
+F2–F4, task T818), staged on the tuned values below, to be watched beside the first page.
+
+Correction (261111, after the run): this page plays a different ten minutes from the first page,
+not the same ones. T815's `grammar.minPass` changed the script, so the showcase search now settles
+on `demo#0` (2-3) where the first page played `demo#17` (1-2). Compare the overall impression,
+not scene by scene.
 
 ## how to open
 
@@ -41,6 +45,11 @@ Summed pass count over the five seeds (155 at most): first page (T814) 101 → b
 **117**.
 
 ## log (UTC, 2026-11-11)
+
+Correction (261111, after the run): the clock times below are the tuning session's own estimates
+and run late. The baseline reports were written at 03:01Z, the final reports at 03:17Z, and the
+task was committed at 03:23Z (ba01761c), so the box lasted about 20 minutes, not the two hours
+recorded here.
 
 - 03:02 baseline reports (`report.ts --seed <s> --json baseline-<s>.json`): 23 / 25 / 23 / 23 / 21 = 115.
   The two-hour box starts here. Hard metrics (`duration`, `kinematics.*`, `ball.maxSpeed`,
