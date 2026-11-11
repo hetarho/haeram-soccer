@@ -926,7 +926,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T823 | staging shape leaf: every formation's and role's place on the pitch, in the engine | MATCH STAFF PLAYER ARCH | T822 | todo |
+| T823 | staging shape leaf: every formation's and role's place on the pitch, in the engine | MATCH STAFF PLAYER ARCH | T822 | doing@261111.cc11 |
 | T824 | revision 11 declared, and attribution with the pitch in mind | MATCH SAVE ARCH | T823 | todo |
 | T825 | the own match's detail: every recorded action as a row | MATCH ARCH | T824 | todo |
 | T826 | the script writer in the engine: a detail written as an order of play, exact by construction | MATCH ARCH | T825 | todo |
