@@ -864,6 +864,7 @@
 | save-storage-and-fast-pace | ready@261026 |
 | match-day-progress | ready@261026 |
 | calibration-pass | open@261026 |
+| match-script-and-staging | open@261111 |
 
 ## ssot
 | id | rev | tasked | pending | [?] |
@@ -941,9 +942,11 @@
 ## next
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
+- ideation match-script-and-staging (open): the owner settled the method on 261111 — one aggregate result for every match, a script only for a watched match, spatial material drawn by probability, pass network for own matches only; open: fitting a script to a settled result, when to convert (after T818's page or now)
 - implement-task T814 (then T815 → T816 → T817 → T818, one chain under `scripts/match-proto/`): the owner watched `artifacts/match-proto-261110/index.html` on 261111 and named three scenes that read wrong (review/match-engine-split-261110 F2–F4); T818 delivers `artifacts/match-proto-261111/index.html` to watch beside it, and the verdict on the script→staging split (F1) waits for that page
 
 ## log
+- 261111 ideation match-script-and-staging start: the owner's calls of the day taken down (split adopted, aggregate result for every match, scripts for watched matches only, maps drawn by probability, pass network own matches only); open
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
 - 261111 create-task review/match-engine-split-261110 start
 - 261111 rl10 closed: T803–T813 released to main behind four verify:batch runs (final d0aa6338, Chromium 333/333); report reports/261110-rl10.md rl10
