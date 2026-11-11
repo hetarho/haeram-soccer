@@ -7,10 +7,11 @@ import { PROTO_CONFIG } from '../core/config.ts';
 import { clampToPitch, toAttack } from '../core/pitch.ts';
 import { offsideLineX } from '../core/shape.ts';
 import type { TeamId, Vec } from '../core/types.ts';
-import { add, clamp, dist, norm, scale, sub } from '../core/vec.ts';
+import { clamp, dist, len } from '../core/vec.ts';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, resolveCut } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
+import { holdTouch } from './pass.ts';
 import type { BeatContext } from './perform.ts';
 import {
   ensureOwner,
@@ -46,13 +47,7 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
   const start = state.t;
   const left = (): number => beat.hold - (state.t - start);
 
-  state.orders.set(actor, {
-    target: () => {
-      const pos = state.bodies[actor].pos;
-      return add(pos, scale(norm(sub(beat.to, pos)), STAGE.holdDrift));
-    },
-    pace: 'walk',
-  });
+  state.orders.set(actor, holdTouch(state, actor, beat.to));
   const runOrder: Order = {
     target: (): Vec => {
       const me = toAttack(T, runnerPos());
@@ -102,8 +97,18 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
   );
   state.orders.delete(actor);
   // He chases a ball running out only as far as the line: braking from a sprint past a target
-  // beyond it carried runners 4 m off the pitch.
-  state.orders.set(runner, { target: clampToPitch(Rw, 0.5), pace: 'sprint' });
+  // beyond it carried runners 4 m off the pitch. Chasing one running out he brakes once he could
+  // just stop there (T816: from a later, faster run he still slid 1.1 m past the line).
+  const chase = clampToPitch(Rw, 0.5);
+  const body = state.bodies[runner];
+  const braking = (): boolean => {
+    const v = len(body.vel);
+    return dist(body.pos, chase) <= (v * v) / (2 * PROTO_CONFIG.motion.decel);
+  };
+  state.orders.set(runner, {
+    target: beat.outcome === 'out' ? (): Vec => (braking() ? body.pos : chase) : chase,
+    pace: 'sprint',
+  });
   const untilLanded = (flight: { t1: number }): void =>
     runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + TICK);
 

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { PROTO_CONFIG } from '../core/config.ts';
-import { toAttack } from '../core/pitch.ts';
-import type { Phase, Script } from '../core/types.ts';
+import { PITCH, toAttack } from '../core/pitch.ts';
+import type { Phase, Script, Vec } from '../core/types.ts';
+import { dist } from '../core/vec.ts';
 import { generateScript } from './generate.ts';
 import { DEFAULT_MOVES } from './moves.ts';
 import { scriptStats } from './stats.ts';
@@ -25,6 +26,24 @@ const FOLLOW_UPS = [
   'goalKick',
   'corner',
   'freeKick',
+];
+
+/** Moves whose pass is aimed by `feetPoint` or `stridePoint`. */
+const FEET_OR_STRIDE = [
+  'circulate',
+  'safe',
+  'intoPivot',
+  'pressedBack',
+  'interior',
+  'dropLink',
+  'recycle',
+  'combine',
+  'layOff',
+  'gkShort',
+  'wideOut',
+  'switchPlay',
+  'wideRelease',
+  'outlet',
 ];
 
 let cached: Script[] | undefined;
@@ -61,6 +80,26 @@ describe('generateScript', () => {
       const script = generateScript(`t${i}`);
       expect(validateScript(script), `seed t${i}`).toEqual([]);
     }
+  });
+
+  it('no feet or stride pass of seeds t0–t29 is shorter than grammar.minPass', () => {
+    const margin = PROTO_CONFIG.margin + 0.01;
+    const nearLine = (p: Vec): boolean =>
+      p[0] <= margin ||
+      p[0] >= PITCH.length - margin ||
+      p[1] <= margin ||
+      p[1] >= PITCH.width - margin;
+    let checked = 0;
+    for (let i = 0; i < 30; i++) {
+      for (const b of generateScript(`t${i}`).beats) {
+        if (b.kind !== 'pass' || !FEET_OR_STRIDE.includes(b.move) || nearLine(b.to)) continue;
+        checked += 1;
+        expect(dist(b.from, b.to), `t${i} beat ${b.index} ${b.move}`).toBeGreaterThanOrEqual(
+          PROTO_CONFIG.grammar.minPass - 0.01,
+        );
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
   });
 
   it('open-play phases follow the ball', () => {

@@ -8,6 +8,7 @@ import type {
   BeatReason,
   Fixture,
   Frame,
+  Phase,
   Playback,
   Script,
   TeamId,
@@ -28,11 +29,12 @@ export interface BeatSpec {
   header?: boolean;
   hold?: number;
   possession?: number;
+  phase?: Phase;
 }
 
 /**
  * Beats from specs: `index` in order, `from` = the previous beat's `to` (`CENTRE` first), phase
- * `buildUp`, move `test`, no loft/through/header, hold 1, team 0, outcome `complete` and possession
+ * `buildUp` unless given, move `test`, no loft/through/header, hold 1, team 0, outcome `complete` and possession
  * 1 unless given. Every player named must be one of the fixture's.
  */
 export function beats(fixture: Fixture, list: readonly BeatSpec[]): Beat[] {
@@ -45,7 +47,7 @@ export function beats(fixture: Fixture, list: readonly BeatSpec[]): Beat[] {
       index,
       possession: s.possession ?? 1,
       team: s.team ?? 0,
-      phase: 'buildUp',
+      phase: s.phase ?? 'buildUp',
       move: 'test',
       kind: s.kind,
       actor: s.actor,

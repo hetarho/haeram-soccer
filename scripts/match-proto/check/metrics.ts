@@ -8,6 +8,7 @@ import { offsideLineX } from '../core/shape.ts';
 import {
   isShotLike,
   PASS_KINDS,
+  RESTART_KINDS,
   type Beat,
   type Frame,
   type Playback,
@@ -50,6 +51,16 @@ export const METRIC_IDS: readonly string[] = [
   'script.backPassReason',
   'stage.pressVisible',
   'score.consistent',
+  'events.shortKick',
+  'shape.huddle',
+  'shape.huddleLongest',
+  'motion.restarts',
+  'motion.startSync',
+  'motion.speedSync',
+  'turn.reverse',
+  'turn.run',
+  'turn.counterRun',
+  'mark.near',
 ];
 
 const L = PROTO_CONFIG.limits;
@@ -129,30 +140,77 @@ const positions = (frame: Frame): Vec[] =>
   Array.from({ length: frame.p.length / 2 }, (_, i) => pos(frame, i));
 const other = (team: TeamId): TeamId => (team === 0 ? 1 : 0);
 
+/** A turnover in open play: the frame index the other side has the ball from, and its kind. */
+interface Turnover {
+  f: number;
+  counter: boolean;
+}
+
 /** Everything the metrics read about one playback, worked out once. */
 interface Context {
   pb: Playback;
   beatOf: Map<number, Beat>;
   live: Frame[];
   outfield: [number[], number[]];
+  /** Both teams' outfield players. */
+  all: number[];
+  /** Open-play frame indexes (from 1: live, no set piece, a beat that is no restart), ascending. */
+  open: number[];
+  openSet: Set<number>;
+  openMinutes: number;
+  turnovers: Turnover[];
   frameAt: (event: StageEvent) => Frame;
   label: (index: number) => string;
+  /** Player `i`'s speed and x-velocity at frame `f` (from frame `f - 1`), in m/s; `f >= 1`. */
+  speed: (f: number, i: number) => number;
+  vx: (f: number, i: number) => number;
 }
 
 function contextOf(pb: Playback): Context {
-  const last = pb.frames.length - 1;
+  const { frames } = pb;
+  const last = frames.length - 1;
+  const beatOf = new Map(pb.beats.map((b) => [b.index, b]));
   const outfieldOf = (team: TeamId): number[] =>
     pb.fixture.teams[team].players.filter((p) => p.slot !== 0).map((p) => p.index);
+  const outfield: [number[], number[]] = [outfieldOf(0), outfieldOf(1)];
+  const open: number[] = [];
+  for (let f = 1; f < frames.length; f++) {
+    const frame = frames[f];
+    const beat = beatOf.get(frame.beat);
+    if (!frame.live || frame.phase === 'setPiece' || !beat || RESTART_KINDS.includes(beat.kind)) {
+      continue;
+    }
+    open.push(f);
+  }
+  const openSet = new Set(open);
+  const before = Math.round(L.turn.before / tick);
+  const after = Math.round(Math.max(L.turn.within, L.turn.runAt) / tick);
+  const turnovers: Turnover[] = open
+    .filter(
+      (f) =>
+        frames[f].team !== frames[f - 1].team &&
+        frames[f - 1].live &&
+        f - before >= 1 &&
+        f + after <= last,
+    )
+    .map((f) => ({ f, counter: frames[f].phase === 'counter' }));
   return {
     pb,
-    beatOf: new Map(pb.beats.map((b) => [b.index, b])),
-    live: pb.frames.filter((f) => f.live),
-    outfield: [outfieldOf(0), outfieldOf(1)],
-    frameAt: (event) => pb.frames[Math.min(last, Math.max(0, Math.round(event.t * pb.hz)))],
+    beatOf,
+    live: frames.filter((f) => f.live),
+    outfield,
+    all: [...outfield[0], ...outfield[1]],
+    open,
+    openSet,
+    openMinutes: (open.length * tick) / 60,
+    turnovers,
+    frameAt: (event) => frames[Math.min(last, Math.max(0, Math.round(event.t * pb.hz)))],
     label: (index) => {
       const player = pb.fixture.players[index];
       return player ? `${pb.fixture.teams[player.team].code}${player.number}` : String(index);
     },
+    speed: (f, i) => dist(pos(frames[f - 1], i), pos(frames[f], i)) / tick,
+    vx: (f, i) => (frames[f].p[2 * i] - frames[f - 1].p[2 * i]) / tick,
   };
 }
 
@@ -417,6 +475,252 @@ function scoreConsistent(c: Context): Metric {
   );
 }
 
+/** Ordinary passes (kind `pass`) kicked with the receiver nearer the passer than `shortKick.distance`. */
+function shortKick(c: Context): Metric {
+  let kicks = 0;
+  let short = 0;
+  for (const e of c.pb.events) {
+    if (e.kind !== 'kick' || e.other === undefined) continue;
+    if (c.beatOf.get(e.beat)?.kind !== 'pass') continue;
+    kicks += 1;
+    const frame = c.frameAt(e);
+    if (dist(pos(frame, e.actor), pos(frame, e.other)) < L.shortKick.distance) short += 1;
+  }
+  return rate('events.shortKick', short, kicks, L.shortKick.share);
+}
+
+/** Both inside the same penalty area: a box defence or a set piece's crowd, not a huddle. */
+const sameBox = (a: Vec, b: Vec): boolean =>
+  inEitherBox(a) && inEitherBox(b) && a[0] < HALFWAY === b[0] < HALFWAY;
+
+/** A run of consecutive open frames `start`..`last` in which outfield teammates `a` and `b` stand close. */
+interface Episode {
+  a: number;
+  b: number;
+  start: number;
+  last: number;
+}
+
+function huddle(c: Context): Metric[] {
+  const { frames } = c.pb;
+  const runs = new Map<number, Episode>();
+  const episodes: Episode[] = [];
+  for (const f of c.open) {
+    const frame = frames[f];
+    for (const team of c.outfield) {
+      for (let x = 0; x < team.length; x++) {
+        for (let y = x + 1; y < team.length; y++) {
+          const a = pos(frame, team[x]);
+          const b = pos(frame, team[y]);
+          if (dist(a, b) >= L.huddle.distance || sameBox(a, b)) continue;
+          const key = team[x] * frame.p.length + team[y];
+          const run = runs.get(key);
+          if (run && run.last === f - 1) {
+            run.last = f;
+            continue;
+          }
+          if (run) episodes.push(run);
+          runs.set(key, { a: team[x], b: team[y], start: f, last: f });
+        }
+      }
+    }
+  }
+  episodes.push(...runs.values());
+  const seconds = (e: Episode): number => (e.last - e.start + 1) * tick;
+  const long = episodes.filter((e) => seconds(e) > L.huddle.seconds).length;
+  let longest: Episode | undefined;
+  for (const e of episodes) {
+    const better =
+      !longest ||
+      seconds(e) > seconds(longest) ||
+      (seconds(e) === seconds(longest) && e.start < longest.start);
+    if (better) longest = e;
+  }
+  return [
+    atMost(
+      'shape.huddle',
+      c.openMinutes === 0 ? 0 : long / c.openMinutes,
+      L.huddle.perMinute,
+      `n=${long}/${episodes.length} minutes=${num(c.openMinutes)}`,
+    ),
+    atMost(
+      'shape.huddleLongest',
+      longest ? seconds(longest) : 0,
+      L.huddle.longest,
+      longest
+        ? `pair=${c.label(longest.a)}-${c.label(longest.b)} t=${num(frames[longest.start].t)}`
+        : 'episodes=0 empty',
+    ),
+  ];
+}
+
+/** A speed series whose variance is below this (m²/s²) is still: float noise, not movement. */
+const STILL_VARIANCE = 1e-9;
+
+/** A series as its deviations from its mean and their norm (0 for a still series). */
+interface Centred {
+  d: number[];
+  norm: number;
+}
+
+/** Pearson correlation of two centred series; 0 when either is still. */
+const correlation = (a: Centred, b: Centred): number => {
+  if (a.norm === 0 || b.norm === 0) return 0;
+  let dot = 0;
+  for (let k = 0; k < a.d.length; k++) dot += a.d[k] * b.d[k];
+  return dot / (a.norm * b.norm);
+};
+
+const centred = (xs: readonly number[]): Centred => {
+  const m = xs.reduce((s, x) => s + x, 0) / xs.length;
+  const d = xs.map((x) => x - m);
+  const ss = d.reduce((s, x) => s + x * x, 0);
+  return { d, norm: ss / xs.length < STILL_VARIANCE ? 0 : Math.sqrt(ss) };
+};
+
+/** Starts after a rest, how many fall together, and how alike two players' speeds rise and fall. */
+function unison(c: Context): Metric[] {
+  const { rest, go } = L.motion;
+  const startsAt = new Array<number>(c.pb.frames.length).fill(0);
+  const starts: number[] = [];
+  const series = c.all.map((i) => c.open.map((f) => c.speed(f, i)));
+  series.forEach((speeds) => {
+    let resting = false;
+    speeds.forEach((s, k) => {
+      if (s < rest) {
+        resting = true;
+      } else if (resting && s > go) {
+        resting = false;
+        starts.push(c.open[k]);
+        startsAt[c.open[k]] += 1;
+      }
+    });
+  });
+  const playerMinutes = c.all.length * c.openMinutes;
+  const restarts = atMost(
+    'motion.restarts',
+    playerMinutes === 0 ? 0 : starts.length / playerMinutes,
+    L.motion.restarts,
+    `starts=${starts.length}`,
+  );
+
+  const w = Math.round(L.motion.window / tick);
+  const prefix = [0];
+  for (const n of startsAt) prefix.push(prefix[prefix.length - 1] + n);
+  const around = (f: number): number =>
+    prefix[Math.min(startsAt.length, f + w + 1)] - prefix[Math.max(0, f - w)];
+  const inStep = starts.filter((f) => around(f) >= L.motion.together).length;
+  const startSync = rate('motion.startSync', inStep, starts.length, L.motion.startSync);
+
+  let sync = 0;
+  if (c.open.length >= 2 && series.length >= 2) {
+    const all = series.map(centred);
+    let sum = 0;
+    let pairs = 0;
+    for (let a = 0; a < all.length; a++) {
+      for (let b = a + 1; b < all.length; b++) {
+        sum += correlation(all[a], all[b]);
+        pairs += 1;
+      }
+    }
+    sync = sum / pairs;
+  }
+  const tops = [
+    L.motion.rest,
+    (motion.walk + motion.jog) / 2,
+    (motion.jog + motion.run) / 2,
+    motion.run + 0.3,
+  ];
+  const bands = [0, 0, 0, 0, 0];
+  let samples = 0;
+  for (const speeds of series) {
+    for (const s of speeds) {
+      const band = s < tops[0] ? 0 : s < tops[1] ? 1 : s < tops[2] ? 2 : s <= tops[3] ? 3 : 4;
+      bands[band] += 1;
+      samples += 1;
+    }
+  }
+  const shares = bands.map((n) => num(samples === 0 ? 0 : n / samples)).join('/');
+  return [
+    restarts,
+    startSync,
+    atMost('motion.speedSync', sync, L.motion.speedSync, `bands=${shares}`),
+  ];
+}
+
+/** How the outfield players react to a turnover: turning as one, and how many run after it. */
+function turns(c: Context): Metric[] {
+  const before = Math.round(L.turn.before / tick);
+  const within = Math.round(L.turn.within / tick);
+  const runAt = Math.round(L.turn.runAt / tick);
+  const settled = c.turnovers.filter((t) => !t.counter);
+  const counters = c.turnovers.filter((t) => t.counter);
+  let movers = 0;
+  let turned = 0;
+  for (const { f } of settled) {
+    for (const i of c.all) {
+      let sum = 0;
+      for (let g = f - before; g < f; g++) sum += c.vx(g, i);
+      const v = sum / before;
+      if (Math.abs(v) < L.turn.moving) continue;
+      movers += 1;
+      for (let g = f; g <= f + within; g++) {
+        const x = c.vx(g, i);
+        if (x * v < 0 && Math.abs(x) >= L.turn.moving) {
+          turned += 1;
+          break;
+        }
+      }
+    }
+  }
+  const reverse = rate('turn.reverse', turned, movers, L.turn.reverseShare);
+  const running = (list: readonly Turnover[]): number =>
+    median(
+      list.map(
+        ({ f }) =>
+          c.all.filter((i) => c.speed(f + runAt, i) > L.turn.runSpeed).length / c.all.length,
+      ),
+    );
+  return [
+    { ...reverse, detail: `${reverse.detail} turnovers=${settled.length}` },
+    settled.length === 0
+      ? atMost('turn.run', 0, L.turn.runShare, 'turnovers=0 empty')
+      : atMost('turn.run', running(settled), L.turn.runShare, `turnovers=${settled.length}`),
+    counters.length === 0
+      ? metric('turn.counterRun', 1, `>= ${num(L.turn.counterRunShare)}`, true, 'turnovers=0 empty')
+      : atLeast(
+          'turn.counterRun',
+          running(counters),
+          L.turn.counterRunShare,
+          `turnovers=${counters.length}`,
+        ),
+  ];
+}
+
+/** `mark.near` reads every fifth frame (half a second at 10 Hz). */
+const MARK_EVERY = 5;
+
+/** Attackers without the ball in the last part of the pitch with an outfield defender close. */
+function markNear(c: Context): Metric {
+  const { frames } = c.pb;
+  let samples = 0;
+  let marked = 0;
+  for (const f of c.open) {
+    if (f % MARK_EVERY !== 0) continue;
+    const frame = frames[f];
+    const team = frame.team;
+    for (const i of c.outfield[team]) {
+      if (i === frame.owner) continue;
+      const p = pos(frame, i);
+      if (toAttack(team, p)[0] < L.mark.fromX) continue;
+      samples += 1;
+      const near = c.outfield[other(team)].some((j) => dist(pos(frame, j), p) <= L.mark.distance);
+      if (near) marked += 1;
+    }
+  }
+  return share('mark.near', marked, samples, L.mark.share, 'min');
+}
+
 /** Every metric of `METRIC_IDS` in that order; role metrics of roles no team has are left out. */
 export function computeMetrics(playback: Playback): Metric[] {
   const c = contextOf(playback);
@@ -431,5 +735,10 @@ export function computeMetrics(playback: Playback): Metric[] {
     backPassReason(c),
     pressVisible(c),
     scoreConsistent(c),
+    shortKick(c),
+    ...huddle(c),
+    ...unison(c),
+    ...turns(c),
+    markNear(c),
   ];
 }

@@ -22,19 +22,40 @@
 //     press:    staging only (stage/world.ts): a defending side presses while the ball's x in its
 //               own attack frame is at most `from` (per style); the presser stands `standoff`
 //               metres goal-side of the ball (`tight` during a pressed beat), the cover `coverGap`
-//     mark:     staging only: a defender leans by `blend` toward a point `goalSide` metres goal-side
-//               of the nearest outfield opponent within `radius` of his place
+//     mark:     staging only (stage/mark.ts): each free defender marks one man, one to one, nearest
+//               first: a man within `radius` metres of his zone place, kept up to `keep` metres
+//               beyond it; he stands by `blend` (per line) toward a point `goalSide` metres goal-side
+//               of his man (the back line only across) and his place follows with a lag of at most
+//               `lag` seconds
+//     unmark:   staging only: a free attacker whose place lies within `radius` metres of an
+//               opponent steps up to `step` metres across, away from him, keeping his depth
 //   motion:   bounded movement (stage/motion.ts): pace speeds in m/s (sprint = `sprintBase` +
 //             `sprintPerPace` * pace / 100), acceleration and braking in m/s², the arrival ramp
 //             (`arriveTime` seconds, still within `arriveRadius` metres), reaction time, when a
 //             player jogs (target within `jogWithin` metres, `transitionSeconds` after a turnover)
-//             and when a presser sprints (farther than `pressSprintBeyond` metres)
+//             and when a presser sprints (farther than `pressSprintBeyond` metres); these paces
+//             drive the direct players (orders, cues, keepers, presser, cover, the last shoulder
+//             and everyone at a dead ball)
+//     own:      free players (stage/mind.ts): the seconds before one acts on a change of the
+//               shape's inputs (`delay`: a base, more for low `decisions`, more per metre from the
+//               ball; one value for the back line), the time constant his own place follows the
+//               wanted place with (`lag`, likewise), the metres to the ball counted up to `farCap`,
+//               the seconds he gives himself to reach his place (`arrive`: `near` at the ball, `far`
+//               from `farAt` metres), the distance within which he stands (`hold`), his slowest
+//               move (`minSpeed`, m/s) and the seconds of inputs kept for the delay (`memory`)
+//     turn:     after the ball changes sides in live play, for `window` seconds: a settled turnover
+//               is believed `delayPerMetre` seconds later per metre from the ball and the place
+//               follows with a lag of at least `lag.settled`; after a counter the lag is at most
+//               `lag.counter`, a place farther than `runBeyond` metres is run to and one farther than
+//               `sprintBeyond` sprinted to (the back line keeps its own delay and lag)
 //   ball:     ball flight (stage/ball.ts): ground and lofted speeds and the slowest kick (m/s), the
 //             shortest flight (s), a lofted ball's apex per metre within `loftMin`-`loftMax`, how far
 //             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
 //             and how fast a dead ball is brought back to its restart spot (`retrieval`, m/s); a
 //             through ball's top speed, a shot's and a header's speed and a header's apex
-//   stage:    performing beats (stage/): the passer's drift while holding, extra hold, receiving
+//   stage:    performing beats (stage/): the length of the passer's one touch while holding, at
+//             most (`holdDrift`), the least distance between the ball and an ordinary pass's
+//             reception point, which his touch never closes (`kickGap`), extra hold, receiving
 //             slack, control range, settling time limit, dribbling speed, arrival distance and the
 //             kick-off's half and centre-circle margins; contests (stage/contest.ts): the shadow
 //             point on a pass lane (`shadowAt` along it, `shadowOff` goal-side), the share of a
@@ -45,7 +66,9 @@
 //             attacker's and the beaten defender's speed caps and time; `pressVisible`, how near
 //             the presser is before a pressed pass is kicked; `boards`, how far outside the lines a
 //             target may lie and where a player stops; `separation`, how far a free outfield player
-//             keeps his target from his outfield teammates; restarts (stage/scenes.ts): the dead
+//             keeps his target from his outfield teammates, and `ownerRoom`, how far a free outfield
+//             player of the side in possession keeps it from the man on the ball and from
+//             teammates under an order; restarts (stage/scenes.ts): the dead
 //             time per kind, its extra allowance, the distance the other team keeps, how near the
 //             taker and receiver must be, the taker's offset from the spot and how far past the line
 //             a ball out runs; through balls (stage/through.ts): where the runner waits behind the
@@ -57,9 +80,22 @@
 //             wide ball's run, a blocked ball's roll and deflection speed; crosses: the receiver's
 //             run-up; corners (stage/scenes.ts): both sides' places
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
-//             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
+//             clock, where a lost ball is nominally won, receiver showing and jitter, the least
+//             distance from the ball an open-play pass to feet or into a stride is aimed at
+//             (`minPass`), counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
-//   limits:   the thresholds the staging metrics are judged by (check/metrics.ts)
+//   limits:   the thresholds the staging metrics are judged by (check/metrics.ts); the naturalness
+//             ones read open play (live, no set piece, no restart beat): passes kicked to a man
+//             standing almost on the passer (`shortKick`), outfield teammates sticking together
+//             (`huddle`: their distance, the allowed seconds, episodes a minute and the longest),
+//             players starting and stopping as one (`motion`: the rest and go speeds, starts a
+//             player-minute, the window and count that make starts simultaneous, the share of such
+//             starts and the mean correlation of two players' speeds), players turning as one
+//             after a turnover (`turn`: the seconds before it a mover is read over, the moving
+//             speed, the seconds after it a turn counts within, the share that turn, the running
+//             speed, when it is read and the running shares after a settled turnover and after a
+//             counter) and attackers in the last part of the pitch left unmarked (`mark`: the
+//             attack x they are read from, the marking distance and the share marked)
 //   viewer:   the page that plays a playback (viewer/, build.ts): the metres shown around the
 //             pitch (`pad`), player and ball radii in metres with their pixel floors, how long a
 //             flash and the ball's trail last (s), the speeds offered, the seek step (s), the
@@ -116,7 +152,8 @@ export const PROTO_CONFIG = {
     poacherLean: 0.25,
     poacherMaxLean: 10,
     press: { from: { possession: 105, counter: 62 }, standoff: 3.5, tight: 1.2, coverGap: 14 },
-    mark: { radius: 7, blend: 0.2, goalSide: 1.5 },
+    mark: { radius: 10, keep: 3, goalSide: 1.5, blend: { DF: 0.6, MF: 0.6, FW: 0.3 }, lag: 0.3 },
+    unmark: { radius: 4, step: 2.5 },
   },
   motion: {
     walk: 1.8,
@@ -132,6 +169,34 @@ export const PROTO_CONFIG = {
     jogWithin: 10,
     transitionSeconds: 3,
     pressSprintBeyond: 6,
+    /** Free players (stage/mind.ts). */
+    own: {
+      /** Seconds before he acts on a change: `base + perIq * (100 - decisions) / 100 + perMetre * metres to the ball`; a back-line player: `line`. */
+      delay: { base: 0.15, perIq: 0.35, perMetre: 0.008, line: 0.25 },
+      /** Time constant (s) his place follows the wanted place with: `base + perMetre * metres to the ball`; a back-line player: `line`. */
+      lag: { base: 0.5, perMetre: 0.02, line: 0.5 },
+      /** The metres to the ball count up to this. */
+      farCap: 50,
+      /** Seconds he gives himself to reach his place: `near` at the ball, `far` from `farAt` metres. */
+      arrive: { near: 1.2, far: 3, farAt: 40 },
+      /** He stands within `hold` metres of his place; otherwise he moves at `minSpeed` at least. */
+      hold: 0.2,
+      minSpeed: 0.8,
+      /** Seconds of inputs kept for the delay: at least the longest delay, `delay.base + delay.perIq + (delay.perMetre + turn.delayPerMetre) * farCap`. */
+      memory: 2.2,
+    },
+    /** After the ball changes sides in live play (stage/mind.ts). */
+    turn: {
+      /** Seconds a turnover shapes how free players move. */
+      window: 6,
+      /** A settled turnover is believed this many seconds later per metre from the ball (up to `own.farCap`). */
+      delayPerMetre: 0.026,
+      /** The place's time constant inside the window: at least `settled` after a settled turnover, at most `counter` after a counter; the back line keeps `own.lag.line`. */
+      lag: { settled: 2, counter: 0.5 },
+      /** Inside the window after a counter a free player runs to a place farther than `runBeyond` metres and sprints to one farther than `sprintBeyond`. */
+      runBeyond: 3,
+      sprintBeyond: 12,
+    },
   },
   ball: {
     ground: 16,
@@ -150,7 +215,10 @@ export const PROTO_CONFIG = {
     headerApex: 0.6,
   },
   stage: {
+    /** The length of the passer's one touch while holding, at most. */
     holdDrift: 1.5,
+    /** The least distance between the ball and the point an ordinary pass is received at, and how near to that point the passer's touch may take him. */
+    kickGap: 5.5,
     maxExtraHold: 1.5,
     receiveSlack: 0.1,
     controlRange: 1,
@@ -177,7 +245,9 @@ export const PROTO_CONFIG = {
     /** How far outside the lines a target may lie, and where the boards stop a player. */
     boards: 2,
     /** How far a free outfield player keeps his target from every outfield teammate (0 = off). */
-    separation: 2.5,
+    separation: 3,
+    /** How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order. */
+    ownerRoom: 4,
     restart: {
       delay: { kickOff: 14, throwIn: 5, goalKick: 8, corner: 12, freeKick: 7 },
       maxExtra: 8,
@@ -250,6 +320,8 @@ export const PROTO_CONFIG = {
     /** A receiver shows this far toward the ball; reception points get ± jitter metres. */
     showFor: 3,
     jitter: 1.5,
+    /** An open-play pass to feet or into a stride is aimed at least this far from the ball. */
+    minPass: 7,
     shortRange: 18,
     /** A turnover below `fromX` (attack x of the winners) after the losers' progression or final third may start a counter. */
     counter: {
@@ -511,6 +583,33 @@ export const PROTO_CONFIG = {
     /** A pressed pass is kicked with an opponent within `stage.pressVisible + pressedSlack` in `pressedShare` of them. */
     pressedShare: 0.9,
     pressedSlack: 0.5,
+    /** An ordinary pass kicked with its receiver nearer than `distance`, in at most `share` of them. */
+    shortKick: { distance: 5, share: 0.05 },
+    /** Two outfield teammates within `distance` for longer than `seconds`: at most `perMinute` such episodes an open-play minute, none longer than `longest` seconds. */
+    huddle: { distance: 3, seconds: 2, perMinute: 0.6, longest: 4 },
+    /** A player rests below `rest` m/s and starts when he next exceeds `go`: at most `restarts` starts a player-minute; a start is in step when `together` starts fall within ± `window` seconds, in at most `startSync` of them; the mean correlation of two players' speeds is at most `speedSync`. */
+    motion: {
+      rest: 0.5,
+      go: 1,
+      restarts: 4,
+      window: 0.2,
+      together: 8,
+      startSync: 0.2,
+      speedSync: 0.3,
+    },
+    /** A turnover in open play: of the players moving at `moving` m/s along the pitch in the `before` seconds before it, at most `reverseShare` have turned `within` seconds after a settled one; `runAt` seconds after it at most `runShare` of the outfield players are faster than `runSpeed` (at least `counterRunShare` after a counter). */
+    turn: {
+      before: 0.5,
+      moving: 0.8,
+      within: 1,
+      reverseShare: 0.3,
+      runSpeed: 4.5,
+      runAt: 1.5,
+      runShare: 0.4,
+      counterRunShare: 0.5,
+    },
+    /** An attacker without the ball at attack x `fromX` or beyond has a defender within `distance`, in at least `share` of the samples. */
+    mark: { fromX: 65, distance: 4, share: 0.5 },
   },
   // The viewer (viewer/, build.ts): presentation only, never read by the script or the staging.
   viewer: {
