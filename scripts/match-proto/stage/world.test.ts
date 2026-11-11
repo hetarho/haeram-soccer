@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { PROTO_CONFIG } from '../core/config.ts';
-import { CENTRE, ownGoal } from '../core/pitch.ts';
+import { CENTRE, ownGoal, toAttack } from '../core/pitch.ts';
 import { nominalSpot } from '../core/shape.ts';
 import { demoFixture } from '../core/squads.ts';
 import type { Beat, Phase, TeamId, Vec } from '../core/types.ts';
+import { lineOf } from '../core/types.ts';
 import { add, dist, lerp, norm, scale, sub } from '../core/vec.ts';
+import { performScript } from './perform.ts';
+import { posOf, scriptOf } from './script.testkit.ts';
 import {
   createStage,
   defaultTarget,
@@ -17,6 +20,8 @@ import {
 const fixture = demoFixture();
 const PRESS = PROTO_CONFIG.shape.press;
 const MARK = PROTO_CONFIG.shape.mark;
+const MOTION = PROTO_CONFIG.motion;
+const LIMITS = PROTO_CONFIG.limits.motion;
 
 const beatOf = (team: TeamId): Beat => ({
   index: 0,
@@ -265,6 +270,78 @@ describe('stage world', () => {
     expect(separated(state, 6, [49, 34], snapshot)).toEqual([49, 34]);
     const near = separated(state, 6, [51, 34], snapshot);
     expect(dist(near, snapshot[7])).toBeCloseTo(PROTO_CONFIG.stage.separation, 9);
+  });
+
+  describe('after a long pass across the pitch (T816)', () => {
+    // Kick-off, then the anchor switches play 33 m to the right-back in his own half, where the
+    // counter side does not press, so every outfield player but the two in the pass is free.
+    const LONG = scriptOf(fixture, [
+      { kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] },
+      { kind: 'pass', actor: 5, receiver: 4, to: [38, 62], loft: true },
+      { kind: 'carry', actor: 4, to: [44, 62], hold: 3 },
+    ]);
+    const long = performScript(LONG, { duration: 20 });
+    const kick = long.events.find((e) => e.kind === 'kick' && e.beat === 1);
+    if (!kick) throw new Error('no kick of the long pass');
+    const at = long.frames.findIndex((f) => Math.abs(f.t - kick.t) < 1e-9);
+    const speedAt = (f: number, i: number): number =>
+      dist(posOf(long.frames[f - 1], i), posOf(long.frames[f], i)) / PROTO_CONFIG.tick;
+    /** Outfield players without an order during the flight (everyone but the passer and receiver). */
+    const free = fixture.players.filter((p) => p.slot !== 0 && p.index !== 5 && p.index !== 4);
+
+    it('the long pass is a long one', () => {
+      expect(dist([45, 30], [38, 62])).toBeGreaterThanOrEqual(30);
+      expect(at).toBeGreaterThan(0);
+    });
+
+    it('after a long pass the free players start at different moments', () => {
+      const starts: number[] = [];
+      for (const p of free) {
+        if (lineOf(p.position) === 'DF') continue;
+        for (let f = at + 1; f < long.frames.length; f++) {
+          if (speedAt(f, p.index) > LIMITS.go) {
+            starts.push(f);
+            break;
+          }
+        }
+      }
+      expect(starts.length).toBeGreaterThanOrEqual(3);
+      const span = (Math.max(...starts) - Math.min(...starts)) * PROTO_CONFIG.tick;
+      expect(span).toBeGreaterThanOrEqual(0.3);
+      expect(new Set(starts).size).toBeGreaterThanOrEqual(3);
+    });
+
+    it('the back four stay one line while the ball travels', () => {
+      const defenders = fixture.players.filter((p) => p.team === 1 && lineOf(p.position) === 'DF');
+      expect(defenders).toHaveLength(4);
+      let read = 0;
+      for (const frame of long.frames) {
+        if (frame.t < 5 || !frame.live) continue;
+        const xs = defenders.map((p) => toAttack(1, posOf(frame, p.index))[0]);
+        expect(Math.max(...xs) - Math.min(...xs), String(frame.t)).toBeLessThanOrEqual(2);
+        read += 1;
+      }
+      expect(read).toBeGreaterThan(20);
+    });
+
+    it('one second after a long pass some free players walk while others run', () => {
+      const f = at + Math.round(1 / PROTO_CONFIG.tick);
+      const moving = free.map((p) => speedAt(f, p.index)).filter((speed) => speed > LIMITS.go);
+      expect(moving.some((speed) => speed < MOTION.jog - 0.5)).toBe(true);
+      expect(moving.some((speed) => speed > MOTION.jog + 0.5)).toBe(true);
+    });
+  });
+
+  it('a player under an order keeps his place on his body', () => {
+    const state = stageWith(0, [50, 34], 'progression');
+    state.ball.mode = 'held';
+    state.ball.owner = 5;
+    const i = 7;
+    state.orders.set(i, { target: [70, 50], pace: 'run' });
+    for (let k = 0; k < 3; k++) {
+      step(state);
+      expect(state.minds[i].place).toEqual(state.bodies[i].pos);
+    }
   });
 
   it('nobody presses or marks while the ball is dead', () => {

@@ -28,7 +28,16 @@
 //             `sprintPerPace` * pace / 100), acceleration and braking in m/s², the arrival ramp
 //             (`arriveTime` seconds, still within `arriveRadius` metres), reaction time, when a
 //             player jogs (target within `jogWithin` metres, `transitionSeconds` after a turnover)
-//             and when a presser sprints (farther than `pressSprintBeyond` metres)
+//             and when a presser sprints (farther than `pressSprintBeyond` metres); these paces
+//             drive the direct players (orders, cues, keepers, presser, cover, the last shoulder
+//             and everyone at a dead ball)
+//     own:      free players (stage/mind.ts): the seconds before one acts on a change of the
+//               shape's inputs (`delay`: a base, more for low `decisions`, more per metre from the
+//               ball; one value for the back line), the time constant his own place follows the
+//               wanted place with (`lag`, likewise), the metres to the ball counted up to `farCap`,
+//               the seconds he gives himself to reach his place (`arrive`: `near` at the ball, `far`
+//               from `farAt` metres), the distance within which he stands (`hold`), his slowest
+//               move (`minSpeed`, m/s) and the seconds of inputs kept for the delay (`memory`)
 //   ball:     ball flight (stage/ball.ts): ground and lofted speeds and the slowest kick (m/s), the
 //             shortest flight (s), a lofted ball's apex per metre within `loftMin`-`loftMax`, how far
 //             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
@@ -149,6 +158,22 @@ export const PROTO_CONFIG = {
     jogWithin: 10,
     transitionSeconds: 3,
     pressSprintBeyond: 6,
+    /** Free players (stage/mind.ts). */
+    own: {
+      /** Seconds before he acts on a change: `base + perIq * (100 - decisions) / 100 + perMetre * metres to the ball`; a back-line player: `line`. */
+      delay: { base: 0.15, perIq: 0.35, perMetre: 0.008, line: 0.25 },
+      /** Time constant (s) his place follows the wanted place with: `base + perMetre * metres to the ball`; a back-line player: `line`. */
+      lag: { base: 0.5, perMetre: 0.02, line: 0.5 },
+      /** The metres to the ball count up to this. */
+      farCap: 50,
+      /** Seconds he gives himself to reach his place: `near` at the ball, `far` from `farAt` metres. */
+      arrive: { near: 1.2, far: 3, farAt: 40 },
+      /** He stands within `hold` metres of his place; otherwise he moves at `minSpeed` at least. */
+      hold: 0.6,
+      minSpeed: 0.8,
+      /** Seconds of inputs kept for the delay. */
+      memory: 1.2,
+    },
   },
   ball: {
     ground: 16,

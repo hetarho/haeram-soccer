@@ -7,7 +7,7 @@ import { PROTO_CONFIG } from '../core/config.ts';
 import { clampToPitch, toAttack } from '../core/pitch.ts';
 import { offsideLineX } from '../core/shape.ts';
 import type { TeamId, Vec } from '../core/types.ts';
-import { clamp, dist } from '../core/vec.ts';
+import { clamp, dist, len } from '../core/vec.ts';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, resolveCut } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
@@ -97,8 +97,18 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
   );
   state.orders.delete(actor);
   // He chases a ball running out only as far as the line: braking from a sprint past a target
-  // beyond it carried runners 4 m off the pitch.
-  state.orders.set(runner, { target: clampToPitch(Rw, 0.5), pace: 'sprint' });
+  // beyond it carried runners 4 m off the pitch. Chasing one running out he brakes once he could
+  // just stop there (T816: from a later, faster run he still slid 1.1 m past the line).
+  const chase = clampToPitch(Rw, 0.5);
+  const body = state.bodies[runner];
+  const braking = (): boolean => {
+    const v = len(body.vel);
+    return dist(body.pos, chase) <= (v * v) / (2 * PROTO_CONFIG.motion.decel);
+  };
+  state.orders.set(runner, {
+    target: beat.outcome === 'out' ? (): Vec => (braking() ? body.pos : chase) : chase,
+    pace: 'sprint',
+  });
   const untilLanded = (flight: { t1: number }): void =>
     runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + TICK);
 
