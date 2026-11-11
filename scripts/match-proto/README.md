@@ -38,6 +38,7 @@ owner can watch whether staging a script reads as football. Nothing here is prod
 - `stage/` the staging: bounded movement of players and ball that performs the script as frames.
 - `check/` metrics: machine-checked staging invariants.
 - `viewer/` and `build.ts`: a single HTML page that plays the staged minutes.
+- `fixtures/settled/`: ten settled production matches (`## settled matches`).
 
 ## commands
 
@@ -76,6 +77,20 @@ owner can watch whether staging a script reads as football. Nothing here is prod
 - `pnpm exec tsx scripts/match-proto/build.ts --seed demo --serve [port]` does the same, then serves
   the page at `http://localhost:<port>/` (default `PROTO_CONFIG.viewer.port`, 4310) and prints
   `url=`; stop it with Ctrl-C. Opening `index.html` directly works as well.
+
+## settled matches
+
+`fixtures/settled/s01.json` … `s10.json` are ten production matches settled by the aggregate path
+(the core sample's top-tier pairs, each side on 4-3-3 possession or 4-4-2 counter, in the latest
+year without substitutes), the material a script is fitted to (T820). Each lists every attempt
+with who made it and how it ended, every shot, every foul and card, and the record's team and
+player rows; identifiers and numbers only. `core/settled.ts` owns the format: `Settled` and its
+row layouts (`EV`, `SH`, `FO`, `CA` name the columns; the code lists `EVENT_KINDS`,
+`SET_PIECES`, `EVENT_RESULTS`, `SHOT_KINDS`, `SHOT_OUTCOMES`, `TEAM_ROW`, `PLAYER_ROW`),
+`readSettled` validates a file and `fixtureOf` gives its 22 players as a `Fixture`. They are
+written by `pnpm exec tsx scripts/export-settled.ts --out scripts/match-proto/fixtures/settled`
+(`--count`, `--year`), whose header states how a move group becomes attempts; the same run gives
+the same bytes.
 
 ## viewer
 

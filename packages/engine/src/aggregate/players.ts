@@ -31,6 +31,7 @@ import {
 import { AGGREGATE_MOVE_KINDS } from './types';
 import type {
   AggregateAttribute,
+  AggregateAttributionTrace,
   AggregateInput,
   AggregateLine,
   AggregateMove,
@@ -43,6 +44,8 @@ import type {
   AggregateSide,
   AggregateStreams,
   AggregateTeamFacts,
+  AggregateTraceFouls,
+  AggregateTraceMove,
 } from './types';
 
 type Rng = () => number;
@@ -530,7 +533,8 @@ function creditMove(row: Row, move: MoveTraits, attempts: number, done: number, 
  * Player lines of one match from its team facts and participation (→MATCH-26/27): shots and their
  * key passes at their minutes, every move group, the ball won from the opponent, saves, fouls
  * committed and won, cards and minutes — each counted for players present, adding up exactly to
- * the side's row. Returns each side's lines in record order and the shot credits.
+ * the side's row. Returns each side's lines in record order and the shot credits. A `trace`, when
+ * given, receives a copy of every split drawn (T819); it changes no draw and no fact.
  */
 export function attributePlayerFacts(
   input: AggregateInput,
@@ -538,12 +542,22 @@ export function attributePlayerFacts(
   participation: AggregateParticipation,
   facts: AggregateTeamFacts,
   streams: AggregateStreams,
+  trace?: AggregateAttributionTrace,
 ): AggregatePlayerFacts {
   const sides = [
     new SideLines(0, input, plan, participation),
     new SideLines(1, input, plan, participation),
   ] as const;
   const credits: AggregateShotCredit[] = [];
+  if (trace)
+    for (const side of [0, 1] as const) {
+      const ledger = facts.ledger.sides[side];
+      if (trace.moves[side].length === 0)
+        for (let i = 0; i < ledger.moves.length; i++) trace.moves[side].push(emptyTraceMove());
+      if (trace.fouls[side].length === 0)
+        for (let i = 0; i < ledger.fouled.length; i++)
+          trace.fouls[side].push({ booked: [], fouled: [], fouler: [] });
+    }
   for (const period of facts.ledger.periods)
     for (const side of [0, 1] as const)
       attributeSide(
@@ -554,6 +568,7 @@ export function attributePlayerFacts(
         facts,
         participation,
         credits,
+        trace,
       );
   for (const x of participation.incidents) {
     const d = sides[x.side].rows[sides[x.side].lineOf(x.player)]!.detail;
@@ -580,6 +595,7 @@ function attributeSide(
   facts: AggregateTeamFacts,
   participation: AggregateParticipation,
   credits: AggregateShotCredit[],
+  trace: AggregateAttributionTrace | undefined,
 ) {
   const own = sides[side],
     opp = sides[side === 0 ? 1 : 0];
@@ -629,6 +645,9 @@ function attributeSide(
   const n = own.rows.length;
   /** Loose balls the opponent recovered in its high-turnover zone: band played to, count. */
   const loose: number[] = [];
+  /** With a trace, the move index of each pushed loose entry, beside `loose`. */
+  const looseMoves: number[] | undefined = trace && [];
+  const moveTrace = trace?.moves[side];
   // Plain loops and per-group constants (T285): the same draws in the same order as before.
   for (let index = 0; index < ledger.moves.length; index++) {
     const move = ledger.moves[index]!;
@@ -648,6 +667,12 @@ function attributeSide(
     for (let line = 0; line < n; line++)
       if (attempts[line]! > 0)
         creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
+    const traced: AggregateTraceMove | undefined = moveTrace?.[index];
+    if (traced) {
+      traced.attempts = attempts.slice();
+      traced.completed = completed.slice();
+      traced.broke = broke.slice();
+    }
     if (move.offside > 0) {
       const offside = multinomialInto(
         r,
@@ -657,6 +682,7 @@ function attributeSide(
       );
       for (let line = 0; line < offside.length; line++)
         own.rows[line]!.detail[PD.offsides]! += offside[line]!;
+      if (traced) traced.offside = offside.slice();
     }
     // The ball won from this group: interceptions where the pass was played to, tackles on a
     // failed carry or take-on where it started; in the winner's high-turnover zone (MATCH-13) each
@@ -664,13 +690,17 @@ function attributeSide(
     const pass = traits.pass;
     if (pass && mirrorBand(traits.toBand) >= COUNTER_ZONES.highTurnover) {
       const k = looseBalls(move);
-      if (k > 0) loose.push(traits.toBand, k);
+      if (k > 0) {
+        loose.push(traits.toBand, k);
+        looseMoves?.push(index);
+      }
     }
     const won = pass ? move.intercepted : move.attempts - move.completed;
     if (won > 0) {
       const at = pass ? traits.toBand : traits.fromBand;
       const role = ROLES.defend(LAST_BAND - at, pass ? 'positioning' : 'tackling');
       const split = multinomialInto(r, won, opp.weights(period, role), opp.split);
+      if (traced) traced.won = split.slice();
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
         if (k === 0) continue;
@@ -684,6 +714,9 @@ function attributeSide(
   const { from, to } = AGGREGATE_CONFIG.periods[period];
   const fouls = ledger.fouled.filter((f) => f.period === period);
   const left = fouls.map((f) => f.n);
+  /** With a trace, each row's entry, found by its index in the ledger's `fouled`. */
+  const foulTrace: AggregateTraceFouls[] | undefined =
+    trace && fouls.map((f) => trace.fouls[side][ledger.fouled.indexOf(f)]!);
   const booked = participation.incidents.filter(
     (x) =>
       x.side !== side &&
@@ -701,24 +734,35 @@ function attributeSide(
     opp.rows[opp.lineOf(card.player)]!.detail[PD.fouls]!++;
     const fouled = own.pickAt(r, card.minute, ROLES.carry(cellBand(f.cell)));
     own.rows[fouled]!.detail[PD.foulsWon]!++;
+    foulTrace?.[i]!.booked.push({
+      fouler: opp.lineOf(card.player),
+      fouled,
+      incident: participation.incidents.indexOf(card),
+    });
   }
   fouls.forEach((f, i) => {
     const k = left[i]!;
     if (k === 0) return;
     const band = cellBand(f.cell);
-    multinomialDraw(r, k, own.weights(period, ROLES.carry(band))).forEach(
-      (x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x),
-    );
+    const fouledLines = multinomialDraw(r, k, own.weights(period, ROLES.carry(band)));
+    fouledLines.forEach((x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x));
     const role = ROLES.defend(LAST_BAND - band, 'tackling');
-    multinomialDraw(r, k, opp.weights(period, role)).forEach(
-      (x, line) => (opp.rows[line]!.detail[PD.fouls]! += x),
-    );
+    const foulerLines = multinomialDraw(r, k, opp.weights(period, role));
+    foulerLines.forEach((x, line) => (opp.rows[line]!.detail[PD.fouls]! += x));
+    if (foulTrace) {
+      foulTrace[i]!.fouled = fouledLines.slice();
+      foulTrace[i]!.fouler = foulerLines.slice();
+    }
   });
   // Who recovered the loose balls, drawn last so every split above keeps its draws (T327).
   for (let i = 0; i < loose.length; i += 2) {
     const role = ROLES.defend(LAST_BAND - loose[i]!, 'positioning');
-    multinomialDraw(r, loose[i + 1]!, opp.weights(period, role)).forEach(
-      (x, line) => (opp.rows[line]!.detail[PD.highTurnovers]! += x),
-    );
+    const recovered = multinomialDraw(r, loose[i + 1]!, opp.weights(period, role));
+    recovered.forEach((x, line) => (opp.rows[line]!.detail[PD.highTurnovers]! += x));
+    if (looseMoves) moveTrace![looseMoves[i / 2]!]!.recovered = recovered.slice();
   }
+}
+
+function emptyTraceMove(): AggregateTraceMove {
+  return { attempts: [], completed: [], broke: [], offside: [], won: [], recovered: [] };
 }

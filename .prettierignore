@@ -14,3 +14,6 @@ packages/engine/src/grid/baselines.json
 
 # Portable game exports are user data, not source files.
 *.haeram-save.json
+
+# settled matches written by scripts/export-settled.ts as compact JSON, byte-identical per run (T819)
+scripts/match-proto/fixtures

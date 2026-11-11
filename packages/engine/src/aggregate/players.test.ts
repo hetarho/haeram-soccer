@@ -9,7 +9,13 @@ import { isPassKind } from './ledger';
 import { onPitchAt, planParticipation, playedMinutes } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
-import type { AggregatePlan, AggregateProfile, AggregateSide, AggregateSkillAccess } from './types';
+import type {
+  AggregateAttributionTrace,
+  AggregatePlan,
+  AggregateProfile,
+  AggregateSide,
+  AggregateSkillAccess,
+} from './types';
 
 // Synthetic, explicitly marked test data: skills that differ by line, a full bench (→ARCH-21).
 const neutral: AggregateProfile = { possession: 0, pass: 0, shot: 0, defense: 0, pressure: 0 };
@@ -161,5 +167,65 @@ describe('aggregate player attribution (→MATCH-11, MATCH-13, MATCH-27)', () =>
     const a = match('repeat').players;
     match('another');
     expect(match('repeat').players).toEqual(a);
+  });
+
+  const traced = (fixture: string, length: 90 | 120 = 90) => {
+    const m = match(fixture, 2008, length);
+    const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+    const players = attributePlayerFacts(
+      m.input,
+      m.plan,
+      m.participation,
+      m.facts,
+      aggregateStreams('synthetic', fixture),
+      trace,
+    );
+    return { ...m, traced: players, trace };
+  };
+  const total = (xs: readonly number[]) => xs.reduce((n, x) => n + x, 0);
+
+  it('a trace changes no fact', () => {
+    for (const fixture of fixtures(8, 'trace-same')) {
+      const { players, traced: withTrace } = traced(fixture, fixture.endsWith('3') ? 120 : 90);
+      expect(withTrace).toEqual(players);
+    }
+  });
+
+  it('a trace adds up to the ledger and the lines', () => {
+    for (const fixture of fixtures(12, 'trace-sum')) {
+      const { facts, players, trace } = traced(fixture, fixture.endsWith('5') ? 120 : 90);
+      for (const side of [0, 1] as const) {
+        const ledger = facts.ledger.sides[side];
+        expect(trace.moves[side].length).toBe(ledger.moves.length);
+        expect(trace.fouls[side].length).toBe(ledger.fouled.length);
+        const passes = new Map<number, number>(),
+          takeOns = new Map<number, number>();
+        ledger.moves.forEach((move, i) => {
+          const t = trace.moves[side][i]!;
+          expect(total(t.attempts), `attempts ${i}`).toBe(move.attempts);
+          expect(total(t.completed), `completed ${i}`).toBe(move.completed);
+          expect(total(t.broke), `broke ${i}`).toBe(move.lineBreaking);
+          expect(total(t.offside), `offside ${i}`).toBe(move.offside);
+          const pass = isPassKind(move.kind);
+          expect(total(t.won), `won ${i}`).toBe(
+            pass ? move.intercepted : move.attempts - move.completed,
+          );
+          t.attempts.forEach((k, line) => {
+            expect(t.completed[line]!).toBeLessThanOrEqual(k);
+            const into = pass ? passes : move.kind === 'takeOn' ? takeOns : undefined;
+            into?.set(line, (into.get(line) ?? 0) + k);
+          });
+        });
+        for (const l of players.sides[side]) {
+          expect(passes.get(l.line) ?? 0, `passes ${l.line}`).toBe(l.metrics[M.passes]);
+          expect(takeOns.get(l.line) ?? 0, `take-ons ${l.line}`).toBe(l.detail[PD.takeOns]);
+        }
+        ledger.fouled.forEach((row, i) => {
+          const t = trace.fouls[side][i]!;
+          expect(t.booked.length + total(t.fouled), `fouled ${i}`).toBe(row.n);
+          expect(t.booked.length + total(t.fouler), `fouler ${i}`).toBe(row.n);
+        });
+      }
+    }
   });
 });
