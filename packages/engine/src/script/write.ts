@@ -67,6 +67,7 @@ const CM = {
   paceBias: C.paceBias * 100,
   setPieceWait: C.setPieceWait * 100,
   placeWeight: C.placeWeight * 100,
+  idleWinner: C.idleWinner * 100,
 };
 const KIND = (code: number) => EVENT_KINDS[code]!;
 const other = (t: Side): Side => (t === 0 ? 1 : 0);
@@ -273,6 +274,21 @@ function write(
     total[t.side]!++;
     if (ends[i]) endsTotal[t.side]!++;
   });
+  /** The line of the other side a touch's record names as winning the ball from it, or −1. */
+  const winnerOf = touches.map((t) => {
+    const r = t.release;
+    const id =
+      r !== undefined && 'event' in r ? r.event : r === undefined ? (t.carries.at(-1) ?? -1) : -1;
+    if (id < 0) return -1;
+    const e = detail.events[id]!;
+    const res = e[EV.result]!;
+    return res === R.intercepted || res === R.tackled || res === R.looseRecovered
+      ? e[EV.other]!
+      : -1;
+  });
+  /** Unplayed touches by side and line. */
+  const touchesLeft = lines.map((l) => l.map(() => 0));
+  for (const t of touches) touchesLeft[t.side]![t.actor]!++;
   /** Whether touch `i` releases a pass the record flags as a corner's or free kick's delivery. */
   const setPiece = touches.map(
     (t) =>
@@ -408,6 +424,9 @@ function write(
     if (fixedNow(i)) cost -= met ? CM.fixedPush : CM.fixedPull + Math.round(fill * CM.fixedRamp);
     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
     if (setPiece[i]) cost += CM.setPieceWait;
+    // A row whose recorded winner has no touch left hands him a ball he must lose at once.
+    const w = winnerOf[i]!;
+    if (w >= 0 && touchesLeft[other(team)]![w]! === 0) cost += CM.idleWinner;
     if (ends[i]) {
       // Ahead of the other side, or behind in spending its own possession-ending touches, a side
       // ends its possession sooner; so neither side runs out of touches, nor of ways to lose the ball.
@@ -428,6 +447,16 @@ function write(
     const r = touches[i]!.release;
     if (r === undefined || !('shot' in r)) return false;
     return detail.shots[r.shot]![SH.passer]! < 0;
+  };
+  /**
+   * Who of `team` wins a ball the record names no winner for (a loose ball, a block): the nearest
+   * man with a touch still to play this minute, so he does not lose it at once; else the nearest.
+   */
+  const winnerFor = (team: Side, at: Vec): number => {
+    const busy = new Set(unplayed(team).map((i) => touches[i]!.actor));
+    const idle = onNow(team).filter((line) => !busy.has(line));
+    const best = nearestBy(team, at, idle);
+    return busy.has(best) ? best : nearestBy(team, at);
   };
   /** The holder has the ball from a recorded completed pass, his own carries since (as the count reads an assist). */
   const fed = (): boolean => {
@@ -544,7 +573,7 @@ function write(
     const to = intoCell(side, toCell, spotOf(side, actor));
     if (res === R.intercepted || res === R.looseRecovered || res === R.tackled) {
       const at = res === R.tackled ? ball : to;
-      const by = e[EV.other]! >= 0 ? e[EV.other]! : nearestBy(other(side), at);
+      const by = e[EV.other]! >= 0 ? e[EV.other]! : winnerFor(other(side), at);
       push({
         ...base,
         to,
@@ -597,7 +626,7 @@ function write(
                 : 0,
             );
     const opponent =
-      out === 'save' ? keeper : out === 'block' ? nearestBy(other(side), from) : undefined;
+      out === 'save' ? keeper : out === 'block' ? winnerFor(other(side), from) : undefined;
     const outcome: ScriptBeatOutcome =
       out === 'goal' ? 'goal' : out === 'save' ? 'saved' : out === 'block' ? 'blocked' : 'wide';
     push({
@@ -639,6 +668,7 @@ function write(
   const playTouch = (i: number, delivering?: Owed) => {
     played[i] = true;
     const t = touches[i]!;
+    touchesLeft[t.side]![t.actor]!--;
     done[t.side]!++;
     if (ends[i]) endsDone[t.side]!++;
     nextOwed = t.next ?? -1;
@@ -662,7 +692,7 @@ function write(
         ball = to;
         continue;
       }
-      const by = e[EV.other]! >= 0 ? e[EV.other]! : nearestBy(other(side), ball);
+      const by = e[EV.other]! >= 0 ? e[EV.other]! : winnerFor(other(side), ball);
       push({
         side,
         move: KIND(e[EV.kind]!),
@@ -742,7 +772,8 @@ function write(
     }
     // A goal kick is the keeper's, so the touch it is delivered to is another man's.
     const keeper = keeperOf(side);
-    const nextTouch = choose(side, spotCell, o.kind === 'goalKick' ? keeper : -1, undefined, true);
+    // A connective delivery is no recorded pass, so it is nobody's key pass.
+    const nextTouch = choose(side, spotCell, o.kind === 'goalKick' ? keeper : -1, undefined, false);
     const taker =
       o.kind === 'goalKick'
         ? keeper
@@ -770,13 +801,25 @@ function write(
     ball = to;
   };
 
+  /** Beats written before the minute being written. */
+  let minuteBeats = 0;
+  /** Whether a beat from `from` on plays a recorded row. */
+  const recordedSince = (from: number) => {
+    for (let k = from; k < beats.length; k++) {
+      const b = beats[k]!;
+      if (b.event !== undefined || b.shot !== undefined || b.foul !== undefined) return true;
+    }
+    return false;
+  };
   /** A guard against a minute that never ends: no detail needs this many beats. */
   const BEAT_LIMIT = 40 * touches.length + 1000;
   const settledMinute = (): boolean => {
     for (;;) {
       if (beats.length > BEAT_LIMIT) return false;
-      // The minute ends with its share of touches played and nothing it must hold left.
-      if (quotaMet() && !fixedLeft()) break;
+      // The minute ends with its share of touches played, nothing it must hold left and a recorded
+      // row played in it: a minute after one that ran past its share, or whose only touch was a
+      // restart a recorded pass delivered and still in flight, would otherwise stand empty.
+      if (quotaMet() && !fixedLeft() && recordedSince(minuteBeats)) break;
       const mine = unplayed(side);
       const theirs = unplayed(other(side));
       if (owed !== null) {
@@ -787,7 +830,8 @@ function write(
       }
       if (pending !== null) {
         const p: Pending = pending;
-        const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
+        // A completed pass is not played to a chance its shooter made alone; a pass kept loose is.
+        const i = choose(p.side, cellAt(p.side, ball), p.actor, ball, p.outcome === 'complete');
         if (i >= 0 && touches[i]!.actor !== p.actor) {
           resolve(touches[i]!.actor);
           // He was chosen for that touch: it is the one he plays.
@@ -805,16 +849,15 @@ function write(
         continue;
       }
       // The minute waits only on the other side's fixed touch: with no touch left that ends this
-      // possession, or with that touch a goal nobody's pass made, the holder loses the ball to it.
+      // possession, the holder loses the ball to it. A chance made alone is not handed the ball by
+      // a heavy touch, as the prototype did for goals: the possessions would pay it back with
+      // another (measured on the ten: 249 heavy touches handing it to every lone chance, 188 to
+      // those the holder's side could spare, 176 to none); its shooter gets the ball as any man
+      // does, never straight off a completed pass (`fed`).
       if (quotaMet() && fixedLeft(other(side))) {
         const waiting = theirs.filter(fixedNow);
-        // A side with a fixed touch of its own plays it first, so two lone chances in one minute
-        // do not hand the ball to each other for ever.
-        const lone = mine.some(fixedNow) ? undefined : waiting.find((i) => unassisted(i));
-        if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
-          miscontrol(
-            touches[lone ?? cheapest(other(side), waiting, cellAt(other(side), ball))]!.actor,
-          );
+        if (waiting.length > 0 && !mine.some((i) => ends[i])) {
+          miscontrol(touches[cheapest(other(side), waiting, cellAt(other(side), ball))]!.actor);
           continue;
         }
       }
@@ -856,20 +899,12 @@ function write(
 
   for (minute = 0; minute < MINUTES; minute++) {
     minuteStart = done[0]! + done[1]!;
+    minuteBeats = beats.length;
     if (minute === 0 || minute === 45) {
       pending = null;
       owed = { kind: 'kickOff', side: minute === 0 ? 0 : 1, spot: CENTRE };
-      // A half starts on its minute, whether or not the minute holds a touch, and a kick-off a
-      // recorded pass delivers is received in it (the prototype's could wait minutes for it).
+      // A half starts on its minute, whether or not the minute holds a touch.
       deliver();
-      if (pending !== null) {
-        const p: Pending = pending;
-        const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
-        if (i >= 0 && touches[i]!.actor !== p.actor) {
-          resolve(touches[i]!.actor);
-          intended = i;
-        } else resolve(nearestBy(p.side, ball, [p.actor]));
-      }
     }
     if (!settledMinute()) return { problems: [`stuck:minute:${minute}`] };
     // A man whose stint ends with this minute leaves nothing in it: his pass in flight is received

@@ -37,4 +37,11 @@ export const SCRIPT_CONFIG = {
   minPass: 7,
   /** Metres across the goal a missed shot is aimed, either side of the middle. */
   missWide: 5,
+  /**
+   * Metres a row costs whose recorded winner has no touch left to play: he would lose the ball at
+   * once by a heavy touch (T826). Measured on the ten over seeds fit/a/b/c with unnamed winners the
+   * nearest man: 0 → 180.5 heavy touches a run of ten on average, 30 → 175.0, link metres within
+   * 0.2%; with them the nearest man with a touch left (write.ts `winnerFor`) and 30: 171.8.
+   */
+  idleWinner: 30,
 } as const;

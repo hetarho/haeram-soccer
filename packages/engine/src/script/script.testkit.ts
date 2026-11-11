@@ -2,18 +2,21 @@
  * Details for the script writer's tests (T826): the match prototype's ten settled matches
  * (`fixtures/s01.json`–`s10.json`, copied from scripts/match-proto/fixtures/settled) read as
  * `MatchDetail`s, and a small hand-made one. A prototype file numbers players `side * 11 + slot` and
- * names a formation and style; every exported match fielded its starters alone, so a player's line
- * is his slot, his side plays the tactic of its style and each slot the role its formation gives it
- * (player.ts `FORMATIONS`). Cells keep their numbers (scripts/export-settled.ts `protoCell`).
+ * names a formation, style and roles; every exported match fielded its starters alone, so a
+ * player's line is his slot, his side plays the tactic of its style and each slot keeps the file's
+ * role under the engine's id (`ENGINE_ROLE`, as staging/shape.test.ts maps the prototype's squads),
+ * so the engine's shape stands each man where the prototype's did. Cells keep their numbers
+ * (scripts/export-settled.ts `protoCell`).
  */
 import { readFileSync } from 'node:fs';
+import type { RoleId } from '../../../contracts/src/player';
 import type { Tactic } from '../../../contracts/src/types';
 import { FORMATIONS } from '../player';
 import { EV, FO, INCIDENT_KINDS, R, type DetailSide, type MatchDetail } from './detail';
 
 interface ProtoFile {
   id: string;
-  sides: { style: string }[];
+  sides: { style: string; players?: { role: string }[] }[];
   score: [number, number];
   added: [number, number];
   events: number[][];
@@ -25,14 +28,27 @@ interface ProtoFile {
 const DIR = new URL('./fixtures/', import.meta.url);
 export const FIXTURE_IDS = ['s01', 's02', 's03', 's04', 's05', 's06', 's07', 's08', 's09', 's10'];
 
-const sideOf = (tactic: Tactic, id: string, side: number): DetailSide => ({
+/**
+ * The prototype's role ids the engine names otherwise, as staging/shape.test.ts maps them; none of
+ * the three moves its slot's anchor in either shape. Every other id the files hold is the engine's.
+ */
+const ENGINE_ROLE: Record<string, RoleId> = {
+  keeper: 'shotStopper',
+  fullBack: 'defensiveFullBack',
+  centreBack: 'coverDefender',
+};
+const sideOf = (
+  tactic: Tactic,
+  id: string,
+  side: number,
+  roles: readonly string[] = [],
+): DetailSide => ({
   tactic,
-  lines: FORMATIONS[tactic].slots.map((s, slot) => ({
-    id: `${id}:${side}:${slot}`,
-    slot,
-    role: s.role,
-    position: s.position,
-  })),
+  lines: FORMATIONS[tactic].slots.map((s, slot) => {
+    const proto = roles[slot];
+    const role = proto === undefined ? s.role : (ENGINE_ROLE[proto] ?? (proto as RoleId));
+    return { id: `${id}:${side}:${slot}`, slot, role, position: s.position };
+  }),
 });
 
 /**
@@ -101,7 +117,14 @@ export function fromProto(file: ProtoFile, allCards = false): MatchDetail {
     length: 90,
     added: [...file.added],
     score: [...file.score],
-    sides: [sideOf(tactic(0), file.id, 0), sideOf(tactic(1), file.id, 1)],
+    sides: [0, 1].map((k) =>
+      sideOf(
+        tactic(k),
+        file.id,
+        k,
+        file.sides[k]!.players?.map((p) => p.role),
+      ),
+    ) as [DetailSide, DetailSide],
     stints: [0, 1].flatMap((side) =>
       Array.from({ length: 11 }, (_, slot) => [side, slot, slot, 0, 90]),
     ),
