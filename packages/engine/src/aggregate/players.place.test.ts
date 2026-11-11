@@ -1,4 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
+import { normalQuantile } from '../../../../scripts/lib/match-parity';
 import type { Fixture, World } from '../../../contracts/src/types';
 import { careerWorld } from '../career.testkit';
 import { eraRules } from '../grid/setup';
@@ -169,22 +170,33 @@ describe('revision 11 attribution by place (→MATCH-16)', () => {
         sums.set(key, row);
       }
     }
+    // This is one joint claim about every slot/action class. Pointwise 95% intervals would
+    // falsely fail at least one of 88 independent null comparisons about 99% of the time.
+    // Bonferroni keeps family-wise coverage at 95% even though these paired rows are correlated.
+    const confidence = 0.95;
+    const critical = normalQuantile(1 - (1 - confidence) / (2 * sums.size));
     let worstRelative = 0;
     for (const [key, row] of sums) {
       const n = row.differences.length;
       const mean = row.differences.reduce((a, b) => a + b, 0) / n;
       const variance = row.differences.reduce((sum, d) => sum + (d - mean) ** 2, 0) / (n - 1);
-      const interval = 1.96 * Math.sqrt(variance / n);
+      const interval = critical * Math.sqrt(variance / n);
       const margin = (0.03 * row.base) / n;
       if (row.base > 0) worstRelative = Math.max(worstRelative, Math.abs(mean) / (row.base / n));
       expect(
         Math.abs(mean),
-        `${key}: mean ${mean}, 3% ${margin}, paired 95% ${interval}`,
+        `${key}: mean ${mean}, 3% ${margin}, simultaneous paired 95% ${interval}`,
       ).toBeLessThanOrEqual(Math.max(margin, interval));
     }
     console.info(
       'T824 expected totals',
-      JSON.stringify({ fixtures: 300, classesAndSlots: sums.size, worstRelative }),
+      JSON.stringify({
+        fixtures: 300,
+        classesAndSlots: sums.size,
+        confidence,
+        critical,
+        worstRelative,
+      }),
     );
   });
 

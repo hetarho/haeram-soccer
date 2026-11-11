@@ -41,6 +41,24 @@ const scene = (s: ReturnType<typeof write>, kind: string) =>
   s.beats.find((b) => b.incidents?.some((x) => x.kind === kind))!;
 
 describe('script incidents and special scenes', () => {
+  it('plays both sides fixed touches without endlessly yielding the ball between them', () => {
+    // The minute quota is already met, but both sides still owe a fixed action. A completed
+    // delivery and a foul both keep possession, so neither may yield before playing its own.
+    const d = smallDetail(
+      [
+        [1, 0, 3, 0, 34, 37, 8, 0, 0, -1, 0],
+        [1, 1, 6, 0, 34, 39, 8, 0, 0, -1, 0],
+      ],
+      [[1, 1, 37, 0, 1, 42, 2, 0, 9, 8, 0, 0]],
+      [[0, 17, 4, 3, 1, 0, 0]],
+    );
+    d.incidents = [[1, 1, 0, 4, -1, 0]];
+    const s = write(d);
+    expect(s.beats.filter((b) => b.event !== undefined)).toHaveLength(2);
+    expect(s.beats.filter((b) => b.shot !== undefined)).toHaveLength(1);
+    expect(s.beats.filter((b) => b.foul !== undefined)).toHaveLength(1);
+    expect(s.beats.length).toBeLessThan(30);
+  });
   it('keeps a key-pass delivery attached to a non-goal shot through a same-minute change', () => {
     const d = smallDetail(
       [[0, 0, 0, 0, 22, 32, 5, 0, 0, -1, 0]],

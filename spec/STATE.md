@@ -16,8 +16,11 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
+| rs12 | ihaelam-ui-MacBookPro | autopilot | 2026-11-11T23:08Z | 2026-11-11T23:08Z | T849 |
 
 ## inbox
+- 261112 decided T849 ARCH-21: the 300-fixture expected-total check fits every numerical marginal within 9.72e-9, but its 88 pointwise 95% comparisons reject seven rows → keep the same 300 fixtures and 3% margin, use simultaneous paired 95% confidence with Bonferroni and the existing normalQuantile, and add a 100-case exact-marginal property check (alt: tune simulation or seeds to fit this sample, rejected). No football parameter or game output changes for this statistical test correction.
+- 261112 decided T849 ARCH-30: the owner resumed work until 09:30 KST, with explicit fallback to push unfinished progress to wip/cc12-handoff; main is merged and pushed only if the requested work is complete and verified. rs12 handles the failed gate first and preserves all remaining work at the deadline.
 - 261112 decided T848 MATCH-27 MATCH-38 MATCH-39: how minute frames count a prefix whose earned restarts and recorded deliveries are not yet balanced → share pure numerical counters with an explicit prefix scope, while complete records still call the unchanged ledger guard (alt: drop the settled-ledger guard | require each presentation minute to be a complete match). Fixed delivery chains wait for every entrant, and a booked leaving fouler finishes his actual foul before his exit; no settled fact is re-credited. cc12
 - 261112 decided T848 MATCH-16 ARCH-21: how to address the failed locality and expected-total checks → use the recorded start cell for tackles, the arrival cell for interceptions, lower the already-approved place reach from 12 to 11 m, and converge the proportional fit with a bounded 128-round cap (alt: raise the locality thresholds | widen the 3% or 95% expected-total gate | accept eight-round residual bias). A two-group isolated example at eight rounds gives 50.752791/49.247209 against exact 50/50 targets; the converged unit case holds both to eight decimals. All statistical acceptance thresholds and the revision-10 path stay unchanged; host batch measurements remain required. cc12
 - 261112 decided T837 ARCH-34: how to hash the old grid observation whose interval-whistle events carry eight NaN coordinates → tag each non-finite kind before canonical diagnostic hashing and retain the exact paths, rather than claim a valid picture or discard fields (alt: JSON null conversion | omit whistle coordinates | use v8 byte hashes, which varied on identical bundles). The new script/motion hashes remain strict canonical values; no game DTO or save changes. cc12
@@ -955,7 +958,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
-| T849 | Fix final gate failure | ARCH | - | todo |
+| T849 | Fix final gate failure | ARCH | - | doing@261112.rs12 |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |

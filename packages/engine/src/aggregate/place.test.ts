@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import fc from 'fast-check';
 import {
   isScriptedModel,
   MATCH_MODEL_REVISION,
@@ -12,6 +13,43 @@ import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './config';
 import { fitPlaceWeights, opposingCell, placeDistance, placeTerm } from './place';
 
 describe('placed attribution primitives', () => {
+  it('preserves target expectations across many asymmetric action classes', () => {
+    const vector = () =>
+      fc.array(fc.integer({ min: 2, max: 100 }), { minLength: 11, maxLength: 11 });
+    fc.assert(
+      fc.property(
+        fc.array(
+          fc.record({
+            count: fc.integer({ min: 1, max: 30 }),
+            weights: vector(),
+            factors: vector(),
+          }),
+          { minLength: 1, maxLength: 12 },
+        ),
+        (rows) => {
+          const groups = rows.map((row) => ({
+            count: row.count,
+            weights: [...row.weights, 0],
+            placed: [...row.weights.map((w, p) => (w * row.factors[p]!) / 100), 0],
+          }));
+          const fitted = fitPlaceWeights(groups);
+          for (let p = 0; p < 12; p++) {
+            const expected = groups.reduce(
+              (sum, row) =>
+                sum + (row.count * row.weights[p]!) / row.weights.reduce((a, b) => a + b, 0),
+              0,
+            );
+            const actual = fitted.reduce(
+              (sum, row, i) => sum + (groups[i]!.count * row[p]!) / row.reduce((a, b) => a + b, 0),
+              0,
+            );
+            expect(Math.abs(actual - expected)).toBeLessThanOrEqual(1e-7 * Math.max(1, expected));
+          }
+        },
+      ),
+      { seed: 849, numRuns: 100 },
+    );
+  });
   it('declares revision 11 without activating it', () => {
     expect(MATCH_MODEL_REVISIONS.at(-1)).toBe('scripted-aggregate-11');
     expect(MATCH_MODEL_REVISION).toBe('continuous-aggregate-10');

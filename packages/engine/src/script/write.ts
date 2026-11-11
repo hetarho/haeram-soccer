@@ -1024,9 +1024,9 @@ function writeFitted(settled: Settled, seed: string): Script {
         miscontrol(touches[choose(other(side), cellAt(other(side), ball))]!.actor);
         continue;
       }
-      // The minute waits only on the other side's fixed touch: with no touch left that ends this
-      // possession, or with that touch a goal nobody's pass made, the holder loses the ball to it.
-      if (quotaMet() && fixedLeft(other(side))) {
+      // Yield to the other side's fixed touch only after this side has played its own. Otherwise
+      // two sides with possession-preserving fixed touches can yield forever without playing one.
+      if (quotaMet() && !fixedLeft(side) && fixedLeft(other(side))) {
         const waiting = theirs.filter((i) => touches[i]!.minute === minute);
         const lone = waiting.find((i) => unassisted(i));
         if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
