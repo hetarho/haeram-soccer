@@ -917,6 +917,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
+| T823 | Fix final gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -944,11 +945,7 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
-- inspect work board for remaining tasks
-- owner: open `artifacts/match-proto-261111/index.html` beside `artifacts/match-proto-261110/index.html` (a different ten minutes: T815's `grammar.minPass` changed the script, so the second page plays `demo#0` 2-3 where the first played `demo#17` 1-2; compare the overall impression) and compare the three complaints (review/match-engine-split-261110 F2–F4): (1) passes to a man standing on the passer and teammates sticking together — e.g. 07:11 H8→H3 2.4 m, the huddles at 01:13 H6+H8, 07:06 H2+H7, 08:35 A8+A9; (2) both teams wheeling round at a turnover — settled turnovers at 01:02, 03:56, 03:58, counters at 00:08, 02:49 — and how near defenders stay to attackers; (3) everyone starting and stopping together, anywhere in open play. The artifacts README holds the scene list, both 31-metric tables and what still fails (huddles ~1–2 a minute, restarts 4.2–5.0, mark.near ~0.3; summed passes 101 → 115 → 117 of 155); then the verdict on the script→staging split (F1), and whether the huddle and marking limits become staging rules (planning)
-- owner: open `artifacts/match-proto-fit/index.html` (s01, a 1-1 between two 4-3-3 possession sides, ninety minutes fitted to its settled result and staged; speeds 1×/5×/20×) beside `artifacts/match-proto-fit/README.md`: the record of s01 beside its staged count (0 cells differ) and the scenes — goals 76:10 H11 (cut-back H10) and 81:57 A11 (cut-back A9), shots 04:57/13:16/18:57, first corner 02:32, first offside 03:17 A2 → A9, the longest invented carries 21:42 A5 68.7 m, 42:52 H11 59.0 m, 28:48 H6 58.3 m, heavy touches 10:36/16:24/21:31, the busiest minute 42 (29 beats); then the verdict on whether a fitted match reads as football
-- ideation match-script-and-staging (open; T822's result is in, the owner's order of 261111 no longer holds the conversion back; its other open items and [?] lines remain): update-ssot MATCH WEB HIST SAVE ARCH from the ideation and create-task for phase B and phase C, starting from T822's findings (`artifacts/match-proto-fit/README.md`): exact on all ten; per match 381 invented carries (5.4 km, at the record's own floor of 243–337 rows starting where the ball never arrives), 17 heavy touches (the two sides' possession-ending rows differ by 1–32), 11 connective restarts; recorded actors a median 21 m from their role's place (grammar scripts 9.9 m), so contests are stretched or late; `writeFitted` ~250 ms and staging ~8 s a match on this host, the page 13 MB; whether the aggregate path draws its flows as chains and picks its players with the pitch in mind is phase B's planning question; T689 closes at that conversion
+- implement-task T823
 
 ## log
 - 261111 T822 done: the fitted writer plays the rows the record gives no minute where the order of play reaches them (`dealFixed`, whole-match greedy `touchCost`, an even share of touches a minute, possession-ending rows spent at one pace by both sides); all ten exact; per match link carries 1,022 → 381 (26.2 → 5.4 km), heavy touches 196 → 17, clock ratio 1.58–1.92 → 1.03–1.18, staging ~8 s; s08's through-ball stop and s09's keeper-to-himself goal kick fixed; findings and the s01 page in `artifacts/match-proto-fit` fv11
