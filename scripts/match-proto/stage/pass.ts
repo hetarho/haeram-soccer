@@ -16,6 +16,7 @@ import type { BeatContext } from './perform.ts';
 import { performThrough } from './through.ts';
 import {
   ensureOwner,
+  isLate,
   positionsOf,
   pushEvent,
   runUntil,
@@ -258,7 +259,45 @@ export function performPass(state: StageState, ctx: BeatContext): void {
 
 /** `pass:intercepted` and `clearance:intercepted`: the ball ends at the interceptor's feet on its path. */
 export function performPassIntercepted(state: StageState, ctx: BeatContext): void {
-  if (ctx.beat.through) return performThrough(state, ctx);
+  if (ctx.beat.through && ctx.beat.outcome !== 'loose') return performThrough(state, ctx);
+  winOnPath(state, ctx, ctx.beat.outcome === 'loose' ? 'loose' : 'intercept');
+}
+
+/**
+ * `pass:loose` and `clearance:loose`: with an opponent, he wins it on its path as an interceptor
+ * does (a `loose` event); without one the ball lands at the beat's aim and lies for the next beat.
+ */
+export function performPassLoose(state: StageState, ctx: BeatContext): void {
+  if (ctx.beat.opponent !== undefined) return winOnPath(state, ctx, 'loose');
+  const beat = ctx.beat;
+  setPossession(state, beat);
+  ensureOwner(state, beat.actor);
+  const R = clampToPitch(beat.to, 0.5);
+  const speed = speedOf(beat);
+  const held = receiverHold(state, beat, beat.receiver, R);
+  holdForPass(
+    state,
+    beat.actor,
+    beat.receiver,
+    R,
+    speed,
+    beat.hold,
+    pressWait(state, beat),
+    held.order,
+  );
+  kickEvent(state, beat.actor, beat.receiver);
+  const flight = startFlight(state, R, speed, beat.loft);
+  state.orders.delete(beat.actor);
+  runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + PROTO_CONFIG.tick);
+  const ball = state.ball;
+  ball.mode = 'loose';
+  ball.owner = -1;
+  delete ball.flight;
+  pushEvent(state, { kind: 'loose', actor: beat.actor, at: [ball.pos[0], ball.pos[1]] });
+  state.orders.clear();
+}
+
+function winOnPath(state: StageState, ctx: BeatContext, kind: 'intercept' | 'loose'): void {
   const beat = ctx.beat;
   const scripted = beat.opponent;
   if (scripted === undefined) throw new Error('interception without opponent ' + beat.index);
@@ -306,14 +345,16 @@ export function performPassIntercepted(state: StageState, ctx: BeatContext): voi
   if (receiver !== undefined) state.orders.set(receiver, { target: R, pace: 'sprint' });
   runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + PROTO_CONFIG.tick);
   // A late interceptor collects the ball where it lies rather than it jumping to his feet.
+  const late = state.bound && isLate(state, opponent);
   ensureOwner(state, opponent);
   pushEvent(state, {
-    kind: 'intercept',
+    kind,
     actor: beat.actor,
     other: opponent,
     at: [state.ball.pos[0], state.ball.pos[1]],
     recast: r.recast,
     stretch: r.stretch,
+    ...(late ? { late: true } : {}),
   });
   state.orders.clear();
 }

@@ -148,6 +148,8 @@ export interface Frame {
   live: boolean;
   /** Index of the beat being performed. */
   beat: number;
+  /** Match seconds of the record's clock (a fitted script's frames only, T821). */
+  clock?: number;
   /** 44 numbers: x0, y0, x1, y1, … by player index (world frame). */
   p: number[];
 }
@@ -165,7 +167,9 @@ export type StageEventKind =
   | 'block'
   | 'wide'
   | 'restart'
-  | 'whistle';
+  | 'whistle'
+  /** A heavy touch or a loose pass: the ball runs to `other` (or lies for the side when absent). */
+  | 'loose';
 export interface StageEvent {
   t: number;
   beat: number;
@@ -183,6 +187,8 @@ export interface StageEvent {
   recast?: boolean;
   /** The opponent needed the lunge allowance to get there. */
   stretch?: boolean;
+  /** The opponent was still not there when the ball arrived; the ball became his once he got there. */
+  late?: boolean;
   /** Goal events: the score after the goal. */
   score?: readonly [number, number];
 }
@@ -198,6 +204,8 @@ export interface Playback {
   frames: Frame[];
   events: StageEvent[];
   score: readonly [number, number];
+  /** Staged ticks per stored frame (default 1); events keep their times. */
+  stride?: number;
 }
 export const SHOT_OUTCOMES: readonly BeatOutcome[] = ['goal', 'saved', 'blocked', 'wide'];
 export const PASS_KINDS: readonly BeatKind[] = [

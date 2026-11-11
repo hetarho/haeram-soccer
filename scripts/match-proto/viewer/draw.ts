@@ -15,8 +15,8 @@ import {
 import type { Playback, Vec } from '../core/types.ts';
 import {
   captionAt,
-  clockLabel,
   flashesAt,
+  hudClock,
   offsideLines,
   scoreAt,
   toCanvas,
@@ -239,7 +239,7 @@ const hud = (
   ctx.fillStyle = C.away;
   ctx.fillText(playback.fixture.teams[1].code, em * 4.6, mid);
   ctx.fillStyle = C.hudText;
-  ctx.fillText(clockLabel(sample.t), em * 6.4, mid);
+  ctx.fillText(hudClock(playback, sample), em * 6.4, mid);
   ctx.font = `${viewer.captionFontPx}px monospace`;
   ctx.fillText(captionAt(playback, sample.t), em * 10.2, mid);
 };

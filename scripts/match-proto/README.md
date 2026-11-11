@@ -11,8 +11,9 @@ owner can watch whether staging a script reads as football. Nothing here is prod
   built-ins, `vitest` (tests) and `esbuild` (the viewer's `build.ts` only). Nothing is imported
   from `packages/`, `apps/` or `tests/`, and no task of the chain edits a production file.
 - Determinism (ARCH-5): the only randomness is `createRng` in `core/rng.ts`. No `Math.random`,
-  `Date.now` or `performance.now` outside `viewer/`. Plain `Math.*` functions are fine here; the
-  portable-math lint covers `packages/` only.
+  `Date.now` or `performance.now` outside `viewer/`, except `check/report.ts` timing its own run
+  (`fit.writeMs`, `fit.stageMs`): a CLI outside `stage/` whose two numbers are printed, never fed
+  back. Plain `Math.*` functions are fine here; the portable-math lint covers `packages/` only.
 - No authored display prose anywhere (ARCH-32 stays untouched): the viewer and the CLIs print only
   digits, symbols and identifiers that come from data (`beat.move`, `beat.kind`, role ids, metric
   ids). No Korean literal in any file. Prose, if ever wanted, must become message IDs in the

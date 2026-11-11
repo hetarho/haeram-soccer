@@ -91,6 +91,11 @@ export interface StageState {
   score: [number, number];
   frames: Frame[];
   events: StageEvent[];
+  /** A script written from a settled result (T821): nobody the record names may be replaced. */
+  bound: boolean;
+  /** The record's match clock (a bound script's frames): it runs in live play up to `clockCap`. */
+  clock?: number;
+  clockCap: number;
 }
 
 const SHAPE = PROTO_CONFIG.shape;
@@ -119,6 +124,7 @@ const recordFrame = (state: StageState): void => {
     phase: state.phase,
     live: state.live,
     beat: state.beat,
+    ...(state.clock === undefined ? {} : { clock: round2(state.clock) }),
     p,
   });
 };
@@ -166,7 +172,10 @@ export function createStage(script: Script): StageState {
     score: [0, 0],
     frames: [],
     events: [],
+    bound: script.bound === true,
+    clockCap: Infinity,
   };
+  if (state.bound && first.clock !== undefined) state.clock = first.clock;
   giveBall(state, first.actor);
   remember(state);
   recordFrame(state);
@@ -462,6 +471,10 @@ export function step(state: StageState): void {
   });
   state.tickCount += 1;
   state.t = Math.round(state.tickCount * tick * 1000) / 1000;
+  // The record's clock runs one match second per staged second in live play, never past the next beat's.
+  if (state.clock !== undefined && state.live) {
+    state.clock = Math.min(state.clock + tick, state.clockCap);
+  }
   updateBall(state);
   recordFrame(state);
 }
@@ -499,6 +512,13 @@ export function setPossession(state: StageState, beat: Beat): void {
   state.tight = beat.reason === 'pressed';
 }
 
+const BOUND_WAIT = 5;
+
+/** Whether player `index` is still out of `stage.controlRange` of the ball (a late winner). */
+export function isLate(state: StageState, index: number): boolean {
+  return dist(state.bodies[index].pos, state.ball.pos) > PROTO_CONFIG.stage.controlRange;
+}
+
 /** Makes sure `actor` has the ball: he goes to it (a loose ball rolls toward him) and takes it. */
 export function ensureOwner(state: StageState, actor: number): void {
   const ball = state.ball;
@@ -510,7 +530,8 @@ export function ensureOwner(state: StageState, actor: number): void {
   }
   state.orders.set(actor, { target: () => state.ball.pos, pace: 'sprint' });
   const stage = PROTO_CONFIG.stage;
-  const end = state.t + stage.settleMax;
+  // A bound script's man is never replaced, so the ball waits for him (a pitch's length at most).
+  const end = state.t + (state.bound ? stage.settleMax * BOUND_WAIT : stage.settleMax);
   const near = (): boolean => dist(state.bodies[actor].pos, ball.pos) <= stage.controlRange;
   while (!near() && state.t < end - 1e-9) {
     if (ball.mode === 'loose') {

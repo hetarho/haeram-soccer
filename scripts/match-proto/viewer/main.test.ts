@@ -110,4 +110,37 @@ describe('viewer page', () => {
     press('r');
     expect(v.state.roles).toBe(true);
   });
+
+  it('the match clock is read from the frames', () => {
+    const clocked = fakePlayback({
+      frames: Array.from({ length: 11 }, (_, i) => ({
+        ...frameOf(i / PROTO_CONFIG.hz),
+        clock: 3720 + i / PROTO_CONFIG.hz,
+      })),
+    });
+    const root = document.createElement('div');
+    document.body.append(root);
+    const recorded = recordingContext();
+    open.push(createViewer(root, clocked, { raf: () => 0, getContext: () => recorded.ctx }));
+    const speeds = [...root.querySelectorAll('button[data-speed]')].map((b) => b.textContent);
+    expect(speeds).toEqual(viewer.matchSpeeds.map((s) => `${s}×`));
+    const texts = recorded.calls.filter((c) => c.name === 'fillText').map((c) => c.args[0]);
+    expect(texts).toContain('62:00');
+  });
+
+  it('a thinned playback interpolates between stored frames', () => {
+    const thinned = {
+      ...fakePlayback({
+        frames: Array.from({ length: 51 }, (_, i) => frameOf((i * 2) / PROTO_CONFIG.hz)),
+      }),
+      hz: PROTO_CONFIG.hz / 2,
+      stride: 2,
+    };
+    const root = document.createElement('div');
+    document.body.append(root);
+    open.push(createViewer(root, thinned, { raf: () => 0 }));
+    const seek = root.querySelector<HTMLInputElement>('input[data-act="seek"]');
+    expect(seek?.max).toBe(String(thinned.duration));
+    expect(thinned.duration).toBeCloseTo(10);
+  });
 });

@@ -4,13 +4,13 @@
 import { PROTO_CONFIG } from '../core/config.ts';
 import type { Beat, Playback, Script, Vec } from '../core/types.ts';
 import { PASS_KINDS, isShotLike } from '../core/types.ts';
-import { performCarry, performCarryLost } from './carry.ts';
-import { performPass, performPassIntercepted, performPassOut } from './pass.ts';
+import { performCarry, performCarryLost, performMiscontrol } from './carry.ts';
+import { performPass, performPassIntercepted, performPassLoose, performPassOut } from './pass.ts';
 import { withRestart } from './scenes.ts';
 import { performShot } from './shot.ts';
 import { performTakeOn } from './takeon.ts';
 import { performThrough } from './through.ts';
-import { createStage, step, type StageState } from './world.ts';
+import { createStage, pushEvent, runUntil, step, type StageState } from './world.ts';
 
 export { ensureOwner, setPossession } from './world.ts';
 
@@ -43,31 +43,74 @@ export const HANDLERS: Record<string, Handler> = {
   'carry:complete': performCarry,
   'carry:tackled': performCarryLost,
   'carry:foul': performCarryLost,
+  'carry:loose': performMiscontrol,
   'takeOn:complete': performTakeOn,
   'takeOn:tackled': performCarryLost,
   'takeOn:foul': performCarryLost,
+  'pass:loose': withRestart(performPassLoose),
+  'clearance:loose': withRestart(performPassLoose),
 };
 
+const HALF = 2700;
+
+/** The whistle at a half's end: the ball is dead and held for `stage.restart.delay.kickOff` seconds. */
+function endHalf(state: StageState): void {
+  const ball = state.ball;
+  ball.mode = 'dead';
+  ball.owner = -1;
+  delete ball.flight;
+  state.live = false;
+  state.orders.clear();
+  state.cues.clear();
+  pushEvent(state, { kind: 'whistle', actor: -1, at: [ball.pos[0], ball.pos[1]] });
+  const start = state.t;
+  const hold = PROTO_CONFIG.stage.restart.delay.kickOff;
+  runUntil(state, () => state.t - start >= hold - 1e-9, hold);
+}
+
+/**
+ * Performs `script`. An unbound script stops at `options.duration` (default `PROTO_CONFIG.duration`);
+ * a bound one (written from a settled result) runs to its last beat unless `options.duration` cuts
+ * it between beats, its frames carry the record's clock and each half ends with a whistle.
+ */
 export function performScript(script: Script, options?: { duration?: number }): Playback {
-  const duration = options?.duration ?? PROTO_CONFIG.duration;
+  const bound = script.bound === true;
+  const duration = options?.duration ?? (bound ? Infinity : PROTO_CONFIG.duration);
   const state = createStage(script);
   const beats = script.beats;
   const performed: Beat[] = [];
   for (let i = 0; i < beats.length && state.t < duration; i++) {
     const beat = beats[i];
+    const next = beats[i + 1];
     const key = handlerKey(beat);
     const handler = HANDLERS[key];
     if (!handler) throw new Error('no handler for ' + key);
+    const halfEnds =
+      bound && next?.clock !== undefined && beat.clock !== undefined
+        ? beat.clock < HALF && next.clock >= HALF
+        : false;
+    if (bound && beat.clock !== undefined) {
+      state.clock = Math.max(state.clock ?? 0, beat.clock);
+      state.clockCap = next?.clock !== undefined && !halfEnds ? next.clock : Infinity;
+      if (halfEnds) state.clockCap = HALF;
+    }
     const before = state.tickCount;
-    handler(state, { beat, next: beats[i + 1] });
+    handler(state, { beat, next });
     if (state.tickCount === before) step(state);
     performed.push(beat);
+    if (halfEnds && state.t < duration) endHalf(state);
   }
-  const frames = state.frames.filter((f) => f.t <= duration);
-  const events = state.events.filter((e) => e.t <= duration);
+  if (bound) {
+    state.clockCap = state.clock ?? 0;
+    endHalf(state);
+  }
+  const frames = bound ? state.frames : state.frames.filter((f) => f.t <= duration);
+  const events = bound ? state.events : state.events.filter((e) => e.t <= duration);
   const last = frames[frames.length - 1];
   const at: Vec = [last.ball[0], last.ball[1]];
-  events.push({ t: last.t, beat: last.beat, kind: 'whistle', team: last.team, actor: -1, at });
+  if (!bound) {
+    events.push({ t: last.t, beat: last.beat, kind: 'whistle', team: last.team, actor: -1, at });
+  }
   let score: readonly [number, number] = [0, 0];
   for (const e of events) if (e.kind === 'goal' && e.score) score = e.score;
   return {

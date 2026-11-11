@@ -243,6 +243,8 @@ export const PROTO_CONFIG = {
     tackleRange: 1.2,
     tackleGrace: 2.5,
     tackleExtra: 2,
+    /** A heavy touch (`carry:loose`) leaves the ball loose this far toward the named opponent (m). */
+    heavyTouch: 3,
     foulFreeze: 1,
     takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9 },
     pressVisible: 3,
@@ -636,6 +638,9 @@ export const PROTO_CONFIG = {
     flashSeconds: 1.8,
     trailSeconds: 1.5,
     speeds: [1, 2, 5],
+    /** A fitted match's page: every `matchStride`-th staged frame is stored, offered at `matchSpeeds`. */
+    matchStride: 2,
+    matchSpeeds: [1, 5, 20],
     seekStep: 5,
     port: 4310,
     maxWidth: 1180,
