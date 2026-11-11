@@ -60,12 +60,15 @@ for (const width of [360, 1280]) {
       await expect(modal).toHaveCount(0);
       await expect(page).toHaveURL(/\/club-operations\?view=investment$/);
     }
-    // An area opens from its home card and leads back to the office (→WEB-10/14): 재정 · 사업
-    // reads the books (→WEB-110).
+    // An area opens from its home card and leads back home, where it was opened (→WEB-10 r216,
+    // →WEB-14): 재정 · 사업 reads the books (→WEB-110).
     await openArea(page, '재정 · 사업');
     await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-    await page.getByRole('button', { name: '구단주 사무실로', exact: true }).click();
+    await page.getByRole('button', { name: '클럽하우스 홈으로', exact: true }).click();
+    await expect(page.getByTestId('club-hub')).toBeVisible();
+    // The office itself still reads the effects in force.
+    await openOfficePage(page);
     await expect(office.getByTestId('office-effects')).toBeVisible();
     // Each 구단 운영 address opens from itself and again after a reload, as the static deployment
     // serves it (→ARCH-23, →WEB-110); an older desk address lands on the same page.

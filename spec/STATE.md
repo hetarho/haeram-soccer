@@ -950,7 +950,6 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
-| T847 | a home area card's detail leads back home | WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -978,13 +977,13 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T847 (owner request 261111: a home area card's detail — 유소년, 경기장, … — leads back home, not to the office)
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
 - implement-task T823 once the owner's two prototype fixes (a man who takes the ball in stride, an opponent beside him engaging) are on main (fv11 landed T819–T822 261111): one chain T823 → … → T845 — phase B T823–T840 (everything behind revision 11 until T838 releases it; T839 moves the browser journeys; T840 is the released model's verdict), phase C T841–T845 (the prototype first, the detailed engine last). T837 (2 h) and T840 (3 h) are explore tasks: give the loop a unit timeout above them (`--timeout-ms 19800000`)
 - owner: seven calls taken at the conversion of ideation match-script-and-staging are in the inbox (261111 decided) to confirm or overturn before T833 — every own match is scripted at settlement even when skipped; score-led substitutions and the tendencies no longer move results; attribution places players, shots left as they are; prospective activation; the record's minute on the clock; the lab moves to the new model
 
 ## log
+- 261111 T847 done: a home area card opens its detail with the area kept in task memory (`HOME_AREA_ORIGIN`), every other opener clearing it; `officeBack` in `clubSections.ts` reads the office menu's back link — home on the detail a home card opened, the office on any other detail or 구단 운영 section — with no new copy; `work-office.spec.ts` returns home from 재정 · 사업, left to the host's batch run hb11
 - 261111 create-task WEB: T847 (a home area card's detail leads back home; the origin in task memory, no new copy)
 - 261111 update-ssot WEB r216 (WEB-10✎ a detail a home area card opened leads back home; flow Office✎)
 - 261111 T689 discarded on the owner's order (done by its exit, no scoring commit): MATCH r59 retired the detailed engine's rules it measured; T840 reads the own club's scoring on the released model
@@ -1004,4 +1003,3 @@
 - 261111 T815 done: `grammar.minPass` 7 (feet and stride passes aimed 7 m from the ball at least), one fixed touch while holding (`holdTouch`), ordinary passes received `stage.kickGap` 5.5 away (`roomyAim`), `canReceive` true within `stage.controlRange`, `stage.ownerRoom` 4 around the man on the ball for free attackers; demo–demo5 summed shortKick hits 85 → 14 and long huddles 92 → 43, passed 23/22/22/20/21 of 31, every showcase quota and the six gate metrics holding nt11
 - 261111 T814 done: ten naturalness metrics in `scripts/match-proto/check/metrics.ts` (31 ids) with `limits.shortKick/huddle/motion/turn/mark`; baseline demo–demo5 passed 21/20/20/21/19 of 31, nine new metrics failing on every seed (shortKick 0.139–0.204, huddle 2.136–2.926 a minute, longest 5–11.4 s, restarts 9.06–9.67, startSync 0.565–0.669, speedSync 0.456–0.542, reverse 0.444–0.591, run 0.7–0.825, mark 0.28–0.314), counterRun 0.8–0.875 passing; no production file touched nt11
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
-- 261111 create-task review/match-engine-split-261110 start

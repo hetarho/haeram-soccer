@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../../../../packages/contracts/src/messages';
+import { INVESTMENT_AREAS } from './investmentAreas';
 import type { Page } from './state';
 
 /**
@@ -14,6 +15,26 @@ export type ClubSection = (typeof CLUB_SECTIONS)[number][0];
 export function clubSection(page: Page): ClubSection | undefined {
   if (page === 'training') return 'business';
   return CLUB_SECTIONS.find(([id]) => id === page)?.[0];
+}
+
+/**
+ * Where the office menu's back link leads (→WEB-10): an investment detail or a 구단 운영 section
+ * leads back to the office, except the detail a home area card opened (`homeArea`), which leads
+ * home as every other office page does; no link off the office pages.
+ */
+export function officeBack(
+  page: Page,
+  search: string,
+  homeArea?: unknown,
+): 'home' | 'office' | undefined {
+  if (!clubSection(page)) return undefined;
+  if (page !== 'operations') return 'home';
+  const params = new URLSearchParams(search);
+  const view = operationsView(params.get('view'));
+  const area = params.get('area');
+  const detail = view !== 'investment' || INVESTMENT_AREAS.some(({ id }) => id === area);
+  if (!detail) return 'home';
+  return view === 'investment' && area === homeArea ? 'home' : 'office';
 }
 
 /** 구단 운영's three sections (→WEB-110), the first its default. */

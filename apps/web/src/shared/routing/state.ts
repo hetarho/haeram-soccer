@@ -295,7 +295,15 @@ export function openTeam(view: TeamView = 'players') {
 export function openOperations(view: OperationsView = 'investment') {
   visit(operationsAddress(view));
 }
-export function openInvestment(area?: InvestmentArea) {
+/**
+ * The area a home card opened (→WEB-10/11), kept in task memory so the office menu's back link
+ * leads home from its detail; every other opener clears it. A reload or a pasted address has none.
+ */
+export const HOME_AREA_ORIGIN = 'investment-home-area';
+export function openInvestment(area?: InvestmentArea, from?: 'home') {
+  useTaskMemory.setState((memory) => ({
+    values: { ...memory.values, [HOME_AREA_ORIGIN]: from === 'home' ? area : undefined },
+  }));
   visit(`${operationsAddress('investment')}${area ? `&area=${area}` : ''}`);
 }
 /**

@@ -13,7 +13,7 @@ import { PresentationProvider } from '../../presentation/react';
 import { validateRegistry } from '../../presentation/registry';
 import { createThemeResolver } from '../../presentation/theme';
 import { ClubNavigation } from './ClubNavigation';
-import { clubSection, OPERATIONS_VIEWS } from '../../shared/routing/clubSections';
+import { clubSection, officeBack, OPERATIONS_VIEWS } from '../../shared/routing/clubSections';
 import type { Page } from '../../shared/routing/state';
 
 vi.mock('../../features/approvals/ui/ApprovalButtons', () => ({
@@ -83,6 +83,23 @@ describe('the office section bar (→WEB-10/69/112)', () => {
       expect(render(page), page).toBe('');
       expect(clubSection(page)).toBeUndefined();
     }
+  });
+
+  it("a home area card's detail leads home, any other detail to the office", () => {
+    // The office's own page leads home.
+    expect(officeBack('operations', '?view=investment')).toBe('home');
+    expect(officeBack('operations', '')).toBe('home');
+    expect(officeBack('business', '')).toBe('home');
+    expect(officeBack('training', '')).toBe('home');
+    // A detail opened inside the office, or a 구단 운영 section, leads back to the office.
+    expect(officeBack('operations', '?view=investment&area=youth')).toBe('office');
+    expect(officeBack('operations', '?view=sponsor')).toBe('office');
+    expect(officeBack('operations', '?view=sponsor', 'youth')).toBe('office');
+    // Only the area a home card opened leads home (→WEB-10 r216).
+    expect(officeBack('operations', '?view=investment&area=youth', 'youth')).toBe('home');
+    expect(officeBack('operations', '?view=investment&area=stadium', 'youth')).toBe('office');
+    for (const page of ['dashboard', 'team', 'league', 'match'] as const)
+      expect(officeBack(page, '?view=investment&area=youth', 'youth'), page).toBeUndefined();
   });
 
   it('names every section and operations view in each registered locale', () => {

@@ -2,14 +2,15 @@ import { message as sourceMessage } from '../../../../../packages/contracts/src/
 import { displayMessage, localizeValue, useTextLocale } from '../../presentation/text';
 import { richMessage } from '../../presentation/LocalizedMessage';
 import { useSyncExternalStore } from 'react';
-import { clubSection, operationsView } from '../../shared/routing/clubSections';
+import { officeBack } from '../../shared/routing/clubSections';
 import {
+  HOME_AREA_ORIGIN,
   openClubOverview,
   openInvestment,
   openPrimary,
   type Page,
 } from '../../shared/routing/state';
-import { INVESTMENT_AREAS } from '../../shared/routing/investmentAreas';
+import { useTaskMemory } from '../../shared/routing/taskMemory';
 import { ApprovalButtons } from '../../features/approvals';
 import { PixelIcon } from '../../shared/ui/PixelIcon';
 import p from '../../shared/ui/styles/ProgressControls.module.css';
@@ -32,12 +33,10 @@ export function ClubNavigation({ page }: { page: Page }) {
     () => location.search,
     () => '',
   );
-  const params = new URLSearchParams(search);
-  const detail =
-    page === 'operations' &&
-    (operationsView(params.get('view')) !== 'investment' ||
-      INVESTMENT_AREAS.some((area) => area.id === params.get('area')));
-  if (!clubSection(page)) return null;
+  const homeArea = useTaskMemory((state) => state.values[HOME_AREA_ORIGIN]);
+  const back = officeBack(page, search, homeArea);
+  if (!back) return null;
+  const detail = back === 'office';
   return (
     <div className={s.toolbar}>
       <button

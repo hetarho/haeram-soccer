@@ -24,7 +24,7 @@ export function InvestmentGallery({ w, className }: { w: World; className?: stri
           type="button"
           className={s.destination}
           aria-label={displayMessage('copy.InvestmentView.8767428e28', { p0: item.title })}
-          onClick={() => openInvestment(item.id)}
+          onClick={() => openInvestment(item.id, 'home')}
         >
           <FacilityArt
             kind={item.art}

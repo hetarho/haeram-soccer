@@ -25,6 +25,10 @@ import {
   openFacility,
   leaveDesk,
   useFacilityRequest,
+  HOME_AREA_ORIGIN,
+  openInvestment,
+  openControl,
+  useControlRequest,
 } from './state';
 import { useTaskMemory } from './taskMemory';
 
@@ -255,6 +259,32 @@ describe('club sections and 구단 운영 (→WEB-10/39/110)', () => {
     useNavigation.setState({ page: 'dashboard' });
     openPrimary('operations');
     expect(at()).toBe('/club-operations?view=investment');
+  });
+});
+
+describe("a home area card's way back (→WEB-10/11)", () => {
+  const origin = () => useTaskMemory.getState().values[HOME_AREA_ORIGIN];
+  it('a home area card marks its detail; every other opener clears it', () => {
+    browser();
+    const openers = [
+      () => openInvestment(),
+      () => openControl('youth', 'academy'),
+      () => openFacility('academy'),
+    ];
+    for (const open of openers) {
+      openInvestment('youth', 'home');
+      expect(origin()).toBe('youth');
+      expect(location.pathname + location.search).toBe(
+        '/club-operations?view=investment&area=youth',
+      );
+      open();
+      expect(origin(), open.toString()).toBeUndefined();
+    }
+    useControlRequest.getState().take();
+    useFacilityRequest.getState().take();
+    openInvestment('youth', 'home');
+    activateTaskWorld('another-game');
+    expect(origin()).toBeUndefined();
   });
 });
 
