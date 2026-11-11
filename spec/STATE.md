@@ -954,6 +954,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
+| T848 | Fix final gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -981,9 +982,7 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
-- cc12: T823–T837 are complete; continue with T838, then T839–T845. T837 reports own settlement CPU ×0.2735 and diagnostic raw motion ×0.2389, equal sampled outputs and 1,568 affected unit tests/fast checks/i18n passed. Production stageAll fails on baseline minute-prefix corner/free-kick recount: T838 repairs it and remeasures before release; retain explicit revision-11 workloads and revision-10 grid context when removing SCRIPTED_RELEASE. Keep the same tag/report, 24-hour run limit and 19800000 ms unit timeout; T840 retains its 3 h box. Integration/browser acceptance and the single final batch/push remain the host's. See artifacts/benchmarks/scripted-match-throughput.md and reports/261111-cc12.md.
-- owner: seven calls taken at the conversion of ideation match-script-and-staging remain in the inbox (261111 decided) for optional review; the current explicit autopilot delegation applies those recorded reversible choices without another pause before T833 — every own match is scripted at settlement even when skipped; score-led substitutions and the tendencies no longer move results; attribution places players, shots left as they are; prospective activation; the record's minute on the clock; the lab moves to the new model
+- implement-task T848
 
 ## log
 - 261112 T837 done: 2 h throughput exploration, eight writer/two shape cuts kept and five noise trials reverted; own CPU ×0.2735, raw motion diagnostic ×0.2389, sampled hashes unchanged, 1,568 affected unit tests/type/lint/format/i18n pass; full staging baseline prefix-ledger failure explicitly open for T838, raw evidence/report retained, no push cc12
