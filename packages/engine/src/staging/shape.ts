@@ -164,8 +164,12 @@ interface RoleShape {
   finalThird?: Override;
 }
 
-/** Unlisted roles keep their slot's anchor; the keeper rule handles sweeperKeeper. */
+/** Empty rows explicitly keep the slot's anchor; the keeper rule handles both keeper roles. */
 export const ROLE_SHAPE: Partial<Record<RoleId, RoleShape>> = {
+  sweeperKeeper: {},
+  shotStopper: {},
+  stopper: {},
+  coverDefender: {},
   ballPlayingDefender: { buildUp: { ayAbs: 15 } },
   defensiveFullBack: { progression: { ax: 0.22 }, finalThird: { ax: 0.34 } },
   overlappingFullBack: {
@@ -186,8 +190,13 @@ export const ROLE_SHAPE: Partial<Record<RoleId, RoleShape>> = {
   boxToBox: { finalThird: { ax: 0.78, ayAbs: 6 } },
   mezzala: { progression: { ax: 0.6, ayAbs: 15 }, finalThird: { ax: 0.86, ayAbs: 13 } },
   deepLyingPlaymaker: { buildUp: { ax: 0.26 }, finalThird: { ax: 0.5 } },
+  anchor: {},
   ballWinner: { finalThird: { ax: 0.45 } },
+  regista: {},
   wideMidfielder: { progression: { ax: 0.7 }, finalThird: { ax: 0.9, ayAbs: 27 } },
+  widePlaymaker: {},
+  attackingMidfielder: {},
+  trequartista: {},
   traditionalWinger: {
     progression: { ax: 0.9, ayAbs: 30 },
     finalThird: { ax: 0.97, ayAbs: 29 },
@@ -254,10 +263,14 @@ const outfieldSpot = (ctx: ShapeContext, side: 0 | 1, slot: number, role: RoleId
   }
   const ip = SHAPE.ip;
   const lineX = clamp(ip.lineBase + ip.lineSlope * bx, ip.lineMin, ip.lineMax);
-  const depth = clamp(ip.depthBase + ip.depthSlope * bx, ip.depthMin, ip.depthMax);
+  const fullDepth = clamp(ip.depthBase + ip.depthSlope * bx, ip.depthMin, ip.depthMax);
   const [ax0, ay0] = FORMATION_SHAPE[spec.tactic].ip[slot] as Anchor;
   const shape = ROLE_SHAPE[role];
   const line = nominalLineX(ctx, side);
+  // The new 4-2-3-1 has two central attacking slots. Fit its block before placing their
+  // anchors, so the onside cap cannot collapse the shadow striker onto the striker.
+  const depth =
+    spec.tactic === 'press' ? Math.min(fullDepth, line - SHAPE.onsideGap - lineX) : fullDepth;
   if (shape?.onShoulder) {
     const lean = clamp(
       (by - AXIS) * SHAPE.poacherLean,
