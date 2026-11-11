@@ -908,7 +908,6 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T689 | measure and calibrate scoring volume and player concentration | MATCH ARCH | T688 T700 T712 | todo |
-| T815 | match-proto room on the ball: no passes between players standing on each other | ARCH | T814 | todo |
 | T816 | match-proto own moment, own pace: free players stop moving and stopping as one | ARCH | T815 | todo |
 | T817 | match-proto turnovers and marking: players read their man and the kind of turnover, not only the ball | ARCH | T816 | todo |
 | T818 | match-proto: tune the three naturalness complaints and deliver a second page | ARCH | T817 | todo |
@@ -941,9 +940,10 @@
 ## next
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
-- implement-task T815 (then T816 → T817 → T818, one chain under `scripts/match-proto/`; T814's baseline of the ten naturalness metrics is in tasks/done/T814): the owner watched `artifacts/match-proto-261110/index.html` on 261111 and named three scenes that read wrong (review/match-engine-split-261110 F2–F4); T818 delivers `artifacts/match-proto-261111/index.html` to watch beside it, and the verdict on the script→staging split (F1) waits for that page
+- implement-task T816 (then T817 → T818, one chain under `scripts/match-proto/`; T814's baseline of the ten naturalness metrics and T815's before/after read are in tasks/done/T814 and T815): the owner watched `artifacts/match-proto-261110/index.html` on 261111 and named three scenes that read wrong (review/match-engine-split-261110 F2–F4); T818 delivers `artifacts/match-proto-261111/index.html` to watch beside it, and the verdict on the script→staging split (F1) waits for that page
 
 ## log
+- 261111 T815 done: `grammar.minPass` 7 (feet and stride passes aimed 7 m from the ball at least), one fixed touch while holding (`holdTouch`), ordinary passes received `stage.kickGap` 5.5 away (`roomyAim`), `canReceive` true within `stage.controlRange`, `stage.ownerRoom` 4 around the man on the ball for free attackers; demo–demo5 summed shortKick hits 85 → 14 and long huddles 92 → 43, passed 23/22/22/20/21 of 31, every showcase quota and the six gate metrics holding nt11
 - 261111 T814 done: ten naturalness metrics in `scripts/match-proto/check/metrics.ts` (31 ids) with `limits.shortKick/huddle/motion/turn/mark`; baseline demo–demo5 passed 21/20/20/21/19 of 31, nine new metrics failing on every seed (shortKick 0.139–0.204, huddle 2.136–2.926 a minute, longest 5–11.4 s, restarts 9.06–9.67, startSync 0.565–0.669, speedSync 0.456–0.542, reverse 0.444–0.591, run 0.7–0.825, mark 0.28–0.314), counterRun 0.8–0.875 passing; no production file touched nt11
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
 - 261111 create-task review/match-engine-split-261110 start

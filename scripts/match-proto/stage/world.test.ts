@@ -233,6 +233,40 @@ describe('stage world', () => {
     expect(separated(state, 6, snapshot[7], snapshot)).toEqual(snapshot[7]);
   });
 
+  it('free teammates leave stage.ownerRoom around the man on the ball', () => {
+    const state = stageWith(0, [50, 34], 'progression');
+    sendAway(state, 0, 90);
+    place(state, 5, [50, 34]);
+    state.ball.owner = 5;
+    place(state, 6, [46, 34]);
+    place(state, 7, [60, 20]);
+    state.orders.set(7, { target: [60, 20], pace: 'walk' });
+    place(state, 8, [64, 20]);
+    const snapshot = positionsOf(state);
+    const room = PROTO_CONFIG.stage.ownerRoom;
+    // A target 1 m from the man on the ball.
+    const target = separated(state, 6, [49, 34], snapshot);
+    expect(dist(target, snapshot[5])).toBeGreaterThanOrEqual(room - 0.01);
+    // A target 1 m from a teammate under an order.
+    const beside = separated(state, 8, [61, 20], snapshot);
+    expect(dist(beside, snapshot[7])).toBeGreaterThanOrEqual(room - 0.01);
+  });
+
+  it('a defender is not moved by the owner’s room', () => {
+    const state = stageWith(1, [50, 34], 'progression');
+    sendAway(state, 0, 90);
+    place(state, 16, [50, 34]);
+    state.ball.owner = 16;
+    place(state, 6, [46, 34]);
+    place(state, 7, [52, 34]);
+    state.orders.set(7, { target: [52, 34], pace: 'walk' });
+    const snapshot = positionsOf(state);
+    // 3 m from a teammate under an order: beyond stage.separation, inside stage.ownerRoom.
+    expect(separated(state, 6, [49, 34], snapshot)).toEqual([49, 34]);
+    const near = separated(state, 6, [51, 34], snapshot);
+    expect(dist(near, snapshot[7])).toBeCloseTo(PROTO_CONFIG.stage.separation, 9);
+  });
+
   it('nobody presses or marks while the ball is dead', () => {
     const state = stageWith(1, [40, 34]);
     place(state, 6, [42, 36]);

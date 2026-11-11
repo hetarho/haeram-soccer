@@ -1,9 +1,9 @@
 // Who plays a part in a beat: weighted receivers by role, position or line, the opponent nearest a
 // point, outcome draws and aim points. Draw order is part of the script's identity: `castReceiver`
 // draws exactly one number when a candidate exists and none otherwise, `drawOutcome` one,
-// `feetPoint` two (x then y), `canCast` and `castOpponentNear` none.
+// `feetPoint` two (x then y), `stridePoint`, `canCast` and `castOpponentNear` none.
 import { PROTO_CONFIG } from '../core/config.ts';
-import { clampToPitch, toAttack } from '../core/pitch.ts';
+import { CENTRE, clampToPitch, toAttack } from '../core/pitch.ts';
 import type { Rng } from '../core/rng.ts';
 import {
   lineOf,
@@ -137,17 +137,37 @@ export function drawOutcome<T extends string>(
   );
 }
 
-/** His `spot` moved `grammar.showFor` metres toward the ball, plus ± jitter on each axis (x then y). */
+/**
+ * `p` when it is at least `grammar.minPass` from the ball; otherwise the point `grammar.minPass`
+ * from the ball along ball → `p` (ball → his `spot` when `p` is on the ball, toward the pitch's
+ * centre when that is too), kept inside the pitch margin. Draws nothing.
+ */
+function spaced(state: ScriptState, index: number, p: Vec): Vec {
+  const ball = state.ball;
+  if (dist(ball, p) >= GRAMMAR.minPass) return p;
+  const toward = (q: Vec): Vec | undefined => (dist(ball, q) > 1e-6 ? q : undefined);
+  const aim = toward(p) ?? toward(spot(state, index)) ?? CENTRE;
+  return clampToPitch(add(ball, scale(norm(sub(aim, ball)), GRAMMAR.minPass)), PROTO_CONFIG.margin);
+}
+
+/**
+ * His `spot` moved `grammar.showFor` metres toward the ball, plus ± jitter on each axis (x then y),
+ * never nearer to the ball than `grammar.minPass` (`spaced`).
+ */
 export function feetPoint(state: ScriptState, index: number): Vec {
   const s = spot(state, index);
   const shown = add(s, scale(norm(sub(state.ball, s)), GRAMMAR.showFor));
   const jx = state.rng.range(-GRAMMAR.jitter, GRAMMAR.jitter);
   const jy = state.rng.range(-GRAMMAR.jitter, GRAMMAR.jitter);
-  return clampToPitch([shown[0] + jx, shown[1] + jy], PROTO_CONFIG.margin);
+  return clampToPitch(spaced(state, index, [shown[0] + jx, shown[1] + jy]), PROTO_CONFIG.margin);
 }
 
-/** His `attackSpot` plus `[ahead, 0]`, back in the world frame. */
+/** His `attackSpot` plus `[ahead, 0]`, back in the world frame, kept `grammar.minPass` from the ball (`spaced`). */
 export function stridePoint(state: ScriptState, index: number, ahead: number): Vec {
   const a = attackSpot(state, index);
-  return clampToPitch(toAttack(state.team, [a[0] + ahead, a[1]]), PROTO_CONFIG.margin);
+  return spaced(
+    state,
+    index,
+    clampToPitch(toAttack(state.team, [a[0] + ahead, a[1]]), PROTO_CONFIG.margin),
+  );
 }

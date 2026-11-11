@@ -34,7 +34,9 @@
 //             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
 //             and how fast a dead ball is brought back to its restart spot (`retrieval`, m/s); a
 //             through ball's top speed, a shot's and a header's speed and a header's apex
-//   stage:    performing beats (stage/): the passer's drift while holding, extra hold, receiving
+//   stage:    performing beats (stage/): the length of the passer's one touch while holding, at
+//             most (`holdDrift`), the least distance between the ball and an ordinary pass's
+//             reception point, which his touch never closes (`kickGap`), extra hold, receiving
 //             slack, control range, settling time limit, dribbling speed, arrival distance and the
 //             kick-off's half and centre-circle margins; contests (stage/contest.ts): the shadow
 //             point on a pass lane (`shadowAt` along it, `shadowOff` goal-side), the share of a
@@ -45,7 +47,9 @@
 //             attacker's and the beaten defender's speed caps and time; `pressVisible`, how near
 //             the presser is before a pressed pass is kicked; `boards`, how far outside the lines a
 //             target may lie and where a player stops; `separation`, how far a free outfield player
-//             keeps his target from his outfield teammates; restarts (stage/scenes.ts): the dead
+//             keeps his target from his outfield teammates, and `ownerRoom`, how far a free outfield
+//             player of the side in possession keeps it from the man on the ball and from
+//             teammates under an order; restarts (stage/scenes.ts): the dead
 //             time per kind, its extra allowance, the distance the other team keeps, how near the
 //             taker and receiver must be, the taker's offset from the spot and how far past the line
 //             a ball out runs; through balls (stage/through.ts): where the runner waits behind the
@@ -57,7 +61,9 @@
 //             wide ball's run, a blocked ball's roll and deflection speed; crosses: the receiver's
 //             run-up; corners (stage/scenes.ts): both sides' places
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
-//             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
+//             clock, where a lost ball is nominally won, receiver showing and jitter, the least
+//             distance from the ball an open-play pass to feet or into a stride is aimed at
+//             (`minPass`), counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
 //   limits:   the thresholds the staging metrics are judged by (check/metrics.ts); the naturalness
 //             ones read open play (live, no set piece, no restart beat): passes kicked to a man
@@ -161,7 +167,10 @@ export const PROTO_CONFIG = {
     headerApex: 0.6,
   },
   stage: {
+    /** The length of the passer's one touch while holding, at most. */
     holdDrift: 1.5,
+    /** The least distance between the ball and the point an ordinary pass is received at, and how near to that point the passer's touch may take him. */
+    kickGap: 5.5,
     maxExtraHold: 1.5,
     receiveSlack: 0.1,
     controlRange: 1,
@@ -189,6 +198,8 @@ export const PROTO_CONFIG = {
     boards: 2,
     /** How far a free outfield player keeps his target from every outfield teammate (0 = off). */
     separation: 2.5,
+    /** How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order. */
+    ownerRoom: 4,
     restart: {
       delay: { kickOff: 14, throwIn: 5, goalKick: 8, corner: 12, freeKick: 7 },
       maxExtra: 8,
@@ -261,6 +272,8 @@ export const PROTO_CONFIG = {
     /** A receiver shows this far toward the ball; reception points get ± jitter metres. */
     showFor: 3,
     jitter: 1.5,
+    /** An open-play pass to feet or into a stride is aimed at least this far from the ball. */
+    minPass: 7,
     shortRange: 18,
     /** A turnover below `fromX` (attack x of the winners) after the losers' progression or final third may start a counter. */
     counter: {

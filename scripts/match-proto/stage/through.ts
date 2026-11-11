@@ -7,10 +7,11 @@ import { PROTO_CONFIG } from '../core/config.ts';
 import { clampToPitch, toAttack } from '../core/pitch.ts';
 import { offsideLineX } from '../core/shape.ts';
 import type { TeamId, Vec } from '../core/types.ts';
-import { add, clamp, dist, norm, scale, sub } from '../core/vec.ts';
+import { clamp, dist } from '../core/vec.ts';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, resolveCut } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
+import { holdTouch } from './pass.ts';
 import type { BeatContext } from './perform.ts';
 import {
   ensureOwner,
@@ -46,13 +47,7 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
   const start = state.t;
   const left = (): number => beat.hold - (state.t - start);
 
-  state.orders.set(actor, {
-    target: () => {
-      const pos = state.bodies[actor].pos;
-      return add(pos, scale(norm(sub(beat.to, pos)), STAGE.holdDrift));
-    },
-    pace: 'walk',
-  });
+  state.orders.set(actor, holdTouch(state, actor, beat.to));
   const runOrder: Order = {
     target: (): Vec => {
       const me = toAttack(T, runnerPos());

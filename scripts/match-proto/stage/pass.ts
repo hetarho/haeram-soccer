@@ -5,7 +5,7 @@
 // the line and leaves the ball dead. A pressed pass also waits for its presser to be visibly close.
 // `holdForPass`, `reachablePoint` and `kickTo` are the steps T797 reuses for its own beats.
 import { PROTO_CONFIG } from '../core/config.ts';
-import { HALFWAY, clampToPitch, inBox, inPitch, toAttack } from '../core/pitch.ts';
+import { CENTRE, HALFWAY, clampToPitch, inBox, inPitch, toAttack } from '../core/pitch.ts';
 import { offsideLineX } from '../core/shape.ts';
 import type { Beat, TeamId, Vec } from '../core/types.ts';
 import { add, approach, dist, norm, scale, sub } from '../core/vec.ts';
@@ -42,6 +42,7 @@ export function canReceive(
   speed: number,
 ): boolean {
   if (receiver === undefined) return true;
+  if (dist(state.bodies[receiver].pos, to) <= STAGE.controlRange) return true;
   return (
     timeToReach(state.bodies[receiver], to, sprintOf(state, receiver)) <=
     flightTime(state.ball.pos, to, speed) + STAGE.receiveSlack
@@ -54,9 +55,33 @@ export function pressWait(state: StageState, beat: Beat): () => boolean {
     beat.reason !== 'pressed' || nearestOpponent(state, beat.actor).distance <= STAGE.pressVisible;
 }
 
+/** The passer's order while he holds: one touch of at most `stage.holdDrift` toward `to`, never nearer to `to` than `stage.kickGap`; the point is fixed when the hold starts. */
+export function holdTouch(state: StageState, actor: number, to: Vec): Order {
+  const pos = state.bodies[actor].pos;
+  const start: Vec = [pos[0], pos[1]];
+  const step = Math.min(STAGE.holdDrift, Math.max(0, dist(start, to) - STAGE.kickGap));
+  return { target: step > 0 ? add(start, scale(norm(sub(to, start)), step)) : start, pace: 'walk' };
+}
+
+/** `to` moved straight away from the ball until it is `stage.kickGap` from it; unchanged when it is already that far. */
+export function roomyAim(state: StageState, receiver: number, to: Vec): Vec {
+  const ball: Vec = [state.ball.pos[0], state.ball.pos[1]];
+  if (dist(ball, to) >= STAGE.kickGap) return to;
+  const toward = (q: Vec): Vec | undefined => (dist(ball, q) >= 0.5 ? q : undefined);
+  const aim = toward(to) ?? toward(state.bodies[receiver].pos) ?? CENTRE;
+  return clampToPitch(add(ball, scale(norm(sub(aim, ball)), STAGE.kickGap)), 0.5);
+}
+
 /**
- * The passer holds the ball at least `hold` seconds, drifting toward `to`, while the receiver (if
- * any) runs there; then he waits up to `stage.maxExtraHold` more until `ready()`.
+ * An ordinary pass (kind `pass`, not a through ball) is received `stage.kickGap` from the ball at
+ * least; without a receiver the passer stands in for him, so an aim on the ball turns to the centre.
+ */
+const roomy = (state: StageState, beat: Beat, to: Vec): Vec =>
+  beat.kind === 'pass' && !beat.through ? roomyAim(state, beat.receiver ?? beat.actor, to) : to;
+
+/**
+ * The passer holds the ball at least `hold` seconds, taking one touch toward `to` (`holdTouch`),
+ * while the receiver (if any) runs there; then he waits up to `stage.maxExtraHold` more until `ready()`.
  */
 export function holdUntil(
   state: StageState,
@@ -67,13 +92,7 @@ export function holdUntil(
   ready: () => boolean,
   receiverOrder?: Order,
 ): void {
-  state.orders.set(actor, {
-    target: () => {
-      const pos = state.bodies[actor].pos;
-      return add(pos, scale(norm(sub(to, pos)), STAGE.holdDrift));
-    },
-    pace: 'walk',
-  });
+  state.orders.set(actor, holdTouch(state, actor, to));
   if (receiver !== undefined) {
     state.orders.set(receiver, receiverOrder ?? { target: to, pace: 'run' });
   }
@@ -210,7 +229,7 @@ export function performPass(state: StageState, ctx: BeatContext): void {
   if (receiver === undefined) throw new Error('pass without receiver ' + beat.index);
   setPossession(state, beat);
   ensureOwner(state, beat.actor);
-  let to = clampToPitch(beat.to, 0.5);
+  let to = roomy(state, beat, clampToPitch(beat.to, 0.5));
   const speed = speedOf(beat);
   const press = pressWait(state, beat);
   const held = receiverHold(state, beat, receiver, to);
@@ -246,7 +265,7 @@ export function performPassIntercepted(state: StageState, ctx: BeatContext): voi
   setPossession(state, beat);
   ensureOwner(state, beat.actor);
   const receiver = beat.receiver;
-  let R = clampToPitch(beat.to, 0.5);
+  let R = roomy(state, beat, clampToPitch(beat.to, 0.5));
   const speed = speedOf(beat);
   const team = state.fixture.players[scripted].team;
   const range = cutRange(state, scripted);

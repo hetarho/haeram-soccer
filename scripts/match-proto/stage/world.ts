@@ -269,7 +269,8 @@ const BOARDS = PROTO_CONFIG.stage.boards;
  * A free outfield player's `target` moved out to `stage.separation` from every outfield teammate
  * standing within it, so two markers never pick the same man and nobody in the shape walks onto a
  * teammate. Players with an order or cue (the beat's actors) and the ball's owner are not moved;
- * the free man makes room for them.
+ * the free man makes room for them. On the side in possession he keeps `stage.ownerRoom` from the
+ * man on the ball and from teammates under an order or cue, so the play has room around it.
  */
 export function separated(
   state: StageState,
@@ -278,16 +279,21 @@ export function separated(
   snapshot: readonly Vec[],
 ): Vec {
   const sep = PROTO_CONFIG.stage.separation;
+  const room = PROTO_CONFIG.stage.ownerRoom;
   const spec = state.fixture.players[index];
   if (sep <= 0 || spec.slot === 0 || state.ball.owner === index || !state.live) return target;
+  const attacking = spec.team === state.team;
   let out = target;
   for (const mate of state.fixture.teams[spec.team].players) {
     if (mate.index === index || mate.slot === 0) continue;
     const at = snapshot[mate.index];
     const off = sub(out, at);
-    if (len(off) >= sep) continue;
+    const busy =
+      state.ball.owner === mate.index || state.orders.has(mate.index) || state.cues.has(mate.index);
+    const keep = attacking && busy ? room : sep;
+    if (len(off) >= keep) continue;
     const away = len(off) > 1e-9 ? norm(off) : norm(sub(snapshot[index], at));
-    out = add(at, scale(len(away) > 0 ? away : [0, 1], sep));
+    out = add(at, scale(len(away) > 0 ? away : [0, 1], keep));
   }
   return out;
 }
