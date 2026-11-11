@@ -79,6 +79,8 @@ export interface StageState {
   marks: Map<number, number>;
   /** The presser closes to `shape.press.tight` during this beat. */
   tight: boolean;
+  /** The presser engaged with the man on the ball, and since when (set each tick by `trackPress`). */
+  pressing?: { index: number; owner: number; since: number };
   /** Dead-ball scenes: shapes read this point instead of the ball. */
   shapeBall?: Vec;
   /** Dead-ball scenes: a dead ball is brought toward this point at `ball.retrieval` m/s. */
@@ -269,10 +271,11 @@ export function defaultTarget(
     const g = norm(sub(goal, ref));
     const roles = pressRoles(state, d, ref, snapshot);
     if (index === roles.presser) {
-      const target = add(ref, scale(g, state.tight ? SHAPE.press.tight : SHAPE.press.standoff));
+      const { reach, poke } = pressReach(state, index);
+      const target = add(ref, scale(g, reach));
       return {
         target,
-        pace: dist(pos, target) > MOTION.pressSprintBeyond ? 'sprint' : 'run',
+        pace: poke || dist(pos, target) > MOTION.pressSprintBeyond ? 'sprint' : 'run',
         direct: true,
       };
     }
@@ -300,9 +303,62 @@ export function isPressRole(
   // A beat the script calls pressed is pressed wherever the ball is, whatever the side's style.
   const pressing =
     state.tight || toAttack(d, ref)[0] <= SHAPE.press.from[state.fixture.teams[d].style];
-  if (!pressing) return false;
   const roles = pressRoles(state, d, ref, snapshot);
-  return index === roles.presser || index === roles.cover;
+  if (pressing) return index === roles.presser || index === roles.cover;
+  // Outside its pressing zone a side still engages a man on the ball its nearest free defender is near.
+  return index === roles.presser && engages(state, index, snapshot);
+}
+
+/** Whether defender `presser` stands within `shape.press.engage` of the man holding the ball. */
+function engages(state: StageState, presser: number, snapshot: readonly Vec[]): boolean {
+  const owner = state.ball.owner;
+  return (
+    presser >= 0 &&
+    owner >= 0 &&
+    state.ball.mode === 'held' &&
+    dist(snapshot[presser], snapshot[owner]) <= SHAPE.press.engage
+  );
+}
+
+/**
+ * Who presses the man on the ball, and since when: the defending side's presser once he is within
+ * `shape.press.engage` of him; reset when either changes or they come apart. Once a tick.
+ */
+function trackPress(state: StageState, snapshot: readonly Vec[]): void {
+  const d: TeamId = state.team === 0 ? 1 : 0;
+  const owner = state.ball.owner;
+  const presser =
+    state.live && owner >= 0 ? pressRoles(state, d, shapeRef(state), snapshot).presser : -1;
+  if (
+    presser < 0 ||
+    !engages(state, presser, snapshot) ||
+    !isPressRole(state, d, presser, snapshot)
+  ) {
+    state.pressing = undefined;
+    return;
+  }
+  const p = state.pressing;
+  if (!p || p.index !== presser || p.owner !== owner) {
+    state.pressing = { index: presser, owner, since: state.t };
+  }
+}
+
+/**
+ * How far goal-side of the ball the presser stands: `standoff` (`tight` in a pressed beat); once
+ * engaged (`trackPress`) he closes to `close` over `closeIn` seconds, then every `pokeEvery`
+ * seconds lunges to `poke` for `pokeFor` seconds — a tackle the script does not let win.
+ */
+function pressReach(state: StageState, index: number): { reach: number; poke: boolean } {
+  const P = SHAPE.press;
+  const base = state.tight ? P.tight : P.standoff;
+  const p = state.pressing;
+  if (!p || p.index !== index) return { reach: base, poke: false };
+  const held = state.t - p.since;
+  if (held >= P.closeIn && (held - P.closeIn) % P.pokeEvery < P.pokeFor) {
+    return { reach: P.poke, poke: true };
+  }
+  const close = Math.min(base, P.close);
+  return { reach: base + (close - base) * Math.min(1, held / P.closeIn), poke: false };
 }
 
 const MARGIN = PROTO_CONFIG.margin;
@@ -425,6 +481,7 @@ export function step(state: StageState): void {
     );
   };
   assignMarks(state, snapshot, zoneOf, canMark);
+  trackPress(state, snapshot);
   const turn = turnOf(state);
   const onBody: boolean[] = [];
   const moves: { target: Vec; speed: number }[] = state.fixture.players.map((spec) => {

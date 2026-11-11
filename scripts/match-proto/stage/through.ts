@@ -11,7 +11,7 @@ import { clamp, dist, len } from '../core/vec.ts';
 import { apexFor, flightTime, startFlight, startFlightTimed } from './ball.ts';
 import { cueNext, resolveCut } from './contest.ts';
 import { paceSpeed, timeToReach } from './motion.ts';
-import { holdTouch } from './pass.ts';
+import { holdMove } from './pass.ts';
 import type { BeatContext } from './perform.ts';
 import {
   ensureOwner,
@@ -47,7 +47,7 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
   const start = state.t;
   const left = (): number => beat.hold - (state.t - start);
 
-  state.orders.set(actor, holdTouch(state, actor, beat.to));
+  state.orders.set(actor, holdMove(state, actor, beat.to));
   const runOrder: Order = {
     target: (): Vec => {
       const me = toAttack(T, runnerPos());
@@ -62,11 +62,15 @@ export function performThrough(state: StageState, ctx: BeatContext): void {
     },
   };
   state.orders.set(runner, runOrder);
+  // The ball's attack x: a runner level with or behind the ball is onside whatever the line says.
+  const bx = (): number => toAttack(T, state.ball.pos)[0];
   const kickReady = (): boolean => {
     if (left() > 1e-9) return false;
     const l = line();
     const x = rx();
-    return offside ? x >= l + THROUGH.offsideGap : x >= l - THROUGH.window && x < l - 0.05;
+    return offside
+      ? x >= l + THROUGH.offsideGap && x >= bx() + THROUGH.offsideGap
+      : x >= l - THROUGH.window && x < l - 0.05;
   };
   if (offside) {
     // The trap: once the runner goes early, the back line holds where it stands instead of
