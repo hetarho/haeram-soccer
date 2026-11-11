@@ -2,7 +2,10 @@
 // follows the place he wants with a lag, and he moves to it at a speed that fits how far it is, so
 // twenty outfield players do not start, run and stop as one. Everything here is read from
 // positions, attributes and the clock: no random number, no seed (ARCH-5); it only presents beats
-// already settled (ARCH-7). `world.ts` decides who is free; this module only computes.
+// already settled (ARCH-7). `world.ts` decides who is free; this module only computes. T817: what
+// kind of turnover it was shapes them for `motion.turn.window` seconds — a settled one is believed
+// later the farther a player is from the ball and the shape re-forms slowly; after a counter
+// everyone turns at once and runs.
 import { PROTO_CONFIG } from '../core/config.ts';
 import { clampToPitch } from '../core/pitch.ts';
 import type { Phase, PlayerSpec, TeamId, Vec } from '../core/types.ts';
@@ -21,6 +24,8 @@ export interface Mind {
 }
 
 const OWN = PROTO_CONFIG.motion.own;
+const TURN = PROTO_CONFIG.motion.turn;
+const MARK_LAG = PROTO_CONFIG.shape.mark.lag;
 const TICK = PROTO_CONFIG.tick;
 
 /**
@@ -46,10 +51,33 @@ export function reactionDelay(spec: PlayerSpec, ballMetres: number): number {
   );
 }
 
-/** Time constant (s) his place follows the wanted place with; the back line shares one. */
-export function placeLag(spec: PlayerSpec, ballMetres: number): number {
+/** The kind of turnover a free player moves under: the last change of sides while `motion.turn.window` lasts. */
+export interface Turn {
+  counter: boolean;
+}
+
+/** The turnover shaping free players now: the last one while `motion.turn.window` seconds have not passed. */
+export function turnOf(state: StageState): Turn | undefined {
+  const turn = state.turn;
+  if (!turn || state.t - turn.at >= TURN.window) return undefined;
+  return { counter: turn.counter };
+}
+
+/**
+ * Time constant (s) his place follows the wanted place with; the back line shares one. Inside a
+ * settled turnover's window it is at least `turn.lag.settled`, inside a counter's at most
+ * `turn.lag.counter`; a man marking (`marking`) uses at most `shape.mark.lag` whatever the window.
+ */
+export function placeLag(
+  spec: PlayerSpec,
+  ballMetres: number,
+  turn?: Turn,
+  marking = false,
+): number {
   if (isLine(spec)) return OWN.lag.line;
-  return OWN.lag.base + OWN.lag.perMetre * Math.min(ballMetres, OWN.farCap);
+  let lag = OWN.lag.base + OWN.lag.perMetre * Math.min(ballMetres, OWN.farCap);
+  if (turn) lag = turn.counter ? Math.min(lag, TURN.lag.counter) : Math.max(lag, TURN.lag.settled);
+  return marking ? Math.min(lag, MARK_LAG) : lag;
 }
 
 /** Appends this tick's true inputs to `state.seen`, keeping `own.memory` seconds of them, newest last. */
@@ -59,11 +87,25 @@ export function remember(state: StageState): void {
   if (state.seen.length > keep) state.seen.splice(0, state.seen.length - keep);
 }
 
-/** The inputs player `index` acts on: those of his delay ago, the oldest kept when there are fewer. */
+/**
+ * The inputs player `index` acts on: the point of his delay ago and the side and phase of
+ * `turn.delayPerMetre` seconds a metre earlier still while a settled turnover's window lasts (the
+ * back line excepted), each the oldest kept when there are fewer.
+ */
 export function seenBy(state: StageState, index: number, ballMetres: number): Seen {
-  const back = Math.round(reactionDelay(state.fixture.players[index], ballMetres) / TICK);
+  const spec = state.fixture.players[index];
+  const back = Math.round(reactionDelay(spec, ballMetres) / TICK);
+  const turn = turnOf(state);
+  const extra =
+    turn && !turn.counter && !isLine(spec)
+      ? TURN.delayPerMetre * Math.min(ballMetres, OWN.farCap)
+      : 0;
+  const backSide = Math.round((reactionDelay(spec, ballMetres) + extra) / TICK);
   const seen = state.seen;
-  return seen[Math.max(0, seen.length - 1 - back)];
+  const at = seen[Math.max(0, seen.length - 1 - back)];
+  if (backSide === back) return at;
+  const side = seen[Math.max(0, seen.length - 1 - backSide)];
+  return { ref: at.ref, team: side.team, phase: side.phase };
 }
 
 /** One tick of his place following `want` with time constant `lag` seconds; mutates `mind`. */
@@ -78,10 +120,12 @@ export function followPlace(mind: Mind, want: Vec, lag: number): void {
 /**
  * His speed toward a place `d` metres away when he is `ballMetres` from the ball: still within
  * `own.hold`, else the distance over the seconds he gives himself (`own.arrive`, briskest at the
- * ball), at least `own.minSpeed` and at most `cap`.
+ * ball), at least `own.minSpeed` and at most `cap`. Inside a counter's window a place farther than
+ * `turn.runBeyond` is gone to at `cap` (the caller passes the sprint beyond `turn.sprintBeyond`).
  */
-export function freeSpeed(d: number, ballMetres: number, cap: number): number {
+export function freeSpeed(d: number, ballMetres: number, cap: number, turn?: Turn): number {
   if (d <= OWN.hold) return 0;
+  if (turn?.counter && d > TURN.runBeyond) return cap;
   const a = OWN.arrive;
   const arriveIn = a.near + (a.far - a.near) * Math.min(1, ballMetres / a.farAt);
   return Math.min(cap, Math.max(OWN.minSpeed, d / arriveIn));

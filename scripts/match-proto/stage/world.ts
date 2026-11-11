@@ -4,7 +4,7 @@
 // lag and pace in `mind.ts`), moves everyone, then the ball, and records a frame. Staging draws no random numbers: it is a pure function of the script (ARCH-5),
 // and movement only presents beats already settled (ARCH-7).
 import { PROTO_CONFIG } from '../core/config.ts';
-import { CENTRE, HALFWAY, clampToPitch, oppGoal, ownGoal, toAttack } from '../core/pitch.ts';
+import { CENTRE, HALFWAY, PITCH, clampToPitch, oppGoal, ownGoal, toAttack } from '../core/pitch.ts';
 import { ROLE_SHAPE, nominalSpot } from '../core/shape.ts';
 import type {
   BallMode,
@@ -18,8 +18,9 @@ import type {
   Vec,
 } from '../core/types.ts';
 import { lineOf } from '../core/types.ts';
-import { add, approach, dist, len, lerp, norm, scale, sub } from '../core/vec.ts';
+import { add, approach, clamp, dist, len, norm, scale, sub } from '../core/vec.ts';
 import { giveBall, updateBall } from './ball.ts';
+import { assignMarks, markSpot } from './mark.ts';
 import {
   followPlace,
   freeSpeed,
@@ -27,6 +28,7 @@ import {
   remember,
   seenBy,
   shapeRef,
+  turnOf,
   type Mind,
   type Seen,
 } from './mind.ts';
@@ -71,6 +73,10 @@ export interface StageState {
   live: boolean;
   /** When possession last changed sides. */
   turnedAt: number;
+  /** The last change of sides in live play and whether the new side's phase is a counter (stage/mind.ts). */
+  turn?: { at: number; counter: boolean };
+  /** Who marks whom (defender index → attacker index), set every tick by `assignMarks` (stage/mark.ts). */
+  marks: Map<number, number>;
   /** The presser closes to `shape.press.tight` during this beat. */
   tight: boolean;
   /** Dead-ball scenes: shapes read this point instead of the ball. */
@@ -89,6 +95,7 @@ export interface StageState {
 
 const SHAPE = PROTO_CONFIG.shape;
 const MOTION = PROTO_CONFIG.motion;
+const TURN = PROTO_CONFIG.motion.turn;
 const KICK_OFF = PROTO_CONFIG.stage.kickOff;
 
 const round2 = (v: number): number => Math.round(v * 100) / 100;
@@ -152,6 +159,7 @@ export function createStage(script: Script): StageState {
     beat: first.index,
     live: true,
     turnedAt: -Infinity,
+    marks: new Map(),
     tight: false,
     orders: new Map(),
     cues: new Map(),
@@ -241,14 +249,16 @@ export function defaultTarget(
   }
   const view = seen ?? truth;
   const base = placeOf(view);
-  if (player.team === state.team) return { target: base, pace: generalPace(base), direct: false };
+  const free = (target: Vec): Want => ({ target, pace: generalPace(target), direct: false });
+  // A free player who believes his side has the ball steps off a marker standing on his place.
+  const open = (): Want =>
+    index === state.ball.owner ? free(base) : free(unmarked(state, index, base, snapshot));
+  if (player.team === state.team) return view.team === player.team ? open() : free(base);
   const d = player.team;
   const goal = ownGoal(d);
-  // A beat the script calls pressed is pressed wherever the ball is, whatever the side's style.
-  const pressing = state.tight || toAttack(d, ref)[0] <= SHAPE.press.from[fixture.teams[d].style];
-  if (pressing) {
-    const roles = pressRoles(state, d, ref, snapshot);
+  if (isPressRole(state, d, index, snapshot)) {
     const g = norm(sub(goal, ref));
+    const roles = pressRoles(state, d, ref, snapshot);
     if (index === roles.presser) {
       const target = add(ref, scale(g, state.tight ? SHAPE.press.tight : SHAPE.press.standoff));
       return {
@@ -257,28 +267,65 @@ export function defaultTarget(
         direct: true,
       };
     }
-    if (index === roles.cover)
-      return { target: add(ref, scale(g, SHAPE.press.coverGap)), pace: 'run', direct: true };
+    return { target: add(ref, scale(g, SHAPE.press.coverGap)), pace: 'run', direct: true };
   }
-  // He leans toward a man only once he believes his side is defending.
-  if (view.team === d) return { target: base, pace: generalPace(base), direct: false };
+  // He goes with a man only once he believes his side is defending.
+  if (view.team === d) return open();
+  const man = state.marks.get(index);
+  if (man === undefined) return free(base);
+  return free(markSpot(d, lineOf(player.position), base, snapshot[man]));
+}
+
+/**
+ * Whether player `index` of the defending side `d` is this tick's presser or cover: the side
+ * presses during a pressed beat, or while the shape's point lies within its style's `press.from`.
+ */
+export function isPressRole(
+  state: StageState,
+  d: TeamId,
+  index: number,
+  snapshot: readonly Vec[],
+): boolean {
+  if (d === state.team || !state.live) return false;
+  const ref = shapeRef(state);
+  // A beat the script calls pressed is pressed wherever the ball is, whatever the side's style.
+  const pressing =
+    state.tight || toAttack(d, ref)[0] <= SHAPE.press.from[state.fixture.teams[d].style];
+  if (!pressing) return false;
+  const roles = pressRoles(state, d, ref, snapshot);
+  return index === roles.presser || index === roles.cover;
+}
+
+const MARGIN = PROTO_CONFIG.margin;
+
+/**
+ * A free attacker's place `base` moved across, away from the nearest outfield opponent when that
+ * one stands within `shape.unmark.radius` of it: by `unmark.step * (1 - d / radius)` metres in y
+ * (toward the long axis when level with him), y kept inside the pitch margin, x unchanged.
+ */
+export function unmarked(
+  state: StageState,
+  index: number,
+  base: Vec,
+  snapshot: readonly Vec[],
+): Vec {
+  const fixture = state.fixture;
+  const team = fixture.players[index].team;
   let nearest: Vec | undefined;
-  let nearestD: number = SHAPE.mark.radius;
-  for (const opp of fixture.teams[state.team].players) {
+  let nearestD = Infinity;
+  for (const opp of fixture.teams[team === 0 ? 1 : 0].players) {
     if (opp.slot === 0) continue;
     const od = dist(snapshot[opp.index], base);
-    if (od <= nearestD) {
+    if (od < nearestD) {
       nearestD = od;
       nearest = snapshot[opp.index];
     }
   }
-  if (!nearest) return { target: base, pace: generalPace(base), direct: false };
-  const m = add(nearest, scale(norm(sub(goal, nearest)), SHAPE.mark.goalSide));
-  const target: Vec =
-    lineOf(player.position) === 'DF'
-      ? [base[0], base[1] + (m[1] - base[1]) * SHAPE.mark.blend]
-      : lerp(base, m, SHAPE.mark.blend);
-  return { target, pace: generalPace(target), direct: false };
+  if (!nearest || nearestD >= SHAPE.unmark.radius) return base;
+  const dy = base[1] - nearest[1];
+  const dir = Math.abs(dy) > 1e-6 ? Math.sign(dy) : base[1] <= CENTRE[1] ? 1 : -1;
+  const y = base[1] + dir * SHAPE.unmark.step * (1 - nearestD / SHAPE.unmark.radius);
+  return [base[0], clamp(y, MARGIN, PITCH.width - MARGIN)];
 }
 
 /** `target` moved radially out to the keep-out circle's edge when it lies inside it. */
@@ -346,6 +393,30 @@ const atBoards = (body: Body): void => {
 export function step(state: StageState): void {
   remember(state);
   const snapshot = positionsOf(state);
+  const fixture = state.fixture;
+  const ballMetres = snapshot.map((p) => dist(p, state.ball.pos));
+  const seens = fixture.players.map((spec) => seenBy(state, spec.index, ballMetres[spec.index]));
+  const zoneOf = (i: number): Vec => {
+    const s = seens[i];
+    return nominalSpot(
+      { fixture, ball: s.ref, team: s.team, phase: s.phase, positions: snapshot },
+      i,
+    );
+  };
+  const canMark = (i: number): boolean => {
+    const spec = fixture.players[i];
+    return (
+      spec.team !== state.team &&
+      spec.slot !== 0 &&
+      state.live &&
+      !state.orders.has(i) &&
+      !state.cues.has(i) &&
+      !isPressRole(state, spec.team, i, snapshot) &&
+      seens[i].team !== spec.team
+    );
+  };
+  assignMarks(state, snapshot, zoneOf, canMark);
+  const turn = turnOf(state);
   const onBody: boolean[] = [];
   const moves: { target: Vec; speed: number }[] = state.fixture.players.map((spec) => {
     const i = spec.index;
@@ -359,18 +430,21 @@ export function step(state: StageState): void {
       );
       return { target: clampToPitch(target, -BOARDS), speed };
     }
-    const ballMetres = dist(snapshot[i], state.ball.pos);
-    const want = defaultTarget(state, i, snapshot, seenBy(state, i, ballMetres));
+    const metres = ballMetres[i];
+    const want = defaultTarget(state, i, snapshot, seens[i]);
     if (want.direct) {
       onBody[i] = true;
       const target = separated(state, i, want.target, snapshot);
       return { target: clampToPitch(target, -BOARDS), speed: paceSpeed(want.pace, spec) };
     }
     const mind = state.minds[i];
-    followPlace(mind, want.target, placeLag(spec, ballMetres));
+    followPlace(mind, want.target, placeLag(spec, metres, turn, state.marks.has(i)));
     const target = clampToPitch(separated(state, i, mind.place, snapshot), -BOARDS);
-    const speed = freeSpeed(dist(snapshot[i], target), ballMetres, paceSpeed('run', spec));
-    return { target, speed };
+    const d = dist(snapshot[i], target);
+    // He runs for a counter once he has seen it: before that his place is the old one.
+    const run = turn?.counter && seens[i].team === state.team ? turn : undefined;
+    const cap = paceSpeed(run && d > TURN.sprintBeyond ? 'sprint' : 'run', spec);
+    return { target, speed: freeSpeed(d, metres, cap, run) };
   });
   const keep = state.keepOut;
   if (keep) {
@@ -415,7 +489,10 @@ export function pushEvent(
  */
 export function setPossession(state: StageState, beat: Beat): void {
   state.cues.clear();
-  if (beat.team !== state.team) state.turnedAt = state.t;
+  if (beat.team !== state.team) {
+    state.turnedAt = state.t;
+    if (state.live) state.turn = { at: state.t, counter: beat.phase === 'counter' };
+  }
   state.team = beat.team;
   state.phase = beat.phase;
   state.beat = beat.index;

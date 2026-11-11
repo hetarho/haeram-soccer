@@ -80,20 +80,21 @@ describe('a free player’s mind', () => {
     // Fewer entries than his delay: the oldest.
     expect(seenBy(state, cm.index, metres)).toBe(first);
     // Enough entries: the one `back` ticks before the newest.
-    for (let k = 1; k <= 20; k++) {
+    const keep = Math.round(OWN.memory / TICK) + 1;
+    const n = keep + 5;
+    for (let k = 1; k <= n; k++) {
       state.ball.pos = [CENTRE[0] + k, CENTRE[1]];
       remember(state);
     }
-    const keep = Math.round(OWN.memory / TICK) + 1;
     expect(state.seen).toHaveLength(keep);
     const newest = state.seen[state.seen.length - 1];
-    expect(newest.ref).toEqual([CENTRE[0] + 20, CENTRE[1]]);
-    expect(seenBy(state, cm.index, metres).ref).toEqual([CENTRE[0] + 20 - back, CENTRE[1]]);
+    expect(newest.ref).toEqual([CENTRE[0] + n, CENTRE[1]]);
+    expect(seenBy(state, cm.index, metres).ref).toEqual([CENTRE[0] + n - back, CENTRE[1]]);
     // The back line's shared delay.
     const cb = fixture.players.find((p) => p.position === 'CB');
     if (!cb) throw new Error('no CB');
     const lineBack = Math.round(OWN.delay.line / TICK);
-    expect(seenBy(state, cb.index, 3).ref).toEqual([CENTRE[0] + 20 - lineBack, CENTRE[1]]);
+    expect(seenBy(state, cb.index, 3).ref).toEqual([CENTRE[0] + n - lineBack, CENTRE[1]]);
   });
 
   it('followPlace closes about 63% of the gap in one lag', () => {
@@ -104,6 +105,81 @@ describe('a free player’s mind', () => {
     expect(left).toBeGreaterThanOrEqual(3.4);
     expect(left).toBeLessThanOrEqual(4.0);
     expect(mind.place[1]).toBe(0);
+  });
+
+  /** Seconds from the first input showing a turnover of `counter` kind to the first at which seenBy(...).team is the new side, for each distance. */
+  const believedAt = (counter: boolean, metres: readonly number[]): number[] => {
+    const state = createStage(
+      scriptOf(fixture, [{ kind: 'kickOff', actor: 9, receiver: 5, to: [45, 30] }]),
+    );
+    const tick = (): void => {
+      state.tickCount += 1;
+      state.t = Math.round(state.tickCount * TICK * 1000) / 1000;
+      remember(state);
+    };
+    for (let k = 0; k < 40; k++) tick();
+    state.team = 1;
+    state.phase = counter ? 'counter' : 'buildUp';
+    state.turn = { at: state.t, counter };
+    const at = metres.map(() => NaN);
+    for (let k = 0; k < 60; k++) {
+      tick();
+      metres.forEach((m, j) => {
+        if (Number.isNaN(at[j]) && seenBy(state, cm.index, m).team === 1)
+          // The new side is first remembered on the tick after the change.
+          at[j] = state.t - (state.turn?.at ?? 0) - TICK;
+      });
+    }
+    return at;
+  };
+
+  it('a far player believes a settled turnover later than a near one', () => {
+    // One midfielder read at two distances: two midfielders of equal `decisions`.
+    const [near, far] = believedAt(false, [5, 40]);
+    const want = (OWN.delay.perMetre + PROTO_CONFIG.motion.turn.delayPerMetre) * 35;
+    expect(Math.abs(far - near - want)).toBeLessThanOrEqual(2 * TICK + 1e-9);
+    expect(far).toBeGreaterThan(near);
+  });
+
+  it('after a counter both believe it within their reaction delay', () => {
+    const [near, far] = believedAt(true, [5, 40]);
+    expect(near).toBeLessThanOrEqual(reactionDelay(cm, 5) + TICK + 1e-9);
+    expect(far).toBeLessThanOrEqual(reactionDelay(cm, 40) + TICK + 1e-9);
+  });
+
+  it('the place follows slowly after a settled turnover and fast after a counter', () => {
+    const TURN = PROTO_CONFIG.motion.turn;
+    for (const metres of [0, 10, 30, 60]) {
+      expect(placeLag(cm, metres, { counter: false })).toBeGreaterThanOrEqual(TURN.lag.settled);
+      expect(placeLag(cm, metres, { counter: true })).toBeLessThanOrEqual(TURN.lag.counter);
+      expect(placeLag(cm, metres)).toBe(
+        OWN.lag.base + OWN.lag.perMetre * Math.min(metres, OWN.farCap),
+      );
+      // A man marking stays with him whatever the window says.
+      expect(placeLag(cm, metres, { counter: false }, true)).toBeLessThanOrEqual(
+        PROTO_CONFIG.shape.mark.lag,
+      );
+    }
+    const cb = fixture.players.find((p) => p.position === 'CB');
+    if (!cb) throw new Error('no CB');
+    expect(placeLag(cb, 20, { counter: false })).toBe(OWN.lag.line);
+    expect(placeLag(cb, 20, { counter: true })).toBe(OWN.lag.line);
+  });
+
+  it('freeSpeed runs in a counter', () => {
+    const TURN = PROTO_CONFIG.motion.turn;
+    const counter = { counter: true };
+    for (const ballMetres of [0, 20, 60]) {
+      expect(freeSpeed(TURN.runBeyond + 0.5, ballMetres, 6, counter)).toBe(6);
+      expect(freeSpeed(TURN.sprintBeyond + 5, ballMetres, 8.2, counter)).toBe(8.2);
+      // A nearer place is reached as in T816.
+      expect(freeSpeed(TURN.runBeyond - 0.5, ballMetres, 6, counter)).toBe(
+        freeSpeed(TURN.runBeyond - 0.5, ballMetres, 6),
+      );
+      // After a settled turnover and outside the window, T816's values.
+      expect(freeSpeed(10, ballMetres, 6, { counter: false })).toBe(freeSpeed(10, ballMetres, 6));
+    }
+    expect(freeSpeed(10, 40, 6)).toBeLessThan(6);
   });
 
   it('freeSpeed stands inside own.hold, walks a small correction, runs a long one and is brisker near the ball', () => {

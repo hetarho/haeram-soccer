@@ -6,6 +6,7 @@ import { demoFixture } from '../core/squads.ts';
 import type { Beat, Phase, TeamId, Vec } from '../core/types.ts';
 import { lineOf } from '../core/types.ts';
 import { add, dist, lerp, norm, scale, sub } from '../core/vec.ts';
+import { assignMarks } from './mark.ts';
 import { performScript } from './perform.ts';
 import { posOf, scriptOf } from './script.testkit.ts';
 import {
@@ -75,6 +76,8 @@ const pressTarget = (team: TeamId, ref: Vec, gap: number): Vec =>
 describe('stage world', () => {
   it('players in possession stand on their nominal spots', () => {
     const state = stageWith(0, [60, 20], 'progression');
+    // Nobody near them: a free attacker with a marker on his place steps off him (T817, mark.test.ts).
+    sendAway(state, 1, 2);
     const snapshot = positionsOf(state);
     for (let i = 0; i < 11; i++) {
       expect(defaultTarget(state, i, snapshot).target).toEqual(baseOf(state, i, snapshot));
@@ -139,32 +142,48 @@ describe('stage world', () => {
   it('a marker leans goal-side of a near opponent and the back line keeps its depth', () => {
     const goal = ownGoal(1);
     const markOf = (opp: Vec): Vec => add(opp, scale(norm(sub(goal, opp)), MARK.goalSide));
+    /** One tick's assignment as `step` makes it, every outfield defender free to mark. */
+    const assign = (state: StageState): void => {
+      const snapshot = positionsOf(state);
+      assignMarks(
+        state,
+        snapshot,
+        (i) => baseOf(state, i, snapshot),
+        (i) => fixture.players[i].team !== state.team && fixture.players[i].slot !== 0,
+      );
+    };
     // A centre-back (index 13) with an opponent 5 m from his place.
     const back = stageWith(0, [30, 34]);
     sendAway(back, 0, 5);
     const base13 = baseOf(back, 13, positionsOf(back));
     const opp9: Vec = [base13[0] - 4, base13[1] + 3];
     place(back, 9, opp9);
+    assign(back);
+    expect(back.marks.get(13)).toBe(9);
     let snapshot = positionsOf(back);
     const m9 = markOf(opp9);
     expect(dist(m9, goal)).toBeLessThan(dist(opp9, goal));
     const t13 = defaultTarget(back, 13, snapshot).target;
     expect(t13[0]).toBeCloseTo(base13[0], 10);
-    expect(t13[1]).toBeCloseTo(base13[1] + (m9[1] - base13[1]) * MARK.blend, 10);
+    expect(t13[1]).toBeCloseTo(base13[1] + (m9[1] - base13[1]) * MARK.blend.DF, 10);
     // A midfielder (index 17) leans in both directions.
     const mid = stageWith(0, [30, 34]);
     sendAway(mid, 0, 5);
     const base17 = baseOf(mid, 17, positionsOf(mid));
     const opp8: Vec = [base17[0] + 3, base17[1] - 2];
     place(mid, 8, opp8);
+    assign(mid);
+    expect(mid.marks.get(17)).toBe(8);
     snapshot = positionsOf(mid);
     const t17 = defaultTarget(mid, 17, snapshot).target;
-    const want = lerp(base17, markOf(opp8), MARK.blend);
+    const want = lerp(base17, markOf(opp8), MARK.blend.MF);
     expect(t17[0]).toBeCloseTo(want[0], 10);
     expect(t17[1]).toBeCloseTo(want[1], 10);
     expect(dist(t17, goal)).toBeLessThan(dist(base17, goal));
-    // Nobody within the radius: his place.
+    // Nobody within the radius: no man, his place.
     place(mid, 8, [5, 40]);
+    assign(mid);
+    expect(mid.marks.has(17)).toBe(false);
     snapshot = positionsOf(mid);
     expect(defaultTarget(mid, 17, snapshot).target).toEqual(baseOf(mid, 17, snapshot));
   });

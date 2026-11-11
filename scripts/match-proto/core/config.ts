@@ -22,8 +22,13 @@
 //     press:    staging only (stage/world.ts): a defending side presses while the ball's x in its
 //               own attack frame is at most `from` (per style); the presser stands `standoff`
 //               metres goal-side of the ball (`tight` during a pressed beat), the cover `coverGap`
-//     mark:     staging only: a defender leans by `blend` toward a point `goalSide` metres goal-side
-//               of the nearest outfield opponent within `radius` of his place
+//     mark:     staging only (stage/mark.ts): each free defender marks one man, one to one, nearest
+//               first: a man within `radius` metres of his zone place, kept up to `keep` metres
+//               beyond it; he stands by `blend` (per line) toward a point `goalSide` metres goal-side
+//               of his man (the back line only across) and his place follows with a lag of at most
+//               `lag` seconds
+//     unmark:   staging only: a free attacker whose place lies within `radius` metres of an
+//               opponent steps up to `step` metres across, away from him, keeping his depth
 //   motion:   bounded movement (stage/motion.ts): pace speeds in m/s (sprint = `sprintBase` +
 //             `sprintPerPace` * pace / 100), acceleration and braking in m/s², the arrival ramp
 //             (`arriveTime` seconds, still within `arriveRadius` metres), reaction time, when a
@@ -38,6 +43,11 @@
 //               the seconds he gives himself to reach his place (`arrive`: `near` at the ball, `far`
 //               from `farAt` metres), the distance within which he stands (`hold`), his slowest
 //               move (`minSpeed`, m/s) and the seconds of inputs kept for the delay (`memory`)
+//     turn:     after the ball changes sides in live play, for `window` seconds: a settled turnover
+//               is believed `delayPerMetre` seconds later per metre from the ball and the place
+//               follows with a lag of at least `lag.settled`; after a counter the lag is at most
+//               `lag.counter`, a place farther than `runBeyond` metres is run to and one farther than
+//               `sprintBeyond` sprinted to (the back line keeps its own delay and lag)
 //   ball:     ball flight (stage/ball.ts): ground and lofted speeds and the slowest kick (m/s), the
 //             shortest flight (s), a lofted ball's apex per metre within `loftMin`-`loftMax`, how far
 //             ahead of the owner's feet a held ball sits, how fast a loose ball rolls to a player
@@ -142,7 +152,8 @@ export const PROTO_CONFIG = {
     poacherLean: 0.25,
     poacherMaxLean: 10,
     press: { from: { possession: 105, counter: 62 }, standoff: 3.5, tight: 1.2, coverGap: 14 },
-    mark: { radius: 7, blend: 0.2, goalSide: 1.5 },
+    mark: { radius: 10, keep: 3, goalSide: 1.5, blend: { DF: 0.6, MF: 0.6, FW: 0.3 }, lag: 0.3 },
+    unmark: { radius: 4, step: 2.5 },
   },
   motion: {
     walk: 1.8,
@@ -171,8 +182,20 @@ export const PROTO_CONFIG = {
       /** He stands within `hold` metres of his place; otherwise he moves at `minSpeed` at least. */
       hold: 0.6,
       minSpeed: 0.8,
-      /** Seconds of inputs kept for the delay. */
-      memory: 1.2,
+      /** Seconds of inputs kept for the delay: at least the longest delay, `delay.base + delay.perIq + (delay.perMetre + turn.delayPerMetre) * farCap`. */
+      memory: 2.2,
+    },
+    /** After the ball changes sides in live play (stage/mind.ts). */
+    turn: {
+      /** Seconds a turnover shapes how free players move. */
+      window: 6,
+      /** A settled turnover is believed this many seconds later per metre from the ball (up to `own.farCap`). */
+      delayPerMetre: 0.02,
+      /** The place's time constant inside the window: at least `settled` after a settled turnover, at most `counter` after a counter; the back line keeps `own.lag.line`. */
+      lag: { settled: 2, counter: 0.5 },
+      /** Inside the window after a counter a free player runs to a place farther than `runBeyond` metres and sprints to one farther than `sprintBeyond`. */
+      runBeyond: 3,
+      sprintBeyond: 12,
     },
   },
   ball: {
