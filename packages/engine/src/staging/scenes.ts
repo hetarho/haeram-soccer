@@ -220,6 +220,7 @@ export function* runDeadBall(state: StageState, ctx: BeatContext): Generator<voi
   // A late participant finishes his bounded route rather than being placed at a timeout.
   if (!ready()) yield* runUntil(state, ready, STAGING_CONFIG.stage.scene.maxTravel);
   if (!ready()) throw invalidDetail('staging:input');
+  pushEvent(state, { kind: 'settled', actor: taker, at: spot });
 
   ball.pos = [spot[0], spot[1]];
   delete state.retrieve;

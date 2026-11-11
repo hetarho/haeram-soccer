@@ -134,7 +134,10 @@ export function matchDetail(
         fouler = spread(split.fouler);
       if (fouled.length !== fouler.length || fouled.length + split.booked.length !== f.n)
         throw invalidDetail(`fouls:${side}/${i}`);
-      fouled.forEach((line, j) => push(fouler[j]!, line, -1));
+      if (split.pairs) {
+        if (split.pairs.length !== fouled.length) throw invalidDetail(`foul-pairs:${side}/${i}`);
+        for (const pair of split.pairs) push(pair.other, pair.actor, -1);
+      } else fouled.forEach((line, j) => push(fouler[j]!, line, -1));
     });
   }
   const incidents = participation.incidents.map((x, i) => {

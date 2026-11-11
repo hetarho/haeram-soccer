@@ -59,6 +59,7 @@ export function* runSpotScene(state: StageState, ctx: BeatContext): Generator<vo
     [...places].every(([index, target]) => dist(state.bodies[index].pos, target) <= SCENE.ready);
   yield* runUntil(state, ready, duration + SCENE.maxTravel);
   if (!ready()) throw invalidDetail('staging:input');
+  pushEvent(state, { kind: 'settled', actor: beat.actor, at: spot });
   // Retrieval has reached its spot; this assignment only removes sub-centimetre rounding.
   state.ball.pos = [...spot];
   delete state.retrieve;

@@ -807,7 +807,7 @@ export class Host {
             for (let n = 0; n < limit; n++) {
               if (this.cancelled) break;
               const p = await this.day(w, watched);
-              if (p?.frames.length) playback = p;
+              if (p && (p.frames.length || p.script)) playback = p;
               if (
                 w.critical ||
                 careerEnded(w) ||
@@ -843,7 +843,7 @@ export class Host {
                 w.revision++;
               }
               const p = advanceRound(w, undefined, cmd.type !== 'season');
-              if (p?.frames.length) playback = p;
+              if (p && (p.frames.length || p.script)) playback = p;
               if (careerEnded(w)) break;
               if (n % 5 === 0) {
                 this.progress({

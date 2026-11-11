@@ -62,7 +62,7 @@ import {
 import { usePitchSkin } from '../../../entities/match';
 import { keepersBySample, matchLook, UNRECORDED_KIT } from '../../../entities/match';
 import { scoreboardHalves } from '../lib/scoreboardHalves';
-import { incidentFrame, sampleAt, sentOff } from '../lib/moments';
+import { incidentFrame, momentReady, sampleAt, sentOff } from '../lib/moments';
 import {
   advanceGoalFeedback,
   GOAL_FEEDBACK_CONFIG,
@@ -299,6 +299,9 @@ export function Pitch({
   const placed = useRef<{ id: string; side: 0 | 1; x: number; y: number }[]>([]);
   const placedRadius = useRef(0);
   const [reviewedId, setReviewedId] = useState<string>();
+  const [revealedId, setRevealedId] = useState<string>();
+  const completedId = useRef<string | undefined>(undefined);
+  const [waiting, setWaiting] = useState(false);
   const [selection, setSelection] = useState('0:8');
   // A goal-scene clip under way (→WEB-105): its own presentation over a snapshot of the original
   // viewing. The ref is what the frame loop reads, so a return takes effect on the next frame.
@@ -312,27 +315,29 @@ export function Pitch({
   const replayOpen = useRef<HTMLButtonElement>(null);
   const refocusReplay = useRef(false);
   // Every sample and recorded ball position at its match time, so a pass flies at its real speed.
-  const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p]);
+  const timed = useMemo(() => presentationSamples(p?.frames ?? []), [p?.frames]);
   const { samples, track } = timed;
   // How far the ball has rolled by each track point, so its panels turn with its travel.
   const travel = useMemo(() => trackTravel(track), [track]);
   const length = runningLength(p?.frames.length ?? 0);
+  const complete = !p?.staged || p.staged.done;
+  const revealed = !!p && revealedId === p.record.id;
   // Every stoppage's rush and still beat, drawn at their own rates (→WEB-32).
-  const preparations = useMemo(() => deadBallBeats(p?.frames ?? []), [p]);
+  const preparations = useMemo(() => deadBallBeats(p?.frames ?? []), [p?.frames]);
   const goals = useMemo(() => {
     if (!p) return [];
     const starts: number[] = [];
     for (const sample of samples) starts[sample.frame] ??= sample.time;
     return goalInstants(p.record, p.frames, starts);
-  }, [p, samples]);
+  }, [p?.record, p?.frames, samples]);
   // Each player's place in his matchday roster (starters, then the bench) numbers his figure.
   const numbers = useMemo(
     () => new Map(p?.squads.flatMap((squad) => squad.map((player, i) => [player.id, i] as const))),
-    [p],
+    [p?.squads],
   );
   // What the figures are posed from besides the presented instant (→MATCH-37): every recorded
   // action's window and every player's metres travelled, built once per playback.
-  const windows = useMemo(() => figureActionWindows(p?.frames ?? []), [p]);
+  const windows = useMemo(() => figureActionWindows(p?.frames ?? []), [p?.frames]);
   const distances = useMemo(() => gaitDistances(samples), [samples]);
   // Each player's own skin and hair (→MATCH-36), the same in every match.
   const looks = useMemo(
@@ -340,20 +345,23 @@ export function Pitch({
       new Map<string, PlayerLook>(
         p?.squads.flatMap((squad) => squad.map((player) => [player.id, playerLook(player.id)])),
       ),
-    [p],
+    [p?.squads],
   );
   const names = useMemo(
     () => new Map(p?.squads.flatMap((squad) => squad.map((player) => [player.id, player.name]))),
-    [p],
+    [p?.squads],
   );
   const captions = beatCaptions(beat, (id) => names.get(id) ?? '');
   // What both sides wore, from the record's own snapshot only (KIT-12): resolved once per record,
   // so editing a club's design while watching never repaints this match.
-  const look = useMemo(() => (p ? matchLook(p.record) : undefined), [p]);
+  const look = useMemo(() => (p ? matchLook(p.record) : undefined), [p?.record]);
   // The scoreboard's halves in the shirts the sides wore (→WEB-50).
   const halves = useMemo(() => (look ? scoreboardHalves(look) : undefined), [look]);
   // Who is in goal in each sample, found by player over the whole matchday roster.
-  const keepers = useMemo(() => keepersBySample(samples, p?.squads ?? [[], []]), [samples, p]);
+  const keepers = useMemo(
+    () => keepersBySample(samples, p?.squads ?? [[], []]),
+    [samples, p?.squads],
+  );
   // One painter, and so one torso-sprite cache, per mounted pitch: rAF only blits cached shirts.
   const [painter] = useState(() => createFigurePainter());
   const [selectedSide, selectedIndex] = selection.split(':').map(Number);
@@ -364,13 +372,15 @@ export function Pitch({
   const replay = replayFor(replayState, p?.record.id);
   // The final recorded goal finishes its cue before the match does. A clip keeps the original
   // viewing's state, so it never finishes, restarts or marks the match watched (→WEB-105).
-  const finished = replay
-    ? replay.origin.finished
-    : !!p &&
-      onRecord &&
-      sampleIndex >= samples.length - 1 &&
-      cue === undefined &&
-      shownGoals >= goals.length;
+  const pictureEnded =
+    !!p &&
+    complete &&
+    onRecord &&
+    samples.length > 0 &&
+    sampleIndex >= samples.length - 1 &&
+    cue === undefined &&
+    shownGoals >= goals.length;
+  const finished = replay ? replay.origin.finished : revealed || pictureEnded;
   // An archive offers every recorded goal; a live presentation those it has shown.
   const offered = useMemo(
     () => (p ? replayGoals(goals, p.frames, summary ? goals.length : seen) : []),
@@ -405,17 +415,20 @@ export function Pitch({
     setPaused(wasPaused);
   }, []);
   const heldGoal = onRecord && cue !== undefined ? goals[cue] : undefined;
-  const presentedScore = onRecord ? goals[shownGoals - 1] : undefined;
+  const presentedScore =
+    revealed && !replay ? p?.record.score : onRecord ? goals[shownGoals - 1] : undefined;
   const home = world.clubs.find((c) => c.id === p?.record.home);
   const away = world.clubs.find((c) => c.id === p?.record.away);
   const selectedPlayer = p?.squads[selectedSide]?.[selectedIndex];
   const selectedId = selectedPlayer?.id;
   const selectedMotion = sample?.players?.[selectedSide]?.find((m) => m.id === selectedId);
-  const reds = p ? sentOff(p.record, p.frames, sample?.frame ?? 0) : [0, 0];
+  const reds = p ? sentOff(p.record, p.frames, sample?.frame ?? 0, complete) : [0, 0];
   // Why a player has left the pitch so far: sent off, substituted or injured.
   const gone = new Map(
     (p?.record.incidents ?? []).flatMap((incident) =>
-      incident.kind === 'yellow' || incidentFrame(p!.frames, incident) > (sample?.frame ?? 0)
+      incident.kind === 'yellow' ||
+      incidentFrame(p!.frames, incident, complete) < 0 ||
+      incidentFrame(p!.frames, incident, complete) > (sample?.frame ?? 0)
         ? []
         : [
             [
@@ -460,8 +473,20 @@ export function Pitch({
 
   useEffect(() => {
     if (finished && p) setReviewedId(p.record.id);
-    if (finished && p && samples.length) onFinish?.(p.record.id);
-  }, [finished, p?.record.id, samples.length, onFinish]);
+    if (finished && p && completedId.current !== p.record.id) {
+      completedId.current = p.record.id;
+      onFinish?.(p.record.id);
+    }
+  }, [finished, p?.record.id, onFinish]);
+
+  useLayoutEffect(() => {
+    if (!revealed || !complete || replaying.current || !samples.length) return;
+    clock.current = seekGoalFeedback(goals, samples.at(-1)!.time);
+    setSampleIndex(samples.length - 1);
+    setCue(undefined);
+    setShownGoals(goalsShown(clock.current));
+    noteSeen(clock.current);
+  }, [revealed, complete, samples, goals, noteSeen, replay]);
 
   useLayoutEffect(() => {
     clock.current = { seconds: 0, next: 0 };
@@ -469,6 +494,8 @@ export function Pitch({
     setSampleIndex(0);
     setCue(undefined);
     setShownGoals(0);
+    setRevealedId(undefined);
+    completedId.current = undefined;
     possessionShown.current = '';
     setPossession({ state: 'unknown' });
     setBallSide(undefined);
@@ -560,6 +587,7 @@ export function Pitch({
         );
         if (clip && replayEnded(clock.current, clip)) endReplay();
         else if (!clip) noteSeen(clock.current);
+        setWaiting(!complete && (revealed || clock.current.seconds >= length));
         // Only a new cue or goal re-renders; a held goal keeps one cue however often this runs.
         setCue(clock.current.cue?.goal);
         setBeat(beatAt(preparations, clock.current.seconds));
@@ -784,6 +812,8 @@ export function Pitch({
     samples,
     timed,
     length,
+    complete,
+    revealed,
     preparations,
     goals,
     track,
@@ -812,7 +842,8 @@ export function Pitch({
     refocusReplay.current = false;
   }, [replay]);
 
-  const seek = (index: number) => {
+  const seek = (index: number, keepResult = false) => {
+    if (!keepResult) setRevealedId(undefined);
     const target = Math.max(0, Math.min(samples.length - 1, index));
     // An explicit seek leaves a clip for the original viewing at its new place and speed.
     const clip = replaying.current;
@@ -830,7 +861,13 @@ export function Pitch({
     if (p && index < samples.length - 1) onPlaybackStart?.(p.record.id);
   };
   const reveal = () => {
-    seek(samples.length - 1);
+    if (p) setRevealedId(p.record.id);
+    if (complete) seek(samples.length - 1, true);
+    else {
+      if (replaying.current) endReplay();
+      clock.current = { ...clock.current, cue: undefined };
+      setCue(undefined);
+    }
     setPaused(true);
   };
   const toggle = () => {
@@ -1006,7 +1043,7 @@ export function Pitch({
           </i>
         </span>
         {localizeValue(
-          frame ? (
+          frame || revealed ? (
             // The score as presented so far: a goal later in this minute is not shown before it lands.
             <strong>
               <i className={t.score}>
@@ -1046,8 +1083,13 @@ export function Pitch({
         <span className={`${s.live} ${t.liveText}`}>
           {localizeValue(
             frame
-              ? `${replay ? `${tr('match.replay.state')} · ` : ''}${frame.label}′ · ${frame.action}${finished && !replay ? sourceMessage('copy.Pitch.000578f677') : ''}`
-              : 'MATCH DAY',
+              ? `${replay ? `${tr('match.replay.state')} · ` : ''}${frame.label}′ · ${frame.action}${pictureEnded && !replay ? sourceMessage('copy.Pitch.000578f677') : ''}`
+              : !complete
+                ? tr('match.preparing')
+                : 'MATCH DAY',
+          )}
+          {localizeValue(
+            waiting && frame && <span role="status">{richMessage('match.preparing')}</span>,
           )}
         </span>
         {/* A clip offers the ordinary speeds in archived replay too (→WEB-105). */}
@@ -1306,8 +1348,11 @@ export function Pitch({
                     live={!summary}
                     record={p.record}
                     frames={p.frames}
+                    complete={complete}
                     names={names}
                     onSeek={(moment) => {
+                      if (!momentReady(p.frames, moment, complete)) return;
+                      setRevealedId(undefined);
                       seek(sampleAt(p.frames, samples, moment));
                       setPaused(true);
                     }}
@@ -1330,7 +1375,8 @@ export function Pitch({
                           type="range"
                           aria-label={displayMessage('copy.Pitch.78239af671')}
                           min={0}
-                          max={samples.length - 1}
+                          max={Math.max(0, samples.length - 1)}
+                          disabled={!samples.length}
                           value={sampleIndex}
                           onChange={(e) => {
                             seek(Number(e.target.value));

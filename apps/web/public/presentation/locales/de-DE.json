@@ -6652,6 +6652,7 @@
     "tool.payroll.legacyScopeMismatch": "abweichender Umfang: historische Gesamtgehälter und reine NPC-Spielergehälter",
     "tool.payroll.accountingLine": "Gehaltsbuchhaltung: {summary}.",
     "tool.payroll.modeledRatio": "modellierte Gehälter für Spieler + Trainer/Betreuer / Einnahmen, erste 50 Saisons",
-    "tool.payroll.npcComparison": "reine Spielergehälter / letzte Spielergehälter im Hauptbuch (Buchhaltung)"
+    "tool.payroll.npcComparison": "reine Spielergehälter / letzte Spielergehälter im Hauptbuch (Buchhaltung)",
+    "match.preparing": "Spielszene wird vorbereitet…"
   }
 }

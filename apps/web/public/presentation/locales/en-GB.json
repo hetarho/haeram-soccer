@@ -6652,6 +6652,7 @@
     "tool.payroll.legacyScopeMismatch": "legacy total payroll / NPC player-only mismatch",
     "tool.payroll.accountingLine": "Payroll accounting: {summary}.",
     "tool.payroll.modeledRatio": "modeled player + manager/coaching wage bill / revenue, first 50 seasons",
-    "tool.payroll.npcComparison": "player-only wages / books' last player wages (accounting)"
+    "tool.payroll.npcComparison": "player-only wages / books' last player wages (accounting)",
+    "match.preparing": "Preparing the scene…"
   }
 }

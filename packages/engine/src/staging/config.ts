@@ -297,6 +297,8 @@ export const STAGING_CONFIG = {
     },
   },
   limits: {
+    /** Match seconds per staged second; reported by T831 and judged at the release verdict. */
+    clockRate: [0.8, 1.25],
     /** Staged seconds a playback covers at least. */
     duration: 599.5,
     /** The fastest ball step between frames, and how far outside the pitch a player may stand. */

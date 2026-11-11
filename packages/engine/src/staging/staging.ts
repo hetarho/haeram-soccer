@@ -13,7 +13,12 @@ export interface StagingId {
 export interface StageFrame extends Omit<Frame, 'owner' | 'p' | 'present' | 'slots'> {
   owner: StagingId | null;
   /** Positions in record line order; identity never depends on a shirt number or current slot. */
-  p: { player: StagingId; at: Vec; slot: number }[];
+  p: {
+    player: StagingId;
+    at: Vec;
+    slot: number;
+    movement?: NonNullable<Frame['movement']>[number];
+  }[];
 }
 export interface StageEvent extends Omit<InternalEvent, 'actor' | 'other'> {
   actor: StagingId | null;
@@ -58,7 +63,7 @@ export function advance(
     staging.done = program.next().done === true;
   }
   const frames = state.frames.map((f): StageFrame => {
-    const { present, slots, ...rest } = f;
+    const { present, slots, movement, ...rest } = f;
     return {
       ...rest,
       owner: identity(state, f.owner),
@@ -68,6 +73,7 @@ export function advance(
           player: identity(state, p.index)!,
           at: [f.p[p.index * 2], f.p[p.index * 2 + 1]],
           slot: slots?.[p.index] ?? p.slot,
+          ...(movement?.[p.index] ? { movement: movement[p.index] } : {}),
         })),
     };
   });

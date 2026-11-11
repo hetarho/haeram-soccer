@@ -13,6 +13,7 @@ import type {
 import type { ManagerHistoryFacts } from './manager-history';
 import type { ClubBooks, DividendShare, EndCause, OwnerState, TakeoverLoan } from './owner';
 import type { RecentResults } from './recent-results';
+import type { MatchScript, StagingSide } from './match-script';
 import type {
   IntentionObservation,
   MatchModelRevision,
@@ -739,6 +740,7 @@ export type PlayerMotionState =
 export interface PlayerMotion {
   id: string;
   position: [number, number];
+  /** Playback coordinates; scripted frames express velocity per match second. */
   velocity: [number, number];
   state: PlayerMotionState;
   intent: [number, number];
@@ -794,7 +796,7 @@ export interface MatchEvent {
   card?: 'yellow' | 'red';
   xg?: number;
   header?: boolean;
-  /** Korean commentary (→MATCH-24). */
+  /** Locale-independent source commentary, resolved at presentation (→MATCH-24, ARCH-32). */
   text: string;
 }
 /** A dead ball in an observed frame (→WEB-32's dead-ball beat): `dead` ≤ `settled` ≤ `kick`. */
@@ -858,6 +860,13 @@ export interface MatchFrame {
 export interface MatchPlayback {
   record: MatchRecord;
   frames: MatchFrame[];
+  /** Watched revision-11 matches hand their script to a presentation-only staging consumer. */
+  script?: MatchScript;
+  staging?: [StagingSide, StagingSide];
+  /** Transient presentation progress only; never a world/save fact. */
+  staged?: { done: boolean; error?: boolean };
+  /** A failed script keeps its settled record and is never handed to the consumer (MATCH-38). */
+  problems?: string[];
   /** Whole matchday rosters: the starters in slot order, then the bench. */
   squads: [Player[], Player[]];
 }

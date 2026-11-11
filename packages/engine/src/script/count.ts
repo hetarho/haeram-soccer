@@ -129,9 +129,12 @@ export function countScript(script: Script, detail: MatchDetail): Counted {
 }
 
 /** Every M, TD and PD cell is compared, including layout/presence mismatches. */
-export function compareRecord(detail: MatchDetail, counted: Counted): string[] {
-  const expected = recordOf(detail),
-    out: string[] = [];
+export function compareRecord(
+  detail: MatchDetail,
+  counted: Counted,
+  expected: Counted = recordOf(detail),
+): string[] {
+  const out: string[] = [];
   const rows = (
     label: string,
     a: readonly number[] | undefined,
@@ -148,6 +151,9 @@ export function compareRecord(detail: MatchDetail, counted: Counted): string[] {
     rows(`team:${side}:M`, counted.metrics[side], expected.metrics[side]);
     rows(`team:${side}:TD`, counted.detail?.[side], expected.detail?.[side]);
   }
+  rows('xg', counted.xg, expected.xg);
+  for (const key of ['score', 'regulation'] as const)
+    if (JSON.stringify(counted[key]) !== JSON.stringify(expected[key])) out.push(key);
   if (counted.players.length !== expected.players.length) out.push('players:length');
   expected.players.forEach((p, i) => {
     const got = counted.players[i];

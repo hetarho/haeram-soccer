@@ -1,7 +1,7 @@
 /**
  * Post-match material of an own match (→MATCH-25) and its season heat maps (→MATCH-5, HIST-16).
- * The grid engine writes the flat integer rows (`grid/record.ts`); these helpers decode them for the
- * UI. MATERIAL_LAYOUT and REPORT_SLOTS below define the layouts.
+ * The grid and script material writers use the flat integer rows of `grid/record.ts`; these helpers
+ * decode them for the UI. MATERIAL_LAYOUT and REPORT_SLOTS below define the layouts.
  */
 import type { MatchMaterial, MatchRecord, SeasonArchive, World } from '../../contracts/src/types';
 
@@ -68,7 +68,7 @@ export interface NetworkPair {
   to: number;
   fromPlayer?: string;
   toPlayer?: string;
-  /** Completed passes from `from` to `to` (only pairs with at least two are kept). */
+  /** Completed passes from `from` to `to`; earlier grid material may omit singleton pairs. */
   completed: number;
 }
 

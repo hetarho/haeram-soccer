@@ -1,0 +1,140 @@
+{
+  "diffBase": "b5399b87d13e40e3497470abd16a55416a285ab8",
+  "checks": [
+    {
+      "command": "pnpm exec vitest run --project unit --changed b5399b87d13e40e3497470abd16a55416a285ab8 --passWithNoTests packages/engine/src/aggregate/players.unit.test.ts packages/engine/src/aggregate/timeline.test.ts packages/engine/src/script/count.test.ts packages/engine/src/script/detail.test.ts packages/engine/src/script/incidents.test.ts packages/engine/src/script/material.report.test.ts packages/engine/src/script/touches.test.ts packages/engine/src/script/validate.test.ts packages/engine/src/script/windows.test.ts packages/engine/src/script/playback.test.ts tests/config/test-tiers.test.ts",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 3061,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "b5399b87d13e40e3497470abd16a55416a285ab8",
+        "TASK": "T833",
+        "TASKS": "T833"
+      },
+      "commit": "b5399b87d13e40e3497470abd16a55416a285ab8",
+      "tree": "18567dd0e89ce1d9fa33f2f2a2990fcc6411533a",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-335f0c27-6f45-4817-8b55-d6dae616b789.log",
+      "failedTests": [],
+      "tail": [
+        "",
+        " RUN  v5.0.3 /Users/ihaelam/project/haeram-soccer",
+        "",
+        "",
+        " Test Files  11 passed (11)",
+        "      Tests  98 passed (98)",
+        "   Start at  00:34:12",
+        "   Duration  1.46s (transform 52%, import 30%, tests 17%)"
+      ]
+    },
+    {
+      "command": "pnpm run typecheck",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 25547,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "b5399b87d13e40e3497470abd16a55416a285ab8",
+        "TASK": "T833",
+        "TASKS": "T833"
+      },
+      "commit": "b5399b87d13e40e3497470abd16a55416a285ab8",
+      "tree": "18567dd0e89ce1d9fa33f2f2a2990fcc6411533a",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-eb62a242-7b75-43cf-a7f4-8bf9eb0361c2.log",
+      "failedTests": [],
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 typecheck /Users/ihaelam/project/haeram-soccer",
+        "> tsc --noEmit --incremental --tsBuildInfoFile .tmp/tsc/tsbuildinfo"
+      ]
+    },
+    {
+      "command": "pnpm run lint",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 10658,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "b5399b87d13e40e3497470abd16a55416a285ab8",
+        "TASK": "T833",
+        "TASKS": "T833"
+      },
+      "commit": "b5399b87d13e40e3497470abd16a55416a285ab8",
+      "tree": "18567dd0e89ce1d9fa33f2f2a2990fcc6411533a",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-41bf90fb-f550-400c-b24c-ddfd7737676b.log",
+      "failedTests": [],
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 lint /Users/ihaelam/project/haeram-soccer",
+        "> eslint apps packages scripts tests --no-warn-ignored"
+      ]
+    },
+    {
+      "command": "pnpm run format:check",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 7279,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "b5399b87d13e40e3497470abd16a55416a285ab8",
+        "TASK": "T833",
+        "TASKS": "T833"
+      },
+      "commit": "b5399b87d13e40e3497470abd16a55416a285ab8",
+      "tree": "18567dd0e89ce1d9fa33f2f2a2990fcc6411533a",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-08363d0e-f324-4c2e-9959-c436e4066d7f.log",
+      "failedTests": [],
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 format:check /Users/ihaelam/project/haeram-soccer",
+        "> prettier --check --cache --cache-strategy content --cache-location .tmp/prettier-cache apps packages scripts tests *.json *.ts *.mjs .github",
+        "",
+        "Checking formatting...",
+        "All matched files use Prettier code style!"
+      ]
+    },
+    {
+      "command": "pnpm run validate:i18n",
+      "schemaVersion": 1,
+      "ok": true,
+      "exitCode": 0,
+      "cached": false,
+      "timedOut": false,
+      "stale": false,
+      "ms": 3115,
+      "scope": {
+        "TIER": "task",
+        "DIFF_BASE": "b5399b87d13e40e3497470abd16a55416a285ab8",
+        "TASK": "T833",
+        "TASKS": "T833"
+      },
+      "commit": "b5399b87d13e40e3497470abd16a55416a285ab8",
+      "tree": "18567dd0e89ce1d9fa33f2f2a2990fcc6411533a",
+      "log": "/Users/ihaelam/project/haeram-soccer/.git/haeram/v1/logs/check-19664e57-b71a-4ee8-9b73-0c5a614be4f9.log",
+      "failedTests": [],
+      "tail": [
+        "",
+        "> haeram-soccor@0.8.0 validate:i18n /Users/ihaelam/project/haeram-soccer",
+        "> tsx scripts/validate-i18n.ts",
+        "",
+        "{\"locales\":12,\"messages\":6633,\"references\":8358}"
+      ]
+    }
+  ]
+}

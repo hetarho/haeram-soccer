@@ -6649,6 +6649,7 @@
     "tool.payroll.legacyScopeMismatch": "cakupan berbeda antara total gaji lama dan gaji pemain NPC saja",
     "tool.payroll.accountingLine": "Akuntansi gaji: {summary}.",
     "tool.payroll.modeledRatio": "gaji pemain + manajer/staf pelatih dalam model / pendapatan, 50 musim pertama",
-    "tool.payroll.npcComparison": "gaji pemain saja / gaji pemain terakhir dalam buku besar (akuntansi)"
+    "tool.payroll.npcComparison": "gaji pemain saja / gaji pemain terakhir dalam buku besar (akuntansi)",
+    "match.preparing": "Menyiapkan adegan…"
   }
 }

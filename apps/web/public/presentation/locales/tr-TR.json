@@ -6652,6 +6652,7 @@
     "tool.payroll.legacyScopeMismatch": "eski toplam maaşlar ile NPC oyuncu maaşlarının kapsamı uyuşmuyor",
     "tool.payroll.accountingLine": "Maaş muhasebesi: {summary}.",
     "tool.payroll.modeledRatio": "modellenen oyuncu + teknik direktör/teknik ekip maaşları / gelir, ilk 50 sezon",
-    "tool.payroll.npcComparison": "yalnızca oyuncu maaşları / defterdeki son oyuncu maaşları (muhasebe)"
+    "tool.payroll.npcComparison": "yalnızca oyuncu maaşları / defterdeki son oyuncu maaşları (muhasebe)",
+    "match.preparing": "Sahne hazırlanıyor…"
   }
 }

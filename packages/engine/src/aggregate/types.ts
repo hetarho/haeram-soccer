@@ -356,6 +356,9 @@ export interface AggregateTraceMove {
   offside: number[];
   /** Revision 11 only: each failed pass's actor and its caught receiver, never the same line. */
   offsidePairs?: { actor: number; receiver: number }[];
+  /** Revision 11's joint actor/winner attribution, preserving the paired action's common spell. */
+  wins?: { actor: number; other: number }[];
+  recoveries?: { actor: number; other: number }[];
   /** The opponent's lines that won the ball: interceptions of a pass group, tackles of a carry or take-on group. */
   won: number[];
   /** The opponent's lines that recovered the group's loose balls in their high-turnover zone (empty elsewhere). */
@@ -367,4 +370,6 @@ export interface AggregateTraceFouls {
   /** The other fouls of the row: this side's lines fouled and the opponent's lines that fouled. */
   fouled: number[];
   fouler: number[];
+  /** Revision 11's unbooked fouls, in ordinal order after `booked`. */
+  pairs?: { actor: number; other: number }[];
 }

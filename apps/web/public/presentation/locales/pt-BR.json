@@ -6655,6 +6655,7 @@
     "tool.payroll.legacyScopeMismatch": "incompatibilidade entre folha total histórica e salários de jogadores de NPC",
     "tool.payroll.accountingLine": "Contabilidade salarial: {summary}.",
     "tool.payroll.modeledRatio": "folha modelada de jogadores + treinador/comissão técnica / receita, primeiras 50 temporadas",
-    "tool.payroll.npcComparison": "salários de jogadores / últimos salários de jogadores do livro (contabilidade)"
+    "tool.payroll.npcComparison": "salários de jogadores / últimos salários de jogadores do livro (contabilidade)",
+    "match.preparing": "Preparando a cena…"
   }
 }

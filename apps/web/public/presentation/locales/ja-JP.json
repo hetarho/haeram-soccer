@@ -6649,6 +6649,7 @@
     "tool.payroll.legacyScopeMismatch": "過去の総給与とNPCの選手給与のみでは対象範囲が異なります",
     "tool.payroll.accountingLine": "給与会計: {summary}。",
     "tool.payroll.modeledRatio": "モデル内の選手・監督・コーチ給与 / 収入、最初の50シーズン",
-    "tool.payroll.npcComparison": "選手給与のみ / 帳簿上の直前の選手給与 (会計方式)"
+    "tool.payroll.npcComparison": "選手給与のみ / 帳簿上の直前の選手給与 (会計方式)",
+    "match.preparing": "シーンを準備中…"
   }
 }

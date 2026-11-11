@@ -1,5 +1,6 @@
 /** Canonical source-language message resource. Edit alongside every registered locale pack. */
 export const sourceMessages = {
+  'match.preparing': '장면 준비 중…',
   'copy.main.10ac389f48': '개발 모드에서만 사용할 수 있어요.',
   'copy.main.0bf2b10d97': '게임으로 돌아가기',
   'copy.bitpacking.c852cf9f8f': '비트 통계 열 개수가 올바르지 않습니다.',

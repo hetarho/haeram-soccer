@@ -1,6 +1,7 @@
 import type { MatchDetail } from './detail';
 import { EV, EVENT_RESULTS, FO, SH } from './codes';
 import type { TeamId } from './types';
+import { commonSpan, playingSpan } from '../aggregate/timeline';
 
 export const periodOf = (minute: number): 0 | 1 => (minute >= 90 ? 1 : 0);
 /** A recorded minute names the preceding minute's interval; period edges stay on their side. */
@@ -33,12 +34,14 @@ export function touchWindow(d: MatchDetail, carries: number[], release?: Release
   const span = (side: number, line: number) => {
     const stints = d.stints.filter((s) => s[0] === side && s[1] === line);
     // Moving to another slot splits a continuous spell; it never takes the man off the pitch.
-    return [Math.min(...stints.map((s) => s[3]!)), Math.max(...stints.map((s) => s[4]!))];
+    const span = playingSpan(stints.map((s) => ({ from: s[3]!, to: s[4]! })));
+    return [span.from, span.to];
   };
   const add = (side: number, line: number) => {
     const [start, end] = span(side, line);
-    from = Math.max(from, start!);
-    until = Math.min(until, end!);
+    const window = commonSpan({ from, to: until }, { from: start!, to: end! });
+    from = window.from;
+    until = window.to;
   };
   for (const id of events) {
     const e = d.events[id]!,

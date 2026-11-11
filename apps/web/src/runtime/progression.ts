@@ -536,6 +536,7 @@ export class ProgressionController {
     const previous = this.store.getState().watching;
     if (previous === watching) return;
     this.store.setState({ watching });
+    if (watching) this.client.setWatching?.(true);
     if (watching && this.store.getState().running) this.beginWatch();
     if (!watching) this.endWatch();
   }
@@ -544,11 +545,13 @@ export class ProgressionController {
    * once the owner leaves the match view. A match-eve card always resumes, as playing through would.
    */
   beginWatch(fromEve = false) {
+    this.client.setWatching?.(true);
     this.resumeAfterWatch = this.mode === 'automatic' && (fromEve || this.store.getState().running);
     this.stop(WATCH_REASON);
   }
   /** Leaving the match view (or a watch that produced no match) resumes a clock watching stopped. */
   endWatch() {
+    this.client.setWatching?.(false);
     if (this.store.getState().reason === WATCH_REASON) this.store.setState({ reason: '' });
     if (this.mode !== 'automatic' || !this.resumeAfterWatch) return;
     this.resumeAfterWatch = false;

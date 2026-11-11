@@ -6649,6 +6649,7 @@
     "tool.payroll.legacyScopeMismatch": "과거 총급여와 NPC 선수 전용 급여의 범위 불일치",
     "tool.payroll.accountingLine": "급여 회계: {summary}.",
     "tool.payroll.modeledRatio": "모델에 포함된 선수·감독·코칭 급여 / 수입, 첫 50시즌",
-    "tool.payroll.npcComparison": "선수 급여만 / 장부의 직전 선수 급여 (회계 방식)"
+    "tool.payroll.npcComparison": "선수 급여만 / 장부의 직전 선수 급여 (회계 방식)",
+    "match.preparing": "장면 준비 중…"
   }
 }

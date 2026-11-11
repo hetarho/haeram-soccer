@@ -6664,6 +6664,7 @@
     "tool.payroll.legacyScopeMismatch": "اختلاف النطاق بين إجمالي الرواتب القديمة ورواتب لاعبي الأندية غير المملوكة فقط",
     "tool.payroll.accountingLine": "محاسبة الرواتب: {summary}.",
     "tool.payroll.modeledRatio": "رواتب اللاعبين + المدرب/الجهاز الفني المشمولة في النموذج / الإيرادات، أول 50 موسمًا",
-    "tool.payroll.npcComparison": "رواتب اللاعبين فقط / آخر رواتب للاعبين في الدفتر (المحاسبة)"
+    "tool.payroll.npcComparison": "رواتب اللاعبين فقط / آخر رواتب للاعبين في الدفتر (المحاسبة)",
+    "match.preparing": "جارٍ تجهيز المشهد…"
   }
 }

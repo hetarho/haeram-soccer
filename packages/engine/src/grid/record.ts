@@ -244,20 +244,21 @@ export class MaterialTally {
 
   /**
    * An action start by `(side, idx)` at `at` (engine frame). `phase` is the carrier's tag in open play,
-   * absent for a restart; a restart or a change of side starts a possession.
+   * absent for a restart; a restart or a change of side starts a possession. A script can supply
+   * its explicit possession boundary even when its restart carries a phase.
    */
-  touch(side: 0 | 1, idx: number, at: Point, phase?: Tags['phase']): void {
+  touch(side: 0 | 1, idx: number, at: Point, phase?: Tags['phase'], newPossession = false): void {
     this.touchAt(side, idx, attackFrame(side, at));
-    if (phase !== undefined && side === this.possession) return;
+    if (!newPossession && phase !== undefined && side === this.possession) return;
     this.possession = side;
     this.counter = phase === 'counter';
     if (this.counter) this.bump(side, REPORT_SLOTS.counterAttacks);
   }
 
-  /** A completed pass from `passer` received by `receiver` at `at` (engine frame). */
-  received(side: 0 | 1, passer: number, receiver: number, at: Point): void {
+  /** A completed delivery received at `at` (engine frame); connective deliveries credit no pair. */
+  received(side: 0 | 1, passer: number, receiver: number, at: Point, counted = true): void {
     this.touchAt(side, receiver, attackFrame(side, at));
-    if (side === this.own) this.pairs[passer * this.size + receiver]!++;
+    if (counted && side === this.own) this.pairs[passer * this.size + receiver]!++;
   }
 
   /** A shot: `d` holds its point (attack frame), xG, header and set-piece flag. */
@@ -266,9 +267,10 @@ export class MaterialTally {
     idx: number,
     result: (typeof SHOT_OUTCOMES)[number],
     d: { x: number; y: number; xg: number; header: boolean; setPiece: boolean },
+    touchCounted = false,
   ): void {
-    // A header is the header taker's touch; any other shot follows a touch already counted.
-    if (d.header) this.touchAt(side, idx, [d.x, d.y]);
+    // A header is the header taker's touch unless the caller already counted its action start.
+    if (d.header && !touchCounted) this.touchAt(side, idx, [d.x, d.y]);
     if (d.setPiece) {
       this.bump(side, REPORT_SLOTS.setPieceShots);
       if (result === 'goal') this.bump(side, REPORT_SLOTS.setPieceGoals);
@@ -330,8 +332,8 @@ export class MaterialTally {
     this.bump(side, REPORT_SLOTS.tackles);
   }
 
-  /** The rows, with roster indexes mapped to each side's lines (`played`, in record order). */
-  finish(played: number[][]): MatchMaterial {
+  /** The rows in record order. The grid filters single passes; scripts retain them with minimumPair=1. */
+  finish(played: number[][], minimumPair: 1 | 2 = 2): MatchMaterial {
     const lineOf = played.map((idxs) => {
       const map = new Map<number, number>();
       idxs.forEach((idx, line) => map.set(idx, line));
@@ -357,7 +359,7 @@ export class MaterialTally {
     for (let a = 0; a < own.length; a++)
       for (let b = 0; b < own.length; b++) {
         const n = this.pairs[own[a]! * this.size + own[b]!]!;
-        if (n >= 2 && kept++ < MAX_PAIRS) network.push(a, b, n);
+        if (n >= minimumPair && kept++ < MAX_PAIRS) network.push(a, b, n);
       }
     return { shots, heat, network, report: Array.from(this.report) };
   }
