@@ -58,7 +58,16 @@ owner can watch whether staging a script reads as football. Nothing here is prod
   (`check/metrics.ts`, thresholds in `PROTO_CONFIG.limits`): it prints the produce info, the
   script statistics of the performed beats, one line per metric (`id value limit ok|FAIL`, then
   its detail) and `passed n/m`. `--json` writes `{ info, stats, metrics }`; `--strict` exits with
-  code 1 when a metric fails (the default exit code is 0).
+  code 1 when a metric fails (the default exit code is 0). The last ten metrics read open play
+  (live, no set piece, no restart beat): `events.shortKick` the share of ordinary passes kicked to a
+  receiver almost on the passer, `shape.huddle` how often two outfield teammates stick together
+  for longer than allowed and `shape.huddleLongest` the longest such pair, `motion.restarts` how
+  often a player starts after a rest, `motion.startSync` the share of starts made together with
+  many others, `motion.speedSync` how alike two players' speeds rise and fall (with the share of
+  speed samples in each band), `turn.reverse` the share of moving players who turn back as one
+  after a settled turnover, `turn.run` and `turn.counterRun` the share of outfield players running
+  shortly after a settled turnover and after a counter, and `mark.near` the share of attackers
+  without the ball in the last part of the pitch with a defender close.
 - `pnpm exec tsx scripts/match-proto/build.ts [--seed <s>] [--no-showcase] [--duration <seconds>] [--out <dir>]`
   stages a playback as `produce.ts` does, judges it by the metrics, bundles `viewer/main.ts` with
   esbuild and writes one self-contained page, `<dir>/index.html` (playback and viewer inline), plus

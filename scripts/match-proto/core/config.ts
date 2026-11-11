@@ -59,7 +59,18 @@
 //   grammar:  the script generator (script/): phase thresholds, nominal speeds and holds for its
 //             clock, where a lost ball is nominally won, receiver showing and jitter, counters,
 //             restart durations and completions, carry lengths and the outcome chances of moves
-//   limits:   the thresholds the staging metrics are judged by (check/metrics.ts)
+//   limits:   the thresholds the staging metrics are judged by (check/metrics.ts); the naturalness
+//             ones read open play (live, no set piece, no restart beat): passes kicked to a man
+//             standing almost on the passer (`shortKick`), outfield teammates sticking together
+//             (`huddle`: their distance, the allowed seconds, episodes a minute and the longest),
+//             players starting and stopping as one (`motion`: the rest and go speeds, starts a
+//             player-minute, the window and count that make starts simultaneous, the share of such
+//             starts and the mean correlation of two players' speeds), players turning as one
+//             after a turnover (`turn`: the seconds before it a mover is read over, the moving
+//             speed, the seconds after it a turn counts within, the share that turn, the running
+//             speed, when it is read and the running shares after a settled turnover and after a
+//             counter) and attackers in the last part of the pitch left unmarked (`mark`: the
+//             attack x they are read from, the marking distance and the share marked)
 //   viewer:   the page that plays a playback (viewer/, build.ts): the metres shown around the
 //             pitch (`pad`), player and ball radii in metres with their pixel floors, how long a
 //             flash and the ball's trail last (s), the speeds offered, the seek step (s), the
@@ -511,6 +522,33 @@ export const PROTO_CONFIG = {
     /** A pressed pass is kicked with an opponent within `stage.pressVisible + pressedSlack` in `pressedShare` of them. */
     pressedShare: 0.9,
     pressedSlack: 0.5,
+    /** An ordinary pass kicked with its receiver nearer than `distance`, in at most `share` of them. */
+    shortKick: { distance: 5, share: 0.05 },
+    /** Two outfield teammates within `distance` for longer than `seconds`: at most `perMinute` such episodes an open-play minute, none longer than `longest` seconds. */
+    huddle: { distance: 3, seconds: 2, perMinute: 0.6, longest: 4 },
+    /** A player rests below `rest` m/s and starts when he next exceeds `go`: at most `restarts` starts a player-minute; a start is in step when `together` starts fall within ± `window` seconds, in at most `startSync` of them; the mean correlation of two players' speeds is at most `speedSync`. */
+    motion: {
+      rest: 0.5,
+      go: 1,
+      restarts: 4,
+      window: 0.2,
+      together: 8,
+      startSync: 0.2,
+      speedSync: 0.3,
+    },
+    /** A turnover in open play: of the players moving at `moving` m/s along the pitch in the `before` seconds before it, at most `reverseShare` have turned `within` seconds after a settled one; `runAt` seconds after it at most `runShare` of the outfield players are faster than `runSpeed` (at least `counterRunShare` after a counter). */
+    turn: {
+      before: 0.5,
+      moving: 0.8,
+      within: 1,
+      reverseShare: 0.3,
+      runSpeed: 4.5,
+      runAt: 1.5,
+      runShare: 0.4,
+      counterRunShare: 0.5,
+    },
+    /** An attacker without the ball at attack x `fromX` or beyond has a defender within `distance`, in at least `share` of the samples. */
+    mark: { fromX: 65, distance: 4, share: 0.5 },
   },
   // The viewer (viewer/, build.ts): presentation only, never read by the script or the staging.
   viewer: {
