@@ -739,6 +739,7 @@ export type PlayerMotionState =
 export interface PlayerMotion {
   id: string;
   position: [number, number];
+  /** Playback coordinates; scripted frames express velocity per match second. */
   velocity: [number, number];
   state: PlayerMotionState;
   intent: [number, number];
@@ -794,7 +795,7 @@ export interface MatchEvent {
   card?: 'yellow' | 'red';
   xg?: number;
   header?: boolean;
-  /** Korean commentary (→MATCH-24). */
+  /** Locale-independent source commentary, resolved at presentation (→MATCH-24, ARCH-32). */
   text: string;
 }
 /** A dead ball in an observed frame (→WEB-32's dead-ball beat): `dead` ≤ `settled` ≤ `kick`. */

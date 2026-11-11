@@ -1,5 +1,5 @@
 import type { ScriptBeat, StagingPlayer, StagingSide } from '../../../contracts/src/match-script';
-import type { Position, RoleId, Tactic } from '../../../contracts/src/types';
+import type { PlayerMotionState, Position, RoleId, Tactic } from '../../../contracts/src/types';
 export type { Position, RoleId };
 export type Vec = readonly [number, number];
 export type TeamId = 0 | 1;
@@ -133,8 +133,13 @@ export interface Frame {
   present?: number[];
   slots?: number[];
   period?: 1 | 2 | 3 | 4 | 5;
+  /** Observation at this tick, before mutable orders/roles move on. Pitch metres and m/s. */
+  movement?: { velocity: Vec; intent: Vec; state: PlayerMotionState }[];
+  action?: BeatKind;
 }
 export type StageEventKind =
+  | 'begin'
+  | 'settled'
   | 'performed'
   | 'kick'
   | 'receive'

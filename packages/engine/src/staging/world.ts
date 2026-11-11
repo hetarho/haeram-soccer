@@ -12,6 +12,7 @@ import { ROLE_SHAPE, nominalSpot } from './places';
 import type {
   BallMode,
   Beat,
+  BeatKind,
   Fixture,
   Frame,
   Phase,
@@ -109,6 +110,10 @@ export interface StageState {
   clockCap: number;
   /** Record-clock seconds when each participant entered; starters start at zero. */
   enteredAt?: number[];
+  /** The exact targets used by the last movement tick. Observation only. */
+  targets?: Vec[];
+  action?: BeatKind;
+  receiver?: number;
 }
 
 const SHAPE = STAGING_CONFIG.shape;
@@ -124,9 +129,60 @@ const standing = (pos: Vec, toward: Vec): Body => {
   return { pos: [pos[0], pos[1]], vel: [0, 0], face: [f[0], f[1]] };
 };
 
+/** Snapshot the staging's actual current role and target, not a later inference from proximity. */
+function observedMovement(
+  state: StageState,
+  index: number,
+  snapshot: readonly Vec[],
+): NonNullable<Frame['movement']>[number] {
+  const p = state.fixture.players[index];
+  const body = state.bodies[index];
+  const ordered = state.orders.has(index) || state.cues.has(index);
+  let action: NonNullable<Frame['movement']>[number]['state'] = 'shape';
+  if (!onPitch(state.fixture, index))
+    return { velocity: [0, 0], intent: [...body.pos], state: action };
+  if (p.slot === 0) action = 'keeper';
+  else if (state.ball.owner === index && state.ball.mode === 'held') action = 'carry';
+  else if (
+    state.live &&
+    p.team !== state.team &&
+    (ordered || isPressRole(state, p.team, index, snapshot))
+  )
+    action = 'press';
+  else if (state.marks.has(index)) action = 'mark';
+  else if (state.live && p.team === state.team && index === state.receiver) action = 'support';
+  else if (state.live && p.team === state.team && (ordered || ROLE_SHAPE[p.role]?.onShoulder))
+    action = 'run';
+  else if (
+    state.live &&
+    p.team !== state.team &&
+    state.t - state.turnedAt < MOTION.transitionSeconds
+  )
+    action = 'recover';
+  else if (state.live && p.team === state.team) {
+    const nominal = nominalSpot(
+      {
+        fixture: state.fixture,
+        ball: shapeRef(state),
+        team: state.team,
+        phase: state.phase,
+        positions: snapshot,
+      },
+      index,
+    );
+    if (dist(state.minds[index].place, nominal) > MOTION.arriveRadius) action = 'support';
+  }
+  return {
+    velocity: [...body.vel],
+    intent: [...(state.targets?.[index] ?? state.minds[index].place)],
+    state: action,
+  };
+}
+
 /** Records the frame of the current time. */
 const recordFrame = (state: StageState): void => {
   const p: number[] = [];
+  const snapshot = positionsOf(state);
   for (const body of state.bodies) p.push(round2(body.pos[0]), round2(body.pos[1]));
   state.frames.push({
     t: state.t,
@@ -144,6 +200,8 @@ const recordFrame = (state: StageState): void => {
       .map((p) => p.index),
     slots: state.fixture.players.map((p) => p.slot),
     period: state.fixture.period ?? 1,
+    action: state.action,
+    movement: state.fixture.players.map((p) => observedMovement(state, p.index, snapshot)),
   });
 };
 
@@ -212,6 +270,7 @@ export function createStage(script: Script): StageState {
     team: first.team,
     phase: first.phase,
     beat: first.index,
+    action: first.kind,
     live: true,
     turnedAt: -Infinity,
     marks: new Map(),
@@ -600,6 +659,7 @@ export function step(state: StageState): void {
     });
   }
   const tick = STAGING_CONFIG.tick;
+  state.targets = moves.map((m) => m.target);
   moves.forEach((move, i) => {
     const body = state.bodies[i];
     if (!onPitch(fixture, i)) return;

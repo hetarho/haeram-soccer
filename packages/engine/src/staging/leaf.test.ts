@@ -36,8 +36,13 @@ it('the staging imports no world, season or match orchestration', () => {
         path.startsWith(staging) ||
           path.startsWith('packages/contracts/') ||
           path === 'packages/engine/src/grid/pitch.ts' ||
+          path === 'packages/engine/src/grid/clock.ts' ||
+          path === 'packages/engine/src/grid/commentary.ts' ||
+          path === 'packages/engine/src/grid/playback.ts' ||
+          path === 'packages/engine/src/grid/record.ts' ||
           path === 'packages/engine/src/primitives.ts' ||
           path === 'packages/engine/src/script/count.ts' ||
+          path === 'packages/engine/src/script/types.ts' ||
           path === 'packages/engine/src/script/failure.ts' ||
           path === 'packages/engine/src/formations.ts' ||
           path === 'packages/engine/src/portable-math.ts',

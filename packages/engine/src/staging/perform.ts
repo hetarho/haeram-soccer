@@ -55,6 +55,8 @@ export const HANDLERS: Record<string, Handler> = {
 
 /** Each period ends in a whistle, with a dead-ball hold. */
 function* endPeriod(state: StageState): Generator<void, void> {
+  // The final touch and the whistle are distinct instants, including a last-tick save.
+  yield* nextTick(state);
   state.ball.mode = 'dead';
   state.ball.owner = -1;
   delete state.ball.flight;
@@ -78,6 +80,15 @@ export function* performance(state: StageState): Generator<void, void> {
         (next.original?.period ?? (next.clock! < 2700 ? 1 : 2));
     state.clock = Math.max(state.clock ?? 0, beat.clock ?? 0);
     state.fixture.period = beat.original?.period ?? ((beat.clock ?? 0) < 2700 ? 1 : 2);
+    state.beat = beat.index;
+    state.action = beat.kind;
+    state.receiver = beat.receiver;
+    pushEvent(state, {
+      kind: 'begin',
+      actor: beat.actor,
+      team: beat.team,
+      at: [...state.ball.pos],
+    });
     state.clockCap = periodEnds
       ? Math.max(state.clock, next.clock ?? state.clock)
       : (next?.clock ?? Infinity);
