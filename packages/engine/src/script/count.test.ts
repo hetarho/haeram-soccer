@@ -18,6 +18,33 @@ describe('fitted count (ported T820 cases)', () => {
   it('countScript gives the record of every settled match', () => {
     expect(compareRecord(detail, countScript(script, detail))).toEqual([]);
   });
+  it('counts a performed corner prefix without weakening the complete-record guard', () => {
+    const corner = script.beats.find((b) => b.event !== undefined && b.setPiece === 'corner')!;
+    const prefix = { ...script, beats: [corner] };
+    expect(() => countScript(prefix, detail)).toThrow();
+    const running = countScript(prefix, detail, 'prefix');
+    expect(running.metrics[corner.side][M.passes]).toBe(1);
+    expect(running.detail![corner.side]![TD.corners]).toBe(corner.kind === 'corner' ? 1 : 0);
+    expect(running.score).toEqual({ home: 0, away: 0 });
+    expect(compareRecord(detail, countScript(script, detail))).toEqual([]);
+  });
+  it('counts a penalty kick in a selected prefix without a complete causal ledger', () => {
+    const shot = script.beats.find((b) => b.shot !== undefined)!;
+    const penalty = {
+      ...shot,
+      kind: 'penalty' as const,
+      shotKind: 'penalty' as const,
+      from: [94, 34] as const,
+      xg: 76,
+      source: -1,
+      keyPass: -1,
+    };
+    const prefix = { ...script, beats: [penalty] };
+    expect(() => countScript(prefix, detail)).toThrow();
+    expect(countScript(prefix, detail, 'prefix').detail![penalty.side]![TD.penaltiesScored]).toBe(
+      1,
+    );
+  });
   it('a script missing one pass is caught', () => {
     const i = script.beats.findIndex((b) => b.event !== undefined && b.outcome === 'intercepted');
     const b = script.beats[i]!,

@@ -191,7 +191,13 @@ describe('revision 11 own matches on the result path', () => {
     const rosters = matchdayRosters(context, f, b, eraRules(f.year));
     const match = playAggregate(context, f, b, rosters);
     expect(match.input.sides[0].strength).toBe(b.strength[0]);
-    expect(match.input.sides[0].profile).toEqual(b.profiles[0]);
+    expect(match.input.sides[0].profile).toEqual({
+      possession: b.profiles[0]!.possession,
+      pass: b.profiles[0]!.pass,
+      shot: b.profiles[0]!.shot,
+      defense: b.profiles[0]!.defense,
+      pressure: b.profiles[0]!.pressure,
+    });
   });
   it("other clubs' fixtures are untouched by the own club's script", () => {
     const w = world(),

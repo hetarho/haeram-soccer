@@ -212,7 +212,7 @@ export function* stageFrames(
           const prefix = counted
             .filter((x) => x.time < end - 1e-9 || (m === p.minutes - 1 && x.time <= end + 1e-9))
             .map((x) => x.beat);
-          const totals = countScript({ ...script, beats: prefix }, detail);
+          const totals = countScript({ ...script, beats: prefix }, detail, 'prefix');
           const stamp = stampAt(p.period, m * 60);
           const metrics = totals.metrics;
           for (const side of [0, 1] as const) {

@@ -1019,7 +1019,7 @@
       "leaves": [
         {
           "path": "AGGREGATE_ATTRIBUTION_CONFIG.place.reach",
-          "value": 12,
+          "value": 11,
           "comment": "",
           "loadTime": false
         },
@@ -1031,7 +1031,7 @@
         },
         {
           "path": "AGGREGATE_ATTRIBUTION_CONFIG.place.iterations",
-          "value": 8,
+          "value": 128,
           "comment": "",
           "loadTime": false
         },

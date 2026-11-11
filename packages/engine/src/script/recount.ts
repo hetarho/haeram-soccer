@@ -1,6 +1,6 @@
 import type { Incident, MatchRecord } from '../../../contracts/src/types';
 import { countPlayerFacts, keeperLine } from '../aggregate/count';
-import { deriveTeamFacts, isPassKind, ledgerIssues } from '../aggregate/ledger';
+import { countTeamFacts, deriveTeamFacts, isPassKind, ledgerIssues } from '../aggregate/ledger';
 import type {
   AggregateAttributionTrace,
   AggregateLedger,
@@ -182,12 +182,13 @@ function rowsOf(d: MatchDetail) {
 /** The record's own layouts, counted from the detail through the original ledger/credit definitions. */
 export function recordOf(
   d: MatchDetail,
+  scope: 'complete' | 'prefix' = 'complete',
 ): Pick<
   MatchRecord,
   'score' | 'metrics' | 'detail' | 'players' | 'xg' | 'incidents' | 'regulation' | 'shootout'
 > {
   const { ledger, participation, trace, credits } = rowsOf(d);
-  const facts = deriveTeamFacts(ledger);
+  const facts = scope === 'prefix' ? countTeamFacts(ledger) : deriveTeamFacts(ledger);
   const players = countPlayerFacts(ledger, participation, trace, credits, [
     d.sides[0].lines,
     d.sides[1].lines,

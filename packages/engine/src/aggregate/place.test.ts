@@ -83,4 +83,20 @@ describe('placed attribution primitives', () => {
     const actual = means(fitPlaceWeights(groups));
     expected.forEach((e, p) => expect(Math.abs(actual[p]! - e)).toBeLessThanOrEqual(e * 0.03));
   });
+  it('converges for asymmetric flank weights instead of stopping with biased expectations', () => {
+    const groups = [
+      { count: 50, weights: [1, 1, 0], placed: [1, 0.02, 0] },
+      { count: 50, weights: [1, 1, 0], placed: [0.1, 1, 0] },
+    ];
+    const fitted = fitPlaceWeights(groups);
+    const expected = [0, 0, 0];
+    fitted.forEach((row, i) => {
+      const sum = row.reduce((n, w) => n + w, 0);
+      row.forEach((w, p) => (expected[p]! += (groups[i]!.count * w) / sum));
+    });
+    // Eight rounds left the first line at 50.752791, although both targets are exactly 50.
+    expect(expected[0]).toBeCloseTo(50, 8);
+    expect(expected[1]).toBeCloseTo(50, 8);
+    expect(expected[2]).toBe(0);
+  });
 });

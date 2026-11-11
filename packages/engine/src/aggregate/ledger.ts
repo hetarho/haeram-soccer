@@ -371,6 +371,12 @@ export function assertLedger(ledger: AggregateLedger): void {
 /** Both sides' team facts, the score and the regulation score, from one checked ledger. */
 export function deriveTeamFacts(ledger: AggregateLedger): AggregateTeamFacts {
   assertLedger(ledger);
+  return countTeamFacts(ledger);
+}
+
+/** Numerical counters also used for a performed script prefix. A prefix need not contain both
+ * an earned restart and its recorded delivery; settled records use `deriveTeamFacts` above. */
+export function countTeamFacts(ledger: AggregateLedger): AggregateTeamFacts {
   const goals = (side: AggregateSide, period?: string) =>
     ledger.sides[side].shots.filter(
       (s) => s.outcome === 'goal' && (period === undefined || s.period === period),

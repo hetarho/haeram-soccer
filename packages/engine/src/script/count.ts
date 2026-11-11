@@ -33,7 +33,11 @@ const setPiece = (b: Beat) => b.setPiece ?? 'none';
 /** Beat IDs mark recorded actions; coordinates/outcomes/credits supply their counted facts.
  * Only xG, line-breaking and source qualifiers are carried verbatim, since the picture cannot infer them.
  * Participation minutes remain the record's; incidents and knockout kicks are read from beats. */
-export function countScript(script: Script, detail: MatchDetail): Counted {
+export function countScript(
+  script: Script,
+  detail: MatchDetail,
+  scope: 'complete' | 'prefix' = 'complete',
+): Counted {
   const events: number[][] = [],
     shots: number[][] = [],
     fouls: number[][] = [];
@@ -103,16 +107,19 @@ export function countScript(script: Script, detail: MatchDetail): Counted {
       ]);
     }
   }
-  const counted = recordOf({
-    ...detail,
-    events,
-    shots,
-    fouls,
-    incidents: incidentRows(script.beats),
-    shootout: script.beats
-      .filter((b) => b.kind === 'shootoutKick')
-      .map((b) => [b.side, b.actor, b.outcome === 'goal' ? 1 : 0]),
-  });
+  const counted = recordOf(
+    {
+      ...detail,
+      events,
+      shots,
+      fouls,
+      incidents: incidentRows(script.beats),
+      shootout: script.beats
+        .filter((b) => b.kind === 'shootoutKick')
+        .map((b) => [b.side, b.actor, b.outcome === 'goal' ? 1 : 0]),
+    },
+    scope,
+  );
   // A restart is a script event, including one with no recorded delivery. Count it directly.
   const restarts = {
     corner: TD.corners,

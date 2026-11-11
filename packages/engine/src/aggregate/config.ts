@@ -334,9 +334,9 @@ export const AGGREGATE_PARTICIPATION_CONFIG = {
  */
 export const AGGREGATE_ATTRIBUTION_CONFIG = {
   place: {
-    reach: 12,
+    reach: 11,
     floor: 0.02,
-    iterations: 8,
+    iterations: 128,
     target: { median: 13, far: 0.2, winnersFar: 0.25 },
   },
   attributeScale: 70,

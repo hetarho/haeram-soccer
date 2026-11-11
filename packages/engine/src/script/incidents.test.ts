@@ -41,6 +41,51 @@ const scene = (s: ReturnType<typeof write>, kind: string) =>
   s.beats.find((b) => b.incidents?.some((x) => x.kind === kind))!;
 
 describe('script incidents and special scenes', () => {
+  it('keeps a key-pass delivery attached to a non-goal shot through a same-minute change', () => {
+    const d = smallDetail(
+      [[0, 0, 0, 0, 22, 32, 5, 0, 0, -1, 0]],
+      [[0, 61, 32, 0, 0, 6, 3, 0, 9, 5, 0, 0]],
+    );
+    const next = replace(d, 0, 9, 61);
+    d.shots[0]![8] = next;
+    write(d);
+  });
+  it('plays a booked penalty cause and its delivery around a same-minute substitution', () => {
+    const d = smallDetail(
+      [],
+      [[0, 61, 32, 3, 0, 76, 1, 0, 9, -1, -1, 0]],
+      [[0, 32, 3, 5, 61, 1, 0]],
+    );
+    d.penalties = [[0, 0]];
+    d.incidents = [[61, 1, 0, 3, -1, 0]];
+    const next = replace(d, 0, 5, 61);
+    d.fouls[0]![3] = next;
+    write(d);
+  });
+  it('plays a booked foul before its fouler is substituted in that minute', () => {
+    const d = smallDetail([], [], [[0, 22, 3, 5, 61, 0, 0]]);
+    d.incidents = [[61, 1, 0, 3, -1, 0]];
+    replace(d, 1, 3, 61);
+    const s = write(d),
+      foul = scene(s, 'yellow'),
+      sub = scene(s, 'sub');
+    expect(sub).toBe(foul); // The foul creates the dead ball at which he is replaced.
+    // A boundary foul is still refused after the actual exit, even in the same minute.
+    const earlyExit = {
+      ...foul,
+      kind: 'stoppage' as const,
+      move: 'incident',
+      outcome: 'complete' as const,
+      to: foul.from,
+      foul: undefined,
+      opponent: undefined,
+      incidents: foul.incidents!.filter((x) => x.kind === 'sub'),
+    };
+    foul.incidents = foul.incidents!.filter((x) => x.kind !== 'sub');
+    s.beats.splice(foul.index, 0, earlyExit);
+    s.beats.forEach((b, i) => (b.index = i));
+    expect(validateScript(d, s)).toContain(`beat:${foul.index}:lineup`);
+  });
   it('a substitution is a dead-ball beat of its recorded minute, naming both men', () => {
     const d = detail();
     const next = replace(d, 0, 1, 61);

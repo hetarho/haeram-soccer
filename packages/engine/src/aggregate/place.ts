@@ -57,6 +57,10 @@ export function fitPlaceWeights(groups: readonly PlaceGroup[]): number[][] {
       if (sum > 0)
         for (let p = 0; p < n; p++) actual[p]! += (g.count * g.placed[p]! * scale[p]!) / sum;
     }
+    // Stop on numerical convergence, not after a small fixed count that leaves a systematic
+    // bias in asymmetric classes. The configured iteration count remains the bounded cap.
+    if (actual.every((a, p) => Math.abs(a - expected[p]!) <= 1e-10 * Math.max(1, expected[p]!)))
+      break;
     for (let p = 0; p < n; p++)
       scale[p] = actual[p]! > 0 ? (scale[p]! * expected[p]!) / actual[p]! : 0;
   }

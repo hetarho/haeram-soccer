@@ -91,7 +91,13 @@ function distances(samples: readonly Sample[], placed: boolean) {
           });
         };
         add(t.attempts, side, move.from, true, attempts);
-        add(t.won, side === 0 ? 1 : 0, opposingCell(move.to), false, winners);
+        add(
+          t.won,
+          side === 0 ? 1 : 0,
+          opposingCell(isPassKind(move.kind) ? move.to : move.from),
+          false,
+          winners,
+        );
       });
     }
   }

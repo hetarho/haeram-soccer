@@ -260,14 +260,15 @@ export function validateScript(settled: Settled, script: Script): string[] {
     if (b.period !== (b.kind === 'shootoutKick' ? 5 : scriptPeriod(Math.floor(b.clock / 60))))
       problems.push(`beat:${i}:period`);
     const minute = Math.floor(b.clock / 60);
-    const dismissedFouler =
+    const departingFouler =
       b.foul !== undefined &&
       b.incidents?.some(
         (x) =>
           x.side === other(b.side) &&
           x.line === b.opponent &&
-          ['red', 'secondYellow'].includes(x.kind),
-      );
+          ['yellow', 'red', 'secondYellow'].includes(x.kind),
+      ) &&
+      settled.stints.some((s) => s[0] === other(b.side) && s[1] === b.opponent && s[4] === minute);
     const onPitch = (side: TeamId, line: number) =>
       present(settled, side, line, minute) ||
       (b.event === undefined &&
@@ -282,7 +283,7 @@ export function validateScript(settled: Settled, script: Script): string[] {
       b.kind !== 'stoppage' &&
       (!onPitch(b.side, b.actor) ||
         (b.receiver !== undefined && !onPitch(b.side, b.receiver)) ||
-        (b.opponent !== undefined && !dismissedFouler && !onPitch(other(b.side), b.opponent)))
+        (b.opponent !== undefined && !departingFouler && !onPitch(other(b.side), b.opponent)))
     )
       problems.push(`beat:${i}:stint`);
     if (b.event !== undefined && periodOf(minute) !== settled.events[b.event]?.[EV.period])

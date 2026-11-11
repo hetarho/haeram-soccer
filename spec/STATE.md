@@ -19,6 +19,8 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261112 decided T848 MATCH-27 MATCH-38 MATCH-39: how minute frames count a prefix whose earned restarts and recorded deliveries are not yet balanced → share pure numerical counters with an explicit prefix scope, while complete records still call the unchanged ledger guard (alt: drop the settled-ledger guard | require each presentation minute to be a complete match). Fixed delivery chains wait for every entrant, and a booked leaving fouler finishes his actual foul before his exit; no settled fact is re-credited. cc12
+- 261112 decided T848 MATCH-16 ARCH-21: how to address the failed locality and expected-total checks → use the recorded start cell for tackles, the arrival cell for interceptions, lower the already-approved place reach from 12 to 11 m, and converge the proportional fit with a bounded 128-round cap (alt: raise the locality thresholds | widen the 3% or 95% expected-total gate | accept eight-round residual bias). A two-group isolated example at eight rounds gives 50.752791/49.247209 against exact 50/50 targets; the converged unit case holds both to eight decimals. All statistical acceptance thresholds and the revision-10 path stay unchanged; host batch measurements remain required. cc12
 - 261112 decided T837 ARCH-34: how to hash the old grid observation whose interval-whistle events carry eight NaN coordinates → tag each non-finite kind before canonical diagnostic hashing and retain the exact paths, rather than claim a valid picture or discard fields (alt: JSON null conversion | omit whistle coordinates | use v8 byte hashes, which varied on identical bundles). The new script/motion hashes remain strict canonical values; no game DTO or save changes. cc12
 - 261112 decided T837 ARCH-34 MATCH-39: how to measure staging when the baseline stageAll throws on minute-prefix restart counts → retain the failing end-to-end workload and measure the unchanged full motion program separately, clearly labelled diagnostic, while optimizing only equal-output paths (alt: remove the ledger guard | select another seed until one passes | mix a correctness repair into a result-identical speed-up). All eight additional seeds failed; T838 must repair the prefix boundary before release. cc12
 - 261112 decided T836 LAB-1 LAB-3 LAB-9 ARCH-32: how tuning stays isolated when attribution and the script use the staging's shared nominal shape and cache player weights at module load → settle records and scripts at the default staging shape, send frozen picture overrides only to a separate lab staging worker, and rebuild cached attribution roles only when lab values change or restore; descriptions use localized noun parameters within complete messages in every registered pack (alt: let a picture edit change credited facts | render every match in the lab worker before watching | keep copied weights that ignore edits). Retired grid overrides are omitted from active settings and reported/skipped when loading old runs; kept evidence remains. No game save or release switch changes. cc12
@@ -954,7 +956,6 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
-| T848 | Fix final gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -982,9 +983,10 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T848
+- implement-task T838
 
 ## log
+- 261112 T848 done: entrant-safe fixed chains, booked departure boundary, explicit prefix counters with settled guards retained, converged place marginals and corrected tackle cell; lab defaults refreshed, 1,485 affected unit tests/type/lint/format/i18n/build pass, original integration acceptance pending host batch, no push cc12
 - 261112 T837 done: 2 h throughput exploration, eight writer/two shape cuts kept and five noise trials reverted; own CPU ×0.2735, raw motion diagnostic ×0.2389, sampled hashes unchanged, 1,568 affected unit tests/type/lint/format/i18n pass; full staging baseline prefix-ledger failure explicitly open for T838, raw evidence/report retained, no push cc12
 - 261112 T836 done: result-path lab and scripted/staged watch, five groups/622 numeric leaves and localized descriptions, isolated frozen overrides, complete target rows with unavailable sequence/point readings; 133 affected unit tests and type/lint/format/i18n/build pass, updated lab browser journey deferred to host; revision 11 preview only, no push cc12
 - 261112 T835 done: completed-pass circles, stable numbers, bidirectional-width links and played-direction arrows; recorded kit/contrast ink, touch/keyboard/locale selection and busiest-five text; 43 isolated affected tests and type/lint/format/i18n/build pass, phone browser assertions written for host batch; no push cc12
@@ -1004,4 +1006,3 @@
 - 261111 T824 done: revision 11 declared but inactive; aggregate place weights fitted by class/period, mirrored ball wins and different-passer offside pairs; six pre-change attribution+trace hashes unchanged, 168 affected unit files/1,577 tests and 7 focused cases pass, type/lint/format/i18n pass; two statistical integration acceptance items remain open for the host batch, no measured locality claim cc12
 - 261111 T823 done: retained staging shape leaf completed with explicit role defaults and 18 isolated tests; 5,720 prototype positions agree within 1e-9, all 40 cells across 16 tactic pairings agree through placeFor; the new 4-2-3-1 fits its attacking depth inside the onside line so its central slots stay distinct; type/lint/format/i18n and changed unit checks pass, final batch deferred to the host cc12
 - 261111 T847 done: a home area card opens its detail with the area kept in task memory (`HOME_AREA_ORIGIN`), every other opener clearing it; `officeBack` in `clubSections.ts` reads the office menu's back link — home on the detail a home card opened, the office on any other detail or 구단 운영 section — with no new copy; `work-office.spec.ts` returns home from 재정 · 사업, left to the host's batch run hb11
-- 261111 create-task WEB: T847 (a home area card's detail leads back home; the origin in task memory, no new copy)

@@ -93,7 +93,7 @@ it('stages each T825 incident scenario through its final whistle without re-cred
       while (cursor < membership.length && membership[cursor].t <= frame.t + 1e-9) {
         const e = membership[cursor++];
         active.delete(`${e.actor!.side}/${e.actor!.line}`);
-        active.add(`${e.other!.side}/${e.other!.line}`);
+        if (e.other) active.add(`${e.other.side}/${e.other.line}`);
       }
       const ids = frame.p.map((p) => `${p.player.side}/${p.player.line}`);
       expect(new Set(ids).size, `${scenario}/${frame.t}/unique`).toBe(ids.length);

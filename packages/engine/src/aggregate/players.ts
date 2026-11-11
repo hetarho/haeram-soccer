@@ -434,7 +434,7 @@ class SideLines {
         : move.kind === 'cutBack'
           ? 'cross'
           : move.kind;
-      const cell = winning ? opposingCell(move.to) : move.from;
+      const cell = winning ? opposingCell(pass ? move.to : move.from) : move.from;
       const group = {
         count,
         weights: this.weights(period, role),

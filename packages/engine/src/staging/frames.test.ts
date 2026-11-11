@@ -47,6 +47,41 @@ const input = frameTestInputs(hand);
 const frames = stageAll(hand, input.sides, input.record, input.squads);
 
 describe('staged match frames', () => {
+  it('yields a minute containing a corner delivery before its ledger cause is performed', () => {
+    const script: MatchScript = {
+      ...hand,
+      beats: [
+        hand.beats[0],
+        {
+          ...hand.beats[5],
+          index: 1,
+          kind: 'corner',
+          move: 'cross',
+          setPiece: 'corner',
+          event: 0,
+          clock: 61,
+          from: [105, 0],
+          to: [94, 34],
+        },
+        {
+          ...hand.beats[6],
+          index: 2,
+          clock: 121,
+          source: 0,
+          shotKind: 'corner',
+          from: [94, 34],
+          corner: true,
+        },
+      ],
+    };
+    const args = frameTestInputs(script);
+    const all = stageAll(script, args.sides, args.record, args.squads);
+    expect(all).toHaveLength(3);
+    expect(all[1].metrics[0][M.passes]).toBe(1);
+    expect(all[1].metrics[0][M.shots]).toBe(0);
+    expect(all[2].metrics[0][M.shots]).toBe(1);
+    expect(all.at(-1)!.score).toEqual(args.record.score);
+  });
   it("frames follow the contract's time rules", () => {
     expect(frameTimeIssues(frames)).toEqual([]);
     expect(frames).toHaveLength(2);

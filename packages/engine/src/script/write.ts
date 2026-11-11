@@ -353,6 +353,34 @@ function writeFitted(settled: Settled, seed: string): Script {
   touches.forEach((t, i) => {
     if (t.next !== undefined) after[t.next] = i;
   });
+  /** A fixed delivery cannot start until its receiver and the rest of its shot/foul chain
+   * have entered. Otherwise a stop between the pass and shot loses the recorded key passer. */
+  const awaitingTouchEntry = (i: number): boolean => {
+    const t = touches[i]!,
+      team = t.side,
+      r = t.release;
+    if (awaitingEntry(team, t.actor)) return true;
+    if (
+      t.carries.some((id) => {
+        const e = settled.events[id]!;
+        return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
+      })
+    )
+      return true;
+    if (r && 'event' in r) {
+      const e = settled.events[r.event]!;
+      if (
+        e[EV.other]! >= 0 &&
+        awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
+      )
+        return true;
+    }
+    if (r && 'shot' in r && awaitingEntry(other(team), settled.shots[r.shot]![SH.keeper]!))
+      return true;
+    if (r && 'foul' in r && awaitingEntry(other(team), settled.fouls[r.foul]![FO.fouler]!))
+      return true;
+    return t.next !== undefined && awaitingTouchEntry(t.next);
+  };
   /** Touches `team` may play now, in row-id order: this minute's fixed ones and every floating one. */
   const unplayed = (team: TeamId): readonly number[] => {
     const cached = available[team]!;
@@ -364,37 +392,7 @@ function writeFitted(settled: Settled, seed: string): Script {
     for (const i of source) {
       if (played[i]) continue;
       remaining.push(i);
-      const t = touches[i]!;
-      if (
-        (!hasEntry ||
-          (!awaitingEntry(team, t.actor) &&
-            !t.carries.some((id) => {
-              const e = settled.events[id]!;
-              return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
-            }) &&
-            !(
-              t.release &&
-              'event' in t.release &&
-              (() => {
-                const e = settled.events[t.release.event]!;
-                return (
-                  e[EV.other]! >= 0 &&
-                  awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
-                );
-              })()
-            ) &&
-            !(
-              t.release &&
-              'shot' in t.release &&
-              awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
-            ) &&
-            !(
-              t.release &&
-              'foul' in t.release &&
-              awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
-            ))) &&
-        (after[i]! < 0 || played[after[i]!])
-      )
+      if ((!hasEntry || !awaitingTouchEntry(i)) && (after[i]! < 0 || played[after[i]!]))
         rows.push(i);
     }
     cached.remaining = remaining;
