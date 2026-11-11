@@ -43,8 +43,8 @@ describe('staging leaf', () => {
     expect(outside).toEqual([]);
   });
 
-  // The script writer takes plain inputs too (→ARCH-33, T825): from `grid/` only the pitch, the
-  // record's counters and the rules, and no season, world or match orchestration.
+  // The script writer takes plain inputs too (→ARCH-33, T825, T826): from `grid/` only the pitch,
+  // the record's counters and the rules, and no season, world or match orchestration.
   it('the script imports no grid engine, season, world or match orchestration', () => {
     const script = resolve(engine, 'script');
     const grid = resolve(engine, 'grid');
@@ -53,7 +53,16 @@ describe('staging leaf', () => {
     const files = readdirSync(script)
       .filter((name) => /\.[cm]?tsx?$/.test(name) && !isTest(name))
       .map((name) => join(script, name));
-    expect(files.map((file) => relative(script, file)).sort()).toEqual(['build.ts', 'detail.ts']);
+    expect(files.map((file) => relative(script, file)).sort()).toEqual([
+      'build.ts',
+      'cells.ts',
+      'config.ts',
+      'count.ts',
+      'detail.ts',
+      'touches.ts',
+      'validate.ts',
+      'write.ts',
+    ]);
     const outside: string[] = [];
     for (const file of files)
       for (const name of runtimeImports(readFileSync(file, 'utf8'), file)) {
