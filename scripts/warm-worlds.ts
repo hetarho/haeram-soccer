@@ -5,5 +5,7 @@
  * it and the other waits on its lock. Without the warm-up the case builds the world itself.
  */
 import { tenRichSeasons } from '../apps/web/src/adapters/persistence.testkit';
+import { operatingLossWorld } from '../tests/fixtures/business';
 
 tenRichSeasons();
+operatingLossWorld();

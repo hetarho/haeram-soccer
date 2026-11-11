@@ -75,7 +75,13 @@ test('stages a scripted own match ahead of its theatre and retains the Node resu
   await expect(replay).toHaveCount(0);
   await expect(page.locator('[data-ui="match-meta"] > span').first()).toContainText('경기 종료');
   const saved = await exportWorld(page);
+  // recordMatch retains the own squad and adds its tenure; playback.record has both squads.
   expect(saved.ownMatches).toEqual(reference.ownMatches);
-  expect(saved.ownMatches.at(-1)).toEqual(played.record);
+  expect(saved.ownMatches.at(-1)).toMatchObject({
+    id: played.record.id,
+    score: played.record.score,
+    detail: played.record.detail,
+    material: played.record.material,
+  });
   expect(saved.calendar).toEqual(reference.calendar);
 });

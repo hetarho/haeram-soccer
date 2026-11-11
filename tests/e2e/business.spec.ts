@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { decode, encode } from '../../apps/web/src/adapters/persistence';
 import { advanceRound } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
+import { operatingLossWorld } from '../fixtures/business';
 import { startWork } from '../../packages/engine/src/testing';
 import { sponsorOffers, sponsorAnnual } from '../../packages/engine/src/operations';
 import {
@@ -311,37 +312,32 @@ test('reads the ticket price taken over with and charges it at an actual home ga
   );
 });
 
-test('reads a genuine negative operating balance with no owner capital to add', async ({
-  page,
-}) => {
-  // A top-flight club taken over: its wage bill outruns a round's income, where the lowest
-  // division's first club (the default career) earns about twice its costs and never ran short.
-  const fixture = careerWorld({
-    country: 'ENG',
-    seed: 'business-budget-recovery',
-    club: 'ENG:0:0:0',
+test.describe('negative operating balance', () => {
+  let fixture: World;
+  test.beforeAll(() => {
+    // Keep the unchanged simulation outside the browser case's 30-second interaction budget.
+    fixture = operatingLossWorld();
   });
-  // A price off the presets, as an older save keeps it (→ECON-17).
-  fixture.ticket = 0.01;
-  // Real costs, not an edited balance, take the club below zero within a round or two.
-  fixture.cash = '1';
-  for (let i = 0; i < 46 && BigInt(fixture.cash) >= 0n; i++)
-    advanceRound(fixture, undefined, false);
-  expect(BigInt(fixture.cash)).toBeLessThan(0n);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await importCareer(page, fixture, 'synthetic-operating-loss.json');
-  await openBusiness(page, '투자');
-  await expect(page.getByRole('region', { name: '클럽 재정' })).toBeVisible();
-  // The owner adds no capital (→ECON-11): the debt reads, and only the club's income clears it.
-  await expect(page.getByRole('button', { name: /출자/ })).toHaveCount(0);
-  await expect(page.getByText(/추가 출자/)).toHaveCount(0);
-  await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
-  const ledger = page.getByRole('region', { name: '수입과 지출 장부' });
-  await expect(ledger).toContainText('시즌 수지');
-  await expect(ledger).toContainText('보유 현금');
-  await expect(ledger).toContainText('자동으로 자금이 보충되지 않습니다.');
-  await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
-  expect(BigInt((await exportWorld(page)).cash)).toBe(BigInt(fixture.cash));
+
+  test('reads a genuine negative operating balance with no owner capital to add', async ({
+    page,
+  }) => {
+    expect(BigInt(fixture.cash)).toBeLessThan(0n);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await importCareer(page, fixture, 'synthetic-operating-loss.json');
+    await openBusiness(page, '투자');
+    await expect(page.getByRole('region', { name: '클럽 재정' })).toBeVisible();
+    // The owner adds no capital (→ECON-11): the debt reads, and only the club's income clears it.
+    await expect(page.getByRole('button', { name: /출자/ })).toHaveCount(0);
+    await expect(page.getByText(/추가 출자/)).toHaveCount(0);
+    await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
+    const ledger = page.getByRole('region', { name: '수입과 지출 장부' });
+    await expect(ledger).toContainText('시즌 수지');
+    await expect(ledger).toContainText('보유 현금');
+    await expect(ledger).toContainText('자동으로 자금이 보충되지 않습니다.');
+    await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();
+    expect(BigInt((await exportWorld(page)).cash)).toBe(BigInt(fixture.cash));
+  });
 });
 
 test('ends a bankrupt career on the game-over page and starts a new game from it', async ({
