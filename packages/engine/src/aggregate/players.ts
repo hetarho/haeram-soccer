@@ -6,15 +6,23 @@
  * one of that pass group's completions, so goals, assists, shots, key passes, xG and xA are the
  * same chances. Every split is of an exact count, so player lines add up to the team row under
  * each definition; nothing is drawn independently of the team facts.
+ *
+ * From revision 11 (`AggregatePlan.placed`, T824, →MATCH-16) a pass, carry, take-on, ball won,
+ * foul or offside also weighs how near the player's role stands to where it happens (`placeTerm`),
+ * and the open-play splits are scaled back so each player's expected totals by action class stay
+ * the unplaced weights' (`fitPlaced`); shots, key passers, saves, cards and set-piece takers are
+ * credited as before, and an offside is drawn among the passer's teammates, never himself.
  */
 import { PD, PLAYER_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
-import { cellBand } from '../grid/pitch';
+import { cellBand, cellLane } from '../grid/pitch';
 import { RESTART_CONFIG } from '../grid/restarts';
 import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
 import { exp } from '../portable-math';
+import { cellCentre, placeFor, type ShapeSide } from '../staging/shape';
+import { dist } from '../staging/vec';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
 import { inBoxCell, isPassKind, looseBalls, moveKindIndex, xtGain } from './ledger';
 import {
@@ -30,6 +38,7 @@ import {
 } from './participation';
 import { AGGREGATE_MOVE_KINDS } from './types';
 import type {
+  AggregateMoveKind,
   AggregateAttribute,
   AggregateAttributionTrace,
   AggregateInput,
@@ -192,6 +201,96 @@ interface Row {
   detail: number[];
 }
 
+/** Revision 11's place rule (→MATCH-16, T824). */
+const PLACE = AC.place;
+/** The 40 grid cells (`band * 5 + lane`) and the most slots a formation has, as the place cache sizes them. */
+const CELL_COUNT = 40;
+const SLOT_LIMIT = 16;
+/** The same cell seen from the other side's attack frame: band and lane both mirrored. */
+export const mirrorCell = (cell: number) => mirrorBand(cellBand(cell)) * 5 + (4 - cellLane(cell));
+/** Place terms per pair of shapes (tactics and roles by slot), filled as they are read. */
+const PLACE_TERMS = new Map<string, Float64Array>();
+const shapeKey = (shape: readonly [ShapeSide, ShapeSide]) =>
+  shape.map((s) => `${s.tactic}:${s.roles.join(',')}`).join('|');
+/**
+ * A slot's place term for an action in `cell` (his side's attack frame), in or out of possession:
+ * max(`floor`, e^(−(d / `reach`)² / 2)), `d` the metres from the cell's centre to his role's place
+ * for a ball there. Plain arithmetic, the square root and the portable `exp` (→ARCH-9).
+ */
+function placeTerm(
+  shape: readonly [ShapeSide, ShapeSide],
+  terms: Float64Array,
+  side: AggregateSide,
+  slot: number,
+  cell: number,
+  inPossession: boolean,
+) {
+  const at = ((side * 2 + (inPossession ? 1 : 0)) * SLOT_LIMIT + slot) * CELL_COUNT + cell;
+  let term = terms[at]!;
+  if (Number.isNaN(term)) {
+    const x = dist(cellCentre(cell), placeFor(shape, side, slot, cell, inPossession)) / PLACE.reach;
+    term = Math.max(PLACE.floor, exp(-(x * x) / 2));
+    terms[at] = term;
+  }
+  return term;
+}
+
+/** The action classes whose expected totals the fitting keeps, by move kind; tackles and interceptions apart. */
+const MOVE_CLASS: Readonly<Record<AggregateMoveKind, number>> = {
+  short: 0,
+  long: 0,
+  cross: 1,
+  cutBack: 1,
+  through: 2,
+  carry: 3,
+  takeOn: 4,
+};
+const MOVE_CLASSES = 5;
+const INTERCEPTION = 0,
+  TACKLE = 1,
+  WON_CLASSES = 2;
+/** One group's split in the placed path: its class, the count split and its weights by line. */
+export interface PlacedGroup {
+  c: number;
+  n: number;
+  /** The unplaced weights (`SideLines.weights`). */
+  w: readonly number[];
+  /** The place-weighted weights; after `fitPlaced`, the scaled weights the split draws on. */
+  u: number[];
+}
+/**
+ * Proportional fitting (→MATCH-16, T824): with `E[p][c] = Σ_g n[g]·w[p][g] / Σ_q w[q][g]` each
+ * line's expected count of class `c` under the unplaced weights, it finds scales `s[p][c]` by
+ * `iterations` rounds so the placed weights `u[p][g]·s[p][c]` give each line the same expectation
+ * again, and leaves them in each group's `u`. A line expected to do none keeps weight 0.
+ */
+export function fitPlaced(groups: readonly PlacedGroup[], lines: number, classes: number) {
+  const expected = Array<number>(lines * classes).fill(0);
+  for (const g of groups) {
+    let total = 0;
+    for (let p = 0; p < lines; p++) total += g.w[p]!;
+    if (!(total > 0) || g.n <= 0) continue;
+    for (let p = 0; p < lines; p++) expected[p * classes + g.c]! += (g.n * g.w[p]!) / total;
+  }
+  const scale = Array<number>(lines * classes).fill(1);
+  const now = Array<number>(lines * classes).fill(0);
+  for (let round = 0; round < PLACE.iterations; round++) {
+    now.fill(0);
+    for (const g of groups) {
+      if (g.n <= 0) continue;
+      let total = 0;
+      for (let p = 0; p < lines; p++) total += g.u[p]! * scale[p * classes + g.c]!;
+      if (!(total > 0)) continue;
+      for (let p = 0; p < lines; p++)
+        now[p * classes + g.c]! += (g.n * g.u[p]! * scale[p * classes + g.c]!) / total;
+    }
+    for (let i = 0; i < scale.length; i++)
+      if (now[i]! > 0) scale[i] = (scale[i]! * expected[i]!) / now[i]!;
+  }
+  for (const g of groups)
+    for (let p = 0; p < lines; p++) g.u[p] = g.u[p]! * scale[p * classes + g.c]!;
+}
+
 /** One side's lines, their exposures and cached weights while the match is attributed. */
 class SideLines {
   readonly rows: Row[];
@@ -216,6 +315,11 @@ class SideLines {
   readonly completed: number[];
   readonly broke: number[];
   readonly split: number[];
+  /** Both sides' shape when the plan places its splits (revision 11, T824), else undefined. */
+  readonly shape: readonly [ShapeSide, ShapeSide] | undefined;
+  private readonly placeTerms: Float64Array | undefined;
+  /** Per period, each role's share of every exposure in `exposuresOf` order, by its `id`. */
+  private readonly sharesByRole: (number[] | undefined)[][] = [[], []];
 
   constructor(
     readonly side: AggregateSide,
@@ -223,6 +327,14 @@ class SideLines {
     private readonly plan: AggregatePlan,
     private readonly participation: AggregateParticipation,
   ) {
+    this.shape = plan.placed === true ? plan.shape : undefined;
+    if (this.shape) {
+      const key = shapeKey(this.shape);
+      let terms = PLACE_TERMS.get(key);
+      if (!terms)
+        PLACE_TERMS.set(key, (terms = new Float64Array(2 * 2 * SLOT_LIMIT * CELL_COUNT).fill(NaN)));
+      this.placeTerms = terms;
+    }
     this.rows = input.sides[side].lines.map(() => ({
       metrics: zeroMetrics(),
       detail: Array<number>(PLAYER_DETAIL_SIZE).fill(0),
@@ -410,6 +522,78 @@ class SideLines {
     const here = this.present(minute);
     return (here.find((p) => p.slot === 0) ?? here[0]!).line;
   }
+
+  /** A slot's place term for an action in `cell` (this side's attack frame; placed plans only). */
+  private term(slot: number, cell: number, inPossession: boolean) {
+    return placeTerm(this.shape!, this.placeTerms!, this.side, slot, cell, inPossession);
+  }
+
+  /** A role's share of each exposure of a period, `weights` before it sums them by line. */
+  private exposureShares(period: AggregatePeriod, role: Role): number[] {
+    const cache = this.sharesByRole[period === 'regulation' ? 0 : 1]!;
+    let out = cache[role.id];
+    if (!out) {
+      const list = this.exposuresOf(period);
+      const terms = this.termsOf(
+        period,
+        role.call ? `${role.attribute}:call` : role.attribute,
+        list.length,
+      );
+      out = list.map((e, at) => this.share(e.line, e.slot, e.minutes, e.mid, role, terms, at));
+      // Nobody of the role's lines played: whoever was on the pitch, by his minutes, as `weights`.
+      if (!out.some((w) => w > 0)) out = list.map((e) => e.minutes);
+      cache[role.id] = out;
+    }
+    return out;
+  }
+
+  /**
+   * `weights` with each exposure's place term for an action in `cell` (this side's attack frame),
+   * in or out of possession (→MATCH-16, T824): a new array, by line.
+   */
+  placedWeights(
+    period: AggregatePeriod,
+    role: Role,
+    cell: number,
+    inPossession: boolean,
+  ): number[] {
+    const list = this.exposuresOf(period);
+    const shares = this.exposureShares(period, role);
+    const out = Array<number>(this.rows.length).fill(0);
+    for (let at = 0; at < list.length; at++) {
+      const share = shares[at]!;
+      if (share > 0) out[list[at]!.line]! += share * this.term(list[at]!.slot, cell, inPossession);
+    }
+    return out;
+  }
+
+  /** `pickAt` with each present slot's place term for an action in `cell` (this side's frame). */
+  pickPlacedAt(r: Rng, minute: number, role: Role, cell: number, inPossession: boolean): number {
+    const here = this.present(minute);
+    const weights = here.map(
+      (p) =>
+        this.share(p.line, p.slot, 1, minute - 0.5, role) * this.term(p.slot, cell, inPossession),
+    );
+    let i = weightedIndex(r, weights);
+    if (i < 0) i = Math.floor(r() * here.length);
+    return here[i]!.line;
+  }
+
+  /**
+   * A line drawn by `weights` other than `except`; when no other line weighs anything, by the
+   * others' minutes in the period. An offside's receiver is never its passer (T824).
+   */
+  drawExcept(r: Rng, period: AggregatePeriod, weights: readonly number[], except: number): number {
+    const others = weights.map((w, line) => (line === except ? 0 : w));
+    let i = weightedIndex(r, others);
+    if (i < 0) {
+      const minutes = Array<number>(this.rows.length).fill(0);
+      for (const e of this.exposuresOf(period))
+        if (e.line !== except) minutes[e.line]! += e.minutes;
+      i = weightedIndex(r, minutes);
+    }
+    return i < 0 ? except : i;
+  }
 }
 
 /**
@@ -587,20 +771,20 @@ export function attributePlayerFacts(
   return { sides: out, shots: credits.sort((a, b) => a.side - b.side || a.shot - b.shot) };
 }
 
-function attributeSide(
+/**
+ * A side's shots of a period, first: their minute fixes who could take them and who could have
+ * made them. Returns, by move index, the lines whose completions the shots pinned.
+ */
+function creditShots(
   r: Rng,
   period: AggregatePeriod,
   side: AggregateSide,
-  sides: readonly [SideLines, SideLines],
+  own: SideLines,
+  opp: SideLines,
   facts: AggregateTeamFacts,
-  participation: AggregateParticipation,
   credits: AggregateShotCredit[],
-  trace: AggregateAttributionTrace | undefined,
-) {
-  const own = sides[side],
-    opp = sides[side === 0 ? 1 : 0];
+): Map<number, number[]> {
   const ledger = facts.ledger.sides[side];
-  // Shots first: their minute fixes who could take them and who could have made them.
   const pinned = new Map<number, number[]>();
   ledger.shots.forEach((shot, index) => {
     if (shot.period !== period) return;
@@ -641,6 +825,27 @@ function attributeSide(
       ...(passer !== undefined && { passer }),
     });
   });
+  return pinned;
+}
+
+function attributeSide(
+  r: Rng,
+  period: AggregatePeriod,
+  side: AggregateSide,
+  sides: readonly [SideLines, SideLines],
+  facts: AggregateTeamFacts,
+  participation: AggregateParticipation,
+  credits: AggregateShotCredit[],
+  trace: AggregateAttributionTrace | undefined,
+) {
+  const own = sides[side],
+    opp = sides[side === 0 ? 1 : 0];
+  const ledger = facts.ledger.sides[side];
+  const pinned = creditShots(r, period, side, own, opp, facts, credits);
+  if (own.shape) {
+    attributePlaced(r, period, side, sides, facts, participation, pinned, trace);
+    return;
+  }
   // Every move group of the period: pinned completions, then the rest by weight.
   const n = own.rows.length;
   /** Loose balls the opponent recovered in its high-turnover zone: band played to, count. */
@@ -755,6 +960,186 @@ function attributeSide(
     }
   });
   // Who recovered the loose balls, drawn last so every split above keeps its draws (T327).
+  for (let i = 0; i < loose.length; i += 2) {
+    const role = ROLES.defend(LAST_BAND - loose[i]!, 'positioning');
+    const recovered = multinomialDraw(r, loose[i + 1]!, opp.weights(period, role));
+    recovered.forEach((x, line) => (opp.rows[line]!.detail[PD.highTurnovers]! += x));
+    if (looseMoves) moveTrace![looseMoves[i / 2]!]!.recovered = recovered.slice();
+  }
+}
+
+/**
+ * `attributeSide` after the shots under the place rule (revision 11, →MATCH-16, T824): every
+ * open-play move group and every ball won is split on weights that read the slot's place for it,
+ * fitted per side and period so each line's expected count of each action class is the unplaced
+ * one's; each offside pass names a receiver other than its passer; fouls weigh the fouled man's
+ * place in possession and the fouler's out of it, without the fitting. Set-piece deliveries keep
+ * their taker and loose balls are recovered as before. Its draws need not match the unplaced
+ * path's: nothing compares the two fixture by fixture.
+ */
+function attributePlaced(
+  r: Rng,
+  period: AggregatePeriod,
+  side: AggregateSide,
+  sides: readonly [SideLines, SideLines],
+  facts: AggregateTeamFacts,
+  participation: AggregateParticipation,
+  pinned: ReadonlyMap<number, readonly number[]>,
+  trace: AggregateAttributionTrace | undefined,
+) {
+  const own = sides[side],
+    opp = sides[side === 0 ? 1 : 0];
+  const ledger = facts.ledger.sides[side];
+  const n = own.rows.length;
+  // Each group's fitted weights before any draw: the open-play attempts by this side's place where
+  // they start, the ball won by the winner's place where the group ends, seen from his end.
+  const attemptsOf: (PlacedGroup | undefined)[] = [];
+  const wonOf: (PlacedGroup | undefined)[] = [];
+  for (let index = 0; index < ledger.moves.length; index++) {
+    const move = ledger.moves[index]!;
+    if (move.period !== period) continue;
+    const traits = moveTraits(move);
+    if (!move.setPiece) {
+      const role = moveRole(move);
+      attemptsOf[index] = {
+        c: MOVE_CLASS[move.kind],
+        n: move.attempts - (pinned.get(index)?.length ?? 0),
+        w: own.weights(period, role),
+        u: own.placedWeights(period, role, move.from, true),
+      };
+    }
+    const won = traits.pass ? move.intercepted : move.attempts - move.completed;
+    if (won > 0) {
+      const at = traits.pass ? traits.toBand : traits.fromBand;
+      const role = ROLES.defend(LAST_BAND - at, traits.pass ? 'positioning' : 'tackling');
+      wonOf[index] = {
+        c: traits.pass ? INTERCEPTION : TACKLE,
+        n: won,
+        w: opp.weights(period, role),
+        u: opp.placedWeights(period, role, mirrorCell(move.to), false),
+      };
+    }
+  }
+  const listed = (g: PlacedGroup | undefined): g is PlacedGroup => g !== undefined;
+  fitPlaced(attemptsOf.filter(listed), n, MOVE_CLASSES);
+  fitPlaced(wonOf.filter(listed), opp.rows.length, WON_CLASSES);
+  const loose: number[] = [];
+  const looseMoves: number[] | undefined = trace && [];
+  const moveTrace = trace?.moves[side];
+  for (let index = 0; index < ledger.moves.length; index++) {
+    const move = ledger.moves[index]!;
+    if (move.period !== period) continue;
+    const pins = pinned.get(index) ?? NO_PINS;
+    const weights = move.setPiece
+      ? own.takerWeights(period, move.setPiece === 'corner' ? 'corner' : 'freeKick')
+      : attemptsOf[index]!.u;
+    const attempts = multinomialInto(r, move.attempts - pins.length, weights, own.attempts);
+    const completed = within(r, move.completed - pins.length, attempts, own.completed);
+    for (const line of pins) {
+      attempts[line]!++;
+      completed[line]!++;
+    }
+    const broke = within(r, move.lineBreaking, completed, own.broke);
+    const traits = moveTraits(move);
+    for (let line = 0; line < n; line++)
+      if (attempts[line]! > 0)
+        creditMove(own.rows[line]!, traits, attempts[line]!, completed[line]!, broke[line]!);
+    const traced: AggregateTraceMove | undefined = moveTrace?.[index];
+    if (traced) {
+      traced.attempts = attempts.slice();
+      traced.completed = completed.slice();
+      traced.broke = broke.slice();
+    }
+    if (move.offside > 0) {
+      // Who played each offside pass: among the group's failed attempts; who was caught: one of
+      // his teammates near where it was played to (→MATCH-18), never the passer himself.
+      const failed = attempts.map((k, line) => k - completed[line]!);
+      const passers = within(r, move.offside, failed, own.split);
+      const receivers = own.placedWeights(period, ROLES.offside, move.to, true);
+      const caught = Array<number>(n).fill(0);
+      const pairs: [number, number][] = [];
+      for (let passer = 0; passer < n; passer++)
+        for (let k = 0; k < passers[passer]!; k++) {
+          const receiver = own.drawExcept(r, period, receivers, passer);
+          caught[receiver]!++;
+          pairs.push([passer, receiver]);
+        }
+      for (let line = 0; line < n; line++) own.rows[line]!.detail[PD.offsides]! += caught[line]!;
+      if (traced) {
+        traced.offside = caught;
+        traced.offsidePairs = pairs;
+      }
+    }
+    const pass = traits.pass;
+    if (pass && mirrorBand(traits.toBand) >= COUNTER_ZONES.highTurnover) {
+      const k = looseBalls(move);
+      if (k > 0) {
+        loose.push(traits.toBand, k);
+        looseMoves?.push(index);
+      }
+    }
+    const won = wonOf[index];
+    if (won) {
+      const at = pass ? traits.toBand : traits.fromBand;
+      const split = multinomialInto(r, won.n, won.u, opp.split);
+      if (traced) traced.won = split.slice();
+      for (let line = 0; line < split.length; line++) {
+        const k = split[line]!;
+        if (k === 0) continue;
+        opp.rows[line]!.metrics[pass ? M.interceptions : M.tackles]! += k;
+        if (mirrorBand(at) >= COUNTER_ZONES.highTurnover)
+          opp.rows[line]!.detail[PD.highTurnovers]! += k;
+      }
+    }
+  }
+  // Fouls the opponent committed on this side, at their cell: the fouled man in possession there,
+  // the fouler out of it; a booked foul is the carded player's.
+  const { from, to } = AGGREGATE_CONFIG.periods[period];
+  const fouls = ledger.fouled.filter((f) => f.period === period);
+  const left = fouls.map((f) => f.n);
+  const foulTrace: AggregateTraceFouls[] | undefined =
+    trace && fouls.map((f) => trace.fouls[side][ledger.fouled.indexOf(f)]!);
+  const booked = participation.incidents.filter(
+    (x) =>
+      x.side !== side &&
+      x.kind !== 'sub' &&
+      x.kind !== 'injury' &&
+      x.reason !== 'dissent' &&
+      x.minute > from &&
+      x.minute <= to,
+  );
+  for (const card of booked) {
+    const i = weightedIndex(r, left);
+    if (i < 0) break;
+    left[i]!--;
+    const f = fouls[i]!;
+    opp.rows[opp.lineOf(card.player)]!.detail[PD.fouls]!++;
+    const role = ROLES.carry(cellBand(f.cell));
+    const fouled = own.pickPlacedAt(r, card.minute, role, f.cell, true);
+    own.rows[fouled]!.detail[PD.foulsWon]!++;
+    foulTrace?.[i]!.booked.push({
+      fouler: opp.lineOf(card.player),
+      fouled,
+      incident: participation.incidents.indexOf(card),
+    });
+  }
+  fouls.forEach((f, i) => {
+    const k = left[i]!;
+    if (k === 0) return;
+    const band = cellBand(f.cell);
+    const fouledWeights = own.placedWeights(period, ROLES.carry(band), f.cell, true);
+    const fouledLines = multinomialDraw(r, k, fouledWeights);
+    fouledLines.forEach((x, line) => (own.rows[line]!.detail[PD.foulsWon]! += x));
+    const role = ROLES.defend(LAST_BAND - band, 'tackling');
+    const foulerWeights = opp.placedWeights(period, role, mirrorCell(f.cell), false);
+    const foulerLines = multinomialDraw(r, k, foulerWeights);
+    foulerLines.forEach((x, line) => (opp.rows[line]!.detail[PD.fouls]! += x));
+    if (foulTrace) {
+      foulTrace[i]!.fouled = fouledLines.slice();
+      foulTrace[i]!.fouler = foulerLines.slice();
+    }
+  });
+  // Who recovered the loose balls, unplaced, as revisions up to 10 draw them.
   for (let i = 0; i < loose.length; i += 2) {
     const role = ROLES.defend(LAST_BAND - loose[i]!, 'positioning');
     const recovered = multinomialDraw(r, loose[i + 1]!, opp.weights(period, role));

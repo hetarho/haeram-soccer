@@ -54,6 +54,11 @@ import {
  * marker a man, its back line holding while midfielders take the men between the lines, and a
  * runner in behind along his run (T599, →MATCH-17, MATCH-32, MATCH-34);
  * careers on revisions 1–9 take it the same way.
+ * Revision 11, the scripted model, settles every fixture on the aggregate path and writes an own
+ * match's script and picture from its record (→MATCH-1, MATCH-38, MATCH-39); from it a pass,
+ * carry, take-on, ball won, foul or offside is credited with the player's place on the pitch in
+ * mind, each player's expected totals kept (T824, →MATCH-16). Tests and tools run it until T838
+ * releases it.
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -66,6 +71,7 @@ export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-8',
   'continuous-aggregate-9',
   'continuous-aggregate-10',
+  'scripted-aggregate-11',
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
@@ -75,6 +81,9 @@ export const isMatchModelRevision = (value: unknown): value is MatchModelRevisio
 /** A revision's number: 1 for the first. */
 export const matchModelNumber = (revision: MatchModelRevision) =>
   MATCH_MODEL_REVISIONS.indexOf(revision) + 1;
+/** Whether a revision is the scripted model's (11 on): absent is the pre-feature model. */
+export const isScriptedModel = (revision: MatchModelRevision | undefined) =>
+  revision !== undefined && matchModelNumber(revision) >= 11;
 
 /** The first fixture day and round a set of newly available counters covers (→HIST-17). */
 export interface TrackingBoundary {

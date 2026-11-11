@@ -8,6 +8,7 @@ import { message as sourceMessage } from '../../../contracts/src/messages';
  */
 import {
   activeMatchModel,
+  isScriptedModel,
   MATCH_MODEL_REVISION,
   type MatchModelRevision,
 } from '../../../contracts/src/match-model';
@@ -47,6 +48,7 @@ import {
 import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
 import { slotOvr } from '../player-state';
+import type { ShapeSide } from '../staging/shape';
 import { buildAggregateInput } from './input';
 import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { onPitchAt, planParticipation, rebalanceIssues, slotAt } from './participation';
@@ -200,7 +202,16 @@ export function aggregatePlan(
         actionWeight(slots[slot]!.role, candidates[line]!.traits, action),
     };
   };
-  return { era, sides: [side(0), side(1)] };
+  const shape = (s: AggregateSide): ShapeSide => ({
+    tactic: prepared.tactics[s],
+    roles: FORMATIONS[prepared.tactics[s]].slots.map((slot) => slot.role),
+  });
+  return {
+    era,
+    sides: [side(0), side(1)],
+    placed: isScriptedModel(activeMatchModel(w)),
+    shape: [shape(0), shape(1)],
+  };
 }
 
 /**

@@ -369,4 +369,21 @@ export const AGGREGATE_ATTRIBUTION_CONFIG = {
     MF: [0.6, 1, 1.4, 1.7, 1.6, 1.2, 0.8, 0.6],
     FW: [0.1, 0.2, 0.3, 0.6, 0.9, 1.2, 1.3, 1.2],
   },
+  /**
+   * Revision 11's place rule (→MATCH-16, T824): a slot's weight for an action in a cell is
+   * multiplied by max(`floor`, e^(−(d / `reach`)² / 2)), `d` the metres from the cell's centre to
+   * his role's place for a ball there (staging/shape.ts `placeFor`); `iterations` rounds of
+   * proportional fitting bring each line's expected totals by action class back to the unplaced
+   * weights' (players.ts `fitPlaced`). `target` is the median metres from an open-play attempt's
+   * start to its actor's place, the share of those attempts beyond 20 m and the share of tackles
+   * and interceptions beyond 20 m (aggregate/players.place.test.ts); `reach` may go down to 8 to
+   * meet it. T824 measured 24 fixtures at reach 12: 12.8 m, 16.5%, winners 26.3% (missed); at 10:
+   * 11.8 m, 12.5%, winners 22.5%; without place 20.2 m, 50.4%, winners 50.8%.
+   */
+  place: {
+    reach: 10,
+    floor: 0.02,
+    iterations: 8,
+    target: { median: 13, far: 0.2, winnersFar: 0.25 },
+  },
 } as const;

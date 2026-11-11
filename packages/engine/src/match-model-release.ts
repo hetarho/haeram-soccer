@@ -18,3 +18,12 @@ export const MATCH_MODEL_RELEASE: MatchModelRelease = {
   revision: MATCH_MODEL_REVISION,
   enabled: true,
 };
+/**
+ * The scripted model (revision 11, →MATCH-1, MATCH-16, MATCH-38), for tests and tools only until
+ * T838 releases it: a world created or activated with it settles other clubs' fixtures on the
+ * aggregate path with the place rule (T824); its own fixtures still play the grid until T833.
+ */
+export const SCRIPTED_RELEASE: MatchModelRelease = {
+  revision: 'scripted-aggregate-11',
+  enabled: true,
+};

@@ -8,6 +8,7 @@ import type { Incident, Metrics, Tactic } from '../../../contracts/src/types';
 import type { Line, PlayTrait } from '../../../contracts/src/player';
 import type { EraRules, SubPolicy } from '../grid/setup';
 import type { MatchAction } from '../match';
+import type { ShapeSide } from '../staging/shape';
 
 export type AggregateSide = 0 | 1;
 /** Regulation is minutes 0–90; extra time (→MATCH-6) extends the same match by 90–120. */
@@ -307,6 +308,13 @@ export interface AggregateSidePlan {
 export interface AggregatePlan {
   era: EraRules;
   sides: readonly [AggregateSidePlan, AggregateSidePlan];
+  /**
+   * Whether the attribution weighs each slot's place on the pitch (revision 11 on, →MATCH-16,
+   * T824); absent is false, as revisions up to 10 and direct callers attribute.
+   */
+  placed?: boolean;
+  /** Each side's tactic and roles by slot, as the shape reads them (staging/shape.ts). */
+  shape?: readonly [ShapeSide, ShapeSide];
 }
 
 /** One named line of a side in record order: the starters, then substitutes as they came on. */
@@ -349,6 +357,11 @@ export interface AggregateTraceMove {
   won: number[];
   /** The opponent's lines that recovered the group's loose balls in their high-turnover zone (empty elsewhere). */
   recovered: number[];
+  /**
+   * Revision 11 (T824): each offside pass of the group as `[passer, receiver]`, this side's lines,
+   * the receiver never the passer. Absent on revisions up to 10.
+   */
+  offsidePairs?: [number, number][];
 }
 export interface AggregateTraceFouls {
   /** Booked fouls: the opponent's line that fouled, this side's line fouled, the index of the card in `participation.incidents`. */

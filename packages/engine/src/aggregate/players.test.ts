@@ -1,6 +1,10 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { PD, TD } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
+import type { Tactic } from '../../../contracts/src/types';
+import { FORMATIONS } from '../player';
+import type { ShapeSide } from '../staging/shape';
 import { DEFAULT_SUB_POLICY, eraRules } from '../grid/setup';
 import { M } from '../grid/record';
 import { finishing, targetChance } from '../match';
@@ -21,11 +25,18 @@ import type {
 const neutral: AggregateProfile = { possession: 0, pass: 0, shot: 0, defense: 0, pressure: 0 };
 const BENCH_LINES: Line[] = ['GK', 'DF', 'MF', 'FW', 'DF', 'MF', 'FW', 'MF', 'FW'];
 
+/** Each side's shape as `aggregatePlan` gives it (T824). */
+const shapeOf = (tactic: Tactic): ShapeSide => ({
+  tactic,
+  roles: FORMATIONS[tactic].slots.map((s) => s.role),
+});
 function match(
   fixture: string,
   year = 2024,
   length: 90 | 120 = 90,
   own?: AggregateSkillAccess['own'],
+  /** Absent leaves the plan as revisions up to 10 build it: no shape, no `placed`. */
+  placed?: boolean,
 ) {
   const era = eraRules(year);
   const roster = (side: number) =>
@@ -60,7 +71,14 @@ function match(
     drain: 1,
     actionWeight: () => 1,
   });
-  const plan: AggregatePlan = { era, sides: [side(0), side(1)] };
+  const plan: AggregatePlan = {
+    era,
+    sides: [side(0), side(1)],
+    ...(placed !== undefined && {
+      placed,
+      shape: [shapeOf(input.sides[0].tactic), shapeOf(input.sides[1].tactic)],
+    }),
+  };
   const streams = aggregateStreams('synthetic', fixture);
   const participation = planParticipation(input, plan, streams, length);
   const facts = generateTeamFacts(input, streams, participation);
@@ -169,8 +187,8 @@ describe('aggregate player attribution (→MATCH-11, MATCH-13, MATCH-27)', () =>
     expect(match('repeat').players).toEqual(a);
   });
 
-  const traced = (fixture: string, length: 90 | 120 = 90) => {
-    const m = match(fixture, 2008, length);
+  const traced = (fixture: string, length: 90 | 120 = 90, placed?: boolean) => {
+    const m = match(fixture, 2008, length, undefined, placed);
     const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
     const players = attributePlayerFacts(
       m.input,
@@ -188,6 +206,54 @@ describe('aggregate player attribution (→MATCH-11, MATCH-13, MATCH-27)', () =>
     for (const fixture of fixtures(8, 'trace-same')) {
       const { players, traced: withTrace } = traced(fixture, fixture.endsWith('3') ? 120 : 90);
       expect(withTrace).toEqual(players);
+    }
+  });
+
+  it('revision 10 attribution is untouched by the place rule', () => {
+    // Pinned on the unplaced attribution before T824 added the place rule: the same six fixtures,
+    // their player lines and traces, as revisions up to 10 settle them.
+    const six = fixtures(6, 'unplaced').map((fixture, i) => {
+      const { traced: players, trace } = traced(fixture, i % 3 === 2 ? 120 : 90);
+      return { players, trace };
+    });
+    expect(createHash('sha256').update(JSON.stringify(six)).digest('hex').slice(0, 16)).toBe(
+      'bf0eb79eb9e94d66',
+    );
+    // A plan carrying the sides' shape but not placed, as `aggregatePlan` builds one for a
+    // revision-10 world, attributes exactly as the unplaced path.
+    fixtures(6, 'unplaced').forEach((fixture, i) => {
+      const { traced: players, trace } = traced(fixture, i % 3 === 2 ? 120 : 90, false);
+      expect({ players, trace }).toEqual(six[i]);
+    });
+  });
+
+  it('the place rule keeps totals, shooters and receivers apart from passers (synthetic)', () => {
+    for (const fixture of fixtures(10, 'placed')) {
+      const length = fixture.endsWith('4') ? 120 : 90;
+      const unplaced = traced(fixture, length);
+      const { facts, traced: players, trace } = traced(fixture, length, true);
+      // Shots and their key passers are drawn first, on the same stream, as before.
+      expect(players.shots).toEqual(unplaced.traced.shots);
+      for (const side of [0, 1] as const) {
+        const lines = players.sides[side],
+          team = facts.sides[side];
+        const sum = (row: 'metrics' | 'detail', index: number) =>
+          lines.reduce((n, l) => n + l[row][index]!, 0);
+        for (let index = 0; index < M.minutes; index++)
+          expect(sum('metrics', index), `metric ${index}`).toBe(team.metrics[index]);
+        for (const key of SHARED) expect(sum('detail', PD[key]), key).toBe(team.detail[TD[key]]);
+        expect(sum('detail', PD.foulsWon)).toBe(facts.sides[side === 0 ? 1 : 0].detail[TD.fouls]);
+        facts.ledger.sides[side].moves.forEach((move, i) => {
+          const t = trace.moves[side][i]!;
+          expect(total(t.attempts)).toBe(move.attempts);
+          expect(total(t.offside)).toBe(move.offside);
+          expect(t.offsidePairs?.length ?? 0).toBe(move.offside);
+          for (const [passer, receiver] of t.offsidePairs ?? []) {
+            expect(receiver).not.toBe(passer);
+            expect(t.attempts[passer]! - t.completed[passer]!).toBeGreaterThan(0);
+          }
+        });
+      }
     }
   });
 
