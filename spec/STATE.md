@@ -846,6 +846,8 @@
 - 261111 decided LAB-3 LAB-4 T836: the lab tuned the detailed engine's numbers → it moves to the result path's, the script writer's and the staging's numbers and watches a scripted, staged match (alt: retire the lab with the detailed engine)
 - 261111 suggest MATCH-22 T840: T822 found the script's linking carries sit at the record's own flows (wing cells release more rows than reach them); if T840 still reads the invention as too high on the placed attribution, drawing the aggregate path's flows as chains is the next lever — a result-model change with recalibration, for the owner to order
 - 261111 decided WEB-10 T847: where does an area detail opened from a home card keep its origin for the back link → a task-memory value set by the home card and cleared by every other opener; a reload falls back to the office (alt: a `from=home` address parameter, which survives reload but changes the address every journey asserts | a WEB-74 detour, which adds the 돌아가기 banner beside the menu)
+- 261111 decided MATCH-16 MATCH-38 T827 T848: how revision 11's attribution keeps every record playable, now that one of T825's sixty pairs a tackle across a substitution → MATCH r60 (MATCH-16✎): an action naming two men (a ball won and its loser, a loose ball in the high-turnover zone and its passer, an offside's passer and the man caught, an unbooked foul's two men) draws the second among the men on the pitch with the first, his minutes in the base weight replaced by the minutes they share in the period; the winners are refitted to the unplaced expected totals on one sub-group per loser line (`pairGroups` beside T824's unchanged `fitPlaced`), the trace names every pair (`wonPairs`, `recoveredPairs`, foul `pairs`) and the detail lays rows out from them, so `settlePairs` goes and an unmet pair becomes a `detailIssues` line — T848, dep T826, before T827's sample item (alt: keep `settlePairs` beside the pairs as a safety net, which hides an attribution bug behind a trade | pair only balls won and leave offsides and fouls to trades | mask each group's winners by their period minutes inside T827, outside its touches and against `fitPlaced`'s totals) sm11
+- 261111 decided MATCH-38 T827 T848: what becomes of T827 while T848 runs → T827 back to todo with dep T848 and base MATCH@60, its committed writer, validator, count and detail settling kept (59 of 60 exact); it resumes at acceptance 2 (`script/sample.test.ts` un-skipped, run once by hand, means pasted) and corrects its result's settling line, since T848 removes `settlePairs` (alt: close T827 now without its sample item, moving acceptance 2 into T848, which would make an aggregate task read the script's cost line | keep T827 blocked until T848 is done, leaving the loop no runnable task between) sm11
 
 ## ideation
 | id | st |
@@ -877,7 +879,7 @@
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 67 | 67 | - | 0 |
-| MATCH | 59 | 59 | - | 0 |
+| MATCH | 60 | 60 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 41 | 41 | - | 0 |
 | ECON | 54 | 54 | - | 0 |
@@ -965,6 +967,7 @@
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
 | T847 | a home area card's detail leads back home | WEB | - | todo |
+| T848 | revision 11's attribution pairs the two men of an action among men on the pitch together | MATCH ARCH | T826 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -1012,6 +1015,7 @@
 - 261111 update-ssot MATCH WEB HIST SAVE ARCH start: ideation match-script-and-staging taken to planning (ready) on the owner's order after T822's page and result
 - 261111 create-task WEB: T847 (a home area card's detail leads back home; the origin in task memory, no new copy)
 - 261111 update-ssot WEB r216 (WEB-10✎ a detail a home area card opened leads back home; flow Office✎)
+- 261111 update-ssot MATCH r60 (MATCH-16✎: a two-man action's second man drawn among the men on the pitch with the first, on the minutes they share) + create-task T848 (revision 11's attribution pairs, the trace and the detail reading them, `settlePairs` removed; dep T826), T827 to resume after it sm11
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
 - 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
@@ -1022,4 +1026,3 @@
 - 261110 update-ssot ARCH r38 (ARCH-21 clone-wide local world cache); create-task T788-T790 tv10
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
-- 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
