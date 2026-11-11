@@ -124,12 +124,17 @@ const rowsByMinute = (script: MatchScript) => {
   return per;
 };
 
+/** The seeds the cost line is read over: one seed moves heavy touches about ±6%. */
+const COST_SEEDS = ['fit', 'a', 'b', 'c'] as const;
+
 /**
- * What the prototype's writer adds on the ten matches at the task's base (5b658a30), summed:
- * `pnpm exec tsx scripts/match-proto/check/report.ts --match sNN`, `fit.linkMetres`,
- * `fit.miscontrols` and `fit.connectiveRestarts`.
+ * What the prototype's writer adds on the ten matches at the task's base (5b658a30), summed over
+ * them and the seeds `fit`, `a`, `b` and `c` (`writeFitted` + `fitCost`): linking metres, heavy
+ * touches and restarts without a recorded delivery. Per seed: `fit` 54,014 / 172 / 114 (what
+ * `pnpm exec tsx scripts/match-proto/check/report.ts --match sNN` reads), `a` 54,450 / 182 / 116,
+ * `b` 54,590 / 175 / 113, `c` 54,201 / 176 / 119.
  */
-const PROTOTYPE = { linkMetres: 54_014, miscontrols: 172, connectiveRestarts: 114 };
+const PROTOTYPE = { linkMetres: 217_255, miscontrols: 705, connectiveRestarts: 462 };
 
 describe('script writer on the ten matches (T822, T826)', () => {
   const ten = FIXTURE_IDS.map((id) => {
@@ -155,11 +160,16 @@ describe('script writer on the ten matches (T822, T826)', () => {
 
   it("what the script adds stays at the prototype's level", () => {
     const sum = { linkMetres: 0, miscontrols: 0, connectiveRestarts: 0 };
-    for (const [, detail, script] of ten) {
-      const cost = scriptCost(script, detail);
-      sum.linkMetres += cost.linkMetres;
-      sum.miscontrols += cost.miscontrols;
-      sum.connectiveRestarts += cost.connectiveRestarts;
+    for (const seed of COST_SEEDS) {
+      for (const [id, detail, fitted] of ten) {
+        const script = seed === 'fit' ? fitted : scriptOf(detail, seed);
+        expect(validateScript(detail, script), `${id} ${seed}`).toEqual([]);
+        expect(compareRecord(detail, countScript(script, detail)), `${id} ${seed}`).toEqual([]);
+        const cost = scriptCost(script, detail);
+        sum.linkMetres += cost.linkMetres;
+        sum.miscontrols += cost.miscontrols;
+        sum.connectiveRestarts += cost.connectiveRestarts;
+      }
     }
     expect(sum.linkMetres).toBeLessThanOrEqual(PROTOTYPE.linkMetres * 1.02);
     expect(sum.miscontrols).toBeLessThanOrEqual(PROTOTYPE.miscontrols * 1.02);
