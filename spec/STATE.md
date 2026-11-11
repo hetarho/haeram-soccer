@@ -956,6 +956,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
+| T849 | Fix final gate failure | ARCH | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -983,7 +984,7 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T838
+- implement-task T849
 
 ## log
 - 261112 T848 done: entrant-safe fixed chains, booked departure boundary, explicit prefix counters with settled guards retained, converged place marginals and corrected tackle cell; lab defaults refreshed, 1,485 affected unit tests/type/lint/format/i18n/build pass, original integration acceptance pending host batch, no push cc12
