@@ -12,7 +12,6 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| fv11 | hq-dev1-pve2-vm2 | autopilot | 2026-11-11T04:50Z | 2026-11-11T04:50Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
