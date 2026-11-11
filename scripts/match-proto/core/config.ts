@@ -180,7 +180,7 @@ export const PROTO_CONFIG = {
       /** Seconds he gives himself to reach his place: `near` at the ball, `far` from `farAt` metres. */
       arrive: { near: 1.2, far: 3, farAt: 40 },
       /** He stands within `hold` metres of his place; otherwise he moves at `minSpeed` at least. */
-      hold: 0.6,
+      hold: 0.2,
       minSpeed: 0.8,
       /** Seconds of inputs kept for the delay: at least the longest delay, `delay.base + delay.perIq + (delay.perMetre + turn.delayPerMetre) * farCap`. */
       memory: 2.2,
@@ -190,7 +190,7 @@ export const PROTO_CONFIG = {
       /** Seconds a turnover shapes how free players move. */
       window: 6,
       /** A settled turnover is believed this many seconds later per metre from the ball (up to `own.farCap`). */
-      delayPerMetre: 0.02,
+      delayPerMetre: 0.026,
       /** The place's time constant inside the window: at least `settled` after a settled turnover, at most `counter` after a counter; the back line keeps `own.lag.line`. */
       lag: { settled: 2, counter: 0.5 },
       /** Inside the window after a counter a free player runs to a place farther than `runBeyond` metres and sprints to one farther than `sprintBeyond`. */
@@ -245,7 +245,7 @@ export const PROTO_CONFIG = {
     /** How far outside the lines a target may lie, and where the boards stop a player. */
     boards: 2,
     /** How far a free outfield player keeps his target from every outfield teammate (0 = off). */
-    separation: 2.5,
+    separation: 3,
     /** How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order. */
     ownerRoom: 4,
     restart: {

@@ -183,7 +183,7 @@ describe('a free player’s mind', () => {
   });
 
   it('freeSpeed stands inside own.hold, walks a small correction, runs a long one and is brisker near the ball', () => {
-    expect(freeSpeed(0.5, 10, 6)).toBe(0);
+    expect(freeSpeed(OWN.hold / 2, 10, 6)).toBe(0);
     expect(freeSpeed(OWN.hold, 10, 6)).toBe(0);
     expect(freeSpeed(3, 40, 6)).toBeCloseTo(3 / OWN.arrive.far, 12);
     expect(freeSpeed(3, 0, 6)).toBeCloseTo(3 / OWN.arrive.near, 12);
