@@ -1,9 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { tunableLeaves } from '../../../../packages/engine/src/grid/tunables';
+import { tunableLeaves } from '../../../../packages/engine/src/tunables';
+import { sourceMessages } from '../../../../packages/contracts/src/source-messages';
+import registry from '../../public/presentation/locales/index.json';
+import { TUNABLE_DESCRIPTIONS, tunableDescription } from './descriptions';
 import { CATALOG_PATH, catalogText, type Catalog } from '../../../../scripts/lab-tunables';
-
-const KO_PATH = CATALOG_PATH.replace(/tunables\.json$/, 'tunables.ko.json');
 
 describe('lab tunable catalog', () => {
   it('catalog matches the engine', async () => {
@@ -19,20 +20,16 @@ describe('lab tunable catalog', () => {
     const catalog = JSON.parse(readFileSync(CATALOG_PATH, 'utf8')) as Catalog;
     const leaves = catalog.groups.flatMap((g) => g.leaves);
     const leaf = (path: string) => leaves.find((l) => l.path === path)!;
-    expect(leaf('SHOT_CONFIG.saveShare').comment).toMatch(/saves the grid keeps/);
+    expect(leaf('AGGREGATE_CONFIG.shots.scale').comment).toMatch(/shot share/);
     // A leaf without a comment of its own takes its parent's.
-    expect(leaf('SHOT_CONFIG.candidate.header').comment).toMatch(/header's chance quality/);
-    expect(leaf('GRID_MOVEMENT_CONFIG.turn').loadTime).toBe(true);
-    expect(leaves.filter((l) => l.loadTime)).toHaveLength(4);
-    expect(catalog.groups.every((g) => g.file.startsWith('packages/engine/src/grid/'))).toBe(true);
+    expect(leaf('STAGING_CONFIG.stage.holdMove.speed').comment).toMatch(/keeps it moving/);
+    expect(leaves.filter((l) => l.loadTime)).toHaveLength(0);
+    expect(catalog.groups.every((g) => g.file.endsWith('/config.ts'))).toBe(true);
   });
 
   it('every value and group has a Korean description', () => {
     const catalog = JSON.parse(readFileSync(CATALOG_PATH, 'utf8')) as Catalog;
-    const ko = JSON.parse(readFileSync(KO_PATH, 'utf8')) as {
-      groups: Record<string, string>;
-      leaves: Record<string, string>;
-    };
+    const ko = TUNABLE_DESCRIPTIONS;
     const missing = 'apps/web/src/lab/tunables.ko.json lacks or keeps stale descriptions (→LAB-3)';
     expect(Object.keys(ko.groups).sort(), missing).toEqual(
       catalog.groups.map((g) => g.name).sort(),
@@ -40,10 +37,27 @@ describe('lab tunable catalog', () => {
     expect(Object.keys(ko.leaves).sort(), missing).toEqual(
       catalog.groups.flatMap((g) => g.leaves.map((l) => l.path)).sort(),
     );
-    const texts = [...Object.values(ko.groups), ...Object.values(ko.leaves)];
+    const texts = [
+      ...Object.values(ko.groups).map((id) => sourceMessages[id]),
+      ...Object.keys(ko.leaves).map((path) => tunableDescription(path)),
+    ];
     expect(
-      texts.filter((t) => !/[가-힣]/.test(t.trim())),
+      texts.filter((text) => !/[가-힣]/.test(text.trim())),
       missing,
     ).toEqual([]);
+    for (const locale of registry.entries) {
+      const pack = JSON.parse(
+        readFileSync(
+          new URL(`../../public/presentation/locales/${locale.resource}`, import.meta.url),
+          'utf8',
+        ),
+      ).messages as Record<string, string>;
+      for (const id of [
+        ...Object.values(ko.groups),
+        ...Object.values(ko.leaves).flatMap((d) => [d.control, d.message]),
+      ]) {
+        expect(pack[id], `${locale.id}: ${id}`).toBeTruthy();
+      }
+    }
   });
 });

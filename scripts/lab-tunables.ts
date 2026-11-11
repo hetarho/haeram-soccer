@@ -1,22 +1,19 @@
 /**
- * The match lab's catalog of tunable grid numbers (→LAB-3, T573): every leaf `tunableLeaves()`
+ * The match lab's catalog of tunable match numbers (→LAB-3, T573): every leaf `tunableLeaves()`
  * lists with its default, its code comment and whether it is copied at load, grouped by config
  * object, written to apps/web/src/lab/tunables.json for the lab page (which imports no engine code).
  *
  *   pnpm run lab:tunables
  */
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { format } from 'prettier';
 import ts from 'typescript';
 import { leadingComment, trailingComment } from './source-comments';
-import {
-  GRID_TUNABLES,
-  LOAD_TIME_LEAVES,
-  tunableLeaves,
-} from '../packages/engine/src/grid/tunables';
+import { MATCH_TUNABLES, LOAD_TIME_LEAVES, tunableLeaves } from '../packages/engine/src/tunables';
 
-const GRID = fileURLToPath(new URL('../packages/engine/src/grid/', import.meta.url));
+const SOURCES = ['aggregate/config.ts', 'script/config.ts', 'staging/config.ts'];
+const ENGINE = fileURLToPath(new URL('../packages/engine/src/', import.meta.url));
 export const CATALOG_PATH = fileURLToPath(
   new URL('../apps/web/src/lab/tunables.json', import.meta.url),
 );
@@ -41,10 +38,8 @@ export interface Catalog {
 function sourceComments() {
   const comments = new Map<string, string>();
   const files = new Map<string, { file: string; comment: string }>();
-  for (const file of readdirSync(GRID).filter(
-    (f) => f.endsWith('.ts') && !f.includes('.test') && !f.includes('.testkit'),
-  )) {
-    const text = readFileSync(GRID + file, 'utf8');
+  for (const file of SOURCES) {
+    const text = readFileSync(ENGINE + file, 'utf8');
     const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true);
     const walk = (node: ts.Expression, path: string) => {
       let inner: ts.Expression = node;
@@ -70,9 +65,9 @@ function sourceComments() {
       if (!ts.isVariableStatement(st)) continue;
       for (const d of st.declarationList.declarations) {
         const name = d.name.getText(sf);
-        if (!(name in GRID_TUNABLES) || !d.initializer) continue;
+        if (!(name in MATCH_TUNABLES) || !d.initializer) continue;
         files.set(name, {
-          file: `packages/engine/src/grid/${file}`,
+          file: `packages/engine/src/${file}`,
           comment: leadingComment(text, st),
         });
         walk(d.initializer, name);
@@ -95,7 +90,7 @@ export function buildCatalog(): Catalog {
     return '';
   };
   return {
-    groups: Object.keys(GRID_TUNABLES).map((name) => ({
+    groups: Object.keys(MATCH_TUNABLES).map((name) => ({
       name,
       file: files.get(name)?.file ?? '',
       comment: files.get(name)?.comment ?? '',

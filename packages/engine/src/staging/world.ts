@@ -489,8 +489,6 @@ function pressReach(state: StageState, index: number): { reach: number; poke: bo
   return { reach: base + (close - base) * Math.min(1, held / P.closeIn), poke: false };
 }
 
-const MARGIN = STAGING_CONFIG.margin;
-
 /**
  * A free attacker's place `base` moved across, away from the nearest outfield opponent when that
  * one stands within `shape.unmark.radius` of it: by `unmark.step * (1 - d / radius)` metres in y
@@ -518,7 +516,7 @@ export function unmarked(
   const dy = base[1] - nearest[1];
   const dir = Math.abs(dy) > 1e-6 ? Math.sign(dy) : base[1] <= CENTRE[1] ? 1 : -1;
   const y = base[1] + dir * SHAPE.unmark.step * (1 - nearestD / SHAPE.unmark.radius);
-  return [base[0], clamp(y, MARGIN, PITCH.width - MARGIN)];
+  return [base[0], clamp(y, STAGING_CONFIG.margin, PITCH.width - STAGING_CONFIG.margin)];
 }
 
 /** `target` moved radially out to the keep-out circle's edge when it lies inside it. */
@@ -533,8 +531,6 @@ const keptOut = (
   const dir = d > 1e-9 ? norm(off) : norm(sub(ownGoal(keep.team, period), keep.centre));
   return clampToPitch(add(keep.centre, scale(dir, keep.radius)), -2);
 };
-
-const BOARDS = STAGING_CONFIG.stage.boards;
 
 /**
  * A free outfield player's `target` moved out to `stage.separation` from every outfield teammate
@@ -574,7 +570,7 @@ export function separated(
  * target flips at a dead ball must not carry him on, so the outward part of his velocity ends there.
  */
 const atBoards = (body: Body): void => {
-  const [x, y] = clampToPitch(body.pos, -BOARDS);
+  const [x, y] = clampToPitch(body.pos, -STAGING_CONFIG.stage.boards);
   if (x !== body.pos[0]) body.vel = [0, body.vel[1]];
   if (y !== body.pos[1]) body.vel = [body.vel[0], 0];
   body.pos = [x, y];
@@ -629,14 +625,17 @@ export function step(state: StageState): void {
       onBody[i] = true;
       const target = typeof order.target === 'function' ? order.target() : order.target;
       const speed = speedAt(state, i, order.pace, order.speedCap, order.boost);
-      return { target: clampToPitch(target, -BOARDS), speed };
+      return { target: clampToPitch(target, -STAGING_CONFIG.stage.boards), speed };
     }
     const metres = ballMetres[i];
     const want = defaultTarget(state, i, snapshot, seens[i]);
     if (want.direct) {
       onBody[i] = true;
       const target = separated(state, i, want.target, snapshot);
-      return { target: clampToPitch(target, -BOARDS), speed: speedAt(state, i, want.pace) };
+      return {
+        target: clampToPitch(target, -STAGING_CONFIG.stage.boards),
+        speed: speedAt(state, i, want.pace),
+      };
     }
     const mind = state.minds[i];
     followPlace(
@@ -644,7 +643,10 @@ export function step(state: StageState): void {
       want.target,
       placeLag(spec, metres, turn, state.marks.has(i), lineDiscipline[spec.team]),
     );
-    const target = clampToPitch(separated(state, i, mind.place, snapshot), -BOARDS);
+    const target = clampToPitch(
+      separated(state, i, mind.place, snapshot),
+      -STAGING_CONFIG.stage.boards,
+    );
     const d = dist(snapshot[i], target);
     // He runs for a counter once he has seen it: before that his place is the old one.
     const run = turn?.counter && seens[i].team === state.team ? turn : undefined;

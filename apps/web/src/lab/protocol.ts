@@ -62,7 +62,7 @@ export type LabRequest =
       ovr: number;
     }
   | { type: 'summarize'; runId: number; samples: LabSample[]; sides: [LabSide, LabSide] }
-  /** 관전 (→LAB-9): match 0 of `seed` with its frames, under `overrides`. */
+  /** 관전 (→LAB-9): match 0 of `seed` with its script and staging inputs, under `overrides`. */
   | {
       type: 'watch';
       requestId: number;

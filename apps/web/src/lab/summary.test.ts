@@ -49,6 +49,22 @@ function sample(
 const row = (s: ReturnType<typeof summarizeRun>, id: string) => s.sides.find((r) => r.id === id)!;
 
 describe('lab run summary', () => {
+  it('keeps every target row and leaves record-free measurements absent rather than zero', () => {
+    const summary = summarizeRun([sample(0, true, [1, 0])]);
+    for (const id of [
+      'possessions',
+      'passesPerPossession',
+      'shotDistance',
+      'shotsFar',
+      'shotsOwnHalf',
+    ]) {
+      const row = summary.targets.find((r) => r.id === id);
+      expect(row, id).toBeDefined();
+      expect(row!.estimate, id).toBeUndefined();
+      expect(row!.pass, id).toBeUndefined();
+    }
+  });
+
   it('outcome counts', () => {
     const s = summarizeRun([
       sample(2, true, [0, 3]), // right wins
@@ -128,7 +144,7 @@ describe('lab run summary', () => {
     const s = summarizeRun([sample(0, true, [1, 1]), sample(1, false, [0, 2])]);
     // The synthetic samples carry no grid diagnostics.
     const possessions = s.targets.find((t) => t.id === 'possessions')!;
-    expect(possessions.status).toBe('missing');
+    expect(possessions.status).toBe('detailed-only');
     expect(possessions.pass).toBeUndefined();
     expect(possessions.estimate).toBeUndefined();
     expect(possessions.real).toEqual([85, 105]);

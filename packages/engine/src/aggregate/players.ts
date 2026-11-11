@@ -102,56 +102,69 @@ const makeRole = (r: RoleSpec): Role => ({
   action: r.action,
   wide: r.wide,
 });
-/** Every role, built once: weights are cached by role. */
-const PASS_ROLES = BANDS.map((band) =>
-  [false, true].map((long) =>
+/** Build the cached role tables from the current configuration, without a random draw. */
+function buildRoles() {
+  roleCount = 0;
+  const PASS_ROLES = BANDS.map((band) =>
+    [false, true].map((long) =>
+      makeRole({
+        table: byBand(AC.pass, band),
+        attribute: 'passing',
+        ...(long
+          ? { action: 'long' as const }
+          : band >= FINAL_THIRD_BAND
+            ? { action: 'key' as const }
+            : {}),
+      }),
+    ),
+  );
+  const CROSS_ROLES = BANDS.map((band) =>
     makeRole({
       table: byBand(AC.pass, band),
-      attribute: 'passing',
-      ...(long
-        ? { action: 'long' as const }
-        : band >= FINAL_THIRD_BAND
-          ? { action: 'key' as const }
-          : {}),
+      attribute: 'crossing',
+      action: 'cross',
+      wide: AC.wide,
     }),
-  ),
-);
-const CROSS_ROLES = BANDS.map((band) =>
-  makeRole({ table: byBand(AC.pass, band), attribute: 'crossing', action: 'cross', wide: AC.wide }),
-);
-const CARRY_ROLES = BANDS.map((band) =>
-  makeRole({ table: byBand(AC.pass, band), attribute: 'dribbling', action: 'run' }),
-);
-const TAKE_ON_ROLES = BANDS.map((band) =>
-  makeRole({
-    table: {
-      GK: 0,
-      DF: AC.takeOn.DF * AC.pass.DF[band]!,
-      MF: AC.takeOn.MF * AC.pass.MF[band]!,
-      FW: AC.takeOn.FW * AC.pass.FW[band]!,
-    },
-    attribute: 'dribbling',
-    action: 'dribble',
-  }),
-);
-const DEFEND_ROLES = BANDS.map((band) =>
-  (['tackling', 'positioning'] as const).map((attribute) =>
-    makeRole({ table: byBand(AC.defend, band), attribute, action: 'press' }),
-  ),
-);
-const ROLES = {
-  pass: (band: number, long: boolean) => PASS_ROLES[band]![long ? 1 : 0]!,
-  cross: (band: number) => CROSS_ROLES[band]!,
-  through: makeRole({ table: AC.through, attribute: 'vision', action: 'key' }),
-  carry: (band: number) => CARRY_ROLES[band]!,
-  takeOn: (band: number) => TAKE_ON_ROLES[band]!,
-  shot: makeRole({ table: AC.shot, attribute: 'finishing', action: 'box' }),
-  outsideShot: makeRole({ table: AC.outsideShot, attribute: 'finishing', action: 'long' }),
-  header: makeRole({ table: AC.header, attribute: 'heading', action: 'aerial' }),
-  offside: makeRole({ table: AC.offside, attribute: 'decisions', call: true, action: 'run' }),
-  defend: (band: number, attribute: 'tackling' | 'positioning') =>
-    DEFEND_ROLES[band]![attribute === 'tackling' ? 0 : 1]!,
-};
+  );
+  const CARRY_ROLES = BANDS.map((band) =>
+    makeRole({ table: byBand(AC.pass, band), attribute: 'dribbling', action: 'run' }),
+  );
+  const TAKE_ON_ROLES = BANDS.map((band) =>
+    makeRole({
+      table: {
+        GK: 0,
+        DF: AC.takeOn.DF * AC.pass.DF[band]!,
+        MF: AC.takeOn.MF * AC.pass.MF[band]!,
+        FW: AC.takeOn.FW * AC.pass.FW[band]!,
+      },
+      attribute: 'dribbling',
+      action: 'dribble',
+    }),
+  );
+  const DEFEND_ROLES = BANDS.map((band) =>
+    (['tackling', 'positioning'] as const).map((attribute) =>
+      makeRole({ table: byBand(AC.defend, band), attribute, action: 'press' }),
+    ),
+  );
+  return {
+    pass: (band: number, long: boolean) => PASS_ROLES[band]![long ? 1 : 0]!,
+    cross: (band: number) => CROSS_ROLES[band]!,
+    through: makeRole({ table: AC.through, attribute: 'vision', action: 'key' }),
+    carry: (band: number) => CARRY_ROLES[band]!,
+    takeOn: (band: number) => TAKE_ON_ROLES[band]!,
+    shot: makeRole({ table: AC.shot, attribute: 'finishing', action: 'box' }),
+    outsideShot: makeRole({ table: AC.outsideShot, attribute: 'finishing', action: 'long' }),
+    header: makeRole({ table: AC.header, attribute: 'heading', action: 'aerial' }),
+    offside: makeRole({ table: AC.offside, attribute: 'decisions', call: true, action: 'run' }),
+    defend: (band: number, attribute: 'tackling' | 'positioning') =>
+      DEFEND_ROLES[band]![attribute === 'tackling' ? 0 : 1]!,
+  };
+}
+let ROLES = buildRoles();
+/** Lab-only tuning refresh; ordinary play builds these once, as before. */
+export function refreshAttributionRoles() {
+  ROLES = buildRoles();
+}
 
 /** The shot a chance of this kind is taken with, by place and foot or head. */
 const shooterRole = (shot: AggregateShot) =>

@@ -1,67 +1,29 @@
 /**
- * The grid engine's numbers as the match lab tunes them (→LAB-3): every exported `*_CONFIG` object,
+ * The match model's numbers as the match lab tunes them (→LAB-3): every exported `*_CONFIG` object,
  * its finite-number leaves by path, overrides written in place and restored, and a probe of which
- * leaves a match reads. It reaches grid execution, so only the lab worker and tests import it —
+ * leaves a match reads. Only the lab workers and tests import it —
  * never the game's UI or worker state (ARCH-4, LAB constraints).
  */
-import { BOX_CONFIG } from './box';
-import { COORDINATION_CONFIG } from './coordination';
-import { DISORDER_CONFIG, FREEDOM_CONFIG, SWAP_CONFIG, TENDENCY_MOVEMENT_CONFIG } from './freedom';
-import { CARD_CONFIG } from './discipline';
-import { CHANGES_CONFIG } from './changes';
-import { LANE_CONFIG, SHADOW_CONFIG } from './lanes';
-import { GRID_BALL_CONFIG, GRID_MOVEMENT_CONFIG, IN_STRIDE_CONFIG } from './movement';
-import { ADDED_CONFIG } from './engine';
-import { STRENGTH_CONFIG } from './state';
-import { TENDENCY_CONFIG } from './tendencies';
-import { INTENTION_CONFIG } from './intentions';
-import { DUEL_CONFIG, SHOT_CONFIG } from './resolve';
-import { MATCH_MOTION_CONFIG, PLAYBACK_CONFIG } from './playback';
-import { DECISION_CONFIG } from './decide';
-import { TAG_CONFIG } from './tags';
-import { RESTART_CONFIG } from './restarts';
-import { SHAPE_CONFIG } from './shape';
+import {
+  AGGREGATE_CONFIG,
+  AGGREGATE_PARTICIPATION_CONFIG,
+  AGGREGATE_ATTRIBUTION_CONFIG,
+} from './aggregate/config';
+import { refreshAttributionRoles } from './aggregate/players';
+import { SCRIPT_CONFIG } from './script/config';
+import { STAGING_CONFIG } from './staging/config';
 
-/** Every grid configuration object by its export name. */
-export const GRID_TUNABLES: Readonly<Record<string, object>> = {
-  BOX_CONFIG,
-  COORDINATION_CONFIG,
-  FREEDOM_CONFIG,
-  DISORDER_CONFIG,
-  SWAP_CONFIG,
-  TENDENCY_MOVEMENT_CONFIG,
-  CARD_CONFIG,
-  CHANGES_CONFIG,
-  LANE_CONFIG,
-  SHADOW_CONFIG,
-  GRID_MOVEMENT_CONFIG,
-  GRID_BALL_CONFIG,
-  IN_STRIDE_CONFIG,
-  ADDED_CONFIG,
-  STRENGTH_CONFIG,
-  TENDENCY_CONFIG,
-  INTENTION_CONFIG,
-  DUEL_CONFIG,
-  SHOT_CONFIG,
-  PLAYBACK_CONFIG,
-  MATCH_MOTION_CONFIG,
-  DECISION_CONFIG,
-  TAG_CONFIG,
-  RESTART_CONFIG,
-  SHAPE_CONFIG,
+/** The result path, script writer and picture; no earlier detailed-engine numbers. */
+export const MATCH_TUNABLES: Readonly<Record<string, object>> = {
+  AGGREGATE_CONFIG,
+  AGGREGATE_PARTICIPATION_CONFIG,
+  AGGREGATE_ATTRIBUTION_CONFIG,
+  SCRIPT_CONFIG,
+  STAGING_CONFIG,
 };
 
-/**
- * Leaves copied into module constants when the grid loads (FULL_TURN, SECONDS_PER_MOTION,
- * MATCH_MOTION_CONFIG.ball): an override would not reach the copy, so the lab shows them read-only.
- * tunables.test.ts scans the grid sources so this list stays complete.
- */
-export const LOAD_TIME_LEAVES: readonly string[] = [
-  'GRID_MOVEMENT_CONFIG.step',
-  'GRID_MOVEMENT_CONFIG.turn',
-  'PLAYBACK_CONFIG.flight.maxLoft',
-  'PLAYBACK_CONFIG.motionSecondsPerMinute',
-];
+/** Execution reads live numbers; the lab refreshes the result path's copied role tables. */
+export const LOAD_TIME_LEAVES: readonly string[] = [];
 
 export interface TunableLeaf {
   path: string;
@@ -89,11 +51,12 @@ function slots(): Slot[] {
       else if (value && typeof value === 'object') walk(value as Holder, at);
     }
   };
-  for (const [name, config] of Object.entries(GRID_TUNABLES)) walk(config as Holder, name);
+  for (const [name, config] of Object.entries(MATCH_TUNABLES)) walk(config as Holder, name);
   return out;
 }
 
 let cache: { slots: Slot[]; byPath: Map<string, Slot>; defaults: Map<string, number> } | undefined;
+let quietReads = false;
 function registry() {
   if (!cache) {
     const all = slots();
@@ -116,10 +79,46 @@ export function tunableDefault(path: string): number | undefined {
   return registry().defaults.get(path);
 }
 
+/**
+ * Attribution and the writer read the shared nominal shape too. A lab picture edit must never
+ * change that factual input: keep the code's shape until record and script are both settled,
+ * then give the lab's staging values back to its separate presentation step.
+ */
+export function withDefaultStaging<T>(run: () => T): T {
+  const { slots: all, defaults } = registry();
+  const staging = all.filter((s) => s.path.startsWith('STAGING_CONFIG.'));
+  // Snapshot bookkeeping is not evidence that football or staging consumed a value.
+  const wasQuiet = quietReads;
+  let values: unknown[];
+  try {
+    quietReads = true;
+    values = staging.map((s) => s.holder[s.key]);
+  } finally {
+    quietReads = wasQuiet;
+  }
+  try {
+    for (const s of staging) s.holder[s.key] = defaults.get(s.path);
+    return run();
+  } finally {
+    staging.forEach((s, i) => {
+      s.holder[s.key] = values[i];
+    });
+  }
+}
+
 /** Every leaf back to its code value. */
 export function restoreDefaults() {
   const { slots: all, defaults } = registry();
-  for (const s of all) s.holder[s.key] = defaults.get(s.path);
+  let attributionChanged = false;
+  for (const s of all) {
+    if (
+      s.path.startsWith('AGGREGATE_ATTRIBUTION_CONFIG.') &&
+      s.holder[s.key] !== defaults.get(s.path)
+    )
+      attributionChanged = true;
+    s.holder[s.key] = defaults.get(s.path);
+  }
+  if (attributionChanged) refreshAttributionRoles();
 }
 
 export interface OverrideOutcome {
@@ -146,7 +145,21 @@ export function applyOverrides(overrides: Readonly<Record<string, unknown>>): Ov
       outcome.applied.push(path);
     }
   }
+  if (outcome.applied.some((p) => p.startsWith('AGGREGATE_ATTRIBUTION_CONFIG.')))
+    refreshAttributionRoles();
   return outcome;
+}
+
+/** One lab operation owns its numbers only until it returns or throws. */
+export function withOverrides<T>(overrides: Readonly<Record<string, unknown>>, run: () => T) {
+  try {
+    const outcome = applyOverrides(overrides);
+    return outcome.rejected.length
+      ? { ok: false as const, rejected: outcome.rejected }
+      : { ok: true as const, value: run() };
+  } finally {
+    restoreDefaults();
+  }
 }
 
 /**
@@ -162,7 +175,7 @@ export function probeReads(run: () => void): Set<string> {
       configurable: true,
       enumerable: true,
       get() {
-        reads.add(s.path);
+        if (!quietReads) reads.add(s.path);
         return values.get(s.path);
       },
       set(next) {

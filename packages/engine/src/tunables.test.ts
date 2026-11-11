@@ -2,32 +2,32 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { afterEach, describe, expect, it } from 'vitest';
-import { generateLabSide } from '../lab/sides';
-import { createLabWorld, playLabMatch } from '../lab/match';
-import { SHOT_CONFIG } from './resolve';
 import {
   applyOverrides,
-  GRID_TUNABLES,
+  MATCH_TUNABLES,
   LOAD_TIME_LEAVES,
   probeReads,
   restoreDefaults,
   tunableDefault,
   tunableLeaves,
+  withDefaultStaging,
 } from './tunables';
 
-const GRID = fileURLToPath(new URL('.', import.meta.url));
-const sources = readdirSync(GRID)
-  .filter((f) => f.endsWith('.ts') && !f.includes('.test') && !f.includes('.testkit'))
-  .map((f) => ({ f, text: readFileSync(GRID + f, 'utf8') }));
+const ROOT = fileURLToPath(new URL('.', import.meta.url));
+const sources = ['aggregate', 'script', 'staging'].flatMap((dir) =>
+  readdirSync(`${ROOT}/${dir}`)
+    .filter((f) => f.endsWith('.ts') && !f.includes('.test'))
+    .map((f) => ({ f, text: readFileSync(`${ROOT}/${dir}/${f}`, 'utf8') })),
+);
 
 afterEach(() => restoreDefaults());
 
-describe('grid tunables', () => {
-  it('every grid config is listed', () => {
-    const exported = sources.flatMap(({ text }) =>
-      [...text.matchAll(/export const (\w+_CONFIG)\b/g)].map((m) => m[1]!),
-    );
-    expect(Object.keys(GRID_TUNABLES).sort()).toEqual([...new Set(exported)].sort());
+describe('match tunables', () => {
+  it('every configuration export from the three families is listed', () => {
+    const exported = sources
+      .filter(({ f }) => f === 'config.ts')
+      .flatMap(({ text }) => [...text.matchAll(/export const (\w+_CONFIG)\b/g)].map((m) => m[1]!));
+    expect(Object.keys(MATCH_TUNABLES).sort()).toEqual([...new Set(exported)].sort());
     const leaves = tunableLeaves();
     expect(new Set(leaves.map((l) => l.path)).size).toBe(leaves.length);
     expect(leaves.length).toBeGreaterThan(100);
@@ -57,9 +57,7 @@ describe('grid tunables', () => {
   });
 
   it('apply/restore round trip', () => {
-    const path =
-      'SHOT_CONFIG.' +
-      Object.keys(SHOT_CONFIG).find((k) => typeof (SHOT_CONFIG as never)[k] === 'number');
+    const path = 'AGGREGATE_CONFIG.shots.scale';
     const base = tunableDefault(path)!;
     const outcome = applyOverrides({ [path]: base + 1 });
     expect(outcome).toEqual({ applied: [path], rejected: [] });
@@ -77,10 +75,9 @@ describe('grid tunables', () => {
     const outcome = applyOverrides({
       'NOPE_CONFIG.x': 1,
       [first!.path]: Number.NaN,
-      [LOAD_TIME_LEAVES[0]!]: 3,
     });
     expect(outcome.applied).toEqual([]);
-    expect(outcome.rejected.map((r) => r.reason)).toEqual(['unknown', 'not-a-number', 'load-time']);
+    expect(outcome.rejected.map((r) => r.reason)).toEqual(['unknown', 'not-a-number']);
     expect(tunableLeaves().every((l) => l.value === tunableDefault(l.path))).toBe(true);
   });
 
@@ -90,7 +87,7 @@ describe('grid tunables', () => {
     expect(reads).toEqual(new Set([a!.path]));
     expect(reads.has(b!.path)).toBe(false);
     const [name, ...rest] = a!.path.split('.');
-    let holder = GRID_TUNABLES[name!] as Record<string, unknown>;
+    let holder = MATCH_TUNABLES[name!] as Record<string, unknown>;
     for (const key of rest.slice(0, -1)) holder = holder[key] as Record<string, unknown>;
     const descriptor = Object.getOwnPropertyDescriptor(holder, rest.at(-1)!)!;
     expect(descriptor.writable).toBe(true);
@@ -98,35 +95,17 @@ describe('grid tunables', () => {
     expect(descriptor.value).toBe(a!.value);
   });
 
-  it('override changes play, restore reproduces it', { timeout: 120_000 }, () => {
-    const lab = createLabWorld();
-    const sides = [
-      generateLabSide({ side: 0, seed: 'tune', tactic: 'balanced', average: 72, spread: 4 }),
-      generateLabSide({ side: 1, seed: 'tune', tactic: 'counter', average: 72, spread: 4 }),
-    ] as const;
-    const digest = () => {
-      const r = playLabMatch(lab, sides, 'tune', 0).record;
-      return JSON.stringify([r.score, r.metrics]);
-    };
-    const before = digest();
-    let reads = new Set<string>();
-    const probed = ((reads = probeReads(() => void digest())), digest());
-    expect(probed).toBe(before);
-    expect(reads.size).toBeGreaterThan(20);
-    // Shots never taken: the most direct lever on what a match records.
-    const lever = [...reads].find(
-      (p) => p.startsWith('DECISION_CONFIG.') || p.startsWith('SHOT_CONFIG.'),
-    )!;
-    applyOverrides({ [lever]: tunableDefault(lever)! * 3 + 1 });
-    expect(digest()).not.toBe(before);
-    restoreDefaults();
-    expect(digest()).toBe(before);
+  it('does not mistake staging-override bookkeeping for actual consumption', () => {
+    const reads = probeReads(() =>
+      withDefaultStaging(() => void valueAt('AGGREGATE_CONFIG.shots.scale')),
+    );
+    expect(reads).toEqual(new Set(['AGGREGATE_CONFIG.shots.scale']));
   });
 });
 
 function valueAt(path: string): unknown {
   const [name, ...rest] = path.split('.');
-  let at: unknown = GRID_TUNABLES[name!];
+  let at: unknown = MATCH_TUNABLES[name!];
   for (const key of rest) at = (at as Record<string, unknown> | undefined)?.[key];
   return at;
 }

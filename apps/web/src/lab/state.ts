@@ -6,9 +6,15 @@ import { message as sourceMessage } from '../../../../packages/contracts/src/mes
  */
 import type { Tactic } from '../../../../packages/contracts/src/types';
 import type { Estimate, RunSummary } from './summary';
+import catalog from './tunables.json';
 
 export const LAB_STORAGE_KEY = 'haeram.lab.v1';
 const VERSION = 1;
+const CURRENT_PATHS = new Set(catalog.groups.flatMap((g) => g.leaves.map((l) => l.path)));
+
+/** Old grid overrides remain in kept evidence but cannot enter a new result-path run. */
+const currentOverrides = (values: Readonly<Record<string, number>>) =>
+  Object.fromEntries(Object.entries(values).filter(([path]) => CURRENT_PATHS.has(path)));
 
 /** The page's copy of the engine's `LAB_CONFIG` ranges (sides.ts is not a read leaf). */
 export const LAB_RANGES = {
@@ -143,7 +149,7 @@ export function parseLabState(text: string | null, fallback: LabState = defaultL
       : undefined;
   return {
     sides: [readSide(sides[0], fallback.sides[0]), readSide(sides[1], fallback.sides[1])],
-    overrides: readOverrides(raw.overrides),
+    overrides: currentOverrides(readOverrides(raw.overrides)),
     run: {
       count: RUN_COUNTS.includes(run.count as 1) ? (run.count as number) : fallback.run.count,
       runSeed: typeof run.runSeed === 'string' && run.runSeed ? run.runSeed : fallback.run.runSeed,

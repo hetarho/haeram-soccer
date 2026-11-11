@@ -1,16 +1,19 @@
 import { message as sourceMessage } from '../../../contracts/src/messages';
 /**
- * A match lab fixture (→LAB-4): two lab sides played by the detailed engine's latest release
- * revision, the left side at home in even matches, each match seeded from the run seed and its index.
+ * A match lab fixture (→LAB-4): generated sides settled by the result path, the left side at home in even matches, each match seeded from the run seed and its index.
  */
 import type { Club, Fixture, MatchPlayback, World } from '../../../contracts/src/types';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
-import { playGrid, type GridResult } from '../grid/engine';
-import { buildFrames } from '../grid/playback';
-import { buildGridSetup, type GridSetup } from '../grid/setup';
+import { playAggregate, aggregateRecord } from '../aggregate/engine';
+import type { AggregateAttributionTrace } from '../aggregate/types';
+import { prepareMatch } from '../match';
+import { matchDetail } from '../script/detail';
+import { ownMatchPlayback } from '../script/playback';
 import { appearanceForFixture } from '../match-appearance';
 import { LAB_CONFIG, type LabSide } from './sides';
 import { historyWorld } from '../history';
+import { withDefaultStaging } from '../tunables';
+
+const LAB_MODEL = 'scripted-aggregate-11' as const;
 
 export interface LabWorld {
   w: World;
@@ -28,8 +31,14 @@ export const LAB_HOST_NAMES = [
  * The one world a lab worker builds once and plays every lab match in: a world nobody owns a club
  * in (→WORLD-13), since the lab sides play for two of its clubs and no own club is needed.
  */
-export function createLabWorld(): LabWorld {
-  const w = historyWorld('lab-world');
+export function createLabWorld(w = historyWorld('lab-world')): LabWorld {
+  // The lab previews revision 11 before T838 activates it in careers.
+  w.matchModel = {
+    revision: LAB_MODEL,
+    activated: { year: LAB_CONFIG.year, day: 0, revision: 0 },
+    trackedFrom: { year: LAB_CONFIG.year, day: 0, round: 0 },
+    coverage: 'founding',
+  };
   const [a, b] = w.clubs.filter((c) => c.country === 'ENG' && c.tier === 0);
   const hosts: [Club, Club] = [a!, b!];
   hosts.forEach((club, side) => Object.assign(club, LAB_HOST_NAMES[side]));
@@ -53,49 +62,57 @@ export function labFixture(lab: LabWorld, runSeed: string, index: number): Fixtu
   };
 }
 
-/** Match `index`'s setup, the sides placed home and away as its fixture has them. */
+/** The generated rosters, without a manager, morale, cohesion or club-profile bend (LAB-2). */
 export function labSetup(
   lab: LabWorld,
   sides: readonly [LabSide, LabSide],
   runSeed: string,
   index: number,
-  observe: boolean,
-): GridSetup {
-  const [home, away] = leftAtHome(index) ? [sides[0], sides[1]] : [sides[1], sides[0]];
-  return buildGridSetup(lab.w, labFixture(lab, runSeed, index), {
-    observe,
-    recordPlayers: true,
-    model: MATCH_MODEL_REVISION,
-    lab: { rosters: [home.players, away.players], tactics: [home.tactic, away.tactic] },
+) {
+  const ordered = leftAtHome(index) ? sides : ([sides[1], sides[0]] as const);
+  const rosters = ordered.map((s) => [...s.players]) as [LabSide['players'], LabSide['players']];
+  const f = labFixture(lab, runSeed, index);
+  const prepared = prepareMatch(lab.w, f, undefined, LAB_MODEL, {
+    xis: [rosters[0].slice(0, 11), rosters[1].slice(0, 11)],
+    tactics: [ordered[0].tactic, ordered[1].tactic],
   });
+  return { f, prepared, rosters };
 }
 
-/** Plays match `index`; the result's sides are home and away as the fixture has them. */
+/** Every run is settled on the result path, with revision 11's place attribution on. */
 export function playLabMatch(
   lab: LabWorld,
   sides: readonly [LabSide, LabSide],
   runSeed: string,
   index: number,
-  observe = false,
-): GridResult {
-  return playGrid(labSetup(lab, sides, runSeed, index, observe));
+  trace?: AggregateAttributionTrace,
+) {
+  return withDefaultStaging(() => {
+    const { f, prepared, rosters } = labSetup(lab, sides, runSeed, index);
+    const match = playAggregate(lab.w, f, prepared, rosters, undefined, undefined, trace);
+    return { match, record: aggregateRecord(f, rosters, match, LAB_MODEL), rosters };
+  });
 }
 
-/**
- * 관전 (→LAB-9): match 0 of `seed`, the left side at home, with its frames and matchday squads as
- * the game's match view reads them, wearing the host identities' selected kits as the game's own
- * matches do (KIT-6/12); observing it changes no football it records (→MATCH-7).
- */
+/** Match 0, scripted and validated as an own match; the game's staging worker draws it later. */
 export function watchLabMatch(
   lab: LabWorld,
   sides: readonly [LabSide, LabSide],
   seed: string,
 ): MatchPlayback {
-  const setup = labSetup(lab, sides, seed, 0, true);
-  const result = playGrid(setup);
-  return {
-    record: { ...result.record, appearance: appearanceForFixture(lab.w, labFixture(lab, seed, 0)) },
-    frames: buildFrames(result, setup, lab.w.seed),
-    squads: setup.rosters,
-  };
+  return withDefaultStaging(() => {
+    const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
+    const { match, record, rosters } = playLabMatch(lab, sides, seed, 0, trace);
+    return ownMatchPlayback(
+      { ...record, appearance: appearanceForFixture(lab.w, labFixture(lab, seed, 0)) },
+      rosters,
+      () => matchDetail(match, rosters, trace),
+      {
+        managers: [lab.w.manager, lab.w.manager],
+        seed: `${lab.w.seed}:${record.id}`,
+        own: 0,
+        observe: true,
+      },
+    );
+  });
 }

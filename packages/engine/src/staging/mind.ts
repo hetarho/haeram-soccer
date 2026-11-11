@@ -27,8 +27,6 @@ export interface Mind {
 
 const OWN = STAGING_CONFIG.motion.own;
 const TURN = STAGING_CONFIG.motion.turn;
-const MARK_LAG = STAGING_CONFIG.shape.mark.lag;
-const TICK = STAGING_CONFIG.tick;
 
 /**
  * The point the shapes read: the dead-ball scene's point, a flight's landing point (on the line
@@ -81,13 +79,16 @@ export function placeLag(
   if (isLine(spec)) return OWN.lag.line * disciplineScale(lineDiscipline);
   let lag = OWN.lag.base + OWN.lag.perMetre * Math.min(ballMetres, OWN.farCap);
   if (turn) lag = turn.counter ? Math.min(lag, TURN.lag.counter) : Math.max(lag, TURN.lag.settled);
-  return (marking ? Math.min(lag, MARK_LAG) : lag) * disciplineScale(spec.discipline);
+  return (
+    (marking ? Math.min(lag, STAGING_CONFIG.shape.mark.lag) : lag) *
+    disciplineScale(spec.discipline)
+  );
 }
 
 /** Appends this tick's true inputs to `state.seen`, keeping `own.memory` seconds of them, newest last. */
 export function remember(state: StageState): void {
   state.seen.push({ ref: shapeRef(state), team: state.team, phase: state.phase });
-  const keep = Math.round(OWN.memory / TICK) + 1;
+  const keep = Math.round(OWN.memory / STAGING_CONFIG.tick) + 1;
   if (state.seen.length > keep) state.seen.splice(0, state.seen.length - keep);
 }
 
@@ -98,13 +99,13 @@ export function remember(state: StageState): void {
  */
 export function seenBy(state: StageState, index: number, ballMetres: number): Seen {
   const spec = state.fixture.players[index];
-  const back = Math.round(reactionDelay(spec, ballMetres) / TICK);
+  const back = Math.round(reactionDelay(spec, ballMetres) / STAGING_CONFIG.tick);
   const turn = turnOf(state);
   const extra =
     turn && !turn.counter && !isLine(spec)
       ? TURN.delayPerMetre * Math.min(ballMetres, OWN.farCap)
       : 0;
-  const backSide = Math.round((reactionDelay(spec, ballMetres) + extra) / TICK);
+  const backSide = Math.round((reactionDelay(spec, ballMetres) + extra) / STAGING_CONFIG.tick);
   const seen = state.seen;
   const at = seen[Math.max(0, seen.length - 1 - back)];
   if (backSide === back) return at;
@@ -114,7 +115,7 @@ export function seenBy(state: StageState, index: number, ballMetres: number): Se
 
 /** One tick of his place following `want` with time constant `lag` seconds; mutates `mind`. */
 export function followPlace(mind: Mind, want: Vec, lag: number): void {
-  const k = 1 - PORTABLE_MATH.exp(-TICK / lag);
+  const k = 1 - PORTABLE_MATH.exp(-STAGING_CONFIG.tick / lag);
   mind.place = [
     mind.place[0] + (want[0] - mind.place[0]) * k,
     mind.place[1] + (want[1] - mind.place[1]) * k,
