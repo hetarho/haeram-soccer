@@ -8,8 +8,12 @@ import {
   clockLabel,
   fitPitch,
   flashesAt,
+  hasMatchClock,
+  hudClock,
+  matchClockLabel,
   sampleAt,
   scoreAt,
+  speedsFor,
   toCanvas,
 } from './model.ts';
 
@@ -165,5 +169,40 @@ describe('viewer model', () => {
     expect(flashes[0].line).toBe(70);
     expect(flashes[0].age).toBeCloseTo(1);
     expect(flashes[1].age).toBeCloseTo(0.5);
+  });
+
+  it('the match clock is read from the frames', () => {
+    const clocked = (t: number, clock: number) => ({ ...frameOf(t), clock });
+    const playback = fakePlayback({
+      frames: [clocked(0, 2690), clocked(0.1, 2700), clocked(0.2, 2700), clocked(0.3, 5410)],
+      events: [event(0.15, 'whistle', { actor: -1 }), event(0.3, 'whistle', { actor: -1 })],
+    });
+    expect(hasMatchClock(playback)).toBe(true);
+    expect(speedsFor(playback)).toEqual(PROTO_CONFIG.viewer.matchSpeeds);
+    expect(sampleAt(playback, 0.05).clock).toBeCloseTo(2695);
+    expect(hudClock(playback, sampleAt(playback, 0))).toBe('44:50');
+    expect(hudClock(playback, sampleAt(playback, 0.1))).toBe('45+0:00');
+    expect(hudClock(playback, sampleAt(playback, 0.2))).toBe('45:00');
+    expect(hudClock(playback, sampleAt(playback, 0.3))).toBe('90+0:10');
+    expect(matchClockLabel(3725, false)).toBe('62:05');
+    // Frames without a clock keep the staged time and the ordinary speeds.
+    const plain = fakePlayback({ frames: still(1) });
+    expect(hasMatchClock(plain)).toBe(false);
+    expect(speedsFor(plain)).toEqual(PROTO_CONFIG.viewer.speeds);
+    expect(hudClock(plain, sampleAt(plain, 0.5))).toBe(clockLabel(0.5));
+  });
+
+  it('a thinned playback interpolates between stored frames', () => {
+    // Every second staged frame stored: `hz` halves, each stored frame keeps its own time.
+    const stride = 2;
+    const frames = [0, 0.2, 0.4].map((t, i) =>
+      frameOf(t, { ball: [10 + i * 4, 30, 0], players: { 5: [20 + i * 2, 20] } }),
+    );
+    const playback = { ...fakePlayback({ frames }), hz: hz / stride, stride };
+    const s = sampleAt(playback, 0.1);
+    expect(s.ball[0]).toBeCloseTo(12);
+    expect(s.players[5].x).toBeCloseTo(21);
+    expect(sampleAt(playback, 0.3).ball[0]).toBeCloseTo(16);
+    expect(sampleAt(playback, 0.4).ball[0]).toBeCloseTo(18);
   });
 });

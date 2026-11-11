@@ -330,3 +330,30 @@ export interface AggregatePlayerFacts {
   sides: [AggregateLine[], AggregateLine[]];
   shots: AggregateShotCredit[];
 }
+
+/** What `attributePlayerFacts` split, group by group, when a caller asks (transient, never persisted, →MATCH-26). Count arrays are indexed by the side's `lines`. */
+export interface AggregateAttributionTrace {
+  /** Per side, per index of its ledger's `moves`. */
+  moves: [AggregateTraceMove[], AggregateTraceMove[]];
+  /** Per side (the fouled side), per index of its ledger's `fouled`. */
+  fouls: [AggregateTraceFouls[], AggregateTraceFouls[]];
+}
+export interface AggregateTraceMove {
+  /** This side's lines. */
+  attempts: number[];
+  completed: number[];
+  broke: number[];
+  /** This side's lines caught offside on the group's offside passes. */
+  offside: number[];
+  /** The opponent's lines that won the ball: interceptions of a pass group, tackles of a carry or take-on group. */
+  won: number[];
+  /** The opponent's lines that recovered the group's loose balls in their high-turnover zone (empty elsewhere). */
+  recovered: number[];
+}
+export interface AggregateTraceFouls {
+  /** Booked fouls: the opponent's line that fouled, this side's line fouled, the index of the card in `participation.incidents`. */
+  booked: { fouler: number; fouled: number; incident: number }[];
+  /** The other fouls of the row: this side's lines fouled and the opponent's lines that fouled. */
+  fouled: number[];
+  fouler: number[];
+}

@@ -24,8 +24,12 @@ export interface Sample {
   phase: Phase;
   live: boolean;
   beat: number;
+  /** The record's match clock (seconds), interpolated, when the frames carry one. */
+  clock?: number;
 }
 
+// A thinned playback (`stride` > 1) stores every stride-th staged frame and carries `hz / stride`,
+// so frame `i` is still at `i / hz` and the same interpolation runs between stored frames.
 const frameIndex = (playback: Playback, t: number): { i: number; u: number } => {
   const last = playback.frames.length - 1;
   const at = clamp(t, 0, playback.duration) * playback.hz;
@@ -72,6 +76,7 @@ export function sampleAt(playback: Playback, t: number): Sample {
     phase: a.phase,
     live: a.live,
     beat: a.beat,
+    ...(a.clock === undefined ? {} : { clock: mix(a.clock, b.clock ?? a.clock) }),
   };
 }
 
@@ -80,6 +85,33 @@ export function clockLabel(t: number): string {
   const s = Math.floor(Math.max(0, t));
   const two = (n: number): string => String(n).padStart(2, '0');
   return `${two(Math.floor(s / 60))}:${two(s % 60)}`;
+}
+
+const HALF = 2700;
+const FULL = 5400;
+
+/** `mm:ss` of match time, as `45+m:ss` past the first half's end and `90+m:ss` past the second's. */
+export function matchClockLabel(clock: number, firstHalf: boolean): string {
+  if (firstHalf && clock >= HALF) return `45+${clockLabel(clock - HALF).replace(/^0/, '')}`;
+  if (!firstHalf && clock >= FULL) return `90+${clockLabel(clock - FULL).replace(/^0/, '')}`;
+  return clockLabel(clock);
+}
+
+/** Whether the playback's frames carry the record's match clock (a fitted match). */
+export const hasMatchClock = (playback: Playback): boolean =>
+  playback.frames[0]?.clock !== undefined;
+
+/** The speeds the page offers: `viewer.matchSpeeds` for a fitted match, else `viewer.speeds`. */
+export const speedsFor = (playback: Playback): readonly number[] =>
+  hasMatchClock(playback) ? viewer.matchSpeeds : viewer.speeds;
+
+/** The HUD's clock: the record's match clock when the frames carry one, else the staged time. */
+export function hudClock(playback: Playback, sample: Sample): string {
+  if (sample.clock === undefined) return clockLabel(sample.t);
+  // The half-time whistle (the first of two) splits the halves; without it the clock alone does.
+  const whistles = playback.events.filter((e) => e.kind === 'whistle');
+  const firstHalf = whistles.length > 1 ? sample.t <= whistles[0].t : sample.clock < HALF;
+  return matchClockLabel(sample.clock, firstHalf);
 }
 
 export interface View {

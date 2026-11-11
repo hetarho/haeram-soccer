@@ -202,6 +202,12 @@ for (const observation of ['interleaved', 'eve-first'] as const)
   test(`keeps league views and nodes across silent progression and updates real scorers (${observation})`, async ({
     page,
   }) => {
+    // A takeover, a run to the first match eve, its match day and a stop: 18–24 s on five local
+    // Chromium workers, 29.6/30.9 s in fv11's gate on 5415c770, where every step was on time and
+    // the budget ran out in the final return to the clubhouse — the takeover took 11.7 s, and two
+    // bounded settles 2 s each behind the running calendar's and the first win's celebration's
+    // motion.
+    test.slow();
     await proveLiveLeague(page, observation);
   });
 

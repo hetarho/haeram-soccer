@@ -11,8 +11,9 @@ owner can watch whether staging a script reads as football. Nothing here is prod
   built-ins, `vitest` (tests) and `esbuild` (the viewer's `build.ts` only). Nothing is imported
   from `packages/`, `apps/` or `tests/`, and no task of the chain edits a production file.
 - Determinism (ARCH-5): the only randomness is `createRng` in `core/rng.ts`. No `Math.random`,
-  `Date.now` or `performance.now` outside `viewer/`. Plain `Math.*` functions are fine here; the
-  portable-math lint covers `packages/` only.
+  `Date.now` or `performance.now` outside `viewer/`, except `check/report.ts` timing its own run
+  (`fit.writeMs`, `fit.stageMs`): a CLI outside `stage/` whose two numbers are printed, never fed
+  back. Plain `Math.*` functions are fine here; the portable-math lint covers `packages/` only.
 - No authored display prose anywhere (ARCH-32 stays untouched): the viewer and the CLIs print only
   digits, symbols and identifiers that come from data (`beat.move`, `beat.kind`, role ids, metric
   ids). No Korean literal in any file. Prose, if ever wanted, must become message IDs in the
@@ -38,6 +39,7 @@ owner can watch whether staging a script reads as football. Nothing here is prod
 - `stage/` the staging: bounded movement of players and ball that performs the script as frames.
 - `check/` metrics: machine-checked staging invariants.
 - `viewer/` and `build.ts`: a single HTML page that plays the staged minutes.
+- `fixtures/settled/`: ten settled production matches (`## settled matches`).
 
 ## commands
 
@@ -76,6 +78,56 @@ owner can watch whether staging a script reads as football. Nothing here is prod
 - `pnpm exec tsx scripts/match-proto/build.ts --seed demo --serve [port]` does the same, then serves
   the page at `http://localhost:<port>/` (default `PROTO_CONFIG.viewer.port`, 4310) and prints
   `url=`; stop it with Ctrl-C. Opening `index.html` directly works as well.
+
+## settled matches
+
+`fixtures/settled/s01.json` … `s10.json` are ten production matches settled by the aggregate path
+(the core sample's top-tier pairs, each side on 4-3-3 possession or 4-4-2 counter, in the latest
+year without substitutes), the material a script is fitted to (T820). Each lists every attempt
+with who made it and how it ended, every shot, every foul and card, and the record's team and
+player rows; identifiers and numbers only. `core/settled.ts` owns the format: `Settled` and its
+row layouts (`EV`, `SH`, `FO`, `CA` name the columns; the code lists `EVENT_KINDS`,
+`SET_PIECES`, `EVENT_RESULTS`, `SHOT_KINDS`, `SHOT_OUTCOMES`, `TEAM_ROW`, `PLAYER_ROW`),
+`readSettled` validates a file and `fixtureOf` gives its 22 players as a `Fixture`. They are
+written by `pnpm exec tsx scripts/export-settled.ts --out scripts/match-proto/fixtures/settled`
+(`--count`, `--year`), whose header states how a move group becomes attempts; the same run gives
+the same bytes.
+
+## fitted scripts
+
+The record is the fact: a fitted script performs every settled attempt, shot and foul exactly
+once, with its actor, cells, kind and result. The writer chooses only the order, the receivers,
+the points inside the cells, the clock and the connective tissue between events. Connective tissue
+is only what the record does not count: a carry that is not one of the record's (`link`), a heavy
+touch that loses the ball (`miscontrol`) and a restart's delivery when no recorded pass is left to
+make it (`restart`); a connective pass in open play does not exist.
+
+- `fit/touches.ts` keeps the minutes the record states (`dealFixed`: shots, their sources and
+  booked fouls; every other row is `FLOATING`) and gathers players' spells on the ball
+  (`buildTouches`; a floating carry joins the release of his whose start it meets). `dealMinutes`,
+  T820's shuffle of the rest over the ninety minutes, is kept for its tests. `fit/write.ts`
+  (`writeFitted`) plays them greedily into a `Script` marked `bound` (T822): the next touch is the
+  cheapest of the whole match's (`touchCost`: metres to where it starts, a pull toward the touches
+  fixed to the minute, a side ahead of the other or spending its possession-ending rows faster
+  pushed to end its possession), each minute takes its even share of all touches, and a side whose
+  possession-ending rows run ahead of the other side's loses the ball by a heavy touch, so the
+  turnovers the record's two sides cannot alternate are spread over the match;
+  `fit/validate.ts` (`validateFitted`) checks every row is played
+  once as recorded and the ball is handed on from where it was left; `fit/count.ts` counts the
+  record's rows back from the beats alone (`countScript`, `compareRecord`) and prices the joins
+  (`fitCost`). `fit/cells.ts` holds the cell geometry and dead-ball spots both sides share.
+- `pnpm exec tsx scripts/match-proto/fit/print.ts --match s01 [--beats <n>] [--seed <s>]` prints
+  the match id, `mismatches=` and `problems=` (both 0 for a valid script), the cost line and the
+  first beats; `--match all` prints the first three lines of every settled match.
+- The cost: `beats` and `counted` (beats that perform a row), `links` and `linkMetres` (carries
+  that take the ball to where the next row starts), `miscontrols` (balls lost without an event),
+  `connectiveRestarts` and `countedRestarts` (deliveries without and with a recorded pass),
+  `orphanSetPieces` (recorded corner or free-kick deliveries played from open play),
+  `orphanFreeKickShots` (direct free kicks without a foul to take them from), `movedCarries`
+  (floating carries given a minute by joining a release fixed to one) and `maxOverrun` (the most
+  seconds a minute's beats needed beyond sixty; such a minute is pressed into its sixty seconds so
+  every beat keeps its record minute).
+- Yellow cards are taken from the record's card rows: no beat carries a booking.
 
 ## viewer
 

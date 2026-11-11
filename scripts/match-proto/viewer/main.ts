@@ -5,7 +5,7 @@ import { PITCH } from '../core/pitch.ts';
 import type { Playback } from '../core/types.ts';
 import { clamp } from '../core/vec.ts';
 import { drawScene } from './draw.ts';
-import { fitPitch, sampleAt, trailAt, type View } from './model.ts';
+import { fitPitch, sampleAt, speedsFor, trailAt, type View } from './model.ts';
 
 const { viewer } = PROTO_CONFIG;
 type ToggleId = 'offsideLines' | 'roles' | 'trail';
@@ -39,10 +39,11 @@ export interface Viewer {
 export function createViewer(root: HTMLElement, playback: Playback, deps?: ViewerDeps): Viewer {
   const doc = root.ownerDocument;
   const win = doc.defaultView ?? window;
+  const speeds = speedsFor(playback);
   const state: ViewerState = {
     t: 0,
     playing: true,
-    speed: viewer.speeds[0],
+    speed: speeds[0],
     offsideLines: false,
     roles: false,
     trail: false,
@@ -73,7 +74,7 @@ export function createViewer(root: HTMLElement, playback: Playback, deps?: Viewe
     return b;
   };
   const play = button(PAUSE, 'data-act', 'play');
-  const speedButtons = viewer.speeds.map((s) => button(`${s}×`, 'data-speed', String(s)));
+  const speedButtons = speeds.map((s) => button(`${s}×`, 'data-speed', String(s)));
   const seek = doc.createElement('input');
   seek.type = 'range';
   seek.setAttribute('data-act', 'seek');
@@ -86,7 +87,7 @@ export function createViewer(root: HTMLElement, playback: Playback, deps?: Viewe
 
   const syncControls = (): void => {
     play.textContent = state.playing ? PAUSE : PLAY;
-    speedButtons.forEach((b, k) => b.classList.toggle('on', viewer.speeds[k] === state.speed));
+    speedButtons.forEach((b, k) => b.classList.toggle('on', speeds[k] === state.speed));
     toggleButtons.forEach((b, k) => b.classList.toggle('on', state[TOGGLES[k][0]]));
     seek.value = String(state.t);
   };
@@ -130,7 +131,7 @@ export function createViewer(root: HTMLElement, playback: Playback, deps?: Viewe
   });
   speedButtons.forEach((b, k) =>
     b.addEventListener('click', () => {
-      state.speed = viewer.speeds[k];
+      state.speed = speeds[k];
       render();
     }),
   );
@@ -151,8 +152,7 @@ export function createViewer(root: HTMLElement, playback: Playback, deps?: Viewe
     if (e.key === ' ') togglePlay();
     else if (e.key === 'ArrowLeft') seekTo(state.t - viewer.seekStep);
     else if (e.key === 'ArrowRight') seekTo(state.t + viewer.seekStep);
-    else if (speedKey >= 0 && speedKey < viewer.speeds.length)
-      state.speed = viewer.speeds[speedKey];
+    else if (speedKey >= 0 && speedKey < speeds.length) state.speed = speeds[speedKey];
     else if (toggle) flip(toggle[0]);
     else return;
     e.preventDefault();

@@ -72,6 +72,13 @@ export function resolveCut(
   const rangeOf = (i: number): readonly [number, number] => range ?? cutRange(state, i);
   const own = planCut(state, scripted, from, to, flight, rangeOf(scripted));
   if (own.margin <= STAGE.cutSlack) return { plan: own, flight, recast: false, stretch: false };
+  // A bound script's scripted man is the record's winner: the lunge, then a slower ball, for him alone.
+  if (state.bound) {
+    const lunge = planCut(state, scripted, from, to, flight, rangeOf(scripted), STAGE.lunge);
+    if (lunge.margin <= STAGE.cutSlack)
+      return { plan: lunge, flight, recast: false, stretch: true };
+    return { ...slowed(lunge, from, to, flight), recast: false, stretch: true };
+  }
   const team = state.fixture.players[scripted].team;
   const keeperToo = isKeeper(state, scripted);
   const mates = state.fixture.teams[team].players
@@ -87,17 +94,22 @@ export function resolveCut(
   const plan = best(lunging) ?? own;
   const recast = plan.opponent !== scripted;
   if (plan.margin <= STAGE.cutSlack) return { plan, flight, recast, stretch: true };
+  return { ...slowed(plan, from, to, flight), recast, stretch: true };
+}
+
+/** `plan` with the ball slowed (never below `ball.minSpeed`) so its man gets there, or as near as he can. */
+function slowed(
+  plan: CutPlan,
+  from: Vec,
+  to: Vec,
+  flight: number,
+): { plan: CutPlan; flight: number } {
   const slowest = dist(from, to) / BALL.minSpeed;
   const wanted = plan.param > 0 ? (plan.time + plan.margin - STAGE.cutSlack) / plan.param : flight;
   const longer = Math.max(flight, Math.min(slowest, wanted));
   const arrival = plan.time + plan.margin;
   const time = plan.param * longer;
-  return {
-    plan: { ...plan, time, margin: arrival - time },
-    flight: longer,
-    recast,
-    stretch: true,
-  };
+  return { plan: { ...plan, time, margin: arrival - time }, flight: longer };
 }
 
 /** The nearest outfield opponent of player `index` now. */

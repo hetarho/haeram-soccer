@@ -105,6 +105,10 @@
 //             much larger it grows, the stillness below which a player keeps his last facing (m)
 //             and how many frames back that facing is looked for, the longest frame step (s), the
 //             pitch markings (m) and the colours
+//   fit:      the fitted script (fit/): the least and most seconds a touch holds the ball (a
+//             minute's time is shared out between its beats within them), the nominal seconds a
+//             restart takes off its minute by kind, how many minutes a carry is moved at most to
+//             find a release of its player, and how far a point inside a cell stays from its edges
 export const PROTO_CONFIG = {
   tick: 0.1,
   hz: 10,
@@ -239,6 +243,8 @@ export const PROTO_CONFIG = {
     tackleRange: 1.2,
     tackleGrace: 2.5,
     tackleExtra: 2,
+    /** A heavy touch (`carry:loose`) leaves the ball loose this far toward the named opponent (m). */
+    heavyTouch: 3,
     foulFreeze: 1,
     takeOn: { side: 2, speed: 4.5, beatenSpeed: 2, beatenTime: 0.9 },
     pressVisible: 3,
@@ -611,6 +617,33 @@ export const PROTO_CONFIG = {
     /** An attacker without the ball at attack x `fromX` or beyond has a defender within `distance`, in at least `share` of the samples. */
     mark: { fromX: 65, distance: 4, share: 0.5 },
   },
+  // The fitted script (fit/): a script written from a settled result.
+  fit: {
+    /** Seconds a touch takes at least and at most; a minute's time is shared out between its beats within these. */
+    hold: [0.4, 5],
+    /** Nominal seconds a restart takes off the minute, by kind. */
+    dead: { kickOff: 40, throwIn: 12, goalKick: 20, corner: 25, freeKick: 20 },
+    /** A carry is moved at most this many minutes to find a release of its player. */
+    carryWindow: 3,
+    /** A floating carry joins its player's release only when it ends within this many metres (cell centre to cell centre) of where that touch starts; else it is a touch of its own (T822). Measured: 0 (exact cells only) cost s01-s05 1.4% fewer link metres but one more lost contest; every carry joins. */
+    carryJoin: 1000,
+    /** A point inside a cell stays this far from the cell's edges. */
+    cellMargin: 1.5,
+    /** Metres a touch fixed to the minute being written is preferred by over a floating one (T822); `fixedPush` once the minute's share of touches is played, when only its fixed touches keep it open (and a possession-ending touch of the other side as much). */
+    fixedPull: 20,
+    fixedPush: 300,
+    /** Metres added to `fixedPull` as the minute's share of touches fills, all of it at the share. 0: measured, 80 took s01-s05's busiest minute from 30-36 to 26-33 beats (s10 84 -> 34) but cost 0.8% more link metres. */
+    fixedRamp: 0,
+    /** Metres a possession-ending touch is preferred by when its side is `paceSlack` (a share of its touches) ahead of the other side; as much dearer when behind (T822). */
+    paceBias: 15,
+    paceSlack: 0.02,
+    /** A side whose share of its possession-ending rows played is this far ahead of the other side's loses the ball by a heavy touch instead of spending one more (T822). Measured: 0.015 and 0.05 both cost s01-s05 more link metres. */
+    endsSlack: 0.03,
+    /** Metres a touch releasing a flagged corner or free-kick delivery costs in open play: it waits for its restart (T822). 0: measured, 30 took s03-s05's orphan set pieces 36 -> 25 but cost s01-s05 3% more link metres. */
+    setPieceWait: 0,
+    /** Metres of cost per metre a pass's receiver stands (his `nominalSpot`) from where it lands (T822). 0: measured, 0.05 took receivers 19 m -> 17 m from their places but cost s01-s05 4% more link metres, 0.5 13%. */
+    placeWeight: 0,
+  },
   // The viewer (viewer/, build.ts): presentation only, never read by the script or the staging.
   viewer: {
     pad: 3,
@@ -621,6 +654,9 @@ export const PROTO_CONFIG = {
     flashSeconds: 1.8,
     trailSeconds: 1.5,
     speeds: [1, 2, 5],
+    /** A fitted match's page: every `matchStride`-th staged frame is stored, offered at `matchSpeeds`. */
+    matchStride: 2,
+    matchSpeeds: [1, 5, 20],
     seekStep: 5,
     port: 4310,
     maxWidth: 1180,

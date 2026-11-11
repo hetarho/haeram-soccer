@@ -1,0 +1,276 @@
+{
+  "match": "s01",
+  "fit": [
+    {
+      "id": "fit.exact",
+      "value": 0,
+      "pass": true
+    },
+    {
+      "id": "fit.performed",
+      "value": 0,
+      "pass": true
+    },
+    {
+      "id": "fit.recast",
+      "value": 0,
+      "pass": true
+    },
+    {
+      "id": "fit.stretch",
+      "value": 0.068,
+      "detail": "13/190"
+    },
+    {
+      "id": "fit.late",
+      "value": 7
+    },
+    {
+      "id": "fit.links",
+      "value": 368
+    },
+    {
+      "id": "fit.linkMetres",
+      "value": 5080
+    },
+    {
+      "id": "fit.miscontrols",
+      "value": 20
+    },
+    {
+      "id": "fit.connectiveRestarts",
+      "value": 10
+    },
+    {
+      "id": "fit.orphans",
+      "value": 11,
+      "detail": "setPieces=11 freeKickShots=0"
+    },
+    {
+      "id": "fit.stagedSeconds",
+      "value": 6407
+    },
+    {
+      "id": "fit.clockRatio",
+      "value": 1.08
+    },
+    {
+      "id": "fit.writeMs",
+      "value": 248
+    },
+    {
+      "id": "fit.stageMs",
+      "value": 7921
+    }
+  ],
+  "metrics": [
+    {
+      "id": "duration",
+      "value": 6407,
+      "limit": ">= 599.5",
+      "pass": true
+    },
+    {
+      "id": "kinematics.maxStep",
+      "value": 10.316,
+      "limit": "<= 11",
+      "pass": true,
+      "detail": "frame=53560 player=H5"
+    },
+    {
+      "id": "kinematics.outside",
+      "value": 0,
+      "limit": "= 0",
+      "pass": true
+    },
+    {
+      "id": "ball.maxSpeed",
+      "value": 0,
+      "limit": "= 0",
+      "pass": true,
+      "detail": "max=28.102"
+    },
+    {
+      "id": "ball.ownerDistance",
+      "value": 1,
+      "limit": ">= 0.99",
+      "pass": true,
+      "detail": "n=46927/46927"
+    },
+    {
+      "id": "events.reception",
+      "value": 1,
+      "limit": ">= 0.98",
+      "pass": true,
+      "detail": "n=772/772"
+    },
+    {
+      "id": "events.contest",
+      "value": 0.915,
+      "limit": ">= 0.95",
+      "pass": false,
+      "detail": "n=54/59"
+    },
+    {
+      "id": "events.recastRate",
+      "value": 0,
+      "limit": "<= 0.25",
+      "pass": true,
+      "detail": "n=0/74"
+    },
+    {
+      "id": "events.stretchRate",
+      "value": 0.176,
+      "limit": "<= 0.1",
+      "pass": false,
+      "detail": "n=13/74"
+    },
+    {
+      "id": "offside.consistency",
+      "value": 1,
+      "limit": "= 0",
+      "pass": false,
+      "detail": "kicks=850 onsideCalls=1 missedCalls=0"
+    },
+    {
+      "id": "shape.swarm",
+      "value": 0.065,
+      "limit": "<= 0.02",
+      "pass": false,
+      "detail": "n=3207/49509"
+    },
+    {
+      "id": "shape.teamLength.H",
+      "value": 29.97,
+      "limit": "22..52",
+      "pass": true,
+      "detail": "frames=56810"
+    },
+    {
+      "id": "shape.teamLength.A",
+      "value": 29.44,
+      "limit": "22..52",
+      "pass": true,
+      "detail": "frames=56810"
+    },
+    {
+      "id": "shape.spacing",
+      "value": 0.079,
+      "limit": "<= 0.03",
+      "pass": false,
+      "detail": "n=4337/55005"
+    },
+    {
+      "id": "role.invertedFullBack.inside",
+      "value": 14.827,
+      "limit": ">= 8",
+      "pass": true,
+      "detail": "frames=21877"
+    },
+    {
+      "id": "role.invertedFullBack.pivot",
+      "value": 2.896,
+      "limit": "<= 8",
+      "pass": true,
+      "detail": "frames=21877"
+    },
+    {
+      "id": "role.falseNine.drop",
+      "value": 5.221,
+      "limit": ">= 5",
+      "pass": true,
+      "detail": "frames=15843"
+    },
+    {
+      "id": "script.backPassReason",
+      "value": 32,
+      "limit": "= 0",
+      "pass": false,
+      "detail": "backward=32"
+    },
+    {
+      "id": "stage.pressVisible",
+      "value": 1,
+      "limit": ">= 0.9",
+      "pass": true,
+      "detail": "n=0/0 empty"
+    },
+    {
+      "id": "score.consistent",
+      "value": 2,
+      "limit": "= score",
+      "pass": true,
+      "detail": "score=1-1 last=1-1 goalBeats=2/2"
+    },
+    {
+      "id": "events.shortKick",
+      "value": 0.036,
+      "limit": "<= 0.05",
+      "pass": true,
+      "detail": "n=28/783"
+    },
+    {
+      "id": "shape.huddle",
+      "value": 1.833,
+      "limit": "<= 0.6",
+      "pass": false,
+      "detail": "n=168/1582 minutes=91.675"
+    },
+    {
+      "id": "shape.huddleLongest",
+      "value": 10.7,
+      "limit": "<= 4",
+      "pass": false,
+      "detail": "pair=H4-H8 t=1323.5"
+    },
+    {
+      "id": "motion.restarts",
+      "value": 4.966,
+      "limit": "<= 4",
+      "pass": false,
+      "detail": "starts=9106"
+    },
+    {
+      "id": "motion.startSync",
+      "value": 0.105,
+      "limit": "<= 0.2",
+      "pass": true,
+      "detail": "n=957/9106"
+    },
+    {
+      "id": "motion.speedSync",
+      "value": 0.178,
+      "limit": "<= 0.3",
+      "pass": true,
+      "detail": "bands=0.105/0.696/0.111/0.082/0.005"
+    },
+    {
+      "id": "turn.reverse",
+      "value": 0.307,
+      "limit": "<= 0.3",
+      "pass": false,
+      "detail": "n=283/921 turnovers=84"
+    },
+    {
+      "id": "turn.run",
+      "value": 0.275,
+      "limit": "<= 0.4",
+      "pass": true,
+      "detail": "turnovers=84"
+    },
+    {
+      "id": "turn.counterRun",
+      "value": 1,
+      "limit": ">= 0.5",
+      "pass": true,
+      "detail": "turnovers=0 empty"
+    },
+    {
+      "id": "mark.near",
+      "value": 0.333,
+      "limit": ">= 0.5",
+      "pass": false,
+      "detail": "n=10923/32754"
+    }
+  ]
+}

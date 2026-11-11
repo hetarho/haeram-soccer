@@ -1,6 +1,8 @@
 // CLI: stages a playback and writes one self-contained page that plays it; identifiers and numbers only.
 //   pnpm exec tsx scripts/match-proto/build.ts [--seed <s>] [--no-showcase] [--duration <seconds>]
-//     [--out <dir>] [--serve [port]]
+//     [--match <id>] [--out <dir>] [--serve [port]]
+// `--match <id>` stages the fitted script of `fixtures/settled/<id>.json` in full and stores every
+// `viewer.matchStride`-th frame (`thinPlayback`); the metrics read the full-rate playback.
 // Writes `<out>/index.html` (playback and viewer bundle inline) and `<out>/playback.json` (default
 // out `.tmp/match-proto` under the repository root) and prints `html=`, `json=`, `bytes=`, `seed=`
 // and `passed=<n>/<m>` of the staging metrics. `--serve` then answers every GET with the page.
@@ -11,8 +13,14 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { build } from 'esbuild';
 import { computeMetrics } from './check/metrics.ts';
+import { loadMatch } from './check/report.ts';
 import { PROTO_CONFIG } from './core/config.ts';
+import type { Playback } from './core/types.ts';
+import { writeFitted } from './fit/write.ts';
+import { performScript } from './stage/perform.ts';
 import { producePlayback } from './stage/pipeline.ts';
+
+const { viewer } = PROTO_CONFIG;
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '../..');
@@ -41,6 +49,20 @@ export function renderHtml(playbackJson: string, bundleJs: string): string {
   );
 }
 
+/** `playback` storing every `stride`-th frame (the last one kept): events keep their times, `hz` becomes `hz / stride`. */
+export function thinPlayback(playback: Playback, stride: number): Playback {
+  if (stride <= 1) return playback;
+  const frames = playback.frames.filter((_, i) => i % stride === 0);
+  const last = frames[frames.length - 1];
+  return {
+    ...playback,
+    hz: playback.hz / stride,
+    duration: last === undefined ? 0 : last.t,
+    frames,
+    stride,
+  };
+}
+
 /** The viewer as one minified IIFE (esbuild, nothing written to disk). */
 export async function bundleViewer(): Promise<string> {
   const result = await build({
@@ -66,6 +88,7 @@ async function main(): Promise<void> {
     args,
     options: {
       seed: { type: 'string', default: 'demo' },
+      match: { type: 'string' },
       'no-showcase': { type: 'boolean', default: false },
       duration: { type: 'string' },
       out: { type: 'string', default: DEFAULT_OUT },
@@ -73,12 +96,24 @@ async function main(): Promise<void> {
     },
   });
   const duration = values.duration === undefined ? undefined : Number(values.duration);
-  const { playback, info } = producePlayback(values.seed, {
-    showcase: !values['no-showcase'],
-    ...(duration === undefined ? {} : { duration }),
-  });
+  let playback: Playback;
+  let seed: string;
+  if (values.match !== undefined) {
+    // A settled match's fitted script staged in full; the metrics read the full-rate playback.
+    const script = writeFitted(loadMatch(values.match), 'fit');
+    playback = performScript(script);
+    seed = script.seed;
+  } else {
+    const produced = producePlayback(values.seed, {
+      showcase: !values['no-showcase'],
+      ...(duration === undefined ? {} : { duration }),
+    });
+    playback = produced.playback;
+    seed = produced.info.seed;
+  }
   const metrics = computeMetrics(playback);
-  const json = JSON.stringify(playback);
+  const stored = values.match !== undefined ? thinPlayback(playback, viewer.matchStride) : playback;
+  const json = JSON.stringify(stored);
   const html = renderHtml(json, await bundleViewer());
   const out = resolve(ROOT, values.out);
   mkdirSync(out, { recursive: true });
@@ -90,7 +125,7 @@ async function main(): Promise<void> {
     `html=${htmlPath}`,
     `json=${jsonPath}`,
     `bytes=${Buffer.byteLength(html)}`,
-    `seed=${info.seed}`,
+    `seed=${seed}`,
     `passed=${metrics.filter((m) => m.pass).length}/${metrics.length}`,
   ];
   process.stdout.write(`${lines.join('\n')}\n`);
