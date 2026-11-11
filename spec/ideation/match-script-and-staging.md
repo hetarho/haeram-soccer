@@ -15,6 +15,9 @@
   - The pass network the owner wants (two reference pictures, 261111): one circle per player at his average position, its size his passes, lines between pairs whose width is the passes between them, arrows for direction. It needs three kinds of numbers: an average position per player, passes per player, passes per pair.
   - A watched match's script takes those numbers as its material (a pair drawn with 12 passes gets 12 such passes in the script), so the match seen and the map after it agree.
 - [o] For now the pass network is kept and shown for the own club's matches only, as today (→MATCH-25) (owner 261111); its stored form should be able to hold every fixture later ← a world season is about 10,000 fixtures: about 4–5 MB uncompressed for all of them (planner's estimate, not measured) against the web beta's 6 MiB checkpoint, which is rewritten whole on every save
+- [o] Order of work (owner 261111): the staging's three complaints (T814–T818) → a prototype proof that a script can be written from a settled result (T819–T822) → preparation and application of the whole approach to the game → removal of the prototype and of what the change leaves unused ← each step's result is what the next is planned from
+  - Nothing before launch needs save compatibility (owner 261103), so the game changes over in one new match-model revision rather than keeping the detailed engine for older careers.
+  - T689 (scoring calibration on the detailed engine's decision files) closes when the conversion replaces those files; its MATCH-23 concentration targets and scoring scripts move to the aggregate result's calibration.
 - [x] Unseeded randomness drawn live while watching, the owner's first concept ← it would not make a match read more like football; it gives up reproducing a save's bug, comparing a rule change on the same seeds, replays computed from the seed, and watching and skipping giving the same result
 - [x] A continuous simulation in which all 22 decide every moment ← statistics become a by-product that is hard to calibrate, and every unwatched fixture would need the same engine (about 10,000 a season) or the two paths disagree again
 - [?] Pass networks for other clubs' fixtures: the own league and the cups the own club plays in on the web beta (a few hundred fixtures, about 150–200 KB), every fixture on mobile where storage is per match and no 6 MiB whole-checkpoint limit applies; an online server would multiply any stored size by its users, so maps may stay on the device
@@ -23,16 +26,22 @@
 ## shape
 - flow: fixture → aggregate engine settles the result (score, counters, incidents, and for the own club's match the pass network, heat maps and report numbers) → records and standings; only when the match is watched: a script written to fit that result → staging → the pitch view.
 - v1: the split as the match model; the own club's result from the aggregate engine; scripts for watched matches only; spatial material drawn by probability; pass network for own matches only / not: scripts for unwatched fixtures, maps for other clubs' fixtures, a change of the random model.
+- phase A, prototype (tasks exist): T814–T818 the staging's naturalness and a second page; T819–T822 the fitted script on ten real settled matches and a full match to watch beside its record.
+- phase B, the game (planned after T822's result: update-ssot on the domains below, then create-task):
+  - preparation, behaviour unchanged: the attribution's split kept for a watched match (from T819's trace); the script writer, the staging and their values brought into `packages/engine` under ARCH's rules (portable math, named random streams, message IDs for any prose, tests with them); staged frames delivered through the existing `MatchFrame` playback contract so the web pitch view keeps its renderer; staging tables for every production formation and role; what the prototype does not cover — substitutions, dismissals and injuries, penalties, extra time and shoot-outs, set-piece takers, era rules; post-match material drawn from the aggregate result.
+  - the change-over, one new match-model revision: the own club's match settles on the aggregate path; watching writes and stages its script, skipping settles only; goal replays read the script; the own club's calibration re-read on the same curve as every club (→MATCH-2); the two-engine parity registry reduced to one engine; golden fixtures regenerated; match scenes of the browser journeys updated; throughput and the watched match's cost measured and reported (→ARCH-31).
+- phase C, clean-up (after phase B is released): the detailed engine's decision and movement modules and the loop that drives them (about 8,500 lines: `grid/decide.ts`, `resolve.ts`, `shape.ts`, `intentions.ts`, `coordination.ts`, `lanes.ts`, `box.ts`, `freedom.ts`, `movement.ts`, the loop in `engine.ts`) with the scripts, tunables and tests only they use; the earlier match-model revisions' branches (about 110 reads); `scripts/match-proto/`, `scripts/export-settled.ts` and `artifacts/match-proto-*`.
 
 ## domains
 - [o] MATCH: MATCH-1 (the detailed engine plays the own club's match touch by touch) and MATCH-22 (dispatch: own matches always the grid engine) replaced by one aggregate result for every match plus a script and staging for watched matches; MATCH-25 material drawn by probability instead of read from play; MATCH-23/28's two-engine parity reduced to one engine's targets
-- [?] WEB: the pitch view plays staged frames from a script; the pass network view as the owner's reference pictures (circle size by passes, line width by pair passes, arrows)
-- [?] HIST: which fixtures keep a pass network, per platform (own matches only for now)
-- [?] SAVE: a stored form of the pass network able to hold every fixture later
-- [?] ARCH: the processing budget of writing a script for a watched match; removal of the detailed engine's decision and movement modules once replaced
+- [o] WEB: the pitch view plays staged frames from a script; the pass network view as the owner's reference pictures (circle size by passes, line width by pair passes, arrows)
+- [o] HIST: which fixtures keep a pass network, per platform (own matches only for now)
+- [o] SAVE: a stored form of the pass network able to hold every fixture later
+- [o] ARCH: the processing budget of writing a script for a watched match; removal of the detailed engine's decision and movement modules once replaced
 
 ## open
 - Writing a script that reproduces a settled result exactly (goals, scorers, shots, passes per pair): the prototype's script is a hand-written grammar not yet tied to the aggregate engine's totals — the main unproven part after staging.
 - How the aggregate engine's probabilities for average positions, pair passes and heat are calibrated (`packages/engine/src/grid/baselines.json` holds real-football cell tables).
 - Whether a past fixture's maps can be drawn again on demand: it needs that day's line-ups and attributes, and what a save keeps of them has not been checked.
-- When to convert: after T818's second page, or now for the parts already settled.
+- Conversion waits for T822's result (owner's order 261111); until then this document is not converted, by a session or by an autopilot run.
+- What phase B's tasks need from T822: how much a fitted script invents between recorded events, whether the aggregate path's flows must be drawn as chains, the cost of a watched match.

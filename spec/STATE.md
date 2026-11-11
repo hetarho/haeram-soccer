@@ -927,6 +927,10 @@
 | T816 | match-proto own moment, own pace: free players stop moving and stopping as one | ARCH | T815 | todo |
 | T817 | match-proto turnovers and marking: players read their man and the kind of turnover, not only the ball | ARCH | T816 | todo |
 | T818 | match-proto: tune the three naturalness complaints and deliver a second page | ARCH | T817 | todo |
+| T819 | settled results for the prototype: an attribution trace and ten exported matches | ARCH | T818 | todo |
+| T820 | match-proto fitted script: a script written from a settled result, exact by construction | ARCH | T819 | todo |
+| T821 | match-proto stage a fitted match: ninety minutes performed to the last beat, the record intact | ARCH | T820 | todo |
+| T822 | match-proto fit verdict: make a fitted match read as football, measure what it costs, deliver a full match | ARCH | T821 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -959,13 +963,14 @@
 - owner calls: F18, F20, F6, F11, F8/F9/F6/F10 (tq10), the 14 legacy ideations, calibration-pass
 - rl10: T803–T807 and T809 as work group rl10 on `si/rl10` (lanes realism-reads, squad-generation, and T804 alone; review all), then T808 (explore 2h) in its own session, one `verify:batch` gate and the push to main by 2026-11-11 07:00 KST; review/game-realism-261110 F8 (an NPC-to-NPC market) and F10 (the list's order and young players' values) stay open
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
-- implement-task T814 (then T815 → T816 → T817 → T818, one chain under `scripts/match-proto/`): the owner watched `artifacts/match-proto-261110/index.html` on 261111 and named three scenes that read wrong (review/match-engine-split-261110 F2–F4); T818 delivers `artifacts/match-proto-261111/index.html` to watch beside it, and the verdict on the script→staging split (F1) waits for that page
-- ideation match-script-and-staging (open): the owner settled the method on 261111 — one aggregate result for every match, a script only for a watched match, spatial material drawn by probability, pass network for own matches only; open: fitting a script to a settled result, when to convert (after T818's page or now)
+- ideation match-script-and-staging (open, not to be converted before T822 is done): the owner's order of 261111 — T814–T818, then T819–T822 (a script fitted to a settled result, on ten real aggregate results), then update-ssot MATCH WEB HIST SAVE ARCH from the ideation and create-task for phase B (preparation and change-over of the game) and phase C (removal of the prototype, the detailed engine's replaced modules and the older model revisions' branches); T689 closes at that conversion
+- implement-task T814 (then T815 → T816 → T817 → T818 → T819 → T820 → T821 → T822, one chain; T819 alone touches `packages/`, behaviour unchanged): T818 delivers `artifacts/match-proto-261111/index.html` to watch beside the first page, T822 `artifacts/match-proto-fit/index.html`, one full match beside its record
 
 ## log
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
 - 261111 create-task review/match-engine-split-261110 start
 - 261111 ideation match-script-and-staging start: the owner's calls of the day taken down (split adopted, aggregate result for every match, scripts for watched matches only, maps drawn by probability, pass network own matches only); open
+- 261111 create-task review/match-engine-split-261110 F5: T819–T822 — the aggregate attribution's split as an optional trace and ten settled matches exported as data (T819), a script that performs every recorded event exactly once with a counter that proves it (T820), bound staging to the last beat with the record's clock and fit lines in the report (T821), a three-hour window on order, strain and cost with a full match delivered (T822); phases B and C recorded in ideation/match-script-and-staging, planned from T822's result
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
 - 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
@@ -982,4 +987,3 @@
 - 261110 tq10 closed: T769-T774 integrated, verify:batch passed at f002b110 in 37.3 min cold (nx10 same source 61.0 min); F6/F8/F9/F10 parked for the owner tq10
 - 261110 T774 integrated (independent review approved 82b06542, P3 notes only) tq10
 - 261110 create-task T774 from review/test-gate-time-261110 F11 (measured −41% journey CPU) tq10
-- 261110 rl10: update-ssot WORLD r11 (WORLD-6 age ladder, refill, squad spread) CLUB r66 (CLUB-33 upgrade measure); create-task T803–T808 from review/game-realism-261110 rl10
