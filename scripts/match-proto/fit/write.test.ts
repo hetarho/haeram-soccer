@@ -3,6 +3,7 @@ import { CENTRE } from '../core/pitch.ts';
 import { EV, EVENT_RESULTS, type Settled } from '../core/settled.ts';
 import { PASS_KINDS, type Script } from '../core/types.ts';
 import { cellAt } from './cells.ts';
+import { compareRecord, countScript } from './count.ts';
 import { loadSettled, smallSettled } from './fit.testkit.ts';
 import { validateFitted } from './validate.ts';
 import { writeFitted } from './write.ts';
@@ -108,5 +109,78 @@ describe('match-proto fitted writer (T820)', () => {
     const s01 = loadSettled('s01');
     expect(JSON.stringify(writeFitted(s01, 'a'))).toBe(JSON.stringify(writeFitted(s01, 'a')));
     expect(JSON.stringify(writeFitted(s01, 'a'))).not.toBe(JSON.stringify(writeFitted(s01, 'b')));
+  });
+});
+
+const TEN = ['s01', 's02', 's03', 's04', 's05', 's06', 's07', 's08', 's09', 's10'];
+const recorded = (b: Script['beats'][number]) =>
+  b.event !== undefined || b.shot !== undefined || b.foul !== undefined;
+const rowsByMinute = (script: Script) => {
+  const per = Array<number>(90).fill(0);
+  for (const b of script.beats) if (recorded(b)) per[Math.floor(b.clock! / 60)]!++;
+  return per;
+};
+
+describe('match-proto fitted order of play (T822)', () => {
+  const ten = TEN.map((id) => {
+    const settled = loadSettled(id);
+    return [id, settled, writeFitted(settled, 'fit')] as const;
+  });
+  const s01 = ten[0]![2];
+  const s06 = ten[5]![2];
+
+  it('every settled match is written exactly, a restart owed at the whistle included', () => {
+    // Rows the record gives no minute float to wherever the order of play reaches them; a restart
+    // owed as a half ends is delivered and its pass received before the kick-off (s07 lost one).
+    for (const [id, settled, script] of ten) {
+      expect(validateFitted(settled, script), id).toEqual([]);
+      expect(compareRecord(settled, countScript(script, settled)), id).toEqual([]);
+    }
+  }, 30_000);
+
+  it('nobody passes to himself, a restart included', () => {
+    // s09's connective goal kick went from its keeper to its keeper, the next touch being his: the
+    // ball jumped 16 m in a frame on the page (ball.maxSpeed).
+    for (const [id, , script] of ten) {
+      const self = script.beats.filter((b) => b.receiver !== undefined && b.receiver === b.actor);
+      expect(
+        self.map((b) => `${b.index}:${b.kind}`),
+        id,
+      ).toEqual([]);
+    }
+  });
+
+  it('a completed pass is mostly received where the next touch starts', () => {
+    // The next touch is taken from the whole match, not a dealt minute: under the greedy writer of
+    // T820 two of every three completed passes needed a link carry after them.
+    let passes = 0;
+    let linked = 0;
+    s01.beats.forEach((b, i) => {
+      if (b.kind !== 'pass' || b.outcome !== 'complete' || b.event === undefined) return;
+      passes++;
+      if (s01.beats[i + 1]?.move === 'link') linked++;
+    });
+    expect(linked / passes).toBeLessThan(0.4);
+  });
+
+  it('every minute holds its share of the recorded rows', () => {
+    for (const script of [s01, s06]) {
+      const per = rowsByMinute(script);
+      const mean = per.reduce((s, n) => s + n, 0) / 90;
+      expect(Math.min(...per)).toBeGreaterThan(0);
+      expect(Math.max(...per)).toBeLessThan(mean * 3);
+    }
+  });
+
+  it('both sides spend their possession-ending rows at one pace, so neither runs out', () => {
+    // s06: the home side has 79 rows that end a possession, the away side 45; the difference is
+    // lost by heavy touches spread over the match, not piled into its last minutes.
+    const lastTen = [0, 1].map(
+      (t) => s06.beats.filter((b) => b.clock! >= 80 * 60 && b.team === t && recorded(b)).length,
+    );
+    expect(Math.min(...lastTen)).toBeGreaterThan(20);
+    const heavy = s06.beats.filter((b) => b.move === 'miscontrol').map((b) => b.clock! / 60);
+    const late = heavy.filter((m) => m >= 80).length;
+    expect(late / heavy.length).toBeLessThan(0.3);
   });
 });

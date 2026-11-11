@@ -77,6 +77,27 @@ export function dealMinutes(settled: Settled, seed: string): { events: number[];
   return { events, fouls };
 }
 
+/** Minute index of a row the record gives no minute: the writer deals it as it plays it (T822). */
+export const FLOATING = -1;
+
+/**
+ * Every event's and foul's minute index as the record fixes it: shots, their sources and booked
+ * fouls keep the record's minute; every other row is `FLOATING`, played in whichever minute the
+ * writer reaches it (T822: dealt by the order of play, not by a shuffle).
+ */
+export function dealFixed(settled: Settled): { events: number[]; fouls: number[] } {
+  const events = Array<number>(settled.events.length).fill(FLOATING);
+  const fouls = Array<number>(settled.fouls.length).fill(FLOATING);
+  for (const shot of settled.shots) {
+    const source = shot[SH.source]!;
+    if (source >= 0) events[source] = minuteIndex(shot[SH.minute]!);
+  }
+  settled.fouls.forEach((f, i) => {
+    if (f[FO.cardMinute]! >= 0) fouls[i] = minuteIndex(f[FO.cardMinute]!);
+  });
+  return { events, fouls };
+}
+
 /** The cell a touch starts in: its first carry's `from`, else its release's. */
 export function firstCell(settled: Settled, touch: Touch): number {
   if (touch.carries.length > 0) return settled.events[touch.carries[0]!]![EV.from]!;
@@ -215,6 +236,27 @@ export function buildTouches(
         return d(i) < d(best) ? i : best;
       }, -1);
     const minute = minutes.events[id]!;
+    if (minute === FLOATING) {
+      // A carry with no minute of its own runs into whichever release of his it meets best: the
+      // touch whose start (its first carry's `from`, else its release's cell) is nearest where
+      // the carry ends, a floating touch before a fixed one at the same distance.
+      let best = -1;
+      let bestCost = Infinity;
+      touches.forEach((t, i) => {
+        if (t.actor !== actor || t.release === undefined || direct.has(i)) return;
+        const cost =
+          cellDistance(firstCell(settled, t), e[EV.to]!) + (t.minute === FLOATING ? 0 : 0.5);
+        if (cost < bestCost) [best, bestCost] = [i, cost];
+      });
+      // Too far from every release of his, it is a touch of its own the writer plays where it starts.
+      if (best < 0 || bestCost > PROTO_CONFIG.fit.carryJoin + 0.5)
+        touches.push({ side, actor, minute, carries: [id] });
+      else {
+        touches[best]!.carries.unshift(id);
+        minutes.events[id] = touches[best]!.minute;
+      }
+      return;
+    }
     let found = pick(own(minute));
     for (let k = 1; found < 0 && k <= window; k++) {
       for (const m of [minute - k, minute + k]) {

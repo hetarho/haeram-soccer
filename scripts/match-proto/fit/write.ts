@@ -1,6 +1,7 @@
-// The fitted writer (T820): a ninety-minute script that performs every settled attempt, shot and
-// foul exactly once. The record is the fact; the writer chooses only the order (greedy: the
-// nearest touch by cell), the receivers, the points inside the cells, the clock and the connective
+// The fitted writer (T820, its order T822): a ninety-minute script that performs every settled
+// attempt, shot and foul exactly once. The record is the fact; the writer chooses only the order
+// (greedy over the whole match: the cheapest touch by `touchCost`), the minutes of the rows the
+// record gives none, the receivers, the points inside the cells, the clock and the connective
 // tissue (link carries, miscontrols, restart deliveries no recorded pass makes). A pure function of
 // the settled match and the seed (-> ARCH-5).
 import { PROTO_CONFIG } from '../core/config.ts';
@@ -40,7 +41,8 @@ import {
   pointAway,
   restartSpot,
 } from './cells.ts';
-import { buildTouches, dealMinutes, firstCell } from './touches.ts';
+import { createRng } from '../core/rng.ts';
+import { FLOATING, buildTouches, dealFixed, firstCell } from './touches.ts';
 
 const FIT = PROTO_CONFIG.fit;
 const GRAMMAR = PROTO_CONFIG.grammar;
@@ -74,11 +76,60 @@ const phaseOf = (side: TeamId, ball: Vec): Phase => {
       : 'finalThird';
 };
 
-/** A script performing every row of `settled`, written greedily from its dealt touches. */
+/** Metres between two cells' centres, by cell pair. */
+const CELL_DISTANCE: number[][] = Array.from({ length: 40 }, (_, a) =>
+  Array.from({ length: 40 }, (_, b) => cellDistance(a, b)),
+);
+const cellGap = (a: number, b: number): number =>
+  a < 0 || b < 0 ? cellDistance(Math.max(a, 0), Math.max(b, 0)) : CELL_DISTANCE[a]![b]!;
+
+/**
+ * A script performing every row of `settled`. Rows the record gives a minute (shots, their sources,
+ * booked fouls) are played in it; every other row floats and is played in whichever minute the
+ * order of play reaches it, each minute taking its even share of all touches (T822). The order is
+ * greedy: the next touch is the one starting nearest the ball (`touchCost`), ties broken by the
+ * seed's order.
+ */
 export function writeFitted(settled: Settled, seed: string): Script {
   const fixture = fixtureOf(settled);
-  const touches = buildTouches(settled, dealMinutes(settled, seed));
+  const touches = buildTouches(settled, dealFixed(settled));
   const played = touches.map(() => false);
+  const startCell = touches.map((t) => firstCell(settled, t));
+  // The seed's order of the touches: ties of `touchCost` go to the earlier.
+  const rng = createRng(seed).fork('order');
+  const order = touches.map((_, i) => i);
+  for (let i = order.length - 1; i > 0; i--) {
+    const j = rng.int(0, i);
+    [order[i], order[j]] = [order[j]!, order[i]!];
+  }
+  const total = [0, 0];
+  const done = [0, 0];
+  const endsTotal = [0, 0];
+  const endsDone = [0, 0];
+  /** Whether touch `i` ends its side's possession when played (a failed release, a shot, a lost carry). */
+  const ends = touches.map((t) => {
+    const r = t.release;
+    if (r === undefined) {
+      const last = t.carries[t.carries.length - 1];
+      return last !== undefined && settled.events[last]![EV.result] !== R('complete');
+    }
+    // A shot that wins a corner and a pass out for a corner keep the ball for the side.
+    if ('shot' in r) return settled.shots[r.shot]![SH.corner] !== 1;
+    if ('foul' in r) return false;
+    const res = settled.events[r.event]![EV.result]!;
+    return res !== R('complete') && res !== R('looseKept') && res !== R('cornerWon');
+  });
+  touches.forEach((t, i) => {
+    total[t.side]!++;
+    if (ends[i]) endsTotal[t.side]!++;
+  });
+  /** Whether touch `i` releases a pass the record flags as a corner's or free kick's delivery. */
+  const setPiece = touches.map(
+    (t) =>
+      t.release !== undefined &&
+      'event' in t.release &&
+      SET_PIECES[settled.events[t.release.event]![EV.setPiece]!] !== 'none',
+  );
   const beats: Beat[] = [];
   const minuteOf: number[] = [];
   let possession = 0;
@@ -88,7 +139,11 @@ export function writeFitted(settled: Settled, seed: string): Script {
   let owed: Owed | null = null;
   let pending: Pending | null = null;
   let nextOwed = -1;
+  /** The touch a pass's receiver was chosen for (T822). */
+  let intended = -1;
   let minute = 0;
+  /** Touches played before the minute being written. */
+  let minuteStart = 0;
 
   const spotOf = (index: number, at: Vec = ball, team: TeamId = side): Vec =>
     nominalSpot({ fixture, ball: at, team, phase: phaseOf(team, at) }, index);
@@ -161,12 +216,54 @@ export function writeFitted(settled: Settled, seed: string): Script {
   touches.forEach((t, i) => {
     if (t.next !== undefined) after[t.next] = i;
   });
+  /** Touches `team` may play now, in the seed's order: this minute's fixed ones and every floating one. */
   const unplayed = (team: TeamId) =>
-    touches.flatMap((t, i) =>
-      !played[i] && t.minute === minute && t.side === team && (after[i]! < 0 || played[after[i]!])
-        ? [i]
-        : [],
+    order.filter((i) => {
+      const t = touches[i]!;
+      return (
+        !played[i] &&
+        t.side === team &&
+        (t.minute === minute || t.minute === FLOATING) &&
+        (after[i]! < 0 || played[after[i]!])
+      );
+    });
+  const fixedLeft = (team?: TeamId) =>
+    touches.some(
+      (t, i) => !played[i] && t.minute === minute && (team === undefined || t.side === team),
     );
+  /** The touches played by the end of minute `m`: an even share of all of them. */
+  const quota = (m: number) => Math.round(((m + 1) * touches.length) / 90);
+  const quotaMet = () => done[0]! + done[1]! >= quota(minute);
+  /**
+   * The price of `team` playing touch `i` with the ball in `cell`: the metres to where it starts,
+   * less `fit.fixedPull` for a touch fixed to this minute; a touch ending the possession is cheaper
+   * by up to `fit.paceBias` the further `team` is ahead of the other side in its share of touches
+   * played (dearer when behind), and by `fit.fixedPull` once the minute's share is met while the
+   * other side still has a fixed touch in it.
+   */
+  const touchCost = (team: TeamId, i: number, cell: number): number => {
+    let cost = cellGap(startCell[i]!, cell);
+    const met = quotaMet();
+    // The pull grows as the minute fills, so its fixed touches come before its share runs out.
+    const fill = Math.min(
+      1,
+      (done[0]! + done[1]! - minuteStart) / Math.max(1, quota(minute) - minuteStart),
+    );
+    if (touches[i]!.minute === minute)
+      cost -= met ? FIT.fixedPush : FIT.fixedPull + fill * FIT.fixedRamp;
+    // A corner's or free kick's delivery waits for its restart rather than be played in open play.
+    if (setPiece[i]) cost += FIT.setPieceWait;
+    if (ends[i]) {
+      // Ahead of the other side, or behind in spending its own possession-ending touches, a side
+      // ends its possession sooner; so neither side runs out of touches, nor of ways to lose the ball.
+      const share = done[team]! / total[team]!;
+      const lead = share - done[other(team)]! / total[other(team)]!;
+      const endsLead = endsDone[team]! / Math.max(1, endsTotal[team]!) - share;
+      cost -= Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias;
+      if (met && fixedLeft(other(team))) cost -= FIT.fixedPush;
+    }
+    return cost;
+  };
   /** A touch whose release is a goal the record credits to no passer. */
   const unassisted = (i: number): boolean => {
     const r = touches[i]!.release;
@@ -189,22 +286,35 @@ export function writeFitted(settled: Settled, seed: string): Script {
     }
     return false;
   };
-  /** The touch `team` plays next with the ball in `cell`, skipping `skip`'s while another is left. */
-  const choose = (team: TeamId, cell: number, skip = -1): number => {
+  /**
+   * The touch `team` plays next with the ball in `cell`, skipping `skip`'s while another is left.
+   * For a pass landing at `at`, a touch also costs `fit.placeWeight` times the metres from its
+   * player's place (`nominalSpot`) to `at`: the man the pass is played to stands near it (T822).
+   */
+  const choose = (team: TeamId, cell: number, skip = -1, at?: Vec): number => {
     const all = unplayed(team);
     if (nextOwed >= 0 && all.includes(nextOwed)) return nextOwed;
     const fresh = all.filter((i) => !(skip >= 0 && unassisted(i)));
     const left = fresh.length > 0 ? fresh : all;
     const open = left.filter((i) => touches[i]!.actor !== skip);
     const pool = open.length > 0 ? open : left;
+    const place = new Map<number, number>();
+    if (at !== undefined)
+      for (const p of fixture.teams[team].players)
+        place.set(p.index, FIT.placeWeight * dist(spotOf(p.index, at, team), at));
+    return cheapest(team, pool, cell, place);
+  };
+  const cheapest = (
+    team: TeamId,
+    pool: readonly number[],
+    cell: number,
+    place?: ReadonlyMap<number, number>,
+  ): number => {
     let best = -1;
+    let bestCost = Infinity;
     for (const i of pool) {
-      if (
-        best < 0 ||
-        cellDistance(firstCell(settled, touches[i]!), cell) <
-          cellDistance(firstCell(settled, touches[best]!), cell)
-      )
-        best = i;
+      const cost = touchCost(team, i, cell) + (place?.get(touches[i]!.actor) ?? 0);
+      if (cost < bestCost) [best, bestCost] = [i, cost];
     }
     return best;
   };
@@ -370,6 +480,8 @@ export function writeFitted(settled: Settled, seed: string): Script {
   const playTouch = (i: number, delivering?: Owed) => {
     played[i] = true;
     const t = touches[i]!;
+    done[t.side]!++;
+    if (ends[i]) endsDone[t.side]!++;
     nextOwed = t.next ?? -1;
     for (const c of t.carries) {
       const e = settled.events[c]!;
@@ -469,12 +581,17 @@ export function writeFitted(settled: Settled, seed: string): Script {
       playTouch(best, o);
       return;
     }
-    const nextTouch = choose(side, spotCell);
+    // A goal kick is the keeper's, so the touch it is delivered to is another man's (T822: s09's
+    // keeper kicked to himself when his own touch started nearest).
+    const nextTouch = choose(side, spotCell, o.kind === 'goalKick' ? side * 11 : -1);
     const taker =
       o.kind === 'goalKick'
         ? side * 11
         : nearestBy(side, ball, nextTouch >= 0 ? [touches[nextTouch]!.actor] : []);
-    const receiver = nextTouch >= 0 ? touches[nextTouch]!.actor : nearestBy(side, ball, [taker]);
+    const receiver =
+      nextTouch >= 0 && touches[nextTouch]!.actor !== taker
+        ? touches[nextTouch]!.actor
+        : nearestBy(side, ball, [taker]);
     const cell =
       nextTouch >= 0 ? firstCell(settled, touches[nextTouch]!) : cellAt(side, spotOf(receiver));
     const to = pointAway(side, cell, spotOf(receiver), ball, GRAMMAR.minPass);
@@ -494,6 +611,8 @@ export function writeFitted(settled: Settled, seed: string): Script {
 
   const settledMinute = () => {
     for (;;) {
+      // The minute ends with its share of touches played and nothing fixed to it left.
+      if (quotaMet() && !fixedLeft()) break;
       const mine = unplayed(side);
       const theirs = unplayed(other(side));
       if (owed !== null) {
@@ -504,9 +623,11 @@ export function writeFitted(settled: Settled, seed: string): Script {
       }
       if (pending !== null) {
         const p: Pending = pending;
-        const i = choose(p.side, cellAt(p.side, ball), p.actor);
+        const i = choose(p.side, cellAt(p.side, ball), p.actor, ball);
         if (i >= 0 && touches[i]!.actor !== p.actor) {
           resolve(touches[i]!.actor);
+          // He was chosen for that touch: it is the one he plays.
+          intended = i;
           continue;
         }
         if (i < 0 && theirs.length === 0) break;
@@ -519,22 +640,42 @@ export function writeFitted(settled: Settled, seed: string): Script {
         miscontrol(touches[choose(other(side), cellAt(other(side), ball))]!.actor);
         continue;
       }
+      // The minute waits only on the other side's fixed touch: with no touch left that ends this
+      // possession, or with that touch a goal nobody's pass made, the holder loses the ball to it.
+      if (quotaMet() && fixedLeft(other(side))) {
+        const waiting = theirs.filter((i) => touches[i]!.minute === minute);
+        const lone = waiting.find((i) => unassisted(i));
+        if (waiting.length > 0 && (lone !== undefined || !mine.some((i) => ends[i]))) {
+          miscontrol(
+            touches[lone ?? cheapest(other(side), waiting, cellAt(other(side), ball))]!.actor,
+          );
+          continue;
+        }
+      }
       // The holder plays on with a touch of his own; another man's touch needs the ball first.
       const here = cellAt(side, ball);
       const own = mine.filter((i) => touches[i]!.actor === holder);
       const pickOwn =
         nextOwed >= 0 && mine.includes(nextOwed)
           ? nextOwed
-          : own.length > 0
-            ? own.reduce((a, b) =>
-                cellDistance(firstCell(settled, touches[b]!), here) <
-                cellDistance(firstCell(settled, touches[a]!), here)
-                  ? b
-                  : a,
-              )
-            : choose(side, here);
+          : own.includes(intended)
+            ? intended
+            : own.length > 0
+              ? cheapest(side, own, here)
+              : choose(side, here);
+      intended = -1;
+      // Possessions alternate, so a side that has fewer possession-ending rows than the other must
+      // lose the ball connectively that many times: it does so where it is spending its ending
+      // rows faster than the other side spends its own, never on a touch fixed to the minute (T822).
+      const endsShare = (t: TeamId) => endsDone[t]! / Math.max(1, endsTotal[t]!);
+      const spread =
+        ends[pickOwn] &&
+        touches[pickOwn]!.minute === FLOATING &&
+        touches[pickOwn]!.actor === holder &&
+        endsShare(side) - endsShare(other(side)) > FIT.endsSlack &&
+        theirs.length > 0;
       // A goal the record credits to nobody's pass is not scored straight off a pass to the scorer.
-      if (touches[pickOwn]!.actor !== holder || (unassisted(pickOwn) && fed())) {
+      if (spread || touches[pickOwn]!.actor !== holder || (unassisted(pickOwn) && fed())) {
         const them =
           theirs.length > 0
             ? touches[choose(other(side), cellAt(other(side), ball))]!.actor
@@ -547,6 +688,7 @@ export function writeFitted(settled: Settled, seed: string): Script {
   };
 
   for (minute = 0; minute < 90; minute++) {
+    minuteStart = done[0]! + done[1]!;
     if (minute === 0 || minute === 45) {
       pending = null;
       owed = { kind: 'kickOff', team: minute === 0 ? 0 : 1, spot: restartSpot('kickOff', 0, ball) };
@@ -555,10 +697,12 @@ export function writeFitted(settled: Settled, seed: string): Script {
     }
     settledMinute();
     if (minute === 44 || minute === 89) {
-      if (pending !== null)
-        resolve(nearestBy((pending as Pending).side, ball, [(pending as Pending).actor]));
+      // A restart owed at the whistle is still taken, and a pass in flight, its delivery's
+      // included, is received before the half ends.
       const o = owed as Owed | null;
       if (o !== null && o.kind !== 'kickOff') deliver();
+      if (pending !== null)
+        resolve(nearestBy((pending as Pending).side, ball, [(pending as Pending).actor]));
       owed = null;
       nextOwed = -1;
     }

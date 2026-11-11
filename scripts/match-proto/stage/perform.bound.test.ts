@@ -37,6 +37,28 @@ describe('bound scripts (T821)', () => {
     expect(cut[0].recast).not.toBe(true);
   });
 
+  it('an intercepted through ball without a runner is cut out by the scripted man', () => {
+    // T822: s08's fitted script stopped here ('through ball without runner').
+    const p = performScript(
+      bound([
+        K,
+        {
+          kind: 'pass',
+          actor: 5,
+          to: [70, 30],
+          outcome: 'intercepted',
+          opponent: 13,
+          through: true,
+        },
+        { team: 1, kind: 'pass', actor: 13, receiver: 14, to: [55, 45], possession: 2 },
+      ]),
+    );
+    expect(p.beats).toHaveLength(3);
+    const cut = p.events.filter((e) => e.kind === 'intercept');
+    expect(cut).toHaveLength(1);
+    expect(cut[0].other).toBe(13);
+  });
+
   it('a bound tackle is won by the scripted man', () => {
     const p = performScript(
       bound([

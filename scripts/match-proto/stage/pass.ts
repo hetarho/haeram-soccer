@@ -257,9 +257,14 @@ export function performPass(state: StageState, ctx: BeatContext): void {
   state.orders.clear();
 }
 
-/** `pass:intercepted` and `clearance:intercepted`: the ball ends at the interceptor's feet on its path. */
+/**
+ * `pass:intercepted` and `clearance:intercepted`: the ball ends at the interceptor's feet on its path.
+ * A through ball without a named runner (a fitted script's: the record names none for a ball that
+ * never arrived) is cut out as an ordinary pass is.
+ */
 export function performPassIntercepted(state: StageState, ctx: BeatContext): void {
-  if (ctx.beat.through && ctx.beat.outcome !== 'loose') return performThrough(state, ctx);
+  if (ctx.beat.through && ctx.beat.outcome !== 'loose' && ctx.beat.receiver !== undefined)
+    return performThrough(state, ctx);
   winOnPath(state, ctx, ctx.beat.outcome === 'loose' ? 'loose' : 'intercept');
 }
 

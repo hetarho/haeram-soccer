@@ -102,10 +102,17 @@ is only what the record does not count: a carry that is not one of the record's 
 touch that loses the ball (`miscontrol`) and a restart's delivery when no recorded pass is left to
 make it (`restart`); a connective pass in open play does not exist.
 
-- `fit/touches.ts` deals every row a minute (`dealMinutes`: shots, their sources and booked fouls
-  keep the record's minute, the rest are dealt evenly from the seed) and gathers players' spells on
-  the ball (`buildTouches`); `fit/write.ts` (`writeFitted`) joins them greedily by the nearest cell
-  into a `Script` marked `bound`; `fit/validate.ts` (`validateFitted`) checks every row is played
+- `fit/touches.ts` keeps the minutes the record states (`dealFixed`: shots, their sources and
+  booked fouls; every other row is `FLOATING`) and gathers players' spells on the ball
+  (`buildTouches`; a floating carry joins the release of his whose start it meets). `dealMinutes`,
+  T820's shuffle of the rest over the ninety minutes, is kept for its tests. `fit/write.ts`
+  (`writeFitted`) plays them greedily into a `Script` marked `bound` (T822): the next touch is the
+  cheapest of the whole match's (`touchCost`: metres to where it starts, a pull toward the touches
+  fixed to the minute, a side ahead of the other or spending its possession-ending rows faster
+  pushed to end its possession), each minute takes its even share of all touches, and a side whose
+  possession-ending rows run ahead of the other side's loses the ball by a heavy touch, so the
+  turnovers the record's two sides cannot alternate are spread over the match;
+  `fit/validate.ts` (`validateFitted`) checks every row is played
   once as recorded and the ball is handed on from where it was left; `fit/count.ts` counts the
   record's rows back from the beats alone (`countScript`, `compareRecord`) and prices the joins
   (`fitCost`). `fit/cells.ts` holds the cell geometry and dead-ball spots both sides share.
@@ -117,7 +124,7 @@ make it (`restart`); a connective pass in open play does not exist.
   `connectiveRestarts` and `countedRestarts` (deliveries without and with a recorded pass),
   `orphanSetPieces` (recorded corner or free-kick deliveries played from open play),
   `orphanFreeKickShots` (direct free kicks without a foul to take them from), `movedCarries`
-  (carries moved to another minute to find their player's release) and `maxOverrun` (the most
+  (floating carries given a minute by joining a release fixed to one) and `maxOverrun` (the most
   seconds a minute's beats needed beyond sixty; such a minute is pressed into its sixty seconds so
   every beat keeps its record minute).
 - Yellow cards are taken from the record's card rows: no beat carries a booking.

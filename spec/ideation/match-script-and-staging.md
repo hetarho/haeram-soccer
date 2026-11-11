@@ -40,8 +40,13 @@
 - [o] ARCH: the processing budget of writing a script for a watched match; removal of the detailed engine's decision and movement modules once replaced
 
 ## open
-- Writing a script that reproduces a settled result exactly (goals, scorers, shots, passes per pair): the prototype's script is a hand-written grammar not yet tied to the aggregate engine's totals — the main unproven part after staging.
+- Writing a script that reproduces a settled result exactly is proven on ten real aggregate results (T819–T822, `artifacts/match-proto-fit/README.md`): every attempt, shot and foul performed once as recorded, every record row counted back from the staged playback, ninety minutes staged in about 8 s after a 250 ms write; passes per pair are not yet in the record the aggregate path hands over. Still open: whether a fitted match reads as football to the owner (`artifacts/match-proto-fit/index.html`, s01).
 - How the aggregate engine's probabilities for average positions, pair passes and heat are calibrated (`packages/engine/src/grid/baselines.json` holds real-football cell tables).
 - Whether a past fixture's maps can be drawn again on demand: it needs that day's line-ups and attributes, and what a save keeps of them has not been checked.
-- Conversion waits for T822's result (owner's order 261111); until then this document is not converted, by a session or by an autopilot run.
-- What phase B's tasks need from T822: how much a fitted script invents between recorded events, whether the aggregate path's flows must be drawn as chains, the cost of a watched match.
+- T822's result is in (261111), so the owner's order no longer holds the conversion back; phase B's planning starts from its findings:
+  - invention: per match 381 invented carries (5.4 km, 14 m each), 17 heavy touches, 11 restarts no recorded pass delivers (74 delivered by recorded rows); the greedy writer of T820 needed 1,022 carries (26.2 km) and 196 heavy touches.
+  - the carries sit at the record's own floor: its flows leave 243–337 rows a match starting where the ball never arrives (wings release more than reaches them, half-spaces and the band before the box receive more than they release), because the ledger counts a move group as N attempts from one cell to one cell without saying which follows which; a natural script needs flows drawn as chains, or each cell's arrivals and departures balanced per side.
+  - the heavy touches follow the gap between the two sides' possession-ending rows (1–32 a match, mean 12.8): possessions alternate, so each unit is a turnover the record does not hold.
+  - the attribution chooses its players without the pitch: a recorded actor stands a median 21 m from his role's place for the cell (54% over 20 m; the grammar's 9.9 m, 5.8%), so a fitted match's contests are stretched (16–30%) or late and 8% are not won within reach.
+  - cost: `writeFitted` about 250 ms and staging about 8 s for ninety minutes on the dev host; a 13 MB page at every second frame.
+  - not yet covered by the ten matches: substitutions, dismissals, injuries, penalties, extra time and shoot-outs, other formations.

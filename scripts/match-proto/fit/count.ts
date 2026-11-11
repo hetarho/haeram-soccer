@@ -15,7 +15,7 @@ import {
 } from '../core/settled.ts';
 import { type Beat, PASS_KINDS, type Script, isShotLike } from '../core/types.ts';
 import { dist } from '../core/vec.ts';
-import { buildTouches, dealMinutes } from './touches.ts';
+import { buildTouches, dealFixed } from './touches.ts';
 import { minuteTimes } from './write.ts';
 
 export interface Counted {
@@ -133,8 +133,8 @@ export interface FitCost {
 export function fitCost(script: Script, settled: Settled): FitCost {
   const b = script.beats;
   const restart = (k: Beat['kind']) => k !== 'pass' && PASS_KINDS.includes(k);
-  const seed = script.seed.slice(settled.id.length + 1);
-  const dealt = dealMinutes(settled, seed);
+  // The writer's dealing (T822): a floating carry "moves" when it joins a release fixed to a minute.
+  const dealt = dealFixed(settled);
   const moved = { events: [...dealt.events], fouls: [...dealt.fouls] };
   buildTouches(settled, moved);
   const FREE_KICK = SHOT_KINDS.indexOf('freeKick');
