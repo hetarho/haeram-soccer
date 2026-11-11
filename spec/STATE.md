@@ -913,6 +913,10 @@
 | T816 | match-proto own moment, own pace: free players stop moving and stopping as one | ARCH | T815 | todo |
 | T817 | match-proto turnovers and marking: players read their man and the kind of turnover, not only the ball | ARCH | T816 | todo |
 | T818 | match-proto: tune the three naturalness complaints and deliver a second page | ARCH | T817 | todo |
+| T819 | settled results for the prototype: an attribution trace and ten exported matches | ARCH | T818 | todo |
+| T820 | match-proto fitted script: a script written from a settled result, exact by construction | ARCH | T819 | todo |
+| T821 | match-proto stage a fitted match: ninety minutes performed to the last beat, the record intact | ARCH | T820 | todo |
+| T822 | match-proto fit verdict: make a fitted match read as football, measure what it costs, deliver a full match | ARCH | T821 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -942,10 +946,11 @@
 ## next
 - rl10 (closed 261111): T803–T813 on main; open for the owner: review/game-realism-261110 F8 (an NPC-to-NPC market), F10 (the list's order and young players' values), F11 (Ballon d'Or weights), F12 (title dynasties), and the squad spread's CLUB-46 read (inbox suggest)
 - inspect work board for remaining tasks
-- ideation match-script-and-staging (open): the owner settled the method on 261111 — one aggregate result for every match, a script only for a watched match, spatial material drawn by probability, pass network for own matches only; open: fitting a script to a settled result, when to convert (after T818's page or now)
-- implement-task T814 (then T815 → T816 → T817 → T818, one chain under `scripts/match-proto/`): the owner watched `artifacts/match-proto-261110/index.html` on 261111 and named three scenes that read wrong (review/match-engine-split-261110 F2–F4); T818 delivers `artifacts/match-proto-261111/index.html` to watch beside it, and the verdict on the script→staging split (F1) waits for that page
+- ideation match-script-and-staging (open, not to be converted before T822 is done): the owner's order of 261111 — T814–T818, then T819–T822 (a script fitted to a settled result, on ten real aggregate results), then update-ssot MATCH WEB HIST SAVE ARCH from the ideation and create-task for phase B (preparation and change-over of the game) and phase C (removal of the prototype, the detailed engine's replaced modules and the older model revisions' branches); T689 closes at that conversion
+- implement-task T814 (then T815 → T816 → T817 → T818 → T819 → T820 → T821 → T822, one chain; T819 alone touches `packages/`, behaviour unchanged): T818 delivers `artifacts/match-proto-261111/index.html` to watch beside the first page, T822 `artifacts/match-proto-fit/index.html`, one full match beside its record
 
 ## log
+- 261111 create-task review/match-engine-split-261110 F5: T819–T822 — the aggregate attribution's split as an optional trace and ten settled matches exported as data (T819), a script that performs every recorded event exactly once with a counter that proves it (T820), bound staging to the last beat with the record's clock and fit lines in the report (T821), a three-hour window on order, strain and cost with a full match delivered (T822); phases B and C recorded in ideation/match-script-and-staging, planned from T822's result
 - 261111 ideation match-script-and-staging start: the owner's calls of the day taken down (split adopted, aggregate result for every match, scripts for watched matches only, maps drawn by probability, pass network own matches only); open
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
 - 261111 create-task review/match-engine-split-261110 start
