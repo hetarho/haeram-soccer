@@ -33,6 +33,7 @@ export * from './schema';
 export * from './identity';
 export * from './identitySchema';
 export * from './match-model';
+export * from './match-script';
 export * from './manager-history';
 export * from './manager-history-view';
 
