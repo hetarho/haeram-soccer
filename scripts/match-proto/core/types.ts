@@ -81,7 +81,9 @@ export type BeatOutcome =
   | 'goal'
   | 'saved'
   | 'blocked'
-  | 'wide';
+  | 'wide'
+  /** A heavy touch (or a ball nobody controls): it runs to the opponent named in `opponent`, or with none stays with the side. */
+  | 'loose';
 export type BeatReason = 'pressed' | 'blocked' | 'layoff' | 'cutBack' | 'switch' | 'reset';
 /** One on-ball action with its settled outcome. Player fields are player indexes. */
 export interface Beat {
@@ -112,6 +114,13 @@ export interface Beat {
   reason?: BeatReason;
   /** Nominal seconds the actor has the ball before acting. */
   hold: number;
+  /** The settled event this beat performs (index into `Settled.events`); absent on a connective beat and on a shot or foul beat. */
+  event?: number;
+  /** The settled shot or foul this beat performs. */
+  shot?: number;
+  foul?: number;
+  /** Match seconds when the beat starts (0 = kick-off, 2700 = the second half's). */
+  clock?: number;
 }
 /** `times[i]` is the nominal second beat `i` starts at; `nominalSeconds` the nominal length of the whole script. */
 export interface Script {
@@ -120,6 +129,8 @@ export interface Script {
   beats: Beat[];
   times: number[];
   nominalSeconds: number;
+  /** Written from a settled result: staging may not replace a beat's opponent (T821). */
+  bound?: true;
 }
 
 export type BallMode = 'held' | 'flight' | 'loose' | 'dead';

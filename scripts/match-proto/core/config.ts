@@ -105,6 +105,10 @@
 //             much larger it grows, the stillness below which a player keeps his last facing (m)
 //             and how many frames back that facing is looked for, the longest frame step (s), the
 //             pitch markings (m) and the colours
+//   fit:      the fitted script (fit/): the least and most seconds a touch holds the ball (a
+//             minute's time is shared out between its beats within them), the nominal seconds a
+//             restart takes off its minute by kind, how many minutes a carry is moved at most to
+//             find a release of its player, and how far a point inside a cell stays from its edges
 export const PROTO_CONFIG = {
   tick: 0.1,
   hz: 10,
@@ -610,6 +614,17 @@ export const PROTO_CONFIG = {
     },
     /** An attacker without the ball at attack x `fromX` or beyond has a defender within `distance`, in at least `share` of the samples. */
     mark: { fromX: 65, distance: 4, share: 0.5 },
+  },
+  // The fitted script (fit/): a script written from a settled result.
+  fit: {
+    /** Seconds a touch takes at least and at most; a minute's time is shared out between its beats within these. */
+    hold: [0.4, 5],
+    /** Nominal seconds a restart takes off the minute, by kind. */
+    dead: { kickOff: 40, throwIn: 12, goalKick: 20, corner: 25, freeKick: 20 },
+    /** A carry is moved at most this many minutes to find a release of its player. */
+    carryWindow: 3,
+    /** A point inside a cell stays this far from the cell's edges. */
+    cellMargin: 1.5,
   },
   // The viewer (viewer/, build.ts): presentation only, never read by the script or the staging.
   viewer: {

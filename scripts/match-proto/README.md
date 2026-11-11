@@ -92,6 +92,35 @@ written by `pnpm exec tsx scripts/export-settled.ts --out scripts/match-proto/fi
 (`--count`, `--year`), whose header states how a move group becomes attempts; the same run gives
 the same bytes.
 
+## fitted scripts
+
+The record is the fact: a fitted script performs every settled attempt, shot and foul exactly
+once, with its actor, cells, kind and result. The writer chooses only the order, the receivers,
+the points inside the cells, the clock and the connective tissue between events. Connective tissue
+is only what the record does not count: a carry that is not one of the record's (`link`), a heavy
+touch that loses the ball (`miscontrol`) and a restart's delivery when no recorded pass is left to
+make it (`restart`); a connective pass in open play does not exist.
+
+- `fit/touches.ts` deals every row a minute (`dealMinutes`: shots, their sources and booked fouls
+  keep the record's minute, the rest are dealt evenly from the seed) and gathers players' spells on
+  the ball (`buildTouches`); `fit/write.ts` (`writeFitted`) joins them greedily by the nearest cell
+  into a `Script` marked `bound`; `fit/validate.ts` (`validateFitted`) checks every row is played
+  once as recorded and the ball is handed on from where it was left; `fit/count.ts` counts the
+  record's rows back from the beats alone (`countScript`, `compareRecord`) and prices the joins
+  (`fitCost`). `fit/cells.ts` holds the cell geometry and dead-ball spots both sides share.
+- `pnpm exec tsx scripts/match-proto/fit/print.ts --match s01 [--beats <n>] [--seed <s>]` prints
+  the match id, `mismatches=` and `problems=` (both 0 for a valid script), the cost line and the
+  first beats; `--match all` prints the first three lines of every settled match.
+- The cost: `beats` and `counted` (beats that perform a row), `links` and `linkMetres` (carries
+  that take the ball to where the next row starts), `miscontrols` (balls lost without an event),
+  `connectiveRestarts` and `countedRestarts` (deliveries without and with a recorded pass),
+  `orphanSetPieces` (recorded corner or free-kick deliveries played from open play),
+  `orphanFreeKickShots` (direct free kicks without a foul to take them from), `movedCarries`
+  (carries moved to another minute to find their player's release) and `maxOverrun` (the most
+  seconds a minute's beats needed beyond sixty; such a minute is pressed into its sixty seconds so
+  every beat keeps its record minute).
+- Yellow cards are taken from the record's card rows: no beat carries a booking.
+
 ## viewer
 
 The page draws the pitch from above with the 22 numbered players (a tick shows where each faces),
