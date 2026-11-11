@@ -41,6 +41,29 @@ const scene = (s: ReturnType<typeof write>, kind: string) =>
   s.beats.find((b) => b.incidents?.some((x) => x.kind === kind))!;
 
 describe('script incidents and special scenes', () => {
+  it('keeps a booked fouler on the pitch through a restart before his same-minute substitution', () => {
+    const d = smallDetail(
+      [[0, 0, 5, 0, 27, 32, 9, 0, 0, -1, 0]],
+      [[0, 60, 32, 0, 0, 10, 3, 0, 9, -1, 0, 0]],
+      [[0, 22, 3, 5, 61, 0, 0]],
+    );
+    d.incidents = [[61, 1, 0, 3, -1, 0]];
+    replace(d, 1, 3, 61);
+    const s = write(d),
+      foul = scene(s, 'yellow');
+    expect(scene(s, 'sub')).toBe(foul);
+    expect(foul.foul).toBe(0);
+  });
+  it('attaches half-time incidents after receiving a recorded kick-off delivery', () => {
+    const d = smallDetail();
+    const entrant = replace(d, 1, 1, 46);
+    d.events.push([1, 0, 0, 0, 22, 27, entrant, 0, 0, -1, 0]);
+    const b = scene(write(d), 'sub');
+    expect(b.kind).toBe('kickOff');
+    expect(b.event).toBe(0);
+    expect(b.clock).toBe(45 * 60);
+    expect(b.actor).toBe(entrant);
+  });
   it('plays both sides fixed touches without endlessly yielding the ball between them', () => {
     // The minute quota is already met, but both sides still owe a fixed action. A completed
     // delivery and a foul both keep possession, so neither may yield before playing its own.

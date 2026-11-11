@@ -872,15 +872,32 @@ function writeFitted(settled: Settled, seed: string): Script {
     });
   };
   const finishIncidents = () => {
+    // A booked departing fouler must finish his fixed foul before his side's substitutions.
+    // Other sides can still enter at this stop, including a man that foul needs as its victim.
+    const waitingSides = new Set<TeamId>();
+    for (const x of waitingIncidents) {
+      if (x.kind !== 'sub' && x.kind !== 'injury') continue;
+      if (
+        touches.some((t, i) => {
+          const r = t.release;
+          if (played[i] || t.minute !== minute || !r || !('foul' in r) || !cards.has(r.foul))
+            return false;
+          const f = settled.fouls[r.foul]!;
+          return 1 - f[FO.fouledSide]! === x.side && f[FO.fouler] === x.line;
+        })
+      )
+        waitingSides.add(x.side);
+    }
+    const incidents = waitingIncidents.filter((x) => !waitingSides.has(x.side));
+    if (!incidents.length) return;
     if (pending) resolve(nearestBy(pending.side, ball, [pending.actor]));
-    const incidents = waitingIncidents;
     const last = beats.at(-1);
     if (owed && minuteOf.at(-1) === minute && last) {
       last.incidents = [...(last.incidents ?? []), ...incidents].sort(
         (a, b) => incidentIndex(settled, minute + 1, a) - incidentIndex(settled, minute + 1, b),
       );
     } else stopFor(incidents);
-    waitingIncidents = [];
+    waitingIncidents = waitingIncidents.filter((x) => waitingSides.has(x.side));
     eligibilityVersion++;
     if (!owed && holder >= 0 && !present(settled, side, holder, minute)) {
       // A dead ball in the departing keeper's hands belongs to his recorded successor.
@@ -1087,7 +1104,6 @@ function writeFitted(settled: Settled, seed: string): Script {
       };
       // A half starts on its minute, whether or not the minute holds a touch.
       deliver();
-      if (incidents.length) beats[minuteOf.indexOf(minute)]!.incidents = incidents;
       // Even an empty opening minute contains its kick-off, including a recorded delivery.
       if (pending !== null) {
         const p: Pending = pending;
@@ -1099,6 +1115,8 @@ function writeFitted(settled: Settled, seed: string): Script {
         resolve(receiver);
         if (i >= 0 && receiver === touches[i]!.actor) intended = i;
       }
+      // A recorded completed delivery creates its beat only once the receiver is known.
+      if (incidents.length) beats[minuteOf.indexOf(minute)]!.incidents = incidents;
     }
     settledMinute();
     // A recorded delivery is received in the minute it was played; a departing holder leaves
