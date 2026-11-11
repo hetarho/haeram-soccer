@@ -845,6 +845,7 @@
 - 261111 decided MATCH-12 T831: a script's staged seconds run about 3–18% longer than the match clock (T822) → the minute shown is the record's and the picture's seconds are fitted to the clock at one rate between two fixed moments, so the game's 60-second frames and presentation stay as they are (alt: minutes of varying length on the presentation clock | frames cut by picture time with repeated minute labels)
 - 261111 decided LAB-3 LAB-4 T836: the lab tuned the detailed engine's numbers → it moves to the result path's, the script writer's and the staging's numbers and watches a scripted, staged match (alt: retire the lab with the detailed engine)
 - 261111 suggest MATCH-22 T840: T822 found the script's linking carries sit at the record's own flows (wing cells release more rows than reach them); if T840 still reads the invention as too high on the placed attribution, drawing the aggregate path's flows as chains is the next lever — a result-model change with recalibration, for the owner to order
+- 261111 decided WEB-10 T847: where does an area detail opened from a home card keep its origin for the back link → a task-memory value set by the home card and cleared by every other opener; a reload falls back to the office (alt: a `from=home` address parameter, which survives reload but changes the address every journey asserts | a WEB-74 detour, which adds the 돌아가기 banner beside the menu)
 
 ## ideation
 | id | st |
@@ -871,7 +872,7 @@
 | id | rev | tasked | pending | [?] |
 |---|---|---|---|---|
 | ARCH | 39 | 39 | - | 2 |
-| WEB | 215 | 215 | - | 0 |
+| WEB | 216 | 216 | - | 0 |
 | LAB | 8 | 8 | - | 0 |
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
@@ -963,6 +964,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
+| T847 | a home area card's detail leads back home | WEB | - | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -998,6 +1000,7 @@
 - implement-task T823 once fv11 has landed T819–T822 and the owner's two prototype fixes (a man who takes the ball in stride, an opponent beside him engaging) are on main: one chain T823 → … → T845 — phase B T823–T840 (everything behind revision 11 until T838 releases it; T839 moves the browser journeys; T840 is the released model's verdict), phase C T841–T845 (the prototype first, the detailed engine last). T837 (2 h) and T840 (3 h) are explore tasks: give the loop a unit timeout above them (`--timeout-ms 19800000`)
 - T689 is superseded, never run it (leave it out of every task list): MATCH r59 retired the detailed engine's rules it measures and T840 reads the own club's scoring on the released model. Its file could not be closed in this planning commit — `next`'s copy differs from main's, so the replay conflicts — close it by its exit (done, no scoring commit) in a spec-only commit on main once no loop is landing
 - owner: seven calls taken at the conversion of ideation match-script-and-staging are in the inbox (261111 decided) to confirm or overturn before T833 — every own match is scripted at settlement even when skipped; score-led substitutions and the tendencies no longer move results; attribution places players, shots left as they are; prospective activation; the record's minute on the clock; the lab moves to the new model
+- implement-task T847 (owner request 261111: a home area card's detail — 유소년, 경기장, … — leads back home, not to the office)
 
 ## log
 - 261111 create-task review/match-engine-split-261110 F2 F3 F4: T814–T818 — ten naturalness metrics with a five-seed baseline (T814), a least pass length, one bounded touch and room around the man on the ball (T815), free players acting on a delayed view with a lagged place and a speed by distance, the back four one line (T816), settled turnovers believed late and re-shaped over seconds against counters at once, defenders assigned a man, attackers stepping off markers (T817), a two-hour tuning window and a second page (T818); review converted@261111
@@ -1007,6 +1010,8 @@
 - 261111 ideation match-script-and-staging converted; its two undecided items moved to ideation/other-clubs-match-maps and ideation/kick-off-fresh-seed
 - 261111 update-ssot MATCH r59 (one result path for every match; an own match's script MATCH-38 and staging MATCH-39; MATCH-11/12/15/16/17/18/20/22/24/25/28/37 revised, MATCH-31–35 retired), ARCH r39, WEB r215, LAB r8, HIST r25, SAVE r67, STAFF r41, PLAYER r17; seven calls in the inbox for the owner
 - 261111 update-ssot MATCH WEB HIST SAVE ARCH start: ideation match-script-and-staging taken to planning (ready) on the owner's order after T822's page and result
+- 261111 create-task WEB: T847 (a home area card's detail leads back home; the origin in task memory, no new copy)
+- 261111 update-ssot WEB r216 (WEB-10✎ a detail a home area card opened leads back home; flow Office✎)
 - 261110 mp10: the owner withdraws the smaller-model note; the T791–T800 chain runs on Opus mp10
 - 261110 rc10 start: the owner's 맡김 for T784 T785 (vibe loop, one unit each); T689 held for T800 rc10
 - 261110 tv10 closed: T779-T781 T786-T790 T801 integrated and released (gates 2166/2002/2004 s); engine hotspot pass and parked checkpoint/rendering questions remain tv10
@@ -1018,5 +1023,3 @@
 - 261110 T783 done: Ballon d'Or votes split 1/0.55/0.35 among teammates (one club's three 90.9%→0% of 44 measured podiums, winner unchanged) bd10
 - 261110 fix staff: a club holder named at the close (retirement) and hired by our delegated staff at the same close crashed it on employment dates (재직 날짜를 확인하세요, 2 of 4 measured worlds by 1963); his held time now starts no later than the move bd10
 - 261110 create-task T783 T784 T785: PLAYER r16 (Ballon d'Or vote split), CLUB r65 (delegated-recruitment targets) bd10
-- 261110 explore T689: cv04-alt (04:41Z, measurements 04:42–05:21Z) — new `scripts/scoring-clear-chances.ts`; ~8 clear-chance possessions a team on every base; 11 existing settings on `c50`, only `markGoalSide` moves the volume, goal-area share 20–22% and entries 27.6+ remain; no candidate earns the full read, no scoring source committed, T689 todo sc10
-- 261110 planning T689: cv04-alt window defined (clear-chance diagnostic first, then default-off switches on chance frequency/alternatives, cv04-clr's gate); no SSOT change, bases MATCH@58 ARCH@35 sc10
