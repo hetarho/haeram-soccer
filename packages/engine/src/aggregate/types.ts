@@ -338,6 +338,12 @@ export interface AggregatePlayerFacts {
 export interface AggregateAttributionTrace {
   /** Per side, per index of its ledger's `moves`. */
   moves: [AggregateTraceMove[], AggregateTraceMove[]];
+  /** Present only on traced calls: the participation timeline in input-line indexes. */
+  incidents?: { line: number; other?: number }[];
+  /** Each penalty shot's foul: group index and ordinal in its expanded fouls (booked first). */
+  penalties?: { side: AggregateSide; group: number; foul: number; shot: number }[];
+  /** Shoot-out kicks in kicking order; playAggregate/aggregateShootout fills this when traced. */
+  shootout?: { side: AggregateSide; line: number; scored: 0 | 1 }[];
   /** Per side (the fouled side), per index of its ledger's `fouled`. */
   fouls: [AggregateTraceFouls[], AggregateTraceFouls[]];
 }

@@ -210,16 +210,7 @@ export function exposures(
   }
   return out;
 }
-/** Whole minutes each line played, by line index; lines that never played are absent. */
-export function playedMinutes(
-  participation: AggregateParticipation,
-  side: AggregateSide,
-): Map<number, number> {
-  const out = new Map<number, number>();
-  for (const s of participation.stints[side])
-    out.set(s.line, (out.get(s.line) ?? 0) + s.to - s.from);
-  return out;
-}
+export { playedMinutes } from './count';
 
 /**
  * Every way a planned timeline breaks MATCH-19/20/27 beyond the kernel's own checks, empty when it

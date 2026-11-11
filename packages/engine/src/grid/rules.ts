@@ -77,3 +77,14 @@ export function modelAtLeast(setup: { model?: MatchModelRevision }, revision: nu
   }
   return lastNumber >= revision;
 }
+
+/** Added-time credits in seconds and each period's bounds in minutes. */
+export const ADDED_CONFIG = {
+  credits: { goal: 45, sub: 30, injury: 90, card: 20, penalty: 60 },
+  bounds: [
+    [1, 6],
+    [2, 10],
+    [0, 3],
+    [0, 3],
+  ],
+} as const;

@@ -104,15 +104,8 @@ export const ACTION_SECONDS = {
 } as const;
 
 /** Added-time credits in seconds and each period's bounds in minutes. */
-export const ADDED_CONFIG = {
-  credits: { goal: 45, sub: 30, injury: 90, card: 20, penalty: 60 },
-  bounds: [
-    [1, 6],
-    [2, 10],
-    [0, 3],
-    [0, 3],
-  ],
-} as const;
+export { ADDED_CONFIG } from './rules';
+import { ADDED_CONFIG } from './rules';
 
 /**
  * Candidate model (→MATCH-31, T441): each side's failed open-play passes by where they ended — won

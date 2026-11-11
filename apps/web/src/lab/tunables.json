@@ -770,7 +770,7 @@
     },
     {
       "name": "ADDED_CONFIG",
-      "file": "packages/engine/src/grid/engine.ts",
+      "file": "packages/engine/src/grid/rules.ts",
       "comment": "Added-time credits in seconds and each period's bounds in minutes.",
       "leaves": [
         { "path": "ADDED_CONFIG.credits.goal", "value": 45, "comment": "", "loadTime": false },

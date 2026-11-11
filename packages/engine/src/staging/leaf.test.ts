@@ -36,3 +36,36 @@ it('the staging imports no world, season or match orchestration', () => {
     }
   }
 });
+
+it('the script imports only leaves, with pitch, record and rules as its grid boundary', () => {
+  const root = process.cwd();
+  const script = 'packages/engine/src/script/';
+  const files = sourceFiles(root, [script]).filter(
+    (file) => isSource(file) && !/\.test\.[cm]?[jt]sx?$/.test(file),
+  );
+  expect(files.length).toBeGreaterThan(0);
+  const graph = sourceGraph(root);
+  for (const file of files) {
+    expect(
+      runtimeImports(readFileSync(file, 'utf8'), file).filter((name) => !name.startsWith('.')),
+      relative(root, file),
+    ).toEqual([]);
+    for (const imported of graph.files.get(resolve(file)) ?? []) {
+      const path = relative(root, imported);
+      if (path.startsWith('packages/engine/src/grid/'))
+        expect(
+          ['pitch.ts', 'record.ts', 'rules.ts'].some(
+            (name) => path === `packages/engine/src/grid/${name}`,
+          ),
+          `${relative(root, file)} imports ${path}`,
+        ).toBe(true);
+    }
+    for (const imported of dependencies(graph, [file])) {
+      const path = relative(root, imported);
+      expect(
+        !/^packages\/engine\/src\/(season(?:\.|\/)|world(?:\.|\/)|match\.ts$)/.test(path),
+        `${relative(root, file)} reaches ${path}`,
+      ).toBe(true);
+    }
+  }
+});

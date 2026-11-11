@@ -11,12 +11,12 @@ import { PD, PLAYER_DETAIL_SIZE } from '../../../contracts/src/detail';
 import type { Line } from '../../../contracts/src/player';
 import { cellBand } from '../grid/pitch';
 import { RESTART_CONFIG } from '../grid/restarts';
-import { COUNTER_ZONES, isCutBack, M, mirrorBand } from '../grid/record';
+import { COUNTER_ZONES, M, mirrorBand } from '../grid/record';
 import type { MatchAction } from '../match';
 import { zeroMetrics } from '../primitives';
 import { exp } from '../portable-math';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC, AGGREGATE_CONFIG } from './config';
-import { inBoxCell, isPassKind, looseBalls, moveKindIndex, xtGain } from './ledger';
+import { inBoxCell, isPassKind, looseBalls } from './ledger';
 import { fitPlaceWeights, opposingCell, placeDistance, placeTerm, type PlaceGroup } from './place';
 import {
   binomialDraw,
@@ -29,7 +29,7 @@ import {
   weightedIndex,
   type AggregateExposure,
 } from './participation';
-import { AGGREGATE_MOVE_KINDS } from './types';
+import { creditMove, creditShot, creditWin, creditCard, moveTraits } from './count';
 import type {
   AggregateAttribute,
   AggregateAttributionTrace,
@@ -52,9 +52,8 @@ import type {
 type Rng = () => number;
 type Table = Readonly<Record<Line, number>>;
 
-/** MATCH-13's definitions as the ledger reads them (ledger.ts `sideCounters`). */
+/** MATCH-13's zones as the ledger reads them (ledger.ts `sideCounters`). */
 const FINAL_THIRD_BAND = COUNTER_ZONES.finalThird;
-const BIG_CHANCE = 30;
 const LAST_BAND = 7;
 
 /** What makes a line do an action: his slot's line, a flank bonus, the attribute and the action. */
@@ -553,79 +552,6 @@ function within(r: Rng, k: number, counts: readonly number[], out: number[]): nu
 /** A move group without pinned completions. */
 const NO_PINS: readonly number[] = [];
 
-/** What MATCH-13 reads of a move group's kind and cells, worked out once per group. */
-interface MoveTraits {
-  kind: AggregateMove['kind'];
-  pass: boolean;
-  fromBand: number;
-  toBand: number;
-  boxEntry: boolean;
-  /** MATCH-13's cut-back by its cells (grid/record.ts `isCutBack`), whatever the move's kind. */
-  cutBack: boolean;
-  xt: number;
-}
-/** The 40 grid cells a move runs between (`band * 5 + lane`). */
-const CELLS = 40;
-/**
- * Traits by kind and cells, worked out once a process (T326): they read nothing else. A flat
- * array indexed by the numeric key instead of a map (T612).
- */
-const TRAITS: (MoveTraits | undefined)[] = Array<MoveTraits | undefined>(
-  AGGREGATE_MOVE_KINDS.length * CELLS * CELLS,
-).fill(undefined);
-function moveTraits(move: AggregateMove): MoveTraits {
-  const key = (moveKindIndex(move.kind) * CELLS + move.from) * CELLS + move.to;
-  let traits = TRAITS[key];
-  if (!traits) TRAITS[key] = traits = traitsOf(move);
-  return traits;
-}
-function traitsOf(move: AggregateMove): MoveTraits {
-  return {
-    kind: move.kind,
-    pass: isPassKind(move.kind),
-    fromBand: cellBand(move.from),
-    toBand: cellBand(move.to),
-    boxEntry: inBoxCell(move.to) && !inBoxCell(move.from),
-    cutBack: isPassKind(move.kind) && isCutBack(move.from, move.to),
-    xt: xtGain(move.from, move.to),
-  };
-}
-
-/** Counters a line's attempts and completions of one move group earn (→MATCH-13). */
-function creditMove(row: Row, move: MoveTraits, attempts: number, done: number, broke: number) {
-  const m = row.metrics,
-    d = row.detail;
-  const { fromBand, toBand } = move;
-  if (move.pass) {
-    m[M.passes]! += attempts;
-    m[M.completed]! += done;
-    if (fromBand >= FINAL_THIRD_BAND) {
-      d[PD.finalThirdPasses]! += attempts;
-      d[PD.finalThirdCompleted]! += done;
-    }
-    if (toBand > fromBand) d[PD.progressivePasses]! += done;
-    d[PD.lineBreakingPasses]! += broke;
-    if (move.kind === 'cross') {
-      d[PD.crosses]! += attempts;
-      d[PD.crossesCompleted]! += done;
-    }
-    if (move.kind === 'through') {
-      d[PD.throughBalls]! += attempts;
-      d[PD.throughBallsCompleted]! += done;
-    }
-    if (move.cutBack) d[PD.cutBacks]! += done;
-  } else {
-    if (toBand > fromBand) d[PD.progressiveCarries]! += done;
-    if (move.kind === 'takeOn') {
-      d[PD.takeOns]! += attempts;
-      m[M.dribbles]! += done;
-    }
-  }
-  if (move.boxEntry) d[PD.boxEntries]! += done;
-  if (toBand === FINAL_THIRD_BAND && fromBand < FINAL_THIRD_BAND) d[PD.frontOfBoxEntries]! += done;
-  d[PD.xtAdded]! += done * move.xt;
-}
-
 /**
  * Player lines of one match from its team facts and participation (→MATCH-26/27): shots and their
  * key passes at their minutes, every move group, the ball won from the opponent, saves, fouls
@@ -670,8 +596,31 @@ export function attributePlayerFacts(
       );
   for (const x of participation.incidents) {
     const d = sides[x.side].rows[sides[x.side].lineOf(x.player)]!.detail;
-    if (x.kind === 'yellow' || x.kind === 'secondYellow') d[PD.yellowCards]!++;
-    if (x.kind === 'red' || x.kind === 'secondYellow') d[PD.redCards]!++;
+    creditCard(d, x.kind);
+  }
+  if (trace) {
+    if (participation.incidents.length)
+      trace.incidents = participation.incidents.map((x) => ({
+        line: sides[x.side].lineOf(x.player),
+        ...(x.other !== undefined && { other: sides[x.side].lineOf(x.other) }),
+      }));
+    // setPieceShots creates penalties in foul-group order, within each period. No draw is added.
+    const penalties: NonNullable<AggregateAttributionTrace['penalties']> = [];
+    for (const side of [0, 1] as const) {
+      const ledger = facts.ledger.sides[side];
+      for (const period of facts.ledger.periods) {
+        const shots = ledger.shots
+          .map((shot, i) => ({ shot, i }))
+          .filter((s) => s.shot.period === period && s.shot.kind === 'penalty');
+        let at = 0;
+        ledger.fouled.forEach((f, group) => {
+          if (f.period !== period) return;
+          for (let foul = 0; foul < f.penalties; foul++)
+            penalties.push({ side, group, foul, shot: shots[at++]!.i });
+        });
+      }
+    }
+    if (penalties.length) trace.penalties = penalties;
   }
   const out: [AggregateLine[], AggregateLine[]] = [[], []];
   for (const side of [0, 1] as const) {
@@ -718,20 +667,12 @@ function attributeSide(
       const actor = passer ?? shooter;
       pinned.set(shot.source, [...(pinned.get(shot.source) ?? []), actor]);
     }
-    const goal = shot.outcome === 'goal';
-    const m = own.rows[shooter]!.metrics;
-    m[M.shots]!++;
-    if (goal || shot.outcome === 'save') m[M.onTarget]!++;
-    if (goal) m[M.goals]!++;
-    own.rows[shooter]!.detail[PD.xg]! += shot.xg;
-    if (passer !== undefined) {
-      const p = own.rows[passer]!;
-      p.detail[PD.keyPasses]!++;
-      p.detail[PD.xa]! += shot.xg;
-      if (shot.xg >= BIG_CHANCE) p.detail[PD.bigChancesCreated]!++;
-      if (goal) p.metrics[M.assists]!++;
-    }
-    if (shot.outcome === 'save') opp.rows[opp.keeperAt(shot.minute)]!.metrics[M.saves]!++;
+    creditShot(
+      own.rows[shooter]!,
+      passer === undefined ? undefined : own.rows[passer]!,
+      shot.outcome === 'save' ? opp.rows[opp.keeperAt(shot.minute)]! : undefined,
+      shot,
+    );
     credits.push({
       side,
       shot: index,
@@ -823,9 +764,7 @@ function attributeSide(
       for (let line = 0; line < split.length; line++) {
         const k = split[line]!;
         if (k === 0) continue;
-        opp.rows[line]!.metrics[pass ? M.interceptions : M.tackles]! += k;
-        if (mirrorBand(at) >= COUNTER_ZONES.highTurnover)
-          opp.rows[line]!.detail[PD.highTurnovers]! += k;
+        creditWin(opp.rows[line]!, pass, at, k);
       }
     }
   }

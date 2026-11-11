@@ -16,7 +16,6 @@ import type {
   Club,
   Fixture,
   Highlight,
-  Incident,
   MatchPlayback,
   MatchRecord,
   Player,
@@ -25,7 +24,8 @@ import type {
 } from '../../../contracts/src/types';
 import { injuryChance } from '../careers';
 import { subPolicyFor } from '../grid/changes';
-import { ADDED_CONFIG } from '../grid/engine';
+import { aggregateAddedTime } from './count';
+export { aggregateAddedTime } from './count';
 import { SHOT_CONFIG } from '../grid/resolve';
 import {
   DEFAULT_SUB_POLICY,
@@ -49,11 +49,12 @@ import { FORMATIONS, levelFactor, lineOf } from '../player';
 import { clamp } from '../primitives';
 import { slotOvr } from '../player-state';
 import { buildAggregateInput } from './input';
-import { AGGREGATE_CONFIG, AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
+import { AGGREGATE_PARTICIPATION_CONFIG as PC } from './config';
 import { onPitchAt, planParticipation, rebalanceIssues, slotAt } from './participation';
 import { attributePlayerFacts } from './players';
 import { aggregateStreams, generateTeamFacts } from './team';
 import type {
+  AggregateAttributionTrace,
   AggregateAttribute,
   AggregateCandidate,
   AggregateInput,
@@ -215,6 +216,7 @@ export function aggregateShootout(
   input: AggregateInput,
   participation: AggregateParticipation,
   streams: AggregateStreams,
+  trace?: AggregateAttributionTrace,
 ): Score {
   const end = participation.length;
   const minute = end - 0.5;
@@ -242,12 +244,16 @@ export function aggregateShootout(
       (kicker(side, line) - skill(foe, keeperOf(foe), 'reflexes')) * STRENGTH_CONFIG.skillScale;
     return clamp(P.base + margin / 300, P.min, P.max);
   };
+  if (trace) trace.shootout = [];
   const r = streams.draw('shootout');
   const scored = [0, 0],
     taken = [0, 0];
   const kick = (side: AggregateSide) => {
     const list = order[side]!;
-    if (r() < chance(side, list[taken[side]! % list.length]!)) scored[side]!++;
+    const line = list[taken[side]! % list.length]!;
+    const success = r() < chance(side, line);
+    if (success) scored[side]!++;
+    trace?.shootout!.push({ side, line, scored: success ? 1 : 0 });
     taken[side]!++;
   };
   const score = (): Score => ({ home: scored[0]!, away: scored[1]! });
@@ -262,34 +268,6 @@ export function aggregateShootout(
     kick(1);
   }
   return score();
-}
-
-/**
- * Added minutes of each period played (→MATCH-1): the time its goals, substitutions, injuries,
- * cards and penalties took, at the detailed engine's credits and bounds (grid/engine.ts).
- */
-export function aggregateAddedTime(
-  facts: AggregateTeamFacts,
-  incidents: readonly Incident[],
-): number[] {
-  const periods = facts.length === 120 ? 4 : 2;
-  const periodOf = (minute: number) =>
-    minute <= 45 ? 0 : minute <= 90 ? 1 : minute <= 105 ? 2 : 3;
-  const credits = [0, 0, 0, 0];
-  const K = ADDED_CONFIG.credits;
-  for (const side of facts.ledger.sides)
-    for (const shot of side.shots) {
-      if (shot.outcome === 'goal') credits[periodOf(shot.minute)]! += K.goal;
-      if (shot.kind === 'penalty') credits[periodOf(shot.minute)]! += K.penalty;
-    }
-  for (const x of incidents)
-    credits[periodOf(x.minute)]! +=
-      x.kind === 'sub' ? K.sub : x.kind === 'injury' ? K.injury : K.card;
-  return credits.slice(0, periods).map((credited, i) => {
-    const seconds = credited + AGGREGATE_CONFIG.addedSeconds[i]!;
-    const [lo, hi] = ADDED_CONFIG.bounds[i]!;
-    return Math.min(hi, Math.max(lo, Math.ceil(seconds / 60)));
-  });
 }
 
 /** Everything one aggregate match produced before it becomes a record. */
@@ -406,6 +384,7 @@ export function playAggregate(
   rosters: readonly [readonly Player[], readonly Player[]],
   decide?: DecideRule,
   limits: AggregateRebalanceLimits = PC.changes,
+  trace?: AggregateAttributionTrace,
 ): AggregateMatch {
   const era = eraRules(f.year);
   const base = buildAggregateInput(prepared, UNPLANNED, rosters);
@@ -423,9 +402,10 @@ export function playAggregate(
     if (match && level(match.facts))
       match = settleParticipation(base, plan, streams, 120, access, match.decisions, search);
     if (!match) continue;
+    if (trace) trace.shootout = [];
     const shootout =
       match.facts.length === 120 && level(match.facts)
-        ? aggregateShootout(match.input, match.participation, streams)
+        ? aggregateShootout(match.input, match.participation, streams, trace)
         : undefined;
     const players = attributePlayerFacts(
       match.input,
@@ -433,6 +413,7 @@ export function playAggregate(
       match.participation,
       match.facts,
       streams,
+      trace,
     );
     return { ...match, plan, players, retry, ...(shootout && { shootout }) };
   }

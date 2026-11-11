@@ -47,38 +47,20 @@ import { PD, TD } from '../packages/contracts/src/detail';
 import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
 import type { Fixture, Player, Tactic } from '../packages/contracts/src/types';
 import type { AggregateMatch } from '../packages/engine/src/aggregate/engine';
-import { isPassKind } from '../packages/engine/src/aggregate/ledger';
 import { attributePlayerFacts } from '../packages/engine/src/aggregate/players';
 import { aggregateStreams } from '../packages/engine/src/aggregate/team';
-import {
-  AGGREGATE_MOVE_KINDS,
-  type AggregateAttributionTrace,
-  type AggregateMove,
-  type AggregateTraceMove,
-} from '../packages/engine/src/aggregate/types';
+import type { AggregateAttributionTrace } from '../packages/engine/src/aggregate/types';
 import { M } from '../packages/engine/src/grid/record';
 import { eraRules } from '../packages/engine/src/grid/setup';
 import { FORMATIONS } from '../packages/engine/src/player';
 
-/** The prototype's code lists (`scripts/match-proto/core/settled.ts`), copied, not imported. */
-export const EVENT_RESULTS = [
-  'complete',
-  'offside',
-  'intercepted',
-  'outTouch',
-  'outByline',
-  'cornerWon',
-  'looseKept',
-  'looseRecovered',
-  'tackled',
-] as const;
+import { EVENT_RESULTS, matchDetail } from '../packages/engine/src/script/detail';
+export { EVENT_RESULTS } from '../packages/engine/src/script/detail';
+export { expandGroup, swapOffsides } from '../packages/engine/src/script/expand';
 const R = Object.fromEntries(EVENT_RESULTS.map((r, i) => [r, i])) as Record<
   (typeof EVENT_RESULTS)[number],
   number
 >;
-const SET_PIECES = ['none', 'corner', 'freeKick'] as const;
-const SHOT_KINDS = ['open', 'corner', 'freeKick'] as const;
-const SHOT_OUTCOMES = ['goal', 'save', 'block', 'miss'] as const;
 const ATTRS = [
   'passing',
   'vision',
@@ -155,131 +137,6 @@ export function protoCell(cell: number): number {
   const band = Math.floor(cell / 5),
     lane = cell % 5;
   return band * 5 + lane;
-}
-
-/** One attempt of a group, in the side's line indexes (`other` −1 when none). */
-export interface Attempt {
-  actor: number;
-  result: number;
-  lineBreaking: 0 | 1;
-  other: number;
-}
-type GroupCounts = Pick<
-  AggregateMove,
-  | 'kind'
-  | 'attempts'
-  | 'completed'
-  | 'lineBreaking'
-  | 'offside'
-  | 'intercepted'
-  | 'outTouch'
-  | 'outByline'
-  | 'cornersWon'
-  | 'recovered'
->;
-/** Line indexes repeated by their counts, ascending. */
-const spread = (counts: readonly number[]) =>
-  counts.flatMap((k, line) => Array<number>(k).fill(line));
-
-/**
- * A move group's attempts by the header's rule. `outfield` lists this side's outfield lines, for an
- * offside group whose only caught line is the passer's own; without it such an attempt keeps its
- * own line for the caller to swap across groups (`swapOffsides`).
- */
-export function expandGroup(
-  move: GroupCounts,
-  t: AggregateTraceMove,
-  outfield?: readonly number[],
-): Attempt[] {
-  const out: Attempt[] = [];
-  const failed: Attempt[] = [];
-  t.attempts.forEach((k, actor) => {
-    const done = t.completed[actor] ?? 0,
-      broke = t.broke[actor] ?? 0;
-    for (let j = 0; j < done; j++)
-      out.push({ actor, result: R.complete, lineBreaking: j < broke ? 1 : 0, other: -1 });
-    for (let j = done; j < k; j++) {
-      const a: Attempt = { actor, result: R.looseKept, lineBreaking: 0, other: -1 };
-      out.push(a);
-      failed.push(a);
-    }
-  });
-  if (out.length !== move.attempts) throw new Error(`group of ${move.attempts}: ${out.length}`);
-  if (failed.length !== move.attempts - move.completed) throw new Error('completions differ');
-  const pass = isPassKind(move.kind);
-  if (pass) {
-    const fates: [number, number][] = [
-      [R.offside, move.offside],
-      [R.intercepted, move.intercepted],
-      [R.outTouch, move.outTouch],
-      [R.outByline, move.outByline - move.cornersWon],
-      [R.cornerWon, move.cornersWon],
-      [R.looseRecovered, move.recovered],
-    ];
-    let at = 0;
-    for (const [result, k] of fates)
-      for (let j = 0; j < k; j++) {
-        const a = failed[at++];
-        if (!a) throw new Error(`more fates than failed attempts in a ${move.kind} group`);
-        a.result = result;
-      }
-  } else for (const a of failed) a.result = R.tackled;
-  const won = spread(t.won);
-  const winners = out.filter((a) => a.result === R.intercepted || a.result === R.tackled);
-  if (won.length !== winners.length) throw new Error(`${won.length} won, ${winners.length} lost`);
-  winners.forEach((a, i) => (a.other = won[i]!));
-  const caught = spread(t.offside);
-  const offside = out.filter((a) => a.result === R.offside);
-  if (caught.length !== offside.length) throw new Error('offside lines differ');
-  offside.forEach((a, i) => (a.other = caught[i]!));
-  offside.forEach((a, i) => {
-    if (a.other !== a.actor) return;
-    const next = offside[i + 1];
-    if (next) {
-      [a.other, next.other] = [next.other, a.other];
-      return;
-    }
-    const earlier = offside
-      .slice(0, i)
-      .find((b) => b.other !== a.actor && a.other !== b.actor && b.actor !== a.actor);
-    if (earlier) {
-      [a.other, earlier.other] = [earlier.other, a.other];
-      return;
-    }
-    // A failed attempt of another man in the group takes the offside, with its own fate and
-    // `other` passing to this one: every man's attempts, completions and offsides stay as drawn.
-    const instead = failed.find((b) => b.result !== R.offside && b.actor !== a.actor);
-    if (instead) {
-      [a.result, instead.result] = [instead.result, a.result];
-      [a.other, instead.other] = [instead.other, a.other];
-    } else if (outfield) a.other = outfield.find((line) => line !== a.actor) ?? -1;
-  });
-  const recovered = spread(t.recovered);
-  out
-    .filter((a) => a.result === R.looseRecovered)
-    .forEach((a, i) => (a.other = recovered[i] ?? -1));
-  return out;
-}
-
-/**
- * Event rows (`[side, group, kind, setPiece, from, to, actor, result, lineBreaking, other]`) whose
- * offside man is still the passer swap with the first offside row of the same side that stays
- * valid, else take the side's lowest other outfield player (slot 1, or 2 when the passer is 1).
- */
-export function swapOffsides(events: number[][], offside: number): number {
-  let fallbacks = 0;
-  for (const e of events) {
-    if (e[7] !== offside || e[9] !== e[6]) continue;
-    const swap = events.find(
-      (g) => g !== e && g[7] === offside && g[0] === e[0] && g[9] !== e[6] && g[6] !== e[9],
-    );
-    if (swap) [e[9], swap[9]] = [swap[9]!, e[9]!];
-    else {
-      e[9] = e[0]! * 11 + (e[6] === e[0]! * 11 + 1 ? 2 : 1);
-      fallbacks++;
-    }
-  }
-  return fallbacks;
 }
 
 /** A candidate the export finds it cannot stage after all, with its counted reason. */
@@ -371,98 +228,45 @@ export function settledFile(
     if (slot === undefined) throw new Error(`side ${side} line ${line} has no slot`);
     return side * 11 + slot;
   };
-  const lineOfId = (side: 0 | 1, id: string) => {
-    const line = input.sides[side].lines.findIndex((l) => l.id === id);
-    if (line < 0) throw new Error(`no line for ${id}`);
-    return line;
-  };
-  const events: number[][] = [];
-  /** Per side and group, each completed event id by the actor's line. */
-  const completedIds: Map<number, number[]>[][] = [[], []];
-  for (const side of [0, 1] as const) {
-    const ledger = facts.ledger.sides[side];
-    ledger.moves.forEach((move, group) => {
-      const byActor = new Map<number, number[]>();
-      completedIds[side][group] = byActor;
-      for (const a of expandGroup(move, trace.moves[side][group]!)) {
-        if (a.result === R.complete)
-          byActor.set(a.actor, [...(byActor.get(a.actor) ?? []), events.length]);
-        const otherSide = a.result === R.offside ? side : 1 - side;
-        events.push([
-          side,
-          group,
-          AGGREGATE_MOVE_KINDS.indexOf(move.kind),
-          SET_PIECES.indexOf(move.setPiece ?? 'none'),
-          protoCell(move.from),
-          protoCell(move.to),
-          index(side, a.actor),
-          a.result,
-          a.lineBreaking,
-          index(otherSide, a.other),
-        ]);
-      }
-    });
-  }
-  // An offside only its own passer was caught on, with no other man to take it in its group or
-  // side, would move an offside off the record's player: such a match is not exported.
-  if (swapOffsides(events, R.offside) > 0) throw new SkipMatch('offsidePasser');
-  const shots: number[][] = [];
-  for (const side of [0, 1] as const) {
-    const ledger = facts.ledger.sides[side];
-    const used = new Set<number>();
-    ledger.shots.forEach((shot, i) => {
-      const credit = match.players.shots.find((c) => c.side === side && c.shot === i);
-      if (!credit) throw new Error(`side ${side} shot ${i} has no credit`);
-      let source = -1;
-      if (shot.source >= 0) {
-        const actor = credit.passer ?? credit.shooter;
-        const ids = completedIds[side][shot.source]!.get(actor) ?? [];
-        source = ids.find((id) => !used.has(id)) ?? -1;
-        if (source < 0) throw new Error(`side ${side} shot ${i}: no completion of its source`);
-        used.add(source);
-      }
-      const kind = SHOT_KINDS.indexOf(shot.kind as (typeof SHOT_KINDS)[number]);
-      if (kind < 0) throw new Error(`shot kind ${shot.kind}`);
-      shots.push([
-        side,
-        shot.minute,
-        protoCell(shot.cell),
-        kind,
-        shot.header ? 1 : 0,
-        shot.xg,
-        SHOT_OUTCOMES.indexOf(shot.outcome),
-        shot.corner ? 1 : 0,
-        index(side, credit.shooter),
-        credit.passer === undefined ? -1 : index(side, credit.passer),
-        source,
-        (1 - side) * 11,
-      ]);
-    });
-  }
-  const fouls: number[][] = [];
-  for (const side of [0, 1] as const) {
-    facts.ledger.sides[side].fouled.forEach((row, i) => {
-      const t = trace.fouls[side][i]!;
-      for (const b of t.booked)
-        fouls.push([
-          side,
-          protoCell(row.cell),
-          index(1 - side, b.fouler),
-          index(side, b.fouled),
-          participation.incidents[b.incident]!.minute,
-        ]);
-      const fouled = spread(t.fouled),
-        fouler = spread(t.fouler);
-      if (fouled.length !== fouler.length || fouled.length + t.booked.length !== row.n)
-        throw new Error(`side ${side} foul row ${i} does not add up`);
-      fouled.forEach((line, j) =>
-        fouls.push([side, protoCell(row.cell), index(1 - side, fouler[j]!), index(side, line), -1]),
-      );
-    });
-  }
-  const cards = participation.incidents
-    .filter((x) => x.kind === 'yellow')
-    .map((x) => [x.minute, x.side, index(x.side, lineOfId(x.side, x.player))]);
+  const detail = matchDetail(match, rosters, trace);
+  const events = detail.events.map((e) => [
+    ...e.slice(0, 4),
+    protoCell(e[4]!),
+    protoCell(e[5]!),
+    index(e[0]!, match.players.sides[e[0] as 0 | 1][e[6]!]!.line),
+    e[7]!,
+    e[8]!,
+    e[9]! < 0
+      ? -1
+      : index(
+          e[7] === R.offside ? e[0]! : 1 - e[0]!,
+          match.players.sides[(e[7] === R.offside ? e[0]! : 1 - e[0]!) as 0 | 1][e[9]!]!.line,
+        ),
+  ]);
+  // Revision-10 singleton offside traces cannot always name a different passer without changing
+  // a recorded player's count. The ten-file prototype still excludes those candidates.
+  if (events.some((e) => e[7] === R.offside && e[6] === e[9])) throw new SkipMatch('offsidePasser');
+  const lineIndex = (side: number, line: number) =>
+    line < 0 ? -1 : index(side, match.players.sides[side as 0 | 1][line]!.line);
+  const shots = detail.shots.map((s) => [
+    ...s.slice(0, 2),
+    protoCell(s[2]!),
+    ...s.slice(3, 8),
+    lineIndex(s[0]!, s[8]!),
+    lineIndex(s[0]!, s[9]!),
+    s[10]!,
+    lineIndex(1 - s[0]!, s[11]!),
+  ]);
+  const fouls = detail.fouls.map((f) => [
+    f[0]!,
+    protoCell(f[1]!),
+    lineIndex(1 - f[0]!, f[2]!),
+    lineIndex(f[0]!, f[3]!),
+    f[4]!,
+  ]);
+  const cards = detail.incidents
+    .filter((x) => x[2] === 0)
+    .map((x) => [x[0]!, x[1]!, lineIndex(x[1]!, x[3]!)]);
   const players: number[][] = Array.from({ length: 22 }, () => Array<number>(14).fill(0));
   for (const side of [0, 1] as const)
     for (const l of match.players.sides[side])
