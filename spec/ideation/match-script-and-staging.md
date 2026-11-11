@@ -27,7 +27,8 @@
 ## domains
 - [o] MATCH: MATCH-1 (the detailed engine plays the own club's match touch by touch) and MATCH-22 (dispatch: own matches always the grid engine) replaced by one aggregate result for every match plus a script and staging for watched matches; MATCH-25 material drawn by probability instead of read from play; MATCH-23/28's two-engine parity reduced to one engine's targets
 - [?] WEB: the pitch view plays staged frames from a script; the pass network view as the owner's reference pictures (circle size by passes, line width by pair passes, arrows)
-- [?] HIST/SAVE: the stored form of the pass network able to hold every fixture later; the scope kept per platform
+- [?] HIST: which fixtures keep a pass network, per platform (own matches only for now)
+- [?] SAVE: a stored form of the pass network able to hold every fixture later
 - [?] ARCH: the processing budget of writing a script for a watched match; removal of the detailed engine's decision and movement modules once replaced
 
 ## open
