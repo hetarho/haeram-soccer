@@ -1,0 +1,44 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index 6ee2bfe5..a0290f8f 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -112,6 +112,22 @@ function writeFitted(settled: Settled, seed: string): Script {
+     return settled.events.length + settled.shots.length + (r && 'foul' in r ? r.foul : 0);
+   };
+   const order = touches.map((_, i) => i).sort((a, b) => rowId(a) - rowId(b));
++  // Temporal eligibility is fixed by the record. Keep row-id order inside each minute/side;
++  // playing a touch and waiting for an entrant remain dynamic checks below.
++  const minuteOrder = Array.from({ length: settled.length }, (_, m) =>
++    ([0, 1] as const).map((team) =>
++      order.filter((i) => {
++        const t = touches[i]!;
++        return (
++          t.side === team &&
++          (t.minute === m || t.minute === FLOATING) &&
++          t.period === periodOf(m) &&
++          m >= t.from &&
++          m < t.until
++        );
++      }),
++    ),
++  );
+   const total = [0, 0];
+   const done = [0, 0];
+   const endsTotal = [0, 0];
+@@ -306,15 +322,10 @@ function writeFitted(settled: Settled, seed: string): Script {
+   });
+   /** Touches `team` may play now, in row-id order: this minute's fixed ones and every floating one. */
+   const unplayed = (team: TeamId) =>
+-    order.filter((i) => {
++    minuteOrder[minute]![team]!.filter((i) => {
+       const t = touches[i]!;
+       return (
+         !played[i] &&
+-        t.side === team &&
+-        (t.minute === minute || t.minute === FLOATING) &&
+-        t.period === periodOf(minute) &&
+-        minute >= t.from &&
+-        minute < t.until &&
+         !awaitingEntry(team, t.actor) &&
+         !t.carries.some((id) => {
+           const e = settled.events[id]!;

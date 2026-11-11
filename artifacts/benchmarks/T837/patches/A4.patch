@@ -1,0 +1,69 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index 3e62ea17..d423359b 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -333,36 +333,38 @@ function writeFitted(settled: Settled, seed: string): Script {
+   const unplayed = (team: TeamId): readonly number[] => {
+     const cached = available[team]!;
+     if (cached.minute === minute && cached.version === eligibilityVersion) return cached.rows;
++    const hasEntry = waitingIncidents.some((x) => x.kind === 'sub');
+     const rows = minuteOrder[minute]![team]!.filter((i) => {
+       const t = touches[i]!;
+       return (
+         !played[i] &&
+-        !awaitingEntry(team, t.actor) &&
+-        !t.carries.some((id) => {
+-          const e = settled.events[id]!;
+-          return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
+-        }) &&
+-        !(
+-          t.release &&
+-          'event' in t.release &&
+-          (() => {
+-            const e = settled.events[t.release.event]!;
+-            return (
+-              e[EV.other]! >= 0 &&
+-              awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
+-            );
+-          })()
+-        ) &&
+-        !(
+-          t.release &&
+-          'shot' in t.release &&
+-          awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
+-        ) &&
+-        !(
+-          t.release &&
+-          'foul' in t.release &&
+-          awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
+-        ) &&
++        (!hasEntry ||
++          (!awaitingEntry(team, t.actor) &&
++            !t.carries.some((id) => {
++              const e = settled.events[id]!;
++              return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
++            }) &&
++            !(
++              t.release &&
++              'event' in t.release &&
++              (() => {
++                const e = settled.events[t.release.event]!;
++                return (
++                  e[EV.other]! >= 0 &&
++                  awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
++                );
++              })()
++            ) &&
++            !(
++              t.release &&
++              'shot' in t.release &&
++              awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
++            ) &&
++            !(
++              t.release &&
++              'foul' in t.release &&
++              awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
++            ))) &&
+         (after[i]! < 0 || played[after[i]!])
+       );
+     });

@@ -1,0 +1,61 @@
+process 1/8: cpu ×0.961
+process 2/8: cpu ×1.014
+process 3/8: cpu ×0.991
+process 4/8: cpu ×1.001
+process 5/8: cpu ×0.997
+process 6/8: cpu ×1.025
+process 7/8: cpu ×0.985
+process 8/8: cpu ×1.021
+{
+  "workload": "staging-core",
+  "base": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "cand": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "procs": 8,
+  "reps": 3,
+  "sameBundle": true,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "0e73f30ad40fb149"
+    ],
+    "cand": [
+      "0e73f30ad40fb149"
+    ]
+  },
+  "staging-core": {
+    "pairs": 24,
+    "ms": {
+      "base": {
+        "cpu": 13828.917499999996,
+        "wall": 13922.113771
+      },
+      "cand": {
+        "cpu": 13870.269,
+        "wall": 13967.545166999997
+      }
+    },
+    "cpu": {
+      "ratio": 1.0016,
+      "lo": 0.9843,
+      "hi": 1.0151,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 1.0008,
+      "lo": 0.9812,
+      "hi": 1.0156,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    4.70458984375,
+    23.12841796875,
+    6.24072265625,
+    3.5498046875,
+    4.8681640625,
+    5.21240234375,
+    4.31396484375,
+    3.3896484375,
+    2.572265625
+  ]
+}

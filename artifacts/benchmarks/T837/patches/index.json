@@ -1,0 +1,81 @@
+{
+  "baseline": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "writerOrder": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A6",
+    "A8",
+    "A9",
+    "A10"
+  ],
+  "motionOrder": [
+    "S1",
+    "S3"
+  ],
+  "patches": {
+    "A1": {
+      "sha256": "78db353e732b34542171bd6e336ce0d527eab26eaa3ae8b8652f262000ad97cb",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A2": {
+      "sha256": "cb71bcbfbb5039204dbc879cd946d1e95585647b1fa0ed9f945a8ac9e516c3e5",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A3": {
+      "sha256": "cbcd65270fb7f99b60151a94d33f6e7cf4e5481afe431d804d0bf6a47e60e963",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A4": {
+      "sha256": "3783b2bb25974fb2e1072b3b6c50ab6f72c2951db876b5a1b31da04d94d3ec14",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A6": {
+      "sha256": "f94ea6ca6fa4dcd1559ce2301dff0707aabb6a18e980e96b82d5ddfe201d645c",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A8": {
+      "sha256": "a6a4f0a20c3f03f178420f3569e39cc833cf11df352e6f89780b540edd03b969",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A9": {
+      "sha256": "b1f0cf82555097776c39134df9a88d5d4131702096eb49faf4815e8286f20fb3",
+      "files": [
+        "packages/engine/src/script/write.ts"
+      ]
+    },
+    "A10": {
+      "sha256": "1c68e87828791930e01d382c49ac97ee8827bd439d23f8c8e18b5dc110e5af13",
+      "files": [
+        "packages/engine/src/script/write.ts",
+        "packages/engine/src/script/search.ts"
+      ]
+    },
+    "S1": {
+      "sha256": "da9f515272c718b1eee52f54b8a6128c0f6f9c252f67d2ace86c781f6b397312",
+      "files": [
+        "packages/engine/src/staging/places.ts",
+        "packages/engine/src/staging/world.ts"
+      ]
+    },
+    "S3": {
+      "sha256": "4a331c328e9f13e89d2cd3a5a7eade51640d37d4ac324c969d40dd50ed7e1ac2",
+      "files": [
+        "packages/engine/src/staging/places.ts"
+      ]
+    }
+  }
+}

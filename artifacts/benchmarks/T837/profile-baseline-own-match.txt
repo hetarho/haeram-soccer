@@ -1,0 +1,80 @@
+own-match: 12 reps after 4 warm, 2025 ms, 2200 samples (whole profile: window not on the profile clock), load1 2.78, digest 318f9b6a609147e7
+
+self
+ 33.0%    669 ms  (anonymous) workloads-45478.mjs:256704
+  8.7%    176 ms  unplayed workloads-45478.mjs:256704
+  3.5%     70 ms  touchCost workloads-45478.mjs:256725
+  3.1%     64 ms  cheapest workloads-45478.mjs:256787
+  2.7%     55 ms  (garbage collector)
+  2.7%     54 ms  (anonymous) workloads-45478.mjs:256715
+  2.5%     52 ms  awaitingEntry workloads-45478.mjs:256610
+  2.1%     43 ms  writeFitted workloads-45478.mjs:256541
+  1.8%     37 ms  compileSourceTextModule utils:338
+  1.8%     37 ms  settledMinute workloads-45478.mjs:257127
+  1.8%     36 ms  (anonymous) workloads-45478.mjs:256709
+  1.5%     30 ms  fixedLeft workloads-45478.mjs:256714
+  1.3%     26 ms  hasTurn workloads-45478.mjs:256627
+  1.3%     26 ms  (anonymous) workloads-45478.mjs:256250
+  1.2%     24 ms  choose workloads-45478.mjs:256774
+  0.9%     17 ms  (anonymous) workloads-45478.mjs:255878
+  0.8%     17 ms  fitPlaceWeights workloads-45478.mjs:253625
+  0.8%     17 ms  (anonymous) workloads-45478.mjs:256628
+  0.7%     15 ms  push workloads-45478.mjs:256645
+  0.7%     15 ms  (anonymous) workloads-45478.mjs:256455
+  0.7%     14 ms  validateScript workloads-45478.mjs:256441
+  0.6%     13 ms  nominalSpot workloads-45478.mjs:253585
+  0.6%     12 ms  generateAttributes workloads-45478.mjs:233075
+  0.5%     11 ms  quotaMet workloads-45478.mjs:256724
+  0.5%     10 ms  (anonymous) workloads-45478.mjs:257179
+
+inclusive
+ 95.6%   1936 ms  (anonymous) [eval1]:1
+ 86.4%   1749 ms  candidateMatch workloads-45478.mjs:260267
+ 86.4%   1749 ms  simulateMatch workloads-45478.mjs:260252
+ 86.4%   1749 ms  write workloads-45478.mjs:278530
+ 86.4%   1749 ms  rep workloads-45478.mjs:278542
+ 82.5%   1671 ms  ownMatchPlayback workloads-45478.mjs:257302
+ 78.7%   1594 ms  writePeriods workloads-45478.mjs:256533
+ 78.7%   1594 ms  writeScript workloads-45478.mjs:256530
+ 74.3%   1505 ms  writeFitted workloads-45478.mjs:256541
+ 67.0%   1358 ms  settledMinute workloads-45478.mjs:257127
+ 46.2%    935 ms  unplayed workloads-45478.mjs:256704
+ 38.0%    770 ms  (anonymous) workloads-45478.mjs:256704
+ 22.8%    461 ms  choose workloads-45478.mjs:256774
+ 11.1%    226 ms  cheapest workloads-45478.mjs:256787
+  8.0%    163 ms  touchCost workloads-45478.mjs:256725
+  6.6%    133 ms  careerWorld workloads-45478.mjs:270135
+  6.6%    133 ms  workloadOf workloads-45478.mjs:278513
+  4.7%     96 ms  historyWorld workloads-45478.mjs:269842
+  4.2%     85 ms  fixedLeft workloads-45478.mjs:256714
+  3.8%     76 ms  validateScript workloads-45478.mjs:256441
+  3.6%     74 ms  prepareSeason workloads-45478.mjs:263479
+  3.5%     72 ms  playAggregate workloads-45478.mjs:255102
+  3.3%     66 ms  materializePeople workloads-45478.mjs:235581
+  2.9%     59 ms  generatedSquad workloads-45478.mjs:235563
+  2.9%     58 ms  evaluate
+
+lines of touchCost workloads-45478.mjs:256725 (67 ticks, warm-up included)
+ 10.4% 256742  if (touches[i].minute === minute)
+  9.0% 256734  if (actorLeft[team][actor] <= winsLeft[team][actor]) cost += FIT.winnerPull * 100;
+  9.0% 256728  if (waitingIncidents.length && release && ("foul" in release || "shot" in release || ["offside", "outTouch", "outByline", "cornerWon"].inclu
+  7.5% 256726  let cost = cellGap(startCell[i], cell2);
+  7.5% 256746  if (release && "event" in release && reserve.has(release.event) && demand[team][startCell[i]] > 0)
+  7.5% 256740  (done[0] + done[1] - minuteStart) / Math.max(1, quota(minute) - minuteStart)
+  7.5% 256727  const release = touches[i].release;
+  6.0% 256744  if (touches[i].until === minute + 1) cost -= FIT.fixedPush * 100;
+  6.0% 256748  if (ends[i]) {
+  6.0% 256745  if (setPiece2[i]) cost += FIT.setPieceWait * 100;
+  4.5% 256732  const met = quotaMet();
+  4.5% 256735  const by = winner[i];
+  4.5% 256752  cost -= Math.round(
+  1.5% 256736  if (by >= 0 && actorLeft[other7(team)][by] <= winsLeft[other7(team)][by])
+  1.5% 256750  const lead = share2 - done[other7(team)] / Math.max(1, total[other7(team)]);
+  1.5% 256753  Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100
+  1.5% 256751  const endsLead = endsDone[team] / Math.max(1, endsTotal[team]) - share2;
+  1.5% 256749  const share2 = done[team] / Math.max(1, total[team]);
+  1.5% 256725  const touchCost = (team, i, cell2) => {
+  1.5% 256757  return cost;
+
+profile /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/own-match-45478.cpuprofile
+bundle /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/workloads-45478.mjs

@@ -1,0 +1,53 @@
+process 1/4: cpu ×0.266
+process 2/4: cpu ×0.280
+process 3/4: cpu ×0.259
+process 4/4: cpu ×0.272
+{
+  "workload": "staging-core",
+  "base": ".tmp/T837/A1",
+  "cand": "/Users/ihaelam/project/haeram-soccer",
+  "procs": 4,
+  "reps": 2,
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "0e73f30ad40fb149"
+    ],
+    "cand": [
+      "0e73f30ad40fb149"
+    ]
+  },
+  "staging-core": {
+    "pairs": 8,
+    "ms": {
+      "base": {
+        "cpu": 14115.559499999998,
+        "wall": 14244.338521
+      },
+      "cand": {
+        "cpu": 3762.7005000000026,
+        "wall": 3796.3877500000017
+      }
+    },
+    "cpu": {
+      "ratio": 0.269,
+      "lo": 0.262,
+      "hi": 0.2761,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.2703,
+      "lo": 0.2622,
+      "hi": 0.2772,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    4.099609375,
+    8.052734375,
+    13.8037109375,
+    7.83642578125,
+    5.005859375
+  ]
+}

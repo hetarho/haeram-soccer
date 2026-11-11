@@ -8,7 +8,7 @@ import { invalidDetail } from '../script/failure';
 // and movement only presents beats already settled (ARCH-7).
 import { STAGING_CONFIG } from './config';
 import { CENTRE, HALFWAY, PITCH, clampToPitch, oppGoal, ownGoal, toAttack } from './pitch';
-import { ROLE_SHAPE, nominalSpot } from './places';
+import { ROLE_SHAPE, nominalSpot, prepareSpots } from './places';
 import type {
   BallMode,
   Beat,
@@ -134,6 +134,7 @@ function observedMovement(
   state: StageState,
   index: number,
   snapshot: readonly Vec[],
+  spot: ReturnType<typeof prepareSpots>,
 ): NonNullable<Frame['movement']>[number] {
   const p = state.fixture.players[index];
   const body = state.bodies[index];
@@ -160,16 +161,7 @@ function observedMovement(
   )
     action = 'recover';
   else if (state.live && p.team === state.team) {
-    const nominal = nominalSpot(
-      {
-        fixture: state.fixture,
-        ball: shapeRef(state),
-        team: state.team,
-        phase: state.phase,
-        positions: snapshot,
-      },
-      index,
-    );
+    const nominal = spot(shapeRef(state), state.team, state.phase, index);
     if (dist(state.minds[index].place, nominal) > MOTION.arriveRadius) action = 'support';
   }
   return {
@@ -183,6 +175,7 @@ function observedMovement(
 const recordFrame = (state: StageState): void => {
   const p: number[] = [];
   const snapshot = positionsOf(state);
+  const spot = prepareSpots(state.fixture, snapshot);
   for (const body of state.bodies) p.push(round2(body.pos[0]), round2(body.pos[1]));
   state.frames.push({
     t: state.t,
@@ -201,7 +194,7 @@ const recordFrame = (state: StageState): void => {
     slots: state.fixture.players.map((p) => p.slot),
     period: state.fixture.period ?? 1,
     action: state.action,
-    movement: state.fixture.players.map((p) => observedMovement(state, p.index, snapshot)),
+    movement: state.fixture.players.map((p) => observedMovement(state, p.index, snapshot, spot)),
   });
 };
 
@@ -352,12 +345,12 @@ export function defaultTarget(
   index: number,
   snapshot: readonly Vec[],
   seen?: Seen,
+  spot = prepareSpots(state.fixture, snapshot),
 ): Want {
   const ref = shapeRef(state);
   const fixture = state.fixture;
   const truth: Seen = { ref, team: state.team, phase: state.phase };
-  const placeOf = (s: Seen): Vec =>
-    nominalSpot({ fixture, ball: s.ref, team: s.team, phase: s.phase, positions: snapshot }, index);
+  const placeOf = (s: Seen): Vec => spot(s.ref, s.team, s.phase, index);
   const pos = snapshot[index];
   const generalPace = (target: Vec): Pace =>
     state.t - state.turnedAt < MOTION.transitionSeconds || dist(pos, target) > MOTION.jogWithin
@@ -589,12 +582,10 @@ export function step(state: StageState): void {
   const fixture = state.fixture;
   const ballMetres = snapshot.map((p) => dist(p, state.ball.pos));
   const seens = fixture.players.map((spec) => seenBy(state, spec.index, ballMetres[spec.index]));
+  const spot = prepareSpots(fixture, snapshot);
   const zoneOf = (i: number): Vec => {
     const s = seens[i];
-    return nominalSpot(
-      { fixture, ball: s.ref, team: s.team, phase: s.phase, positions: snapshot },
-      i,
-    );
+    return spot(s.ref, s.team, s.phase, i);
   };
   const canMark = (i: number): boolean => {
     const spec = fixture.players[i];
@@ -628,7 +619,7 @@ export function step(state: StageState): void {
       return { target: clampToPitch(target, -STAGING_CONFIG.stage.boards), speed };
     }
     const metres = ballMetres[i];
-    const want = defaultTarget(state, i, snapshot, seens[i]);
+    const want = defaultTarget(state, i, snapshot, seens[i], spot);
     if (want.direct) {
       onBody[i] = true;
       const target = separated(state, i, want.target, snapshot);

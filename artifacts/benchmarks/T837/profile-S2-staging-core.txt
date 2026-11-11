@@ -1,0 +1,58 @@
+staging-core: 2 reps after 1 warm, 7512 ms, 12658 samples (whole profile: window not on the profile clock), load1 4.54, digest 0e73f30ad40fb149
+
+self
+ 15.5%   1166 ms  canonical workloads-61685.mjs:273018
+  8.1%    605 ms  (garbage collector)
+  7.7%    580 ms  (anonymous) workloads-61685.mjs:270793
+  5.8%    437 ms  separated workloads-61685.mjs:271270
+  4.3%    326 ms  (anonymous) workloads-61685.mjs:271318
+  3.5%    263 ms  (anonymous) workloads-61685.mjs:273028
+  2.7%    205 ms  observedMovement workloads-61685.mjs:271018
+  2.5%    191 ms  step workloads-61685.mjs:271295
+  2.4%    183 ms  offsideLineX workloads-61685.mjs:270829
+  2.3%    173 ms  (anonymous) workloads-61685.mjs:271065
+  2.2%    163 ms  outfieldSpot workloads-61685.mjs:253543
+  2.1%    160 ms  pressRoles workloads-61685.mjs:271144
+  2.1%    155 ms  update hash:144
+  2.0%    147 ms  nominalSpot workloads-61685.mjs:253588
+  2.0%    147 ms  defaultTarget workloads-61685.mjs:271160
+  1.9%    144 ms  (program)
+  1.9%    144 ms  assignMarks workloads-61685.mjs:270906
+  1.4%    106 ms  advanceBody workloads-61685.mjs:270769
+  1.2%     90 ms  (anonymous) workloads-61685.mjs:272741
+  1.1%     86 ms  (anonymous) workloads-61685.mjs:270809
+  1.1%     84 ms  shapeRef workloads-61685.mjs:270954
+  1.0%     78 ms  presentPlayers workloads-61685.mjs:270643
+  1.0%     76 ms  recordFrame workloads-61685.mjs:271045
+  0.9%     67 ms  attackFrame workloads-61685.mjs:243596
+  0.9%     67 ms  onPitch2 workloads-61685.mjs:270642
+
+inclusive
+ 89.4%   6715 ms  (anonymous) [eval1]:1
+ 65.0%   4880 ms  rep workloads-61685.mjs:278565
+ 64.8%   4870 ms  advance2 workloads-61685.mjs:272730
+ 62.2%   4670 ms  performance workloads-61685.mjs:272674
+ 61.0%   4580 ms  nextTick workloads-61685.mjs:271426
+ 60.6%   4550 ms  step workloads-61685.mjs:271295
+ 59.7%   4485 ms  runUntil workloads-61685.mjs:271377
+ 37.5%   2820 ms  (anonymous) workloads-61685.mjs:272427
+ 26.0%   1951 ms  performPass workloads-61685.mjs:271761
+ 23.2%   1744 ms  (anonymous) workloads-61685.mjs:271318
+ 21.1%   1582 ms  digest workloads-61685.mjs:278564
+ 20.2%   1520 ms  holdUntil workloads-61685.mjs:271687
+ 19.9%   1497 ms  performCarry workloads-61685.mjs:271934
+ 19.3%   1452 ms  holdForPass workloads-61685.mjs:271702
+ 19.0%   1428 ms  canonical workloads-61685.mjs:273018
+ 18.6%   1398 ms  (anonymous) workloads-61685.mjs:273028
+ 16.8%   1265 ms  recordFrame workloads-61685.mjs:271045
+ 13.0%    974 ms  prepareSpots workloads-61685.mjs:270790
+  9.8%    736 ms  (anonymous) workloads-61685.mjs:270793
+  9.0%    673 ms  (anonymous) workloads-61685.mjs:271065
+  9.0%    672 ms  defaultTarget workloads-61685.mjs:271160
+  8.1%    605 ms  (garbage collector)
+  7.2%    540 ms  separated workloads-61685.mjs:271270
+  6.7%    501 ms  observedMovement workloads-61685.mjs:271018
+  6.2%    466 ms  (anonymous) workloads-61685.mjs:270809
+
+profile /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/staging-core-61685.cpuprofile
+bundle /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/workloads-61685.mjs

@@ -1,0 +1,55 @@
+process 1/2: cpu ×0.410
+process 2/2: cpu ×0.439
+{
+  "workload": "own-match",
+  "base": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "cand": "/Users/ihaelam/project/haeram-soccer",
+  "procs": 2,
+  "reps": 4,
+  "warm": 1,
+  "seed": "perf-script-1",
+  "bundles": {
+    "base": "1e02a85b05563243",
+    "cand": "58a55abb5cdeca48"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "2a62d2176ec2b020"
+    ],
+    "cand": [
+      "2a62d2176ec2b020"
+    ]
+  },
+  "own-match": {
+    "pairs": 8,
+    "ms": {
+      "base": {
+        "cpu": 199.91650000000016,
+        "wall": 200.99822899999992
+      },
+      "cand": {
+        "cpu": 84.96849999999995,
+        "wall": 85.5604790000001
+      }
+    },
+    "cpu": {
+      "ratio": 0.4243,
+      "lo": 0.4102,
+      "hi": 0.4388,
+      "call": "faster"
+    },
+    "wall": {
+      "ratio": 0.4252,
+      "lo": 0.4072,
+      "hi": 0.444,
+      "call": "faster"
+    }
+  },
+  "load1": [
+    5.185546875,
+    5.185546875,
+    5.185546875
+  ]
+}

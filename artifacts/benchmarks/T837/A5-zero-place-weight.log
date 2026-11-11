@@ -1,0 +1,67 @@
+process 1/8: cpu ×0.968
+process 2/8: cpu ×0.995
+process 3/8: cpu ×0.973
+process 4/8: cpu ×1.006
+process 5/8: cpu ×0.974
+process 6/8: cpu ×1.021
+process 7/8: cpu ×0.978
+process 8/8: cpu ×1.032
+{
+  "workload": "own-match",
+  "base": ".tmp/T837/A4-S1",
+  "cand": "/Users/ihaelam/project/haeram-soccer",
+  "procs": 8,
+  "reps": 12,
+  "warm": 4,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "5f8e02be11ce8409",
+    "cand": "5e2a4af79c3b6685"
+  },
+  "sameBundle": false,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "318f9b6a609147e7"
+    ],
+    "cand": [
+      "318f9b6a609147e7"
+    ]
+  },
+  "own-match": {
+    "pairs": 96,
+    "ms": {
+      "base": {
+        "cpu": 62.476,
+        "wall": 63.041624999999954
+      },
+      "cand": {
+        "cpu": 61.80600000000004,
+        "wall": 62.06431250000003
+      }
+    },
+    "cpu": {
+      "ratio": 0.9909,
+      "lo": 0.9751,
+      "hi": 1.0116,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 0.9861,
+      "lo": 0.9718,
+      "hi": 1.0099,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    2.86181640625,
+    3.11279296875,
+    3.11279296875,
+    3.263671875,
+    3.263671875,
+    3.162109375,
+    3.162109375,
+    3.22900390625,
+    3.21044921875
+  ]
+}

@@ -1,0 +1,66 @@
+diff --git a/.tmp/T837/A8-S3/packages/engine/src/staging/world.ts b/packages/engine/src/staging/world.ts
+index 0d8848cd..4ccd28f1 100644
+--- a/.tmp/T837/A8-S3/packages/engine/src/staging/world.ts
++++ b/packages/engine/src/staging/world.ts
+@@ -16,6 +16,7 @@ import type {
+   Fixture,
+   Frame,
+   Phase,
++  PlayerSpec,
+   Script,
+   StageEvent,
+   TeamId,
+@@ -295,6 +296,17 @@ interface PressRoles {
+   cover: number;
+ }
+ const pressCache = new WeakMap<readonly Vec[], Map<TeamId, PressRoles>>();
++// Membership is fixed while one tick reads its position snapshot. A fresh snapshot after a
++// substitution/exit gets fresh lists; the fixture guard also permits shared synthetic positions.
++const rosterCache = new WeakMap<readonly Vec[], { fixture: Fixture; teams: PlayerSpec[][] }>();
++const presentAt = (fixture: Fixture, snapshot: readonly Vec[], team: TeamId) => {
++  let cached = rosterCache.get(snapshot);
++  if (!cached || cached.fixture !== fixture) {
++    cached = { fixture, teams: [presentPlayers(fixture, 0), presentPlayers(fixture, 1)] };
++    rosterCache.set(snapshot, cached);
++  }
++  return cached.teams[team]!;
++};
+ 
+ const pressRoles = (
+   state: StageState,
+@@ -309,7 +321,7 @@ const pressRoles = (
+   }
+   const cached = byTeam.get(d);
+   if (cached) return cached;
+-  const free = presentPlayers(state.fixture, d)
++  const free = presentAt(state.fixture, snapshot, d)
+     .filter((p) => p.slot !== 0 && !state.orders.has(p.index) && !state.cues.has(p.index))
+     .map((p) => ({ index: p.index, d: dist(snapshot[p.index], ref) }))
+     .filter(({ index, d: metres }) => {
+@@ -497,7 +509,7 @@ export function unmarked(
+   const team = fixture.players[index].team;
+   let nearest: Vec | undefined;
+   let nearestD = Infinity;
+-  for (const opp of presentPlayers(fixture, team === 0 ? 1 : 0)) {
++  for (const opp of presentAt(fixture, snapshot, team === 0 ? 1 : 0)) {
+     if (opp.slot === 0) continue;
+     const od = dist(snapshot[opp.index], base);
+     if (od < nearestD) {
+@@ -544,7 +556,7 @@ export function separated(
+   if (sep <= 0 || spec.slot === 0 || state.ball.owner === index || !state.live) return target;
+   const attacking = spec.team === state.team;
+   let out = target;
+-  for (const mate of presentPlayers(state.fixture, spec.team)) {
++  for (const mate of presentAt(state.fixture, snapshot, spec.team)) {
+     if (mate.index === index || mate.slot === 0) continue;
+     const at = snapshot[mate.index];
+     const off = sub(out, at);
+@@ -604,7 +616,7 @@ export function step(state: StageState): void {
+   const turn = turnOf(state);
+   // Defenders by slot line share a lag even in a back three/five; their hold radii remain personal.
+   const lineDiscipline = fixture.teams.map((team) => {
+-    const line = presentPlayers(fixture, team.id).filter((p) => lineOf(p.position) === 'DF');
++    const line = presentAt(fixture, snapshot, team.id).filter((p) => lineOf(p.position) === 'DF');
+     return line.length ? line.reduce((sum, p) => sum + p.discipline, 0) / line.length : 50;
+   });
+   const onBody: boolean[] = [];

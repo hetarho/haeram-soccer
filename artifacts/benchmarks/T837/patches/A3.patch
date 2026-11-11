@@ -1,0 +1,52 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index f4b59151..3e62ea17 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -128,6 +128,13 @@ function writeFitted(settled: Settled, seed: string): Script {
+       }),
+     ),
+   );
++  const fixedRemaining = Array.from({ length: settled.length }, () => [0, 0]);
++  const expiring = Array<number>(settled.length).fill(0);
++  for (const t of touches) {
++    if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!++;
++    const last = t.until - 1;
++    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!++;
++  }
+   const total = [0, 0];
+   const done = [0, 0];
+   const endsTotal = [0, 0];
+@@ -365,9 +372,9 @@ function writeFitted(settled: Settled, seed: string): Script {
+     return rows;
+   };
+   const fixedLeft = (team?: TeamId) =>
+-    touches.some(
+-      (t, i) => !played[i] && t.minute === minute && (team === undefined || t.side === team),
+-    );
++    team === undefined
++      ? fixedRemaining[minute]![0]! + fixedRemaining[minute]![1]! > 0
++      : fixedRemaining[minute]![team]! > 0;
+   /** The touches played by the end of minute `m`: an even share of all of them. */
+   const periodCounts = [0, 0];
+   for (const t of touches) periodCounts[t.period]!++;
+@@ -680,6 +687,9 @@ function writeFitted(settled: Settled, seed: string): Script {
+     played[i] = true;
+     eligibilityVersion++;
+     const t = touches[i]!;
++    if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!--;
++    const last = t.until - 1;
++    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!--;
+     actorLeft[t.side]![t.actor]!--;
+     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
+     done[t.side]!++;
+@@ -894,9 +904,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+         quotaMet() &&
+         done[0]! + done[1]! > minuteStart &&
+         !fixedLeft() &&
+-        !touches.some(
+-          (t, i) => !played[i] && t.period === periodOf(minute) && t.until === minute + 1,
+-        )
++        expiring[minute] === 0
+       ) {
+         if (waitingIncidents.length) finishIncidents();
+         break;

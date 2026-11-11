@@ -38,6 +38,13 @@ const arg = (name, fallback) => {
 };
 const workload = arg('--workload', 'grid');
 const DEFAULTS = {
+  'own-match': { procs: 8, reps: 12, warm: 4 },
+  staging: { procs: 8, reps: 3, warm: 1 },
+  'staging-core': { procs: 8, reps: 3, warm: 1 },
+  'staging-first': { procs: 8, reps: 12, warm: 4 },
+  'grid-own': { procs: 8, reps: 6, warm: 2 },
+  'grid-observed': { procs: 8, reps: 6, warm: 2 },
+  fixture: { procs: 8, reps: 12, warm: 4 },
   grid: { procs: 16, reps: 18, warm: 6 },
   aggregate: { procs: 16, reps: 20, warm: 4 },
   day: { procs: 4, reps: 60, warm: 0 },
@@ -84,7 +91,8 @@ function treeOf(spec, name) {
     }
   }
   mkdirSync(join(dir, 'scripts/perf'), { recursive: true });
-  cpSync(join(here, 'workloads.ts'), join(dir, 'scripts/perf/workloads.ts'));
+  for (const file of ['workloads.ts', 'digest.ts'])
+    cpSync(join(here, file), join(dir, 'scripts/perf', file));
   return dir;
 }
 
@@ -158,6 +166,9 @@ const summary = {
   cand: candSpec,
   procs,
   reps,
+  warm,
+  seed,
+  bundles,
   sameBundle: bundles.base === bundles.cand,
   sameHash:
     hashes.base.size === 1 && hashes.cand.size === 1 && [...hashes.base][0] === [...hashes.cand][0],

@@ -4,6 +4,11 @@
  * alternate them rep by rep (`pair.mjs`).
  *
  * Every rep replays the same fixed inputs, so the reps of one side do equal work:
+ * - `own-match`: revision-11 own settlement, retaining script/material but staging no frames;
+ * - `staging`: production `stageAll` of that frozen written match; `staging-first`: its first
+ *   emitted minute. `staging-core` isolates the complete motion program if the adapter fails;
+ * - `grid-own` / `grid-observed`: the same own fixture on the current grid, with `buildFrames`
+ *   included in the observed case; `fixture`: one aggregate fixture. These hash after timing;
  * - `grid`: the detailed engine on one of `GRID_FIXTURES` top-tier fixtures a rep, in turn (setup
  *   built per rep, as an own match is: no observation, player records on);
  * - `aggregate`: `simulateAggregate` on the first `AGGREGATE_FIXTURES` fixtures without the own club;
@@ -21,16 +26,23 @@
  * baseline.
  */
 import { createHash } from 'node:crypto';
+import { diagnosticCanonical } from './digest';
 import * as engine from '../../packages/engine/src/index';
 // A tree before T670 has no career testkit; such a baseline needs its own world builder here.
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { playGrid } from '../../packages/engine/src/grid/engine';
+import { buildFrames } from '../../packages/engine/src/grid/playback';
+import { simulateMatch } from '../../packages/engine/src/match';
+import { SCRIPTED_RELEASE } from '../../packages/engine/src/match-model-release';
+import { invalidDetail } from '../../packages/engine/src/script/failure';
+import { stageAll, stageFrames } from '../../packages/engine/src/staging/frames';
+import { advance, createStaging } from '../../packages/engine/src/staging/staging';
 import { simulateAggregate } from '../../packages/engine/src/aggregate/engine';
 import { canonical } from '../../packages/contracts/src/index';
 import { currentDay } from '../../packages/engine/src/calendar';
 import { historyWorld, liveHistory } from '../../packages/engine/src/history';
-import type { Fixture, World } from '../../packages/contracts/src/types';
+import type { Fixture, MatchPlayback, World } from '../../packages/contracts/src/types';
 import { Host } from '../../apps/web/src/runtime/host';
 import { forPosting } from '../../apps/web/src/runtime/viewPublisher';
 import type { Reply } from '../../apps/web/src/runtime/protocol';
@@ -67,6 +79,70 @@ function otherFixtures(w: World, count: number, filter: (f: Fixture) => boolean)
 
 export function workloadOf(name: string, seed: string): Workload {
   const hash = createHash('sha256');
+  if (
+    [
+      'own-match',
+      'staging',
+      'staging-core',
+      'staging-first',
+      'grid-own',
+      'grid-observed',
+      'fixture',
+    ].includes(name)
+  ) {
+    // One frozen top-flight own fixture, identical inputs for settlement, picture and grid context.
+    // Building the world and (for staging) writing the script are outside the timed window.
+    const w = careerWorld(
+      { country: 'ENG', club: 'ENG:0:0:0', seed },
+      name.startsWith('grid-') ? engine.MATCH_MODEL_RELEASE : SCRIPTED_RELEASE,
+    );
+    const fixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
+    let written: MatchPlayback | undefined;
+    const write = () => {
+      const playback = simulateMatch(w, fixture, true);
+      if (playback.problems?.length || !playback.script || !playback.staging)
+        throw invalidDetail(`perf:script:${playback.problems?.join(',') ?? 'missing'}`);
+      return playback;
+    };
+    if (name.startsWith('staging')) written = write();
+    let output: unknown;
+    return {
+      cycle: 1,
+      // Hash outside the timing: serializing a full picture is not staging it. The old grid's
+      // interval-whistle coordinates are NaN: diagnostic tags retain their non-finite kind.
+      digest: () =>
+        hash
+          .update(name === 'grid-observed' ? diagnosticCanonical(output) : canonical(output))
+          .digest('hex')
+          .slice(0, 16),
+      rep(record) {
+        let result: unknown;
+        if (name === 'own-match') result = write();
+        else if (name === 'fixture') result = simulateAggregate(w, fixture);
+        else if (written) {
+          const args = [written.script!, written.staging!, written.record, written.squads] as const;
+          result =
+            name === 'staging-core'
+              ? advance(createStaging(written.script!, written.staging!), Infinity)
+              : name === 'staging'
+                ? stageAll(...args)
+                : stageFrames(...args).next().value;
+        } else {
+          const setup = buildGridSetup(w, fixture, {
+            observe: name === 'grid-observed',
+            recordPlayers: true,
+          });
+          const grid = playGrid(setup);
+          result =
+            name === 'grid-observed'
+              ? { record: grid.record, frames: buildFrames(grid, setup, w.seed) }
+              : grid.record;
+        }
+        if (record) output = result;
+        return name;
+      },
+    };
+  }
   if (name === 'history') {
     // A new game's history: no career world is built for it.
     const h = historyWorld(seed);

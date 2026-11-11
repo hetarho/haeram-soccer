@@ -1,0 +1,18 @@
+diff --git a/.tmp/T837/A10-S3/packages/engine/src/staging/world.ts b/packages/engine/src/staging/world.ts
+index 0d8848cd..9b6db3b4 100644
+--- a/.tmp/T837/A10-S3/packages/engine/src/staging/world.ts
++++ b/packages/engine/src/staging/world.ts
+@@ -175,7 +175,12 @@ function observedMovement(
+ const recordFrame = (state: StageState): void => {
+   const p: number[] = [];
+   const snapshot = positionsOf(state);
+-  const spot = prepareSpots(state.fixture, snapshot);
++  // Dead-ball/ordered movement often needs no nominal-place observation at all.
++  let prepared: ReturnType<typeof prepareSpots> | undefined;
++  const spot: ReturnType<typeof prepareSpots> = (ball, team, phase, index) => {
++    prepared ??= prepareSpots(state.fixture, snapshot);
++    return prepared(ball, team, phase, index);
++  };
+   for (const body of state.bodies) p.push(round2(body.pos[0]), round2(body.pos[1]));
+   state.frames.push({
+     t: state.t,

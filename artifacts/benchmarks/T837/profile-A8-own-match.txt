@@ -1,0 +1,58 @@
+own-match: 12 reps after 4 warm, 829 ms, 1293 samples (whole profile: window not on the profile clock), load1 3.73, digest 318f9b6a609147e7
+
+self
+  6.0%     49 ms  (anonymous) workloads-67685.mjs:256731
+  5.3%     44 ms  touchCost workloads-67685.mjs:256772
+  5.0%     42 ms  cheapest workloads-67685.mjs:256823
+  4.1%     34 ms  unplayed workloads-67685.mjs:256727
+  3.8%     31 ms  compileSourceTextModule utils:338
+  3.7%     31 ms  (anonymous) workloads-67685.mjs:256251
+  3.5%     29 ms  (garbage collector)
+  2.5%     21 ms  writeFitted workloads-67685.mjs:256542
+  2.4%     20 ms  (anonymous) workloads-67685.mjs:256562
+  2.4%     20 ms  settledMinute workloads-67685.mjs:257172
+  2.2%     18 ms  choose workloads-67685.mjs:256810
+  2.0%     17 ms  (anonymous) workloads-67685.mjs:255879
+  1.5%     12 ms  (anonymous) workloads-67685.mjs:256456
+  1.4%     12 ms  fitPlaceWeights workloads-67685.mjs:253626
+  1.3%     11 ms  (anonymous) workloads-67685.mjs:255851
+  1.3%     11 ms  deliver workloads-67685.mjs:257108
+  1.2%     10 ms  outfieldSpot workloads-67685.mjs:253541
+  1.2%     10 ms  (anonymous) workloads-67685.mjs:257222
+  1.2%     10 ms  push workloads-67685.mjs:256668
+  1.0%      8 ms  (anonymous) workloads-67685.mjs:256815
+  0.9%      8 ms  validateScript workloads-67685.mjs:256442
+  0.9%      7 ms  generateAttributes workloads-67685.mjs:233076
+  0.9%      7 ms  (anonymous) workloads-67685.mjs:256571
+  0.9%      7 ms  unassisted workloads-67685.mjs:256795
+  0.8%      6 ms  ovrAt workloads-67685.mjs:232885
+
+inclusive
+ 93.4%    774 ms  (anonymous) [eval1]:1
+ 75.6%    626 ms  candidateMatch workloads-67685.mjs:260310
+ 75.6%    626 ms  simulateMatch workloads-67685.mjs:260295
+ 75.6%    626 ms  write workloads-67685.mjs:278564
+ 75.6%    626 ms  rep workloads-67685.mjs:278577
+ 68.5%    568 ms  ownMatchPlayback workloads-67685.mjs:257345
+ 60.5%    501 ms  writePeriods workloads-67685.mjs:256534
+ 60.5%    501 ms  writeScript workloads-67685.mjs:256531
+ 50.3%    417 ms  writeFitted workloads-67685.mjs:256542
+ 35.9%    297 ms  settledMinute workloads-67685.mjs:257172
+ 16.4%    136 ms  choose workloads-67685.mjs:256810
+ 12.5%    103 ms  careerWorld workloads-67685.mjs:270178
+ 12.5%    103 ms  workloadOf workloads-67685.mjs:278547
+ 11.1%     92 ms  cheapest workloads-67685.mjs:256823
+  9.7%     81 ms  unplayed workloads-67685.mjs:256727
+  9.0%     74 ms  historyWorld workloads-67685.mjs:269885
+  8.6%     71 ms  validateScript workloads-67685.mjs:256442
+  7.0%     58 ms  prepareSeason workloads-67685.mjs:263522
+  6.3%     52 ms  materializePeople workloads-67685.mjs:235582
+  6.3%     52 ms  playAggregate workloads-67685.mjs:255103
+  6.0%     50 ms  touchCost workloads-67685.mjs:256772
+  6.0%     49 ms  (anonymous) workloads-67685.mjs:256731
+  5.7%     47 ms  evaluate
+  5.7%     47 ms  run module_job:558
+  5.7%     47 ms  generatedSquad workloads-67685.mjs:235564
+
+profile /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/own-match-67685.cpuprofile
+bundle /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/workloads-67685.mjs

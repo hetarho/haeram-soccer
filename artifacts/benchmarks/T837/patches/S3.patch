@@ -1,0 +1,42 @@
+diff --git a/packages/engine/src/staging/places.ts b/packages/engine/src/staging/places.ts
+index 0796408b..371285f6 100644
+--- a/packages/engine/src/staging/places.ts
++++ b/packages/engine/src/staging/places.ts
+@@ -6,25 +6,23 @@ import type { Fixture, Phase, TeamId, Vec } from './types';
+ import { presentPlayers } from './types';
+ export { ROLE_SHAPE } from './shape';
+ 
+-/** One immutable position/membership snapshot shared by a tick's shape reads. */
++/** Shared shape inputs for one tick snapshot; rebuild after membership or slots change. */
+ export function prepareSpots(fixture: Fixture, positions?: readonly Vec[]) {
+   const period = fixture.period;
+   const canonical = (p: Vec): Vec => toAttack(0, p, period);
+   const sides = fixture.teams.map((side) => {
+     const current = presentPlayers(fixture, side.id);
+-    return {
+-      tactic: side.style,
+-      roles: Array.from(
+-        { length: 11 },
+-        (_, slot) =>
+-          current.find((p) => p.slot === slot)?.role ?? FORMATIONS[side.style].slots[slot].role,
+-      ),
+-      freedom: Array.from(
+-        { length: 11 },
+-        (_, slot) => current.find((p) => p.slot === slot)?.freedom ?? 50,
+-      ),
+-      present: Array.from({ length: 11 }, (_, slot) => current.some((p) => p.slot === slot)),
+-    };
++    const roles = FORMATIONS[side.style].slots.map((s) => s.role);
++    const freedom = Array<number>(11).fill(50);
++    const present = Array<boolean>(11).fill(false);
++    for (const p of current) {
++      const slot = p.slot;
++      if (!Number.isInteger(slot) || slot < 0 || slot >= 11 || present[slot]) continue;
++      roles[slot] = p.role ?? roles[slot];
++      freedom[slot] = p.freedom ?? 50;
++      present[slot] = true;
++    }
++    return { tactic: side.style, roles, freedom, present };
+   }) as unknown as Parameters<typeof slotSpot>[0]['sides'];
+   const offside = positions
+     ? ([offsideLineX(fixture, positions, 0), offsideLineX(fixture, positions, 1)] as const)

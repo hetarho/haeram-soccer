@@ -1,0 +1,39 @@
+{
+  "fixture": "1950:ENG:0:0:0:0",
+  "frames": 100,
+  "nonFinite": 8,
+  "examples": [
+    {
+      "path": "frames.50.events.6.from.0",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.50.events.6.from.1",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.50.events.6.to.0",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.50.events.6.to.1",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.99.events.3.from.0",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.99.events.3.from.1",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.99.events.3.to.0",
+      "value": "NaN"
+    },
+    {
+      "path": "frames.99.events.3.to.1",
+      "value": "NaN"
+    }
+  ]
+}

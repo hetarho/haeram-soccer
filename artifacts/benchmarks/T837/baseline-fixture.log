@@ -1,0 +1,67 @@
+process 1/8: cpu ×1.225
+process 2/8: cpu ×2.447
+process 3/8: cpu ×0.767
+process 4/8: cpu ×NaN
+process 5/8: cpu ×NaN
+process 6/8: cpu ×0.440
+process 7/8: cpu ×0.922
+process 8/8: cpu ×1.373
+{
+  "workload": "fixture",
+  "base": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "cand": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "procs": 8,
+  "reps": 12,
+  "warm": 4,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "b2e878dc8b79b012",
+    "cand": "b2e878dc8b79b012"
+  },
+  "sameBundle": true,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "7ddd9edbdf7bbe93"
+    ],
+    "cand": [
+      "7ddd9edbdf7bbe93"
+    ]
+  },
+  "fixture": {
+    "pairs": 10,
+    "ms": {
+      "base": {
+        "cpu": 4.662000000000035,
+        "wall": 4.689124999999933
+      },
+      "cand": {
+        "cpu": 5.248499999999979,
+        "wall": 5.263875499999983
+      }
+    },
+    "cpu": {
+      "ratio": 1.0419,
+      "lo": 0.6804,
+      "hi": 1.6012,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 1.064,
+      "lo": 0.6863,
+      "hi": 1.605,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    3.6279296875,
+    3.6279296875,
+    3.6279296875,
+    4.53857421875,
+    4.53857421875,
+    4.53857421875,
+    4.53857421875,
+    4.53857421875,
+    4.53857421875
+  ]
+}

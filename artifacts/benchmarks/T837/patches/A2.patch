@@ -1,0 +1,54 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index a0290f8f..f4b59151 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -190,6 +190,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+   /** Touches played before the minute being written. */
+   let minuteStart = 0;
+   let waitingIncidents: NonNullable<Beat['incidents']> = [];
++  let eligibilityVersion = 0;
++  const available = [0, 1].map(() => ({ minute: -1, version: -1, rows: [] as number[] }));
+   const awaitingEntry = (team: TeamId, line: number) =>
+     waitingIncidents.some((x) => x.side === team && x.kind === 'sub' && x.other === line);
+ 
+@@ -321,8 +323,10 @@ function writeFitted(settled: Settled, seed: string): Script {
+     if (t.next !== undefined) after[t.next] = i;
+   });
+   /** Touches `team` may play now, in row-id order: this minute's fixed ones and every floating one. */
+-  const unplayed = (team: TeamId) =>
+-    minuteOrder[minute]![team]!.filter((i) => {
++  const unplayed = (team: TeamId): readonly number[] => {
++    const cached = available[team]!;
++    if (cached.minute === minute && cached.version === eligibilityVersion) return cached.rows;
++    const rows = minuteOrder[minute]![team]!.filter((i) => {
+       const t = touches[i]!;
+       return (
+         !played[i] &&
+@@ -355,6 +359,11 @@ function writeFitted(settled: Settled, seed: string): Script {
+         (after[i]! < 0 || played[after[i]!])
+       );
+     });
++    cached.minute = minute;
++    cached.version = eligibilityVersion;
++    cached.rows = rows;
++    return rows;
++  };
+   const fixedLeft = (team?: TeamId) =>
+     touches.some(
+       (t, i) => !played[i] && t.minute === minute && (team === undefined || t.side === team),
+@@ -669,6 +678,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+   /** Plays touch `i` by its actor, who has the ball. */
+   const playTouch = (i: number, delivering?: Owed) => {
+     played[i] = true;
++    eligibilityVersion++;
+     const t = touches[i]!;
+     actorLeft[t.side]![t.actor]!--;
+     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
+@@ -779,6 +789,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+       );
+     } else stopFor(incidents);
+     waitingIncidents = [];
++    eligibilityVersion++;
+     if (!owed && holder >= 0 && !present(settled, side, holder, minute)) {
+       // A dead ball in the departing keeper's hands belongs to his recorded successor.
+       holder = keeperOf(side);
