@@ -1,0 +1,58 @@
+staging-core: 2 reps after 1 warm, 6603 ms, 11137 samples (whole profile: window not on the profile clock), load1 3.10, digest 0e73f30ad40fb149
+
+self
+ 15.8%   1043 ms  canonical workloads-75709.mjs:229337
+  9.1%    602 ms  (garbage collector)
+  6.1%    401 ms  separated workloads-75709.mjs:271420
+  5.2%    344 ms  (anonymous) workloads-75709.mjs:271468
+  3.6%    238 ms  (anonymous) workloads-75709.mjs:229347
+  3.4%    224 ms  observedMovement workloads-75709.mjs:271168
+  2.7%    177 ms  step workloads-75709.mjs:271445
+  2.7%    175 ms  offsideLineX workloads-75709.mjs:270979
+  2.6%    174 ms  (anonymous) workloads-75709.mjs:271215
+  2.5%    162 ms  outfieldSpot workloads-75709.mjs:253578
+  2.3%    151 ms  pressRoles workloads-75709.mjs:271294
+  2.1%    141 ms  assignMarks workloads-75709.mjs:271056
+  2.0%    131 ms  (program)
+  1.9%    128 ms  nominalSpot workloads-75709.mjs:253623
+  1.9%    124 ms  defaultTarget workloads-75709.mjs:271310
+  1.8%    122 ms  sub workloads-75709.mjs:253342
+  1.8%    120 ms  update hash:144
+  1.4%     94 ms  advanceBody workloads-75709.mjs:270920
+  1.4%     90 ms  (anonymous) workloads-75709.mjs:270944
+  1.3%     88 ms  (anonymous) workloads-75709.mjs:270959
+  1.3%     85 ms  presentPlayers workloads-75709.mjs:270794
+  1.3%     84 ms  shapeRef workloads-75709.mjs:271104
+  1.2%     82 ms  (anonymous) workloads-75709.mjs:272891
+  1.2%     81 ms  recordFrame workloads-75709.mjs:271195
+  1.1%     70 ms  isPressRole workloads-75709.mjs:271353
+
+inclusive
+ 88.3%   5833 ms  (anonymous) [eval1]:1
+ 63.5%   4194 ms  rep workloads-75709.mjs:278690
+ 63.4%   4185 ms  advance2 workloads-75709.mjs:272880
+ 60.5%   3997 ms  performance workloads-75709.mjs:272824
+ 59.1%   3905 ms  nextTick workloads-75709.mjs:271576
+ 58.8%   3882 ms  step workloads-75709.mjs:271445
+ 57.8%   3818 ms  runUntil workloads-75709.mjs:271527
+ 36.5%   2410 ms  (anonymous) workloads-75709.mjs:272577
+ 26.2%   1729 ms  (anonymous) workloads-75709.mjs:271468
+ 25.5%   1687 ms  performPass workloads-75709.mjs:271911
+ 21.2%   1401 ms  digest workloads-75709.mjs:278689
+ 19.6%   1292 ms  holdUntil workloads-75709.mjs:271837
+ 19.5%   1286 ms  performCarry workloads-75709.mjs:272084
+ 19.4%   1281 ms  canonical workloads-75709.mjs:229337
+ 18.9%   1250 ms  (anonymous) workloads-75709.mjs:229347
+ 18.6%   1230 ms  holdForPass workloads-75709.mjs:271852
+ 14.7%    968 ms  recordFrame workloads-75709.mjs:271195
+ 10.6%    702 ms  defaultTarget workloads-75709.mjs:271310
+ 10.5%    691 ms  (anonymous) workloads-75709.mjs:271215
+  9.1%    602 ms  (garbage collector)
+  7.8%    518 ms  observedMovement workloads-75709.mjs:271168
+  7.7%    510 ms  separated workloads-75709.mjs:271420
+  7.1%    466 ms  assignMarks workloads-75709.mjs:271056
+  6.9%    455 ms  (anonymous) workloads-75709.mjs:270959
+  5.7%    374 ms  isPressRole workloads-75709.mjs:271353
+
+profile /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/staging-core-75709.cpuprofile
+bundle /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/workloads-75709.mjs

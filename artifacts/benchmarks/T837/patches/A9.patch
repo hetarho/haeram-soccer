@@ -1,0 +1,49 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index bfeb49d6..5c3827df 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -205,7 +205,12 @@ function writeFitted(settled: Settled, seed: string): Script {
+   let minuteStart = 0;
+   let waitingIncidents: NonNullable<Beat['incidents']> = [];
+   let eligibilityVersion = 0;
+-  const available = [0, 1].map(() => ({ minute: -1, version: -1, rows: [] as number[] }));
++  const available = [0, 1].map(() => ({
++    minute: -1,
++    version: -1,
++    rows: [] as number[],
++    remaining: [] as number[],
++  }));
+   const awaitingEntry = (team: TeamId, line: number) =>
+     waitingIncidents.some((x) => x.side === team && x.kind === 'sub' && x.other === line);
+ 
+@@ -330,10 +335,14 @@ function writeFitted(settled: Settled, seed: string): Script {
+     const cached = available[team]!;
+     if (cached.minute === minute && cached.version === eligibilityVersion) return cached.rows;
+     const hasEntry = waitingIncidents.some((x) => x.kind === 'sub');
+-    const rows = minuteOrder[minute]![team]!.filter((i) => {
++    const source = cached.minute === minute ? cached.remaining : minuteOrder[minute]![team]!;
++    const remaining: number[] = [],
++      rows: number[] = [];
++    for (const i of source) {
++      if (played[i]) continue;
++      remaining.push(i);
+       const t = touches[i]!;
+-      return (
+-        !played[i] &&
++      if (
+         (!hasEntry ||
+           (!awaitingEntry(team, t.actor) &&
+             !t.carries.some((id) => {
+@@ -362,8 +371,10 @@ function writeFitted(settled: Settled, seed: string): Script {
+               awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
+             ))) &&
+         (after[i]! < 0 || played[after[i]!])
+-      );
+-    });
++      )
++        rows.push(i);
++    }
++    cached.remaining = remaining;
+     cached.minute = minute;
+     cached.version = eligibilityVersion;
+     cached.rows = rows;

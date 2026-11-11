@@ -61,10 +61,10 @@ import {
   type AggregateMatch,
   type AggregateRebalanceLimits,
 } from '../packages/engine/src/aggregate/engine';
-import { slotAt } from '../packages/engine/src/aggregate/participation';
+import { ledgerDiagnostics } from '../packages/engine/src/lab/diagnostics';
+export { ledgerDiagnostics } from '../packages/engine/src/lab/diagnostics';
 import { inMatchFatigue } from '../packages/engine/src/grid/changes';
 import { playGrid } from '../packages/engine/src/grid/engine';
-import { cellBand } from '../packages/engine/src/grid/pitch';
 import { M } from '../packages/engine/src/grid/record';
 import { buildGridSetup, eraRules, type DecideRule } from '../packages/engine/src/grid/setup';
 import { npcMatchContext, type Prepared } from '../packages/engine/src/match';
@@ -112,7 +112,6 @@ import {
   tacticPairingParity as tacticPairingParityReport,
   tacticPairingVerdicts,
   TARGET_BANDS,
-  type LedgerDiagnostics,
   type MatchSample,
   type ParityCondition,
   type Partition,
@@ -140,46 +139,6 @@ export function aggregateFreshness(match: AggregateMatch): [number, number] {
     return 100 - fatigue.reduce((a, b) => a + b, 0) / fatigue.length;
   };
   return [side(0), side(1)];
-}
-
-/**
- * The aggregate ledger's readings for the target rows its cells resolve: open-play pass attempts by
- * the band they end in against the band they start in, each shot's cell, kind and its shooter's
- * line at his slot then, and the seconds the ball was in play.
- */
-export function ledgerDiagnostics(match: AggregateMatch): LedgerDiagnostics {
-  const { facts, participation, input, players } = match;
-  const directions: [number[], number[]] = [
-    [0, 0, 0],
-    [0, 0, 0],
-  ];
-  let ballInPlay = 0;
-  facts.ledger.sides.forEach((side, s) => {
-    for (const m of side.moves) {
-      if (m.setPiece || m.kind === 'carry' || m.kind === 'takeOn') continue;
-      const d = cellBand(m.to) - cellBand(m.from);
-      directions[s]![d > 0 ? 0 : d === 0 ? 1 : 2]! += m.attempts;
-    }
-    for (const held of side.held) ballInPlay += held;
-  });
-  const shooters = new Map(players.shots.map((c) => [`${c.side}:${c.shot}`, c.shooter]));
-  const shots = facts.ledger.sides.flatMap((side, s) =>
-    side.shots.map((shot, i) => {
-      const shooter = shooters.get(`${s}:${i}`);
-      const slot =
-        shooter === undefined ? undefined : slotAt(participation, s as 0 | 1, shooter, shot.minute);
-      return {
-        side: s as 0 | 1,
-        cell: shot.cell,
-        header: shot.header,
-        setPiece: shot.kind === 'corner' || shot.kind === 'freeKick',
-        penalty: shot.kind === 'penalty',
-        goal: shot.outcome === 'goal',
-        line: slot === undefined ? 'unknown' : input.sides[s as 0 | 1].slots[slot]!.line,
-      };
-    }),
-  );
-  return { ballInPlay, directions, shots };
 }
 
 /** What a measurement changes about a fixture between clubs nobody owns. */

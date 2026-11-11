@@ -13,8 +13,10 @@ import { tacticLabel } from '../../../../packages/engine/src/tactics';
 import type { MatchPlayback, Tactic, World } from '../../../../packages/contracts/src/types';
 import { Pitch } from '../features/match-viewer';
 import catalogJson from './tunables.json';
-import koJson from './tunables.ko.json';
+import { TUNABLE_DESCRIPTIONS, tunableDescription } from './descriptions';
 import { LabPool, type LabRun } from './pool';
+import { PlaybackStaging } from '../runtime/staging';
+import { labStagingWorker } from './staging';
 import type { LabSide, LabSideIndex } from './protocol';
 import type { Estimate, RunSummary, SideRow, TargetRow } from './summary';
 import {
@@ -41,18 +43,12 @@ import {
 import styles from './LabPage.module.css';
 
 const catalog = catalogJson as Catalog;
-/** Each group's and value's Korean description, written from the code that reads it (→LAB-3). */
-const KO = koJson as { groups: Record<string, string>; leaves: Record<string, string> };
+
 const LEAVES = catalog.groups.flatMap((g) => g.leaves);
 const SIDE_NAMES = [
   sourceMessage('copy.LabPage.d192ee8a47'),
   sourceMessage('copy.LabPage.bb56f4ce84'),
 ] as const;
-/**
- * Groups the page's own match view reads (Pitch and its figure code import MATCH_MOTION_CONFIG):
- * an override reaches the worker's match and frames, but the view draws with the code's values.
- */
-const PAGE_READ_GROUPS: ReadonlySet<string> = new Set(['MATCH_MOTION_CONFIG']);
 const SKIP_REASON = {
   unknown: sourceMessage('copy.LabPage.e4305c5605'),
   'not-a-number': sourceMessage('copy.LabPage.793fc429ee'),
@@ -284,7 +280,8 @@ function ValuesPanel(props: {
     (!reads || showUnread || reads.has(leaf.path) || leaf.path in overrides) &&
     (!q ||
       leaf.path.toLowerCase().includes(q) ||
-      (KO.leaves[leaf.path] ?? '').toLowerCase().includes(q) ||
+      tunableDescription(leaf.path).toLowerCase().includes(q) ||
+      tunableDescription(leaf.path, displayMessage).toLowerCase().includes(q) ||
       leaf.comment.toLowerCase().includes(q));
   const unread = reads ? LEAVES.filter((l) => !reads.has(l.path)).length : 0;
   const reset = (paths: string[]) => {
@@ -383,19 +380,9 @@ function ValuesPanel(props: {
                       })}
                     </span>
                     {localizeValue(
-                      KO.groups[group.name] && (
+                      TUNABLE_DESCRIPTIONS.groups[group.name] && (
                         <span className={styles.groupDescription}>
-                          {localizeValue(KO.groups[group.name])}
-                        </span>
-                      ),
-                    )}
-                    {localizeValue(
-                      PAGE_READ_GROUPS.has(group.name) && (
-                        <span
-                          className={styles.badge}
-                          title={displayMessage('copy.LabPage.f93fc408de')}
-                        >
-                          {richMessage('copy.LabPage.383e742f33')}
+                          {displayMessage(TUNABLE_DESCRIPTIONS.groups[group.name]!)}
                         </span>
                       ),
                     )}
@@ -431,9 +418,9 @@ function ValuesPanel(props: {
                                 )}
                               </div>
                               {localizeValue(
-                                KO.leaves[leaf.path] && (
+                                TUNABLE_DESCRIPTIONS.leaves[leaf.path] && (
                                   <p className={styles.description}>
-                                    {localizeValue(KO.leaves[leaf.path])}
+                                    {tunableDescription(leaf.path, displayMessage)}
                                   </p>
                                 ),
                               )}
@@ -492,7 +479,7 @@ function ValuesPanel(props: {
         </div>
         <textarea
           aria-label={displayMessage('copy.LabPage.9db159f659')}
-          placeholder={JSON.stringify({ 'SHOT_CONFIG.saveShare': 0.4 })}
+          placeholder={JSON.stringify({ 'AGGREGATE_CONFIG.shots.scale': 0.4 })}
           value={transfer}
           onChange={(e) => setTransfer(e.target.value)}
           rows={4}
@@ -869,6 +856,8 @@ export function LabPage() {
     world: World;
   }>();
   const [watching, setWatching] = useState<string>();
+  const staging = useRef<PlaybackStaging | undefined>(undefined);
+  useEffect(() => () => staging.current?.stop(), []);
   const watchKey = useRef(0);
   const watchView = useRef<HTMLDivElement>(null);
   // A new playback brings the whole match view into the screen.
@@ -1017,18 +1006,25 @@ export function LabPage() {
     setState((s) => ({ ...s, watch: { seed } }));
     const key = ++watchKey.current;
     setWatching(seed);
+    const overrides = { ...state.overrides };
     const failed = (text: string) => {
       if (watchKey.current !== key) return;
       setWatching(undefined);
       setMessage(text);
     };
-    Promise.all([p.world(), p.watch(seed, [left, right], { ...state.overrides })]).then(
+    Promise.all([p.world(), p.watch(seed, [left, right], overrides)]).then(
       ([world, outcome]) => {
         if (pool.current !== p || watchKey.current !== key || outcome.status === 'superseded')
           return;
         if (outcome.status === 'done') {
           setWatching(undefined);
-          setWatched({ key, seed, playback: outcome.playback, world });
+          staging.current?.stop();
+          staging.current = new PlaybackStaging(
+            (playback) => playback && setWatched({ key, seed, playback, world }),
+            () => setMessage(sourceMessage('copy.client.aa2516a9e3')),
+            () => labStagingWorker(overrides),
+          );
+          staging.current.replace(outcome.playback);
         } else if (outcome.status === 'rejected')
           failed(
             sourceMessage('copy.LabPage.1b78f82acc', {
@@ -1044,13 +1040,21 @@ export function LabPage() {
   };
 
   const loadRun = (k: KeptRun) => {
+    const imported = importOverrides(exportOverrides(k.overrides), LEAVES);
+    if (!imported.ok) return;
+    if (imported.skipped.length)
+      setMessage(
+        sourceMessage('copy.LabPage.b480760b61', {
+          p0: imported.skipped.map((v) => v.path).join(', '),
+        }),
+      );
     setState((s) => ({
       ...s,
       sides: [
         { ...k.sides[0], edited: true },
         { ...k.sides[1], edited: true },
       ],
-      overrides: { ...k.overrides },
+      overrides: imported.overrides,
       run: { count: k.count, runSeed: k.runSeed },
     }));
     generate(0, { ...k.sides[0], edited: true }, k.sides[0].ovrs);

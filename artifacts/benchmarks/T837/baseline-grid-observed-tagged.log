@@ -1,0 +1,67 @@
+process 1/8: cpu ×1.025
+process 2/8: cpu ×0.996
+process 3/8: cpu ×0.997
+process 4/8: cpu ×0.985
+process 5/8: cpu ×1.011
+process 6/8: cpu ×0.978
+process 7/8: cpu ×0.989
+process 8/8: cpu ×0.976
+{
+  "workload": "grid-observed",
+  "base": "HEAD",
+  "cand": "HEAD",
+  "procs": 8,
+  "reps": 6,
+  "warm": 2,
+  "seed": "perf-261027",
+  "bundles": {
+    "base": "4122a9cacac3e461",
+    "cand": "4122a9cacac3e461"
+  },
+  "sameBundle": true,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "e723d89a904386f4"
+    ],
+    "cand": [
+      "e723d89a904386f4"
+    ]
+  },
+  "grid-observed": {
+    "pairs": 48,
+    "ms": {
+      "base": {
+        "cpu": 201.51600000000008,
+        "wall": 204.74614599999995
+      },
+      "cand": {
+        "cpu": 203.04499999999985,
+        "wall": 206.8456665
+      }
+    },
+    "cpu": {
+      "ratio": 0.9926,
+      "lo": 0.9826,
+      "hi": 1.0063,
+      "call": "no difference"
+    },
+    "wall": {
+      "ratio": 0.9937,
+      "lo": 0.9831,
+      "hi": 1.0085,
+      "call": "no difference"
+    }
+  },
+  "load1": [
+    2.1298828125,
+    2.19921875,
+    2.19921875,
+    2.18310546875,
+    2.16796875,
+    2.474609375,
+    2.9169921875,
+    3.00341796875,
+    3.0029296875
+  ]
+}

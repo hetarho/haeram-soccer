@@ -17,10 +17,13 @@ import { ensureOwner, pushEvent, runUntil, setPossession, type StageState } from
 const STAGE = STAGING_CONFIG.stage;
 const SHOT = STAGE.shot;
 const BALL = STAGING_CONFIG.ball;
-const TICK = STAGING_CONFIG.tick;
 
 const untilLanded = function* (state: StageState, flight: { t1: number }): Generator<void, void> {
-  return yield* runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + TICK);
+  return yield* runUntil(
+    state,
+    () => state.t >= flight.t1 - 1e-9,
+    flight.t1 - state.t + STAGING_CONFIG.tick,
+  );
 };
 
 /** Runs until `share` of the flight that started now and lasts `total` seconds has passed. */
@@ -30,7 +33,7 @@ const untilShare = function* (
   total: number,
 ): Generator<void, void> {
   const t0 = state.t;
-  yield* runUntil(state, () => state.t - t0 >= share * total - 1e-9, total + TICK);
+  yield* runUntil(state, () => state.t - t0 >= share * total - 1e-9, total + STAGING_CONFIG.tick);
 };
 
 const deadBall = (state: StageState): void => {

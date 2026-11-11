@@ -1,0 +1,58 @@
+staging-core: 2 reps after 1 warm, 7671 ms, 10537 samples (whole profile: window not on the profile clock), load1 5.01, digest 0e73f30ad40fb149
+
+self
+ 14.5%   1114 ms  canonical workloads-51330.mjs:273014
+  8.0%    617 ms  (anonymous) workloads-51330.mjs:270789
+  7.6%    582 ms  (garbage collector)
+  5.6%    431 ms  separated workloads-51330.mjs:271266
+  5.0%    384 ms  (anonymous) workloads-51330.mjs:271314
+  4.3%    331 ms  (anonymous) workloads-51330.mjs:273024
+  3.5%    272 ms  observedMovement workloads-51330.mjs:271014
+  2.6%    202 ms  (anonymous) workloads-51330.mjs:271061
+  2.4%    183 ms  step workloads-51330.mjs:271291
+  2.3%    179 ms  offsideLineX workloads-51330.mjs:270825
+  2.2%    167 ms  pressRoles workloads-51330.mjs:271140
+  2.0%    156 ms  outfieldSpot workloads-51330.mjs:253540
+  2.0%    156 ms  defaultTarget workloads-51330.mjs:271156
+  2.0%    154 ms  assignMarks workloads-51330.mjs:270902
+  1.9%    143 ms  (program)
+  1.6%    121 ms  sub workloads-51330.mjs:253304
+  1.6%    120 ms  nominalSpot workloads-51330.mjs:253585
+  1.2%     92 ms  recordFrame workloads-51330.mjs:271041
+  1.1%     88 ms  update hash:144
+  1.1%     87 ms  shapeRef workloads-51330.mjs:270950
+  1.1%     82 ms  presentPlayers workloads-51330.mjs:270639
+  1.1%     81 ms  (anonymous) workloads-51330.mjs:270805
+  1.1%     81 ms  advanceBody workloads-51330.mjs:270765
+  1.0%     75 ms  (anonymous) workloads-51330.mjs:272737
+  0.9%     68 ms  canMark workloads-51330.mjs:271302
+
+inclusive
+ 89.9%   6894 ms  (anonymous) [eval1]:1
+ 66.3%   5083 ms  rep workloads-51330.mjs:278561
+ 66.1%   5073 ms  advance2 workloads-51330.mjs:272726
+ 63.7%   4884 ms  performance workloads-51330.mjs:272670
+ 62.5%   4793 ms  nextTick workloads-51330.mjs:271422
+ 62.0%   4758 ms  step workloads-51330.mjs:271291
+ 61.1%   4689 ms  runUntil workloads-51330.mjs:271373
+ 38.3%   2938 ms  (anonymous) workloads-51330.mjs:272423
+ 26.5%   2035 ms  performPass workloads-51330.mjs:271757
+ 23.6%   1807 ms  (anonymous) workloads-51330.mjs:271314
+ 21.3%   1634 ms  holdUntil workloads-51330.mjs:271683
+ 20.5%   1576 ms  performCarry workloads-51330.mjs:271930
+ 20.3%   1554 ms  holdForPass workloads-51330.mjs:271698
+ 19.9%   1529 ms  digest workloads-51330.mjs:278560
+ 18.8%   1441 ms  canonical workloads-51330.mjs:273014
+ 18.6%   1426 ms  (anonymous) workloads-51330.mjs:273024
+ 18.3%   1403 ms  recordFrame workloads-51330.mjs:271041
+ 13.1%   1005 ms  prepareSpots workloads-51330.mjs:270786
+ 10.1%    774 ms  (anonymous) workloads-51330.mjs:271061
+  9.9%    763 ms  (anonymous) workloads-51330.mjs:270789
+  9.1%    695 ms  defaultTarget workloads-51330.mjs:271156
+  7.6%    582 ms  (garbage collector)
+  7.5%    574 ms  observedMovement workloads-51330.mjs:271014
+  6.8%    523 ms  separated workloads-51330.mjs:271266
+  6.6%    504 ms  assignMarks workloads-51330.mjs:270902
+
+profile /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/staging-core-51330.cpuprofile
+bundle /var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-profile/workloads-51330.mjs

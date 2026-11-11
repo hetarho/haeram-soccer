@@ -1,13 +1,19 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   probeReads,
   tunableDefault,
   tunableLeaves,
-} from '../../../../packages/engine/src/grid/tunables';
+} from '../../../../packages/engine/src/tunables';
 import { generateLabSide } from '../../../../packages/engine/src/lab/sides';
 import { labWorld, playLabSample, playSlice, playWatch } from './runner';
 import { summarizeRun } from './summary';
 import type { LabSample } from './protocol';
+
+vi.mock('../../../../packages/engine/src/lab/match', async (actual) => {
+  const module = await actual<typeof import('../../../../packages/engine/src/lab/match')>();
+  const { tinyLabWorld } = await import('../../../../packages/engine/src/lab/match.testkit');
+  return { ...module, createLabWorld: () => module.createLabWorld(tinyLabWorld().w) };
+});
 
 const sides = [
   generateLabSide({ side: 0, seed: 'runner', tactic: 'balanced', average: 72, spread: 4 }),
@@ -26,7 +32,7 @@ function oneSlice() {
 }
 
 describe('lab runner', () => {
-  it('left home on even matches', { timeout: 120_000 }, () => {
+  it('left home on even matches', () => {
     const [hostA, hostB] = labWorld().hosts;
     const samples = oneSlice();
     expect(samples.map((s) => s.index)).toEqual([0, 1, 2]);
@@ -42,7 +48,7 @@ describe('lab runner', () => {
     }
   });
 
-  it('same run seed same summary with 1 and 3 slices', { timeout: 120_000 }, () => {
+  it('same run seed same summary with 1 and 3 slices', () => {
     const slices = [0, 1, 2].map((from) => {
       const outcome = playSlice(sides, 'r', {}, from, 1);
       if (!outcome.ok) throw new Error('rejected');
@@ -53,23 +59,21 @@ describe('lab runner', () => {
     expect(summarizeRun(merged)).toEqual(summarizeRun(oneSlice()));
   });
 
-  it('override changes the result, defaults restore it', { timeout: 120_000 }, () => {
+  it('override changes the result, defaults restore it', () => {
     const lab = labWorld();
     const digest = (samples: readonly LabSample[]) =>
       JSON.stringify(samples.map((s) => [s.sample.record.score, s.sample.record.metrics]));
     const before = digest(oneSlice().slice(0, 1));
     const reads = probeReads(() => void playLabSample(lab, sides, 'r', 0, false));
     // Shots never taken: the most direct lever on what a match records.
-    const lever = [...reads].find(
-      (p) => p.startsWith('DECISION_CONFIG.') || p.startsWith('SHOT_CONFIG.'),
-    )!;
+    const lever = [...reads].find((p) => p === 'AGGREGATE_CONFIG.shots.scale')!;
     const changed = playSlice(sides, 'r', { [lever]: tunableDefault(lever)! * 3 + 1 }, 0, 1);
     expect(changed.ok && digest(changed.samples)).not.toBe(before);
     const restored = playSlice(sides, 'r', {}, 0, 1);
     expect(restored.ok && digest(restored.samples)).toBe(before);
   });
 
-  it('watch applies overrides and restores', { timeout: 120_000 }, () => {
+  it('watch applies overrides and restores', () => {
     const watched = (overrides: Record<string, number>) => {
       const outcome = playWatch(sides, 'r', overrides);
       if (!outcome.ok) throw new Error('rejected');
@@ -81,7 +85,7 @@ describe('lab runner', () => {
       JSON.stringify([first!.sample.record.score, first!.sample.record.metrics]),
     );
     const lever = [...probeReads(() => void playLabSample(labWorld(), sides, 'r', 0, false))].find(
-      (p) => p.startsWith('DECISION_CONFIG.') || p.startsWith('SHOT_CONFIG.'),
+      (p) => p === 'AGGREGATE_CONFIG.shots.scale',
     )!;
     const base = tunableDefault(lever)!;
     expect(watched({ [lever]: base * 3 + 1 })).not.toBe(watched({}));
@@ -95,14 +99,17 @@ describe('lab runner', () => {
     expect(atCode()).toBe(true);
   });
 
-  it('same seed and values give the same playback', { timeout: 120_000 }, () => {
+  it('same seed and values give the same playback', () => {
     const a = playWatch(sides, 'same', {}),
       b = playWatch(sides, 'same', {});
     if (!a.ok || !b.ok) throw new Error('rejected');
     expect(b.playback).toEqual(a.playback);
     expect(a.playback.record.id).toBe('lab:same:0');
     expect(a.playback.record.home).toBe(labWorld().hosts[0].id);
-    expect(a.playback.frames.length).toBeGreaterThan(90);
+    expect(a.playback.frames).toEqual([]);
+    expect(a.playback.script).toBeDefined();
+    expect(a.playback.staging).toBeDefined();
+    expect(a.playback.problems).toBeUndefined();
   });
 
   it('rejects unknown overrides before any match', () => {

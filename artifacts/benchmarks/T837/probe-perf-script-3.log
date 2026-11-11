@@ -1,0 +1,27 @@
+file:///Users/ihaelam/project/haeram-soccer/scripts/perf/ab.mjs:124
+  if (r.status !== 0) throw new Error(`pair.mjs failed:\n${r.stderr}`);
+                            ^
+
+Error: pair.mjs failed:
+file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:246207
+    throw new Error(message("copy.ledger.59439895da", { p0: issues.slice(0, 5).join("; ") }));
+          ^
+
+Error: 집계 원장 불일치: side 0 delivered 1 of 0 corners
+    at assertLedger (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:246207:11)
+    at deriveTeamFacts (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:246210:3)
+    at recordOf (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:255395:17)
+    at countScript (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:256110:19)
+    at stageFrames (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:272892:26)
+    at stageFrames.next (<anonymous>)
+    at stageAll (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:272981:14)
+    at Object.rep (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-44745.mjs:278540:41)
+    at time (file:///Users/ihaelam/project/haeram-soccer/scripts/perf/pair.mjs:30:29)
+    at file:///Users/ihaelam/project/haeram-soccer/scripts/perf/pair.mjs:40:19
+
+Node.js v26.8.1
+
+    at file:///Users/ihaelam/project/haeram-soccer/scripts/perf/ab.mjs:124:29
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v26.8.1

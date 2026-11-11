@@ -4,6 +4,8 @@ import type { RunSummary } from './summary';
 import {
   compare,
   defaultLabState,
+  parseLabState,
+  serializeLabState,
   dropRun,
   exportOverrides,
   importOverrides,
@@ -48,12 +50,12 @@ const run = (id: string): KeptRun => ({
   count: 20,
   runSeed: 'r',
   sides: [side, { ...side, tactic: 'counter' }],
-  overrides: { 'SHOT_CONFIG.saveShare': 0.5 },
+  overrides: { 'AGGREGATE_CONFIG.shots.scale': 0.5 },
   summary: { matches: 20 } as RunSummary,
 });
 const leaves = [
-  { path: 'SHOT_CONFIG.saveShare', value: 0.3, loadTime: false },
-  { path: 'GRID_MOVEMENT_CONFIG.turn', value: 2, loadTime: true },
+  { path: 'AGGREGATE_CONFIG.shots.scale', value: 0.3, loadTime: false },
+  { path: 'SYNTHETIC_CONFIG.readOnly', value: 2, loadTime: true },
 ];
 
 describe('lab state', () => {
@@ -72,7 +74,7 @@ describe('lab state', () => {
           { ...side, edited: true },
           { ...side, seed: 'b' },
         ],
-        overrides: { 'SHOT_CONFIG.saveShare': 0.4 },
+        overrides: { 'AGGREGATE_CONFIG.shots.scale': 0.4 },
         run: { count: 300, runSeed: 'x' },
       },
       run('one'),
@@ -122,26 +124,37 @@ describe('lab state', () => {
     expect(state.baseline).toBeUndefined();
   });
 
+  it('drops retired active overrides while keeping their historical evidence', () => {
+    const saved = {
+      ...defaultLabState(),
+      overrides: { 'SHOT_CONFIG.saveShare': 0.5, 'AGGREGATE_CONFIG.shots.scale': 0.7 },
+      kept: [{ ...run('retired'), overrides: { 'SHOT_CONFIG.saveShare': 0.5 } }],
+    };
+    const parsed = parseLabState(serializeLabState(saved));
+    expect(parsed.overrides).toEqual({ 'AGGREGATE_CONFIG.shots.scale': 0.7 });
+    expect(parsed.kept[0]!.overrides).toEqual({ 'SHOT_CONFIG.saveShare': 0.5 });
+  });
+
   it('import skips unknown paths', () => {
     const result = importOverrides(
       JSON.stringify({
-        'SHOT_CONFIG.saveShare': 0.45,
+        'AGGREGATE_CONFIG.shots.scale': 0.45,
         'NOPE.x': 1,
-        'GRID_MOVEMENT_CONFIG.turn': 3,
+        'SYNTHETIC_CONFIG.readOnly': 3,
       }),
       leaves,
     );
     expect(result).toEqual({
       ok: true,
-      overrides: { 'SHOT_CONFIG.saveShare': 0.45 },
+      overrides: { 'AGGREGATE_CONFIG.shots.scale': 0.45 },
       skipped: [
         { path: 'NOPE.x', reason: 'unknown' },
-        { path: 'GRID_MOVEMENT_CONFIG.turn', reason: 'load-time' },
+        { path: 'SYNTHETIC_CONFIG.readOnly', reason: 'load-time' },
       ],
     });
-    const text = importOverrides('{"SHOT_CONFIG.saveShare":"0.4"}', leaves);
+    const text = importOverrides('{"AGGREGATE_CONFIG.shots.scale":"0.4"}', leaves);
     expect(text.ok && text.skipped).toEqual([
-      { path: 'SHOT_CONFIG.saveShare', reason: 'not-a-number' },
+      { path: 'AGGREGATE_CONFIG.shots.scale', reason: 'not-a-number' },
     ]);
     expect(importOverrides('[1]', leaves).ok).toBe(false);
     expect(importOverrides('nope', leaves).ok).toBe(false);

@@ -1,0 +1,170 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index 5c3827df..dc05df51 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -32,8 +32,10 @@ import { validateScript } from './validate';
+ import { compareRecord, countScript } from './count';
+ import { planRestarts } from './restarts';
+ import { minuteTimes, travel, deadOf } from './clock';
++import { TouchSearch } from './search';
+ const FIT = SCRIPT_CONFIG;
+ const GRAMMAR = SCRIPT_CONFIG;
++const MIN_INDEXED_POOL = 32;
+ const R = (name: (typeof EVENT_RESULTS)[number]) => EVENT_RESULTS.indexOf(name);
+ const KIND = (code: number) => EVENT_KINDS[code]!;
+ const other = (t: TeamId): TeamId => (t === 0 ? 1 : 0);
+@@ -189,6 +191,27 @@ function writeFitted(settled: Settled, seed: string): Script {
+       'event' in t.release &&
+       SET_PIECES[settled.events[t.release.event]![EV.setPiece]!] !== 'none',
+   );
++  const search = new TouchSearch(
++    touches.map((t, i) => ({
++      side: t.side,
++      cell: Math.max(0, startCell[i]!),
++      group: (ends[i] ? 1 : 0) + (winner[i]! >= 0 ? 2 : 0),
++    })),
++    order,
++  );
++  // Bounds are exact only while these cost operations stay in safe-integer arithmetic. Other
++  // tunings use the original full scan; this guard never changes the cost or a football rule.
++  const precisionBudget = Number.MAX_SAFE_INTEGER / 16;
++  const weights = [
++    FIT.fixedPull,
++    FIT.fixedPush,
++    FIT.winnerPull,
++    FIT.setPieceWait,
++    FIT.restartPull,
++  ].map((x) => x * 100);
++  const indexedCosts =
++    weights.every(Number.isSafeInteger) &&
++    weights.reduce((sum, x) => sum + Math.abs(x), 0) < precisionBudget;
+   const beats: Beat[] = [];
+   const minuteOf: number[] = [];
+   let possession = 0;
+@@ -413,7 +436,7 @@ function writeFitted(settled: Settled, seed: string): Script {
+     };
+   };
+   /**
+-   * The price of `team` playing touch `i` with the ball in `cell`: the metres to where it starts,
++   * The price of `team` playing touch `i` with the ball in `cell`: the cell distance in centimetres,
+    * less `fit.fixedPull` for a touch fixed to this minute; a touch ending the possession is cheaper
+    * by up to `fit.paceBias` the further `team` is ahead of the other side in its share of touches
+    * played (dearer when behind), and by `fit.fixedPush` once the minute's share is met while the
+@@ -512,6 +535,42 @@ function writeFitted(settled: Settled, seed: string): Script {
+     let best = -1;
+     let bestCost = Infinity;
+     const terms = costTerms(team);
++    let minPlace = 0;
++    let exact =
++      indexedCosts &&
++      Number.isSafeInteger(terms.fixed) &&
++      Number.isSafeInteger(terms.pace) &&
++      Math.abs(terms.fixed) < precisionBudget &&
++      Math.abs(terms.pace) < precisionBudget;
++    for (const value of place?.values() ?? []) {
++      exact &&= Number.isSafeInteger(value) && Math.abs(value) < precisionBudget;
++      minPlace = Math.min(minPlace, value);
++    }
++    // Small pools are cheaper to scan than to mark and traverse the cell index.
++    if (exact && pool.length > MIN_INDEXED_POOL) {
++      const common =
++        minPlace +
++        Math.min(0, waitingIncidents.length ? -FIT.fixedPull * 100 : 0) +
++        Math.min(0, FIT.winnerPull * 100) +
++        Math.min(0, FIT.setPieceWait * 100) +
++        Math.min(0, FIT.restartPull * 100);
++      const bounds = [0, 1, 2, 3].map(
++        (group) =>
++          common +
++          (group & 2 ? Math.min(0, -FIT.winnerPull * 100) : 0) +
++          (group & 1
++            ? Math.min(0, -terms.pace) + (terms.push ? Math.min(0, -FIT.fixedPush * 100) : 0)
++            : 0),
++      );
++      return search.pick(
++        team,
++        pool,
++        Math.max(0, cell),
++        bounds,
++        (i) => touchCost(team, i, cell, terms) + (place?.get(touches[i]!.actor) ?? 0),
++        (i) => touches[i]!.minute !== FLOATING || touches[i]!.until === minute + 1,
++      );
++    }
+     for (const i of pool) {
+       const cost = touchCost(team, i, cell, terms) + (place?.get(touches[i]!.actor) ?? 0);
+       if (cost < bestCost) [best, bestCost] = [i, cost];
+diff --git a/packages/engine/src/script/search.ts b/packages/engine/src/script/search.ts
+new file mode 100644
+index 00000000..445c161f
+--- /dev/null
++++ b/packages/engine/src/script/search.ts
+@@ -0,0 +1,69 @@
++import { CELL_CENTIMETRES, cellDistance } from './cells';
++import type { TeamId } from './types';
++
++const cellsByDistance = CELL_CENTIMETRES.map((row) =>
++  row.map((_, cell) => cell).sort((a, b) => row[a]! - row[b]! || a - b),
++);
++
++/** Per-writer index. A group has one valid lower bound on its non-distance cost. */
++export class TouchSearch {
++  private readonly buckets = [0, 1].map(() =>
++    Array.from({ length: 4 }, () => Array.from({ length: 40 }, () => [] as number[])),
++  );
++  private readonly rank: number[];
++  private readonly marked: Uint32Array;
++  private serial = 0;
++
++  constructor(
++    rows: readonly { side: TeamId; cell: number; group: number }[],
++    order: readonly number[],
++  ) {
++    this.marked = new Uint32Array(rows.length);
++    this.rank = Array<number>(rows.length);
++    order.forEach((i, rank) => {
++      this.rank[i] = rank;
++      const r = rows[i]!;
++      this.buckets[r.side]![r.group]![r.cell]!.push(i);
++    });
++  }
++
++  /**
++   * Costs are safe integers, bounded below by cell distance + bounds[group]. Fixed/due rows
++   * bypass that bound. Equal costs retain row-ID order even when equal-distance cells differ.
++   */
++  pick(
++    team: TeamId,
++    pool: readonly number[],
++    cell: number,
++    bounds: readonly number[],
++    cost: (index: number) => number,
++    fixed: (index: number) => boolean,
++  ): number {
++    this.serial = (this.serial + 1) >>> 0;
++    if (this.serial === 0) {
++      this.marked.fill(0);
++      this.serial = 1;
++    }
++    let best = -1;
++    let bestCost = Infinity;
++    const visit = (i: number) => {
++      const value = cost(i);
++      if (value < bestCost || (value === bestCost && this.rank[i]! < this.rank[best]!)) {
++        best = i;
++        bestCost = value;
++      }
++    };
++    for (const i of pool) {
++      if (fixed(i)) visit(i);
++      else this.marked[i] = this.serial;
++    }
++    for (let group = 0; group < bounds.length; group++) {
++      for (const near of cellsByDistance[cell]!) {
++        if (cellDistance(near, cell) + bounds[group]! > bestCost) break;
++        for (const i of this.buckets[team]![group]![near]!)
++          if (this.marked[i] === this.serial) visit(i);
++      }
++    }
++    return best;
++  }
++}

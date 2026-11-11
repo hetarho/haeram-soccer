@@ -190,68 +190,91 @@ export function heatOf(record: MatchRecord, w: Pick<World, 'players' | 'playerCl
   return heatMap(record, who, ownSide(record, w));
 }
 
-/** A short label for a node: the last word of his name, at most five letters. */
-const shortName = (name: string) => (name.split(' ').at(-1) ?? name).slice(0, 5);
+/** Sizes in pitch-width fractions and CSS px at the reference drawing width, scaled by SVG. */
+export const NETWORK_VIEW = {
+  radius: { min: 0.018, max: 0.045 },
+  line: { min: 1, max: 9 },
+  minPasses: 3,
+  referenceWidth: 760,
+} as const;
 
-/** Own players at their average positions and the pairs between them, line width by passes. */
+/**
+ * The own side's recorded average positions. A circle counts all of his outgoing completed
+ * passes, including pairs too quiet to draw. His number is his retained line + 1, as in playback.
+ */
 export function networkView(record: MatchRecord, w: Pick<World, 'players' | 'playerClub'>) {
   const network = passNetwork(record, ownSide(record, w));
   if (!network) return undefined;
-  const nodes = network.nodes.filter((n) => n.touches > 0);
-  const at = new Map(nodes.map((n) => [n.line, n]));
-  const mostTouches = Math.max(1, ...nodes.map((n) => n.touches));
-  const mostPasses = Math.max(1, ...network.pairs.map((p) => p.completed));
-  // A pair counts both ways: A→B and B→A share one line.
-  const joined = new Map<string, { from: number; to: number; passes: number }>();
+  const present = network.nodes.filter((n) => n.touches > 0);
+  const at = new Map(present.map((n) => [n.line, n]));
+  const outgoing = new Map<number, number>();
+  // Stable endpoints retain each direction even if the first stored row runs backwards.
+  const joined = new Map<
+    string,
+    { from: number; to: number; forward: number; backward: number; passes: number }
+  >();
   for (const pair of network.pairs) {
-    if (!at.has(pair.from) || !at.has(pair.to)) continue;
-    const key = pair.from < pair.to ? `${pair.from}-${pair.to}` : `${pair.to}-${pair.from}`;
-    const line = joined.get(key) ?? { from: pair.from, to: pair.to, passes: 0 };
-    line.passes += pair.completed;
-    joined.set(key, line);
+    if (!at.has(pair.from) || !at.has(pair.to) || pair.from === pair.to || pair.completed <= 0)
+      continue;
+    outgoing.set(pair.from, (outgoing.get(pair.from) ?? 0) + pair.completed);
+    const from = Math.min(pair.from, pair.to),
+      to = Math.max(pair.from, pair.to);
+    const key = `${from}-${to}`;
+    const link = joined.get(key) ?? { from, to, forward: 0, backward: 0, passes: 0 };
+    link[pair.from === from ? 'forward' : 'backward'] += pair.completed;
+    link.passes += pair.completed;
+    joined.set(key, link);
   }
-  const mostJoined = Math.max(1, ...[...joined.values()].map((l) => l.passes));
-  const name = (line: number) =>
-    nameOf(w, at.get(line)?.player) ??
-    sourceMessage('copy.materialView.921afb8470', { p0: line + 1 });
-  return {
-    nodes: nodes.map((n) => {
-      const full = name(n.line);
+  const mostPasses = Math.max(1, ...outgoing.values());
+  const nodes = present.map((n) => {
+    const passes = outgoing.get(n.line) ?? 0;
+    return {
+      line: n.line,
+      number: n.line + 1,
+      name: nameOf(w, n.player),
+      cx: px(n.x),
+      cy: py(n.y),
+      r:
+        FIELD_W *
+        (NETWORK_VIEW.radius.min +
+          (NETWORK_VIEW.radius.max - NETWORK_VIEW.radius.min) * Math.sqrt(passes / mostPasses)),
+      passes,
+      touches: n.touches,
+    };
+  });
+  const circles = new Map(nodes.map((n) => [n.line, n]));
+  const pairs = [...joined.values()].filter((l) => l.passes >= NETWORK_VIEW.minPasses);
+  const mostJoined = Math.max(1, ...pairs.map((l) => l.passes));
+  const links = pairs
+    // Thin first; stable ties also make the busiest-five summary reproducible.
+    .sort((a, b) => a.passes - b.passes || a.from - b.from || a.to - b.to)
+    .map((l) => {
+      const from = circles.get(l.from)!,
+        to = circles.get(l.to)!;
+      const dx = to.cx - from.cx,
+        dy = to.cy - from.cy;
+      const distance = Math.hypot(dx, dy);
+      // Stop at the circles so the arrow tips stay visible above the links and below the nodes.
+      const scale = Math.min(1, distance / (from.r + to.r));
+      const start = distance ? (from.r * scale) / distance : 0;
+      const end = distance ? (to.r * scale) / distance : 0;
       return {
-        line: n.line,
-        cx: px(n.x),
-        cy: py(n.y),
-        r: 2.6 + 2.4 * Math.sqrt(n.touches / mostTouches),
-        short: shortName(full),
-        label: sourceMessage('copy.materialView.38aeab08e9', {
-          p0: full,
-          p1: cellName(cellOf([n.x, n.y])),
-          p2: n.touches,
-        }),
+        ...l,
+        key: `${l.from}-${l.to}`,
+        x1: from.cx + dx * start,
+        y1: from.cy + dy * start,
+        x2: to.cx - dx * end,
+        y2: to.cy - dy * end,
+        width:
+          ((NETWORK_VIEW.line.min +
+            ((NETWORK_VIEW.line.max - NETWORK_VIEW.line.min) * l.passes) / mostJoined) *
+            VIEW.width) /
+          NETWORK_VIEW.referenceWidth,
+        arrowStart: l.backward > 0,
+        arrowEnd: l.forward > 0,
       };
-    }),
-    links: [...joined.values()]
-      .sort((a, b) => a.passes - b.passes)
-      .map((l) => {
-        const a = at.get(l.from)!,
-          b = at.get(l.to)!;
-        return {
-          key: `${l.from}-${l.to}`,
-          x1: px(a.x),
-          y1: py(a.y),
-          x2: px(b.x),
-          y2: py(b.y),
-          width: 0.4 + 2.6 * (l.passes / mostJoined),
-          passes: l.passes,
-          label: sourceMessage('copy.materialView.9e20aac524', {
-            p0: name(l.from),
-            p1: name(l.to),
-            p2: l.passes,
-          }),
-        };
-      }),
-    mostPasses,
-  };
+    });
+  return { nodes, links, busiest: links.toReversed().slice(0, 5) };
 }
 
 export interface ReportView {

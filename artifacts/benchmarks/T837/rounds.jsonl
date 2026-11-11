@@ -1,0 +1,36 @@
+{"round": "A4-empty-entry", "workload": "own-match", "start": "2026-11-11T16:34:00Z", "end": "2026-11-11T16:34:26Z", "exit": 0}
+{"round": "S2-scalar-distance", "workload": "staging-core", "start": "2026-11-11T16:34:26Z", "end": "2026-11-11T16:39:26Z", "exit": 0}
+{"round": "baseline", "workload": "staging-core", "start": "2026-11-11T16:27:52Z", "end": "2026-11-11T16:44:03Z", "exit": 0}
+{"round": "baseline", "workload": "staging-first", "start": "2026-11-11T16:44:03Z", "end": "2026-11-11T16:46:24Z", "exit": 0}
+{"round": "baseline", "workload": "grid-own", "start": "2026-11-11T16:46:24Z", "end": "2026-11-11T16:46:45Z", "exit": 0}
+{"round": "baseline", "workload": "grid-observed", "start": "2026-11-11T16:46:45Z", "end": "2026-11-11T16:46:50Z", "exit": 1}
+{"round": "baseline", "workload": "fixture", "start": "2026-11-11T16:46:50Z", "end": "2026-11-11T16:46:55Z", "exit": 0}
+{"round": "A5-zero-place-weight", "workload": "own-match", "start": "2026-11-11T16:47:54Z", "end": "2026-11-11T16:48:18Z", "exit": 0}
+{"round": "corpus-own-T831", "workload": "own-match", "start": "2026-11-11T16:50:23Z", "end": "2026-11-11T16:50:28Z", "exit": 0}
+{"round": "corpus-own-T837", "workload": "own-match", "start": "2026-11-11T16:50:28Z", "end": "2026-11-11T16:50:32Z", "exit": 0}
+{"round": "corpus-own-perf-script-1", "workload": "own-match", "start": "2026-11-11T16:50:32Z", "end": "2026-11-11T16:50:37Z", "exit": 0}
+{"round": "corpus-own-perf-script-2", "workload": "own-match", "start": "2026-11-11T16:50:37Z", "end": "2026-11-11T16:50:41Z", "exit": 0}
+{"round": "A7-nearest-rank", "workload": "own-match", "start": "2026-11-11T16:52:07Z", "end": "2026-11-11T16:52:54Z", "exit": 0}
+{"round": "S3-shape-slots", "workload": "staging-core", "start": "2026-11-11T16:48:18Z", "end": "2026-11-11T16:53:10Z", "exit": 0}
+{"round": "baseline-grid-observed", "workload": "grid-observed", "start": "2026-11-11T16:53:10Z", "end": "2026-11-11T16:53:44Z", "exit": 0}
+{"round": "A8-actor-turn-counts", "workload": "own-match", "start": "2026-11-11T16:53:40Z", "end": "2026-11-11T16:54:27Z", "exit": 0}
+{"round": "A9-remaining-scan", "workload": "own-match", "start": "2026-11-11T16:57:21Z", "end": "2026-11-11T16:58:06Z", "exit": 0}
+{"round": "S4-snapshot-rosters", "workload": "staging-core", "start": "2026-11-11T16:56:36Z", "end": "2026-11-11T17:01:15Z", "exit": 0}
+{"round": "S5-lazy-observation-shape", "workload": "staging-core", "start": "2026-11-11T17:04:54Z", "end": "2026-11-11T17:09:53Z", "exit": 0}
+{"round": "final-own-match", "workload": "own-match", "start": "2026-11-11T17:13:53Z", "end": "2026-11-11T17:14:28Z", "exit": 0}
+{"round": "final-staging-core", "workload": "staging-core", "start": "2026-11-11T17:14:28Z", "end": "2026-11-11T18:17:27Z", "exit": 0}
+{"round": "final-staging-first", "workload": "staging-first", "start": "2026-11-11T18:17:27Z", "end": "2026-11-11T18:19:20Z", "exit": 0}
+{"round": "final-staging", "workload": "staging", "start": "2026-11-11T18:19:20Z", "end": "2026-11-11T18:19:24Z", "exit": 1}
+{"round": "final-grid-own", "workload": "grid-own", "start": "2026-11-11T18:19:24Z", "end": "2026-11-11T18:19:44Z", "exit": 0}
+{"round": "final-grid-observed", "workload": "grid-observed", "start": "2026-11-11T18:19:44Z", "end": "2026-11-11T18:20:28Z", "exit": 0}
+{"round": "final-fixture", "workload": "fixture", "start": "2026-11-11T18:20:28Z", "end": "2026-11-11T18:20:36Z", "exit": 0}
+{"round": "identity-aggregate", "workload": "aggregate", "start": "2026-11-11T18:20:36Z", "end": "2026-11-11T18:20:48Z", "exit": 0}
+{"round": "identity-day", "workload": "day", "start": "2026-11-11T18:20:48Z", "end": "2026-11-11T18:20:53Z", "exit": 0}
+{"round": "final-corpus-own-match-T831", "workload": "own-match", "seed": "T831", "start": "2026-11-11T18:20:53Z", "end": "2026-11-11T18:20:58Z", "exit": 0}
+{"round": "final-corpus-staging-core-T831", "workload": "staging-core", "seed": "T831", "start": "2026-11-11T18:20:58Z", "end": "2026-11-11T18:21:27Z", "exit": 0}
+{"round": "final-corpus-own-match-T837", "workload": "own-match", "seed": "T837", "start": "2026-11-11T18:21:27Z", "end": "2026-11-11T18:21:32Z", "exit": 0}
+{"round": "final-corpus-staging-core-T837", "workload": "staging-core", "seed": "T837", "start": "2026-11-11T18:21:32Z", "end": "2026-11-11T18:22:03Z", "exit": 0}
+{"round": "final-corpus-own-match-perf-script-1", "workload": "own-match", "seed": "perf-script-1", "start": "2026-11-11T18:22:03Z", "end": "2026-11-11T18:22:09Z", "exit": 0}
+{"round": "final-corpus-staging-core-perf-script-1", "workload": "staging-core", "seed": "perf-script-1", "start": "2026-11-11T18:22:09Z", "end": "2026-11-11T18:22:39Z", "exit": 0}
+{"round": "final-corpus-own-match-perf-script-2", "workload": "own-match", "seed": "perf-script-2", "start": "2026-11-11T18:22:39Z", "end": "2026-11-11T18:22:43Z", "exit": 0}
+{"round": "final-corpus-staging-core-perf-script-2", "workload": "staging-core", "seed": "perf-script-2", "start": "2026-11-11T18:22:43Z", "end": "2026-11-11T18:23:10Z", "exit": 0}

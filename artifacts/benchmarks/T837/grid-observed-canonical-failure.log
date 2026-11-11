@@ -1,0 +1,27 @@
+file:///Users/ihaelam/project/haeram-soccer/scripts/perf/ab.mjs:125
+  if (r.status !== 0) throw new Error(`pair.mjs failed:\n${r.stderr}`);
+                            ^
+
+Error: pair.mjs failed:
+file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:272998
+    if (!Number.isFinite(value2)) throw new Error("Non-finite canonical value");
+                                        ^
+
+Error: Non-finite canonical value
+    at canonical (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:272998:41)
+    at Array.map (<anonymous>)
+    at canonical (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:273002:48)
+    at file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:273005:128
+    at Array.map (<anonymous>)
+    at canonical (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:273005:87)
+    at Array.map (<anonymous>)
+    at canonical (file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:273002:48)
+    at file:///private/var/folders/cd/rj398yyj6bx9vxv_0jw5qnl40000gn/T/haeram-perf-ab/base-61481.mjs:273005:128
+    at Array.map (<anonymous>)
+
+Node.js v26.8.1
+
+    at file:///Users/ihaelam/project/haeram-soccer/scripts/perf/ab.mjs:125:29
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v26.8.1

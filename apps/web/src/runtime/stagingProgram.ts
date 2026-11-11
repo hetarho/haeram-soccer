@@ -3,8 +3,12 @@ import { stageFrames } from '../../../../packages/engine/src/staging/frames';
 import { STAGING_BATCH_MINUTES, type StagingReply, type StagingRequest } from './stagingProtocol';
 
 /** The worker and timer fallback run the same bounded program and yield between messages. */
-export function runStaging(request: StagingRequest, send: (reply: StagingReply) => void) {
-  const frames = stageFrames(request.script, request.staging, request.record, request.squads);
+export function runStaging(
+  request: StagingRequest,
+  send: (reply: StagingReply) => void,
+  framesFor = stageFrames,
+) {
+  const frames = framesFor(request.script, request.staging, request.record, request.squads);
   let from = 0;
   let stopped = false;
   let timer: ReturnType<typeof setTimeout>;

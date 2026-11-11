@@ -28,7 +28,6 @@ import {
 const STAGE = STAGING_CONFIG.stage;
 const THROUGH = STAGE.through;
 const BALL = STAGING_CONFIG.ball;
-const TICK = STAGING_CONFIG.tick;
 
 /** `pass:*` with `through` set, and `pass:offside`. */
 export function* performThrough(state: StageState, ctx: BeatContext): Generator<void, void> {
@@ -121,7 +120,11 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
     pace: 'sprint',
   });
   const untilLanded = function* (flight: { t1: number }): Generator<void, void> {
-    return yield* runUntil(state, () => state.t >= flight.t1 - 1e-9, flight.t1 - state.t + TICK);
+    return yield* runUntil(
+      state,
+      () => state.t >= flight.t1 - 1e-9,
+      flight.t1 - state.t + STAGING_CONFIG.tick,
+    );
   };
 
   if (beat.outcome === 'intercepted') {
@@ -157,7 +160,7 @@ export function* performThrough(state: StageState, ctx: BeatContext): Generator<
     yield* runUntil(
       state,
       () => state.t >= flight.t1 - 1e-9 || state.t - flagged >= THROUGH.flagDelay - 1e-9,
-      THROUGH.flagDelay + TICK,
+      THROUGH.flagDelay + STAGING_CONFIG.tick,
     );
     deadBall(state);
     pushEvent(state, { kind: 'whistle', actor, at: [state.ball.pos[0], state.ball.pos[1]] });

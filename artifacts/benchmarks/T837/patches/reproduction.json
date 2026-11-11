@@ -1,0 +1,33 @@
+{
+  "baseline": "a453de2367488234d9a24ec23eb07f92e0979028",
+  "order": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A6",
+    "A8",
+    "A9",
+    "A10",
+    "S1",
+    "S3"
+  ],
+  "files": {
+    "packages/engine/src/script/write.ts": {
+      "same": true,
+      "sha256": "7b19c92966535754fd64ccb1a04e84136c279ad1b874839891d8f95168045b5d"
+    },
+    "packages/engine/src/staging/places.ts": {
+      "same": true,
+      "sha256": "4a92ecbf454bc2754577b126cf2b21d5d59266be83c1570b765651e1005b61a0"
+    },
+    "packages/engine/src/staging/world.ts": {
+      "same": true,
+      "sha256": "27f5043051d98ff83e524d0f506729fa0869d96972a9e692029e5e47f1d3d1a6"
+    },
+    "packages/engine/src/script/search.ts": {
+      "same": true,
+      "sha256": "23ad1663a8d054b5ed8fe4c925ecf46f68dc42b4e721076084585573dedf171c"
+    }
+  }
+}

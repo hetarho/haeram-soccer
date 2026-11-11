@@ -1,7 +1,7 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { useId, useMemo, useState } from 'react';
+import { useId, useMemo, useState, type CSSProperties } from 'react';
 import type { MatchRecord, World } from '../../../../../../packages/contracts/src/types';
 import { BAND_EDGES, LANE_EDGES, PITCH } from '../../../../../../packages/engine/src/grid/pitch';
 import { FIELD, HeatPitch, MaterialPitch } from '../../../entities/match';
@@ -9,6 +9,8 @@ import {
   heatChoices,
   heatOf,
   networkView,
+  NETWORK_VIEW,
+  matchLook,
   ownSide,
   px,
   py,
@@ -17,6 +19,9 @@ import {
   sideReport,
   topToucher,
 } from '../../../entities/match';
+import { number } from '../../../presentation/format';
+import { scoreboardHalves } from '../lib/scoreboardHalves';
+import networkStyle from './PassNetwork.module.css';
 import { TabList } from '../../../shared/ui/PageTabs';
 import { openPlayer } from '../../../entities/player';
 import { Segments } from '../../../shared/ui/Segments';
@@ -214,55 +219,143 @@ function HeatMaps({ record, w }: { record: MatchRecord; w: World }) {
 function Network({ record, w }: { record: MatchRecord; w: World }) {
   useTextLocale();
   const view = useMemo(() => networkView(record, w), [record, w]);
+  const arrow = `network-arrow-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   if (!view) return null;
+  const kit = scoreboardHalves(matchLook(record))[ownSide(record, w)];
+  const nodes = new Map(view.nodes.map((node) => [node.line, node]));
+  const name = (line: number) =>
+    nodes.get(line)?.name ??
+    displayMessage('copy.materialView.921afb8470', { p0: number(line + 1) });
+  const nodeLabel = (node: (typeof view.nodes)[number]) =>
+    displayMessage('copy.materialView.38aeab08e9', {
+      player: name(node.line),
+      number: number(node.number),
+      passes: number(node.passes),
+      touches: number(node.touches),
+    });
+  const pairLabel = (link: (typeof view.links)[number]) =>
+    displayMessage('copy.materialView.9e20aac524', {
+      from: name(link.from),
+      to: name(link.to),
+      forward: number(link.forward),
+      backward: number(link.backward),
+    });
+  const labels = new Map<string, string>([
+    ...view.nodes.map((node) => [`node-${node.line}`, nodeLabel(node)] as const),
+    ...view.links.map((link) => [`pair-${link.key}`, pairLabel(link)] as const),
+  ]);
   return (
     <MaterialPitch
       label={displayMessage('copy.MatchMaterial.2a1cc2e03e', {
-        p0: view.nodes.length,
-        p1: view.links.length,
+        p0: number(view.nodes.length),
+        p1: number(view.links.length),
       })}
+      describeMark={(key) => labels.get(key) ?? ''}
       legend={
         <>
-          <p className={s.caption}>{richMessage('copy.MatchMaterial.e86b9ed7bd')}</p>
+          <p className={s.caption}>
+            {richMessage('copy.MatchMaterial.e86b9ed7bd', {
+              minPasses: number(NETWORK_VIEW.minPasses),
+            })}
+          </p>
           <ol className={s.roster}>
-            {localizeValue(
-              view.nodes.map((n, i) => (
-                <li key={n.line}>
-                  <b>{localizeValue(i + 1)}</b> {localizeValue(n.label)}
-                </li>
-              )),
-            )}
+            {view.nodes.map((node) => (
+              <li key={node.line}>{nodeLabel(node)}</li>
+            ))}
+          </ol>
+          <p className={s.caption}>{richMessage('match.network.busiest')}</p>
+          <ol className={s.roster} aria-label={displayMessage('match.network.busiest')}>
+            {view.busiest.map((link) => (
+              <li key={link.key}>{pairLabel(link)}</li>
+            ))}
           </ol>
         </>
       }
     >
-      {localizeValue(
-        view.links.map((l) => (
-          <line
-            key={l.key}
-            className={s.link}
-            x1={l.x1}
-            y1={l.y1}
-            x2={l.x2}
-            y2={l.y2}
-            strokeWidth={l.width}
-            data-label={l.label}
+      <defs>
+        <marker
+          id={arrow}
+          viewBox="0 0 10 10"
+          refX="10"
+          refY="5"
+          markerWidth="4"
+          markerHeight="4"
+          markerUnits="userSpaceOnUse"
+          orient="auto-start-reverse"
+        >
+          <path className={networkStyle.arrowhead} d="M 0 0 L 10 5 L 0 10 Z" />
+        </marker>
+      </defs>
+      <g
+        className={networkStyle.network}
+        style={
+          {
+            '--network-shirt': kit.background,
+            '--network-ink': kit.ink,
+          } as CSSProperties
+        }
+      >
+        {view.links.map((link) => (
+          <g
+            key={link.key}
+            role="button"
+            tabIndex={0}
+            className={networkStyle.link}
+            aria-label={pairLabel(link)}
+            data-label={pairLabel(link)}
+            data-mark={`pair-${link.key}`}
+            data-network-link
           >
-            <title>{localizeValue(l.label)}</title>
-          </line>
-        )),
-      )}
-      {localizeValue(
-        view.nodes.map((n, i) => (
-          <g key={n.line} className={s.node} data-label={n.label}>
-            <title>{localizeValue(n.label)}</title>
-            <circle cx={n.cx} cy={n.cy} r={n.r} />
-            <text x={n.cx} y={n.cy} dy="0.36em">
-              {localizeValue(i + 1)}
+            <title>{pairLabel(link)}</title>
+            <line
+              x1={link.x1}
+              y1={link.y1}
+              x2={link.x2}
+              y2={link.y2}
+              strokeWidth={link.width}
+              markerStart={link.arrowStart ? `url(#${arrow})` : undefined}
+              markerEnd={link.arrowEnd ? `url(#${arrow})` : undefined}
+            />
+            <line
+              className={networkStyle.hit}
+              aria-hidden="true"
+              x1={link.x1}
+              y1={link.y1}
+              x2={link.x2}
+              y2={link.y2}
+              strokeWidth="44"
+              vectorEffect="non-scaling-stroke"
+            />
+          </g>
+        ))}
+        {view.nodes.map((node) => (
+          <g
+            key={node.line}
+            className={networkStyle.node}
+            role="button"
+            tabIndex={0}
+            aria-label={nodeLabel(node)}
+            data-label={nodeLabel(node)}
+            data-mark={`node-${node.line}`}
+            data-network-node
+          >
+            <title>{nodeLabel(node)}</title>
+            <circle
+              className={networkStyle.hit}
+              aria-hidden="true"
+              cx={node.cx}
+              cy={node.cy}
+              r={node.r}
+              strokeWidth="44"
+              vectorEffect="non-scaling-stroke"
+            />
+            <circle cx={node.cx} cy={node.cy} r={node.r} />
+            <text x={node.cx} y={node.cy} dy="0.36em">
+              {number(node.number)}
             </text>
           </g>
-        )),
-      )}
+        ))}
+      </g>
     </MaterialPitch>
   );
 }

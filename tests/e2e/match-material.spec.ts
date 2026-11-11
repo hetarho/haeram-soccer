@@ -5,6 +5,8 @@ import { chooseOption } from './select';
 import { expect, test } from '@playwright/test';
 import { horizontalOverflow } from './layout';
 import { startCareer } from './start';
+import { exportWorld } from './club-identity-helpers';
+import { networkView } from '../../apps/web/src/entities/match/logic';
 
 test.use({ viewport: { width: 390, height: 844 } });
 
@@ -16,6 +18,8 @@ test('opens an own match material from its report and from the fixture notebook'
   await delegateSales(page);
   await watchNext(page, { manual: true });
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
+  const saved = await exportWorld(page);
+  const network = networkView(saved.ownMatches.at(-1)!, saved)!;
   const details = await openMatchDetails(page);
   const report = details.getByRole('region', { name: '경기 분석 리포트', exact: true });
   await expect(report).toBeVisible();
@@ -45,6 +49,43 @@ test('opens an own match material from its report and from the fixture notebook'
 
   await tabs.nth(2).click();
   await expect(material).toContainText('선 굵기 = 두 선수 사이 성공 패스');
+  const networkPitch = material.getByRole('group', { name: /^패스 연결망:/ });
+  const circles = networkPitch.getByRole('button').and(networkPitch.locator('[data-network-node]'));
+  const links = networkPitch.getByRole('button').and(networkPitch.locator('[data-network-link]'));
+  expect(network.nodes.length).toBeGreaterThan(0);
+  expect(network.links.length).toBeGreaterThan(0);
+  await expect(circles).toHaveCount(network.nodes.length);
+  await expect(links).toHaveCount(network.links.length);
+  for (const node of network.nodes)
+    await expect(
+      circles.and(networkPitch.locator(`[data-mark="node-${node.line}"]`)).locator('text'),
+    ).toHaveText(String(node.number));
+  await expect(networkPitch.locator('line[marker-start]')).toHaveCount(
+    network.links.filter((l) => l.arrowStart).length,
+  );
+  await expect(networkPitch.locator('line[marker-end]')).toHaveCount(
+    network.links.filter((l) => l.arrowEnd).length,
+  );
+  await expect(
+    material
+      .getByRole('list', { name: '성공 패스가 가장 많은 연결 (최대 5개)' })
+      .getByRole('listitem'),
+  ).toHaveCount(Math.min(5, network.links.length));
+  // Touch the topmost circle, and read a line with the keyboard without changing any match fact.
+  const circleLabel = await circles.last().getAttribute('aria-label');
+  await circles.last().click();
+  await expect(material.locator('figcaption')).toHaveText(circleLabel!);
+  await links.first().focus();
+  await links.first().press('Enter');
+  await expect(material.locator('figcaption')).toHaveText(
+    (await links.first().getAttribute('aria-label'))!,
+  );
+  for (const width of [360, 390]) {
+    await page.setViewportSize({ width, height: width === 360 ? 740 : 844 });
+    const networkBox = (await networkPitch.boundingBox())!;
+    expect(networkBox.width / networkBox.height).toBeCloseTo(1.9, 1);
+    expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
+  }
   await tabs.nth(3).click();
   await expect(material).toContainText('세트피스');
   await expect(material.getByRole('table')).toContainText('되찾기');

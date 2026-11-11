@@ -73,12 +73,19 @@ test('the lab watches a match in the game’s match view and replays it with edi
   await expect.poll(seconds).toBeGreaterThan(at);
 
   // 다시 보기 plays the same seed again with the edited value: a new playback from the start.
-  await setValue(page, 'SHOT_CONFIG.saveShare', '0.9');
+  await setValue(page, 'AGGREGATE_CONFIG.shots.scale', '0.9');
   await page.getByRole('button', { name: '다시 보기', exact: true }).click();
   await expect(preparing).toHaveText('e2e-watch 경기를 치르는 중…');
   await expect(preparing).toBeHidden({ timeout: 120_000 });
   await expect(seed).toHaveValue('e2e-watch');
   await expect(page.getByRole('slider', { name: '경기 시간', exact: true })).toBeHidden();
+
+  // Staging changes stay on the picture's worker and replay the frozen seed.
+  await setValue(page, 'STAGING_CONFIG.stage.kickGap', '9');
+  await page.getByRole('button', { name: '다시 보기', exact: true }).click();
+  await expect(preparing).toBeHidden({ timeout: 120_000 });
+  await expect(seed).toHaveValue('e2e-watch');
+  await expect(canvas).toHaveAttribute('data-seconds', /.+/);
 
   // 새 경기 draws a new seed.
   await page.getByRole('button', { name: '새 경기', exact: true }).click();
@@ -111,7 +118,7 @@ test('the lab generates sides, edits values and compares runs against a baseline
   await expect(first).toHaveValue('90');
   await expect(left.getByText(/^선발 평균 OVR/)).not.toContainText('OVR 70.0');
 
-  await setValue(page, 'SHOT_CONFIG.saveShare', '0.9');
+  await setValue(page, 'AGGREGATE_CONFIG.shots.scale', '0.9');
   await expect(page.getByRole('region', { name: '엔진 수치' })).toContainText('변경 1개');
 
   await simulate(page, '1');
@@ -123,7 +130,7 @@ test('the lab generates sides, edits values and compares runs against a baseline
   await kept.getByRole('row').nth(1).getByRole('button', { name: '기준으로 고정' }).click();
   await expect(kept.getByRole('row').nth(1)).toContainText('기준');
 
-  await setValue(page, 'SHOT_CONFIG.saveShare', '0.6');
+  await setValue(page, 'AGGREGATE_CONFIG.shots.scale', '0.6');
   await simulate(page, '20');
   const results = page.getByRole('region', { name: '결과' });
   await expect(results.getByRole('columnheader', { name: '기준', exact: true })).toBeVisible();

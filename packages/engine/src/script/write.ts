@@ -32,8 +32,10 @@ import { validateScript } from './validate';
 import { compareRecord, countScript } from './count';
 import { planRestarts } from './restarts';
 import { minuteTimes, travel, deadOf } from './clock';
+import { TouchSearch } from './search';
 const FIT = SCRIPT_CONFIG;
 const GRAMMAR = SCRIPT_CONFIG;
+const MIN_INDEXED_POOL = 32;
 const R = (name: (typeof EVENT_RESULTS)[number]) => EVENT_RESULTS.indexOf(name);
 const KIND = (code: number) => EVENT_KINDS[code]!;
 const other = (t: TeamId): TeamId => (t === 0 ? 1 : 0);
@@ -112,6 +114,36 @@ function writeFitted(settled: Settled, seed: string): Script {
     return settled.events.length + settled.shots.length + (r && 'foul' in r ? r.foul : 0);
   };
   const order = touches.map((_, i) => i).sort((a, b) => rowId(a) - rowId(b));
+  // Temporal eligibility is fixed by the record. Keep row-id order inside each minute/side;
+  // playing a touch and waiting for an entrant remain dynamic checks below.
+  const minuteOrder = Array.from({ length: settled.length }, (_, m) =>
+    ([0, 1] as const).map((team) =>
+      order.filter((i) => {
+        const t = touches[i]!;
+        return (
+          t.side === team &&
+          (t.minute === m || t.minute === FLOATING) &&
+          t.period === periodOf(m) &&
+          m >= t.from &&
+          m < t.until
+        );
+      }),
+    ),
+  );
+  const fixedRemaining = Array.from({ length: settled.length }, () => [0, 0]);
+  const expiring = Array<number>(settled.length).fill(0);
+  const turnsRemaining = minuteOrder.map((teams) =>
+    teams.map((rows, team) => {
+      const counts = settled.sides[team]!.lines.map(() => 0);
+      for (const i of rows) counts[touches[i]!.actor]!++;
+      return counts;
+    }),
+  );
+  for (const t of touches) {
+    if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!++;
+    const last = t.until - 1;
+    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!++;
+  }
   const total = [0, 0];
   const done = [0, 0];
   const endsTotal = [0, 0];
@@ -159,6 +191,27 @@ function writeFitted(settled: Settled, seed: string): Script {
       'event' in t.release &&
       SET_PIECES[settled.events[t.release.event]![EV.setPiece]!] !== 'none',
   );
+  const search = new TouchSearch(
+    touches.map((t, i) => ({
+      side: t.side,
+      cell: Math.max(0, startCell[i]!),
+      group: (ends[i] ? 1 : 0) + (winner[i]! >= 0 ? 2 : 0),
+    })),
+    order,
+  );
+  // Bounds are exact only while these cost operations stay in safe-integer arithmetic. Other
+  // tunings use the original full scan; this guard never changes the cost or a football rule.
+  const precisionBudget = Number.MAX_SAFE_INTEGER / 16;
+  const weights = [
+    FIT.fixedPull,
+    FIT.fixedPush,
+    FIT.winnerPull,
+    FIT.setPieceWait,
+    FIT.restartPull,
+  ].map((x) => x * 100);
+  const indexedCosts =
+    weights.every(Number.isSafeInteger) &&
+    weights.reduce((sum, x) => sum + Math.abs(x), 0) < precisionBudget;
   const beats: Beat[] = [];
   const minuteOf: number[] = [];
   let possession = 0;
@@ -174,6 +227,13 @@ function writeFitted(settled: Settled, seed: string): Script {
   /** Touches played before the minute being written. */
   let minuteStart = 0;
   let waitingIncidents: NonNullable<Beat['incidents']> = [];
+  let eligibilityVersion = 0;
+  const available = [0, 1].map(() => ({
+    minute: -1,
+    version: -1,
+    rows: [] as number[],
+    remaining: [] as number[],
+  }));
   const awaitingEntry = (team: TeamId, line: number) =>
     waitingIncidents.some((x) => x.side === team && x.kind === 'sub' && x.other === line);
 
@@ -199,19 +259,8 @@ function writeFitted(settled: Settled, seed: string): Script {
         (p.slot === 0 && !keeper)
       )
         continue;
-      const hasTurn = (line: number) =>
-        touches.some(
-          (t, i) =>
-            !played[i] &&
-            t.side === team &&
-            t.actor === line &&
-            t.period === periodOf(minute) &&
-            (t.minute === FLOATING || t.minute === minute) &&
-            t.from <= minute &&
-            t.until > minute,
-        );
       const rank = (line: number) =>
-        (hasTurn(line) ? 0 : FIT.restartPull * 100) +
+        (turnsRemaining[minute]![team]![line]! > 0 ? 0 : FIT.restartPull * 100) +
         Math.round(dist(spotOf(line, at, team), at) * 100);
       if (best < 0 || rank(index) < rank(best)) best = index;
     }
@@ -305,49 +354,59 @@ function writeFitted(settled: Settled, seed: string): Script {
     if (t.next !== undefined) after[t.next] = i;
   });
   /** Touches `team` may play now, in row-id order: this minute's fixed ones and every floating one. */
-  const unplayed = (team: TeamId) =>
-    order.filter((i) => {
+  const unplayed = (team: TeamId): readonly number[] => {
+    const cached = available[team]!;
+    if (cached.minute === minute && cached.version === eligibilityVersion) return cached.rows;
+    const hasEntry = waitingIncidents.some((x) => x.kind === 'sub');
+    const source = cached.minute === minute ? cached.remaining : minuteOrder[minute]![team]!;
+    const remaining: number[] = [],
+      rows: number[] = [];
+    for (const i of source) {
+      if (played[i]) continue;
+      remaining.push(i);
       const t = touches[i]!;
-      return (
-        !played[i] &&
-        t.side === team &&
-        (t.minute === minute || t.minute === FLOATING) &&
-        t.period === periodOf(minute) &&
-        minute >= t.from &&
-        minute < t.until &&
-        !awaitingEntry(team, t.actor) &&
-        !t.carries.some((id) => {
-          const e = settled.events[id]!;
-          return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
-        }) &&
-        !(
-          t.release &&
-          'event' in t.release &&
-          (() => {
-            const e = settled.events[t.release.event]!;
-            return (
-              e[EV.other]! >= 0 &&
-              awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
-            );
-          })()
-        ) &&
-        !(
-          t.release &&
-          'shot' in t.release &&
-          awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
-        ) &&
-        !(
-          t.release &&
-          'foul' in t.release &&
-          awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
-        ) &&
+      if (
+        (!hasEntry ||
+          (!awaitingEntry(team, t.actor) &&
+            !t.carries.some((id) => {
+              const e = settled.events[id]!;
+              return e[EV.other]! >= 0 && awaitingEntry(other(team), e[EV.other]!);
+            }) &&
+            !(
+              t.release &&
+              'event' in t.release &&
+              (() => {
+                const e = settled.events[t.release.event]!;
+                return (
+                  e[EV.other]! >= 0 &&
+                  awaitingEntry(e[EV.result] === R('offside') ? team : other(team), e[EV.other]!)
+                );
+              })()
+            ) &&
+            !(
+              t.release &&
+              'shot' in t.release &&
+              awaitingEntry(other(team), settled.shots[t.release.shot]![SH.keeper]!)
+            ) &&
+            !(
+              t.release &&
+              'foul' in t.release &&
+              awaitingEntry(other(team), settled.fouls[t.release.foul]![FO.fouler]!)
+            ))) &&
         (after[i]! < 0 || played[after[i]!])
-      );
-    });
+      )
+        rows.push(i);
+    }
+    cached.remaining = remaining;
+    cached.minute = minute;
+    cached.version = eligibilityVersion;
+    cached.rows = rows;
+    return rows;
+  };
   const fixedLeft = (team?: TeamId) =>
-    touches.some(
-      (t, i) => !played[i] && t.minute === minute && (team === undefined || t.side === team),
-    );
+    team === undefined
+      ? fixedRemaining[minute]![0]! + fixedRemaining[minute]![1]! > 0
+      : fixedRemaining[minute]![team]! > 0;
   /** The touches played by the end of minute `m`: an even share of all of them. */
   const periodCounts = [0, 0];
   for (const t of touches) periodCounts[t.period]!++;
@@ -358,14 +417,37 @@ function writeFitted(settled: Settled, seed: string): Script {
   );
   const quota = (m: number) => quotas[m]!;
   const quotaMet = () => done[0]! + done[1]! >= quota(minute);
+  /** Quota and pace terms are constant during one cheapest-touch search. */
+  const costTerms = (team: TeamId) => {
+    const met = quotaMet();
+    const fill = Math.min(
+      1,
+      (done[0]! + done[1]! - minuteStart) / Math.max(1, quota(minute) - minuteStart),
+    );
+    const share = done[team]! / Math.max(1, total[team]!);
+    const lead = share - done[other(team)]! / Math.max(1, total[other(team)]!);
+    const endsLead = endsDone[team]! / Math.max(1, endsTotal[team]!) - share;
+    return {
+      fixed: met ? FIT.fixedPush * 100 : Math.round((FIT.fixedPull + fill * FIT.fixedRamp) * 100),
+      pace: Math.round(
+        Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100,
+      ),
+      push: met && fixedLeft(other(team)),
+    };
+  };
   /**
-   * The price of `team` playing touch `i` with the ball in `cell`: the metres to where it starts,
+   * The price of `team` playing touch `i` with the ball in `cell`: the cell distance in centimetres,
    * less `fit.fixedPull` for a touch fixed to this minute; a touch ending the possession is cheaper
    * by up to `fit.paceBias` the further `team` is ahead of the other side in its share of touches
-   * played (dearer when behind), and by `fit.fixedPull` once the minute's share is met while the
+   * played (dearer when behind), and by `fit.fixedPush` once the minute's share is met while the
    * other side still has a fixed touch in it.
    */
-  const touchCost = (team: TeamId, i: number, cell: number): number => {
+  const touchCost = (
+    team: TeamId,
+    i: number,
+    cell: number,
+    terms: ReturnType<typeof costTerms>,
+  ): number => {
     let cost = cellGap(startCell[i]!, cell);
     const release = touches[i]!.release;
     // Prefer the minute's existing dead ball for its incidents over opening a keeper stoppage.
@@ -379,19 +461,13 @@ function writeFitted(settled: Settled, seed: string): Script {
         ))
     )
       cost -= FIT.fixedPull * 100;
-    const met = quotaMet();
     const actor = touches[i]!.actor;
     if (actorLeft[team]![actor]! <= winsLeft[team]![actor]!) cost += FIT.winnerPull * 100;
     const by = winner[i]!;
     if (by >= 0 && actorLeft[other(team)]![by]! <= winsLeft[other(team)]![by]!)
       cost -= FIT.winnerPull * 100;
     // The pull grows as the minute fills, so its fixed touches come before its share runs out.
-    const fill = Math.min(
-      1,
-      (done[0]! + done[1]! - minuteStart) / Math.max(1, quota(minute) - minuteStart),
-    );
-    if (touches[i]!.minute === minute)
-      cost -= met ? FIT.fixedPush * 100 : Math.round((FIT.fixedPull + fill * FIT.fixedRamp) * 100);
+    if (touches[i]!.minute === minute) cost -= terms.fixed;
     // A corner's or free kick's delivery waits for its restart rather than be played in open play.
     if (touches[i]!.until === minute + 1) cost -= FIT.fixedPush * 100;
     if (setPiece[i]) cost += FIT.setPieceWait * 100;
@@ -405,13 +481,8 @@ function writeFitted(settled: Settled, seed: string): Script {
     if (ends[i]) {
       // Ahead of the other side, or behind in spending its own possession-ending touches, a side
       // ends its possession sooner; so neither side runs out of touches, nor of ways to lose the ball.
-      const share = done[team]! / Math.max(1, total[team]!);
-      const lead = share - done[other(team)]! / Math.max(1, total[other(team)]!);
-      const endsLead = endsDone[team]! / Math.max(1, endsTotal[team]!) - share;
-      cost -= Math.round(
-        Math.min(Math.max((lead - endsLead) / FIT.paceSlack, -1), 1) * FIT.paceBias * 100,
-      );
-      if (met && fixedLeft(other(team))) cost -= FIT.fixedPush * 100;
+      cost -= terms.pace;
+      if (terms.push) cost -= FIT.fixedPush * 100;
     }
     return cost;
   };
@@ -463,8 +534,45 @@ function writeFitted(settled: Settled, seed: string): Script {
   ): number => {
     let best = -1;
     let bestCost = Infinity;
+    const terms = costTerms(team);
+    let minPlace = 0;
+    let exact =
+      indexedCosts &&
+      Number.isSafeInteger(terms.fixed) &&
+      Number.isSafeInteger(terms.pace) &&
+      Math.abs(terms.fixed) < precisionBudget &&
+      Math.abs(terms.pace) < precisionBudget;
+    for (const value of place?.values() ?? []) {
+      exact &&= Number.isSafeInteger(value) && Math.abs(value) < precisionBudget;
+      minPlace = Math.min(minPlace, value);
+    }
+    // Small pools are cheaper to scan than to mark and traverse the cell index.
+    if (exact && pool.length > MIN_INDEXED_POOL) {
+      const common =
+        minPlace +
+        Math.min(0, waitingIncidents.length ? -FIT.fixedPull * 100 : 0) +
+        Math.min(0, FIT.winnerPull * 100) +
+        Math.min(0, FIT.setPieceWait * 100) +
+        Math.min(0, FIT.restartPull * 100);
+      const bounds = [0, 1, 2, 3].map(
+        (group) =>
+          common +
+          (group & 2 ? Math.min(0, -FIT.winnerPull * 100) : 0) +
+          (group & 1
+            ? Math.min(0, -terms.pace) + (terms.push ? Math.min(0, -FIT.fixedPush * 100) : 0)
+            : 0),
+      );
+      return search.pick(
+        team,
+        pool,
+        Math.max(0, cell),
+        bounds,
+        (i) => touchCost(team, i, cell, terms) + (place?.get(touches[i]!.actor) ?? 0),
+        (i) => touches[i]!.minute !== FLOATING || touches[i]!.until === minute + 1,
+      );
+    }
     for (const i of pool) {
-      const cost = touchCost(team, i, cell) + (place?.get(touches[i]!.actor) ?? 0);
+      const cost = touchCost(team, i, cell, terms) + (place?.get(touches[i]!.actor) ?? 0);
       if (cost < bestCost) [best, bestCost] = [i, cost];
     }
     return best;
@@ -658,7 +766,14 @@ function writeFitted(settled: Settled, seed: string): Script {
   /** Plays touch `i` by its actor, who has the ball. */
   const playTouch = (i: number, delivering?: Owed) => {
     played[i] = true;
+    eligibilityVersion++;
     const t = touches[i]!;
+    for (let m = Math.max(minute, t.from); m < Math.min(settled.length, t.until); m++)
+      if (t.period === periodOf(m) && (t.minute === FLOATING || t.minute === m))
+        turnsRemaining[m]![t.side]![t.actor]!--;
+    if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!--;
+    const last = t.until - 1;
+    if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!--;
     actorLeft[t.side]![t.actor]!--;
     if (winner[i]! >= 0) winsLeft[other(t.side)]![winner[i]!]!--;
     done[t.side]!++;
@@ -768,6 +883,7 @@ function writeFitted(settled: Settled, seed: string): Script {
       );
     } else stopFor(incidents);
     waitingIncidents = [];
+    eligibilityVersion++;
     if (!owed && holder >= 0 && !present(settled, side, holder, minute)) {
       // A dead ball in the departing keeper's hands belongs to his recorded successor.
       holder = keeperOf(side);
@@ -872,9 +988,7 @@ function writeFitted(settled: Settled, seed: string): Script {
         quotaMet() &&
         done[0]! + done[1]! > minuteStart &&
         !fixedLeft() &&
-        !touches.some(
-          (t, i) => !played[i] && t.period === periodOf(minute) && t.until === minute + 1,
-        )
+        expiring[minute] === 0
       ) {
         if (waitingIncidents.length) finishIncidents();
         break;

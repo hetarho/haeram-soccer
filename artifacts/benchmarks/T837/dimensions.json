@@ -1,0 +1,36 @@
+{
+  "fixture": "1950:ENG:0:0:0:0",
+  "year": 1950,
+  "seed": "perf-261027",
+  "model": "scripted-aggregate-11",
+  "score": {
+    "home": 0,
+    "away": 0
+  },
+  "tactics": [
+    "press",
+    "possession"
+  ],
+  "lines": [
+    11,
+    11
+  ],
+  "added": [
+    2,
+    2
+  ],
+  "scriptBeats": 1780,
+  "representedMinutes": 94,
+  "periods": [
+    {
+      "period": 1,
+      "start": 0,
+      "minutes": 47
+    },
+    {
+      "period": 2,
+      "start": 2820,
+      "minutes": 47
+    }
+  ]
+}

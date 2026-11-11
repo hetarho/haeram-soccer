@@ -28,6 +28,13 @@ const arg = (name, fallback) => {
 };
 const workload = arg('--workload', 'grid');
 const DEFAULTS = {
+  'own-match': { reps: 12, warm: 4 },
+  staging: { reps: 2, warm: 1 },
+  'staging-core': { reps: 2, warm: 1 },
+  'staging-first': { reps: 12, warm: 4 },
+  'grid-own': { reps: 6, warm: 2 },
+  'grid-observed': { reps: 6, warm: 2 },
+  fixture: { reps: 12, warm: 4 },
   grid: { reps: 18, warm: 6 },
   aggregate: { reps: 20, warm: 4 },
   day: { reps: 60, warm: 0 },

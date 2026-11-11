@@ -1,0 +1,8 @@
+{
+  "command": [
+    "/Users/ihaelam/.hermes/node/bin/node",
+    "/Users/ihaelam/.npm/_npx/26287f45a133efbe/node_modules/haeram-spec-creator/bin/haeram-spec-creator.mjs",
+    "lint"
+  ],
+  "exitCode": 0
+}

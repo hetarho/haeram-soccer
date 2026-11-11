@@ -8,7 +8,7 @@ import { invalidDetail } from '../script/failure';
 // and movement only presents beats already settled (ARCH-7).
 import { STAGING_CONFIG } from './config';
 import { CENTRE, HALFWAY, PITCH, clampToPitch, oppGoal, ownGoal, toAttack } from './pitch';
-import { ROLE_SHAPE, nominalSpot } from './places';
+import { ROLE_SHAPE, nominalSpot, prepareSpots } from './places';
 import type {
   BallMode,
   Beat,
@@ -134,6 +134,7 @@ function observedMovement(
   state: StageState,
   index: number,
   snapshot: readonly Vec[],
+  spot: ReturnType<typeof prepareSpots>,
 ): NonNullable<Frame['movement']>[number] {
   const p = state.fixture.players[index];
   const body = state.bodies[index];
@@ -160,16 +161,7 @@ function observedMovement(
   )
     action = 'recover';
   else if (state.live && p.team === state.team) {
-    const nominal = nominalSpot(
-      {
-        fixture: state.fixture,
-        ball: shapeRef(state),
-        team: state.team,
-        phase: state.phase,
-        positions: snapshot,
-      },
-      index,
-    );
+    const nominal = spot(shapeRef(state), state.team, state.phase, index);
     if (dist(state.minds[index].place, nominal) > MOTION.arriveRadius) action = 'support';
   }
   return {
@@ -183,6 +175,7 @@ function observedMovement(
 const recordFrame = (state: StageState): void => {
   const p: number[] = [];
   const snapshot = positionsOf(state);
+  const spot = prepareSpots(state.fixture, snapshot);
   for (const body of state.bodies) p.push(round2(body.pos[0]), round2(body.pos[1]));
   state.frames.push({
     t: state.t,
@@ -201,7 +194,7 @@ const recordFrame = (state: StageState): void => {
     slots: state.fixture.players.map((p) => p.slot),
     period: state.fixture.period ?? 1,
     action: state.action,
-    movement: state.fixture.players.map((p) => observedMovement(state, p.index, snapshot)),
+    movement: state.fixture.players.map((p) => observedMovement(state, p.index, snapshot, spot)),
   });
 };
 
@@ -352,12 +345,12 @@ export function defaultTarget(
   index: number,
   snapshot: readonly Vec[],
   seen?: Seen,
+  spot = prepareSpots(state.fixture, snapshot),
 ): Want {
   const ref = shapeRef(state);
   const fixture = state.fixture;
   const truth: Seen = { ref, team: state.team, phase: state.phase };
-  const placeOf = (s: Seen): Vec =>
-    nominalSpot({ fixture, ball: s.ref, team: s.team, phase: s.phase, positions: snapshot }, index);
+  const placeOf = (s: Seen): Vec => spot(s.ref, s.team, s.phase, index);
   const pos = snapshot[index];
   const generalPace = (target: Vec): Pace =>
     state.t - state.turnedAt < MOTION.transitionSeconds || dist(pos, target) > MOTION.jogWithin
@@ -489,8 +482,6 @@ function pressReach(state: StageState, index: number): { reach: number; poke: bo
   return { reach: base + (close - base) * Math.min(1, held / P.closeIn), poke: false };
 }
 
-const MARGIN = STAGING_CONFIG.margin;
-
 /**
  * A free attacker's place `base` moved across, away from the nearest outfield opponent when that
  * one stands within `shape.unmark.radius` of it: by `unmark.step * (1 - d / radius)` metres in y
@@ -518,7 +509,7 @@ export function unmarked(
   const dy = base[1] - nearest[1];
   const dir = Math.abs(dy) > 1e-6 ? Math.sign(dy) : base[1] <= CENTRE[1] ? 1 : -1;
   const y = base[1] + dir * SHAPE.unmark.step * (1 - nearestD / SHAPE.unmark.radius);
-  return [base[0], clamp(y, MARGIN, PITCH.width - MARGIN)];
+  return [base[0], clamp(y, STAGING_CONFIG.margin, PITCH.width - STAGING_CONFIG.margin)];
 }
 
 /** `target` moved radially out to the keep-out circle's edge when it lies inside it. */
@@ -533,8 +524,6 @@ const keptOut = (
   const dir = d > 1e-9 ? norm(off) : norm(sub(ownGoal(keep.team, period), keep.centre));
   return clampToPitch(add(keep.centre, scale(dir, keep.radius)), -2);
 };
-
-const BOARDS = STAGING_CONFIG.stage.boards;
 
 /**
  * A free outfield player's `target` moved out to `stage.separation` from every outfield teammate
@@ -574,7 +563,7 @@ export function separated(
  * target flips at a dead ball must not carry him on, so the outward part of his velocity ends there.
  */
 const atBoards = (body: Body): void => {
-  const [x, y] = clampToPitch(body.pos, -BOARDS);
+  const [x, y] = clampToPitch(body.pos, -STAGING_CONFIG.stage.boards);
   if (x !== body.pos[0]) body.vel = [0, body.vel[1]];
   if (y !== body.pos[1]) body.vel = [body.vel[0], 0];
   body.pos = [x, y];
@@ -593,12 +582,10 @@ export function step(state: StageState): void {
   const fixture = state.fixture;
   const ballMetres = snapshot.map((p) => dist(p, state.ball.pos));
   const seens = fixture.players.map((spec) => seenBy(state, spec.index, ballMetres[spec.index]));
+  const spot = prepareSpots(fixture, snapshot);
   const zoneOf = (i: number): Vec => {
     const s = seens[i];
-    return nominalSpot(
-      { fixture, ball: s.ref, team: s.team, phase: s.phase, positions: snapshot },
-      i,
-    );
+    return spot(s.ref, s.team, s.phase, i);
   };
   const canMark = (i: number): boolean => {
     const spec = fixture.players[i];
@@ -629,14 +616,17 @@ export function step(state: StageState): void {
       onBody[i] = true;
       const target = typeof order.target === 'function' ? order.target() : order.target;
       const speed = speedAt(state, i, order.pace, order.speedCap, order.boost);
-      return { target: clampToPitch(target, -BOARDS), speed };
+      return { target: clampToPitch(target, -STAGING_CONFIG.stage.boards), speed };
     }
     const metres = ballMetres[i];
-    const want = defaultTarget(state, i, snapshot, seens[i]);
+    const want = defaultTarget(state, i, snapshot, seens[i], spot);
     if (want.direct) {
       onBody[i] = true;
       const target = separated(state, i, want.target, snapshot);
-      return { target: clampToPitch(target, -BOARDS), speed: speedAt(state, i, want.pace) };
+      return {
+        target: clampToPitch(target, -STAGING_CONFIG.stage.boards),
+        speed: speedAt(state, i, want.pace),
+      };
     }
     const mind = state.minds[i];
     followPlace(
@@ -644,7 +634,10 @@ export function step(state: StageState): void {
       want.target,
       placeLag(spec, metres, turn, state.marks.has(i), lineDiscipline[spec.team]),
     );
-    const target = clampToPitch(separated(state, i, mind.place, snapshot), -BOARDS);
+    const target = clampToPitch(
+      separated(state, i, mind.place, snapshot),
+      -STAGING_CONFIG.stage.boards,
+    );
     const d = dist(snapshot[i], target);
     // He runs for a counter once he has seen it: before that his place is the old one.
     const run = turn?.counter && seens[i].team === state.team ? turn : undefined;

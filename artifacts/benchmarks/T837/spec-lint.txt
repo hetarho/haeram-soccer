@@ -1,0 +1,20 @@
+경고: T838: base MATCH@59 < 현재 r60 — implement 전 신선도 확인 필요.
+경고: T839: base MATCH@59 < 현재 r60 — implement 전 신선도 확인 필요.
+경고: T839: base WEB@215 < 현재 r216 — implement 전 신선도 확인 필요.
+경고: T840: base MATCH@59 < 현재 r60 — implement 전 신선도 확인 필요.
+경고: T843: base MATCH@59 < 현재 r60 — implement 전 신선도 확인 필요.
+경고: T844: base MATCH@59 < 현재 r60 — implement 전 신선도 확인 필요.
+경고: T845: base MATCH@59 < 현재 r60 — implement 전 신선도 확인 필요.
+경고: review self-improve-local-261109: base ARCH@38 < 현재 r39 — ARCH가 바뀐 뒤의 리뷰가 아닙니다.
+검토 후보: ssot/ARCH.md chg r39: 요약이 687자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/ARCH.md chg r27: 요약이 417자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/ARCH.md chg r26: 요약이 492자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/WEB.md WEB-68: 결정 라인이 728자입니다 — 조건·예외를 하위 항목이나 표로 펴거나, 따로 바뀌는 정책이면 나눕니다
+검토 후보: ssot/WEB.md chg r210: 요약이 555자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/WEB.md chg r208: 요약이 1071자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/WEB.md chg r204: 요약이 798자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/WEB.md chg r203: 요약이 1277자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/WEB.md chg r202: 요약이 2115자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: ssot/WEB.md chg r193: 요약이 454자입니다 — 결정 표기와 old→new만 남깁니다
+검토 후보: … 외 57건 — 전체는 lint --hints, 정리는 doc-review
+spec 정합성 정상: ssot 15개, 남은 task 8개, 완료 777개 (경고 8건, 검토 후보 67건)

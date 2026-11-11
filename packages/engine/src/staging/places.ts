@@ -6,49 +6,50 @@ import type { Fixture, Phase, TeamId, Vec } from './types';
 import { presentPlayers } from './types';
 export { ROLE_SHAPE } from './shape';
 
+/** Shared shape inputs for one tick snapshot; rebuild after membership or slots change. */
+export function prepareSpots(fixture: Fixture, positions?: readonly Vec[]) {
+  const period = fixture.period;
+  const canonical = (p: Vec): Vec => toAttack(0, p, period);
+  const sides = fixture.teams.map((side) => {
+    const current = presentPlayers(fixture, side.id);
+    const roles = FORMATIONS[side.style].slots.map((s) => s.role);
+    const freedom = Array<number>(11).fill(50);
+    const present = Array<boolean>(11).fill(false);
+    for (const p of current) {
+      const slot = p.slot;
+      if (!Number.isInteger(slot) || slot < 0 || slot >= 11 || present[slot]) continue;
+      roles[slot] = p.role ?? roles[slot];
+      freedom[slot] = p.freedom ?? 50;
+      present[slot] = true;
+    }
+    return { tactic: side.style, roles, freedom, present };
+  }) as unknown as Parameters<typeof slotSpot>[0]['sides'];
+  const offside = positions
+    ? ([offsideLineX(fixture, positions, 0), offsideLineX(fixture, positions, 1)] as const)
+    : undefined;
+  return (ball: Vec, team: TeamId, phase: Phase, index: number): Vec => {
+    const p = fixture.players[index];
+    return canonical(
+      slotSpot(
+        {
+          sides,
+          ball: canonical(ball),
+          team,
+          phase,
+          ...(offside ? { offside } : {}),
+        },
+        p.team,
+        p.slot,
+      ),
+    );
+  };
+}
+
 export function nominalSpot(
   ctx: { fixture: Fixture; ball: Vec; team: TeamId; phase: Phase; positions?: readonly Vec[] },
   index: number,
 ): Vec {
-  const p = ctx.fixture.players[index];
-  const period = ctx.fixture.period;
-  const canonical = (p: Vec): Vec => toAttack(0, p, period);
-  return canonical(
-    slotSpot(
-      {
-        sides: ctx.fixture.teams.map((side) => {
-          const current = presentPlayers(ctx.fixture, side.id);
-          return {
-            tactic: side.style,
-            roles: Array.from(
-              { length: 11 },
-              (_, slot) =>
-                current.find((p) => p.slot === slot)?.role ??
-                FORMATIONS[side.style].slots[slot].role,
-            ),
-            freedom: Array.from(
-              { length: 11 },
-              (_, slot) => current.find((p) => p.slot === slot)?.freedom ?? 50,
-            ),
-            present: Array.from({ length: 11 }, (_, slot) => current.some((p) => p.slot === slot)),
-          };
-        }) as unknown as Parameters<typeof slotSpot>[0]['sides'],
-        ball: canonical(ctx.ball),
-        team: ctx.team,
-        phase: ctx.phase,
-        ...(ctx.positions
-          ? {
-              offside: [
-                offsideLineX(ctx.fixture, ctx.positions, 0),
-                offsideLineX(ctx.fixture, ctx.positions, 1),
-              ] as const,
-            }
-          : {}),
-      },
-      p.team,
-      p.slot,
-    ),
-  );
+  return prepareSpots(ctx.fixture, ctx.positions)(ctx.ball, ctx.team, ctx.phase, index);
 }
 
 /** Actual second-last defender in the attacking frame; no sampled body is replaced by a slot. */

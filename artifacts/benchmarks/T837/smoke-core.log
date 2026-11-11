@@ -1,0 +1,47 @@
+process 1/1: cpu ×1.021
+{
+  "workload": "staging-core",
+  "base": "HEAD",
+  "cand": "HEAD",
+  "procs": 1,
+  "reps": 1,
+  "sameBundle": true,
+  "sameHash": true,
+  "hashes": {
+    "base": [
+      "0e73f30ad40fb149"
+    ],
+    "cand": [
+      "0e73f30ad40fb149"
+    ]
+  },
+  "staging-core": {
+    "pairs": 1,
+    "ms": {
+      "base": {
+        "cpu": 13329.092,
+        "wall": 13391.555750000001
+      },
+      "cand": {
+        "cpu": 13611.073,
+        "wall": 13693.101417000002
+      }
+    },
+    "cpu": {
+      "ratio": 1.0212,
+      "lo": 1.0212,
+      "hi": 1.0212,
+      "call": "slower"
+    },
+    "wall": {
+      "ratio": 1.0225,
+      "lo": 1.0225,
+      "hi": 1.0225,
+      "call": "slower"
+    }
+  },
+  "load1": [
+    3.11865234375,
+    3.31689453125
+  ]
+}

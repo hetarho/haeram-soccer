@@ -66,6 +66,7 @@ export function MaterialPitch({
   children,
   heat,
   describe,
+  describeMark,
   legend,
 }: {
   label: string;
@@ -74,16 +75,22 @@ export function MaterialPitch({
   heat?: ReactNode;
   /** What a tap on a cell says beyond its name. */
   describe?: (cell: number) => string;
+  /** Interactive diagrams expose their marked buttons and resolve selection in the current locale. */
+  describeMark?: (key: string) => string;
   legend?: ReactNode;
 }) {
   useTextLocale();
-  const [note, setNote] = useState<{ cell?: number; text: string }>();
+  const [note, setNote] = useState<{ cell?: number; mark?: string; text: string }>();
   const groundId = useId();
   const pitch = useRef<SVGSVGElement>(null);
   const skin = usePitchSkin(pitch);
   const tap = (event: MouseEvent<SVGSVGElement>) => {
     const marked = (event.target as Element).closest('[data-label]');
-    if (marked) return setNote({ text: marked.getAttribute('data-label')! });
+    if (marked)
+      return setNote({
+        mark: marked.getAttribute('data-mark') ?? undefined,
+        text: marked.getAttribute('data-label')!,
+      });
     const box = event.currentTarget.getBoundingClientRect();
     if (!box.width || !box.height) return;
     const cell = cellAt(
@@ -99,9 +106,16 @@ export function MaterialPitch({
         ref={pitch}
         className={s.pitch}
         viewBox={`0 0 ${VIEW.width} ${VIEW.height}`}
-        role="img"
+        role={describeMark ? 'group' : 'img'}
         aria-label={localizeValue(label)}
         onClick={tap}
+        onKeyDown={(event) => {
+          if (!describeMark || (event.key !== 'Enter' && event.key !== ' ')) return;
+          const marked = (event.target as Element).closest('[data-mark][role="button"]');
+          if (!marked) return;
+          event.preventDefault();
+          setNote({ mark: marked.getAttribute('data-mark')!, text: '' });
+        }}
         data-testid="material-pitch"
         data-ui="analysis-pitch"
       >
@@ -160,7 +174,9 @@ export function MaterialPitch({
         )}
       </svg>
       <figcaption className={s.caption} aria-live="polite">
-        {localizeValue(note?.text ?? sourceMessage('copy.HeatPitch.1c10e2f16d'))}
+        {note?.mark && describeMark
+          ? describeMark(note.mark)
+          : localizeValue(note?.text ?? sourceMessage('copy.HeatPitch.1c10e2f16d'))}
       </figcaption>
       {localizeValue(legend)}
     </figure>

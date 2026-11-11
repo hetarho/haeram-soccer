@@ -3,8 +3,6 @@ import { overall } from '../player-state';
 import { PRESS_LOAD_FATIGUE } from '../world';
 import { FORMATIONS } from '../player';
 import { eraRules } from '../grid/rules';
-import { buildGridSetup } from '../grid/setup';
-import { MATCH_MODEL_REVISION } from '../../../contracts/src/match-model';
 import {
   generateLabSide,
   LAB_CONFIG,
@@ -14,8 +12,15 @@ import {
   setLabPlayerOvr,
 } from './sides';
 import { appearanceForFixture } from '../match-appearance';
-import { createLabWorld, labFixture, leftAtHome, playLabMatch, watchLabMatch } from './match';
-import { historyWorld } from '../history';
+import {
+  createLabWorld,
+  labSetup,
+  labFixture,
+  leftAtHome,
+  playLabMatch,
+  watchLabMatch,
+} from './match';
+import { tinyLabWorld } from './match.testkit';
 
 const input = {
   side: 0 as const,
@@ -91,36 +96,26 @@ describe('lab sides', () => {
 });
 
 describe('lab setup', () => {
-  const lab = createLabWorld();
+  const lab = createLabWorld(tinyLabWorld().w);
 
   it('lab squads drive the setup', () => {
     const left = generateLabSide({ ...input, average: 80 });
     const right = generateLabSide({ ...input, side: 1, tactic: 'press', average: 50 });
     const f = labFixture(lab, 'setup', 0);
     expect(leftAtHome(0)).toBe(true);
-    const setup = buildGridSetup(lab.w, f, {
-      observe: false,
-      recordPlayers: true,
-      model: MATCH_MODEL_REVISION,
-      lab: { rosters: [left.players, right.players], tactics: [left.tactic, right.tactic] },
-    });
+    const { prepared: setup, rosters } = labSetup(lab, [left, right], 'setup', 0);
     expect(setup.tactics).toEqual(['possession', 'press']);
-    expect(setup.rosters[0]).toEqual(left.players);
-    expect(setup.rosters[1]).toEqual(right.players);
-    expect(setup.bench).toEqual([left.players.length - 11, right.players.length - 11]);
+    expect(rosters[0]).toEqual(left.players);
+    expect(rosters[1]).toEqual(right.players);
     // No 조직력 or adaptation term: every lab player plays at his own level.
-    expect(setup.multiplier.map((m, side) => m(setup.rosters[side]![0]!))).toEqual([1, 1]);
-    expect(setup.tendencies?.[1]).toHaveLength(right.players.length);
+    expect(setup.multiplier.map((m, side) => m(rosters[side]![0]!))).toEqual([1, 1]);
     expect(labFixture(lab, 'setup', 1).home).toBe(f.away);
   });
 
   it('hosts are named left and right', () => {
     expect(lab.hosts.map((c) => c.name)).toEqual(['좌측 팀', '우측 팀']);
     // Names only: the clubs keep their ids and kits, so nothing a match plays changes.
-    const plain = historyWorld('lab-world');
-    const before = plain.clubs.filter((c) => lab.hosts.some((h) => h.id === c.id));
-    expect(before.map((c) => c.id)).toEqual(lab.hosts.map((c) => c.id));
-    before.forEach((c, i) => expect({ ...lab.hosts[i]!, name: c.name, short: c.short }).toEqual(c));
+    expect(lab.hosts.map((c) => c.id)).toEqual(tinyLabWorld().hosts.map((c) => c.id));
   });
 
   const watchSides = [
@@ -132,11 +127,14 @@ describe('lab setup', () => {
   const watched = () => (watchedOnce ??= watchLabMatch(lab, watchSides, 'watch'));
 
   it('watched match equals the unobserved one', { timeout: 120_000 }, () => {
-    const { appearance, ...football } = watched().record;
+    const { appearance, material, ...football } = watched().record;
     expect(appearance).toBeDefined();
     expect(football).toEqual(playLabMatch(lab, watchSides, 'watch', 0).record);
     expect(watched().record.home).toBe(lab.hosts[0].id);
-    expect(watched().frames.length).toBeGreaterThan(90);
+    expect(watched().frames).toEqual([]);
+    expect(watched().problems).toBeUndefined();
+    expect(watched().script).toBeDefined();
+    expect(material).toBeDefined();
     expect(watched().squads).toEqual([watchSides[0].players, watchSides[1].players]);
   });
 

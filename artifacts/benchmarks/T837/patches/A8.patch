@@ -1,0 +1,49 @@
+diff --git a/packages/engine/src/script/write.ts b/packages/engine/src/script/write.ts
+index 5cd77f50..bfeb49d6 100644
+--- a/packages/engine/src/script/write.ts
++++ b/packages/engine/src/script/write.ts
+@@ -130,6 +130,13 @@ function writeFitted(settled: Settled, seed: string): Script {
+   );
+   const fixedRemaining = Array.from({ length: settled.length }, () => [0, 0]);
+   const expiring = Array<number>(settled.length).fill(0);
++  const turnsRemaining = minuteOrder.map((teams) =>
++    teams.map((rows, team) => {
++      const counts = settled.sides[team]!.lines.map(() => 0);
++      for (const i of rows) counts[touches[i]!.actor]!++;
++      return counts;
++    }),
++  );
+   for (const t of touches) {
+     if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!++;
+     const last = t.until - 1;
+@@ -224,19 +231,8 @@ function writeFitted(settled: Settled, seed: string): Script {
+         (p.slot === 0 && !keeper)
+       )
+         continue;
+-      const hasTurn = (line: number) =>
+-        touches.some(
+-          (t, i) =>
+-            !played[i] &&
+-            t.side === team &&
+-            t.actor === line &&
+-            t.period === periodOf(minute) &&
+-            (t.minute === FLOATING || t.minute === minute) &&
+-            t.from <= minute &&
+-            t.until > minute,
+-        );
+       const rank = (line: number) =>
+-        (hasTurn(line) ? 0 : FIT.restartPull * 100) +
++        (turnsRemaining[minute]![team]![line]! > 0 ? 0 : FIT.restartPull * 100) +
+         Math.round(dist(spotOf(line, at, team), at) * 100);
+       if (best < 0 || rank(index) < rank(best)) best = index;
+     }
+@@ -702,6 +698,9 @@ function writeFitted(settled: Settled, seed: string): Script {
+     played[i] = true;
+     eligibilityVersion++;
+     const t = touches[i]!;
++    for (let m = Math.max(minute, t.from); m < Math.min(settled.length, t.until); m++)
++      if (t.period === periodOf(m) && (t.minute === FLOATING || t.minute === m))
++        turnsRemaining[m]![t.side]![t.actor]!--;
+     if (t.minute >= 0) fixedRemaining[t.minute]![t.side]!--;
+     const last = t.until - 1;
+     if (last >= 0 && last < settled.length && t.period === periodOf(last)) expiring[last]!--;
