@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { canonical } from '../../../../packages/contracts/src/index';
 import {
   advanceDays,
-  advanceRound,
   identityOf,
   installMissingIdentities,
   operate,
@@ -91,16 +90,11 @@ class Memory implements StoragePort {
 const observed = (rounds: 1 | 2): World => simulatedWorld(CAREER, { rounds });
 /**
  * `observed(rounds)` as a career saved before the full match model (→SAVE-23), as every container
- * 1 and 2 checkpoint was: saved without the model data such a writer never held.
+ * 1 and 2 checkpoint was: saved without the model data such a writer never held. The rounds are
+ * played on today's model and its data left out afterwards, since no earlier model plays a round.
  */
-const unmodelled = (rounds = 0): World =>
-  rounds === 0
-    ? withoutMatchModel(simulatedWorld(CAREER, {}))
-    : cachedWorld(`unmodelled:${rounds}`, () => {
-        const w = unmodelled(rounds - 1);
-        advanceRound(w);
-        return w;
-      });
+const unmodelled = (rounds: 0 | 1 | 2 = 0): World =>
+  withoutMatchModel(simulatedWorld(CAREER, { rounds }));
 const features = () => cachedWorld('feature-state', () => featureState());
 const sha256 = async (bytes: Uint8Array<ArrayBuffer>) =>
   Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)), (b) =>
