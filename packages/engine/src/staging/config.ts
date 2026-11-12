@@ -59,7 +59,7 @@ export const STAGING_CONFIG = {
       pokeFor: 0.6,
       poke: 0.7,
     },
-    mark: { radius: 10, keep: 3, goalSide: 1.5, blend: { DF: 0.8, MF: 0.8, FW: 0.3 }, lag: 0.3 },
+    mark: { radius: 10, keep: 3, goalSide: 1, blend: { DF: 0.8, MF: 0.8, FW: 0.3 }, lag: 0.3 },
     unmark: { radius: 4, step: 2.5 },
   },
   motion: {
@@ -194,7 +194,7 @@ export const STAGING_CONFIG = {
     /** How far outside the lines a target may lie, and where the boards stop a player. */
     boards: 2,
     /** How far a free outfield player keeps his target from every outfield teammate (0 = off). */
-    separation: 4,
+    separation: 8,
     /** How far a free outfield player of the side in possession keeps his target from the man on the ball and from teammates under an order. */
     ownerRoom: 4,
     scene: {
