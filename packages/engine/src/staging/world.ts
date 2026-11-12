@@ -8,7 +8,7 @@ import { invalidDetail } from '../script/failure';
 // and movement only presents beats already settled (ARCH-7).
 import { STAGING_CONFIG } from './config';
 import { CENTRE, HALFWAY, PITCH, clampToPitch, oppGoal, ownGoal, toAttack } from './pitch';
-import { ROLE_SHAPE, nominalSpot, prepareSpots } from './places';
+import { ROLE_SHAPE, nominalSpot, offsideLineX, prepareSpots } from './places';
 import type {
   BallMode,
   Beat,
@@ -555,7 +555,36 @@ export function separated(
     const away = len(off) > 1e-9 ? norm(off) : norm(sub(snapshot[index], at));
     out = add(at, scale(len(away) > 0 ? away : [0, 1], keep));
   }
-  return out;
+  return attacking && out !== target ? onsideRoom(state, spec.team, target, out, snapshot) : out;
+}
+
+/**
+ * Room made for an onside attacker stays onside (T840): a target pushed past `shape.onsideGap`
+ * inside the offside line is held on that line and moved across instead, away from each teammate
+ * still within `stage.separation` of it.
+ */
+function onsideRoom(
+  state: StageState,
+  team: TeamId,
+  target: Vec,
+  out: Vec,
+  snapshot: readonly Vec[],
+): Vec {
+  const period = state.fixture.period;
+  const cap = offsideLineX(state.fixture, snapshot, team) - STAGING_CONFIG.shape.onsideGap;
+  const got = toAttack(team, out, period);
+  if (got[0] <= cap || toAttack(team, target, period)[0] > cap) return out;
+  let y = got[1];
+  const sep = STAGING_CONFIG.stage.separation;
+  for (const mate of presentPlayers(state.fixture, team)) {
+    if (mate.slot === 0 || mate.index === state.ball.owner) continue;
+    const m = toAttack(team, snapshot[mate.index], period);
+    const dx = cap - m[0];
+    if (dist([cap, y], m) >= sep || Math.abs(dx) >= sep) continue;
+    const side = y !== m[1] ? Math.sign(y - m[1]) : m[1] < CENTRE[1] ? 1 : -1;
+    y = m[1] + side * Math.sqrt(sep * sep - dx * dx);
+  }
+  return toAttack(team, [cap, clamp(y, 0, PITCH.width)], period);
 }
 
 /**

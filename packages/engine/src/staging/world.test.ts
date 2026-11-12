@@ -285,10 +285,29 @@ describe('stage world', () => {
     place(state, 7, [52, 34]);
     state.orders.set(7, { target: [52, 34], pace: 'walk' });
     const snapshot = positionsOf(state);
-    // 3 m from a teammate under an order: beyond stage.separation, inside stage.ownerRoom.
-    expect(separated(state, 6, [49, 34], snapshot)).toEqual([49, 34]);
+    const sep = STAGING_CONFIG.stage.separation;
+    // Beyond stage.separation from a teammate under an order: kept where it is, whatever the room.
+    expect(separated(state, 6, [51.5 - sep, 34], snapshot)).toEqual([51.5 - sep, 34]);
+    // Inside it: moved out to stage.separation, the defender's keep, never to stage.ownerRoom.
     const near = separated(state, 6, [51, 34], snapshot);
-    expect(dist(near, snapshot[7])).toBeCloseTo(STAGING_CONFIG.stage.separation, 9);
+    expect(dist(near, snapshot[7])).toBeCloseTo(sep, 9);
+  });
+
+  it('making room never takes an onside attacker past the offside line', () => {
+    // T840: separation pushed free attackers off a teammate and offside (offside.consistency).
+    const state = stageWith(0, [60, 34], 'finalThird');
+    sendAway(state, 0, 30);
+    sendAway(state, 1, 30);
+    // Side 1's back line at world x 80 (attack x 80 for side 0); its keeper stays on his line.
+    place(state, 12, [80, 20]);
+    place(state, 13, [80, 48]);
+    place(state, 6, [79, 34]);
+    const snapshot = positionsOf(state);
+    const cap = 80 - STAGING_CONFIG.shape.onsideGap;
+    // A target onside, just in front of a teammate on the line: room is made across, not beyond it.
+    const target = separated(state, 7, [cap - 0.2, 34], snapshot);
+    expect(target[0]).toBeLessThanOrEqual(cap + 1e-9);
+    expect(dist(target, snapshot[6])).toBeGreaterThan(0.5);
   });
 
   describe('after a long pass across the pitch (T816)', () => {

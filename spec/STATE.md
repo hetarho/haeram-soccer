@@ -19,6 +19,9 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261112 suggest MATCH-38 MATCH-39 MATCH-12 MATCH-22 T840: planning from `artifacts/benchmarks/scripted-model-calibration/README.md` — (1) the writer keeps a minute open until every touch expiring in it is played, so a departing pair's deep touches become bursts of up to 328 beats in two minutes (clock rate 0.085, 49% of long stretches outside 0.8–1.25); pulling due touches forward evens the minutes but adds 2–7% linking metres, a writer rule to decide; (2) a blocked shot's blocker is the script's invention (`nearestBy` on nominal places), staged up to 26 m from the shot (events.contest, stretchRate); (3) outside shots placed anywhere in their 18.5 m cell give a 21.1 m mean distance and 27.5% from 30 m+; (4) drawing the aggregate path's flows as chains is what would cut the 5.0 km of linking carries further hf12
+- 261112 decided MATCH-39 T840: whether to run T840's tuning to the full three hours → stopped 1 h 43 min after the baseline with all 40 matches re-read, the remaining failures needing code or planning (README's causes) (alt: keep screening values, 13 of 34 rounds having moved nothing | change the writer's minute rule inside the explore, which raised linking metres in rounds 33–34) hf12
+- 261112 decided MATCH-39 ARCH-32 T840: `apps/web/src/lab/tunables.json` (outside the touches) goes stale when staging values change → regenerated with `pnpm run lab:tunables`, a derived catalog its unit test compares with the engine (alt: revert the kept values | leave the test failing) hf12
 - 261112 decided MATCH-18 MATCH-39 WEB-23 T839: how match-core's archived replay and the set-piece journeys check scenes once staged frames carry no intention and no corner holds the grid's fixed 1 : 0, 1 : 1, 1 : 2 archive (none in goal-feedback-1–1600) → the archived replay reads its running scores from the staged reference's goals and seeks to the end (dense staged samples reach sample 80 in the second minute), and the corner journeys assert MATCH-18 at the staged kick in Node (2–3 attackers beyond 40 m, 1–2 defenders beyond 35 m, a defender goal-side within 4 m of every attacker in the box) while the page checks each tapped sheet names the staged state (alt: keep the fixed score pattern and scan further | keep the archived replay on revision 1, a pinned grid revision the task rules out | assert grid-era job labels such as 상대 마크 that no staged frame carries). hf12
 - 261112 decided WEB-53 MATCH-15 LAB-11 T839: what replaces the glossary's 터치 상황 태그 and the influence map's movement, decision-table and tendency factors → a 기록된 플레이 entry naming what an action is recorded with and the script's five phases, and influence entries rewritten to the aggregate path's actual inputs with 위치 자유도·규율·압박 성향·예측력 listed as shaping the picture only; unused message ids leave every pack (alt: keep the old copy and only swap evidence | delete the movement/offside entry, losing the offside rule). hf12
 - 261112 decided OWNER-7 OWNER-8 SAVE-4 T838: every century of the storage benchmark and its era probe ended in 구단주 파산 between their 31st and 40th seasons on revision 11 (a replay of the baseline: `owner` at its 36th close, fortune −77.8 M, club cash 324 M, 팬 민심 64) ("Missing completed season archive", the era's 2024 gate), because an owner who moves no money pays living costs that grow with prices out of a fortune that does not (→OWNER-8) → both centuries and the era probe stake the owner's whole fortune in his business from the takeover through the real `owner-stake` command (OWNER-7's full stake keeps a fortune near prices), and the report's scope says so (alt: a dividend each season, which costs 팬 민심 and risks 퇴진 (→OWNER-12, LEAGUE-13 measured 5 of 23 on 50%) | stop the profiles at their 30th season, which drops SAVE-13's century | a richer tier, which only delays it). Workload realism only: limits, retained facts and the material kept are unchanged; the stake adds 11 business events a season, so the checkpoints measured are larger, not smaller. hf12
@@ -959,7 +962,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T840 | the released model's verdict: the own club on the same curve, the script's invention, the picture's limits | MATCH ARCH | T839 | todo |
 | T841 | remove the match prototype | ARCH | T840 | todo |
 | T842 | shared match leaves out of `grid/` | ARCH | T841 | todo |
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
@@ -993,9 +995,11 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T840 T848
+- implement-task T841 T848
+- owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T840 done
 - 261112 T839 done
 - 261112 T838 done: revision 11 released; capacity gate passed on the staking workload (worst checkpoint 4,367,776 of 6,291,456 bytes, portable file 6,551,024 of 8,388,608), every century own match a full revision-11 record from the takeover, era probe to 2025 passed; season 1.4–1.8× revision 10 reported, not a gate; no push hf12
 - 261112 create-task MATCH r62: T848 refreshed as a guard (every traced pair on the pitch together over 8 placed 2008 fixtures, pairs add up to the trace's counts, `commonSpan`/`pairParticipants` edge cases), dep T833, base MATCH@62 hf12
@@ -1015,4 +1019,3 @@
 - 261112 T832 done: script-derived material, singleton pass pairs, exact touch heat/means, record shot points and 30 report slots; original ten fixtures 7,249 completed passes/305 singleton pairs/238 shots; 1,431 affected unit tests plus type/lint/format/i18n pass; aerial duels unsupported and missing writer counter tags handed to T839/T840; host batch deferred, no push cc12
 - 261112 T831 done: lazy 60-second staged frames, fixed-action clock fits/rate reports, live ball/holder/XI/target snapshots, source commentary and pose facts, prefix counters; 1,568 affected unit tests plus type/lint/format/i18n pass; three-record integration written/registered with unrun rate/equality evidence deferred to host; no push cc12
 - 261111 T830 done: incident entry/exit scenes, current XI/slots/keeper, period-aware geometry, lawful penalties/shoot-out and motion-stream corner numbers; event-based exact recount, fresh substitute fatigue; 1,509 affected unit tests and type/lint/format/i18n pass; six T825 incident scenarios written/registered, integration output deferred to host; no push cc12
-- 261111 T829 done: four tactic press profiles/counter-press window, role freedom, discipline, personal pace and fatigue in movement/arrival planning; first step 0.7→0.4 s, mean place error 4.58→3.76 m, 134 staging and 1,494 changed-selection unit tests, type/lint/format/i18n pass; ten-pairing integration written/registered, unrun metrics reserved for host batch; no push cc12

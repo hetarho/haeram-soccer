@@ -1,0 +1,13 @@
+[
+ {
+  "seed": 4,
+  "fixture": "2024:ENG:0:0:4:1",
+  "problems": [
+   "incident:12:missingOrMinute",
+   "beat:1581:lineup",
+   "beat:1582:lineup",
+   "beat:1583:lineup",
+   "event:965:missing"
+  ]
+ }
+]

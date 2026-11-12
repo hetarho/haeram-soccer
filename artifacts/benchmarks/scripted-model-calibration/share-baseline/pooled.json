@@ -1,0 +1,36 @@
+{
+ "model": "scripted-aggregate-11",
+ "clubSeasons": 95,
+ "all": 100,
+ "topShare": {
+  "mean": 0.25169240023202777,
+  "sd": 0.06273950689967674,
+  "ci": [
+   0.23907600255571293,
+   0.2643087979083426
+  ]
+ },
+ "topGoals": 13.526315789473685,
+ "maxTopGoals": 28,
+ "goalsPerMatch": 2.788919667590028,
+ "ownGoalsPerMatch": 1.4551246537396119,
+ "hatTricksPerMatch": null,
+ "hatTrickSeasons": 0,
+ "ledgerMismatches": 0,
+ "positions": {
+  "CM": 11,
+  "ST": 69,
+  "RW": 10,
+  "DM": 1,
+  "LW": 4
+ },
+ "share20to30": 62,
+ "allClubSeasons": {
+  "n": 100,
+  "mean": 0.25188516784180875,
+  "ci": [
+   0.23980966434737594,
+   0.26396067133624157
+  ]
+ }
+}
