@@ -18,8 +18,3 @@ export const MATCH_MODEL_RELEASE: MatchModelRelease = {
   revision: MATCH_MODEL_REVISION,
   enabled: true,
 };
-/** Tests and tools only until T838 activates the scripted match model. */
-export const SCRIPTED_RELEASE: MatchModelRelease = {
-  revision: 'scripted-aggregate-11',
-  enabled: true,
-};

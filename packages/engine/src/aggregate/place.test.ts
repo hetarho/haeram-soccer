@@ -6,7 +6,7 @@ import {
   MATCH_MODEL_REVISIONS,
 } from '../../../contracts/src/match-model';
 import { BAND_EDGES, LANE_EDGES, toEngine } from '../grid/pitch';
-import { MATCH_MODEL_RELEASE, SCRIPTED_RELEASE } from '../match-model-release';
+import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { FORMATIONS } from '../player';
 import { placeFor } from '../staging/shape';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './config';
@@ -50,15 +50,15 @@ describe('placed attribution primitives', () => {
       { seed: 849, numRuns: 100 },
     );
   });
-  it('declares revision 11 without activating it', () => {
+  it('releases revision 11', () => {
     expect(MATCH_MODEL_REVISIONS.at(-1)).toBe('scripted-aggregate-11');
-    expect(MATCH_MODEL_REVISION).toBe('continuous-aggregate-10');
+    expect(MATCH_MODEL_REVISION).toBe('scripted-aggregate-11');
     expect(MATCH_MODEL_RELEASE.revision).toBe(MATCH_MODEL_REVISION);
-    expect(SCRIPTED_RELEASE).toEqual({ revision: 'scripted-aggregate-11', enabled: true });
+    expect(MATCH_MODEL_RELEASE).toEqual({ revision: 'scripted-aggregate-11', enabled: true });
     expect(isScriptedModel(undefined)).toBe(false);
     for (const revision of MATCH_MODEL_REVISIONS.slice(0, 10))
       expect(isScriptedModel(revision)).toBe(false);
-    expect(isScriptedModel(SCRIPTED_RELEASE.revision)).toBe(true);
+    expect(isScriptedModel(MATCH_MODEL_RELEASE.revision)).toBe(true);
   });
 
   it('measures both sides in metres and mirrors the lane with the band', () => {

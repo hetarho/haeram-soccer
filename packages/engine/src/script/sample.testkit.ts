@@ -4,7 +4,7 @@ import { conditionedMatch } from '../../../../scripts/match-parity';
 import { aggregateRecord, playAggregate } from '../aggregate/engine';
 import type { AggregateAttributionTrace } from '../aggregate/types';
 import { careerWorld } from '../career.testkit';
-import { SCRIPTED_RELEASE } from '../match-model-release';
+import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { random } from '../primitives';
 import { matchDetail } from './build';
 
@@ -13,8 +13,8 @@ export function detailSample() {
   const worlds = [2024, 1975].map((year) =>
     cachedWorld(
       `detail-world-${year}`,
-      () => careerWorld({ seed: `detail-${year}`, year }, SCRIPTED_RELEASE),
-      { input: { year, release: SCRIPTED_RELEASE } },
+      () => careerWorld({ seed: `detail-${year}`, year }, MATCH_MODEL_RELEASE),
+      { input: { year, release: MATCH_MODEL_RELEASE } },
     ),
   );
   const tactics: readonly Tactic[] = ['possession', 'press', 'counter', 'balanced'];
@@ -93,7 +93,7 @@ export function detailSample() {
     selected.push({
       world,
       tactics: pairing,
-      record: aggregateRecord(f, rosters, match, SCRIPTED_RELEASE.revision),
+      record: aggregateRecord(f, rosters, match, MATCH_MODEL_RELEASE.revision),
       detail,
     });
   }

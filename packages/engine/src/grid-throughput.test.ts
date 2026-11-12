@@ -20,11 +20,7 @@
  */
 import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
-import {
-  MATCH_MODEL_REVISION,
-  MATCH_MODEL_REVISIONS,
-  type MatchModelRevision,
-} from '../../contracts/src/match-model';
+import { MATCH_MODEL_REVISIONS, type MatchModelRevision } from '../../contracts/src/match-model';
 import type { Fixture, World } from '../../contracts/src/types';
 import { playGrid } from './grid/engine';
 import { buildFrames } from './grid/playback';
@@ -49,7 +45,7 @@ function era(year: number): { w: World; f: Fixture } {
   return { w, f };
 }
 
-/** Plays `f` under `id`; the candidate model unless `preFeature`. */
+/** Plays `f` under `id`; revision 10 of the grid unless `preFeature` or explicitly pinned. */
 function play(
   { w, f }: { w: World; f: Fixture },
   id: string,
@@ -65,7 +61,7 @@ function play(
     observe: opts.observe ?? false,
     recordPlayers: true,
     ...(opts.decide ? { decide: opts.decide } : {}),
-    ...(opts.preFeature ? {} : { model: opts.model ?? MATCH_MODEL_REVISION }),
+    ...(opts.preFeature ? {} : { model: opts.model ?? 'continuous-aggregate-10' }),
   });
   const result = playGrid(setup);
   return { result, setup, frames: opts.observe ? buildFrames(result, setup, w.seed) : [] };

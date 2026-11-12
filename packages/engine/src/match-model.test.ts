@@ -473,14 +473,35 @@ describe('match-model revision 3 (→MATCH-2, SAVE-23, T466)', () => {
 
   // Every revision moves at the safe boundary by the same rule: the first move (1→2, above) and the
   // latest are replayed here, the ones between them are not (T787).
+  it('a revision-10 career moves to the scripted model and replays nothing', () => {
+    const revision10: MatchModelRelease = { revision: 'continuous-aggregate-10', enabled: true };
+    const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, revision10));
+    const before = structuredClone(career);
+    expect(before.ownMatches.length).toBeGreaterThan(0);
+    expect(before.ownMatches.every((m) => m.model === revision10.revision)).toBe(true);
+    expect(activateMatchModel(career, MATCH_MODEL_RELEASE)).toBe(true);
+    const expected = structuredClone(before);
+    expected.matchModel!.revision = 'scripted-aggregate-11';
+    expected.npcSeason!.model = 'scripted-aggregate-11';
+    expect(canonical(career)).toBe(canonical(expected));
+    expect(activateMatchModel(career, revision10)).toBe(false);
+    for (let n = 0; n < 2; n++) advanceRound(career, undefined, false);
+    expect(canonical(career.ownMatches.slice(0, before.ownMatches.length))).toBe(
+      canonical(before.ownMatches),
+    );
+    const added = career.ownMatches.slice(before.ownMatches.length);
+    expect(added.length).toBeGreaterThan(0);
+    expect(added.every((m) => m.model === 'scripted-aggregate-11' && m.material)).toBe(true);
+  });
+
   it('a revision-9 world moves to revision 10 at the safe boundary (T596)', () => {
     const career = structuredClone(simulatedWorld(founding, { rounds: 2 }, REVISION_9));
     const settled = structuredClone(career.ownMatches);
     expect(settled.length).toBeGreaterThan(0);
     expect(settled.every((m) => m.model === ninth)).toBe(true);
     const before = structuredClone(career);
-    expect(ENABLED_RELEASE.revision).toBe(tenth);
-    expect(activateMatchModel(career, ENABLED_RELEASE)).toBe(true);
+    const revision10: MatchModelRelease = { revision: tenth, enabled: true };
+    expect(activateMatchModel(career, revision10)).toBe(true);
     expect(career.matchModel).toEqual({ ...before.matchModel!, revision: tenth });
     expect(career.npcSeason).toEqual({ ...before.npcSeason!, model: tenth });
     expect(activateMatchModel(career, REVISION_9)).toBe(false);

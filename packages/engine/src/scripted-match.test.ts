@@ -11,7 +11,7 @@ import { M } from './grid/record';
 import { SEASON_ROUNDS } from './calendar';
 import { simulateMatch, prepareMatch } from './match';
 import { validateFullMatchRecord } from './match-model';
-import { SCRIPTED_RELEASE } from './match-model-release';
+import { MATCH_MODEL_RELEASE } from './match-model-release';
 import { advanceRound, closeSeason } from './season';
 import { advanceToNextMatch, handTo, holdRows } from './testing';
 import { matchDetail } from './script/detail';
@@ -20,8 +20,8 @@ import { compareRecord, countScript } from './script/count';
 
 const input = { seed: 'settlement-833', country: 'BEL' as const, year: 2024 };
 const world = () =>
-  cachedWorld('own-settlement-833', () => careerWorld(input, SCRIPTED_RELEASE), {
-    input: { ...input, release: SCRIPTED_RELEASE },
+  cachedWorld('own-settlement-833', () => careerWorld(input, MATCH_MODEL_RELEASE), {
+    input: { ...input, release: MATCH_MODEL_RELEASE },
   });
 const ownFixtures = (w: World) =>
   w.fixtures.filter((f) => f.home === w.playerClub || f.away === w.playerClub);
@@ -40,13 +40,13 @@ function detailFor(w: World, f: Fixture) {
   );
   return {
     detail: matchDetail(match, rosters, trace),
-    record: aggregateRecord(f, rosters, match, SCRIPTED_RELEASE.revision),
+    record: aggregateRecord(f, rosters, match, MATCH_MODEL_RELEASE.revision),
   };
 }
 function fullPlayback(p: MatchPlayback) {
   expect(p.problems, p.record.id).toBeUndefined();
   expect(validateFullMatchRecord(p.record), p.record.id).toEqual([]);
-  expect(p.record.model).toBe(SCRIPTED_RELEASE.revision);
+  expect(p.record.model).toBe(MATCH_MODEL_RELEASE.revision);
   expect(p.record.material, p.record.id).toBeDefined();
   expect(p.frames).toEqual([]);
 }

@@ -5,7 +5,7 @@ import { careerWorld } from '../career.testkit';
 import { eraRules } from '../grid/setup';
 import { prepareMatch } from '../match';
 import { validateFullMatchRecord } from '../match-model';
-import { SCRIPTED_RELEASE } from '../match-model-release';
+import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { AGGREGATE_ATTRIBUTION_CONFIG as AC } from './config';
 import { aggregateRecord, matchdayRosters, playAggregate } from './engine';
 import { isPassKind } from './ledger';
@@ -33,7 +33,7 @@ function sample(w: World, f: Fixture) {
     return {
       trace,
       players,
-      record: aggregateRecord(f, rosters, { ...match, players }, SCRIPTED_RELEASE.revision),
+      record: aggregateRecord(f, rosters, { ...match, players }, MATCH_MODEL_RELEASE.revision),
     };
   };
   return { match, placed: trace(true), unplaced: trace(false) };
@@ -131,7 +131,7 @@ function counts(s: Sample, placed: boolean) {
 describe('revision 11 attribution by place (→MATCH-16)', () => {
   let w: World, samples: Sample[];
   beforeAll(() => {
-    w = careerWorld({ seed: 'placed-attribution', year: 1964 }, SCRIPTED_RELEASE);
+    w = careerWorld({ seed: 'placed-attribution', year: 1964 }, MATCH_MODEL_RELEASE);
     samples = fixtures(w, 24, 'placed-fixture').map((f) => sample(w, f));
   });
 

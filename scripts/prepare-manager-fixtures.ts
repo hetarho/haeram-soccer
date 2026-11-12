@@ -8,7 +8,7 @@ import { message as sourceMessage } from '../packages/contracts/src/messages';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import { advanceDays } from '../packages/engine/src/season';
 import { daysUntilNextMatch } from '../packages/engine/src/calendar';
-import { SCRIPTED_RELEASE } from '../packages/engine/src/match-model-release';
+import { MATCH_MODEL_RELEASE } from '../packages/engine/src/match-model-release';
 import { advanceToNextMatch } from '../packages/engine/src/testing';
 import {
   buildManagerActivationWorld,
@@ -33,7 +33,7 @@ function buildScriptedJourneyWorld() {
   for (let seed = 0; seed < 8; seed++) {
     const world = careerWorld(
       { country: 'ENG', year: 2024, seed: `scripted-journey-${seed}` },
-      SCRIPTED_RELEASE,
+      MATCH_MODEL_RELEASE,
     );
     world.settings!.mode = 'manual';
     world.settings!.observations.matchEve = true;

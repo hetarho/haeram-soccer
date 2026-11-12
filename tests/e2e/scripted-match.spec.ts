@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 import { preparedWorld } from '../fixtures/prepared-world';
 import { advanceToNextMatch } from '../../packages/engine/src/testing';
 import { daysUntilNextMatch } from '../../packages/engine/src/calendar';
-import { SCRIPTED_RELEASE } from '../../packages/engine/src/match-model-release';
+import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/match-model-release';
 import { importResponsibilityCareer } from './responsibility-fixtures';
 import { openWatchAction, openMatchDetails, closeMatchDetails, presentedMinute } from './watch';
 import { exportWorld } from './club-identity-helpers';
@@ -15,7 +15,7 @@ test('stages a scripted own match ahead of its theatre and retains the Node resu
   await page.setViewportSize({ width: 390, height: 844 });
   // preparedWorld checks the SHA-256 and schema before returning an independent world.
   const world = preparedWorld('scripted-journey');
-  expect(world.matchModel!.revision).toBe(SCRIPTED_RELEASE.revision);
+  expect(world.matchModel!.revision).toBe(MATCH_MODEL_RELEASE.revision);
   expect(daysUntilNextMatch(world)).toBe(1);
   const reference = structuredClone(world);
   const played = advanceToNextMatch(reference)!;

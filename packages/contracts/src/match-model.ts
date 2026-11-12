@@ -54,6 +54,8 @@ import {
  * marker a man, its back line holding while midfielders take the men between the lines, and a
  * runner in behind along his run (T599, →MATCH-17, MATCH-32, MATCH-34);
  * careers on revisions 1–9 take it the same way.
+ * Revision 11 settles every fixture on the joint aggregate path and writes the own match script
+ * and material from that result; watching stages its picture without settling again (T838).
  */
 export const MATCH_MODEL_REVISIONS = [
   'continuous-aggregate-1',
@@ -70,7 +72,7 @@ export const MATCH_MODEL_REVISIONS = [
 ] as const;
 export type MatchModelRevision = (typeof MATCH_MODEL_REVISIONS)[number];
 /** The revision new careers and upgraded ones play. */
-export const MATCH_MODEL_REVISION: MatchModelRevision = 'continuous-aggregate-10';
+export const MATCH_MODEL_REVISION: MatchModelRevision = 'scripted-aggregate-11';
 export const isMatchModelRevision = (value: unknown): value is MatchModelRevision =>
   (MATCH_MODEL_REVISIONS as readonly unknown[]).includes(value);
 /** A revision's number: 1 for the first. */

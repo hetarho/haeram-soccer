@@ -801,6 +801,42 @@ it('reports supported match-model metadata and refuses a future one without acti
 });
 
 describe('prospective match-model activation (→SAVE-23)', () => {
+  it('a loaded revision-10 career plays its next own match on the result path', async () => {
+    const source = simulatedWorld(
+      input,
+      { rounds: 2 },
+      { revision: 'continuous-aggregate-10', enabled: true },
+    );
+    const host = new Host();
+    const reply = await host.handle(
+      req('scripted-load', -1, {
+        type: 'inspect',
+        raw: await encode(source),
+        activate: true,
+        upgrade: true,
+      }),
+    );
+    expect(reply.ok, reply.error).toBe(true);
+    expect(reply.upgraded).toBe(true);
+    expect(host.world!.matchModel!.revision).toBe('scripted-aggregate-11');
+    expect(canonical(host.world!.ownMatches)).toBe(canonical(source.ownMatches));
+    expect(canonical((await decode(reply.raw!)).world)).toBe(canonical(host.world!));
+    const played = await host.handle(
+      req('scripted-next', host.world!.revision, {
+        type: 'command',
+        command: { type: 'advance', rounds: 1 },
+      }),
+    );
+    expect(played.ok, played.error).toBe(true);
+    expect(played.playback!.record.model).toBe('scripted-aggregate-11');
+    expect(played.playback!.record.material).toBeDefined();
+    expect(played.playback!.script).toBeDefined();
+    expect(played.playback!.frames).toEqual([]);
+    expect(canonical(host.world!.ownMatches.slice(0, source.ownMatches.length))).toBe(
+      canonical(source.ownMatches),
+    );
+  });
+
   const enabled = () => new Host(undefined, { release: ENABLED_RELEASE });
   const disabled = () => new Host(undefined, { release: DISABLED_RELEASE });
   const load = (host: Host, id: string, raw: string, upgrade = true) =>

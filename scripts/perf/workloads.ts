@@ -34,7 +34,7 @@ import { buildGridSetup } from '../../packages/engine/src/grid/setup';
 import { playGrid } from '../../packages/engine/src/grid/engine';
 import { buildFrames } from '../../packages/engine/src/grid/playback';
 import { simulateMatch } from '../../packages/engine/src/match';
-import { SCRIPTED_RELEASE } from '../../packages/engine/src/match-model-release';
+import { MATCH_MODEL_RELEASE } from '../../packages/engine/src/match-model-release';
 import { invalidDetail } from '../../packages/engine/src/script/failure';
 import { stageAll, stageFrames } from '../../packages/engine/src/staging/frames';
 import { advance, createStaging } from '../../packages/engine/src/staging/staging';
@@ -96,7 +96,7 @@ export function workloadOf(name: string, seed: string): Workload {
       { country: 'ENG', club: 'ENG:0:0:0', seed },
       name.startsWith('grid-')
         ? { revision: 'continuous-aggregate-10', enabled: true }
-        : SCRIPTED_RELEASE,
+        : MATCH_MODEL_RELEASE,
     );
     const fixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     let written: MatchPlayback | undefined;

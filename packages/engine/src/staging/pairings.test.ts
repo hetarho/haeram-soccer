@@ -7,7 +7,7 @@ import { conditionedMatch } from '../../../../scripts/match-parity';
 import { playAggregate } from '../aggregate/engine';
 import type { AggregateAttributionTrace } from '../aggregate/types';
 import { careerWorld } from '../career.testkit';
-import { SCRIPTED_RELEASE } from '../match-model-release';
+import { MATCH_MODEL_RELEASE } from '../match-model-release';
 import { matchDetail } from '../script/build';
 import { writeScript } from '../script/write';
 import { fitLines, stagingMetrics } from './measure';
@@ -22,8 +22,8 @@ beforeAll(() => {
   // Before substitutes: this gate exercises tactics; T830 owns the incident-scene gate.
   world = cachedWorld(
     'staging-pairings-829',
-    () => careerWorld({ seed: 'staging-pairings-829', year: 1960 }, SCRIPTED_RELEASE),
-    { input: { year: 1960, release: SCRIPTED_RELEASE } },
+    () => careerWorld({ seed: 'staging-pairings-829', year: 1960 }, MATCH_MODEL_RELEASE),
+    { input: { year: 1960, release: MATCH_MODEL_RELEASE } },
   );
 });
 
