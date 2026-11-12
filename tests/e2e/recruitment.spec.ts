@@ -18,6 +18,7 @@ import { readFile } from 'node:fs/promises';
 import { decode } from '../../apps/web/src/adapters/persistence';
 import { recruitmentPreview } from '../../packages/engine/src/recruitment';
 import { transferOffers, operatingCost } from '../../packages/engine/src/operations';
+import { operatingCosts } from '../../packages/engine/src/finance';
 import { clubOf, startingSquad } from '../../packages/engine/src/world';
 import { currentDay, daysUntilNextMatch } from '../../packages/engine/src/calendar';
 import { lineupSummary } from '../../packages/engine/src/strategy';
@@ -417,9 +418,14 @@ test('filters and compares stable candidates, discloses free wages, and saves re
   expect(borrowed.players.find((player) => player.id === loan.player.id)?.loanUntil).toBe(
     before.year + 1,
   );
-  expect(BigInt(operatingCost(borrowed)) - BigInt(operatingCost(recruited))).toBe(
-    BigInt(loan.player.wage),
-  );
+  // The loan adds his wage to the wage bill. The annual total moves by more: the first league round
+  // settles while the bid is answered, and there the 단장 makes his first plan of the takeover
+  // season, setting the delegated 유소년 투자 and its academy spend (→ECON-39/40). The whole
+  // total is the engine's own for the same days.
+  expect(
+    BigInt(operatingCosts(borrowed).playerWages) - BigInt(operatingCosts(recruited).playerWages),
+  ).toBe(BigInt(loan.player.wage));
+  expect(operatingCost(borrowed)).toBe(operatingCost(expectedBorrowed));
   await expect(page.getByTestId('save-status')).toContainText('저장 완료');
   await page.reload();
   await expect(marketEntry(page)).toHaveAttribute('aria-current', 'page');
