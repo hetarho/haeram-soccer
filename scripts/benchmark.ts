@@ -26,7 +26,7 @@ import {
   transferOffers,
 } from '../packages/engine/src/index';
 import { careerWorld, CAREER_YEAR } from '../packages/engine/src/career.testkit';
-import { FAN_MOOD } from '../packages/engine/src/owner-config';
+import { FAN_MOOD, OWNER_BUSINESS } from '../packages/engine/src/owner-config';
 import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
 import { managerHistoryDateKey } from '../packages/contracts/src/manager-history';
@@ -349,8 +349,19 @@ function loadPhase<T>(phase: Phase): PhaseResult<T> {
   return result;
 }
 
-const profileWorld = (variant: Variant) =>
-  careerWorld({ country: 'ENG', seed: 'release-century-' + variant });
+/**
+ * A long career's takeover with the owner's whole fortune staked in his business from the start
+ * (→OWNER-7), through the real command. An owner who moves no money pays living costs that grow
+ * with prices out of a fortune that does not (→OWNER-8), so every century and the era probe ended
+ * in 구단주 파산 between their 31st and 40th seasons on revision 11 (T838); a full stake keeps the
+ * fortune near prices without the 팬 민심 a dividend costs (→OWNER-12).
+ */
+function longCareer(country: string, seed: string) {
+  const w = careerWorld({ country, seed });
+  operate(w, { type: 'owner-stake', percent: OWNER_BUSINESS.stake.max });
+  return w;
+}
+const profileWorld = (variant: Variant) => longCareer('ENG', 'release-century-' + variant);
 const checkpointLabel = (variant: Variant) =>
   variant === 'active-management'
     ? `${variant} century active round 23`
@@ -841,7 +852,7 @@ async function retained() {
 // Separate era probe crosses the 2024 transition after a century without claiming an unbounded
 // storage guarantee: up to ERA_HALF in its first phase, then on from the world it kept.
 function eraFirst() {
-  const era = careerWorld({ country: 'FRA', seed: 'era-probe' });
+  const era = longCareer('FRA', 'era-probe');
   for (let year = CAREER_YEAR; year < ERA_HALF; year++) simulateSeason(era);
   saveWorld('era-half', era);
   return {};
@@ -1014,7 +1025,7 @@ function report() {
     managerHistoryRoundTrip: true,
     completeModelFromTakeover: MATCH_MODEL_RELEASE.enabled,
     passed: true,
-    scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design adopted at an active season start whenever 팬 민심 is at least ${REDESIGN_MOOD} (${identityEvidence.edits} edits; a −20 adoption every season forces the owner out, →OWNER-13) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${CAREER_YEAR}–${ERA_END} era probe. Both careers track their own managers from the takeover; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
+    scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design adopted at an active season start whenever 팬 민심 is at least ${REDESIGN_MOOD} (${identityEvidence.edits} edits; a −20 adoption every season forces the owner out, →OWNER-13) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${CAREER_YEAR}–${ERA_END} era probe. In both centuries and the era probe the owner stakes his whole fortune in his business from the takeover (→OWNER-7), since one who moves no money is bankrupt in his thirties of seasons (→OWNER-8). Both careers track their own managers from the takeover; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
   };
   if (smoke) {
     console.log(JSON.stringify(report, null, 2));
