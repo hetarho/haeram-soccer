@@ -3,6 +3,7 @@ import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import { presentationSamples } from '../../apps/web/src/entities/match/lib/presentationClock';
 import { motionStateLabel } from '../../apps/web/src/features/match-viewer/lib/motionState';
+import { metresApart, stagedCorners } from '../fixtures/corner-scene';
 import { withCandidateModel } from '../fixtures/worlds';
 import { stoppages } from './preparation';
 
@@ -28,8 +29,6 @@ function career(seed: string): World {
 export type Who = { side: 0 | 1; index: number };
 /** A paused sample: its index on the page's timeline and the label of its minute. */
 export type Shot = { index: number; label: string };
-/** Metres per playback unit: the 105 × 68 m pitch drawn on 0–100 along each axis. */
-const METRES = [1.05, 0.68] as const;
 /**
  * MATCH-18 at a corner, read at its kick: the attacking side keeps 2–3 outfielders back near
  * halfway (more than 40 m from the goal it attacks), the defending side leaves 1–2 up as outlets
@@ -50,84 +49,55 @@ function recordedScene(seed: string) {
   const playback = stagedPlayback(advanceToNextMatch(career(seed))!);
   const { samples } = presentationSamples(playback.frames);
   const stops = stoppages(playback);
-  for (const [i, frame] of playback.frames.entries())
-    for (const stoppage of frame.stoppages ?? []) {
-      if (stoppage.kind !== 'corner') continue;
-      const kick = i * 60 + Math.min(60, stoppage.kick);
-      const settled = i * 60 + Math.min(stoppage.kick, stoppage.settled);
-      const event = (frame.events ?? [])
-        .filter((e) => e.restart === 'corner')
-        .sort((a, b) => Math.abs(i * 60 + a.t - kick) - Math.abs(i * 60 + b.t - kick))[0];
-      // The players stand on their places between the settled beat and the kick.
-      const index = samples.findLastIndex(
-        (sample) => sample.time >= settled && sample.time <= kick && !!sample.players,
-      );
-      const preparation = stops.find(({ to }) => Math.abs(to - kick) <= 0.1);
-      if (!event || index < 0 || !preparation) continue;
-      const attack = event.side as 0 | 1;
-      const defend: 0 | 1 = attack === 0 ? 1 : 0;
-      const goal = event.from[0] > 50 ? 100 : 0;
-      const players = samples[index]!.players!;
-      const squad = (side: 0 | 1, p: PlayerMotion) =>
-        playback.squads[side].find((player) => player.id === p.id);
-      const outfield = (side: 0 | 1) =>
-        players[side].filter((p) => squad(side, p)?.position !== 'GK');
-      /** Metres from the goal line the corner is taken at. */
-      const fromGoal = (p: PlayerMotion) => Math.abs(goal - p.position[0]) * METRES[0];
-      const across = (p: PlayerMotion) => p.position[1] * METRES[1];
-      const back = outfield(attack).filter((p) => fromGoal(p) > CORNER_RULE.backFromGoal);
-      const up = outfield(defend).filter((p) => fromGoal(p) > CORNER_RULE.upFromGoal);
-      const inBox = outfield(attack).filter(
-        (p) =>
-          p.id !== event.receiver &&
-          p.id !== event.actor &&
-          fromGoal(p) <= CORNER_RULE.box.depth &&
-          across(p) >= CORNER_RULE.box.from &&
-          across(p) <= CORNER_RULE.box.to,
-      );
-      const distance = (a: PlayerMotion, b: PlayerMotion) =>
-        Math.hypot(
-          (a.position[0] - b.position[0]) * METRES[0],
-          (a.position[1] - b.position[1]) * METRES[1],
-        );
-      const markers = inBox.map((runner) =>
-        outfield(defend).find(
-          (d) => fromGoal(d) < fromGoal(runner) && distance(d, runner) <= CORNER_RULE.reach,
-        ),
-      );
-      const who = (side: 0 | 1, p: PlayerMotion): Who => ({
-        side,
-        index: playback.squads[side].findIndex((player) => player.id === p.id),
-      });
-      const keeper = players[defend].find((p) => squad(defend, p)?.position === 'GK');
+  for (const corner of stagedCorners(playback, samples)) {
+    const preparation = stops.find(({ to }) => Math.abs(to - corner.kick) <= 0.1);
+    if (!preparation) continue;
+    const { attack, defend, fromGoal, across, outfield, index } = corner;
+    const back = outfield(attack).filter((p) => fromGoal(p) > CORNER_RULE.backFromGoal);
+    const up = outfield(defend).filter((p) => fromGoal(p) > CORNER_RULE.upFromGoal);
+    const inBox = outfield(attack).filter(
+      (p) =>
+        p.id !== corner.receiver &&
+        p.id !== corner.taker &&
+        fromGoal(p) <= CORNER_RULE.box.depth &&
+        across(p) >= CORNER_RULE.box.from &&
+        across(p) <= CORNER_RULE.box.to,
+    );
+    const markers = inBox.map((runner) =>
+      outfield(defend).find(
+        (d) => fromGoal(d) < fromGoal(runner) && metresApart(d, runner) <= CORNER_RULE.reach,
+      ),
+    );
+    const who = (side: 0 | 1, p: PlayerMotion): Who => ({
+      side,
+      index: playback.squads[side].findIndex((player) => player.id === p.id),
+    });
+    const keeper = corner.keeper(defend);
+    const motionOf = (at: Shot, { side, index: player }: Who) =>
+      samples[at.index]!.players![side].find((p) => p.id === playback.squads[side][player]!.id)!;
+    return {
+      playback,
+      preparation,
       /** Where `who` stands at a paused sample, in the pitch's 0–100 units. */
-      const place = (at: Shot, { side, index }: Who) =>
-        samples[at.index]!.players![side].find((p) => p.id === playback.squads[side][index]!.id)!
-          .position;
-      const state = (at: Shot, { side, index }: Who) =>
-        motionStateLabel(
-          samples[at.index]!.players![side].find((p) => p.id === playback.squads[side][index]!.id)!,
-        );
-      return {
-        playback,
-        preparation,
-        place,
-        state,
-        samples: samples.length,
-        shot: { index, label: playback.frames[samples[index]!.frame]!.label },
-        back: back.length,
-        up: up.length,
-        inBox: inBox.length,
-        unmarked: inBox.filter((_, k) => !markers[k]).map((p) => p.id),
-        runner: inBox[0] && who(attack, inBox[0]),
-        marker: markers[0] && who(defend, markers[0]),
-        rest: back[0] && who(attack, back[0]),
-        outlet: up[0] && who(defend, up[0]),
-        keeper: keeper && who(defend, keeper),
-      };
-    }
+      place: (at: Shot, who: Who) => motionOf(at, who).position,
+      /** What his sheet says he is doing there: his staged state's label. */
+      state: (at: Shot, who: Who) => motionStateLabel(motionOf(at, who)),
+      samples: samples.length,
+      shot: { index, label: playback.frames[samples[index]!.frame]!.label },
+      back: back.length,
+      up: up.length,
+      inBox: inBox.length,
+      unmarked: inBox.filter((_, k) => !markers[k]).map((p) => p.id),
+      runner: inBox[0] && who(attack, inBox[0]),
+      marker: markers[0] && who(defend, markers[0]),
+      rest: back[0] && who(attack, back[0]),
+      outlet: up[0] && who(defend, up[0]),
+      keeper: keeper && who(defend, keeper),
+    };
+  }
   return undefined;
 }
+
 /**
  * The first of a few seeded careers whose reference match has a corner kicked from a settled beat:
  * the scene, not the seed, is what this journey checks.
