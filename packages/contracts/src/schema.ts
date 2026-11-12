@@ -121,21 +121,8 @@ export const budgetResponsibilitySchema = z.enum([
   'sales',
   'academy',
 ]);
-export const wageResponsibilitySchema = z.enum([
-  'manager',
-  'staff',
-  'contracts',
-  'recruitment',
-  'academy',
-]);
-export const financeChoiceSchema = z.enum(['aggressive', 'bold', 'standard', 'careful', 'stable']);
-const decisionBudgetSchema = z.strictObject({
-  finance: financeChoiceSchema.optional(),
-  maxAnnualWage: z
-    .string()
-    .regex(/^\d{1,40}$/)
-    .optional(),
-});
+/** The owner's spending request to a delegated person (→ SpendRequest). */
+export const spendRequestSchema = z.literal([1, 2, 3, 4, 5]);
 /** A club's books while nobody owns it (→ECON-36): the current and the last closed season. */
 const clubBooks = z.strictObject({
   seasons: z
@@ -1268,12 +1255,11 @@ const worldSchema: z.ZodType<World> = z.object({
       school: managerStyle.optional(),
       manager: z.enum(['developer', 'proven', 'young', 'cheap']).optional(),
       coaches: z.enum(['volunteer', 'cheap', 'elite']).optional(),
-      finance: z.enum(['aggressive', 'bold', 'careful', 'stable']).optional(),
       youthGoal: z.enum(['firstTeam', 'sell', 'minimal']).optional(),
       debut: z.enum(['early', 'ready', 'late']).optional(),
     })
     .optional(),
-  decisionBudgets: z.partialRecord(budgetResponsibilitySchema, decisionBudgetSchema).optional(),
+  delegationRequests: z.partialRecord(budgetResponsibilitySchema, spendRequestSchema).optional(),
   cupWinners: z.record(id, id),
   cups: z.array(domesticCup).max(10).optional(),
   europe: z.array(tournament).max(10),

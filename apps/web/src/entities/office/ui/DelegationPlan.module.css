@@ -1,0 +1,78 @@
+/* A person's plan: one sentence, the money in tiles, then the settings he sets. */
+.plan {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.response {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.spare {
+  margin: -6px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.response[data-response='noMoney'] {
+  color: var(--warm);
+}
+.choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  font-size: 12px;
+}
+.choices > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  padding-block: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.choices dt {
+  color: var(--text-muted);
+}
+.choices dd {
+  margin: 0;
+  font-weight: 700;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* The head of a work's page: who decides it. */
+.note {
+  --card-gap: 10px;
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+.meta > [data-ui='badge'] {
+  padding-inline: 6px;
+}
+.person,
+.next,
+.hint {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.person {
+  color: var(--text);
+}
+.next {
+  color: var(--accent-text, var(--text));
+  font-weight: 600;
+}
+.hint {
+  color: var(--text-muted);
+}

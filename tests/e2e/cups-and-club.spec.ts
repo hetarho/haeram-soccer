@@ -103,10 +103,10 @@ test.describe('cups, transfer stance, coaching and club trends at 390x844', () =
     await expect(page.getByTestId('coach-pick-attack')).toBeVisible();
     await expect(page.getByTestId('coach-pick-attack')).toContainText('코치 기조로 뽑는다면');
     await page.getByText('스태프 선임 기준', { exact: true }).click();
-    // 코치 기조 reads as founded beside 재정 기조; no line opens an editor (→STAFF-15).
+    // 코치 기조 reads as founded beside who decides; no line opens an editor (→STAFF-15).
     const criteria = page.getByText('스태프 선임 기준', { exact: true }).locator('xpath=..');
     await expect(criteria.locator('[data-row="coaches"]')).toContainText('표준');
-    await expect(criteria.locator('[data-row="finance"]')).toContainText('표준');
+    await expect(criteria.locator('[data-row="plan"]')).toContainText('직접 결정');
     await expect(page.getByRole('button', { name: /^코치 기조 · / })).toHaveCount(0);
     await expect(page.getByRole('dialog', { name: '스태프 업무 기준', exact: true })).toHaveCount(
       0,

@@ -76,9 +76,9 @@ for (const viewport of [
     const date = await page.getByTestId('game-date').innerText();
     const trigger = page
       .getByRole('region', { name: '시즌 진행', exact: true })
-      .getByRole('button', { name: '결재 설정', exact: true });
+      .getByRole('button', { name: '위임 설정', exact: true });
     await trigger.click();
-    const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
+    const overview = page.getByRole('dialog', { name: '위임 설정', exact: true });
     const contracts = overview.getByRole('group', { name: '선수 계약', exact: true });
     const applied = contracts.locator('button[aria-pressed="true"]');
     const appliedLabel = await applied.innerText();

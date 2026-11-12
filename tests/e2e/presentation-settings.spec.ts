@@ -706,9 +706,9 @@ test('unseen routed locale and theme change actual resources while game facts, t
   // The owner's office scene heads the 결재라인 overview, opened from the bottom controls.
   await page
     .locator('[data-ui="season-transport"]')
-    .getByRole('button', { name: '결재 설정', exact: true })
+    .getByRole('button', { name: '위임 설정', exact: true })
     .click();
-  const overview = page.getByRole('dialog', { name: '결재 설정', exact: true });
+  const overview = page.getByRole('dialog', { name: '위임 설정', exact: true });
   const image = overview.locator('[data-facility-art="manager"] img');
   await expect(image).toHaveAttribute(
     'src',

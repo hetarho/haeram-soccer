@@ -3,6 +3,7 @@ import { displayMessage, localizeValue, useTextLocale } from '../../../presentat
 import { richMessage } from '../../../presentation/LocalizedMessage';
 import { useEffect, useState } from 'react';
 import type {
+  DirectionKey,
   FacilityPart,
   PolicyKey,
   PolicyLevel,
@@ -42,23 +43,27 @@ import {
   INVESTMENT_PAGES,
   type InvestmentArea,
 } from '../../../shared/routing/investmentAreas';
-import {
-  openDecisionSettings,
-  useControlRequest,
-  useFacilityRequest,
-} from '../../../shared/routing/state';
+import { useControlRequest, useFacilityRequest } from '../../../shared/routing/state';
 import { BusinessWorkbench } from './BusinessWorkbench';
 import { InvestmentTotals } from './InvestmentTotals';
 import { OfficeEffects } from './OfficeEffects';
 import { TaskReturn } from './TaskReturn';
 import {
   BuildSetting,
+  ClubBudget,
+  DelegationNote,
+  DirectionSetting,
   InvestmentSlider,
+  settingLock,
   TicketSetting,
   useClubSettingAction as useInvestmentAction,
 } from '../../../entities/office';
-import { PASSIVE_BUILDS, PASSIVE_POLICIES } from '../../../entities/office';
-import { OwnerFunds } from '../../../entities/office';
+import {
+  AREA_DELEGATIONS,
+  AREA_DIRECTIONS,
+  PASSIVE_BUILDS,
+  PASSIVE_POLICIES,
+} from '../../../entities/office';
 import { FixtureKitSelector } from '../../../features/match-prep';
 import s from '../../../shared/ui/styles/InvestmentView.module.css';
 
@@ -92,10 +97,12 @@ function BudgetSetting({
   const [selected, setSelected] = useState<PolicyLevel>(current);
   useEffect(() => setSelected(current), [current]);
   const action = useInvestmentAction(client);
+  const lock = settingLock(w, { policy: policyKey });
+  const level = lock ? current : selected;
   const info = POLICY_INFO[policyKey];
-  const option = info.levels.find((level) => level.level === selected)!;
-  const effects = policyEffects({ ...policy, [policyKey]: selected });
-  const preview = office.policyCosts[policyKey][selected]!;
+  const option = info.levels.find((one) => one.level === level)!;
+  const effects = policyEffects({ ...policy, [policyKey]: level });
+  const preview = office.policyCosts[policyKey][level]!;
   const base = office.policyCosts[policyKey][1]!;
   const annual =
     policyKey === 'support'
@@ -116,6 +123,7 @@ function BudgetSetting({
       }
       className={s.panel}
       data-control={`policy:${policyKey}`}
+      data-locked={lock ? '' : undefined}
     >
       <p className={s.note}>
         {richMessage('copy.InvestmentTotals.4cc8a528aa', {
@@ -124,9 +132,9 @@ function BudgetSetting({
       </p>
       <InvestmentSlider
         label={displayMessage('copy.InvestmentView.8740e5b543', { p0: info.label })}
-        options={info.levels.map((level) => ({ value: level.level, name: level.name }))}
-        value={selected}
-        disabled={action.blocked}
+        options={info.levels.map((one) => ({ value: one.level, name: one.name }))}
+        value={level}
+        disabled={action.blocked || !!lock}
         onChange={setSelected}
       />
       <div className={s.selection} data-surface="inset">
@@ -192,38 +200,49 @@ function BudgetSetting({
           ),
         )}
       </div>
-      <div className={s.apply}>
-        <p className={s.note}>
-          {localizeValue(
-            policyKey === 'recruitment'
-              ? sourceMessage('copy.InvestmentView.3e9d654214')
-              : policyKey === 'support'
-                ? sourceMessage('copy.InvestmentView.a480936d6c')
-                : policyKey === 'tour'
-                  ? sourceMessage('copy.InvestmentView.afb698d0e3')
-                  : sourceMessage('copy.InvestmentView.fc0aadef44'),
-          )}
-        </p>
-        <button
-          type="button"
-          data-ui="primary"
-          disabled={action.blocked || selected === current}
-          onClick={() =>
-            void action.apply(
-              { type: 'club-policy', key: policyKey, level: selected },
-              sourceMessage('copy.InvestmentView.3d07a90bf0', { p0: info.label }),
-            )
-          }
-        >
-          {localizeValue(
-            action.busy
-              ? sourceMessage('copy.ClubSettingControl.304d48a5d2')
-              : policyKey === 'tour'
-                ? sourceMessage('copy.InvestmentView.5ce3a5c330')
-                : sourceMessage('copy.InvestmentView.235d04c236'),
-          )}
-        </button>
-      </div>
+      {localizeValue(
+        lock ? (
+          <p className={s.locked}>
+            <span data-ui="badge" data-compact="">
+              {richMessage('delegation.badge.delegated')}
+            </span>
+            <span>{localizeValue(lock)}</span>
+          </p>
+        ) : (
+          <div className={s.apply}>
+            <p className={s.note}>
+              {localizeValue(
+                policyKey === 'recruitment'
+                  ? sourceMessage('copy.InvestmentView.3e9d654214')
+                  : policyKey === 'support'
+                    ? sourceMessage('copy.InvestmentView.a480936d6c')
+                    : policyKey === 'tour'
+                      ? sourceMessage('copy.InvestmentView.afb698d0e3')
+                      : sourceMessage('copy.InvestmentView.fc0aadef44'),
+              )}
+            </p>
+            <button
+              type="button"
+              data-ui="primary"
+              disabled={action.blocked || selected === current}
+              onClick={() =>
+                void action.apply(
+                  { type: 'club-policy', key: policyKey, level: selected },
+                  sourceMessage('copy.InvestmentView.3d07a90bf0', { p0: info.label }),
+                )
+              }
+            >
+              {localizeValue(
+                action.busy
+                  ? sourceMessage('copy.ClubSettingControl.304d48a5d2')
+                  : policyKey === 'tour'
+                    ? sourceMessage('copy.InvestmentView.5ce3a5c330')
+                    : sourceMessage('copy.InvestmentView.235d04c236'),
+              )}
+            </button>
+          </div>
+        ),
+      )}
       {localizeValue(action.error && <p role="alert">{localizeValue(action.error)}</p>)}
       {localizeValue(
         action.message && (
@@ -639,15 +658,6 @@ function CoachingInvestment({ w, office }: { w: World; office: OfficeRead }) {
             }),
           )}
         </dl>
-        <p className={s.note}>{richMessage('copy.InvestmentView.9520835cd6')}</p>
-        <button
-          type="button"
-          data-ui="secondary"
-          aria-haspopup="dialog"
-          onClick={() => openDecisionSettings('staff')}
-        >
-          {richMessage('copy.InvestmentView.f6db5d8cfa')}
-        </button>
       </Card>
     </>
   );
@@ -667,12 +677,41 @@ function InvestmentDetails({
   const blocked = useGameState(gameActionsBlocked);
   const office = useOfficeRead(w);
   if (!office) return <p role="status">{richMessage('copy.InvestmentView.d6008342de')}</p>;
+  const directions: readonly DirectionKey[] = AREA_DIRECTIONS[area];
   return (
     <>
+      {localizeValue(
+        AREA_DELEGATIONS[area].map((key) => (
+          <DelegationNote key={key} w={w} responsibility={key} />
+        )),
+      )}
+      {localizeValue(
+        area === 'finance' && (
+          <Card surface="sheet" className={s.panel}>
+            <ClubBudget w={w} titled={false} />
+          </Card>
+        ),
+      )}
       {localizeValue(
         PASSIVE_POLICIES[area].map((key) => (
           <BudgetSetting key={key} w={w} client={client} policyKey={key} office={office} />
         )),
+      )}
+      {localizeValue(
+        directions.length > 0 && (
+          <Card
+            surface="sheet"
+            title={displayMessage('delegation.rules.title')}
+            meta={displayMessage('delegation.rules.meta')}
+            className={s.panel}
+          >
+            {localizeValue(
+              directions.map((key) => (
+                <DirectionSetting key={key} w={w} client={client} directionKey={key} />
+              )),
+            )}
+          </Card>
+        ),
       )}
       {localizeValue(
         PASSIVE_BUILDS[area].map((slot) => (
@@ -712,12 +751,7 @@ function InvestmentDetails({
       )}
       {localizeValue(area === 'coaches' && <CoachingInvestment w={w} office={office} />)}
       {localizeValue(
-        area === 'finance' && (
-          <>
-            {localizeValue(w.owner && <OwnerFunds client={client} />)}
-            <BusinessWorkbench state={state} client={client} part="finance" />
-          </>
-        ),
+        area === 'finance' && <BusinessWorkbench state={state} client={client} part="finance" />,
       )}
       {localizeValue(
         area === 'identity' && (

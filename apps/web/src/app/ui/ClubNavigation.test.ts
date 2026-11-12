@@ -22,7 +22,7 @@ vi.mock('../../features/approvals/ui/ApprovalButtons', () => ({
       'div',
       null,
       createElement('button', null, '결재함'),
-      createElement('button', null, '결재 설정'),
+      createElement('button', null, '위임 설정'),
     ),
 }));
 const snapshot: PresentationSnapshot = {
@@ -60,7 +60,7 @@ describe('the office section bar (→WEB-10/69/112)', () => {
     const html = render('operations');
     expect(html).toContain('aria-label="클럽하우스 홈으로"');
     expect(html).toContain('role="group" aria-label="사무실 메뉴"');
-    for (const label of ['오버뷰', '결재함', '결재 설정']) expect(html).toContain(label);
+    for (const label of ['오버뷰', '결재함', '위임 설정']) expect(html).toContain(label);
     expect(html).not.toContain('role="tab"');
     expect(html).not.toContain('role="tablist"');
   });

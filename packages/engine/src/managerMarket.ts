@@ -43,7 +43,6 @@ const MARKET_START = TAKEOVER_DECADES[0];
 import { ownLeagueClubs } from './season';
 import { managerCriteriaOf } from './hiring';
 import { moneyLabel } from './finance';
-import { annualWageLimit, wageWithinLimit } from './direction';
 import { networkCandidates, networkedCandidate } from './owner-traits';
 import { employmentWageInBuyerCurrency } from './employment-money';
 
@@ -331,12 +330,6 @@ function managerChecks(w: World, c: ManagerCriteria): ManagerCheck[] {
       (m) => m.ability >= c.minOvr,
     ],
     [
-      sourceMessage('copy.managerMarket.7875f4d9d5', {
-        p0: moneyLabel(w, annualWageLimit(w, 'manager') ?? '0'),
-      }),
-      (m) => wageWithinLimit(w, 'manager', m.wage),
-    ],
-    [
       sourceMessage('copy.managerMarket.c25c9d5f08', {
         p0: c.schools.map((style) => STYLE_INFO[style].label).join('·'),
       }),
@@ -422,7 +415,6 @@ export function managerMatches(w: World): ManagerCandidate[] {
 export function bestFreeAgent(w: World): ManagerCandidate | undefined {
   return managerCandidates(w)
     .filter((m) => m.source !== 'club')
-    .filter((m) => wageWithinLimit(w, 'manager', m.wage))
     .filter((m) => affordableManager(w, m))
     .sort(byPriority(managerCriteriaOf(w).priority))[0];
 }

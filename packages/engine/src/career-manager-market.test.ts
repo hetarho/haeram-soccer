@@ -7,7 +7,7 @@ import { managerHireCost } from './managerMarket';
 import { releaseCost } from './staff';
 import { careerWorld, type CareerInput } from './career.testkit';
 import { operatingCosts } from './finance';
-import { financeStance } from './direction';
+import { spendingStance } from './delegation';
 function fixture(
   kind: 'free' | 'internal' | 'club',
   input: CareerInput = {},
@@ -153,7 +153,7 @@ describe('career manager appointments', () => {
     expect(candidate.compensation).toBe('150000');
     const annual =
         BigInt(operatingCosts(w).annual) + BigInt(candidate.wage) - BigInt(w.manager.wage),
-      reserve = (annual / 46n) * BigInt(financeStance(w, 'manager').runway),
+      reserve = (annual / 46n) * BigInt(spendingStance(w, 'manager').runway),
       threshold = reserve + BigInt(candidate.fee) + 150000n;
     w.cash = threshold.toString();
     expect(managerMatches(w).some((c) => c.id === person.id)).toBe(true);

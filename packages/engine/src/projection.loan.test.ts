@@ -4,7 +4,7 @@ import { message } from '../../contracts/src/messages';
 import { financeProjection, type ProjectionLine } from './projection';
 import { operatingCosts, moneyLabel } from './finance';
 import { roundShare } from './finance-read';
-import { financeStance } from './direction';
+import { spendingStance } from './delegation';
 import { signingVerdict } from './signings';
 import { SEASON_ROUNDS } from './calendar';
 
@@ -131,7 +131,7 @@ describe('takeover loan cash projections', () => {
     w.income = '4600000000000';
     const plain = structuredClone(w);
     delete plain.loan;
-    const stance = financeStance(w, 'recruitment');
+    const stance = spendingStance(w, 'recruitment');
     const runway =
       (BigInt(operatingCosts(w).annual) / BigInt(SEASON_ROUNDS)) * BigInt(stance.runway);
     const netWithoutLoan = BigInt(financeProjection(plain).seasonEnd.low) - BigInt(plain.cash);
@@ -149,7 +149,10 @@ describe('takeover loan cash projections', () => {
     const verdict = signingVerdict(w, player, '0');
     expect(verdict.ok).toBe(false);
     expect(verdict.reason).toContain(
-      message('copy.signings.d4c4571f86', { p0: moneyLabel(w, projected), p1: stance.runway }),
+      message('delegation.verdict.seasonEnd', {
+        projected: moneyLabel(w, projected),
+        reserve: moneyLabel(w, runway.toString()),
+      }),
     );
     expect(w).toEqual(before);
   });

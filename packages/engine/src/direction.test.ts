@@ -13,7 +13,6 @@ import {
   dailyMarket,
   DIRECTION_INFO,
   DIRECTION_KEYS,
-  financeStance,
   managerCriteriaOf,
   MANAGER_CRITERIA_DEFAULT,
   operate,
@@ -33,6 +32,8 @@ import {
   untouchableVerdict,
 } from './index';
 import { careerWorld } from './career.testkit';
+import { spendingStance } from './delegation';
+import { holdTemperament } from './delegation.testkit';
 
 const world = (seed = 'direction') => careerWorld({ seed });
 /** Cash covering `rounds` rounds of the club's fixed costs. */
@@ -46,26 +47,17 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(managerCriteriaOf(w)).toEqual(MANAGER_CRITERIA_DEFAULT);
     expect(coachCriteriaOf(w)).toEqual(COACH_CRITERIA_DEFAULT);
     expect(talkRuleOf(w)).toEqual(TALK_RULE_DEFAULT);
-    expect(financeStance(w)).toEqual({
-      runway: 13,
-      wageShare: 0.65,
-      promotionYears: 1,
-      sellSteps: [13, 30],
-      signing: { margin: 5, upgrades: 1, feeShare: 0.5 },
-    });
     expect(DIRECTION_KEYS.map((key) => DIRECTION_INFO[key].label)).toEqual([
       '단장·감독 지원',
       '재계약 기조',
       '선호 학파',
       '감독 기조',
       '코치 기조',
-      '재정 기조',
       '육성 목표',
       '데뷔 시점',
     ]);
 
     // The rows a club holds as founded or saved (→ECON-25); no owner action changes them.
-    holdRows(w, { direction: { finance: 'careful' } });
     holdRows(w, { direction: { school: 'developer' } });
     holdRows(w, { direction: { manager: 'developer' } });
     holdRows(w, { direction: { coaches: 'elite' } });
@@ -98,40 +90,46 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(coachCriteriaOf(w).volunteer).toBe(true);
   });
 
-  it('재정 기조 sets the runway the staff keep, the promotion floor and the sale steps', () => {
+  it("the delegated person's cutoff sets the runway the staff keep, the promotion floor and the sale steps", () => {
     const w = world('direction-finance');
-    // Twenty rounds of costs: enough for 표준 (13), not for 안정적 (30).
+    // Twenty rounds of costs: enough for a balanced 단장 (12), not for a cautious one (23).
+    holdTemperament(w, 'director', 'balanced');
     w.cash = cashFor(w, 20);
     expect(affordable(w, 0n, 0n)).toBe(true);
-    holdRows(w, { direction: { finance: 'stable' } });
+    holdTemperament(w, 'director', 'cautious');
     expect(affordable(w, 0n, 0n)).toBe(false);
-    holdRows(w, { direction: { finance: 'aggressive' } });
+    holdTemperament(w, 'director', 'bold');
     w.cash = cashFor(w, 8);
     expect(affordable(w, 0n, 0n)).toBe(true);
 
-    // Promotions wait below a quarter of a year at 공격적, a year at 표준, two at 안정적.
+    // Promotions wait below the youth coach's cutoff: 6, 12 or 23 weeks of fixed costs.
     const annual = BigInt(operatingCosts(w).annual);
-    expect(promotionFloor(w)).toBe(annual / 4n);
-    holdRows(w, { direction: { finance: 'standard' } });
-    expect(promotionFloor(w)).toBe(annual);
-    holdRows(w, { direction: { finance: 'stable' } });
-    expect(promotionFloor(w)).toBe(annual * 2n);
+    holdTemperament(w, 'youth', 'bold');
+    expect(promotionFloor(w)).toBe((annual * 6n) / 46n);
+    holdTemperament(w, 'youth', 'balanced');
+    expect(promotionFloor(w)).toBe((annual * 12n) / 46n);
+    holdTemperament(w, 'youth', 'cautious');
+    expect(promotionFloor(w)).toBe((annual * 23n) / 46n);
 
-    // The sale bar's runway steps move with it: 25 rounds cuts 10 at 표준, 20 at 안정적.
+    // The sale bar's runway steps move with it: 25 rounds cuts 10 for a balanced (12, 30) or a
+    // cautious 단장 (23, 58), whose 20 rounds cut 20, and nothing for a bold one (6, 15).
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
     p.born = w.year - 26;
     p.until = w.year + 3;
     w.cash = cashFor(w, 25);
-    holdRows(w, { direction: { finance: 'standard' } });
+    holdTemperament(w, 'director', 'balanced');
     expect(saleBar(w, p).percent).toBe(120);
-    holdRows(w, { direction: { finance: 'stable' } });
+    holdTemperament(w, 'director', 'cautious');
+    expect(saleBar(w, p).percent).toBe(120);
+    w.cash = cashFor(w, 20);
     expect(saleBar(w, p).percent).toBe(110);
-    holdRows(w, { direction: { finance: 'aggressive' } });
+    w.cash = cashFor(w, 25);
+    holdTemperament(w, 'director', 'bold');
     expect(saleBar(w, p).percent).toBe(130);
-    // An untouchable star: 표준 lowers the price under 30 rounds and sells under 13.
-    holdRows(w, { direction: { finance: 'standard' } });
+    // An untouchable star: a balanced 단장 lowers the price under 30 rounds, a bold one under 15.
+    holdTemperament(w, 'director', 'balanced');
     expect(untouchableVerdict(w, 180, false).accept).toBe(true);
-    holdRows(w, { direction: { finance: 'aggressive' } });
+    holdTemperament(w, 'director', 'bold');
     expect(untouchableVerdict(w, 180, false).accept).toBe(false);
   });
 
@@ -255,13 +253,13 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
 describe('recruitment support policy', () => {
   it('defaults to balanced and preserves financial limits and responsibilities under every option', () => {
     const w = world('support-row');
-    const financial = financeStance(w);
+    const financial = spendingStance(w, 'recruitment');
     const responsibilities = structuredClone(w.settings);
     expect(directionOf(w, 'recruitmentSupport')).toBe('balanced');
     for (const option of ['director', 'manager', 'balanced']) {
       holdRows(w, { direction: { recruitmentSupport: option } });
       expect(directionOf(w, 'recruitmentSupport')).toBe(option);
-      expect(financeStance(w)).toEqual(financial);
+      expect(spendingStance(w, 'recruitment')).toEqual(financial);
       expect(w.settings).toEqual(responsibilities);
       expect(validateWorld(JSON.parse(canonical(w))).direction).toEqual(w.direction);
     }
@@ -272,6 +270,6 @@ describe('recruitment support policy', () => {
     expect(preset.rows.direction).not.toHaveProperty('recruitmentSupport');
     const w = careerWorld({ seed: 'support-config', preset: preset.id });
     expect(directionOf(w, 'recruitmentSupport')).toBe('balanced');
-    expect(directionOf(w, 'finance')).toBe(preset.rows.direction!.finance);
+    expect(w.delegationRequests?.recruitment).toBe(preset.rows.request);
   });
 });

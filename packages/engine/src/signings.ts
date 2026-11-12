@@ -20,7 +20,7 @@ import { LINE_MINIMUM, LINE_NAME, lineOf, POSITION_LABEL, requestLabel } from '.
 export { requestLabel } from './player';
 import { currentDay, ROUND_INTERVAL_DAYS, SEASON_ROUNDS } from './calendar';
 import { MARKET_REFRESH_ROUNDS } from './managerMarket';
-import { clamp, compareIds, ratio, scaleBy } from './primitives';
+import { clamp, compareIds, ratio } from './primitives';
 import {
   activePlayers,
   lineOfPlayer,
@@ -31,7 +31,7 @@ import {
 } from './player-state';
 import { addEvent } from './events';
 import { joinClub, ownStarters } from './world';
-import { annualWageLimit, financeOption, financeStance, wageWithinLimit } from './direction';
+import { delegatePlan, planLabel, spendingStance } from './delegation';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
 import { financeProjection } from './projection';
 import { pushInbox } from './inbox';
@@ -146,35 +146,30 @@ export function shortLines(w: World): ShortNeed[] {
 }
 
 /**
- * 재정 기조's checks on a signing (→ECON-33): the fee within its share of the cash above the
- * runway, and with his wage the runway, the wage bill ceiling and the season's cash projection.
+ * The 단장's plan's checks on a signing: the fee within what is left of the season's signing budget
+ * and above his cutoff, and with his wage the wage bill ceiling and the season's cash projection
+ * still above the cutoff.
  */
 export function signingVerdict(w: World, player: Player, fee: string) {
-  const stance = financeStance(w, 'recruitment'),
-    finance = financeOption(w, 'recruitment').name,
+  const plan = delegatePlan(w, 'recruitment'),
+    stance = plan.stance,
+    label = planLabel(w, 'recruitment'),
     perRound = (BigInt(operatingCosts(w).annual) + BigInt(player.wage)) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),
-    spare = BigInt(w.cash) - runway,
-    cap = spare > 0n ? scaleBy(spare.toString(), stance.signing.feeShare, 100n) : '0';
+    spare = BigInt(w.cash) - runway;
   const no = (reason: string) => ({
     ok: false as const,
-    reason: sourceMessage('copy.signings.1ed3f9250d', { p0: reason, p1: finance }),
+    reason: sourceMessage('delegation.verdict.wrap', { reason, plan: label }),
   });
-  if (!wageWithinLimit(w, 'recruitment', player.wage))
-    return no(
-      sourceMessage('copy.signings.ef4cd4ff44', {
-        p0: moneyLabel(w, player.wage),
-        p1: moneyLabel(w, annualWageLimit(w, 'recruitment')!),
-      }),
-    );
   if (spare < BigInt(fee))
-    return no(sourceMessage('copy.signings.a436f357d9', { p0: stance.runway }));
-  if (BigInt(fee) > BigInt(cap))
     return no(
-      sourceMessage('copy.signings.228afae599', {
-        p0: moneyLabel(w, fee),
-        p1: Math.round(stance.signing.feeShare * 100),
-        p2: moneyLabel(w, cap),
+      sourceMessage('delegation.verdict.reserve', { reserve: moneyLabel(w, runway.toString()) }),
+    );
+  if (BigInt(fee) > BigInt(plan.left))
+    return no(
+      sourceMessage('delegation.verdict.budget', {
+        fee: moneyLabel(w, fee),
+        left: moneyLabel(w, plan.left),
       }),
     );
   const bill = BigInt(wageBill(w)) + BigInt(player.wage),
@@ -200,17 +195,17 @@ export function signingVerdict(w: World, player: Player, fee: string) {
   }
   if (BigInt(seasonEnd) < runway)
     return no(
-      sourceMessage('copy.signings.d4c4571f86', {
-        p0: moneyLabel(w, seasonEnd),
-        p1: stance.runway,
+      sourceMessage('delegation.verdict.seasonEnd', {
+        projected: moneyLabel(w, seasonEnd),
+        reserve: moneyLabel(w, runway.toString()),
       }),
     );
   return {
     ok: true as const,
-    reason: sourceMessage('copy.signings.56746fd995', {
-      p0: Math.round(stance.signing.feeShare * 100),
-      p1: share,
-      p2: finance,
+    reason: sourceMessage('delegation.verdict.signingOk', {
+      left: moneyLabel(w, plan.left),
+      share,
+      plan: label,
     }),
   };
 }
@@ -236,13 +231,13 @@ export function needLine(w: World, need: SigningNeed) {
             p1: SIGNING_CONFIG.squadMinimum,
           }))
     );
-  return sourceMessage('copy.signings.c997ed1cf6', {
-    p0: asked,
-    p1: POSITION_LABEL[need.position],
-    p2: need.measure.name,
-    p3: Math.round(need.level),
-    p4: need.margin,
-    p5: financeOption(w, 'recruitment').name,
+  return sourceMessage('delegation.need.upgrade', {
+    asked,
+    position: POSITION_LABEL[need.position],
+    starter: need.measure.name,
+    level: Math.round(need.level),
+    margin: need.margin,
+    plan: planLabel(w, 'recruitment'),
   });
 }
 /** " · 감독이 고른 선수" when the 단장 moves for the manager's pick. */
@@ -688,7 +683,7 @@ export function staffSignings(w: World) {
   if (!regular && !retry && !replacements.length) return;
   const squad = activePlayers(w).length;
   if (squad >= registration(w).ceiling) return;
-  const stance = financeStance(w, 'recruitment'),
+  const stance = spendingStance(w, 'recruitment'),
     upgrades = bids.filter(
       (bid) => bid.staff === 'upgrade' && (bid.status === 'completed' || isOpen(bid)),
     ).length,

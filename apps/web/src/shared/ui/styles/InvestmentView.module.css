@@ -530,3 +530,17 @@
   flex: 1 1 240px;
   margin: 0;
 }
+/* A setting its delegated person sets: read only, naming who sets it in place of the apply. */
+.locked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.locked > [data-ui='badge'] {
+  padding-inline: 6px;
+}

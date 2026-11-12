@@ -8,9 +8,9 @@ import { transferOffers } from '../../packages/engine/src/index';
 import { detectMediations } from '../../packages/engine/src/mediation';
 import { lineOf } from '../../packages/engine/src/player';
 import { leaveOffice, openArea } from './office';
-/** The office's 재정 · 사업, entered from its card on the clubhouse (→WEB-11/14). */
+/** The office's 구단 예산, entered from its card on the clubhouse (→WEB-11/14). */
 async function operations(page: Page) {
-  await openArea(page, '재정 · 사업');
+  await openArea(page, '구단 예산');
   await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
 }
 
@@ -32,7 +32,7 @@ test('rules three retains a joint career and promise through handover and portab
   expect(detectMediations(w)).toHaveLength(1);
   await page.setViewportSize({ width: 390, height: 844 });
   await importResponsibilityCareer(page, w);
-  // The direction reads as saved: 재정 · 사업's revenue model in force (→ECON-25, WEB-14).
+  // The direction reads as saved: 구단 예산's revenue model in force (→ECON-25, WEB-14).
   await operations(page);
   await expect(page.locator('[data-control="build:revenue"]')).toContainText('현재 · 표준');
   await leaveOffice(page);
@@ -51,7 +51,7 @@ test('rules three retains a joint career and promise through handover and portab
   await expect(page.getByTestId('action-outcome')).toHaveCount(0);
   await operations(page);
   const saved = await exportedCareer(page);
-  expect(saved.direction?.finance ?? 'standard').toBe('standard');
+  expect(saved.delegationRequests).toBeUndefined();
   expect(saved.playingCoachProposals![player.id].status).toBe('accepted');
   expect(saved.staff!.filter((s) => s.person === player.id)).toHaveLength(1);
   expect(saved.mediations![0].status).toBe('resolved');

@@ -40,9 +40,9 @@ export const INVESTMENT_AREAS = [
   },
   {
     id: 'finance',
-    title: sourceMessage('copy.investmentAreas.7fd6d6d374'),
+    title: sourceMessage('budget.title'),
     art: 'manager',
-    description: sourceMessage('copy.investmentAreas.9964916eb0'),
+    description: sourceMessage('budget.area.description'),
   },
   {
     id: 'identity',

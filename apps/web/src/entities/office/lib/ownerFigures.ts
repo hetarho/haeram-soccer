@@ -123,6 +123,11 @@ export function nextSettlement(w: World): Settlement {
     close: day === CLOSE_DAY,
   };
 }
+/** Business settlements still to come this season, its close included (→OWNER-7). */
+export function settlementsLeft(w: World) {
+  const today = currentDay(w);
+  return settlementDays(w.year).filter((day) => day > today).length;
+}
 /** The season close's date and days left, the end of 구단주 파산 위기 (→OWNER-14). */
 function seasonClose(w: World) {
   return {
@@ -299,6 +304,84 @@ export function lastDividend(owner: OwnerState) {
 }
 /** The 배당 dial's settings, in percent (→OWNER-11). */
 export const DIVIDEND_DIAL = OWNER_DIVIDEND.shares;
+
+/** Where the owner's money went in one season (→OWNER-17), in that season's money. */
+export interface OwnerSeasonRow {
+  year: number;
+  /** False for the season in progress, whose figures are so far. */
+  closed: boolean;
+  /** 구단주 자금 when the season began, read back from its close and its flows. */
+  start: string;
+  /** At the close, or now. */
+  fortune: string;
+  /** The business result, won (positive) or lost. */
+  business: string;
+  living: string;
+  injected: string;
+  dividend: string;
+}
+/**
+ * Every owner season, oldest first: the closed ones from their records and the one in progress
+ * from this season's flows (→`ownerSeasonFlows`, read on the worker from the whole ledger). The
+ * start is what the flows leave at the end.
+ */
+export function ownerSeasonRows(
+  w: World,
+  flows: { business: string; living: string; injected: string; dividend: string },
+): OwnerSeasonRow[] {
+  const owner = w.owner;
+  if (!owner) return [];
+  const row = (
+    year: number,
+    closed: boolean,
+    fortune: bigint,
+    business: bigint,
+    living: bigint,
+    injected: bigint,
+    dividend: bigint,
+  ): OwnerSeasonRow => ({
+    year,
+    closed,
+    start: (fortune - business + living + injected - dividend).toString(),
+    fortune: fortune.toString(),
+    business: business.toString(),
+    living: living.toString(),
+    injected: injected.toString(),
+    dividend: dividend.toString(),
+  });
+  const rows = owner.seasonRecords.map((record) =>
+    row(
+      record.year,
+      true,
+      BigInt(record.fortune),
+      BigInt(record.business),
+      BigInt(record.living),
+      BigInt(record.injected),
+      BigInt(record.dividend),
+    ),
+  );
+  if (rows.some((one) => one.year === w.year)) return rows;
+  return [
+    ...rows,
+    row(
+      w.year,
+      false,
+      BigInt(owner.fortune),
+      BigInt(flows.business),
+      BigInt(flows.living),
+      BigInt(flows.injected),
+      BigInt(flows.dividend),
+    ),
+  ];
+}
+/**
+ * The business stake's average result over the settlements still to come this season: each wins
+ * or loses the same amount, so its expectation is (2 × chance − 1) × amount.
+ */
+export function stakeExpectation(chance: number, amount: string, settlements: number) {
+  const edge = Math.round((2 * chance - 1) * 1000);
+  return ((BigInt(amount) * BigInt(edge) * BigInt(settlements)) / 1000n).toString();
+}
 
 export interface FanMover {
   label: string;

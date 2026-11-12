@@ -25,7 +25,13 @@
  * one seller supplied, and the largest share of the fee signings over any five seasons.
  */
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
-import type { CountryCode, Line, TransferBid, World } from '../packages/contracts/src/types';
+import type {
+  CountryCode,
+  Line,
+  SpendRequest,
+  TransferBid,
+  World,
+} from '../packages/contracts/src/types';
 import type { TakeoverDecade, WealthTier } from '../packages/contracts/src/owner';
 import { careerEnded } from '../packages/contracts/src/owner';
 import { generateHistory } from '../packages/engine/src/history';
@@ -62,6 +68,15 @@ const SEED = option('seed', 'spread-0');
 const CODE = option('country', 'ENG') as CountryCode;
 const TIER = option('tier', 'oil') as WealthTier;
 const FINANCE = option('finance', 'aggressive');
+/** The legacy 재정 기조 names map to the 단장's spending request (→`SpendRequest`). */
+const REQUEST_OF: Record<string, SpendRequest> = {
+  stable: 1,
+  careful: 2,
+  standard: 3,
+  bold: 4,
+  aggressive: 5,
+};
+
 const FROM = Number(option('from', '2000')) as TakeoverDecade;
 const UNTIL = Number(option('until', '2007'));
 const INJECT = Number(option('inject', '0'));
@@ -251,10 +266,7 @@ function playCareer(): Career | undefined {
   takeOver(w, pick.club.id, { tier: TIER, traits: [] });
   w.settings = defaultSettings();
   for (const key of RESPONSIBILITY_KEYS) w.settings.responsibilities[key] = 'delegated';
-  w.decisionBudgets = {
-    ...w.decisionBudgets,
-    recruitment: { finance: FINANCE },
-  } as World['decisionBudgets'];
+  w.delegationRequests = { recruitment: REQUEST_OF[FINANCE] ?? 3 };
   const career: Career = {
     seed: SEED,
     code: CODE,

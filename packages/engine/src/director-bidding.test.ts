@@ -13,6 +13,7 @@ import {
 import { staffBidShare } from './director-bidding';
 import { STAFF_INFO, STAFF_TRAIT_INFO } from './staff';
 import { careerWorld } from './career.testkit';
+import { holdTemperament } from './delegation.testkit';
 function world(trait?: StaffTrait) {
   const w = careerWorld({ seed: 'director-bids' });
   w.settings = staffAuthority(4);
@@ -23,7 +24,8 @@ function world(trait?: StaffTrait) {
   w.cash = w.income = '999999999999';
   w.round = 23;
   w.calendar = { day: transferWindowDays(w.year).winterOpen };
-  w.direction = { finance: 'aggressive' };
+  holdTemperament(w, 'director', 'balanced');
+  w.delegationRequests = { recruitment: 5 };
   return w;
 }
 function bid(w: World, share: number) {
@@ -40,22 +42,22 @@ describe('director trait bidding', () => {
     ['closer', 110],
   ] as const)('opens %s at %s percent and adds ten points for aggression', (trait, share) => {
     const w = world(trait);
-    w.direction = {};
+    delete w.delegationRequests;
     expect(staffBidShare(w)).toBe(share);
-    w.direction!.finance = 'aggressive';
+    w.delegationRequests = { recruitment: 5 };
     expect(staffBidShare(w)).toBe(share + 10);
   });
   it('registers closer in the same director trait pool and keeps a volunteer neutral', () => {
     expect(STAFF_INFO.director.traits).toEqual(['negotiator', 'closer']);
     expect(STAFF_TRAIT_INFO.closer.label).toBe('속전속결');
     const w = world();
-    w.direction = {};
+    delete w.delegationRequests;
     w.staff!.find((s) => s.role === 'director')!.wage = '0';
     expect(staffBidShare(w)).toBe(100);
   });
   it('raises 80→85→…→100 the next day outside weekly looks, then moves on', () => {
     const w = world('negotiator');
-    w.direction = {};
+    delete w.delegationRequests;
     let last = bid(w, 80);
     const id = last.playerId;
     for (const share of [85, 90, 95, 100]) {
@@ -75,7 +77,7 @@ describe('director trait bidding', () => {
   });
   it('jumps to the ceiling in the final seven days', () => {
     const w = world('negotiator');
-    w.direction = {};
+    delete w.delegationRequests;
     const first = bid(w, 80);
     first.status = 'rejected';
     w.calendar!.day = transferWindowDays(w.year).winterClose - 6;
@@ -97,7 +99,7 @@ describe('director trait bidding', () => {
   );
   it('declines a negotiator counter below the ceiling and raises next day', () => {
     const w = world('negotiator');
-    w.direction = {};
+    delete w.delegationRequests;
     const first = bid(w, 80);
     first.status = 'countered';
     first.counterFee = ratio(first.offer!.fee, 120n, 100n);

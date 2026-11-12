@@ -34,15 +34,11 @@ import {
   type OfficeProposal,
 } from '../../entities/office';
 import { delegationCounts } from './officeSummary';
-import {
-  BuildSetting,
-  DecisionFinanceSetting,
-  DirectionSetting,
-  RecruitmentGuideline,
-  WageBudgetSetting,
-} from '../../entities/office';
-import { DECISION_BUILDS, DECISION_DIRECTIONS, DECISION_POLICIES } from '../../entities/office';
-import { DecisionRuleFacts } from './DecisionRuleFacts';
+import { delegationArea } from '../../entities/office';
+import { DelegationRequest } from './DelegationRequest';
+import { isBudgetResponsibility } from '../../../../../packages/engine/src/delegation-info';
+import { INVESTMENT_AREAS } from '../../shared/routing/investmentAreas';
+import { closeDecisionSettings, openInvestment } from '../../shared/routing/state';
 import { PendingHandover } from '../../features/approvals';
 import s from '../../shared/ui/styles/OwnerOffice.module.css';
 const ApprovalWorkbench = lazy(() =>
@@ -277,7 +273,7 @@ export function OwnerOffice({
             })}
           </small>
         </div>
-        <p>{richMessage('copy.OwnerOfficeView.674aa7fd09')}</p>
+        <p>{richMessage('delegation.page.lead')}</p>
         <div className={s.rows}>
           {localizeValue(
             !scope &&
@@ -330,48 +326,43 @@ export function OwnerOffice({
                 />
                 <div className={s.guidelines}>
                   {localizeValue(
-                    DECISION_POLICIES[key].map(
-                      (policy) =>
-                        policy === 'recruitment' && (
-                          <RecruitmentGuideline key={policy} w={w} client={client} />
-                        ),
+                    settings.responsibilities[key] === 'delegated' ? (
+                      isBudgetResponsibility(key) ? (
+                        <DelegationRequest w={w} client={client} responsibility={key} />
+                      ) : (
+                        <p className={s.cardNote}>{richMessage('delegation.sponsors.note')}</p>
+                      )
+                    ) : (
+                      <p className={s.cardNote}>{richMessage('delegation.direct.note')}</p>
                     ),
                   )}
-                  {localizeValue(
-                    DECISION_DIRECTIONS[key].map((direction) => (
-                      <DirectionSetting
-                        key={direction}
-                        w={w}
-                        client={client}
-                        directionKey={direction}
-                      />
-                    )),
-                  )}
-                  {localizeValue(
-                    DECISION_BUILDS[key].map((slot) => (
-                      <BuildSetting key={slot} w={w} client={client} slot={slot} />
-                    )),
-                  )}
-                  {localizeValue(
-                    key !== 'sales' && key !== 'sponsors' && (
-                      <WageBudgetSetting w={w} client={client} responsibility={key} />
-                    ),
-                  )}
-                  {localizeValue(
-                    key !== 'sponsors' && (
-                      <DecisionFinanceSetting w={w} client={client} responsibility={key} />
-                    ),
-                  )}
-                  <DecisionRuleFacts w={w} responsibility={key} />
-                  <button
-                    type="button"
-                    data-ui="secondary"
-                    className={s.workbenchButton}
-                    aria-haspopup="dialog"
-                    onClick={() => setWorkbench(key)}
-                  >
-                    {richMessage('copy.stories.a779e41652', { p0: WORKBENCH_LABELS[key] })}
-                  </button>
+                  <div className={s.cardActions}>
+                    {localizeValue(
+                      delegationArea(key) && (
+                        <button
+                          type="button"
+                          data-ui="secondary"
+                          onClick={() => {
+                            closeDecisionSettings();
+                            openInvestment(delegationArea(key));
+                          }}
+                        >
+                          {richMessage('delegation.details.open', {
+                            page: INVESTMENT_AREAS.find((area) => area.id === delegationArea(key))!
+                              .title,
+                          })}
+                        </button>
+                      ),
+                    )}
+                    <button
+                      type="button"
+                      data-ui="secondary"
+                      aria-haspopup="dialog"
+                      onClick={() => setWorkbench(key)}
+                    >
+                      {richMessage('copy.stories.a779e41652', { p0: WORKBENCH_LABELS[key] })}
+                    </button>
+                  </div>
                 </div>
               </article>
             )),

@@ -43,13 +43,8 @@ import { wageDemandFactor } from './owner-traits';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
-import {
-  annualWageLimit,
-  directionOption,
-  financeOption,
-  financeStance,
-  wageWithinLimit,
-} from './direction';
+import { directionOption } from './direction';
+import { planLabel, spendingStance } from './delegation';
 import { contractSeason } from './ops-staff';
 import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
 import { credit } from './transactions';
@@ -647,7 +642,7 @@ export function seasonEndWithWage(w: World, p: Player, wage: string) {
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
  * ending before the running contract (→staffTerm), when 재계약 기조 keeps the player (the floor
  * within its wage cap, a starter when it keeps only the XI, younger than its age limit) and
- * 재정 기조 allows the raise (→ECON-33): cash after it keeps the runway, the yearly wage bill after
+ * the 단장's plan allows the raise (`spendingStance`): cash after it keeps his cutoff, the yearly wage bill after
  * it, staff included, stays within the ceiling of the last 12 months' revenue, and the season's
  * cash projection with the new wage from the next round still ends the season keeping the runway;
  * otherwise they decline. Either way the talk's inbox item says why.
@@ -656,22 +651,14 @@ export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
     rule = talkRuleOf(w),
     renewal = directionOption(w, 'renewal').name,
-    stance = financeStance(w, 'contracts'),
-    finance = financeOption(w, 'contracts').name,
+    stance = spendingStance(w, 'contracts'),
+    finance = planLabel(w, 'contracts'),
     ceiling = scaleBy(playerWorth(w, p), rule.maxPay, 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
     perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
     runway = perRound * BigInt(stance.runway),
     term = staffTerm(w, p),
     age = w.year - p.born;
-  if (!wageWithinLimit(w, 'contracts', talk.floor))
-    return {
-      accept: false as const,
-      reason: sourceMessage('copy.contracts.7733fb4416', {
-        p0: moneyLabel(w, talk.floor),
-        p1: moneyLabel(w, annualWageLimit(w, 'contracts')!),
-      }),
-    };
   if (BigInt(talk.floor) > BigInt(ceiling))
     return {
       accept: false as const,
@@ -708,7 +695,10 @@ export function staffTalkVerdict(w: World, p: Player) {
   if (BigInt(w.cash) < runway)
     return {
       accept: false as const,
-      reason: sourceMessage('copy.contracts.41859e5c0d', { p0: stance.runway, p1: finance }),
+      reason: sourceMessage('delegation.verdict.raiseReserve', {
+        reserve: moneyLabel(w, runway.toString()),
+        plan: finance,
+      }),
     };
   const bill = BigInt(wageBill(w)) + raise,
     revenue = recentRevenue(w),
@@ -716,22 +706,21 @@ export function staffTalkVerdict(w: World, p: Player) {
   if (bill * 100n > BigInt(revenue) * BigInt(share))
     return {
       accept: false as const,
-      reason: sourceMessage('copy.contracts.b1d7fee324', {
-        p0: moneyLabel(w, bill.toString()),
-        p1: moneyLabel(w, revenue),
-        p2: share,
-        p3: finance,
+      reason: sourceMessage('delegation.verdict.raiseWageBill', {
+        bill: moneyLabel(w, bill.toString()),
+        revenue: moneyLabel(w, revenue),
+        share,
+        plan: finance,
       }),
     };
   const seasonEnd = seasonEndWithWage(w, p, talk.floor);
   if (BigInt(seasonEnd) < runway)
     return {
       accept: false as const,
-      reason: sourceMessage('copy.contracts.d9793e3ead', {
-        p0: moneyLabel(w, seasonEnd),
-        p1: stance.runway,
-        p2: moneyLabel(w, runway.toString()),
-        p3: finance,
+      reason: sourceMessage('delegation.verdict.raiseSeasonEnd', {
+        projected: moneyLabel(w, seasonEnd),
+        reserve: moneyLabel(w, runway.toString()),
+        plan: finance,
       }),
     };
   return { accept: true as const, term };

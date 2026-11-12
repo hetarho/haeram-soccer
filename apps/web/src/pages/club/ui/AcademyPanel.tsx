@@ -342,11 +342,7 @@ export function AcademyPanel({
                   auto={sourceMessage('copy.AcademyPanel.f391535bf3')}
                   owner={sourceMessage('copy.AcademyPanel.7aec0b3ee8')}
                 />
-                <DirectionFacts
-                  w={w}
-                  rows={['youthGoal', 'debut', 'finance']}
-                  responsibility="academy"
-                />
+                <DirectionFacts w={w} rows={['youthGoal', 'debut']} responsibility="academy" />
                 <ul className={s.rule}>
                   <li>
                     <b>{richMessage('copy.AcademyPanel.8e70a8dda1')}</b>

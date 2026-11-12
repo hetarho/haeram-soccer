@@ -33,7 +33,8 @@ import { clamp, compareIds, integer, random, ratio, scaleBy } from './primitives
 import { debit } from './transactions';
 import { appointDelegatedManager, contractSeason, managerRenewal, renewManager } from './ops-staff';
 import { managerBeats, managerFits, managerLine, managerMatches } from './managerMarket';
-import { annualWageLimit, directionLine, financeStance, wageWithinLimit } from './direction';
+import { directionLine } from './direction';
+import { spendingStance } from './delegation';
 import { pushInbox } from './inbox';
 import { moneyLabel, operatingCosts } from './finance';
 import { currentDay, seasonDayOf } from './calendar';
@@ -519,7 +520,7 @@ export function volunteer(w: World, role: StaffRole): Staff {
     until: w.year + 1,
   };
 }
-/** Cash left after `spend` still keeps 재정 기조's runway with `wage` added to the costs (→ECON-33). */
+/** Cash left after `spend` still keeps the delegated person's cutoff with `wage` added to the costs. */
 export function affordable(
   w: World,
   spend: bigint,
@@ -527,7 +528,7 @@ export function affordable(
   responsibility: BudgetResponsibility = 'staff',
 ) {
   const perRound = (BigInt(operatingCosts(w).annual) + wage) / 46n;
-  return BigInt(w.cash) - spend >= perRound * BigInt(financeStance(w, responsibility).runway);
+  return BigInt(w.cash) - spend >= perRound * BigInt(spendingStance(w, responsibility).runway);
 }
 /** A match this much abler beats an expiring coach who meets the criteria, under 능력 높은 순. */
 export const COACH_RENEWAL_MARGIN = 3;
@@ -553,12 +554,6 @@ function coachChecks(w: World, role: StaffRole, c: CoachCriteria): CoachCheck[] 
     [
       sourceMessage('copy.staff.614681d845', { p0: c.minAbility }),
       (coach) => coach.ability >= c.minAbility,
-    ],
-    [
-      sourceMessage('copy.staff.9494efbca1', {
-        p0: moneyLabel(w, annualWageLimit(w, 'staff') ?? '0'),
-      }),
-      (coach) => wageWithinLimit(w, 'staff', coach.wage),
     ],
     ...(trait
       ? [
@@ -797,9 +792,7 @@ function delegatedSeason(w: World, role: StaffRole, member: Staff | undefined) {
   }
   const terms = renewalTerms(w, member, c.term),
     payable =
-      !c.volunteer &&
-      wageWithinLimit(w, 'staff', terms.wage) &&
-      affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
+      !c.volunteer && affordable(w, BigInt(terms.fee), BigInt(terms.wage) - BigInt(member.wage)),
     beaten =
       !!first &&
       (c.priority === 'ability'
@@ -974,11 +967,7 @@ function delegatedManagerRenewal(w: World, school: string, limit: number) {
     });
     return true;
   }
-  if (
-    !wageWithinLimit(w, 'manager', kept.wage) ||
-    !affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage), 'manager')
-  )
-    return false;
+  if (!affordable(w, BigInt(kept.fee), BigInt(kept.wage) - BigInt(m.wage), 'manager')) return false;
   renewManager(w, term, true);
   pushInbox(w, {
     kind: 'staff-report',

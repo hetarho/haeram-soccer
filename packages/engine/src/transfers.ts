@@ -48,7 +48,7 @@ import { ownStarters } from './world';
 import { ambitionAfterDecline, leaveContract, marketValue, signingClauses } from './contracts';
 import { credit, debit } from './transactions';
 import { locateOffer, transferOffers } from './scout-search';
-import { financeStance } from './direction';
+import { applyDelegatePlans, spendingStance } from './delegation';
 import { moneyLabel, operatingCosts } from './finance';
 import { fixedCostRunway } from './investment';
 import { staffEffects } from './staff';
@@ -445,8 +445,10 @@ function announceWindows(w: World, day: number) {
       detail: sourceMessage('copy.transfers.8caca6c7a1', { p0: WINDOW_INFO[opening].deadline }),
       attention: true,
     });
-    // The chief scout lists candidates and the manager asks before the window's first day of
-    // business (→CLUB-33).
+    // Delegated people plan the window — the 단장 its signing budget and search — before the
+    // chief scout lists candidates and the manager asks, ahead of the first day of business
+    // (→CLUB-33).
+    applyDelegatePlans(w, 'window');
     openShortlistWindow(w);
     if (isDelegated(w, 'sales')) staffStances(w);
   }
@@ -684,7 +686,7 @@ export function saleBar(w: World, p: Player) {
     runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     prospect = isProspect(w, p),
     base = SALE_BARS[w.build?.market ?? 'standard'][prospect ? 1 : 0],
-    [first, second] = financeStance(w, 'sales').sellSteps,
+    [first, second] = spendingStance(w, 'sales').sellSteps,
     cuts: string[] = [];
   let percent = base;
   const cut = (points: number, why: string) => {
@@ -864,7 +866,7 @@ export function untouchableVerdict(w: World, offered: number, essential: boolean
   const runway = fixedCostRunway(w.cash, operatingCosts(w).annual),
     market = w.build?.market,
     card = cardOf(buildOf(w), 'market').label,
-    [first, second] = financeStance(w, 'sales').sellSteps;
+    [first, second] = spendingStance(w, 'sales').sellSteps;
   if (runway < first)
     return { accept: true, reason: sourceMessage('copy.transfers.838216488c', { p0: runway }) };
   if (market === 'hold')

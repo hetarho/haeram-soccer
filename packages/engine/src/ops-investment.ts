@@ -8,7 +8,8 @@ import { TICKET_LEVELS } from './tickets';
 import { nextWork, partLevel, startFacilityWork } from './facilities';
 import { addEvent } from './events';
 import { debit } from './transactions';
-import { moneyLabel } from './finance';
+import { setDelegationRequest } from './delegation';
+import { delegateOf, RESPONSIBILITY_NAMES, settingDelegate } from './delegation-info';
 
 type InvestmentCommand = Extract<
   Command,
@@ -20,64 +21,35 @@ type InvestmentCommand = Extract<
       | 'club-ticket'
       | 'coaching-investment'
       | 'facility-upgrade'
-      | 'decision-wage-limit'
-      | 'decision-finance';
+      | 'delegation-request';
   }
 >;
 
+/**
+ * A dial or direction row a delegated person sets is his while the work is delegated: the owner's
+ * change is refused with whose it is (→`DELEGATE_CONTROLS`).
+ */
+function refuseDelegated(w: World, setting: Parameters<typeof settingDelegate>[1]) {
+  const key = settingDelegate(w, setting);
+  if (key)
+    throw new Error(
+      sourceMessage('delegation.error.delegated', {
+        area: RESPONSIBILITY_NAMES[key],
+        person: delegateOf(w, key).postLabel,
+      }),
+    );
+}
 /** Owner investment choices reuse the existing policy effects, spending and construction rules. */
 export function investmentCommand(w: World, command: InvestmentCommand) {
   switch (command.type) {
-    case 'decision-wage-limit': {
-      if (
-        !['manager', 'staff', 'contracts', 'recruitment', 'academy'].includes(
-          command.responsibility,
-        ) ||
-        (command.amount !== null && !/^\d{1,40}$/.test(command.amount))
-      )
-        throw new Error(sourceMessage('copy.ops_investment.d842dfec12'));
-      const budget = { ...w.decisionBudgets?.[command.responsibility] };
-      if (command.amount === null) delete budget.maxAnnualWage;
-      else budget.maxAnnualWage = BigInt(command.amount).toString();
-      w.decisionBudgets = { ...w.decisionBudgets, [command.responsibility]: budget };
-      addEvent(
-        w,
-        'decision-wage-limit',
-        sourceMessage('copy.ops_investment.a31454ca6a'),
-        command.amount === null
-          ? sourceMessage('copy.ops_investment.170ee849fd')
-          : sourceMessage('copy.ops_investment.8ca1afcae5', { p0: moneyLabel(w, command.amount) }),
-      );
+    case 'delegation-request':
+      setDelegationRequest(w, command.responsibility, command.level);
       return;
-    }
-    case 'decision-finance': {
-      const option = DIRECTION_INFO.finance.options.find((option) => option.id === command.choice);
-      if (
-        !['manager', 'staff', 'contracts', 'recruitment', 'sales', 'academy'].includes(
-          command.responsibility,
-        ) ||
-        !option
-      )
-        throw new Error(sourceMessage('copy.ops_investment.dea4aaa7cf'));
-      w.decisionBudgets = {
-        ...w.decisionBudgets,
-        [command.responsibility]: {
-          ...w.decisionBudgets?.[command.responsibility],
-          finance: command.choice,
-        },
-      };
-      addEvent(
-        w,
-        'decision-finance',
-        sourceMessage('copy.ops_investment.0b8db57c91', { p0: option.name }),
-        sourceMessage('copy.ops_investment.6369d4732a'),
-      );
-      return;
-    }
     case 'club-direction': {
       const info = DIRECTION_INFO[command.key];
       const option = info?.options.find((option) => option.id === command.choice);
       if (!option) throw new Error(sourceMessage('copy.ops_investment.df68b713f9'));
+      refuseDelegated(w, { direction: command.key });
       const direction = { ...w.direction };
       if (option.id === DIRECTION_DEFAULT[command.key]) delete direction[command.key];
       else Object.assign(direction, { [command.key]: option.id });
@@ -120,6 +92,7 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
       const info = POLICY_INFO[command.key];
       const option = info?.levels.find((option) => option.level === command.level);
       if (!option) throw new Error(sourceMessage('copy.ops_investment.ab8a2c2261'));
+      refuseDelegated(w, { policy: command.key });
       w.policy = { ...policyOf(w), [command.key]: command.level };
       addEvent(w, 'club-policy', `${info.label} · ${option.name}`, option.summary);
       return;
@@ -127,6 +100,7 @@ export function investmentCommand(w: World, command: InvestmentCommand) {
     case 'coaching-investment': {
       const option = DIRECTION_INFO.coaches.options.find((option) => option.id === command.choice);
       if (!option) throw new Error(sourceMessage('copy.ops_investment.d4abced1b5'));
+      refuseDelegated(w, { direction: 'coaches' });
       w.direction = {
         ...w.direction,
         coaches: command.choice === 'standard' ? undefined : command.choice,

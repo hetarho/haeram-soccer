@@ -19,7 +19,7 @@ import { retirePerson } from './careers';
 import { atCareerDate, careerDate, closeEmployment } from './person-careers';
 import { historyWorld } from './history';
 import { careerWorld } from './career.testkit';
-import { financeStance } from './direction';
+import { spendingStance } from './delegation';
 import { operatingCosts } from './finance';
 import { ownLeagueClubs } from './season';
 import { random } from './primitives';
@@ -297,7 +297,7 @@ describe('hiring from the staff markets (→STAFF-49, STAFF-15)', () => {
     // Cash for his fee but not for the fee and the compensation: only the free agent matches.
     const runway =
       ((BigInt(operatingCosts(w).annual) + BigInt(top.wage)) / 46n) *
-      BigInt(financeStance(w, 'staff').runway);
+      BigInt(spendingStance(w, 'staff').runway);
     w.cash = (runway + BigInt(top.fee) + BigInt(top.compensation!) - 1n).toString();
     const affordable = coachMatches(w, 'attack').map((o) => o.id);
     expect(affordable).toContain('staff-free:attack:twin');

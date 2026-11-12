@@ -217,7 +217,7 @@ function PersonnelPanel({
           </>
         ),
       )}
-      {/* The market's responsibility is edited in 결재 설정, not under its list. */}
+      {/* The market's responsibility is edited in 위임 설정, not under its list. */}
       {localizeValue(
         tab !== 'market' && (
           <WorkResponsibility

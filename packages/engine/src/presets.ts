@@ -1,4 +1,5 @@
 import { message as sourceMessage } from '../../contracts/src/messages';
+import { BUDGET_RESPONSIBILITIES, DEFAULT_REQUEST } from './delegation-info';
 import type { ClubPolicy, Direction, World } from '../../contracts/src/types';
 import { BUILD_SLOTS, type ClubBuild } from '../../contracts/src/build';
 import { BUILD_PRESETS, cardOf } from './build';
@@ -71,4 +72,7 @@ export function foundWithPreset(w: World, id: string | undefined) {
     }),
   ) as Direction;
   if (Object.keys(direction).length) w.direction = direction;
+  const request = preset.rows.request;
+  if (request !== undefined && request !== DEFAULT_REQUEST)
+    w.delegationRequests = Object.fromEntries(BUDGET_RESPONSIBILITIES.map((key) => [key, request]));
 }

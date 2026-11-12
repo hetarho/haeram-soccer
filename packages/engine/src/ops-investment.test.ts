@@ -5,7 +5,8 @@ import { operate } from './operations';
 import { operatingCosts } from './finance';
 import { policyOf, POLICY_DEFAULTS } from './policy';
 import { academyPotentialBonus } from './academy';
-import { financeStance } from './direction';
+import { delegatePlan } from './delegation';
+import { holdTemperament } from './delegation.testkit';
 import { managerMatches, bestFreeAgent } from './managerMarket';
 import { appointDelegatedManager } from './ops-staff';
 import { dailyStaff, seasonStaff } from './staff';
@@ -22,43 +23,39 @@ function world() {
 }
 
 describe('owner office instructions and investment', () => {
-  it('stores independent duty instructions without changing an existing contract or another budget', () => {
+  it("stores each duty's request without changing a signed contract", () => {
     const w = world(),
       wage = w.manager.wage;
-    operate(w, { type: 'decision-finance', responsibility: 'manager', choice: 'aggressive' });
-    operate(w, { type: 'decision-finance', responsibility: 'staff', choice: 'stable' });
-    operate(w, { type: 'decision-wage-limit', responsibility: 'manager', amount: '12345' });
-    operate(w, { type: 'decision-wage-limit', responsibility: 'staff', amount: '0' });
-    expect(financeStance(w, 'manager').runway).toBe(6);
-    expect(financeStance(w, 'staff').runway).toBe(30);
-    expect(financeStance(w, 'recruitment').runway).toBe(13);
+    operate(w, { type: 'delegation-request', responsibility: 'manager', level: 5 });
+    operate(w, { type: 'delegation-request', responsibility: 'staff', level: 1 });
+    expect(w.delegationRequests).toEqual({ manager: 5, staff: 1 });
     expect(w.manager.wage).toBe(wage);
-    const loaded = validateWorld(structuredClone(w));
-    expect(loaded.decisionBudgets).toEqual(w.decisionBudgets);
-    operate(w, { type: 'decision-wage-limit', responsibility: 'manager', amount: null });
-    expect(w.decisionBudgets!.manager!.maxAnnualWage).toBeUndefined();
-    expect(w.decisionBudgets!.staff!.maxAnnualWage).toBe('0');
+    expect(validateWorld(structuredClone(w)).delegationRequests).toEqual(w.delegationRequests);
+    // 적당히 is the default and is not stored.
+    operate(w, { type: 'delegation-request', responsibility: 'manager', level: 3 });
+    expect(w.delegationRequests).toEqual({ staff: 1 });
+    expect(() =>
+      operate(w, { type: 'delegation-request', responsibility: 'sponsors' as never, level: 3 }),
+    ).toThrow();
   });
 
-  it('never lets the fallback manager search exceed the annual limit', () => {
+  it("never lets the fallback manager search spend below the 단장's cutoff", () => {
     const w = world();
-    operate(w, { type: 'club-direction', key: 'manager', choice: 'developer' });
-    operate(w, { type: 'decision-wage-limit', responsibility: 'manager', amount: '0' });
-    const cash = w.cash,
-      manager = w.manager.id;
+    w.cash = '0';
+    const manager = w.manager.id;
     expect(managerMatches(w)).toEqual([]);
     expect(bestFreeAgent(w)).toBeUndefined();
     expect(appointDelegatedManager(w)).toBeUndefined();
-    expect(w.cash).toBe(cash);
+    expect(w.cash).toBe('0');
     expect(w.manager.id).toBe(manager);
   });
 
-  it('keeps a paid coach until expiry, then uses a volunteer instead of renewing above budget', () => {
+  it('keeps a paid coach until expiry, then uses a volunteer when renewing would break the cutoff', () => {
     const w = world();
     operate(w, { type: 'hire-staff', role: 'attack', candidate: 1, term: 1 });
     const coach = w.staff!.find((person) => person.role === 'attack')!;
     expect(BigInt(coach.wage)).toBeGreaterThan(0n);
-    operate(w, { type: 'decision-wage-limit', responsibility: 'staff', amount: '0' });
+    w.cash = '0';
     w.settings!.responsibilities.staff = 'delegated';
     dailyStaff(w);
     expect(w.staff!.find((person) => person.role === 'attack')!.id).toBe(coach.id);
@@ -67,29 +64,24 @@ describe('owner office instructions and investment', () => {
     expect(w.staff!.find((person) => person.role === 'attack')!.wage).toBe('0');
   });
 
-  it('applies separate player renewal and recruitment limits even when fees and runway fit', () => {
+  it("bounds a delegated signing by what is left of the 단장's season budget", () => {
     const w = world();
     w.round = 1;
     w.income = w.cash;
+    holdTemperament(w, 'director', 'balanced');
+    operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 1 });
+    const offer = transferOffers(w)[0],
+      fee = (BigInt(delegatePlan(w, 'recruitment').left) + 1n).toString();
+    expect(signingVerdict(w, offer.player, fee)).toMatchObject({
+      ok: false,
+      reason: expect.stringContaining('남은 영입 예산'),
+    });
+    operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 5 });
+    expect(signingVerdict(w, offer.player, fee)).toMatchObject({ ok: true });
+    // A renewal is not bounded by the signing budget.
     const player = w.players.find((person) => person.status === 'active')!;
     player.talk = { kind: 'renew', demand: '1', floor: '1', year: w.year, day: 0 };
-    operate(w, { type: 'decision-wage-limit', responsibility: 'contracts', amount: '0' });
-    expect(staffTalkVerdict(w, player)).toMatchObject({ accept: false });
-    expect(staffTalkVerdict(w, player)).toHaveProperty(
-      'reason',
-      expect.stringContaining('1인당 연봉 한도'),
-    );
-    operate(w, { type: 'decision-wage-limit', responsibility: 'contracts', amount: null });
     expect(staffTalkVerdict(w, player)).toMatchObject({ accept: true });
-    const offer = transferOffers(w)[0];
-    operate(w, { type: 'decision-wage-limit', responsibility: 'recruitment', amount: '0' });
-    expect(signingVerdict(w, offer.player, '0')).toMatchObject({
-      ok: false,
-      reason: expect.stringContaining('1인당 연봉 한도'),
-    });
-    expect(staffTalkVerdict(w, player)).toMatchObject({ accept: true });
-    operate(w, { type: 'decision-wage-limit', responsibility: 'recruitment', amount: null });
-    expect(signingVerdict(w, offer.player, '0')).toMatchObject({ ok: true });
   });
 
   it('discards a retired grassroots value from old saves, costs and intake potential', () => {

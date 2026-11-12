@@ -1,0 +1,57 @@
+/* The request sent with a delegation: the scale, the person's judgement of it, then sending. */
+.request {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 14px;
+}
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.head h4 {
+  margin: 0;
+  font-size: 14px;
+}
+.head small,
+.footer small,
+.message {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+.judgement {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+}
+.person {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+}
+.person b {
+  font-size: 13px;
+}
+.person small {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.footer > small {
+  flex: 1 1 220px;
+}
+.footer > button {
+  margin-left: auto;
+}

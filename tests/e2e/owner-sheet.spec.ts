@@ -52,7 +52,10 @@ for (const viewport of [{ width: 360, height: 740 }]) {
     await money.click();
     const sheet = page.getByRole('dialog', { name: '자금 관리' });
     await expect(sheet).toBeVisible();
-    for (const section of ['구단 운영비 · 자금 여력', '사업 투자', '자금 투입', '배당'])
+    // 구단 예산 opens first, season by season; 내 자산 holds the owner's own money (→WEB-114).
+    await expect(sheet.getByTestId('club-budget')).toBeVisible();
+    await sheet.getByRole('tab', { name: '내 자산', exact: true }).click();
+    for (const section of ['내 돈이 오가는 곳', '시즌별 내 자산', '사업 투자', '자금 투입', '배당'])
       await expect(sheet).toContainText(section);
     // The stake slider previews its odds before anything applies (→OWNER-7, WEB-36).
     await sheet.getByRole('slider', { name: /사업에 걸기/ }).fill('40');

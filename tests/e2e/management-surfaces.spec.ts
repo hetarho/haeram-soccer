@@ -84,7 +84,7 @@ for (const themeId of ['standard', 'pixel']) {
       .getByRole('dialog', { name: '게임 진행 방식이 변경됩니다.', exact: true })
       .getByRole('button', { name: '수동 모드로 변경', exact: true })
       .click();
-    await openOfficeArea(page, '결재 설정');
+    await openOfficeArea(page, '위임 설정');
     const office = page.getByTestId('owner-office');
     // The office keeps shared bottom controls without duplicating mode controls in the overview.
     await expect(page.locator('[data-ui="season-transport"]')).toBeVisible();
@@ -221,7 +221,7 @@ for (const themeId of ['standard', 'pixel']) {
       await expect(page.getByRole('region', { name: '선수 프로필', exact: true })).toBeVisible();
       await page.getByRole('dialog').getByRole('button', { name: '창 닫기', exact: true }).click();
       expect(await horizontalOverflow(page)).toBeLessThanOrEqual(0);
-      await openOfficeArea(page, '결재 설정');
+      await openOfficeArea(page, '위임 설정');
     }
   });
 }

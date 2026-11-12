@@ -24,38 +24,26 @@
   padding-bottom: 14px;
 }
 .guidelines {
+  display: grid;
+  gap: 12px;
   border-top: 1px solid var(--line);
 }
-.guidelines .workbenchButton {
-  width: 100%;
-  margin-top: 14px;
-}
-.ruleFacts {
-  margin-top: 12px;
-  font-size: 12px;
-}
-.ruleFacts summary {
-  padding-block: 10px;
-}
-.ruleFacts dl {
-  display: grid;
-  gap: 8px;
-  margin: 12px 0;
-}
-.ruleFacts dl > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-}
-.ruleFacts dt {
-  flex: none;
+.cardNote {
+  margin: 14px 0 0;
   color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.7;
 }
-.ruleFacts dd {
-  margin: 0;
-  text-align: right;
-  overflow-wrap: anywhere;
+.cardActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+@media (max-width: 600px) {
+  .cardActions > button {
+    flex: 1 1 100%;
+  }
 }
 .hero {
   display: block;

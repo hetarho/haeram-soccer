@@ -33,6 +33,7 @@ import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { careerWorld, type CareerInput } from './career.testkit';
+import { holdTemperament } from './delegation.testkit';
 
 const founding = (seed: string): CareerInput => ({ country: 'ENG', seed });
 /** The club on the pre-feature path: the manager market, not the match model, is the subject. */
@@ -217,7 +218,7 @@ function resignAtTrustFloor(w: World) {
   yearlyStaff(w);
 }
 /** Sets one direction row (→ECON-25). */
-const row = (w: World, key: 'manager' | 'school' | 'finance', option: string) =>
+const row = (w: World, key: 'manager' | 'school', option: string) =>
   holdRows(w, { direction: { [key]: option } });
 /** A rich club with the manager post delegated (level 3) under 감독 기조 and 선호 학파. */
 function delegated(seed: string, manager = 'standard', school = 'any') {
@@ -264,20 +265,21 @@ describe('선호 학파 and 감독 기조 (STAFF-18)', () => {
         '감독 기조에 맞는 감독이 없어요 · 데이터 헤드코치 학파의 후보가 없어요 · 임시 감독 체제로 기다려요',
     });
 
-    // Only those the club can afford: cash after the fee still keeps 재정 기조's runway (13
-    // rounds at 표준, 20 at 신중) with his wage in place of the current manager's.
+    // Only those the club can afford: cash after the fee still keeps the 단장's cutoff (12 rounds
+    // for a balanced one, 23 for a cautious one) with his wage in place of the current manager's.
     row(w, 'school', 'any');
+    holdTemperament(w, 'director', 'balanced');
     const best = managerCandidates(w).find((m) => m.id === 'agent-1')!;
     const runway = (wage: string, rounds: bigint) =>
       ((BigInt(operatingCosts(w).annual) + BigInt(wage) - BigInt(w.manager.wage)) / 46n) * rounds;
-    w.cash = (BigInt(best.fee) + runway(best.wage, 13n)).toString();
+    w.cash = (BigInt(best.fee) + runway(best.wage, 12n)).toString();
     expect(ids(w)[0]).toBe('agent-1');
-    w.cash = (BigInt(best.fee) + runway(best.wage, 13n) - 1n).toString();
+    w.cash = (BigInt(best.fee) + runway(best.wage, 12n) - 1n).toString();
     expect(ids(w)[0]).toBe('agent-3');
-    w.cash = (BigInt(best.fee) + runway(best.wage, 13n)).toString();
-    row(w, 'finance', 'careful');
+    w.cash = (BigInt(best.fee) + runway(best.wage, 12n)).toString();
+    holdTemperament(w, 'director', 'cautious');
     expect(ids(w)[0]).not.toBe('agent-1');
-    row(w, 'finance', 'standard');
+    holdTemperament(w, 'director', 'balanced');
     w.cash = '0';
     expect(ids(w)).toEqual([]);
     expect(managerPickPreview(w).reason).toContain('자금 여력에 맞는 후보가 없어요');

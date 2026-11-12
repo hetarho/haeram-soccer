@@ -97,8 +97,8 @@ test('older office and operations addresses open where their work lives now', as
   await page.goto('/direction');
   await expect(officePage(page).getByTestId('office-effects')).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
-  // Campaigns are no more (→ECON-7): 재정 · 사업 shows none to start.
-  await openArea(page, '재정 · 사업');
+  // Campaigns are no more (→ECON-7): 구단 예산 shows none to start.
+  await openArea(page, '구단 예산');
   await expect(page.getByRole('region', { name: '클럽 재정', exact: true })).toBeVisible();
   await expect(page.getByRole('region', { name: '캠페인', exact: true })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '캠페인 시작' })).toHaveCount(0);
@@ -148,7 +148,7 @@ for (const viewport of [{ width: 360, height: 740 }]) {
       await expect(facility.locator('[data-facility-art]')).toHaveCount(1);
     }
     // The books carry the work (→WEB-14).
-    await openArea(page, '재정 · 사업');
+    await openArea(page, '구단 예산');
     await page.getByRole('button', { name: '수입·지출 장부', exact: true }).click();
     await expect(page.getByRole('region', { name: '수입과 지출 장부' })).toContainText('시설 공사');
     await page.getByRole('button', { name: '장부 확인 마치기', exact: true }).click();

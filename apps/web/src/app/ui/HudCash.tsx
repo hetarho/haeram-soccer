@@ -8,26 +8,62 @@ import type { GameClient } from '../../runtime/client';
 import { useGameState } from '../../runtime/store';
 import { AnimatedMoney } from './AnimatedMoney';
 import { Dialog } from '../../shared/ui/Dialog';
-import { ClubCashSummary } from '../../entities/office';
-import { OwnerSheet } from '../../entities/office';
+import { ClubBudget, OwnerFunds } from '../../entities/office';
+import { TabList, TabPanel } from '../../shared/ui/PageTabs';
 import { compactMoney, money } from '../../presentation/format';
 import { cashState } from '../../entities/player';
 import s from '../../shared/ui/styles/App.module.css';
 import o from '../../shared/ui/styles/OwnerSheet.module.css';
 
-export function CashSheet({ w, onClose }: { w: World; onClose: () => void }) {
+type MoneyTab = 'club' | 'owner';
+/**
+ * 자금 관리 (→WEB-114): the HUD money action's dialog. 구단 예산 reads the club's money season by
+ * season; 내 자산, for an owner, shows where his own money goes and moves it.
+ */
+export function MoneySheet({
+  w,
+  client,
+  onClose,
+}: {
+  w: World;
+  client?: GameClient;
+  onClose: () => void;
+}) {
   useTextLocale();
+  const [tab, setTab] = useState<MoneyTab>('club');
+  const tabs: readonly (readonly [MoneyTab, string])[] = [
+    ['club', sourceMessage('budget.title')],
+    ['owner', sourceMessage('owner.money.title')],
+  ];
   return (
     <Dialog
-      label={displayMessage('shell.cash')}
+      label={displayMessage('copy.OwnerSheet.3b1b6aab0e')}
       onClose={onClose}
-      actions={
-        <button data-ui="primary" onClick={onClose}>
-          {richMessage('copy.stories.1aacb54c49')}
-        </button>
+      actions={null}
+      wide
+      summary={
+        w.owner ? (
+          <TabList
+            tabs={tabs}
+            value={tab}
+            onChange={setTab}
+            label={displayMessage('copy.OwnerSheet.3b1b6aab0e')}
+            idPrefix="money"
+          />
+        ) : undefined
       }
     >
-      <ClubCashSummary w={w} />
+      {localizeValue(
+        w.owner ? (
+          <TabPanel idPrefix="money" value={tab}>
+            {localizeValue(
+              tab === 'club' ? <ClubBudget w={w} titled={false} /> : <OwnerFunds client={client} />,
+            )}
+          </TabPanel>
+        ) : (
+          <ClubBudget w={w} />
+        ),
+      )}
     </Dialog>
   );
 }
@@ -97,14 +133,7 @@ export function HudCash({ client }: { client?: GameClient } = {}) {
           ),
         )}
       </button>
-      {localizeValue(
-        open &&
-          (w.owner ? (
-            <OwnerSheet client={client} onClose={() => setOpen(false)} />
-          ) : (
-            <CashSheet w={w} onClose={() => setOpen(false)} />
-          )),
-      )}
+      {localizeValue(open && <MoneySheet w={w} client={client} onClose={() => setOpen(false)} />)}
     </>
   );
 }

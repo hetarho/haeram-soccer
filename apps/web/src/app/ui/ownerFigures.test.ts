@@ -24,7 +24,7 @@ import { CashAlarm } from '../../widgets/cash-alarm';
 import { ClubOverview } from '../../widgets/club-overview';
 import { GameOver } from '../../pages/game-over';
 import { HudCash } from './HudCash';
-import { OwnerSheetBody } from '../../entities/office';
+import { ClubBudget, OwnerSheetBody } from '../../entities/office';
 import { seasonBooks } from '../../entities/player';
 import {
   businessChance,
@@ -338,10 +338,17 @@ describe('the season books the money sheet leads with', () => {
     expect(seasonBooks(w)).toEqual({ income: '1000', expense: '600', result: '400' });
     expect(dividendOutlook(w, 50)).toMatchObject({ result: '400', amount: '200' });
   });
-  it('shows the result and runway always open, and 팬 민심 only in the team overview', () => {
+  it("shows the club's result and runway in 구단 예산, and 팬 민심 only in the team overview", () => {
     const w = owned();
     w.income = '1000';
     w.expense = '1600';
+    gameStore.setState({ view: { world: w, office: officeRead(w) } as View });
+    const budget = renderToStaticMarkup(createElement(ClubBudget, { w }));
+    expect(budget).not.toContain('<details');
+    expect(budget).toContain('data-testid="season-result"');
+    expect(budget).toContain('적자');
+    expect(budget.indexOf('season-result')).toBeLessThan(budget.indexOf('지금 현금'));
+    // The owner's sheet is his own money; the club's books live in 구단 예산.
     const sheet = renderToStaticMarkup(
       createElement(OwnerSheetBody, {
         w,
@@ -350,10 +357,8 @@ describe('the season books the money sheet leads with', () => {
         onCommand: async () => true,
       }),
     );
-    expect(sheet).not.toContain('<details');
-    expect(sheet).toContain('data-testid="season-result"');
-    expect(sheet).toContain('손해');
-    expect(sheet.indexOf('season-result')).toBeLessThan(sheet.indexOf('보유 현금'));
+    expect(sheet).not.toContain('season-result');
+    expect(sheet).toContain('내 돈이 오가는 곳');
     expect(sheet).not.toContain('owner-fan-mood');
     gameStore.setState({ view: { world: w, office: officeRead(w) } as View });
     const overview = renderToStaticMarkup(createElement(ClubOverview, { w }));
@@ -466,7 +471,7 @@ describe('the HUD and the 구단주 sheet (→WEB-114, WEB-97)', () => {
         onCommand: async () => true,
       }),
     );
-    for (const heading of ['구단 운영비 · 자금 여력', '사업 투자', '자금 투입', '배당'])
+    for (const heading of ['내 돈이 오가는 곳', '시즌별 내 자산', '사업 투자', '자금 투입', '배당'])
       expect(markup).toContain(heading);
     expect(markup).toContain('data-testid="owner-lock"');
     const primaries = [...markup.matchAll(/<button([^>]*data-ui="primary"[^>]*)>/g)];

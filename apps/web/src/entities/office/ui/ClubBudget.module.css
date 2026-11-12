@@ -1,0 +1,162 @@
+/* 구단 예산: a season's verdict plate, its three groups of money, then this season's plans. */
+.budget {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+.head h3 {
+  margin: 0;
+  font-size: 16px;
+}
+.head small,
+.groupHead small,
+.empty,
+.transfers {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.verdict {
+  --card-gap: 10px;
+}
+.up {
+  color: var(--danger);
+}
+.down {
+  color: var(--cool);
+}
+.groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+}
+.group,
+.forecast,
+.plans {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+}
+.forecast,
+.plans {
+  padding-inline: 0;
+}
+.groupHead {
+  display: grid;
+  gap: 2px;
+}
+.groupHead h4 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+}
+.lines,
+.planList {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lines > li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 8px;
+  align-items: baseline;
+  font-size: 12px;
+}
+.label {
+  min-width: 0;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.amount {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.bar {
+  grid-column: 1 / -1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.bar > span {
+  display: block;
+  height: 100%;
+  background: var(--chart-primary, var(--accent));
+}
+.transfers {
+  margin: 0;
+}
+.forecast,
+.plans {
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.planList > li {
+  display: grid;
+  grid-template-columns: minmax(96px, 0.8fr) minmax(0, 1.4fr) auto;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding-block: 6px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+}
+.who {
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+.planList > li[data-delegated] .who {
+  color: var(--text);
+}
+.planActions {
+  display: flex;
+  justify-content: flex-end;
+}
+@media (max-width: 900px) {
+  .groups {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  /* Four money tiles do not fit one phone row: two by two. */
+  .verdict dl {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .planList > li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .planList > li > .who {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .planActions > button {
+    flex: 1 1 100%;
+  }
+}
+.runway {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.runway[data-tone='warn'],
+.runway[data-tone='bad'] {
+  color: var(--danger);
+}
