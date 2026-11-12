@@ -16,7 +16,7 @@
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| rs12 | ihaelam-ui-MacBookPro | autopilot | 2026-11-11T23:08Z | 2026-11-12T00:03Z | - |
+| rs12 | ihaelam-ui-MacBookPro | autopilot | 2026-11-11T23:08Z | 2026-11-12T00:04Z | T838 |
 
 ## inbox
 - 261112 decided T849 ARCH-21: the 300-fixture expected-total check fits every numerical marginal within 9.72e-9, but its 88 pointwise 95% comparisons reject seven rows → keep the same 300 fixtures and 3% margin, use simultaneous paired 95% confidence with Bonferroni and the existing normalQuantile, and add a 100-case exact-marginal property check (alt: tune simulation or seeds to fit this sample, rejected). No football parameter or game output changes for this statistical test correction.
@@ -950,7 +950,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | todo |
+| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | doing@261112.rs12 |
 | T839 | web on the scripted model: browser journeys, goal scenes, the influence map and the glossary | MATCH WEB LAB PLAYER ARCH | T838 | todo |
 | T840 | the released model's verdict: the own club on the same curve, the script's invention, the picture's limits | MATCH ARCH | T839 | todo |
 | T841 | remove the match prototype | ARCH | T840 | todo |

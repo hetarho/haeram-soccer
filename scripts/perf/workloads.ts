@@ -94,7 +94,9 @@ export function workloadOf(name: string, seed: string): Workload {
     // Building the world and (for staging) writing the script are outside the timed window.
     const w = careerWorld(
       { country: 'ENG', club: 'ENG:0:0:0', seed },
-      name.startsWith('grid-') ? engine.MATCH_MODEL_RELEASE : SCRIPTED_RELEASE,
+      name.startsWith('grid-')
+        ? { revision: 'continuous-aggregate-10', enabled: true }
+        : SCRIPTED_RELEASE,
     );
     const fixture = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
     let written: MatchPlayback | undefined;
