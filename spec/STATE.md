@@ -979,6 +979,7 @@
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
 | T854 | Fix the match-scene journeys the final gate failed | ARCH | - | todo |
+| T855 | Fix the recruitment journey's loan operating cost the final gate failed | ARCH | - | todo |
 
 ## next
 - gusta-implement-task T854
