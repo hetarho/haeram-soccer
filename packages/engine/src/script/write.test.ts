@@ -29,7 +29,7 @@ const written = cases.map(
 const result = (s: Settled, id: number) => EVENT_RESULTS[s.events[id]![EV.result]!];
 const firstHalfStart = (script: Script) => script.beats.findIndex((b) => b.clock! >= 2700);
 
-describe('match-proto fitted writer (T820)', () => {
+describe('script fitted writer (T820)', () => {
   it('every event, shot and foul is performed exactly once', () => {
     for (const [name, settled, script] of written) {
       expect(validateFitted(settled, script), name).toEqual([]);
@@ -132,7 +132,7 @@ const rowsByMinute = (script: Script) => {
   return per;
 };
 
-describe('match-proto fitted order of play (T822)', () => {
+describe('script fitted order of play (T822)', () => {
   const ten = TEN.map((id) => {
     const settled = loadSettled(id);
     return [id, settled, writeFitted(settled, fixtureSeed(id))] as const;

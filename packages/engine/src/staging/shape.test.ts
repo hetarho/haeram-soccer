@@ -100,7 +100,8 @@ const PROTOTYPE_SIDES: readonly [ShapeSide, ShapeSide] = [
   },
 ];
 
-// Reference coordinates copied from scripts/match-proto/core/shape.ts at 01928078f364.
+// Reference coordinates copied from the match prototype's core/shape.ts at 01928078f364 (removed by
+// T841; read it at that commit).
 // Each numeric row is the two sides' eleven attack-frame [x,y] pairs, in slot order.
 // These are literal expectations: the test never imports or runs the prototype.
 const REFERENCE: readonly {

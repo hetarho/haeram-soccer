@@ -17,7 +17,7 @@ const flat = (s: Settled, minute: number) => ({
   fouls: s.fouls.map(() => minute),
 });
 
-describe('match-proto fitted touches (T820)', () => {
+describe('script fitted touches (T820)', () => {
   it("a player's carries are joined to his own releases", () => {
     const s = make([
       [0, 0, 0, 0, 17, 22, 5, 0, 0, -1],

@@ -18,7 +18,8 @@ commit. Preserve each run's source, command, units, sample size, environment and
 interpreting results. Measurements from different sources or cache conditions do not establish a
 controlled speedup. Keep original machine-readable outputs unchanged.
 
-Old run records and completed task histories may name deleted reports or former `docs/` paths.
+Old run records and completed task histories may name deleted reports, former `docs/` paths or
+removed tools, such as the match prototype and its exporter and delivered pages (removed by T841).
 Use their recorded commit to inspect those historical inputs. Reproduction tools may also require
 that version of the code. Current tooling writes retained measurements under `benchmarks/`.
 

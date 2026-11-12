@@ -12,13 +12,15 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | - |
+| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | T841 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261112 decided ARCH-33 T841: the acceptance grep `git grep -n "match-proto\|export-settled" -- . ':!spec'` still names four historical measurement records (`artifacts/benchmarks/T826/script-costs-261111.json`, `T838/post-activation-engine-check.json`, `T838/post-activation-engine-output.txt`, `scripted-model-release.md`) → kept unchanged as ARCH-33 and `artifacts/README.md` keep historical measurements immutable, the README now saying old records may name the removed prototype; no source, exporter, fixture, delivered page or list names it (alt: rewrite those records to pass the literal grep, altering retained evidence | delete them, losing T826/T838's measurements) hf12
+- 261112 decided ARCH-21 MATCH-39 T841: where the prototype comparison of `staging/perform.fixtures.test.ts` goes and how `scripts/staging-read.ts` reads a fixture → the prototype's own pass counts read once at 195c900a (s01–s10: 21/20/20/20/22/21/20/19/21/20) held as constants with the same one-fewer bound, and the fixture's staging squads built by one `fixtureSides` in `tests/fixtures/match-script.ts` that the test and the script share (alt: drop the comparison, losing the bound | copy the squad builder into the script) hf12
 - 261112 suggest MATCH-38 MATCH-39 MATCH-12 MATCH-22 T840: planning from `artifacts/benchmarks/scripted-model-calibration/README.md` — (1) the writer keeps a minute open until every touch expiring in it is played, so a departing pair's deep touches become bursts of up to 328 beats in two minutes (clock rate 0.085, 49% of long stretches outside 0.8–1.25); pulling due touches forward evens the minutes but adds 2–7% linking metres, a writer rule to decide; (2) a blocked shot's blocker is the script's invention (`nearestBy` on nominal places), staged up to 26 m from the shot (events.contest, stretchRate); (3) outside shots placed anywhere in their 18.5 m cell give a 21.1 m mean distance and 27.5% from 30 m+; (4) drawing the aggregate path's flows as chains is what would cut the 5.0 km of linking carries further hf12
 - 261112 decided MATCH-39 T840: whether to run T840's tuning to the full three hours → stopped 1 h 43 min after the baseline with all 40 matches re-read, the remaining failures needing code or planning (README's causes) (alt: keep screening values, 13 of 34 rounds having moved nothing | change the writer's minute rule inside the explore, which raised linking metres in rounds 33–34) hf12
 - 261112 decided MATCH-39 ARCH-32 T840: `apps/web/src/lab/tunables.json` (outside the touches) goes stale when staging values change → regenerated with `pnpm run lab:tunables`, a derived catalog its unit test compares with the engine (alt: revert the kept values | leave the test failing) hf12
@@ -962,7 +964,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T841 | remove the match prototype | ARCH | T840 | todo |
+| T841 | remove the match prototype | ARCH | T840 | doing@261112.hf12 |
 | T842 | shared match leaves out of `grid/` | ARCH | T841 | todo |
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |

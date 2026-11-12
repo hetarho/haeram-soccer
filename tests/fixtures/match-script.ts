@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { FORMATIONS } from '../../packages/engine/src/player';
 import type { RoleId, Position } from '../../packages/contracts/src/player';
 import type { MatchDetail } from '../../packages/engine/src/script/detail';
+import type { StagingSide } from '../../packages/contracts/src/match-script';
 import { EVENT_RESULTS, EV } from '../../packages/engine/src/script/codes';
 import { cellBand, cellLane } from '../../packages/engine/src/grid/pitch';
 /** Prototype resources are data only; no runtime import of the prototype or world builder. */
@@ -83,22 +84,37 @@ export function fromPrototype(p: PrototypeDetail): MatchDetail {
     penalties: [],
   };
 }
-export const loadDetail = (id: string) =>
-  fromPrototype(
-    JSON.parse(
-      readFileSync(
-        new URL(`../../packages/engine/src/script/fixtures/${id}.json`, import.meta.url),
-        'utf8',
-      ),
-    ),
-  );
-export const fixtureSeed = (id: string): string =>
+/** The exported fixture file `packages/engine/src/script/fixtures/<id>.json` (T826), as stored. */
+const readFixture = (id: string) =>
   JSON.parse(
     readFileSync(
       new URL(`../../packages/engine/src/script/fixtures/${id}.json`, import.meta.url),
       'utf8',
     ),
-  ).source.seed;
+  );
+export const loadDetail = (id: string) => fromPrototype(readFixture(id));
+export const fixtureSeed = (id: string): string => readFixture(id).source.seed;
+/** The staging squads of an exported fixture (T828): each line's slot and role from its detail,
+ * pace and anticipation from the file's attributes, the other tendencies neutral. */
+export function fixtureSides(
+  id: string,
+  detail: MatchDetail = loadDetail(id),
+): [StagingSide, StagingSide] {
+  const raw = readFixture(id) as { sides: { players: { attrs: number[] }[] }[] };
+  return detail.sides.map((side, t): StagingSide => ({
+    tactic: side.tactic,
+    players: side.lines.map((line, i) => ({
+      line: i,
+      slot: line.slot,
+      role: line.role,
+      pace: raw.sides[t]!.players[i]!.attrs[4]!,
+      anticipation: raw.sides[t]!.players[i]!.attrs[5]!,
+      discipline: 50,
+      pressing: 50,
+      freedom: 50,
+    })),
+  })) as [StagingSide, StagingSide];
+}
 /** Hand-built rows over two complete synthetic line lists. */
 export function smallDetail(
   events: number[][] = [],

@@ -56,7 +56,6 @@ export const INTEGRATION_FILES = [
   'packages/engine/src/staging/pairings.test.ts',
   'packages/engine/src/staging/incidents.test.ts',
   'packages/engine/src/staging/frames.match.test.ts',
-  'scripts/export-settled.test.ts',
   'packages/engine/src/approvals.days.test.ts',
   'packages/engine/src/bases.test.ts',
   'packages/engine/src/build-cards.test.ts',
