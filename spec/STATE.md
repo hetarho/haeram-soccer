@@ -979,9 +979,10 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
+| T857 | Fix CI failure | ARCH | - | todo |
 
 ## next
-- no runnable task: plan next with gusta-sketch
+- gusta-implement-task T857
 
 ## log
 - 261112 T856 done
