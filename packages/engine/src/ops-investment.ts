@@ -9,7 +9,7 @@ import { nextWork, partLevel, startFacilityWork } from './facilities';
 import { addEvent } from './events';
 import { debit } from './transactions';
 import { setDelegationRequest } from './delegation';
-import { delegateOf, RESPONSIBILITY_NAMES, settingDelegate } from './delegation-info';
+import { RESPONSIBILITY_NAMES, settingDelegate, settingPerson } from './delegation-info';
 
 type InvestmentCommand = Extract<
   Command,
@@ -27,7 +27,8 @@ type InvestmentCommand = Extract<
 
 /**
  * A dial or direction row a delegated person sets is his while the work is delegated: the owner's
- * change is refused with whose it is (→`DELEGATE_CONTROLS`).
+ * change is refused naming whose it is — the person the UI lock names (→`DELEGATE_CONTROLS`,
+ * `settingPerson`).
  */
 function refuseDelegated(w: World, setting: Parameters<typeof settingDelegate>[1]) {
   const key = settingDelegate(w, setting);
@@ -35,7 +36,7 @@ function refuseDelegated(w: World, setting: Parameters<typeof settingDelegate>[1
     throw new Error(
       sourceMessage('delegation.error.delegated', {
         area: RESPONSIBILITY_NAMES[key],
-        person: delegateOf(w).postLabel,
+        person: settingPerson(w, setting).postLabel,
       }),
     );
 }

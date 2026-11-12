@@ -60,6 +60,17 @@ describe('owner controls as released (→ECON-16/17/22/25/32, CLUB-26)', () => {
     expect(() => operate(w, { type: 'club-direction', key: 'renewal', choice: 'frugal' })).toThrow(
       '위임 중',
     );
+    // ...naming the 단장 who sets it (→ECON-39), as for 영입 기조 under delegated recruitment.
+    expect(() => operate(w, { type: 'club-direction', key: 'renewal', choice: 'frugal' })).toThrow(
+      '선수 계약 · 단장 담당',
+    );
+    w.settings!.responsibilities.recruitment = 'delegated';
+    const recruiting = structuredClone(w);
+    expect(() => operate(w, { type: 'club-policy', key: 'recruitment', level: 5 })).toThrow(
+      '선수 영입 · 단장 담당',
+    );
+    expect(w).toEqual(recruiting);
+    w.settings!.responsibilities.recruitment = held.settings!.responsibilities.recruitment;
     expect(w).toEqual(held);
   });
 

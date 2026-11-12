@@ -230,6 +230,18 @@ describe('youth money is the 단장’s, the academy’s football the youth dire
       name: personOf(w, 'youth').name,
     });
     expect(() => operate(w, { type: 'club-policy', key: 'academy', level: 1 })).toThrow('위임 중');
+    // A refused change names whose the setting is, as the page's lock does (→ECON-39).
+    const held = structuredClone(w),
+      names = (post: 'director' | 'youth') => `유소년 운영 · ${personOf(w, post).postLabel} 담당`;
+    expect(personOf(w, 'youth').postLabel).not.toBe(personOf(w, 'director').postLabel);
+    expect(() => operate(w, { type: 'club-policy', key: 'academy', level: 1 })).toThrow(
+      names('director'),
+    );
+    for (const key of ['youthGoal', 'debut'] as const)
+      expect(() => operate(w, { type: 'club-direction', key, choice: 'standard' })).toThrow(
+        names('youth'),
+      );
+    expect(w).toEqual(held);
     // Asked for the minimum he cuts the academy back at once.
     operate(w, { type: 'delegation-request', responsibility: 'academy', level: 1 });
     expect(policyOf(w).academy).toBeLessThan(plan.youth!.level);
