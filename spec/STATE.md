@@ -20,6 +20,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261113 suggest MATCH-39 MATCH-38 T854: seed set-piece-defence-10's own match (ENG, every responsibility delegated, scripted-aggregate-11, 0 : 0) cannot be staged — `cornerScene` → `keeperOf` (packages/engine/src/staging/participants.ts) throws `집계 원장 불일치: staging:input` with no defending keeper present at a corner, so watching such a match stops on a staging error; a fix task should find which script leaves the keeper slot empty at that corner (repro: `careerWorld({ country: 'ENG', seed: 'set-piece-defence-10' })`, all delegated, `stagedPlayback(advanceToNextMatch(w))`)
 - 261113 decided STAFF-51 ARCH-21 T851: how `staff.test`'s basic-staff and no-staff seasons compare once a vacant post acts 안정 지향 and basic volunteers carry their own temperaments and names in the 단장's reports → hold the basic 단장 and youth director 안정 지향 and compare the two seasons with the basic delegates' names read as 공석, so only what STAFF-51 states differs (alt: make an absent staff list read as basic volunteers in `staffMember`, an engine change for saves no new career writes | drop the equality, losing the check that nothing else differs) n813
 - 261113 decided ARCH-21 STAFF-50 T851: `holdTemperament` gave a volunteer 단장 an unregistered `director:n` person, which delegated staff could not close on replacing him (signings' three `인물을 확인하세요.` throws) → a test-setup gap: the testkit re-keys a person-less holder by his staff id (`temperamentOf` reads person, else id) and refuses to re-key a registered person; no engine change, since the engine only sets `person` for registered people (alt: register a synthetic person in the testkit | let `closeEmployment` skip unknown people, hiding a real broken link) n813
 - 261113 decided SAVE-23 ARCH-30 T845: what of the earlier models' tests and the acceptance's "by hand" integration runs survives once no earlier model has code → host.test's two cases that queued a round on an earlier model (`does not replace an unfinished settled playback`, `the upgrade waits for a queued playback and happens on load`) are removed, since every load activates the released model before a fixture and a fixture on another model now throws `UnreleasedMatchModelError`; the release-on probe goes with the `enabled` switch; by hand only the new activation cases and the touched round-jobs case ran, and the rest of the touched integration files go to the batch gate (ARCH-30 r40, the unit host's tier rule) (alt: keep the queued-playback cases on a relabelled released career, which plays the released model and tests nothing earlier | run every touched integration file in the unit, against the host's tier rule) n813
@@ -978,13 +979,13 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T854 | Fix the match-scene journeys the final gate failed | ARCH | - | todo |
 | T855 | Fix the recruitment journey's loan operating cost the final gate failed | ARCH | - | todo |
 
 ## next
-- gusta-implement-task T854
+- gusta-implement-task T855
 
 ## log
+- 261112 T854 done
 - 261113 fix e2e: `fundClub` presses the amount button, not the 흐름 card's "구단에 넣기" jump the money-spend variant added (17 journeys failed on its strict-mode match)
 - 261112 T853 done
 - 261112 T852 done
@@ -1004,4 +1005,3 @@
 - 261112 T843 done
 - 261112 T842 done
 - 261112 T841 done
-- 261112 T840 done
