@@ -1025,7 +1025,13 @@ function writeFitted(settled: Settled, seed: string): Script {
           intended = i;
           continue;
         }
-        if (i < 0 && theirs.length === 0) break;
+        if (i < 0 && theirs.length === 0) {
+          // What is left may wait for an entrant: the ball comes in and play stops for him.
+          const waiting = waitingIncidents.length;
+          if (waiting) finishIncidents();
+          if (waitingIncidents.length < waiting) continue;
+          break;
+        }
         // Nobody else of his side is left: a nominal receiver loses it.
         resolve(nearestBy(p.side, ball, [p.actor]));
         continue;
@@ -1125,6 +1131,9 @@ function writeFitted(settled: Settled, seed: string): Script {
       const p: Pending = pending;
       resolve(nearestBy(p.side, ball, [p.actor]));
     }
+    // A minute left with a pass in flight still stops for its incidents once the pass is in;
+    // the next minute's incidents replace whatever waits, so none may be carried over (T840).
+    if (waitingIncidents.length) finishIncidents();
     if (
       minute + 1 < settled.length &&
       ![44, 89, 104, 119].includes(minute) &&
