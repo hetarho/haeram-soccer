@@ -54,7 +54,7 @@ Machine: Intel Xeon Silver 4214 @ 2.20GHz, 12 logical CPUs, 31 GiB, Linux 5.15.0
 
 ### Engine suite
 
-`pnpm exec vitest run --project unit --project integration --project contract` on the final test sources (01:26–02:05 UTC, load 7–27): 532 files, 4,482 tests — **4,472 passed, 4 skipped (declared), 6 failed, every one a time limit** under the shared load (`staff.hiring` 34 s against 30 s; `calendar.progression-eng`, `detail`, `fixtureHelpers.integration`, `staging/incidents` against 300 s; `persistence.long-career` against 600 s), no assertion failed. The handoff's 13 failures were tests that took a released own match for a grid match: viewer charts and moments, world, fast-path, season dispatch and client reload now read the script/staging (`stagedPlayback` where frames are needed), the grid's own dispatch is kept by an explicit revision-10 world, and `export-settled`'s ten prototype files are reproduced from the revision-10 worlds that exported them (the exporter now names the settling world's revision rather than the release constant).
+`pnpm exec vitest run --project unit --project integration --project contract` on the final test sources (01:26–02:05 UTC, load 7–27): 532 files, 4,482 tests — **4,472 passed, 4 skipped (declared), 6 failed, every one a time limit** under the shared load (`staff.hiring` 34 s against 30 s; `calendar.progression-eng`, `detail`, `fixtureHelpers.integration`, `staging/incidents` against 300 s; `persistence.long-career` against 600 s), no assertion failed. Those six files then pass with `--testTimeout=2400000` and nothing else changed (02:08–02:17 UTC, load about 25): `staging/incidents` 441 s, `calendar.progression-eng` 510 s, `fixtureHelpers.integration` 512 s, `staff.hiring` 29 s, `persistence.long-career` 9 s and `detail` 4 s. The handoff's 13 failures were tests that took a released own match for a grid match: viewer charts and moments, world, fast-path, season dispatch and client reload now read the script/staging (`stagedPlayback` where frames are needed), the grid's own dispatch is kept by an explicit revision-10 world, and `export-settled`'s ten prototype files are reproduced from the revision-10 worlds that exported them (the exporter now names the settling world's revision rather than the release constant).
 
 ### Complete season, revision 10 against revision 11
 
@@ -70,3 +70,13 @@ On this Xeon host, under that load, a complete season on revision 11 takes about
 ### Century workloads
 
 The first two benchmark runs exposed two workload faults older than this task, both in the benchmark's owner actions: the active-management profile loaned the scout's first listed player, now a free agent whom the game refuses to loan (→CLUB-49/50), and it adopted a new design every season, whose −20 팬 민심 (→KIT-9, OWNER-12) forced the owner out (구단주 퇴진, →OWNER-13) in season 3 on revision 10 and before season 20 on revision 11 (a scratch replay of the same workload printed 팬 민심 by season). The owner now bids for the scout's first club player on loan and adopts a design only while 팬 민심 is at least 50, twice the floor after the drop; the scope line reports the edits made. `scripts/season-throughput.ts` and `scripts/match-model-baseline.ts` carried the same loan.
+
+### Settlement, grid and fixture re-read
+
+`node scripts/perf/ab.mjs --workload <w> --base . --cand . --json artifacts/benchmarks/T838/final-<w>-aa.json` with the runner's defaults and seed perf-261027, A/A on this commit (`TMPDIR` in the session's scratch). Both sides bundle byte-identically and give identical output hashes in every workload. Medians are main-thread CPU and wall in ms; the wall/CPU gap is the shared load. These are this machine's figures; T837's M1 Max figures above are context only (→ARCH-34).
+
+| Workload | CPU median A / B | Wall median A / B | Pairs | A/A CPU ratio [95%] | Load 1 min |
+|---|---:|---:|---:|---|---|
+| own-match (revision-11 settlement: record, script, material) | 140.69 / 139.25 | 265.36 / 294.05 | 96 | 0.9941 [0.9655, 1.0276] | 13.9–20.9 |
+| grid-own (the grid's own match, revision 10) | 463.32 / 444.89 | 1252.03 / 1109.52 | 48 | 0.9931 [0.9511, 1.0248] | 23.4–30.8 |
+| fixture (one aggregate fixture) | 11.86 / 12.00 | 32.57 / 32.26 | 96 | 1.0659 [0.9600, 1.1706] | 20.9–23.4 |
