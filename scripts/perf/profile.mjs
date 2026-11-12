@@ -1,7 +1,7 @@
 /**
  * Where a workload of the paired A/B bench (`ab.mjs`) spends its CPU, on this tree.
  *
- *   node scripts/perf/profile.mjs --workload grid|aggregate|day|view|history [--reps n] [--warm n]
+ *   node scripts/perf/profile.mjs --workload own-match|aggregate|day|view|history [--reps n] [--warm n]
  *     [--top n] [--lines <function>] [--seed s]
  *
  * This tree's `workloads.ts` is bundled as `ab.mjs` bundles it (`bundle.mjs`; tsx's `__name`
@@ -26,16 +26,13 @@ const arg = (name, fallback) => {
   const at = process.argv.indexOf(name);
   return at < 0 ? fallback : process.argv[at + 1];
 };
-const workload = arg('--workload', 'grid');
+const workload = arg('--workload', 'own-match');
 const DEFAULTS = {
   'own-match': { reps: 12, warm: 4 },
   staging: { reps: 2, warm: 1 },
   'staging-core': { reps: 2, warm: 1 },
   'staging-first': { reps: 12, warm: 4 },
-  'grid-own': { reps: 6, warm: 2 },
-  'grid-observed': { reps: 6, warm: 2 },
   fixture: { reps: 12, warm: 4 },
-  grid: { reps: 18, warm: 6 },
   aggregate: { reps: 20, warm: 4 },
   day: { reps: 60, warm: 0 },
   view: { reps: 60, warm: 6 },

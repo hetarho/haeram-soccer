@@ -4,7 +4,7 @@ import { expect, test, type Page } from '@playwright/test';
 import type { World } from '../../packages/contracts/src/types';
 import { advanceRound } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
-import { DISABLED_RELEASE } from '../fixtures/releases';
+import { withoutMatchModel } from '../fixtures/earlier-saves';
 import { withCandidateModel } from '../fixtures/worlds';
 import { horizontalOverflow } from './layout';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -12,14 +12,15 @@ import { chooseOption, selectOptions } from './select';
 
 /**
  * Complete statistics in the existing league lenses and the player comparison (→WEB-89, HIST-17).
- * Marked synthetic careers taken over before the full model's release, `before` rounds on the
- * pre-feature model, then on the released model (`withCandidateModel`: the activation the writer
- * applies) from that boundary — from the first day when `before` is 0 — every result real football.
+ * Marked synthetic careers: with `before` rounds, a career saved before the full model's release
+ * after those rounds (`withoutMatchModel`), then activated there (`withCandidateModel`: the
+ * activation the writer applies); with none, tracked from the first day — every result real
+ * football.
  */
 function career(seed: string, before: number, after: number): World {
-  const w = careerWorld({ country: 'ENG', seed }, DISABLED_RELEASE);
+  const w = careerWorld({ country: 'ENG', seed });
   for (let n = 0; n < before; n++) advanceRound(w, undefined, false);
-  withCandidateModel(w);
+  if (before) withCandidateModel(withoutMatchModel(w));
   for (let n = 0; n < after; n++) advanceRound(w, undefined, false);
   return w;
 }
@@ -117,7 +118,7 @@ for (const viewport of VIEWPORTS)
 test('names a partial season start and sample through reload and import', async ({ page }) => {
   test.slow();
   await page.setViewportSize({ width: 390, height: 844 });
-  // One round on the earlier model, then the candidate model from the next day.
+  // One round saved before the full model, then the model activated from the next day.
   await importResponsibilityCareer(page, career('full-stat-partial', 1, 1));
   const coverage = async () => {
     await openLeagueTab(page, '선수 기록');

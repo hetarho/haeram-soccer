@@ -1,25 +1,22 @@
 /**
- * Seconds per simulated season on the century benchmark's worlds (T224, T285, →MATCH-22, ARCH-31).
+ * Seconds per simulated season on the century benchmark's worlds (T224, T285, →MATCH-22, ARCH-31),
+ * on the released match model (every fixture on the result path; T844 removed the grid and
+ * pre-feature switches).
  *
- *   pnpm exec tsx scripts/season-throughput.ts [--seasons N] [--own-league summary|grid]
- *     [--profile baseline|active-management] [--candidate] [--revision R]
+ *   pnpm exec tsx scripts/season-throughput.ts [--seasons N] [--profile baseline|active-management]
  *   pnpm exec tsx scripts/season-throughput.ts --stages N [--reps R]
- *   pnpm exec tsx scripts/season-throughput.ts --ab name=repo[:candidate][@R] ... [--seasons N] [--reps R]
+ *   pnpm exec tsx scripts/season-throughput.ts --ab name=repo ... [--seasons N] [--reps R]
  *
- * Also runs unchanged on older trees (copy it there, as T224 did): the own-league switch, the
- * candidate model and the aggregate stages are loaded only when asked for.
  * - `--profile active-management` plays the runner's owner actions each season
  *   (scripts/match-model-baseline.ts `manage`); the default is the baseline world.
- * - `--candidate` activates the candidate match model from the takeover (tests/fixtures/worlds.ts).
- * - `--revision R` pins the profile world to match-model revision R by its number (T838: the
- *   released revision 11 against revision 10 on one tree, `--ab rev10=.@10 rev11=.@11`).
  * - `--stages N` times the aggregate fixture's stages on the baseline world's first N non-own
- *   fixtures instead of seasons (trees with the aggregate path): per stage, the median over
- *   fixtures of each fixture's median of R repetitions.
+ *   fixtures instead of seasons: per stage, the median over fixtures of each fixture's median of R
+ *   repetitions.
  * - `--ab` interleaves named trees, each a checkout holding this same script: per repetition, the
- *   stage probe on the `:candidate` trees, then each profile's seasons, the tree order rotated
- *   every repetition. It prints per-tree medians and the ratios of the sums of per-season medians
- *   (T285's interleaved A/B). Output names trees by the given names, never by their paths.
+ *   stage probe on every tree, then each profile's seasons, the tree order rotated every
+ *   repetition. It prints per-tree medians and the ratios of the sums of per-season medians
+ *   (T285's interleaved A/B; a release against the previous one on one machine, →ARCH-31/34).
+ *   Output names trees by the given names, never by their paths.
  */
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
@@ -43,7 +40,6 @@ import {
 } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import type { World } from '../packages/contracts/src/types';
-import * as match from '../packages/engine/src/match';
 
 const arg = (name: string) => {
   const at = process.argv.indexOf(name);
@@ -108,25 +104,7 @@ async function seasons() {
   const seasonCount = count('--seasons', 5);
   const profile = (arg('--profile') ?? 'baseline') as Profile;
   if (!(profile in PROFILES)) throw new Error('--profile takes baseline or active-management');
-  const ownLeague = arg('--own-league');
-  if (ownLeague !== undefined) {
-    if (ownLeague !== 'grid' && ownLeague !== 'summary')
-      throw new Error('--own-league takes grid or summary');
-    const set = (match as { setOwnLeagueEngine?: (engine: 'grid' | 'summary') => void })
-      .setOwnLeagueEngine;
-    if (!set) throw new Error('this tree has no own-league switch');
-    set(ownLeague);
-  }
-  const candidate = process.argv.includes('--candidate');
   const w = world(profile);
-  if (candidate) (await import('../tests/fixtures/worlds')).withCandidateModel(w);
-  const revision = arg('--revision');
-  if (revision !== undefined) {
-    const { MATCH_MODEL_REVISIONS } = await import('../packages/contracts/src/match-model');
-    const pinned = MATCH_MODEL_REVISIONS[Number(revision) - 1];
-    if (!pinned || !w.matchModel) throw new Error(`--revision ${revision} names no model here`);
-    w.matchModel = { ...w.matchModel, revision: pinned };
-  }
   const startLoad = load1();
   const times: number[] = [];
   for (let n = 0; n < seasonCount; n++) {
@@ -140,9 +118,7 @@ async function seasons() {
   return {
     kind: 'seasons',
     profile,
-    candidate,
-    revision: w.matchModel?.revision ?? 'pre-feature',
-    ownLeague: ownLeague ?? 'default',
+    revision: w.matchModel?.revision,
     seasons: seasonCount,
     secondsPerSeason: Number(mean.toFixed(2)),
     perSeason: times.map(r3),
@@ -165,7 +141,7 @@ async function stages() {
     await import('../packages/engine/src/aggregate/team');
   const { planParticipation } = await import('../packages/engine/src/aggregate/participation');
   const { attributePlayerFacts } = await import('../packages/engine/src/aggregate/players');
-  const { eraRules } = await import('../packages/engine/src/grid/setup');
+  const { eraRules } = await import('../packages/engine/src/match/rules');
   // Older trees have no UNPLANNED export; the input never reads skills before participation.
   const unplanned = { skill: () => 0, finishing: () => 0, targetChance: () => 0 };
   const w = world('baseline');
@@ -247,7 +223,7 @@ interface SeasonRow {
 
 /** T285's interleaved A/B: rotated tree order, every tree running its own copy of this script. */
 function ab() {
-  // Every name=repo[:candidate] argument after --ab, up to the next flag.
+  // Every name=repo argument after --ab, up to the next flag.
   const specs: string[] = [];
   for (let i = process.argv.indexOf('--ab') + 1; i < process.argv.length; i++) {
     if (process.argv[i]!.startsWith('--')) break;
@@ -255,14 +231,10 @@ function ab() {
   }
   const trees = specs.map((spec) => {
     const eq = spec.indexOf('=');
-    if (eq < 1) throw new Error(`--ab takes name=repo[:candidate][@R], not ${spec}`);
-    const pinned = /@(\d+)$/.exec(spec.slice(eq + 1));
-    const rest = spec.slice(eq + 1, pinned ? spec.length - pinned[0].length : undefined);
-    const candidate = rest.endsWith(':candidate');
-    const repo = candidate ? rest.slice(0, -':candidate'.length) : rest;
-    return { name: spec.slice(0, eq), repo, candidate, revision: pinned?.[1] };
+    if (eq < 1) throw new Error(`--ab takes name=repo, not ${spec}`);
+    return { name: spec.slice(0, eq), repo: spec.slice(eq + 1) };
   });
-  if (trees.length < 2) throw new Error('--ab takes two or more name=repo[:candidate] trees');
+  if (trees.length < 2) throw new Error('--ab takes two or more name=repo trees');
   const reps = count('--reps', 3);
   const seasonCount = count('--seasons', 3);
   const self = readFileSync(fileURLToPath(import.meta.url), 'utf8');
@@ -284,7 +256,7 @@ function ab() {
   const seasonRows: SeasonRow[] = [];
   for (let rep = 0; rep < reps; rep++) {
     const order = trees.map((_, i) => trees[(i - rep + trees.length * reps) % trees.length]!);
-    for (const t of order.filter((tree) => tree.candidate))
+    for (const t of order)
       stageRows.push({
         ...run<Omit<StageRow, 'tree' | 'rep'>>(t.repo, ['--stages', '300', '--reps', '3']),
         tree: t.name,
@@ -293,8 +265,6 @@ function ab() {
     for (const profile of Object.keys(PROFILES) as Profile[])
       for (const t of order) {
         const args = ['--profile', profile, '--seasons', String(seasonCount)];
-        if (t.candidate) args.push('--candidate');
-        if (t.revision) args.push('--revision', t.revision);
         seasonRows.push({
           ...run<Omit<SeasonRow, 'tree' | 'rep'>>(t.repo, args),
           tree: t.name,
@@ -304,7 +274,7 @@ function ab() {
   }
   const out = {
     kind: 'ab',
-    trees: trees.map((t) => ({ name: t.name, candidate: t.candidate, revision: t.revision })),
+    trees: trees.map((t) => t.name),
     reps,
     seasons: seasonCount,
     stages: {} as Record<string, Record<string, number>>,
@@ -315,7 +285,7 @@ function ab() {
       seasons: seasonRows.map((r) => r.load1),
     },
   };
-  const staged = trees.filter((tree) => tree.candidate);
+  const staged = trees;
   for (const t of staged) {
     const rows = stageRows.filter((r) => r.tree === t.name);
     out.stages[t.name] = Object.fromEntries(

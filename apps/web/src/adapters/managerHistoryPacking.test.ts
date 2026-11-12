@@ -16,7 +16,7 @@ import {
   yearlyStaff,
   type MatchModelRelease,
 } from '../../../../packages/engine/src/index';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import {
   simulatedWorld,
   withCandidateModel,
@@ -86,8 +86,8 @@ describe('manager-history packing (→SAVE-24)', () => {
   });
 
   it('selects the manager-history container whether or not the full model is active', () => {
-    // Founded with the release off: the full model is active only where the case records it.
-    const w = career(DISABLED_RELEASE);
+    // Saved before the full model's release: it is active only where the case records it.
+    const w = withoutMatchModel(career());
     expect(checkpointContainerFor(w)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);
     const modelled = withCandidateModel(structuredClone(w));
     expect(checkpointContainerFor(modelled)).toBe(MANAGER_HISTORY_CHECKPOINT_SCHEMA);

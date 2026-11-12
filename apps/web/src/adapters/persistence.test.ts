@@ -29,7 +29,8 @@ import {
 } from '../../../../tests/fixtures/club-identity';
 import { featureState } from '../../../../tests/fixtures/feature-state';
 import { cachedWorld } from '../../../../tests/fixtures/cached-world';
-import { DISABLED_RELEASE, ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { ENABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld, withoutManagerHistory } from '../../../../tests/fixtures/worlds';
 import { checkpoint, encode, decode, type PreviousStore, type StoragePort } from './persistence';
 import { MANIFEST } from './repository';
@@ -90,11 +91,11 @@ class Memory implements StoragePort {
 const observed = (rounds: 1 | 2): World => simulatedWorld(CAREER, { rounds });
 /**
  * `observed(rounds)` as a career saved before the full match model (→SAVE-23), as every container
- * 1 and 2 checkpoint was: founded and played with the release off.
+ * 1 and 2 checkpoint was: saved without the model data such a writer never held.
  */
 const unmodelled = (rounds = 0): World =>
   rounds === 0
-    ? simulatedWorld(CAREER, {}, DISABLED_RELEASE)
+    ? withoutMatchModel(simulatedWorld(CAREER, {}))
     : cachedWorld(`unmodelled:${rounds}`, () => {
         const w = unmodelled(rounds - 1);
         advanceRound(w);

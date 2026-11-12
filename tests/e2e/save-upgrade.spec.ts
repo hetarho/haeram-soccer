@@ -4,19 +4,21 @@ import { readFile } from 'node:fs/promises';
 import { advanceRound } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { encode } from '../../apps/web/src/adapters/persistence';
-import { DISABLED_RELEASE } from '../fixtures/releases';
+import { withoutMatchModel } from '../fixtures/earlier-saves';
 import { withoutManagerHistory } from '../fixtures/worlds';
 import { openSaveMenu } from './save-menu';
 import { startCareer, startFlow } from './start';
 import { CURRENT_ENGINE_VERSION } from '../../packages/contracts/src/versions';
 
 /**
- * A career of the current rules, one round in, taken over before the full match model's release,
- * so the earlier-rules copies below carry no model data those rules never wrote (→SAVE-23).
+ * A career of the current rules, one round in, saved as a writer before the full match model's
+ * release saved it, so the earlier-rules copies below carry no model data those rules never wrote
+ * (→SAVE-23).
  */
 async function current() {
-  const world = careerWorld({ country: 'ENG', seed: 'legacy-browser-upgrade' }, DISABLED_RELEASE);
+  const world = careerWorld({ country: 'ENG', seed: 'legacy-browser-upgrade' });
   advanceRound(world, undefined, false);
+  withoutMatchModel(world);
   return { world, raw: await encode(world, 1, 0) };
 }
 async function seed(page: Page, raw: string, other?: string) {

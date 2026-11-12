@@ -3,7 +3,7 @@
  *
  * One place for what a match result is measured by: every recorded counter with its level and
  * units, the intended target bands, the exact record invariants, the comparison settings, the corpus
- * conditions and seed partitions and the performance budgets, plus the report builders that read
+ * conditions and seed partitions and the timed performance components, plus the report builders that read
  * them. Later tasks import these names instead of copying thresholds or corpus sizes. Measurement
  * tooling only: the match lab's worker code (apps/web/src/lab/summary.ts, →LAB-5) is its one importer
  * under apps/ or packages/; game UI and the game worker never import it.
@@ -11,9 +11,7 @@
 import { PD, PLAYER_DETAIL_SIZE, TD, TEAM_DETAIL_SIZE } from '../../packages/contracts/src/detail';
 import type { Incident, MatchRecord, Tactic } from '../../packages/contracts/src/types';
 import { inBoxCell, inGoalAreaCell } from '../../packages/engine/src/aggregate/ledger';
-import { BAND_EDGES, goalDistance, inBox, inGoalArea } from '../../packages/engine/src/match/pitch';
 import { M } from '../../packages/engine/src/match/record';
-import { type GridDiagnostics, type ShotDiagnostic } from '../../packages/engine/src/grid/record';
 import { eraRules, isLevel, type DecideRule } from '../../packages/engine/src/match/rules';
 import { random, zeroMetrics } from '../../packages/engine/src/primitives';
 import {
@@ -22,7 +20,7 @@ import {
 } from '../../apps/web/src/adapters/repository';
 
 /** Changes whenever an entry, unit, band, condition, partition, size or tolerance changes (→MATCH-28). */
-export const MATCH_PARITY_VERSION = 'match-parity-6';
+export const MATCH_PARITY_VERSION = 'match-parity-7';
 
 export type Side = 0 | 1;
 const sides = [0, 1] as const;
@@ -478,8 +476,6 @@ export const gapBucket = (gap: number) =>
 /** One match as a report reads it. */
 export interface MatchSample {
   record: MatchRecord;
-  /** Grid-only measurements: pass directions, possessions, shot places and ball in play. */
-  diagnostics?: GridDiagnostics;
   /** The path records incidents, so an absent list means none happened rather than untracked. */
   incidentsTracked: boolean;
   /** A CORPUS_CONFIG condition id. */
@@ -537,10 +533,11 @@ export interface TargetBand {
   unit: Unit;
   source: string;
   /**
-   * Read from the record alone, from the grid's diagnostics or the aggregate ledger's cells
-   * (`cells`), or from the grid's diagnostics only (a point or a possession sequence).
+   * Read from the record alone, from the result path's ledger cells (`cells`), or from an own
+   * match's script only (`script`: a point or a possession sequence the record holds no fact of,
+   * →MATCH-23/26/38), which this registry does not read.
    */
-  reads: 'record' | 'cells' | 'diagnostics';
+  reads: 'record' | 'cells' | 'script';
   /** A ratio of sums over matches, or the median of pooled values. */
   estimator: 'ratio' | 'median';
   /** Per match: numerator and denominator (ratio) or the values (median); undefined when absent. */
@@ -584,31 +581,24 @@ export function incidentsOf(s: MatchSample): readonly Incident[] | undefined {
 }
 /** Minutes of play a match ran: 90, or 120 with extra time (→MATCH-6). */
 const matchMinutes = (r: MatchRecord) => (r.regulation ? 120 : 90);
-const shotsOf = (s: MatchSample) => s.diagnostics?.shots;
-const shotShare = (s: MatchSample, keep: (x: ShotDiagnostic) => boolean) => {
-  const shots = shotsOf(s);
-  return shots && share(shots.filter(keep).length, shots.length);
-};
 type ShotPlace = 'goalArea' | 'box' | 'outside';
-/** Each shot's place: the grid's point, or the aggregate cell (cells follow the markings, MATCH-14). */
+/** Each shot's place: its ledger cell (cells follow the markings, MATCH-14). */
 const placesOf = (s: MatchSample): ShotPlace[] | undefined =>
-  s.diagnostics
-    ? s.diagnostics.shots.map((x) =>
-        inGoalArea(point(x)) ? 'goalArea' : inBox(point(x)) ? 'box' : 'outside',
-      )
-    : s.ledger?.shots.map((x) =>
-        inGoalAreaCell(x.cell) ? 'goalArea' : inBoxCell(x.cell) ? 'box' : 'outside',
-      );
+  s.ledger?.shots.map((x) =>
+    inGoalAreaCell(x.cell) ? 'goalArea' : inBoxCell(x.cell) ? 'box' : 'outside',
+  );
+/** A row read on own matches' scripts (→MATCH-23/38): the record and its ledger hold no such fact. */
+const onScripts = (): undefined => undefined;
 const placeShare = (s: MatchSample, place: ShotPlace) => {
   const places = placesOf(s);
   return places && share(places.filter((p) => p === place).length, places.length);
 };
-const goalShare = (s: MatchSample, keep: (g: ShotDiagnostic | LedgerShot) => boolean) => {
-  const goals = (shotsOf(s) ?? s.ledger?.shots)?.filter((g) => g.goal);
+const goalShare = (s: MatchSample, keep: (g: LedgerShot) => boolean) => {
+  const goals = s.ledger?.shots.filter((g) => g.goal);
   return goals && share(goals.filter(keep).length, goals.length);
 };
 const direction = (s: MatchSample, d: number) => {
-  const dirs = s.diagnostics?.directions ?? s.ledger?.directions;
+  const dirs = s.ledger?.directions;
   return (
     dirs &&
     share(
@@ -617,7 +607,6 @@ const direction = (s: MatchSample, d: number) => {
     )
   );
 };
-const point = (shot: { x: number; y: number }) => [shot.x, shot.y] as const;
 
 function band(
   id: string,
@@ -657,29 +646,19 @@ export const TARGET_BANDS: readonly TargetBand[] = [
   band('passForward', 'passes forward', [30, 40], 'percent', 'cells', (s) => direction(s, 0)),
   band('passLateral', 'passes lateral', [45, 55], 'percent', 'cells', (s) => direction(s, 1)),
   band('passBack', 'passes back', [12, 18], 'percent', 'cells', (s) => direction(s, 2)),
-  band('possessions', 'possessions (team)', [85, 105], 'count', 'diagnostics', (s) =>
-    perTeam(s.diagnostics?.possessions.length),
-  ),
+  band('possessions', 'possessions (team)', [85, 105], 'count', 'script', onScripts),
   band(
     'passesPerPossession',
     'median passes in a possession',
     [2, 4],
     'count',
-    'diagnostics',
-    (s) => s.diagnostics?.possessions.map((p) => p.passes),
-    { estimator: 'median' },
-  ),
-  band(
-    'possessionShots',
-    'possessions ending in a shot',
-    [10, 15],
-    'percent',
-    'diagnostics',
-    (s) => {
-      const spells = s.diagnostics?.possessions;
-      return spells && share(spells.filter((p) => p.shot).length, spells.length);
+    'script',
+    onScripts,
+    {
+      estimator: 'median',
     },
   ),
+  band('possessionShots', 'possessions ending in a shot', [10, 15], 'percent', 'script', onScripts),
   band('shots', 'shots (team)', [11, 14], 'count', 'record', (s) => perTeam(metric(s, M.shots))),
   band('onTarget', 'shots on target', [30, 37], 'percent', 'record', (s) =>
     share(metric(s, M.onTarget), metric(s, M.shots)),
@@ -699,22 +678,9 @@ export const TARGET_BANDS: readonly TargetBand[] = [
   band('shotsOutside', 'shots from outside the box', [32, 42], 'percent', 'cells', (s) =>
     placeShare(s, 'outside'),
   ),
-  band('shotDistance', 'mean shot distance', [15, 18], 'metres', 'diagnostics', (s) => {
-    const shots = shotsOf(s);
-    return (
-      shots &&
-      share(
-        shots.reduce((a, x) => a + goalDistance(point(x)), 0),
-        shots.length,
-      )
-    );
-  }),
-  band('shotsFar', 'shots from 30 m or more', [0, 10], 'percent', 'diagnostics', (s) =>
-    shotShare(s, (x) => goalDistance(point(x)) >= 30),
-  ),
-  band('shotsOwnHalf', 'shots from the own half', [0, 0.5], 'percent', 'diagnostics', (s) =>
-    shotShare(s, (x) => x.x < BAND_EDGES[4]),
-  ),
+  band('shotDistance', 'mean shot distance', [15, 18], 'metres', 'script', onScripts),
+  band('shotsFar', 'shots from 30 m or more', [0, 10], 'percent', 'script', onScripts),
+  band('shotsOwnHalf', 'shots from the own half', [0, 0.5], 'percent', 'script', onScripts),
   band('crosses', 'crosses (team)', [13, 20], 'count', 'record', (s) =>
     perTeam(detail(s, TD.crosses)),
   ),
@@ -790,7 +756,7 @@ export const TARGET_BANDS: readonly TargetBand[] = [
     goalShare(s, (g) => g.line === 'DF'),
   ),
   band('ballInPlay', 'ball in play (match)', [54, 58], 'minutes', 'cells', (s) => {
-    const seconds = s.diagnostics?.ballInPlay ?? s.ledger?.ballInPlay;
+    const seconds = s.ledger?.ballInPlay;
     return seconds === undefined ? undefined : [seconds / 60, 1];
   }),
   band(
@@ -1135,9 +1101,7 @@ export const CORPUS_CONFIG = {
        */
       pairing: 'world-country-roster',
       /**
-       * Each club plays its own tactic, the only assignment both existing paths support (the
-       * summary path takes no override). scripts/grid-bands.ts rotates all four tactics by override
-       * instead, so its band readings are not this condition's.
+       * Each club plays its own tactic; the tactics family forces pairings instead.
        */
       tactics: 'club',
       fixture: CORE_FIXTURE,
@@ -1474,34 +1438,18 @@ export function conditionValidationSize(needs: PilotNeeds) {
 export type PerformanceCategory =
   'preparation' | 'computation' | 'observation' | 'settlement' | 'season' | 'codec';
 /**
- * ARCH-31's release budgets and the unchanged browser/storage limits (→ARCH-28, SAVE-4). Fixture
- * components time whole processing including preparation; `preparation.*` times it alone.
+ * What the match-model runner times (→ARCH-31) and the unchanged browser/storage limits (→ARCH-28,
+ * SAVE-4). Throughput has no absolute budget: a run is compared with the previous release's on one
+ * machine (`comparePerformance`, →ARCH-34). Fixture components time whole processing including
+ * preparation; `candidate.preparation` times it alone.
  */
 export const PERFORMANCE_CONFIG = {
   /**
-   * 3: ARCH-31 r19's absolute budgets on the recorded reference machine gate the release, and the
-   * paired ratios to the baseline summary path are context (T286); 2 added the candidate aggregate
-   * stages, own candidate fixtures and candidate settlement (T285).
+   * 4: the released result path only, no absolute budgets or release gates (ARCH-31 r39, T844); 3
+   * held ARCH-31 r19's budgets on a reference machine (T286); 2 added the candidate aggregate stages,
+   * own candidate fixtures and candidate settlement (T285).
    */
-  version: 3,
-  release: {
-    /** A fixture without the own club, full numerical records enabled: the median, in ms. */
-    npcFixtureMs: 1,
-    /** Complete-season engine time, the median for each century workload profile, in ms. */
-    seasonMs: 15_000,
-    /**
-     * The machine the budgets were set on (the owner's MacBook Pro, 261022): timings from any
-     * other machine are context only.
-     */
-    referenceMachine: { platform: 'darwin', arch: 'arm64', cpu: 'Apple M1 Max', logicalCpus: 10 },
-    /**
-     * A quiet window: the 1-minute load average sampled through the run, the run's own busy core
-     * included, stays at or below half the reference machine's cores. The timed work is
-     * single-threaded, so it always had a performance core (8 of the 10) to itself; T285's runs
-     * under other sessions' work sat at a median of 9–12.
-     */
-    quietLoad: 5,
-  },
+  version: 4,
   profiles: {
     baseline: 'release-century-baseline',
     'active-management': 'release-century-active-management',
@@ -1516,24 +1464,16 @@ export const PERFORMANCE_CONFIG = {
   },
   seasons: { release: 100, smoke: 1 },
   components: {
-    'preparation.summary': 'preparation',
-    'preparation.grid': 'preparation',
-    'fixture.summary': 'computation',
-    'fixture.summary-lines': 'computation',
-    'fixture.grid': 'computation',
+    /** A fixture between clubs nobody owns on the result path (→MATCH-22). */
     'fixture.candidate': 'computation',
     /** The candidate aggregate fixture's stages, timed one by one on the same fixtures. */
     'candidate.preparation': 'preparation',
     'candidate.generation': 'computation',
     'candidate.attribution': 'computation',
     'candidate.record': 'computation',
-    /** Own fixtures through the candidate dispatch: the detailed engine and the full record check. */
+    /** Own fixtures through the dispatch: record, script and post-material, and the record check. */
     'fixture.own-candidate': 'computation',
-    'observation.grid': 'observation',
-    'observation.frames': 'observation',
-    'settlement.npc': 'settlement',
-    'settlement.own': 'settlement',
-    /** Candidate records settled on a candidate world: every existing effect plus the ledger. */
+    /** Records settled on a released world: every existing effect plus the ledger. */
     'settlement.candidate': 'settlement',
     'season.baseline': 'season',
     'season.active-management': 'season',
@@ -1848,7 +1788,7 @@ export interface MetricComparison {
 }
 
 /**
- * MATCH-28's comparison of one metric between a reference (detailed play) and a candidate path.
+ * MATCH-28's comparison of one metric between the released model (reference) and a candidate.
  * Equivalence needs the whole uncertainty interval inside the margin; an interval that merely
  * overlaps zero is insufficient, not a pass.
  */
@@ -2068,7 +2008,7 @@ export function buildCoverageReport(
 }
 
 export type TargetStatus =
-  'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing' | 'undefined' | 'detailed-only';
+  'inside' | 'outside' | 'unresolved' | 'underpowered' | 'missing' | 'undefined' | 'script-only';
 export interface TargetResult {
   id: string;
   label: string;
@@ -2082,32 +2022,28 @@ export interface TargetResult {
   matches: number;
   missing: number;
 }
-/** Which engine a report reads: the aggregate path records no shot points or sequences (MATCH-23). */
-export type ReportPath = 'detailed' | 'aggregate';
 /**
- * MATCH-23's rows that read ball positions or possession sequences bind the detailed engine only
- * (→MATCH-26): on the aggregate path they are listed as detailed-only, never missing or failed.
+ * MATCH-23's rows that read ball positions or possession sequences are read on own matches'
+ * scripts (→MATCH-38) and reported with each calibration: the record holds no such facts
+ * (→MATCH-26), so this registry lists them as script-only, never missing or failed.
  */
-export const DETAILED_ONLY_REASON =
-  'MATCH-23: reads ball positions or possession sequences, which bind the detailed engine only (MATCH-26)';
+export const SCRIPT_ONLY_REASON =
+  "MATCH-23: reads ball positions or possession sequences, read on own matches' scripts (MATCH-38); the record holds no such facts (MATCH-26)";
 /**
  * Absolute target errors against the intended bands (→MATCH-23): only `inside` passes. Counts and
- * durations of a match that played extra time are read per 90 minutes (`perNinety`). On the
- * aggregate path the rows that read the detailed engine's diagnostics are `detailed-only`.
+ * durations of a match that played extra time are read per 90 minutes (`perNinety`). The rows
+ * read on own matches' scripts are `script-only` (`SCRIPT_ONLY_REASON`).
  */
-export function buildTargetReport(
-  samples: readonly MatchSample[],
-  path: ReportPath = 'detailed',
-): TargetResult[] {
+export function buildTargetReport(samples: readonly MatchSample[]): TargetResult[] {
   return TARGET_BANDS.map((t) =>
-    path === 'aggregate' && t.reads === 'diagnostics'
+    t.reads === 'script'
       ? {
           id: t.id,
           label: t.label,
           band: t.band,
           unit: t.unit,
           matches: samples.length,
-          status: 'detailed-only' as const,
+          status: 'script-only' as const,
           missing: 0,
         }
       : evaluateTarget(t, samples),
@@ -2988,205 +2924,6 @@ export function describeTacticPairings(report: TacticPairingReport): string[] {
   return lines;
 }
 
-// ---- MATCH-29 parity of the two paths (MATCH-28) ---------------------------------------------------
-
-/** One fixture played on both paths. */
-interface FixturePair {
-  aggregate: MatchSample;
-  detailed: MatchSample;
-}
-export type PairingParityVerdict = 'equivalent' | 'different' | 'insufficient';
-/** One paired difference (aggregate − detailed) of a row's estimate against its MATCH-28 margin. */
-export interface PairingParityPart {
-  /** An ordering's difference: the tactic (or mean) that should be higher, and the lower one. */
-  higher?: string;
-  lower?: string;
-  verdict: PairingParityVerdict;
-  difference?: number;
-  interval?: [number, number];
-  /** Paired fixtures in the venues it reads. */
-  pairs: number;
-  reason?: string;
-}
-export interface TacticPairingParityRow {
-  id: string;
-  label: string;
-  kind: 'band' | 'ordering';
-  /** The row's MATCH-29 status on each path, from that path's own verdicts. */
-  aggregate: PairingStatus;
-  detailed: PairingStatus;
-  verdict: PairingParityVerdict;
-  /** MATCH-28's margin for this row: 3 points of a rate, or the reference measure's mean margin. */
-  margin: number;
-  /** A band row's paired difference; an ordering's are in `differences`. */
-  difference?: number;
-  interval?: [number, number];
-  differences?: PairingParityPart[];
-  pairs: number;
-  reason?: string;
-}
-export interface TacticPairingParityReport {
-  note: string;
-  version: string;
-  target: number;
-  matches: { aggregate: number; detailed: number; paired: number };
-  /** Rows with the same MATCH-29 status on both paths (context, not a verdict). */
-  agreeing: number;
-  rows: TacticPairingParityRow[];
-  counts: Record<PairingParityVerdict, number>;
-}
-
-/** A row's reading on one fixture pair: the aggregate's minus the detailed path's. */
-const pairedTerms = (terms: readonly PairingTerm[]): PairingTerm<FixturePair>[] =>
-  terms.map((t) => ({
-    venue: t.venue,
-    weight: t.weight,
-    read: (p) => {
-      const a = t.read(p.aggregate),
-        d = t.read(p.detailed);
-      return typeof a === 'number' && typeof d === 'number' ? a - d : undefined;
-    },
-  }));
-/**
- * MATCH-28's mean margin for a row reading `read`: the larger of 5% of the detailed reference's
- * mean or 0.1 of its per-match spread, over both sides of every reference match.
- */
-function pairingMeanMargin(detailed: readonly MatchSample[], read: SideReader) {
-  const values = detailed.flatMap((s) =>
-    ([0, 1] as const)
-      .map((side) => read(side)(s))
-      .filter((v): v is number => typeof v === 'number'),
-  );
-  return values.length ? meanMargin({ mean: meanOf(values), sd: sdOf(values) }) : 0;
-}
-function parityPart(
-  readout: PairingReadout,
-  margin: number,
-  ends: { higher?: string; lower?: string },
-): PairingParityPart {
-  const base = {
-    ...(ends.higher !== undefined && { higher: ends.higher, lower: ends.lower }),
-    pairs: readout.matches,
-  };
-  if ('reason' in readout) return { ...base, verdict: 'insufficient', reason: readout.reason };
-  const verdictOf = verdict(readout.interval, -margin, margin);
-  return {
-    ...base,
-    verdict: verdictOf,
-    difference: readout.value,
-    interval: readout.interval,
-    ...(verdictOf === 'insufficient' && { reason: 'the interval crosses a margin edge' }),
-  };
-}
-
-/**
- * MATCH-29 parity as a MATCH-28 verdict (T396): each row's aggregate − detailed difference over
- * the same forced fixtures, paired fixture by fixture (`fixture`, else the record id), with a 95%
- * interval from the paired differences pooled over venues as `tacticPairingVerdicts` pools one
- * path. Outcome-rate rows (draws, win shares and their gap) take MATCH-28's 3 points; points and
- * the orderings' measures take the larger of 5% of the detailed mean or 0.1 of its spread. A row is
- * equivalent only when every interval it reads fits the margin, different when any lies beyond
- * it, and insufficient otherwise: a straddling interval, a short venue or a missing reading is
- * never a pass. Fixtures played on one path only are left out.
- */
-export function tacticPairingParity(
-  aggregate: readonly MatchSample[],
-  detailed: readonly MatchSample[],
-): TacticPairingParityReport {
-  const onAggregate = tacticPairingVerdicts(aggregate),
-    onDetailed = tacticPairingVerdicts(detailed);
-  const keyOf = (s: MatchSample) => s.fixture ?? s.record.id;
-  const reference = new Map(detailed.map((s) => [keyOf(s), s]));
-  const pairs: FixturePair[] = [];
-  for (const a of aggregate) {
-    const d = reference.get(keyOf(a));
-    if (!d) continue;
-    if (a.record.tactics[0] !== d.record.tactics[0] || a.record.tactics[1] !== d.record.tactics[1])
-      throw new Error(
-        `${keyOf(a)} played ${a.record.tactics.join('-')} on the aggregate path and ${d.record.tactics.join('-')} on the detailed one`,
-      );
-    pairs.push({ aggregate: a, detailed: d });
-  }
-  const club = onAggregate.assignment === 'club' || onDetailed.assignment === 'club';
-  const venues = pairingVenues(pairs, (p) => p.aggregate.record.tactics);
-  const statusOf = (report: TacticPairingReport, id: string) =>
-    report.rows.find((r) => r.id === id)!.status;
-  const rows = pairingRowSpecs().map((spec): TacticPairingParityRow => {
-    const margin =
-      spec.scale.kind === 'rate'
-        ? PARITY_CONFIG.outcomeRateMargin
-        : pairingMeanMargin(detailed, spec.scale.read);
-    const parts = spec.parts.map((p) =>
-      parityPart(pairingEstimate(venues, pairedTerms(p.terms)), margin, p),
-    );
-    const verdictOf: PairingParityVerdict = parts.every((p) => p.verdict === 'equivalent')
-      ? 'equivalent'
-      : parts.some((p) => p.verdict === 'different')
-        ? 'different'
-        : 'insufficient';
-    const base = {
-      id: spec.id,
-      label: spec.label,
-      kind: spec.kind,
-      aggregate: statusOf(onAggregate, spec.id),
-      detailed: statusOf(onDetailed, spec.id),
-      margin,
-      pairs: Math.max(0, ...parts.map((p) => p.pairs)),
-    };
-    if (spec.forcedOnly && club)
-      return { ...base, verdict: 'insufficient', reason: FORCED_ONLY_REASON };
-    const reason = verdictOf === 'insufficient' ? parts.find((p) => p.reason)?.reason : undefined;
-    return spec.kind === 'band'
-      ? {
-          ...base,
-          verdict: verdictOf,
-          ...(parts[0]!.difference !== undefined && {
-            difference: parts[0]!.difference,
-            interval: parts[0]!.interval,
-          }),
-          ...(reason && { reason }),
-        }
-      : { ...base, verdict: verdictOf, differences: parts, ...(reason && { reason }) };
-  });
-  const count = (v: PairingParityVerdict) => rows.filter((r) => r.verdict === v).length;
-  return {
-    note: 'Each MATCH-29 row as aggregate − detailed over the same forced fixtures, paired by fixture, with a 95% interval against MATCH-28’s margin (T396).',
-    version: MATCH_PARITY_VERSION,
-    target: PT.version,
-    matches: { aggregate: aggregate.length, detailed: detailed.length, paired: pairs.length },
-    agreeing: rows.filter((r) => r.aggregate === r.detailed).length,
-    rows,
-    counts: {
-      equivalent: count('equivalent'),
-      different: count('different'),
-      insufficient: count('insufficient'),
-    },
-  };
-}
-
-/** The paired MATCH-29 parity as printed lines. */
-export function describeTacticPairingParity(report: TacticPairingParityReport): string[] {
-  const { equivalent, different, insufficient } = report.counts;
-  const lines = [
-    `MATCH-29 parity (aggregate − detailed, ${report.matches.paired} paired fixtures): ${equivalent} equivalent, ${different} different, ${insufficient} insufficient of ${report.rows.length}; ${report.agreeing} rows share a status`,
-  ];
-  const reading = (p: { difference?: number; interval?: [number, number] }) =>
-    p.difference === undefined ? '' : `${fixed(p.difference)} ${span(p.interval!)}`;
-  for (const r of report.rows) {
-    const body =
-      r.kind === 'band'
-        ? reading(r)
-        : r
-            .differences!.map((d) => `${d.higher} − ${d.lower} ${reading(d)} ${d.verdict}`)
-            .join('; ');
-    const parts = [body, `±${fixed(r.margin)}`, r.reason && `(${r.reason})`]
-      .filter(Boolean)
-      .join(' ');
-    lines.push(`  ${r.verdict.padEnd(12)} ${r.label} [${r.aggregate} / ${r.detailed}]: ${parts}`);
-  }
-  return lines;
-}
-
 /** An exact record invariant: no statistical tolerance (→MATCH-27). */
 export interface Invariant {
   id: string;
@@ -3540,8 +3277,10 @@ const tally = <T extends { status: string }>(rows: readonly T[]) =>
   );
 
 /**
- * Path equivalence of one condition's metrics and relationships (→MATCH-28): a fixture condition
- * compares the match metrics, a season condition the season measures. Metrics the condition's
+ * A candidate change of the result model against the released model on one condition's metrics
+ * and relationships (→MATCH-28): \`reference\` holds the released model's samples, \`candidate\` the
+ * changed model's on the same fixtures. A fixture condition compares the match metrics, a season
+ * condition the season measures. Metrics the condition's
  * rules make impossible are not applicable: listed with their rule and left out of the verdict,
  * unless a path records them, which is `violated` and blocks. Equal constants pass by their zero
  * difference and are listed; every other status blocks.
@@ -3646,30 +3385,21 @@ export interface Provenance {
   partitions: Readonly<Record<string, string>>;
 }
 
-interface ParitySide {
-  path: string;
-  engine: ReportPath;
-  samples: readonly MatchSample[];
-  seasons?: readonly SeasonSample[];
-}
-/** The comparison sections kept apart: target errors, path equivalence and exact invariants. */
+/** The one result path's reports kept apart: coverage, target errors, outcome curve, invariants. */
 export function buildParityReport(input: {
   provenance: Provenance;
   partition: Partition;
   condition: string;
-  /** `engine`: which engine played the samples (MATCH-23's trace-only rows bind the detailed one). */
-  reference: ParitySide;
-  candidate: ParitySide;
+  path: string;
+  samples: readonly MatchSample[];
+  seasons?: readonly SeasonSample[];
 }) {
   const errors = validateCorpusConfig(CORPUS_CONFIG);
   if (errors.length) throw new Error(errors.join('; '));
-  const equivalence = buildEquivalenceReport({
-    condition: input.condition,
-    reference: input.reference.samples,
-    candidate: input.candidate.samples,
-    referenceSeasons: input.reference.seasons,
-    candidateSeasons: input.candidate.seasons,
-  });
+  const condition = conditionOf(input.condition);
+  for (const s of input.samples)
+    if (s.condition !== condition.id)
+      throw new Error(`${s.record.id} was drawn under ${s.condition}, not ${condition.id}`);
   return {
     version: MATCH_PARITY_VERSION,
     configs: {
@@ -3680,24 +3410,11 @@ export function buildParityReport(input: {
     provenance: input.provenance,
     partition: input.partition,
     partitions: CORPUS_CONFIG.partitions,
-    paths: { reference: input.reference.path, candidate: input.candidate.path },
-    coverage: {
-      reference: buildCoverageReport(input.reference.samples, input.reference.seasons),
-      candidate: buildCoverageReport(input.candidate.samples, input.candidate.seasons),
-    },
-    targets: {
-      reference: buildTargetReport(input.reference.samples, input.reference.engine),
-      candidate: buildTargetReport(input.candidate.samples, input.candidate.engine),
-    },
-    outcomeCurve: {
-      reference: buildOutcomeTargetReport(input.reference.samples),
-      candidate: buildOutcomeTargetReport(input.candidate.samples),
-    },
-    invariants: {
-      reference: buildInvariantReport(input.reference.samples),
-      candidate: buildInvariantReport(input.candidate.samples),
-    },
-    equivalence,
+    path: input.path,
+    coverage: buildCoverageReport(input.samples, input.seasons),
+    targets: buildTargetReport(input.samples),
+    outcomeCurve: buildOutcomeTargetReport(input.samples),
+    invariants: buildInvariantReport(input.samples),
   };
 }
 
@@ -3782,7 +3499,7 @@ const PROFILES = Object.keys(
 const medianOf = (r: PerformanceReport, id: PerformanceComponent) =>
   r.components.find((c) => c.id === id)?.medianMs;
 
-/** One paired ratio to the baseline summary path: context for the release, never its gate. */
+/** One paired ratio to the previous release's run on the same machine (→ARCH-31/34). */
 export interface RatioResult {
   id: string;
   status: 'measured' | 'missing' | 'unpaired';
@@ -3791,7 +3508,7 @@ export interface RatioResult {
   candidateMs?: number;
 }
 /**
- * The paired ratios between two runs (→ARCH-31: context, not a gate). Runs on another machine,
+ * The paired ratios between two runs (→ARCH-31: reported, not a gate). Runs on another machine,
  * toolchain or world set are unpaired: their ratios are not reported as paired results.
  */
 export function comparePerformance(
@@ -3823,67 +3540,11 @@ export function comparePerformance(
     paired,
     reasons,
     ratios: [
-      ratio('npc-fixture', 'fixture.summary', 'fixture.candidate'),
+      ratio('npc-fixture', 'fixture.candidate', 'fixture.candidate'),
+      ratio('own-fixture', 'fixture.own-candidate', 'fixture.own-candidate'),
       ...PROFILES.map((profile) =>
         ratio(`season.${profile}`, `season.${profile}`, `season.${profile}`),
       ),
     ],
-  };
-}
-
-/** One of ARCH-31's absolute release budgets against a run's median. */
-export interface GateResult {
-  id: string;
-  budgetMs: number;
-  status: 'pass' | 'fail' | 'missing';
-  medianMs?: number;
-}
-/**
- * ARCH-31's release gates on one run (r19): a fixture without the own club at most
- * `release.npcFixtureMs` median and complete-season engine time at most `release.seasonMs` median
- * for both century profiles. A gate result is release evidence only from the reference machine, in
- * a quiet window and from a run that is not provisional; any other run's results are context.
- */
-export function releaseGates(run: {
-  provenance: Provenance;
-  report: PerformanceReport;
-  /** The highest 1-minute load average sampled through the run, when sampled. */
-  maxLoad?: number;
-}) {
-  const { release } = PERFORMANCE_CONFIG;
-  const gate = (id: string, budgetMs: number, component: PerformanceComponent): GateResult => {
-    const medianMs = medianOf(run.report, component);
-    if (medianMs === undefined) return { id, budgetMs, status: 'missing' };
-    return { id, budgetMs, status: medianMs <= budgetMs ? 'pass' : 'fail', medianMs };
-  };
-  const gates = [
-    gate('npc-fixture', release.npcFixtureMs, 'fixture.candidate'),
-    ...PROFILES.map((profile) => gate(`season.${profile}`, release.seasonMs, `season.${profile}`)),
-  ];
-  const { machine } = run.provenance;
-  const reference = release.referenceMachine;
-  const reasons = [
-    ...(machine.platform !== reference.platform ||
-    machine.arch !== reference.arch ||
-    machine.cpu !== reference.cpu ||
-    machine.logicalCpus !== reference.logicalCpus
-      ? [`not the reference machine (${reference.cpu}, ${reference.logicalCpus} cores)`]
-      : []),
-    ...(run.maxLoad === undefined
-      ? ['load not sampled']
-      : run.maxLoad > release.quietLoad
-        ? [`not quiet: load ${run.maxLoad} > ${release.quietLoad}`]
-        : []),
-    ...(run.report.provisional ? ['provisional run'] : []),
-  ];
-  const passed = gates.every((g) => g.status === 'pass');
-  return {
-    referenceMachine: !reasons.some((r) => r.startsWith('not the reference')),
-    /** Why the run's results are context only; empty for release evidence. */
-    reasons,
-    gates,
-    passed,
-    /** The gates passed on the reference machine, quietly, in a release run: activation may go on. */
-    releaseEvidence: reasons.length === 0 && passed,
   };
 }

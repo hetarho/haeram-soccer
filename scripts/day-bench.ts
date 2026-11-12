@@ -46,7 +46,7 @@ const median = (xs: number[]) => {
 };
 const r1 = (x: number) => Number(x.toFixed(1));
 
-const w = career.careerWorld({ country, seed }, engine.MATCH_MODEL_RELEASE);
+const w = career.careerWorld({ country, seed });
 const own: number[] = [];
 const busy: number[] = []; // days without our match that still take ≥ 50 ms (other fixtures)
 const quiet: number[] = [];

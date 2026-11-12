@@ -10,9 +10,9 @@
  *   - top: the median-strength club of the founding country's top tier taken as the own club on a
  *     probe-only copy (its squad as the own squad at its 조직력, its tactic, its named manager's
  *     ability without a style, morale 60; the founding build stays, so its home strength counts).
- * Each own fixture plays on the detailed engine as played (`simulateMatch`) and on the aggregate
- * path (`simulateAggregate`); the other fixtures of the same league play the aggregate path as the
- * reference at the same gaps, read from both sides. Every sample is bucketed by its prepared gap
+ * Each own fixture plays as played (`simulateMatch`: the released result path, →MATCH-22); the other
+ * fixtures of the same league play the result path as the reference at the same gaps, read from
+ * both sides. (Before T844 an own fixture also played the detailed engine.) Every sample is bucketed by its prepared gap
  * from the side's own view: `prepareMatch`'s home-minus-away strength before the day's form, with
  * diminishing returns undone so it reads on the target's axis (the raw gap `outcomeTarget` and the
  * parity tool take). Seed i sets `w.seed = <seed>:probe<i>`; the world is never settled.
@@ -196,27 +196,21 @@ function read(label: string, w: World) {
   const others = w.fixtures.filter((f) => pending(f) && !ownFixture(f) && f.groupKey === groupKey);
   const started = Date.now();
   const samples = {
-    detailed: [] as Sample[],
-    aggregate: [] as Sample[],
+    own: [] as Sample[],
     reference: [] as Sample[],
   };
   for (const f of ownFixtures) {
     const home = f.home === own;
     const [raw, eff] = preparedGap(w, f);
-    for (let seed = 0; seed < SEEDS; seed++)
-      for (const path of ['detailed', 'aggregate'] as const) {
-        const { score } = withSeed(w, seed, () =>
-          path === 'detailed'
-            ? simulateMatch(w, f, false, true).record
-            : simulateAggregate(w, f).record,
-        );
-        samples[path].push({
-          gap: home ? raw : -raw,
-          effective: home ? eff : -eff,
-          us: home ? score.home : score.away,
-          them: home ? score.away : score.home,
-        });
-      }
+    for (let seed = 0; seed < SEEDS; seed++) {
+      const { score } = withSeed(w, seed, () => simulateMatch(w, f, false, true).record);
+      samples.own.push({
+        gap: home ? raw : -raw,
+        effective: home ? eff : -eff,
+        us: home ? score.home : score.away,
+        them: home ? score.away : score.home,
+      });
+    }
   }
   const ownSeconds = (Date.now() - started) / 1000;
   for (const f of others) {
@@ -249,15 +243,13 @@ function read(label: string, w: World) {
     manager: { ability: w.manager.ability, style: w.manager.style ?? null },
     morale: w.morale,
     homeStrength: buildEffects(w).homeStrength,
-    detailed: report(samples.detailed),
-    aggregate: report(samples.aggregate),
+    own: report(samples.own),
     reference: report(samples.reference),
     seconds: { own: ownSeconds, all: (Date.now() - started) / 1000 },
   };
-  const line = (k: 'detailed' | 'aggregate' | 'reference') =>
-    `${k} ${JSON.stringify(result[k].all)}`;
+  const line = (k: 'own' | 'reference') => `${k} ${JSON.stringify(result[k].all)}`;
   console.log(`[${label}] ${club.name} ${result.year} ${groupKey} own ${result.ownXi}`);
-  for (const k of ['detailed', 'aggregate', 'reference'] as const) console.log(line(k));
+  for (const k of ['own', 'reference'] as const) console.log(line(k));
   return result;
 }
 

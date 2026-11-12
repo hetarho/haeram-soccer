@@ -142,9 +142,9 @@ describe('lab run summary', () => {
 
   it('rows without data stay missing, never pass', () => {
     const s = summarizeRun([sample(0, true, [1, 1]), sample(1, false, [0, 2])]);
-    // The synthetic samples carry no grid diagnostics.
+    // A possession sequence is read on own matches' scripts, never from a lab run's records.
     const possessions = s.targets.find((t) => t.id === 'possessions')!;
-    expect(possessions.status).toBe('detailed-only');
+    expect(possessions.status).toBe('script-only');
     expect(possessions.pass).toBeUndefined();
     expect(possessions.estimate).toBeUndefined();
     expect(possessions.real).toEqual([85, 105]);

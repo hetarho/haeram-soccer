@@ -12,7 +12,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | - |
+| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | T844 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -969,7 +969,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
+| T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | doing@261112.hf12 |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
 | T848 | revision 11's pairs are men on the pitch together, held over whole matches | MATCH ARCH | T833 | todo |
 

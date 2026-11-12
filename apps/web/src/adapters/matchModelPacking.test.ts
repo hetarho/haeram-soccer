@@ -14,7 +14,7 @@ import {
   isSaveCompatibilityError,
   SaveCompatibilityError,
 } from '../../../../packages/contracts/src/versions';
-import { DISABLED_RELEASE } from '../../../../tests/fixtures/releases';
+import { withoutMatchModel } from '../../../../tests/fixtures/earlier-saves';
 import { simulatedWorld } from '../../../../tests/fixtures/worlds';
 import { packBitColumns } from './bitpacking';
 import { pack, unpack } from './packing';
@@ -31,10 +31,10 @@ import {
 
 const CAREER: CareerInput = { country: 'ENG', seed: 'full-model-ledger' };
 /**
- * Two unobserved rounds into the taken-over career, played before the full model (release off) so
- * its model data is only what a case adds; a fresh copy per call.
+ * Two unobserved rounds into the taken-over career, saved as a writer before the full model saved
+ * it (`withoutMatchModel`), so its model data is only what a case adds; a fresh copy per call.
  */
-const career = () => simulatedWorld(CAREER, { rounds: 2 }, DISABLED_RELEASE);
+const career = () => withoutMatchModel(simulatedWorld(CAREER, { rounds: 2 }));
 const state = (w: World): MatchModelState => ({
   revision: MATCH_MODEL_REVISION,
   activated: { year: w.year, day: 9, revision: w.revision },
