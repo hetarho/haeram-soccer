@@ -12,7 +12,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | T841 |
+| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -964,7 +964,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T841 | remove the match prototype | ARCH | T840 | doing@261112.hf12 |
 | T842 | shared match leaves out of `grid/` | ARCH | T841 | todo |
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
@@ -997,10 +996,11 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T841 T848
+- implement-task T842 T848
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T841 done
 - 261112 T840 done
 - 261112 T839 done
 - 261112 T838 done: revision 11 released; capacity gate passed on the staking workload (worst checkpoint 4,367,776 of 6,291,456 bytes, portable file 6,551,024 of 8,388,608), every century own match a full revision-11 record from the takeover, era probe to 2025 passed; season 1.4–1.8× revision 10 reported, not a gate; no push hf12
@@ -1020,4 +1020,3 @@
 - 261112 update-ssot MATCH start: T833 measured incompatible participation pairs and penalty clocks; resolve the rule and refresh the assigned task in this planning unit cc12
 - 261112 T832 done: script-derived material, singleton pass pairs, exact touch heat/means, record shot points and 30 report slots; original ten fixtures 7,249 completed passes/305 singleton pairs/238 shots; 1,431 affected unit tests plus type/lint/format/i18n pass; aerial duels unsupported and missing writer counter tags handed to T839/T840; host batch deferred, no push cc12
 - 261112 T831 done: lazy 60-second staged frames, fixed-action clock fits/rate reports, live ball/holder/XI/target snapshots, source commentary and pose facts, prefix counters; 1,568 affected unit tests plus type/lint/format/i18n pass; three-record integration written/registered with unrun rate/equality evidence deferred to host; no push cc12
-- 261111 T830 done: incident entry/exit scenes, current XI/slots/keeper, period-aware geometry, lawful penalties/shoot-out and motion-stream corner numbers; event-based exact recount, fresh substitute fatigue; 1,509 affected unit tests and type/lint/format/i18n pass; six T825 incident scenarios written/registered, integration output deferred to host; no push cc12
