@@ -3,6 +3,7 @@
 > Current checkout only; not an atomic lock or a cross-worktree coordination store. Content truth: ssot/. Task detail: tasks/. Notation: FORMAT.md.
 > Work-group checkpoints may add a CLI-generated work summary linking to spec/work/<group>.json. Read work board for live progress.
 > Running sessions add an active row; autopilot adds inbox lines for the owner to confirm and a report under reports/.
+> An open design (gusta-design-mode) is checkout-local interactive state kept by vibe design — never written here.
 
 ## cfg
 - level: mid
@@ -973,31 +974,6 @@
 |---|---|---|---|---|
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
 | T848 | revision 11's pairs are men on the pitch together, held over whole matches | MATCH ARCH | T833 | todo |
-
-## work
-| id | workers | total | done | remaining | running | review | blocked | updated | history |
-|---|---|---|---|---|---|---|---|---|---|
-| one-result | 3 | 10 | 9 | 1 | 0 | 0 | 1 | 2026-10-12T09:01:22.640Z | [history](work/one-result.json) |
-| club-realism | 4 | 13 | 12 | 1 | 0 | 0 | 1 | 2026-10-12T22:43:01.938Z | [history](work/club-realism.json) |
-| refactor-261019 | 4 | 53 | 13 | 40 | 0 | 0 | 0 | 2026-10-19T15:26:40.310Z | [history](work/refactor-261019.json) |
-| identity | 2 | 33 | 18 | 15 | 0 | 0 | 0 | 2026-10-20T22:28:57.114Z | [history](work/identity.json) |
-| full-model | 3 | 19 | 9 | 10 | 0 | 1 | 0 | 2026-10-21T11:25:40.420Z | [history](work/full-model.json) |
-| presentation-261021 | 2 | 20 | 5 | 15 | 0 | 0 | 0 | 2026-10-21T08:56:27.409Z | [history](work/presentation-261021.json) |
-| history-activation | 4 | 12 | 0 | 12 | 0 | 0 | 0 | 2026-10-23T17:52:49.367Z | [history](work/history-activation.json) |
-| v9n4-release | 4 | 23 | 16 | 7 | 0 | 0 | 0 | 2026-10-25T04:35:28.540Z | [history](work/v9n4-release.json) |
-| module-1026 | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-26T14:01:39.120Z | [history](work/module-1026.json) |
-| h7t3 | 4 | 6 | 0 | 6 | 0 | 1 | 2 | 2026-10-27T08:21:16.497Z | [history](work/h7t3.json) |
-| auto-play | 4 | 7 | 4 | 3 | 0 | 1 | 0 | 2026-10-27T11:34:29.863Z | [history](work/auto-play.json) |
-| auto-play-2 | 4 | 4 | 3 | 1 | 0 | 0 | 0 | 2026-10-27T16:35:19.928Z | [history](work/auto-play-2.json) |
-| v07-beta | 4 | 3 | 2 | 1 | 0 | 0 | 0 | 2026-10-28T15:33:48.514Z | [history](work/v07-beta.json) |
-| club-places | 3 | 4 | 4 | 0 | 0 | 0 | 0 | 2026-10-28T20:38:37.582Z | [history](work/club-places.json) |
-| club-places-ui | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:28.891Z | [history](work/club-places-ui.json) |
-| club-browser-fix | 2 | 7 | 7 | 0 | 0 | 0 | 0 | 2026-10-28T20:39:32.438Z | [history](work/club-browser-fix.json) |
-| club-market-fix | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2026-10-28T20:43:31.901Z | [history](work/club-market-fix.json) |
-| av07 | 3 | 4 | 2 | 2 | 0 | 0 | 0 | 2026-11-07T14:37:29.322Z | [history](work/av07.json) |
-| economy-ec09 | 2 | 13 | 13 | 0 | 0 | 0 | 0 | 2026-11-09T08:07:24.453Z | [history](work/economy-ec09.json) |
-| fi09 | 2 | 22 | 22 | 0 | 0 | 0 | 0 | 2026-11-09T21:55:30.034Z | [history](work/fi09.json) |
-| rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
 - hf12 handed off at 21:00 KST 261112 (owner's deadline): fetch `origin/wip/hf12`, branch from it (e.g. `git worktree add -b work/<tag> .tmp/<tag> origin/wip/hf12`), merge origin/main, then `vibe loop --tasks 'T845 T848' --verify "pnpm run verify:batch"`. T838–T844 are done but unverified as a whole: the final `pnpm run verify:batch` (browser journeys included, T839's specs among them) and the main push are still to run; main is unchanged at 9673816c plus the owner's unpushed local commits, which this branch contains
