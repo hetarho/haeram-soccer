@@ -12,7 +12,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | T844 |
+| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -971,7 +971,6 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | doing@261112.hf12 |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
 | T848 | revision 11's pairs are men on the pitch together, held over whole matches | MATCH ARCH | T833 | todo |
 
@@ -1001,10 +1000,11 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T844 T848
+- implement-task T845 T848
 - owner opens `artifacts/benchmarks/scripted-model-calibration/README.md` (T840, the released model's verdict); planning starts from its causes table and the 261112 suggest: the writer's minute bursts, the script's invented blockers, outside-shot placement and chained flows (→MATCH-38/39/22)
 
 ## log
+- 261112 T844 done
 - 261112 T843 done
 - 261112 T842 done
 - 261112 T841 done
@@ -1024,4 +1024,3 @@
 - 261112 T833 done: joint temporal attribution, causal penalty clocks and own aggregate/script/material path; 98 isolated tests and fast checks pass, 20/20 measured fixtures valid; integration acceptance remains open for the host gate cc12
 - 261112 create-task MATCH r61: refreshed T833 at MATCH@61, same T832 dependency and original acceptance; joint action participation and penalty cause clocks precede own dispatch; todo and runnable, source sketch withdrawn, one planning slice cc12
 - 261112 update-ssot MATCH r61: MATCH-27 common participation and one penalty/foul/card minute; T833 is the sole affected in-flight task, its uncommitted dispatch sketch withdrawn before create-task refresh cc12
-- 261112 update-ssot MATCH start: T833 measured incompatible participation pairs and penalty clocks; resolve the rule and refresh the assigned task in this planning unit cc12
