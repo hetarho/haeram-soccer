@@ -28,7 +28,12 @@ import {
 import { careerWorld, CAREER_YEAR } from '../packages/engine/src/career.testkit';
 import { FAN_MOOD, OWNER_BUSINESS } from '../packages/engine/src/owner-config';
 import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
-import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
+import {
+  canonical,
+  validateWorld,
+  type CountryCode,
+  type World,
+} from '../packages/contracts/src/index';
 import { managerHistoryDateKey } from '../packages/contracts/src/manager-history';
 import type { ManagerHistoryPage } from '../packages/contracts/src/manager-history-view';
 import {
@@ -356,7 +361,7 @@ function loadPhase<T>(phase: Phase): PhaseResult<T> {
  * in 구단주 파산 between their 31st and 40th seasons on revision 11 (T838); a full stake keeps the
  * fortune near prices without the 팬 민심 a dividend costs (→OWNER-12).
  */
-function longCareer(country: string, seed: string) {
+function longCareer(country: CountryCode, seed: string) {
   const w = careerWorld({ country, seed });
   operate(w, { type: 'owner-stake', percent: OWNER_BUSINESS.stake.max });
   return w;
