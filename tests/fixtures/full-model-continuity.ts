@@ -1,5 +1,6 @@
 import type { MatchPlayback, PlayerMotion, World } from '../../packages/contracts/src/types';
 import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
+import { motionStateLabel } from '../../apps/web/src/features/match-viewer/lib/motionState';
 import { advanceRound, fullStatsRead, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
@@ -80,10 +81,17 @@ export interface ContinuityCareer {
      */
     fastest: (realMs: number) => number;
     /**
-     * A sample of a delivered set piece where six or more defenders hold set-piece jobs (T348),
-     * with where its marker stands then, in the pitch's 0–100 units.
+     * The kick sample of a staged corner (→MATCH-18) with a defender goal-side of a man in the box,
+     * where that marker stands then, in the pitch's 0–100 units.
      */
-    setPiece: { index: number; label: string; marker: Who; at: readonly [number, number] };
+    setPiece: {
+      index: number;
+      label: string;
+      marker: Who;
+      at: readonly [number, number];
+      /** What his sheet says he is doing: his staged state's label. */
+      state: string;
+    };
   };
 }
 
@@ -98,23 +106,46 @@ function career(seed: string): World {
   return w;
 }
 
-/** A committed set-piece mark or cover the engine recorded, still held. */
-const job = (p: PlayerMotion) =>
-  !!p.intention &&
-  !p.intention.ended &&
-  p.intention.priority === 'committed' &&
-  (p.intention.kind === 'mark' || p.intention.kind === 'cover');
+/** Metres per playback unit: the 105 × 68 m pitch drawn on 0–100 along each axis. */
+const METRES = [1.05, 0.68] as const;
 
-/** The first sample whose defending side holds six or more set-piece jobs, with one marker. */
+/**
+ * The kick of the first corner the staging places from a settled beat (→MATCH-18): its sample and
+ * a defender standing goal-side of an attacker in the box, with the state his sheet names.
+ */
 function setPieceShot(playback: MatchPlayback) {
   const { samples } = presentationSamples(playback.frames);
-  for (let index = 0; index < samples.length; index++)
-    for (const side of [0, 1] as const) {
-      const players = samples[index]!.players?.[side] ?? [];
-      if (players.filter(job).length < 6) continue;
-      const marker = players.find(
-        (p) => job(p) && p.intention!.kind === 'mark' && p.state === 'mark',
+  for (const [i, frame] of playback.frames.entries())
+    for (const stoppage of frame.stoppages ?? []) {
+      if (stoppage.kind !== 'corner') continue;
+      const kick = i * 60 + Math.min(60, stoppage.kick);
+      const settled = i * 60 + Math.min(stoppage.kick, stoppage.settled);
+      const event = (frame.events ?? []).find((e) => e.restart === 'corner');
+      const index = samples.findLastIndex(
+        (sample) => sample.time >= settled && sample.time <= kick && !!sample.players,
       );
+      if (!event || index < 0) continue;
+      const attack = event.side as 0 | 1;
+      const side: 0 | 1 = attack === 0 ? 1 : 0;
+      const goal = event.from[0] > 50 ? 100 : 0;
+      const fromGoal = (p: PlayerMotion) => Math.abs(goal - p.position[0]) * METRES[0];
+      const players = samples[index]!.players!;
+      const keeper = (s: 0 | 1, p: PlayerMotion) =>
+        playback.squads[s].find((player) => player.id === p.id)?.position === 'GK';
+      const runner = players[attack].find(
+        (p) => !keeper(attack, p) && p.id !== event.receiver && fromGoal(p) <= 16.5,
+      );
+      const marker =
+        runner &&
+        players[side].find(
+          (p) =>
+            !keeper(side, p) &&
+            fromGoal(p) < fromGoal(runner) &&
+            Math.hypot(
+              (p.position[0] - runner.position[0]) * METRES[0],
+              (p.position[1] - runner.position[1]) * METRES[1],
+            ) <= 4,
+        );
       if (!marker) continue;
       return {
         samples: samples.length,
@@ -123,6 +154,7 @@ function setPieceShot(playback: MatchPlayback) {
           label: playback.frames[samples[index]!.frame]!.label,
           marker: { side, index: playback.squads[side].findIndex((p) => p.id === marker.id) },
           at: marker.position,
+          state: motionStateLabel(marker),
         },
       };
     }
@@ -130,7 +162,7 @@ function setPieceShot(playback: MatchPlayback) {
 }
 
 /**
- * The first seeded career whose next own match has a goal and a held set-piece delivery: the
+ * The first seeded career whose next own match has a goal and a staged corner: the
  * journey checks those scenes, not a seed, and a football change can leave one match without them.
  */
 export function continuityCareer(): ContinuityCareer {

@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { clubhouseDate, openClubRecords, openLeague } from './competition-navigation';
-import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { delegateSales } from './events';
 import { finishSeason } from './season-progression';
 import { openCurrentClubSeason, openSeasonReview, showRecordTabs } from './record-navigation';
@@ -329,6 +329,8 @@ test('filters player samples and shows scoped per-90 evidence on a mobile profil
 test('jumps between recorded periods without changing the final result or calendar', async ({
   page,
 }) => {
+  // The page stages the watched match ahead (→MATCH-39): a moment opens once it is staged.
+  test.slow();
   await page.goto('/');
   await startCareer(page);
   await delegateSales(page);
@@ -340,6 +342,7 @@ test('jumps between recorded periods without changing the final result or calend
   await details.getByText('주요 장면 탐색', { exact: true }).click();
   const moments = details.getByRole('region', { name: '주요 장면 탐색', exact: true });
   const half = moments.getByRole('button', { name: '전반 종료 · 45분', exact: true });
+  await expect(half).toBeEnabled({ timeout: STAGING_TIMEOUT_MS });
   await half.click();
   // Half-time opens the second half's first minute.
   await expect(page.getByTestId('pitch-theatre')).toContainText('46′ ·');
@@ -351,7 +354,9 @@ test('jumps between recorded periods without changing the final result or calend
   await page.getByRole('radio', { name: '1×', exact: true }).click();
   await openMatchDetails(page);
   await details.getByText('주요 장면 탐색', { exact: true }).click();
-  await moments.getByRole('button', { name: '경기 종료 · 90분', exact: true }).click();
+  const fullTime = moments.getByRole('button', { name: '경기 종료 · 90분', exact: true });
+  await expect(fullTime).toBeEnabled({ timeout: STAGING_TIMEOUT_MS });
+  await fullTime.click();
   await expect(page.getByTestId('match-score').locator('strong')).toHaveText(score);
   await expect(page.getByTestId('game-date')).toHaveText(date);
 });

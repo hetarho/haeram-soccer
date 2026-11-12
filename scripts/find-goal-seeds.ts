@@ -14,10 +14,10 @@
  *   sooner than one clock minute after kick-off, and holds at least three goals, all of them
  *   highlights with their footage retained; the paused seek between the first two goals lands on a
  *   sample before the second, and the second leaves the clip room to return first.
- * - `archived`: tests/e2e/match-core.spec.ts's archived replay of a settled own match.
- *   Three goals, home then away twice (1 : 0, 1 : 1, 1 : 2): the first crossed within the replay's
- *   first two clock minutes at the speed it opens at, the second within one clock minute of the
- *   sample before its minute's, the third before the seek sample `ARCHIVED.pastSample`.
+ * - `archived`: tests/e2e/match-core.spec.ts's archived replay of a settled own match, staged from
+ *   its script. Three goals or more, the first crossed within the replay's first two clock minutes
+ *   at the speed it opens at, the second within one clock minute of the seek sample just before it;
+ *   the spec reads the running scores from the reference and seeks past the rest to the end.
  *
  * - `brace`: two goals within one minute, both with their footage, for a journey on separate goals
  *   of one minute (→WEB-94/105); reported when the scan finds one, never a failure when it does not.
@@ -85,18 +85,12 @@ const OPENING = {
 
 /** The `archived` scene's bounds, as match-core.spec.ts reads it. */
 const ARCHIVED = {
-  /** The running scores the spec asserts, goal by goal. */
-  scores: [
-    [1, 0],
-    [1, 1],
-    [1, 2],
-  ],
+  /** Goals the match holds at least: the first, and later ones a seek to the end passes. */
+  goals: 3,
   /** Clock minutes at the opening speed within which the first goal is crossed. */
   firstMinutes: 2,
   /** Clock minutes from the seek sample within which the second goal is crossed. */
   secondMinutes: 1,
-  /** The sample the spec seeks to past every goal, before seeking back. */
-  pastSample: 80,
 } as const;
 
 interface Verdict {
@@ -219,29 +213,26 @@ function archivedScene(seed: string, playback: MatchPlayback | undefined): Verdi
   const played = playback.record;
   const minutes = played.highlights.map((goal) => goal.minute);
   const misses = recordMisses(played);
-  const sides = played.highlights.map((h) => h.side).join('');
-  if (sides !== '011') misses.push(`goals by side ${sides || 'none'}`);
+  if (played.highlights.length < ARCHIVED.goals) misses.push(`fewer than ${ARCHIVED.goals} goals`);
   if ((played.highlights[0]?.minute ?? 99) > ARCHIVED.firstMinutes + 1)
     misses.push(`first goal after ${ARCHIVED.firstMinutes + 1}′`);
   if (misses.length) return { seed, misses, goals: listed(played), minutes };
   const staged = stagedGoals(playback);
   const { goals, samples, beats } = staged;
   misses.push(...commonMisses(staged));
-  const scores = goals.map((goal) => [goal.home, goal.away]);
-  if (JSON.stringify(scores) !== JSON.stringify(ARCHIVED.scores))
-    misses.push(`scores ${scores.map((s) => s.join(':')).join(', ') || 'none'}`);
+  if (goals.length !== played.highlights.length) misses.push('goals on the clock ≠ highlights');
   const shown = (time: number) => goals.filter((goal) => goal.seconds <= time).length;
   let seek: number | undefined;
   let firstCue: number | undefined;
-  const [one, two, three] = goals as (GoalInstant | undefined)[];
-  if (one && two && three) {
+  const [one, two] = goals as (GoalInstant | undefined)[];
+  if (one && two) {
     // The cue names the first goal's scorer.
     if (!one.scorer || one.scorer !== played.highlights[0]?.player)
       misses.push('first cue unnamed');
     firstCue = presentationMs(0, one.seconds, WATCH_DEFAULT_SPEED, beats);
     if (firstCue > ARCHIVED.firstMinutes * clockMinuteMs)
       misses.push(`first goal after ${ARCHIVED.firstMinutes} clock minutes`);
-    // One sample a minute: the one before the second goal's minute's.
+    // The sample before the second goal's.
     const at = samples.findIndex((sample) => sample.time >= two.seconds);
     seek = at - 1;
     const from = samples[seek]?.time ?? -1;
@@ -251,9 +242,6 @@ function archivedScene(seed: string, playback: MatchPlayback | undefined): Verdi
       ARCHIVED.secondMinutes * clockMinuteMs
     )
       misses.push(`second goal after ${ARCHIVED.secondMinutes} clock minute from sample ${seek}`);
-    const past = samples[ARCHIVED.pastSample];
-    if (!past || shown(past.time) !== goals.length)
-      misses.push(`a goal past sample ${ARCHIVED.pastSample}`);
   }
   return { seed, misses, goals: listed(played), firstCue, minutes, seek };
 }

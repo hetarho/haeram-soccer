@@ -6,6 +6,7 @@ import {
   openMatchDetails,
   openPlayerSheet,
   presentedMinute,
+  stagedTo,
   watchNext,
 } from './watch';
 import { delegateSales, reportKit } from './events';
@@ -347,13 +348,13 @@ test('draws a set-piece preparation in about 1.5 s with the players travelling',
   // The result holds the match still, so the details' seek keeps its place once they close.
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const details = await openMatchDetails(page);
-  // The same match: its sample count matches the reference within the few points Firefox and
-  // WebKit may sample apart from Node; the seek itself goes by match time.
-  const max = Number(
-    await details.getByRole('slider', { name: '경기 시간', exact: true }).getAttribute('max'),
-  );
-  expect(
-    Math.abs(max - (presentationSamples(playback.frames).samples.length - 1)),
-  ).toBeLessThanOrEqual(10);
+  // The same match: once the page's worker has staged it (→MATCH-39), its sample count matches the
+  // reference within the few points Firefox and WebKit may sample apart from Node; the seek itself
+  // goes by match time.
+  const reference = presentationSamples(playback.frames).samples.length - 1;
+  const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
+  await stagedTo(timeline, reference - 10);
+  const max = Number(await timeline.getAttribute('max'));
+  expect(Math.abs(max - reference)).toBeLessThanOrEqual(10);
   await expectCompressedPreparation(page, playback, preparation);
 });
