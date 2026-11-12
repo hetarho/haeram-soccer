@@ -18,6 +18,7 @@
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
 
 ## inbox
+- 261112 decided MATCH-16 T848: next's MATCH r60 (a two-man action's second man weighed on the minutes he shares with the first, refit by `pairGroups`, `settlePairs` removed) and the handoff's T833 (both men drawn on their own weights, matched over shared playing time, only an unmatched second man redrawn on the shared share of his spell) solve the same unplayable pairs → MATCH r62 states T833's matching, which the 200-fixture audit already passes with zero script failures; T848 keeps its number as a trace-level guard on whole matches with substitutions (alt: implement r60's weighting on top, redrawing revision 11 and repeating T838's digests, prepared careers and audit | leave T848 as planned against sm11's code, which the handoff does not have). hf12
 - 261112 decided T849 ARCH-21: the 300-fixture expected-total check fits every numerical marginal within 9.72e-9, but its 88 pointwise 95% comparisons reject seven rows → keep the same 300 fixtures and 3% margin, use simultaneous paired 95% confidence with Bonferroni and the existing normalQuantile, and add a 100-case exact-marginal property check (alt: tune simulation or seeds to fit this sample, rejected). No football parameter or game output changes for this statistical test correction.
 - 261112 decided T849 ARCH-30: the owner resumed work until 09:30 KST, with explicit fallback to push unfinished progress to wip/cc12-handoff; main is merged and pushed only if the requested work is complete and verified. rs12 handles the failed gate first and preserves all remaining work at the deadline.
 - 261112 decided T850 MATCH-27 MATCH-38 MATCH-39: how minute frames count a prefix whose earned restarts and recorded deliveries are not yet balanced → share pure numerical counters with an explicit prefix scope, while complete records still call the unchanged ledger guard (alt: drop the settled-ledger guard | require each presentation minute to be a complete match). Fixed delivery chains wait for every entrant, and a booked leaving fouler finishes his actual foul before his exit; no settled fact is re-credited. cc12
@@ -919,7 +920,7 @@
 | WORLD | 11 | 11 | - | 0 |
 | KIT | 10 | 10 | - | 0 |
 | CLUB | 67 | 67 | - | 0 |
-| MATCH | 61 | 61 | - | 0 |
+| MATCH | 62 | 62 | - | 0 |
 | LEAGUE | 18 | 18 | - | 0 |
 | STAFF | 41 | 41 | - | 0 |
 | ECON | 54 | 54 | - | 0 |
@@ -959,7 +960,7 @@
 | T843 | engine tests, fixtures and goldens off the earlier match models | MATCH SAVE ARCH | T842 | todo |
 | T844 | scripts, the target registry and the web off the earlier match models | MATCH ARCH | T843 | todo |
 | T845 | remove the detailed engine and the earlier match-model paths | MATCH SAVE ARCH | T844 | todo |
-| T848 | revision 11's attribution pairs the two men of an action among men on the pitch together | MATCH ARCH | T826 | todo |
+| T848 | revision 11's pairs are men on the pitch together, held over whole matches | MATCH ARCH | T833 | todo |
 
 ## work
 | id | workers | total | done | remaining | running | review | blocked | updated | history |
@@ -987,9 +988,12 @@
 | rl10 | 2 | 10 | 10 | 0 | 0 | 0 | 0 | 2026-11-10T19:37:26.513Z | [history](work/rl10.json) |
 
 ## next
-- implement-task T838
+- implement-task T838 (from the handoff receipt: artifacts/benchmarks/T838/post-activation-engine-check.json), T848 guard, then T839 → T845
 
 ## log
+- 261112 create-task MATCH r62: T848 refreshed as a guard (every traced pair on the pitch together over 8 placed 2008 fixtures, pairs add up to the trace's counts, `commonSpan`/`pairParticipants` edge cases), dep T833, base MATCH@62 hf12
+- 261112 update-ssot MATCH r62 (MATCH-16✎ two-man actions: both men on their own weights matched over shared playing time, only an unmatched second man redrawn) hf12
+- 261112 hf12: owner's 맡김 to finish the cc12 handoff on latest main; main merged into the handoff, handoff MATCH r60→r61 and T848 (gate fix)→T850 renumbered after next's own r60/T848 hf12
 - 261112 T838 checkpoint: revision 11 candidate/default and activation regressions, explicit historical grid pins, refreshed result digests and all prepared packs; 1756 affected units/static/build and final-source 200-fixture audit pass. Broader engine run cut off at 09:26 with 13 observed failures, incomplete; capacity/final throughput remain. Handoff requested by 09:30, todo for remote pickup, main unchanged. rs12
 - 261112 T849 done: fixed-touch livelock, booked departure and recorded kickoff incidents repaired; joint confidence corrected without retuning football. Full batch at 64d30c26 passes 4476 tests plus 334 Chromium journeys and all static/build stages; checkpoint pushed to handoff, T838–T845 remain. rs12
 - 261112 T850 done: entrant-safe fixed chains, booked departure boundary, explicit prefix counters with settled guards retained, converged place marginals and corrected tackle cell; lab defaults refreshed, 1,485 affected unit tests/type/lint/format/i18n/build pass, original integration acceptance pending host batch, no push cc12
@@ -1007,6 +1011,3 @@
 - 261111 T829 done: four tactic press profiles/counter-press window, role freedom, discipline, personal pace and fatigue in movement/arrival planning; first step 0.7→0.4 s, mean place error 4.58→3.76 m, 134 staging and 1,494 changed-selection unit tests, type/lint/format/i18n pass; ten-pairing integration written/registered, unrun metrics reserved for host batch; no push cc12
 - 261111 T828 done: resumable bound staging, stable record-line frame/event IDs, 31 picture metrics and pure fit lines; 1,611 changed-selection and 122 final focused unit tests, type/lint/format/i18n pass; ten-fixture prototype comparison written and registered, unrun lists/fit evidence reserved for host batch; no push cc12
 - 261111 T827 done: incident beats, penalty links/restarts, four halves and ordered shoot-out; 78 focused and 67 changed-selection unit tests, type/lint/format/i18n pass; sixty-fixture integration gate written and registered, unrun costs/means reserved for the host; no push cc12
-- 261111 T826 done
-- 261111 T825 done: integer detail rows and exact ledger/attribution recount, stints/incidents, penalty links and optional shoot-out trace; exporter consumes detail; six legacy hashes unchanged, 141 affected unit files/1,317 tests and type/lint/format/i18n pass; 60-fixture and ten-file byte-identity integration gates written but not run, deferred to the host cc12
-- 261111 T824 done: revision 11 declared but inactive; aggregate place weights fitted by class/period, mirrored ball wins and different-passer offside pairs; six pre-change attribution+trace hashes unchanged, 168 affected unit files/1,577 tests and 7 focused cases pass, type/lint/format/i18n pass; two statistical integration acceptance items remain open for the host batch, no measured locality claim cc12
