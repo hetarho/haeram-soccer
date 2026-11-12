@@ -24,7 +24,7 @@ The existing paired runner measures identical copies of this source (A/A), seed 
 | fixture | 3.60 | 3.64 | 96 | true | 1.0445 [0.632, 1.5962] |
 | staging | 3840.53 | 3877.93 | 24 | true | 1.0031 [0.9832, 1.0228] |
 
-Full production staging now completes, including its prefix counters; the historical T837 prefix-ledger failure is repaired by T848 and validated with T849. Historical T837 reports are unchanged.
+Full production staging now completes, including its prefix counters; the historical T837 prefix-ledger failure is repaired by T850 and validated with T849. Historical T837 reports are unchanged.
 
 ```sh
 node scripts/perf/ab.mjs --workload own-match --base . --cand . --json .tmp/own-match-aa.json
