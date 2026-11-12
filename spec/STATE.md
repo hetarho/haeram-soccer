@@ -12,7 +12,7 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
-| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | - |
+| hf12 | hq-dev1-pve2-vm2 | autopilot | 2026-11-12T01:19Z | 2026-11-12T01:19Z | T838 |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
@@ -954,7 +954,7 @@
 ## tasks
 | id | title | ssot | dep | st |
 |---|---|---|---|---|
-| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | todo |
+| T838 | release: the scripted match model becomes the game's | MATCH SAVE HIST ARCH | T837 | doing@261112.hf12 |
 | T839 | web on the scripted model: browser journeys, goal scenes, the influence map and the glossary | MATCH WEB LAB PLAYER ARCH | T838 | todo |
 | T840 | the released model's verdict: the own club on the same curve, the script's invention, the picture's limits | MATCH ARCH | T839 | todo |
 | T841 | remove the match prototype | ARCH | T840 | todo |

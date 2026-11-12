@@ -47,3 +47,26 @@ The [post-activation audit](T838/post-activation-own-fixtures-200.json) passes a
 The broader unit/integration/contract run was stopped by its explicit 09:26 KST deadline after 444811 ms. It is incomplete and observed 13 failures; additional failures may remain. [The receipt and failed cases](T838/post-activation-engine-check.json) and [raw output](T838/post-activation-engine-output.txt) are preserved for the next owner. Some checks still expect grid frames; others require investigation. No guard, sample or threshold was weakened to clear them.
 
 Release acceptance remains open: resolve these cases and rerun the engine gate, run the unchanged lossless century benchmark, and repeat required throughput on final source/toolchain. Browser migration remains T839, then T840–T845. The owner authorized incomplete work on wip/cc12-handoff by 09:30 KST; main is unchanged.
+
+## Final source on the pinned toolchain (hf12, 261112)
+
+Machine: Intel Xeon Silver 4214 @ 2.20GHz, 12 logical CPUs, 31 GiB, Linux 5.15.0-164, Node **v24.22.1** (the repository's pinned release), pnpm 10.34.6. The century benchmark's phases, the engine suite and these measurements shared the host, so every timing names its load. The engine source equals the audited candidate 4e3d88fb: since then only tests, `scripts/` measurement workloads and reports changed, so the [post-activation audit](T838/post-activation-own-fixtures-200.json) is this source's — 200 own fixtures, record (→MATCH-27) failures **0**, script count failures **0 (0%)**, exceptions 0.
+
+### Engine suite
+
+`pnpm exec vitest run --project unit --project integration --project contract` on the final test sources (01:26–02:05 UTC, load 7–27): 532 files, 4,482 tests — **4,472 passed, 4 skipped (declared), 6 failed, every one a time limit** under the shared load (`staff.hiring` 34 s against 30 s; `calendar.progression-eng`, `detail`, `fixtureHelpers.integration`, `staging/incidents` against 300 s; `persistence.long-career` against 600 s), no assertion failed. The handoff's 13 failures were tests that took a released own match for a grid match: viewer charts and moments, world, fast-path, season dispatch and client reload now read the script/staging (`stagedPlayback` where frames are needed), the grid's own dispatch is kept by an explicit revision-10 world, and `export-settled`'s ten prototype files are reproduced from the revision-10 worlds that exported them (the exporter now names the settling world's revision rather than the release constant).
+
+### Complete season, revision 10 against revision 11
+
+`pnpm exec tsx scripts/season-throughput.ts --ab rev10=.@10 rev11=.@11 --seasons 2 --reps 2` — the same tree, the century benchmark's two profile worlds pinned to each revision, interleaved with the order rotated each repetition ([raw](T838/season-rev10-rev11.json)). Sum of per-season medians, seconds:
+
+| Profile | Revision 10 | Revision 11 | Revision 11 / 10 | Load 1 min |
+|---|---:|---:|---:|---|
+| baseline | 142.6 (81.7, 61.0) | 252.1 (134.1, 118.0) | **1.768** | 6.9–23.5 |
+| active-management | 114.5 (66.3, 48.2) | 161.6 (85.0, 76.7) | **1.411** | 7.3–23.5 |
+
+On this Xeon host, under that load, a complete season on revision 11 takes about 1.4–1.8× revision 10's engine time. Two repetitions give no interval; the direction held in every pair. Throughput is reported, not a gate (→ARCH-31); revision 11 also credits every fixture's actions with the players' places (→MATCH-16), not only the own match.
+
+### Century workloads
+
+The first two benchmark runs exposed two workload faults older than this task, both in the benchmark's owner actions: the active-management profile loaned the scout's first listed player, now a free agent whom the game refuses to loan (→CLUB-49/50), and it adopted a new design every season, whose −20 팬 민심 (→KIT-9, OWNER-12) forced the owner out (구단주 퇴진, →OWNER-13) in season 3 on revision 10 and before season 20 on revision 11 (a scratch replay of the same workload printed 팬 민심 by season). The owner now bids for the scout's first club player on loan and adopts a design only while 팬 민심 is at least 50, twice the floor after the drop; the scope line reports the edits made. `scripts/season-throughput.ts` and `scripts/match-model-baseline.ts` carried the same loan.

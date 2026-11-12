@@ -20,6 +20,11 @@ it("the engine's detail equals the exported files", () => {
     };
   });
   const pairs = setup.pairs;
+  // The ten files are the prototype's revision-10 exports (T819), which the script writer's tests
+  // read as inputs, so they stay as recorded: the worlds settle on revision 10 by name, whose
+  // attribution ignores the players' places (→MATCH-16), not on the released revision 11 (T838).
+  for (const w of Object.values(setup.worlds))
+    if (w.matchModel) w.matchModel = { ...w.matchModel, revision: 'continuous-aggregate-10' };
   const tactics: readonly (readonly [Tactic, Tactic])[] = [
     ['possession', 'possession'],
     ['possession', 'counter'],
@@ -94,7 +99,7 @@ it("the engine's detail equals the exported files", () => {
     expect(
       detail.incidents.filter((x) => x[2] === 0).map((x) => [x[0]!, x[1]!, line(x[1]!, x[3]!)]),
     ).toEqual(expected.cards);
-    const exported = settledFile(id, w.seed, f, match, rosters, sample.record.added!);
+    const exported = settledFile(id, w, f, match, rosters, sample.record.added!);
     expect(JSON.stringify(exported) + '\n').toBe(bytes);
   }
 });

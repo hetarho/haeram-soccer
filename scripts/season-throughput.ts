@@ -2,15 +2,17 @@
  * Seconds per simulated season on the century benchmark's worlds (T224, T285, →MATCH-22, ARCH-31).
  *
  *   pnpm exec tsx scripts/season-throughput.ts [--seasons N] [--own-league summary|grid]
- *     [--profile baseline|active-management] [--candidate]
+ *     [--profile baseline|active-management] [--candidate] [--revision R]
  *   pnpm exec tsx scripts/season-throughput.ts --stages N [--reps R]
- *   pnpm exec tsx scripts/season-throughput.ts --ab name=repo[:candidate] ... [--seasons N] [--reps R]
+ *   pnpm exec tsx scripts/season-throughput.ts --ab name=repo[:candidate][@R] ... [--seasons N] [--reps R]
  *
  * Also runs unchanged on older trees (copy it there, as T224 did): the own-league switch, the
  * candidate model and the aggregate stages are loaded only when asked for.
  * - `--profile active-management` plays the runner's owner actions each season
  *   (scripts/match-model-baseline.ts `manage`); the default is the baseline world.
  * - `--candidate` activates the candidate match model from the takeover (tests/fixtures/worlds.ts).
+ * - `--revision R` pins the profile world to match-model revision R by its number (T838: the
+ *   released revision 11 against revision 10 on one tree, `--ab rev10=.@10 rev11=.@11`).
  * - `--stages N` times the aggregate fixture's stages on the baseline world's first N non-own
  *   fixtures instead of seasons (trees with the aggregate path): per stage, the median over
  *   fixtures of each fixture's median of R repetitions.
@@ -37,6 +39,7 @@ import {
   quote,
   simulateSeason,
   sponsorSlots,
+  transferOffers,
 } from '../packages/engine/src/index';
 import { careerWorld } from '../packages/engine/src/career.testkit';
 import type { World } from '../packages/contracts/src/types';
@@ -80,8 +83,16 @@ function manage(w: World, season: number) {
       });
   // The town's investment row, held from the first season as a founded club holds its rows.
   if (season === 0) w.policy = { ...policyOf(w), localInvest: 2 };
-  if (season % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
-    operate(w, { type: 'recruit', candidate: 0, loan: true });
+  // A loan bid for the scout's first club player: free agents list first and are never loaned.
+  const loanable = transferOffers(w).findIndex(
+    (offer) => offer.source.kind === 'club' && offer.available,
+  );
+  if (
+    season % 10 === 0 &&
+    loanable >= 0 &&
+    w.players.filter((p) => p.status === 'active').length < 26
+  )
+    operate(w, { type: 'recruit', candidate: loanable, loan: true });
   const stand = nextWork(w, 'stadium');
   if (season % 15 === 0 && stand && !w.facilityWorks?.stadium && available(stand.cost))
     startFacilityWork(w, 'stadium', (fee) => debit(w, fee));
@@ -109,6 +120,13 @@ async function seasons() {
   const candidate = process.argv.includes('--candidate');
   const w = world(profile);
   if (candidate) (await import('../tests/fixtures/worlds')).withCandidateModel(w);
+  const revision = arg('--revision');
+  if (revision !== undefined) {
+    const { MATCH_MODEL_REVISIONS } = await import('../packages/contracts/src/match-model');
+    const pinned = MATCH_MODEL_REVISIONS[Number(revision) - 1];
+    if (!pinned || !w.matchModel) throw new Error(`--revision ${revision} names no model here`);
+    w.matchModel = { ...w.matchModel, revision: pinned };
+  }
   const startLoad = load1();
   const times: number[] = [];
   for (let n = 0; n < seasonCount; n++) {
@@ -123,6 +141,7 @@ async function seasons() {
     kind: 'seasons',
     profile,
     candidate,
+    revision: w.matchModel?.revision ?? 'pre-feature',
     ownLeague: ownLeague ?? 'default',
     seasons: seasonCount,
     secondsPerSeason: Number(mean.toFixed(2)),
@@ -236,11 +255,12 @@ function ab() {
   }
   const trees = specs.map((spec) => {
     const eq = spec.indexOf('=');
-    if (eq < 1) throw new Error(`--ab takes name=repo[:candidate], not ${spec}`);
-    const rest = spec.slice(eq + 1);
+    if (eq < 1) throw new Error(`--ab takes name=repo[:candidate][@R], not ${spec}`);
+    const pinned = /@(\d+)$/.exec(spec.slice(eq + 1));
+    const rest = spec.slice(eq + 1, pinned ? spec.length - pinned[0].length : undefined);
     const candidate = rest.endsWith(':candidate');
     const repo = candidate ? rest.slice(0, -':candidate'.length) : rest;
-    return { name: spec.slice(0, eq), repo, candidate };
+    return { name: spec.slice(0, eq), repo, candidate, revision: pinned?.[1] };
   });
   if (trees.length < 2) throw new Error('--ab takes two or more name=repo[:candidate] trees');
   const reps = count('--reps', 3);
@@ -274,6 +294,7 @@ function ab() {
       for (const t of order) {
         const args = ['--profile', profile, '--seasons', String(seasonCount)];
         if (t.candidate) args.push('--candidate');
+        if (t.revision) args.push('--revision', t.revision);
         seasonRows.push({
           ...run<Omit<SeasonRow, 'tree' | 'rep'>>(t.repo, args),
           tree: t.name,
@@ -283,7 +304,7 @@ function ab() {
   }
   const out = {
     kind: 'ab',
-    trees: trees.map((t) => ({ name: t.name, candidate: t.candidate })),
+    trees: trees.map((t) => ({ name: t.name, candidate: t.candidate, revision: t.revision })),
     reps,
     seasons: seasonCount,
     stages: {} as Record<string, Record<string, number>>,

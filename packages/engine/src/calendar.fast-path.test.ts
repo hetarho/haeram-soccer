@@ -14,7 +14,13 @@ describe('persistent season calendar', () => {
     const fast = structuredClone(observed);
     const watched = advanceToNextMatch(observed);
     const skipped = advanceToNextMatch(fast, undefined, false);
-    expect(watched?.frames.length).toBeGreaterThan(0);
+    // A released own match is pictured from its script (→MATCH-38/39, T838): watching hands over
+    // the script and staging inputs, the fast path neither, and no frames are built at settlement.
+    expect(watched?.script?.beats.length).toBeGreaterThan(0);
+    expect(watched?.staging).toBeDefined();
+    expect(watched?.frames).toEqual([]);
+    expect(skipped?.script).toBeUndefined();
+    expect(skipped?.staging).toBeUndefined();
     expect(skipped?.frames).toEqual([]);
     expect(skipped?.record).toEqual(watched?.record);
     expect(skipped?.record.players.length).toBeGreaterThan(0);

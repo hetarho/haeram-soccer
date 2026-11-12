@@ -1,6 +1,7 @@
 import { expect, it } from 'vitest';
 import { simulateMatch, nextOwnFixture } from '../../../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
+import { stagedPlayback } from '../../../../../../packages/engine/src/testing';
 import { archivePlayback } from '../../../entities/match/logic';
 import {
   goalFrame,
@@ -12,7 +13,8 @@ import {
 } from './moments';
 
 const w = careerWorld({ country: 'ENG', seed: 'moments' });
-const { record, frames } = simulateMatch(w, nextOwnFixture(w)!, true, true);
+// A released own match carries its script, not frames: the picture is its staging (→MATCH-39).
+const { record, frames } = stagedPlayback(simulateMatch(w, nextOwnFixture(w)!, true, true));
 const samples = frames.flatMap((frame, i) => (frame.motion || [frame]).map(() => ({ frame: i })));
 
 it('orders recorded goals, keeps penalty decisions distinct and maps actual samples', () => {

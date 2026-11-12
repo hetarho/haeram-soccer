@@ -462,8 +462,16 @@ function manage(w: World, season: number) {
       });
   // The town's investment row, held from the first season as a founded club holds its rows.
   if (season === 0) w.policy = { ...policyOf(w), localInvest: 2 };
-  if (season % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
-    operate(w, { type: 'recruit', candidate: 0, loan: true });
+  // A loan bid for the scout's first club player: free agents list first and are never loaned.
+  const loanable = engine
+    .transferOffers(w)
+    .findIndex((offer) => offer.source.kind === 'club' && offer.available);
+  if (
+    season % 10 === 0 &&
+    loanable >= 0 &&
+    w.players.filter((p) => p.status === 'active').length < 26
+  )
+    operate(w, { type: 'recruit', candidate: loanable, loan: true });
   const stand = nextWork(w, 'stadium');
   if (season % 15 === 0 && stand && !w.facilityWorks?.stadium && available(stand.cost))
     startFacilityWork(w, 'stadium', (fee) => debit(w, fee));

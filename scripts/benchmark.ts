@@ -23,8 +23,10 @@ import {
   MATCH_MODEL_RELEASE,
   sponsorSlots,
   trackingBoundary,
+  transferOffers,
 } from '../packages/engine/src/index';
 import { careerWorld, CAREER_YEAR } from '../packages/engine/src/career.testkit';
+import { FAN_MOOD } from '../packages/engine/src/owner-config';
 import { COUNTRIES, LOAD_CATALOG } from '../packages/catalogs/src/index';
 import { canonical, validateWorld, type World } from '../packages/contracts/src/index';
 import { managerHistoryDateKey } from '../packages/contracts/src/manager-history';
@@ -519,6 +521,8 @@ interface ProfileData {
     checkpointAppearances: ReturnType<typeof appearanceSummary>;
   };
 }
+/** The least 팬 민심 at which the active profile's owner adopts a new design (see playSeasons). */
+const REDESIGN_MOOD = FAN_MOOD.floor * 2 - FAN_MOOD.identity;
 /** What a profile's first half hands its second, with the world it left. */
 interface HalfData {
   simulationMs: number;
@@ -542,8 +546,11 @@ function playSeasons(
   for (let n = from; n < to; n++) {
     const before = retainedFacts(w);
     // Before the season's business; its recorded-appearance checks stay out of the engine time
-    // below.
-    identity?.edit(w, n);
+    // below. The owner redesigns only while his supporters can take it: an adoption costs 20 팬
+    // 민심 (→KIT-9, OWNER-12), and one every season forced him out (구단주 퇴진, →OWNER-13) in
+    // his third season on revision 10 and before his twentieth on revision 11 (T838), so he waits
+    // while 팬 민심 is under REDESIGN_MOOD, twice the floor after the drop.
+    if ((w.owner?.fanMood ?? REDESIGN_MOOD) >= REDESIGN_MOOD) identity?.edit(w, n);
     const seasonStart = performance.now();
     if (variant === 'active-management') {
       const code = clubOf(w).country;
@@ -559,8 +566,17 @@ function playSeasons(
       // The town's investment row in place of the outreach campaigns (→ECON-7), held from the
       // first season on as a founded club holds its rows: no command changes them (→ECON-16).
       if (n === 0) w.policy = { ...policyOf(w), localInvest: 2 };
-      if (n % 10 === 0 && w.players.filter((p) => p.status === 'active').length < 26)
-        operate(w, { type: 'recruit', candidate: 0, loan: true });
+      // A loan bid for the scout's first club player: free agents list first and are never
+      // loaned (→CLUB-49/50), and another club's player joins only through a bid (→CLUB-4).
+      const loanable = transferOffers(w).findIndex(
+        (offer) => offer.source.kind === 'club' && offer.available,
+      );
+      if (
+        n % 10 === 0 &&
+        loanable >= 0 &&
+        w.players.filter((p) => p.status === 'active').length < 26
+      )
+        operate(w, { type: 'recruit', candidate: loanable, loan: true });
       const stand = nextWork(w, 'stadium');
       if (n % 15 === 0 && stand && !w.facilityWorks?.stadium && available(stand.cost))
         startFacilityWork(w, 'stadium', (fee) => debit(w, fee));
@@ -998,7 +1014,7 @@ function report() {
     managerHistoryRoundTrip: true,
     completeModelFromTakeover: MATCH_MODEL_RELEASE.enabled,
     passed: true,
-    scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design applied through the club-identity command at each active season start (${identityEvidence.edits} edits) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${CAREER_YEAR}–${ERA_END} era probe. Both careers track their own managers from the takeover; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
+    scope: `Two representative ${SEASONS}-season workloads, with real youth/recovery round training in the active profile, a settled round-23 checkpoint after the century in both profiles, an own design adopted at an active season start whenever 팬 민심 is at least ${REDESIGN_MOOD} (${identityEvidence.edits} edits; a −20 adoption every season forces the owner out, →OWNER-13) and a pending match-kit choice in the active round-23 checkpoint that both resumed careers wear and use up, recorded appearances compared before and after every such command, eight-country archive/capacity checks and a separate ${CAREER_YEAR}–${ERA_END} era probe. Both careers track their own managers from the takeover; the active one also hires a free manager every tenth season and four times a century appoints, replaces and reappoints on one day, beside the interims contract ends leave. At the century and the round after it, every tenure, outcome source, date and record link round-trips the checkpoint exactly, and the records room's paged manager-history read covers every tenure and attributed match. Every checkpoint must round-trip the complete canonical world without loss; save limits and history retention remain unchanged. Throughput includes codec/replay checks; peak heap is sampled at checkpoints. No claim that all seeds/actions fit indefinitely. Direct engine harness records but does not stop at UI warnings.`,
   };
   if (smoke) {
     console.log(JSON.stringify(report, null, 2));

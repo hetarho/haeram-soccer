@@ -21,6 +21,7 @@ import { LINE_MINIMUM, lineOf, ovrAt } from './player';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { simulatedWorld } from '../../../tests/fixtures/worlds';
 import { assertCapacities, input } from './world.testkit';
+import { stagedPlayback } from './testing';
 import { ownStarters, readingOnce } from './world';
 import { effectLedger } from './effect-ledger';
 import { synergyStates } from './synergy';
@@ -119,8 +120,9 @@ describe('world progression', () => {
   it('observed and fast outcomes agree and all metric totals are event-backed', () => {
     const w = simulatedWorld(input),
       f = w.fixtures.find((f) => f.home === w.playerClub || f.away === w.playerClub)!;
+    // A released own match is pictured by staging its script (→MATCH-39, T838).
     const fast = simulateMatch(w, f, false, true),
-      observed = simulateMatch(w, f, true, true);
+      observed = stagedPlayback(simulateMatch(w, f, true, true));
     expect(fast.record).toEqual(observed.record);
     expect(observed.frames.at(-1)!.score).toEqual(observed.record.score);
     // One frame a minute, the added minutes of each half included.

@@ -4,6 +4,7 @@ import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { simulatedWorld, withCandidateModel } from '../../../tests/fixtures/worlds';
 import { canonical, validateWorld } from '../../contracts/src/index';
+import { MATCH_MODEL_REVISION } from '../../contracts/src/match-model';
 import type { Fixture, MatchPlayback, World } from '../../contracts/src/types';
 import { simulateAggregate } from './aggregate/engine';
 import { nextOwnFixture } from './calendar';
@@ -122,7 +123,9 @@ describe('league settlement appearance (→KIT-12)', () => {
       let live: MatchPlayback | undefined;
       advanceRound(w, (_, p) => (live = p), observe);
       expect(live!.record.id).toBe(next.id);
-      expect(live!.frames.length > 0).toBe(observe);
+      // Watching hands over the released match's script to stage; the record is the same.
+      expect(live!.script !== undefined).toBe(observe);
+      expect(live!.frames).toEqual([]);
       expect(live!.record.appearance).toEqual(expected);
       expect(w.ownMatches.find((m) => m.id === next.id)!.appearance).toEqual(expected);
       // The round's other matches leave no appearance anywhere in the world.
@@ -209,16 +212,26 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
       [w.fixtures.find((f) => isOwn(w, f))!, undefined],
       [ownCup, { awayGoals: false }],
     ];
+    // Revision 10, pinned by name, plays an own fixture on the grid until T844 removes it.
+    const grid = structuredClone(w);
+    grid.matchModel = { ...grid.matchModel!, revision: 'continuous-aggregate-10' };
     for (const [f, decide] of owns) {
+      // The released revision 11 settles it on the result path and writes its script and material
+      // whether watched or not; watching adds the script and staging inputs, never frames
+      // (→MATCH-7, MATCH-22, MATCH-38, T838).
       const quiet = simulateMatch(w, f, false, false, decide);
       const watched = simulateMatch(w, f, true, true, decide);
-      const detailed = playGrid(
-        buildGridSetup(w, f, { observe: false, recordPlayers: true, ...(decide && { decide }) }),
-      ).record;
-      expect(quiet.record).toEqual(detailed);
       expect(watched.record).toEqual(quiet.record);
-      expect(quiet.frames).toEqual([]);
-      expect(watched.frames.length).toBeGreaterThan(0);
+      expect(quiet.record.model).toBe(MATCH_MODEL_REVISION);
+      expect(quiet.record.material).toBeDefined();
+      expect([quiet.frames, watched.frames]).toEqual([[], []]);
+      expect(quiet.script).toBeUndefined();
+      expect(watched.script?.beats.length).toBeGreaterThan(0);
+      const detailed = playGrid(
+        buildGridSetup(grid, f, { observe: false, recordPlayers: true, ...(decide && { decide }) }),
+      ).record;
+      expect(simulateMatch(grid, f, false, false, decide).record).toEqual(detailed);
+      expect(simulateMatch(grid, f, true, true, decide).frames.length).toBeGreaterThan(0);
       // Every named participant of both sides, with his advanced counters.
       expect(validateFullMatchRecord(quiet.record)).toEqual([]);
       expect(quiet.record.lineCounts![0]).toBeGreaterThanOrEqual(11);
@@ -278,7 +291,7 @@ describe('candidate model dispatch and settlement (→MATCH-22, MATCH-27, HIST-1
     expect(canonical(read)).toBe(before);
     const watched = advanceToNextMatch(read);
     const quiet = advanceToNextMatch(w, undefined, false);
-    expect(watched!.frames.length).toBeGreaterThan(0);
+    expect(watched!.script?.beats.length).toBeGreaterThan(0);
     expect(quiet!.record).toEqual(watched!.record);
     expect(canonical(read)).toBe(canonical(w));
   });

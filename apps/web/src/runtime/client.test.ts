@@ -889,7 +889,11 @@ describe('full match-model activation (→SAVE-23)', () => {
     const playback = client.state.playback!;
     expect(playback.record.id).toBe(client.state.view!.world.ownMatches.at(-1)!.id);
     await client.reload();
-    expect(client.state.playback).toBe(playback);
+    // A released match's playback keeps its record and script and stages its picture again from
+    // the script (T834, →MATCH-39), so the object is new while the match is the same.
+    expect(playback.script?.beats.length).toBeGreaterThan(0);
+    expect(client.state.playback?.record).toBe(playback.record);
+    expect(client.state.playback?.script).toBe(playback.script);
     // A checkpoint without that match replays its fixture: the playback goes.
     storage.data = new Map(founded);
     await client.reload();

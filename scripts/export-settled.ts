@@ -44,8 +44,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { PD, TD } from '../packages/contracts/src/detail';
-import { MATCH_MODEL_REVISION } from '../packages/contracts/src/match-model';
-import type { Fixture, Player, Tactic } from '../packages/contracts/src/types';
+import { activeMatchModel, matchModelNumber } from '../packages/contracts/src/match-model';
+import type { Fixture, Player, Tactic, World } from '../packages/contracts/src/types';
 import type { AggregateMatch } from '../packages/engine/src/aggregate/engine';
 import { attributePlayerFacts } from '../packages/engine/src/aggregate/players';
 import { aggregateStreams } from '../packages/engine/src/aggregate/team';
@@ -199,20 +199,21 @@ const TEAM_ROW: readonly (readonly ['M' | 'TD', number])[] = [
 /** One settled match in the prototype's file shape (`Settled`, version 1). */
 export function settledFile(
   id: string,
-  seed: string,
+  w: Pick<World, 'seed' | 'matchModel'>,
   f: Fixture,
   match: AggregateMatch,
   rosters: readonly [readonly Player[], readonly Player[]],
   added: readonly number[],
 ) {
   const { input, plan, participation, facts } = match;
+  const model = activeMatchModel(w);
   const trace: AggregateAttributionTrace = { moves: [[], []], fouls: [[], []] };
   const again = attributePlayerFacts(
     input,
     plan,
     participation,
     facts,
-    aggregateStreams(seed, match.retry === 0 ? f.id : `${f.id}:retry${match.retry}`),
+    aggregateStreams(w.seed, match.retry === 0 ? f.id : `${f.id}:retry${match.retry}`),
     trace,
   );
   if (!isDeepStrictEqual(again, match.players)) throw new Error(`${f.id}: trace run differs`);
@@ -306,10 +307,11 @@ export function settledFile(
     version: 1,
     id,
     source: {
-      seed,
+      seed: w.seed,
       fixture: f.id,
       year: f.year,
-      revision: Number(/(\d+)$/.exec(MATCH_MODEL_REVISION)?.[1] ?? NaN),
+      // The revision of the world that settled it: its attribution follows that revision (→MATCH-16).
+      revision: model === undefined ? NaN : matchModelNumber(model),
     },
     sides,
     score: [...facts.score],
@@ -361,7 +363,7 @@ async function main(args: readonly string[]) {
     const id = `s${String(kept + 1).padStart(2, '0')}`;
     let file: ReturnType<typeof settledFile>;
     try {
-      file = settledFile(id, w.seed, f, match, rosters, sample.record.added ?? []);
+      file = settledFile(id, w, f, match, rosters, sample.record.added ?? []);
     } catch (error) {
       if (!(error instanceof SkipMatch)) throw error;
       skipped.set(error.reason, (skipped.get(error.reason) ?? 0) + 1);

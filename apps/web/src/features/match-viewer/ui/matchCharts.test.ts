@@ -6,17 +6,21 @@ import type { MatchAppearance } from '../../../../../../packages/contracts/src/i
 import type { MatchPlayback } from '../../../../../../packages/contracts/src/types';
 import { simulateMatch } from '../../../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../../../packages/engine/src/career.testkit';
+import { stagedPlayback } from '../../../../../../packages/engine/src/testing';
 import { chartLines, chartSeries, MatchCharts, seriesColour } from './MatchCharts';
 import { colourDistance, contrast } from '../../../entities/club';
 import { describeShirt } from '../../../entities/match';
 import { matchLook, UNRECORDED_LOOK, type MatchLook } from '../../../entities/match';
 
 const w = careerWorld({ country: 'ENG', seed: 'charts' });
-const playback = simulateMatch(
-  w,
-  w.fixtures.find((f) => f.home === w.playerClub)!,
-  true,
-  true,
+// A released own match carries its script, not frames: the charts read its staging (→MATCH-39).
+const playback = stagedPlayback(
+  simulateMatch(
+    w,
+    w.fixtures.find((f) => f.home === w.playerClub)!,
+    true,
+    true,
+  ),
 );
 
 describe('live match charts', () => {
