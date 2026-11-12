@@ -413,14 +413,15 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   await expect(cue).toBeVisible();
   await replay.getByRole('button', { name: '재생', exact: true }).click();
   await expect(cue).toHaveCount(0, { timeout: 3000 });
-  // Paused again, a seek in 경기 상세 to the end, past every later goal, stays there without
-  // celebrating them; the details hold the replay while open and leave it paused, as it was, once
-  // closed. The record replay has all its minutes from the start: one sample a minute.
+  // Paused again, a seek in 경기 상세 past every later goal stays there without celebrating them;
+  // the details hold the replay while open and leave it paused, as it was, once closed. The record
+  // replay has all its minutes from the start: one sample a minute. The seek stops a minute short
+  // of the last sample, since a replay at its end has finished and offers 다시 보기, not 재생.
   await replay.getByRole('button', { name: '일시정지', exact: true }).click();
   await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
   const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
   await expect(scrubber).toHaveAttribute('max', String(samples.length - 1));
-  await scrubber.press('End');
+  await scrubber.fill(String(samples.length - 2));
   await expect(score).toHaveText(`${played.score.home} : ${played.score.away}`);
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
