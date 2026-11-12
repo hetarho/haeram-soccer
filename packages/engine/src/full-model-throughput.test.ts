@@ -168,9 +168,13 @@ const facts = (w: World) => ({
  * before. Their scores alone digest 5a3cce9f595e74bc and 7edad9a4bcf5e622 after; the own club's
  * scores and squad did not move. e192354fec4079d4 and 1b00aca71876ec62 before.
  */
+// T838 releases revision 11: aggregate records gain its label/place attribution, and own rounds
+// now settle on that same result path with retained script material instead of the grid. Recorded
+// on the activation candidate; revision-10 digests were 1777e46a55e11535 / c1dae39d1b1fc9a9.
+// The separate grid and pre-feature portable goldens remain unchanged.
 const BEFORE = {
-  aggregateRecords: '1777e46a55e11535',
-  candidateRounds: 'c1dae39d1b1fc9a9',
+  aggregateRecords: '9ad7a73f17eb42d4',
+  candidateRounds: '6829def1e75ea8f9',
 };
 
 describe('complete-result throughput (T285)', () => {
