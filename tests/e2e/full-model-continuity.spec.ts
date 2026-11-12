@@ -15,6 +15,7 @@ import {
   openMatchDetails,
   openPlayerSheet,
   presentedMinute,
+  STAGING_TIMEOUT_MS,
   watchNext,
 } from './watch';
 
@@ -173,9 +174,12 @@ for (const viewport of VIEWPORTS)
     await expect(report).toBeVisible();
     await expect(report).toContainText('xG');
     await expect(report).not.toContainText('기록하기 전 규칙');
-    // The recorded set-piece shape: six or more defenders on their jobs, a marker with his man.
+    // The staged corner: a defender goal-side of a man in the box at its kick (→MATCH-18). The
+    // page's worker stages the match ahead (→MATCH-39), so its timeline reaches the reference's.
     const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
-    await expect(timeline).toHaveAttribute('max', String(next.samples - 1));
+    await expect(timeline).toHaveAttribute('max', String(next.samples - 1), {
+      timeout: STAGING_TIMEOUT_MS,
+    });
     // The whistle left the match playing on, so closing the details resumes it: the result holds
     // it still, and a seek made from there keeps its place once the details close.
     await timeline.fill(String(next.setPiece.index));
@@ -191,7 +195,9 @@ for (const viewport of VIEWPORTS)
     const sheet = await openPlayerSheet(page, { at: next.setPiece.at });
     const { index } = next.setPiece.marker;
     await expect(sheet).toHaveAccessibleName(new RegExp(`^${index + 1}\\. `));
-    await expect(sheet.getByTestId('player-inspector').locator('p > b')).toHaveText('상대 마크');
+    await expect(sheet.getByTestId('player-inspector').locator('p > b')).toHaveText(
+      next.setPiece.state,
+    );
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
     await expect(sheet).toHaveCount(0);

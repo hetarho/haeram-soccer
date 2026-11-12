@@ -4,6 +4,23 @@ import { acknowledgeEvents, configureResponsibilities, dismissMatchReport } from
 import { chooseOption } from './select';
 import { PITCH_PAD } from '../../apps/web/src/entities/match/lib/pitchPainting';
 
+/**
+ * How long a journey waits for the page's worker to stage a watched match ahead (→MATCH-39): it
+ * stages a few minutes a step from the script, so a seek or the final whistle may wait for it on a
+ * slow runner (a whole match stages in about 15 s in Node on the shared host, 261112).
+ */
+export const STAGING_TIMEOUT_MS = 60_000;
+
+/**
+ * Waits until the timeline in 경기 상세 reaches `sample`: the staging has drawn that far, so a seek
+ * there lands on it rather than on the last staged sample.
+ */
+export async function stagedTo(timeline: Locator, sample: number) {
+  await expect
+    .poll(() => timeline.getAttribute('max').then(Number), { timeout: STAGING_TIMEOUT_MS })
+    .toBeGreaterThanOrEqual(sample);
+}
+
 /** Resume a live match, or progress through real public events to the match-eve dialog. */
 export async function openWatchAction(page: Page) {
   const watch = page

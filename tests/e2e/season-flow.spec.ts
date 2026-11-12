@@ -1,5 +1,11 @@
 import { openLeague } from './competition-navigation';
-import { closeMatchDetails, openMatchDetails, openPlayerSheet, watchNext } from './watch';
+import {
+  closeMatchDetails,
+  openMatchDetails,
+  openPlayerSheet,
+  STAGING_TIMEOUT_MS,
+  watchNext,
+} from './watch';
 import { configureResponsibilities, dismissMatchReport } from './events';
 import { chooseOption } from './select';
 import { test, expect } from '@playwright/test';
@@ -132,7 +138,10 @@ test('shows independent player decisions and post-match league context', async (
   await sheet.getByRole('button', { name: '창 닫기', exact: true }).click();
   await expect(sheet).toHaveCount(0);
   await page.getByRole('button', { name: '결과 보기' }).click();
-  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+  // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+    timeout: STAGING_TIMEOUT_MS,
+  });
   // The standing after the match shows once it ends, without opening its details (→WEB-50).
   await expect(page.getByRole('heading', { name: '경기 뒤의 순위표' })).toBeVisible();
   await expect(page.getByRole('table', { name: '리그 순위표' })).toContainText('우리 팀');

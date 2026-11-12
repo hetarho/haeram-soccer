@@ -1,5 +1,5 @@
 import { expect, type Page } from '@playwright/test';
-import { closeMatchDetails, matchDetails, openMatchDetails } from './watch';
+import { closeMatchDetails, matchDetails, openMatchDetails, stagedTo } from './watch';
 import type { MatchPlayback } from '../../packages/contracts/src/types';
 import {
   DEAD_BALL_CONFIG,
@@ -68,6 +68,7 @@ export async function expectCompressedPreparation(
   const details = matchDetails(page);
   if (!(await details.isVisible())) await openMatchDetails(page);
   const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
+  await stagedTo(timeline, before);
   await timeline.fill(String(before));
   await expect(timeline).toHaveValue(String(before));
   const canvas = page.getByLabel('22명의 선수와 공으로 표현하는 경기');

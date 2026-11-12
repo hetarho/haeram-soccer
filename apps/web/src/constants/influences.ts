@@ -640,36 +640,31 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
       ),
       o(
         'movement-offside',
-        sourceMessage('copy.influences.f0792d50b5'),
-        sourceMessage('copy.influences.596bfc741f'),
-        sourceMessage('copy.influences.d19b0bac57'),
+        sourceMessage('influences.match.offsideTitle'),
+        sourceMessage('copy.influences.bf7f08b3cb'),
+        sourceMessage('influences.match.offsideSummary'),
         [
           f(
-            sourceMessage('copy.influences.645b21ee9e'),
-            sourceMessage('copy.influences.971968626c'),
+            sourceMessage('influences.match.forwardPasses'),
+            sourceMessage('influences.match.forwardPassesEffect'),
           ),
           f(
-            sourceMessage('copy.influences.6d69b06ed9'),
-            sourceMessage('copy.influences.7a481eb1dd'),
+            sourceMessage('influences.match.receiverDecisions'),
+            sourceMessage('influences.match.receiverDecisionsEffect'),
           ),
           f(
-            sourceMessage('copy.influences.2ae94096d1'),
-            sourceMessage('copy.influences.fd9e7ed988'),
-          ),
-          f(
-            sourceMessage('copy.influences.03d50661bd'),
-            sourceMessage('copy.influences.41aba8a71e'),
+            sourceMessage('influences.match.pictureShape'),
+            sourceMessage('influences.match.pictureShapeEffect'),
           ),
         ],
         [
-          ...src('grid/shape', 'speedOf', 'offsideLine'),
-          ...src('grid/restarts', 'offsideChance'),
-          ...src('grid/decide', 'decide'),
+          ...src('aggregate/team', 'generateTeamFacts', 'passGroup'),
+          ...src('aggregate/players', 'OFFSIDE_CALL', 'attributePlayerFacts'),
+          ...src('staging/shape', 'placeFor'),
+          ...src('staging/tendency', 'tendency', 'roleFreedom'),
         ],
-        [
-          link('pass-success', sourceMessage('copy.influences.912877ae57')),
-          link('shot-quality', sourceMessage('copy.influences.8e1bbb0fec')),
-        ],
+        [link('shot-quality', sourceMessage('copy.influences.8e1bbb0fec'))],
+        [sourceMessage('influences.match.tendenciesAbsent')],
       ),
 
       o(
@@ -730,7 +725,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         [
           ...src('player-state', 'slotOvr', 'unhappyPenalty'),
           ...src('player', 'ovrAt', 'levelFactor', 'adaptationMultiplier'),
-          ...src('grid/state', 'skill'),
+          ...src('aggregate/engine', 'aggregateSkillAccess'),
         ],
         [link('match-strength', sourceMessage('copy.influences.5f0a70bbf0'))],
       ),
@@ -777,7 +772,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         'tactical-play',
         sourceMessage('copy.influences.308404051e'),
         sourceMessage('copy.influences.596bfc741f'),
-        sourceMessage('copy.influences.efb5258978'),
+        sourceMessage('influences.match.tacticalSummary'),
         [
           f(
             sourceMessage('copy.influences.efc1f9a43c'),
@@ -788,55 +783,53 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.5e164c8930'),
           ),
           f(
-            sourceMessage('copy.influences.8773640806'),
-            sourceMessage('copy.influences.f1e30c271d'),
-          ),
-          f(
-            sourceMessage('copy.influences.55d424100c'),
-            sourceMessage('copy.influences.9d7ba83947'),
+            sourceMessage('influences.match.attribution'),
+            sourceMessage('influences.match.attributionEffect'),
           ),
         ],
         [
           ...src('strategy', 'tacticalProfile'),
-          ...src('grid/decide', 'actionMix', 'decide'),
-          ...src('grid/tendencies', 'playerTendencies'),
+          ...src('aggregate/team', 'generateTeamFacts', 'attackOf'),
+          ...src('aggregate/players', 'attributePlayerFacts'),
+          ...src('match-weights', 'ROLE_ACTION', 'TRAIT_ACTION', 'actionWeight'),
         ],
         [
           link('match-fatigue', sourceMessage('copy.influences.5d1f3ba823')),
           link('shot-quality', sourceMessage('copy.influences.b32689f42e')),
         ],
+        [sourceMessage('influences.match.tendenciesAbsent')],
       ),
       o(
         'pass-success',
         sourceMessage('copy.influences.15b0ea34b3'),
         sourceMessage('copy.influences.596bfc741f'),
-        sourceMessage('copy.influences.32aa53f332'),
+        sourceMessage('influences.match.passSummary'),
         [
           f(
             sourceMessage('copy.influences.ccbba1cf2e'),
             sourceMessage('copy.influences.003e6c4df3'),
           ),
           f(
-            sourceMessage('copy.influences.d8fe413948'),
-            sourceMessage('copy.influences.595255c829'),
+            sourceMessage('influences.match.passKind'),
+            sourceMessage('influences.match.passKindEffect'),
           ),
           f(
-            sourceMessage('copy.influences.3a7398cd5b'),
-            sourceMessage('copy.influences.21eae76379'),
+            sourceMessage('influences.match.passOpponent'),
+            sourceMessage('influences.match.passOpponentEffect'),
           ),
           f(
             sourceMessage('copy.influences.6c0f0eace4'),
-            sourceMessage('copy.influences.b721637043'),
+            sourceMessage('influences.match.crossEffect'),
           ),
         ],
-        src('grid/resolve', 'resolvePass', 'resolveCross', 'resolveCutBack', 'resolveAerial'),
+        src('aggregate/team', 'completionShift', 'completionTo', 'passGroup', 'passesAndCarries'),
         [link('shot-quality', sourceMessage('copy.influences.2df0c48065'))],
       ),
       o(
         'take-on',
         sourceMessage('copy.influences.dd268eae3f'),
         sourceMessage('copy.influences.bf7f08b3cb'),
-        sourceMessage('copy.influences.b1fa4b7676'),
+        sourceMessage('influences.match.takeOnSummary'),
         [
           f(
             sourceMessage('copy.influences.17bef28d91'),
@@ -847,11 +840,11 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.f4768b877f'),
           ),
           f(
-            sourceMessage('copy.influences.cddaa0af2e'),
+            sourceMessage('influences.match.takeOnZone'),
             sourceMessage('copy.influences.531e29f6e3'),
           ),
         ],
-        src('grid/resolve', 'resolveTakeOn', 'resolveCarry', 'resolveAerial'),
+        src('aggregate/team', 'carriesFrom', 'foulsOn'),
         [
           link('discipline', sourceMessage('copy.influences.da69ecaeec')),
           link('shot-quality', sourceMessage('copy.influences.470fab60a6')),
@@ -868,34 +861,34 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.9e0c071c2e'),
           ),
           f(
-            sourceMessage('copy.influences.1e23058256'),
-            sourceMessage('copy.influences.3af16d24de'),
+            sourceMessage('influences.match.shotDelivery'),
+            sourceMessage('influences.match.shotDeliveryEffect'),
           ),
           f(
             sourceMessage('copy.influences.5bbb07141c'),
             sourceMessage('copy.influences.7f569380dc'),
           ),
           f(
-            sourceMessage('copy.influences.61a34a21be'),
-            sourceMessage('copy.influences.06d844b21d'),
+            sourceMessage('influences.match.shotDefence'),
+            sourceMessage('influences.match.shotDefenceEffect'),
           ),
           f(
-            sourceMessage('copy.influences.25280ae9f2'),
-            sourceMessage('copy.influences.0aef3dd0ae'),
+            sourceMessage('influences.match.shotScore'),
+            sourceMessage('influences.match.shotScoreEffect'),
           ),
         ],
-        src('grid/resolve', 'chanceXg', 'resolveShot', 'shotBlockers', 'secondBall'),
+        src('aggregate/team', 'shoot', 'openPlayShots', 'setPieceShots', 'keepByScore'),
         [link('match-strength', sourceMessage('copy.influences.7980ffd281'))],
       ),
       o(
         'discipline',
         sourceMessage('copy.influences.b21c7f542a'),
         sourceMessage('copy.influences.596bfc741f'),
-        sourceMessage('copy.influences.90ff47568b'),
+        sourceMessage('influences.match.disciplineSummary'),
         [
           f(
-            sourceMessage('copy.influences.412edae6a8'),
-            sourceMessage('copy.influences.378bf8b522'),
+            sourceMessage('influences.match.cardRates'),
+            sourceMessage('influences.match.cardRatesEffect'),
           ),
           f(
             sourceMessage('copy.influences.a913f58991'),
@@ -907,7 +900,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('grid/discipline', 'cardForFoul'),
+          ...src('aggregate/participation', 'planParticipation'),
           ...src('discipline', 'leagueYellowBan', 'competitionOf'),
         ],
         [link('team-selection', sourceMessage('copy.influences.d6b9dfdd38'))],
@@ -937,7 +930,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         ],
         [
           ...src('strategy', 'fatigueCost'),
-          ...src('grid/changes', 'planChanges', 'inMatchFatigue'),
+          ...src('aggregate/participation', 'planParticipation'),
+          ...src('aggregate/engine', 'aggregatePlan'),
           ...src('training', 'settleTraining'),
         ],
         [
@@ -965,8 +959,8 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
           ),
         ],
         [
-          ...src('grid/resolve', 'resolvePenalty'),
-          ...src('grid/shootout', 'kickChance', 'playShootout'),
+          ...src('aggregate/team', 'foulsOn', 'shoot'),
+          ...src('aggregate/engine', 'aggregateShootout'),
         ],
       ),
     ],
@@ -995,13 +989,13 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
             sourceMessage('copy.influences.444d15cd3d'),
           ),
           f(
-            sourceMessage('copy.influences.f08da98587'),
+            sourceMessage('influences.match.traitsRole'),
             sourceMessage('copy.influences.d6cc599b9b'),
           ),
         ],
         [
           ...src('player', 'PROFESSIONALISM_RATE', 'ADAPTABILITY_RATE', 'AMBITION_UNHAPPY'),
-          ...src('grid/tendencies', 'playerTendencies'),
+          ...src('match-weights', 'TRAIT_ACTION'),
           ...src('morale', 'leadersInLastXi'),
         ],
         [
@@ -1182,7 +1176,7 @@ export const INFLUENCE_GROUPS: InfluenceGroup[] = [
         ],
         [
           ...src('injury-rules', 'injuryChance'),
-          ...src('grid/changes', 'injuryHazard', 'drawInjury'),
+          ...src('aggregate/participation', 'planParticipation'),
           ...src('careers', 'trainingInjuries'),
         ],
         [

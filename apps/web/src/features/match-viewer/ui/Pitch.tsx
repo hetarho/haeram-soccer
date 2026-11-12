@@ -20,8 +20,6 @@ import type {
   MatchEvent,
   MatchPlayback,
   MatchFrame,
-  PlayerMotion,
-  PlayerMotionState,
   World,
 } from '../../../../../../packages/contracts/src/types';
 import {
@@ -87,6 +85,7 @@ import {
 import { Dialog } from '../../../shared/ui/Dialog';
 import { useLocale } from '../../../presentation/react';
 import { possessionKey, resolvePossessionCue, type PossessionCue } from '../lib/possessionCue';
+import { motionStateLabel } from '../lib/motionState';
 import {
   beatAt,
   beatCaptions,
@@ -102,23 +101,6 @@ import {
 import s from '../../../shared/ui/styles/App.module.css';
 import t from './Pitch.module.css';
 
-const stateLabels: Record<PlayerMotionState, string> = {
-  shape: sourceMessage('copy.Pitch.c8b026ca9e'),
-  support: sourceMessage('copy.Pitch.d0fdc8c1b3'),
-  run: sourceMessage('copy.Pitch.b66ab772e3'),
-  press: sourceMessage('copy.Pitch.75e147f54f'),
-  mark: sourceMessage('copy.Pitch.dd4d63cca3'),
-  recover: sourceMessage('copy.Pitch.4cdbdae8b5'),
-  carry: sourceMessage('copy.Pitch.0c24193053'),
-  keeper: sourceMessage('copy.Pitch.abcf2c81c5'),
-};
-/** Intentions the inspector names by their own label rather than their motion state's (→MATCH-32). */
-const intentionLabels: Partial<Record<NonNullable<PlayerMotion['intention']>['kind'], string>> = {
-  screen: sourceMessage('copy.Pitch.2e1032e0a1'),
-};
-/** What the inspector says a player is doing: an intention he still holds that has a label, else his motion state. */
-const motionLabel = ({ state, intention }: PlayerMotion) =>
-  (intention && !intention.ended && intentionLabels[intention.kind]) || stateLabels[state];
 /** Height (pitch units) at which a lofted ball reaches its largest drawn size. */
 const BALL_PEAK = MATCH_MOTION_CONFIG.ball.maxLoft;
 /** A still figure facing up the screen, drawn off-screen only to build the worn kits' torso sprites. */
@@ -1474,7 +1456,7 @@ export function Pitch({
               <p>
                 {localizeValue(
                   selectedMotion ? (
-                    <b>{localizeValue(motionLabel(selectedMotion))}</b>
+                    <b>{localizeValue(motionStateLabel(selectedMotion))}</b>
                   ) : (
                     sourceMessage('copy.Pitch.f87c3afdbf', {
                       p0: selectedId && gone.has(selectedId) ? ` (${gone.get(selectedId)})` : '',

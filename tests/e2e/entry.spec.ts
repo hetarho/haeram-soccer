@@ -1,6 +1,6 @@
 import { openPersonnel } from './personnel-navigation';
 import { openCups, openLeague } from './competition-navigation';
-import { closeMatchDetails, openMatchDetails, watchNext } from './watch';
+import { closeMatchDetails, openMatchDetails, STAGING_TIMEOUT_MS, watchNext } from './watch';
 import { advanceOneRound } from './season-progression';
 import { delegateSales } from './events';
 import { chooseOption } from './select';
@@ -35,6 +35,8 @@ test('creates, computes and reloads through the bundled worker', async ({ page }
 test('observes event-backed metrics, historical locks and responsive navigation', async ({
   page,
 }) => {
+  // The page stages the watched match ahead (→MATCH-39) before its final whistle shows.
+  test.slow();
   await page.goto('/');
   await startCareer(page);
   await delegateSales(page);
@@ -43,7 +45,10 @@ test('observes event-backed metrics, historical locks and responsive navigation'
     page.getByTestId('match-theatre').getByRole('heading', { name: '매치데이' }),
   ).toBeVisible();
   await page.getByRole('button', { name: '결과 보기' }).click();
-  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+  // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+  await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+    timeout: STAGING_TIMEOUT_MS,
+  });
   const details = await openMatchDetails(page);
   await expect(details.getByText('유효 슈팅', { exact: true })).toBeVisible();
   await closeMatchDetails(page);

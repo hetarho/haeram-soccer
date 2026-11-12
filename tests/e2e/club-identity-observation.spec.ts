@@ -22,7 +22,7 @@ import {
   visiblePitch,
   watchToWhistle,
 } from './club-identity-helpers';
-import { closeMatchDetails, openMatchDetails, openWatchAction } from './watch';
+import { closeMatchDetails, openMatchDetails, openWatchAction, STAGING_TIMEOUT_MS } from './watch';
 import { leaveOffice } from './office';
 
 /**
@@ -121,7 +121,10 @@ test('a design adopted while the match is paused mid-match leaves its recorded s
   // result held the match still, so it stays there once 경기 상세 closes.
   const details = await openMatchDetails(page);
   await details.getByText('주요 장면 탐색', { exact: true }).click();
-  await details.getByRole('button', { name: '전반 종료 · 45분', exact: true }).click();
+  // The page stages the match ahead (→MATCH-39): half-time opens once it is staged.
+  const halfTime = details.getByRole('button', { name: '전반 종료 · 45분', exact: true });
+  await expect(halfTime).toBeEnabled({ timeout: STAGING_TIMEOUT_MS });
+  await halfTime.click();
   await closeMatchDetails(page);
   await expect(page.getByTestId('match-next-action')).toHaveAccessibleName('결과 보기');
   expect(await figures(page, STRIPES)).toBeGreaterThanOrEqual(3);

@@ -1,11 +1,13 @@
 import { openLeague, returnToMatch } from './competition-navigation';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import {
   closeMatchDetails,
   matchDetails,
   openMatchDetails,
   openPlayerSheet,
   presentedMinute,
+  STAGING_TIMEOUT_MS,
+  stagedTo,
   watchNext,
 } from './watch';
 import { configureResponsibilities, reportKit } from './events';
@@ -26,8 +28,13 @@ import { generateHistory } from '../../packages/engine/src/history';
 import { takeOver } from '../../packages/engine/src/takeover';
 import type { World } from '../../packages/contracts/src/types';
 import { expectViewFits, horizontalOverflow, settle } from './layout';
-import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
 import {
+  GOAL_FEEDBACK_CONFIG,
+  goalInstants,
+  type GoalInstant,
+} from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
+import {
+  presentationSamples,
   WATCH_DEFAULT_SPEED,
   WATCH_MINUTE_MS,
 } from '../../apps/web/src/entities/match/lib/presentationClock';
@@ -195,7 +202,10 @@ for (const viewport of [
     await page.waitForTimeout((4 * WATCH_MINUTE_MS) / 16 + GOAL_FEEDBACK_CONFIG.holdMs);
     expect((await minuteNow()) - before).toBeGreaterThanOrEqual(2);
     await page.getByRole('button', { name: '결과 보기', exact: true }).click();
-    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible();
+    // The final whistle shows once the page's worker has staged it (→MATCH-39, WEB-23).
+    await expect(page.getByText(/90(\+\d+)?′ ·.*경기 종료/)).toBeVisible({
+      timeout: STAGING_TIMEOUT_MS,
+    });
     // The scoreboard carries one red mark per player sent off; the commentary ends on the final
     // whistle, its minute label beside it.
     await expect(page.getByTestId('red-cards-home').locator('i')).toHaveCount(sentOff[0]);
@@ -354,18 +364,21 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
   const replayMinuteMs = WATCH_MINUTE_MS / WATCH_DEFAULT_SPEED;
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.setViewportSize({ width: 390, height: 844 });
-  // A settled revision-1 match keeps its recorded facts after a writer upgrades the career.
-  // The archived replay exercises those historical goals, independent of the current model. The
-  // club taken over from goal-feedback-389 scores at 2′, then concedes at 18′ and 31′ (found by
-  // scripts/find-goal-seeds.ts once T805's per-club age ladder moved goal-feedback-207's 2′, 4′
-  // and 40′ of T687; goal-feedback-221's founded career had the same shape at 2′, 13′ and 32′).
-  const world = careerWorld(
-    { country: 'ENG', seed: 'goal-feedback-389' },
-    { revision: 'continuous-aggregate-1', enabled: true },
-  );
+  // A settled own match is replayed from the records room, staged from its script as it was
+  // watched (→MATCH-38/39, WEB-23). The club taken over from goal-feedback-6 scores at 2′,
+  // concedes at 22′, scores at 37′ and concedes at 56′ on the scripted model (found by
+  // scripts/find-goal-seeds.ts, T839; goal-feedback-389 on revision 1 until then, after T805's
+  // per-club age ladder moved goal-feedback-207's 2′, 4′ and 40′ of T687).
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-6' });
   world.settings!.responsibilities.sales = 'delegated';
-  const played = advanceToNextMatch(world)!.record;
-  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 18, 31]);
+  const reference = stagedPlayback(advanceToNextMatch(world)!);
+  const played = reference.record;
+  expect(played.highlights.map((goal) => goal.minute)).toEqual([2, 22, 37, 56]);
+  const { samples } = presentationSamples(reference.frames);
+  const starts: number[] = [];
+  for (const sample of samples) starts[sample.frame] ??= sample.time;
+  const [first, second] = goalInstants(played, reference.frames, starts);
+  const running = (goal: GoalInstant) => `${goal.home} : ${goal.away}`;
   await importResponsibilityCareer(page, world);
   const replay = await openRecordedMatch(page);
   const cue = replay.getByTestId('goal-cue');
@@ -387,29 +400,32 @@ test('an archived replay holds each goal it crosses, keeps a pause and skips wha
     );
   await pauseOnCue(2 * replayMinuteMs + 5000);
   await expect(cue).toContainText(played.highlights[0]!.player);
-  await expect(score).toHaveText('1 : 0');
+  await expect(score).toHaveText(running(first!));
   // A pause during the hold keeps the cue until playback resumes.
   await page.waitForTimeout(1500);
   await expect(cue).toBeVisible();
   await replay.getByRole('button', { name: '재생', exact: true }).click();
   await expect(cue).toHaveCount(0, { timeout: 3000 });
-  // Paused again, a seek in 경기 상세 past both later goals stays there without celebrating them;
-  // the details hold the replay while open and leave it paused, as it was, once closed.
+  // Paused again, a seek in 경기 상세 to the end, past every later goal, stays there without
+  // celebrating them; the details hold the replay while open and leave it paused, as it was, once
+  // closed. The page stages the replay ahead (→MATCH-39), so the end is there once staged.
   await replay.getByRole('button', { name: '일시정지', exact: true }).click();
   await replay.getByRole('button', { name: '경기 상세', exact: true }).click();
   const scrubber = matchDetails(page).getByRole('slider', { name: '경기 시간', exact: true });
-  await scrubber.fill('80');
-  await expect(score).toHaveText('1 : 2');
+  await stagedTo(scrubber, samples.length - 1);
+  await scrubber.press('End');
+  await expect(score).toHaveText(`${played.score.home} : ${played.score.away}`);
   await expect(cue).toHaveCount(0);
   await expect(replay.getByRole('button', { name: '재생', exact: true })).toBeVisible();
-  // Going back before the 18′ goal lets playback cross it again: one sample a minute, the one
-  // before its minute's (16; 2 stood before goal-feedback-207's 4′ goal, 11 before a 13′ one).
-  await scrubber.fill('16');
-  await expect(score).toHaveText('1 : 0');
+  // Going back before the 22′ goal lets playback cross it again: the sample just before it.
+  await scrubber.fill('1190');
+  await expect(score).toHaveText(running(first!));
   await closeMatchDetails(page);
   await replay.getByRole('button', { name: '재생', exact: true }).click();
   await pauseOnCue(replayMinuteMs + 4000);
   await expect(cue).toBeVisible();
-  await expect(score).toHaveText('1 : 1');
-  await expect(replay.getByTestId('goal-score')).toHaveText('1');
+  await expect(score).toHaveText(running(second!));
+  await expect(replay.getByTestId('goal-score')).toHaveText(
+    String(second!.side === 0 ? second!.home : second!.away),
+  );
 });

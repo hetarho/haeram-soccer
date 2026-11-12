@@ -285,12 +285,14 @@ export const GLOSSARY: readonly GlossaryEntry[] = [
       rows: pitchZoneRows(),
     },
   },
+  // What an action is recorded with and the script's phase (→MATCH-15); pressure, body orientation
+  // and relational spaces are not recorded, so no entry states them of a match.
   {
-    id: 'touch-tags',
-    term: sourceMessage('copy.glossaryEntries.fa3a35e10f'),
-    standard: sourceMessage('copy.glossaryEntries.a5e32a8767'),
-    here: sourceMessage('copy.glossaryEntries.40a048d5c0'),
-    read: sourceMessage('copy.glossaryEntries.daffa517b8'),
+    id: 'action-record',
+    term: sourceMessage('glossary.actionRecord.term'),
+    standard: sourceMessage('glossary.actionRecord.standard'),
+    here: sourceMessage('glossary.actionRecord.here'),
+    read: sourceMessage('glossary.actionRecord.read'),
   },
 ];
 

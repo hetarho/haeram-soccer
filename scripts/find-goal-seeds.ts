@@ -1,28 +1,35 @@
 /**
- * T813: finds the goal scenes three browser specs watch, by each spec's own criteria before its
- * browser starts, so a change to world generation or the match model re-finds them in minutes
+ * T813, T839: finds the goal scenes three browser specs watch, by each spec's own criteria before
+ * its browser starts, so a change to world generation or the match model re-finds them in minutes
  * rather than in a failed gate. Each scene is a seed `goal-feedback-N` whose career, built with the
- * fixture helpers the specs use (`careerWorld`, `advanceToNextMatch`) and read with their goal
+ * fixture helpers the specs use (`careerWorld`, `advanceToNextMatch` and `stagedPlayback`, the
+ * released scripted model's own match staged as the browser stages it) and read with their goal
  * readers (`goalInstants`, `replayGoals`, the presentation clock), plays the first own match that
- * spec needs:
+ * spec needs. Every scene's goals each have a staged build-up of `GOAL_REPLAY_CONFIG.leadSeconds`
+ * (a clip never starts at a period's kick-off or the goal before it), and its goals fall in both
+ * halves:
  *
  * - `opening`: `goalWorld` in tests/e2e/goal-replay.spec.ts and tests/e2e/mobile-match-presentation.spec.ts.
  *   The taken-over club's next match opens with a home goal at 5′ or earlier (1 : 0), its cue no
  *   sooner than one clock minute after kick-off, and holds at least three goals, all of them
  *   highlights with their footage retained; the paused seek between the first two goals lands on a
  *   sample before the second, and the second leaves the clip room to return first.
- * - `archived`: tests/e2e/match-core.spec.ts's archived replay on revision `continuous-aggregate-1`.
- *   Three goals, home then away twice (1 : 0, 1 : 1, 1 : 2): the first crossed within the replay's
- *   first two clock minutes at the speed it opens at, the second within one clock minute of the
- *   sample before its minute's, the third before the seek sample `ARCHIVED.pastSample`.
+ * - `archived`: tests/e2e/match-core.spec.ts's archived replay of a settled own match, staged from
+ *   its script. Three goals or more, the first crossed within the replay's first two clock minutes
+ *   at the speed it opens at, the second within one clock minute of the seek sample just before it;
+ *   the spec reads the running scores from the reference and seeks past the rest to the end.
+ *
+ * - `brace`: two goals within one minute, both with their footage, for a journey on separate goals
+ *   of one minute (→WEB-94/105); reported when the scan finds one, never a failure when it does not.
  *
  * The scan prints, per scene, the first seed meeting its criteria with its goals (and, for
  * `archived`, the seek sample the spec fills). `--check` reads the seed each spec names (its one
  * `goal-feedback-N`), and for match-core its asserted minutes and seek sample, and exits 1 when a
  * named seed no longer meets them.
  *
- * About 0.6 s a scene a seed: measured 261111, goal-feedback-61 and goal-feedback-389 took 389
- * seeds and about four minutes; a scan stops once every scene asked for is found.
+ * A seed's match is settled and its record read first (about 3 s a seed, measured 261112 on the
+ * scripted model); only a record that can hold a scene is staged (about 15 s). A scan stops once
+ * every required scene asked for is found.
  *
  *   pnpm exec tsx scripts/find-goal-seeds.ts [--start 1] [--count 1000] [--scene opening|archived]
  *   pnpm exec tsx scripts/find-goal-seeds.ts --check
@@ -30,11 +37,10 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { message as sourceMessage } from '../packages/contracts/src/messages';
-import type { MatchFrame, MatchRecord } from '../packages/contracts/src/types';
+import type { MatchFrame, MatchPlayback, MatchRecord } from '../packages/contracts/src/types';
 import { careerWorld } from '../packages/engine/src/career.testkit';
-import { advanceToNextMatch } from '../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../packages/engine/src/testing';
 import {
-  archivePlayback,
   deadBallBeats,
   presentationMs,
   presentationSamples,
@@ -45,7 +51,12 @@ import {
   goalInstants,
   type GoalInstant,
 } from '../apps/web/src/features/match-viewer/lib/goalFeedback';
-import { replayGoals } from '../apps/web/src/features/match-viewer/lib/goalReplay';
+import {
+  GOAL_REPLAY_CONFIG,
+  replayGoals,
+  startGoalReplay,
+  type ReplayGoal,
+} from '../apps/web/src/features/match-viewer/lib/goalReplay';
 
 /** The seeds scanned: `goal-feedback-N`, the family every one of these specs has named. */
 const SEED_PREFIX = 'goal-feedback-';
@@ -74,20 +85,12 @@ const OPENING = {
 
 /** The `archived` scene's bounds, as match-core.spec.ts reads it. */
 const ARCHIVED = {
-  /** The match-model revision its settled match keeps. */
-  revision: 'continuous-aggregate-1',
-  /** The running scores the spec asserts, goal by goal. */
-  scores: [
-    [1, 0],
-    [1, 1],
-    [1, 2],
-  ],
+  /** Goals the match holds at least: the first, and later ones a seek to the end passes. */
+  goals: 3,
   /** Clock minutes at the opening speed within which the first goal is crossed. */
   firstMinutes: 2,
   /** Clock minutes from the seek sample within which the second goal is crossed. */
   secondMinutes: 1,
-  /** The sample the spec seeks to past every goal, before seeking back. */
-  pastSample: 80,
 } as const;
 
 interface Verdict {
@@ -118,17 +121,60 @@ function frameStarts(frames: MatchFrame[]) {
   return { samples, starts };
 }
 
-/** goal-replay.spec.ts's and mobile-match-presentation.spec.ts's `goalWorld` scene. */
-function openingScene(seed: string): Verdict {
+/** A seed's career, its next own match settled the way every spec reads it, not yet staged. */
+function settled(seed: string) {
   const world = careerWorld({ country: 'ENG', seed });
   world.settings!.responsibilities.sales = 'delegated';
-  const playback = advanceToNextMatch(world);
-  if (!playback) return { seed, misses: ['no own match played'], goals: [] };
-  const { record, frames } = playback;
+  return advanceToNextMatch(world);
+}
+
+/** The staged goals of a playback, with each goal's clip as goal-replay.spec.ts opens it. */
+function stagedGoals(playback: MatchPlayback) {
+  const { record, frames } = stagedPlayback(playback);
   const { samples, starts } = frameStarts(frames);
   const goals = goalInstants(record, frames, starts);
   const picks = replayGoals(goals, frames, goals.length);
+  const clipOf = (pick: ReplayGoal) =>
+    startGoalReplay(goals, frames, pick, {
+      matchId: record.id,
+      clock: { seconds: 0, next: 0 },
+      sampleIndex: 0,
+      paused: false,
+      speed: WATCH_DEFAULT_SPEED,
+      finished: false,
+    });
+  return { record, frames, samples, goals, picks, clipOf, beats: deadBallBeats(frames) };
+}
+
+/** What every scene asks of its goals: footage, a full staged build-up and goals in both halves. */
+function commonMisses(staged: ReturnType<typeof stagedGoals>) {
   const misses: string[] = [];
+  if (!staged.picks.every((pick) => pick.footage)) misses.push('a goal without footage');
+  const short = staged.picks.filter((pick) => {
+    const clip = staged.clipOf(pick);
+    return !clip || pick.goal.seconds - clip.from < GOAL_REPLAY_CONFIG.leadSeconds;
+  });
+  if (short.length)
+    misses.push(
+      `build-up under ${GOAL_REPLAY_CONFIG.leadSeconds} s before goal ${short.map((p) => p.goal.id + 1).join(', ')}`,
+    );
+  return misses;
+}
+
+/** The record facts a scene's goals need: both halves, every highlight a goal. */
+function recordMisses(record: MatchRecord) {
+  const misses: string[] = [];
+  if (record.highlights.some((h) => h.action !== GOAL)) misses.push('a highlight is not a goal');
+  if (!record.highlights.some((h) => h.minute <= 45)) misses.push('no first-half goal');
+  if (!record.highlights.some((h) => h.minute > 45)) misses.push('no second-half goal');
+  return misses;
+}
+
+/** goal-replay.spec.ts's and mobile-match-presentation.spec.ts's `goalWorld` scene. */
+function openingScene(seed: string, playback: MatchPlayback | undefined): Verdict {
+  if (!playback) return { seed, misses: ['no own match played'], goals: [] };
+  const { record } = playback;
+  const misses = recordMisses(record);
   const first = record.highlights[0];
   if (!first || first.side !== 0 || first.action !== GOAL)
     misses.push('first highlight not a home goal');
@@ -136,14 +182,16 @@ function openingScene(seed: string): Verdict {
     misses.push(`opening goal after ${OPENING.latestMinute}′`);
   if (record.highlights.length < OPENING.goals)
     misses.push(`fewer than ${OPENING.goals} highlights`);
+  // Only a record that can hold the scene is staged.
+  if (misses.length) return { seed, misses, goals: listed(record) };
+  const staged = stagedGoals(playback);
+  const { goals, samples, beats } = staged;
+  misses.push(...commonMisses(staged));
   // The 360 run counts a cue per highlight and goal-replay's archive one option per goal.
-  if (record.highlights.some((h) => h.action !== GOAL)) misses.push('a highlight is not a goal');
   if (goals.length !== record.highlights.length) misses.push('goals on the clock ≠ highlights');
   if (goals.length < OPENING.goals) misses.push(`fewer than ${OPENING.goals} goals on the clock`);
   const [one, two] = goals as (GoalInstant | undefined)[];
   if (!one || one.side !== 0 || one.home !== 1 || one.away !== 0) misses.push('not 1 : 0 first');
-  if (!picks.every((pick) => pick.footage)) misses.push('a goal without footage');
-  const beats = deadBallBeats(frames);
   const firstCue = one && presentationMs(0, one.seconds, WATCH_DEFAULT_SPEED, beats);
   if (firstCue !== undefined && firstCue < OPENING.earliestMinutes * clockMinuteMs)
     misses.push(`opening goal within ${OPENING.earliestMinutes} clock minute of kick-off`);
@@ -159,37 +207,32 @@ function openingScene(seed: string): Verdict {
   return { seed, misses, goals: listed(record), firstCue };
 }
 
-/** match-core.spec.ts's archived replay scene on a settled revision-1 match. */
-function archivedScene(seed: string): Verdict {
-  const world = careerWorld(
-    { country: 'ENG', seed },
-    { revision: ARCHIVED.revision, enabled: true },
-  );
-  world.settings!.responsibilities.sales = 'delegated';
-  const played = advanceToNextMatch(world)?.record;
-  if (!played) return { seed, misses: ['no own match played'], goals: [] };
-  const misses: string[] = [];
+/** match-core.spec.ts's archived replay scene of a settled own match on the released model. */
+function archivedScene(seed: string, playback: MatchPlayback | undefined): Verdict {
+  if (!playback) return { seed, misses: ['no own match played'], goals: [] };
+  const played = playback.record;
   const minutes = played.highlights.map((goal) => goal.minute);
-  if (played.highlights.some((h) => h.action !== GOAL)) misses.push('a highlight is not a goal');
-  const { frames } = archivePlayback(played);
-  const { samples, starts } = frameStarts(frames);
-  const beats = deadBallBeats(frames);
-  const goals = goalInstants(played, frames, starts);
-  const scores = goals.map((goal) => [goal.home, goal.away]);
-  if (JSON.stringify(scores) !== JSON.stringify(ARCHIVED.scores))
-    misses.push(`scores ${scores.map((s) => s.join(':')).join(', ') || 'none'}`);
+  const misses = recordMisses(played);
+  if (played.highlights.length < ARCHIVED.goals) misses.push(`fewer than ${ARCHIVED.goals} goals`);
+  if ((played.highlights[0]?.minute ?? 99) > ARCHIVED.firstMinutes + 1)
+    misses.push(`first goal after ${ARCHIVED.firstMinutes + 1}′`);
+  if (misses.length) return { seed, misses, goals: listed(played), minutes };
+  const staged = stagedGoals(playback);
+  const { goals, samples, beats } = staged;
+  misses.push(...commonMisses(staged));
+  if (goals.length !== played.highlights.length) misses.push('goals on the clock ≠ highlights');
   const shown = (time: number) => goals.filter((goal) => goal.seconds <= time).length;
   let seek: number | undefined;
   let firstCue: number | undefined;
-  const [one, two, three] = goals as (GoalInstant | undefined)[];
-  if (one && two && three) {
+  const [one, two] = goals as (GoalInstant | undefined)[];
+  if (one && two) {
     // The cue names the first goal's scorer.
     if (!one.scorer || one.scorer !== played.highlights[0]?.player)
       misses.push('first cue unnamed');
     firstCue = presentationMs(0, one.seconds, WATCH_DEFAULT_SPEED, beats);
     if (firstCue > ARCHIVED.firstMinutes * clockMinuteMs)
       misses.push(`first goal after ${ARCHIVED.firstMinutes} clock minutes`);
-    // One sample a minute: the one before the second goal's minute's.
+    // The sample before the second goal's.
     const at = samples.findIndex((sample) => sample.time >= two.seconds);
     seek = at - 1;
     const from = samples[seek]?.time ?? -1;
@@ -199,15 +242,30 @@ function archivedScene(seed: string): Verdict {
       ARCHIVED.secondMinutes * clockMinuteMs
     )
       misses.push(`second goal after ${ARCHIVED.secondMinutes} clock minute from sample ${seek}`);
-    const past = samples[ARCHIVED.pastSample];
-    if (!past || shown(past.time) !== goals.length)
-      misses.push(`a goal past sample ${ARCHIVED.pastSample}`);
   }
   return { seed, misses, goals: listed(played), firstCue, minutes, seek };
 }
 
-const SCENES = { opening: openingScene, archived: archivedScene } as const;
+/** Two goals within one minute, both with their footage (no spec names it yet). */
+function braceScene(seed: string, playback: MatchPlayback | undefined): Verdict {
+  if (!playback) return { seed, misses: ['no own match played'], goals: [] };
+  const { record } = playback;
+  const minutes = record.highlights.filter((h) => h.action === GOAL).map((h) => h.minute);
+  const misses = minutes.some((m, i) => i > 0 && m === minutes[i - 1])
+    ? []
+    : ['no two goals within one minute'];
+  if (misses.length) return { seed, misses, goals: listed(record) };
+  const staged = stagedGoals(playback);
+  if (!staged.picks.every((pick) => pick.footage)) misses.push('a goal without footage');
+  if (staged.goals.length !== record.highlights.filter((h) => h.action === GOAL).length)
+    misses.push('goals on the clock ≠ goals recorded');
+  return { seed, misses, goals: listed(record), minutes };
+}
+
+const SCENES = { opening: openingScene, archived: archivedScene, brace: braceScene } as const;
 type Scene = keyof typeof SCENES;
+/** Scenes reported when found, never a failed scan when not. */
+const OPTIONAL: readonly Scene[] = ['brace'];
 
 /** The specs naming each scene's seed, read by `--check`. */
 const SPECS: { file: string; scene: Scene }[] = [
@@ -223,7 +281,9 @@ const describe = (verdict: Verdict) =>
     verdict.firstCue === undefined
       ? ''
       : `first cue ${(verdict.firstCue / 1000).toFixed(1)} s after kick-off at ${WATCH_DEFAULT_SPEED}x`,
-    verdict.minutes ? `minutes [${verdict.minutes.join(', ')}], seek sample ${verdict.seek}` : '',
+    verdict.minutes && verdict.seek !== undefined
+      ? `minutes [${verdict.minutes.join(', ')}], seek sample ${verdict.seek}`
+      : '',
   ]
     .filter(Boolean)
     .join(' · ');
@@ -254,7 +314,7 @@ function check() {
       failed = true;
       continue;
     }
-    const verdict = SCENES[scene](spec.seed);
+    const verdict = SCENES[scene](spec.seed, settled(spec.seed));
     const misses = [...verdict.misses];
     if (scene === 'archived') {
       if (JSON.stringify(spec.minutes) !== JSON.stringify(verdict.minutes))
@@ -275,23 +335,33 @@ function check() {
 
 function scan(start: number, count: number, scenes: Scene[]) {
   const found = new Map<Scene, Verdict>();
+  const required = scenes.filter((scene) => !OPTIONAL.includes(scene));
   const t0 = Date.now();
   let n = start;
-  for (; n < start + count && found.size < scenes.length; n++)
+  let scanned = 0;
+  const done = () => required.every((scene) => found.has(scene)) && found.size === scenes.length;
+  for (; n < start + count && !done(); n++) {
+    scanned++;
+    // One settled match a seed, read by every scene still looked for.
+    const seed = `${SEED_PREFIX}${n}`;
+    const playback = settled(seed);
     for (const scene of scenes) {
       if (found.has(scene)) continue;
-      const verdict = SCENES[scene](`${SEED_PREFIX}${n}`);
+      const verdict = SCENES[scene](seed, playback);
       if (!verdict.misses.length) {
         found.set(scene, verdict);
         console.log(`${scene}: ${describe(verdict)} (${((Date.now() - t0) / 1000).toFixed(0)} s)`);
       }
     }
+    // Optional scenes do not hold the scan open once every required one is found.
+    if (required.length && required.every((scene) => found.has(scene))) break;
+  }
   for (const scene of scenes)
     if (!found.has(scene)) {
-      console.log(`${scene}: none of ${SEED_PREFIX}${start}–${start + count - 1} fits`);
-      process.exitCode = 1;
+      console.log(`${scene}: none of ${SEED_PREFIX}${start}–${start + scanned - 1} fits`);
+      if (!OPTIONAL.includes(scene)) process.exitCode = 1;
     }
-  console.log(`${n - start} seeds scanned in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
+  console.log(`${scanned} seeds scanned in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
 }
 
 const args = process.argv.slice(2);
@@ -306,6 +376,6 @@ else {
   scan(
     Number(opt('start') ?? 1),
     Number(opt('count') ?? 1000),
-    scene ? [scene] : ['opening', 'archived'],
+    scene ? [scene] : ['opening', 'archived', 'brace'],
   );
 }

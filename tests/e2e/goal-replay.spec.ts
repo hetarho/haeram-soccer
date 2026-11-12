@@ -1,5 +1,5 @@
 import { closeMatchDetails, openMatchDetails, presentedMinute, watchNext } from './watch';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import { expect, test, type Locator, type Page } from '@playwright/test';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { importResponsibilityCareer } from './responsibility-fixtures';
@@ -23,12 +23,11 @@ import {
 
 /** The mobile presentation journey's fixture: an early home goal, then more on the current model. */
 function goalWorld() {
-  // As tests/e2e/mobile-match-presentation.spec.ts: the club taken over from goal-feedback-61 opens
-  // 2′ home, then scores at 18′, 24′, 26′ and 35′ and concedes at 45′ and 86′ (found by
-  // scripts/find-goal-seeds.ts once T805's per-club age ladder moved goal-feedback-25's opener,
-  // 4′ home in T687, to 38′). The second goal stays minutes after the clip below returns, so the
-  // cue count it reads is the clip's own.
-  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-61' });
+  // As tests/e2e/mobile-match-presentation.spec.ts: the club taken over from goal-feedback-6 opens
+  // 2′ home, concedes at 22′, scores at 37′ and concedes at 56′ on the scripted model (found by
+  // scripts/find-goal-seeds.ts, T839; goal-feedback-61 on revision 10). The second goal stays
+  // minutes after the clip below returns, so the cue count it reads is the clip's own.
+  const world = careerWorld({ country: 'ENG', seed: 'goal-feedback-6' });
   world.settings!.responsibilities.sales = 'delegated';
   return world;
 }
@@ -83,7 +82,7 @@ test('a seen goal replays its build-up and returns to the original viewing', asy
   test.slow();
   await page.setViewportSize({ width: 360, height: 740 });
   const world = goalWorld();
-  const playback = advanceToNextMatch(structuredClone(world))!;
+  const playback = stagedPlayback(advanceToNextMatch(structuredClone(world))!);
   const { samples } = presentationSamples(playback.frames);
   const starts: number[] = [];
   for (const sample of samples) starts[sample.frame] ??= sample.time;

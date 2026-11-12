@@ -363,6 +363,50 @@ export const sourceMessages = {
   'copy.catalog.7ed1601971': '{p0}현재 없는 연결: {p1}',
   'copy.catalog.02c1f38ec2': '{p0}구현 근거: {p1}',
   'copy.catalog.129b656496': '## 행동부터 보기',
+  'influences.match.offsideTitle': '오프사이드와 경기 화면의 움직임',
+  'influences.match.offsideSummary':
+    '오프사이드는 결과 경로가 상대 진영 마지막 세 구역으로 가는 전진 패스에서 뽑고, 받는 선수의 판단력이 누가 걸리는지 정합니다. 경기 화면의 선수 이동은 기록에서 만들어지고 기록을 바꾸지 않습니다.',
+  'influences.match.forwardPasses': '상대 진영 마지막 세 구역으로 가는 전진 패스',
+  'influences.match.forwardPassesEffect':
+    '깃발이 오를 수 있는 패스의 수를 정합니다. 팀 평균은 경기당 1.7–1.9회입니다.',
+  'influences.match.receiverDecisions': '받는 선수의 판단력',
+  'influences.match.receiverDecisionsEffect': '판단력이 낮은 선수일수록 더 자주 걸립니다.',
+  'influences.match.pictureShape': '포메이션·역할·국면',
+  'influences.match.pictureShapeEffect':
+    '경기 화면에서 각 선수가 서는 자리와 움직이는 길을 정합니다. 결과와 기록에는 작용하지 않습니다.',
+  'influences.match.tendenciesAbsent':
+    '위치 자유도·규율·압박 성향·예측력은 경기 화면의 움직임만 바꾸고 결과와 기록은 바꾸지 않습니다.',
+  'influences.match.tacticalSummary':
+    '전술과 양 팀 선수 구성이 팀의 행동 수와 효율을 정하고, 역할·특성·능력치·자리가 누가 그 행동을 하는지 정합니다.',
+  'influences.match.attribution': '역할 습관·플레이 특성·능력치·자리',
+  'influences.match.attributionEffect': '같은 팀 행동이 어느 선수에게 기록될지에 작용합니다.',
+  'influences.match.passSummary':
+    '패스 종류와 구역, 양 팀의 패스·압박 능력, 전술과 전력 차이로 성공 수를 정합니다.',
+  'influences.match.passKind': '패스 종류·구역',
+  'influences.match.passKindEffect':
+    '짧은 패스·긴 패스·스루패스는 구역마다 기준 성공률이 다릅니다.',
+  'influences.match.passOpponent': '상대의 압박 능력·전술·전력 차이',
+  'influences.match.passOpponentEffect':
+    '상대의 태클·위치선정·속도와 압박 전술은 성공률을 낮추고, 전력 차이가 성공률을 움직입니다.',
+  'influences.match.crossEffect':
+    '크로스와 컷백은 성공률이 따로 있고, 이어진 헤더 슈팅은 공중볼 능력이 정합니다.',
+  'influences.match.takeOnSummary':
+    '양 팀의 드리블·속도와 상대의 태클·위치선정·속도를 견주어, 그 구역의 기준 성공률에서 돌파 성공 수를 정합니다.',
+  'influences.match.takeOnZone': '경기장 구역·페널티 지역 여부',
+  'influences.match.shotDelivery': '헤더·컷백·세트피스 종류',
+  'influences.match.shotDeliveryEffect':
+    '같은 칸이라도 헤더인지, 오픈 플레이·코너킥·프리킥·페널티킥인지에 따라 기회가 달라집니다.',
+  'influences.match.shotDefence': '상대 수비수의 태클·위치선정·공중볼',
+  'influences.match.shotDefenceEffect': '상대의 슈팅 기회 생성을 억제합니다.',
+  'influences.match.shotScore': '경기 중 스코어·양 팀 전력·전술',
+  'influences.match.shotScoreEffect':
+    '앞선 팀은 위험을 덜 감수하고 뒤진 팀은 더 감수해 슈팅 수와 기회가 달라집니다.',
+  'influences.match.cardRates': '전술의 반칙 성향·시대 규칙',
+  'influences.match.cardRatesEffect':
+    '카드 수는 전술의 반칙 비율에 맞춘 비율로 뽑고, 사유는 정해진 비중으로 정합니다.',
+  'influences.match.traitsRole': '플레이 특성·세부 능력·역할',
+  'influences.match.disciplineSummary':
+    '카드 수와 사유는 전술의 반칙 비율과 시대 규칙으로 뽑고, 경고 이력이 경고 누적 퇴장을, 대회별 누적 규칙이 출전 정지를 만듭니다.',
   'copy.influences.1419e09797': '자동 변화',
   'copy.influences.636b022e8b': '직접 선택',
   'copy.influences.31b976b577': '계약 · 선수 관계',
@@ -670,19 +714,6 @@ export const sourceMessages = {
   'copy.influences.8a49f0362a': '화면 관찰과 실제 날짜 진행을 구분',
   'copy.influences.a342ed6ba3':
     '관전하면 유리하고 자동 진행하면 불리해지는 별도의 경기 판정 규칙은 없습니다.',
-  'copy.influences.f0792d50b5': '선수 이동·뒷공간 침투·오프사이드',
-  'copy.influences.d19b0bac57':
-    '속도와 움직일 목표, 수비 라인과 공의 위치가 기회를 만들거나 공격을 끊습니다.',
-  'copy.influences.645b21ee9e': '선수 속도·뛴 시간·전환 상황',
-  'copy.influences.971968626c': '달릴 수 있는 속도와 복귀 움직임을 바꿉니다.',
-  'copy.influences.6d69b06ed9': '포메이션·역할·공 위치·선수들의 의도',
-  'copy.influences.7a481eb1dd': '어디를 지키고 어느 공간으로 움직이는지에 작용합니다.',
-  'copy.influences.2ae94096d1': '받는 선수와 공·상대 수비 라인의 위치',
-  'copy.influences.fd9e7ed988':
-    '상대 진영에서 공과 수비 라인보다 앞서는지 확인합니다. 스로인·골킥·코너킥에는 예외가 있습니다.',
-  'copy.influences.03d50661bd': '판단력·침투 특성·상대의 높은 수비 라인',
-  'copy.influences.41aba8a71e': '대상 장면에서 오프사이드가 선언될 가능성에 작용합니다.',
-  'copy.influences.912877ae57': '받을 수 있는 공간과 경로 변경',
   'copy.influences.8e1bbb0fec': '슈팅까지 이어질 기회 변경',
   'copy.influences.46620aead4': '감독이 어떤 선수를 선발하는지',
   'copy.influences.a5a2ebe38a':
@@ -733,37 +764,23 @@ export const sourceMessages = {
   'copy.influences.03c4d91833':
     '구단주 자금이나 팬 민심 자체를 직접 경기 전력에 더하지는 않습니다.',
   'copy.influences.308404051e': '전술 수행과 패스·돌파·슈팅 선택',
-  'copy.influences.efb5258978': '전술·선수 구성·현재 장면이 행동 선택과 효율을 바꿉니다.',
   'copy.influences.efc1f9a43c': '패스·시야·수비력·속도·체력 구성',
   'copy.influences.91e47e16f7':
     '점유는 패스와 시야, 역습은 수비 조직과 속도, 압박은 버틸 체력 등의 영향을 받습니다.',
   'copy.influences.4344f92bf3': '상대 전술',
   'copy.influences.5e164c8930': '상대가 점유·역습·압박인지에 따라 같은 전술의 유불리가 달라집니다.',
-  'copy.influences.8773640806': '공 위치·공간·동료 움직임·압박',
-  'copy.influences.f1e30c271d': '그 장면에서 가능한 행동과 선택 비중을 바꿉니다.',
-  'copy.influences.55d424100c': '선수 성향·역할·감독 유연성',
-  'copy.influences.9d7ba83947':
-    '행동 선호와 자율성에 작용합니다. 사용 중인 경기 엔진의 규칙을 따릅니다.',
   'copy.influences.5d1f3ba823': '압박은 소모 증가',
   'copy.influences.b32689f42e': '만들어내는 기회의 위치와 형태 변화',
   'copy.influences.15b0ea34b3': '패스·크로스의 연결',
-  'copy.influences.32aa53f332': '패스 종류와 거리, 패서·수신자·수비수의 능력과 위치를 함께 봅니다.',
   'copy.influences.ccbba1cf2e': '패스·시야 또는 골키퍼 배급',
   'copy.influences.003e6c4df3': '짧은 패스·긴 패스·골키퍼 배급에서 쓰는 능력이 다릅니다.',
-  'copy.influences.d8fe413948': '거리·패스 경로·수비의 도달 가능성',
-  'copy.influences.595255c829': '먼 패스와 차단 가능한 경로는 실패 위험이 다릅니다.',
-  'copy.influences.3a7398cd5b': '압박·수신자의 공간과 타이밍',
-  'copy.influences.21eae76379': '패스를 낼 시간과 받을 위치의 상황이 결과를 바꿉니다.',
   'copy.influences.6c0f0eace4': '크로스·컷백·헤더 여부',
-  'copy.influences.b721637043': '높은 공은 공중볼 경합과 후속 슈팅까지 다른 장면을 만듭니다.',
   'copy.influences.2df0c48065': '연결된 공이 슈팅 장면을 바꿈',
   'copy.influences.dd268eae3f': '돌파·볼 경합 성공과 반칙 유도',
-  'copy.influences.b1fa4b7676': '돌파 능력·속도를 앞의 수비수의 태클·속도에 견줍니다.',
   'copy.influences.17bef28d91': '공격자의 드리블·속도',
   'copy.influences.c84295330a': '앞의 수비수를 제치는 데 유리하게 작용합니다.',
   'copy.influences.394a42bad2': '수비수의 태클·속도·위치',
   'copy.influences.f4768b877f': '공격자가 지나가기 어렵게 만듭니다.',
-  'copy.influences.cddaa0af2e': '경기장 구역·수비수의 경고·페널티 지역 여부',
   'copy.influences.531e29f6e3': '실패 뒤 반칙이나 깨끗한 태클로 이어지는 비중 등이 달라집니다.',
   'copy.influences.da69ecaeec': '경합이 반칙·카드로 이어질 수 있음',
   'copy.influences.470fab60a6': '돌파로 더 좋은 기회를 만들 수 있음',
@@ -772,20 +789,10 @@ export const sourceMessages = {
     '기회 자체의 질, 슈터·골키퍼의 능력, 수비 블록은 구분되는 요소입니다.',
   'copy.influences.1fdb630e83': '골대와의 거리·슈팅 각도',
   'copy.influences.9e0c071c2e': '기회의 기본 득점 가능성을 바꿉니다.',
-  'copy.influences.1e23058256': '헤더·컷백·프리킥·압박',
-  'copy.influences.3af16d24de': '같은 위치라도 공 전달 방식과 압박에 따라 기회가 달라집니다.',
   'copy.influences.5bbb07141c': '공격자의 마무리와 골키퍼 반사신경',
   'copy.influences.7f569380dc': '기회를 실제 골로 전환하는 데 작용합니다.',
-  'copy.influences.61a34a21be': '수비수의 슈팅 경로 차단·골키퍼 위치',
-  'copy.influences.06d844b21d': '블록·선방·리바운드에 영향을 줍니다.',
-  'copy.influences.25280ae9f2': '사용 중인 엔진·장면 추첨',
-  'copy.influences.0aef3dd0ae': '기회 생성·차단·마무리 규칙에 따라 판정합니다.',
   'copy.influences.7980ffd281': '실제 골 누적으로 최종 스코어 형성',
   'copy.influences.b21c7f542a': '반칙·카드·퇴장·출전 정지',
-  'copy.influences.90ff47568b':
-    '수비 장면과 카드 이력이 카드 판정에 작용하고, 대회별 누적 규칙이 출전 정지를 만듭니다.',
-  'copy.influences.412edae6a8': '반칙 위치·득점 기회 저지·전술적 반칙',
-  'copy.influences.378bf8b522': '일반 반칙과 다른 카드 판정 분기로 들어갑니다.',
   'copy.influences.a913f58991': '기존 경고',
   'copy.influences.f7032006b0': '추가 경고가 경고 누적 퇴장으로 이어집니다.',
   'copy.influences.ab64191528': '반칙 종류·대회·시즌 시점·경고 누적',
@@ -825,7 +832,6 @@ export const sourceMessages = {
   'copy.influences.7589bac4d7': '야망',
   'copy.influences.444d15cd3d':
     '더 큰 구단의 이적 제안이 막혔을 때 불만이 생길 가능성에 작용합니다.',
-  'copy.influences.f08da98587': '플레이 특성·세부 능력·역할·감독 유연성',
   'copy.influences.d6cc599b9b':
     '침투·리더 효과 등 특성별 조건과 경기 안 행동 선호에 각각 작용합니다. 경기 안의 선호 성향과 위 세 성격은 별도로 봐야 합니다.',
   'copy.influences.6960772acd': '프로의식이 성장에 영향',
@@ -3888,7 +3894,6 @@ export const sourceMessages = {
   'copy.Pitch.4cdbdae8b5': '수비 복귀',
   'copy.Pitch.0c24193053': '볼 운반',
   'copy.Pitch.abcf2c81c5': '골문 보호',
-  'copy.Pitch.2e1032e0a1': '길목 차단',
   'copy.Pitch.0e9e3ce22b': '부상',
   'copy.Pitch.d43a776c5e': '재생',
   'copy.Pitch.4f51c0c8ad': '일시정지',
@@ -4782,6 +4787,13 @@ export const sourceMessages = {
   'copy.fullStatsView.abc2d9a4a3': 'xG 차',
   'copy.fullStatsView.3cef0459ef': '태클+인터셉트',
   'copy.fullStatsView.543d84eb22': '세부 기록을 불러오지 못했어요.',
+  'glossary.actionRecord.term': '기록된 플레이',
+  'glossary.actionRecord.standard':
+    '이벤트 데이터는 공을 다룬 플레이마다 위치, 종류, 결과와 관여한 선수를 기록하고, 분석가는 그 플레이가 놓인 국면(빌드업, 전진, 파이널 서드, 역습, 세트피스)으로 흐름을 읽어요(Opta, StatsBomb).',
+  'glossary.actionRecord.here':
+    '경기 기록은 플레이마다 시작과 끝 칸(40칸), 종류(패스·운반·돌파·크로스·슈팅·태클·인터셉트·파울·오프사이드), 세트피스 여부, 결과, 라인을 깨뜨렸는지, 누가 했고 누가 공을 따냈는지를 담아요. 경기 스크립트는 여기에 그 플레이의 국면인 빌드업, 전진, 파이널 서드, 역습, 세트피스를 더해요.',
+  'glossary.actionRecord.read':
+    '해설과 통계는 이 기록만 읽어요. 칸 이름, 결과, 라인 브레이킹은 기록 그대로이고, 해설 앞에 "역습"이 붙으면 그 플레이의 국면이 역습이에요.',
   'copy.glossaryEntries.7087773f6a': '왼쪽 측면',
   'copy.glossaryEntries.e6042799eb': '왼쪽 하프스페이스',
   'copy.glossaryEntries.25c630c275': '중앙',
@@ -4991,13 +5003,6 @@ export const sourceMessages = {
   'copy.glossaryEntries.a21e31075d':
     '아래 표는 위쪽이 상대 골문이에요. 칸에 띠 이름만 있으면 그 열의 레인 이름을 앞에 붙여 읽어요. 상대 골문에 가까운 중앙 칸일수록 위협도(xT)가 높아요.',
   'copy.glossaryEntries.c93350ead2': '공격 방향 기준 40칸 (위쪽이 상대 골문)',
-  'copy.glossaryEntries.fa3a35e10f': '터치 상황 태그',
-  'copy.glossaryEntries.a5e32a8767':
-    "분석가와 해설은 공을 받는 순간의 상황을 상대 위치로 설명해요. 라인 사이(상대 미드필드 줄과 수비 줄 사이), 뒷공간(가장 깊은 수비수 뒤), 채널(센터백과 풀백 사이), 압박(StatsBomb은 약 4.6m 안의 상대), 등지고 받기, 수적 우위, 그리고 국면으로 역습과 게겐프레싱(공을 잃은 직후 바로 되찾으려는 압박)을 써요(FIFA EFI, Spielverlagerung, Coaches' Voice).",
-  'copy.glossaryEntries.40a048d5c0':
-    '공을 다룰 때마다 선수들 위치로 다시 계산해요. 라인 사이: 상대 미드필드 줄과 수비 줄의 평균 위치 사이, 하프스페이스·중앙 레인. 라인 사이의 빈 공간(포켓): 라인 사이이면서 가장 가까운 상대가 6m 이상 떨어짐. 뒷공간: 뒤에서 두 번째 상대보다 앞. 채널: 하프스페이스에서 상대 수비 줄과 6m 안, 그쪽 센터백과 풀백 사이. 압박: 4.6m 안의 상대 수(골문 쪽 상대는 1, 뒤쪽 상대는 0.5). 등지고 받기: 뒤로 온 패스를 받았는데 3m 안 골문 쪽에 상대가 있음. 수적 우위: 공 주변 15m 안 우리 선수가 상대보다 많음. 역습: 공을 되찾고 8초 안, 공보다 골문 쪽 상대가 5명 이하. 게겐프레싱: 공을 잃고 5초 동안 전술에 따라 압박 반경이 넓어짐.',
-  'copy.glossaryEntries.daffa517b8':
-    '해설에 "라인 사이에서 받은", "뒷공간으로", "등지고 받은", "역습"이 나오면 이 태그예요. 압박이 1 이상이면 패스 성공률이 떨어지고 드리블 돌파나 걷어내기가 늘어나요.',
   'copy.identityPreview.2f41a055e8': '어웨이',
   'copy.identityPreview.ec9b859e8d': '세컨',
   'copy.identityPreview.6b01b2385d': '밝은 상대 예시',

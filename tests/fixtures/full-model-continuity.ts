@@ -1,5 +1,7 @@
-import type { MatchPlayback, PlayerMotion, World } from '../../packages/contracts/src/types';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import type { MatchPlayback, World } from '../../packages/contracts/src/types';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
+import { motionStateLabel } from '../../apps/web/src/features/match-viewer/lib/motionState';
+import { metresApart, stagedCorners } from './corner-scene';
 import { advanceRound, fullStatsRead, MATCH_MODEL_RELEASE } from '../../packages/engine/src/index';
 import { careerWorld } from '../../packages/engine/src/career.testkit';
 import { GOAL_FEEDBACK_CONFIG } from '../../apps/web/src/features/match-viewer/lib/goalFeedback';
@@ -80,10 +82,17 @@ export interface ContinuityCareer {
      */
     fastest: (realMs: number) => number;
     /**
-     * A sample of a delivered set piece where six or more defenders hold set-piece jobs (T348),
-     * with where its marker stands then, in the pitch's 0–100 units.
+     * The kick sample of a staged corner (→MATCH-18) with a defender goal-side of a man in the box,
+     * where that marker stands then, in the pitch's 0–100 units.
      */
-    setPiece: { index: number; label: string; marker: Who; at: readonly [number, number] };
+    setPiece: {
+      index: number;
+      label: string;
+      marker: Who;
+      at: readonly [number, number];
+      /** What his sheet says he is doing: his staged state's label. */
+      state: string;
+    };
   };
 }
 
@@ -98,39 +107,40 @@ function career(seed: string): World {
   return w;
 }
 
-/** A committed set-piece mark or cover the engine recorded, still held. */
-const job = (p: PlayerMotion) =>
-  !!p.intention &&
-  !p.intention.ended &&
-  p.intention.priority === 'committed' &&
-  (p.intention.kind === 'mark' || p.intention.kind === 'cover');
-
-/** The first sample whose defending side holds six or more set-piece jobs, with one marker. */
+/**
+ * The kick of the first corner the staging places from a settled beat (→MATCH-18): its sample and
+ * a defender standing goal-side of an attacker in the box, with the state his sheet names.
+ */
 function setPieceShot(playback: MatchPlayback) {
   const { samples } = presentationSamples(playback.frames);
-  for (let index = 0; index < samples.length; index++)
-    for (const side of [0, 1] as const) {
-      const players = samples[index]!.players?.[side] ?? [];
-      if (players.filter(job).length < 6) continue;
-      const marker = players.find(
-        (p) => job(p) && p.intention!.kind === 'mark' && p.state === 'mark',
-      );
-      if (!marker) continue;
-      return {
-        samples: samples.length,
-        shot: {
-          index,
-          label: playback.frames[samples[index]!.frame]!.label,
-          marker: { side, index: playback.squads[side].findIndex((p) => p.id === marker.id) },
-          at: marker.position,
+  for (const { index, attack, defend, fromGoal, outfield, receiver } of stagedCorners(
+    playback,
+    samples,
+  )) {
+    const runner = outfield(attack).find((p) => p.id !== receiver && fromGoal(p) <= 16.5);
+    const marker =
+      runner &&
+      outfield(defend).find((p) => fromGoal(p) < fromGoal(runner) && metresApart(p, runner) <= 4);
+    if (!marker) continue;
+    return {
+      samples: samples.length,
+      shot: {
+        index,
+        label: playback.frames[samples[index]!.frame]!.label,
+        marker: {
+          side: defend,
+          index: playback.squads[defend].findIndex((p) => p.id === marker.id),
         },
-      };
-    }
+        at: marker.position,
+        state: motionStateLabel(marker),
+      },
+    };
+  }
   return undefined;
 }
 
 /**
- * The first seeded career whose next own match has a goal and a held set-piece delivery: the
+ * The first seeded career whose next own match has a goal and a staged corner: the
  * journey checks those scenes, not a seed, and a football change can leave one match without them.
  */
 export function continuityCareer(): ContinuityCareer {
@@ -138,12 +148,16 @@ export function continuityCareer(): ContinuityCareer {
     const world = career(seed);
     // What the build holds after the import, whichever side activates it.
     const activated = writerActivation(world, ENABLED_RELEASE);
-    const playback = advanceToNextMatch(structuredClone(activated));
-    if (!playback) continue;
-    const record = playback.record;
+    const settled = advanceToNextMatch(structuredClone(activated));
+    if (!settled) continue;
+    const record = settled.record;
     const goals = record.highlights.filter((h) => h.action === '골');
+    if (!goals.length) continue;
+    // The scripted model's frames are staged as the browser stages them; only a match with a goal
+    // is staged, since staging is what costs the time here.
+    const playback = stagedPlayback(settled);
     const scene = setPieceShot(playback);
-    if (!goals.length || !scene) continue;
+    if (!scene) continue;
     const running = [0, 0];
     const scores = goals.map((goal) => {
       running[goal.side]!++;

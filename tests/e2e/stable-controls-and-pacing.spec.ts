@@ -1,11 +1,12 @@
 import { openPersonnel } from './personnel-navigation';
-import { advanceToNextMatch } from '../../packages/engine/src/testing';
+import { advanceToNextMatch, stagedPlayback } from '../../packages/engine/src/testing';
 import { openClubhouse, openLeague, openCups, openClubRecords } from './competition-navigation';
 import {
   closeMatchDetails,
   openMatchDetails,
   openPlayerSheet,
   presentedMinute,
+  stagedTo,
   watchNext,
 } from './watch';
 import { delegateSales, reportKit } from './events';
@@ -218,7 +219,7 @@ test('opens at 2x, one minute per 12 s at 1x, and provides five replay speeds', 
   // That reference match is played in Node first, then about 20 s of timed playback follow; on the
   // released model CI Firefox ran past 30 s on both attempts (40262705063), as the sibling below.
   test.slow();
-  const playback = advanceToNextMatch(paceCareer())!;
+  const playback = stagedPlayback(advanceToNextMatch(paceCareer())!);
   await importResponsibilityCareer(page, paceCareer());
   await watchNext(page);
   const speeds = page.getByRole('radiogroup', { name: '관전 속도', exact: true });
@@ -340,20 +341,20 @@ test('draws a set-piece preparation in about 1.5 s with the players travelling',
   // A reference run of the same seeded match finds a long corner, free kick or goal kick
   // preparation, and the page plays that recorded match (→WEB-32, MATCH-7/12).
   test.slow();
-  const playback = advanceToNextMatch(paceCareer())!;
+  const playback = stagedPlayback(advanceToNextMatch(paceCareer())!);
   const preparation = longPreparation(playback);
   await importResponsibilityCareer(page, paceCareer());
   await watchNext(page);
   // The result holds the match still, so the details' seek keeps its place once they close.
   await page.getByRole('button', { name: '결과 보기', exact: true }).click();
   const details = await openMatchDetails(page);
-  // The same match: its sample count matches the reference within the few points Firefox and
-  // WebKit may sample apart from Node; the seek itself goes by match time.
-  const max = Number(
-    await details.getByRole('slider', { name: '경기 시간', exact: true }).getAttribute('max'),
-  );
-  expect(
-    Math.abs(max - (presentationSamples(playback.frames).samples.length - 1)),
-  ).toBeLessThanOrEqual(10);
+  // The same match: once the page's worker has staged it (→MATCH-39), its sample count matches the
+  // reference within the few points Firefox and WebKit may sample apart from Node; the seek itself
+  // goes by match time.
+  const reference = presentationSamples(playback.frames).samples.length - 1;
+  const timeline = details.getByRole('slider', { name: '경기 시간', exact: true });
+  await stagedTo(timeline, reference - 10);
+  const max = Number(await timeline.getAttribute('max'));
+  expect(Math.abs(max - reference)).toBeLessThanOrEqual(10);
   await expectCompressedPreparation(page, playback, preparation);
 });
