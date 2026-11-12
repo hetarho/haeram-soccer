@@ -143,26 +143,26 @@ export async function expectViewFits(page: Page) {
  * ball both halves wear one colour, and recolouring the board never moves it or the pitch.
  */
 export async function expectBallSideScoreboard(page: Page) {
-  // Read a still board and pitch: WebKit resamples a page's entrance still sliding them in when
-  // the recolour restyles, so the two reads below differed by 0.05 px at 1280 px.
-  await page.getByTestId('match-score').evaluate((scoreboard) => {
+  const board = await page.getByTestId('match-score').evaluate(async (scoreboard) => {
     const canvas = scoreboard.parentElement!.querySelector('canvas')!;
-    return Promise.all(
-      document
-        .getAnimations()
-        .filter((animation) => {
-          const target = (animation.effect as KeyframeEffect | null)?.target;
-          return (
-            (target?.contains(scoreboard) || target?.contains(canvas)) &&
-            animation.playState === 'running' &&
-            animation.effect!.getComputedTiming().endTime !== Infinity
-          );
-        })
-        .map((animation) => animation.finished.catch(() => undefined)),
-    );
-  });
-  const board = await page.getByTestId('match-score').evaluate((scoreboard) => {
-    const canvas = scoreboard.parentElement!.querySelector('canvas')!;
+    // Read a still board and pitch: WebKit resamples a page's entrance still sliding them in when
+    // the recolour restyles, so the two reads below differed by 0.05 px at 1280 px; and each half
+    // eases to the side on the ball over 240 ms, so a read inside that recolour finds the halves
+    // still apart (chromium at 360 and 1280: one half still white).
+    const moving = () =>
+      document.getAnimations().filter((animation) => {
+        const target = (animation.effect as KeyframeEffect | null)?.target;
+        return (
+          !!target &&
+          (target.contains(scoreboard) || target.contains(canvas) || scoreboard.contains(target)) &&
+          animation.playState === 'running' &&
+          animation.effect!.getComputedTiming().endTime !== Infinity
+        );
+      });
+    // The ball may change side again while one recolour ends: read in the same turn that finds
+    // nothing moving, so no restyle comes between the check and the read.
+    for (let wait = 0, running = moving(); running.length && wait < 50; running = moving(), wait++)
+      await Promise.all(running.map((animation) => animation.finished.catch(() => undefined)));
     const behind = (side: string) =>
       getComputedStyle(scoreboard.querySelector(`:scope > [data-side="${side}"]`)!).backgroundColor;
     const measure = () => {

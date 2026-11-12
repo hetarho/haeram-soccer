@@ -5,7 +5,7 @@ import { presentationSamples } from '../../apps/web/src/entities/match/lib/prese
 import { motionStateLabel } from '../../apps/web/src/features/match-viewer/lib/motionState';
 import { metresApart, stagedCorners } from '../fixtures/corner-scene';
 import { withCandidateModel } from '../fixtures/worlds';
-import { stoppages } from './preparation';
+import { showsCompression, stoppages } from './preparation';
 
 /**
  * Both sides through a corner in observation (→MATCH-12, MATCH-17, MATCH-18): the walk-in to its
@@ -13,8 +13,8 @@ import { stoppages } from './preparation';
  * takeover on the released scripted model (`withCandidateModel` keeps it explicit whatever the
  * switch says), every responsibility delegated so nothing holds the watch. The scene is the
  * staging's own: a reference run of the same seeded match, staged in Node as the page's worker
- * stages it, finds the first corner whose kick follows a settled beat, and the page is paused on
- * that sample.
+ * stages it, finds the first corner whose kick follows a settled beat after a walk-in long enough to
+ * show its compression at 1x, and the page is paused on that sample.
  */
 function career(seed: string): World {
   const w = careerWorld({ country: 'ENG', seed });
@@ -44,14 +44,18 @@ export const CORNER_RULE = {
   reach: 4,
 } as const;
 
-/** The first corner of a seeded reference match whose kick follows its settled beat. */
+/**
+ * The first corner of a seeded reference match whose kick follows its settled beat and whose
+ * walk-in the phone plays at 1x (`expectCompressedPreparation`): most of the scripted model's
+ * corners are walked in within 9–15 s, too short to read the compression (T854).
+ */
 function recordedScene(seed: string) {
   const playback = stagedPlayback(advanceToNextMatch(career(seed))!);
   const { samples } = presentationSamples(playback.frames);
   const stops = stoppages(playback);
   for (const corner of stagedCorners(playback, samples)) {
     const preparation = stops.find(({ to }) => Math.abs(to - corner.kick) <= 0.1);
-    if (!preparation) continue;
+    if (!preparation || !showsCompression(preparation)) continue;
     const { attack, defend, fromGoal, across, outfield, index } = corner;
     const back = outfield(attack).filter((p) => fromGoal(p) > CORNER_RULE.backFromGoal);
     const up = outfield(defend).filter((p) => fromGoal(p) > CORNER_RULE.upFromGoal);
@@ -99,13 +103,16 @@ function recordedScene(seed: string) {
 }
 
 /**
- * The first of a few seeded careers whose reference match has a corner kicked from a settled beat:
- * the scene, not the seed, is what this journey checks.
+ * The first of a few seeded careers whose reference match has such a corner: the scene, not the
+ * seed, is what this journey checks. Each reference match costs seconds to stage, so the search
+ * starts at set-piece-defence-6, whose 22′ corner is walked in for 33 s on the released model
+ * (T854: seeds 1–3 hold none, seeds 4 and 8 a 20–25 s one); the rest follow after a model change.
  */
 export function sceneCareer() {
   const seeds = [
+    'set-piece-defence-6',
     'set-piece-defence',
-    ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => `set-piece-defence-${n}`),
+    ...[2, 3, 4, 5, 7, 8, 9, 10].map((n) => `set-piece-defence-${n}`),
   ];
   for (const seed of seeds) {
     const scene = recordedScene(seed);

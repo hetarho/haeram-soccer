@@ -33,6 +33,15 @@ export function stoppages(playback: MatchPlayback): Stoppage[] {
 const LEAD_SECONDS = 3;
 /** Real ms recorded beyond the clock's own time to the kick: the click landing and a few frames. */
 const RECORD_SLACK_MS = 2000;
+/**
+ * Real ms of running play at 1x a stoppage must exceed for its rush and beat to read as plainly
+ * quicker (`expectCompressedPreparation`): 20 s of match time.
+ */
+const PLAIN_RUNNING_MS = 4000;
+
+/** Whether a stoppage lasts long enough at 1x for `expectCompressedPreparation` to read it. */
+export const showsCompression = ({ from, to }: { from: number; to: number }) =>
+  presentationMs(from, to, 1) > PLAIN_RUNNING_MS;
 
 /**
  * The first stoppage (→WEB-32) of a reference playback that starts after the opening minutes and
@@ -115,7 +124,7 @@ export async function expectCompressedPreparation(
   const drawnMs = records[kickedAt]![0] - records[enteredAt]![0];
   const runningMs = presentationMs(from, to, 1);
   const beatMs = presentationMs(from, to, 1, segments);
-  expect(runningMs).toBeGreaterThan(4000);
+  expect(runningMs).toBeGreaterThan(PLAIN_RUNNING_MS);
   expect(beatMs).toBeLessThanOrEqual(DEAD_BALL_CONFIG.rushMaxMs + DEAD_BALL_CONFIG.beatMs.incident);
   expect(drawnMs).toBeGreaterThanOrEqual(beatMs - 100);
   expect(drawnMs).toBeLessThan(Math.min(beatMs + 1000, runningMs * 0.6));
