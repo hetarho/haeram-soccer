@@ -20,8 +20,8 @@ import {
   academyPotentialBonus,
   ACADEMY_LIMIT,
 } from '../../../../packages/engine/src/academy';
-import { staffEffects } from '../../../../packages/engine/src/staff';
-import { delegatePlan } from '../../../../packages/engine/src/delegation';
+import { departmentEffects, staffEffects } from '../../../../packages/engine/src/staff';
+import { delegatePlan, planRevenue } from '../../../../packages/engine/src/delegation';
 import { clubBudgets, ownerSeasonFlows } from '../../../../packages/engine/src/club-budget';
 import {
   BUDGET_RESPONSIBILITIES,
@@ -53,7 +53,8 @@ export function officeRead(w: World) {
   const policy = policyOf(w),
     effects = policyEffects(policy),
     build = buildEffects(w);
-  const costs = operatingCosts(w);
+  const costs = operatingCosts(w),
+    revenue = planRevenue(w);
   const policyCosts = Object.fromEntries(
     POLICY_KEYS.map((key) => [
       key,
@@ -84,6 +85,8 @@ export function officeRead(w: World) {
       ]),
     ),
     staff: staffEffects(w),
+    /** What the youth director's training adds on his own (→WEB-116): his effect, not his pay. */
+    youthCoach: departmentEffects(w, 'youth'),
     academy: {
       growth: academyGrowth(w),
       intake: academyIntakeSize(w),
@@ -111,15 +114,16 @@ export function officeRead(w: World) {
     /** The owner's money this season so far (→`ownerSeasonFlows`). */
     ownerFlows: ownerSeasonFlows(w),
     /**
-     * Each spending responsibility's plan now and, per request, the plan its person would make if
+     * Each spending responsibility's plan now and, per request, the plan the 단장 would make if
      * asked that (→`delegation.ts`), so the delegation page previews a request before it is sent.
+     * All rest on the season's income he plans on (→`planRevenue`).
      */
     delegation: Object.fromEntries(
       BUDGET_RESPONSIBILITIES.map((key) => [
         key,
         {
-          plan: delegatePlan(w, key, undefined, costs.annual),
-          previews: SPEND_REQUESTS.map((level) => delegatePlan(w, key, level, costs.annual)),
+          plan: delegatePlan(w, key, undefined, revenue),
+          previews: SPEND_REQUESTS.map((level) => delegatePlan(w, key, level, revenue)),
         },
       ]),
     ) as Record<

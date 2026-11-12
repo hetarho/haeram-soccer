@@ -37,7 +37,7 @@ export function DirectionFacts({
   const lines = rows.map((row) => ({ row: row as string, ...rowInForce(w, row) }));
   // The person's plan behind the delegated work: the owner's request as he acts on it.
   if (responsibility) {
-    const person = delegateOf(w, responsibility),
+    const person = delegateOf(w),
       request = requestOf(w, responsibility);
     lines.push({
       row: 'plan',

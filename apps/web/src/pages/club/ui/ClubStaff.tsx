@@ -33,6 +33,7 @@ import {
 import { managerRenewal, managerTermLimit } from '../../../../../../packages/engine/src/ops-staff';
 import { coachCriteriaOf, coachDelegated } from '../../../../../../packages/engine/src/hiring';
 import { directionOption } from '../../../../../../packages/engine/src/direction';
+import { SAFETY_ROUNDS, sharePercent } from '../../../../../../packages/engine/src/delegation-info';
 import { useOfficeRead } from '../../../shared/lib/useOfficeRead';
 import { SALE_BARS } from '../../../../../../packages/engine/src/transfers';
 import { managerPickPreview } from '../../../../../../packages/engine/src/managerMarket';
@@ -1259,7 +1260,7 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
   useTextLocale();
   const office = useOfficeRead(w);
   if (!office) return null;
-  const stance = office.delegation.contracts.plan.stance;
+  const plan = office.delegation.contracts.plan;
   return (
     <section
       data-surface="sheet"
@@ -1280,12 +1281,7 @@ export function TalkRulePanel({ w }: { w: World; client?: GameClient }) {
       <ul className={s.fixed}>
         <li>{localizeValue(directionOption(w, 'renewal').summary)}</li>
         <li>{richMessage('copy.ClubStaff.9d5c92492d')}</li>
-        <li>
-          {richMessage('delegation.talk.money', {
-            weeks: stance.runway,
-            share: Math.round(stance.wageShare * 100),
-          })}
-        </li>
+        <li>{richMessage('delegation.talk.money', { share: sharePercent(plan.share) })}</li>
         <li>{richMessage('copy.ClubStaff.e257a74a0b')}</li>
       </ul>
     </section>
@@ -1301,7 +1297,7 @@ export function OfferAnswers({ w }: { w: World }) {
   if (!office) return null;
   const card = cardOf(buildOf(w), 'market').label,
     [bar, prospect] = SALE_BARS[w.build?.market ?? 'standard'],
-    [first, second] = office.delegation.sales.plan.stance.sellSteps,
+    [first, second] = office.delegation.sales.plan.stance.sellAbove,
     recruitment = office.delegation.recruitment.plan,
     signing = recruitment.stance.signing,
     code = clubOf(w).country,
@@ -1343,7 +1339,7 @@ export function OfferAnswers({ w }: { w: World }) {
               : sourceMessage('copy.ClubStaff.131f1f83e6'),
           })}
         </li>
-        <li>{richMessage('copy.ClubStaff.cfc5a016a7', { p0: first, p1: second })}</li>
+        <li>{richMessage('delegation.offer.cuts', { first, second, weeks: SAFETY_ROUNDS })}</li>
         <li>{richMessage('copy.ClubStaff.5909c8a6d1', { p0: <b>{localizeValue(card)}</b> })}</li>
         <li>
           {richMessage('delegation.offer.signings', {
@@ -1354,7 +1350,6 @@ export function OfferAnswers({ w }: { w: World }) {
                     p0: signing.margin,
                     p1: signing.upgrades,
                   }),
-            budget: compactMoney(recruitment.budget, code, w.year),
             left: compactMoney(recruitment.left, code, w.year),
           })}
         </li>

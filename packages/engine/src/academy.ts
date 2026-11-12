@@ -4,7 +4,7 @@ import { movePerson } from './npc-continuity';
 import { baseEffects } from './bases';
 import type { Line, Player, Position, World, YouthFocus } from '../../contracts/src/types';
 import { LINES } from '../../contracts/src/player';
-import { currentDay, SEASON_ROUNDS, seasonDayOf } from './calendar';
+import { currentDay, seasonDayOf } from './calendar';
 import { activePlayers, clubOf, lineOfPlayer, overall } from './player-state';
 import { addEvent } from './events';
 import { joinClub, makePlayer, ownStarters } from './world';
@@ -13,13 +13,13 @@ import { marketWage, signingClauses } from './contracts';
 import { staffEffects, staffMember } from './staff';
 import { pushInbox } from './inbox';
 import { growAttributes, recordDevelopment } from './training';
-import { moneyLabel, operatingCosts } from './finance';
+import { moneyLabel } from './finance';
 import { policyEffects, policyOf } from './policy';
 import { buildEffects } from './build';
 import { synergyEffects } from './synergy';
 import { isDelegated } from './responsibilities';
 import { debutRule, directionOf, directionOption, releaseRule } from './direction';
-import { planLabel, spendingStance } from './delegation';
+import { insolvencyStop } from './delegation';
 import { academyFacilityTerms } from './facilities';
 import { intakePotential } from './owner-traits';
 
@@ -412,13 +412,6 @@ function staffReport(w: World, title: string, detail: string, ref?: string) {
   });
 }
 /** Season boundary: academy ages, and delegated staff promote or release prospects. */
-/** Cash below which the delegated youth director defers promotions: his cutoff. */
-export function promotionFloor(w: World) {
-  return (
-    (BigInt(operatingCosts(w).annual) * BigInt(spendingStance(w, 'academy').runway)) /
-    BigInt(SEASON_ROUNDS)
-  );
-}
 export function seasonAcademy(w: World): void {
   if (!w.academy?.players.length) return;
   // Academy football ends at 21 whoever decides; this also bounds the academy.
@@ -458,18 +451,21 @@ export function seasonAcademy(w: World): void {
     return;
   }
   const promoted = new Set<string>();
-  // Every promotion adds a first-team wage, so the youth director waits while cash is under his
-  // cutoff.
-  const floor = promotionFloor(w),
-    affordable = BigInt(w.cash) >= floor;
-  if (!affordable && ready.length)
+  // Every promotion adds a first-team wage: only the plain insolvency stop holds them back.
+  const stop = ready.length
+      ? insolvencyStop(
+          w,
+          0n,
+          ready.reduce((all, player) => all + BigInt(player.wage), 0n),
+          true,
+        )
+      : undefined,
+    affordable = !stop;
+  if (stop)
     staffReport(
       w,
       sourceMessage('copy.academy.daeb17db53', { p0: ready.length }),
-      sourceMessage('delegation.verdict.promotionWait', {
-        reserve: moneyLabel(w, floor.toString()),
-        plan: planLabel(w, 'academy'),
-      }),
+      sourceMessage('delegation.promotion.stop', { reason: stop }),
     );
   for (const player of affordable ? ready : []) {
     if (registrationRoom(w, { ...player, graduate: true, joined: w.year })) continue;

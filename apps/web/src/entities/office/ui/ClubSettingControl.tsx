@@ -1,7 +1,7 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import type { BuildSlot } from '../../../../../../packages/contracts/src/build';
 import { BUILD_OPTIONS } from '../../../../../../packages/contracts/src/build';
 import type {
@@ -16,7 +16,10 @@ import {
   type BuildEffects,
 } from '../../../../../../packages/engine/src/build';
 import { DIRECTION_INFO, directionOf } from '../../../../../../packages/engine/src/direction';
-import { delegateOf, settingDelegate } from '../../../../../../packages/engine/src/delegation-info';
+import {
+  settingDelegate,
+  settingPerson,
+} from '../../../../../../packages/engine/src/delegation-info';
 import { SALE_BARS } from '../../../../../../packages/engine/src/transfer-policy';
 import { clubOf } from '../../../../../../packages/engine/src/player-state';
 import type { GameClient } from '../../../runtime/client';
@@ -92,14 +95,16 @@ export function InvestmentSlider<T extends string | number>({
       <span
         className={s.names}
         data-many={options.length > 6 || undefined}
-        style={{
-          gridTemplateColumns: `repeat(${options.length > 6 ? 2 : options.length}, minmax(0, 1fr))`,
-        }}
+        style={{ '--stops': Math.max(1, options.length - 1) } as CSSProperties}
         aria-hidden="true"
       >
         {localizeValue(
-          options.map((option) => (
-            <span key={option.value} data-selected={value === option.value || undefined}>
+          options.map((option, stop) => (
+            <span
+              key={option.value}
+              data-selected={value === option.value || undefined}
+              style={{ '--stop': stop } as CSSProperties}
+            >
               {localizeValue(option.name)}
             </span>
           )),
@@ -304,15 +309,15 @@ function SettingFooter({
 
 /**
  * Who sets a dial or direction row now, when its work is delegated (→`DELEGATE_CONTROLS`):
- * "위임 중 · 유스 디렉터 Francisco Barata 담당"; undefined while the owner sets it.
+ * "위임 중 · 단장 Mateus Teixeira 담당", the youth director for the academy's football rows;
+ * undefined while the owner sets it.
  */
 export function settingLock(
   w: World,
   setting: { policy: PolicyKey } | { direction: DirectionKey },
 ): string | undefined {
-  const key = settingDelegate(w, setting);
-  if (!key) return undefined;
-  const person = delegateOf(w, key);
+  if (!settingDelegate(w, setting)) return undefined;
+  const person = settingPerson(w, setting);
   return sourceMessage('delegation.locked', { post: person.postLabel, name: person.name });
 }
 

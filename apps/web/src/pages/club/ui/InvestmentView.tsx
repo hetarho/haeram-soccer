@@ -48,6 +48,7 @@ import { BusinessWorkbench } from './BusinessWorkbench';
 import { InvestmentTotals } from './InvestmentTotals';
 import { OfficeEffects } from './OfficeEffects';
 import { TaskReturn } from './TaskReturn';
+import { YouthCoach } from './YouthCoach';
 import {
   BuildSetting,
   ClubBudget,
@@ -685,6 +686,7 @@ function InvestmentDetails({
           <DelegationNote key={key} w={w} responsibility={key} />
         )),
       )}
+      {localizeValue(area === 'youth' && <YouthCoach w={w} office={office} />)}
       {localizeValue(
         area === 'finance' && (
           <Card surface="sheet" className={s.panel}>

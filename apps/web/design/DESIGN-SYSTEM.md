@@ -194,12 +194,23 @@ Reuse the quiet link control and chevron resource so the list remains reachable 
 the detailed report at phone widths.
 
 Who decides a work is chosen on the delegation page (위임 설정) only; no other screen offers a
-direct/delegate switch. A delegated work sends its person a spending request on the shared
+direct/delegate switch. A delegated work sends the 단장 a spending request on the shared
 five-step `InvestmentSlider`, previewing the plan he would make of it (`PlanPreview`: one
-sentence, the money as `stat-tile`s, then the settings he sets). Each area page opens with one
-`DelegationNote` per work it holds — the person, temperament and request, or the owner — and a
-control its person sets stays visible but read only: its options disabled at the value in force
-and, in place of the apply footer, the compact `badge` 위임 중 beside who sets it.
+sentence, the money as a `PlanFlow` — `stat-tile`s joined by quiet chevrons that read income →
+the work's share → already committed → left to spend, two by two on a phone — one plain line,
+then the settings he sets). Each area page opens with one `DelegationNote` per work it holds —
+the person, temperament and request, or the owner — and a control its person sets stays visible
+but read only: its options disabled at the value in force and, in place of the apply footer, the
+compact `badge` 위임 중 beside who sets it.
+
+A stepped slider names each stop exactly under it: the thumb travels between half its width
+from either end, so the names read the shared `--range-thumb-size` the resource skin draws the
+thumb with, and the end names keep to the track's ends.
+
+구단 예산 shows a season as two bars of one length — what came in (earned, player sales, the
+owner's money, cash drawn on) and where it went (paid regardless, chosen spending, kept) — in the
+theme's semantic colours with one legend line per part; the season in progress adds the 단장's
+`PlanFlow`s.
 
 ### Detail pages read as reports
 

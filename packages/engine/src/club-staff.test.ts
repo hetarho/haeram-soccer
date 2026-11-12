@@ -19,7 +19,7 @@ import { retirePerson } from './careers';
 import { atCareerDate, careerDate, closeEmployment } from './person-careers';
 import { historyWorld } from './history';
 import { careerWorld } from './career.testkit';
-import { spendingStance } from './delegation';
+import { SAFETY_ROUNDS } from './delegation-info';
 import { operatingCosts } from './finance';
 import { ownLeagueClubs } from './season';
 import { random } from './primitives';
@@ -294,10 +294,10 @@ describe('hiring from the staff markets (→STAFF-49, STAFF-15)', () => {
     const order = coachMatches(w, 'attack').map((o) => o.id);
     expect(order.indexOf('staff-free:attack:twin')).toBeGreaterThanOrEqual(0);
     expect(order.indexOf('staff-free:attack:twin')).toBeLessThan(order.indexOf(top.id));
-    // Cash for his fee but not for the fee and the compensation: only the free agent matches.
+    // Cash for his fee but not for the fee and the compensation, after the month of fixed costs
+    // the plain insolvency stop keeps: only the free agent matches.
     const runway =
-      ((BigInt(operatingCosts(w).annual) + BigInt(top.wage)) / 46n) *
-      BigInt(spendingStance(w, 'staff').runway);
+      ((BigInt(operatingCosts(w).annual) + BigInt(top.wage)) / 46n) * BigInt(SAFETY_ROUNDS);
     w.cash = (runway + BigInt(top.fee) + BigInt(top.compensation!) - 1n).toString();
     const affordable = coachMatches(w, 'attack').map((o) => o.id);
     expect(affordable).toContain('staff-free:attack:twin');

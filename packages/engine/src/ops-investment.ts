@@ -35,7 +35,7 @@ function refuseDelegated(w: World, setting: Parameters<typeof settingDelegate>[1
     throw new Error(
       sourceMessage('delegation.error.delegated', {
         area: RESPONSIBILITY_NAMES[key],
-        person: delegateOf(w, key).postLabel,
+        person: delegateOf(w).postLabel,
       }),
     );
 }

@@ -12,6 +12,7 @@ import {
 import { sponsorAnnual } from './sponsors';
 import { ownLeagueClubs, ranked } from './season';
 import { SEASON_ROUNDS } from './calendar';
+import { lastSeasonTurnover, seasonTurnover } from './finance-read';
 
 export type ProjectionKey =
   | 'operating'
@@ -200,4 +201,40 @@ export function financeProjection(w: World): FinanceProjection {
     lines,
     seasonLines,
   };
+}
+
+/** The projection's lines that bring money in. */
+const INCOME_LINES: ReadonlySet<ProjectionKey> = new Set([
+  'gate',
+  'share',
+  'parachute',
+  'sponsor',
+  'performance',
+  'merit',
+]);
+/**
+ * This season's income as the 단장 plans on it (→`delegation.ts`): the turnover so far — no player
+ * sales, no owner money (→ECON-30) — and the rest of the season at the middle of the projection's
+ * income lines, so this season's crowds, contracts and table place set it. Cup prizes and other
+ * one-offs count once they are in. Before the season's fixtures exist (the close's own planning)
+ * it reads last season's turnover, or the bought club's books in a takeover season.
+ */
+export function seasonRevenue(w: World): string {
+  const fixtures = w.fixtures.some(
+    (f) =>
+      f.year === w.year &&
+      f.kind === 'league' &&
+      (f.home === w.playerClub || f.away === w.playerClub),
+  );
+  if (!fixtures) {
+    const takeover = w.owner?.takeover;
+    return (
+      lastSeasonTurnover(w) ?? (takeover?.year === w.year ? takeover.lastIncome : undefined) ?? '0'
+    );
+  }
+  const rest = financeProjection(w)
+    .seasonLines.filter((row) => INCOME_LINES.has(row.key))
+    .reduce((all, row) => all + big(row.amount), 0n);
+  const total = seasonTurnover(w) + rest;
+  return (total > 0n ? total : 0n).toString();
 }

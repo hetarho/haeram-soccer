@@ -544,3 +544,10 @@
 .locked > [data-ui='badge'] {
   padding-inline: 6px;
 }
+/* The youth director's training on the youth page: his effect in tiles, then one plain line. */
+.coachNote {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}

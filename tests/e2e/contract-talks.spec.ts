@@ -134,7 +134,7 @@ test('the talk rule shows under 선수 as the club was taken over', async ({ pag
   await expect(talks.getByRole('button', { name: /^재계약 기조/ })).toHaveCount(0);
   await expect(talks).toContainText('시장가까지만');
   await expect(talks).toContainText('32세부터 1시즌');
-  await expect(talks).toContainText('남겨 둘 돈(고정지출');
+  await expect(talks).toContainText('이번 시즌 수입 예상의');
   await expect(talks).toContainText('언해피');
   await expect(page.getByRole('dialog', { name: '재정 업무 기준', exact: true })).toHaveCount(0);
 });

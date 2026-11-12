@@ -384,8 +384,8 @@ function byPriority(priority: ManagerCriteria['priority']) {
 export const managerHireCost = (m: ManagerCandidate) =>
   BigInt(m.fee) + BigInt(m.compensation ?? '0') + BigInt(m.coachingRelease ?? '0');
 /**
- * Cash after his fee and any compensation still keeps 재정 기조's runway with his wage in place of
- * the current manager's (→STAFF-18, as →STAFF-15, →ECON-33).
+ * His fee and any compensation, with his wage in place of the current manager's, pass the plain
+ * insolvency stop (→STAFF-18, as →STAFF-15, →`affordable`).
  */
 function affordableManager(w: World, m: ManagerCandidate) {
   return affordable(
@@ -394,7 +394,6 @@ function affordableManager(w: World, m: ManagerCandidate) {
     BigInt(m.wage) -
       BigInt(w.manager.wage) -
       BigInt((m.person && w.staff?.find((member) => member.person === m.person)?.wage) || '0'),
-    'manager',
   );
 }
 /** Free agents, and other clubs' managers too when the criteria allow poaching. */

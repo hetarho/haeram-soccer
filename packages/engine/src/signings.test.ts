@@ -27,7 +27,6 @@ import {
   overall,
   placeBid,
   ratio,
-  SEASON_ROUNDS,
   seasonDayOf,
   shortlistOffers,
   joinedThisWindow,
@@ -44,7 +43,6 @@ import { holdRows, staffAuthority } from './testing';
 import { cachedWorld } from '../../../tests/fixtures/cached-world';
 import { DISABLED_RELEASE } from '../../../tests/fixtures/releases';
 import { careerWorld } from './career.testkit';
-import { spendingStance } from './delegation';
 import { holdTemperament } from './delegation.testkit';
 import { scoutReach } from './scout-search';
 
@@ -159,22 +157,24 @@ describe('the chief scout signs players at level 4 (→CLUB-33)', () => {
   it("keeps the 단장's money checks", () => {
     const w = club();
     const offer = transferOffers(w)[clubIndex(w)]!;
-    const perRound =
-      (BigInt(operatingCosts(w).annual) + BigInt(offer.player.wage)) / BigInt(SEASON_ROUNDS);
-    // Cash for his cutoff and two fees: asked 적당히 he spends 36% of the cash above it a season.
-    w.cash = (perRound * 12n + BigInt(offer.fee) * 2n).toString();
+    // A season's income at which the fee and a year of his wage fit 80% of it after the wages
+    // already paid, but not 62%.
+    const wages = BigInt(operatingCosts(w).playerWages),
+      cost = BigInt(offer.fee) + BigInt(offer.player.wage),
+      planned = { year: w.year, revenue: (((cost + wages) * 10n) / 7n).toString(), sales: '0' };
+    w.budgetPlan = planned;
     const standard = signingVerdict(w, offer.player, offer.fee);
     expect(standard.ok).toBe(false);
-    expect(standard.reason).toContain('남은 영입 예산');
+    expect(standard.reason).toContain('영입에 쓸 돈');
     w.delegationRequests = { recruitment: 5 };
     expect(signingVerdict(w, offer.player, offer.fee).ok).toBe(true);
-    // Below the cutoff nothing is spent at all.
-    w.cash = (perRound * BigInt(spendingStance(w, 'recruitment').runway)).toString();
-    expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('남겨 둘 돈');
-    // Without revenue the wage bill has no room.
+    // Whatever the plan allows, the plain stop keeps a month of fixed costs in cash.
+    w.cash = BigInt(offer.fee).toString();
+    expect(signingVerdict(w, offer.player, offer.fee).reason).toContain('현금이 바닥나지');
+    // Without income the wage bill has no room.
     const poor = club();
-    poor.income = '0';
-    expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('인건비');
+    poor.budgetPlan = { ...planned, revenue: '0' };
+    expect(signingVerdict(poor, offer.player, offer.fee).reason).toContain('연봉 총액');
     passFree(poor);
     staffSignings(poor);
     expect(staffBids(poor)).toEqual([]);

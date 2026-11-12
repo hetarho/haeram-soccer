@@ -570,6 +570,10 @@ html[data-theme] {
     accent-color: var(--image-primary);
   }
 
+  /* The thumb's size, which stepped sliders also read to set each stop's name under it. */
+  & {
+    --range-thumb-size: 20px;
+  }
   input[type='range'] {
     appearance: none;
     min-height: 44px;
@@ -589,8 +593,8 @@ html[data-theme] {
   }
   input[type='range']::-webkit-slider-thumb {
     appearance: none;
-    width: 20px;
-    height: 20px;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
     margin-top: -7px;
     border: 0;
     border-radius: 50%;
@@ -598,8 +602,8 @@ html[data-theme] {
     background-color: var(--formation-marker-fallback, var(--image-primary));
   }
   input[type='range']::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
+    width: var(--range-thumb-size);
+    height: var(--range-thumb-size);
     border: 0;
     border-radius: 50%;
     background: var(--formation-marker, var(--image-primary-material)) center / cover no-repeat;

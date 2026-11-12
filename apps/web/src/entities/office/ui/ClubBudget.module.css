@@ -1,4 +1,7 @@
-/* 구단 예산: a season's verdict plate, its three groups of money, then this season's plans. */
+/*
+ * 구단 예산: a season's verdict plate holding its two money bars, then this season's plan and the
+ * year's fixed costs.
+ */
 .budget {
   display: grid;
   gap: 14px;
@@ -17,14 +20,25 @@
 }
 .head small,
 .groupHead small,
-.empty,
 .transfers {
   color: var(--text-muted);
   font-size: 12px;
   line-height: 1.6;
 }
 .verdict {
-  --card-gap: 10px;
+  --card-gap: 12px;
+}
+.result {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+}
+.cash {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 600;
 }
 .up {
   color: var(--danger);
@@ -32,24 +46,130 @@
 .down {
   color: var(--cool);
 }
-.groups {
+
+/*
+ * The two bars share one length: what came in, with any cash drawn on, and where it went, with
+ * what was kept. The parts take the theme's semantic colours, never their own.
+ */
+.flow {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 14px;
   min-width: 0;
 }
-.group,
-.forecast,
-.plans {
+.flowRow {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.flowHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+}
+.flowHead > b {
+  font-variant-numeric: tabular-nums;
+}
+.bar {
+  display: flex;
+  height: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--subtle-fill, transparent);
+}
+.bar > span {
+  flex: none;
+  height: 100%;
+}
+.bar > span + span {
+  border-inline-start: 1px solid var(--surface);
+}
+.flow [data-tone='earned'] {
+  --tone: var(--positive);
+}
+.flow [data-tone='sales'] {
+  --tone: var(--gold, var(--warm));
+}
+.flow [data-tone='injection'] {
+  --tone: var(--cool);
+}
+.flow [data-tone='drawn'] {
+  --tone: var(--danger);
+}
+.flow [data-tone='fixed'] {
+  --tone: var(--line-strong);
+}
+.flow [data-tone='chosen'] {
+  --tone: var(--chart-primary, var(--accent));
+}
+.flow [data-tone='kept'] {
+  --tone: color-mix(in srgb, var(--positive) 40%, transparent);
+}
+.bar > span {
+  background: var(--tone);
+}
+.legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.legend > li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-content: start;
+  align-items: start;
+  gap: 2px 8px;
+  min-width: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.swatch {
+  width: 10px;
+  height: 10px;
+  margin-top: 4px;
+  border-radius: 2px;
+  background: var(--tone);
+}
+.partName {
+  min-width: 0;
+  color: var(--text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.partAmount {
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+  white-space: nowrap;
+}
+.partShare,
+.partLines {
+  grid-column: 2 / -1;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.partShare:empty {
+  display: none;
+}
+.transfers {
+  margin: 0;
+}
+
+/* This season: the 단장's plan, then the year's fixed costs. */
+.plans,
+.forecast {
   display: grid;
   align-content: start;
-  gap: 8px;
+  gap: 10px;
   min-width: 0;
-  padding: 12px;
-}
-.forecast,
-.plans {
-  padding-inline: 0;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
 }
 .groupHead {
   display: grid;
@@ -62,6 +182,16 @@
   gap: 8px;
   margin: 0;
   font-size: 14px;
+}
+.planFlow {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.planFlow > h5 {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
 }
 .lines,
 .planList {
@@ -85,32 +215,23 @@
 }
 .amount {
   font-variant-numeric: tabular-nums;
-  text-align: right;
-  white-space: nowrap;
+  text-align: end;
 }
-.bar {
+.meter {
   grid-column: 1 / -1;
   height: 4px;
   border-radius: 2px;
   background: var(--line);
   overflow: hidden;
 }
-.bar > span {
+.meter > span {
   display: block;
   height: 100%;
   background: var(--chart-primary, var(--accent));
 }
-.transfers {
-  margin: 0;
-}
-.forecast,
-.plans {
-  border-top: 1px solid var(--line);
-  padding-top: 14px;
-}
 .planList > li {
   display: grid;
-  grid-template-columns: minmax(96px, 0.8fr) minmax(0, 1.4fr) auto;
+  grid-template-columns: minmax(96px, 0.8fr) minmax(0, 1.2fr) minmax(0, 1.4fr);
   gap: 4px 12px;
   align-items: baseline;
   padding-block: 6px;
@@ -128,35 +249,21 @@
   display: flex;
   justify-content: flex-end;
 }
-@media (max-width: 900px) {
-  .groups {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
 @media (max-width: 600px) {
-  /* Four money tiles do not fit one phone row: two by two. */
-  .verdict dl {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
   .planList > li {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-  .planList > li > .who {
+  .planList > li > .amount {
     grid-column: 1 / -1;
-    grid-row: 2;
+    grid-row: 3;
+    text-align: start;
+  }
+  .planList > li > .who {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: end;
   }
   .planActions > button {
     flex: 1 1 100%;
   }
-}
-.runway {
-  margin: 0;
-  color: var(--text);
-  font-size: 12px;
-  line-height: 1.6;
-}
-.runway[data-tone='warn'],
-.runway[data-tone='bad'] {
-  color: var(--danger);
 }

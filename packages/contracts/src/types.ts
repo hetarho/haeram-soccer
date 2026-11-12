@@ -1354,6 +1354,12 @@ export interface World {
   direction?: Direction;
   /** The owner's spending request per delegated responsibility; absent is 적당히 (3). */
   delegationRequests?: Partial<Record<BudgetResponsibility, SpendRequest>>;
+  /**
+   * The 단장's season plan: the season's income he planned on and the player sales already in
+   * when he made it, written at each plan moment (→`delegation.ts`). Absent, or from another
+   * season, the plans read the income projection live.
+   */
+  budgetPlan?: { year: number; revenue: string; sales: string };
   /** 지역 기반 and 글로벌 인지도, 0–100 (→ECON-34); absent is 0. */
   localBase?: number;
   globalReach?: number;

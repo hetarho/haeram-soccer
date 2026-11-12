@@ -42,16 +42,16 @@ import { buildEffects } from './build';
 import { wageDemandFactor } from './owner-traits';
 import { moraleOf, UNHAPPY_MORALE } from './morale';
 import { pushInbox } from './inbox';
-import { moneyLabel, operatingCosts, recentRevenue, wageBill } from './finance';
+import { moneyLabel } from './finance';
 import { directionOption } from './direction';
-import { planLabel, spendingStance } from './delegation';
+import { delegatePlan, insolvencyStop, planLabel } from './delegation';
+import { sharePercent } from './delegation-info';
 import { contractSeason } from './ops-staff';
-import { currentDay, dayCountedFrom, SEASON_ROUNDS } from './calendar';
+import { currentDay, dayCountedFrom } from './calendar';
 import { credit } from './transactions';
 import { suitorFor } from './transfers';
 import { joinAtClose } from './free-agents';
 import { transferWindowDays } from './transfer-window';
-import { financeProjection } from './projection';
 import { isDelegated } from './responsibilities';
 import { AMBITION_UNHAPPY, GRADE_LABEL } from './player';
 import { BALLON_DOR_CONFIG, ballonDorPremium } from './ballon-dor';
@@ -626,37 +626,20 @@ function declineTalk(w: World, p: Player, reason: string) {
   return { kept, outcome };
 }
 /**
- * The cautious end of the season-end cash projection (→ECON-18) with `p` paid `wage` from the next
- * round, as the owner's projection would show it once agreed.
- */
-export function seasonEndWithWage(w: World, p: Player, wage: string) {
-  const before = p.wage;
-  p.wage = wage;
-  try {
-    return financeProjection(w).seasonEnd.low;
-  } finally {
-    p.wage = before;
-  }
-}
-/**
  * Delegated staff (→STAFF-13) offer the floor for two seasons past this one (one from 32), never
  * ending before the running contract (→staffTerm), when 재계약 기조 keeps the player (the floor
  * within its wage cap, a starter when it keeps only the XI, younger than its age limit) and
- * the 단장's plan allows the raise (`spendingStance`): cash after it keeps his cutoff, the yearly wage bill after
- * it, staff included, stays within the ceiling of the last 12 months' revenue, and the season's
- * cash projection with the new wage from the next round still ends the season keeping the runway;
+ * the 단장's plan allows the raise (`delegatePlan`): the players' wage bill after it stays inside
+ * the squad's share of the season's income, and the plain insolvency stop lets it through;
  * otherwise they decline. Either way the talk's inbox item says why.
  */
 export function staffTalkVerdict(w: World, p: Player) {
   const talk = p.talk!,
     rule = talkRuleOf(w),
     renewal = directionOption(w, 'renewal').name,
-    stance = spendingStance(w, 'contracts'),
     finance = planLabel(w, 'contracts'),
     ceiling = scaleBy(playerWorth(w, p), rule.maxPay, 1000n),
     raise = BigInt(talk.floor) - BigInt(p.wage),
-    perRound = (BigInt(operatingCosts(w).annual) + raise) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(stance.runway),
     term = staffTerm(w, p),
     age = w.year - p.born;
   if (BigInt(talk.floor) > BigInt(ceiling))
@@ -692,36 +675,24 @@ export function staffTalkVerdict(w: World, p: Player) {
       accept: false as const,
       reason: sourceMessage('copy.contracts.129ed2f743', { p0: age, p1: renewal, p2: rule.maxAge }),
     };
-  if (BigInt(w.cash) < runway)
+  if (raise > 0n) {
+    const plan = delegatePlan(w, 'contracts');
+    if (raise > BigInt(plan.left))
+      return {
+        accept: false as const,
+        reason: sourceMessage('delegation.verdict.raiseWageBill', {
+          bill: moneyLabel(w, (BigInt(plan.committed) + raise).toString()),
+          revenue: moneyLabel(w, plan.revenue),
+          share: sharePercent(plan.share),
+          plan: finance,
+        }),
+      };
+  }
+  const stop = insolvencyStop(w, 0n, raise > 0n ? raise : 0n);
+  if (stop)
     return {
       accept: false as const,
-      reason: sourceMessage('delegation.verdict.raiseReserve', {
-        reserve: moneyLabel(w, runway.toString()),
-        plan: finance,
-      }),
-    };
-  const bill = BigInt(wageBill(w)) + raise,
-    revenue = recentRevenue(w),
-    share = Math.round(stance.wageShare * 100);
-  if (bill * 100n > BigInt(revenue) * BigInt(share))
-    return {
-      accept: false as const,
-      reason: sourceMessage('delegation.verdict.raiseWageBill', {
-        bill: moneyLabel(w, bill.toString()),
-        revenue: moneyLabel(w, revenue),
-        share,
-        plan: finance,
-      }),
-    };
-  const seasonEnd = seasonEndWithWage(w, p, talk.floor);
-  if (BigInt(seasonEnd) < runway)
-    return {
-      accept: false as const,
-      reason: sourceMessage('delegation.verdict.raiseSeasonEnd', {
-        projected: moneyLabel(w, seasonEnd),
-        reserve: moneyLabel(w, runway.toString()),
-        plan: finance,
-      }),
+      reason: sourceMessage('delegation.verdict.wrap', { reason: stop, plan: finance }),
     };
   return { accept: true as const, term };
 }

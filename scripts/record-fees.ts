@@ -46,8 +46,9 @@ import { scoutReach, transferOffers } from '../packages/engine/src/scout-search'
 import { shortLines, signingVerdict, SIGNING_CONFIG } from '../packages/engine/src/signings';
 import { staffBidShare } from '../packages/engine/src/director-bidding';
 import { transferWindow, transferWindowDays } from '../packages/engine/src/transfer-window';
-import { delegatePlan } from '../packages/engine/src/delegation';
-import { operatingCosts, recentRevenue, wageBill } from '../packages/engine/src/finance';
+import { delegatePlan, insolvencyStop } from '../packages/engine/src/delegation';
+import { SAFETY_ROUNDS } from '../packages/engine/src/delegation-info';
+import { operatingCosts } from '../packages/engine/src/finance';
 import { financeProjection } from '../packages/engine/src/projection';
 import { openNeeds } from '../packages/engine/src/replacements';
 import { clubTerms } from '../packages/engine/src/world-market';
@@ -212,18 +213,12 @@ interface Career {
 /** The first of the 단장's plan's checks a signing fails, as `signingVerdict` orders them. */
 function checkOf(w: World, player: Player, fee: string) {
   const plan = delegatePlan(w, 'recruitment'),
-    stance = plan.stance,
-    perRound = (BigInt(operatingCosts(w).annual) + BigInt(player.wage)) / BigInt(SEASON_ROUNDS),
-    spare = BigInt(w.cash) - perRound * BigInt(stance.runway),
-    cap = BigInt(plan.left);
+    wage = BigInt(player.wage);
   const verdict = signingVerdict(w, player, fee);
   if (verdict.ok) return 'ok';
-  if (spare < BigInt(fee)) return 'runway';
-  if (BigInt(fee) > cap) return 'share';
-  const bill = BigInt(wageBill(w)) + BigInt(player.wage);
-  if (bill * 100n > BigInt(recentRevenue(w)) * BigInt(Math.round(stance.wageShare * 100)))
-    return 'wage bill';
-  return 'projection';
+  if (wage > 0n && BigInt(plan.committed) + wage > BigInt(plan.budget)) return 'wage bill';
+  if (BigInt(fee) + wage > BigInt(plan.left)) return 'share';
+  return insolvencyStop(w, BigInt(fee), wage, true) ? 'runway' : 'projection';
 }
 
 function gapOf(w: World, player: Player) {
@@ -258,14 +253,13 @@ function candidate(w: World, player: Player, fee: string, club: string, inBand: 
 
 function read(w: World): Read {
   const plan = delegatePlan(w, 'recruitment'),
-    stance = plan.stance,
     costs = operatingCosts(w),
     perRound = BigInt(costs.annual) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(stance.runway),
+    runway = perRound * BigInt(SAFETY_ROUNDS),
     spare = BigInt(w.cash) - runway,
     cap = BigInt(plan.left),
-    revenue = BigInt(recentRevenue(w)),
-    bill = BigInt(wageBill(w));
+    revenue = BigInt(plan.revenue),
+    bill = BigInt(plan.committed);
   const reach = scoutReach(w),
     [low, high] = reach.ability,
     [young, old] = reach.age;
@@ -306,7 +300,7 @@ function read(w: World): Read {
     cap: pounds(cap),
     wageBill: pounds(bill),
     revenue: pounds(revenue),
-    wageRoom: pounds((revenue * BigInt(Math.round(stance.wageShare * 100))) / 100n - bill),
+    wageRoom: pounds(BigInt(plan.budget) - bill),
     projection: pounds(projection),
     squad: activePlayers(w).length,
     short: shortLines(w).length,

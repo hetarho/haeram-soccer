@@ -74,7 +74,7 @@ describe('owner office instructions and investment', () => {
       fee = (BigInt(delegatePlan(w, 'recruitment').left) + 1n).toString();
     expect(signingVerdict(w, offer.player, fee)).toMatchObject({
       ok: false,
-      reason: expect.stringContaining('남은 영입 예산'),
+      reason: expect.stringContaining('영입에 쓸 돈'),
     });
     operate(w, { type: 'delegation-request', responsibility: 'recruitment', level: 5 });
     expect(signingVerdict(w, offer.player, fee)).toMatchObject({ ok: true });

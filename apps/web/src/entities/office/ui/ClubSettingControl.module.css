@@ -63,21 +63,45 @@
   min-height: 44px;
   margin: 0;
 }
+/*
+ * Each name sits under its stop: a range thumb travels from half its width to the track's end
+ * less half its width, so stop n of N lies at thumb/2 + (width − thumb) × n/N. The names share one
+ * grid cell, so the row is as tall as the longest name; the end names keep to the track's ends.
+ */
 .names {
+  --thumb: var(--range-thumb-size, 20px);
+  --gap: calc((100% - var(--thumb)) / var(--stops));
   display: grid;
-  gap: 4px;
   color: var(--text-muted);
   font-size: 11px;
-  text-align: center;
   line-height: 1.5;
   word-break: keep-all;
   overflow-wrap: anywhere;
 }
+.names > span {
+  grid-area: 1 / 1;
+  justify-self: start;
+  width: max-content;
+  max-width: calc(var(--gap) - 4px);
+  margin-inline-start: calc(var(--thumb) / 2 + var(--gap) * var(--stop));
+  translate: -50% 0;
+  text-align: center;
+}
+.names > span:dir(rtl) {
+  translate: 50% 0;
+}
+.names > :first-child,
+.names > :last-child {
+  max-width: calc(var(--gap) / 2 + var(--thumb) / 2 - 2px);
+  margin-inline-start: 0;
+  translate: none;
+}
 .names > :first-child {
-  text-align: left;
+  text-align: start;
 }
 .names > :last-child {
-  text-align: right;
+  justify-self: end;
+  text-align: end;
 }
 .names > [data-selected] {
   color: var(--text);

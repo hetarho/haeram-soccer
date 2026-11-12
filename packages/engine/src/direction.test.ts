@@ -19,7 +19,6 @@ import {
   operatingCosts,
   overall,
   ownStarters,
-  promotionFloor,
   releaseStaff,
   renewalDay,
   saleAllowed,
@@ -32,6 +31,7 @@ import {
   untouchableVerdict,
 } from './index';
 import { careerWorld } from './career.testkit';
+import { seasonRevenue } from './projection';
 import { spendingStance } from './delegation';
 import { holdTemperament } from './delegation.testkit';
 
@@ -90,47 +90,58 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     expect(coachCriteriaOf(w).volunteer).toBe(true);
   });
 
-  it("the delegated person's cutoff sets the runway the staff keep, the promotion floor and the sale steps", () => {
+  it('only the plain insolvency stop reads the cash; the wage bill against the income sets the sale steps', () => {
     const w = world('direction-finance');
-    // Twenty rounds of costs: enough for a balanced 단장 (12), not for a cautious one (23).
-    holdTemperament(w, 'director', 'balanced');
-    w.cash = cashFor(w, 20);
-    expect(affordable(w, 0n, 0n)).toBe(true);
-    holdTemperament(w, 'director', 'cautious');
-    expect(affordable(w, 0n, 0n)).toBe(false);
-    holdTemperament(w, 'director', 'bold');
-    w.cash = cashFor(w, 8);
-    expect(affordable(w, 0n, 0n)).toBe(true);
+    // Five rounds of costs pass the stop (a month), three do not, whoever the 단장 is.
+    for (const temperament of ['balanced', 'cautious', 'bold'] as const) {
+      holdTemperament(w, 'director', temperament);
+      w.cash = cashFor(w, 5);
+      expect(affordable(w, 0n, 0n)).toBe(true);
+      w.cash = cashFor(w, 3);
+      expect(affordable(w, 0n, 0n)).toBe(false);
+    }
 
-    // Promotions wait below the youth coach's cutoff: 6, 12 or 23 weeks of fixed costs.
-    const annual = BigInt(operatingCosts(w).annual);
-    holdTemperament(w, 'youth', 'bold');
-    expect(promotionFloor(w)).toBe((annual * 6n) / 46n);
-    holdTemperament(w, 'youth', 'balanced');
-    expect(promotionFloor(w)).toBe((annual * 12n) / 46n);
-    holdTemperament(w, 'youth', 'cautious');
-    expect(promotionFloor(w)).toBe((annual * 23n) / 46n);
-
-    // The sale bar's runway steps move with it: 25 rounds cuts 10 for a balanced (12, 30) or a
-    // cautious 단장 (23, 58), whose 20 rounds cut 20, and nothing for a bold one (6, 15).
+    // The sale bar drops 10 points once the wage bill passes the 단장's sales line (60% of the
+    // income for 적당히) and 20 points ten points above it; a cash crisis drops it 20 as well.
     const p = activePlayers(w).find((x) => w.year - x.born >= 24 && w.year - x.born <= 29)!;
     p.born = w.year - 26;
     p.until = w.year + 3;
     w.cash = cashFor(w, 25);
     holdTemperament(w, 'director', 'balanced');
+    const revenue = BigInt(seasonRevenue(w)),
+      wagesAt = (percent: bigint) => {
+        const now = BigInt(operatingCosts(w).playerWages),
+          target = (revenue * percent) / 100n;
+        for (const player of activePlayers(w))
+          player.wage = ((BigInt(player.wage) * target) / now).toString();
+      };
+    wagesAt(50n);
+    expect(saleBar(w, p).percent).toBe(130);
+    wagesAt(65n);
     expect(saleBar(w, p).percent).toBe(120);
+    wagesAt(75n);
+    expect(saleBar(w, p).percent).toBe(110);
+    // Asked to hold at all costs a cautious 단장 still draws his line a step lower (68%, 78%);
+    // asked to sell readily, at 45% and 55%.
+    w.delegationRequests = { sales: 5 };
     holdTemperament(w, 'director', 'cautious');
     expect(saleBar(w, p).percent).toBe(120);
-    w.cash = cashFor(w, 20);
+    w.delegationRequests = { sales: 1 };
     expect(saleBar(w, p).percent).toBe(110);
+    delete w.delegationRequests;
+    wagesAt(50n);
+    w.cash = cashFor(w, 3);
+    expect(saleBar(w, p).percent).toBe(110);
+    // An untouchable star: the wage burden past the second line lowers the price by 25.
     w.cash = cashFor(w, 25);
-    holdTemperament(w, 'director', 'bold');
-    expect(saleBar(w, p).percent).toBe(130);
-    // An untouchable star: a balanced 단장 lowers the price under 30 rounds, a bold one under 15.
     holdTemperament(w, 'director', 'balanced');
-    expect(untouchableVerdict(w, 180, false).accept).toBe(true);
-    holdTemperament(w, 'director', 'bold');
     expect(untouchableVerdict(w, 180, false).accept).toBe(false);
+    wagesAt(75n);
+    expect(untouchableVerdict(w, 180, false).accept).toBe(true);
+    // A cash crisis sells.
+    wagesAt(50n);
+    w.cash = cashFor(w, 3);
+    expect(untouchableVerdict(w, 100, false).accept).toBe(true);
   });
 
   it('매각 기조 sets the sale bar, and 핵심 지키기 never sells a starter', () => {
@@ -236,6 +247,8 @@ describe('direction rows (→ECON-25, ECON-33, CLUB-26, STAFF-15, STAFF-18)', ()
     const hold = world('direction-hold');
     holdRows(hold, { build: { market: 'hold' } });
     hold.settings = staffAuthority(4);
+    // No signing joins the XI after the marks are set.
+    hold.settings.responsibilities.recruitment = 'direct';
     hold.calendar = { day: transferWindowDays(hold.year).summerOpen };
     dailyMarket(hold);
     const marked = activePlayers(hold).filter((player) => player.stance === 'untouchable');

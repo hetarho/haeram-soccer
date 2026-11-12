@@ -96,7 +96,7 @@ import {
 } from '../packages/engine/src/player-state';
 import { transferOffers } from '../packages/engine/src/scout-search';
 import { delegatePlan } from '../packages/engine/src/delegation';
-import { recentRevenue, wageBill } from '../packages/engine/src/finance';
+import { SAFETY_ROUNDS } from '../packages/engine/src/delegation-info';
 import { SEASON_ROUNDS } from '../packages/engine/src/calendar';
 
 const args = process.argv.slice(2);
@@ -600,16 +600,13 @@ function fitWage(w: World, p: Player, tier: number) {
  */
 function replaySigning(w: World, p: Player, fee: bigint, wage: bigint): string | false {
   const plan = delegatePlan(w, 'recruitment'),
-    stance = plan.stance,
     paid = BigInt(p.wage);
   const perRound = (BigInt(operatingCosts(w).annual) - paid + wage) / BigInt(SEASON_ROUNDS),
-    runway = perRound * BigInt(stance.runway),
-    spare = BigInt(w.cash) + fee - runway;
+    floor = perRound * BigInt(SAFETY_ROUNDS),
+    spare = BigInt(w.cash) + fee - floor;
   if (spare < fee) return 'runway';
-  if (fee > BigInt(plan.left) + fee) return 'budget';
-  const bill = BigInt(wageBill(w)) - paid + wage,
-    revenue = BigInt(recentRevenue(w));
-  if (bill * 100n > revenue * BigInt(Math.round(stance.wageShare * 100))) return 'wage bill';
+  if (fee + wage > BigInt(plan.left) + fee + paid) return 'budget';
+  if (BigInt(plan.committed) - paid + wage > BigInt(plan.budget)) return 'wage bill';
   return false;
 }
 /** The owner's league's clubs nobody owns (its division and group). */

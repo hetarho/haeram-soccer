@@ -1,11 +1,13 @@
 import { message as sourceMessage } from '../../../../../../packages/contracts/src/messages';
 import { displayMessage, localizeValue, useTextLocale } from '../../../presentation/text';
 import { richMessage } from '../../../presentation/LocalizedMessage';
+import type { ReactNode } from 'react';
 import type { BudgetResponsibility, World } from '../../../../../../packages/contracts/src/types';
 import {
-  BUDGET_STEP,
+  personOf,
   requestLabel,
   RESPONSIBILITY_NAMES,
+  sharePercent,
   TEMPERAMENT_INFO,
 } from '../../../../../../packages/engine/src/delegation-info';
 import { POLICY_INFO, policyOf } from '../../../../../../packages/engine/src/policy';
@@ -23,18 +25,9 @@ import s from './DelegationPlan.module.css';
 
 export type DelegatePlan = OfficeRead['delegation'][BudgetResponsibility]['plan'];
 
-/** How the person heard the request, in one sentence. */
-function responseLine(w: World, plan: DelegatePlan) {
-  const code = clubOf(w).country,
-    level = requestLabel(plan.key, plan.level);
-  if (plan.response === 'noMoney')
-    return displayMessage(
-      plan.key === 'sales' ? 'delegation.response.salesNoMoney' : 'delegation.response.noMoney',
-      {
-        cash: compactMoney(plan.cash, code, w.year),
-        reserve: compactMoney(plan.reserve, code, w.year),
-      },
-    );
+/** How the 단장 heard the request, in one sentence that says why when he moved off it. */
+function responseLine(plan: DelegatePlan) {
+  const level = requestLabel(plan.key, plan.level);
   if (plan.response === 'followed')
     return displayMessage('delegation.response.followed', { level });
   return displayMessage(
@@ -43,68 +36,186 @@ function responseLine(w: World, plan: DelegatePlan) {
   );
 }
 
-/** The plan's money in tiles: what he keeps and, by work, what he will spend or how he sells. */
-function planStats(w: World, plan: DelegatePlan, office: OfficeRead): DeskStat[] {
+/** A share of the planned income, in percent with at most one decimal. */
+function shareOf(amount: string, revenue: string) {
+  const income = BigInt(revenue);
+  return income > 0n ? sharePercent(Number((BigInt(amount) * 10000n) / income)) : 0;
+}
+
+/** One step of a plan's money: what it is, the amount, a quiet note; `result` marks the last. */
+export interface FlowStep {
+  label: string;
+  value: ReactNode;
+  note?: string;
+  tone?: 'minus' | 'result' | 'empty';
+}
+
+/**
+ * A plan's money read left to right as one sentence (→`PlanPreview`): the season's income, the
+ * work's share of it, what that share already pays, and what is left to spend. The steps are the
+ * shared stat tiles joined by arrows; on a phone they stack two by two.
+ */
+export function PlanFlow({ label, steps }: { label: string; steps: readonly FlowStep[] }) {
+  useTextLocale();
+  return (
+    <ol className={s.flow} aria-label={localizeValue(label)} data-steps={steps.length}>
+      {localizeValue(
+        steps.map((step) => (
+          <li key={step.label} data-ui="stat-tile" data-tone={step.tone}>
+            <span className={s.stepLabel}>{localizeValue(step.label)}</span>
+            <b>{localizeValue(step.value)}</b>
+            {localizeValue(step.note && <small>{localizeValue(step.note)}</small>)}
+          </li>
+        )),
+      )}
+    </ol>
+  );
+}
+
+/** The plan's money as steps, for the works the 단장 plans with a share of the income. */
+export function planSteps(w: World, plan: DelegatePlan): FlowStep[] | undefined {
   const code = clubOf(w).country,
-    amount = (value: string) => <Money value={value} code={code} year={w.year} plain />;
-  const reserve: DeskStat = {
-    label: sourceMessage('delegation.fact.reserve'),
-    value: amount(plan.reserve),
-    note: sourceMessage('delegation.fact.reserveNote', { weeks: plan.stance.runway }),
-  };
+    amount = (value: string) => <Money value={value} code={code} year={w.year} plain />,
+    money = (value: string) => compactMoney(value, code, w.year),
+    share = sharePercent(plan.share),
+    revenue: FlowStep = {
+      label: sourceMessage('delegation.flow.revenue'),
+      value: amount(plan.revenue),
+      note: plan.lastRevenue
+        ? sourceMessage('delegation.flow.revenueLast', { amount: money(plan.lastRevenue) })
+        : undefined,
+    },
+    wages: FlowStep = {
+      label: sourceMessage('delegation.flow.wages'),
+      value: amount(plan.committed),
+      note: sourceMessage('delegation.flow.wagesNote', {
+        share: shareOf(plan.committed, plan.revenue),
+      }),
+      tone: 'minus',
+    };
   switch (plan.key) {
     case 'recruitment':
       return [
+        revenue,
         {
-          label: sourceMessage('delegation.fact.signingBudget'),
+          label: sourceMessage('delegation.flow.squad', { share }),
           value: amount(plan.budget),
-          note: sourceMessage('delegation.fact.signingLeft', {
-            left: compactMoney(plan.left, code, w.year),
-          }),
+          note: sourceMessage('delegation.flow.squadNote'),
         },
-        reserve,
-      ];
-    case 'academy': {
-      const choice = plan.choices.find((one) => one.kind === 'policy' && one.key === 'academy');
-      const level = choice?.kind === 'policy' ? choice.level : policyOf(w).academy;
-      return [
+        wages,
         {
-          label: POLICY_INFO.academy.label,
-          value: POLICY_INFO.academy.levels[level - 1].name,
-          note: sourceMessage('delegation.fact.yearly', {
-            amount: compactMoney(office.policyCosts.academy[level]?.academy ?? '0', code, w.year),
+          label: sourceMessage('delegation.flow.signings'),
+          value: amount(plan.left),
+          note: sourceMessage('delegation.flow.signingsNote', {
+            reinvest: money(plan.reinvest),
+            spent: money(plan.spent),
           }),
+          tone: BigInt(plan.left) > 0n ? 'result' : 'empty',
         },
-        reserve,
       ];
-    }
     case 'contracts':
       return [
+        revenue,
         {
-          label: sourceMessage('delegation.fact.wageShare'),
-          value: sourceMessage('delegation.fact.wageShareValue', {
-            share: Math.round(plan.stance.wageShare * 100),
-          }),
+          label: sourceMessage('delegation.flow.wageCap', { share }),
+          value: amount(plan.budget),
         },
-        reserve,
+        wages,
+        {
+          label: sourceMessage('delegation.flow.raises'),
+          value: amount(plan.left),
+          tone: BigInt(plan.left) > 0n ? 'result' : 'empty',
+        },
       ];
+    case 'academy': {
+      const youth = plan.youth!;
+      return [
+        revenue,
+        {
+          label: sourceMessage('delegation.flow.youth', { share }),
+          value: amount(plan.budget),
+        },
+        {
+          label: sourceMessage('delegation.flow.youthPay'),
+          value: amount(youth.pay),
+          note: sourceMessage('delegation.flow.youthPayNote'),
+          tone: 'minus',
+        },
+        {
+          label: sourceMessage('delegation.flow.academy'),
+          value: POLICY_INFO.academy.levels[youth.level - 1].name,
+          note: sourceMessage('delegation.flow.academyNote', { cost: money(youth.cost) }),
+          tone: 'result',
+        },
+      ];
+    }
     case 'sales':
       return [
+        revenue,
         {
-          label: sourceMessage('delegation.fact.sellSteps'),
-          value: sourceMessage('delegation.fact.sellStepsValue', {
-            first: plan.stance.sellSteps[0],
-            second: plan.stance.sellSteps[1],
-          }),
+          label: sourceMessage('delegation.flow.sellLine', { share }),
+          value: amount(plan.budget),
+          note: sourceMessage('delegation.flow.sellLineNote'),
         },
-        reserve,
+        { ...wages, label: sourceMessage('delegation.flow.wagesNow'), tone: undefined },
       ];
     default:
-      return [
-        ...plan.choices.slice(0, 1).map((choice) => ({ label: choice.label, value: choice.value })),
-        reserve,
-      ];
+      return undefined;
   }
+}
+
+/** The plan in one or two plain sentences under its steps. */
+function planSentence(w: World, plan: DelegatePlan): ReactNode {
+  const share = sharePercent(plan.share),
+    now = shareOf(plan.committed, plan.revenue);
+  switch (plan.key) {
+    case 'recruitment':
+      return plan.over
+        ? richMessage('delegation.flow.recruitmentOver', {
+            now,
+            share,
+            reinvest: plan.reinvestShare,
+          })
+        : richMessage('delegation.flow.recruitmentLine', { share, reinvest: plan.reinvestShare });
+    case 'contracts':
+      return plan.over
+        ? richMessage('delegation.flow.contractsOver', { now, share })
+        : richMessage('delegation.flow.contractsLine', { share });
+    case 'academy':
+      return (
+        <>
+          {richMessage('delegation.flow.academyLine')}{' '}
+          {richMessage('delegation.flow.youthCoach', { name: personOf(w, 'youth').name })}
+        </>
+      );
+    case 'sales': {
+      const [first, second] = plan.stance.sellAbove;
+      return now > first
+        ? richMessage('delegation.flow.salesPressed', { now, points: now > second ? 20 : 10 })
+        : richMessage('delegation.flow.salesCalm', { now });
+    }
+    default:
+      return undefined;
+  }
+}
+
+/** The posts whose pay the 단장's criteria decide: the setting he sets and the pay now. */
+function postStats(w: World, plan: DelegatePlan): DeskStat[] {
+  const code = clubOf(w).country,
+    first = plan.choices[0];
+  return [
+    ...(first ? [{ label: first.label, value: first.value }] : []),
+    {
+      label:
+        plan.key === 'manager'
+          ? sourceMessage('delegation.fact.managerWage')
+          : sourceMessage('delegation.fact.staffWages'),
+      value: <Money value={plan.committed} code={code} year={w.year} plain />,
+      note: sourceMessage('delegation.flow.wagesNote', {
+        share: shareOf(plan.committed, plan.revenue),
+      }),
+    },
+  ];
 }
 
 /** A choice of the plan that differs from what is in force now. */
@@ -117,9 +228,9 @@ function pending(w: World, plan: DelegatePlan) {
 }
 
 /**
- * A person's plan for a request (→`delegatePlan`): how he heard it, the money he keeps and
- * spends, and the settings he sets himself. The delegation page shows it for the request being
- * chosen; a work's page for the request in force.
+ * The 단장's plan for a request (→`delegatePlan`): how he heard it, the money as income → share →
+ * already committed → left to spend, one plain sentence, and the settings he sets. The delegation
+ * page shows it for the request being chosen; a work's page for the request in force.
  */
 export function PlanPreview({
   w,
@@ -131,9 +242,9 @@ export function PlanPreview({
   showChoices?: boolean;
 }) {
   useTextLocale();
-  const office = useOfficeRead(w);
-  if (!office) return null;
-  // A setting already shown as a tile is not listed again (→`planStats`).
+  const steps = planSteps(w, plan),
+    sentence = planSentence(w, plan);
+  // A setting already shown as a step or a tile is not listed again.
   const listed = plan.choices.filter(
     (choice, index) =>
       !(plan.key === 'academy' && choice.key === 'academy') &&
@@ -142,23 +253,22 @@ export function PlanPreview({
   return (
     <div className={s.plan} data-testid={`delegation-plan-${plan.key}`}>
       <p className={s.response} data-response={plan.response}>
-        {localizeValue(responseLine(w, plan))}
+        {localizeValue(responseLine(plan))}
       </p>
       {localizeValue(
-        (plan.key === 'recruitment' || plan.key === 'academy') && plan.response !== 'noMoney' && (
-          <p className={s.spare}>
-            {richMessage('delegation.plan.spare', {
-              cash: compactMoney(plan.cash, clubOf(w).country, w.year),
-              spare: compactMoney(plan.spare, clubOf(w).country, w.year),
-              share: plan.level * BUDGET_STEP,
-            })}
+        steps ? (
+          <PlanFlow label={displayMessage('delegation.plan.heading')} steps={steps} />
+        ) : (
+          <DeskStats label={displayMessage('delegation.plan.heading')} stats={postStats(w, plan)} />
+        ),
+      )}
+      {localizeValue(
+        sentence && (
+          <p className={s.sentence} data-over={plan.over || undefined}>
+            {localizeValue(sentence)}
           </p>
         ),
       )}
-      <DeskStats
-        label={displayMessage('delegation.plan.heading')}
-        stats={planStats(w, plan, office)}
-      />
       {localizeValue(
         showChoices && listed.length > 0 && (
           <dl className={s.choices} aria-label={displayMessage('delegation.choices.title')}>
@@ -178,8 +288,8 @@ export function PlanPreview({
 }
 
 /**
- * Who decides a work, at the head of its page: the person it is delegated to, his temperament,
- * the owner's request and his plan, with the settings below read only — or the owner himself.
+ * Who decides a work, at the head of its page: the 단장 it is delegated to, his temperament, the
+ * owner's request and his plan, with the settings below read only — or the owner himself.
  * Changing who decides or the request happens on the delegation page only.
  */
 export function DelegationNote({

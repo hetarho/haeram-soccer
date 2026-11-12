@@ -3,6 +3,7 @@ import { eventsInSeason } from './season-index';
 import { baseEffects, settleBases } from './bases';
 import type { MatchRecord, World } from '../../contracts/src/types';
 import { addEvent } from './events';
+import { replanIfMoved } from './delegation';
 import { clubOf } from './player-state';
 import { footballQuote, quote } from './quotes';
 import { random, ratio } from './primitives';
@@ -335,6 +336,8 @@ export function settleRound(w: World) {
     );
   }
   insolvency(w, cost.annual);
+  // The 단장 plans again when the season's income or its sales moved a lot (→`replanIfMoved`).
+  replanIfMoved(w);
 }
 /** League rounds in debt before the club goes bankrupt, or debt deeper than half a year's costs. */
 export const BANKRUPTCY_ROUNDS = 8;

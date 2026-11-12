@@ -8,6 +8,7 @@ import {
 } from '../../../../../packages/engine/src/index';
 import { careerWorld } from '../../../../../packages/engine/src/career.testkit';
 import { addEvent } from '../../../../../packages/engine/src/events';
+import { applyDelegatePlans } from '../../../../../packages/engine/src/delegation';
 import { sellPlayer, startWork } from '../../../../../packages/engine/src/testing';
 import { settingsOf } from '../../../../../packages/engine/src/responsibilities';
 import { describeOutcome, newEvents } from './outcome';
@@ -92,6 +93,8 @@ describe('action outcome summaries', () => {
 
   it('leaves routine ledger records to the cash change instead of listing raw units', () => {
     const before = world();
+    // The 단장 has made this season's plan, so the round brings only routine records.
+    applyDelegatePlans(before, 'season');
     const command = { type: 'sign-sponsor', slot: 'local', offer: 0 } as const;
     const next = after(before, (w) => {
       settleRound(w);

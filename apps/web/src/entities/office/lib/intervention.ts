@@ -21,7 +21,10 @@ export const RESPONSIBILITY_DETAILS: Readonly<Record<ResponsibilityKey, string>>
   academy: sourceMessage('delegation.detail.academy'),
   sponsors: sourceMessage('copy.intervention.c5ca8c981c'),
 };
-/** Who takes each responsibility once the owner delegates it. */
+/**
+ * Who takes each responsibility's money once the owner delegates it: the 단장, youth money included
+ * (the youth director's football calls are named in the academy's plan).
+ */
 export type ResponsibilityPost = 'director' | 'manager' | 'youth';
 export const RESPONSIBILITY_DELEGATES: Readonly<
   Record<ResponsibilityKey, readonly ResponsibilityPost[]>
@@ -31,7 +34,7 @@ export const RESPONSIBILITY_DELEGATES: Readonly<
   contracts: ['director', 'manager'],
   recruitment: ['director', 'manager'],
   sales: ['director', 'manager'],
-  academy: ['youth'],
+  academy: ['director'],
   sponsors: ['director'],
 };
 /** Current holders and their person records for a delegated responsibility. */
