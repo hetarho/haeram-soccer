@@ -71,7 +71,7 @@ On this Xeon host, under that load, a complete season on revision 11 takes about
 
 The first two benchmark runs exposed two workload faults older than this task, both in the benchmark's owner actions: the active-management profile loaned the scout's first listed player, now a free agent whom the game refuses to loan (→CLUB-49/50), and it adopted a new design every season, whose −20 팬 민심 (→KIT-9, OWNER-12) forced the owner out (구단주 퇴진, →OWNER-13) in season 3 on revision 10 and before season 20 on revision 11 (a scratch replay of the same workload printed 팬 민심 by season). The owner now bids for the scout's first club player on loan and adopts a design only while 팬 민심 is at least 50, twice the floor after the drop; the scope line reports the edits made. `scripts/season-throughput.ts` and `scripts/match-model-baseline.ts` carried the same loan.
 
-### Settlement, grid and fixture re-read
+### Settlement, staging, grid and fixture re-read
 
 `node scripts/perf/ab.mjs --workload <w> --base . --cand . --json artifacts/benchmarks/T838/final-<w>-aa.json` with the runner's defaults and seed perf-261027, A/A on this commit (`TMPDIR` in the session's scratch). Both sides bundle byte-identically and give identical output hashes in every workload. Medians are main-thread CPU and wall in ms; the wall/CPU gap is the shared load. These are this machine's figures; T837's M1 Max figures above are context only (→ARCH-34).
 
@@ -80,3 +80,8 @@ The first two benchmark runs exposed two workload faults older than this task, b
 | own-match (revision-11 settlement: record, script, material) | 140.69 / 139.25 | 265.36 / 294.05 | 96 | 0.9941 [0.9655, 1.0276] | 13.9–20.9 |
 | grid-own (the grid's own match, revision 10) | 463.32 / 444.89 | 1252.03 / 1109.52 | 48 | 0.9931 [0.9511, 1.0248] | 23.4–30.8 |
 | fixture (one aggregate fixture) | 11.86 / 12.00 | 32.57 / 32.26 | 96 | 1.0659 [0.9600, 1.1706] | 20.9–23.4 |
+| staging (full production `stageAll`, the whole match) | 13350.36 / 13728.39 | 20997.96 / 22857.55 | 24 | 1.0242 [0.9866, 1.0803] | 16.6–35.9 |
+
+### Capacity, partial (→SAVE-4, ARCH-31)
+
+`pnpm exec tsx scripts/benchmark.ts --phase <name>`, its five independent phase chains side by side, on the final workload (state `.tmp/benchmark/029821328bb12dd4`, computation fingerprint 4c823b8f…, started 02:11 UTC). Finished when this section was written: `retained` (843 s, worst checkpoint 837,206 bytes, "marked synthetic retained career and cross-season promise") and `activation` (1,022 s, a pre-release career taken over in 1950 and activated by the worker host's writer load mid-season after ten seasons, worst 1,284,556 bytes two seasons later), both within the 6 MiB checkpoint and 8 MiB portable limits. The two century profiles, their checkpoints, the era probe and the report were still running under the shared load; **no capacity verdict is claimed**. They resume on the same source with `pnpm run benchmark --phase <name>` for each phase not yet in that directory, then `--phase report`.
