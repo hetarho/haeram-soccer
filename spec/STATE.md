@@ -13,11 +13,11 @@
 ## active
 | tag | host | mode | since | at | doing |
 |---|---|---|---|---|---|
+| n813 | ihaelam-ui-MacBookPro | autopilot | 2026-11-12T17:22Z | 2026-11-12T17:22Z | - |
 | k2d7 | ihaelam-ui-MacBookPro | autopilot | 2026-10-26T15:53Z | 2026-10-26T15:53Z | - |
 | f5j2 | hq-dev1-pve2-vm2 | pair | 2026-10-28T07:05Z | 2026-10-28T07:05Z | - |
 | ot03 | hq-dev1-pve2-vm2 | autopilot | 2026-11-02T16:10Z | 2026-11-03T05:39Z | - |
 | ba04 | hq-dev1-pve2-vm2 | autopilot | 2026-11-04T07:00Z | 2026-11-04T07:00Z | - |
-| n813 | ihaelam-ui-MacBookPro | autopilot | 2026-11-12T16:59Z | 2026-11-12T16:59Z | - |
 
 ## inbox
 - 261113 decided STAFF-51 ARCH-21 T851: how `staff.test`'s basic-staff and no-staff seasons compare once a vacant post acts 안정 지향 and basic volunteers carry their own temperaments and names in the 단장's reports → hold the basic 단장 and youth director 안정 지향 and compare the two seasons with the basic delegates' names read as 공석, so only what STAFF-51 states differs (alt: make an absent staff list read as basic volunteers in `staffMember`, an engine change for saves no new career writes | drop the equality, losing the check that nothing else differs) n813
